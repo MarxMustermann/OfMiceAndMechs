@@ -1,5 +1,4 @@
-import urwid
-
+import urwid 
 header = urwid.Text(u"")
 main = urwid.Text(u"@")
 footer = urwid.Text(u"")
@@ -424,9 +423,9 @@ npc.watched = True
 npcQuests = [quest0]
 npc2 = Character("Ü",1,1,name="Ernst Ziegelbach")
 
-tutorialQuest1 = MoveQuest(5,5,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n l=left\n h=right\n k=up\n j=down\n\nplease move to the designated Target. the Implant will mark your Way")
-tutorialQuest2 = CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n a=activate/apply\n e=examine\n ,=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing a.")
-tutorialQuest3 = ActivateQuest(furnace,startCinematics="now go and activate the Furnace marked with a Ω. you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press a.")
+tutorialQuest1 = MoveQuest(5,5,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way")
+tutorialQuest2 = CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing j.")
+tutorialQuest3 = ActivateQuest(furnace,startCinematics="now go and activate the Furnace marked with a Ω. you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press j.")
 tutorialQuest4 = MoveQuest(1,1,startCinematics="please stand to attention and wait for further Orders.")
 quest0 = CollectQuest()
 quest05 = ActivateQuest(furnace)
@@ -454,6 +453,8 @@ def callShow_or_exit(loop,key):
 	show_or_exit(key)
 
 def show_or_exit(key):
+	if not len(key) == 1:
+		return
 	global cinematicQueue
 	stop = False
 	if len(cinematicQueue):
@@ -470,35 +471,35 @@ def show_or_exit(key):
 
 	if key in ('q', 'Q'):
 		raise urwid.ExitMainLoop()
-	if key in ('k'):
+	if key in ('w'):
 		if characters[0].yPosition:
 			characters[0].yPosition -= 1
 		characters[0].changed()
-	if key in ('j'):
+	if key in ('s'):
 		characters[0].yPosition += 1
 		characters[0].changed()
-	if key in ('l'):
+	if key in ('d'):
 		characters[0].xPosition += 1
 		characters[0].changed()
-	if key in ('h'):
+	if key in ('a'):
 		if characters[0].xPosition:
 			characters[0].xPosition -= 1
 		characters[0].changed()
-	if key in ('a'):
+	if key in ('j'):
 		for item in itemsOnFloor:
 			if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:
 				item.apply()
-	if key in ('d'):
+	if key in ('l'):
 		if len(characters[0].inventory):
 			item = characters[0].inventory.pop()	
 			item.xPosition = characters[0].xPosition		
 			item.yPosition = characters[0].yPosition		
 			itemsOnFloor.append(item)
 			item.changed()
-	if key in ('C'):
+	if key in ('h'):
 		messages.append(characters[0].name+": HÜ!")
 		messages.append(characters[0].name+": HOTT!")
-	if key in (','):
+	if key in ('k'):
 		for item in itemsOnFloor:
 			if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:
 				itemsOnFloor.remove(item)

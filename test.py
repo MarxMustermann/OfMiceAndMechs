@@ -427,6 +427,7 @@ npc2 = Character("Ü",1,1,name="Ernst Ziegelbach")
 tutorialQuest1 = MoveQuest(5,5,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n l=left\n h=right\n k=up\n j=down\n\nplease move to the designated Target. the Implant will mark your Way")
 tutorialQuest2 = CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n a=activate/apply\n e=examine\n ,=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing a.")
 tutorialQuest3 = ActivateQuest(furnace,startCinematics="now go and activate the Furnace marked with a Ω. you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press a.")
+tutorialQuest4 = MoveQuest(1,1,startCinematics="please stand to attention and wait for further Orders.")
 quest0 = CollectQuest()
 quest05 = ActivateQuest(furnace)
 quest1 = MoveQuest(10,10)
@@ -434,7 +435,8 @@ quest2 = MoveQuest(0,0)
 quest3 = ActivateQuest(lever2)
 tutorialQuest1.followUp = tutorialQuest2
 tutorialQuest2.followUp = tutorialQuest3
-tutorialQuest3.followUp = quest0
+tutorialQuest3.followUp = tutorialQuest4
+tutorialQuest4.followUp = quest0
 quest0.followUp = quest05
 quest05.followUp = quest1
 quest1.followUp = quest2

@@ -1,0 +1,567 @@
+import urwid
+
+header = urwid.Text(u"")
+main = urwid.Text(u"@")
+footer = urwid.Text(u"")
+cinematicQueue = []
+
+def calculatePath(startX,startY,endX,endY):
+	diffX = startX-endX
+	diffY = startY-endY
+
+	import math
+	path = []
+	while (not diffX == 0) or (not diffY == 0):
+			if (diffX<0):
+				startX += 1
+				diffX  += 1
+			if (diffX>0):
+				startX -= 1
+				diffX  -= 1
+			if (diffY<0):
+				startY += 1
+				diffY  += 1
+			if (diffY>0):
+				startY -= 1
+				diffY  -= 1
+			path.append((startX,startY))
+
+			"""
+			if math.abs(diffX) > math.abs(diffY):
+				if (diffX<1):
+					endX-1
+					diffX+1
+				else:
+					endX+1
+					diffX-1
+				if (diffY<1):
+					endY-1
+					diffY+1
+				else:
+					endY+1
+					diffY-1
+				path.append((startX,startY))
+			"""
+	#path = path[:-1]
+	return path
+
+class Item(object):
+	def __init__(self,display="§",xPosition=0,yPosition=0):
+		self.display = display
+		self.xPosition = xPosition
+		self.yPosition = yPosition
+		self.listeners = []
+
+	def apply(self):
+		messages.append("i can't do anything useful with this")
+
+	def changed(self):
+		messages.append(self.name+": Object changed")
+		for listener in self.listeners:
+			listener()
+
+	def addListener(self,listenFunction):
+		if not listenFunction in self.listeners:
+			self.listeners.append(listenFunction)
+
+	def delListener(self,listenFunction):
+		if listenFunction in self.listeners:
+			self.listeners.remove(listenFunction)
+
+class Lever(Item):
+	def __init__(self,xPosition=0,yPosition=0,name="lever",activated=False):
+		self.activated = activated
+		self.display = {True:"/",False:"|"}
+		self.name = name
+		super().__init__("|",xPosition,yPosition)
+		self.activateAction = None
+		self.deactivateAction = None
+
+	def apply(self):
+		if not self.activated:
+			self.activated = True
+			self.display = "/"
+			messages.append(self.name+": activated!")
+
+			if self.activateAction:
+				self.activateAction(self)
+		else:
+			self.activated = False
+			self.display = "|"
+			messages.append(self.name+": deactivated!")
+
+			if self.deactivateAction:
+				self.activateAction(self)
+		self.changed()
+
+class Furnace(Item):
+	def __init__(self,xPosition=0,yPosition=0,name="furnace"):
+		self.name = name
+		self.activated = False
+		super().__init__("Ω",xPosition,yPosition)
+
+	def apply(self):
+		messages.append("Furnace used")
+		foundItem = None
+		for item in characters[0].inventory:
+			try:
+				canBurn = item.canBurn
+			except:
+				continue
+			if not canBurn:
+				continue
+
+			foundItem = item
+
+		if not foundItem:
+			messages.append("keine KOHLE zum anfeuern")
+		else:
+			self.activated = True
+			self.display = "ϴ"
+			characters[0].inventory.remove(foundItem)
+			messages.append("burn it ALL")
+		self.changed()
+
+class Display(Item):
+	def __init__(self,xPosition=0,yPosition=0,name="display"):
+		self.name = name
+		super().__init__("ߐ",xPosition,yPosition)
+
+class Coal(Item):
+	def __init__(self,xPosition=0,yPosition=0,name="coal"):
+		self.name = name
+		self.canBurn = True
+		super().__init__("*",xPosition,yPosition)
+
+class Pile(Item):
+	def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal):
+		self.name = name
+		self.canBurn = True
+		self.type = itemType
+		super().__init__("ӫ",xPosition,yPosition)
+
+	def apply(self):
+		messages.append("Pile used")
+		characters[0].inventory.append(self.type())
+		characters[0].changed()
+
+class Character():
+	def __init__(self,display="@",xPosition=0,yPosition=0,quests=[],automated=True,name="Person"):
+		self.display = display
+		self.xPosition = xPosition
+		self.yPosition = yPosition
+		self.automated = automated
+		self.quests = []
+		self.name = name
+		self.inventory = []
+		self.watched = False
+		self.listeners = []
+		
+		for quest in quests:
+			self.assignQuest(quest)
+
+	def startNextQuest(self):
+		if len(self.quests):
+			self.setPathToQuest(self.quests[0])
+
+	def assignQuest(self,quest,active=False):
+			quest.activate()
+			if active:
+				self.quests.insert(0,quest)
+			else:
+				self.quests.append(quest)
+			quest.assignToCharacter(self)
+			if self.automated and (active or len(self.quests) == 1):
+				try:
+					self.setPathToQuest(quest)
+				except:
+					pass
+
+			if self.watched:
+				messages.append(self.name+": got a new quest\n - "+quest.description)
+
+	def setPathToQuest(self,quest):
+		self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY)
+
+	def addToInventory(self,item):
+		self.inventory.append(item)
+
+	def advance(self):
+		if self.automated:
+			if hasattr(self,"path") and len(self.path):
+				self.xPosition = self.path[0][0]
+				self.yPosition = self.path[0][1]
+				self.path = self.path[1:]
+			try:
+				if not len(self.path):
+					self.quests[0].toActivate.apply()
+			except:
+				pass
+			self.changed()
+
+	def addListener(self,listenFunction):
+		if not listenFunction in self.listeners:
+			self.listeners.append(listenFunction)
+
+	def delListener(self,listenFunction):
+		if listenFunction in self.listeners:
+			self.listeners.remove(listenFunction)
+
+	def changed(self):
+		for listenFunction in self.listeners:
+			listenFunction()
+		
+
+class Quest(object):
+	def __init__(self,followUp=None,startCinematics=None):
+		self.followUp = followUp
+		self.character = None
+		self.listener = []
+		self.active = False
+		self.startCinematics=startCinematics
+
+	def triggerCompletionCheck(self):
+		if not self.active:
+			return 
+		pass
+	
+	def postHandler(self):
+		self.character.quests.remove(self)
+		if self.followUp:
+			self.character.assignQuest(self.followUp,active=True)
+		else:
+			self.character.startNextQuest()
+
+		if self.character.watched:
+			messages.append("Thank you kindly. @"+self.character.name)
+		
+		self.deactivate()
+
+	def assignToCharacter(self,character):
+		self.character = character
+		self.recalculate()
+
+	def recalculate(self):
+		self.triggerCompletionCheck()
+
+	def changed(self):
+		messages.append("QUEST: "+self.description+" changed")
+
+	def addListener(self,listenFunction):
+		if not listenFunction in self.listener:
+			self.listener.append(listenFunction)
+
+	def delListener(self,listenFunction):
+		if listenFunction in self.listener:
+			self.listener.remove(listenFunction)
+
+	def activate(self):
+		self.active = True
+		if self.startCinematics:
+			showCinematic(self.startCinematics)			
+			try:
+				loop.set_alarm_in(0.0, callShow_or_exit, '.')
+			except:
+				pass
+
+	def deactivate(self):
+		self.active = False
+
+class CollectQuest(Quest):
+	def __init__(self,toFind="canBurn",startCinematics=None):
+		self.toFind = toFind
+		self.description = "Please fetch things with property: "+toFind
+
+		for item in itemsOnFloor:
+			hasProperty = False
+			try:
+				hasProperty = getattr(item,self.toFind)
+			except:
+				continue
+			
+			if hasProperty:
+				foundItem = item
+				break
+
+		if foundItem:
+			self.dstX = foundItem.xPosition
+			self.dstY = foundItem.yPosition
+
+		super().__init__(startCinematics=startCinematics)
+
+	def triggerCompletionCheck(self):
+		if not self.active:
+			return 
+
+		foundItem = None
+		for item in self.character.inventory:
+			hasProperty = False
+			try:
+				hasProperty = getattr(item,self.toFind)
+			except:
+				continue
+			
+			if hasProperty:
+				foundItem = item
+				break
+
+		if foundItem:
+			self.postHandler()
+			pass
+
+	def assignToCharacter(self,character):
+		super().assignToCharacter(character)
+		character.addListener(self.recalculate)
+
+class ActivateQuest(Quest):
+	def __init__(self,toActivate,followUp=None,desiredActive=True,startCinematics=None):
+		self.toActivate = toActivate
+		self.toActivate.addListener(self.recalculate)
+		self.description = "Please activate the "+self.toActivate.name+" ("+str(self.toActivate.xPosition)+"/"+str(self.toActivate.yPosition)+")"
+		self.dstX = self.toActivate.xPosition
+		self.dstY = self.toActivate.yPosition
+		self.desiredActive = desiredActive
+		super().__init__(followUp,startCinematics=startCinematics)
+
+	def triggerCompletionCheck(self):
+		if not self.active:
+			return 
+
+		if self.toActivate.activated == self.desiredActive:
+			self.postHandler()
+
+	def recalculate(self):
+		if hasattr(self,"dstX"):
+			del self.dstX
+		if hasattr(self,"dstY"):
+			del self.dstY
+		if hasattr(self,"toActivate"):
+			if hasattr(self.toActivate,"xPosition"):
+				self.dstX = self.toActivate.xPosition
+			if hasattr(self.toActivate,"xPosition"):
+				self.dstY = self.toActivate.yPosition
+		super().recalculate()
+
+class MoveQuest(Quest):
+	def __init__(self,x,y,followUp=None,startCinematics=None):
+		self.dstX = x
+		self.dstY = y
+		self.description = "Please go to coordinate "+str(self.dstX)+"/"+str(self.dstY)	
+		super().__init__(followUp,startCinematics=startCinematics)
+
+	def triggerCompletionCheck(self):
+		if not self.active:
+			return 
+
+		if self.character.xPosition == self.dstX and self.character.yPosition == self.dstY:
+			self.postHandler()
+
+	def assignToCharacter(self,character):
+		super().assignToCharacter(character)
+		character.addListener(self.recalculate)
+
+class GameState():
+	def __init__(self,characters):
+		self.characters = characters
+		self.gameWon = False
+
+messages = []
+
+lever1 = Lever(3,7,"engine control")
+lever2 = Lever(7,3,"boarding alarm")
+
+
+def lever2action(self):
+	messages.append("Bitte unterlassen Sie das anschalten des Alarms!")
+	deactivateLeaverQuest = ActivateQuest(lever2,desiredActive=False)
+	characters[1].assignQuest(deactivateLeaverQuest,active=True)
+
+class Cinematic(object):
+	def __init__(self,text):
+		self.text = text+"\n\n-- press space to proceed -- "
+		self.position = 0
+		self.endPosition = len(self.text)
+
+	def advance(self):
+		if self.position >= self.endPosition:
+			return
+
+		main.set_text(self.text[0:self.position])
+		if self.text[self.position] in ("\n"):
+			loop.set_alarm_in(0.5, callShow_or_exit, '.')
+		else:
+			loop.set_alarm_in(0.05, callShow_or_exit, '.')
+		self.position += 1
+
+def showCinematic(text):
+	cinematicQueue.append(Cinematic(text))
+
+showCinematic("welcome to the training environment\n\nPlease, try to learn fast.\n\nParticipants with low evaluation scores will be given suitable assignments in the vats")
+
+lever2.activateAction = lever2action
+
+furnace = Furnace(9,7,"Furnace")
+furnaceDisplay = Display(9,8,"Furnace monitoring")
+coalPile1 = Pile(9,6,"coal Pile1",Coal)
+coalPile2 = Pile(9,5,"coal Pile2",Coal)
+coalPile3 = Pile(9,4,"coal Pile3",Coal)
+itemsOnFloor = [lever1,lever2,furnace,furnaceDisplay,coalPile1,coalPile2,coalPile3]
+
+quest0 = ActivateQuest(lever1)
+quest1 = MoveQuest(2,2)
+quest2 = MoveQuest(2,8)
+quest3 = MoveQuest(8,8)
+quest4 = MoveQuest(8,2)
+quest0.followUp = quest1
+quest1.followUp = quest2
+quest2.followUp = quest3
+quest3.followUp = quest4
+quest4.followUp = quest1
+npcQuests = [quest0]
+npc = Character("Ö",1,1,npcQuests,name="Erwin von Libwig")
+npc.watched = True
+
+npcQuests = [quest0]
+npc2 = Character("Ü",1,1,name="Ernst Ziegelbach")
+
+tutorialQuest1 = MoveQuest(5,5,startCinematics="Inside the Simulationchamber everything has to be taught from Scratch.\n\nThe basic Movementcommands are:\n\n l=left\n h=right\n k=up\n j=down\n\nPlease move to the designated Target. The Implant will mark your Way.")
+tutorialQuest2 = CollectQuest(startCinematics="Interaction with your Environment ist somewhat complicated.\n\nThe basic Interationcommands are:\n\n a=activate/apply\n e=examine\n ,=pick up\n\nSee this Piles of coal marked with ӫ on the rigth side of the room.\n\nPlease grab yourself some coal from a pile by moving onto it and pressing the a button.")
+quest0 = CollectQuest()
+quest05 = ActivateQuest(furnace)
+quest1 = MoveQuest(10,10)
+quest2 = MoveQuest(0,0)
+quest3 = ActivateQuest(lever2)
+tutorialQuest1.followUp = tutorialQuest2
+tutorialQuest2.followUp = quest0
+quest0.followUp = quest05
+quest05.followUp = quest1
+quest1.followUp = quest2
+quest2.followUp = quest3
+quest3.followUp = None
+mainQuests = [tutorialQuest1]
+mainChar = Character("@",1,1,mainQuests,False,name="Sigmund Bärenstein")
+mainChar.watched = True
+
+characters = [mainChar,npc,npc2]
+
+gamestate = GameState(characters)
+
+def callShow_or_exit(loop,key):
+	show_or_exit(key)
+
+def show_or_exit(key):
+	global cinematicQueue
+	stop = False
+	if len(cinematicQueue):
+		if key in ('q', 'Q'):
+			raise urwid.ExitMainLoop()
+		elif key in (' '):
+			cinematicQueue = cinematicQueue[1:]
+			loop.set_alarm_in(0.0, callShow_or_exit, '.')
+		else:
+			stop = True
+			cinematicQueue[0].advance()
+	if stop:
+		return
+
+	if key in ('q', 'Q'):
+		raise urwid.ExitMainLoop()
+	if key in ('k'):
+		if characters[0].yPosition:
+			characters[0].yPosition -= 1
+		characters[0].changed()
+	if key in ('j'):
+		characters[0].yPosition += 1
+		characters[0].changed()
+	if key in ('l'):
+		characters[0].xPosition += 1
+		characters[0].changed()
+	if key in ('h'):
+		if characters[0].xPosition:
+			characters[0].xPosition -= 1
+		characters[0].changed()
+	if key in ('a'):
+		for item in itemsOnFloor:
+			if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:
+				item.apply()
+	if key in ('d'):
+		if len(characters[0].inventory):
+			item = characters[0].inventory.pop()	
+			item.xPosition = characters[0].xPosition		
+			item.yPosition = characters[0].yPosition		
+			itemsOnFloor.append(item)
+			item.changed()
+	if key in ('C'):
+		messages.append(characters[0].name+": HÜ!")
+		messages.append(characters[0].name+": HOTT!")
+	if key in (','):
+		for item in itemsOnFloor:
+			if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:
+				itemsOnFloor.remove(item)
+				if hasattr(item,"xPosition"):
+					del item.xPosition
+				if hasattr(item,"yPosition"):
+					del item.yPosition
+				characters[0].inventory.append(item)
+				item.changed()
+		
+	if not gamestate.gameWon:
+		if len(characters[0].quests):
+			header.set_text("QUEST: "+characters[0].quests[0].description)
+		else:
+			header.set_text("QUEST: keinQuest")
+			gamestate.gameWon = True
+
+		advanceGame()
+
+		main.set_text(render());
+		footer.set_text(renderMessagebox())
+	else:
+		main.set_text("")
+		footer.set_text("good job")
+
+
+def advanceGame():
+	for character in characters:
+		character.advance()
+
+def renderMessagebox():
+	txt = ""
+	for message in messages[-5:]:
+		txt += message+"\n"
+	return txt
+
+def render():
+	chars = []
+	for i in range(1,20):
+		subChars = []
+		for j in range(1,20):
+			subChars.append(" ")
+		chars.append(subChars)
+
+	if len(characters[0].quests):
+		try:
+			chars[characters[0].quests[0].dstY][characters[0].quests[0].dstX] = "X"
+
+			path = calculatePath(characters[0].xPosition,characters[0].yPosition,characters[0].quests[0].dstX,characters[0].quests[0].dstY)
+			for item in path:
+				chars[item[1]][item[0]] = "x"
+		except:
+			pass
+	
+	for item in itemsOnFloor:
+		chars[item.yPosition][item.xPosition] = item.display
+
+	for character in characters:
+		chars[character.yPosition][character.xPosition] = character.display
+
+	lines = []
+	for lineChars in chars:
+		lines.append("".join(lineChars))
+
+	return "\n".join(lines)
+
+frame = urwid.Frame(urwid.Filler(main,"top"),header=header,footer=footer)
+loop = urwid.MainLoop(frame, unhandled_input=show_or_exit)
+loop.set_alarm_in(0.0, callShow_or_exit, '.')
+loop.run()

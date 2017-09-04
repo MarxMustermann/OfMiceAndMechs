@@ -178,7 +178,7 @@ class Character():
 					pass
 
 			if self.watched:
-				messages.append(self.name+": got a new quest\n - "+quest.description)
+				messages.append(self.name+": got a new Quest\n - "+quest.description)
 
 	def setPathToQuest(self,quest):
 		self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY)
@@ -270,7 +270,7 @@ class Quest(object):
 class CollectQuest(Quest):
 	def __init__(self,toFind="canBurn",startCinematics=None):
 		self.toFind = toFind
-		self.description = "Please fetch things with property: "+toFind
+		self.description = "please fetch things with property: "+toFind
 
 		for item in itemsOnFloor:
 			hasProperty = False
@@ -317,7 +317,7 @@ class ActivateQuest(Quest):
 	def __init__(self,toActivate,followUp=None,desiredActive=True,startCinematics=None):
 		self.toActivate = toActivate
 		self.toActivate.addListener(self.recalculate)
-		self.description = "Please activate the "+self.toActivate.name+" ("+str(self.toActivate.xPosition)+"/"+str(self.toActivate.yPosition)+")"
+		self.description = "please activate the "+self.toActivate.name+" ("+str(self.toActivate.xPosition)+"/"+str(self.toActivate.yPosition)+")"
 		self.dstX = self.toActivate.xPosition
 		self.dstY = self.toActivate.yPosition
 		self.desiredActive = desiredActive
@@ -346,7 +346,7 @@ class MoveQuest(Quest):
 	def __init__(self,x,y,followUp=None,startCinematics=None):
 		self.dstX = x
 		self.dstY = y
-		self.description = "Please go to coordinate "+str(self.dstX)+"/"+str(self.dstY)	
+		self.description = "please go to coordinate "+str(self.dstX)+"/"+str(self.dstY)	
 		super().__init__(followUp,startCinematics=startCinematics)
 
 	def triggerCompletionCheck(self):
@@ -396,7 +396,7 @@ class Cinematic(object):
 def showCinematic(text):
 	cinematicQueue.append(Cinematic(text))
 
-showCinematic("welcome to the training environment\n\nPlease, try to learn fast.\n\nParticipants with low evaluation scores will be given suitable assignments in the vats")
+showCinematic("welcome to the Trainingenvironment\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
 
 lever2.activateAction = lever2action
 
@@ -424,15 +424,17 @@ npc.watched = True
 npcQuests = [quest0]
 npc2 = Character("Ü",1,1,name="Ernst Ziegelbach")
 
-tutorialQuest1 = MoveQuest(5,5,startCinematics="Inside the Simulationchamber everything has to be taught from Scratch.\n\nThe basic Movementcommands are:\n\n l=left\n h=right\n k=up\n j=down\n\nPlease move to the designated Target. The Implant will mark your Way.")
-tutorialQuest2 = CollectQuest(startCinematics="Interaction with your Environment ist somewhat complicated.\n\nThe basic Interationcommands are:\n\n a=activate/apply\n e=examine\n ,=pick up\n\nSee this Piles of coal marked with ӫ on the rigth side of the room.\n\nPlease grab yourself some coal from a pile by moving onto it and pressing the a button.")
+tutorialQuest1 = MoveQuest(5,5,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n l=left\n h=right\n k=up\n j=down\n\nplease move to the designated Target. the Implant will mark your Way")
+tutorialQuest2 = CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n a=activate/apply\n e=examine\n ,=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing a.")
+tutorialQuest3 = ActivateQuest(furnace,startCinematics="now go and activate the Furnace marked with a Ω. you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press a.")
 quest0 = CollectQuest()
 quest05 = ActivateQuest(furnace)
 quest1 = MoveQuest(10,10)
 quest2 = MoveQuest(0,0)
 quest3 = ActivateQuest(lever2)
 tutorialQuest1.followUp = tutorialQuest2
-tutorialQuest2.followUp = quest0
+tutorialQuest2.followUp = tutorialQuest3
+tutorialQuest3.followUp = quest0
 quest0.followUp = quest05
 quest05.followUp = quest1
 quest1.followUp = quest2

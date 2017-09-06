@@ -94,7 +94,7 @@ class Lever(Item):
 		self.changed()
 
 class Furnace(Item):
-	def __init__(self,xPosition=0,yPosition=0,name="furnace"):
+	def __init__(self,xPosition=0,yPosition=0,name="Furnace"):
 		self.name = name
 		self.activated = False
 		super().__init__("Ω",xPosition,yPosition)
@@ -122,9 +122,14 @@ class Furnace(Item):
 		self.changed()
 
 class Display(Item):
-	def __init__(self,xPosition=0,yPosition=0,name="display"):
+	def __init__(self,xPosition=0,yPosition=0,name="Display"):
 		self.name = name
 		super().__init__("ߐ",xPosition,yPosition)
+
+class Wall(Item):
+	def __init__(self,xPosition=0,yPosition=0,name="Wall"):
+		self.name = name
+		super().__init__("X",xPosition,yPosition)
 
 class Coal(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="coal"):
@@ -366,8 +371,8 @@ class GameState():
 
 messages = []
 
-lever1 = Lever(3,7,"engine control")
-lever2 = Lever(7,3,"boarding alarm")
+lever1 = Lever(3,6,"engine control")
+lever2 = Lever(1,2,"boarding alarm")
 
 
 def lever2action(self):
@@ -399,25 +404,98 @@ showCinematic("welcome to the Trainingenvironment\n\nplease, try to learn fast.\
 
 lever2.activateAction = lever2action
 
-furnace = Furnace(9,7,"Furnace")
-furnaceDisplay = Display(9,8,"Furnace monitoring")
-coalPile1 = Pile(9,6,"coal Pile1",Coal)
-coalPile2 = Pile(9,5,"coal Pile2",Coal)
-coalPile3 = Pile(9,4,"coal Pile3",Coal)
-itemsOnFloor = [lever1,lever2,furnace,furnaceDisplay,coalPile1,coalPile2,coalPile3]
+coalPile1 = Pile(8,3,"coal Pile1",Coal)
+coalPile2 = Pile(8,4,"coal Pile2",Coal)
+coalPile3 = Pile(8,5,"coal Pile3",Coal)
+coalPile4 = Pile(8,6,"coal Pile4",Coal)
+furnace = Furnace(6,6,"Furnace")
+furnaceDisplay = Display(8,8,"Furnace monitoring")
+
+
+itemsOnFloor = [lever1,lever2,furnace,furnaceDisplay,coalPile1,coalPile2,coalPile3,coalPile4]
+
+roomLayout = """
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+"""
+roomLayout = """
+XXX↓X↓↓X↓X
+X  #8## #X
+X  #8## #X
+X  #8##8#X
+X  # ## #X
+X  # ##8#X
+X  #8## #X
+X  #8## #X
+X  #8## #X
+XXX↓X↓↓↓↓X
+"""
+roomLayout = """
+XXXXXXXXXX
+X        X
+X        X
+X  88##8 X
+X  #8##8 X
+X  88##8 X
+X   8    X
+X        X
+X        X
+XXXXXXXXXX
+"""
+roomLayout = """
+XXXXHXXXXX
+X@Iv vID#X
+X@      #X
+X@ 8#OF PX
+X@ ##OF PX
+XB 8#OF PX
+XB |DI  PX
+XB      #X
+XPPPPPID#X
+XXXXXXXXXX
+"""
+roomLayout2 = """
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+"""
+lineCounter = 0
+for line in roomLayout[1:].split("\n"):
+	rowCounter = 0
+	for char in line:
+		if char == "X":
+			itemsOnFloor.append(Wall(rowCounter,lineCounter,"Wall"))
+		rowCounter += 1
+	lineCounter += 1
+
 
 quest0 = ActivateQuest(lever1)
 quest1 = MoveQuest(2,2)
-quest2 = MoveQuest(2,8)
-quest3 = MoveQuest(8,8)
-quest4 = MoveQuest(8,2)
+quest2 = MoveQuest(2,7)
+quest3 = MoveQuest(7,7)
+quest4 = MoveQuest(7,2)
 quest0.followUp = quest1
 quest1.followUp = quest2
 quest2.followUp = quest3
 quest3.followUp = quest4
 quest4.followUp = quest1
 npcQuests = [quest0]
-npc = Character("Ö",1,1,npcQuests,name="Erwin von Libwig")
+npc = Character("Ö",2,1,npcQuests,name="Erwin von Libwig")
 npc.watched = True
 
 npcQuests = [quest0]
@@ -426,7 +504,7 @@ npc2 = Character("Ü",1,1,name="Ernst Ziegelbach")
 tutorialQuest1 = MoveQuest(5,5,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way")
 tutorialQuest2 = CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing j.")
 tutorialQuest3 = ActivateQuest(furnace,startCinematics="now go and activate the Furnace marked with a Ω. you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press j.")
-tutorialQuest4 = MoveQuest(1,1,startCinematics="please stand to attention and wait for further Orders.")
+tutorialQuest4 = MoveQuest(1,3,startCinematics="Move back to waiting position")
 quest0 = CollectQuest()
 quest05 = ActivateQuest(furnace)
 quest1 = MoveQuest(10,10)
@@ -442,7 +520,7 @@ quest1.followUp = quest2
 quest2.followUp = quest3
 quest3.followUp = None
 mainQuests = [tutorialQuest1]
-mainChar = Character("@",1,1,mainQuests,False,name="Sigmund Bärenstein")
+mainChar = Character("@",1,3,mainQuests,False,name="Sigmund Bärenstein")
 mainChar.watched = True
 
 characters = [mainChar,npc,npc2]

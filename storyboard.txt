@@ -1,0 +1,157 @@
+
+Basic setting:
+	authoritarian Steampunk adventure
+
+	country: german-siberia
+	citynames:
+		russian city names
+
+	authorian:
+		war centered society
+		everybody does exacty as told 
+
+	values:
+		authority
+		efficency
+			surpassing quotas
+			no punishment for failure
+			upranking for surpassing quotas
+			downranking for quotas
+			violating minor orders is tolerated if there is overall surpassing of quotas
+			names and information is given 
+			failing in case of overwhelming odds is accepted
+			not having to issue commands is a virtue
+			using idle time for productive purposes is encuraged
+			education done is never thrown away
+		command chain	
+		secrecy
+			
+	not value:
+		cruelety
+			no insane puishments
+		compassion
+		knowlegde
+			knowledge not needed is secret
+			no not needed education
+		waste of ressources and dekadence and luxury
+
+	lower caste:
+		genetically engeneered loyality
+			mindless slave
+				basically standing around if no explicit command was given
+		russian speaking + russian names
+		crude implants and enhancements
+	uppder caste:
+		"german" speaking + german names
+
+	kein Geld
+
+	mechanics:
+		steam
+		hydraulics
+		quasi magic items
+		mechs
+		vats+foodgoo
+
+	3x1D world
+
+abstracted story:
+	tutorial phase with simulation restarts
+	spawn as officer
+		allow class selection based on resutls of previous runs
+
+save system:
+	simulation restart = gamestate is kept, character is ported back to engine room. minor details are discarded, alle quests resettet
+		dying with low status and never having had a high status
+	spawn as officer  = get woken up from full emersion machine get ceremony for achieving Manhood 8 Birthday. Details of world are discarded
+		dying with having had a high status once
+		dying without beeing recovered
+	brain recovery = time gets forwarded
+		dying with brain recovery
+	synced brain = restart at last sync station
+		dying while havin sync implant
+	permadead = the whole world and gamestate gets killed
+		dying while fugitive or vat duty
+		treason
+	execution because of danger to the current hegemony = permadead with credit screen
+	Vat duty = gamestate is kept completely
+			
+
+Level0
+( child 5 til 8 )
+Machine room (tutorial1):
+	got to center room
+	fetch coal
+	fire furnace
+	pull lever
+	*engine roaring*
+	stand to attention
+
+	pull the lever -> Vat duty
+
+	good mechanic -> mecanics -> weapon loading
+	killing mice -> hunter -> tunnel cleaning
+	killing invaders -> soldier -> miltary education
+	temporary commmand -> planning -> logistics
+
+	dying or failing -> simulation restart
+	
+
+	watch
+
+	[
+	boiler bursts
+	temporary 
+	]
+
+	
+
+Vat duty (tutorial2):
+	follw orders till 
+		
+	good mechanic -> Machine room
+	killing mice/blobs -> hunter -> tunnel cleaning
+	killing invaders/not really dead invader -> soldier -> miltary education
+	temporary commmand -> planning -> logistics
+
+	items to 
+
+	die -> permadead
+
+
+Level 1
+weapon loading
+	good mechanic -> repair group
+	killing invaders -> soldier
+	temporary commmand -> planning -> logistics
+	bad performance -> machine room
+
+tunnel cleaning
+	kill big vermin -> soldier
+	temporary commmand -> planning -> huntgroup
+	bad performance -> vat
+	helping repair group -> weapon loading
+
+logistics
+	temporary commmand -> produktionsleiter
+	bad performance -> machine room
+	killing -> soldier
+	helping repair group -> weapon loading
+	
+miltary education
+	good performance -> soldier
+	emergency repair -> weapon loading
+	guter Nahkampf -> huntgroup
+	bad performance -> vat
+
+Level 2
+huntgroup
+	command -> Kapitän
+repairgroup
+	command -> Kapitän
+produktionsleiter
+	command -> Kapitän
+soldier
+	command -> Kapitän
+
+Kapitän

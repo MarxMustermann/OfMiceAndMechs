@@ -165,10 +165,10 @@ XXXXXXXXXX
 		self.itemsOnFloor.extend([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4,self.furnace,furnaceDisplay])
 
 		quest0 = ActivateQuest(self.lever1)
-		quest1 = MoveQuest(2,2)
-		quest2 = MoveQuest(2,7)
-		quest3 = MoveQuest(7,7)
-		quest4 = MoveQuest(7,2)
+		quest1 = MoveQuest(self,2,2)
+		quest2 = MoveQuest(self,2,7)
+		quest3 = MoveQuest(self,7,7)
+		quest4 = MoveQuest(self,7,2)
 		quest0.followUp = quest1
 		quest1.followUp = quest2
 		quest2.followUp = quest3
@@ -513,9 +513,12 @@ class ActivateQuest(Quest):
 		super().recalculate()
 
 class MoveQuest(Quest):
-	def __init__(self,x,y,followUp=None,startCinematics=None):
+	def __init__(self,room,x,y,followUp=None,startCinematics=None):
 		self.dstX = x
 		self.dstY = y
+		self.targetX = x
+		self.targetY = y
+		self.room = room
 		self.description = "please go to coordinate "+str(self.dstX)+"/"+str(self.dstY)	
 		super().__init__(followUp,startCinematics=startCinematics)
 
@@ -523,8 +526,9 @@ class MoveQuest(Quest):
 		if not self.active:
 			return 
 
-		if self.character.xPosition == self.dstX and self.character.yPosition == self.dstY:
-			self.postHandler()
+		if hasattr(self,"dstX") and hasattr(self,"dstY"):
+			if self.character.xPosition == self.dstX and self.character.yPosition == self.dstY:
+				self.postHandler()
 
 	def assignToCharacter(self,character):
 		if not self.active:
@@ -533,9 +537,22 @@ class MoveQuest(Quest):
 		super().assignToCharacter(character)
 		character.addListener(self.recalculate)
 
+	def recalculate(self):
+		if not self.active:
+			return 
+
+		if hasattr(self,"dstX"):
+			del self.dstX
+		if hasattr(self,"dstY"):
+			del self.dstY
+		if self.room == self.character.room:
+			self.dstX = self.targetX
+			self.dstY = self.targetY
+		super().recalculate()
+
 class MoveToExit(MoveQuest):
 	def __init__(self,room,startCinematics=None):
-		super().__init__(room.walkingAccess[0][0],room.walkingAccess[0][1],startCinematics=startCinematics)
+		super().__init__(room,room.walkingAccess[0][0],room.walkingAccess[0][1],startCinematics=startCinematics)
 
 class GameState():
 	def __init__(self,characters):
@@ -644,10 +661,10 @@ room2 = Room2()
 
 rooms = [room1,room2]
 
-tutorialQuest1 = MoveQuest(5,5,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way")
+tutorialQuest1 = MoveQuest(room2,5,5,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way")
 tutorialQuest2 = CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing j.")
 tutorialQuest3 = ActivateQuest(room2.furnace,startCinematics="now go and activate the Furnace marked with a Ω. you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press j.")
-tutorialQuest4 = MoveQuest(1,3,startCinematics="Move back to waiting position")
+tutorialQuest4 = MoveQuest(room2,1,3,startCinematics="Move back to waiting position")
 tutorialQuest5 = MoveToExit(room2,startCinematics="please exit the Room")
 
 tutorialQuest1.followUp = tutorialQuest2

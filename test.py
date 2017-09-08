@@ -72,15 +72,16 @@ class Room(object):
 				subChars.append(" ")
 			chars.append(subChars)
 
-		if len(characters[0].quests):
-			try:
-				chars[characters[0].quests[0].dstY][characters[0].quests[0].dstX] = "X"
+		if mainChar.room == self:
+			if len(characters[0].quests):
+				try:
+					chars[characters[0].quests[0].dstY][characters[0].quests[0].dstX] = "X"
 
-				path = calculatePath(characters[0].xPosition,characters[0].yPosition,characters[0].quests[0].dstX,characters[0].quests[0].dstY)
-				for item in path:
-					chars[item[1]][item[0]] = "x"
-			except:
-				pass
+					path = calculatePath(characters[0].xPosition,characters[0].yPosition,characters[0].quests[0].dstX,characters[0].quests[0].dstY)
+					for item in path:
+						chars[item[1]][item[0]] = "x"
+				except:
+					pass
 		
 		for item in self.itemsOnFloor:
 			chars[item.yPosition][item.xPosition] = item.display

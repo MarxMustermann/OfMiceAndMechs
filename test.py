@@ -49,6 +49,8 @@ class Room(object):
 		self.itemsOnFloor = []
 		self.characters = []
 
+		self.walkingAccess = []
+
 		lineCounter = 0
 		for line in self.layout[1:].split("\n"):
 			rowCounter = 0
@@ -57,6 +59,7 @@ class Room(object):
 					self.itemsOnFloor.append(Wall(rowCounter,lineCounter))
 				if char == "$":
 					self.itemsOnFloor.append(Door(rowCounter,lineCounter))
+					self.walkingAccess.append((rowCounter,lineCounter))
 				rowCounter += 1
 			lineCounter += 1
 
@@ -501,6 +504,10 @@ class MoveQuest(Quest):
 		super().assignToCharacter(character)
 		character.addListener(self.recalculate)
 
+class MoveToExit(MoveQuest):
+	def __init__(self,room,startCinematics=None):
+		super().__init__(room.walkingAccess[0][0],room.walkingAccess[0][1],startCinematics=startCinematics)
+
 class GameState():
 	def __init__(self,characters):
 		self.characters = characters
@@ -612,20 +619,14 @@ tutorialQuest1 = MoveQuest(5,5,startCinematics="inside the Simulationchamber eve
 tutorialQuest2 = CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing j.")
 tutorialQuest3 = ActivateQuest(room2.furnace,startCinematics="now go and activate the Furnace marked with a Ω. you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press j.")
 tutorialQuest4 = MoveQuest(1,3,startCinematics="Move back to waiting position")
-quest0 = CollectQuest()
-quest05 = ActivateQuest(room2.furnace)
-quest1 = MoveQuest(10,10)
-quest2 = MoveQuest(0,0)
-quest3 = ActivateQuest(room2.lever2)
+tutorialQuest5 = MoveToExit(room2,startCinematics="please exit the Room")
+
 tutorialQuest1.followUp = tutorialQuest2
 tutorialQuest2.followUp = tutorialQuest3
 tutorialQuest3.followUp = tutorialQuest4
-tutorialQuest4.followUp = None
-quest0.followUp = quest05
-quest05.followUp = quest1
-quest1.followUp = quest2
-quest2.followUp = quest3
-quest3.followUp = None
+tutorialQuest4.followUp = tutorialQuest5
+tutorialQuest5.followUp = None
+
 mainQuests = [tutorialQuest1]
 mainChar = Character("@",1,3,mainQuests,False,name="Sigmund Bärenstein")
 mainChar.watched = True

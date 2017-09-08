@@ -267,7 +267,6 @@ class Coal(Item):
 class Door(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Door"):
 		self.name = name
-		self.canBurn = True
 		super().__init__("$",xPosition,yPosition)
 
 class Pile(Item):
@@ -411,29 +410,17 @@ class CollectQuest(Quest):
 		self.description = "please fetch things with property: "+toFind
 		
 		foundItem = None
-		for item in itemsOnFloor:
-			hasProperty = False
-			try:
-				hasProperty = getattr(item,self.toFind)
-			except:
-				continue
-			
-			if hasProperty:
-				foundItem = item
-				break
-
-		if foundItem:
-			self.dstX = foundItem.xPosition
-			self.dstY = foundItem.yPosition
 
 		super().__init__(startCinematics=startCinematics)
 
 	def triggerCompletionCheck(self):
+		self.messgages("test2")
 		if not self.active:
 			return 
 
 		foundItem = None
 		for item in self.character.inventory:
+			self.messgages("test1")
 			hasProperty = False
 			try:
 				hasProperty = getattr(item,self.toFind)
@@ -451,6 +438,22 @@ class CollectQuest(Quest):
 	def assignToCharacter(self,character):
 		super().assignToCharacter(character)
 		character.addListener(self.recalculate)
+
+	def recalculate(self):
+		for item in self.character.room.itemsOnFloor:
+			hasProperty = False
+			try:
+				hasProperty = getattr(item,self.toFind)
+			except:
+				continue
+			
+			if hasProperty:
+				foundItem = item
+				break
+
+		if foundItem:
+			self.dstX = foundItem.xPosition
+			self.dstY = foundItem.yPosition
 
 class ActivateQuest(Quest):
 	def __init__(self,toActivate,followUp=None,desiredActive=True,startCinematics=None):

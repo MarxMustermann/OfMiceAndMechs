@@ -774,10 +774,13 @@ XXXXXXXXXXXXXXX
 
 	lineCounter = 0
 	for room in rooms:
+		for i in range(0,room.offsetX):
+			result += layoutByLine[lineCounter]+"\n"
+			lineCounter += 1
 		for line in room.render().split("\n"):
 			result += line+layoutByLine[lineCounter][10:]+"\n"
 			lineCounter += 1
-		for i in range(0,5):
+		for i in range(room.offsetX,5):
 			result += layoutByLine[lineCounter]+"\n"
 			lineCounter += 1
 

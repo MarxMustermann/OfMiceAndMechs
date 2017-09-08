@@ -91,6 +91,16 @@ class Room(object):
 		if mainChar.room == self:
 			chars[mainChar.yPosition][mainChar.xPosition] = mainChar.display
 
+		if mainChar.room == self:
+			if len(characters[0].quests):
+				try:
+					chars[characters[0].quests[0].dstY][characters[0].quests[0].dstX] = "!"
+
+					path = calculatePath(characters[0].xPosition,characters[0].yPosition,characters[0].quests[0].dstX,characters[0].quests[0].dstY)
+					for item in path:
+						chars[item[1]][item[0]] = "!"
+				except:
+					pass
 		lines = []
 		for lineChars in chars:
 			lines.append("".join(lineChars))
@@ -550,12 +560,31 @@ class MoveQuest(Quest):
 		if self.room == self.character.room:
 			self.dstX = self.targetX
 			self.dstY = self.targetY
+		elif self.character.room and self.character.quests[0] == self:
+			self.character.assignQuest(LeaveRoom(self.character.room),active=True)
 		super().recalculate()
 
-class MoveToExit(MoveQuest):
-	def __init__(self,room,startCinematics=None):
-		super().__init__(room,room.walkingAccess[0][0],room.walkingAccess[0][1],startCinematics=startCinematics)
+class LeaveRoom(Quest):
+	def __init__(self,room,followUp=None,startCinematics=None):
+		self.room = room
+		self.description = "please leave the room."
+		self.dstX = self.room.walkingAccess[0][0]
+		self.dstY = self.room.walkingAccess[0][1]
+		super().__init__(followUp,startCinematics=startCinematics)
 
+	def assignToCharacter(self,character):
+		if not self.active:
+			return 
+
+		super().assignToCharacter(character)
+		character.addListener(self.recalculate)
+
+	def triggerCompletionCheck(self):
+		if not self.active:
+			return 
+
+		if not self.character.room == self.room:
+			self.postHandler()
 class GameState():
 	def __init__(self,characters):
 		self.characters = characters
@@ -667,7 +696,7 @@ tutorialQuest1 = MoveQuest(room2,5,5,startCinematics="inside the Simulationchamb
 tutorialQuest2 = CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing j.")
 tutorialQuest3 = ActivateQuest(room2.furnace,startCinematics="now go and activate the Furnace marked with a Ω. you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press j.")
 tutorialQuest4 = MoveQuest(room2,1,3,startCinematics="Move back to waiting position")
-tutorialQuest5 = MoveToExit(room2,startCinematics="please exit the Room")
+tutorialQuest5 = LeaveRoom(room2,startCinematics="please exit the Room")
 
 tutorialQuest1.followUp = tutorialQuest2
 tutorialQuest2.followUp = tutorialQuest3

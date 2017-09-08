@@ -119,6 +119,8 @@ X        X
 X        X
 XXXX$XXXXX
 """
+		self.offsetX = 2
+		self.offsetY = 2
 		super().__init__(self.roomLayout)
 
 class Room2(Room):
@@ -135,6 +137,9 @@ XB      #X
 XPPPPPID#X
 XXXXXXXXXX
 """
+		self.offsetX = 4
+		self.offsetY = 0
+
 		super().__init__(self.roomLayout)
 
 		self.lever1 = Lever(3,6,"engine control")

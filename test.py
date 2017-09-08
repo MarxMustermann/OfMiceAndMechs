@@ -137,7 +137,7 @@ XB      #X
 XPPPPPID#X
 XXXXXXXXXX
 """
-		self.offsetX = 4
+		self.offsetX = 3
 		self.offsetY = 0
 
 		super().__init__(self.roomLayout)
@@ -774,11 +774,11 @@ XXXXXXXXXXXXXXX
 
 	lineCounter = 0
 	for room in rooms:
-		for i in range(0,room.offsetX):
+		for i in range(0,room.offsetY):
 			result += layoutByLine[lineCounter]+"\n"
 			lineCounter += 1
 		for line in room.render().split("\n"):
-			result += line+layoutByLine[lineCounter][10:]+"\n"
+			result += layoutByLine[lineCounter][:room.offsetX]+line+layoutByLine[lineCounter][(10+room.offsetX):]+"\n"
 			lineCounter += 1
 		for i in range(room.offsetX,5):
 			result += layoutByLine[lineCounter]+"\n"

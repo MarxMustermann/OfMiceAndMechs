@@ -91,16 +91,6 @@ class Room(object):
 		if mainChar.room == self:
 			chars[mainChar.yPosition][mainChar.xPosition] = mainChar.display
 
-		if mainChar.room == self:
-			if len(characters[0].quests):
-				try:
-					chars[characters[0].quests[0].dstY][characters[0].quests[0].dstX] = "!"
-
-					path = calculatePath(characters[0].xPosition,characters[0].yPosition,characters[0].quests[0].dstX,characters[0].quests[0].dstY)
-					for item in path:
-						chars[item[1]][item[0]] = "!"
-				except:
-					pass
 		lines = []
 		for lineChars in chars:
 			lines.append("".join(lineChars))

@@ -732,10 +732,50 @@ def renderMessagebox():
 	return txt
 
 def render():
+	layout = """
+XXXXXXXXXXXXXXX
+X             X
+X             X
+X             X
+X             X
+X             X
+X             X
+X             X
+X             X
+X             X
+X             X
+XXXXXXXXXXXXXXX
+X             X
+X             X
+X             X
+XXXXXXXXXXXXXXX
+X             X
+X             X
+X             X
+X             X
+X             X
+X             X
+X             X
+X             X
+X             X
+X             X
+X             X
+X             X
+XXXXXXXXXXXXXXX
+"""
 	result = ""
-	result += rooms[0].render()
-	result += "\n"
-	result += rooms[1].render()
+
+	layoutByLine = layout.split("\n")[1:]
+
+	lineCounter = 0
+	for room in rooms:
+		for line in room.render().split("\n"):
+			result += line+layoutByLine[lineCounter][10:]+"\n"
+			lineCounter += 1
+		for i in range(0,5):
+			result += layoutByLine[lineCounter]+"\n"
+			lineCounter += 1
+
 	return result
 
 frame = urwid.Frame(urwid.Filler(main,"top"),header=header,footer=footer)

@@ -119,9 +119,11 @@ X        X
 X        X
 XXXX$XXXXX
 """
+		super().__init__(self.roomLayout)
 		self.offsetX = 2
 		self.offsetY = 2
-		super().__init__(self.roomLayout)
+		self.Xpos = 0
+		self.Ypos = 0
 
 class Room2(Room):
 	def __init__(self):
@@ -137,10 +139,11 @@ XB      #X
 XPPPPPID#X
 XXXXXXXXXX
 """
+		super().__init__(self.roomLayout)
 		self.offsetX = 3
 		self.offsetY = 0
-
-		super().__init__(self.roomLayout)
+		self.Xpos = 0
+		self.Ypos = 0
 
 		self.lever1 = Lever(3,6,"engine control")
 		self.lever2 = Lever(1,2,"boarding alarm")
@@ -450,6 +453,11 @@ class CollectQuest(Quest):
 		character.addListener(self.recalculate)
 
 	def recalculate(self):
+		if hasattr(self,"dstX"):
+			del self.dstX
+		if hasattr(self,"dstY"):
+			del self.dstY
+
 		if not self.active:
 			return 
 

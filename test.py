@@ -148,13 +148,6 @@ XXXXXXXXXX
 		self.lever1 = Lever(3,6,"engine control")
 		self.lever2 = Lever(1,2,"boarding alarm")
 
-		def lever2action(self):
-			messages.append("Bitte unterlassen Sie das anschalten des Alarms!")
-			deactivateLeaverQuest = ActivateQuest(self.lever2,desiredActive=False)
-			characters[1].assignQuest(deactivateLeaverQuest,active=True)
-
-		self.lever2.activateAction = lever2action
-
 		coalPile1 = Pile(8,3,"coal Pile1",Coal)
 		coalPile2 = Pile(8,4,"coal Pile2",Coal)
 		coalPile3 = Pile(8,5,"coal Pile3",Coal)
@@ -177,6 +170,13 @@ XXXXXXXXXX
 		npcQuests = [quest0]
 		npc = Character("Ö",2,1,npcQuests,name="Erwin von Libwig")
 		npc.watched = True
+
+		lever2 = self.lever2
+		def lever2action(self):
+			messages.append("Bitte unterlassen Sie das anschalten des Alarms!")
+			deactivateLeaverQuest = ActivateQuest(lever2,desiredActive=False)
+			npc.assignQuest(deactivateLeaverQuest,active=True)
+		self.lever2.activateAction = lever2action
 
 		npc2 = Character("Ü",1,1,name="Ernst Ziegelbach")
 
@@ -769,6 +769,9 @@ def show_or_exit(key):
 def advanceGame():
 	for character in characters:
 		character.advance()
+	for room in rooms:
+		for character in room.characters:
+			character.advance()
 
 def renderMessagebox():
 	txt = ""

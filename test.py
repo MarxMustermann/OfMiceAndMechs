@@ -780,7 +780,7 @@ XXXXXXXXXXXXXXX
 		for line in room.render().split("\n"):
 			result += layoutByLine[lineCounter][:room.offsetX]+line+layoutByLine[lineCounter][(10+room.offsetX):]+"\n"
 			lineCounter += 1
-		for i in range(room.offsetX,5):
+		for i in range(room.offsetY,5):
 			result += layoutByLine[lineCounter]+"\n"
 			lineCounter += 1
 

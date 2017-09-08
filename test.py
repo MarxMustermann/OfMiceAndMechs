@@ -388,6 +388,9 @@ class Quest(object):
 		self.recalculate()
 
 	def recalculate(self):
+		if not self.active:
+			return 
+
 		self.triggerCompletionCheck()
 
 	def changed(self):
@@ -447,20 +450,26 @@ class CollectQuest(Quest):
 		character.addListener(self.recalculate)
 
 	def recalculate(self):
-		for item in self.character.room.itemsOnFloor:
-			hasProperty = False
-			try:
-				hasProperty = getattr(item,self.toFind)
-			except:
-				continue
-			
-			if hasProperty:
-				foundItem = item
-				break
+		if not self.active:
+			return 
 
-		if foundItem:
-			self.dstX = foundItem.xPosition
-			self.dstY = foundItem.yPosition
+		try:
+			for item in self.character.room.itemsOnFloor:
+				hasProperty = False
+				try:
+					hasProperty = getattr(item,self.toFind)
+				except:
+					continue
+				
+				if hasProperty:
+					foundItem = item
+					break
+
+			if foundItem:
+				self.dstX = foundItem.xPosition
+				self.dstY = foundItem.yPosition
+		except:
+			pass
 		super().recalculate()
 
 class ActivateQuest(Quest):
@@ -481,6 +490,9 @@ class ActivateQuest(Quest):
 			self.postHandler()
 
 	def recalculate(self):
+		if not self.active:
+			return 
+
 		if hasattr(self,"dstX"):
 			del self.dstX
 		if hasattr(self,"dstY"):
@@ -507,6 +519,9 @@ class MoveQuest(Quest):
 			self.postHandler()
 
 	def assignToCharacter(self,character):
+		if not self.active:
+			return 
+
 		super().assignToCharacter(character)
 		character.addListener(self.recalculate)
 
@@ -668,15 +683,15 @@ def show_or_exit(key):
 		if characters[0].yPosition:
 			characters[0].yPosition -= 1
 		else:
-			room1.addCharacter(mainChar,4,9)
 			room2.removeCharacter(mainChar)
+			room1.addCharacter(mainChar,4,9)
 		characters[0].changed()
 	if key in ('s'):
 		if characters[0].yPosition < 9:
 			characters[0].yPosition += 1
 		else:
-			room2.addCharacter(mainChar,4,0)
 			room1.removeCharacter(mainChar)
+			room2.addCharacter(mainChar,4,0)
 		characters[0].changed()
 	if key in ('d'):
 		characters[0].xPosition += 1

@@ -88,6 +88,8 @@ class Room(object):
 
 		for character in self.characters:
 			chars[character.yPosition][character.xPosition] = character.display
+		if mainChar.room == self:
+			chars[mainChar.yPosition][mainChar.xPosition] = mainChar.display
 
 		lines = []
 		for lineChars in chars:

@@ -414,13 +414,11 @@ class CollectQuest(Quest):
 		super().__init__(startCinematics=startCinematics)
 
 	def triggerCompletionCheck(self):
-		self.messgages("test2")
 		if not self.active:
 			return 
 
 		foundItem = None
 		for item in self.character.inventory:
-			self.messgages("test1")
 			hasProperty = False
 			try:
 				hasProperty = getattr(item,self.toFind)
@@ -454,6 +452,7 @@ class CollectQuest(Quest):
 		if foundItem:
 			self.dstX = foundItem.xPosition
 			self.dstY = foundItem.yPosition
+		super().recalculate()
 
 class ActivateQuest(Quest):
 	def __init__(self,toActivate,followUp=None,desiredActive=True,startCinematics=None):

@@ -217,25 +217,68 @@ def show_or_exit(key):
 		raise urwid.ExitMainLoop()
 	if key in ('w'):
 		if characters[0].yPosition:
-			characters[0].yPosition -= 1
+			foundItem = None
+			for item in mainChar.room.itemsOnFloor:
+				if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition-1:
+					foundItem = item
+			if foundItem and not foundItem.walkable:
+				messages.append("You cannot walk there")
+				a = input()
+				if a == 'j':
+					foundItem.apply()
+			else:
+				characters[0].yPosition -= 1
+				characters[0].changed()
 		else:
 			room2.removeCharacter(mainChar)
 			room1.addCharacter(mainChar,4,9)
-		characters[0].changed()
+			characters[0].changed()
 	if key in ('s'):
 		if characters[0].yPosition < 9:
-			characters[0].yPosition += 1
+			foundItem = None
+			for item in mainChar.room.itemsOnFloor:
+				if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition+1:
+					foundItem = item
+			if foundItem and not foundItem.walkable:
+				messages.append("You cannot walk there")
+				a = input()
+				if a == 'j':
+					foundItem.apply()
+			else:
+				characters[0].yPosition += 1
+				characters[0].changed()
 		else:
 			room1.removeCharacter(mainChar)
 			room2.addCharacter(mainChar,4,0)
-		characters[0].changed()
+			characters[0].changed()
 	if key in ('d'):
-		characters[0].xPosition += 1
-		characters[0].changed()
+		if characters[0].xPosition < 9:
+			foundItem = None
+			for item in mainChar.room.itemsOnFloor:
+				if item.xPosition == characters[0].xPosition+1 and item.yPosition == characters[0].yPosition:
+					foundItem = item
+			if foundItem and not foundItem.walkable:
+				messages.append("You cannot walk there")
+				a = input()
+				if a == 'j':
+					foundItem.apply()
+			else:
+				characters[0].xPosition += 1
+				characters[0].changed()
 	if key in ('a'):
 		if characters[0].xPosition:
-			characters[0].xPosition -= 1
-		characters[0].changed()
+			foundItem = None
+			for item in mainChar.room.itemsOnFloor:
+				if item.xPosition == characters[0].xPosition-1 and item.yPosition == characters[0].yPosition:
+					foundItem = item
+			if foundItem and not foundItem.walkable:
+				messages.append("You cannot walk there")
+				a = input()
+				if a == 'j':
+					foundItem.apply()
+			else:
+				characters[0].xPosition -= 1
+				characters[0].changed()
 	if key in ('j'):
 		for item in mainChar.room.itemsOnFloor:
 			if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:

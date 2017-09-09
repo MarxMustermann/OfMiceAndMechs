@@ -7,6 +7,7 @@ class Item(object):
 		self.xPosition = xPosition
 		self.yPosition = yPosition
 		self.listeners = []
+		self.walkable = False
 
 	def apply(self):
 		messages.append("i can't do anything useful with this")
@@ -96,8 +97,9 @@ class Coal(Item):
 
 class Door(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Door"):
-		self.name = name
 		super().__init__("$",xPosition,yPosition)
+		self.name = name
+		self.walkable = True
 
 class Pile(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal):

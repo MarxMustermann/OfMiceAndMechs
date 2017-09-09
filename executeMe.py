@@ -303,15 +303,15 @@ def show_or_exit(key):
 			item = characters[0].inventory.pop()	
 			item.xPosition = characters[0].xPosition		
 			item.yPosition = characters[0].yPosition		
-			itemsOnFloor.append(item)
+			characters[0].room.itemsOnFloor.append(item)
 			item.changed()
 	if key in ('h'):
 		messages.append(characters[0].name+": HÜ!")
 		messages.append(characters[0].name+": HOTT!")
 	if key in ('k'):
-		for item in itemsOnFloor:
+		for item in characters[0].room.itemsOnFloor:
 			if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:
-				itemsOnFloor.remove(item)
+				characters[0].room.itemsOnFloor.remove(item)
 				if hasattr(item,"xPosition"):
 					del item.xPosition
 				if hasattr(item,"yPosition"):

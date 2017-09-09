@@ -95,6 +95,7 @@ class Coal(Item):
 		self.name = name
 		self.canBurn = True
 		super().__init__("*",xPosition,yPosition)
+		self.walkable = True
 
 class Door(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Door"):

@@ -202,10 +202,12 @@ gamestate = GameState(characters)
 def callShow_or_exit(loop,key):
 	show_or_exit(key)
 
+itemMarkedLast = None
 def show_or_exit(key):
 	if not len(key) == 1:
 		return
 	global cinematicQueue
+	global itemMarkedLast
 	stop = False
 	if len(cinematicQueue):
 		if key in ('q', 'Q'):
@@ -229,9 +231,10 @@ def show_or_exit(key):
 					foundItem = item
 			if foundItem and not foundItem.walkable:
 				messages.append("You cannot walk there")
-				a = input()
-				if a == 'j':
-					foundItem.apply()
+				messages.append("press j to apply")
+				itemMarkedLast = foundItem
+				footer.set_text(renderMessagebox())
+				return
 			else:
 				characters[0].yPosition -= 1
 				characters[0].changed()
@@ -247,9 +250,10 @@ def show_or_exit(key):
 					foundItem = item
 			if foundItem and not foundItem.walkable:
 				messages.append("You cannot walk there")
-				a = input()
-				if a == 'j':
-					foundItem.apply()
+				messages.append("press j to apply")
+				itemMarkedLast = foundItem
+				footer.set_text(renderMessagebox())
+				return
 			else:
 				characters[0].yPosition += 1
 				characters[0].changed()
@@ -265,9 +269,10 @@ def show_or_exit(key):
 					foundItem = item
 			if foundItem and not foundItem.walkable:
 				messages.append("You cannot walk there")
-				a = input()
-				if a == 'j':
-					foundItem.apply()
+				messages.append("press j to apply")
+				itemMarkedLast = foundItem
+				footer.set_text(renderMessagebox())
+				return
 			else:
 				characters[0].xPosition += 1
 				characters[0].changed()
@@ -279,16 +284,20 @@ def show_or_exit(key):
 					foundItem = item
 			if foundItem and not foundItem.walkable:
 				messages.append("You cannot walk there")
-				a = input()
-				if a == 'j':
-					foundItem.apply()
+				messages.append("press j to apply")
+				itemMarkedLast = foundItem
+				footer.set_text(renderMessagebox())
+				return
 			else:
 				characters[0].xPosition -= 1
 				characters[0].changed()
 	if key in ('j'):
-		for item in mainChar.room.itemsOnFloor:
-			if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:
-				item.apply()
+		if itemMarkedLast:
+			itemMarkedLast.apply()
+		else:
+			for item in mainChar.room.itemsOnFloor:
+				if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:
+					item.apply()
 	if key in ('l'):
 		if len(characters[0].inventory):
 			item = characters[0].inventory.pop()	
@@ -309,16 +318,13 @@ def show_or_exit(key):
 					del item.yPosition
 				characters[0].inventory.append(item)
 				item.changed()
+
+	itemMarkedLast = None
 		
 	if not gamestate.gameWon:
-		if len(characters[0].quests):
-			header.set_text("QUEST: "+characters[0].quests[0].description)
-		else:
-			header.set_text("QUEST: keinQuest")
-			gamestate.gameWon = True
-
 		advanceGame()
 
+		header.set_text(renderQuests())
 		main.set_text(render());
 		footer.set_text(renderMessagebox())
 	else:
@@ -333,6 +339,19 @@ def advanceGame():
 		for character in room.characters:
 			character.advance()
 
+def renderQuests():
+	txt = ""
+	if len(characters[0].quests):
+		txt += "QUEST: "+characters[0].quests[0].description+"\n"
+		try:
+			txt += "QUEST: "+characters[0].quests[0].subDescription+"\n"
+		except:
+			pass
+	else:
+		txt += "QUEST: keinQuest"
+		gamestate.gameWon = True
+	return txt
+	
 def renderMessagebox():
 	txt = ""
 	for message in messages[-5:]:

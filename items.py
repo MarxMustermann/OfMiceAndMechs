@@ -33,6 +33,7 @@ class Lever(Item):
 		super().__init__("|",xPosition,yPosition)
 		self.activateAction = None
 		self.deactivateAction = None
+		self.walkable = True
 
 	def apply(self):
 		if not self.activated:

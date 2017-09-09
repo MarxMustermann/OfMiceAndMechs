@@ -1,5 +1,5 @@
 import urwid 
-from items import *
+import items 
 
 header = urwid.Text(u"")
 main = urwid.Text(u"@")
@@ -58,9 +58,9 @@ class Room(object):
 			rowCounter = 0
 			for char in line:
 				if char == "X":
-					self.itemsOnFloor.append(Wall(rowCounter,lineCounter))
+					self.itemsOnFloor.append(items.Wall(rowCounter,lineCounter))
 				if char == "$":
-					self.itemsOnFloor.append(Door(rowCounter,lineCounter))
+					self.itemsOnFloor.append(items.Door(rowCounter,lineCounter))
 					self.walkingAccess.append((rowCounter,lineCounter))
 				rowCounter += 1
 			lineCounter += 1
@@ -149,15 +149,15 @@ XXXXXXXXXX
 		self.Xpos = 0
 		self.Ypos = 0
 
-		self.lever1 = Lever(3,6,"engine control")
-		self.lever2 = Lever(1,2,"boarding alarm")
+		self.lever1 = items.Lever(3,6,"engine control")
+		self.lever2 = items.Lever(1,2,"boarding alarm")
 
-		coalPile1 = Pile(8,3,"coal Pile1",Coal)
-		coalPile2 = Pile(8,4,"coal Pile2",Coal)
-		coalPile3 = Pile(8,5,"coal Pile3",Coal)
-		coalPile4 = Pile(8,6,"coal Pile4",Coal)
-		self.furnace = Furnace(6,6,"Furnace")
-		furnaceDisplay = Display(8,8,"Furnace monitoring")
+		coalPile1 = items.Pile(8,3,"coal Pile1",items.Coal)
+		coalPile2 = items.Pile(8,4,"coal Pile2",items.Coal)
+		coalPile3 = items.Pile(8,5,"coal Pile3",items.Coal)
+		coalPile4 = items.Pile(8,6,"coal Pile4",items.Coal)
+		self.furnace = items.Furnace(6,6,"Furnace")
+		furnaceDisplay = items.Display(8,8,"Furnace monitoring")
 
 		self.itemsOnFloor.extend([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4,self.furnace,furnaceDisplay])
 
@@ -186,116 +186,6 @@ XXXXXXXXXX
 
 		self.addCharacter(npc,2,1)
 		self.addCharacter(npc2,1,1)
-
-class Item(object):
-	def __init__(self,display="§",xPosition=0,yPosition=0):
-		self.display = display
-		self.xPosition = xPosition
-		self.yPosition = yPosition
-		self.listeners = []
-
-	def apply(self):
-		messages.append("i can't do anything useful with this")
-
-	def changed(self):
-		messages.append(self.name+": Object changed")
-		for listener in self.listeners:
-			listener()
-
-	def addListener(self,listenFunction):
-		if not listenFunction in self.listeners:
-			self.listeners.append(listenFunction)
-
-	def delListener(self,listenFunction):
-		if listenFunction in self.listeners:
-			self.listeners.remove(listenFunction)
-
-class Lever(Item):
-	def __init__(self,xPosition=0,yPosition=0,name="lever",activated=False):
-		self.activated = activated
-		self.display = {True:"/",False:"|"}
-		self.name = name
-		super().__init__("|",xPosition,yPosition)
-		self.activateAction = None
-		self.deactivateAction = None
-
-	def apply(self):
-		if not self.activated:
-			self.activated = True
-			self.display = "/"
-			messages.append(self.name+": activated!")
-
-			if self.activateAction:
-				self.activateAction(self)
-		else:
-			self.activated = False
-			self.display = "|"
-			messages.append(self.name+": deactivated!")
-
-			if self.deactivateAction:
-				self.activateAction(self)
-		self.changed()
-
-class Furnace(Item):
-	def __init__(self,xPosition=0,yPosition=0,name="Furnace"):
-		self.name = name
-		self.activated = False
-		super().__init__("Ω",xPosition,yPosition)
-
-	def apply(self):
-		messages.append("Furnace used")
-		foundItem = None
-		for item in characters[0].inventory:
-			try:
-				canBurn = item.canBurn
-			except:
-				continue
-			if not canBurn:
-				continue
-
-			foundItem = item
-
-		if not foundItem:
-			messages.append("keine KOHLE zum anfeuern")
-		else:
-			self.activated = True
-			self.display = "ϴ"
-			characters[0].inventory.remove(foundItem)
-			messages.append("burn it ALL")
-		self.changed()
-
-class Display(Item):
-	def __init__(self,xPosition=0,yPosition=0,name="Display"):
-		self.name = name
-		super().__init__("ߐ",xPosition,yPosition)
-
-class Wall(Item):
-	def __init__(self,xPosition=0,yPosition=0,name="Wall"):
-		self.name = name
-		super().__init__("X",xPosition,yPosition)
-
-class Coal(Item):
-	def __init__(self,xPosition=0,yPosition=0,name="Coal"):
-		self.name = name
-		self.canBurn = True
-		super().__init__("*",xPosition,yPosition)
-
-class Door(Item):
-	def __init__(self,xPosition=0,yPosition=0,name="Door"):
-		self.name = name
-		super().__init__("$",xPosition,yPosition)
-
-class Pile(Item):
-	def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal):
-		self.name = name
-		self.canBurn = True
-		self.type = itemType
-		super().__init__("ӫ",xPosition,yPosition)
-
-	def apply(self):
-		messages.append("Pile used")
-		characters[0].inventory.append(self.type())
-		characters[0].changed()
 
 class Character():
 	def __init__(self,display="@",xPosition=0,yPosition=0,quests=[],automated=True,name="Person"):
@@ -583,8 +473,7 @@ class GameState():
 		self.gameWon = False
 
 messages = []
-
-
+items.messages = messages
 
 class Cinematic(object):
 	def __init__(self,text):
@@ -675,7 +564,7 @@ for line in roomLayout[1:].split("\n"):
 	rowCounter = 0
 	for char in line:
 		if char == "X":
-			itemsOnFloor.append(Wall(rowCounter,lineCounter,"Wall"))
+			itemsOnFloor.append(items.Wall(rowCounter,lineCounter,"Wall"))
 		rowCounter += 1
 	lineCounter += 1
 
@@ -702,6 +591,7 @@ mainChar.watched = True
 room2.addCharacter(mainChar,1,3)
 
 characters = [mainChar]
+items.characters = characters
 
 gamestate = GameState(characters)
 

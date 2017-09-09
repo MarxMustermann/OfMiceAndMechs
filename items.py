@@ -1,3 +1,6 @@
+messages = None
+characters = None
+
 class Item(object):
 	def __init__(self,display="§",xPosition=0,yPosition=0):
 		self.display = display

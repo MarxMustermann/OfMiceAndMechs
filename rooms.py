@@ -146,7 +146,6 @@ XXXXXXXXXX
 		quest4.followUp = quest1
 		npcQuests = [quest0]
 		npc = Character("Ö",2,1,npcQuests,name="Erwin von Libwig")
-		npc.watched = True
 
 		lever2 = self.lever2
 		def lever2action(self):

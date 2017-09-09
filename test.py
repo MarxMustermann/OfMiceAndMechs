@@ -1,4 +1,6 @@
 import urwid 
+from items import *
+
 header = urwid.Text(u"")
 main = urwid.Text(u"@")
 footer = urwid.Text(u"")

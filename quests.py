@@ -6,7 +6,10 @@ class Quest(object):
 		self.character = None
 		self.listener = []
 		self.active = False
-		self.startCinematics=startCinematics
+		self.startCinematics = startCinematics
+		self.endCinematics = None
+		self.startTrigger = None
+		self.endTrigger = None
 
 	def triggerCompletionCheck(self):
 		if not self.active:
@@ -19,6 +22,15 @@ class Quest(object):
 			self.character.assignQuest(self.followUp,active=True)
 		else:
 			self.character.startNextQuest()
+
+		if self.endTrigger:
+			self.endTrigger()
+		if self.endCinematics:
+			showCinematic(self.endCinematics)			
+			try:
+				loop.set_alarm_in(0.0, callShow_or_exit, '.')
+			except:
+				pass
 
 		if self.character.watched:
 			messages.append("Thank you kindly. @"+self.character.name)
@@ -48,6 +60,8 @@ class Quest(object):
 
 	def activate(self):
 		self.active = True
+		if self.startTrigger:
+			self.startTrigger()
 		if self.startCinematics:
 			showCinematic(self.startCinematics)			
 			try:

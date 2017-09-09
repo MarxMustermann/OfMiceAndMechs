@@ -158,6 +158,7 @@ for line in roomLayout[1:].split("\n"):
 
 room1 = rooms.Room1()
 room2 = rooms.Room2()
+room1.hidden = True
 
 roomsOnMap = [room1,room2]
 
@@ -168,11 +169,13 @@ tutorialQuest4 = quests.MoveQuest(room2,1,3,startCinematics="Move back to waitin
 def tutorialQuest4Endtrigger():
 	room1.openDoors()
 	room2.openDoors()
+	room1.hidden = False
 tutorialQuest4.endTrigger = tutorialQuest4Endtrigger
 tutorialQuest5 = quests.LeaveRoomQuest(room2,startCinematics="please exit the Room")
 def tutorialQuest5Endtrigger():
 	room1.closeDoors()
 	room2.closeDoors()
+	room2.hidden = True
 tutorialQuest5.endTrigger = tutorialQuest5Endtrigger
 tutorialQuest6 = quests.MoveQuest(room1,1,3,startCinematics="Move back to waiting position")
 
@@ -373,6 +376,9 @@ XXXXXXXXXXXXXXX
 
 	lineCounter = 0
 	for room in roomsOnMap:
+		if room.hidden:
+			lineCounter += 15
+			continue
 		for i in range(0,room.offsetY):
 			result += layoutByLine[lineCounter]+"\n"
 			lineCounter += 1

@@ -10,6 +10,7 @@ calculatePath = None
 class Room(object):
 	def __init__(self,layout):
 		self.layout = layout
+		self.hidden = False
 		self.itemsOnFloor = []
 		self.characters = []
 		self.doors = []

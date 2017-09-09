@@ -4,6 +4,8 @@ import quests
 Character = None
 mainChar = None
 characters = None
+messages = None
+calculatePath = None
 
 class Room(object):
 	def __init__(self,layout):
@@ -137,7 +139,6 @@ XXXXXXXXXX
 
 		lever2 = self.lever2
 		def lever2action(self):
-			messages.append("Bitte unterlassen Sie das anschalten des Alarms!")
 			deactivateLeaverQuest = ActivateQuest(lever2,desiredActive=False)
 			npc.assignQuest(deactivateLeaverQuest,active=True)
 		self.lever2.activateAction = lever2action

@@ -99,7 +99,16 @@ class Door(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Door"):
 		super().__init__("$",xPosition,yPosition)
 		self.name = name
+		self.walkable = False
+		self.display = '$'
+	
+	def open(self):
 		self.walkable = True
+		self.display = 'O'
+
+	def close(self):
+		self.walkable = False
+		self.display = '$'
 
 class Pile(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal):

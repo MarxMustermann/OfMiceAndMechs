@@ -159,18 +159,20 @@ for line in roomLayout[1:].split("\n"):
 room1 = rooms.Room1()
 room2 = rooms.Room2()
 
-roomsOnMap = [room2]
+roomsOnMap = [room1,room2]
 
 tutorialQuest1 = quests.MoveQuest(room2,5,5,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way")
 tutorialQuest2 = quests.CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing j.")
 tutorialQuest3 = quests.ActivateQuest(room2.furnace,startCinematics="now go and activate the Furnace marked with a Ω. you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press j.")
 tutorialQuest4 = quests.MoveQuest(room2,1,3,startCinematics="Move back to waiting position")
 def tutorialQuest4Endtrigger():
-	roomsOnMap.insert(0,room1)
+	room1.openDoors()
+	room2.openDoors()
 tutorialQuest4.endTrigger = tutorialQuest4Endtrigger
 tutorialQuest5 = quests.LeaveRoomQuest(room2,startCinematics="please exit the Room")
 def tutorialQuest5Endtrigger():
-	roomsOnMap.remove(room2)
+	room1.closeDoors()
+	room2.closeDoors()
 tutorialQuest5.endTrigger = tutorialQuest5Endtrigger
 tutorialQuest6 = quests.MoveQuest(room1,1,3,startCinematics="Move back to waiting position")
 

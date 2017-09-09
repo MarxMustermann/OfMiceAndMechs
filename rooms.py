@@ -12,6 +12,7 @@ class Room(object):
 		self.layout = layout
 		self.itemsOnFloor = []
 		self.characters = []
+		self.doors = []
 
 		self.walkingAccess = []
 
@@ -22,11 +23,20 @@ class Room(object):
 				if char == "X":
 					self.itemsOnFloor.append(items.Wall(rowCounter,lineCounter))
 				if char == "$":
-					self.itemsOnFloor.append(items.Door(rowCounter,lineCounter))
+					door = items.Door(rowCounter,lineCounter)
+					self.itemsOnFloor.append(door)
 					self.walkingAccess.append((rowCounter,lineCounter))
+					self.doors.append(door)
 				rowCounter += 1
 			lineCounter += 1
 
+	def openDoors(self):
+		for door in self.doors:
+			door.open()
+
+	def closeDoors(self):
+		for door in self.doors:
+			door.close()
 
 	def render(self):
 		chars = []

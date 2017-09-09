@@ -48,6 +48,8 @@ def calculatePath(startX,startY,endX,endY):
 			"""
 	return path
 rooms.calculatePath = calculatePath
+quests.calculatePath = calculatePath
+characters.calculatePath = calculatePath
 
 rooms.Character = characters.Character
 		
@@ -175,9 +177,8 @@ tutorialQuest5 = quests.LeaveRoomQuest(room2,startCinematics="please exit the Ro
 def tutorialQuest5Endtrigger():
 	room1.closeDoors()
 	room2.closeDoors()
-	room2.hidden = True
 tutorialQuest5.endTrigger = tutorialQuest5Endtrigger
-tutorialQuest6 = quests.MoveQuest(room1,1,3,startCinematics="Move back to waiting position")
+tutorialQuest6 = quests.MoveQuest(room1,1,3,startCinematics="pleas move to waiting position")
 
 tutorialQuest1.followUp = tutorialQuest2
 tutorialQuest2.followUp = tutorialQuest3

@@ -139,7 +139,7 @@ XXXXXXXXXX
 
 		lever2 = self.lever2
 		def lever2action(self):
-			deactivateLeaverQuest = ActivateQuest(lever2,desiredActive=False)
+			deactivateLeaverQuest = quests.ActivateQuest(lever2,desiredActive=False)
 			npc.assignQuest(deactivateLeaverQuest,active=True)
 		self.lever2.activateAction = lever2action
 

@@ -289,14 +289,37 @@ rooms.mainChar = mainChar
 room2.addCharacter(mainChar,1,3)
 
 quest0 = quests.MoveQuest(room2,5,5)
+def quest0Endtrigger():
+	room1.openDoors()
+	room2.openDoors()
+	global mapHidden
+	mapHidden = False
+quest0.endTrigger = quest0Endtrigger
 quest1 = quests.LeaveRoomQuest(room2)
+def quest1Endtrigger():
+	room1.closeDoors()
+	room2.closeDoors()
+	global mapHidden
+	mapHidden = True
+quest1.endTrigger = quest1Endtrigger
 quest2 = quests.MoveQuest(room1,5,5)
+def quest2Endtrigger():
+	room1.openDoors()
+	room2.openDoors()
+	global mapHidden
+	mapHidden = False
+quest2.endTrigger = quest2Endtrigger
 quest3 = quests.LeaveRoomQuest(room1)
+def quest3Endtrigger():
+	room1.closeDoors()
+	room2.closeDoors()
+	global mapHidden
+	mapHidden = True
+quest3.endTrigger = quest3Endtrigger
 quest0.followUp = quest1
 quest1.followUp = quest2
 quest2.followUp = quest3
 quest3.followUp = quest0
-npcQuests = []
 npc2 = characters.Character("⒬ ",1,1,name="Ernst Ziegelbach")
 room2.addCharacter(npc2,1,1)
 npc2.assignQuest(quest0)
@@ -351,6 +374,8 @@ def show_or_exit(key):
 		else:
 			room2.removeCharacter(mainChar)
 			room1.addCharacter(mainChar,4,9)
+			room1.hidden = False
+			room2.hidden = True
 			characters[0].changed()
 	if key in ('s'):
 		if characters[0].yPosition < 9:
@@ -370,6 +395,8 @@ def show_or_exit(key):
 		else:
 			room1.removeCharacter(mainChar)
 			room2.addCharacter(mainChar,4,0)
+			room2.hidden = False
+			room1.hidden = True
 			characters[0].changed()
 	if key in ('d'):
 		if characters[0].xPosition < 9:

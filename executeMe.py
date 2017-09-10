@@ -162,6 +162,7 @@ class Terrain(object):
 	def __init__(self,rooms,layout):
 		self.rooms = rooms
 		self.layout = layout
+		self.characters = []
 
 	def render(self):
 		chars = []
@@ -184,6 +185,7 @@ class Terrain(object):
 						chars[lineCounter][rowCounter] = "⛚ "
 					rowCounter += 1
 				lineCounter += 1
+		
 
 		for room in terrain.rooms:
 			if mapHidden and room.hidden:
@@ -201,6 +203,10 @@ class Terrain(object):
 					chars[lineCounter+yOffset][rowCounter+xOffset] = char
 					rowCounter += 1
 				lineCounter += 1
+
+		for character in self.characters:
+			chars[character.yPosition][character.xPosition] = character.display
+
 		return chars
 
 class Terrain1(Terrain):
@@ -219,7 +225,7 @@ X0           0XX0          0 X
 X0           0XX0          0 X
 X0XXXXXXXXXXX0XX0XXXXXXXXXX0XX
 X0...........0000..........000
-X0...........................X 
+X0............................ 
 X0..........................00
 X0XXXXXXXXXXXXX XXXXXXXXXXXX0X
 X0           0X X           0X
@@ -239,12 +245,12 @@ XXXXXXXXXXXX0XX XXXXXXXXXXXXXX
 		super().__init__(rooms,layout)
 
 room1 = rooms.Room1()
-room1.hidden = True
+#room1.hidden = True
 room2 = rooms.Room2()
 room3 = rooms.Room3()
-room3.hidden = True
+#room3.hidden = True
 room4 = rooms.Room4()
-room4.hidden = True
+#room4.hidden = True
 #room1.hidden = True
 
 roomsOnMap = [room1,room2,room3,room4]
@@ -261,7 +267,7 @@ tutorialQuest4 = quests.MoveQuest(room2,1,3,startCinematics="Move back to waitin
 def tutorialQuest4Endtrigger():
 	room1.openDoors()
 	room2.openDoors()
-	room1.hidden = False
+	#room1.hidden = False
 	global mapHidden
 	mapHidden = False
 tutorialQuest4.endTrigger = tutorialQuest4Endtrigger
@@ -269,7 +275,7 @@ tutorialQuest5 = quests.LeaveRoomQuest(room2,startCinematics="please exit the Ro
 def tutorialQuest5Endtrigger():
 	room1.closeDoors()
 	room2.closeDoors()
-	room2.hidden = True
+	#room2.hidden = True
 	global mapHidden
 	mapHidden = True
 tutorialQuest5.endTrigger = tutorialQuest5Endtrigger
@@ -357,53 +363,87 @@ def show_or_exit(key):
 	if key in ('q', 'Q'):
 		raise urwid.ExitMainLoop()
 	if key in ('w'):
-		if characters[0].yPosition:
-			foundItem = None
-			for item in mainChar.room.itemsOnFloor:
-				if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition-1:
-					foundItem = item
-			if foundItem and not foundItem.walkable:
-				messages.append("You cannot walk there")
-				messages.append("press j to apply")
-				itemMarkedLast = foundItem
-				footer.set_text(renderMessagebox())
-				return
+		if mainChar.room:
+			if characters[0].yPosition:
+				foundItem = None
+				for item in mainChar.room.itemsOnFloor:
+					if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition-1:
+						foundItem = item
+				if foundItem and not foundItem.walkable:
+					messages.append("You cannot walk there")
+					messages.append("press j to apply")
+					itemMarkedLast = foundItem
+					footer.set_text(renderMessagebox())
+					return
+				else:
+					characters[0].yPosition -= 1
+					characters[0].changed()
 			else:
-				characters[0].yPosition -= 1
+				newYPos = characters[0].yPosition+mainChar.room.yPosition*15+mainChar.room.offsetY-1
+				newXPos = characters[0].xPosition+mainChar.room.xPosition*15+mainChar.room.offsetX
+				mainChar.xPosition = newXPos
+				mainChar.yPosition = newYPos
+				room2.removeCharacter(mainChar)
+				terrain.characters.append(mainChar)
+				#room1.hidden = False
+				#room2.hidden = True
 				characters[0].changed()
 		else:
-			room2.removeCharacter(mainChar)
-			room1.addCharacter(mainChar,4,9)
-			room1.hidden = False
-			room2.hidden = True
+			for room in terrain.rooms:
+				if room.yPosition*15+room.offsetY+10 == mainChar.yPosition:
+					if room.xPosition*15+room.offsetX < mainChar.xPosition and room.xPosition*15+room.offsetX+10 > mainChar.xPosition:
+						localisedEntry = (mainChar.xPosition%15-room.offsetX,mainChar.yPosition%15-room.offsetY-1)
+						if localisedEntry in room.walkingAccess:
+							messages.append(str(room))
+							room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1]+1)
+							terrain.characters.remove(mainChar)
+			characters[0].yPosition -= 1
 			characters[0].changed()
+
 	if key in ('s'):
-		if characters[0].yPosition < 9:
-			foundItem = None
-			for item in mainChar.room.itemsOnFloor:
-				if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition+1:
-					foundItem = item
-			if foundItem and not foundItem.walkable:
-				messages.append("You cannot walk there")
-				messages.append("press j to apply")
-				itemMarkedLast = foundItem
-				footer.set_text(renderMessagebox())
-				return
+		if mainChar.room:
+			if characters[0].yPosition < 9:
+				foundItem = None
+				for item in mainChar.room.itemsOnFloor:
+					if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition+1:
+						foundItem = item
+				if foundItem and not foundItem.walkable:
+					messages.append("You cannot walk there")
+					messages.append("press j to apply")
+					itemMarkedLast = foundItem
+					footer.set_text(renderMessagebox())
+					return
+				else:
+					characters[0].yPosition += 1
+					characters[0].changed()
 			else:
-				characters[0].yPosition += 1
+				newYPos = characters[0].yPosition+mainChar.room.yPosition*15+mainChar.room.offsetY+1
+				newXPos = characters[0].xPosition+mainChar.room.xPosition*15+mainChar.room.offsetX
+				mainChar.xPosition = newXPos
+				mainChar.yPosition = newYPos
+				room1.removeCharacter(mainChar)
+				terrain.characters.append(mainChar)
+				#room2.hidden = False
+				#room1.hidden = True
 				characters[0].changed()
 		else:
-			room1.removeCharacter(mainChar)
-			room2.addCharacter(mainChar,4,0)
-			room2.hidden = False
-			room1.hidden = True
+			for room in terrain.rooms:
+				if room.yPosition*15+room.offsetY == mainChar.yPosition+1:
+					if room.xPosition*15+room.offsetX < mainChar.xPosition and room.xPosition*15+room.offsetX+10 > mainChar.xPosition:
+						localisedEntry = ((mainChar.xPosition-room.offsetX)%15,(mainChar.yPosition-room.offsetY+1)%15)
+						if localisedEntry in room.walkingAccess:
+							room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1]-1)
+							terrain.characters.remove(mainChar)
+			characters[0].yPosition += 1
 			characters[0].changed()
+
 	if key in ('d'):
 		if characters[0].xPosition < 9:
 			foundItem = None
-			for item in mainChar.room.itemsOnFloor:
-				if item.xPosition == characters[0].xPosition+1 and item.yPosition == characters[0].yPosition:
-					foundItem = item
+			if mainChar.room:
+				for item in mainChar.room.itemsOnFloor:
+					if item.xPosition == characters[0].xPosition+1 and item.yPosition == characters[0].yPosition:
+						foundItem = item
 			if foundItem and not foundItem.walkable:
 				messages.append("You cannot walk there")
 				messages.append("press j to apply")
@@ -416,9 +456,10 @@ def show_or_exit(key):
 	if key in ('a'):
 		if characters[0].xPosition:
 			foundItem = None
-			for item in mainChar.room.itemsOnFloor:
-				if item.xPosition == characters[0].xPosition-1 and item.yPosition == characters[0].yPosition:
-					foundItem = item
+			if mainChar.room:
+				for item in mainChar.room.itemsOnFloor:
+					if item.xPosition == characters[0].xPosition-1 and item.yPosition == characters[0].yPosition:
+						foundItem = item
 			if foundItem and not foundItem.walkable:
 				messages.append("You cannot walk there")
 				messages.append("press j to apply")
@@ -432,9 +473,10 @@ def show_or_exit(key):
 		if itemMarkedLast:
 			itemMarkedLast.apply()
 		else:
-			for item in mainChar.room.itemsOnFloor:
-				if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:
-					item.apply()
+			if mainChar.room:
+				for item in mainChar.room.itemsOnFloor:
+					if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:
+						item.apply()
 	if key in ('l'):
 		if len(characters[0].inventory):
 			item = characters[0].inventory.pop()	
@@ -487,6 +529,7 @@ def renderQuests():
 	else:
 		txt += "QUEST: keinQuest\n\n"
 		gamestate.gameWon = True
+		loop.set_alarm_in(0.0, callShow_or_exit, '~')
 	return txt
 	
 def renderMessagebox():

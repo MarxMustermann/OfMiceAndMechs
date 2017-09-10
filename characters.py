@@ -39,7 +39,8 @@ class Character():
 				messages.append(self.name+": got a new Quest\n - "+quest.description)
 
 	def setPathToQuest(self,quest):
-		self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY)
+		if hasattr(quest,"dstX") and hasattr(quest,"dstY"):
+			self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY)
 
 	def addToInventory(self,item):
 		self.inventory.append(item)

@@ -108,6 +108,12 @@ class Door(Item):
 		self.name = name
 		self.walkable = False
 		self.display = '⛒ '
+
+	def apply(self):
+		if self.walkable:
+			self.close()
+		else:
+			self.open()
 	
 	def open(self):
 		self.walkable = True

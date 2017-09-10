@@ -158,6 +158,86 @@ for line in roomLayout[1:].split("\n"):
 		rowCounter += 1
 	lineCounter += 1
 
+class Terrain(object):
+	def __init__(self,rooms,layout):
+		self.rooms = rooms
+		self.layout = layout
+
+	def render(self):
+		chars = []
+		for i in range(0,30):
+			line = []
+			for j in range(0,30):
+				line.append("  ")
+			chars.append(line)
+				
+		if not mapHidden:
+			lineCounter = 0
+			for layoutline in terrain.layout.split("\n")[1:]:
+				rowCounter = 0
+				for char in layoutline:
+					if char == "X":
+						chars[lineCounter][rowCounter] = "⛝ "
+					if char == "0":
+						chars[lineCounter][rowCounter] = "✠✠"
+					if char == ".":
+						chars[lineCounter][rowCounter] = "⛚ "
+					rowCounter += 1
+				lineCounter += 1
+
+		for room in terrain.rooms:
+			if mapHidden and room.hidden:
+				continue
+
+			renderedRoom = room.render()
+			
+			xOffset = room.xPosition*15+room.offsetX
+			yOffset = room.yPosition*15+room.offsetY
+
+			lineCounter = 0
+			for line in renderedRoom:
+				rowCounter = 0
+				for char in line:
+					chars[lineCounter+yOffset][rowCounter+xOffset] = char
+					rowCounter += 1
+				lineCounter += 1
+		return chars
+
+class Terrain1(Terrain):
+	def __init__(self,rooms):
+		layout = """
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+X0000000000000XX000000000000 X
+X0           0XX0          0 X
+X0           0XX0          0 X
+X0           0XX0          0 X
+X0           0XX0          0 X
+X0           0XX0          0 X
+X0           0XX0          0 X
+X0           0XX0          0 X
+X0           0XX0          0 X
+X0           0XX0          0 X
+X0XXXXXXXXXXX0XX0XXXXXXXXXX0XX
+X0...........0000..........000
+X0...........................X 
+X0..........................00
+X0XXXXXXXXXXXXX XXXXXXXXXXXX0X
+X0           0X X           0X
+X0           0X X           0X
+X0           0X X           0X
+X0           0X X           0X
+X0           0X X           0X
+X0           0X X           0X
+X0           0X X           0X
+X0           0X X           0X
+X0           0X X           0X
+X000000000   0X X           0X
+X            0X X           0X
+00000000000000000000000000000X
+XXXXXXXXXXXX0XX XXXXXXXXXXXXXX
+"""
+		super().__init__(rooms,layout)
+
 room1 = rooms.Room1()
 room1.hidden = True
 room2 = rooms.Room2()
@@ -169,6 +249,8 @@ room4.hidden = True
 
 roomsOnMap = [room1,room2,room3,room4]
 characters.roomsOnMap = roomsOnMap
+
+terrain = Terrain1(roomsOnMap)
 
 mapHidden = True
 
@@ -387,74 +469,7 @@ def renderMessagebox():
 	return txt
 
 def render():
-	layout = """
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-X0000000000000XX000000000000 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0XXXXXXXXXXX0XX0XXXXXXXXXX0XX
-X0           0000          000
-X0                           X 
-X0                          00
-X0XXXXXXXXXXXXX XXXXXXXXXXXX0X
-X0           0X X           0X
-X0           0X X           0X
-X0           0X X           0X
-X0           0X X           0X
-X0           0X X           0X
-X0           0X X           0X
-X0           0X X           0X
-X0           0X X           0X
-X0           0X X           0X
-X000000000   0X X           0X
-X            0X X           0X
-00000000000000000000000000000X
-XXXXXXXXXXXX0XX XXXXXXXXXXXXXX
-"""
-	result = ""
-
-	chars = []
-	for i in range(0,30):
-		line = []
-		for j in range(0,30):
-			line.append("  ")
-		chars.append(line)
-			
-	if not mapHidden:
-		lineCounter = 0
-		for layoutline in layout.split("\n")[1:]:
-			rowCounter = 0
-			for char in layoutline:
-				if char == "X":
-					chars[lineCounter][rowCounter] = "⛝ "
-				if char == "0":
-					chars[lineCounter][rowCounter] = "✠✠"
-				rowCounter += 1
-			lineCounter += 1
-
-	for room in roomsOnMap:
-		if mapHidden and room.hidden:
-			continue
-
-		renderedRoom = room.render()
-		
-		xOffset = room.xPosition*15+room.offsetX
-		yOffset = room.yPosition*15+room.offsetY
-
-		lineCounter = 0
-		for line in renderedRoom:
-			rowCounter = 0
-			for char in line:
-				chars[lineCounter+yOffset][rowCounter+xOffset] = char
-				rowCounter += 1
-			lineCounter += 1
+	chars = terrain.render()
 
 	result = ""
 	for line in chars:

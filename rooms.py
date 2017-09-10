@@ -44,17 +44,17 @@ class Room(object):
 		for i in range(0,10):
 			subChars = []
 			for j in range(0,10):
-				subChars.append(" ")
+				subChars.append("⛚ ")
 			chars.append(subChars)
 
 		if mainChar.room == self:
 			if len(characters[0].quests):
 				try:
-					chars[characters[0].quests[0].dstY][characters[0].quests[0].dstX] = "X"
+					chars[characters[0].quests[0].dstY][characters[0].quests[0].dstX] = "xX"
 
 					path = calculatePath(characters[0].xPosition,characters[0].yPosition,characters[0].quests[0].dstX,characters[0].quests[0].dstY)
 					for item in path:
-						chars[item[1]][item[0]] = "x"
+						chars[item[1]][item[0]] = "xx"
 				except:
 					pass
 		
@@ -144,7 +144,7 @@ XXXXXXXXXX
 		quest2.followUp = quest3
 		quest3.followUp = quest4
 		quest4.followUp = quest1
-		npc = Character("Ö",2,1,name="Erwin von Libwig")
+		npc = Character("⒦ ",2,1,name="Erwin von Libwig")
 		self.addCharacter(npc,2,1)
 		npc.assignQuest(quest0)
 

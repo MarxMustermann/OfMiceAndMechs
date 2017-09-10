@@ -3,7 +3,7 @@ calculatePath = None
 roomsOnMap = None
 
 class Character():
-	def __init__(self,display="@",xPosition=0,yPosition=0,quests=[],automated=True,name="Person"):
+	def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person"):
 		self.display = display
 		self.xPosition = xPosition
 		self.yPosition = yPosition

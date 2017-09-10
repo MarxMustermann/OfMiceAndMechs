@@ -5,7 +5,7 @@ import rooms
 import characters
 
 header = urwid.Text(u"")
-main = urwid.Text(u"@")
+main = urwid.Text(u"＠")
 footer = urwid.Text(u"")
 cinematicQueue = []
 
@@ -189,7 +189,7 @@ tutorialQuest5.followUp = tutorialQuest6
 tutorialQuest6.followUp = None
 
 mainQuests = [tutorialQuest1]
-mainChar = characters.Character("@",1,3,mainQuests,False,name="Sigmund Bärenstein")
+mainChar = characters.Character("＠",1,3,mainQuests,False,name="Sigmund Bärenstein")
 mainChar.watched = True
 rooms.mainChar = mainChar
 room2.addCharacter(mainChar,1,3)
@@ -203,7 +203,7 @@ quest1.followUp = quest2
 quest2.followUp = quest3
 quest3.followUp = quest0
 npcQuests = []
-npc2 = characters.Character("Ü",1,1,name="Ernst Ziegelbach")
+npc2 = characters.Character("⒬ ",1,1,name="Ernst Ziegelbach")
 room2.addCharacter(npc2,1,1)
 npc2.assignQuest(quest0)
 
@@ -416,13 +416,13 @@ XXXXXXXXXXXXXXX
 			lineCounter += 15
 			continue
 		for i in range(0,room.offsetY):
-			result += layoutByLine[lineCounter]+"\n"
+			result += layoutByLine[lineCounter].replace(" ","  ").replace("X","XX")+"\n"
 			lineCounter += 1
 		for line in room.render().split("\n"):
-			result += layoutByLine[lineCounter][:room.offsetX]+line+layoutByLine[lineCounter][(10+room.offsetX):]+"\n"
+			result += layoutByLine[lineCounter][:room.offsetX].replace(" ","  ").replace("X","XX")+line+layoutByLine[lineCounter][(10+room.offsetX):].replace(" ","  ").replace("X","XX")+"\n"
 			lineCounter += 1
 		for i in range(room.offsetY,5):
-			result += layoutByLine[lineCounter]+"\n"
+			result += layoutByLine[lineCounter].replace(" ","  ").replace("X","XX")+"\n"
 			lineCounter += 1
 	return result
 

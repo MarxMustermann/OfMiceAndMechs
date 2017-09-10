@@ -28,9 +28,9 @@ class Item(object):
 class Lever(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="lever",activated=False):
 		self.activated = activated
-		self.display = {True:"/",False:"|"}
+		self.display = {True:" /",False:" |"}
 		self.name = name
-		super().__init__("|",xPosition,yPosition)
+		super().__init__(" |",xPosition,yPosition)
 		self.activateAction = None
 		self.deactivateAction = None
 		self.walkable = True
@@ -38,14 +38,14 @@ class Lever(Item):
 	def apply(self):
 		if not self.activated:
 			self.activated = True
-			self.display = "/"
+			self.display = " /"
 			messages.append(self.name+": activated!")
 
 			if self.activateAction:
 				self.activateAction(self)
 		else:
 			self.activated = False
-			self.display = "|"
+			self.display = " |"
 			messages.append(self.name+": deactivated!")
 
 			if self.deactivateAction:
@@ -56,7 +56,7 @@ class Furnace(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Furnace"):
 		self.name = name
 		self.activated = False
-		super().__init__("Ω",xPosition,yPosition)
+		super().__init__("ΩΩ",xPosition,yPosition)
 
 	def apply(self):
 		messages.append("Furnace used")
@@ -75,7 +75,7 @@ class Furnace(Item):
 			messages.append("keine KOHLE zum anfeuern")
 		else:
 			self.activated = True
-			self.display = "ϴ"
+			self.display = "ϴϴ"
 			characters[0].inventory.remove(foundItem)
 			messages.append("burn it ALL")
 		self.changed()
@@ -83,41 +83,41 @@ class Furnace(Item):
 class Display(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Display"):
 		self.name = name
-		super().__init__("ߐ",xPosition,yPosition)
+		super().__init__("ߐߐ",xPosition,yPosition)
 
 class Wall(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Wall"):
 		self.name = name
-		super().__init__("X",xPosition,yPosition)
+		super().__init__("⛝ ",xPosition,yPosition)
 
 class Coal(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Coal"):
 		self.name = name
 		self.canBurn = True
-		super().__init__("*",xPosition,yPosition)
+		super().__init__(" *",xPosition,yPosition)
 		self.walkable = True
 
 class Door(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Door"):
-		super().__init__("$",xPosition,yPosition)
+		super().__init__("⛒ ",xPosition,yPosition)
 		self.name = name
 		self.walkable = False
-		self.display = '$'
+		self.display = '⛒ '
 	
 	def open(self):
 		self.walkable = True
-		self.display = 'O'
+		self.display = '⭘ '
 
 	def close(self):
 		self.walkable = False
-		self.display = '$'
+		self.display = '⛒ '
 
 class Pile(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal):
 		self.name = name
 		self.canBurn = True
 		self.type = itemType
-		super().__init__("ӫ",xPosition,yPosition)
+		super().__init__(" ӫ",xPosition,yPosition)
 
 	def apply(self):
 		messages.append("Pile used")

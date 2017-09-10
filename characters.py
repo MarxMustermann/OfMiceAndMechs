@@ -1,5 +1,6 @@
 characters = None
 calculatePath = None
+roomsOnMap = None
 
 class Character():
 	def __init__(self,display="@",xPosition=0,yPosition=0,quests=[],automated=True,name="Person"):
@@ -45,6 +46,18 @@ class Character():
 
 	def advance(self):
 		if self.automated:
+			if self.yPosition == 0:
+				roomsOnMap[1].removeCharacter(self)
+				roomsOnMap[0].addCharacter(self,4,8)
+				self.changed()
+				return
+
+			if self.yPosition == 9:
+				roomsOnMap[0].removeCharacter(self)
+				roomsOnMap[1].addCharacter(self,4,1)
+				self.changed()
+				return
+				
 			if hasattr(self,"path") and len(self.path):
 				self.xPosition = self.path[0][0]
 				self.yPosition = self.path[0][1]

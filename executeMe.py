@@ -76,9 +76,9 @@ class Cinematic(object):
 
 		main.set_text(self.text[0:self.position])
 		if self.text[self.position] in ("\n"):
-			loop.set_alarm_in(0.5, callShow_or_exit, '.')
+			loop.set_alarm_in(0.5, callShow_or_exit, '~')
 		else:
-			loop.set_alarm_in(0.05, callShow_or_exit, '.')
+			loop.set_alarm_in(0.05, callShow_or_exit, '~')
 		self.position += 1
 
 def showCinematic(text):
@@ -160,9 +160,10 @@ for line in roomLayout[1:].split("\n"):
 
 room1 = rooms.Room1()
 room2 = rooms.Room2()
-room1.hidden = True
+#room1.hidden = True
 
 roomsOnMap = [room1,room2]
+characters.roomsOnMap = roomsOnMap
 
 tutorialQuest1 = quests.MoveQuest(room2,5,5,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way")
 tutorialQuest2 = quests.CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing j.")
@@ -193,6 +194,19 @@ mainChar.watched = True
 rooms.mainChar = mainChar
 room2.addCharacter(mainChar,1,3)
 
+quest0 = quests.MoveQuest(room2,5,5)
+quest1 = quests.LeaveRoomQuest(room2)
+quest2 = quests.MoveQuest(room1,5,5)
+quest3 = quests.LeaveRoomQuest(room1)
+quest0.followUp = quest1
+quest1.followUp = quest2
+quest2.followUp = quest3
+quest3.followUp = quest0
+npcQuests = []
+npc2 = characters.Character("Ü",1,1,name="Ernst Ziegelbach")
+room2.addCharacter(npc2,1,1)
+npc2.assignQuest(quest0)
+
 characters = [mainChar]
 items.characters = characters
 rooms.characters = characters
@@ -214,11 +228,13 @@ def show_or_exit(key):
 			raise urwid.ExitMainLoop()
 		elif key in (' '):
 			cinematicQueue = cinematicQueue[1:]
-			loop.set_alarm_in(0.0, callShow_or_exit, '.')
+			loop.set_alarm_in(0.0, callShow_or_exit, '~')
 		else:
 			stop = True
 			cinematicQueue[0].advance()
 	if stop:
+		return
+	if key in ('~'):
 		return
 
 	if key in ('q', 'Q'):
@@ -408,10 +424,9 @@ XXXXXXXXXXXXXXX
 		for i in range(room.offsetY,5):
 			result += layoutByLine[lineCounter]+"\n"
 			lineCounter += 1
-
 	return result
 
 frame = urwid.Frame(urwid.Filler(main,"top"),header=header,footer=footer)
 loop = urwid.MainLoop(frame, unhandled_input=show_or_exit)
-loop.set_alarm_in(0.0, callShow_or_exit, '.')
+loop.set_alarm_in(0.0, callShow_or_exit, '~')
 loop.run()

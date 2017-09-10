@@ -144,16 +144,12 @@ XXXXXXXXXX
 		quest2.followUp = quest3
 		quest3.followUp = quest4
 		quest4.followUp = quest1
-		npcQuests = [quest0]
-		npc = Character("Ö",2,1,npcQuests,name="Erwin von Libwig")
+		npc = Character("Ö",2,1,name="Erwin von Libwig")
+		self.addCharacter(npc,2,1)
+		npc.assignQuest(quest0)
 
 		lever2 = self.lever2
 		def lever2action(self):
 			deactivateLeaverQuest = quests.ActivateQuest(lever2,desiredActive=False)
 			npc.assignQuest(deactivateLeaverQuest,active=True)
 		self.lever2.activateAction = lever2action
-
-		npc2 = Character("Ü",1,1,name="Ernst Ziegelbach")
-
-		self.addCharacter(npc,2,1)
-		self.addCharacter(npc2,1,1)

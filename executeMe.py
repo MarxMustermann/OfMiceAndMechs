@@ -159,11 +159,18 @@ for line in roomLayout[1:].split("\n"):
 	lineCounter += 1
 
 room1 = rooms.Room1()
+room1.hidden = True
 room2 = rooms.Room2()
+room3 = rooms.Room3()
+room3.hidden = True
+room4 = rooms.Room4()
+room4.hidden = True
 #room1.hidden = True
 
-roomsOnMap = [room1,room2]
+roomsOnMap = [room1,room2,room3,room4]
 characters.roomsOnMap = roomsOnMap
+
+mapHidden = True
 
 tutorialQuest1 = quests.MoveQuest(room2,5,5,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way")
 tutorialQuest2 = quests.CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing j.")
@@ -173,11 +180,16 @@ def tutorialQuest4Endtrigger():
 	room1.openDoors()
 	room2.openDoors()
 	room1.hidden = False
+	global mapHidden
+	mapHidden = False
 tutorialQuest4.endTrigger = tutorialQuest4Endtrigger
 tutorialQuest5 = quests.LeaveRoomQuest(room2,startCinematics="please exit the Room")
 def tutorialQuest5Endtrigger():
 	room1.closeDoors()
 	room2.closeDoors()
+	room2.hidden = True
+	global mapHidden
+	mapHidden = True
 tutorialQuest5.endTrigger = tutorialQuest5Endtrigger
 tutorialQuest6 = quests.MoveQuest(room1,1,3,startCinematics="please move to waiting position")
 
@@ -362,9 +374,9 @@ def renderQuests():
 		try:
 			txt += "QUEST: "+characters[0].quests[0].subDescription+"\n"
 		except:
-			pass
+			txt += "\n"
 	else:
-		txt += "QUEST: keinQuest"
+		txt += "QUEST: keinQuest\n\n"
 		gamestate.gameWon = True
 	return txt
 	
@@ -376,54 +388,82 @@ def renderMessagebox():
 
 def render():
 	layout = """
-XXXXXXXXXXXXXXX
-X             X
-X             X
-X             X
-X             X
-X             X
-X             X
-X             X
-X             X
-X             X
-X             X
-XXXXXXXXXXXXXXX
-X             X
-X             X
-X             X
-XXXXXXXXXXXXXXX
-X             X
-X             X
-X             X
-X             X
-X             X
-X             X
-X             X
-X             X
-X             X
-X             X
-X             X
-X             X
-XXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+X0000000000000XX000000000000 X
+X0           0XX0          0 X
+X0           0XX0          0 X
+X0           0XX0          0 X
+X0           0XX0          0 X
+X0           0XX0          0 X
+X0           0XX0          0 X
+X0           0XX0          0 X
+X0           0XX0          0 X
+X0           0XX0          0 X
+X0XXXXXXXXXXX0XX0XXXXXXXXXX0XX
+X0           0000          000
+X0                           X 
+X0                          00
+X0XXXXXXXXXXXXX XXXXXXXXXXXX0X
+X0           0X X           0X
+X0           0X X           0X
+X0           0X X           0X
+X0           0X X           0X
+X0           0X X           0X
+X0           0X X           0X
+X0           0X X           0X
+X0           0X X           0X
+X0           0X X           0X
+X000000000   0X X           0X
+X            0X X           0X
+00000000000000000000000000000X
+XXXXXXXXXXXX0XX XXXXXXXXXXXXXX
 """
 	result = ""
 
-	layoutByLine = layout.split("\n")[1:]
+	chars = []
+	for i in range(0,30):
+		line = []
+		for j in range(0,30):
+			line.append("  ")
+		chars.append(line)
+			
+	if not mapHidden:
+		lineCounter = 0
+		for layoutline in layout.split("\n")[1:]:
+			rowCounter = 0
+			for char in layoutline:
+				if char == "X":
+					chars[lineCounter][rowCounter] = "⛝ "
+				if char == "0":
+					chars[lineCounter][rowCounter] = "✠✠"
+				rowCounter += 1
+			lineCounter += 1
 
-	lineCounter = 0
 	for room in roomsOnMap:
-		if room.hidden:
-			lineCounter += 15
+		if mapHidden and room.hidden:
 			continue
-		for i in range(0,room.offsetY):
-			result += layoutByLine[lineCounter].replace(" ","  ").replace("X","XX")+"\n"
+
+		renderedRoom = room.render()
+		
+		xOffset = room.xPosition*15+room.offsetX
+		yOffset = room.yPosition*15+room.offsetY
+
+		lineCounter = 0
+		for line in renderedRoom:
+			rowCounter = 0
+			for char in line:
+				chars[lineCounter+yOffset][rowCounter+xOffset] = char
+				rowCounter += 1
 			lineCounter += 1
-		for line in room.render().split("\n"):
-			result += layoutByLine[lineCounter][:room.offsetX].replace(" ","  ").replace("X","XX")+line+layoutByLine[lineCounter][(10+room.offsetX):].replace(" ","  ").replace("X","XX")+"\n"
-			lineCounter += 1
-		for i in range(room.offsetY,5):
-			result += layoutByLine[lineCounter].replace(" ","  ").replace("X","XX")+"\n"
-			lineCounter += 1
+
+	result = ""
+	for line in chars:
+		lineRender = ""
+		for char in line:
+			lineRender += char
+		lineRender += "\n"
+		result += lineRender
+		
 	return result
 
 frame = urwid.Frame(urwid.Filler(main,"top"),header=header,footer=footer)

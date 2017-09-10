@@ -14,6 +14,8 @@ class Room(object):
 		self.itemsOnFloor = []
 		self.characters = []
 		self.doors = []
+		self.xPosition = None
+		self.yPosition = None
 
 		self.walkingAccess = []
 
@@ -40,37 +42,41 @@ class Room(object):
 			door.close()
 
 	def render(self):
-		chars = []
-		for i in range(0,10):
-			subChars = []
-			for j in range(0,10):
-				subChars.append("⛚ ")
-			chars.append(subChars)
+		if not self.hidden:
+			chars = []
+			for i in range(0,10):
+				subChars = []
+				for j in range(0,10):
+					subChars.append("⛚ ")
+				chars.append(subChars)
 
-		if mainChar.room == self:
-			if len(characters[0].quests):
-				try:
-					chars[characters[0].quests[0].dstY][characters[0].quests[0].dstX] = "xX"
+			if mainChar.room == self:
+				if len(characters[0].quests):
+					try:
+						chars[characters[0].quests[0].dstY][characters[0].quests[0].dstX] = "xX"
 
-					path = calculatePath(characters[0].xPosition,characters[0].yPosition,characters[0].quests[0].dstX,characters[0].quests[0].dstY)
-					for item in path:
-						chars[item[1]][item[0]] = "xx"
-				except:
-					pass
-		
-		for item in self.itemsOnFloor:
-			chars[item.yPosition][item.xPosition] = item.display
+						path = calculatePath(characters[0].xPosition,characters[0].yPosition,characters[0].quests[0].dstX,characters[0].quests[0].dstY)
+						for item in path:
+							chars[item[1]][item[0]] = "xx"
+					except:
+						pass
+			
+			for item in self.itemsOnFloor:
+				chars[item.yPosition][item.xPosition] = item.display
 
-		for character in self.characters:
-			chars[character.yPosition][character.xPosition] = character.display
-		if mainChar.room == self:
-			chars[mainChar.yPosition][mainChar.xPosition] = mainChar.display
+			for character in self.characters:
+				chars[character.yPosition][character.xPosition] = character.display
+			if mainChar.room == self:
+				chars[mainChar.yPosition][mainChar.xPosition] = mainChar.display
+		else:
+			chars = []
+			for i in range(0,10):
+				subChars = []
+				for j in range(0,10):
+					subChars.append("⼞")
+				chars.append(subChars)
 
-		lines = []
-		for lineChars in chars:
-			lines.append("".join(lineChars))
-
-		return "\n".join(lines)
+		return chars
 
 	def addCharacter(self,character,x,y):
 		self.characters.append(character)
@@ -99,8 +105,8 @@ XXXX$XXXXX
 		super().__init__(self.roomLayout)
 		self.offsetX = 2
 		self.offsetY = 2
-		self.Xpos = 0
-		self.Ypos = 0
+		self.xPosition = 0
+		self.yPosition = 0
 
 class Room2(Room):
 	def __init__(self):
@@ -119,8 +125,8 @@ XXXXXXXXXX
 		super().__init__(self.roomLayout)
 		self.offsetX = 3
 		self.offsetY = 0
-		self.Xpos = 0
-		self.Ypos = 0
+		self.xPosition = 0
+		self.yPosition = 1
 
 		self.lever1 = items.Lever(3,6,"engine control")
 		self.lever2 = items.Lever(1,2,"boarding alarm")
@@ -153,3 +159,43 @@ XXXXXXXXXX
 			deactivateLeaverQuest = quests.ActivateQuest(lever2,desiredActive=False)
 			npc.assignQuest(deactivateLeaverQuest,active=True)
 		self.lever2.activateAction = lever2action
+
+class Room3(Room):
+	def __init__(self):
+		self.roomLayout = """
+XXXXXXXXXX
+X        X
+X        X
+X  X X   X
+X  X X   X
+X        X
+X  X     X
+X  X X   X
+X        X
+XXXX$XXXXX
+"""
+		super().__init__(self.roomLayout)
+		self.offsetX = 2
+		self.offsetY = 2
+		self.xPosition = 1
+		self.yPosition = 0
+
+class Room4(Room):
+	def __init__(self):
+		self.roomLayout = """
+XXXXXXXXXX
+X        X
+X        X
+X        X
+X        X
+X        X
+X   X    X
+X        X
+X        X
+XXXXXXXXXX
+"""
+		super().__init__(self.roomLayout)
+		self.offsetX = 2
+		self.offsetY = 2
+		self.xPosition = 1
+		self.yPosition = 1

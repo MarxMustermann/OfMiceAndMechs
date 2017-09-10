@@ -2,7 +2,7 @@ messages = None
 characters = None
 
 class Item(object):
-	def __init__(self,display="§",xPosition=0,yPosition=0):
+	def __init__(self,display="??",xPosition=0,yPosition=0):
 		self.display = display
 		self.xPosition = xPosition
 		self.yPosition = yPosition
@@ -89,6 +89,11 @@ class Wall(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Wall"):
 		self.name = name
 		super().__init__("⛝ ",xPosition,yPosition)
+
+class Pipe(Item):
+	def __init__(self,xPosition=0,yPosition=0,name="Wall"):
+		self.name = name
+		super().__init__("✠✠",xPosition,yPosition)
 
 class Coal(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Coal"):

@@ -227,9 +227,9 @@ X0XXXXXXXXXXX0XX0XXXXXXXXXX0XX
 X0...........0000..........000
 X0............................ 
 X0..........................00
-X0XXXXXXXXXXXXX XXXXXXXXXXXX0X
-X0           0X X           0X
-X0           0X X           0X
+X0XXXXXXXXXXXXX XXX.XXXXXXXX0X
+X0           0X X X.X       0X
+X0           0X X XXX       0X
 X0           0X X           0X
 X0           0X X           0X
 X0           0X X           0X
@@ -438,37 +438,45 @@ def show_or_exit(key):
 			characters[0].changed()
 
 	if key in ('d'):
-		if characters[0].xPosition < 9:
-			foundItem = None
-			if mainChar.room:
-				for item in mainChar.room.itemsOnFloor:
-					if item.xPosition == characters[0].xPosition+1 and item.yPosition == characters[0].yPosition:
-						foundItem = item
-			if foundItem and not foundItem.walkable:
-				messages.append("You cannot walk there")
-				messages.append("press j to apply")
-				itemMarkedLast = foundItem
-				footer.set_text(renderMessagebox())
-				return
-			else:
-				characters[0].xPosition += 1
-				characters[0].changed()
+		if mainChar.room:
+			if characters[0].xPosition < 9:
+				foundItem = None
+				if mainChar.room:
+					for item in mainChar.room.itemsOnFloor:
+						if item.xPosition == characters[0].xPosition+1 and item.yPosition == characters[0].yPosition:
+							foundItem = item
+				if foundItem and not foundItem.walkable:
+					messages.append("You cannot walk there")
+					messages.append("press j to apply")
+					itemMarkedLast = foundItem
+					footer.set_text(renderMessagebox())
+					return
+				else:
+					characters[0].xPosition += 1
+					characters[0].changed()
+		else:
+			characters[0].xPosition += 1
+			characters[0].changed()
 	if key in ('a'):
-		if characters[0].xPosition:
-			foundItem = None
-			if mainChar.room:
-				for item in mainChar.room.itemsOnFloor:
-					if item.xPosition == characters[0].xPosition-1 and item.yPosition == characters[0].yPosition:
-						foundItem = item
-			if foundItem and not foundItem.walkable:
-				messages.append("You cannot walk there")
-				messages.append("press j to apply")
-				itemMarkedLast = foundItem
-				footer.set_text(renderMessagebox())
-				return
-			else:
-				characters[0].xPosition -= 1
-				characters[0].changed()
+		if mainChar.room:
+			if characters[0].xPosition:
+				foundItem = None
+				if mainChar.room:
+					for item in mainChar.room.itemsOnFloor:
+						if item.xPosition == characters[0].xPosition-1 and item.yPosition == characters[0].yPosition:
+							foundItem = item
+				if foundItem and not foundItem.walkable:
+					messages.append("You cannot walk there")
+					messages.append("press j to apply")
+					itemMarkedLast = foundItem
+					footer.set_text(renderMessagebox())
+					return
+				else:
+					characters[0].xPosition -= 1
+					characters[0].changed()
+		else:
+			characters[0].xPosition -= 1
+			characters[0].changed()
 	if key in ('j'):
 		if itemMarkedLast:
 			itemMarkedLast.apply()

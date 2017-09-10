@@ -183,7 +183,7 @@ XXXX$XXXXX
 class Room4(Room):
 	def __init__(self):
 		self.roomLayout = """
-XXXXXXXXXX
+XX$XXXXXXX
 X        X
 X        X
 X        X

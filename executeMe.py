@@ -19,13 +19,13 @@ def calculatePath(startX,startY,endX,endY):
 			if (diffX<0):
 				startX += 1
 				diffX  += 1
-			if (diffX>0):
+			elif (diffX>0):
 				startX -= 1
 				diffX  -= 1
-			if (diffY<0):
+			elif (diffY<0):
 				startY += 1
 				diffY  += 1
-			if (diffY>0):
+			elif (diffY>0):
 				startY -= 1
 				diffY  -= 1
 			path.append((startX,startY))

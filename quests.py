@@ -203,8 +203,8 @@ class MoveQuest(Quest):
 			self.dstY = self.targetY
 		elif self.character.room and self.character.quests[0] == self:
 			self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
-		else:
-			#self.character.assignQuest(EnterRoomQuest(self.room),active=True)
+		elif not self.character.room and self.character.quests[0] == self:
+			self.character.assignQuest(EnterRoomQuest(self.room),active=True)
 			pass
 		super().recalculate()
 
@@ -233,5 +233,31 @@ class LeaveRoomQuest(Quest):
 class EnterRoomQuest(Quest):
 	def __init__(self,room,followUp=None,startCinematics=None):
 		self.description = "please enter the room: "+room.name
+		self.room = room
+		self.dstX = self.room.walkingAccess[0][0]+room.xPosition*15+room.offsetX
+		self.dstY = self.room.walkingAccess[0][1]+room.yPosition*15+room.offsetY
 		super().__init__(followUp,startCinematics=startCinematics)
 
+	def assignToCharacter(self,character):
+		if not self.active:
+			return 
+
+		super().assignToCharacter(character)
+		character.addListener(self.recalculate)
+
+	def recalculate(self):
+		if not self.active:
+			return 
+
+		if self.character.room and not self.character.room == self.room and self.character.quests[0] == self:
+			messages.append("EnterRoomQuest added leaveroom")
+			self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
+
+		super().recalculate()
+
+	def triggerCompletionCheck(self):
+		if not self.active:
+			return 
+
+		if self.character.room == self.room:
+			self.postHandler()

@@ -207,6 +207,18 @@ class Terrain(object):
 		for character in self.characters:
 			chars[character.yPosition][character.xPosition] = character.display
 
+			if character == mainChar:
+				if len(characters[0].quests):
+                                        try:
+                                                chars[characters[0].quests[0].dstY][characters[0].quests[0].dstX] = "xX"
+
+                                                path = calculatePath(characters[0].xPosition,characters[0].yPosition,characters[0].quests[0].dstX,characters[0].quests[0].dstY)
+                                                for item in path:
+                                                        chars[item[1]][item[0]] = "xx"
+                                        except:
+                                                pass
+
+
 		return chars
 
 class Terrain1(Terrain):
@@ -530,11 +542,15 @@ def advanceGame():
 def renderQuests():
 	txt = ""
 	if len(characters[0].quests):
+		"""
 		txt += "QUEST: "+characters[0].quests[0].description+"\n"
 		try:
 			txt += "QUEST: "+characters[0].quests[1].description+"\n"
 		except:
 			txt += "\n"
+		"""
+		for quest in mainChar.quests:
+			txt+= "QUEST: "+quest.description+"\n"
 	else:
 		txt += "QUEST: keinQuest\n\n"
 		gamestate.gameWon = True

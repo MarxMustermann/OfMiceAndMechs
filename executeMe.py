@@ -176,13 +176,20 @@ class Terrain(object):
 		if mainChar.room == None:
 			mapHidden = False
 		else:
-			mapHidden = True
+			messages.append(str(mainChar.room.open))
+			if mainChar.room.open:
+				mapHidden = False
+			else:
+				mapHidden = True
 
 		for room in terrain.rooms:
 			if mainChar.room == room:
 				room.hidden = False
 			else:
-				room.hidden = True
+				if not mapHidden and room.open:
+					room.hidden = False
+				else:
+					room.hidden = True
 				
 		if not mapHidden:
 			lineCounter = 0
@@ -386,8 +393,6 @@ def show_or_exit(key):
 				mainChar.yPosition = newYPos
 				mainChar.room.removeCharacter(mainChar)
 				terrain.characters.append(mainChar)
-				#room1.hidden = False
-				#room2.hidden = True
 				characters[0].changed()
 		else:
 			for room in terrain.rooms:

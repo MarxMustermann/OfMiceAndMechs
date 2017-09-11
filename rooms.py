@@ -17,30 +17,35 @@ class Room(object):
 		self.xPosition = None
 		self.yPosition = None
 		self.name = "Room"
+		self.open = False
 
 		self.walkingAccess = []
 
 		lineCounter = 0
+		itemsOnFloor = []
 		for line in self.layout[1:].split("\n"):
 			rowCounter = 0
 			for char in line:
 				if char == "X":
-					self.itemsOnFloor.append(items.Wall(rowCounter,lineCounter))
+					itemsOnFloor.append(items.Wall(rowCounter,lineCounter))
 				if char == "$":
 					door = items.Door(rowCounter,lineCounter)
-					self.itemsOnFloor.append(door)
+					itemsOnFloor.append(door)
 					self.walkingAccess.append((rowCounter,lineCounter))
 					self.doors.append(door)
 				rowCounter += 1
 			lineCounter += 1
+		self.addItems(itemsOnFloor)
 
 	def openDoors(self):
 		for door in self.doors:
 			door.open()
+			self.open = True
 
 	def closeDoors(self):
 		for door in self.doors:
 			door.close()
+			self.open = False
 
 	def render(self):
 		if not self.hidden:
@@ -92,6 +97,11 @@ class Room(object):
 	def removeCharacter(self,character):
 		self.characters.remove(character)
 		character.room = None
+
+	def addItems(self,items):
+		self.itemsOnFloor.extend(items)
+		for item in items:
+			item.room = self
 
 class Room1(Room):
 	def __init__(self):
@@ -145,7 +155,7 @@ XXXXXXXXXX
 		self.furnace = items.Furnace(6,6,"Furnace")
 		furnaceDisplay = items.Display(8,8,"Furnace monitoring")
 
-		self.itemsOnFloor.extend([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4,self.furnace,furnaceDisplay])
+		self.addItems([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4,self.furnace,furnaceDisplay])
 
 		quest0 = quests.ActivateQuest(self.lever1)
 		quest1 = quests.MoveQuest(self,2,2)

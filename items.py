@@ -8,6 +8,7 @@ class Item(object):
 		self.yPosition = yPosition
 		self.listeners = []
 		self.walkable = False
+		self.room = None
 
 	def apply(self):
 		messages.append("i can't do anything useful with this")
@@ -118,10 +119,12 @@ class Door(Item):
 	def open(self):
 		self.walkable = True
 		self.display = '⭘ '
+		self.room.open = True
 
 	def close(self):
 		self.walkable = False
 		self.display = '⛒ '
+		self.room.open = False
 
 class Pile(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal):

@@ -176,7 +176,6 @@ class Terrain(object):
 		if mainChar.room == None:
 			mapHidden = False
 		else:
-			messages.append(str(mainChar.room.open))
 			if mainChar.room.open:
 				mapHidden = False
 			else:
@@ -276,13 +275,9 @@ XXXXXXXXXXXX0XX XXXXXXXXXXXXXX
 		super().__init__(rooms,layout)
 
 room1 = rooms.Room1()
-#room1.hidden = True
 room2 = rooms.Room2()
 room3 = rooms.Room3()
-#room3.hidden = True
 room4 = rooms.Room4()
-#room4.hidden = True
-#room1.hidden = True
 
 roomsOnMap = [room1,room2,room3,room4]
 characters.roomsOnMap = roomsOnMap
@@ -298,17 +293,11 @@ tutorialQuest4 = quests.MoveQuest(room2,1,3,startCinematics="Move back to waitin
 def tutorialQuest4Endtrigger():
 	room1.openDoors()
 	room2.openDoors()
-	#room1.hidden = False
-	global mapHidden
-	mapHidden = False
 tutorialQuest4.endTrigger = tutorialQuest4Endtrigger
 tutorialQuest5 = quests.LeaveRoomQuest(room2,startCinematics="please exit the Room")
 def tutorialQuest5Endtrigger():
 	room1.closeDoors()
 	room2.closeDoors()
-	#room2.hidden = True
-	global mapHidden
-	mapHidden = True
 tutorialQuest5.endTrigger = tutorialQuest5Endtrigger
 tutorialQuest6 = quests.MoveQuest(room1,1,3,startCinematics="please move to waiting position")
 
@@ -400,9 +389,17 @@ def show_or_exit(key):
 					if room.xPosition*15+room.offsetX < mainChar.xPosition and room.xPosition*15+room.offsetX+10 > mainChar.xPosition:
 						localisedEntry = (mainChar.xPosition%15-room.offsetX,mainChar.yPosition%15-room.offsetY-1)
 						if localisedEntry in room.walkingAccess:
-							messages.append(str(room))
-							room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
-							terrain.characters.remove(mainChar)
+							if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
+								itemMarkedLast = room.itemByCoordinates[localisedEntry]
+								messages.append("you need to open the door first")
+								messages.append("press j to apply")
+								footer.set_text(renderMessagebox())
+								return
+							else:
+								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
+								terrain.characters.remove(mainChar)
+								break
+
 						else:
 							messages.append("you cannot move there")
 							break
@@ -433,8 +430,6 @@ def show_or_exit(key):
 				mainChar.yPosition = newYPos
 				mainChar.room.removeCharacter(mainChar)
 				terrain.characters.append(mainChar)
-				#room2.hidden = False
-				#room1.hidden = True
 				characters[0].changed()
 		else:
 			for room in terrain.rooms:
@@ -442,10 +437,19 @@ def show_or_exit(key):
 					if room.xPosition*15+room.offsetX < mainChar.xPosition and room.xPosition*15+room.offsetX+10 > mainChar.xPosition:
 						localisedEntry = ((mainChar.xPosition-room.offsetX)%15,(mainChar.yPosition-room.offsetY+1)%15)
 						if localisedEntry in room.walkingAccess:
-							room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1]-1)
-							terrain.characters.remove(mainChar)
-			characters[0].yPosition += 1
-			characters[0].changed()
+							if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
+								itemMarkedLast = room.itemByCoordinates[localisedEntry]
+								messages.append("you need to open the door first")
+								messages.append("press j to apply")
+								footer.set_text(renderMessagebox())
+								return
+							else:
+								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1]-1)
+								terrain.characters.remove(mainChar)
+								break
+			else:
+				characters[0].yPosition += 1
+				characters[0].changed()
 
 	if key in ('d'):
 		if mainChar.room:
@@ -557,7 +561,7 @@ def renderQuests():
 def renderMessagebox():
 	txt = ""
 	for message in messages[-5:]:
-		txt += message+"\n"
+		txt += str(message)+"\n"
 	return txt
 
 def render():

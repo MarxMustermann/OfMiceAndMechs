@@ -19,6 +19,8 @@ class Room(object):
 		self.name = "Room"
 		self.open = False
 
+		self.itemByCoordinates = {}
+
 		self.walkingAccess = []
 
 		lineCounter = 0
@@ -102,6 +104,7 @@ class Room(object):
 		self.itemsOnFloor.extend(items)
 		for item in items:
 			item.room = self
+			self.itemByCoordinates[(item.xPosition,item.yPosition)] = item
 
 class Room1(Room):
 	def __init__(self):

@@ -444,7 +444,8 @@ def show_or_exit(key):
 								footer.set_text(renderMessagebox())
 								return
 							else:
-								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1]-1)
+								messages.append(localisedEntry)
+								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
 								terrain.characters.remove(mainChar)
 								break
 			else:

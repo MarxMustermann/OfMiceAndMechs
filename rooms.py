@@ -16,6 +16,7 @@ class Room(object):
 		self.doors = []
 		self.xPosition = None
 		self.yPosition = None
+		self.name = "Room"
 
 		self.walkingAccess = []
 
@@ -103,6 +104,7 @@ X        X
 XXXX$XXXXX
 """
 		super().__init__(self.roomLayout)
+		self.name = "Vat"
 		self.offsetX = 2
 		self.offsetY = 2
 		self.xPosition = 0
@@ -123,6 +125,7 @@ XPPPPPID#X
 XXXXXXXXXX
 """
 		super().__init__(self.roomLayout)
+		self.name = "Boilerroom"
 		self.offsetX = 3
 		self.offsetY = 0
 		self.xPosition = 0

@@ -289,10 +289,11 @@ tutorialQuest5.followUp = tutorialQuest6
 tutorialQuest6.followUp = None
 
 mainQuests = [tutorialQuest1]
-mainChar = characters.Character("＠",1,3,mainQuests,False,name="Sigmund Bärenstein")
+mainChar = characters.Character("＠",1,3,automated=False,name="Sigmund Bärenstein")
 mainChar.watched = True
 rooms.mainChar = mainChar
 room2.addCharacter(mainChar,1,3)
+mainChar.assignQuest(tutorialQuest1)
 
 quest0 = quests.MoveQuest(room2,5,5)
 def quest0Endtrigger():
@@ -383,7 +384,7 @@ def show_or_exit(key):
 				newXPos = characters[0].xPosition+mainChar.room.xPosition*15+mainChar.room.offsetX
 				mainChar.xPosition = newXPos
 				mainChar.yPosition = newYPos
-				room2.removeCharacter(mainChar)
+				mainChar.room.removeCharacter(mainChar)
 				terrain.characters.append(mainChar)
 				#room1.hidden = False
 				#room2.hidden = True
@@ -421,7 +422,7 @@ def show_or_exit(key):
 				newXPos = characters[0].xPosition+mainChar.room.xPosition*15+mainChar.room.offsetX
 				mainChar.xPosition = newXPos
 				mainChar.yPosition = newYPos
-				room1.removeCharacter(mainChar)
+				mainChar.room.removeCharacter(mainChar)
 				terrain.characters.append(mainChar)
 				#room2.hidden = False
 				#room1.hidden = True
@@ -531,7 +532,7 @@ def renderQuests():
 	if len(characters[0].quests):
 		txt += "QUEST: "+characters[0].quests[0].description+"\n"
 		try:
-			txt += "QUEST: "+characters[0].quests[0].subDescription+"\n"
+			txt += "QUEST: "+characters[0].quests[1].description+"\n"
 		except:
 			txt += "\n"
 	else:

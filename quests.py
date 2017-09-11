@@ -203,6 +203,9 @@ class MoveQuest(Quest):
 			self.dstY = self.targetY
 		elif self.character.room and self.character.quests[0] == self:
 			self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
+		else:
+			#self.character.assignQuest(EnterRoomQuest(self.room),active=True)
+			pass
 		super().recalculate()
 
 class LeaveRoomQuest(Quest):
@@ -226,3 +229,9 @@ class LeaveRoomQuest(Quest):
 
 		if not self.character.room == self.room:
 			self.postHandler()
+
+class EnterRoomQuest(Quest):
+	def __init__(self,room,followUp=None,startCinematics=None):
+		self.description = "please enter the room: "+room.name
+		super().__init__(followUp,startCinematics=startCinematics)
+

@@ -77,6 +77,10 @@ class Room(object):
 					subChars.append("⼞")
 				chars.append(subChars)
 
+			for item in self.itemsOnFloor:
+				if item.xPosition == 0 or item.xPosition == 9 or item.yPosition == 0 or item.yPosition == 9:
+					chars[item.yPosition][item.xPosition] = item.display
+
 		return chars
 
 	def addCharacter(self,character,x,y):

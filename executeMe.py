@@ -329,7 +329,6 @@ quest2.followUp = quest3
 quest3.followUp = quest0
 npc2 = characters.Character("⒬ ",1,1,name="Ernst Ziegelbach")
 room2.addCharacter(npc2,1,1)
-npc2.watched = True
 npc2.assignQuest(quest0)
 
 characters = [mainChar]
@@ -397,10 +396,14 @@ def show_or_exit(key):
 						localisedEntry = (mainChar.xPosition%15-room.offsetX,mainChar.yPosition%15-room.offsetY-1)
 						if localisedEntry in room.walkingAccess:
 							messages.append(str(room))
-							room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1]+1)
+							room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
 							terrain.characters.remove(mainChar)
-			characters[0].yPosition -= 1
-			characters[0].changed()
+						else:
+							messages.append("you cannot move there")
+							break
+			else:
+				characters[0].yPosition -= 1
+				characters[0].changed()
 
 	if key in ('s'):
 		if mainChar.room:

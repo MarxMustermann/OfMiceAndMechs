@@ -47,14 +47,16 @@ class Character():
 
 	def advance(self):
 		if self.automated:
+			if not len(self.path):
+				self.setPathToQuest(self.quests[0])
 			if self.yPosition == 0:
-				roomsOnMap[1].removeCharacter(self)
+				self.room.removeCharacter(self)
 				roomsOnMap[0].addCharacter(self,4,8)
 				self.changed()
 				return
 
 			if self.yPosition == 9:
-				roomsOnMap[0].removeCharacter(self)
+				self.room.removeCharacter(self)
 				roomsOnMap[1].addCharacter(self,4,1)
 				self.changed()
 				return

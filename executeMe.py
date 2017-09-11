@@ -165,12 +165,24 @@ class Terrain(object):
 		self.characters = []
 
 	def render(self):
+		global mapHidden
 		chars = []
 		for i in range(0,30):
 			line = []
 			for j in range(0,30):
 				line.append("  ")
 			chars.append(line)
+
+		if mainChar.room == None:
+			mapHidden = False
+		else:
+			mapHidden = True
+
+		for room in terrain.rooms:
+			if mainChar.room == room:
+				room.hidden = False
+			else:
+				room.hidden = True
 				
 		if not mapHidden:
 			lineCounter = 0
@@ -188,7 +200,7 @@ class Terrain(object):
 		
 
 		for room in terrain.rooms:
-			if mapHidden and room.hidden:
+			if mapHidden and room.hidden :
 				continue
 
 			renderedRoom = room.render()
@@ -308,39 +320,16 @@ room2.addCharacter(mainChar,1,3)
 mainChar.assignQuest(tutorialQuest1)
 
 quest0 = quests.MoveQuest(room2,5,5)
-def quest0Endtrigger():
-	room1.openDoors()
-	room2.openDoors()
-	global mapHidden
-	mapHidden = False
-quest0.endTrigger = quest0Endtrigger
-quest1 = quests.LeaveRoomQuest(room2)
-def quest1Endtrigger():
-	room1.closeDoors()
-	room2.closeDoors()
-	global mapHidden
-	mapHidden = True
-quest1.endTrigger = quest1Endtrigger
-quest2 = quests.MoveQuest(room1,5,5)
-def quest2Endtrigger():
-	room1.openDoors()
-	room2.openDoors()
-	global mapHidden
-	mapHidden = False
-quest2.endTrigger = quest2Endtrigger
-quest3 = quests.LeaveRoomQuest(room1)
-def quest3Endtrigger():
-	room1.closeDoors()
-	room2.closeDoors()
-	global mapHidden
-	mapHidden = True
-quest3.endTrigger = quest3Endtrigger
+quest1 = quests.MoveQuest(room1,5,5)
+quest2 = quests.MoveQuest(room3,5,5)
+quest3 = quests.MoveQuest(room4,5,5)
 quest0.followUp = quest1
 quest1.followUp = quest2
 quest2.followUp = quest3
 quest3.followUp = quest0
 npc2 = characters.Character("⒬ ",1,1,name="Ernst Ziegelbach")
 room2.addCharacter(npc2,1,1)
+npc2.watched = True
 npc2.assignQuest(quest0)
 
 characters = [mainChar]

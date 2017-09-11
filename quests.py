@@ -194,11 +194,13 @@ class MoveQuest(Quest):
 		if not self.active:
 			return 
 
+		messages.append("recalculate")
 		if hasattr(self,"dstX"):
 			del self.dstX
 		if hasattr(self,"dstY"):
 			del self.dstY
 		if self.room == self.character.room:
+			messages.append("target room reached")
 			self.dstX = self.targetX
 			self.dstY = self.targetY
 		elif self.character.room and self.character.quests[0] == self:

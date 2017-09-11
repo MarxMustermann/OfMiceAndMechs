@@ -161,6 +161,8 @@ for line in roomLayout[1:].split("\n"):
 class Terrain(object):
 	def __init__(self,rooms,layout):
 		self.rooms = rooms
+		for room in self.rooms:
+			room.terrain = self
 		self.layout = layout
 		self.characters = []
 
@@ -228,10 +230,8 @@ class Terrain(object):
 			if character == mainChar:
 				if len(characters[0].quests):
                                         try:
-                                                chars[characters[0].quests[0].dstY][characters[0].quests[0].dstX] = "xX"
-
                                                 path = calculatePath(characters[0].xPosition,characters[0].yPosition,characters[0].quests[0].dstX,characters[0].quests[0].dstY)
-                                                for item in path:
+                                                for item in path[:-1]:
                                                         chars[item[1]][item[0]] = "xx"
                                         except:
                                                 pass
@@ -290,15 +290,7 @@ tutorialQuest1 = quests.MoveQuest(room2,5,5,startCinematics="inside the Simulati
 tutorialQuest2 = quests.CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing j.")
 tutorialQuest3 = quests.ActivateQuest(room2.furnace,startCinematics="now go and activate the Furnace marked with a Ω. you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press j.")
 tutorialQuest4 = quests.MoveQuest(room2,1,3,startCinematics="Move back to waiting position")
-def tutorialQuest4Endtrigger():
-	room1.openDoors()
-	room2.openDoors()
-tutorialQuest4.endTrigger = tutorialQuest4Endtrigger
 tutorialQuest5 = quests.LeaveRoomQuest(room2,startCinematics="please exit the Room")
-def tutorialQuest5Endtrigger():
-	room1.closeDoors()
-	room2.closeDoors()
-tutorialQuest5.endTrigger = tutorialQuest5Endtrigger
 tutorialQuest6 = quests.MoveQuest(room1,1,3,startCinematics="please move to waiting position")
 
 tutorialQuest1.followUp = tutorialQuest2
@@ -361,6 +353,15 @@ def show_or_exit(key):
 		raise urwid.ExitMainLoop()
 	if key in ('w'):
 		if mainChar.room:
+			item = mainChar.room.moveCharacterNorth(mainChar)
+
+			if item:
+				messages.append("You cannot walk there")
+				messages.append("press j to apply")
+				itemMarkedLast = item
+				footer.set_text(renderMessagebox())
+				return
+			"""
 			if characters[0].yPosition:
 				foundItem = None
 				for item in mainChar.room.itemsOnFloor:
@@ -383,6 +384,7 @@ def show_or_exit(key):
 				mainChar.room.removeCharacter(mainChar)
 				terrain.characters.append(mainChar)
 				characters[0].changed()
+			"""
 		else:
 			for room in terrain.rooms:
 				if room.yPosition*15+room.offsetY+10 == mainChar.yPosition:
@@ -409,6 +411,15 @@ def show_or_exit(key):
 
 	if key in ('s'):
 		if mainChar.room:
+			item = mainChar.room.moveCharacterSouth(mainChar)
+
+			if item:
+				messages.append("You cannot walk there")
+				messages.append("press j to apply")
+				itemMarkedLast = item
+				footer.set_text(renderMessagebox())
+				return
+			"""
 			if characters[0].yPosition < 9:
 				foundItem = None
 				for item in mainChar.room.itemsOnFloor:
@@ -431,6 +442,7 @@ def show_or_exit(key):
 				mainChar.room.removeCharacter(mainChar)
 				terrain.characters.append(mainChar)
 				characters[0].changed()
+			"""
 		else:
 			for room in terrain.rooms:
 				if room.yPosition*15+room.offsetY == mainChar.yPosition+1:
@@ -444,7 +456,6 @@ def show_or_exit(key):
 								footer.set_text(renderMessagebox())
 								return
 							else:
-								messages.append(localisedEntry)
 								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
 								terrain.characters.remove(mainChar)
 								break
@@ -453,26 +464,36 @@ def show_or_exit(key):
 				characters[0].changed()
 
 	if key in ('d'):
+		item = None
 		if mainChar.room:
-			if characters[0].xPosition < 9:
-				foundItem = None
-				if mainChar.room:
-					for item in mainChar.room.itemsOnFloor:
-						if item.xPosition == characters[0].xPosition+1 and item.yPosition == characters[0].yPosition:
-							foundItem = item
-				if foundItem and not foundItem.walkable:
-					messages.append("You cannot walk there")
-					messages.append("press j to apply")
-					itemMarkedLast = foundItem
-					footer.set_text(renderMessagebox())
-					return
-				else:
-					characters[0].xPosition += 1
-					characters[0].changed()
+			item = mainChar.room.moveCharacterEast(mainChar)
 		else:
 			characters[0].xPosition += 1
 			characters[0].changed()
+
+		if item:
+			messages.append("You cannot walk there")
+			messages.append("press j to apply")
+			itemMarkedLast = item
+			footer.set_text(renderMessagebox())
+			return
+
 	if key in ('a'):
+		item = None
+		if mainChar.room:
+			item = mainChar.room.moveCharacterWest(mainChar)
+		else:
+			characters[0].xPosition -= 1
+			characters[0].changed()
+
+		if item:
+			messages.append("You cannot walk there")
+			messages.append("press j to apply")
+			itemMarkedLast = item
+			footer.set_text(renderMessagebox())
+			return
+
+		"""
 		if mainChar.room:
 			if characters[0].xPosition:
 				foundItem = None
@@ -492,6 +513,8 @@ def show_or_exit(key):
 		else:
 			characters[0].xPosition -= 1
 			characters[0].changed()
+		"""
+
 	if key in ('j'):
 		if itemMarkedLast:
 			itemMarkedLast.apply()

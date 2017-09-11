@@ -18,6 +18,7 @@ class Room(object):
 		self.yPosition = None
 		self.name = "Room"
 		self.open = False
+		self.terrain = None
 
 		self.itemByCoordinates = {}
 
@@ -106,6 +107,55 @@ class Room(object):
 			item.room = self
 			self.itemByCoordinates[(item.xPosition,item.yPosition)] = item
 
+	def moveCharacterWest(self,character):
+		newPosition = (character.xPosition-1,character.yPosition)
+		return self.moveCharacter(character,newPosition)
+
+	def moveCharacterEast(self,character):
+		newPosition = (character.xPosition+1,character.yPosition)
+		return self.moveCharacter(character,newPosition)
+
+	def moveCharacterNorth(self,character):
+		if not character.yPosition:
+			newYPos = character.yPosition+mainChar.room.yPosition*15+mainChar.room.offsetY-1
+			newXPos = character.xPosition+mainChar.room.xPosition*15+mainChar.room.offsetX
+			character.xPosition = newXPos
+			character.yPosition = newYPos
+			self.removeCharacter(character)
+			self.terrain.characters.append(character)
+			character.changed()
+			return
+
+		newPosition = (character.xPosition,character.yPosition-1)
+		return self.moveCharacter(character,newPosition)
+
+	def moveCharacterSouth(self,character):
+		if character.yPosition == 9:
+			newYPos = character.yPosition+mainChar.room.yPosition*15+mainChar.room.offsetY+1
+			newXPos = character.xPosition+mainChar.room.xPosition*15+mainChar.room.offsetX
+			character.xPosition = newXPos
+			character.yPosition = newYPos
+			self.removeCharacter(character)
+			self.terrain.characters.append(character)
+			character.changed()
+			return
+
+		newPosition = (character.xPosition,character.yPosition+1)
+		return self.moveCharacter(character,newPosition)
+
+	def moveCharacter(self,character,newPosition):
+		if newPosition in self.itemByCoordinates:
+			item  = self.itemByCoordinates[newPosition]
+			if not item.walkable:
+				return item
+			else:
+				character.xPosition = newPosition[0]
+				character.yPosition = newPosition[1]
+		character.xPosition = newPosition[0]
+		character.yPosition = newPosition[1]
+		character.changed()
+		return None
+	
 class Room1(Room):
 	def __init__(self):
 		self.roomLayout = """

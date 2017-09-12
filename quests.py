@@ -266,8 +266,6 @@ class EnterRoomQuest(Quest):
 		if not self.active:
 			return 
 
-		self.character.setPathToQuest(self)
-
 		if self.character.room and not self.character.room == self.room and self.character.quests[0] == self:
 			self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
 

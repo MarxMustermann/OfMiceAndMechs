@@ -15,6 +15,10 @@ def calculatePath(startX,startY,endX,endY):
 
 	import math
 	path = []
+	if (startY > 10 and diffX):
+		path.extend(calculatePath(startX,startY,startX,13))
+		startY = 13
+		
 	while (not diffX == 0) or (not diffY == 0):
 			if (diffX<0):
 				startX += 1
@@ -31,7 +35,6 @@ def calculatePath(startX,startY,endX,endY):
 			path.append((startX,startY))
 
 			"""
-			if math.abs(diffX) > math.abs(diffY):
 				if (diffX<1):
 					endX-1
 					diffX+1
@@ -310,15 +313,12 @@ mainChar.assignQuest(tutorialQuest1)
 
 quest0 = quests.MoveQuest(room2,4,4)
 quest1 = quests.MoveQuest(room1,4,4)
-quest2 = quests.MoveQuest(room2,4,4)
-quest3 = quests.MoveQuest(room3,4,4)
-quest4 = quests.MoveQuest(room4,2,8)
-quest4 = quests.MoveQuest(room3,4,4)
+quest2 = quests.MoveQuest(room3,4,4)
+quest3 = quests.MoveQuest(room4,2,8)
 quest0.followUp = quest1
 quest1.followUp = quest2
 quest2.followUp = quest3
-quest3.followUp = quest4
-quest4.followUp = quest0
+quest3.followUp = quest0
 npc2 = characters.Character("Ⓩ ",1,1,name="Ernst Ziegelbach")
 npc2.terrain = terrain
 room2.addCharacter(npc2,1,1)

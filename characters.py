@@ -111,8 +111,8 @@ class Character():
 			
 			if item:
 				item.apply()				
-
-			self.path = self.path[1:]
+			else:
+				self.path = self.path[1:]
 			return False
 		else:
 			return True

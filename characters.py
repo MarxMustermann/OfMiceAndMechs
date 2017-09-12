@@ -45,10 +45,82 @@ class Character():
 	def addToInventory(self,item):
 		self.inventory.append(item)
 
+	def applysolver(self,solver):
+		solver(self)
+
+	def walkPath(self):
+		if not len(self.path):
+			self.setPathToQuest(self.quests[0])
+
+		if len(self.path):
+			currentPosition = (self.xPosition,self.yPosition)
+			nextPosition = self.path[0]
+
+			item = None
+			if self.room:
+				if nextPosition[0] < currentPosition[0]:
+					item = self.room.moveCharacterWest(self)
+				elif nextPosition[0] > currentPosition[0]:
+					item = self.room.moveCharacterEast(self)
+				elif nextPosition[1] < currentPosition[1]:
+					item = self.room.moveCharacterNorth(self)
+				elif nextPosition[1] > currentPosition[1]:
+					item = self.room.moveCharacterSouth(self)
+
+			else:
+				for room in self.terrain.rooms:
+					if room.yPosition*15+room.offsetY+10 == nextPosition[1]+1:
+						if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+10 > self.xPosition:
+							localisedEntry = (self.xPosition%15-room.offsetX,nextPosition[1]%15-room.offsetY)
+							if localisedEntry in room.walkingAccess:
+								if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
+									item = room.itemByCoordinates[localisedEntry]
+									break
+								else:
+									room.addCharacter(self,localisedEntry[0],localisedEntry[1]+1)
+									self.terrain.characters.remove(self)
+									self.terrain = None
+									self.changed()
+									break
+							else:
+								messages.append("you cannot move there")
+								break
+					if room.yPosition*15+room.offsetY == nextPosition[1]:
+						if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+10 > self.xPosition:
+							messages.append("checking2 room"+str(room))
+							localisedEntry = ((self.xPosition-room.offsetX)%15,((nextPosition[1]-room.offsetY)%15))
+							messages.append(localisedEntry)
+							messages.append(room.walkingAccess)
+							if localisedEntry in room.walkingAccess:
+								messages.append("checking localisedEntry"+str(localisedEntry))
+								if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
+									messages.append("encountered item"+str(room.itemByCoordinates[localisedEntry]))
+									item = room.itemByCoordinates[localisedEntry]
+									break
+								else:
+									messages.append("entering the room")
+									room.addCharacter(self,localisedEntry[0],localisedEntry[1])
+									self.terrain.characters.remove(self)
+									self.terrain = None
+									self.changed()
+									break
+				else:
+					self.xPosition = nextPosition[0]
+					self.yPosition = nextPosition[1]
+					self.changed()
+			
+			if item:
+				item.apply()				
+
+			self.path = self.path[1:]
+			return False
+		else:
+			return True
+
 	def advance(self):
 		if self.automated:
-			if not len(self.path):
-				self.setPathToQuest(self.quests[0])
+
+			"""
 			if self.yPosition == 0:
 				self.room.removeCharacter(self)
 				roomsOnMap[0].addCharacter(self,4,8)
@@ -60,11 +132,9 @@ class Character():
 				roomsOnMap[1].addCharacter(self,4,1)
 				self.changed()
 				return
+			"""
 				
-			if hasattr(self,"path") and len(self.path):
-				self.xPosition = self.path[0][0]
-				self.yPosition = self.path[0][1]
-				self.path = self.path[1:]
+			self.applysolver(self.quests[0].solver)
 			try:
 				if not len(self.path):
 					self.quests[0].toActivate.apply()

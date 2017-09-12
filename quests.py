@@ -15,6 +15,9 @@ class Quest(object):
 		if not self.active:
 			return 
 		pass
+
+	def solver(self,character):
+		return character.walkPath()
 	
 	def postHandler(self):
 		self.character.quests.remove(self)
@@ -216,6 +219,17 @@ class LeaveRoomQuest(Quest):
 		self.dstY = self.room.walkingAccess[0][1]
 		super().__init__(followUp,startCinematics=startCinematics)
 
+	def solver(self,character):
+		if super().solver(character):
+			if character.room:
+				if character.yPosition == 0:
+					character.path.append((character.xPosition,character.yPosition-1))
+				else:
+					character.path.append((character.xPosition,character.yPosition+1))
+				character.walkPath()
+				return False
+			return True
+
 	def assignToCharacter(self,character):
 		if not self.active:
 			return 
@@ -245,9 +259,14 @@ class EnterRoomQuest(Quest):
 		super().assignToCharacter(character)
 		character.addListener(self.recalculate)
 
+	def solver(self,character):
+		return character.walkPath()
+
 	def recalculate(self):
 		if not self.active:
 			return 
+
+		self.character.setPathToQuest(self)
 
 		if self.character.room and not self.character.room == self.room and self.character.quests[0] == self:
 			self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)

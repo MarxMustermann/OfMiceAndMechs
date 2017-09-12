@@ -117,12 +117,13 @@ class Room(object):
 
 	def moveCharacterNorth(self,character):
 		if not character.yPosition:
-			newYPos = character.yPosition+mainChar.room.yPosition*15+mainChar.room.offsetY-1
-			newXPos = character.xPosition+mainChar.room.xPosition*15+mainChar.room.offsetX
+			newYPos = character.yPosition+character.room.yPosition*15+character.room.offsetY-1
+			newXPos = character.xPosition+character.room.xPosition*15+character.room.offsetX
 			character.xPosition = newXPos
 			character.yPosition = newYPos
 			self.removeCharacter(character)
 			self.terrain.characters.append(character)
+			character.terrain = self.terrain
 			character.changed()
 			return
 
@@ -131,12 +132,13 @@ class Room(object):
 
 	def moveCharacterSouth(self,character):
 		if character.yPosition == 9:
-			newYPos = character.yPosition+mainChar.room.yPosition*15+mainChar.room.offsetY+1
-			newXPos = character.xPosition+mainChar.room.xPosition*15+mainChar.room.offsetX
+			newYPos = character.yPosition+character.room.yPosition*15+character.room.offsetY+1
+			newXPos = character.xPosition+character.room.xPosition*15+character.room.offsetX
 			character.xPosition = newXPos
 			character.yPosition = newYPos
 			self.removeCharacter(character)
 			self.terrain.characters.append(character)
+			character.terrain = self.terrain
 			character.changed()
 			return
 
@@ -220,7 +222,7 @@ XXXXXXXXXX
 		quest2.followUp = quest3
 		quest3.followUp = quest4
 		quest4.followUp = quest1
-		npc = Character("⒦ ",2,1,name="Erwin von Libwig")
+		npc = Character("Ⓛ ",2,1,name="Erwin von Libwig")
 		self.addCharacter(npc,2,1)
 		npc.assignQuest(quest0)
 

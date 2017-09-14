@@ -244,7 +244,7 @@ class Terrain(object):
 						chars[lineCounter][rowCounter] = "⛝ "
 					if char == "0":
 						chars[lineCounter][rowCounter] = "✠✠"
-					if char == ".":
+					if char == ".",",":
 						chars[lineCounter][rowCounter] = "⛚ "
 					rowCounter += 1
 				lineCounter += 1

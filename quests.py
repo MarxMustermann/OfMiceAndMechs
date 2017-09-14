@@ -1,4 +1,6 @@
 showCinematic = None
+loop = None
+callShow_or_exit = None
 
 class Quest(object):
 	def __init__(self,followUp=None,startCinematics=None):
@@ -21,24 +23,21 @@ class Quest(object):
 	
 	def postHandler(self):
 		self.character.quests.remove(self)
-		if self.followUp:
-			self.character.assignQuest(self.followUp,active=True)
-		else:
-			self.character.startNextQuest()
-
 		if self.endTrigger:
 			self.endTrigger()
 		if self.endCinematics:
 			showCinematic(self.endCinematics)			
-			try:
-				loop.set_alarm_in(0.0, callShow_or_exit, '.')
-			except:
-				pass
+			loop.set_alarm_in(0.0, callShow_or_exit, '.')
 
 		if self.character.watched:
 			messages.append("Thank you kindly. @"+self.character.name)
 		
 		self.deactivate()
+
+		if self.followUp:
+			self.character.assignQuest(self.followUp,active=True)
+		else:
+			self.character.startNextQuest()
 
 	def assignToCharacter(self,character):
 		self.character = character
@@ -68,10 +67,7 @@ class Quest(object):
 			self.startTrigger()
 		if self.startCinematics:
 			showCinematic(self.startCinematics)			
-			try:
-				loop.set_alarm_in(0.0, callShow_or_exit, '.')
-			except:
-				pass
+			loop.set_alarm_in(0.0, callShow_or_exit, '.')
 
 	def deactivate(self):
 		self.active = False

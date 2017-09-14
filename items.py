@@ -9,6 +9,7 @@ class Item(object):
 		self.listeners = []
 		self.walkable = False
 		self.room = None
+		self.name = "item"
 
 	def apply(self):
 		messages.append("i can't do anything useful with this")

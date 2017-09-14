@@ -30,16 +30,19 @@ class Room(object):
 		for line in self.layout[1:].split("\n"):
 			rowCounter = 0
 			for char in line:
-				if char == "X":
+				if char in (" ",".","@"):
+					pass
+				elif char == "X":
 					itemsOnFloor.append(items.Wall(rowCounter,lineCounter))
-				if char == "$":
+				elif char == "$":
 					door = items.Door(rowCounter,lineCounter)
 					itemsOnFloor.append(door)
 					self.walkingAccess.append((rowCounter,lineCounter))
 					self.doors.append(door)
-				if char == "#":
-					#itemsOnFloor.append(items.Pipe(rowCounter,lineCounter))
-					pass
+				elif char == "#":
+					itemsOnFloor.append(items.Pipe(rowCounter,lineCounter))
+				else:
+					itemsOnFloor.append(items.Item("[]",rowCounter,lineCounter))
 				rowCounter += 1
 			lineCounter += 1
 		self.addItems(itemsOnFloor)
@@ -167,11 +170,11 @@ class Room1(Room):
 		self.roomLayout = """
 XXXXXXXXXX
 X#-------X
-X#- - - -X
-X#-------X
-X#- - - -X
-X#-------X
-XBBBBBBBBX
+X#      -X
+X# ---- -X
+X#    - -X
+X# ---- -X
+XB BBBB BX
 X........X
 XMMM MMMMX
 XXXX$XXXXX
@@ -189,14 +192,14 @@ class Room2(Room):
 """
 		self.roomLayout = """
 XXXX$XXXXX
-X@Iv vID#X
+X@ v vID#X
 X@......#X
 X@.8#OF.PX
 X@.##OF.PX
 XB.8#OF.PX
 XB.|DI .PX
 XB......#X
-XPPPPPID#X
+XPPPP ID#X
 XXXXXXXXXX
 """
 		super().__init__(self.roomLayout)
@@ -242,14 +245,14 @@ class Room3(Room):
 	def __init__(self):
 		self.roomLayout = """
 XXXXXXXXXX
-X        X
-X  X X   X
-X  X X   X
-X        X
-X  X X   X
-X  X     X
-X        X
-X        X
+X????????X
+X?......?X
+X?.X#X?.?X
+XP.?#??.?X
+XP.X#X?.?X
+X?.X#  .?X
+X?......?X
+X??? ????X
 XXXX$XXXXX
 """
 		super().__init__(self.roomLayout)
@@ -262,14 +265,14 @@ class Room4(Room):
 	def __init__(self):
 		self.roomLayout = """
 XX$XXXXXXX
-X        X
-X        X
-X        X
-X        X
-X        X
-X   X    X
-X        X
-X        X
+X? ??????X
+X?      PX
+X? ???? PX
+X? ???? #X
+X? ???P #X
+X? ?X?? #X
+X?      #X
+X? ?????#X
 XXXXXXXXXX
 """
 		super().__init__(self.roomLayout)

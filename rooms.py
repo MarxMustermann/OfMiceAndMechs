@@ -19,6 +19,7 @@ class Room(object):
 		self.name = "Room"
 		self.open = False
 		self.terrain = None
+		self.shownQuestmarkerLastRender = False
 
 		self.itemByCoordinates = {}
 
@@ -128,22 +129,28 @@ class Room(object):
 				for j in range(0,10):
 					subChars.append("⛚ ")
 				chars.append(subChars)
-
-			if mainChar.room == self:
-				if len(characters[0].quests):
-					try:
-						chars[characters[0].quests[0].dstY][characters[0].quests[0].dstX] = "xX"
-						path = calculatePath(characters[0].xPosition,characters[0].yPosition,characters[0].quests[0].dstX,characters[0].quests[0].dstY,self.walkingPath)
-						for item in path:
-							chars[item[1]][item[0]] = "xx"
-					except:
-						pass
 			
 			for item in self.itemsOnFloor:
 				chars[item.yPosition][item.xPosition] = item.display
 
 			for character in self.characters:
 				chars[character.yPosition][character.xPosition] = character.display
+
+			if mainChar.room == self:
+				if len(characters[0].quests):
+					try:
+						if not self.shownQuestmarkerLastRender:
+							chars[characters[0].quests[0].dstY][characters[0].quests[0].dstX] = "xX"
+							path = calculatePath(characters[0].xPosition,characters[0].yPosition,characters[0].quests[0].dstX,characters[0].quests[0].dstY,self.walkingPath)
+							for item in path:
+								chars[item[1]][item[0]] = "xx"
+							
+							self.shownQuestmarkerLastRender = True
+						else:
+							self.shownQuestmarkerLastRender = False
+					except:
+						pass
+
 			if mainChar.room == self:
 				chars[mainChar.yPosition][mainChar.xPosition] = mainChar.display
 		else:

@@ -226,7 +226,52 @@ class Room2(Room):
 	def __init__(self):
 		self.roomMeta = """
 """
-		self.roomLayout = """
+		roomLayout = """
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+XXXXXXXXXX
+
+XXX↓X↓↓X↓X
+X  #8## #X
+X  #8## #X
+X  #8##8#X
+X  # ## #X
+X  # ##8#X
+X  #8## #X
+X  #8## #X
+X  #8## #X
+XXX↓X↓↓↓↓X
+
+XXXXXXXXXX
+X        X
+X        X
+X  88##8 X
+X  #8##8 X
+X  88##8 X
+X   8    X
+X        X
+X        X
+XXXXXXXXXX
+
+XXXXHXXXXX
+X@Iv vID#X
+X@      #X
+X@ 8#OF PX
+X@ ##OF PX
+XB 8#OF PX
+XB |DI  PX
+XB      #X
+XPPPPPID#X
+XXXXXXXXXX
+"""
+		roomLayout = """
 XXXX$XXXXX
 X@ v vID#X
 X@......#X
@@ -238,7 +283,7 @@ XB......#X
 XPPPP ID#X
 XXXXXXXXXX
 """
-		super().__init__(self.roomLayout)
+		super().__init__(roomLayout)
 		self.name = "Boilerroom"
 		self.offsetX = 3
 		self.offsetY = 0

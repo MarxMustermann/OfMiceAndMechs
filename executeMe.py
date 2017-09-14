@@ -201,81 +201,6 @@ quests.showCinematic = showCinematic
 
 showCinematic("welcome to the Trainingenvironment\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
 
-itemsOnFloor = []
-
-roomLayout = """
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-"""
-roomLayout = """
-XXX↓X↓↓X↓X
-X  #8## #X
-X  #8## #X
-X  #8##8#X
-X  # ## #X
-X  # ##8#X
-X  #8## #X
-X  #8## #X
-X  #8## #X
-XXX↓X↓↓↓↓X
-"""
-roomLayout = """
-XXXXXXXXXX
-X        X
-X        X
-X  88##8 X
-X  #8##8 X
-X  88##8 X
-X   8    X
-X        X
-X        X
-XXXXXXXXXX
-"""
-roomLayout = """
-XXXXHXXXXX
-X@Iv vID#X
-X@      #X
-X@ 8#OF PX
-X@ ##OF PX
-XB 8#OF PX
-XB |DI  PX
-XB      #X
-XPPPPPID#X
-XXXXXXXXXX
-"""
-roomLayout2 = """
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-"""
-lineCounter = 0
-for line in roomLayout[1:].split("\n"):
-	rowCounter = 0
-	for char in line:
-		if char == "X":
-			itemsOnFloor.append(items.Wall(rowCounter,lineCounter,"Wall"))
-		elif char == "@" or char == " ":
-			pass
-		else:
-			itemsOnFloor.append(items.Wall(rowCounter,lineCounter,"Wall"))
-		rowCounter += 1
-	lineCounter += 1
-
 class Terrain(object):
 	def __init__(self,rooms,layout):
 		self.rooms = rooms
@@ -372,9 +297,9 @@ X0           0XX0          0 X
 X0           0XX0          0 X
 X0           0XX0          0 X
 X0XXXXXXXXXXX0XX0XXXXXXXXXX0XX
-X0...........0000..........000
+X0,,,,,,,,,,,0000,,,,,,,,,,000
 X0............................ 
-X0..........................00
+X0,,,,,,,,,,,,,,,,,,,,,,,,,,00
 X0XXXXXXXXXXXXX XXX.XXXXXXXX0X
 X0           0X X X.X       0X
 X0           0X X XXX       0X

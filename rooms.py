@@ -23,8 +23,6 @@ class Room(object):
 		self.itemByCoordinates = {}
 
 		self.walkingAccess = []
-		self.walkingWay = []
-
 		lineCounter = 0
 		itemsOnFloor = []
 		for line in self.layout[1:].split("\n"):
@@ -45,6 +43,45 @@ class Room(object):
 					itemsOnFloor.append(items.Item("[]",rowCounter,lineCounter))
 				rowCounter += 1
 			lineCounter += 1
+
+		rawWalkingPath = []
+		lineCounter = 0
+		for line in self.layout[1:].split("\n"):
+			rowCounter = 0
+			for char in line:
+				if char == ".":
+					rawWalkingPath.append((rowCounter,lineCounter))
+				rowCounter += 1
+			lineCounter += 1
+
+		self.walkingPath = []
+		startWayPoint = rawWalkingPath[0]
+		endWayPoint = rawWalkingPath[0]
+
+		self.walkingPath.append(rawWalkingPath[0])
+		rawWalkingPath.remove(rawWalkingPath[0])
+
+		while (1==1):
+			endWayPoint = self.walkingPath[-1]
+			east = (endWayPoint[0]+1,endWayPoint[1])
+			west = (endWayPoint[0]-1,endWayPoint[1])
+			south = (endWayPoint[0],endWayPoint[1]+1)
+			north = (endWayPoint[0],endWayPoint[1]-1)
+			if east in rawWalkingPath:
+				self.walkingPath.append(east)
+				rawWalkingPath.remove(east)
+			elif west in rawWalkingPath:
+				self.walkingPath.append(west)
+				rawWalkingPath.remove(west)
+			elif south in rawWalkingPath:
+				self.walkingPath.append(south)
+				rawWalkingPath.remove(south)
+			elif north in rawWalkingPath:
+				self.walkingPath.append(north)
+				rawWalkingPath.remove(north)
+			else:
+				break
+
 		self.addItems(itemsOnFloor)
 
 	def openDoors(self):
@@ -70,8 +107,7 @@ class Room(object):
 				if len(characters[0].quests):
 					try:
 						chars[characters[0].quests[0].dstY][characters[0].quests[0].dstX] = "xX"
-
-						path = calculatePath(characters[0].xPosition,characters[0].yPosition,characters[0].quests[0].dstX,characters[0].quests[0].dstY)
+						path = calculatePath(characters[0].xPosition,characters[0].yPosition,characters[0].quests[0].dstX,characters[0].quests[0].dstY,self.walkingPath)
 						for item in path:
 							chars[item[1]][item[0]] = "xx"
 					except:
@@ -170,12 +206,12 @@ class Room1(Room):
 		self.roomLayout = """
 XXXXXXXXXX
 X#-------X
-X#      -X
-X# ---- -X
-X#    - -X
-X# ---- -X
-XB BBBB BX
-X........X
+X#......-X
+X#.- --.-X
+X#.   -.-X
+X#.----.-X
+XB.BBBB.BX
+X ...... X
 XMMM MMMMX
 XXXX$XXXXX
 """
@@ -266,12 +302,12 @@ class Room4(Room):
 		self.roomLayout = """
 XX$XXXXXXX
 X? ??????X
-X?      PX
-X? ???? PX
-X? ???? #X
-X? ???P #X
-X? ?X?? #X
-X?      #X
+X?......PX
+X?.????.PX
+X?.????.#X
+X?.???P.#X
+X?.?X??.#X
+X?......#X
 X? ?????#X
 XXXXXXXXXX
 """

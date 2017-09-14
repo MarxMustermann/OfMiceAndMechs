@@ -40,7 +40,10 @@ class Character():
 
 	def setPathToQuest(self,quest):
 		if hasattr(quest,"dstX") and hasattr(quest,"dstY"):
-			self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY)
+			if self.room:
+				self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY,self.room.walkingPath)
+			else:
+				self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY)
 
 	def addToInventory(self,item):
 		self.inventory.append(item)

@@ -9,7 +9,7 @@ main = urwid.Text(u"＠")
 footer = urwid.Text(u"")
 cinematicQueue = []
 
-def calculatePath(startX,startY,endX,endY):
+def calculatePath(startX,startY,endX,endY,walkingPath=None):
 	import math
 	path = []
 
@@ -24,10 +24,9 @@ def calculatePath(startX,startY,endX,endY):
 	if (startX == endX and startY == endY-1):
 		return [(endX,endY)]
 
-	walkingPath = [(2,2),(2,3),(2,4),(2,5),(2,6),(2,7),(3,7),(4,7),(5,7),(6,7),(7,7),(7,6),(7,5),(7,4),(7,3),(7,2),(6,2),(5,2),(4,2),(3,2)]
 	circlePath = True
 	if (startY > 11 and not startX==endX):
-		path.extend(calculatePath(startX,startY,startX,13))
+		path.extend(calculatePath(startX,startY,startX,13,walkingPath))
 		startY = 13
 	elif (startY < 11):
 		if (startX,startY) in walkingPath and (endX,endY) in walkingPath:
@@ -83,8 +82,8 @@ def calculatePath(startX,startY,endX,endY):
 				pass
 			else:
 				result = []
-				result.extend(calculatePath(startX,startY,nearestPoint[0],nearestPoint[1]))
-				result.extend(calculatePath(nearestPoint[0],nearestPoint[1],endX,endY))
+				result.extend(calculatePath(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
+				result.extend(calculatePath(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
 				return result
 
 		elif (startX,startY) in walkingPath:
@@ -100,8 +99,8 @@ def calculatePath(startX,startY,endX,endY):
 				pass
 			else:
 				result = []
-				result.extend(calculatePath(startX,startY,nearestPoint[0],nearestPoint[1]))
-				result.extend(calculatePath(nearestPoint[0],nearestPoint[1],endX,endY))
+				result.extend(calculatePath(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
+				result.extend(calculatePath(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
 				return result
 		else:
 			path = []
@@ -121,9 +120,9 @@ def calculatePath(startX,startY,endX,endY):
 					lowestDistance = distance
 					endPoint = waypoint
 
-			path.extend(calculatePath(startX,startY,startPoint[0],startPoint[1]))
-			path.extend(calculatePath(startPoint[0],startPoint[1],endPoint[0],endPoint[1]))
-			path.extend(calculatePath(endPoint[0],endPoint[1],endX,endY))
+			path.extend(calculatePath(startX,startY,startPoint[0],startPoint[1],walkingPath))
+			path.extend(calculatePath(startPoint[0],startPoint[1],endPoint[0],endPoint[1],walkingPath))
+			path.extend(calculatePath(endPoint[0],endPoint[1],endX,endY,walkingPath))
 			
 			return path			
 

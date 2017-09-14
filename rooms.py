@@ -65,8 +65,8 @@ class Room(object):
 					itemsOnFloor.append(items.Item("Ѻ ",rowCounter,lineCounter))
 				else:
 					displayChars = ["🜆 ","🜾 ","ꘒ ","ꖻ ","ᵺ "]
-					displayChars = ["🝍🝍","🖵 ","🞇 ","⿴","🜕 "]
-					itemsOnFloor.append(items.Item(displayChars[(rowCounter+lineCounter)%5],rowCounter,lineCounter))
+					displayChars = ["🝍🝍","🝍🝍","🝍🝍","🖵 ","🞇 ","🖵 ","⿴","⿴","🞇 ","🜕 "]
+					itemsOnFloor.append(items.Item(displayChars[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter))
 				rowCounter += 1
 			lineCounter += 1
 

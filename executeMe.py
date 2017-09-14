@@ -3,6 +3,7 @@ import items
 import quests
 import rooms
 import characters
+import terrains
 
 header = urwid.Text(u"")
 main = urwid.Text(u"＠")
@@ -164,6 +165,7 @@ def calculatePath(startX,startY,endX,endY,walkingPath=None):
 rooms.calculatePath = calculatePath
 quests.calculatePath = calculatePath
 characters.calculatePath = calculatePath
+terrains.calculatePath = calculatePath
 
 rooms.Character = characters.Character
 		
@@ -177,6 +179,7 @@ items.messages = messages
 quests.messages = messages
 rooms.messages = messages
 characters.messages = messages
+terrains.messages = messages
 
 class Cinematic(object):
 	def __init__(self,text):
@@ -201,122 +204,6 @@ quests.showCinematic = showCinematic
 
 showCinematic("welcome to the Trainingenvironment\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
 
-class Terrain(object):
-	def __init__(self,rooms,layout):
-		self.rooms = rooms
-		for room in self.rooms:
-			room.terrain = self
-		self.layout = layout
-		self.characters = []
-
-	def render(self):
-		global mapHidden
-		chars = []
-		for i in range(0,30):
-			line = []
-			for j in range(0,30):
-				line.append("  ")
-			chars.append(line)
-
-		if mainChar.room == None:
-			mapHidden = False
-		else:
-			if mainChar.room.open:
-				mapHidden = False
-			else:
-				mapHidden = True
-
-		for room in terrain.rooms:
-			if mainChar.room == room:
-				room.hidden = False
-			else:
-				if not mapHidden and room.open:
-					room.hidden = False
-				else:
-					room.hidden = True
-				
-		if not mapHidden:
-			lineCounter = 0
-			for layoutline in terrain.layout.split("\n")[1:]:
-				rowCounter = 0
-				for char in layoutline:
-					if char == "X":
-						chars[lineCounter][rowCounter] = "⛝ "
-					if char == "0":
-						chars[lineCounter][rowCounter] = "✠✠"
-					if char in (".",","):
-						chars[lineCounter][rowCounter] = "⛚ "
-					rowCounter += 1
-				lineCounter += 1
-		
-
-		for room in terrain.rooms:
-			if mapHidden and room.hidden :
-				continue
-
-			renderedRoom = room.render()
-			
-			xOffset = room.xPosition*15+room.offsetX
-			yOffset = room.yPosition*15+room.offsetY
-
-			lineCounter = 0
-			for line in renderedRoom:
-				rowCounter = 0
-				for char in line:
-					chars[lineCounter+yOffset][rowCounter+xOffset] = char
-					rowCounter += 1
-				lineCounter += 1
-
-		for character in self.characters:
-			chars[character.yPosition][character.xPosition] = character.display
-
-			if character == mainChar:
-				if len(characters[0].quests):
-                                        try:
-                                                path = calculatePath(characters[0].xPosition,characters[0].yPosition,characters[0].quests[0].dstX,characters[0].quests[0].dstY)
-                                                for item in path[:-1]:
-                                                        chars[item[1]][item[0]] = "xx"
-                                        except:
-                                                pass
-
-
-		return chars
-
-class Terrain1(Terrain):
-	def __init__(self,rooms):
-		layout = """
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-X0000000000000XX000000000000 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0XXXXXXXXXXX0XX0XXXXXXXXXX0XX
-X0,,,,,,,,,,,0000,,,,,,,,,,000
-X0............................ 
-X0,,,,,,,,,,,,,,,,,,,,,,,,,,00
-X0XXXXXXXXXXXXX XXX.XXXXXXXX0X
-X0           0X X X.X       0X
-X0           0X X XXX       0X
-X0           0X X           0X
-X0           0X X           0X
-X0           0X X           0X
-X0           0X X           0X
-X0           0X X           0X
-X0           0X X           0X
-X0           0X X           0X
-X000000000   0X X           0X
-X            0X X           0X
-00000000000000000000000000000X
-XXXXXXXXXXXX0XX XXXXXXXXXXXXXX
-"""
-		super().__init__(rooms,layout)
-
 room1 = rooms.Room1()
 room2 = rooms.Room2()
 room3 = rooms.Room3()
@@ -325,7 +212,7 @@ room4 = rooms.Room4()
 roomsOnMap = [room1,room2,room3,room4]
 characters.roomsOnMap = roomsOnMap
 
-terrain = Terrain1(roomsOnMap)
+terrain = terrains.Terrain1(roomsOnMap)
 
 mapHidden = True
 
@@ -349,6 +236,7 @@ mainChar = characters.Character("＠",1,3,automated=False,name="Sigmund Bärenst
 mainChar.terrain = terrain
 mainChar.watched = True
 rooms.mainChar = mainChar
+terrains.mainChar = mainChar
 room2.addCharacter(mainChar,2,4)
 mainChar.assignQuest(tutorialQuest1)
 

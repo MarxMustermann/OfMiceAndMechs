@@ -37,8 +37,32 @@ class Room(object):
 					itemsOnFloor.append(door)
 					self.walkingAccess.append((rowCounter,lineCounter))
 					self.doors.append(door)
+				elif char == "P":
+					itemsOnFloor.append(items.Pile(rowCounter,lineCounter))
+				elif char == "F":
+					itemsOnFloor.append(items.Furnace(rowCounter,lineCounter))
 				elif char == "#":
 					itemsOnFloor.append(items.Pipe(rowCounter,lineCounter))
+				elif char == "D":
+					itemsOnFloor.append(items.Display(rowCounter,lineCounter))
+				elif char == "v":
+					#to be bin
+					itemsOnFloor.append(items.Item("⛛ ",rowCounter,lineCounter))
+				elif char == "O":
+					#to be pressure Tank
+					itemsOnFloor.append(items.Item("⛫ ",rowCounter,lineCounter))
+				elif char == "F":
+					#to be pressure Tank
+					itemsOnFloor.append(items.Item("⛫ ",rowCounter,lineCounter))
+				elif char == "8":
+					#to be chains
+					itemsOnFloor.append(items.Item("⛓ ",rowCounter,lineCounter))
+				elif char == "I":
+					#to be commlink
+					itemsOnFloor.append(items.Item("ߐߐ",rowCounter,lineCounter))
+				elif char == "H":
+					#to be hutch
+					itemsOnFloor.append(items.Item("Ѻ ",rowCounter,lineCounter))
 				else:
 					displayChars = ["🜆 ","🜾 ","ꘒ ","ꖻ ","ᵺ "]
 					displayChars = ["🝍🝍","🖵 ","🞇 ","⿴","🜕 "]
@@ -277,12 +301,12 @@ XXXXXXXXXX
 XXXX$XXXXX
 X@ v vID#X
 X@......#X
-X@.8#OF.PX
-X@.##OF.PX
-XB.8#OF.PX
-XB.|DI .PX
-XB......#X
-XPPPP ID#X
+X@.8#OF. X
+X@.##OF. X
+XH.8#O . X
+XH.|DI . X
+XH......#X
+XXPPP ID#X
 XXXXXXXXXX
 """
 		super().__init__(roomLayout)
@@ -299,7 +323,7 @@ XXXXXXXXXX
 		coalPile2 = items.Pile(8,4,"coal Pile2",items.Coal)
 		coalPile3 = items.Pile(8,5,"coal Pile3",items.Coal)
 		coalPile4 = items.Pile(8,6,"coal Pile4",items.Coal)
-		self.furnace = items.Furnace(6,6,"Furnace")
+		self.furnace = items.Furnace(6,5,"Furnace")
 
 		self.addItems([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4,self.furnace])
 

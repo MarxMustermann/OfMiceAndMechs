@@ -85,7 +85,7 @@ class Furnace(Item):
 class Display(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Display"):
 		self.name = name
-		super().__init__("ߐߐ",xPosition,yPosition)
+		super().__init__("۞ ",xPosition,yPosition)
 
 class Wall(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Wall"):

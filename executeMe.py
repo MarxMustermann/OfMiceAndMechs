@@ -10,14 +10,125 @@ footer = urwid.Text(u"")
 cinematicQueue = []
 
 def calculatePath(startX,startY,endX,endY):
-	diffX = startX-endX
-	diffY = startY-endY
-
 	import math
 	path = []
-	if (startY > 10 and diffX):
+
+	if (startX == endX and startY == endY):
+		return []
+	if (startX == endX+1 and startY == endY):
+		return [(endX,endY)]
+	if (startX == endX-1 and startY == endY):
+		return [(endX,endY)]
+	if (startX == endX and startY == endY+1):
+		return [(endX,endY)]
+	if (startX == endX and startY == endY-1):
+		return [(endX,endY)]
+
+	walkingPath = [(2,2),(2,3),(2,4),(2,5),(2,6),(2,7),(3,7),(4,7),(5,7),(6,7),(7,7),(7,6),(7,5),(7,4),(7,3),(7,2),(6,2),(5,2),(4,2),(3,2)]
+	circlePath = True
+	if (startY > 11 and not startX==endX):
 		path.extend(calculatePath(startX,startY,startX,13))
 		startY = 13
+	elif (startY < 11):
+		if (startX,startY) in walkingPath and (endX,endY) in walkingPath:
+			startIndex = None
+			index = 0
+			for wayPoint in walkingPath:
+				if wayPoint == (startX,startY):
+					startIndex = index
+				index += 1
+			endIndex = None
+			index = 0
+			for wayPoint in walkingPath:
+				if wayPoint == (endX,endY):
+					endIndex = index
+				index += 1
+
+			distance = startIndex-endIndex
+			if distance > 0:
+				if circlePath:
+					if distance < len(walkingPath)/2:
+						result = []
+						result.extend(reversed(walkingPath[endIndex:startIndex]))
+						return result
+					else:
+						result = []
+						result.extend(walkingPath[startIndex:])
+						result.extend(walkingPath[:endIndex+1])
+						return result
+				else:
+					return walkingPath[startIndex:endIndex]
+			else:
+				if circlePath:
+					if (-distance) <= len(walkingPath)/2:
+						return walkingPath[startIndex+1:endIndex+1]
+					else:
+						result = []
+						result.extend(reversed(walkingPath[:startIndex]))
+						result.extend(reversed(walkingPath[endIndex:]))
+						return result
+				else:
+					return walkingPath[endIndex:startIndex]
+
+		elif (endX,endY) in walkingPath:
+			nearestPoint = None
+			lowestDistance = 1234567890
+			for waypoint in walkingPath:
+				distance = abs(waypoint[0]-startX)+abs(waypoint[1]-startY)
+				if lowestDistance > distance:
+					lowestDistance = distance
+					nearestPoint = waypoint
+
+			if (endX,endY) == nearestPoint:
+				pass
+			else:
+				result = []
+				result.extend(calculatePath(startX,startY,nearestPoint[0],nearestPoint[1]))
+				result.extend(calculatePath(nearestPoint[0],nearestPoint[1],endX,endY))
+				return result
+
+		elif (startX,startY) in walkingPath:
+			nearestPoint = None
+			lowestDistance = 1234567890
+			for waypoint in walkingPath:
+				distance = abs(waypoint[0]-endX)+abs(waypoint[1]-endY)
+				if lowestDistance > distance:
+					lowestDistance = distance
+					nearestPoint = waypoint
+
+			if (startX,startY) == nearestPoint:
+				pass
+			else:
+				result = []
+				result.extend(calculatePath(startX,startY,nearestPoint[0],nearestPoint[1]))
+				result.extend(calculatePath(nearestPoint[0],nearestPoint[1],endX,endY))
+				return result
+		else:
+			path = []
+			startPoint = None
+			lowestDistance = 1234567890
+			for waypoint in walkingPath:
+				distance = abs(waypoint[0]-startX)+abs(waypoint[1]-startY)
+				if lowestDistance > distance:
+					lowestDistance = distance
+					startPoint = waypoint
+
+			endPoint = None
+			lowestDistance = 1234567890
+			for waypoint in walkingPath:
+				distance = abs(waypoint[0]-endX)+abs(waypoint[1]-endY)
+				if lowestDistance > distance:
+					lowestDistance = distance
+					endPoint = waypoint
+
+			path.extend(calculatePath(startX,startY,startPoint[0],startPoint[1]))
+			path.extend(calculatePath(startPoint[0],startPoint[1],endPoint[0],endPoint[1]))
+			path.extend(calculatePath(endPoint[0],endPoint[1],endX,endY))
+			
+			return path			
+
+	diffX = startX-endX
+	diffY = startY-endY
 		
 	while (not diffX == 0) or (not diffY == 0):
 			if (diffX<0):
@@ -50,6 +161,7 @@ def calculatePath(startX,startY,endX,endY):
 				path.append((startX,startY))
 			"""
 	return path
+
 rooms.calculatePath = calculatePath
 quests.calculatePath = calculatePath
 characters.calculatePath = calculatePath
@@ -157,6 +269,10 @@ for line in roomLayout[1:].split("\n"):
 	rowCounter = 0
 	for char in line:
 		if char == "X":
+			itemsOnFloor.append(items.Wall(rowCounter,lineCounter,"Wall"))
+		elif char == "@" or char == " ":
+			pass
+		else:
 			itemsOnFloor.append(items.Wall(rowCounter,lineCounter,"Wall"))
 		rowCounter += 1
 	lineCounter += 1
@@ -289,11 +405,12 @@ terrain = Terrain1(roomsOnMap)
 
 mapHidden = True
 
-tutorialQuest1 = quests.MoveQuest(room4,2,8,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way")
+tutorialQuest1 = quests.MoveQuest(room2,5,8,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way")
 tutorialQuest2 = quests.CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing j.")
 tutorialQuest3 = quests.ActivateQuest(room2.furnace,startCinematics="now go and activate the Furnace marked with a Ω. you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press j.")
 tutorialQuest4 = quests.MoveQuest(room2,1,3,startCinematics="Move back to waiting position")
 tutorialQuest5 = quests.LeaveRoomQuest(room2,startCinematics="please exit the Room")
+tutorialQuest5 = quests.EnterRoomQuest(room1,startCinematics="please goto the Vat")
 tutorialQuest6 = quests.MoveQuest(room1,4,4,startCinematics="please move to waiting position")
 
 tutorialQuest1.followUp = tutorialQuest2
@@ -308,22 +425,22 @@ mainChar = characters.Character("＠",1,3,automated=False,name="Sigmund Bärenst
 mainChar.terrain = terrain
 mainChar.watched = True
 rooms.mainChar = mainChar
-room2.addCharacter(mainChar,1,3)
+room2.addCharacter(mainChar,2,4)
 mainChar.assignQuest(tutorialQuest1)
 
-quest0 = quests.MoveQuest(room2,4,4)
+quest0 = quests.MoveQuest(room2,7,7)
 quest1 = quests.MoveQuest(room1,4,4)
-quest2 = quests.MoveQuest(room3,4,4)
+quest2 = quests.MoveQuest(room3,6,6)
 quest3 = quests.MoveQuest(room4,2,8)
 quest0.followUp = quest1
 quest1.followUp = quest2
 quest2.followUp = quest3
 quest3.followUp = quest0
 npc2 = characters.Character("Ⓩ ",1,1,name="Ernst Ziegelbach")
-npc2.terrain = terrain
+#npc2.watched = True
 room2.addCharacter(npc2,1,1)
+npc2.terrain = terrain
 npc2.assignQuest(quest0)
-npc2.watched = True
 
 characters = [mainChar]
 items.characters = characters
@@ -549,15 +666,9 @@ def advanceGame():
 def renderQuests():
 	txt = ""
 	if len(characters[0].quests):
-		"""
-		txt += "QUEST: "+characters[0].quests[0].description+"\n"
-		try:
-			txt += "QUEST: "+characters[0].quests[1].description+"\n"
-		except:
-			txt += "\n"
-		"""
 		for quest in mainChar.quests:
 			txt+= "QUEST: "+quest.description+"\n"
+		txt += str(mainChar.xPosition)+"/"+str(mainChar.yPosition)
 	else:
 		txt += "QUEST: keinQuest\n\n"
 		gamestate.gameWon = True

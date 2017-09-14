@@ -89,8 +89,6 @@ class Character():
 						if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+10 > self.xPosition:
 							messages.append("checking2 room"+str(room))
 							localisedEntry = ((self.xPosition-room.offsetX)%15,((nextPosition[1]-room.offsetY)%15))
-							messages.append(localisedEntry)
-							messages.append(room.walkingAccess)
 							if localisedEntry in room.walkingAccess:
 								messages.append("checking localisedEntry"+str(localisedEntry))
 								if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
@@ -112,7 +110,8 @@ class Character():
 			if item:
 				item.apply()				
 			else:
-				self.path = self.path[1:]
+				if (self.xPosition == nextPosition[0] and self.yPosition == nextPosition[1]):
+					self.path = self.path[1:]
 			return False
 		else:
 			return True

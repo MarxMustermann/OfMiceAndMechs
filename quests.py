@@ -42,6 +42,7 @@ class Quest(object):
 
 	def assignToCharacter(self,character):
 		self.character = character
+		self.character.setPathToQuest(self)
 		self.recalculate()
 
 	def recalculate(self):

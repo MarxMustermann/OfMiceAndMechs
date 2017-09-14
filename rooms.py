@@ -23,6 +23,7 @@ class Room(object):
 		self.itemByCoordinates = {}
 
 		self.walkingAccess = []
+		self.walkingWay = []
 
 		lineCounter = 0
 		itemsOnFloor = []
@@ -36,6 +37,9 @@ class Room(object):
 					itemsOnFloor.append(door)
 					self.walkingAccess.append((rowCounter,lineCounter))
 					self.doors.append(door)
+				if char == "#":
+					#itemsOnFloor.append(items.Pipe(rowCounter,lineCounter))
+					pass
 				rowCounter += 1
 			lineCounter += 1
 		self.addItems(itemsOnFloor)
@@ -162,14 +166,14 @@ class Room1(Room):
 	def __init__(self):
 		self.roomLayout = """
 XXXXXXXXXX
-X        X
-X        X
-X        X
-X        X
-X        X
-X        X
-X        X
-X        X
+X#-------X
+X#- - - -X
+X#-------X
+X#- - - -X
+X#-------X
+XBBBBBBBBX
+X........X
+XMMM MMMMX
 XXXX$XXXXX
 """
 		super().__init__(self.roomLayout)
@@ -181,15 +185,17 @@ XXXX$XXXXX
 
 class Room2(Room):
 	def __init__(self):
+		self.roomMeta = """
+"""
 		self.roomLayout = """
 XXXX$XXXXX
 X@Iv vID#X
-X@      #X
-X@ 8#OF PX
-X@ ##OF PX
-XB 8#OF PX
-XB |DI  PX
-XB      #X
+X@......#X
+X@.8#OF.PX
+X@.##OF.PX
+XB.8#OF.PX
+XB.|DI .PX
+XB......#X
 XPPPPPID#X
 XXXXXXXXXX
 """
@@ -237,12 +243,12 @@ class Room3(Room):
 		self.roomLayout = """
 XXXXXXXXXX
 X        X
-X        X
 X  X X   X
 X  X X   X
 X        X
+X  X X   X
 X  X     X
-X  X X   X
+X        X
 X        X
 XXXX$XXXXX
 """

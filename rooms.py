@@ -40,7 +40,9 @@ class Room(object):
 				elif char == "#":
 					itemsOnFloor.append(items.Pipe(rowCounter,lineCounter))
 				else:
-					itemsOnFloor.append(items.Item("[]",rowCounter,lineCounter))
+					displayChars = ["🜆 ","🜾 ","ꘒ ","ꖻ ","ᵺ "]
+					displayChars = ["🝍🝍","🖵 ","🞇 ","⿴","🜕 "]
+					itemsOnFloor.append(items.Item(displayChars[(rowCounter+lineCounter)%5],rowCounter,lineCounter))
 				rowCounter += 1
 			lineCounter += 1
 
@@ -298,9 +300,8 @@ XXXXXXXXXX
 		coalPile3 = items.Pile(8,5,"coal Pile3",items.Coal)
 		coalPile4 = items.Pile(8,6,"coal Pile4",items.Coal)
 		self.furnace = items.Furnace(6,6,"Furnace")
-		furnaceDisplay = items.Display(8,8,"Furnace monitoring")
 
-		self.addItems([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4,self.furnace,furnaceDisplay])
+		self.addItems([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4,self.furnace])
 
 		quest0 = quests.ActivateQuest(self.lever1)
 		quest1 = quests.MoveQuest(self,2,2)

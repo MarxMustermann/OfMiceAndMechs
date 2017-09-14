@@ -132,7 +132,7 @@ class Pile(Item):
 		self.name = name
 		self.canBurn = True
 		self.type = itemType
-		super().__init__(" ӫ",xPosition,yPosition)
+		super().__init__("ӫӫ",xPosition,yPosition)
 
 	def apply(self):
 		messages.append("Pile used")

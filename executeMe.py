@@ -244,7 +244,7 @@ def calculatePath(startX,startY,endX,endY,walkingPath):
 
 	circlePath = True
 	if (startY > 11 and not startX==endX):
-		circlePath = False
+		circlePath = True
 	elif (startY < 11):
 		circlePath = True
 
@@ -413,7 +413,7 @@ room4 = rooms.GenericRoom(1,1,2,2)
 
 room5 = rooms.GenericRoom(0,2,2,2)
 room6 = rooms.GenericRoom(1,2,2,2)
-room7 = rooms.GenericRoom(2,0,2,2)
+room7 = rooms.Room1(2,0,2,2)
 room8 = rooms.GenericRoom(2,1,1,2)
 room9 = rooms.GenericRoom(2,2,2,2)
 
@@ -452,10 +452,42 @@ quest0 = quests.MoveQuest(room2,7,7)
 quest1 = quests.MoveQuest(room1,4,4)
 quest2 = quests.MoveQuest(room3,6,6)
 quest3 = quests.MoveQuest(room4,2,8)
+quest4 = quests.MoveQuest(room5,2,2)
+quest5 = quests.MoveQuest(room6,2,2)
+quest6 = quests.MoveQuest(room7,2,2)
+quest7 = quests.MoveQuest(room8,2,2)
+quest8 = quests.MoveQuest(room9,2,2)
+quest9 = quests.MoveQuest(room1,2,2)
+quest10 = quests.MoveQuest(room9,2,2)
+quest11 = quests.MoveQuest(room8,2,2)
+quest12 = quests.MoveQuest(room7,2,2)
+quest13 = quests.MoveQuest(room6,2,2)
+quest14 = quests.MoveQuest(room5,2,2)
+quest15 = quests.MoveQuest(room4,2,2)
+quest16 = quests.MoveQuest(room3,2,2)
+quest17 = quests.MoveQuest(room2,2,2)
+quest18 = quests.MoveQuest(room1,2,2)
+quest19 = quests.MoveQuest(room2,2,2)
 quest0.followUp = quest1
 quest1.followUp = quest2
 quest2.followUp = quest3
-quest3.followUp = quest0
+quest3.followUp = quest4
+quest4.followUp = quest5
+quest5.followUp = quest6
+quest6.followUp = quest7
+quest7.followUp = quest8
+quest8.followUp = quest9
+quest9.followUp = quest10
+quest10.followUp = quest11
+quest11.followUp = quest12
+quest12.followUp = quest13
+quest13.followUp = quest14
+quest14.followUp = quest15
+quest15.followUp = quest16
+quest16.followUp = quest17
+quest17.followUp = quest18
+quest18.followUp = quest19
+quest19.followUp = quest0
 npc2 = characters.Character("Ⓩ ",1,1,name="Ernst Ziegelbach")
 #npc2.watched = True
 room2.addCharacter(npc2,1,1)

@@ -235,7 +235,7 @@ class Room(object):
 		return None
 	
 class Room1(Room):
-	def __init__(self):
+	def __init__(self,xPosition=0,yPosition=0,offsetX=2,offsetY=2):
 		self.roomLayout = """
 XXXXXXXXXX
 X#-------X
@@ -250,10 +250,10 @@ XXXX$XXXXX
 """
 		super().__init__(self.roomLayout)
 		self.name = "Vat"
-		self.offsetX = 2
-		self.offsetY = 2
-		self.xPosition = 0
-		self.yPosition = 0
+		self.offsetX = offsetX
+		self.offsetY = offsetY
+		self.xPosition = xPosition
+		self.yPosition = yPosition
 
 class Room2(Room):
 	def __init__(self):

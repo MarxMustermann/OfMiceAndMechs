@@ -409,7 +409,7 @@ cinematics.showCinematic("welcome to the Trainingenvironment\n\nplease, try to l
 room1 = rooms.Room1()
 room2 = rooms.Room2()
 room3 = rooms.Room3()
-room4 = rooms.Room4()
+room4 = rooms.GenericRoom(1,1,2,2)
 
 roomsOnMap = [room1,room2,room3,room4]
 characters.roomsOnMap = roomsOnMap

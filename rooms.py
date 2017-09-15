@@ -394,6 +394,26 @@ XXXXXXXXXX
 		self.xPosition = 1
 		self.yPosition = 1
 
+class GenericRoom(Room):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+		self.roomLayout = """
+XX$XXXXXXX
+X? ??????X
+X?......PX
+X?.????.PX
+X?.????.#X
+X?.???P.#X
+X?.?X??.#X
+X?......#X
+X? XXXXX#X
+XXXXXXXXXX
+"""
+		super().__init__(self.roomLayout)
+		self.offsetX = offsetX
+		self.offsetY = offsetY
+		self.xPosition = xPosition
+		self.yPosition = yPosition
+
 class StorageRoom(Room):
 	def __init__(self):
 		self.roomLayout = """

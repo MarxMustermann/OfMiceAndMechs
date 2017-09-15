@@ -159,14 +159,14 @@ class Room(object):
 				chars[mainChar.yPosition][mainChar.xPosition] = mainChar.display
 		else:
 			chars = []
-			for i in range(0,10):
+			for i in range(0,self.sizeY):
 				subChars = []
-				for j in range(0,10):
+				for j in range(0,self.sizeX):
 					subChars.append("⼞")
 				chars.append(subChars)
 
 			for item in self.itemsOnFloor:
-				if item.xPosition == 0 or item.xPosition == 9 or item.yPosition == 0 or item.yPosition == 9:
+				if item.xPosition == 0 or item.xPosition == self.sizeX-1 or item.yPosition == 0 or item.yPosition == self.sizeY-1:
 					chars[item.yPosition][item.xPosition] = item.display
 
 		return chars
@@ -423,22 +423,26 @@ XXXXXXXXXX
 		self.yPosition = yPosition
 
 class StorageRoom(Room):
-	def __init__(self):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY):
 		self.roomLayout = """
 XX&XX&XX&XX
+X?....?? ?X
+X?.??.?? ?X
+X?.??.?? ?X
+X?.??.?? ?X
+X?....   ?X
 X? ?? ?? ?X
 X? ?? ?? ?X
 X? ?? ?? ?X
-X? ?? ?? ?X
-X?       ?X
-X? ?? ?? ?X
-X? ?? ?? ?X
-X? ?? ?? ?X
-XX&XX&XX&XX
+XX&XX$XX&XX
 """
 		super().__init__(self.roomLayout)
 		self.maxStorage = 2
 		self.store = {}
+		self.offsetX = offsetX
+		self.offsetY = offsetY
+		self.xPosition = xPosition
+		self.yPosition = yPosition
 
 class InfanteryQuarters(Room):
 	def __init__(self):

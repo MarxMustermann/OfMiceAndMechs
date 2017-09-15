@@ -413,7 +413,7 @@ room4 = rooms.GenericRoom(1,1,2,2)
 
 room5 = rooms.GenericRoom(0,2,2,2)
 room6 = rooms.GenericRoom(1,2,2,2)
-room7 = rooms.Room1(2,0,2,2)
+room7 = rooms.StorageRoom(2,0,2,2)
 room8 = rooms.GenericRoom(2,1,1,2)
 room9 = rooms.GenericRoom(2,2,2,2)
 

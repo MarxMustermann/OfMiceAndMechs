@@ -233,6 +233,10 @@ class Room(object):
 		character.yPosition = newPosition[1]
 		character.changed()
 		return None
+
+	def advance(self):
+		for character in self.characters:
+			character.advance()
 	
 class Room1(Room):
 	def __init__(self,xPosition=0,yPosition=0,offsetX=2,offsetY=2):

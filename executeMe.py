@@ -504,8 +504,7 @@ def advanceGame():
 	for character in terrain.characters:
 		character.advance()
 	for room in roomsOnMap:
-		for character in room.characters:
-			character.advance()
+		room.advance()
 
 def renderQuests():
 	txt = ""

@@ -17,28 +17,20 @@ class Terrain(object):
 		for layoutline in self.layout.split("\n")[1:]:
 			rowCounter = 0
 			for char in layoutline:
-				for char in layoutline:
-					if char in (" ",".",",","@"):
-						pass
-					elif char == "X":
-						self.itemsOnFloor.append(items.Wall(rowCounter,lineCounter))
-					elif char == "#":
-						self.itemsOnFloor.append(items.Pipe(rowCounter,lineCounter))
-					else:
-						displayChars = ["🝍🝍","🝍🝍","🝍🝍","🖵 ","🞇 ","🖵 ","⿴","⿴","🞇 ","🜕 "]
-						self.itemsOnFloor.append(items.Item(displayChars[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter))
-					rowCounter += 1
-				lineCounter += 1
+				if char in (" ",".",",","@"):
+					pass
+				elif char == "X":
+					self.itemsOnFloor.append(items.Wall(rowCounter,lineCounter))
+				elif char == "#":
+					self.itemsOnFloor.append(items.Pipe(rowCounter,lineCounter))
+				else:
+					displayChars = ["🝍🝍","🝍🝍","🝍🝍","🖵 ","🞇 ","🖵 ","⿴","⿴","🞇 ","🜕 "]
+					self.itemsOnFloor.append(items.Item(displayChars[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter))
+				rowCounter += 1
+			lineCounter += 1
 
 	def render(self):
 		global mapHidden
-		chars = []
-		for i in range(0,30):
-			line = []
-			for j in range(0,30):
-				line.append("  ")
-			chars.append(line)
-
 		if mainChar.room == None:
 			mapHidden = False
 		else:
@@ -46,6 +38,16 @@ class Terrain(object):
 				mapHidden = False
 			else:
 				mapHidden = True
+
+		chars = []
+		for i in range(0,30):
+			line = []
+			for j in range(0,30):
+				if not mapHidden:
+					line.append("::")
+				else:
+					line.append("  ")
+			chars.append(line)
 
 		for room in self.rooms:
 			if mainChar.room == room:
@@ -57,19 +59,8 @@ class Terrain(object):
 					room.hidden = True
 				
 		if not mapHidden:
-			lineCounter = 0
-			for layoutline in self.layout.split("\n")[1:]:
-				rowCounter = 0
-				for char in layoutline:
-					if char == "X":
-						chars[lineCounter][rowCounter] = "⛝ "
-					if char == "0":
-						chars[lineCounter][rowCounter] = "✠✠"
-					if char in (".",","):
-						chars[lineCounter][rowCounter] = "⛚ "
-					rowCounter += 1
-				lineCounter += 1
-		
+			for item in self.itemsOnFloor:
+				chars[item.yPosition][item.xPosition] = item.display
 
 		for room in self.rooms:
 			if mapHidden and room.hidden :
@@ -107,33 +98,33 @@ class Terrain1(Terrain):
 	def __init__(self,rooms):
 		layout = """
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-X0000000000000XX000000000000 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0           0XX0          0 X
-X0XXXXXXXXXXX0XX0XXXXXXXXXX0XX
-X0,,,,,,,,,,,0000,,,,,,,,,,000
-X0............................ 
-X0,,,,,,,,,,,,,,,,,,,,,,,,,,00
-X0XXXXXXXXXXXXX XXX.XXXXXXXX0X
-X0           0X X X.X       0X
-X0           0X X XXX       0X
-X0           0X X           0X
-X0           0X X           0X
-X0           0X X           0X
-X0           0X X           0X
-X0           0X X           0X
-X0           0X X           0X
-X0           0X X           0X
-X000000000   0X X           0X
-X            0X X           0X
-00000000000000000000000000000X
-XXXXXXXXXXXX0XX XXXXXXXXXXXXXX
+X#############XX############ X
+X#           #XX#          # X
+X#           #XX#          # X
+X#           #XX#          # X
+X#           #XX#          # X
+X#           #XX#          # X
+X#           #XX#          # X
+X#           #XX#          # X
+X#           #XX#          # X
+X#           #XX#          # X
+X#XXXXXXXXXXX#XX#XXXXXXXXXX#XX
+X#,,,,,,,,,,,####,,,,,,,,,,###
+X#............................
+X#,,,,,,,,,,,,,,,,,,,,,,,,,,##
+X#XXXXXXXXXXXXX XXX,XXXXXXXX#X
+X#           #X X X,X       #X
+X#           #X X XXX       #X
+X#           #X X           #X
+X#           #X X           #X
+X#           #X X           #X
+X#           #X X           #X
+X#           #X X           #X
+X#           #X X           #X
+X#           #X X           #X
+X#########   #X X           #X
+X            #X X           #X
+#############################X
+XXXXXXXXXXXX#XX XXXXXXXXXXXXXX
 """
 		super().__init__(rooms,layout)

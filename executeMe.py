@@ -207,6 +207,11 @@ def show_or_exit(key):
 				characters[0].inventory.append(item)
 				item.changed()
 
+	if key in ('+'):
+		mainChar.automated = True
+		mainChar.advance()
+		mainChar.automated = False
+
 	itemMarkedLast = None
 		
 	if not gamestate.gameWon:

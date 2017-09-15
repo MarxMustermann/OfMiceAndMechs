@@ -227,7 +227,7 @@ quests.loop = loop
 cinematics.callShow_or_exit = callShow_or_exit
 quests.callShow_or_exit = callShow_or_exit
 
-def calculatePath(startX,startY,endX,endY,walkingPath=None):
+def calculatePath(startX,startY,endX,endY,walkingPath):
 	import math
 	path = []
 
@@ -244,105 +244,108 @@ def calculatePath(startX,startY,endX,endY,walkingPath=None):
 
 	circlePath = True
 	if (startY > 11 and not startX==endX):
-		path.extend(calculatePath(startX,startY,startX,13,walkingPath))
-		startY = 13
+		circlePath = False
 	elif (startY < 11):
-		if (startX,startY) in walkingPath and (endX,endY) in walkingPath:
-			startIndex = None
-			index = 0
-			for wayPoint in walkingPath:
-				if wayPoint == (startX,startY):
-					startIndex = index
-				index += 1
-			endIndex = None
-			index = 0
-			for wayPoint in walkingPath:
-				if wayPoint == (endX,endY):
-					endIndex = index
-				index += 1
+		circlePath = True
 
-			distance = startIndex-endIndex
-			if distance > 0:
-				if circlePath:
-					if distance < len(walkingPath)/2:
-						result = []
-						result.extend(reversed(walkingPath[endIndex:startIndex]))
-						return result
-					else:
-						result = []
-						result.extend(walkingPath[startIndex:])
-						result.extend(walkingPath[:endIndex+1])
-						return result
+	if (startX,startY) in walkingPath and (endX,endY) in walkingPath:
+		startIndex = None
+		index = 0
+		for wayPoint in walkingPath:
+			if wayPoint == (startX,startY):
+				startIndex = index
+			index += 1
+		endIndex = None
+		index = 0
+		for wayPoint in walkingPath:
+			if wayPoint == (endX,endY):
+				endIndex = index
+			index += 1
+
+		distance = startIndex-endIndex
+		if distance > 0:
+			if circlePath:
+				if distance < len(walkingPath)/2:
+					result = []
+					result.extend(reversed(walkingPath[endIndex:startIndex]))
+					return result
 				else:
-					return walkingPath[startIndex:endIndex]
-			else:
-				if circlePath:
-					if (-distance) <= len(walkingPath)/2:
-						return walkingPath[startIndex+1:endIndex+1]
-					else:
-						result = []
-						result.extend(reversed(walkingPath[:startIndex]))
-						result.extend(reversed(walkingPath[endIndex:]))
-						return result
-				else:
-					return walkingPath[endIndex:startIndex]
-
-		elif (endX,endY) in walkingPath:
-			nearestPoint = None
-			lowestDistance = 1234567890
-			for waypoint in walkingPath:
-				distance = abs(waypoint[0]-startX)+abs(waypoint[1]-startY)
-				if lowestDistance > distance:
-					lowestDistance = distance
-					nearestPoint = waypoint
-
-			if (endX,endY) == nearestPoint:
-				pass
+					result = []
+					result.extend(walkingPath[startIndex:])
+					result.extend(walkingPath[:endIndex+1])
+					return result
 			else:
 				result = []
-				result.extend(calculatePath(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
-				result.extend(calculatePath(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
-				return result
-
-		elif (startX,startY) in walkingPath:
-			nearestPoint = None
-			lowestDistance = 1234567890
-			for waypoint in walkingPath:
-				distance = abs(waypoint[0]-endX)+abs(waypoint[1]-endY)
-				if lowestDistance > distance:
-					lowestDistance = distance
-					nearestPoint = waypoint
-
-			if (startX,startY) == nearestPoint:
-				pass
-			else:
-				result = []
-				result.extend(calculatePath(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
-				result.extend(calculatePath(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
+				result.extend(reversed(walkingPath[endIndex:startIndex]))
 				return result
 		else:
-			path = []
-			startPoint = None
-			lowestDistance = 1234567890
-			for waypoint in walkingPath:
-				distance = abs(waypoint[0]-startX)+abs(waypoint[1]-startY)
-				if lowestDistance > distance:
-					lowestDistance = distance
-					startPoint = waypoint
+			if circlePath:
+				if (-distance) <= len(walkingPath)/2:
+					return walkingPath[startIndex+1:endIndex+1]
+				else:
+					result = []
+					result.extend(reversed(walkingPath[:startIndex]))
+					result.extend(reversed(walkingPath[endIndex:]))
+					return result
+			else:
+				return walkingPath[startIndex+1:endIndex+1]
 
-			endPoint = None
-			lowestDistance = 1234567890
-			for waypoint in walkingPath:
-				distance = abs(waypoint[0]-endX)+abs(waypoint[1]-endY)
-				if lowestDistance > distance:
-					lowestDistance = distance
-					endPoint = waypoint
+	elif (endX,endY) in walkingPath:
+		nearestPoint = None
+		lowestDistance = 1234567890
+		for waypoint in walkingPath:
+			distance = abs(waypoint[0]-startX)+abs(waypoint[1]-startY)
+			if lowestDistance > distance:
+				lowestDistance = distance
+				nearestPoint = waypoint
 
-			path.extend(calculatePath(startX,startY,startPoint[0],startPoint[1],walkingPath))
-			path.extend(calculatePath(startPoint[0],startPoint[1],endPoint[0],endPoint[1],walkingPath))
-			path.extend(calculatePath(endPoint[0],endPoint[1],endX,endY,walkingPath))
-			
-			return path			
+		if (endX,endY) == nearestPoint:
+			pass
+		else:
+			result = []
+			result.extend(calculatePath(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
+			result.extend(calculatePath(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
+			return result
+
+	elif (startX,startY) in walkingPath:
+		nearestPoint = None
+		lowestDistance = 1234567890
+		for waypoint in walkingPath:
+			distance = abs(waypoint[0]-endX)+abs(waypoint[1]-endY)
+			if lowestDistance > distance:
+				lowestDistance = distance
+				nearestPoint = waypoint
+
+		if (startX,startY) == nearestPoint:
+			pass
+		else:
+			result = []
+			result.extend(calculatePath(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
+			result.extend(calculatePath(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
+			return result
+	else:
+		path = []
+		startPoint = None
+		lowestDistance = 1234567890
+		for waypoint in walkingPath:
+			distance = abs(waypoint[0]-startX)+abs(waypoint[1]-startY)
+			if lowestDistance > distance:
+				lowestDistance = distance
+				startPoint = waypoint
+
+		endPoint = None
+		lowestDistance = 1234567890
+		for waypoint in walkingPath:
+			distance = abs(waypoint[0]-endX)+abs(waypoint[1]-endY)
+			if lowestDistance > distance:
+				lowestDistance = distance
+				endPoint = waypoint
+
+		path.extend(calculatePath(startX,startY,startPoint[0],startPoint[1],walkingPath))
+		path.extend(calculatePath(startPoint[0],startPoint[1],endPoint[0],endPoint[1],walkingPath))
+		path.extend(calculatePath(endPoint[0],endPoint[1],endX,endY,walkingPath))
+		
+		return path			
 
 	diffX = startX-endX
 	diffY = startY-endY

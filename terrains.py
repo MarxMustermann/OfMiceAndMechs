@@ -123,7 +123,7 @@ class Terrain(object):
 			if character == mainChar:
 				if len(mainChar.quests):
 					try:
-						path = calculatePath(mainChar.xPosition,mainChar.yPosition,mainChar.quests[0].dstX,mainChar.quests[0].dstY)
+						path = calculatePath(mainChar.xPosition,mainChar.yPosition,mainChar.quests[0].dstX,mainChar.quests[0].dstY,self.walkingPath)
 						for item in path[:-1]:
 							chars[item[1]][item[0]] = "xx"
 					except:

@@ -43,7 +43,7 @@ class Character():
 			if self.room:
 				self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY,self.room.walkingPath)
 			else:
-				self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY)
+				self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY,self.terrain.walkingPath)
 
 	def addToInventory(self,item):
 		self.inventory.append(item)

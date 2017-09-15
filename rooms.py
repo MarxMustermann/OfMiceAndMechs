@@ -393,3 +393,39 @@ XXXXXXXXXX
 		self.offsetY = 2
 		self.xPosition = 1
 		self.yPosition = 1
+
+class StorageRoom(Room):
+	def __init__(self):
+		self.roomLayout = """
+XX&XX&XX&XX
+X? ?? ?? ?X
+X? ?? ?? ?X
+X? ?? ?? ?X
+X? ?? ?? ?X
+X?       ?X
+X? ?? ?? ?X
+X? ?? ?? ?X
+X? ?? ?? ?X
+XX&XX&XX&XX
+"""
+		super().__init__(self.roomLayout)
+		self.maxStorage = 2
+		self.store = {}
+
+class InfanteryQuarters(Room):
+	def __init__(self):
+		self.roomLayout = """
+XXXX&&XXX
+XX8PPPPXX
+X      DX
+XHH HH IX
+XHH HH |X
+XHH HH |X
+XHH HH IX
+X      DX
+XX8PPPPXX
+XXXX&&XXX
+"""
+		super().__init__(self.roomLayout)
+	
+class FreePlacemenRoom(Room):

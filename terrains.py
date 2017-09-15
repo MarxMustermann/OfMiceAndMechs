@@ -7,6 +7,7 @@ class Terrain(object):
 	def __init__(self,rooms,layout):
 		self.itemsOnFloor = []
 		self.characters = []
+		self.walkingPath = []
 
 		self.rooms = rooms
 		for room in self.rooms:
@@ -28,6 +29,43 @@ class Terrain(object):
 					self.itemsOnFloor.append(items.Item(displayChars[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter))
 				rowCounter += 1
 			lineCounter += 1
+
+		rawWalkingPath = []
+		lineCounter = 0
+		for line in self.layout[1:].split("\n"):
+			rowCounter = 0
+			for char in line:
+				if char == ".":
+					rawWalkingPath.append((rowCounter,lineCounter))
+				rowCounter += 1
+			lineCounter += 1
+
+		startWayPoint = rawWalkingPath[0]
+		endWayPoint = rawWalkingPath[0]
+
+		self.walkingPath.append(rawWalkingPath[0])
+		rawWalkingPath.remove(rawWalkingPath[0])
+
+		while (1==1):
+			endWayPoint = self.walkingPath[-1]
+			east = (endWayPoint[0]+1,endWayPoint[1])
+			west = (endWayPoint[0]-1,endWayPoint[1])
+			south = (endWayPoint[0],endWayPoint[1]+1)
+			north = (endWayPoint[0],endWayPoint[1]-1)
+			if east in rawWalkingPath:
+				self.walkingPath.append(east)
+				rawWalkingPath.remove(east)
+			elif west in rawWalkingPath:
+				self.walkingPath.append(west)
+				rawWalkingPath.remove(west)
+			elif south in rawWalkingPath:
+				self.walkingPath.append(south)
+				rawWalkingPath.remove(south)
+			elif north in rawWalkingPath:
+				self.walkingPath.append(north)
+				rawWalkingPath.remove(north)
+			else:
+				break
 
 	def render(self):
 		global mapHidden

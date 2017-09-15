@@ -33,7 +33,7 @@ class Room(object):
 			for char in line:
 				if char in (" ",".","@"):
 					pass
-				elif char == "X":
+				elif char in ("X","&"):
 					itemsOnFloor.append(items.Wall(rowCounter,lineCounter))
 				elif char == "$":
 					door = items.Door(rowCounter,lineCounter)

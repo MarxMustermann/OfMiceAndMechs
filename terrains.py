@@ -147,11 +147,26 @@ X#           #XX#          # XX#           #X
 X#           #XX#          # XX#           #X
 X#           #XX#          # XX#           #X
 X#XXXXXXXXXXX#XX#XXXXXXXXXX#XXXXXXXXXXXXX  XX
-X#,,,,,,,,,,,####,,,,,,,,,,###
-X#............................
-X#,,,,,,,,,,,,,,,,,,,,,,,,,,##
-X#XXXXXXXXXXXXX XXX,XXXXXXXX#XXXXXX XXXXXXXXX
-X#           #X X X,X       #XX#           #X
+X#           ####          ###              X
+X ......................................... X
+X .                         ##            . X
+X . XXXXXXXXXXX XXX,XXXXXXXX#XXXX XXXXXXX . X
+X . X        X# X X,X       #X##X X     X . X
+X . X        X# X XXX       #X#XX X     X . X
+X . X        X# X           #X#X        X . X
+X . X        X# X           #X#X        X . X
+X . X        X# X           #X#X        X . X
+X . X        X# X           #X#X        X . X
+X . X        X# X           #X#X        X . X
+X . X        X# X           #X#X        X . X
+X . X        X# X           #X#X        X . X
+X . X#####   X# X           #X#X        X . X
+X . X        X# X           #X#X        X . X
+# . X########################X##        X . X
+X . XXXXXXXX#XX XXXXXXXXXXXXXXX#XXXXXXXXX . X
+X .                                       . X
+X ......................................... X
+X                                           X
 X#           #X X XXX       #XX#           #X
 X#           #X X           #XX#           #X
 X#           #X X           #XX#           #X
@@ -163,21 +178,6 @@ X#           #X X           #XX#           #X
 X#########   #X X           #XX#           #X
 X            #X X           #XX#           #X
 #############################XX#           #X
-XXXXXXXXXXXX#XX XXXXXXXXXXXXXXX#           #X
-X#,,,,,,,,,,,,,,,,,,,,,,,,,,##
-X#XXX XXXXXXXXX XXX,XXXXXXXX#XXXXX XXXXXXXXXX
-X#           #X X X,X       #XX#           #X
-X#           #X X XXX       #XX#           #X
-X#           #X X           #XX#           #X
-X#           #X X           #XX#           #X
-X#           #X X           #XX#           #X
-X#           #X X           #XX#           #X
-X#           #X X           #XX#           #X
-X#           #X X           #XX#           #X
-X#           #X X           #XX#           #X
-X#########   #X X           #XX#           #X
-X            #X X           #XX#           #X
-#############################XX#           #X
-XXXXXXXXXXXX#XX XXXXXXXXXXXXXXX#           #X
+XXXXXXXXXXXX#XXXXXXXXXXXXXXXXXX#XXXXXXXXXXX#X
 """
 		super().__init__(rooms,layout)

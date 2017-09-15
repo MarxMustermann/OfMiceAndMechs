@@ -318,7 +318,7 @@ XXXXXXXXXX
 """
 		super().__init__(roomLayout)
 		self.name = "Boilerroom"
-		self.offsetX = 3
+		self.offsetX = 4
 		self.offsetY = 0
 		self.xPosition = 0
 		self.yPosition = 1

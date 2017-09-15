@@ -414,7 +414,7 @@ room4 = rooms.GenericRoom(1,1,2,2)
 room5 = rooms.GenericRoom(0,2,2,2)
 room6 = rooms.GenericRoom(1,2,2,2)
 room7 = rooms.GenericRoom(2,0,2,2)
-room8 = rooms.GenericRoom(2,1,2,2)
+room8 = rooms.GenericRoom(2,1,1,2)
 room9 = rooms.GenericRoom(2,2,2,2)
 
 roomsOnMap = [room1,room2,room3,room4,room5,room6,room7,room8,room9]

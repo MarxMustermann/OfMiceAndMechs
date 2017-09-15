@@ -78,9 +78,9 @@ class Terrain(object):
 				mapHidden = True
 
 		chars = []
-		for i in range(0,30):
+		for i in range(0,45):
 			line = []
-			for j in range(0,30):
+			for j in range(0,45):
 				if not mapHidden:
 					line.append("::")
 				else:
@@ -135,34 +135,49 @@ class Terrain(object):
 class Terrain1(Terrain):
 	def __init__(self,rooms):
 		layout = """
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-X#############XX############ X
-X#           #XX#          # X
-X#           #XX#          # X
-X#           #XX#          # X
-X#           #XX#          # X
-X#           #XX#          # X
-X#           #XX#          # X
-X#           #XX#          # X
-X#           #XX#          # X
-X#           #XX#          # X
-X#XXXXXXXXXXX#XX#XXXXXXXXXX#XX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+X#############XX############ XX#           #X
+X#           #XX#          # XX#           #X
+X#           #XX#          # XX#           #X
+X#           #XX#          # XX#           #X
+X#           #XX#          # XX#           #X
+X#           #XX#          # XX#           #X
+X#           #XX#          # XX#           #X
+X#           #XX#          # XX#           #X
+X#           #XX#          # XX#           #X
+X#           #XX#          # XX#           #X
+X#XXXXXXXXXXX#XX#XXXXXXXXXX#XXXXXXXXXXXXX  XX
 X#,,,,,,,,,,,####,,,,,,,,,,###
 X#............................
 X#,,,,,,,,,,,,,,,,,,,,,,,,,,##
-X#XXXXXXXXXXXXX XXX,XXXXXXXX#X
-X#           #X X X,X       #X
-X#           #X X XXX       #X
-X#           #X X           #X
-X#           #X X           #X
-X#           #X X           #X
-X#           #X X           #X
-X#           #X X           #X
-X#           #X X           #X
-X#           #X X           #X
-X#########   #X X           #X
-X            #X X           #X
-#############################X
-XXXXXXXXXXXX#XX XXXXXXXXXXXXXX
+X#XXXXXXXXXXXXX XXX,XXXXXXXX#XXXXXX XXXXXXXXX
+X#           #X X X,X       #XX#           #X
+X#           #X X XXX       #XX#           #X
+X#           #X X           #XX#           #X
+X#           #X X           #XX#           #X
+X#           #X X           #XX#           #X
+X#           #X X           #XX#           #X
+X#           #X X           #XX#           #X
+X#           #X X           #XX#           #X
+X#           #X X           #XX#           #X
+X#########   #X X           #XX#           #X
+X            #X X           #XX#           #X
+#############################XX#           #X
+XXXXXXXXXXXX#XX XXXXXXXXXXXXXXX#           #X
+X#,,,,,,,,,,,,,,,,,,,,,,,,,,##
+X#XXX XXXXXXXXX XXX,XXXXXXXX#XXXXX XXXXXXXXXX
+X#           #X X X,X       #XX#           #X
+X#           #X X XXX       #XX#           #X
+X#           #X X           #XX#           #X
+X#           #X X           #XX#           #X
+X#           #X X           #XX#           #X
+X#           #X X           #XX#           #X
+X#           #X X           #XX#           #X
+X#           #X X           #XX#           #X
+X#           #X X           #XX#           #X
+X#########   #X X           #XX#           #X
+X            #X X           #XX#           #X
+#############################XX#           #X
+XXXXXXXXXXXX#XX XXXXXXXXXXXXXXX#           #X
 """
 		super().__init__(rooms,layout)

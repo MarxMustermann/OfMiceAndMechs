@@ -429,3 +429,5 @@ XXXX&&XXX
 		super().__init__(self.roomLayout)
 	
 class FreePlacemenRoom(Room):
+	def __init__(self):
+		super().__init__(self.roomLayout)

@@ -1,13 +1,34 @@
+import items
+
 mainChar = None
 messages = None
 
 class Terrain(object):
 	def __init__(self,rooms,layout):
+		self.itemsOnFloor = []
+		self.characters = []
+
 		self.rooms = rooms
 		for room in self.rooms:
 			room.terrain = self
+
 		self.layout = layout
-		self.characters = []
+		lineCounter = 0
+		for layoutline in self.layout.split("\n")[1:]:
+			rowCounter = 0
+			for char in layoutline:
+				for char in layoutline:
+					if char in (" ",".",",","@"):
+						pass
+					elif char == "X":
+						self.itemsOnFloor.append(items.Wall(rowCounter,lineCounter))
+					elif char == "#":
+						self.itemsOnFloor.append(items.Pipe(rowCounter,lineCounter))
+					else:
+						displayChars = ["🝍🝍","🝍🝍","🝍🝍","🖵 ","🞇 ","🖵 ","⿴","⿴","🞇 ","🜕 "]
+						self.itemsOnFloor.append(items.Item(displayChars[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter))
+					rowCounter += 1
+				lineCounter += 1
 
 	def render(self):
 		global mapHidden

@@ -23,13 +23,13 @@ class Character():
 			self.setPathToQuest(self.quests[0])
 
 	def assignQuest(self,quest,active=False):
-			quest.activate()
 			if active:
 				self.quests.insert(0,quest)
 			else:
 				self.quests.append(quest)
 			quest.assignToCharacter(self)
-			if self.automated and (active or len(self.quests) == 1):
+			quest.activate()
+			if (active or len(self.quests) == 1):
 				try:
 					self.setPathToQuest(quest)
 				except:
@@ -131,7 +131,7 @@ class Character():
 				self.changed()
 				return
 			"""
-				
+	
 			self.applysolver(self.quests[0].solver)
 			try:
 				if not len(self.path):

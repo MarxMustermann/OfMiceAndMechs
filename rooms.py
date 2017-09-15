@@ -354,7 +354,9 @@ XXXXXXXXXX
 		quest4.followUp = quest1
 		npc = Character("Ⓛ ",2,1,name="Erwin von Libwig")
 		self.addCharacter(npc,2,1)
+		npc.room = self
 		npc.assignQuest(quest0)
+		#npc.automated = False
 
 		lever2 = self.lever2
 		def lever2action(self):

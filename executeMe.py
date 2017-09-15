@@ -208,9 +208,12 @@ def show_or_exit(key):
 				item.changed()
 
 	if key in ('+'):
-		mainChar.automated = True
-		mainChar.advance()
-		mainChar.automated = False
+		if len(mainChar.quests):
+			mainChar.automated = True
+			mainChar.advance()
+			mainChar.automated = False
+		else:
+			pass
 
 	itemMarkedLast = None
 		
@@ -429,6 +432,12 @@ terrain = terrains.Terrain1(roomsOnMap)
 
 mapHidden = True
 
+mainChar = characters.Character("＠",1,3,automated=False,name="Sigmund Bärenstein")
+mainChar.terrain = terrain
+mainChar.room = room2
+mainChar.watched = True
+room2.addCharacter(mainChar,2,4)
+
 tutorialQuest1 = quests.MoveQuest(room2,5,7,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way")
 tutorialQuest2 = quests.CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing j.")
 tutorialQuest3 = quests.ActivateQuest(room2.furnace,startCinematics="now go and activate the Furnace marked with a Ω. you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press j.")
@@ -444,13 +453,9 @@ tutorialQuest4.followUp = tutorialQuest5
 tutorialQuest5.followUp = tutorialQuest6
 tutorialQuest6.followUp = None
 
-mainQuests = [tutorialQuest1]
-mainChar = characters.Character("＠",1,3,automated=False,name="Sigmund Bärenstein")
-mainChar.terrain = terrain
-mainChar.watched = True
 rooms.mainChar = mainChar
 terrains.mainChar = mainChar
-room2.addCharacter(mainChar,2,4)
+
 mainChar.assignQuest(tutorialQuest1)
 
 quest0 = quests.MoveQuest(room2,7,7)
@@ -497,7 +502,9 @@ npc2 = characters.Character("Ⓩ ",1,1,name="Ernst Ziegelbach")
 #npc2.watched = True
 room2.addCharacter(npc2,1,1)
 npc2.terrain = terrain
+npc2.room = room2
 npc2.assignQuest(quest0)
+#npc2.automated = False
 
 characters = [mainChar]
 items.characters = characters

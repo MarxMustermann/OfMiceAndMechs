@@ -41,8 +41,9 @@ class Quest(object):
 
 	def assignToCharacter(self,character):
 		self.character = character
-		self.character.setPathToQuest(self)
 		self.recalculate()
+		if self.active:
+			self.character.setPathToQuest(self)
 
 	def recalculate(self):
 		if not self.active:
@@ -184,9 +185,6 @@ class MoveQuest(Quest):
 				self.postHandler()
 
 	def assignToCharacter(self,character):
-		if not self.active:
-			return 
-
 		super().assignToCharacter(character)
 		character.addListener(self.recalculate)
 
@@ -198,6 +196,7 @@ class MoveQuest(Quest):
 			del self.dstX
 		if hasattr(self,"dstY"):
 			del self.dstY
+
 		if self.room == self.character.room:
 			self.dstX = self.targetX
 			self.dstY = self.targetY
@@ -228,15 +227,18 @@ class LeaveRoomQuest(Quest):
 			return True
 
 	def assignToCharacter(self,character):
-		if not self.active:
-			return 
 
 		super().assignToCharacter(character)
 		character.addListener(self.recalculate)
 
+		super().recalculate()
+
 	def triggerCompletionCheck(self):
 		if not self.active:
 			return 
+
+		if not self.character:
+			return
 
 		if not self.character.room == self.room:
 			self.postHandler()
@@ -250,9 +252,6 @@ class EnterRoomQuest(Quest):
 		super().__init__(followUp,startCinematics=startCinematics)
 
 	def assignToCharacter(self,character):
-		if not self.active:
-			return 
-
 		super().assignToCharacter(character)
 		character.addListener(self.recalculate)
 

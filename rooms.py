@@ -20,6 +20,8 @@ class Room(object):
 		self.open = False
 		self.terrain = None
 		self.shownQuestmarkerLastRender = False
+		self.sizeX = None
+		self.sizeY = None
 
 		self.itemByCoordinates = {}
 
@@ -69,7 +71,9 @@ class Room(object):
 					displayChars = ["🝍🝍","🝍🝍","🝍🝍","🖵 ","🞇 ","🖵 ","⿴","⿴","🞇 ","🜕 "]
 					itemsOnFloor.append(items.Item(displayChars[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter))
 				rowCounter += 1
+				self.sizeX = rowCounter
 			lineCounter += 1
+		self.sizeY = lineCounter-1
 
 		rawWalkingPath = []
 		lineCounter = 0
@@ -124,9 +128,9 @@ class Room(object):
 	def render(self):
 		if not self.hidden:
 			chars = []
-			for i in range(0,10):
+			for i in range(0,self.sizeY):
 				subChars = []
-				for j in range(0,10):
+				for j in range(0,self.sizeX):
 					subChars.append("⛚ ")
 				chars.append(subChars)
 			

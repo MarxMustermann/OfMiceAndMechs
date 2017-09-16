@@ -23,6 +23,7 @@ class Room(object):
 		self.sizeX = None
 		self.sizeY = None
 		self.timeIndex = 0
+		self.delayedTicks = 0
 
 		self.itemByCoordinates = {}
 
@@ -239,13 +240,22 @@ class Room(object):
 		character.changed()
 		return None
 
+	def applySkippedAdvances(self):
+		while self.delayedTicks > 0:
+			for character in self.characters:
+				character.advance()
+			self.delayedTicks -= 1
+
 	def advance(self):
 		self.timeIndex += 1
 		if not self.hidden:
+			if self.delayedTicks > 0:
+				self.applySkippedAdvances()
+			
 			for character in self.characters:
 				character.advance()
 		else:
-			pass
+			self.delayedTicks += 1
 	
 class Room1(Room):
 	def __init__(self,xPosition=0,yPosition=0,offsetX=2,offsetY=2):

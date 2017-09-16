@@ -93,6 +93,7 @@ class Terrain(object):
 			else:
 				if not mapHidden and room.open:
 					room.hidden = False
+					room.applySkippedAdvances()
 				else:
 					room.hidden = True
 				

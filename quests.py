@@ -218,6 +218,7 @@ class LeaveRoomQuest(Quest):
 	def solver(self,character):
 		if super().solver(character):
 			if character.room:
+				character.room.itemByCoordinates[(character.xPosition,character.yPosition)].close()
 				if character.yPosition == 0:
 					character.path.append((character.xPosition,character.yPosition-1))
 				else:

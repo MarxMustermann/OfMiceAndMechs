@@ -152,7 +152,7 @@ X....................X..................... X
 X.                  XXX     ##            . X
 X.XXXXXXXXXXXXX XXX,XXXXXXXX#XXXX XXXXXXX . X
 X...X        X# X X,X       #X##X X     X.. X
-XXX X        X# X XXX       #X#XX X     X.###
+XXX.X        X# X XXX       #X#XX X     X.###
 X...X        X# X           #X#X        X.# X
 X.XXX        X# X           #X#X        X.# X
 X...X        X# X           #X#X        X.# X

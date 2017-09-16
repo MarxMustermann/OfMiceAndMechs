@@ -477,6 +477,7 @@ XXXXXXXXXX
 			self.addCharacter(npc,x,y)
 			npc.room = self
 			npc.assignQuest(quest1)
+			return npc
 
 		addNPC(2,2)
 		addNPC(3,2)
@@ -488,19 +489,31 @@ XXXXXXXXXX
 		addNPC(7,4)
 		addNPC(7,5)
 		addNPC(7,6)
-		addNPC(7,7)
+		
+		x = 7
+		y = 7
+		leaveRoomNpc = Character("ÖÖ",x,y,name="Erwin von Libwig")
+		self.addCharacter(leaveRoomNpc,x,y)
+
+		quest0 = quests.LeaveRoomQuest(self)
+		quest1 = quests.EnterRoomQuest(self)
+		quest2 = quests.MoveQuest(self,7,7)
+		quest0.followUp = quest1
+		quest1.followUp = quest2
+		quest2.followUp = quest0
+
+		leaveRoomNpc.assignQuest(quest0,active=True)
 
 		class Event(object):
-			def __init__(self,tick):
-				self.tick = tick
+			def __init__(subself,tick):
+				subself.tick = tick
 
-			def handleEvent(self):
-				messages.append("Jo ho!")
+			def handleEvent(subself):
+				messages.append("Performance gooing down now!!")
+				self.applySkippedAdvances()
 
-		self.events.append(Event(5))
-		self.events.append(Event(7))
 		self.events.append(Event(15))
-		self.events.append(Event(25))
+		self.events.append(Event(20))
 
 class StorageRoom(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):

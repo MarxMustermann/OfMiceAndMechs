@@ -490,31 +490,12 @@ XXXXXXXXXX
 		addNPC(7,5)
 		addNPC(7,6)
 		
-		"""
-		x = 7
-		y = 7
-		leaveRoomNpc = Character("ÖÖ",x,y,name="Erwin von Libwig")
-		self.addCharacter(leaveRoomNpc,x,y)
-
-		quest0 = quests.LeaveRoomQuest(self)
-		quest1 = quests.EnterRoomQuest(self)
-		quest2 = quests.MoveQuest(self,7,7)
-		quest0.followUp = quest1
-		quest1.followUp = quest2
-		quest2.followUp = quest0
-
-		leaveRoomNpc.assignQuest(quest0,active=True)
-		"""
-
 		class Event(object):
 			def __init__(subself,tick):
 				subself.tick = tick
 
 			def handleEvent(subself):
 				self.applySkippedAdvances()
-
-		self.events.append(Event(15))
-		self.events.append(Event(20))
 
 class StorageRoom(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):

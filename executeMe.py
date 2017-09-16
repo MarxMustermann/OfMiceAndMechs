@@ -433,7 +433,14 @@ room7 = rooms.StorageRoom(2,0,2,2)
 room8 = rooms.GenericRoom(2,1,1,2)
 room9 = rooms.GenericRoom(2,2,2,2)
 
+
 roomsOnMap = [room1,room2,room3,room4,room5,room6,room7,room8,room9]
+
+for i in range(0,15):
+	for j in range(0,15):
+		if not (i < 3 and j < 3):
+			roomsOnMap.append(rooms.GenericRoom(i,j,2,2))
+	
 characters.roomsOnMap = roomsOnMap
 
 terrain = terrains.Terrain1(roomsOnMap)
@@ -550,8 +557,12 @@ def render():
 	result = ""
 	for line in chars:
 		lineRender = ""
+		rowCounter = 0
 		for char in line:
 			lineRender += char
+			rowCounter += 1
+			if rowCounter > 80:
+				break
 		lineRender += "\n"
 		result += lineRender
 		

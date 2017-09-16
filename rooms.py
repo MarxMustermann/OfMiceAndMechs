@@ -57,9 +57,6 @@ class Room(object):
 				elif char == "O":
 					#to be pressure Tank
 					itemsOnFloor.append(items.Item("⛫ ",rowCounter,lineCounter))
-				elif char == "F":
-					#to be pressure Tank
-					itemsOnFloor.append(items.Item("⛫ ",rowCounter,lineCounter))
 				elif char == "8":
 					#to be chains
 					itemsOnFloor.append(items.Item("⛓ ",rowCounter,lineCounter))

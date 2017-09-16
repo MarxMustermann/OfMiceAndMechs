@@ -17,10 +17,12 @@ def callShow_or_exit(loop,key):
 	show_or_exit(key)
 
 itemMarkedLast = None
+lastMoveAutomated = False
 def show_or_exit(key):
 	if not len(key) == 1:
 		return
 	global itemMarkedLast
+	global lastMoveAutomated
 	stop = False
 	if len(cinematics.cinematicQueue):
 		if key in ('q', 'Q'):
@@ -209,11 +211,17 @@ def show_or_exit(key):
 
 	if key in ('+'):
 		if len(mainChar.quests):
+			if not lastMoveAutomated:
+				mainChar.setPathToQuest(mainChar.quests[0])
+			lastMoveAutomated = True
+
 			mainChar.automated = True
 			mainChar.advance()
 			mainChar.automated = False
 		else:
 			pass
+	else:
+		lastMoveAutomated = False
 
 	itemMarkedLast = None
 		

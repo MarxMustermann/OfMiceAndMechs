@@ -80,7 +80,7 @@ class Character():
 									item = room.itemByCoordinates[localisedEntry]
 									break
 								else:
-									room.addCharacter(self,localisedEntry[0],localisedEntry[1]+1)
+									room.addCharacter(self,localisedEntry[0],localisedEntry[1])
 									self.terrain.characters.remove(self)
 									self.terrain = None
 									self.changed()

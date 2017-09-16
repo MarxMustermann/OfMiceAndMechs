@@ -147,23 +147,23 @@ X#           #XX#          # XX#           #X
 X#           #XX#          # XX#           #X
 X#           #XX#          # XX#           #X
 X#XXXXXXXXXXX#XX#XXXXXXXXXX#XXXXXXXXXXXXX  XX
-X#           ####          ###              X
-X ......................................... X
-X .                         ##            . X
-X . XXXXXXXXXXX XXX,XXXXXXXX#XXXX XXXXXXX . X
-X . X        X# X X,X       #X##X X     X . X
-X . X        X# X XXX       #X#XX X     X . X
-X . X        X# X           #X#X        X . X
-X . X        X# X           #X#X        X . X
-X . X        X# X           #X#X        X . X
-X . X        X# X           #X#X        X . X
-X . X        X# X           #X#X        X . X
-X . X        X# X           #X#X        X . X
-X . X        X# X           #X#X        X . X
-X . X#####   X# X           #X#X        X . X
-X . X        X# X           #X#X        X . X
-# . X########################X##        X . X
-X . XXXXXXXX#XX XXXXXXXXXXXXXXX#XXXXXXXXX . X
+X#           #######...#######              X
+X....................X..................... X
+X.                  XXX     ##            . X
+X.XXXXXXXXXXXXX XXX,XXXXXXXX#XXXX XXXXXXX . X
+X...X        X# X X,X       #X##X X     X.. X
+XXX X        X# X XXX       #X#XX X     X.###
+X...X        X# X           #X#X        X.# X
+X.XXX        X# X           #X#X        X.# X
+X...X        X# X           #X#X        X.# X
+XXX.X        X# X           #X#X        X.# X
+X...X        X# X           #X#X        X...X
+X.XXX        X# X           #X#X        X #.X
+X...X        X# X           #X#X        X##.X
+XXX.X#####   X# X           #X#X        X...X
+X...X        X# X           #X#X        X.##X
+#.XXX########################X##        X.# X
+X.. XXXXXXXX#XX XXXXXXXXXXXXXXX#XXXXXXXXX.. X
 X .                                       . X
 X ......................................... X
 X                                           X

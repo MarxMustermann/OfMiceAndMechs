@@ -241,8 +241,11 @@ class Room(object):
 
 	def advance(self):
 		self.timeIndex += 1
-		for character in self.characters:
-			character.advance()
+		if not self.hidden:
+			for character in self.characters:
+				character.advance()
+		else:
+			pass
 	
 class Room1(Room):
 	def __init__(self,xPosition=0,yPosition=0,offsetX=2,offsetY=2):

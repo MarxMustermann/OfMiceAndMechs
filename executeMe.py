@@ -530,6 +530,7 @@ gamestate = GameState(characters)
 def advanceGame():
 	for character in terrain.characters:
 		character.advance()
+
 	for room in roomsOnMap:
 		room.advance()
 

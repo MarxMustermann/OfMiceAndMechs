@@ -490,6 +490,7 @@ XXXXXXXXXX
 		addNPC(7,5)
 		addNPC(7,6)
 		
+		"""
 		x = 7
 		y = 7
 		leaveRoomNpc = Character("ÖÖ",x,y,name="Erwin von Libwig")
@@ -503,13 +504,13 @@ XXXXXXXXXX
 		quest2.followUp = quest0
 
 		leaveRoomNpc.assignQuest(quest0,active=True)
+		"""
 
 		class Event(object):
 			def __init__(subself,tick):
 				subself.tick = tick
 
 			def handleEvent(subself):
-				messages.append("Performance gooing down now!!")
 				self.applySkippedAdvances()
 
 		self.events.append(Event(15))

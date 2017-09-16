@@ -257,7 +257,10 @@ class EnterRoomQuest(Quest):
 		character.addListener(self.recalculate)
 
 	def solver(self,character):
-		return character.walkPath()
+		if character.walkPath():
+			messages.append("solved")
+			return True
+		return False
 
 	def recalculate(self):
 		if not self.active:
@@ -267,6 +270,18 @@ class EnterRoomQuest(Quest):
 			self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
 
 		super().recalculate()
+
+	def postHandler(self):
+		if (self.character.yPosition in (-1,0)):
+			self.character.room.itemByCoordinates[(self.character.xPosition,0)].close()
+			messages.append(self.character.room.itemByCoordinates[(self.character.xPosition,0)])
+		if (self.character.yPosition in (10,9)):
+			self.character.room.itemByCoordinates[(self.character.xPosition,9)].close()
+			messages.append(self.character.room.itemByCoordinates[(self.character.xPosition,9)])
+
+
+		messages.append("pos "+str(self.character.xPosition)+"/"+str(self.character.yPosition))
+		super().postHandler()
 
 	def triggerCompletionCheck(self):
 		if not self.active:

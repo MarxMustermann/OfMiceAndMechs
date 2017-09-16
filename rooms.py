@@ -24,6 +24,7 @@ class Room(object):
 		self.sizeY = None
 		self.timeIndex = 0
 		self.delayedTicks = 0
+		self.events = []
 
 		self.itemByCoordinates = {}
 
@@ -248,6 +249,10 @@ class Room(object):
 
 	def advance(self):
 		self.timeIndex += 1
+		if len(self.events):
+			if self.timeIndex == self.events[0].tick:
+				self.events[0].handleEvent()
+				self.events.remove(self.events[0])
 		if not self.hidden:
 			if self.delayedTicks > 0:
 				self.applySkippedAdvances()
@@ -484,6 +489,18 @@ XXXXXXXXXX
 		addNPC(7,5)
 		addNPC(7,6)
 		addNPC(7,7)
+
+		class Event(object):
+			def __init__(self,tick):
+				self.tick = tick
+
+			def handleEvent(self):
+				messages.append("Jo ho!")
+
+		self.events.append(Event(5))
+		self.events.append(Event(7))
+		self.events.append(Event(15))
+		self.events.append(Event(25))
 
 class StorageRoom(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):

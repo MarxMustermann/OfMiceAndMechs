@@ -439,7 +439,7 @@ roomsOnMap = [room1,room2,room3,room4,room5,room6,room7,room8,room9]
 for i in range(0,15):
 	for j in range(0,15):
 		if not (i < 3 and j < 3):
-			roomsOnMap.append(rooms.GenericRoom(i,j,2,2))
+			roomsOnMap.append(rooms.CpuWasterRoom(i,j,2,2))
 	
 characters.roomsOnMap = roomsOnMap
 

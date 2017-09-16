@@ -22,6 +22,7 @@ class Room(object):
 		self.shownQuestmarkerLastRender = False
 		self.sizeX = None
 		self.sizeY = None
+		self.timeIndex = 0
 
 		self.itemByCoordinates = {}
 
@@ -239,6 +240,7 @@ class Room(object):
 		return None
 
 	def advance(self):
+		self.timeIndex += 1
 		for character in self.characters:
 			character.advance()
 	
@@ -423,6 +425,52 @@ XXXXXXXXXX
 		self.offsetY = offsetY
 		self.xPosition = xPosition
 		self.yPosition = yPosition
+
+class CpuWasterRoom(Room):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+		self.roomLayout = """
+XX$XXXXXXX
+Xv v?????X
+X?......PX
+X?.PPPP.PX
+X?.????.#X
+X?.???P.#X
+X?.?X??.#X
+X?......#X
+X? XXXXX#X
+XXXXXXXXXX
+"""
+		super().__init__(self.roomLayout)
+		self.offsetX = offsetX
+		self.offsetY = offsetY
+		self.xPosition = xPosition
+		self.yPosition = yPosition
+
+		def addNPC(x,y):
+			quest1 = quests.MoveQuest(self,2,2)
+			quest2 = quests.MoveQuest(self,2,7)
+			quest3 = quests.MoveQuest(self,7,7)
+			quest4 = quests.MoveQuest(self,7,2)
+			quest1.followUp = quest2
+			quest2.followUp = quest3
+			quest3.followUp = quest4
+			quest4.followUp = quest1
+			npc = Character("Ⓛ ",x,y,name="Erwin von Libwig")
+			self.addCharacter(npc,x,y)
+			npc.room = self
+			npc.assignQuest(quest1)
+
+		addNPC(2,2)
+		addNPC(3,2)
+		addNPC(4,2)
+		addNPC(5,2)
+		addNPC(6,2)
+		addNPC(7,2)
+		addNPC(7,3)
+		addNPC(7,4)
+		addNPC(7,5)
+		addNPC(7,6)
+		addNPC(7,7)
 
 class StorageRoom(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):

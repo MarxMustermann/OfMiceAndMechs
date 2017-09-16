@@ -118,18 +118,18 @@ class Terrain(object):
 					rowCounter += 1
 				lineCounter += 1
 
-		for character in self.characters:
-			chars[character.yPosition][character.xPosition] = character.display
+		if not mapHidden:
+			for character in self.characters:
+				chars[character.yPosition][character.xPosition] = character.display
 
-			if character == mainChar:
-				if len(mainChar.quests):
-					try:
-						path = calculatePath(mainChar.xPosition,mainChar.yPosition,mainChar.quests[0].dstX,mainChar.quests[0].dstY,self.walkingPath)
-						for item in path[:-1]:
-							chars[item[1]][item[0]] = "xx"
-					except:
-						pass
-
+				if character == mainChar:
+					if len(mainChar.quests):
+						try:
+							path = calculatePath(mainChar.xPosition,mainChar.yPosition,mainChar.quests[0].dstX,mainChar.quests[0].dstY,self.walkingPath)
+							for item in path[:-1]:
+								chars[item[1]][item[0]] = "xx"
+						except:
+							pass
 
 		return chars
 

@@ -427,7 +427,7 @@ room4 = rooms.GenericRoom(1,1,2,2)
 
 room5 = rooms.CpuWasterRoom(0,2,2,2)
 room6 = rooms.CpuWasterRoom(1,2,2,2)
-room7 = rooms.StorageRoom(2,0,2,2)
+room7 = rooms.Vat1(2,0,2,2)
 room8 = rooms.CpuWasterRoom(2,1,1,2)
 room9 = rooms.CpuWasterRoom(2,2,2,2)
 

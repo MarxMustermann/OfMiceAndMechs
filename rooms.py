@@ -67,6 +67,62 @@ class Room(object):
 				elif char == "H":
 					#to be hutch
 					itemsOnFloor.append(items.Item("Ѻ ",rowCounter,lineCounter))
+				elif char == "o":
+					#to be grid
+					itemsOnFloor.append(items.Item("░░",rowCounter,lineCounter))
+				elif char == "a":
+					#to be acid
+					displayChars = ["♒♒","≈≈","≈♒","♒≈","≈≈"]
+					item = items.Item(displayChars[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter)
+					item.walkable = True
+					itemsOnFloor.append(item)
+				elif char == "b":
+					#to be foodstuffs
+					displayChars = ["՞՞","🍖 "," ☠","💀 ","👂 ","✋ "]
+					itemsOnFloor.append(items.Item(displayChars[((2*rowCounter)+lineCounter)%6],rowCounter,lineCounter))
+				elif char == "m":
+					displayChars = ["⌺ ","⚙ ","⌼ ","⍯ ","⌸ "]
+					itemsOnFloor.append(items.Item(displayChars[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter))
+				elif char == "h":
+					itemsOnFloor.append(items.Item("🜹 ",rowCounter,lineCounter))
+				elif char == "i":
+					itemsOnFloor.append(items.Item("⍌ ",rowCounter,lineCounter))
+				elif char == "p":
+					itemsOnFloor.append(items.Item("┅┅",rowCounter,lineCounter))
+				elif char == "q":
+					item = items.Item("━━",rowCounter,lineCounter)
+					item.walkable = True
+					itemsOnFloor.append(item)
+				elif char == "r":
+					item = items.Item("┳━",rowCounter,lineCounter)
+					item.walkable = True
+					itemsOnFloor.append(item)
+				elif char == "s":
+					item = items.Item("┓ ",rowCounter,lineCounter)
+					item.walkable = True
+					itemsOnFloor.append(item)
+				elif char == "t":
+					item = items.Item("┛ ",rowCounter,lineCounter)
+					item.walkable = True
+					itemsOnFloor.append(item)
+				elif char == "u":
+					item = items.Item("┗━",rowCounter,lineCounter)
+					item.walkable = True
+					itemsOnFloor.append(item)
+				elif char == "w":
+					itemsOnFloor.append(items.Item("⚟ ",rowCounter,lineCounter))
+				elif char == "x":
+					itemsOnFloor.append(items.Item("⚞ ",rowCounter,lineCounter))
+				elif char == "y":
+					itemsOnFloor.append(items.Item("◎ ",rowCounter,lineCounter))
+				elif char == "z":
+					item = items.Item("┃ ",rowCounter,lineCounter)
+					item.walkable = True
+					itemsOnFloor.append(item)
+				elif char == "B":
+					item = items.Item("❖❖",rowCounter,lineCounter)
+					item.walkable = True
+					itemsOnFloor.append(item)
 				else:
 					displayChars = ["🜆 ","🜾 ","ꘒ ","ꖻ ","ᵺ "]
 					displayChars = ["🝍🝍","🝍🝍","🝍🝍","🖵 ","🞇 ","🖵 ","⿴","⿴","🞇 ","🜕 "]
@@ -536,3 +592,35 @@ XXXX&&XXX
 class FreePlacemenRoom(Room):
 	def __init__(self):
 		super().__init__(self.roomLayout)
+
+class Vat1(Room):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+		self.roomLayout = """
+XXXXXXXXXX
+XababaabbX
+XrqqrqqsaX
+XzayzayzaX
+XuwbuwxtbX
+XabybayaaX
+XpsaabbaiX
+XmhmooooDX
+Xmmmv.voIX
+XXXXX$XXXX
+"""
+		self.roomLayout = """
+XXXXXXXXXX
+XaaaaaaaaX
+XrqqrqqsaX
+XzayzayzaX
+XuwauwxtaX
+XaayaayaaX
+XpsBBBBBBX
+Xmhm ...DX
+Xmmmv.v.IX
+XXXXX$XXXX
+"""
+		super().__init__(self.roomLayout)
+		self.offsetX = offsetX
+		self.offsetY = offsetY
+		self.xPosition = xPosition
+		self.yPosition = yPosition

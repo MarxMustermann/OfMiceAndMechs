@@ -453,8 +453,17 @@ room2.addCharacter(mainChar,2,4)
 
 cinematics.showCinematic("welcome to the Trainingenvironment\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
 cinematics.showCinematic("the Trainingenvironment will show the Map now. take a look at everything and press . afterwards")
-
 cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+cinematics.showCinematic("you are represented by the ＠ Character. find yourself on the screen and press .")
+cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+cinematics.showCinematic("you are in the Boilerroom\n\nthe Floor is represtented by :: and Walls are shown as ⛝ . the Door is represented by ⛒  or ⭘  when closed.\n\nthe Trainingenvironment will display now. please try to orient yourself in the room.\n\npress . when successful")
+cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+cinematics.showCinematic("in the Middle of the Room you see the Steamgenerator\n\n  ✠✠伫ΩΩ\n✠✠✠✠伫ΩΩ\n  ✠✠伫ΩΩ\n\nit consist of Furnaces marked by ΩΩ or ϴϴ that heat the Water in the Boilers 伫 till it boils. a Boiler with boiling Water will be shown as 伾.\n\nthe Steam is transfered to the Pipes marked with ✠✠ and used to power the Ships Mechanics and Weapons\n\ntry to recognize the Design and press .")
+cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+cinematics.showCinematic("the Furnaces burn Coal shown as **. if a furnace is burning Coal it is shown as ϴϴ and shown as ΩΩ if not. The Coal is stored in Piles shown as ӫӫ. the Coalpiles are on the right Side of the Room and are filled through the Pipes when needed.\n\nthe Piles on the lower End of the Room are Storage for Replacementparts and you can sleep in the Hutches to the left shown as Ѻ \n\na Coaldelivery is incoming anyway. please wait and pay attention.\n\ni will count down the ticks in the messageBox now")
+cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+
+
 
 tutorialQuest1 = quests.MoveQuest(room2,5,7,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way\n\nremeber you are the ＠")
 tutorialQuest2 = quests.CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing j.")

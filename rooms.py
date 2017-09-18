@@ -115,6 +115,8 @@ class Room(object):
 					itemsOnFloor.append(items.Item("⚞ ",rowCounter,lineCounter))
 				elif char == "y":
 					itemsOnFloor.append(items.Item("◎ ",rowCounter,lineCounter))
+				elif char == "j":
+					itemsOnFloor.append(items.Item("🝇 ",rowCounter,lineCounter))
 				elif char == "z":
 					item = items.Item("┃ ",rowCounter,lineCounter)
 					item.walkable = True
@@ -617,6 +619,26 @@ XaayaayaaX
 XpsBBBBBBX
 Xmhm ...DX
 Xmmmv.v.IX
+XXXXX$XXXX
+"""
+		super().__init__(self.roomLayout)
+		self.offsetX = offsetX
+		self.offsetY = offsetY
+		self.xPosition = xPosition
+		self.yPosition = yPosition
+
+class Vat2(Room):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+		self.roomLayout = """
+XXXXXXXXXX
+XaaabajjjX
+XaaaaaabaX
+XabababaaX
+XaaaaaabaX
+XaabaajaaX
+XaaaababaX
+XabaaaabaX
+##aaa.va##
 XXXXX$XXXX
 """
 		super().__init__(self.roomLayout)

@@ -4,8 +4,9 @@ main = None
 loop = None
 callShow_or_exit = None
 messages = None
+advanceGame = None
 
-class Cinematic(object):
+class ScrollingTextCinematic(object):
 	def __init__(self,text):
 		self.text = text+"\n\n-- press space to proceed -- "
 		self.position = 0
@@ -22,5 +23,17 @@ class Cinematic(object):
 			loop.set_alarm_in(0.05, callShow_or_exit, '~')
 		self.position += 1
 
+class ShowGameCinematic(object):
+	def __init__(self,turns):
+		self.turns = turns
+
+	def advance(self):
+		if not self.turns:
+			loop.set_alarm_in(0.0, callShow_or_exit, ' ')
+			return
+				
+		self.turns -= 1
+		advanceGame()
+
 def showCinematic(text):
-	cinematicQueue.append(Cinematic(text))
+	cinematicQueue.append(ScrollingTextCinematic(text))

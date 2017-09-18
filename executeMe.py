@@ -454,6 +454,8 @@ room2.addCharacter(mainChar,2,4)
 cinematics.showCinematic("welcome to the Trainingenvironment\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
 cinematics.showCinematic("the Trainingenvironment will show the Map now. take a look at everything and press . afterwards")
 
+cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+
 tutorialQuest1 = quests.MoveQuest(room2,5,7,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way\n\nremeber you are the ＠")
 tutorialQuest2 = quests.CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing j.")
 tutorialQuest3 = quests.ActivateQuest(room2.furnace,startCinematics="now go and activate the Furnace marked with a Ω. you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press j.")
@@ -534,6 +536,8 @@ def advanceGame():
 
 	for room in roomsOnMap:
 		room.advance()
+
+cinematics.advanceGame = advanceGame
 
 def renderQuests():
 	txt = ""

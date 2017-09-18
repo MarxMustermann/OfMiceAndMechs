@@ -137,7 +137,7 @@ class Terrain1(Terrain):
 	def __init__(self,rooms):
 		detailedLayout = """
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-X#############XX############ XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X
+X#############XX################           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X
 X#           #XX#          # XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X
 X#           #XX#          # XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X
 X#           #XX#          # XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X
@@ -146,7 +146,7 @@ X#           #XX#          # XX#           #XX#           #XX#           #XX#   
 X#           #XX#          # XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X
 X#           #XX#          # XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X
 X#           #XX#          # XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X
-X#           #XX#          # XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X
+X#           #XX#          # XX#          #####           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X
 X#XXXXXXXXXXX#XX#XXXXXXXXXX#XXXXXXXXXXXXX  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 X#           #######...#######              X                                                                                                                       X
 X....................X..................... X                                                                                                                       X

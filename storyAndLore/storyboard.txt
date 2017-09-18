@@ -77,9 +77,144 @@ save system:
 	Vat duty = gamestate is kept completely
 			
 
+
+
+
+
+#===
+say("""welcome to the Trainingenvironment
+please, try to learn fast.
+
+Participants with low Evaluationscores will be given suitable Assignments in the Vats""")
+#==
+say("""the Trainingenvironment will display now. take a look at everything and press . afterwards""")
+showGame1Turn()
+#==
+say("""you are represented by the ＠ Character. find yourself on the screen and press .""")
+showGame1Turn()
+#===
+say("""you are in the Boilerroom
+
+the Floor is represtented by :: and Walls are shown as ⛝  the Door is represented by ⛒  or ⭘  when closed.
+
+the Trainingenvironment will display now. please try to orient yourself.""")
+showGame1Turn()
+#==
+say("""in the Middle of the Room you see the Steamgenerator
+
+it consist of Furnaces marked by ΩΩ or ϴϴ that heat the Water in the Boilers 伫 till it boils. a Boiler with boiling Water will be shown as 伾. the Steam is transfered to the Pipes marked with ✠✠
+
+try to recognize the design""")
+showGame1Turn()
+#==
+say("""the Furnaces burn coal shown as **. if a furnace is burning Coal it is shown as ϴϴ and shown as ΩΩ if not. The Coal is stored in Piles shown as ӫӫ. the Coalpiles are on the right Side of the Room and are filled through the Pipes when needed.
+
+the Piles on the lower End of the Room are Storage for Replacementparts and you can sleep in the Hutches to the left shown as Ѻ 
+
+a coal delivery is incoming anyway. please wait and pay attention
+
+i will count down the ticks in the messageBox now""")
+message("8")
+showGame1Turn()
+message("7")
+showGame1Turn()
+message("6")
+showGame1Turn()
+message("5")
+showGame1Turn()
+message("4")
+showGame1Turn()
+message("3")
+showGame1Turn()
+message("2")
+showGame1Turn()
+message("1")
+showGame1Turn()
+message("Coaldelivery now")
+startShowGameCutScene()
+	*rumbling*
+	*rumbling*
+	*smoke and dust on cole piles and neighbour fields*
+	*a chunk of coal drops onto the floor*
+	*smoke clears*
+endShowGameCutScene()
+#==
+say("""your cohabitants in this Room are:
+ 'Erwin von Libwig' (Ⓛ ) is this Rooms 'Raumleiter' and therefore responsible for proper Steamgeneration in this room
+ 'Ernst Ziegelbach' (Ⓩ ) was dispatched to support 'Erwin von Libwig' and is his Subordinate
+
+you will likely report to 'Erwin von Libwig' later. please try to find them on the display and press .""")
+*show map + wait for keypress*
+#==
+
+say("""Erwin von Libwig will demonstrate how to fire a furnace now.
+
+watch and learn.""")
+
+startShowGameCutScene()
+*Erwin von Libwig walks to a Pile and fires a furnace*
+*Erwin von Libwig walks back to a Pile and fires a furnace*
+endShowGameCutScene()
+*Erwin von Libwig goes back to waiting position*
+#==
+say("""there are other items in the room that may or may not be important for you. Here is the full list for you to review:
+ Bin (⛛ ): Used for storing Things indended to be transported further
+ Pile (ӫӫ): a Pile of Things
+ Door (⭘  or ⛒ ): you can move through it when open
+ Lever ( | or  /): a simple Man-Machineinterface
+ Furace (ΩΩ): used to generate heat burning Things
+ Display (۞ ): a complicated Machine-Maninterface
+ Wall (⛝ ): ensures the structural Integrity of basically any Structure
+ Pipe (✠✠): transports Liquids, Pseudoliquids and Gasses 
+ Coal ( *): a piece of Coal, quite usefull actually
+ Boiler (伫 or 伾): generates Steam using Water and and Heat
+ Chains (⛓ ): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing
+ Comlink (ߐߐ): a pipebased Voicetransportationsystem that allows Communication with other Rooms
+ Hutch (Ѻ ): a comfy and safe Place to sleep and eat""")
+#==
+say("""movement can be tricky sometimes so please make yourself comfortable with the controls.
+
+you can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist. 
+
+the basic Movementcommands are:
+ w=up
+ a=right
+ s=down
+ d=right
+please move to the designated Target. the Implant will mark your Way""")
+#==
+*move back to waiting position*
+#==
+say("""you have 20 Ticks to familiarise yourself with the Movementcommands. please do.""")
+#==
+say("""next on my Checklist is to explain the Interaction with your Environment
+
+interaction with your Environment is somewhat complicated
+
+the basic Interationcommands are:
+ j=activate/apply
+ e=examine
+ k=pick up
+
+see this Piles of Coal marked with ӫ on the rigth Side of the Room.
+
+whenever you bump into an item that is to big to be walked on, you will promted for giving an extra interaction command. I'll give you an example:
+
+ΩΩ＠ӫӫ
+
+ pressing a and j would result in Activation of the Furnace
+ pressing d and j would result in Activation of the Pile
+ pressing a and e would result make you examine the Furnace
+ pressing d and e would result make you examine the Pile
+
+please grab yourself some Coal from a pile by bumping into it and pressing j afterwards. 
+""")
+
 Level0
 ( child 5 til 8 )
-Machine room (tutorial1):
+Machine room tutorial:
+
+
 	got to center room
 	fetch coal
 	fire furnace

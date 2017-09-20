@@ -532,6 +532,13 @@ def setupInitialGame():
 			subself.tick = tick
 
 		def handleEvent(subself):
+			quest0 = quests.CollectQuest()
+			quest1 = quests.ActivateQuest(room2.furnace)
+			quest2 = quests.MoveQuest(room2,5,7,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way\n\nremeber you are the ＠")
+			quest0.followUp = quest1
+			quest1.followUp = quest2
+			quest2.followUp = None
+			npc.assignQuest(quest0,active=True)
 			messages.append("*Erwin von Libwig, please fire the furnace now*")
 
 	room1.events.append(AddQuestEvent(16))

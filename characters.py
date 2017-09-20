@@ -14,6 +14,7 @@ class Character():
 		self.watched = False
 		self.listeners = []
 		self.room = None
+		self.path = []
 		
 		for quest in quests:
 			self.assignQuest(quest)
@@ -39,11 +40,13 @@ class Character():
 				messages.append(self.name+": got a new Quest\n - "+quest.description)
 
 	def setPathToQuest(self,quest):
+		messages.append("try to add path")
 		if hasattr(quest,"dstX") and hasattr(quest,"dstY"):
 			if self.room:
 				self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY,self.room.walkingPath)
 			else:
 				self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY,self.terrain.walkingPath)
+		messages.append("try to add path - success")
 
 	def addToInventory(self,item):
 		self.inventory.append(item)

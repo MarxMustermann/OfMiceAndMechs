@@ -462,8 +462,6 @@ def setupInitialGame():
 	#npc2.assignQuest(quest0)
 	#npc2.automated = False
 
-	cinematics.showCinematic("welcome to the Trainingenvironment\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
-
 	npc2 = characters.Character("Ⓩ ",1,1,name="Ernst Ziegelbach")
 	#npc2.watched = True
 	room2.addCharacter(npc2,1,1)
@@ -534,15 +532,22 @@ def setupInitialGame():
 		def handleEvent(subself):
 			quest0 = quests.CollectQuest()
 			quest1 = quests.ActivateQuest(room2.furnace)
-			quest2 = quests.MoveQuest(room2,1,2,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way\n\nremeber you are the ＠")
+			quest2 = quests.MoveQuest(room2,1,3,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way\n\nremeber you are the ＠")
 			quest0.followUp = quest1
 			quest1.followUp = quest2
 			quest2.followUp = None
 			npc.assignQuest(quest0,active=True)
+
+	class ShowMessageEvent(object):
+		def __init__(subself,tick):
+			subself.tick = tick
+
+		def handleEvent(subself):
 			messages.append("*Erwin von Libwig, please fire the furnace now*")
 
-	room1.events.append(AddQuestEvent(16))
-	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(10))
+	room1.events.append(ShowMessageEvent(17))
+	room1.events.append(AddQuestEvent(18))
+	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(25))
 
 	cinematics.showCinematic("there are other items in the room that may or may not be important for you. Here is the full list for you to review:\n\n Bin (⛛ ): Used for storing Things indended to be transported further\n Pile (ӫӫ): a Pile of Things\n Door (⭘  or ⛒ ): you can move through it when open\n Lever ( | or  /): a simple Man-Machineinterface\n Furace (ΩΩ): used to generate heat burning Things\n Display (۞ ): a complicated Machine-Maninterface\n Wall (⛝ ): ensures the structural Integrity of basically any Structure\n Pipe (✠✠): transports Liquids, Pseudoliquids and Gasses\n Coal ( *): a piece of Coal, quite usefull actually\n Boiler (伫 or 伾): generates Steam using Water and and Heat\n Chains (⛓ ): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing\n Comlink (ߐߐ): a pipebased Voicetransportationsystem that allows Communication with other Rooms\n Hutch (Ѻ ): a comfy and safe Place to sleep and eat")
 

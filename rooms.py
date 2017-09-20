@@ -451,7 +451,7 @@ X@.##OF. X
 XH.8#O . X
 XH.|DI . X
 XH......#X
-XXPPP ID#X
+XXRRR ID#X
 XXXXXXXXXX
 """
 		super().__init__(roomLayout)

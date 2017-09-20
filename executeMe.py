@@ -595,7 +595,7 @@ npc2 = characters.Character("Ⓩ ",1,1,name="Ernst Ziegelbach")
 room2.addCharacter(npc2,1,1)
 npc2.terrain = terrain
 npc2.room = room2
-npc2.assignQuest(quest0)
+#npc2.assignQuest(quest0)
 #npc2.automated = False
 
 characters = [mainChar]

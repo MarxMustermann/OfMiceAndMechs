@@ -132,13 +132,14 @@ class Character():
 				return
 			"""
 	
-			self.applysolver(self.quests[0].solver)
-			try:
-				if not len(self.path):
-					self.quests[0].toActivate.apply()
-			except:
-				pass
-			self.changed()
+			if len(self.quests):
+				self.applysolver(self.quests[0].solver)
+				try:
+					if not len(self.path):
+						self.quests[0].toActivate.apply()
+				except:
+					pass
+				self.changed()
 
 	def addListener(self,listenFunction):
 		if not listenFunction in self.listeners:

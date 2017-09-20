@@ -23,6 +23,9 @@ class ScrollingTextCinematic(object):
 			loop.set_alarm_in(0.05, callShow_or_exit, '~')
 		self.position += 1
 
+	def abort(self):
+		pass
+
 class ShowGameCinematic(object):
 	def __init__(self,turns):
 		self.turns = turns
@@ -34,6 +37,11 @@ class ShowGameCinematic(object):
 				
 		self.turns -= 1
 		advanceGame()
+
+	def abort(self):
+		while self.turns:
+			advanceGame()
+			self.turns -= 1
 
 class ShowMessageCinematic(object):
 	def __init__(self,message):
@@ -47,6 +55,9 @@ class ShowMessageCinematic(object):
 		messages.append(self.message)
 		loop.set_alarm_in(0.0, callShow_or_exit, '~')
 		self.breakCinematic = True
+
+	def abort(self):
+		pass
 
 def showCinematic(text):
 	cinematicQueue.append(ScrollingTextCinematic(text))

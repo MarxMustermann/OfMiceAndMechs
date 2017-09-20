@@ -29,6 +29,7 @@ def show_or_exit(key):
 		if key in ('q', 'Q'):
 			raise urwid.ExitMainLoop()
 		elif key in (' ','+'):
+			cinematics.cinematicQueue[0].abort()
 			cinematics.cinematicQueue = cinematics.cinematicQueue[1:]
 			loop.set_alarm_in(0.0, callShow_or_exit, '~')
 			doAdvanceGame = False

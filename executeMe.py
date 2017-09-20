@@ -182,12 +182,12 @@ def show_or_exit(key):
 
 	if key in ('j'):
 		if itemMarkedLast:
-			itemMarkedLast.apply()
+			itemMarkedLast.apply(mainChar)
 		else:
 			if mainChar.room:
 				for item in mainChar.room.itemsOnFloor:
 					if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:
-						item.apply()
+						item.apply(mainChar)
 	if key in ('l'):
 		if len(characters[0].inventory):
 			item = characters[0].inventory.pop()	
@@ -534,7 +534,7 @@ def setupInitialGame():
 		def handleEvent(subself):
 			quest0 = quests.CollectQuest()
 			quest1 = quests.ActivateQuest(room2.furnace)
-			quest2 = quests.MoveQuest(room2,5,7,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way\n\nremeber you are the ＠")
+			quest2 = quests.MoveQuest(room2,1,2,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way\n\nremeber you are the ＠")
 			quest0.followUp = quest1
 			quest1.followUp = quest2
 			quest2.followUp = None

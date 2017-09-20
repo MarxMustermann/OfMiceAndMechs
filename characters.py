@@ -40,13 +40,11 @@ class Character():
 				messages.append(self.name+": got a new Quest\n - "+quest.description)
 
 	def setPathToQuest(self,quest):
-		messages.append("try to add path")
 		if hasattr(quest,"dstX") and hasattr(quest,"dstY"):
 			if self.room:
 				self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY,self.room.walkingPath)
 			else:
 				self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY,self.terrain.walkingPath)
-		messages.append("try to add path - success")
 
 	def addToInventory(self,item):
 		self.inventory.append(item)
@@ -110,7 +108,7 @@ class Character():
 					self.changed()
 			
 			if item:
-				item.apply()				
+				item.apply(self)
 			else:
 				if (self.xPosition == nextPosition[0] and self.yPosition == nextPosition[1]):
 					self.path = self.path[1:]
@@ -139,7 +137,7 @@ class Character():
 				self.applysolver(self.quests[0].solver)
 				try:
 					if not len(self.path):
-						self.quests[0].toActivate.apply()
+						self.quests[0].toActivate.apply(self)
 				except:
 					pass
 				self.changed()

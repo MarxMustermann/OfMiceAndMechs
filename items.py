@@ -11,7 +11,7 @@ class Item(object):
 		self.room = None
 		self.name = "item"
 
-	def apply(self):
+	def apply(self,character):
 		messages.append("i can't do anything useful with this")
 
 	def changed(self):
@@ -37,7 +37,7 @@ class Lever(Item):
 		self.deactivateAction = None
 		self.walkable = True
 
-	def apply(self):
+	def apply(self,character):
 		if not self.activated:
 			self.activated = True
 			self.display = " /"
@@ -60,10 +60,10 @@ class Furnace(Item):
 		self.activated = False
 		super().__init__("ΩΩ",xPosition,yPosition)
 
-	def apply(self):
+	def apply(self,character):
 		messages.append("Furnace used")
 		foundItem = None
-		for item in characters[0].inventory:
+		for item in character.inventory:
 			try:
 				canBurn = item.canBurn
 			except:
@@ -78,7 +78,7 @@ class Furnace(Item):
 		else:
 			self.activated = True
 			self.display = "ϴϴ"
-			characters[0].inventory.remove(foundItem)
+			character.inventory.remove(foundItem)
 			messages.append("burn it ALL")
 		self.changed()
 
@@ -111,7 +111,7 @@ class Door(Item):
 		self.walkable = False
 		self.display = '⛒ '
 
-	def apply(self):
+	def apply(self,character):
 		if self.walkable:
 			self.close()
 		else:
@@ -134,7 +134,7 @@ class Pile(Item):
 		self.type = itemType
 		super().__init__("ӫӫ",xPosition,yPosition)
 
-	def apply(self):
+	def apply(self,character):
 		messages.append("Pile used")
-		characters[0].inventory.append(self.type())
-		characters[0].changed()
+		character.inventory.append(self.type())
+		character.changed()

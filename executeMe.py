@@ -451,7 +451,7 @@ mainChar = characters.Character("＠",1,3,automated=False,name="Sigmund Bärenst
 mainChar.terrain = terrain
 mainChar.room = room2
 mainChar.watched = True
-room2.addCharacter(mainChar,2,4)
+room2.addCharacter(mainChar,1,4)
 
 def setupInitialGame():
 	cinematics.showCinematic("welcome to the Trainingenvironment\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")

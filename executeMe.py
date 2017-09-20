@@ -423,7 +423,7 @@ cinematics.messages = messages
 quests.showCinematic = cinematics.showCinematic
 
 room1 = rooms.Room1()
-room2 = rooms.Room2()
+room2 = rooms.TutorialMachineRoom()
 room3 = rooms.Room3()
 room4 = rooms.GenericRoom(1,1,2,2)
 
@@ -454,6 +454,24 @@ mainChar.watched = True
 room2.addCharacter(mainChar,1,4)
 
 def setupInitialGame():
+	npc = characters.Character("Ⓛ ",1,2,name="Erwin von Libwig")
+	#npc2.watched = True
+	room2.addCharacter(npc,1,3)
+	npc.terrain = terrain
+	npc.room = room2
+	#npc2.assignQuest(quest0)
+	#npc2.automated = False
+
+	cinematics.showCinematic("welcome to the Trainingenvironment\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
+
+	npc2 = characters.Character("Ⓩ ",1,1,name="Ernst Ziegelbach")
+	#npc2.watched = True
+	room2.addCharacter(npc2,1,1)
+	npc2.terrain = terrain
+	npc2.room = room2
+	#npc2.assignQuest(quest0)
+	#npc2.automated = False
+
 	cinematics.showCinematic("welcome to the Trainingenvironment\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
 	cinematics.showCinematic("the Trainingenvironment will show the Map now. take a look at everything and press . afterwards")
 	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))

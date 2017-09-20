@@ -440,6 +440,39 @@ XXXXXXXXXX
 			npc.assignQuest(deactivateLeaverQuest,active=True)
 		self.lever2.activateAction = lever2action
 
+class TutorialMachineRoom(Room):
+	def __init__(self):
+		roomLayout = """
+XXXX$XXXXX
+X@ v vID#X
+X@......#X
+X@.8#OF. X
+X@.##OF. X
+XH.8#O . X
+XH.|DI . X
+XH......#X
+XXPPP ID#X
+XXXXXXXXXX
+"""
+		super().__init__(roomLayout)
+		self.name = "Boilerroom"
+		self.offsetX = 4
+		self.offsetY = 0
+		self.xPosition = 0
+		self.yPosition = 1
+
+		self.lever1 = items.Lever(3,6,"engine control")
+		self.lever2 = items.Lever(1,2,"boarding alarm")
+
+		coalPile1 = items.Pile(8,3,"coal Pile1",items.Coal)
+		coalPile2 = items.Pile(8,4,"coal Pile2",items.Coal)
+		coalPile3 = items.Pile(8,5,"coal Pile3",items.Coal)
+		coalPile4 = items.Pile(8,6,"coal Pile4",items.Coal)
+		self.furnace = items.Furnace(6,5,"Furnace")
+
+		self.addItems([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4,self.furnace])
+
+
 class Room3(Room):
 	def __init__(self):
 		self.roomLayout = """

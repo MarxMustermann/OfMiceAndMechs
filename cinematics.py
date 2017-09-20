@@ -11,6 +11,7 @@ class ScrollingTextCinematic(object):
 		self.text = text+"\n\n-- press space to proceed -- "
 		self.position = 0
 		self.endPosition = len(self.text)
+		self.alarm = None
 
 	def advance(self):
 		if self.position >= self.endPosition:
@@ -18,13 +19,16 @@ class ScrollingTextCinematic(object):
 
 		main.set_text(self.text[0:self.position])
 		if self.text[self.position] in ("\n"):
-			loop.set_alarm_in(0.5, callShow_or_exit, '~')
+			self.alarm = loop.set_alarm_in(0.5, callShow_or_exit, '~')
 		else:
-			loop.set_alarm_in(0.05, callShow_or_exit, '~')
+			self.alarm = loop.set_alarm_in(0.05, callShow_or_exit, '~')
 		self.position += 1
 
 	def abort(self):
-		pass
+		try: 
+			loop.remove_alarm(self.alarm)
+		except:
+			pass
 
 class ShowGameCinematic(object):
 	def __init__(self,turns):
@@ -35,13 +39,14 @@ class ShowGameCinematic(object):
 			loop.set_alarm_in(0.0, callShow_or_exit, ' ')
 			return
 				
-		self.turns -= 1
 		advanceGame()
+		self.turns -= 1
+		return True
 
 	def abort(self):
-		while self.turns:
-			advanceGame()
+		while self.turns > 0:
 			self.turns -= 1
+			advanceGame()
 
 class ShowMessageCinematic(object):
 	def __init__(self,message):

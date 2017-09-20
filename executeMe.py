@@ -18,9 +18,14 @@ def callShow_or_exit(loop,key):
 
 itemMarkedLast = None
 lastMoveAutomated = False
+fullAutoMode = False
 def show_or_exit(key):
 	if not len(key) == 1:
 		return
+
+	if key in ('*'):
+		loop.set_alarm_in(0.2, callShow_or_exit, '*')
+
 	global itemMarkedLast
 	global lastMoveAutomated
 	stop = False
@@ -28,16 +33,17 @@ def show_or_exit(key):
 	if len(cinematics.cinematicQueue):
 		if key in ('q', 'Q'):
 			raise urwid.ExitMainLoop()
-		elif key in (' ','+'):
+		elif key in (' ','+','*'):
 			cinematics.cinematicQueue[0].abort()
 			cinematics.cinematicQueue = cinematics.cinematicQueue[1:]
 			loop.set_alarm_in(0.0, callShow_or_exit, '~')
-			doAdvanceGame = False
+			return
 		else:
-			cinematics.cinematicQueue[0].advance()
-			doAdvanceGame = False
+			if not cinematics.cinematicQueue[0].advance():
+				return
+			key = '~'
 	if key in ('~'):
-		return
+		doAdvanceGame = False
 
 	if key in ('q', 'Q'):
 		raise urwid.ExitMainLoop()
@@ -210,7 +216,7 @@ def show_or_exit(key):
 				characters[0].inventory.append(item)
 				item.changed()
 
-	if key in ('+'):
+	if key in ('+','*'):
 		if len(mainChar.quests):
 			if not lastMoveAutomated:
 				mainChar.setPathToQuest(mainChar.quests[0])

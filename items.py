@@ -138,3 +138,15 @@ class Pile(Item):
 		messages.append("Pile used")
 		character.inventory.append(self.type())
 		character.changed()
+
+class Acid(Item):
+	def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal):
+		self.name = name
+		self.canBurn = True
+		self.type = itemType
+		super().__init__("♒♒",xPosition,yPosition)
+
+	def apply(self,character):
+		messages.append("Pile used")
+		character.inventory.append(self.type())
+		character.changed()

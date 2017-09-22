@@ -482,7 +482,7 @@ def setupInitialGame():
 	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
 	cinematics.showCinematic("you are represented by the ＠ Character. find yourself on the screen and press .")
 	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-	cinematics.showCinematic("right now you are in the Boilerroom\n\nthe Floor is represented by :: and Walls are shown as ⛝ . the Door is represented by ⛒  or ⭘  when closed.\n\na empty room would look like this:\n\n⛝ ⛝ ⛝ ⛝ ⛝ \n⛝ ::::::⛝ \n⛝ ::::::⛒ \n⛝ ::::::⛝ \n⛝ ⛝ ⛝ ⛝ ⛝ \n\nthe Trainingenvironment will display now. please try to orient yourself in the room.\n\npress . when successful")
+	cinematics.showCinematic("right now you are in the Boilerroom\n\nthe Floor is represented by :: and Walls are shown as ⛝ . the Door is represented by ⛒  or ⭘  when closed.\n\na empty Room would look like this:\n\n⛝ ⛝ ⛝ ⛝ ⛝ \n⛝ ::::::⛝ \n⛝ ::::::⛒ \n⛝ ::::::⛝ \n⛝ ⛝ ⛝ ⛝ ⛝ \n\nthe Trainingenvironment will display now. please try to orient yourself in the Room.\n\npress . when successful")
 	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
 	cinematics.showCinematic("in the Middle of the Room you see the Steamgenerator\n\n  ✠✠伫ΩΩ\n✠✠✠✠伫ΩΩ\n  ✠✠伫ΩΩ\n\nit consist of Furnaces marked by ΩΩ or ϴϴ that heat the Water in the Boilers 伫 till it boils. a Boiler with boiling Water will be shown as 伾.\n\nthe Steam is transfered to the Pipes marked with ✠✠ and used to power the Ships Mechanics and Weapons\n\ntry to recognize the Design and press .")
 	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
@@ -521,7 +521,7 @@ def setupInitialGame():
 	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
 	cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("Coaldelivery now"))
 	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(2))
-	cinematics.showCinematic("your cohabitants in this Room are:\n 'Erwin von Libwig' (Ⓛ ) is this Rooms 'Raumleiter' and therefore responsible for proper Steamgeneration in this room\n 'Ernst Ziegelbach' (Ⓩ ) was dispatched to support 'Erwin von Libwig' and is his Subordinate\n\nyou will likely report to 'Erwin von Libwig' later. please try to find them on the display and press .")
+	cinematics.showCinematic("your cohabitants in this Room are:\n 'Erwin von Libwig' (Ⓛ ) is this Rooms 'Raumleiter' and therefore responsible for proper Steamgeneration in this Room\n 'Ernst Ziegelbach' (Ⓩ ) was dispatched to support 'Erwin von Libwig' and is his Subordinate\n\nyou will likely report to 'Erwin von Libwig' later. please try to find them on the display and press .")
 	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
 	"""
 	startShowGameCutScene()
@@ -556,7 +556,7 @@ def setupInitialGame():
 	room1.events.append(AddQuestEvent(18))
 	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(25))
 
-	cinematics.showCinematic("there are other items in the room that may or may not be important for you. Here is the full list for you to review:\n\n Bin (⛛ ): Used for storing Things indended to be transported further\n Pile (ӫӫ): a Pile of Things\n Door (⭘  or ⛒ ): you can move through it when open\n Lever ( | or  /): a simple Man-Machineinterface\n Furace (ΩΩ): used to generate heat burning Things\n Display (۞ ): a complicated Machine-Maninterface\n Wall (⛝ ): ensures the structural Integrity of basically any Structure\n Pipe (✠✠): transports Liquids, Pseudoliquids and Gasses\n Coal ( *): a piece of Coal, quite usefull actually\n Boiler (伫 or 伾): generates Steam using Water and and Heat\n Chains (⛓ ): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing\n Comlink (ߐߐ): a pipebased Voicetransportationsystem that allows Communication with other Rooms\n Hutch (Ѻ ): a comfy and safe Place to sleep and eat")
+	cinematics.showCinematic("there are other Items in the Room that may or may not be important for you. Here is the full List for you to review:\n\n Bin (⛛ ): Used for storing Things intended to be transported further\n Pile (ӫӫ): a Pile of Things\n Door (⭘  or ⛒ ): you can move through it when open\n Lever ( | or  /): a simple Man-Machineinterface\n Furace (ΩΩ): used to generate heat burning Things\n Display (۞ ): a complicated Machine-Maninterface\n Wall (⛝ ): ensures the structural Integrity of basically any Structure\n Pipe (✠✠): transports Liquids, Pseudoliquids and Gasses\n Coal ( *): a piece of Coal, quite usefull actually\n Boiler (伫 or 伾): generates Steam using Water and and Heat\n Chains (⛓ ): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing\n Comlink (ߐߐ): a Pipe based Voicetransportationsystem that allows Communication with other Rooms\n Hutch (Ѻ ): a comfy and safe Place to sleep and eat")
 
 setupInitialGame()
 
@@ -570,10 +570,10 @@ setupInitialGame()
 tutorialQuest1 = quests.MoveQuest(room2,5,7,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way\n\nremeber you are the ＠")
 tutorialQuest2 = quests.CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing j.")
 tutorialQuest3 = quests.ActivateQuest(room2.furnace,startCinematics="now go and activate the Furnace marked with a Ω. you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press j.")
-tutorialQuest4 = quests.MoveQuest(room2,1,3,startCinematics="Move back to waiting position")
+tutorialQuest4 = quests.MoveQuest(room2,1,3,startCinematics="Move back to Waitingposition")
 tutorialQuest5 = quests.LeaveRoomQuest(room2,startCinematics="please exit the Room")
 tutorialQuest5 = quests.EnterRoomQuest(room1,startCinematics="please goto the Vat")
-tutorialQuest6 = quests.MoveQuest(room1,4,4,startCinematics="please move to waiting position")
+tutorialQuest6 = quests.MoveQuest(room1,4,4,startCinematics="please move to Waitingposition")
 
 tutorialQuest1.followUp = tutorialQuest2
 tutorialQuest2.followUp = tutorialQuest3

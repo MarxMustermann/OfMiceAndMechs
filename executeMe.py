@@ -8,6 +8,7 @@ import cinematics
 
 header = urwid.Text(u"")
 main = urwid.Text(u"＠")
+main.set_layout('left', 'clip')
 cinematics.main = main
 footer = urwid.Text(u"")
 
@@ -657,15 +658,41 @@ def renderMessagebox():
 def render():
 	chars = terrain.render()
 
+	if mainChar.room:
+		centerX = mainChar.room.xPosition*15+mainChar.room.offsetX+mainChar.xPosition
+		centerY = mainChar.room.yPosition*15+mainChar.room.offsetY+mainChar.yPosition
+	else:
+		centerX = mainChar.xPosition
+		centerY = mainChar.yPosition
+
+	screensize = loop.screen.get_cols_rows()
+	decorationSize = frame.frame_top_bottom(loop.screen.get_cols_rows(),True)
+	screensize = (screensize[0]-decorationSize[0][0],screensize[1]-decorationSize[0][1])
+
+	offsetX = int((screensize[0]/4)-centerX)
+	offsetY = int((screensize[1]/2)-centerY)
+
 	result = ""
+
+	if offsetY > 0:
+		result += "\n"*offsetY
+
+	if offsetY < 0:
+		chars = chars[-offsetY:]
+
 	for line in chars:
 		lineRender = ""
 		rowCounter = 0
+
+		if offsetX > 0:
+			lineRender += "  "*offsetX
+
+		if offsetX < 0:
+			line = line[-offsetX:]
+
 		for char in line:
 			lineRender += char
 			rowCounter += 1
-			if rowCounter > 80:
-				break
 		lineRender += "\n"
 		result += lineRender
 		

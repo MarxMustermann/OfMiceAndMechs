@@ -191,10 +191,16 @@ class Room(object):
 	def render(self):
 		if not self.hidden:
 			chars = []
+			fixedChar = None
+			if len(self.floorDisplay) == 1:
+				fixedChar = self.floorDisplay[0]
 			for i in range(0,self.sizeY):
 				subChars = []
 				for j in range(0,self.sizeX):
-					subChars.append(self.floorDisplay[(2*self.sizeY+3*self.sizeX+(j+1)*(i+2)+self.timeIndex)%len(self.floorDisplay)])
+					if fixedChar:
+						subChars.append(fixedChar)
+					else:
+						subChars.append(self.floorDisplay[(j+i+self.timeIndex*2)%len(self.floorDisplay)])
 				chars.append(subChars)
 			
 			for item in self.itemsOnFloor:
@@ -344,7 +350,7 @@ XXXX$XXXXX
 		self.yPosition = yPosition
 
 class Room2(Room):
-	def __init__(self):
+	def __init__(self,xPosition=0,yPosition=1,offsetX=4,offsetY=0):
 		self.roomMeta = """
 """
 		roomLayout = """
@@ -406,10 +412,10 @@ XXXXXXXXXX
 """
 		super().__init__(roomLayout)
 		self.name = "Boilerroom"
-		self.offsetX = 4
-		self.offsetY = 0
-		self.xPosition = 0
-		self.yPosition = 1
+		self.offsetX = offsetX
+		self.offsetY = offsetY
+		self.xPosition = xPosition
+		self.yPosition = yPosition
 
 		self.lever1 = items.Lever(3,6,"engine control")
 		self.lever2 = items.Lever(1,2,"boarding alarm")
@@ -445,7 +451,7 @@ XXXXXXXXXX
 		self.lever2.activateAction = lever2action
 
 class TutorialMachineRoom(Room):
-	def __init__(self):
+	def __init__(self,xPosition=0,yPosition=1,offsetX=4,offsetY=0):
 		roomLayout = """
 XXXX$XXXXX
 X@ v vID#X
@@ -460,10 +466,10 @@ XXXXXXXXXX
 """
 		super().__init__(roomLayout)
 		self.name = "Boilerroom"
-		self.offsetX = 4
-		self.offsetY = 0
-		self.xPosition = 0
-		self.yPosition = 1
+		self.offsetX = offsetX
+		self.offsetY = offsetY
+		self.xPosition = xPosition
+		self.yPosition = yPosition
 
 		self.lever1 = items.Lever(3,6,"engine control")
 		self.lever2 = items.Lever(1,2,"boarding alarm")
@@ -476,9 +482,8 @@ XXXXXXXXXX
 
 		self.addItems([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4,self.furnace])
 
-
 class Room3(Room):
-	def __init__(self):
+	def __init__(self,xPosition=1,yPosition=0,offsetX=2,offsetY=2):
 		self.roomLayout = """
 XXXXXXXXXX
 X????????X
@@ -492,10 +497,10 @@ X??v v???X
 XXXX$XXXXX
 """
 		super().__init__(self.roomLayout)
-		self.offsetX = 2
-		self.offsetY = 2
-		self.xPosition = 1
-		self.yPosition = 0
+		self.offsetX = offsetX
+		self.offsetY = offsetY
+		self.xPosition = xPosition
+		self.yPosition = yPosition
 
 class Room4(Room):
 	def __init__(self):

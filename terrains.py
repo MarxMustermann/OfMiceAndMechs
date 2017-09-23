@@ -303,7 +303,7 @@ class TutorialTerrain(Terrain):
 		room3 = rooms.Vat1(2,1,2,2)
 		room4 = rooms.InfanteryQuarters(2,2,2,2)
 
-		room5 = rooms.CpuWasterRoom(2,3,2,2)
+		room5 = rooms.CpuWasterRoom(1,3,2,2)
 		room6 = rooms.CpuWasterRoom(2,3,2,2)
 		room7 = rooms.Room1(3,1,2,2)
 		room8 = rooms.CpuWasterRoom(3,2,1,2)

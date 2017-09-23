@@ -283,7 +283,7 @@ X.. XXXXXXXX#XX XXXXXXXXXXXXXXX#XXXXXXXXX.. XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 		self.tutorialVat = rooms.Vat2(0,0,2,2)
 		self.tutorialMachineRoom = rooms.TutorialMachineRoom(0,1,4,0)
 		room3 = rooms.Vat1(1,0,2,2)
-		room4 = rooms.GenericRoom(1,1,2,2)
+		room4 = rooms.InfanteryQuarters(1,1,2,2)
 
 		room5 = rooms.CpuWasterRoom(0,2,2,2)
 		room6 = rooms.CpuWasterRoom(1,2,2,2)

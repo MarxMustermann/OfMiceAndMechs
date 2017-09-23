@@ -618,20 +618,24 @@ XX&XX$XX&XX
 		self.yPosition = yPosition
 
 class InfanteryQuarters(Room):
-	def __init__(self):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY):
 		self.roomLayout = """
-XXXX&&XXX
-XX8PPPPXX
-X      DX
-XHH HH IX
-XHH HH |X
-XHH HH |X
-XHH HH IX
-X      DX
-XX8PPPPXX
-XXXX&&XXX
+XX$X&&XXXXX
+XX PPPPPPXX
+X .......DX
+XH.HH HH.IX
+XH.HH HH.|X
+XH.HH HH.|X
+XH.HH HH.IX
+X .......DX
+XX8PPPPPPXX
+XXXX&&XXXXX
 """
 		super().__init__(self.roomLayout)
+		self.offsetX = offsetX
+		self.offsetY = offsetY
+		self.xPosition = xPosition
+		self.yPosition = yPosition
 	
 class FreePlacemenRoom(Room):
 	def __init__(self):

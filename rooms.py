@@ -403,8 +403,8 @@ XXXXXXXXXX
 XXXX$XXXXX
 X@ v vID#X
 X@......#X
-X@.8#OF. X
-X@.##OF. X
+X@.8#O . X
+X@.##O . X
 XH.8#O . X
 XH.|DI . X
 XH......#X
@@ -425,7 +425,9 @@ XXXXXXXXXX
 		coalPile2 = items.Pile(8,4,"coal Pile2",items.Coal)
 		coalPile3 = items.Pile(8,5,"coal Pile3",items.Coal)
 		coalPile4 = items.Pile(8,6,"coal Pile4",items.Coal)
-		self.furnace = items.Furnace(6,5,"Furnace")
+		self.furnace1 = items.Furnace(6,3,"Furnace")
+		self.furnace2 = items.Furnace(6,4,"Furnace")
+		self.furnace3 = items.Furnace(6,5,"Furnace")
 
 		self.addItems([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4,self.furnace])
 

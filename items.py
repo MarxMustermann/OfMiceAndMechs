@@ -32,6 +32,22 @@ class Corpse(Item):
 		super().__init__("࿊ ",xPosition,yPosition)
 		self.walkable = True
 
+class Hutch(Item):
+	def __init__(self,xPosition=0,yPosition=0,name="Hutch",activated=False):
+		self.activated = activated
+		if self.activated:
+			super().__init__("ꙭ ",xPosition,yPosition)
+		else:
+			super().__init__("Ѻ ",xPosition,yPosition)
+
+	def apply(self,character):
+		if not self.activated:
+			self.activated = True
+			self.display = "ꙭ "
+		else:
+			self.activated = False
+			self.display = "Ѻ "
+
 class Lever(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="lever",activated=False):
 		self.activated = activated

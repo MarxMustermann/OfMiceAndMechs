@@ -66,8 +66,9 @@ class Room(object):
 					#to be commlink
 					itemsOnFloor.append(items.Item("ߐߐ",rowCounter,lineCounter))
 				elif char == "H":
-					#to be hutch
-					itemsOnFloor.append(items.Item("Ѻ ",rowCounter,lineCounter))
+					itemsOnFloor.append(items.Hutch(rowCounter,lineCounter))
+				elif char == "'":
+					itemsOnFloor.append(items.Hutch(rowCounter,lineCounter,activated=True))
 				elif char == "o":
 					#to be grid
 					itemsOnFloor.append(items.Item("░░",rowCounter,lineCounter))
@@ -623,10 +624,10 @@ class InfanteryQuarters(Room):
 XX$X&&XXXXX
 XX PPPPPPXX
 X .......DX
-XH.HH HH.IX
-XH.HH HH.|X
-XH.HH HH.|X
-XH.HH HH.IX
+X'.'' ''.IX
+X'.'' ''.|X
+X'.'' ''.|X
+X'.'' ''.IX
 X .......DX
 XX8PPPPPPXX
 XXXX&&XXXXX

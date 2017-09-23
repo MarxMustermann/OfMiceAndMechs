@@ -25,6 +25,7 @@ class Room(object):
 		self.timeIndex = 0
 		self.delayedTicks = 0
 		self.events = []
+		self.floorDisplay = ["::"]
 
 		self.itemByCoordinates = {}
 
@@ -190,7 +191,7 @@ class Room(object):
 			for i in range(0,self.sizeY):
 				subChars = []
 				for j in range(0,self.sizeX):
-					subChars.append("⛚ ")
+					subChars.append(self.floorDisplay[(2*self.sizeY+3*self.sizeX+(j+1)*(i+2)+self.timeIndex)%len(self.floorDisplay)])
 				chars.append(subChars)
 			
 			for item in self.itemsOnFloor:
@@ -664,17 +665,18 @@ class Vat2(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):
 		self.roomLayout = """
 XXXXXXXXXX
-XaaabajjjX
-XaaaaaabaX
-XabababaaX
-XaaaaaabaX
-XaabaajaaX
-XaaaababaX
-XabaaaabaX
-##aaa.va##
+X   b jjjX
+X      b X
+X b b b  X
+X      b X
+X  b  j  X
+X    b b X
+X b    b X
+##   .v ##
 XXXXX$XXXX
 """
 		super().__init__(self.roomLayout)
+		self.floorDisplay = ["♒♒","≈≈","≈♒","♒≈","≈≈"]
 		self.offsetX = offsetX
 		self.offsetY = offsetY
 		self.xPosition = xPosition

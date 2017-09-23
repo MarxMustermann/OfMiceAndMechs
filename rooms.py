@@ -693,3 +693,29 @@ XXXXX$XXXX
 		self.offsetY = offsetY
 		self.xPosition = xPosition
 		self.yPosition = yPosition
+
+class MechArmor(Room):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+		self.roomLayout = """
+XXXXXXXXXXXXXXX
+XX X X X X X XX
+X X X X X X X X
+XXXXXXXXXXXXXXX
+XX X X X X X XX
+XXXXXXXXXXXXXXX
+XX X X X X X XX
+X X X X X X X X
+XXXXXXXXXXXXXXX
+XX X X X X X XX
+X X X X X X X X
+XXXXXXXXXXXXXXX
+XX X X X X X XX
+X X X X.X X X.X
+XXXXXXX$XXXXXXX
+"""
+		super().__init__(self.roomLayout)
+		self.floorDisplay = ["--"]
+		self.offsetX = offsetX
+		self.offsetY = offsetY
+		self.xPosition = xPosition
+		self.yPosition = yPosition

@@ -280,23 +280,25 @@ X...X        X# X           #X#X        X.##XX#           #XX#           #XX#   
 #.XXX########################X##        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X
 X.. XXXXXXXX#XX XXXXXXXXXXXXXXX#XXXXXXXXX.. XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 """
-		self.tutorialVat = rooms.Room1()
-		self.tutorialMachineRoom = rooms.TutorialMachineRoom()
-		room3 = rooms.Room3()
+		self.tutorialVat = rooms.Vat2(0,0,2,2)
+		self.tutorialMachineRoom = rooms.TutorialMachineRoom(0,1,4,0)
+		room3 = rooms.Vat1(1,0,2,2)
 		room4 = rooms.GenericRoom(1,1,2,2)
 
 		room5 = rooms.CpuWasterRoom(0,2,2,2)
 		room6 = rooms.CpuWasterRoom(1,2,2,2)
-		room7 = rooms.Vat2(2,0,2,2)
+		room7 = rooms.Room1(2,0,2,2)
 		room8 = rooms.CpuWasterRoom(2,1,1,2)
 		room9 = rooms.CpuWasterRoom(2,2,2,2)
 
 		roomsOnMap = [self.tutorialVat,self.tutorialMachineRoom,room3,room4,room5,room6,room7,room8,room9]
 
+		"""
 		for i in range(0,15):
 			for j in range(0,15):
 				if not (i < 3 and j < 3):
 					roomsOnMap.append(rooms.CpuWasterRoom(i,j,2,2))
+		"""
 
 		super().__init__(roomsOnMap,detailedLayout)
 

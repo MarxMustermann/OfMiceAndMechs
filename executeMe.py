@@ -63,6 +63,8 @@ def show_or_exit(key):
 				if room.yPosition*15+room.offsetY+room.sizeY == mainChar.yPosition:
 					if room.xPosition*15+room.offsetX < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
 						localisedEntry = (mainChar.xPosition%15-room.offsetX,mainChar.yPosition%15-room.offsetY-1)
+						if localisedEntry[1] == -1:
+							localisedEntry = (localisedEntry[0],room.sizeY-1)
 						if localisedEntry in room.walkingAccess:
 							if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
 								itemMarkedLast = room.itemByCoordinates[localisedEntry]

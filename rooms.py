@@ -281,7 +281,7 @@ class Room(object):
 		return self.moveCharacter(character,newPosition)
 
 	def moveCharacterSouth(self,character):
-		if character.yPosition == 9:
+		if character.yPosition == self.sizeY-1:
 			newYPos = character.yPosition+character.room.yPosition*15+character.room.offsetY+1
 			newXPos = character.xPosition+character.room.xPosition*15+character.room.offsetX
 			character.xPosition = newXPos
@@ -631,8 +631,7 @@ X'.'' ''.|X
 X'.'' ''.|X
 X'.'' ''.IX
 X .......DX
-XX8PPPPPPXX
-XXXX&&XXXXX
+XXXXXXXXXXX
 """
 		super().__init__(self.roomLayout)
 		self.offsetX = offsetX

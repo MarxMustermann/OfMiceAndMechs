@@ -194,6 +194,7 @@ class TutorialTerrain(Terrain):
                X#           #X X           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X#           #X X           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X#           #X X           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               X#           #X X           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X            #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                ##############XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                XXXXXXXXXXXX#XXX#XXXXXXXXXXX#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
@@ -204,6 +205,7 @@ class TutorialTerrain(Terrain):
                X.XXX        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X...X        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                XXX.X        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               XXX.X        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X...X        XX#X        X...XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X.XXX        XX#X        X #.XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X...X        XX#X        X##.XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
@@ -217,6 +219,7 @@ class TutorialTerrain(Terrain):
                X...X        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X.XXX        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X...X        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               XXX.X        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                XXX.X        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X...X        XX#X        X...XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X.XXX        XX#X        X #.XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
@@ -233,6 +236,7 @@ class TutorialTerrain(Terrain):
                X...X        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                XXX.X        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X...X        XX#X        X...XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               X...X        XX#X        X...XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X.XXX        XX#X        X #.XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X...X        XX#X        X##.XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                XXX.X#####   XX#X        X...XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
@@ -246,6 +250,7 @@ class TutorialTerrain(Terrain):
                X.XXX        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X...X        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                XXX.X        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               XXX.X        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X...X        XX#X        X...XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X.XXX        XX#X        X #.XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X...X        XX#X        X##.XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
@@ -258,6 +263,7 @@ class TutorialTerrain(Terrain):
                XXX.X        XX#XX X     X.###X#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X...X        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X.XXX        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               X...X        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X...X        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                XXX.X        XX#X        X.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                X...X        XX#X        X...XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               

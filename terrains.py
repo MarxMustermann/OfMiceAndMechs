@@ -284,18 +284,13 @@ class TutorialTerrain(Terrain):
                                                                                                                                                                     
 """
 
-		room1 = rooms.MechArmor(0,0,0,0)
-		room2 = rooms.MechArmor(1,0,0,0)
-		room3 = rooms.MechArmor(2,0,0,0)
-		room4 = rooms.MechArmor(3,0,0,0)
-		room5 = rooms.MechArmor(4,0,0,0)
-		room6 = rooms.MechArmor(5,0,0,0)
-		room7 = rooms.MechArmor(0,1,0,0)
-		room8 = rooms.MechArmor(0,2,0,0)
-		room9 = rooms.MechArmor(0,3,0,0)
-		room10 = rooms.MechArmor(0,4,0,0)
-		room11 = rooms.MechArmor(0,5,0,0)
-		hull = [room1,room2,room3,room4,room5,room6,room7,room8,room9]
+		hull = []
+		for i in range(0,10):
+			hull.append(rooms.MechArmor(0,i,0,0))
+			hull.append(rooms.MechArmor(9,i,0,0))
+		for i in range(1,9):
+			hull.append(rooms.MechArmor(i,0,0,0))
+			hull.append(rooms.MechArmor(i,9,0,0))
 
 		self.tutorialVat = rooms.Vat2(1,1,2,2)
 		self.tutorialMachineRoom = rooms.TutorialMachineRoom(1,2,4,0)

@@ -27,6 +27,10 @@ class Terrain(object):
 					self.itemsOnFloor.append(items.Pipe(rowCounter,lineCounter))
 				elif char == "R":
 					pass
+				elif char == "O":
+					self.itemsOnFloor.append(items.Item("⮹ ",rowCounter,lineCounter))
+				elif char == "0":
+					self.itemsOnFloor.append(items.Item("⮽ ",rowCounter,lineCounter))
 				else:
 					displayChars = ["🝍🝍","🝍🝍","🝍🝍","🖵 ","🞇 ","🖵 ","⿴","⿴","🞇 ","🜕 "]
 					self.itemsOnFloor.append(items.Item(displayChars[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter))
@@ -155,34 +159,34 @@ class TutorialTerrain(Terrain):
                                                                                                                                                                     
                                                                                                                                                                     
                                                                                                                                                                     
-                                                                                                                                             XXXXXXXXX               
-               ##############  ################RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+                  ###  ###        ######                                                                                                     XXXXXXXXX               
+               ####O####O####  ####O  O########  O    O   #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                # RRRRRRRRRR #  #RRRRRRRRRR#   #RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               # RRRRRRRRRR #  #RRRRRRRRRR#   #RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               # RRRRRRRRRR #  #RRRRRRRRRR#   #RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               # RRRRRRRRRR #  #RRRRRRRRRR#   #RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               # RRRRRRRRRR #  #RRRRRRRRRR#   #RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               # RRRRRRRRRR #  #RRRRRRRRRR#   #RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               # RRRRRRRRRR ## #RRRRRRRRRR#   #RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               # RRRRRRRRRR  # #RRRRRRRRRR#   #RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               ##RRRRRRRRRR# # #RRRRRRRRRR#   #RRRRRRRRRR#####           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-                 RRRRRRRRRR  #         #       RRRRRRRRRR XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
-               XXRRRRRRRRRR  ######...#######  RRRRRRRRRR  X                                                                                                         
-               XX...................X.....................                                                                                                           
-                ..XRRRRRRRRRR      XXX     ##            . X                                                                                                        
-               X.XXRRRRRRRRRR      XX      #     XXXXXXX . XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
-               ..  RRRRRRRRRR#     X       # ##X X     X.. XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               .XXXRRRRRRRRRR#RRRRRRRRRRRRR# #XX X      .###X#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               ....RRRRRRRRRR#RRRRRRRRRRRRR# #RRRRRRRRRR.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               XXX.RRRRRRRRRR#RRRRRRRRRRRRR# #RRRRRRRRRR.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               ....RRRRRRRRRR#RRRRRRRRRRRRR# #RRRRRRRRRR.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               .XXXRRRRRRRRRR#RRRRRRRRRRRRR#X#RRRRRRRRRR.# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               ....RRRRRRRRRR#RRRRRRRRRRRRR#X#RRRRRRRRRR...XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               XXX.RRRRRRRRRR#RRRRRRRRRRRRR#X#RRRRRRRRRR #.XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               ....RRRRRRRRRR#RRRRRRRRRRRRR# #RRRRRRRRRR##.XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               .XXXRRRRRRRRRR#RRRRRRRRRRRRR# #RRRRRRRRRR...XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               ....RRRRRRRRRR#RRRRRRRRRRRRR# #RRRRRRRRRR.##XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               XXX.RRRRRRRRRR############### ##         .# XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #ORRRRRRRRRRO# ##RRRRRRRRRR## ##RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               # RRRRRRRRRR # #ORRRRRRRRRRO# #ORRRRRRRRRRO#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               # RRRRRRRRRR # # RRRRRRRRRR # ##RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #ORRRRRRRRRRO# # RRRRRRRRRR #  #RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               # RRRRRRRRRR # # RRRRRRRRRR # ##RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               # RRRRRRRRRR ### RRRRRRRRRR # #ORRRRRRRRRRO#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #ORRRRRRRRRRO ##ORRRRRRRRRRO# ##RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               ##RRRRRRRRRR# ###RRRRRRRRRR##  #RRRRRRRRRR#####           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+                 RRRRRRRRRR  #  RRRRRRRRRR     RRRRRRRRRR XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
+               XX  O    O    ####O#...##O####    O    O    X                                                                                                         
+               XX...............###.X..###................                                                                                                           
+                ..X  O   O     .....XX.....##            . X                                                                                                        
+               X.XORRRRRRRRRRO     XXX     #     XXXXXXX . XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
+               ..  RRRRRRRRRR#  O  XO  O   ####X O   O X.. XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               .XXORRRRRRRRRR# RRRRRRRRRRR ## RRRRRRRRRR.###X#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               ....RRRRRRRRRR#ORRRRRRRRRRRO## RRRRRRRRRR..#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               XXX.RRRRRRRRRR# RRRRRRRRRRR ##ORRRRRRRRRRO.#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               ....RRRRRRRRRR##RRRRRRRRRRR ## RRRRRRRRRR .#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               .XXORRRRRRRRRRO#RRRRRRRRRRRO## RRRRRRRRRR .#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               ....RRRRRRRRRR##RRRRRRRRRRR ##ORRRRRRRRRRO..XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               XXX.RRRRRRRRRR# RRRRRRRRRRR ## RRRRRRRRRR #.XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               ....RRRRRRRRRR#ORRRRRRRRRRRO## RRRRRRRRRR##.XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               .XXXX O   O   # RRRRRRRRRRR ##ORRRRRRRRRRO..XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               ....          #   O  O  O   ## RRRRRRRRRR..#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               XXX.          ##################  O   O  .##XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                ....X                          #         .. XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
                .XXXX                                     . X                                                                                                         
                ........................................... X                                                                                                         
@@ -303,7 +307,7 @@ class TutorialTerrain(Terrain):
 		self.tutorialVat = rooms.Vat2(1,1,2,2)
 		self.tutorialMachineRoom = rooms.TutorialMachineRoom(1,2,4,0)
 		room3 = rooms.Vat1(2,1,2,2)
-		room4 = rooms.InfanteryQuarters(2,2,2,2)
+		room4 = rooms.InfanteryQuarters(2,2,1,2)
 
 		room5 = rooms.CpuWasterRoom(1,3,2,2)
 		room6 = rooms.CpuWasterRoom(2,3,2,2)

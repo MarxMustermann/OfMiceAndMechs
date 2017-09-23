@@ -243,6 +243,7 @@ def show_or_exit(key):
 		main.set_text("")
 		footer.set_text("good job")
 
+
 frame = urwid.Frame(urwid.Filler(main,"top"),header=header,footer=footer)
 loop = urwid.MainLoop(frame, unhandled_input=show_or_exit)
 cinematics.loop = loop
@@ -429,51 +430,32 @@ cinematics.messages = messages
 
 quests.showCinematic = cinematics.showCinematic
 
-room1 = rooms.Room1()
-room2 = rooms.TutorialMachineRoom()
-room3 = rooms.Room3()
-room4 = rooms.GenericRoom(1,1,2,2)
+terrain = terrains.TutorialTerrain()
 
-room5 = rooms.CpuWasterRoom(0,2,2,2)
-room6 = rooms.CpuWasterRoom(1,2,2,2)
-room7 = rooms.Vat2(2,0,2,2)
-room8 = rooms.CpuWasterRoom(2,1,1,2)
-room9 = rooms.CpuWasterRoom(2,2,2,2)
-
-
-roomsOnMap = [room1,room2,room3,room4,room5,room6,room7,room8,room9]
-
-for i in range(0,15):
-	for j in range(0,15):
-		if not (i < 3 and j < 3):
-			roomsOnMap.append(rooms.CpuWasterRoom(i,j,2,2))
-	
-characters.roomsOnMap = roomsOnMap
-
-terrain = terrains.Terrain1(roomsOnMap)
+characters.roomsOnMap = terrain.rooms
 
 mapHidden = True
 
 mainChar = characters.Character("＠",1,3,automated=False,name="Sigmund Bärenstein")
 mainChar.terrain = terrain
-mainChar.room = room2
+mainChar.room = terrain.tutorialMachineRoom
 mainChar.watched = True
-room2.addCharacter(mainChar,1,4)
+terrain.tutorialMachineRoom.addCharacter(mainChar,1,4)
 
 def setupFirstTutorialPhase():
 	npc = characters.Character("Ⓛ ",1,2,name="Erwin von Libwig")
 	#npc2.watched = True
-	room2.addCharacter(npc,1,3)
+	terrain.tutorialMachineRoom.addCharacter(npc,1,3)
 	npc.terrain = terrain
-	npc.room = room2
+	npc.room = terrain.tutorialMachineRoom
 	#npc2.assignQuest(quest0)
 	#npc2.automated = False
 
 	npc2 = characters.Character("Ⓩ ",1,1,name="Ernst Ziegelbach")
 	#npc2.watched = True
-	room2.addCharacter(npc2,1,1)
+	terrain.tutorialMachineRoom.addCharacter(npc2,1,1)
 	npc2.terrain = terrain
-	npc2.room = room2
+	npc2.room = terrain.tutorialMachineRoom
 	#npc2.assignQuest(quest0)
 	#npc2.automated = False
 
@@ -499,7 +481,7 @@ def setupFirstTutorialPhase():
 			messages.append("*a chunk of coal drops onto the floor*")
 			messages.append("*smoke clears*")
 
-	room1.events.append(CoalRefillEvent(14))
+	terrain.tutorialMachineRoom.events.append(CoalRefillEvent(14))
 
 	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
 	cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("8"))
@@ -538,8 +520,8 @@ def setupFirstTutorialPhase():
 
 		def handleEvent(subself):
 			quest0 = quests.CollectQuest()
-			quest1 = quests.ActivateQuest(room2.furnace)
-			quest2 = quests.MoveQuest(room2,1,3,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way\n\nremeber you are the ＠")
+			quest1 = quests.ActivateQuest(terrain.tutorialMachineRoom.furnace)
+			quest2 = quests.MoveQuest(terrain.tutorialMachineRoom,1,3,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way\n\nremeber you are the ＠")
 			quest0.followUp = quest1
 			quest1.followUp = quest2
 			quest2.followUp = None
@@ -552,8 +534,8 @@ def setupFirstTutorialPhase():
 		def handleEvent(subself):
 			messages.append("*Erwin von Libwig, please fire the furnace now*")
 
-	room1.events.append(ShowMessageEvent(17))
-	room1.events.append(AddQuestEvent(18))
+	terrain.tutorialMachineRoom.events.append(ShowMessageEvent(17))
+	terrain.tutorialMachineRoom.events.append(AddQuestEvent(18))
 	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(25))
 
 	cinematics.showCinematic("there are other Items in the Room that may or may not be important for you. Here is the full List for you to review:\n\n Bin (⛛ ): Used for storing Things intended to be transported further\n Pile (ӫӫ): a Pile of Things\n Door (⭘  or ⛒ ): you can move through it when open\n Lever ( | or  /): a simple Man-Machineinterface\n Furace (ΩΩ): used to generate heat burning Things\n Display (۞ ): a complicated Machine-Maninterface\n Wall (⛝ ): ensures the structural Integrity of basically any Structure\n Pipe (✠✠): transports Liquids, Pseudoliquids and Gasses\n Coal ( *): a piece of Coal, quite usefull actually\n Boiler (伫 or 伾): generates Steam using Water and and Heat\n Chains (⛓ ): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing\n Comlink (ߐߐ): a Pipe based Voicetransportationsystem that allows Communication with other Rooms\n Hutch (Ѻ ): a comfy and safe Place to sleep and eat")
@@ -567,13 +549,13 @@ setupFirstTutorialPhase()
 #cinematics.showCinematic("you have 20 Ticks to familiarise yourself with the Movementcommands. please do.")
 #cinematics.showCinematic("next on my Checklist is to explain the Interaction with your Environment\n\ninteraction with your Environment is somewhat complicated\n\nthe basic Interationcommands are:\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the Room.\n\nwhenever you bump into an item that is to big to be walked on, you will promted for giving an extra interaction command. I'll give you an example:\n\nΩΩ＠ӫӫ\n\n pressing a and j would result in Activation of the Furnace\n pressing d and j would result in Activation of the Pile\n pressing a and e would result make you examine the Furnace\n pressing d and e would result make you examine the Pile\n\nplease grab yourself some Coal from a pile by bumping into it and pressing j afterwards.")
 
-tutorialQuest1 = quests.MoveQuest(room2,5,7,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way\n\nremeber you are the ＠")
+tutorialQuest1 = quests.MoveQuest(terrain.tutorialMachineRoom,5,7,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way\n\nremeber you are the ＠")
 tutorialQuest2 = quests.CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing j.")
-tutorialQuest3 = quests.ActivateQuest(room2.furnace,startCinematics="now go and activate the Furnace marked with a Ω. you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press j.")
-tutorialQuest4 = quests.MoveQuest(room2,1,3,startCinematics="Move back to Waitingposition")
-tutorialQuest5 = quests.LeaveRoomQuest(room2,startCinematics="please exit the Room")
-tutorialQuest5 = quests.EnterRoomQuest(room1,startCinematics="please goto the Vat")
-tutorialQuest6 = quests.MoveQuest(room1,4,4,startCinematics="please move to Waitingposition")
+tutorialQuest3 = quests.ActivateQuest(terrain.tutorialMachineRoom.furnace,startCinematics="now go and activate the Furnace marked with a Ω. you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press j.")
+tutorialQuest4 = quests.MoveQuest(terrain.tutorialMachineRoom,1,3,startCinematics="Move back to Waitingposition")
+tutorialQuest5 = quests.LeaveRoomQuest(terrain.tutorialMachineRoom,startCinematics="please exit the Room")
+tutorialQuest5 = quests.EnterRoomQuest(terrain.tutorialVat,startCinematics="please goto the Vat")
+tutorialQuest6 = quests.MoveQuest(terrain.tutorialVat,4,4,startCinematics="please move to Waitingposition")
 
 tutorialQuest1.followUp = tutorialQuest2
 tutorialQuest2.followUp = tutorialQuest3
@@ -587,7 +569,8 @@ terrains.mainChar = mainChar
 
 mainChar.assignQuest(tutorialQuest1)
 
-quest0 = quests.MoveQuest(room2,7,7)
+"""
+quest0 = quests.MoveQuest(terrain.tutorialMachineRoom,7,7)
 quest1 = quests.MoveQuest(room1,4,4)
 quest2 = quests.MoveQuest(room3,6,6)
 quest3 = quests.MoveQuest(room4,2,8)
@@ -627,11 +610,12 @@ quest16.followUp = quest17
 quest17.followUp = quest18
 quest18.followUp = quest19
 quest19.followUp = quest0
+"""
 npc2 = characters.Character("Ⓩ ",1,1,name="Ernst Ziegelbach")
 #npc2.watched = True
-room2.addCharacter(npc2,1,1)
+terrain.tutorialMachineRoom.addCharacter(npc2,1,1)
 npc2.terrain = terrain
-npc2.room = room2
+npc2.room = terrain.tutorialMachineRoom
 #npc2.assignQuest(quest0)
 #npc2.automated = False
 
@@ -645,7 +629,7 @@ def advanceGame():
 	for character in terrain.characters:
 		character.advance()
 
-	for room in roomsOnMap:
+	for room in terrain.rooms:
 		room.advance()
 
 	gamestate.tick += 1

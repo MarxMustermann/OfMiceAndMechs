@@ -27,6 +27,11 @@ class Item(object):
 		if listenFunction in self.listeners:
 			self.listeners.remove(listenFunction)
 
+class Corpse(Item):
+	def __init__(self,xPosition=0,yPosition=0,name="corpse"):
+		super().__init__("࿊ ",xPosition,yPosition)
+		self.walkable = True
+
 class Lever(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="lever",activated=False):
 		self.activated = activated

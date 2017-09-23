@@ -118,6 +118,9 @@ class Room(object):
 					itemsOnFloor.append(items.Item("◎ ",rowCounter,lineCounter))
 				elif char == "j":
 					itemsOnFloor.append(items.Item("🝇 ",rowCounter,lineCounter))
+				elif char == "c":
+					# to be corpse type I
+					itemsOnFloor.append(items.Corpse(rowCounter,lineCounter))
 				elif char == "z":
 					item = items.Item("┃ ",rowCounter,lineCounter)
 					item.walkable = True
@@ -668,7 +671,7 @@ XXXXXXXXXX
 X   b jjjX
 X      b X
 X b b b  X
-X      b X
+X    c b X
 X  b  j  X
 X    b b X
 X b    b X

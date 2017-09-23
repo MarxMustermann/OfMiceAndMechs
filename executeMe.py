@@ -59,8 +59,8 @@ def show_or_exit(key):
 				return
 		else:
 			for room in terrain.rooms:
-				if room.yPosition*15+room.offsetY+10 == mainChar.yPosition:
-					if room.xPosition*15+room.offsetX < mainChar.xPosition and room.xPosition*15+room.offsetX+10 > mainChar.xPosition:
+				if room.yPosition*15+room.offsetY+room.sizeY == mainChar.yPosition:
+					if room.xPosition*15+room.offsetX < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
 						localisedEntry = (mainChar.xPosition%15-room.offsetX,mainChar.yPosition%15-room.offsetY-1)
 						if localisedEntry in room.walkingAccess:
 							if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
@@ -118,7 +118,7 @@ def show_or_exit(key):
 		else:
 			for room in terrain.rooms:
 				if room.yPosition*15+room.offsetY == mainChar.yPosition+1:
-					if room.xPosition*15+room.offsetX < mainChar.xPosition and room.xPosition*15+room.offsetX+10 > mainChar.xPosition:
+					if room.xPosition*15+room.offsetX < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
 						localisedEntry = ((mainChar.xPosition-room.offsetX)%15,(mainChar.yPosition-room.offsetY+1)%15)
 						if localisedEntry in room.walkingAccess:
 							if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
@@ -540,7 +540,7 @@ def setupFirstTutorialPhase():
 
 	cinematics.showCinematic("there are other Items in the Room that may or may not be important for you. Here is the full List for you to review:\n\n Bin (⛛ ): Used for storing Things intended to be transported further\n Pile (ӫӫ): a Pile of Things\n Door (⭘  or ⛒ ): you can move through it when open\n Lever ( | or  /): a simple Man-Machineinterface\n Furace (ΩΩ): used to generate heat burning Things\n Display (۞ ): a complicated Machine-Maninterface\n Wall (⛝ ): ensures the structural Integrity of basically any Structure\n Pipe (✠✠): transports Liquids, Pseudoliquids and Gasses\n Coal ( *): a piece of Coal, quite usefull actually\n Boiler (伫 or 伾): generates Steam using Water and and Heat\n Chains (⛓ ): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing\n Comlink (ߐߐ): a Pipe based Voicetransportationsystem that allows Communication with other Rooms\n Hutch (Ѻ ): a comfy and safe Place to sleep and eat")
 
-setupFirstTutorialPhase()
+#setupFirstTutorialPhase()
 
 #cinematics.showCinematic("movement can be tricky sometimes so please make yourself comfortable with the controls.\n\nyou can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.\n\nthe basic Movementcommands are:\n w=up\n a=right\n s=down\n d=right\nplease move to the designated Target. the Implant will mark your Way")
 #"""

@@ -25,6 +25,8 @@ class Terrain(object):
 					self.itemsOnFloor.append(items.Wall(rowCounter,lineCounter))
 				elif char == "#":
 					self.itemsOnFloor.append(items.Pipe(rowCounter,lineCounter))
+				elif char == "R":
+					pass
 				else:
 					displayChars = ["🝍🝍","🝍🝍","🝍🝍","🖵 ","🞇 ","🖵 ","⿴","⿴","🞇 ","🜕 "]
 					self.itemsOnFloor.append(items.Item(displayChars[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter))
@@ -155,17 +157,17 @@ class TutorialTerrain(Terrain):
                                                                                                                                                                     
                                                                                                                                              XXXXXXXXX               
                ##############  ################           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #            #  #          #   #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #            #  #          #   #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #            #  #          #   #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #            #  #          #   #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #            #  #          #   #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #            #  #          #   #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #            #  #          #   #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #            #  #          #   #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               ##           #  #          #   #          #####           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-                            #          #                  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
-               XX           #######...#######              X                                                                                                         
+               # RRRRRRRRRR #  #          #   #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               # RRRRRRRRRR #  #          #   #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               # RRRRRRRRRR #  #          #   #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               # RRRRRRRRRR #  #          #   #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               # RRRRRRRRRR #  #          #   #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               # RRRRRRRRRR #  #          #   #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               # RRRRRRRRRR ## #          #   #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               # RRRRRRRRRR  # #          #   #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               ##RRRRRRRRRR# # #          #   #          #####           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+                 RRRRRRRRRR  #         #                  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
+               XXRRRRRRRRRR  ######...#######              X                                                                                                         
                XX...................X.....................                                                                                                           
                 ..X                XXX     ##            . X                                                                                                        
                X.XX                XX      #     XXXXXXX . XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               

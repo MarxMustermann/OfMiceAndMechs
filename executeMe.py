@@ -61,7 +61,7 @@ def show_or_exit(key):
 		else:
 			for room in terrain.rooms:
 				if room.yPosition*15+room.offsetY+room.sizeY == mainChar.yPosition:
-					if room.xPosition*15+room.offsetX < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
+					if room.xPosition*15+room.offsetX-1 < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
 						localisedEntry = (mainChar.xPosition%15-room.offsetX,mainChar.yPosition%15-room.offsetY-1)
 						if localisedEntry[1] == -1:
 							localisedEntry = (localisedEntry[0],room.sizeY-1)

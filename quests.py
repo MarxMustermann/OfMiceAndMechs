@@ -111,7 +111,6 @@ class MetaQuest(Quest):
 		super().assignToCharacter(character)
 
 	def triggerCompletionCheck(self):
-		messages.append("triggerCompletionCheck")
 		if not self.subQuests[0].active:
 			self.subQuests.remove(self.subQuests[0])
 

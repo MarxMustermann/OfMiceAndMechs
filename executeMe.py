@@ -5,6 +5,7 @@ import rooms
 import characters
 import terrains
 import cinematics
+import displayChars
 
 header = urwid.Text(u"")
 main = urwid.Text(u"＠")
@@ -13,6 +14,8 @@ cinematics.main = main
 footer = urwid.Text(u"")
 
 cinematics.quests = quests
+
+items.displayChars = displayChars
 
 def callShow_or_exit(loop,key):
 	show_or_exit(key)

@@ -1,5 +1,6 @@
 messages = None
 characters = None
+displayChars = None
 
 class Item(object):
 	def __init__(self,display="??",xPosition=0,yPosition=0):
@@ -29,7 +30,7 @@ class Item(object):
 
 class Corpse(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="corpse"):
-		super().__init__("࿊ ",xPosition,yPosition)
+		super().__init__(displayChars.corpse,xPosition,yPosition)
 		self.walkable = True
 
 class Hutch(Item):
@@ -111,12 +112,12 @@ class Display(Item):
 class Wall(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Wall"):
 		self.name = name
-		super().__init__("⛝ ",xPosition,yPosition)
+		super().__init__(displayChars.wall,xPosition,yPosition)
 
 class Pipe(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Wall"):
 		self.name = name
-		super().__init__("✠✠",xPosition,yPosition)
+		super().__init__(displayChars.pipe,xPosition,yPosition)
 
 class Coal(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Coal"):

@@ -6,6 +6,7 @@ mainChar = None
 characters = None
 messages = None
 calculatePath = None
+displayChars = None
 
 class Room(object):
 	def __init__(self,layout):
@@ -25,9 +26,10 @@ class Room(object):
 		self.timeIndex = 0
 		self.delayedTicks = 0
 		self.events = []
-		self.floorDisplay = ["::"]
+		self.floorDisplay = [displayChars.floor]
 
 		self.itemByCoordinates = {}
+
 
 		self.walkingAccess = []
 		lineCounter = 0
@@ -54,91 +56,85 @@ class Room(object):
 					itemsOnFloor.append(items.Display(rowCounter,lineCounter))
 				elif char == "v":
 					#to be bin
-					itemsOnFloor.append(items.Item("⛛ ",rowCounter,lineCounter))
+					itemsOnFloor.append(items.Item(displayChars.binStorage,rowCounter,lineCounter))
 				elif char == "O":
 					#to be pressure Tank
-					itemsOnFloor.append(items.Item("伫",rowCounter,lineCounter))
-					#itemsOnFloor.append(items.Item("伾",rowCounter,lineCounter))
+					itemsOnFloor.append(items.Item(displayChars.boiler_inactive,rowCounter,lineCounter))
+					#itemsOnFloor.append(items.Item(displayChars.boiler_active,rowCounter,lineCounter))
 				elif char == "8":
 					#to be chains
-					itemsOnFloor.append(items.Item("⛓ ",rowCounter,lineCounter))
+					itemsOnFloor.append(items.Item(displayChars.chains,rowCounter,lineCounter))
 				elif char == "I":
 					#to be commlink
-					itemsOnFloor.append(items.Item("ߐߐ",rowCounter,lineCounter))
+					itemsOnFloor.append(items.Item(displayChars.commLink,rowCounter,lineCounter))
 				elif char == "H":
 					itemsOnFloor.append(items.Hutch(rowCounter,lineCounter))
 				elif char == "'":
 					itemsOnFloor.append(items.Hutch(rowCounter,lineCounter,activated=True))
 				elif char == "o":
 					#to be grid
-					itemsOnFloor.append(items.Item("░░",rowCounter,lineCounter))
+					itemsOnFloor.append(items.Item(displayChars.grid,rowCounter,lineCounter))
 				elif char == "a":
 					#to be acid
-					displayChars = ["♒♒","≈≈","≈♒","♒≈","≈≈"]
-					item = items.Item(displayChars[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter)
+					item = items.Item(displayChars.acids[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter)
 					item.walkable = True
 					itemsOnFloor.append(item)
 				elif char == "b":
 					#to be foodstuffs
-					displayChars = ["՞՞","🍖 "," ☠","💀 ","👂 ","✋ "]
-					itemsOnFloor.append(items.Item(displayChars[((2*rowCounter)+lineCounter)%6],rowCounter,lineCounter))
+					itemsOnFloor.append(items.Item(displayChars.foodStuffs[((2*rowCounter)+lineCounter)%6],rowCounter,lineCounter))
 				elif char == "m":
-					displayChars = ["⌺ ","⚙ ","⌼ ","⍯ ","⌸ "]
-					itemsOnFloor.append(items.Item(displayChars[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter))
+					itemsOnFloor.append(items.Item(displayChars.machineries[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter))
 				elif char == "h":
-					itemsOnFloor.append(items.Item("🜹 ",rowCounter,lineCounter))
+					itemsOnFloor.append(items.Item(displayChars.hub,rowCounter,lineCounter))
 				elif char == "i":
-					itemsOnFloor.append(items.Item("⍌ ",rowCounter,lineCounter))
+					itemsOnFloor.append(items.Item(displayChars.ramp,rowCounter,lineCounter))
 				elif char == "p":
-					itemsOnFloor.append(items.Item("┅┅",rowCounter,lineCounter))
+					itemsOnFloor.append(items.Item(displayChars.noClue,rowCounter,lineCounter))
 				elif char == "q":
-					item = items.Item("━━",rowCounter,lineCounter)
+					item = items.Item(displayChars.pipe_lr,rowCounter,lineCounter)
 					item.walkable = True
 					itemsOnFloor.append(item)
 				elif char == "r":
-					item = items.Item("┳━",rowCounter,lineCounter)
+					item = items.Item(displayChars.pipe_lrd,rowCounter,lineCounter)
 					item.walkable = True
 					itemsOnFloor.append(item)
 				elif char == "s":
-					item = items.Item("┓ ",rowCounter,lineCounter)
+					item = items.Item(displayChars.pipe_ld,rowCounter,lineCounter)
 					item.walkable = True
 					itemsOnFloor.append(item)
 				elif char == "t":
-					item = items.Item("┛ ",rowCounter,lineCounter)
+					item = items.Item(displayChars.pipe_lu,rowCounter,lineCounter)
 					item.walkable = True
 					itemsOnFloor.append(item)
 				elif char == "u":
-					item = items.Item("┗━",rowCounter,lineCounter)
+					item = items.Item(displayChars.pipe_ru,rowCounter,lineCounter)
 					item.walkable = True
 					itemsOnFloor.append(item)
 				elif char == "w":
-					itemsOnFloor.append(items.Item("⚟ ",rowCounter,lineCounter))
+					itemsOnFloor.append(items.Item(displayChars.spray_right,rowCounter,lineCounter))
 				elif char == "x":
-					itemsOnFloor.append(items.Item("⚞ ",rowCounter,lineCounter))
+					itemsOnFloor.append(items.Item(displayChars.spray_left,rowCounter,lineCounter))
 				elif char == "y":
-					itemsOnFloor.append(items.Item("◎ ",rowCounter,lineCounter))
+					itemsOnFloor.append(items.Item(displayChars.outlet,rowCounter,lineCounter))
 				elif char == "j":
-					itemsOnFloor.append(items.Item("🝇 ",rowCounter,lineCounter))
+					itemsOnFloor.append(items.Item(displayChars.vatSnake,rowCounter,lineCounter))
 				elif char == "c":
 					# to be corpse type I
 					itemsOnFloor.append(items.Corpse(rowCounter,lineCounter))
 				elif char == "z":
-					item = items.Item("┃ ",rowCounter,lineCounter)
+					item = items.Item(displayChars.pipe_ud,rowCounter,lineCounter)
 					item.walkable = True
 					itemsOnFloor.append(item)
 				elif char == "B":
-					item = items.Item("❖❖",rowCounter,lineCounter)
+					item = items.Item(displayChars.barricade,rowCounter,lineCounter)
 					item.walkable = True
 					itemsOnFloor.append(item)
 				else:
-					displayChars = ["🜆 ","🜾 ","ꘒ ","ꖻ ","ᵺ "]
-					displayChars = ["🝍🝍","🝍🝍","🝍🝍","🖵 ","🞇 ","🖵 ","⿴","⿴","🞇 ","🜕 "]
-					itemsOnFloor.append(items.Item(displayChars[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter))
+					itemsOnFloor.append(items.Item(displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter))
 				rowCounter += 1
 				self.sizeX = rowCounter
 			lineCounter += 1
 		self.sizeY = lineCounter-1
-
 		rawWalkingPath = []
 		lineCounter = 0
 		for line in self.layout[1:].split("\n"):
@@ -214,10 +210,10 @@ class Room(object):
 				if len(characters[0].quests):
 					try:
 						if not self.shownQuestmarkerLastRender:
-							chars[characters[0].quests[0].dstY][characters[0].quests[0].dstX] = "xX"
+							chars[characters[0].quests[0].dstY][characters[0].quests[0].dstX] = displayChars.questTargetMarker
 							path = calculatePath(characters[0].xPosition,characters[0].yPosition,characters[0].quests[0].dstX,characters[0].quests[0].dstY,self.walkingPath)
 							for item in path:
-								chars[item[1]][item[0]] = "xx"
+								chars[item[1]][item[0]] = displayChars.questPathMarker
 							
 							self.shownQuestmarkerLastRender = True
 						else:
@@ -232,7 +228,7 @@ class Room(object):
 			for i in range(0,self.sizeY):
 				subChars = []
 				for j in range(0,self.sizeX):
-					subChars.append("⼞")
+					subChars.append(displayChars.invisibleRoom)
 				chars.append(subChars)
 
 			for item in self.itemsOnFloor:
@@ -690,7 +686,7 @@ X b    b X
 XXXXX$XXXX
 """
 		super().__init__(self.roomLayout)
-		self.floorDisplay = ["♒♒","≈≈","≈♒","♒≈","≈≈"]
+		self.floorDisplay = displayChars.acids
 		self.offsetX = offsetX
 		self.offsetY = offsetY
 		self.xPosition = xPosition
@@ -716,7 +712,7 @@ X X X X.X X X.X
 XXXXXXX$XXXXXXX
 """
 		super().__init__(self.roomLayout)
-		self.floorDisplay = ["--"]
+		self.floorDisplay = [displayChars.nonWalkableUnkown]
 		self.offsetX = offsetX
 		self.offsetY = offsetY
 		self.xPosition = xPosition

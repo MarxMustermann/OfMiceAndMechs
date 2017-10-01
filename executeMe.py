@@ -16,6 +16,8 @@ footer = urwid.Text(u"")
 cinematics.quests = quests
 
 items.displayChars = displayChars
+rooms.displayChars = displayChars
+terrains.displayChars = displayChars
 
 def callShow_or_exit(loop,key):
 	show_or_exit(key)

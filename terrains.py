@@ -3,6 +3,7 @@ import rooms
 
 mainChar = None
 messages = None
+displayChars = None
 
 class Terrain(object):
 	def __init__(self,rooms,detailedLayout):
@@ -28,12 +29,11 @@ class Terrain(object):
 				elif char == "R":
 					pass
 				elif char == "O":
-					self.itemsOnFloor.append(items.Item("⮹ ",rowCounter,lineCounter))
+					self.itemsOnFloor.append(items.Item(displayChars.clamp_active,rowCounter,lineCounter))
 				elif char == "0":
-					self.itemsOnFloor.append(items.Item("⮽ ",rowCounter,lineCounter))
+					self.itemsOnFloor.append(items.Item(displayChars.clamp_inactive,rowCounter,lineCounter))
 				else:
-					displayChars = ["🝍🝍","🝍🝍","🝍🝍","🖵 ","🞇 ","🖵 ","⿴","⿴","🞇 ","🜕 "]
-					self.itemsOnFloor.append(items.Item(displayChars[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter))
+					self.itemsOnFloor.append(items.Item(displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter))
 				rowCounter += 1
 			lineCounter += 1
 
@@ -89,9 +89,9 @@ class Terrain(object):
 			line = []
 			for j in range(0,250):
 				if not mapHidden:
-					line.append("::")
+					line.append(displayChars.floor)
 				else:
-					line.append("  ")
+					line.append(displayChars.void)
 			chars.append(line)
 
 		for room in self.rooms:
@@ -134,7 +134,7 @@ class Terrain(object):
 						try:
 							path = calculatePath(mainChar.xPosition,mainChar.yPosition,mainChar.quests[0].dstX,mainChar.quests[0].dstY,self.walkingPath)
 							for item in path[:-1]:
-								chars[item[1]][item[0]] = "xx"
+								chars[item[1]][item[0]] = displayChars.pathMarker
 						except:
 							pass
 

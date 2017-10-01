@@ -22,7 +22,8 @@ class Quest(object):
 		return character.walkPath()
 	
 	def postHandler(self):
-		self.character.quests.remove(self)
+		if self in self.character.quests:
+			self.character.quests.remove(self)
 		if self.endTrigger:
 			self.endTrigger()
 		if self.endCinematics:
@@ -53,6 +54,8 @@ class Quest(object):
 
 	def changed(self):
 		messages.append("QUEST: "+self.description+" changed")
+		for listener in self.listener:
+			listener()
 
 	def addListener(self,listenFunction):
 		if not listenFunction in self.listener:
@@ -72,12 +75,75 @@ class Quest(object):
 
 	def deactivate(self):
 		self.active = False
+		self.changed()
+
+class MetaQuest(Quest):
+	def __init__(self,quests,startCinematics=None):
+		self.subQuests = quests
+		self.subQuests[0].addListener(self.triggerCompletionCheck)
+		super().__init__(startCinematics=startCinematics)
+
+	@property
+	def dstX(self):
+		try:
+			return self.subQuests[0].dstX
+		except:
+			return 0
+
+	@property
+	def dstY(self):
+		try:
+			return self.subQuests[0].dstY
+		except:
+			return 0
+
+	@property
+	def description(self):
+		try:
+			return self.subQuests[0].description
+		except:
+			return ""
+
+	def assignToCharacter(self,character):
+		self.subQuests[0].assignToCharacter(character)
+		super().assignToCharacter(character)
+
+	def triggerCompletionCheck(self):
+		messages.append("triggerCompletionCheck")
+		if not self.subQuests[0].active:
+			self.subQuests.remove(self.subQuests[0])
+
+			if len(self.subQuests):
+				self.subQuests[0].activate()
+				self.subQuests[0].assignToCharacter(self.character)
+				self.subQuests[0].addListener(self.triggerCompletionCheck)
+			else:
+				self.postHandler()
+
+	def activate(self):
+		if len(self.subQuests):
+			self.subQuests[0].activate()
+		super().activate()
+
+	def deactivate(self):
+		if len(self.subQuests):
+			self.subQuests[0].deactivate()
+		super().deactivate()
+
+class PatrolQuest(MetaQuest):
+	def __init__(self,waypoints=[],startCinematics=None):
+		quests = []
+
+		for waypoint in waypoints:
+			quest = MoveQuest(waypoint[0],waypoint[1],waypoint[2])
+			quests.append(quest)
+
+		super().__init__(quests,startCinematics=startCinematics)
 
 class CollectQuest(Quest):
 	def __init__(self,toFind="canBurn",startCinematics=None):
 		self.toFind = toFind
 		self.description = "please fetch things with property: "+toFind
-		
 		foundItem = None
 
 		super().__init__(startCinematics=startCinematics)

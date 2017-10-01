@@ -5,7 +5,13 @@ import rooms
 import characters
 import terrains
 import cinematics
-import displayChars
+import sys
+
+print(len(sys.argv))
+if len(sys.argv) > 1:
+	import displayChars_fallback as displayChars
+else:
+	import displayChars
 
 header = urwid.Text(u"")
 main = urwid.Text(u"＠")

@@ -78,9 +78,11 @@ class Quest(object):
 		self.changed()
 
 class MetaQuest(Quest):
-	def __init__(self,quests,startCinematics=None):
+	def __init__(self,quests,startCinematics=None,looped=False):
+		self.subQuestsOrig = quests.copy()
 		self.subQuests = quests
 		self.subQuests[0].addListener(self.triggerCompletionCheck)
+		self.looped = looped
 		super().__init__(startCinematics=startCinematics)
 
 	@property
@@ -118,7 +120,14 @@ class MetaQuest(Quest):
 				self.subQuests[0].assignToCharacter(self.character)
 				self.subQuests[0].addListener(self.triggerCompletionCheck)
 			else:
-				self.postHandler()
+				if not self.looped:
+					self.postHandler()
+				else:
+					self.subQuests = self.subQuestsOrig.copy()
+
+					self.subQuests[0].activate()
+					self.subQuests[0].assignToCharacter(self.character)
+					self.subQuests[0].addListener(self.triggerCompletionCheck)
 
 	def activate(self):
 		if len(self.subQuests):
@@ -138,7 +147,7 @@ class PatrolQuest(MetaQuest):
 			quest = MoveQuest(waypoint[0],waypoint[1],waypoint[2])
 			quests.append(quest)
 
-		super().__init__(quests,startCinematics=startCinematics)
+		super().__init__(quests,startCinematics=startCinematics,looped=True)
 
 class CollectQuest(Quest):
 	def __init__(self,toFind="canBurn",startCinematics=None):

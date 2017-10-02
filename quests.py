@@ -139,14 +139,14 @@ class MetaQuest(Quest):
 		super().deactivate()
 
 class PatrolQuest(MetaQuest):
-	def __init__(self,waypoints=[],startCinematics=None):
+	def __init__(self,waypoints=[],startCinematics=None,looped=True):
 		quests = []
 
 		for waypoint in waypoints:
 			quest = MoveQuest(waypoint[0],waypoint[1],waypoint[2])
 			quests.append(quest)
 
-		super().__init__(quests,startCinematics=startCinematics,looped=True)
+		super().__init__(quests,startCinematics=startCinematics,looped=looped)
 
 class CollectQuest(Quest):
 	def __init__(self,toFind="canBurn",startCinematics=None):

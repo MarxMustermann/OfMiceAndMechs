@@ -48,3 +48,5 @@ boiler_active = "伾"
 clamp_active = "⮹ "
 clamp_inactive = "⮽ "
 void = "  "
+main_char = "＠"
+staffCharacters = ["Ⓐ ","Ⓑ ","Ⓒ ","Ⓓ ","Ⓔ ","Ⓕ ","Ⓖ ","Ⓗ ","Ⓘ ","Ⓙ ","Ⓚ ","Ⓛ ","Ⓜ ","Ⓝ ","Ⓞ ","Ⓟ ","Ⓠ ","Ⓡ ","Ⓢ ","Ⓣ ","Ⓤ ","Ⓥ ","Ⓦ ","Ⓧ ","Ⓨ ","Ⓩ "]

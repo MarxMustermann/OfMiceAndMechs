@@ -437,7 +437,7 @@ XXXXXXXXXX
 		quest2.followUp = quest3
 		quest3.followUp = quest4
 		quest4.followUp = quest1
-		npc = Character("Ⓛ ",1,2,name="Erwin von Libwig")
+		npc = Character(staffCharacters[11],1,2,name="Erwin von Libwig")
 		self.addCharacter(npc,1,3)
 		npc.room = self
 		npc.assignQuest(quest0)

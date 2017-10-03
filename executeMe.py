@@ -5,13 +5,13 @@ import rooms
 import characters
 import terrains
 import cinematics
-import commandChars
+import config.commandChars as commandChars
 import sys
 
 if len(sys.argv) > 1:
-	import displayChars_fallback as displayChars
+	import config.displayChars_fallback as displayChars
 else:
-	import displayChars
+	import config.displayChars as displayChars
 
 header = urwid.Text(u"")
 main = urwid.Text(displayChars.main_char)

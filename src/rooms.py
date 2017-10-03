@@ -1,5 +1,5 @@
-import items 
-import quests
+import src.items as items
+import src.quests as quests
 
 Character = None
 mainChar = None

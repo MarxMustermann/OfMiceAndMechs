@@ -1,5 +1,5 @@
-import items
-import rooms
+import src.items as items
+import src.rooms as rooms
 
 mainChar = None
 messages = None

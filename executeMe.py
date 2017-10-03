@@ -1,12 +1,13 @@
 import urwid 
-import items 
-import quests
-import rooms
-import characters
-import terrains
-import cinematics
-import config.commandChars as commandChars
 import sys
+
+import src.items as items
+import src.quests as quests
+import src.rooms as rooms
+import src.characters as characters
+import src.terrains as terrains
+import src.cinematics as cinematics
+import config.commandChars as commandChars
 
 if len(sys.argv) > 1:
 	import config.displayChars_fallback as displayChars

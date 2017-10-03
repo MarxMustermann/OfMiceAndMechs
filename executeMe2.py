@@ -8,6 +8,7 @@ import cinematics
 import commandChars
 import sys
 
+print(len(sys.argv))
 if len(sys.argv) > 1:
 	import displayChars_fallback as displayChars
 else:
@@ -24,6 +25,8 @@ cinematics.quests = quests
 items.displayChars = displayChars
 rooms.displayChars = displayChars
 terrains.displayChars = displayChars
+
+cinematics.commandChars = commandChars
 
 def callShow_or_exit(loop,key):
 	show_or_exit(key)
@@ -45,7 +48,7 @@ def show_or_exit(key):
 	if len(cinematics.cinematicQueue):
 		if key in (commandChars.quit_normal, commandChars.quit_instant):
 			raise urwid.ExitMainLoop()
-		elif key in (commandChars.pause,commandChars.advance,commandChars.autoAdvance):
+		elif key in (commandChars.ignore,commandChars.advance,commandChars.autoAdvance):
 			cinematics.cinematicQueue[0].abort()
 			cinematics.cinematicQueue = cinematics.cinematicQueue[1:]
 			loop.set_alarm_in(0.0, callShow_or_exit, commandChars.ignore)

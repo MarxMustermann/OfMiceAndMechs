@@ -1,0 +1,15 @@
+move_north = "w"
+move_east = "d"
+move_west = "a"
+move_south = "s"
+activate = "j"
+pickUp = "k"
+drop = "l"
+hail = "h"
+quit_normal = "q"
+quit_instant = "Q"
+autoAdvance = '*'
+advance = '+'
+pause = ' '
+ignore = '~'
+wait = '.'

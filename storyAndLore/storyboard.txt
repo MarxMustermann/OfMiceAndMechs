@@ -84,7 +84,7 @@ world background story:
 			the lower cast got genetically and otherwise engeneered to be loyal and stupid
 			degeneration of society to a construct for the imperators wishes
 			no development except very limited peaks ordered to be done by the imperator
-			computers were never developed outside of mad science
+		say("""	computers were never developed outside of mad science
 			the dictatorship had no external enemies and no relevant internal unrest
 			the imperator had to disapear completely for yearlong longlivety treatments and enforced his wishes by the implant and delegating most of the work to his underlings
 			seeing his death as an possibility, the imperator decided that a new imperator may be crowned after his death by consensus of his highest underlings
@@ -271,7 +271,7 @@ Kapitän
 
 
 
-
+==== first inactive tutorial phase ====
 
 #===
 say("""welcome to the Trainingenvironment
@@ -344,7 +344,7 @@ say("""Erwin von Libwig will demonstrate how to fire a furnace now.
 watch and learn.""")
 
 startShowGameCutScene()
-*Erwin von Libwig walks to a Pile and fires a furnace*
+*Erwinsay(""" von Libwig walks to a Pile and fires a furnace*
 *Erwin von Libwig walks back to a Pile and fires a furnace*
 endShowGameCutScene()
 *Erwin von Libwig goes back to waiting position*
@@ -354,7 +354,7 @@ say("""there are other items in the room that may or may not be important for yo
  Pile (ӫӫ): a Pile of Things
  Door (⭘  or ⛒ ): you can move through it when open
  Lever ( | or  /): a simple Man-Machineinterface
- Furace (ΩΩ): used to generate heat burning Things
+ Furace (Ωsay("""Ω): used to generate heat burning Things
  Display (۞ ): a complicated Machine-Maninterface
  Wall (⛝ ): ensures the structural Integrity of basically any Structure
  Pipe (✠✠): transports Liquids, Pseudoliquids and Gasses 
@@ -363,6 +363,9 @@ say("""there are other items in the room that may or may not be important for yo
  Chains (⛓ ): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing
  Comlink (ߐߐ): a pipebased Voicetransportationsystem that allows Communication with other Rooms
  Hutch (Ѻ ): a comfy and safe Place to sleep and eat""")
+
+==== second active tutorial phase ====
+
 #==
 say("""movement can be tricky sometimes so please make yourself comfortable with the controls.
 
@@ -375,9 +378,18 @@ the basic Movementcommands are:
  d=right
 please move to the designated Target. the Implant will mark your Way""")
 #==
-*move back to waiting position*
+say("""now please patrol around the rooms a few times.""")
+wait for 40 ticks + at least one completed round
+factor the amount of rounds walked into the score
 #==
-say("""you have 20 Ticks to familiarise yourself with the Movementcommands. please do.""")
+say("""thats enough. move back to waiting position""")
+*move back to waiting position*
+#==say("""
+say("""use e to examine items. you can get Descriptions and more detailed Information about your environment than just by looking at things. 
+you have 20 Ticks to familiarise yourself with the Movementcommands. please do.""")
+wait for 20 tick
+if not in waiting position:
+	send to waiting position
 #==
 say("""next on my Checklist is to explain the Interaction with your Environment. the Interaction with your Environment is somewhat complicated
 
@@ -399,4 +411,95 @@ whenever you bump into an Item that is to big to be walked on, you will promted 
 
 please grab yourself some Coal from a pile by bumping into it and pressing j afterwards. 
 """)
+#==
+if topmost furnace is burning:
+	skip + minus points
+ay("""ay("""now go and fire the top most Furnace.""")
+#==
+if coal is not lying around:
+	skip + bonus points
+say("""please pick up the Coal on the Floor. \n\nyou won't see a whole year of service leaving burnable material next to the Furnace""")
+#==
+EXTRA1:
+pull the lever: guards come in and are anoyed at the lack of invaders
+	heavy minus points
+EXTRA2:
+leave the room: 
+	heavy minus points depending on duration of the leave
 
+if complete fuckup
+	-> VAT duty
+else:
+	-> machine room phase
+
+==== machine room phase ====
+
+say("""time to do some actual work. report to {machine room supervisor}""")
+
+get task from supervisor.
+
+run task till dead or exit found through event reactions
+
+WORK1:
+	run with X capacity
+	-> get told to fire furnaces in appropiate speed
+WORK2:
+	start engine 
+WORK3:
+	stop engine
+
+OPTIONAL1:
+	check for defects
+	-> passive, damage event if not done
+OPTIONAL2:
+	hunt vermin
+OPTIONAL3:
+	do a double shift and get time to explore
+OPTIONAL4:
+	talk to people
+
+SPECIALEVENT1:
+	loss of supervisor
+	either by death, promotion or sleep without fallback
+	take over and learn how to do a supervisors/group leaders job
+
+SPECIALEVENT2:
+	exploding boiler / burst pipe 
+	have the option to fix damage
+	risk of death by steam
+	-> fix damage => mechanics positive points
+	-> not fixing damage => mechanics negative points
+
+SPECIALEVENT3:
+	broken equiptment
+	-> fix damage => mechanics positive points
+	-> not fixing damage => mechanics negative points
+
+SPECIALEVENT4:
+	invaders
+	some invader comes running through the door
+	have the option to pull the invader alarm lever
+	-> pull the lever => mechanics positive points
+	-> not pull the lever => mechanics positive points
+	-> kill the inavder => soldier positive points
+	-> no kill the inavder => soldier negative points
+
+SPECIALEVENT5:
+	hull damage/arty hit
+	some stuff is unbolted and pushed arround
+
+SPECIALEVENT6:
+	vermin slipping through the pipes
+	-> killing vermin => vermin hunter positive points
+	-> not killing vermin => vermin hunter negative points
+
+SPECIALEVENT7:
+	enter capsule => invaders + arty hit
+
+SPECIALEVENT8:
+	sudden speed change
+	-> everything not bolted will jump arround
+	-> bolted things may get unbolted
+
+-> die => negative points
+-> get hurt seriously => vat duty

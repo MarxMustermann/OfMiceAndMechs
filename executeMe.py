@@ -71,9 +71,15 @@ def show_or_exit(key):
 				footer.set_text(renderMessagebox())
 				return
 		else:
-			for room in terrain.rooms:
+			try:
+				room = terrain.roomByCoordinates[(mainChar.xPosition)//15,(mainChar.yPosition-1)//15]
+			except Exception as e:
+				room = None
+			hadRoomInteraction = False
+			if room:
 				if room.yPosition*15+room.offsetY+room.sizeY == mainChar.yPosition:
 					if room.xPosition*15+room.offsetX-1 < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
+						hadRoomInteraction = True
 						localisedEntry = (mainChar.xPosition%15-room.offsetX,mainChar.yPosition%15-room.offsetY-1)
 						if localisedEntry[1] == -1:
 							localisedEntry = (localisedEntry[0],room.sizeY-1)
@@ -87,11 +93,9 @@ def show_or_exit(key):
 							else:
 								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
 								terrain.characters.remove(mainChar)
-								break
 						else:
 							messages.append("you cannot move there")
-							break
-			else:
+			if not hadRoomInteraction:
 				characters[0].yPosition -= 1
 				characters[0].changed()
 
@@ -106,9 +110,15 @@ def show_or_exit(key):
 				footer.set_text(renderMessagebox())
 				return
 		else:
-			for room in terrain.rooms:
+			try:
+				room = terrain.roomByCoordinates[(mainChar.xPosition)//15,(mainChar.yPosition+1)//15]
+			except Exception as e:
+				room = None
+			hadRoomInteraction = False
+			if room:
 				if room.yPosition*15+room.offsetY == mainChar.yPosition+1:
 					if room.xPosition*15+room.offsetX-1 < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
+						hadRoomInteraction = True
 						localisedEntry = ((mainChar.xPosition-room.offsetX)%15,(mainChar.yPosition-room.offsetY+1)%15)
 						if localisedEntry in room.walkingAccess:
 							if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
@@ -120,11 +130,9 @@ def show_or_exit(key):
 							else:
 								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
 								terrain.characters.remove(mainChar)
-								break
 						else:
 							messages.append("you cannot move there")
-							break
-			else:
+			if not hadRoomInteraction:
 				characters[0].yPosition += 1
 				characters[0].changed()
 
@@ -139,9 +147,15 @@ def show_or_exit(key):
 				footer.set_text(renderMessagebox())
 				return
 		else:
-			for room in terrain.rooms:
+			try:
+				room = terrain.roomByCoordinates[(mainChar.xPosition)//15,(mainChar.yPosition+1)//15]
+			except Exception as e:
+				room = None
+			hadRoomInteraction = False
+			if room:
 				if room.xPosition*15+room.offsetX == mainChar.xPosition+1:
 					if room.yPosition*15+room.offsetY < mainChar.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > mainChar.yPosition:
+						hadRoomInteraction = True
 						localisedEntry = ((mainChar.xPosition-room.offsetX+1)%15,(mainChar.yPosition-room.offsetY)%15)
 						if localisedEntry in room.walkingAccess:
 							if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
@@ -153,11 +167,9 @@ def show_or_exit(key):
 							else:
 								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
 								terrain.characters.remove(mainChar)
-								break
 						else:
 							messages.append("you cannot move there")
-							break
-			else:
+			if not hadRoomInteraction:
 				characters[0].xPosition += 1
 				characters[0].changed()
 
@@ -172,9 +184,15 @@ def show_or_exit(key):
 				footer.set_text(renderMessagebox())
 				return
 		else:
-			for room in terrain.rooms:
+			try:
+				room = terrain.roomByCoordinates[(mainChar.xPosition)//15,(mainChar.yPosition+1)//15]
+			except Exception as e:
+				room = None
+			hadRoomInteraction = False
+			if room:
 				if room.xPosition*15+room.offsetX+room.sizeX == mainChar.xPosition:
 					if room.yPosition*15+room.offsetY < mainChar.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > mainChar.yPosition:
+						hadRoomInteraction = True
 						localisedEntry = ((mainChar.xPosition-room.offsetX-1)%15,(mainChar.yPosition-room.offsetY)%15)
 						if localisedEntry in room.walkingAccess:
 							if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
@@ -186,11 +204,9 @@ def show_or_exit(key):
 							else:
 								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
 								terrain.characters.remove(mainChar)
-								break
 						else:
 							messages.append("you cannot move there")
-							break
-			else:
+			if not hadRoomInteraction:
 				characters[0].xPosition -= 1
 				characters[0].changed()
 

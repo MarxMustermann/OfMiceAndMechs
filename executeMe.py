@@ -9,6 +9,11 @@ import src.terrains as terrains
 import src.cinematics as cinematics
 import config.commandChars as commandChars
 
+#import sys, pygame
+#pygame.init()
+#pygame.mixer.music.load("music/chutulu.mp3")
+#pygame.mixer.music.play()
+
 if len(sys.argv) > 1:
 	import config.displayChars_fallback as displayChars
 else:

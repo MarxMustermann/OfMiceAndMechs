@@ -10,7 +10,12 @@ class Terrain(object):
 		self.itemsOnFloor = []
 		self.characters = []
 		self.walkingPath = []
+		self.rooms = []
 
+		self.itemByCoordinates = {}
+		self.roomByCoordinates = {}
+
+		mapItems = []
 		self.detailedLayout = detailedLayout
 		lineCounter = 0
 		for layoutline in self.detailedLayout.split("\n")[1:]:
@@ -19,21 +24,23 @@ class Terrain(object):
 				if char in (" ",".",",","@"):
 					pass
 				elif char == "X":
-					self.itemsOnFloor.append(items.Wall(rowCounter,lineCounter))
+					mapItems.append(items.Wall(rowCounter,lineCounter))
 				elif char == "#":
-					self.itemsOnFloor.append(items.Pipe(rowCounter,lineCounter))
+					mapItems.append(items.Pipe(rowCounter,lineCounter))
 				elif char == "R":
 					pass
 				elif char == "O":
-					self.itemsOnFloor.append(items.Item(displayChars.clamp_active,rowCounter,lineCounter))
+					mapItems.append(items.Item(displayChars.clamp_active,rowCounter,lineCounter))
 				elif char == "0":
-					self.itemsOnFloor.append(items.Item(displayChars.clamp_inactive,rowCounter,lineCounter))
+					mapItems.append(items.Item(displayChars.clamp_inactive,rowCounter,lineCounter))
 				elif char == "8":
-					self.itemsOnFloor.append(items.Item(displayChars.chains,rowCounter,lineCounter))
+					mapItems.append(items.Item(displayChars.chains,rowCounter,lineCounter))
 				else:
-					self.itemsOnFloor.append(items.Item(displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter))
+					mapItems.append(items.Item(displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter))
 				rowCounter += 1
 			lineCounter += 1
+
+		self.addItems(mapItems)
 
 		roomsOnMap = []
 		lineCounter = 0
@@ -71,10 +78,7 @@ class Terrain(object):
 				rowCounter += 1
 			lineCounter += 1
 
-		self.rooms = roomsOnMap
-		for room in self.rooms:
-			room.terrain = self
-
+		self.addRooms(roomsOnMap)
 
 		rawWalkingPath = []
 		lineCounter = 0
@@ -112,6 +116,19 @@ class Terrain(object):
 				rawWalkingPath.remove(north)
 			else:
 				break
+
+	def addRooms(self,rooms):
+		self.rooms.extend(rooms)
+		for room in rooms:
+			room.terrain = self
+			self.roomByCoordinates[(room.xPosition,room.yPosition)] = room
+
+
+	def addItems(self,items):
+		self.itemsOnFloor.extend(items)
+		for item in items:
+			item.terrain = self
+			self.itemByCoordinates[(item.xPosition,item.yPosition)] = item
 
 	def render(self):
 		global mapHidden

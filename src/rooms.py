@@ -717,3 +717,28 @@ XXXXXXX$XXXXXXX
 		self.offsetY = offsetY
 		self.xPosition = xPosition
 		self.yPosition = yPosition
+
+class CargoRoom(Room):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+		self.roomLayout = """
+XXXXXXXXXX
+X        X
+X       .$
+X        X
+X        X
+X        X
+X        X
+X        X
+X        X
+X        X
+X        X
+X        X
+X        X
+XXXXXXXXXX
+"""
+		super().__init__(self.roomLayout)
+		self.floorDisplay = [displayChars.nonWalkableUnkown]
+		self.offsetX = offsetX
+		self.offsetY = offsetY
+		self.xPosition = xPosition
+		self.yPosition = yPosition

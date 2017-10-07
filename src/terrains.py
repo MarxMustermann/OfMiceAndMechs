@@ -28,6 +28,8 @@ class Terrain(object):
 					self.itemsOnFloor.append(items.Item(displayChars.clamp_active,rowCounter,lineCounter))
 				elif char == "0":
 					self.itemsOnFloor.append(items.Item(displayChars.clamp_inactive,rowCounter,lineCounter))
+				elif char == "8":
+					self.itemsOnFloor.append(items.Item(displayChars.chains,rowCounter,lineCounter))
 				else:
 					self.itemsOnFloor.append(items.Item(displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter))
 				rowCounter += 1
@@ -60,6 +62,8 @@ class Terrain(object):
 				elif char == "M":
 					self.tutorialMachineRoom = rooms.TutorialMachineRoom(rowCounter,lineCounter,4,0)
 					roomsOnMap.append(self.tutorialMachineRoom)
+				elif char == "C":
+					roomsOnMap.append(rooms.CargoRoom(rowCounter,lineCounter,3,1))
 				elif char == "?":
 					roomsOnMap.append(rooms.CpuWasterRoom(rowCounter,lineCounter,2,2))
 				else:
@@ -199,9 +203,9 @@ X ? . . . . . . . ? X
 X ? . M Q r ? ? . ? X
 X ? . ? ? ? ? ? . ? X
 X ? . . . . . . . ? X
-X ?   ? ? ? ? ?   ? X
-X ?   ? ? ? ? ?   ? X
-X X X ? X X X X X X X """
+X ?   C C C C C   ? X
+X ?   C C C C C   ? X
+X X X C C C C C X X X """
 		detailedLayout = """
                                                                                                                                                                     
                                                                                                                                                                     

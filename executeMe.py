@@ -96,8 +96,19 @@ def show_or_exit(key):
 						else:
 							messages.append("you cannot move there")
 			if not hadRoomInteraction:
-				characters[0].yPosition -= 1
-				characters[0].changed()
+				try:
+					item = terrain.itemByCoordinates[mainChar.xPosition,mainChar.yPosition-1]
+				except Exception as e:
+					item = None
+
+				if item and not item.walkable:
+					messages.append("You cannot walk there")
+					messages.append("press "+commandChars.activate+" to apply")
+					itemMarkedLast = item
+					footer.set_text(renderMessagebox())
+				else:	
+					characters[0].yPosition -= 1
+					characters[0].changed()
 
 	if key in (commandChars.move_south):
 		if mainChar.room:
@@ -133,8 +144,19 @@ def show_or_exit(key):
 						else:
 							messages.append("you cannot move there")
 			if not hadRoomInteraction:
-				characters[0].yPosition += 1
-				characters[0].changed()
+				try:
+					item = terrain.itemByCoordinates[mainChar.xPosition,mainChar.yPosition+1]
+				except Exception as e:
+					item = None
+
+				if item and not item.walkable:
+					messages.append("You cannot walk there")
+					messages.append("press "+commandChars.activate+" to apply")
+					itemMarkedLast = item
+					footer.set_text(renderMessagebox())
+				else:	
+					characters[0].yPosition += 1
+					characters[0].changed()
 
 	if key in (commandChars.move_east):
 		if mainChar.room:
@@ -170,8 +192,19 @@ def show_or_exit(key):
 						else:
 							messages.append("you cannot move there")
 			if not hadRoomInteraction:
-				characters[0].xPosition += 1
-				characters[0].changed()
+				try:
+					item = terrain.itemByCoordinates[mainChar.xPosition+1,mainChar.yPosition]
+				except Exception as e:
+					item = None
+
+				if item and not item.walkable:
+					messages.append("You cannot walk there")
+					messages.append("press "+commandChars.activate+" to apply")
+					itemMarkedLast = item
+					footer.set_text(renderMessagebox())
+				else:	
+					characters[0].xPosition += 1
+					characters[0].changed()
 
 	if key in (commandChars.move_west):
 		if mainChar.room:
@@ -207,8 +240,19 @@ def show_or_exit(key):
 						else:
 							messages.append("you cannot move there")
 			if not hadRoomInteraction:
-				characters[0].xPosition -= 1
-				characters[0].changed()
+				try:
+					item = terrain.itemByCoordinates[mainChar.xPosition-1,mainChar.yPosition]
+				except Exception as e:
+					item = None
+
+				if item and not item.walkable:
+					messages.append("You cannot walk there")
+					messages.append("press "+commandChars.activate+" to apply")
+					itemMarkedLast = item
+					footer.set_text(renderMessagebox())
+				else:	
+					characters[0].xPosition -= 1
+					characters[0].changed()
 
 	if key in (commandChars.activate):
 		if itemMarkedLast:

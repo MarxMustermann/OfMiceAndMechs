@@ -254,10 +254,32 @@ class Room(object):
 			self.itemByCoordinates[(item.xPosition,item.yPosition)] = item
 
 	def moveCharacterWest(self,character):
+		if not character.xPosition:
+			newYPos = character.yPosition+character.room.yPosition*15+character.room.offsetY
+			newXPos = character.xPosition+character.room.xPosition*15+character.room.offsetX-1
+			character.xPosition = newXPos
+			character.yPosition = newYPos
+			self.removeCharacter(character)
+			self.terrain.characters.append(character)
+			character.terrain = self.terrain
+			character.changed()
+			return
+
 		newPosition = (character.xPosition-1,character.yPosition)
 		return self.moveCharacter(character,newPosition)
 
 	def moveCharacterEast(self,character):
+		if character.xPosition == self.sizeX-1:
+			newYPos = character.yPosition+character.room.yPosition*15+character.room.offsetY
+			newXPos = character.xPosition+character.room.xPosition*15+character.room.offsetX+1
+			character.xPosition = newXPos
+			character.yPosition = newYPos
+			self.removeCharacter(character)
+			self.terrain.characters.append(character)
+			character.terrain = self.terrain
+			character.changed()
+			return
+
 		newPosition = (character.xPosition+1,character.yPosition)
 		return self.moveCharacter(character,newPosition)
 
@@ -335,9 +357,9 @@ X#.- --.-X
 X#.   -.-X
 X#.----.-X
 XB.BBBB.BX
-X ...... X
+$ ...... X
 XMMv vMMMX
-XXXX$XXXXX
+XXXXXXXXXX
 """
 		super().__init__(self.roomLayout)
 		self.name = "Vat"

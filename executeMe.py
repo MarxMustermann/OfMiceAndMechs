@@ -88,7 +88,6 @@ def show_or_exit(key):
 								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
 								terrain.characters.remove(mainChar)
 								break
-
 						else:
 							messages.append("you cannot move there")
 							break
@@ -106,34 +105,10 @@ def show_or_exit(key):
 				itemMarkedLast = item
 				footer.set_text(renderMessagebox())
 				return
-			"""
-			if characters[0].yPosition < 9:
-				foundItem = None
-				for item in mainChar.room.itemsOnFloor:
-					if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition+1:
-						foundItem = item
-				if foundItem and not foundItem.walkable:
-					messages.append("You cannot walk there")
-					messages.append("press j to apply")
-					itemMarkedLast = foundItem
-					footer.set_text(renderMessagebox())
-					return
-				else:
-					characters[0].yPosition += 1
-					characters[0].changed()
-			else:
-				newYPos = characters[0].yPosition+mainChar.room.yPosition*15+mainChar.room.offsetY+1
-				newXPos = characters[0].xPosition+mainChar.room.xPosition*15+mainChar.room.offsetX
-				mainChar.xPosition = newXPos
-				mainChar.yPosition = newYPos
-				mainChar.room.removeCharacter(mainChar)
-				terrain.characters.append(mainChar)
-				characters[0].changed()
-			"""
 		else:
 			for room in terrain.rooms:
 				if room.yPosition*15+room.offsetY == mainChar.yPosition+1:
-					if room.xPosition*15+room.offsetX < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
+					if room.xPosition*15+room.offsetX-1 < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
 						localisedEntry = ((mainChar.xPosition-room.offsetX)%15,(mainChar.yPosition-room.offsetY+1)%15)
 						if localisedEntry in room.walkingAccess:
 							if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
@@ -146,61 +121,78 @@ def show_or_exit(key):
 								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
 								terrain.characters.remove(mainChar)
 								break
+						else:
+							messages.append("you cannot move there")
+							break
 			else:
 				characters[0].yPosition += 1
 				characters[0].changed()
 
 	if key in (commandChars.move_east):
-		item = None
 		if mainChar.room:
 			item = mainChar.room.moveCharacterEast(mainChar)
-		else:
-			characters[0].xPosition += 1
-			characters[0].changed()
 
-		if item:
-			messages.append("You cannot walk there")
-			messages.append("press "+commandChars.activate+" to apply")
-			itemMarkedLast = item
-			footer.set_text(renderMessagebox())
-			return
+			if item:
+				messages.append("You cannot walk there")
+				messages.append("press "+commandChars.activate+" to apply")
+				itemMarkedLast = item
+				footer.set_text(renderMessagebox())
+				return
+		else:
+			for room in terrain.rooms:
+				if room.xPosition*15+room.offsetX == mainChar.xPosition+1:
+					if room.yPosition*15+room.offsetY < mainChar.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > mainChar.yPosition:
+						localisedEntry = ((mainChar.xPosition-room.offsetX+1)%15,(mainChar.yPosition-room.offsetY)%15)
+						if localisedEntry in room.walkingAccess:
+							if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
+								itemMarkedLast = room.itemByCoordinates[localisedEntry]
+								messages.append("you need to open the door first")
+								messages.append("press "+commandChars.activate+" to apply")
+								footer.set_text(renderMessagebox())
+								return
+							else:
+								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
+								terrain.characters.remove(mainChar)
+								break
+						else:
+							messages.append("you cannot move there")
+							break
+			else:
+				characters[0].xPosition += 1
+				characters[0].changed()
 
 	if key in (commandChars.move_west):
-		item = None
 		if mainChar.room:
 			item = mainChar.room.moveCharacterWest(mainChar)
-		else:
-			characters[0].xPosition -= 1
-			characters[0].changed()
 
-		if item:
-			messages.append("You cannot walk there")
-			messages.append("press "+commandChars.activate+" to apply")
-			itemMarkedLast = item
-			footer.set_text(renderMessagebox())
-			return
-
-		"""
-		if mainChar.room:
-			if characters[0].xPosition:
-				foundItem = None
-				if mainChar.room:
-					for item in mainChar.room.itemsOnFloor:
-						if item.xPosition == characters[0].xPosition-1 and item.yPosition == characters[0].yPosition:
-							foundItem = item
-				if foundItem and not foundItem.walkable:
-					messages.append("You cannot walk there")
-					messages.append("press j to apply")
-					itemMarkedLast = foundItem
-					footer.set_text(renderMessagebox())
-					return
-				else:
-					characters[0].xPosition -= 1
-					characters[0].changed()
+			if item:
+				messages.append("You cannot walk there")
+				messages.append("press "+commandChars.activate+" to apply")
+				itemMarkedLast = item
+				footer.set_text(renderMessagebox())
+				return
 		else:
-			characters[0].xPosition -= 1
-			characters[0].changed()
-		"""
+			for room in terrain.rooms:
+				if room.xPosition*15+room.offsetX+room.sizeX == mainChar.xPosition:
+					if room.yPosition*15+room.offsetY < mainChar.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > mainChar.yPosition:
+						localisedEntry = ((mainChar.xPosition-room.offsetX-1)%15,(mainChar.yPosition-room.offsetY)%15)
+						if localisedEntry in room.walkingAccess:
+							if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
+								itemMarkedLast = room.itemByCoordinates[localisedEntry]
+								messages.append("you need to open the door first")
+								messages.append("press "+commandChars.activate+" to apply")
+								footer.set_text(renderMessagebox())
+								return
+							else:
+								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
+								terrain.characters.remove(mainChar)
+								break
+						else:
+							messages.append("you cannot move there")
+							break
+			else:
+				characters[0].xPosition -= 1
+				characters[0].changed()
 
 	if key in (commandChars.activate):
 		if itemMarkedLast:

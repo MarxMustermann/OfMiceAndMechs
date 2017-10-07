@@ -295,8 +295,12 @@ class LeaveRoomQuest(Quest):
 				character.room.itemByCoordinates[(character.xPosition,character.yPosition)].close()
 				if character.yPosition == 0:
 					character.path.append((character.xPosition,character.yPosition-1))
-				else:
+				elif character.yPosition == character.room.sizeY-1:
 					character.path.append((character.xPosition,character.yPosition+1))
+				if character.xPosition == 0:
+					character.path.append((character.xPosition-1,character.yPosition))
+				elif character.xPosition == character.room.sizeX-1:
+					character.path.append((character.xPosition+1,character.yPosition))
 				character.walkPath()
 				return False
 			return True

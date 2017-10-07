@@ -755,7 +755,7 @@ X        X
 X        X
 X        X
 X        X
-X        X
+XPPPPPPPPX
 XXXXXXXXXX
 """
 		super().__init__(self.roomLayout)

@@ -127,7 +127,8 @@ def show_or_exit(key):
 				return
 		else:
 			try:
-				room = terrain.roomByCoordinates[(mainChar.xPosition)//15,(mainChar.yPosition+1)//15]
+				room = terrain.roomByCoordinates[((mainChar.xPosition)//15,(mainChar.yPosition+1)//15)]
+				messages.append(room)
 			except Exception as e:
 				room = None
 			hadRoomInteraction = False
@@ -698,12 +699,58 @@ rooms.characters = characters
 
 gamestate = GameState(characters)
 
+movestate = "up"
 def advanceGame():
+	global movestate
 	for character in terrain.characters:
 		character.advance()
 
 	for room in terrain.rooms:
 		room.advance()
+
+	messages.append(terrain.movingRoom.gogogo)
+	if terrain.movingRoom.gogogo:
+		messages.append("move")
+		if movestate == "up":
+			if terrain.movingRoom.offsetY > -5:
+				terrain.movingRoom.offsetY -= 1
+			else:
+				terrain.movingRoom.offsetY = 9
+				del terrain.roomByCoordinates[(terrain.movingRoom.xPosition,terrain.movingRoom.yPosition)]
+				terrain.movingRoom.yPosition -= 1
+				terrain.roomByCoordinates[(terrain.movingRoom.xPosition,terrain.movingRoom.yPosition)] = terrain.movingRoom
+			if terrain.movingRoom.yPosition == 3 and terrain.movingRoom.offsetY == 2:
+				movestate = "left"
+		elif movestate == "left":
+			if terrain.movingRoom.offsetX > -5:
+				terrain.movingRoom.offsetX -= 1
+			else:
+				terrain.movingRoom.offsetX = 9
+				del terrain.roomByCoordinates[(terrain.movingRoom.xPosition,terrain.movingRoom.yPosition)]
+				terrain.movingRoom.xPosition -= 1
+				terrain.roomByCoordinates[(terrain.movingRoom.xPosition,terrain.movingRoom.yPosition)] = terrain.movingRoom
+			if terrain.movingRoom.xPosition == 2 and terrain.movingRoom.offsetX == 2:
+				movestate = "down"
+		elif movestate == "down":
+			if terrain.movingRoom.offsetY < 9:
+				terrain.movingRoom.offsetY += 1
+			else:
+				terrain.movingRoom.offsetY = -5
+				del terrain.roomByCoordinates[(terrain.movingRoom.xPosition,terrain.movingRoom.yPosition)]
+				terrain.movingRoom.yPosition += 1
+				terrain.roomByCoordinates[(terrain.movingRoom.xPosition,terrain.movingRoom.yPosition)] = terrain.movingRoom
+			if terrain.movingRoom.yPosition == 6 and terrain.movingRoom.offsetY == 2:
+				movestate = "right"
+		elif movestate == "right":
+			if terrain.movingRoom.offsetX < 9:
+				terrain.movingRoom.offsetX += 1
+			else:
+				terrain.movingRoom.offsetX = -5
+				del terrain.roomByCoordinates[(terrain.movingRoom.xPosition,terrain.movingRoom.yPosition)]
+				terrain.movingRoom.xPosition += 1
+				terrain.roomByCoordinates[(terrain.movingRoom.xPosition,terrain.movingRoom.yPosition)] = terrain.movingRoom
+			if terrain.movingRoom.xPosition == 8 and terrain.movingRoom.offsetX == 2:
+				movestate = "up"
 
 	gamestate.tick += 1
 

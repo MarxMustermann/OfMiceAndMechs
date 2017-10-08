@@ -174,3 +174,21 @@ class Acid(Item):
 		messages.append("Pile used")
 		character.inventory.append(self.type())
 		character.changed()
+
+class Chain(Item):
+	def __init__(self,xPosition=0,yPosition=0,name="chain"):
+		self.name = name
+		super().__init__(displayChars.chains,xPosition,yPosition)
+		self.walkable = True
+
+	def apply(self,character):
+		messages.append("TODO")
+
+class Winch(Item):
+	def __init__(self,xPosition=0,yPosition=0,name="winch"):
+		self.name = name
+		super().__init__(displayChars.winch_inactive,xPosition,yPosition)
+
+	def apply(self,character):
+		messages.append("TODO")
+

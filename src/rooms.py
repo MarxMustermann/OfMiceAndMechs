@@ -658,8 +658,23 @@ XXXXXXXXXXX
 		self.yPosition = yPosition
 	
 class FreePlacemenRoom(Room):
-	def __init__(self):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+		self.roomLayout = """
+XX$X&&XXXXX
+XX PPPPPPXX
+X .......DX
+X'.'' ''.IX
+X'.'' ''.|X
+X'.'' ''.|X
+X'.'' ''.IX
+X .......DX
+XXXXXXXXXXX
+"""
 		super().__init__(self.roomLayout)
+		self.offsetX = offsetX
+		self.offsetY = offsetY
+		self.xPosition = xPosition
+		self.yPosition = yPosition
 
 class Vat1(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):
@@ -740,6 +755,54 @@ XXXXXXX$XXXXXXX
 		self.xPosition = xPosition
 		self.yPosition = yPosition
 
+class CargoRoom(Room):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+		self.roomLayout = """
+XXXXXXXXXX
+X        X
+X       .$
+X        X
+X        X
+X        X
+X        X
+X        X
+X        X
+X        X
+X        X
+X        X
+XPPPPPPPPX
+XXXXXXXXXX
+"""
+		super().__init__(self.roomLayout)
+		self.floorDisplay = [displayChars.nonWalkableUnkown]
+		self.offsetX = offsetX
+		self.offsetY = offsetY
+		self.xPosition = xPosition
+		self.yPosition = yPosition
+
+class MiniMech(Room):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+		self.roomLayout = """
+XX$XXX
+XD.. X
+Xm .PX
+Xmm.PX
+XmF.PX
+XXXXXX
+"""
+		super().__init__(self.roomLayout)
+		self.floorDisplay = [displayChars.nonWalkableUnkown]
+		self.offsetX = offsetX
+		self.offsetY = offsetY
+		self.xPosition = xPosition
+		self.yPosition = yPosition
+		self.gogogo = False
+
+		self.lever = items.Lever(2,2,"gogogo button")
+		def go(otherself):
+			self.gogogo = True
+		self.lever.activateAction = go
+		self.addItems([self.lever])
 class CargoRoom(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):
 		self.roomLayout = """

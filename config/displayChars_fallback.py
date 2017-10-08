@@ -50,3 +50,5 @@ clamp_inactive = "iC"
 void = "  "
 main_char = "p@"
 staffCharacters = ["nA","nB","nC","nD","nE","nF","nG","nH","nI","nJ","nK","nL","nM","nN","nO","nP","nQ","nR","nS","nT","nU","nV","nW","nX","nY","nZ"]
+winch_inactive = "iw"
+winch_active = "iW"

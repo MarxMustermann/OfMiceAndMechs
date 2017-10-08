@@ -47,6 +47,8 @@ class Terrain(object):
 		self.addItems(mapItems)
 
 		roomsOnMap = []
+		self.tutorialVat = None
+		self.tutorialMachineRoom = None
 		lineCounter = 0
 		for layoutline in layout.split("\n")[1:]:
 			rowCounter = 0
@@ -62,8 +64,10 @@ class Terrain(object):
 				elif char == "X":
 					roomsOnMap.append(rooms.MechArmor(rowCounter,lineCounter,0,0))
 				elif char == "V":
-					self.tutorialVat = rooms.Vat2(rowCounter,lineCounter,2,2)
-					roomsOnMap.append(self.tutorialVat)
+					room = rooms.Vat2(rowCounter,lineCounter,2,2)
+					if not self.tutorialVat:
+						self.tutorialVat = room
+					roomsOnMap.append(room)
 				elif char == "v":
 					roomsOnMap.append(rooms.Vat1(rowCounter,lineCounter,2,2))
 				elif char == "Q":
@@ -71,8 +75,10 @@ class Terrain(object):
 				elif char == "r":
 					roomsOnMap.append(rooms.Room1(rowCounter,lineCounter,1,2))
 				elif char == "M":
-					self.tutorialMachineRoom = rooms.TutorialMachineRoom(rowCounter,lineCounter,4,0)
-					roomsOnMap.append(self.tutorialMachineRoom)
+					room = rooms.TutorialMachineRoom(rowCounter,lineCounter,4,0)
+					if not self.tutorialMachineRoom:
+						self.tutorialMachineRoom = room
+					roomsOnMap.append(room)
 				elif char == "C":
 					roomsOnMap.append(rooms.CargoRoom(rowCounter,lineCounter,3,0))
 				elif char == "?":
@@ -223,7 +229,7 @@ XXXXXXXXXXXXXXXXXXXXXX"""
 X X X X X X X X X X X
 X X X X X X X X X X X
 X V v ? ? ? ? ? v V X
-X ? . . . . . . . ? X
+X   . . . . . . . ? X
 X ? . M Q r ? ? . ? X
 X ? . ? ? ? ? ? . ? X
 X C . . . . . . . ? X

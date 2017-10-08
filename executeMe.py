@@ -128,7 +128,6 @@ def show_or_exit(key):
 		else:
 			try:
 				room = terrain.roomByCoordinates[((mainChar.xPosition)//15,(mainChar.yPosition+1)//15)]
-				messages.append(room)
 			except Exception as e:
 				room = None
 			hadRoomInteraction = False
@@ -265,23 +264,35 @@ def show_or_exit(key):
 			itemMarkedLast.apply(mainChar)
 		else:
 			if mainChar.room:
-				for item in mainChar.room.itemsOnFloor:
-					if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:
-						item.apply(mainChar)
+				itemList = mainChar.room.itemsOnFloor
+			else:
+				itemList = terrain.itemsOnFloor
+			for item in itemList:
+				if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:
+					item.apply(mainChar)
 	if key in (commandChars.drop):
 		if len(characters[0].inventory):
 			item = characters[0].inventory.pop()	
 			item.xPosition = characters[0].xPosition		
 			item.yPosition = characters[0].yPosition		
-			characters[0].room.itemsOnFloor.append(item)
+			if mainChar.room:
+				itemList = mainChar.room.itemsOnFloor
+			else:
+				itemList = terrain.itemsOnFloor
+			itemList.append(item)
 			item.changed()
 	if key in (commandChars.hail):
 		messages.append(characters[0].name+": HÜ!")
 		messages.append(characters[0].name+": HOTT!")
 	if key in (commandChars.pickUp):
-		for item in characters[0].room.itemsOnFloor:
+		if mainChar.room:
+			itemList = mainChar.room.itemsOnFloor
+		else:
+			itemList = terrain.itemsOnFloor
+
+		for item in itemList:
 			if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:
-				characters[0].room.itemsOnFloor.remove(item)
+				itemList.remove(item)
 				if hasattr(item,"xPosition"):
 					del item.xPosition
 				if hasattr(item,"yPosition"):
@@ -708,9 +719,7 @@ def advanceGame():
 	for room in terrain.rooms:
 		room.advance()
 
-	messages.append(terrain.movingRoom.gogogo)
 	if terrain.movingRoom.gogogo:
-		messages.append("move")
 		if movestate == "up":
 			if terrain.movingRoom.offsetY > -5:
 				terrain.movingRoom.offsetY -= 1

@@ -253,36 +253,6 @@ class Room(object):
 			item.room = self
 			self.itemByCoordinates[(item.xPosition,item.yPosition)] = item
 
-	def moveCharacterWest(self,character):
-		if not character.xPosition:
-			newYPos = character.yPosition+character.room.yPosition*15+character.room.offsetY
-			newXPos = character.xPosition+character.room.xPosition*15+character.room.offsetX-1
-			character.xPosition = newXPos
-			character.yPosition = newYPos
-			self.removeCharacter(character)
-			self.terrain.characters.append(character)
-			character.terrain = self.terrain
-			character.changed()
-			return
-
-		newPosition = (character.xPosition-1,character.yPosition)
-		return self.moveCharacter(character,newPosition)
-
-	def moveCharacterEast(self,character):
-		if character.xPosition == self.sizeX-1:
-			newYPos = character.yPosition+character.room.yPosition*15+character.room.offsetY
-			newXPos = character.xPosition+character.room.xPosition*15+character.room.offsetX+1
-			character.xPosition = newXPos
-			character.yPosition = newYPos
-			self.removeCharacter(character)
-			self.terrain.characters.append(character)
-			character.terrain = self.terrain
-			character.changed()
-			return
-
-		newPosition = (character.xPosition+1,character.yPosition)
-		return self.moveCharacter(character,newPosition)
-
 	def moveCharacterNorth(self,character):
 		if not character.yPosition:
 			newYPos = character.yPosition+character.room.yPosition*15+character.room.offsetY-1
@@ -311,6 +281,36 @@ class Room(object):
 			return
 
 		newPosition = (character.xPosition,character.yPosition+1)
+		return self.moveCharacter(character,newPosition)
+
+	def moveCharacterWest(self,character):
+		if not character.xPosition:
+			newYPos = character.yPosition+character.room.yPosition*15+character.room.offsetY
+			newXPos = character.xPosition+character.room.xPosition*15+character.room.offsetX-1
+			character.xPosition = newXPos
+			character.yPosition = newYPos
+			self.removeCharacter(character)
+			self.terrain.characters.append(character)
+			character.terrain = self.terrain
+			character.changed()
+			return
+
+		newPosition = (character.xPosition-1,character.yPosition)
+		return self.moveCharacter(character,newPosition)
+
+	def moveCharacterEast(self,character):
+		if character.xPosition == self.sizeX-1:
+			newYPos = character.yPosition+character.room.yPosition*15+character.room.offsetY
+			newXPos = character.xPosition+character.room.xPosition*15+character.room.offsetX+1
+			character.xPosition = newXPos
+			character.yPosition = newYPos
+			self.removeCharacter(character)
+			self.terrain.characters.append(character)
+			character.terrain = self.terrain
+			character.changed()
+			return
+
+		newPosition = (character.xPosition+1,character.yPosition)
 		return self.moveCharacter(character,newPosition)
 
 	def moveCharacter(self,character,newPosition):
@@ -567,7 +567,7 @@ class CpuWasterRoom(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):
 		self.roomLayout = """
 XX$XXXXXXX
-Xv v?????X
+Xv vD????X
 X?......PX
 X?.PPPP.PX
 X?.????.#X

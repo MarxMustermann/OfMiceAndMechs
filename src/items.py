@@ -1,6 +1,9 @@
 messages = None
 characters = None
 displayChars = None
+stealKey = None
+commandChars = None
+terrain = None
 
 class Item(object):
 	def __init__(self,display=None,xPosition=0,yPosition=0):
@@ -111,6 +114,27 @@ class Display(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Display"):
 		self.name = name
 		super().__init__(displayChars.display,xPosition,yPosition)
+
+	def apply(self,character):
+		def moveNorth():
+			self.room.terrain.moveRoomNorth(self.room)
+		def moveSouth():
+			self.room.terrain.moveRoomSouth(self.room)
+		def moveWest():
+			self.room.terrain.moveRoomWest(self.room)
+		def moveEast():
+			self.room.terrain.moveRoomEast(self.room)
+		def disapply():
+			del stealKey[commandChars.move_north]
+			del stealKey[commandChars.move_south]
+			del stealKey[commandChars.move_west]
+			del stealKey[commandChars.move_east]
+			del stealKey[commandChars.activate]
+		stealKey[commandChars.move_north] = moveNorth
+		stealKey[commandChars.move_south] = moveSouth
+		stealKey[commandChars.move_west] = moveWest
+		stealKey[commandChars.move_east] = moveEast
+		stealKey[commandChars.activate] = disapply
 
 class Wall(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Wall"):

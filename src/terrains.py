@@ -209,6 +209,42 @@ class Terrain(object):
 
 		return chars
 
+	def moveRoomNorth(self,room):
+		if room.offsetY > -5:
+			room.offsetY -= 1
+		else:
+			room.offsetY = 9
+			del self.roomByCoordinates[(room.xPosition,room.yPosition)]
+			room.yPosition -= 1
+			room.terrain.roomByCoordinates[(room.xPosition,room.yPosition)] = room
+
+	def moveRoomSouth(self,room):
+		if room.offsetY < 9:
+			room.offsetY += 1
+		else:
+			room.offsetY = -5
+			del self.roomByCoordinates[(room.xPosition,room.yPosition)]
+			room.yPosition += 1
+			self.roomByCoordinates[(room.xPosition,room.yPosition)] = room
+
+	def moveRoomWest(self,room):
+		if room.offsetX > -5:
+			room.offsetX -= 1
+		else:
+			room.offsetX = 9
+			del self.roomByCoordinates[(room.xPosition,room.yPosition)]
+			room.xPosition -= 1
+			self.roomByCoordinates[(room.xPosition,room.yPosition)] = room
+
+	def moveRoomEast(self,room):
+		if room.offsetX < 9:
+			room.offsetX += 1
+		else:
+			room.offsetX = -5
+			del self.roomByCoordinates[(room.xPosition,room.yPosition)]
+			room.xPosition += 1
+			self.roomByCoordinates[(room.xPosition,room.yPosition)] = room
+
 class TutorialTerrain(Terrain):
 	def __init__(self):
 

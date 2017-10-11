@@ -117,13 +117,13 @@ class Display(Item):
 
 	def apply(self,character):
 		def moveNorth():
-			self.room.terrain.moveRoomNorth(self.room)
+			self.room.moveNorth()
 		def moveSouth():
-			self.room.terrain.moveRoomSouth(self.room)
+			self.room.moveSouth()
 		def moveWest():
-			self.room.terrain.moveRoomWest(self.room)
+			self.room.moveWest()
 		def moveEast():
-			self.room.terrain.moveRoomEast(self.room)
+			self.room.moveEast()
 		def disapply():
 			del stealKey[commandChars.move_north]
 			del stealKey[commandChars.move_south]

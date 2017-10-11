@@ -253,6 +253,18 @@ class Room(object):
 			item.room = self
 			self.itemByCoordinates[(item.xPosition,item.yPosition)] = item
 
+	def moveNorth(self):
+		self.terrain.moveRoomNorth(self)
+
+	def moveSouth(self):
+		self.terrain.moveRoomSouth(self)
+
+	def moveWest(self):
+		self.terrain.moveRoomWest(self)
+
+	def moveEast(self):
+		self.terrain.moveRoomEast(self)
+
 	def moveCharacterNorth(self,character):
 		if not character.yPosition:
 			newYPos = character.yPosition+character.room.yPosition*15+character.room.offsetY-1

@@ -53,7 +53,6 @@ class Quest(object):
 		self.triggerCompletionCheck()
 
 	def changed(self):
-		messages.append("QUEST: "+self.description+" changed")
 		for listener in self.listener:
 			listener()
 
@@ -336,7 +335,6 @@ class EnterRoomQuest(Quest):
 
 	def solver(self,character):
 		if character.walkPath():
-			messages.append("solved")
 			return True
 		return False
 
@@ -352,13 +350,9 @@ class EnterRoomQuest(Quest):
 	def postHandler(self):
 		if (self.character.yPosition in (-1,0)):
 			self.character.room.itemByCoordinates[(self.character.xPosition,0)].close()
-			messages.append(self.character.room.itemByCoordinates[(self.character.xPosition,0)])
 		if (self.character.yPosition in (10,9)):
 			self.character.room.itemByCoordinates[(self.character.xPosition,9)].close()
-			messages.append(self.character.room.itemByCoordinates[(self.character.xPosition,9)])
 
-
-		messages.append("pos "+str(self.character.xPosition)+"/"+str(self.character.yPosition))
 		super().postHandler()
 
 	def triggerCompletionCheck(self):

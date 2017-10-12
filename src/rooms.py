@@ -264,13 +264,10 @@ class Room(object):
 		
 		self.terrain.moveRoomNorth(self)
 
-		try:
-			for thing in self.chainedTo:
-				if thing.lastMovementToken == movementToken:
-					continue
-				thing.moveNorth(movementToken=movementToken)
-		except:
-			pass
+		for thing in self.chainedTo:
+			if thing.lastMovementToken == movementToken:
+				continue
+			thing.moveNorth(movementToken=movementToken)
 
 	def moveSouth(self,movementToken=None):
 		if not movementToken:
@@ -307,7 +304,6 @@ class Room(object):
 			pass
 
 	def moveEast(self,movementToken=None):
-		messages.append((self,"moveEast1"))
 
 		if not movementToken:
 			import random

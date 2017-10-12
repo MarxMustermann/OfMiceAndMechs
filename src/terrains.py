@@ -134,7 +134,10 @@ class Terrain(object):
 		self.rooms.extend(rooms)
 		for room in rooms:
 			room.terrain = self
-			self.roomByCoordinates[(room.xPosition,room.yPosition)] = room
+			if (room.xPosition,room.yPosition) in self.roomByCoordinates:
+				self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
+			else:
+				self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
 
 	def addItems(self,items):
@@ -214,48 +217,60 @@ class Terrain(object):
 			room.offsetY -= 1
 		else:
 			room.offsetY = 9
-			try:
-				del self.roomByCoordinates[(room.xPosition,room.yPosition)]
-			except:
-				pass
+			if (room.xPosition,room.yPosition) in self.roomByCoordinates:
+				self.roomByCoordinates[(room.xPosition,room.yPosition)].remove(room)
+				if not len(self.roomByCoordinates[(room.xPosition,room.yPosition)]):
+					del self.roomByCoordinates[(room.xPosition,room.yPosition)]
 			room.yPosition -= 1
-			room.terrain.roomByCoordinates[(room.xPosition,room.yPosition)] = room
+			if (room.xPosition,room.yPosition) in self.roomByCoordinates:
+				self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
+			else:
+				self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
 	def moveRoomSouth(self,room):
 		if room.offsetY < 9:
 			room.offsetY += 1
 		else:
 			room.offsetY = -5
-			try:
-				del self.roomByCoordinates[(room.xPosition,room.yPosition)]
-			except:
-				pass
+			if (room.xPosition,room.yPosition) in self.roomByCoordinates:
+				self.roomByCoordinates[(room.xPosition,room.yPosition)].remove(room)
+				if not len(self.roomByCoordinates[(room.xPosition,room.yPosition)]):
+					del self.roomByCoordinates[(room.xPosition,room.yPosition)]
 			room.yPosition += 1
-			self.roomByCoordinates[(room.xPosition,room.yPosition)] = room
+			if (room.xPosition,room.yPosition) in self.roomByCoordinates:
+				self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
+			else:
+				self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
 	def moveRoomWest(self,room):
 		if room.offsetX > -5:
 			room.offsetX -= 1
 		else:
 			room.offsetX = 9
-			try:
-				del self.roomByCoordinates[(room.xPosition,room.yPosition)]
-			except:
-				pass
+			if (room.xPosition,room.yPosition) in self.roomByCoordinates:
+				self.roomByCoordinates[(room.xPosition,room.yPosition)].remove(room)
+				if not len(self.roomByCoordinates[(room.xPosition,room.yPosition)]):
+					del self.roomByCoordinates[(room.xPosition,room.yPosition)]
 			room.xPosition -= 1
-			self.roomByCoordinates[(room.xPosition,room.yPosition)] = room
+			if (room.xPosition,room.yPosition) in self.roomByCoordinates:
+				self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
+			else:
+				self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
 	def moveRoomEast(self,room):
 		if room.offsetX < 9:
 			room.offsetX += 1
 		else:
 			room.offsetX = -5
-			try:
-				del self.roomByCoordinates[(room.xPosition,room.yPosition)]
-			except:
-				pass
+			if (room.xPosition,room.yPosition) in self.roomByCoordinates:
+				self.roomByCoordinates[(room.xPosition,room.yPosition)].remove(room)
+				if not len(self.roomByCoordinates[(room.xPosition,room.yPosition)]):
+					del self.roomByCoordinates[(room.xPosition,room.yPosition)]
 			room.xPosition += 1
-			self.roomByCoordinates[(room.xPosition,room.yPosition)] = room
+			if (room.xPosition,room.yPosition) in self.roomByCoordinates:
+				self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
+			else:
+				self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
 class TutorialTerrain(Terrain):
 	def __init__(self):
@@ -277,7 +292,7 @@ XXXXXXXXXXXXXXXXXXXXXX"""
 X X X X X X X X X X X
 X X X X X X X X X X X
 X V v ? ? ? ? ? v V X
-X   . . . . . . . ? X
+X   . t . . . . . ? X
 X ? . M Q r ? ? . ? X
 X ? . ? ? ? ? ? . ? X
 X C . . . . . . . ? X
@@ -327,11 +342,11 @@ X X X C C C C C X X X """
                #ORRRRRRRRRRO ##ORRRRRRRRRRO# ##RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                ##RRRRRRRRRR# ###RRRRRRRRRR##  #RRRRRRRRRR#####           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                  RRRRRRRRRR  #  RRRRRRRRRR     RRRRRRRRRR XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
-               XX  O    O    ####O#   ##O####    O    O    X                                                                                                         
-               XX               ### X  ###                                                                                                                           
-                  X  O   O          XX     ##              X                                                                                                        
-               X X RRRRRRRRRR                                                                                                          XXXXXXXXXXXXXXX               
-                   RRRRRRRRRR#                                                                                                         X#           #X               
+               XX  O    O    ####O#   ##O####    O8   O    X                                                                                                         
+               XX               ### X  ###        8                                                                                                                  
+                  X  O   O          XX     ##     8        X                                                                                                        
+               X X RRRRRRRRRR                     8                                                                                    XXXXXXXXXXXXXXX               
+                   RRRRRRRRRR#                    8                                                                                    X#           #X               
                    RRRRRRRRRR#                                                                                                         X#           #X               
                    RRRRRRRRRR#                                                                                                         X#           #X               
                    RRRRRRRRRR#                                                                                                         X#           #X               

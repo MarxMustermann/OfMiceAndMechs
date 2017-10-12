@@ -85,12 +85,15 @@ def show_or_exit(key):
 					footer.set_text(renderMessagebox())
 					return
 			else:
-				try:
-					room = terrain.roomByCoordinates[(mainChar.xPosition)//15,(mainChar.yPosition-1)//15]
-				except Exception as e:
-					room = None
+				rooms = []
+				bigX = (mainChar.xPosition)//15
+				bigY = (mainChar.yPosition-1)//15
+				for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
+					if coordinate in terrain.roomByCoordinates:
+						rooms.extend(terrain.roomByCoordinates[coordinate])
+
 				hadRoomInteraction = False
-				if room:
+				for room in rooms:
 					if room.yPosition*15+room.offsetY+room.sizeY == mainChar.yPosition:
 						if room.xPosition*15+room.offsetX-1 < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
 							hadRoomInteraction = True
@@ -135,12 +138,15 @@ def show_or_exit(key):
 					footer.set_text(renderMessagebox())
 					return
 			else:
-				try:
-					room = terrain.roomByCoordinates[((mainChar.xPosition)//15,(mainChar.yPosition+1)//15)]
-				except Exception as e:
-					room = None
+				rooms = []
+				bigX = (mainChar.xPosition)//15
+				bigY = (mainChar.yPosition+1)//15
+				for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
+					if coordinate in terrain.roomByCoordinates:
+						rooms.extend(terrain.roomByCoordinates[coordinate])
+
 				hadRoomInteraction = False
-				if room:
+				for room in rooms:
 					if room.yPosition*15+room.offsetY == mainChar.yPosition+1:
 						if room.xPosition*15+room.offsetX-1 < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
 							hadRoomInteraction = True
@@ -183,12 +189,15 @@ def show_or_exit(key):
 					footer.set_text(renderMessagebox())
 					return
 			else:
-				try:
-					room = terrain.roomByCoordinates[(mainChar.xPosition)//15,(mainChar.yPosition+1)//15]
-				except Exception as e:
-					room = None
+				rooms = []
+				bigX = (mainChar.xPosition+1)//15
+				bigY = (mainChar.yPosition)//15
+				for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
+					if coordinate in terrain.roomByCoordinates:
+						rooms.extend(terrain.roomByCoordinates[coordinate])
+
 				hadRoomInteraction = False
-				if room:
+				for room in rooms:
 					if room.xPosition*15+room.offsetX == mainChar.xPosition+1:
 						if room.yPosition*15+room.offsetY < mainChar.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > mainChar.yPosition:
 							hadRoomInteraction = True
@@ -231,12 +240,15 @@ def show_or_exit(key):
 					footer.set_text(renderMessagebox())
 					return
 			else:
-				try:
-					room = terrain.roomByCoordinates[(mainChar.xPosition)//15,(mainChar.yPosition+1)//15]
-				except Exception as e:
-					room = None
+				rooms = []
+				bigX = (mainChar.xPosition)//15
+				bigY = (mainChar.yPosition-1)//15
+				for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
+					if coordinate in terrain.roomByCoordinates:
+						rooms.extend(terrain.roomByCoordinates[coordinate])
+
 				hadRoomInteraction = False
-				if room:
+				for room in rooms:
 					if room.xPosition*15+room.offsetX+room.sizeX == mainChar.xPosition:
 						if room.yPosition*15+room.offsetY < mainChar.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > mainChar.yPosition:
 							hadRoomInteraction = True

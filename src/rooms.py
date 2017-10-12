@@ -28,6 +28,7 @@ class Room(object):
 		self.events = []
 		self.floorDisplay = [displayChars.floor]
 		self.lastMovementToken = None
+		self.chainedTo = []
 
 		self.itemByCoordinates = {}
 

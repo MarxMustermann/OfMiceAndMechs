@@ -18,6 +18,7 @@ class Item(object):
 		self.room = None
 		self.name = "item"
 		self.lastMovementToken = None
+		self.chainedTo = []
 
 	def apply(self,character):
 		messages.append("i can't do anything useful with this")
@@ -34,6 +35,79 @@ class Item(object):
 	def delListener(self,listenFunction):
 		if listenFunction in self.listeners:
 			self.listeners.remove(listenFunction)
+
+	def moveNorth(self,movementToken=None):
+		if not movementToken:
+			import random
+			movementToken = random.randint(0, 1000000)
+	
+		self.lastMovementToken = movementToken
+
+		try:
+			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
+		except:
+			pass
+		self.yPosition -= 1
+		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = self
+
+		for thing in self.chainedTo:
+			if thing.lastMovementToken == movementToken:
+				continue
+			thing.moveNorth(movementToken=movementToken)
+
+	def moveSouth(self,movementToken=None):
+		if not movementToken:
+			import random
+			movementToken = random.randint(0, 1000000)
+	
+		self.lastMovementToken = movementToken
+		try:
+			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
+		except:
+			pass
+		self.yPosition += 1
+		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = self
+
+		for thing in self.chainedTo:
+			if thing.lastMovementToken == movementToken:
+				continue
+			thing.moveSouth(movementToken=movementToken)
+
+	def moveWest(self,movementToken=None):
+		if not movementToken:
+			import random
+			movementToken = random.randint(0, 1000000)
+	
+		self.lastMovementToken = movementToken
+		try:
+			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
+		except:
+			pass
+		self.xPosition -= 1
+		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = self
+
+		for thing in self.chainedTo:
+			if thing.lastMovementToken == movementToken:
+				continue
+			thing.moveWest(movementToken=movementToken)
+
+	def moveEast(self,movementToken=None):
+		if not movementToken:
+			import random
+			movementToken = random.randint(0, 1000000)
+	
+		self.lastMovementToken = movementToken
+		try:
+			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
+		except:
+			pass
+		self.xPosition += 1
+		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = self
+
+		for thing in self.chainedTo:
+			if thing.lastMovementToken == movementToken:
+				continue
+			thing.moveEast(movementToken=movementToken)
 
 class Corpse(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="corpse"):
@@ -217,45 +291,16 @@ class Chain(Item):
 				self.fixed = True
 
 				items = []
-				try:
-					items.append(self.terrain.itemByCoordinates[(self.xPosition-1,self.yPosition)])
-				except:
-					pass
-				try:
-					items.append(self.terrain.itemByCoordinates[(self.xPosition+1,self.yPosition)])
-				except:
-					pass
-				try:
-					items.append(self.terrain.itemByCoordinates[(self.xPosition,self.yPosition-1)])
-				except:
-					pass
-				try:
-					items.append(self.terrain.itemByCoordinates[(self.xPosition,self.yPosition+1)])
-				except:
-					pass
+				for coordinate in [(self.xPosition-1,self.yPosition),(self.xPosition+1,self.yPosition),(self.xPosition,self.yPosition-1),(self.xPosition,self.yPosition+1)]:
+					if coordinate in self.terrain.itemByCoordinates:
+						items.append(self.terrain.itemByCoordinates[coordinate])
+
 				roomCandidates = []
 				bigX = self.xPosition//15
 				bigY = self.yPosition//15
-				try:
-					roomCandidates.append(self.terrain.roomByCoordinates[bigX,bigY])
-				except:
-					pass
-				try:
-					roomCandidates.append(self.terrain.roomByCoordinates[bigX-1,bigY])
-				except:
-					pass
-				try:
-					roomCandidates.append(self.terrain.roomByCoordinates[bigX+1,bigY])
-				except:
-					pass
-				try:
-					roomCandidates.append(self.terrain.roomByCoordinates[bigX,bigY-1])
-				except:
-					pass
-				try:
-					roomCandidates.append(self.terrain.roomByCoordinates[bigX,bigY+1])
-				except:
-					pass
+				for coordinate in [(bigX,bigY),(bigX-1,bigY),(bigX+1,bigY),(bigX,bigY-1),(bigX,bigY+1)]:
+					if coordinate in self.terrain.roomByCoordinates:
+						roomCandidates.extend(self.terrain.roomByCoordinates[coordinate])
 
 				rooms = []
 				for room in roomCandidates:
@@ -270,95 +315,20 @@ class Chain(Item):
 				messages.append(items)
 				messages.append(rooms)
 
+				self.chainedTo = []
 				self.chainedTo.extend(items)
 				self.chainedTo.extend(rooms)
 
 				for thing in self.chainedTo:
-					try:
-						thing.chainedTo = [self]
-					except:
-						thing.chainedTo.append(self)
+					thing.chainedTo.append(self)
+					messages.append(thing.chainedTo)
 		else:
 			self.fixed = False
 			for thing in self.chainedTo:
-				thing.chainedTo.remove(self)
-			del self.chainedTo
+				if self in thing.chainedTo:
+					thing.chainedTo.remove(self)
 			self.chainedTo = []
 			
-
-	def moveNorth(self,movementToken=None):
-		if not movementToken:
-			import random
-			movementToken = random.randint(0, 1000000)
-	
-		self.lastMovementToken = movementToken
-
-		try:
-			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
-		except:
-			pass
-		self.yPosition -= 1
-		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = self
-
-		for thing in self.chainedTo:
-			if thing.lastMovementToken == movementToken:
-				continue
-			thing.moveNorth(movementToken=movementToken)
-
-	def moveSouth(self,movementToken=None):
-		if not movementToken:
-			import random
-			movementToken = random.randint(0, 1000000)
-	
-		self.lastMovementToken = movementToken
-		try:
-			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
-		except:
-			pass
-		self.yPosition += 1
-		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = self
-
-		for thing in self.chainedTo:
-			if thing.lastMovementToken == movementToken:
-				continue
-			thing.moveSouth(movementToken=movementToken)
-
-	def moveWest(self,movementToken=None):
-		if not movementToken:
-			import random
-			movementToken = random.randint(0, 1000000)
-	
-		self.lastMovementToken = movementToken
-		try:
-			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
-		except:
-			pass
-		self.xPosition -= 1
-		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = self
-
-		for thing in self.chainedTo:
-			if thing.lastMovementToken == movementToken:
-				continue
-			thing.moveWest(movementToken=movementToken)
-
-	def moveEast(self,movementToken=None):
-		if not movementToken:
-			import random
-			movementToken = random.randint(0, 1000000)
-	
-		self.lastMovementToken = movementToken
-		try:
-			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
-		except:
-			pass
-		self.xPosition += 1
-		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = self
-
-		for thing in self.chainedTo:
-			if thing.lastMovementToken == movementToken:
-				continue
-			thing.moveEast(movementToken=movementToken)
-
 class Winch(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="winch"):
 		self.name = name

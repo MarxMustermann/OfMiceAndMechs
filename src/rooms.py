@@ -27,6 +27,7 @@ class Room(object):
 		self.delayedTicks = 0
 		self.events = []
 		self.floorDisplay = [displayChars.floor]
+		self.lastMovementToken = None
 
 		self.itemByCoordinates = {}
 
@@ -253,17 +254,75 @@ class Room(object):
 			item.room = self
 			self.itemByCoordinates[(item.xPosition,item.yPosition)] = item
 
-	def moveNorth(self):
+	def moveNorth(self,movementToken=None):
+		if not movementToken:
+			import random
+			movementToken = random.randint(0, 1000000)
+
+		self.lastMovementToken = movementToken
+		
 		self.terrain.moveRoomNorth(self)
 
-	def moveSouth(self):
+		try:
+			for thing in self.chainedTo:
+				if thing.lastMovementToken == movementToken:
+					continue
+				thing.moveNorth(movementToken=movementToken)
+		except:
+			pass
+
+	def moveSouth(self,movementToken=None):
+		if not movementToken:
+			import random
+			movementToken = random.randint(0, 1000000)
+
+		self.lastMovementToken = movementToken
+
 		self.terrain.moveRoomSouth(self)
 
-	def moveWest(self):
+		try:
+			for thing in self.chainedTo:
+				if thing.lastMovementToken == movementToken:
+					continue
+				thing.moveSouth(movementToken=movementToken)
+		except:
+			pass
+
+	def moveWest(self,movementToken=None):
+		if not movementToken:
+			import random
+			movementToken = random.randint(0, 1000000)
+
+		self.lastMovementToken = movementToken
+
 		self.terrain.moveRoomWest(self)
 
-	def moveEast(self):
+		try:
+			for thing in self.chainedTo:
+				if thing.lastMovementToken == movementToken:
+					continue
+				thing.moveWest(movementToken=movementToken)
+		except:
+			pass
+
+	def moveEast(self,movementToken=None):
+		messages.append((self,"moveEast1"))
+
+		if not movementToken:
+			import random
+			movementToken = random.randint(0, 1000000)
+
+		self.lastMovementToken = movementToken
+
 		self.terrain.moveRoomEast(self)
+
+		try:
+			for thing in self.chainedTo:
+				if thing.lastMovementToken == movementToken:
+					continue
+				thing.moveEast(movementToken=movementToken)
+		except:
+			pass
 
 	def moveCharacterNorth(self,character):
 		if not character.yPosition:

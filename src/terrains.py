@@ -214,7 +214,10 @@ class Terrain(object):
 			room.offsetY -= 1
 		else:
 			room.offsetY = 9
-			del self.roomByCoordinates[(room.xPosition,room.yPosition)]
+			try:
+				del self.roomByCoordinates[(room.xPosition,room.yPosition)]
+			except:
+				pass
 			room.yPosition -= 1
 			room.terrain.roomByCoordinates[(room.xPosition,room.yPosition)] = room
 
@@ -223,7 +226,10 @@ class Terrain(object):
 			room.offsetY += 1
 		else:
 			room.offsetY = -5
-			del self.roomByCoordinates[(room.xPosition,room.yPosition)]
+			try:
+				del self.roomByCoordinates[(room.xPosition,room.yPosition)]
+			except:
+				pass
 			room.yPosition += 1
 			self.roomByCoordinates[(room.xPosition,room.yPosition)] = room
 
@@ -232,7 +238,10 @@ class Terrain(object):
 			room.offsetX -= 1
 		else:
 			room.offsetX = 9
-			del self.roomByCoordinates[(room.xPosition,room.yPosition)]
+			try:
+				del self.roomByCoordinates[(room.xPosition,room.yPosition)]
+			except:
+				pass
 			room.xPosition -= 1
 			self.roomByCoordinates[(room.xPosition,room.yPosition)] = room
 
@@ -241,7 +250,10 @@ class Terrain(object):
 			room.offsetX += 1
 		else:
 			room.offsetX = -5
-			del self.roomByCoordinates[(room.xPosition,room.yPosition)]
+			try:
+				del self.roomByCoordinates[(room.xPosition,room.yPosition)]
+			except:
+				pass
 			room.xPosition += 1
 			self.roomByCoordinates[(room.xPosition,room.yPosition)] = room
 

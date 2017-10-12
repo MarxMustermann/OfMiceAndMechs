@@ -299,8 +299,9 @@ def show_or_exit(key):
 				if mainChar.room:
 					itemList = mainChar.room.itemsOnFloor
 				else:
-					itemList = terrain.itemsOnFloor
-				itemList.append(item)
+					#itemList = terrain.itemsOnFloor
+					#itemList.append(item)
+					terrain.addItems([item])
 				item.changed()
 		if key in (commandChars.hail):
 			messages.append(characters[0].name+": HÜ!")
@@ -313,6 +314,7 @@ def show_or_exit(key):
 
 			for item in itemList:
 				if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:
+					del terrain.itemByCoordinates[(item.xPosition,item.yPosition)]
 					itemList.remove(item)
 					if hasattr(item,"xPosition"):
 						del item.xPosition

@@ -46,24 +46,13 @@ class Item(object):
 
 		return movementBlock
 
-	def moveNorth(self,movementToken=None):
-		if not movementToken:
-			import random
-			movementToken = random.randint(0, 1000000)
-	
-		self.lastMovementToken = movementToken
-
+	def moveNorth(self,force=1,initialMovement=True):
 		try:
 			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
 		except:
 			pass
 		self.yPosition -= 1
 		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = self
-
-		for thing in self.chainedTo:
-			if thing.lastMovementToken == movementToken:
-				continue
-			thing.moveNorth(movementToken=movementToken)
 
 	def getAffectedByMovementSouth(self,force=1,movementBlock=set()):
 		movementBlock.add(self)
@@ -93,23 +82,13 @@ class Item(object):
 
 		return movementBlock
 
-	def moveWest(self,movementToken=None):
-		if not movementToken:
-			import random
-			movementToken = random.randint(0, 1000000)
-	
-		self.lastMovementToken = movementToken
+	def moveWest(self,force=1,initialMovement=True):
 		try:
 			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
 		except:
 			pass
 		self.xPosition -= 1
 		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = self
-
-		for thing in self.chainedTo:
-			if thing.lastMovementToken == movementToken:
-				continue
-			thing.moveWest(movementToken=movementToken)
 
 	def getAffectedByMovementEast(self,force=1,movementBlock=set()):
 		movementBlock.add(self)
@@ -121,23 +100,13 @@ class Item(object):
 
 		return movementBlock
 
-	def moveEast(self,movementToken=None):
-		if not movementToken:
-			import random
-			movementToken = random.randint(0, 1000000)
-	
-		self.lastMovementToken = movementToken
+	def moveEast(self,force=1,initialMovement=True):
 		try:
 			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
 		except:
 			pass
 		self.xPosition += 1
 		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = self
-
-		for thing in self.chainedTo:
-			if thing.lastMovementToken == movementToken:
-				continue
-			thing.moveEast(movementToken=movementToken)
 
 	def getResistance(self):
 		return 1

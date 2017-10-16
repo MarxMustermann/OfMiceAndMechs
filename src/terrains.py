@@ -212,7 +212,7 @@ class Terrain(object):
 
 		return chars
 
-	def moveRoomNorth(self,room):
+	def getAffectedByRoomMovementNorth(self,room,force=1,movementBlock=set()):
 		# check for collision
 		roomCandidates = []
 		bigX = room.xPosition
@@ -225,11 +225,19 @@ class Terrain(object):
 			if coordinate in self.roomByCoordinates:
 				roomCandidates.extend(self.roomByCoordinates[coordinate])
 
+		roomCollisions = set()
 		for roomCandidate in roomCandidates:
 			if (room.yPosition*15 + room.offsetY) == (roomCandidate.yPosition*15+roomCandidate.offsetY+roomCandidate.sizeY):
 				if (room.xPosition*15+room.offsetX < roomCandidate.xPosition*15+roomCandidate.offsetX+roomCandidate.sizeX) and (room.xPosition*15+room.offsetX+room.sizeX > roomCandidate.xPosition*15+roomCandidate.offsetX):
-					roomCandidate.moveNorth()
+					roomCollisions.add(roomCandidate)
 
+		for roomCollision in roomCollisions:
+			movementBlock.add(roomCollision)
+			self.getAffectedByRoomMovementNorth(roomCollision,force=force,movementBlock=movementBlock)
+
+		return movementBlock
+
+	def moveRoomNorth(self,room,force=1,movementBlock=[]):
 		if room.offsetY > -5:
 			room.offsetY -= 1
 		else:
@@ -244,7 +252,7 @@ class Terrain(object):
 			else:
 				self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
-	def moveRoomSouth(self,room):
+	def getAffectedByRoomMovementSouth(self,room,force=1,movementBlock=set()):
 		# check for collision
 		roomCandidates = []
 		bigX = room.xPosition
@@ -257,11 +265,19 @@ class Terrain(object):
 			if coordinate in self.roomByCoordinates:
 				roomCandidates.extend(self.roomByCoordinates[coordinate])
 
+		roomCollisions = set()
 		for roomCandidate in roomCandidates:
 			if (room.yPosition*15 + room.offsetY+room.sizeY) == (roomCandidate.yPosition*15+roomCandidate.offsetY):
 				if (room.xPosition*15+room.offsetX < roomCandidate.xPosition*15+roomCandidate.offsetX+roomCandidate.sizeX) and (room.xPosition*15+room.offsetX+room.sizeX > roomCandidate.xPosition*15+roomCandidate.offsetX):
-					roomCandidate.moveSouth()
+					roomCollisions.add(roomCandidate)
 
+		for roomCollision in roomCollisions:
+			movementBlock.add(roomCollision)
+			self.getAffectedByRoomMovementSouth(roomCollision,force=force,movementBlock=movementBlock)
+
+		return movementBlock
+
+	def moveRoomSouth(self,room,force=1,movementBlock=[]):
 		if room.offsetY < 9:
 			room.offsetY += 1
 		else:
@@ -276,7 +292,7 @@ class Terrain(object):
 			else:
 				self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
-	def moveRoomWest(self,room):
+	def getAffectedByRoomMovementWest(self,room,force=1,movementBlock=set()):
 		# check for collision
 		roomCandidates = []
 		bigX = room.xPosition
@@ -289,11 +305,19 @@ class Terrain(object):
 			if coordinate in self.roomByCoordinates:
 				roomCandidates.extend(self.roomByCoordinates[coordinate])
 
+		roomCollisions = set()
 		for roomCandidate in roomCandidates:
 			if (room.xPosition*15 + room.offsetX) == (roomCandidate.xPosition*15+roomCandidate.offsetX+roomCandidate.sizeX):
 				if (room.yPosition*15+room.offsetY < roomCandidate.yPosition*15+roomCandidate.offsetY+roomCandidate.sizeY) and (room.yPosition*15+room.offsetY+room.sizeY > roomCandidate.yPosition*15+roomCandidate.offsetY):
-					roomCandidate.moveWest()
+					roomCollisions.add(roomCandidate)
 
+		for roomCollision in roomCollisions:
+			movementBlock.add(roomCollision)
+			self.getAffectedByRoomMovementWest(roomCollision,force=force,movementBlock=movementBlock)
+
+		return movementBlock
+
+	def moveRoomWest(self,room):
 		if room.offsetX > -5:
 			room.offsetX -= 1
 		else:
@@ -308,7 +332,7 @@ class Terrain(object):
 			else:
 				self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
-	def moveRoomEast(self,room):
+	def getAffectedByRoomMovementEast(self,room,force=1,movementBlock=set()):
 		# check for collision
 		roomCandidates = []
 		bigX = room.xPosition
@@ -321,10 +345,19 @@ class Terrain(object):
 			if coordinate in self.roomByCoordinates:
 				roomCandidates.extend(self.roomByCoordinates[coordinate])
 
+		roomCollisions = set()
 		for roomCandidate in roomCandidates:
 			if (room.xPosition*15 + room.offsetX+ room.sizeX) == (roomCandidate.xPosition*15+roomCandidate.offsetX):
 				if (room.yPosition*15+room.offsetY < roomCandidate.yPosition*15+roomCandidate.offsetY+roomCandidate.sizeY) and (room.yPosition*15+room.offsetY+room.sizeY > roomCandidate.yPosition*15+roomCandidate.offsetY):
-					roomCandidate.moveEast()
+					roomCollisions.add(roomCandidate)
+
+		for roomCollision in roomCollisions:
+			movementBlock.add(roomCollision)
+			self.getAffectedByRoomMovementEast(roomCollision,force=force,movementBlock=movementBlock)
+
+		return movementBlock
+
+	def moveRoomEast(self,room):
 		if room.offsetX < 9:
 			room.offsetX += 1
 		else:

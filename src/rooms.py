@@ -29,6 +29,7 @@ class Room(object):
 		self.floorDisplay = [displayChars.floor]
 		self.lastMovementToken = None
 		self.chainedTo = []
+		self.engineStrength = 150
 
 		self.itemByCoordinates = {}
 
@@ -177,6 +178,9 @@ class Room(object):
 
 		self.addItems(itemsOnFloor)
 
+	def getResistance(self):
+		return self.sizeX*self.sizeY
+
 	def openDoors(self):
 		for door in self.doors:
 			door.open()
@@ -255,71 +259,132 @@ class Room(object):
 			item.room = self
 			self.itemByCoordinates[(item.xPosition,item.yPosition)] = item
 
-	def moveNorth(self,movementToken=None):
-		if not movementToken:
-			import random
-			movementToken = random.randint(0, 1000000)
-
-		self.lastMovementToken = movementToken
-		
-		self.terrain.moveRoomNorth(self)
+	def getAffectedByMovementNorth(self,initialMovement=True,force=1,movementBlock=set()):
+		self.terrain.getAffectedByRoomMovementNorth(self,force=force,movementBlock=movementBlock)
 
 		for thing in self.chainedTo:
-			if thing.lastMovementToken == movementToken:
-				continue
-			thing.moveNorth(movementToken=movementToken)
+			if thing not in movementBlock:
+				movementBlock.add(thing)
+				thing.getAffectedByMovementNorth(force=force,movementBlock=movementBlock)
 
-	def moveSouth(self,movementToken=None):
-		if not movementToken:
-			import random
-			movementToken = random.randint(0, 1000000)
+		return movementBlock
 
-		self.lastMovementToken = movementToken
 
+	def moveNorth(self,force=1,initialMovement=True,movementBlock=set()):
+		if initialMovement:
+			movementBlock = set()
+			movementBlock.add(self)
+			self.getAffectedByMovementNorth(force=force,movementBlock=movementBlock)
+
+			totalResistance = 0
+			for thing in movementBlock:
+				totalResistance += thing.getResistance()
+
+			if totalResistance > force:
+				messages.append("*CLUNK*")
+				return
+
+			for thing in movementBlock:
+				if not thing == self:
+					thing.moveNorth(initialMovement=False)
+		
+		self.terrain.moveRoomNorth(self)
+		messages.append("*RUMBLE*")
+
+
+	def getAffectedByMovementSouth(self,initialMovement=True,force=1,movementBlock=set()):
+		self.terrain.getAffectedByRoomMovementSouth(self,force=force,movementBlock=movementBlock)
+
+		for thing in self.chainedTo:
+			if thing not in movementBlock:
+				movementBlock.add(thing)
+				thing.getAffectedByMovementSouth(force=force,movementBlock=movementBlock)
+
+		return movementBlock
+
+	def moveSouth(self,force=1,initialMovement=True,movementBlock=set()):
+		if initialMovement:
+			movementBlock = set()
+			movementBlock.add(self)
+			self.getAffectedByMovementSouth(force=force,movementBlock=movementBlock)
+
+			totalResistance = 0
+			for thing in movementBlock:
+				totalResistance += thing.getResistance()
+
+			if totalResistance > force:
+				messages.append("*CLUNK*")
+				return
+
+			for thing in movementBlock:
+				if not thing == self:
+					thing.moveSouth(initialMovement=False)
+		
 		self.terrain.moveRoomSouth(self)
+		messages.append("*RUMBLE*")
 
-		try:
-			for thing in self.chainedTo:
-				if thing.lastMovementToken == movementToken:
-					continue
-				thing.moveSouth(movementToken=movementToken)
-		except:
-			pass
+	def getAffectedByMovementWest(self,initialMovement=True,force=1,movementBlock=set()):
+		self.terrain.getAffectedByRoomMovementWest(self,force=force,movementBlock=movementBlock)
 
-	def moveWest(self,movementToken=None):
-		if not movementToken:
-			import random
-			movementToken = random.randint(0, 1000000)
+		for thing in self.chainedTo:
+			if thing not in movementBlock:
+				movementBlock.add(thing)
+				thing.getAffectedByMovementWest(force=force,movementBlock=movementBlock)
 
-		self.lastMovementToken = movementToken
+		return movementBlock
 
+	def moveWest(self,initialMovement=True,force=1,movementBlock=set()):
+		if initialMovement:
+			movementBlock = set()
+			movementBlock.add(self)
+			self.getAffectedByMovementWest(force=force,movementBlock=movementBlock)
+
+			totalResistance = 0
+			for thing in movementBlock:
+				totalResistance += thing.getResistance()
+
+			if totalResistance > force:
+				messages.append("*CLUNK*")
+				return
+
+			for thing in movementBlock:
+				if not thing == self:
+					thing.moveWest(initialMovement=False)
+		
 		self.terrain.moveRoomWest(self)
+		messages.append("*RUMBLE*")
 
-		try:
-			for thing in self.chainedTo:
-				if thing.lastMovementToken == movementToken:
-					continue
-				thing.moveWest(movementToken=movementToken)
-		except:
-			pass
+	def getAffectedByMovementEast(self,force=1,movementBlock=set()):
+		self.terrain.getAffectedByRoomMovementEast(self,force=force,movementBlock=movementBlock)
 
-	def moveEast(self,movementToken=None):
+		for thing in self.chainedTo:
+			if thing not in movementBlock:
+				movementBlock.add(thing)
+				thing.getAffectedByMovementEast(force=force,movementBlock=movementBlock)
 
-		if not movementToken:
-			import random
-			movementToken = random.randint(0, 1000000)
+		return movementBlock
 
-		self.lastMovementToken = movementToken
+	def moveEast(self,initialMovement=True, movementToken=None,force=1):
+		if initialMovement:
+			movementBlock = set()
+			movementBlock.add(self)
+			self.getAffectedByMovementEast(force=force,movementBlock=movementBlock)
 
+			totalResistance = 0
+			for thing in movementBlock:
+				totalResistance += thing.getResistance()
+
+			if totalResistance > force:
+				messages.append("*CLUNK*")
+				return
+
+			for thing in movementBlock:
+				if not thing == self:
+					thing.moveEast(initialMovement=False)
+		
 		self.terrain.moveRoomEast(self)
+		messages.append("*RUMBLE*")
 
-		try:
-			for thing in self.chainedTo:
-				if thing.lastMovementToken == movementToken:
-					continue
-				thing.moveEast(movementToken=movementToken)
-		except:
-			pass
 
 	def moveCharacterNorth(self,character):
 		if not character.yPosition:
@@ -865,12 +930,14 @@ XXXXXX
 		self.xPosition = xPosition
 		self.yPosition = yPosition
 		self.gogogo = False
+		self.engineStrength = 250
 
 		self.lever = items.Lever(2,2,"gogogo button")
 		def go(otherself):
 			self.gogogo = True
 		self.lever.activateAction = go
 		self.addItems([self.lever])
+
 class CargoRoom(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):
 		self.roomLayout = """

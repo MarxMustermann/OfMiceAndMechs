@@ -36,6 +36,16 @@ class Item(object):
 		if listenFunction in self.listeners:
 			self.listeners.remove(listenFunction)
 
+	def getAffectedByMovementNorth(self,force=1,movementBlock=set()):
+		movementBlock.add(self)
+		
+		for thing in self.chainedTo:
+			if thing not in movementBlock and not thing == self:
+				movementBlock.add(thing)
+				thing.getAffectedByMovementNorth(force=force,movementBlock=movementBlock)
+
+		return movementBlock
+
 	def moveNorth(self,movementToken=None):
 		if not movementToken:
 			import random
@@ -55,12 +65,17 @@ class Item(object):
 				continue
 			thing.moveNorth(movementToken=movementToken)
 
-	def moveSouth(self,movementToken=None):
-		if not movementToken:
-			import random
-			movementToken = random.randint(0, 1000000)
-	
-		self.lastMovementToken = movementToken
+	def getAffectedByMovementSouth(self,force=1,movementBlock=set()):
+		movementBlock.add(self)
+		
+		for thing in self.chainedTo:
+			if thing not in movementBlock and not thing == self:
+				movementBlock.add(thing)
+				thing.getAffectedByMovementSouth(force=force,movementBlock=movementBlock)
+
+		return movementBlock
+
+	def moveSouth(self,force=1,initialMovement=True):
 		try:
 			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
 		except:
@@ -68,10 +83,15 @@ class Item(object):
 		self.yPosition += 1
 		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = self
 
+	def getAffectedByMovementWest(self,force=1,movementBlock=set()):
+		movementBlock.add(self)
+		
 		for thing in self.chainedTo:
-			if thing.lastMovementToken == movementToken:
-				continue
-			thing.moveSouth(movementToken=movementToken)
+			if thing not in movementBlock and not thing == self:
+				movementBlock.add(thing)
+				thing.getAffectedByMovementWest(force=force,movementBlock=movementBlock)
+
+		return movementBlock
 
 	def moveWest(self,movementToken=None):
 		if not movementToken:
@@ -91,6 +111,16 @@ class Item(object):
 				continue
 			thing.moveWest(movementToken=movementToken)
 
+	def getAffectedByMovementEast(self,force=1,movementBlock=set()):
+		movementBlock.add(self)
+		
+		for thing in self.chainedTo:
+			if thing not in movementBlock and not thing == self:
+				movementBlock.add(thing)
+				thing.getAffectedByMovementEast(force=force,movementBlock=movementBlock)
+
+		return movementBlock
+
 	def moveEast(self,movementToken=None):
 		if not movementToken:
 			import random
@@ -108,6 +138,9 @@ class Item(object):
 			if thing.lastMovementToken == movementToken:
 				continue
 			thing.moveEast(movementToken=movementToken)
+
+	def getResistance(self):
+		return 1
 
 class Corpse(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="corpse"):
@@ -192,13 +225,13 @@ class Display(Item):
 
 	def apply(self,character):
 		def moveNorth():
-			self.room.moveNorth()
+			self.room.moveNorth(force=self.room.engineStrength)
 		def moveSouth():
-			self.room.moveSouth()
+			self.room.moveSouth(force=self.room.engineStrength)
 		def moveWest():
-			self.room.moveWest()
+			self.room.moveWest(force=self.room.engineStrength)
 		def moveEast():
-			self.room.moveEast()
+			self.room.moveEast(force=self.room.engineStrength)
 		def disapply():
 			del stealKey[commandChars.move_north]
 			del stealKey[commandChars.move_south]

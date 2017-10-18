@@ -235,7 +235,12 @@ class Terrain(object):
 			movementBlock.add(roomCollision)
 			self.getAffectedByRoomMovementNorth(roomCollision,force=force,movementBlock=movementBlock)
 
-		return movementBlock
+		posX = room.xPosition*15+room.offsetX-1
+		maxX = room.xPosition*15+room.offsetX+room.sizeX-1
+		while posX < maxX:
+			posX += 1
+			if (posX,room.yPosition*15+room.offsetY-1) in self.itemByCoordinates:
+				movementBlock.add(self.itemByCoordinates[(posX,room.yPosition*15+room.offsetY-1)])
 
 	def moveRoomNorth(self,room,force=1,movementBlock=[]):
 		if room.offsetY > -5:
@@ -275,7 +280,12 @@ class Terrain(object):
 			movementBlock.add(roomCollision)
 			self.getAffectedByRoomMovementSouth(roomCollision,force=force,movementBlock=movementBlock)
 
-		return movementBlock
+		posX = room.xPosition*15+room.offsetX-1
+		maxX = room.xPosition*15+room.offsetX+room.sizeX-1
+		while posX < maxX:
+			posX += 1
+			if (posX,room.yPosition*15+room.offsetY+room.sizeY) in self.itemByCoordinates:
+				movementBlock.add(self.itemByCoordinates[(posX,room.yPosition*15+room.offsetY+room.sizeY)])
 
 	def moveRoomSouth(self,room,force=1,movementBlock=[]):
 		if room.offsetY < 9:
@@ -315,7 +325,12 @@ class Terrain(object):
 			movementBlock.add(roomCollision)
 			self.getAffectedByRoomMovementWest(roomCollision,force=force,movementBlock=movementBlock)
 
-		return movementBlock
+		posY = room.yPosition*15+room.offsetY-1
+		maxY = room.yPosition*15+room.offsetY+room.sizeY-1
+		while posY < maxY:
+			posY += 1
+			if (room.xPosition*15+room.offsetX-1,posY) in self.itemByCoordinates:
+				movementBlock.add(self.itemByCoordinates[(room.xPosition*15+room.offsetX-1,posY)])
 
 	def moveRoomWest(self,room):
 		if room.offsetX > -5:
@@ -355,7 +370,13 @@ class Terrain(object):
 			movementBlock.add(roomCollision)
 			self.getAffectedByRoomMovementEast(roomCollision,force=force,movementBlock=movementBlock)
 
-		return movementBlock
+		posY = room.yPosition*15+room.offsetY-1
+		maxY = room.yPosition*15+room.offsetY+room.sizeY-1
+		while posY < maxY:
+			posY += 1
+			if (room.xPosition*15+room.offsetX+room.sizeX,posY) in self.itemByCoordinates:
+				movementBlock.add(self.itemByCoordinates[(room.xPosition*15+room.offsetX+room.sizeX,posY)])
+
 
 	def moveRoomEast(self,room):
 		if room.offsetX < 9:

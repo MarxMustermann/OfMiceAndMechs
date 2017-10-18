@@ -109,7 +109,10 @@ class Item(object):
 		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = self
 
 	def getResistance(self):
-		return 1
+		if (self.walkable):
+			return 1
+		else:
+			return 50
 
 class Corpse(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="corpse"):

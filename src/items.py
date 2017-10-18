@@ -199,6 +199,16 @@ class Furnace(Item):
 			character.inventory.remove(foundItem)
 			messages.append("*wush*")
 
+		class FurnaceBurnout(object):
+			def __init__(subself,tick):
+				subself.tick = tick
+
+			def handleEvent(subself):
+				self.activated = False
+				self.display = displayChars.furnace_inactive
+
+		self.room.events.append(FurnaceBurnout(self.room.timeIndex+20))
+
 		self.changed()
 
 class Commlink(Item):

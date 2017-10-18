@@ -197,8 +197,32 @@ class Furnace(Item):
 			self.activated = True
 			self.display = displayChars.furnace_active
 			character.inventory.remove(foundItem)
-			messages.append("burn it ALL")
+			messages.append("*wush*")
+
 		self.changed()
+
+class Commlink(Item):
+	def __init__(self,xPosition=0,yPosition=0,name="Display"):
+		self.name = name
+		super().__init__(displayChars.commLink,xPosition,yPosition)
+
+	def apply(self,character):
+		messages.append("Sigmund Bärenstein@Logisticcentre: we need more coal")
+		messages.append("Logisticcentre@Sigmund Bärenstein: on its way")
+	
+		class CoalRefillEvent(object):
+			def __init__(subself,tick):
+				subself.tick = tick
+
+			def handleEvent(subself):
+				messages.append("*rumbling*")
+				messages.append("*rumbling*")
+				messages.append("*smoke and dust on cole piles and neighbour fields*")
+				messages.append("*a chunk of coal drops onto the floor*")
+				messages.append("*smoke clears*")
+
+		self.room.events.append(CoalRefillEvent(self.room.timeIndex+10))
+
 
 class Display(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Display"):

@@ -69,7 +69,7 @@ class Room(object):
 					itemsOnFloor.append(items.Item(displayChars.chains,rowCounter,lineCounter))
 				elif char == "I":
 					#to be commlink
-					itemsOnFloor.append(items.Item(displayChars.commLink,rowCounter,lineCounter))
+					itemsOnFloor.append(items.Commlink(rowCounter,lineCounter))
 				elif char == "H":
 					itemsOnFloor.append(items.Hutch(rowCounter,lineCounter))
 				elif char == "'":

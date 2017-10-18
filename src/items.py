@@ -47,12 +47,14 @@ class Item(object):
 		return movementBlock
 
 	def moveNorth(self,force=1,initialMovement=True):
-		try:
+		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
+		if len(self.terrain.itemByCoordinates) == 0:
 			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
-		except:
-			pass
 		self.yPosition -= 1
-		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = self
+		if (self.xPosition,self.yPosition) in self.terrain.itemByCoordinates:
+			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(self)
+		else:
+			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = [self]
 
 	def getAffectedByMovementSouth(self,force=1,movementBlock=set()):
 		movementBlock.add(self)
@@ -65,12 +67,15 @@ class Item(object):
 		return movementBlock
 
 	def moveSouth(self,force=1,initialMovement=True):
-		try:
+		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
+		if len(self.terrain.itemByCoordinates) == 0:
 			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
-		except:
-			pass
+
 		self.yPosition += 1
-		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = self
+		if (self.xPosition,self.yPosition) in self.terrain.itemByCoordinates:
+			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(self)
+		else:
+			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = [self]
 
 	def getAffectedByMovementWest(self,force=1,movementBlock=set()):
 		movementBlock.add(self)
@@ -83,12 +88,15 @@ class Item(object):
 		return movementBlock
 
 	def moveWest(self,force=1,initialMovement=True):
-		try:
+		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
+		if len(self.terrain.itemByCoordinates) == 0:
 			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
-		except:
-			pass
+
 		self.xPosition -= 1
-		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = self
+		if (self.xPosition,self.yPosition) in self.terrain.itemByCoordinates:
+			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(self)
+		else:
+			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = [self]
 
 	def getAffectedByMovementEast(self,force=1,movementBlock=set()):
 		movementBlock.add(self)
@@ -101,12 +109,14 @@ class Item(object):
 		return movementBlock
 
 	def moveEast(self,force=1,initialMovement=True):
-		try:
+		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
+		if len(self.terrain.itemByCoordinates) == 0:
 			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
-		except:
-			pass
 		self.xPosition += 1
-		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = self
+		if (self.xPosition,self.yPosition) in self.terrain.itemByCoordinates:
+			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(self)
+		else:
+			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = [self]
 
 	def getResistance(self):
 		if (self.walkable):
@@ -298,7 +308,7 @@ class Chain(Item):
 				items = []
 				for coordinate in [(self.xPosition-1,self.yPosition),(self.xPosition+1,self.yPosition),(self.xPosition,self.yPosition-1),(self.xPosition,self.yPosition+1)]:
 					if coordinate in self.terrain.itemByCoordinates:
-						items.append(self.terrain.itemByCoordinates[coordinate])
+						items.extend(self.terrain.itemByCoordinates[coordinate])
 
 				roomCandidates = []
 				bigX = self.xPosition//15
@@ -317,8 +327,6 @@ class Chain(Item):
 						rooms.append(room)
 					if (room.yPosition*15+room.offsetY+room.sizeY == self.yPosition) and (self.xPosition > room.xPosition*15+room.offsetX-1 and self.xPosition < room.xPosition*15+room.offsetX+room.sizeX):
 						rooms.append(room)
-				messages.append(items)
-				messages.append(rooms)
 
 				self.chainedTo = []
 				self.chainedTo.extend(items)

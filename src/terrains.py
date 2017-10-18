@@ -144,7 +144,10 @@ class Terrain(object):
 		self.itemsOnFloor.extend(items)
 		for item in items:
 			item.terrain = self
-			self.itemByCoordinates[(item.xPosition,item.yPosition)] = item
+			if (item.xPosition,item.yPosition) in self.itemByCoordinates:
+				self.itemByCoordinates[(item.xPosition,item.yPosition)].append(item)
+			else:
+				self.itemByCoordinates[(item.xPosition,item.yPosition)] = [item]
 
 	def render(self):
 		global mapHidden
@@ -240,7 +243,7 @@ class Terrain(object):
 		while posX < maxX:
 			posX += 1
 			if (posX,room.yPosition*15+room.offsetY-1) in self.itemByCoordinates:
-				movementBlock.add(self.itemByCoordinates[(posX,room.yPosition*15+room.offsetY-1)])
+				movementBlock.update(self.itemByCoordinates[(posX,room.yPosition*15+room.offsetY-1)])
 
 	def moveRoomNorth(self,room,force=1,movementBlock=[]):
 		if room.offsetY > -5:
@@ -285,7 +288,7 @@ class Terrain(object):
 		while posX < maxX:
 			posX += 1
 			if (posX,room.yPosition*15+room.offsetY+room.sizeY) in self.itemByCoordinates:
-				movementBlock.add(self.itemByCoordinates[(posX,room.yPosition*15+room.offsetY+room.sizeY)])
+				movementBlock.update(self.itemByCoordinates[(posX,room.yPosition*15+room.offsetY+room.sizeY)])
 
 	def moveRoomSouth(self,room,force=1,movementBlock=[]):
 		if room.offsetY < 9:
@@ -330,7 +333,7 @@ class Terrain(object):
 		while posY < maxY:
 			posY += 1
 			if (room.xPosition*15+room.offsetX-1,posY) in self.itemByCoordinates:
-				movementBlock.add(self.itemByCoordinates[(room.xPosition*15+room.offsetX-1,posY)])
+				movementBlock.update(self.itemByCoordinates[(room.xPosition*15+room.offsetX-1,posY)])
 
 	def moveRoomWest(self,room):
 		if room.offsetX > -5:
@@ -375,7 +378,7 @@ class Terrain(object):
 		while posY < maxY:
 			posY += 1
 			if (room.xPosition*15+room.offsetX+room.sizeX,posY) in self.itemByCoordinates:
-				movementBlock.add(self.itemByCoordinates[(room.xPosition*15+room.offsetX+room.sizeX,posY)])
+				movementBlock.update(self.itemByCoordinates[(room.xPosition*15+room.offsetX+room.sizeX,posY)])
 
 
 	def moveRoomEast(self,room):

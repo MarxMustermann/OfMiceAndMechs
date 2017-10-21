@@ -679,11 +679,13 @@ class FirstTutorialPhase(object):
 class SecondTutorialPhase(object):
 	def start(self):
 		tutorialQuest1 = quests.MoveQuest(terrain.tutorialMachineRoom,5,7,startCinematics="movement can be tricky sometimes so please make yourself comfortable with the controls.\n\nyou can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.\n\nthe basic Movementcommands are:\n w=up\n a=right\n s=down\n d=right\nplease move to the designated Target. the Implant will mark your Way")
-		#tutorialQuest1 = quests.PatrolQuest([(terrain.tutorialMachineRoom,2,2),(terrain.tutorialMachineRoom,2,7),(terrain.tutorialMachineRoom,7,7),(terrain.tutorialMachineRoom,7,2)])
-		tutorialQuest2 = quests.CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with "+displayChars.coal+" on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing "+commandChars.activate+".")
-		tutorialQuest3 = quests.ActivateQuest(terrain.tutorialMachineRoom.furnace,startCinematics="now go and activate the Furnace marked with a "+displayChars.furnace_inactive+". you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press "+commandChars.activate+".")
-		tutorialQuest4 = quests.MoveQuest(terrain.tutorialMachineRoom,1,3,startCinematics="Move back to Waitingposition")
-		tutorialQuest5 = quests.LeaveRoomQuest(terrain.tutorialMachineRoom,startCinematics="please exit the Room")
+		tutorialQuest2 = quests.PatrolQuest([(terrain.tutorialMachineRoom,2,2),(terrain.tutorialMachineRoom,2,7),(terrain.tutorialMachineRoom,7,7),(terrain.tutorialMachineRoom,7,2)],startCinematics="now please patrol around the rooms a few times.",lifetime=80)
+		tutorialQuest3 = quests.MoveQuest(terrain.tutorialMachineRoom,1,3,startCinematics="thats enough. move back to waiting position")
+
+		tutorialQuest4 = quests.CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with "+displayChars.coal+" on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing "+commandChars.activate+".")
+		tutorialQuest5 = quests.ActivateQuest(terrain.tutorialMachineRoom.furnace,startCinematics="now go and activate the Furnace marked with a "+displayChars.furnace_inactive+". you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press "+commandChars.activate+".")
+		tutorialQuest6 = quests.MoveQuest(terrain.tutorialMachineRoom,1,3,startCinematics="Move back to Waitingposition")
+		tutorialQuest7 = quests.LeaveRoomQuest(terrain.tutorialMachineRoom,startCinematics="please exit the Room")
 
 		tutorialQuest1.followUp = tutorialQuest2
 		tutorialQuest2.followUp = tutorialQuest3
@@ -703,7 +705,8 @@ class VatPhase(object):
 		mainChar.assignQuest(vatQuest1)
 
 phase = FirstTutorialPhase()
-phase.start()
+phase2 = SecondTutorialPhase()
+phase2.start()
 
 #cinematics.showCinematic("movement can be tricky sometimes so please make yourself comfortable with the controls.\n\nyou can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.\n\nthe basic Movementcommands are:\n w=up\n a=right\n s=down\n d=right\nplease move to the designated Target. the Implant will mark your Way")
 #"""

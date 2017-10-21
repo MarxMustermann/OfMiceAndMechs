@@ -628,13 +628,6 @@ class FirstTutorialPhase(object):
 		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(2))
 		cinematics.showCinematic("your cohabitants in this Room are:\n 'Erwin von Libwig' ("+displayChars.staffCharacters[11]+") is this Rooms 'Raumleiter' and therefore responsible for proper Steamgeneration in this Room\n 'Ernst Ziegelbach' ("+displayChars.staffCharacters[25]+") was dispatched to support 'Erwin von Libwig' and is his Subordinate\n\nyou will likely report to 'Erwin von Libwig' later. please try to find them on the display and press "+commandChars.wait)
 		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-		"""
-		startShowGameCutScene()
-		*Erwin von Libwig walks to a Pile and fires a furnace*
-		*Erwin von Libwig walks back to a Pile and fires a furnace*
-		endShowGameCutScene()
-		*Erwin von Libwig goes back to waiting position*
-		"""
 		
 		cinematics.showCinematic("Erwin von Libwig will demonstrate how to fire a furnace now.\n\nwatch and learn.")
 		class AddQuestEvent(object):
@@ -655,7 +648,7 @@ class FirstTutorialPhase(object):
 				subself.tick = tick
 
 			def handleEvent(subself):
-				messages.append("*Erwin von Libwig, please fire the furnace now*")
+				messages.append("*Erwin von Libwig, please fire the Furnace now*")
 
 		terrain.tutorialMachineRoom.events.append(ShowMessageEvent(17))
 		terrain.tutorialMachineRoom.events.append(AddQuestEvent(18))
@@ -707,17 +700,52 @@ class SecondTutorialPhase(object):
 
 class VatPhase(object):
 	def start(self):
-		vatQuest1 = quests.EnterRoomQuest(terrain.tutorialVat,startCinematics="please goto the Vat")
-		vatQuest2 = quests.MoveQuest(terrain.tutorialVat,4,4,startCinematics="please move to Waitingposition")
+		questList = []
+		if not (mainChar.room and mainChar.room == terrain.tutorialVat):
+			questList.append(quests.EnterRoomQuest(terrain.tutorialVat,startCinematics="please goto the Vat"))
 
-		vatQuest1.followUp = vatQuest2
-		vatQuest2.followUp = None
+		questList.append(quests.MoveQuest(terrain.tutorialVat,3,3,startCinematics="please move back to the waiting position"))
 
-		mainChar.assignQuest(vatQuest1)
+		lastQuest = questList[0]
+		for item in questList[1:]:
+			lastQuest.followUp = item
+			lastQuest = item
+		questList[-1].followup = None
+
+		questList[-1].endTrigger = self.end
+
+		mainChar.assignQuest(questList[0])
+
+
+	def end(self):
+		cinematics.showCinematic("you seem to be able to follow orders after all. you may go back to your training.")
+		MachineRoomPhase().start()
+
+class MachineRoomPhase(object):
+	def start(self):
+		questList = []
+		if not (mainChar.room and mainChar.room == terrain.tutorialMachineRoom):
+			questList.append(quests.EnterRoomQuest(terrain.tutorialMachineRoom,startCinematics="please goto the Machineroom"))
+		questList.append(quests.MoveQuest(terrain.tutorialMachineRoom,1,3,startCinematics="time to do some actual work. report to {machine room supervisor}"))
+
+		lastQuest = questList[0]
+		for item in questList[1:]:
+			lastQuest.followUp = item
+			lastQuest = item
+		questList[-1].followup = None
+
+		questList[-1].endTrigger = self.end
+
+		mainChar.assignQuest(questList[0])
+
+	def end(self):
+		gamestate.gameWon = True
 
 phase1 = FirstTutorialPhase()
 phase2 = SecondTutorialPhase()
-phase1.start()
+phase3 = VatPhase()
+phase4 = MachineRoomPhase()
+phase3.start()
 
 #cinematics.showCinematic("movement can be tricky sometimes so please make yourself comfortable with the controls.\n\nyou can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.\n\nthe basic Movementcommands are:\n w=up\n a=right\n s=down\n d=right\nplease move to the designated Target. the Implant will mark your Way")
 #"""

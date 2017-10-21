@@ -601,6 +601,7 @@ class FirstTutorialPhase(object):
 				messages.append("*rumbling*")
 				messages.append("*smoke and dust on Coalpiles and neighbourng Fields*")
 				messages.append("*a chunk of Coal drops onto the floor*")
+				terrain.tutorialMachineRoom.addItems([items.Coal(7,3)])
 				messages.append("*smoke clears*")
 
 		terrain.tutorialMachineRoom.events.append(CoalRefillEvent(14))
@@ -714,9 +715,9 @@ class VatPhase(object):
 
 		mainChar.assignQuest(vatQuest1)
 
-phase = FirstTutorialPhase()
+phase1 = FirstTutorialPhase()
 phase2 = SecondTutorialPhase()
-phase2.start()
+phase1.start()
 
 #cinematics.showCinematic("movement can be tricky sometimes so please make yourself comfortable with the controls.\n\nyou can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.\n\nthe basic Movementcommands are:\n w=up\n a=right\n s=down\n d=right\nplease move to the designated Target. the Implant will mark your Way")
 #"""

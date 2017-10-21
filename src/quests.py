@@ -138,14 +138,30 @@ class MetaQuest(Quest):
 		super().deactivate()
 
 class PatrolQuest(MetaQuest):
-	def __init__(self,waypoints=[],startCinematics=None,looped=True):
+	def __init__(self,waypoints=[],startCinematics=None,looped=True,lifetime=None):
 		quests = []
 
 		for waypoint in waypoints:
 			quest = MoveQuest(waypoint[0],waypoint[1],waypoint[2])
 			quests.append(quest)
 
+		self.lifetime = lifetime
+
 		super().__init__(quests,startCinematics=startCinematics,looped=looped)
+
+	def activate(self):
+		if self.lifetime:
+			class endQuestEvent(object):
+				def __init__(subself,tick):
+					subself.tick = tick
+
+				def handleEvent(subself):
+					self.postHandler()
+
+			self.character.room.events.append(endQuestEvent(self.character.room.timeIndex+self.lifetime))
+
+		super().activate()
+
 
 class CollectQuest(Quest):
 	def __init__(self,toFind="canBurn",startCinematics=None):

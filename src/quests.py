@@ -307,9 +307,9 @@ class MoveQuest(Quest):
 		if self.room == self.character.room:
 			self.dstX = self.targetX
 			self.dstY = self.targetY
-		elif self.character.room and self.character.quests[0] == self:
+		elif self.character.room and self.character.quests and self.character.quests[0] == self:
 			self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
-		elif not self.character.room and self.character.quests[0] == self:
+		elif not self.character.room and self.character.quests and self.character.quests[0] == self:
 			self.character.assignQuest(EnterRoomQuest(self.room),active=True)
 			pass
 		super().recalculate()

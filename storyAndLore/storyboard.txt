@@ -386,8 +386,22 @@ say("""thats enough. move back to waiting position""")
 *move back to waiting position*
 #==say("""
 say("""use e to examine items. you can get Descriptions and more detailed Information about your environment than just by looking at things. 
-you have 20 Ticks to familiarise yourself with the Movementcommands. please do.""")
-wait for 20 tick
+
+to look at something you have to walk into or over the item and press e. For example if you stand next to a furnace like this:
+
+ΩΩ＠
+
+pressing a and then e would result in the Description:
+
+"this is a Furnace"
+
+you have 100 Ticks to familiarise yourself with the Movementcommands. please do.""")
+
+50 Tick warning
+80 Tick warning
+100 Tick warning
+
+wait for 100 tick
 if not in waiting position:
 	send to waiting position
 #==

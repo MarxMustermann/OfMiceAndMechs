@@ -563,105 +563,147 @@ mainChar.room = terrain.tutorialMachineRoom
 mainChar.watched = True
 terrain.tutorialMachineRoom.addCharacter(mainChar,1,4)
 
-def setupFirstTutorialPhase():
-	npc = characters.Character(displayChars.staffCharacters[11],1,2,name="Erwin von Libwig")
-	#npc2.watched = True
-	terrain.tutorialMachineRoom.addCharacter(npc,1,3)
-	npc.terrain = terrain
-	npc.room = terrain.tutorialMachineRoom
-	#npc2.assignQuest(quest0)
-	#npc2.automated = False
+class FirstTutorialPhase(object):
+	def start(self):
+		npc = characters.Character(displayChars.staffCharacters[11],1,2,name="Erwin von Libwig")
+		#npc2.watched = True
+		terrain.tutorialMachineRoom.addCharacter(npc,1,3)
+		npc.terrain = terrain
+		npc.room = terrain.tutorialMachineRoom
+		#npc2.assignQuest(quest0)
+		#npc2.automated = False
 
-	npc2 = characters.Character(displayChars.staffCharacters[25],1,1,name="Ernst Ziegelbach")
-	#npc2.watched = True
-	terrain.tutorialMachineRoom.addCharacter(npc2,1,1)
-	npc2.terrain = terrain
-	npc2.room = terrain.tutorialMachineRoom
-	#npc2.assignQuest(quest0)
-	#npc2.automated = False
+		npc2 = characters.Character(displayChars.staffCharacters[25],1,1,name="Ernst Ziegelbach")
+		#npc2.watched = True
+		terrain.tutorialMachineRoom.addCharacter(npc2,1,1)
+		npc2.terrain = terrain
+		npc2.room = terrain.tutorialMachineRoom
+		#npc2.assignQuest(quest0)
+		#npc2.automated = False
 
-	cinematics.showCinematic("welcome to the Trainingenvironment\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
-	cinematics.showCinematic("the Trainingenvironment will show the Map now. take a look at everything and press "+commandChars.wait+" afterwards")
-	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-	cinematics.showCinematic("you are represented by the "+displayChars.main_char+" Character. find yourself on the screen and press "+commandChars.wait)
-	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-	cinematics.showCinematic("right now you are in the Boilerroom\n\nthe Floor is represented by "+displayChars.floor+" and Walls are shown as "+displayChars.wall+". the Door is represented by "+displayChars.door_closed+" or "+displayChars.door_opened+" when closed.\n\na empty Room would look like this:\n\n"+displayChars.wall*5+"\n"+displayChars.wall+displayChars.floor*3+displayChars.wall+"\n"+displayChars.wall+displayChars.floor*3+displayChars.door_closed+"\n"+displayChars.wall+displayChars.floor*3+displayChars.wall+"\n"+displayChars.wall*5+"\n\nthe Trainingenvironment will display now. please try to orient yourself in the Room.\n\npress "+commandChars.wait+" when successful")
-	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-	cinematics.showCinematic("in the Middle of the Room you see the Steamgenerator\n\n"+displayChars.void+displayChars.pipe+displayChars.boiler_inactive+displayChars.furnace_inactive+"\n"+displayChars.pipe+displayChars.pipe+displayChars.boiler_inactive+displayChars.furnace_inactive+"\n"+displayChars.void+displayChars.pipe+displayChars.boiler_active+displayChars.furnace_active+"\n\nit consist of Furnaces marked by "+displayChars.furnace_inactive+" or "+displayChars.furnace_active+" that heat the Water in the Boilers "+displayChars.boiler_inactive+" till it boils. a Boiler with boiling Water will be shown as "+displayChars.boiler_active+".\n\nthe Steam is transfered to the Pipes marked with "+displayChars.pipe+" and used to power the Ships Mechanics and Weapons\n\ntry to recognize the Design and press "+commandChars.wait)
-	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-	cinematics.showCinematic("the Furnaces burn Coal shown as "+displayChars.coal+". if a Furnace is burning Coal, it is shown as "+displayChars.furnace_active+" and shown as "+displayChars.furnace_inactive+" if not.\n\nthe Coal is stored in Piles shown as "+displayChars.pile+". the Coalpiles are on the right Side of the Room and are filled through the Pipes when needed.\n\nSince a Coaldelivery is incoming anyway. please wait and pay Attention.\n\ni will count down the ticks in the messageBox now")
-	
-	class CoalRefillEvent(object):
-		def __init__(subself,tick):
-			subself.tick = tick
+		cinematics.showCinematic("welcome to the Trainingenvironment\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
+		cinematics.showCinematic("the Trainingenvironment will show now. take a look at Everything and press "+commandChars.wait+" afterwards. You will be able to move later")
+		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+		cinematics.showCinematic("you are represented by the "+displayChars.main_char+" Character. find yourself on the Screen and press "+commandChars.wait)
+		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+		cinematics.showCinematic("right now you are in the Boilerroom\n\nthe Floor is represented by "+displayChars.floor+" and Walls are shown as "+displayChars.wall+". the Door is represented by "+displayChars.door_closed+" or "+displayChars.door_opened+" when closed.\n\na empty Room would look like this:\n\n"+displayChars.wall*5+"\n"+displayChars.wall+displayChars.floor*3+displayChars.wall+"\n"+displayChars.wall+displayChars.floor*3+displayChars.door_closed+"\n"+displayChars.wall+displayChars.floor*3+displayChars.wall+"\n"+displayChars.wall*5+"\n\nthe Trainingenvironment will display now. please try to orient yourself in the Room.\n\npress "+commandChars.wait+" when successful")
+		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+		cinematics.showCinematic("in the Middle of the Room you see the Steamgenerator\n\n"+displayChars.void+displayChars.pipe+displayChars.boiler_inactive+displayChars.furnace_inactive+"\n"+displayChars.pipe+displayChars.pipe+displayChars.boiler_inactive+displayChars.furnace_inactive+"\n"+displayChars.void+displayChars.pipe+displayChars.boiler_active+displayChars.furnace_active+"\n\nit consist of Furnaces marked by "+displayChars.furnace_inactive+" or "+displayChars.furnace_active+" that heat the Water in the Boilers "+displayChars.boiler_inactive+" till it boils. a Boiler with boiling Water will be shown as "+displayChars.boiler_active+".\n\nthe Steam is transfered to the Pipes marked with "+displayChars.pipe+" and used to power the Ships Mechanics and Weapons\n\ntry to recognize the Design and press "+commandChars.wait)
+		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+		cinematics.showCinematic("the Furnaces burn Coal shown as "+displayChars.coal+" . if a Furnace is burning Coal, it is shown as "+displayChars.furnace_active+" and shown as "+displayChars.furnace_inactive+" if not.\n\nthe Coal is stored in Piles shown as "+displayChars.pile+". the Coalpiles are on the right Side of the Room and are filled through the Pipes when needed.\n\nSince a Coaldelivery is incoming anyway. please wait and pay Attention.\n\ni will count down the Ticks in the Messagebox now")
+		
+		class CoalRefillEvent(object):
+			def __init__(subself,tick):
+				subself.tick = tick
 
-		def handleEvent(subself):
-			messages.append("*rumbling*")
-			messages.append("*rumbling*")
-			messages.append("*smoke and dust on cole piles and neighbour fields*")
-			messages.append("*a chunk of coal drops onto the floor*")
-			messages.append("*smoke clears*")
+			def handleEvent(subself):
+				messages.append("*rumbling*")
+				messages.append("*rumbling*")
+				messages.append("*smoke and dust on Coalpiles and neighbourng Fields*")
+				messages.append("*a chunk of Coal drops onto the floor*")
+				messages.append("*smoke clears*")
 
-	terrain.tutorialMachineRoom.events.append(CoalRefillEvent(14))
+		terrain.tutorialMachineRoom.events.append(CoalRefillEvent(14))
 
-	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-	cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("8"))
-	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-	cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("7"))
-	cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("by the way: the Piles on the lower End of the Room are Storage for Replacementparts and you can sleep in the Hutches to the left shown as Ѻ "))
-	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-	cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("6"))
-	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-	cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("5"))
-	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-	cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("4"))
-	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-	cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("3"))
-	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-	cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("2"))
-	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-	cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("1"))
-	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-	cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("Coaldelivery now"))
-	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(2))
-	cinematics.showCinematic("your cohabitants in this Room are:\n 'Erwin von Libwig' ("+displayChars.staffCharacters[11]+") is this Rooms 'Raumleiter' and therefore responsible for proper Steamgeneration in this Room\n 'Ernst Ziegelbach' ("+displayChars.staffCharacters[25]+") was dispatched to support 'Erwin von Libwig' and is his Subordinate\n\nyou will likely report to 'Erwin von Libwig' later. please try to find them on the display and press "+commandChars.wait)
-	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-	"""
-	startShowGameCutScene()
-	*Erwin von Libwig walks to a Pile and fires a furnace*
-	*Erwin von Libwig walks back to a Pile and fires a furnace*
-	endShowGameCutScene()
-	*Erwin von Libwig goes back to waiting position*
-	"""
-	
-	cinematics.showCinematic("Erwin von Libwig will demonstrate how to fire a furnace now.\n\nwatch and learn.")
-	class AddQuestEvent(object):
-		def __init__(subself,tick):
-			subself.tick = tick
+		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+		cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("8"))
+		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+		cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("7"))
+		cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("by the Way: the Piles on the lower End of the Room are Storage for Replacementparts and you can sleep in the Hutches to the left shown as "+displayChars.hutch_free+" or "+displayChars.hutch_occupied))
+		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+		cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("6"))
+		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+		cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("5"))
+		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+		cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("4"))
+		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+		cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("3"))
+		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+		cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("2"))
+		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+		cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("1"))
+		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+		cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("Coaldelivery now"))
+		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(2))
+		cinematics.showCinematic("your cohabitants in this Room are:\n 'Erwin von Libwig' ("+displayChars.staffCharacters[11]+") is this Rooms 'Raumleiter' and therefore responsible for proper Steamgeneration in this Room\n 'Ernst Ziegelbach' ("+displayChars.staffCharacters[25]+") was dispatched to support 'Erwin von Libwig' and is his Subordinate\n\nyou will likely report to 'Erwin von Libwig' later. please try to find them on the display and press "+commandChars.wait)
+		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+		"""
+		startShowGameCutScene()
+		*Erwin von Libwig walks to a Pile and fires a furnace*
+		*Erwin von Libwig walks back to a Pile and fires a furnace*
+		endShowGameCutScene()
+		*Erwin von Libwig goes back to waiting position*
+		"""
+		
+		cinematics.showCinematic("Erwin von Libwig will demonstrate how to fire a furnace now.\n\nwatch and learn.")
+		class AddQuestEvent(object):
+			def __init__(subself,tick):
+				subself.tick = tick
 
-		def handleEvent(subself):
-			quest0 = quests.CollectQuest()
-			quest1 = quests.ActivateQuest(terrain.tutorialMachineRoom.furnace)
-			quest2 = quests.MoveQuest(terrain.tutorialMachineRoom,1,3,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way\n\nremeber you are the "+displayChars.main_char)
-			quest0.followUp = quest1
-			quest1.followUp = quest2
-			quest2.followUp = None
-			npc.assignQuest(quest0,active=True)
+			def handleEvent(subself):
+				quest0 = quests.CollectQuest()
+				quest1 = quests.ActivateQuest(terrain.tutorialMachineRoom.furnace)
+				quest2 = quests.MoveQuest(terrain.tutorialMachineRoom,1,3)
+				quest0.followUp = quest1
+				quest1.followUp = quest2
+				quest2.followUp = None
+				npc.assignQuest(quest0,active=True)
 
-	class ShowMessageEvent(object):
-		def __init__(subself,tick):
-			subself.tick = tick
+		class ShowMessageEvent(object):
+			def __init__(subself,tick):
+				subself.tick = tick
 
-		def handleEvent(subself):
-			messages.append("*Erwin von Libwig, please fire the furnace now*")
+			def handleEvent(subself):
+				messages.append("*Erwin von Libwig, please fire the furnace now*")
 
-	terrain.tutorialMachineRoom.events.append(ShowMessageEvent(17))
-	terrain.tutorialMachineRoom.events.append(AddQuestEvent(18))
-	cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(25))
+		terrain.tutorialMachineRoom.events.append(ShowMessageEvent(17))
+		terrain.tutorialMachineRoom.events.append(AddQuestEvent(18))
+		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(27))
 
-	cinematics.showCinematic("there are other Items in the Room that may or may not be important for you. Here is the full List for you to review:\n\n Bin ("+displayChars.binStorage+"): Used for storing Things intended to be transported further\n Pile ("+displayChars.pile+"): a Pile of Things\n Door ("+displayChars.door_opened+" or "+displayChars.door_closed+"): you can move through it when open\n Lever ("+displayChars.lever_notPulled+" or "+displayChars.lever_pulled+"): a simple Man-Machineinterface\n Furnace ("+displayChars.furnace_inactive+"): used to generate heat burning Things\n Display ("+displayChars.display+"): a complicated Machine-Maninterface\n Wall ("+displayChars.wall+"): ensures the structural Integrity of basically any Structure\n Pipe ("+displayChars.wall+"): transports Liquids, Pseudoliquids and Gasses\n Coal ("+displayChars.coal+"): a piece of Coal, quite usefull actually\n Boiler ("+displayChars.boiler_inactive+" or "+displayChars.boiler_active+"): generates Steam using Water and and Heat\n Chains ("+displayChars.chains+"): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing\n Comlink ("+displayChars.commLink+"): a Pipe based Voicetransportationsystem that allows Communication with other Rooms\n Hutch ("+displayChars.hutch_free+"): a comfy and safe Place to sleep and eat")
+		cinematics.showCinematic("there are other Items in the Room that may or may not be important for you. Here is the full List for you to review:\n\n Bin ("+displayChars.binStorage+"): Used for storing Things intended to be transported further\n Pile ("+displayChars.pile+"): a Pile of Things\n Door ("+displayChars.door_opened+" or "+displayChars.door_closed+"): you can move through it when open\n Lever ("+displayChars.lever_notPulled+" or "+displayChars.lever_pulled+"): a simple Man-Machineinterface\n Furnace ("+displayChars.furnace_inactive+"): used to generate heat burning Things\n Display ("+displayChars.display+"): a complicated Machine-Maninterface\n Wall ("+displayChars.wall+"): ensures the structural Integrity of basically any Structure\n Pipe ("+displayChars.pipe+"): transports Liquids, Pseudoliquids and Gasses\n Coal ("+displayChars.coal+"): a piece of Coal, quite usefull actually\n Boiler ("+displayChars.boiler_inactive+" or "+displayChars.boiler_active+"): generates Steam using Water and and Heat\n Chains ("+displayChars.chains+"): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing\n Comlink ("+displayChars.commLink+"): a Pipe based Voicetransportationsystem that allows Communication with other Rooms\n Hutch ("+displayChars.hutch_free+"): a comfy and safe Place to sleep and eat")
 
-setupFirstTutorialPhase()
+		class StartNextPhaseEvent(object):
+			def __init__(subself,tick):
+				subself.tick = tick
+
+			def handleEvent(subself):
+				self.end()
+
+		terrain.tutorialMachineRoom.events.append(StartNextPhaseEvent(45))
+
+	def end(self):
+		cinematics.showCinematic("please try to remember the Information. The lesson will now continue with movement.")
+		phase2 = SecondTutorialPhase()
+		phase2.start()
+
+class SecondTutorialPhase(object):
+	def start(self):
+		tutorialQuest1 = quests.MoveQuest(terrain.tutorialMachineRoom,5,7,startCinematics="movement can be tricky sometimes so please make yourself comfortable with the controls.\n\nyou can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.\n\nthe basic Movementcommands are:\n w=up\n a=right\n s=down\n d=right\nplease move to the designated Target. the Implant will mark your Way")
+		#tutorialQuest1 = quests.PatrolQuest([(terrain.tutorialMachineRoom,2,2),(terrain.tutorialMachineRoom,2,7),(terrain.tutorialMachineRoom,7,7),(terrain.tutorialMachineRoom,7,2)])
+		tutorialQuest2 = quests.CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with "+displayChars.coal+" on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing "+commandChars.activate+".")
+		tutorialQuest3 = quests.ActivateQuest(terrain.tutorialMachineRoom.furnace,startCinematics="now go and activate the Furnace marked with a "+displayChars.furnace_inactive+". you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press "+commandChars.activate+".")
+		tutorialQuest4 = quests.MoveQuest(terrain.tutorialMachineRoom,1,3,startCinematics="Move back to Waitingposition")
+		tutorialQuest5 = quests.LeaveRoomQuest(terrain.tutorialMachineRoom,startCinematics="please exit the Room")
+
+		tutorialQuest1.followUp = tutorialQuest2
+		tutorialQuest2.followUp = tutorialQuest3
+		tutorialQuest3.followUp = tutorialQuest4
+		tutorialQuest4.followUp = None
+
+		mainChar.assignQuest(tutorialQuest1)
+
+class VatPhase(object):
+	def start(self):
+		vatQuest1 = quests.EnterRoomQuest(terrain.tutorialVat,startCinematics="please goto the Vat")
+		vatQuest2 = quests.MoveQuest(terrain.tutorialVat,4,4,startCinematics="please move to Waitingposition")
+
+		vatQuest1.followUp = vatQuest2
+		vatQuest2.followUp = None
+
+		mainChar.assignQuest(vatQuest1)
+
+phase = FirstTutorialPhase()
+phase.start()
 
 #cinematics.showCinematic("movement can be tricky sometimes so please make yourself comfortable with the controls.\n\nyou can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.\n\nthe basic Movementcommands are:\n w=up\n a=right\n s=down\n d=right\nplease move to the designated Target. the Implant will mark your Way")
 #"""
@@ -669,27 +711,8 @@ setupFirstTutorialPhase()
 #"""
 #cinematics.showCinematic("you have 20 Ticks to familiarise yourself with the Movementcommands. please do.")
 #cinematics.showCinematic("next on my Checklist is to explain the Interaction with your Environment\n\ninteraction with your Environment is somewhat complicated\n\nthe basic Interationcommands are:\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the Room.\n\nwhenever you bump into an item that is to big to be walked on, you will promted for giving an extra interaction command. I'll give you an example:\n\nΩΩ＠ӫӫ\n\n pressing a and j would result in Activation of the Furnace\n pressing d and j would result in Activation of the Pile\n pressing a and e would result make you examine the Furnace\n pressing d and e would result make you examine the Pile\n\nplease grab yourself some Coal from a pile by bumping into it and pressing j afterwards.")
-
-tutorialQuest1 = quests.MoveQuest(terrain.tutorialMachineRoom,5,7,startCinematics="inside the Simulationchamber everything has to be taught from Scratch\n\nthe basic Movementcommands are:\n\n w=up\n a=right\n s=down\n d=right\n\nplease move to the designated Target. the Implant will mark your Way\n\nremeber you are the "+displayChars.main_char)
-#tutorialQuest1 = quests.PatrolQuest([(terrain.tutorialMachineRoom,2,2),(terrain.tutorialMachineRoom,2,7),(terrain.tutorialMachineRoom,7,7),(terrain.tutorialMachineRoom,7,2)])
-tutorialQuest2 = quests.CollectQuest(startCinematics="interaction with your Environment ist somewhat complicated\n\nthe basic Interationcommands are:\n\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with "+displayChars.coal+" on the rigth Side of the room.\n\nplease grab yourself some Coal from a pile by moving onto it and pressing "+commandChars.activate+".")
-tutorialQuest3 = quests.ActivateQuest(terrain.tutorialMachineRoom.furnace,startCinematics="now go and activate the Furnace marked with a "+displayChars.furnace_inactive+". you need to have burnable Material like Coal in your Inventory\n\nso ensure that you have some Coal in your Inventory go to the Furnace and press "+commandChars.activate+".")
-tutorialQuest4 = quests.MoveQuest(terrain.tutorialMachineRoom,1,3,startCinematics="Move back to Waitingposition")
-tutorialQuest5 = quests.LeaveRoomQuest(terrain.tutorialMachineRoom,startCinematics="please exit the Room")
-tutorialQuest5 = quests.EnterRoomQuest(terrain.tutorialVat,startCinematics="please goto the Vat")
-tutorialQuest6 = quests.MoveQuest(terrain.tutorialVat,4,4,startCinematics="please move to Waitingposition")
-
-tutorialQuest1.followUp = tutorialQuest2
-tutorialQuest2.followUp = tutorialQuest3
-tutorialQuest3.followUp = tutorialQuest4
-tutorialQuest4.followUp = tutorialQuest5
-tutorialQuest5.followUp = tutorialQuest6
-tutorialQuest6.followUp = None
-
 rooms.mainChar = mainChar
 terrains.mainChar = mainChar
-
-mainChar.assignQuest(tutorialQuest1)
 
 """
 quest0 = quests.MoveQuest(terrain.tutorialMachineRoom,7,7)
@@ -784,10 +807,6 @@ def renderQuests():
 		for quest in mainChar.quests:
 			txt+= "QUEST: "+quest.description+"\n"
 		txt += str(mainChar.xPosition)+"/"+str(mainChar.yPosition)
-	else:
-		txt += "QUEST: keinQuest\n\n"
-		gamestate.gameWon = True
-		loop.set_alarm_in(0.0, callShow_or_exit, commandChars.ignore)
 	return txt
 	
 def renderMessagebox():

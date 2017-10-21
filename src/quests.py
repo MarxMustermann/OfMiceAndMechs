@@ -162,6 +162,24 @@ class PatrolQuest(MetaQuest):
 
 		super().activate()
 
+class ExamineQuest(Quest):
+	def __init__(self,waypoints=[],startCinematics=None,looped=True,lifetime=None):
+		self.lifetime = lifetime
+		self.description = "please examine your environment"
+		super().__init__(startCinematics=startCinematics)
+
+	def activate(self):
+		if self.lifetime:
+			class endQuestEvent(object):
+				def __init__(subself,tick):
+					subself.tick = tick
+
+				def handleEvent(subself):
+					self.postHandler()
+
+			self.character.room.events.append(endQuestEvent(self.character.room.timeIndex+self.lifetime))
+
+		super().activate()
 
 class CollectQuest(Quest):
 	def __init__(self,toFind="canBurn",startCinematics=None):

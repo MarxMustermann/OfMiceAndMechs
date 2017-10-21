@@ -691,7 +691,14 @@ class SecondTutorialPhase(object):
 			lastQuest = item
 		questList[-1].followup = None
 
+		questList[-1].endTrigger = self.end
+
 		mainChar.assignQuest(questList[0])
+
+	def end(self):
+		cinematics.showCinematic("considering your Score until now moving you directly to your proper assignment is the most efficent Way for you to proceed.")
+		phase3 = VatPhase()
+		phase3.start()
 
 class VatPhase(object):
 	def start(self):

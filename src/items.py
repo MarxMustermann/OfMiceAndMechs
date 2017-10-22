@@ -288,7 +288,7 @@ class Wall(Item):
 		super().__init__(displayChars.wall,xPosition,yPosition,name=name)
 
 class Pipe(Item):
-	def __init__(self,xPosition=0,yPosition=0,name="Wall"):
+	def __init__(self,xPosition=0,yPosition=0,name="Pipe"):
 		super().__init__(displayChars.pipe,xPosition,yPosition,name=name)
 
 class Coal(Item):
@@ -425,6 +425,8 @@ class Boiler(Item):
 						self.isBoiling = True
 						self.startBoilingEvent = None
 						self.changed()
+						self.room.steamGeneration += 1
+						self.room.changed()
 
 				self.startBoilingEvent = StartBoilingEvent(self.room.timeIndex+5)
 				self.room.addEvent(self.startBoilingEvent)
@@ -449,6 +451,8 @@ class Boiler(Item):
 						self.isBoiling = False
 						self.stopBoilingEvent = None
 						self.changed()
+						self.room.steamGeneration -= 1
+						self.room.changed()
 
 				self.stopBoilingEvent = StopBoilingEvent(self.room.timeIndex+5)
 				self.room.addEvent(self.stopBoilingEvent)

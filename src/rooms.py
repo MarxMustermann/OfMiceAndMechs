@@ -29,9 +29,11 @@ class Room(object):
 		self.floorDisplay = [displayChars.floor]
 		self.lastMovementToken = None
 		self.chainedTo = []
-		self.engineStrength = 150
+		self.engineStrength = 0
 		self.boilers = []
 		self.furnaces = []
+		self.pipes = []
+		self.steamGeneration = 0
 
 		self.itemByCoordinates = {}
 
@@ -58,7 +60,9 @@ class Room(object):
 					itemsOnFloor.append(item)
 					self.furnaces.append(item)
 				elif char == "#":
-					itemsOnFloor.append(items.Pipe(rowCounter,lineCounter))
+					item = items.Pipe(rowCounter,lineCounter)
+					itemsOnFloor.append(item)
+					self.pipes.append(item)
 				elif char == "D":
 					itemsOnFloor.append(items.Display(rowCounter,lineCounter))
 				elif char == "v":
@@ -183,6 +187,9 @@ class Room(object):
 				break
 
 		self.addItems(itemsOnFloor)
+
+	def changed(self):
+		pass
 
 	def getResistance(self):
 		return self.sizeX*self.sizeY
@@ -955,13 +962,17 @@ XXXXXX
 		self.xPosition = xPosition
 		self.yPosition = yPosition
 		self.gogogo = False
-		self.engineStrength = 250
+		self.engineStrength = 0
 
 		self.lever = items.Lever(2,2,"gogogo button")
 		def go(otherself):
 			self.gogogo = True
 		self.lever.activateAction = go
 		self.addItems([self.lever])
+
+	def changed(self):
+		self.engineStrength = 250*self.steamGeneration
+
 
 class CargoRoom(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):

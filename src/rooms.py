@@ -30,6 +30,8 @@ class Room(object):
 		self.lastMovementToken = None
 		self.chainedTo = []
 		self.engineStrength = 150
+		self.boilers = []
+		self.furnaces = []
 
 		self.itemByCoordinates = {}
 
@@ -52,7 +54,9 @@ class Room(object):
 				elif char == "P":
 					itemsOnFloor.append(items.Pile(rowCounter,lineCounter))
 				elif char == "F":
-					itemsOnFloor.append(items.Furnace(rowCounter,lineCounter))
+					item = items.Furnace(rowCounter,lineCounter)
+					itemsOnFloor.append(item)
+					self.furnaces.append(item)
 				elif char == "#":
 					itemsOnFloor.append(items.Pipe(rowCounter,lineCounter))
 				elif char == "D":
@@ -62,7 +66,9 @@ class Room(object):
 					itemsOnFloor.append(items.Item(displayChars.binStorage,rowCounter,lineCounter))
 				elif char == "O":
 					#to be pressure Tank
-					itemsOnFloor.append(items.Item(displayChars.boiler_inactive,rowCounter,lineCounter))
+					item = items.Item(displayChars.boiler_inactive,rowCounter,lineCounter)
+					itemsOnFloor.append(item)
+					self.boilers.append(item)
 					#itemsOnFloor.append(items.Item(displayChars.boiler_active,rowCounter,lineCounter))
 				elif char == "8":
 					#to be chains
@@ -465,12 +471,29 @@ class Room(object):
 				character.advance()
 			self.delayedTicks -= 1
 
+	def addEvent(self,event):
+		index = 0
+		for existingEvent in self.events:
+			if event.tick < existingEvent.tick:
+				break
+			index += 1
+		self.events.insert(index,event)
+
+	def removeEvent(self,event):
+		self.events.remove(event)
+
 	def advance(self):
 		self.timeIndex += 1
-		if len(self.events):
-			if self.timeIndex == self.events[0].tick:
-				self.events[0].handleEvent()
-				self.events.remove(self.events[0])
+
+		while self.events and self.timeIndex >  self.events[0].tick:
+			event = self.events[0]
+			messages.append("something went wrong and event"+str(event)+"was skipped")
+			self.events.remove(event)
+		while self.events and self.timeIndex == self.events[0].tick:
+			event = self.events[0]
+			event.handleEvent()
+			self.events.remove(event)
+
 		if not self.hidden:
 			if self.delayedTicks > 0:
 				self.applySkippedAdvances()
@@ -612,7 +635,7 @@ X@ v vID#X
 X@......#X
 X@.8#OF. X
 X@.##OF. X
-XH.8#O . X
+XH.8#OF. X
 XH.|DI . X
 XH......#X
 XXRRR ID#X
@@ -632,9 +655,8 @@ XXXXXXXXXX
 		coalPile2 = items.Pile(8,4,"coal Pile2",items.Coal)
 		coalPile3 = items.Pile(8,5,"coal Pile3",items.Coal)
 		coalPile4 = items.Pile(8,6,"coal Pile4",items.Coal)
-		self.furnace = items.Furnace(6,5,"Furnace")
 
-		self.addItems([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4,self.furnace])
+		self.addItems([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4])
 
 class Room3(Room):
 	def __init__(self,xPosition=1,yPosition=0,offsetX=2,offsetY=2):

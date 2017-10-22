@@ -176,6 +176,8 @@ class Furnace(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Furnace"):
 		self.name = name
 		self.activated = False
+		self.boilers = None
+		self.stopBoilingEvent = None
 		super().__init__(displayChars.furnace_inactive,xPosition,yPosition)
 
 	def apply(self,character):
@@ -199,17 +201,49 @@ class Furnace(Item):
 			character.inventory.remove(foundItem)
 			messages.append("*wush*")
 
-		class FurnaceBurnout(object):
-			def __init__(subself,tick):
-				subself.tick = tick
+			class BoilerBoilingEvent(object):
+				def __init__(subself,tick):
+					subself.tick = tick
+				
+				def handleEvent(subself):
+					messages.append("*boil*")
+					for boiler in self.boilers:
+						boiler.display = displayChars.boiler_active
 
-			def handleEvent(subself):
-				self.activated = False
-				self.display = displayChars.furnace_inactive
+			class BoilerStopBoilingEvent(object):
+				def __init__(subself,tick):
+					subself.tick = tick
+				
+				def handleEvent(subself):
+					messages.append("*unboil*")
+					for boiler in self.boilers:
+						boiler.display = displayChars.boiler_inactive
+					self.stopBoilingEvent = None
 
-		self.room.events.append(FurnaceBurnout(self.room.timeIndex+20))
+			class FurnaceBurnoutEvent(object):
+				def __init__(subself,tick):
+					subself.tick = tick
 
-		self.changed()
+				def handleEvent(subself):
+					self.activated = False
+					self.display = displayChars.furnace_inactive
+					self.stopBoilingEvent = BoilerStopBoilingEvent(self.room.timeIndex+5)
+					self.room.addEvent(self.stopBoilingEvent)
+					self.changed()
+
+			if self.boilers == None:
+				self.boilers = []
+				for boiler in self.room.boilers:
+					if ((boiler.xPosition in [self.xPosition,self.xPosition-1,self.xPosition+1] and boiler.yPosition == self.yPosition) or boiler.yPosition in [self.yPosition-1,self.yPosition+1] and boiler.xPosition == self.xPosition):
+						self.boilers.append(boiler)
+
+			if self.stopBoilingEvent == None:
+				self.room.addEvent(BoilerBoilingEvent(self.room.timeIndex+5))
+			else:
+				self.room.removeEvent(self.stopBoilingEvent)
+			self.room.addEvent(FurnaceBurnoutEvent(self.room.timeIndex+20))
+
+			self.changed()
 
 class Commlink(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Display"):

@@ -6,7 +6,7 @@ commandChars = None
 terrain = None
 
 class Item(object):
-	def __init__(self,display=None,xPosition=0,yPosition=0):
+	def __init__(self,display=None,xPosition=0,yPosition=0,name="item"):
 		if not display:
 			self.display = displayChars.notImplentedYet
 		else:
@@ -16,9 +16,17 @@ class Item(object):
 		self.listeners = []
 		self.walkable = False
 		self.room = None
-		self.name = "item"
 		self.lastMovementToken = None
 		self.chainedTo = []
+		self.name = name
+
+		self.description = "a "+self.name
+
+	def getDetailedInfo(self):
+		return str(self.getDetailedState)
+
+	def getDetailedState(self):
+		return self
 
 	def apply(self,character):
 		messages.append("i can't do anything useful with this")
@@ -149,8 +157,7 @@ class Lever(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="lever",activated=False):
 		self.activated = activated
 		self.display = {True:displayChars.lever_pulled,False:displayChars.lever_notPulled}
-		self.name = name
-		super().__init__(displayChars.lever_notPulled,xPosition,yPosition)
+		super().__init__(displayChars.lever_notPulled,xPosition,yPosition,name=name)
 		self.activateAction = None
 		self.deactivateAction = None
 		self.walkable = True
@@ -174,11 +181,10 @@ class Lever(Item):
 
 class Furnace(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Furnace"):
-		self.name = name
 		self.activated = False
 		self.boilers = None
 		self.stopBoilingEvent = None
-		super().__init__(displayChars.furnace_inactive,xPosition,yPosition)
+		super().__init__(displayChars.furnace_inactive,xPosition,yPosition,name=name)
 
 	def apply(self,character):
 		messages.append("Furnace used")
@@ -196,59 +202,61 @@ class Furnace(Item):
 		if not foundItem:
 			messages.append("keine KOHLE zum anfeuern")
 		else:
-			self.activated = True
-			self.display = displayChars.furnace_active
-			character.inventory.remove(foundItem)
-			messages.append("*wush*")
-
-			class BoilerBoilingEvent(object):
-				def __init__(subself,tick):
-					subself.tick = tick
-				
-				def handleEvent(subself):
-					messages.append("*boil*")
-					for boiler in self.boilers:
-						boiler.display = displayChars.boiler_active
-
-			class BoilerStopBoilingEvent(object):
-				def __init__(subself,tick):
-					subself.tick = tick
-				
-				def handleEvent(subself):
-					messages.append("*unboil*")
-					for boiler in self.boilers:
-						boiler.display = displayChars.boiler_inactive
-					self.stopBoilingEvent = None
-
-			class FurnaceBurnoutEvent(object):
-				def __init__(subself,tick):
-					subself.tick = tick
-
-				def handleEvent(subself):
-					self.activated = False
-					self.display = displayChars.furnace_inactive
-					self.stopBoilingEvent = BoilerStopBoilingEvent(self.room.timeIndex+5)
-					self.room.addEvent(self.stopBoilingEvent)
-					self.changed()
-
-			if self.boilers == None:
-				self.boilers = []
-				for boiler in self.room.boilers:
-					if ((boiler.xPosition in [self.xPosition,self.xPosition-1,self.xPosition+1] and boiler.yPosition == self.yPosition) or boiler.yPosition in [self.yPosition-1,self.yPosition+1] and boiler.xPosition == self.xPosition):
-						self.boilers.append(boiler)
-
-			if self.stopBoilingEvent == None:
-				self.room.addEvent(BoilerBoilingEvent(self.room.timeIndex+5))
+			if self.activated:
+				messages.append("already burning")
 			else:
-				self.room.removeEvent(self.stopBoilingEvent)
-			self.room.addEvent(FurnaceBurnoutEvent(self.room.timeIndex+20))
+				self.activated = True
+				self.display = displayChars.furnace_active
+				character.inventory.remove(foundItem)
+				messages.append("*wush*")
 
-			self.changed()
+				class BoilerBoilingEvent(object):
+					def __init__(subself,tick):
+						subself.tick = tick
+					
+					def handleEvent(subself):
+						messages.append("*boil*")
+						for boiler in self.boilers:
+							boiler.display = displayChars.boiler_active
+
+				class BoilerStopBoilingEvent(object):
+					def __init__(subself,tick):
+						subself.tick = tick
+					
+					def handleEvent(subself):
+						messages.append("*unboil*")
+						for boiler in self.boilers:
+							boiler.display = displayChars.boiler_inactive
+						self.stopBoilingEvent = None
+
+				class FurnaceBurnoutEvent(object):
+					def __init__(subself,tick):
+						subself.tick = tick
+
+					def handleEvent(subself):
+						self.activated = False
+						self.display = displayChars.furnace_inactive
+						self.stopBoilingEvent = BoilerStopBoilingEvent(self.room.timeIndex+5)
+						self.room.addEvent(self.stopBoilingEvent)
+						self.changed()
+
+				if self.boilers == None:
+					self.boilers = []
+					for boiler in self.room.boilers:
+						if ((boiler.xPosition in [self.xPosition,self.xPosition-1,self.xPosition+1] and boiler.yPosition == self.yPosition) or boiler.yPosition in [self.yPosition-1,self.yPosition+1] and boiler.xPosition == self.xPosition):
+							self.boilers.append(boiler)
+
+				if self.stopBoilingEvent == None:
+					self.room.addEvent(BoilerBoilingEvent(self.room.timeIndex+5))
+				else:
+					self.room.removeEvent(self.stopBoilingEvent)
+				self.room.addEvent(FurnaceBurnoutEvent(self.room.timeIndex+20))
+
+				self.changed()
 
 class Commlink(Item):
-	def __init__(self,xPosition=0,yPosition=0,name="Display"):
-		self.name = name
-		super().__init__(displayChars.commLink,xPosition,yPosition)
+	def __init__(self,xPosition=0,yPosition=0,name="Commlink"):
+		super().__init__(displayChars.commLink,xPosition,yPosition,name=name)
 
 	def apply(self,character):
 		messages.append("Sigmund Bärenstein@Logisticcentre: we need more coal")
@@ -270,8 +278,7 @@ class Commlink(Item):
 
 class Display(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Display"):
-		self.name = name
-		super().__init__(displayChars.display,xPosition,yPosition)
+		super().__init__(displayChars.display,xPosition,yPosition,name=name)
 
 	def apply(self,character):
 		def moveNorth():
@@ -296,25 +303,21 @@ class Display(Item):
 
 class Wall(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Wall"):
-		self.name = name
-		super().__init__(displayChars.wall,xPosition,yPosition)
+		super().__init__(displayChars.wall,xPosition,yPosition,name=name)
 
 class Pipe(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Wall"):
-		self.name = name
-		super().__init__(displayChars.pipe,xPosition,yPosition)
+		super().__init__(displayChars.pipe,xPosition,yPosition,name=name)
 
 class Coal(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Coal"):
-		self.name = name
 		self.canBurn = True
-		super().__init__(displayChars.coal,xPosition,yPosition)
+		super().__init__(displayChars.coal,xPosition,yPosition,name=name)
 		self.walkable = True
 
 class Door(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Door"):
-		super().__init__(displayChars.door_closed,xPosition,yPosition)
-		self.name = name
+		super().__init__(displayChars.door_closed,xPosition,yPosition,name=name)
 		self.walkable = False
 
 	def apply(self,character):
@@ -335,10 +338,9 @@ class Door(Item):
 
 class Pile(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal):
-		self.name = name
 		self.canBurn = True
 		self.type = itemType
-		super().__init__(displayChars.pile,xPosition,yPosition)
+		super().__init__(displayChars.pile,xPosition,yPosition,name=name)
 
 	def apply(self,character):
 		messages.append("Pile used")
@@ -347,10 +349,9 @@ class Pile(Item):
 
 class Acid(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal):
-		self.name = name
 		self.canBurn = True
 		self.type = itemType
-		super().__init__(displayChars.acid,xPosition,yPosition)
+		super().__init__(displayChars.acid,xPosition,yPosition,name=name)
 
 	def apply(self,character):
 		messages.append("Pile used")
@@ -359,8 +360,7 @@ class Acid(Item):
 
 class Chain(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="chain"):
-		self.name = name
-		super().__init__(displayChars.chains,xPosition,yPosition)
+		super().__init__(displayChars.chains,xPosition,yPosition,name=name)
 		self.walkable = True
 
 		self.chainedTo = []
@@ -412,8 +412,7 @@ class Chain(Item):
 			
 class Winch(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="winch"):
-		self.name = name
-		super().__init__(displayChars.winch_inactive,xPosition,yPosition)
+		super().__init__(displayChars.winch_inactive,xPosition,yPosition,name=name)
 
 	def apply(self,character):
 		messages.append("TODO")

@@ -263,7 +263,10 @@ class Room(object):
 		self.itemsOnFloor.extend(items)
 		for item in items:
 			item.room = self
-			self.itemByCoordinates[(item.xPosition,item.yPosition)] = item
+			if (item.xPosition,item.yPosition) in self.itemByCoordinates:
+				self.itemByCoordinates[(item.xPosition,item.yPosition)].append(item)
+			else:
+				self.itemByCoordinates[(item.xPosition,item.yPosition)] = [item]
 
 	def getAffectedByMovementNorth(self,initialMovement=True,force=1,movementBlock=set()):
 		self.terrain.getAffectedByRoomMovementNorth(self,force=force,movementBlock=movementBlock)
@@ -454,9 +457,9 @@ class Room(object):
 
 	def moveCharacter(self,character,newPosition):
 		if newPosition in self.itemByCoordinates:
-			item  = self.itemByCoordinates[newPosition]
-			if not item.walkable:
-				return item
+			for item in self.itemByCoordinates[newPosition]:
+				if not item.walkable:
+					return item
 			else:
 				character.xPosition = newPosition[0]
 				character.yPosition = newPosition[1]

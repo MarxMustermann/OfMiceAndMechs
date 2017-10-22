@@ -101,15 +101,16 @@ def show_or_exit(key):
 							if localisedEntry[1] == -1:
 								localisedEntry = (localisedEntry[0],room.sizeY-1)
 							if localisedEntry in room.walkingAccess:
-								if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
-									itemMarkedLast = room.itemByCoordinates[localisedEntry]
-									messages.append("you need to open the door first")
-									messages.append("press "+commandChars.activate+" to apply")
-									footer.set_text(renderMessagebox())
-									return
-								else:
-									room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
-									terrain.characters.remove(mainChar)
+								for item in room.itemByCoordinates[localisedEntry]:
+									if not item.walkable:
+										itemMarkedLast = item
+										messages.append("you need to open the door first")
+										messages.append("press "+commandChars.activate+" to apply")
+										footer.set_text(renderMessagebox())
+										return
+								
+								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
+								terrain.characters.remove(mainChar)
 							else:
 								messages.append("you cannot move there")
 				if not hadRoomInteraction:
@@ -155,15 +156,16 @@ def show_or_exit(key):
 							hadRoomInteraction = True
 							localisedEntry = ((mainChar.xPosition-room.offsetX)%15,(mainChar.yPosition-room.offsetY+1)%15)
 							if localisedEntry in room.walkingAccess:
-								if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
-									itemMarkedLast = room.itemByCoordinates[localisedEntry]
-									messages.append("you need to open the door first")
-									messages.append("press "+commandChars.activate+" to apply")
-									footer.set_text(renderMessagebox())
-									return
-								else:
-									room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
-									terrain.characters.remove(mainChar)
+								for item in room.itemByCoordinates[localisedEntry]:
+									if not item.walkable:
+										itemMarkedLast = item
+										messages.append("you need to open the door first")
+										messages.append("press "+commandChars.activate+" to apply")
+										footer.set_text(renderMessagebox())
+										return
+								
+								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
+								terrain.characters.remove(mainChar)
 							else:
 								messages.append("you cannot move there")
 				if not hadRoomInteraction:
@@ -209,15 +211,16 @@ def show_or_exit(key):
 							hadRoomInteraction = True
 							localisedEntry = ((mainChar.xPosition-room.offsetX+1)%15,(mainChar.yPosition-room.offsetY)%15)
 							if localisedEntry in room.walkingAccess:
-								if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
-									itemMarkedLast = room.itemByCoordinates[localisedEntry]
-									messages.append("you need to open the door first")
-									messages.append("press "+commandChars.activate+" to apply")
-									footer.set_text(renderMessagebox())
-									return
-								else:
-									room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
-									terrain.characters.remove(mainChar)
+								for item in room.itemByCoordinates[localisedEntry]:
+									if not item.walkable:
+										itemMarkedLast = item
+										messages.append("you need to open the door first")
+										messages.append("press "+commandChars.activate+" to apply")
+										footer.set_text(renderMessagebox())
+										return
+								
+								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
+								terrain.characters.remove(mainChar)
 							else:
 								messages.append("you cannot move there")
 				if not hadRoomInteraction:
@@ -263,15 +266,16 @@ def show_or_exit(key):
 							hadRoomInteraction = True
 							localisedEntry = ((mainChar.xPosition-room.offsetX-1)%15,(mainChar.yPosition-room.offsetY)%15)
 							if localisedEntry in room.walkingAccess:
-								if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
-									itemMarkedLast = room.itemByCoordinates[localisedEntry]
-									messages.append("you need to open the door first")
-									messages.append("press "+commandChars.activate+" to apply")
-									footer.set_text(renderMessagebox())
-									return
-								else:
-									room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
-									terrain.characters.remove(mainChar)
+								for item in room.itemByCoordinates[localisedEntry]:
+									if not item.walkable:
+										itemMarkedLast = item
+										messages.append("you need to open the door first")
+										messages.append("press "+commandChars.activate+" to apply")
+										footer.set_text(renderMessagebox())
+										return
+								
+								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
+								terrain.characters.remove(mainChar)
 							else:
 								messages.append("you cannot move there")
 				if not hadRoomInteraction:
@@ -303,21 +307,32 @@ def show_or_exit(key):
 				for item in itemList:
 					if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:
 						item.apply(mainChar)
+
+		if key in (commandChars.examine):
+			if itemMarkedLast:
+				messages.append(itemMarkedLast.description)
+				messages.append(itemMarkedLast.getDetailedInfo())
+			else:
+				if mainChar.room:
+					itemList = mainChar.room.itemsOnFloor
+				else:
+					itemList = terrain.itemsOnFloor
+				for item in itemList:
+					if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:
+						messages.append(item.description)
+						messages.append(item.getDetailedInfo())
+
 		if key in (commandChars.drop):
 			if len(characters[0].inventory):
 				item = characters[0].inventory.pop()	
 				item.xPosition = characters[0].xPosition		
 				item.yPosition = characters[0].yPosition		
 				if mainChar.room:
-					itemList = mainChar.room.itemsOnFloor
+					characters[0].room.addItems([item])
 				else:
-					#itemList = terrain.itemsOnFloor
-					#itemList.append(item)
-					terrain.addItems([item])
+					characters[0].terrain.addItems([item])
 				item.changed()
-		if key in (commandChars.hail):
-			messages.append(characters[0].name+": HÜ!")
-			messages.append(characters[0].name+": HOTT!")
+
 		if key in (commandChars.pickUp):
 			if mainChar.room:
 				itemByCoordinates = mainChar.room.itemByCoordinates
@@ -326,8 +341,8 @@ def show_or_exit(key):
 				itemByCoordinates = terrain.itemByCoordinates
 				itemList = terrain.itemsOnFloor
 
-			if (characters[0].xPosition,characters[0].yPosition) in terrain.itemByCoordinates:
-				for item in terrain.itemByCoordinates[(characters[0].xPosition,characters[0].yPosition)]:
+			if (characters[0].xPosition,characters[0].yPosition) in itemByCoordinates:
+				for item in itemByCoordinates[(characters[0].xPosition,characters[0].yPosition)]:
 					itemList.remove(item)
 					if hasattr(item,"xPosition"):
 						del item.xPosition
@@ -335,7 +350,11 @@ def show_or_exit(key):
 						del item.yPosition
 					characters[0].inventory.append(item)
 					item.changed()
-				del terrain.itemByCoordinates[(characters[0].xPosition,characters[0].yPosition)]
+				del itemByCoordinates[(characters[0].xPosition,characters[0].yPosition)]
+
+		if key in (commandChars.hail):
+			messages.append(characters[0].name+": HÜ!")
+			messages.append(characters[0].name+": HOTT!")
 
 		if key in (commandChars.advance,commandChars.autoAdvance):
 			if len(mainChar.quests):

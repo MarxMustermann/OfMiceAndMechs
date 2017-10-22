@@ -66,7 +66,7 @@ class Room(object):
 					itemsOnFloor.append(items.Item(displayChars.binStorage,rowCounter,lineCounter))
 				elif char == "O":
 					#to be pressure Tank
-					item = items.Item(displayChars.boiler_inactive,rowCounter,lineCounter)
+					item = items.Boiler(rowCounter,lineCounter)
 					itemsOnFloor.append(item)
 					self.boilers.append(item)
 					#itemsOnFloor.append(items.Item(displayChars.boiler_active,rowCounter,lineCounter))
@@ -944,8 +944,8 @@ class MiniMech(Room):
 XX$XXX
 XD.. X
 Xm .PX
+XOF.PX
 Xmm.PX
-XmF.PX
 XXXXXX
 """
 		super().__init__(self.roomLayout)

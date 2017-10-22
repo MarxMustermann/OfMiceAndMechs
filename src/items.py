@@ -210,25 +210,6 @@ class Furnace(Item):
 				character.inventory.remove(foundItem)
 				messages.append("*wush*")
 
-				class BoilerBoilingEvent(object):
-					def __init__(subself,tick):
-						subself.tick = tick
-					
-					def handleEvent(subself):
-						messages.append("*boil*")
-						for boiler in self.boilers:
-							boiler.display = displayChars.boiler_active
-
-				class BoilerStopBoilingEvent(object):
-					def __init__(subself,tick):
-						subself.tick = tick
-					
-					def handleEvent(subself):
-						messages.append("*unboil*")
-						for boiler in self.boilers:
-							boiler.display = displayChars.boiler_inactive
-						self.stopBoilingEvent = None
-
 				class FurnaceBurnoutEvent(object):
 					def __init__(subself,tick):
 						subself.tick = tick
@@ -236,8 +217,10 @@ class Furnace(Item):
 					def handleEvent(subself):
 						self.activated = False
 						self.display = displayChars.furnace_inactive
-						self.stopBoilingEvent = BoilerStopBoilingEvent(self.room.timeIndex+5)
-						self.room.addEvent(self.stopBoilingEvent)
+
+						for boiler in self.boilers:
+							boiler.stopHeatingUp()
+
 						self.changed()
 
 				if self.boilers == None:
@@ -246,10 +229,9 @@ class Furnace(Item):
 						if ((boiler.xPosition in [self.xPosition,self.xPosition-1,self.xPosition+1] and boiler.yPosition == self.yPosition) or boiler.yPosition in [self.yPosition-1,self.yPosition+1] and boiler.xPosition == self.xPosition):
 							self.boilers.append(boiler)
 
-				if self.stopBoilingEvent == None:
-					self.room.addEvent(BoilerBoilingEvent(self.room.timeIndex+5))
-				else:
-					self.room.removeEvent(self.stopBoilingEvent)
+				for boiler in self.boilers:
+					boiler.startHeatingUp()
+
 				self.room.addEvent(FurnaceBurnoutEvent(self.room.timeIndex+20))
 
 				self.changed()
@@ -417,3 +399,58 @@ class Winch(Item):
 	def apply(self,character):
 		messages.append("TODO")
 
+class Boiler(Item):
+	def __init__(self,xPosition=0,yPosition=0,name="boiler"):
+		super().__init__(displayChars.boiler_inactive,xPosition,yPosition,name=name)
+		self.isBoiling = False
+		self.isHeated = False
+		self.startBoilingEvent = None
+		self.stopBoilingEvent = None
+
+	def startHeatingUp(self):
+		if not self.isHeated:
+			self.isHeated = True
+
+			if self.stopBoilingEvent:
+				self.room.removeEvent(self.stopBoilingEvent)
+				self.stopBoilingEvent = None
+			if not self.startBoilingEvent and not self.isBoiling:
+				class StartBoilingEvent(object):
+					def __init__(subself,tick):
+						subself.tick = tick
+			
+					def handleEvent(subself):
+						messages.append("*boil*")
+						self.display = displayChars.boiler_active
+						self.isBoiling = True
+						self.startBoilingEvent = None
+						self.changed()
+
+				self.startBoilingEvent = StartBoilingEvent(self.room.timeIndex+5)
+				self.room.addEvent(self.startBoilingEvent)
+
+			self.changed()
+		
+	def stopHeatingUp(self):
+		if self.isHeated:
+			self.isHeated = False
+
+			if self.startBoilingEvent:
+				self.room.removeEvent(self.startBoilingEvent)
+				self.startBoilingEvent = None
+			if not self.stopBoilingEvent and self.isBoiling:
+				class StopBoilingEvent(object):
+					def __init__(subself,tick):
+						subself.tick = tick
+			
+					def handleEvent(subself):
+						messages.append("*unboil*")
+						self.display = displayChars.boiler_inactive
+						self.isBoiling = False
+						self.stopBoilingEvent = None
+						self.changed()
+
+				self.stopBoilingEvent = StopBoilingEvent(self.room.timeIndex+5)
+				self.room.addEvent(self.stopBoilingEvent)
+
+			self.changed()

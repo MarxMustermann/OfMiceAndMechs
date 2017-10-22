@@ -325,7 +325,8 @@ class LeaveRoomQuest(Quest):
 	def solver(self,character):
 		if super().solver(character):
 			if character.room:
-				character.room.itemByCoordinates[(character.xPosition,character.yPosition)].close()
+				for item in character.room.itemByCoordinates[(character.xPosition,character.yPosition)]:
+					item.close()
 				if character.yPosition == 0:
 					character.path.append((character.xPosition,character.yPosition-1))
 				elif character.yPosition == character.room.sizeY-1:
@@ -383,9 +384,11 @@ class EnterRoomQuest(Quest):
 
 	def postHandler(self):
 		if (self.character.yPosition in (-1,0)):
-			self.character.room.itemByCoordinates[(self.character.xPosition,0)].close()
+			for item in self.character.room.itemByCoordinates[(self.character.xPosition,0)]:
+				item.close()
 		if (self.character.yPosition in (10,9)):
-			self.character.room.itemByCoordinates[(self.character.xPosition,9)].close()
+			for item in self.character.room.itemByCoordinates[(self.character.xPosition,9)]:
+				item.close()
 
 		super().postHandler()
 

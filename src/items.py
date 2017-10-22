@@ -235,7 +235,7 @@ class Furnace(Item):
 				for boiler in self.boilers:
 					boiler.startHeatingUp()
 
-				self.room.addEvent(FurnaceBurnoutEvent(self.room.timeIndex+20))
+				self.room.addEvent(FurnaceBurnoutEvent(self.room.timeIndex+30))
 
 				self.changed()
 

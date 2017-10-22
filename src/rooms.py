@@ -645,15 +645,15 @@ XXXXXXXXXX
 class TutorialMachineRoom(Room):
 	def __init__(self,xPosition=0,yPosition=1,offsetX=4,offsetY=0):
 		roomLayout = """
-XXXX$XXXXX
-X@ v vID#X
-X@......#X
-X@.8#OF. X
-X@.##OF. X
-XH.8#OF. X
-XH.|DI . X
-XH......#X
-XXRRR ID#X
+X#XX$XXX#X
+X#Pv vID#X
+X#......#X
+X .@@@@. X
+X .HHHH. X
+X ...... X
+XFFFFFFFFX
+XOOOOOOOOX
+X#########
 XXXXXXXXXX
 """
 		super().__init__(roomLayout)
@@ -663,13 +663,13 @@ XXXXXXXXXX
 		self.xPosition = xPosition
 		self.yPosition = yPosition
 
-		self.lever1 = items.Lever(3,6,"engine control")
-		self.lever2 = items.Lever(1,2,"boarding alarm")
+		self.lever1 = items.Lever(1,5,"engine control")
+		self.lever2 = items.Lever(8,5,"boarding alarm")
 
 		coalPile1 = items.Pile(8,3,"coal Pile1",items.Coal)
 		coalPile2 = items.Pile(8,4,"coal Pile2",items.Coal)
-		coalPile3 = items.Pile(8,5,"coal Pile3",items.Coal)
-		coalPile4 = items.Pile(8,6,"coal Pile4",items.Coal)
+		coalPile3 = items.Pile(1,3,"coal Pile1",items.Coal)
+		coalPile4 = items.Pile(1,4,"coal Pile2",items.Coal)
 
 		self.addItems([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4])
 
@@ -890,13 +890,13 @@ class Vat2(Room):
 		self.roomLayout = """
 XXXXXXXXXX
 X   b jjjX
-X      b X
-X b b b  X
-X    c b X
-X  b  j  X
-X    b b X
-X b    b X
-##   .v ##
+X  ......X
+X b.b bb.X
+X .. c b.X
+X .b  j .X
+X .. b b.X
+X b. ....X
+## ...v ##
 XXXXX$XXXX
 """
 		super().__init__(self.roomLayout)

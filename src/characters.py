@@ -77,8 +77,12 @@ class Character():
 						if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+10 > self.xPosition:
 							localisedEntry = (self.xPosition%15-room.offsetX,nextPosition[1]%15-room.offsetY)
 							if localisedEntry in room.walkingAccess:
-								if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
-									item = room.itemByCoordinates[localisedEntry]
+								if localisedEntry in room.itemByCoordinates:
+									for listItem in room.itemByCoordinates[localisedEntry]:
+										if not listItem.walkable:
+											item = listItem
+											break
+								if item:
 									break
 								else:
 									room.addCharacter(self,localisedEntry[0],localisedEntry[1])
@@ -93,8 +97,12 @@ class Character():
 						if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+10 > self.xPosition:
 							localisedEntry = ((self.xPosition-room.offsetX)%15,((nextPosition[1]-room.offsetY)%15))
 							if localisedEntry in room.walkingAccess:
-								if localisedEntry in room.itemByCoordinates and not room.itemByCoordinates[localisedEntry].walkable:
-									item = room.itemByCoordinates[localisedEntry]
+								if localisedEntry in room.itemByCoordinates:
+									for listItem in room.itemByCoordinates[localisedEntry]:
+										if not listItem.walkable:
+											item = listItem
+											break
+								if item:
 									break
 								else:
 									room.addCharacter(self,localisedEntry[0],localisedEntry[1])

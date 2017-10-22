@@ -33,6 +33,7 @@ class Room(object):
 		self.boilers = []
 		self.furnaces = []
 		self.pipes = []
+		self.sprays = []
 		self.steamGeneration = 0
 
 		self.itemByCoordinates = {}
@@ -124,9 +125,13 @@ class Room(object):
 					item.walkable = True
 					itemsOnFloor.append(item)
 				elif char == "w":
-					itemsOnFloor.append(items.Item(displayChars.spray_right,rowCounter,lineCounter))
+					item = items.Spray(rowCounter,lineCounter,direction="right")
+					itemsOnFloor.append(item)
+					self.sprays.append(item)
 				elif char == "x":
-					itemsOnFloor.append(items.Item(displayChars.spray_left,rowCounter,lineCounter))
+					item = items.Spray(rowCounter,lineCounter,direction="left")
+					itemsOnFloor.append(item)
+					self.sprays.append(item)
 				elif char == "y":
 					itemsOnFloor.append(items.Item(displayChars.outlet,rowCounter,lineCounter))
 				elif char == "j":
@@ -668,6 +673,9 @@ XXXXXXXXXX
 
 		self.addItems([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4])
 
+	def changed(self):
+		self.terrain.tutorialVatProcessing.recalculate()
+
 class Room3(Room):
 	def __init__(self,xPosition=1,yPosition=0,offsetX=2,offsetY=2):
 		self.roomLayout = """
@@ -873,6 +881,10 @@ XXXXX$XXXX
 		self.xPosition = xPosition
 		self.yPosition = yPosition
 
+	def recalculate(self):
+		for spray in self.sprays:
+			spray.recalculate()
+
 class Vat2(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):
 		self.roomLayout = """
@@ -972,7 +984,6 @@ XXXXXX
 
 	def changed(self):
 		self.engineStrength = 250*self.steamGeneration
-
 
 class CargoRoom(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):

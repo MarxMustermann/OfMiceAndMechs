@@ -48,6 +48,7 @@ class Terrain(object):
 
 		roomsOnMap = []
 		self.tutorialVat = None
+		self.tutorialVatProcessing = None
 		self.tutorialMachineRoom = None
 		lineCounter = 0
 		for layoutline in layout.split("\n")[1:]:
@@ -69,7 +70,10 @@ class Terrain(object):
 						self.tutorialVat = room
 					roomsOnMap.append(room)
 				elif char == "v":
-					roomsOnMap.append(rooms.Vat1(rowCounter,lineCounter,2,2))
+					room = rooms.Vat1(rowCounter,lineCounter,2,2)
+					if not self.tutorialVatProcessing:
+						self.tutorialVatProcessing = room
+					roomsOnMap.append(room)
 				elif char == "Q":
 					roomsOnMap.append(rooms.InfanteryQuarters(rowCounter,lineCounter,1,2))
 				elif char == "r":

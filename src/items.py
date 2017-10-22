@@ -132,6 +132,9 @@ class Item(object):
 		else:
 			return 50
 
+	def recalculate(self):
+		pass
+
 class Corpse(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="corpse"):
 		super().__init__(displayChars.corpse,xPosition,yPosition)
@@ -458,3 +461,33 @@ class Boiler(Item):
 				self.room.addEvent(self.stopBoilingEvent)
 
 			self.changed()
+			
+class Spray(Item):
+	def __init__(self,xPosition=0,yPosition=0,name="spray",direction=None):
+		if direction == None:
+			direction = "left"
+
+		if direction == "left":
+			self.display_inactive = displayChars.spray_left_inactive
+			self.display_stage1 = displayChars.spray_left_stage1
+			self.display_stage2 = displayChars.spray_left_stage2
+			self.display_stage3 = displayChars.spray_left_stage3
+		else:
+			self.display_inactive = displayChars.spray_right_inactive
+			self.display_stage1 = displayChars.spray_right_stage1
+			self.display_stage2 = displayChars.spray_right_stage2
+			self.display_stage3 = displayChars.spray_right_stage3
+
+		super().__init__(self.display_inactive,xPosition,yPosition,name=name)
+
+	def recalculate(self):
+		if terrain.tutorialMachineRoom.steamGeneration == 0:
+			self.display = self.display_inactive
+		if terrain.tutorialMachineRoom.steamGeneration == 1:
+			self.display = self.display_stage1
+		if terrain.tutorialMachineRoom.steamGeneration == 2:
+			self.display = self.display_stage2
+		if terrain.tutorialMachineRoom.steamGeneration == 3:
+			self.display = self.display_stage3
+			
+

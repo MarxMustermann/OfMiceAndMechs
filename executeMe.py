@@ -572,6 +572,8 @@ quests.showCinematic = cinematics.showCinematic
 
 terrain = terrains.TutorialTerrain()
 
+items.terrain = terrain
+
 characters.roomsOnMap = terrain.rooms
 
 mapHidden = True

@@ -34,6 +34,7 @@ class Room(object):
 		self.furnaces = []
 		self.pipes = []
 		self.sprays = []
+		self.piles = []
 		self.steamGeneration = 0
 
 		self.itemByCoordinates = {}
@@ -55,7 +56,9 @@ class Room(object):
 					self.walkingAccess.append((rowCounter,lineCounter))
 					self.doors.append(door)
 				elif char == "P":
-					itemsOnFloor.append(items.Pile(rowCounter,lineCounter))
+					item = items.Pile(rowCounter,lineCounter)
+					itemsOnFloor.append(item)
+					self.piles.append(item)
 				elif char == "F":
 					item = items.Furnace(rowCounter,lineCounter)
 					itemsOnFloor.append(item)

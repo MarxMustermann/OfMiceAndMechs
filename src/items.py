@@ -328,7 +328,9 @@ class Pile(Item):
 		super().__init__(displayChars.pile,xPosition,yPosition,name=name)
 
 	def apply(self,character):
-		messages.append("Pile used")
+		if len(character.inventory) > 10:
+			messages.append("you cannot carry more items")
+			return
 		character.inventory.append(self.type())
 		character.changed()
 

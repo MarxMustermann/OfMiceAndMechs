@@ -79,7 +79,7 @@ class Terrain(object):
 				elif char == "r":
 					roomsOnMap.append(rooms.Room1(rowCounter,lineCounter,1,2))
 				elif char == "M":
-					room = rooms.TutorialMachineRoom(rowCounter,lineCounter,4,0)
+					room = rooms.TutorialMachineRoom(rowCounter,lineCounter,4,1)
 					if not self.tutorialMachineRoom:
 						self.tutorialMachineRoom = room
 					roomsOnMap.append(room)
@@ -488,20 +488,20 @@ X X X C C C C C X X X """
                    RRRRRRRRRR#                                                                                                         X#           #X               
                 XXXX                                                                                                                                                 
                    RRRRRRRRRR#              .............................................................................              X#           #X               
-               XXXXXXXXXXXX#XX              .XXXXXXX XXXXXXXXXXXXXX XXXXXXXXXXXXXX XXXXXXXXXXXXXX XXXXXXXXXXXXX XXXXXXXX.              XX            X               
-               X                            .              X                                                            .                                            
-               X#           #X              .X#RRRRRRRRRRR#XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#RRRRRRRRRRR#XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#RRRRRRRRRRR#XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#RRRRRRRRRRR#XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#RRRRRRRRRRR#XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#RRRRRRRRRRR#XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#RRRRRRRRRRR#XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#RRRRRRRRRRR#XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#RRRRRRRRRRR#XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#RRRRRRRRRRR#XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#RRRRRRRRRRR#XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#RRRRRRRRRRR#XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               XXXXXXXXXXXX#XX              . #####    ### ##                                                          X.              XX            X               
+               X                            .    RRRRRRRRRR#                                                            .                                            
+               X#           #X              .X   RRRRRRRRRR#X#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X   RRRRRRRRRR#X#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X   RRRRRRRRRR#X#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X   RRRRRRRRRR#X#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X   RRRRRRRRRR#X#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X   RRRRRRRRRR#X#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X   RRRRRRRRRR#X#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X   RRRRRRRRRR#X#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X   RRRRRRRRRRXX#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X             XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X             XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X             XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
                XXXXXXXXXXXX#XX              .XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.              XX            X               
                XXXXXXXXXXXX#XX              .XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.              XX            X               
                X                            .              X                                                            .                                            

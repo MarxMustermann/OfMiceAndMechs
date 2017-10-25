@@ -334,6 +334,8 @@ def show_or_exit(key):
 				item.changed()
 
 		if key in (commandChars.pickUp):
+			if len(mainChar.inventory) > 10:
+				messages.append("you cannot carry more items")
 			if mainChar.room:
 				itemByCoordinates = mainChar.room.itemByCoordinates
 				itemList = mainChar.room.itemsOnFloor
@@ -745,9 +747,13 @@ class VatPhase(object):
 class MachineRoomPhase(object):
 	def start(self):
 		questList = []
-		if not (mainChar.room and mainChar.room == terrain.tutorialMachineRoom):
-			questList.append(quests.EnterRoomQuest(terrain.tutorialMachineRoom,startCinematics="please goto the Machineroom"))
-		questList.append(quests.MoveQuest(terrain.tutorialMachineRoom,3,3,startCinematics="time to do some actual work. report to {machine room supervisor}"))
+		#if not (mainChar.room and mainChar.room == terrain.tutorialMachineRoom):
+		#	questList.append(quests.EnterRoomQuest(terrain.tutorialMachineRoom,startCinematics="please goto the Machineroom"))
+		#questList.append(quests.MoveQuest(terrain.tutorialMachineRoom,3,3,startCinematics="time to do some actual work. report to {machine room supervisor}"))
+		questList.append(quests.FireFurnace(terrain.tutorialMachineRoom.furnaces[0]))
+		questList.append(quests.FireFurnace(terrain.tutorialMachineRoom.furnaces[1]))
+		questList.append(quests.FireFurnace(terrain.tutorialMachineRoom.furnaces[2]))
+		questList.append(quests.FillPocketsQuest())
 
 		lastQuest = questList[0]
 		for item in questList[1:]:
@@ -755,7 +761,23 @@ class MachineRoomPhase(object):
 			lastQuest = item
 		questList[-1].followup = None
 
-		questList[-1].endTrigger = self.end
+		furnaceIndex = 0
+		class AnotherOne(object):
+			def __init__(subself,tick,index):
+				subself.tick = tick
+				subself.furnaceIndex = index
+
+			def handleEvent(subself):
+				messages.append("another one")
+				mainChar.assignQuest(quests.KeepFurnaceFired(terrain.tutorialMachineRoom.furnaces[subself.furnaceIndex]))
+				newIndex = subself.furnaceIndex+1
+				if newIndex < 8:
+					terrain.tutorialMachineRoom.addEvent(AnotherOne(gamestate.tick+20,newIndex))
+
+		def tmp():
+			terrain.tutorialMachineRoom.addEvent(AnotherOne(gamestate.tick+1,0))
+
+		questList[-1].endTrigger = tmp
 
 		mainChar.assignQuest(questList[0])
 
@@ -766,7 +788,7 @@ phase1 = FirstTutorialPhase()
 phase2 = SecondTutorialPhase()
 phase3 = VatPhase()
 phase4 = MachineRoomPhase()
-phase1.start()
+phase4.start()
 
 #cinematics.showCinematic("movement can be tricky sometimes so please make yourself comfortable with the controls.\n\nyou can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.\n\nthe basic Movementcommands are:\n w=up\n a=right\n s=down\n d=right\nplease move to the designated Target. the Implant will mark your Way")
 #"""
@@ -867,9 +889,13 @@ cinematics.advanceGame = advanceGame
 def renderQuests():
 	txt = ""
 	if len(characters[0].quests):
+		counter = 0
 		for quest in mainChar.quests:
 			txt+= "QUEST: "+quest.description+"\n"
-		txt += str(mainChar.xPosition)+"/"+str(mainChar.yPosition)+" "+str(gamestate.tick)
+			counter += 1
+			if counter == 2:
+				break
+		txt += str(mainChar.xPosition)+"/"+str(mainChar.yPosition)+" "+str(gamestate.tick)+" "+str(mainChar.inventory)
 	return txt
 	
 def renderMessagebox():

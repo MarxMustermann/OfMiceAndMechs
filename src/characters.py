@@ -21,7 +21,11 @@ class Character():
 
 	def startNextQuest(self):
 		if len(self.quests):
-			self.setPathToQuest(self.quests[0])
+			self.quests[0].recalculate()
+			try:
+				self.setPathToQuest(self.quests[0])
+			except:
+				pass
 
 	def assignQuest(self,quest,active=False):
 			if active:

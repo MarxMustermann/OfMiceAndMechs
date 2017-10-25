@@ -71,6 +71,7 @@ class Quest(object):
 		if self.startCinematics:
 			showCinematic(self.startCinematics)			
 			loop.set_alarm_in(0.0, callShow_or_exit, '.')
+		self.recalculate()
 
 	def deactivate(self):
 		self.active = False
@@ -181,66 +182,6 @@ class ExamineQuest(Quest):
 
 		super().activate()
 
-class CollectQuest(Quest):
-	def __init__(self,toFind="canBurn",startCinematics=None):
-		self.toFind = toFind
-		self.description = "please fetch things with property: "+toFind
-		foundItem = None
-
-		super().__init__(startCinematics=startCinematics)
-
-	def triggerCompletionCheck(self):
-		if not self.active:
-			return 
-
-		foundItem = None
-		for item in self.character.inventory:
-			hasProperty = False
-			try:
-				hasProperty = getattr(item,self.toFind)
-			except:
-				continue
-			
-			if hasProperty:
-				foundItem = item
-				break
-
-		if foundItem:
-			self.postHandler()
-			pass
-
-	def assignToCharacter(self,character):
-		super().assignToCharacter(character)
-		character.addListener(self.recalculate)
-
-	def recalculate(self):
-		if hasattr(self,"dstX"):
-			del self.dstX
-		if hasattr(self,"dstY"):
-			del self.dstY
-
-		if not self.active:
-			return 
-
-		try:
-			for item in self.character.room.itemsOnFloor:
-				hasProperty = False
-				try:
-					hasProperty = getattr(item,self.toFind)
-				except:
-					continue
-				
-				if hasProperty:
-					foundItem = item
-					break
-
-			if foundItem:
-				self.dstX = foundItem.xPosition
-				self.dstY = foundItem.yPosition
-		except:
-			pass
-		super().recalculate()
-
 class ActivateQuest(Quest):
 	def __init__(self,toActivate,followUp=None,desiredActive=True,startCinematics=None):
 		self.toActivate = toActivate
@@ -273,6 +214,123 @@ class ActivateQuest(Quest):
 				self.dstY = self.toActivate.yPosition
 		super().recalculate()
 
+class FireFurnace(Quest):
+	def __init__(self,furnace,followUp=None,startCinematics=None):
+		self.furnace = furnace
+		self.furnace.addListener(self.recalculate)
+		self.description = "please fire the "+self.furnace.name+" ("+str(self.furnace.xPosition)+"/"+str(self.furnace.yPosition)+")"
+		self.dstX = self.furnace.xPosition
+		self.dstY = self.furnace.yPosition
+		self.desiredActive = True
+		self.collectQuest = None
+		self.activateFurnaceQuest = None
+		super().__init__(followUp,startCinematics=startCinematics)
+
+	def assignToCharacter(self,character):
+		super().assignToCharacter(character)
+		character.addListener(self.recalculate)
+
+	def triggerCompletionCheck(self):
+		if not self.active:
+			return 
+
+		if self.furnace.activated == self.desiredActive:
+			self.postHandler()
+
+	def recalculate(self):
+		if not self.active:
+			return 
+
+		if self.furnace.activated:
+			super().recalculate()
+			return 
+
+		foundItem = None
+		for item in self.character.inventory:
+			try:
+				canBurn = item.canBurn
+			except:
+				continue
+			if not canBurn:
+				continue
+			foundItem = item
+
+		if not foundItem:
+			if not self.collectQuest:
+				self.collectQuest = CollectQuest()
+				self.character.assignQuest(self.collectQuest,active=True)
+			return
+
+		if not self.activateFurnaceQuest:
+			self.activateFurnaceQuest = ActivateQuest(self.furnace,desiredActive=True)
+			self.character.assignQuest(self.activateFurnaceQuest,active=True)
+			return
+
+		self.triggerCompletionCheck()
+		super().recalculate()
+
+class KeepFurnaceFired(Quest):
+	def __init__(self,furnace,followUp=None,startCinematics=None):
+		self.furnace = furnace
+		self.furnace.addListener(self.recalculate)
+		self.description = "please fire the "+self.furnace.name+" ("+str(self.furnace.xPosition)+"/"+str(self.furnace.yPosition)+")"
+		self.dstX = self.furnace.xPosition
+		self.dstY = self.furnace.yPosition
+		self.desiredActive = True
+		self.collectQuest = None
+		self.activateFurnaceQuest = None
+		super().__init__(followUp,startCinematics=startCinematics)
+
+	def assignToCharacter(self,character):
+		super().assignToCharacter(character)
+		character.addListener(self.recalculate)
+
+	def triggerCompletionCheck(self):
+		if not self.active:
+			return 
+		
+	def recalculate(self):
+		if not self.active:
+			return 
+
+		if self.collectQuest and not self.collectQuest.active:
+			self.collectQuest = None
+		if self.activateFurnaceQuest and not self.activateFurnaceQuest.active:
+			self.activateFurnaceQuest = None
+
+		if self.furnace.activated:
+			if not self.collectQuest and not len(self.character.inventory) > 10 and self.character.quests[0] == self:
+				self.collectQuest = FillPocketsQuest()
+				self.collectQuest.activate()
+				self.character.assignQuest(self.collectQuest,active=True)
+			super().recalculate()
+			return 
+
+		foundItem = None
+		for item in self.character.inventory:
+			try:
+				canBurn = item.canBurn
+			except:
+				continue
+			if not canBurn:
+				continue
+			foundItem = item
+
+		if not foundItem:
+			if not self.collectQuest:
+				self.collectQuest = FillPocketsQuest()
+				self.character.assignQuest(self.collectQuest,active=True)
+			super().recalculate()
+			return
+
+		if not self.activateFurnaceQuest:
+			self.activateFurnaceQuest = ActivateQuest(self.furnace)
+			self.character.assignQuest(self.activateFurnaceQuest,active=True)
+			super().recalculate()
+			return
+
+		super().recalculate()
+
 class MoveQuest(Quest):
 	def __init__(self,room,x,y,followUp=None,startCinematics=None):
 		self.dstX = x
@@ -286,7 +344,6 @@ class MoveQuest(Quest):
 	def triggerCompletionCheck(self):
 		if not self.active:
 			return 
-
 		if hasattr(self,"dstX") and hasattr(self,"dstY"):
 			if self.character.xPosition == self.dstX and self.character.yPosition == self.dstY:
 				self.postHandler()
@@ -313,6 +370,82 @@ class MoveQuest(Quest):
 			self.character.assignQuest(EnterRoomQuest(self.room),active=True)
 			pass
 		super().recalculate()
+
+class CollectQuest(Quest):
+	def __init__(self,toFind="canBurn",startCinematics=None):
+		self.toFind = toFind
+		self.description = "please fetch things with property: "+toFind
+		foundItem = None
+
+		super().__init__(startCinematics=startCinematics)
+
+	def triggerCompletionCheck(self):
+		if not self.active:
+			return 
+
+		if not self.character:
+			return
+
+		foundItem = None
+		for item in self.character.inventory:
+			hasProperty = False
+			try:
+				hasProperty = getattr(item,self.toFind)
+			except:
+				continue
+			
+			if hasProperty:
+				foundItem = item
+
+		if foundItem:
+			self.postHandler()
+			pass
+
+	def assignToCharacter(self,character):
+		super().assignToCharacter(character)
+		character.addListener(self.recalculate)
+
+	def recalculate(self):
+		if hasattr(self,"dstX"):
+			del self.dstX
+		if hasattr(self,"dstY"):
+			del self.dstY
+
+		if not self.active:
+			return 
+
+		try:
+			for item in self.character.room.itemsOnFloor:
+				hasProperty = False
+				try:
+					hasProperty = getattr(item,self.toFind)
+				except:
+					continue
+				
+				if hasProperty:
+					foundItem = item
+					# This line ist good but looks bad in current setting. reactivate later
+					#break
+
+			if foundItem:
+				self.dstX = foundItem.xPosition
+				self.dstY = foundItem.yPosition
+		except:
+			pass
+		super().recalculate()
+
+class FillPocketsQuest(CollectQuest):
+	def triggerCompletionCheck(self):
+		if not self.active:
+			return 
+
+		if not self.character:
+			return
+
+		if len(self.character.inventory) < 11:
+			return
+
+		super().triggerCompletionCheck()
 
 class LeaveRoomQuest(Quest):
 	def __init__(self,room,followUp=None,startCinematics=None):

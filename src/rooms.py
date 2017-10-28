@@ -500,6 +500,11 @@ class Room(object):
 	def removeEvent(self,event):
 		self.events.remove(event)
 
+	def removeEventsByType(self,eventType):
+		for event in self.events:
+			if type(event) == eventType:
+				self.events.remove(event)
+
 	def advance(self):
 		self.timeIndex += 1
 
@@ -984,6 +989,12 @@ XXXXXX
 			self.gogogo = True
 		self.lever.activateAction = go
 		self.addItems([self.lever])
+
+		npc = Character(displayChars.staffCharacters[12],3,3,name="Friedrich Engelbart")
+		self.addCharacter(npc,3,3)
+		npc.room = self
+		quest0 = quests.KeepFurnaceFired(self.furnaces[0])
+		npc.assignQuest(quest0)
 
 	def changed(self):
 		self.engineStrength = 250*self.steamGeneration

@@ -270,7 +270,7 @@ class FireFurnace(Quest):
 		super().recalculate()
 
 class KeepFurnaceFired(Quest):
-	def __init__(self,furnace,followUp=None,startCinematics=None):
+	def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None):
 		self.furnace = furnace
 		self.furnace.addListener(self.recalculate)
 		self.description = "please fire the "+self.furnace.name+" ("+str(self.furnace.xPosition)+"/"+str(self.furnace.yPosition)+")"
@@ -279,11 +279,28 @@ class KeepFurnaceFired(Quest):
 		self.desiredActive = True
 		self.collectQuest = None
 		self.activateFurnaceQuest = None
+		self.boilers = None
+		self.failTrigger = failTrigger
 		super().__init__(followUp,startCinematics=startCinematics)
 
 	def assignToCharacter(self,character):
 		super().assignToCharacter(character)
 		character.addListener(self.recalculate)
+
+		self.boilers = self.furnace.boilers
+		if self.boilers:
+			for boiler in self.boilers:
+				def fail():
+					self.fail(boiler)
+				boiler.addListener(fail)
+
+	def fail(self,boiler):
+		if not self.active:
+			return 
+
+		if not boiler.isBoiling:
+			if self.failTrigger:
+				self.failTrigger()
 
 	def triggerCompletionCheck(self):
 		if not self.active:

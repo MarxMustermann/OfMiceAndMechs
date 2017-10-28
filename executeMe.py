@@ -395,6 +395,18 @@ cinematics.callShow_or_exit = callShow_or_exit
 quests.callShow_or_exit = callShow_or_exit
 
 def calculatePath(startX,startY,endX,endY,walkingPath):
+	path = calculatePathReal(startX,startY,endX,endY,walkingPath)
+
+	index = 0
+	lastFoundIndex = index
+	for wayPoint in path:
+		if wayPoint == (startX,startY):
+			lastFoundIndex = index
+		index += 1
+
+	return path[lastFoundIndex:]
+
+def calculatePathReal(startX,startY,endX,endY,walkingPath):
 	import math
 	path = []
 
@@ -470,8 +482,8 @@ def calculatePath(startX,startY,endX,endY,walkingPath):
 			pass
 		else:
 			result = []
-			result.extend(calculatePath(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
-			result.extend(calculatePath(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
+			result.extend(calculatePathReal(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
+			result.extend(calculatePathReal(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
 			return result
 
 	elif (startX,startY) in walkingPath:
@@ -487,8 +499,8 @@ def calculatePath(startX,startY,endX,endY,walkingPath):
 			pass
 		else:
 			result = []
-			result.extend(calculatePath(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
-			result.extend(calculatePath(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
+			result.extend(calculatePathReal(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
+			result.extend(calculatePathReal(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
 			return result
 	else:
 		path = []
@@ -508,9 +520,9 @@ def calculatePath(startX,startY,endX,endY,walkingPath):
 				lowestDistance = distance
 				endPoint = waypoint
 
-		path.extend(calculatePath(startX,startY,startPoint[0],startPoint[1],walkingPath))
-		path.extend(calculatePath(startPoint[0],startPoint[1],endPoint[0],endPoint[1],walkingPath))
-		path.extend(calculatePath(endPoint[0],endPoint[1],endX,endY,walkingPath))
+		path.extend(calculatePathReal(startX,startY,startPoint[0],startPoint[1],walkingPath))
+		path.extend(calculatePathReal(startPoint[0],startPoint[1],endPoint[0],endPoint[1],walkingPath))
+		path.extend(calculatePathReal(endPoint[0],endPoint[1],endX,endY,walkingPath))
 		
 		return path			
 
@@ -724,7 +736,6 @@ class SecondTutorialPhase(object):
 class ThirdTutorialPhase(object):
 	def start(self):
 		self.npc = characters.Character(displayChars.staffCharacters[11],4,3,name="Erwin von Libwig")
-		self.npc.watched = True
 		terrain.tutorialMachineRoom.addCharacter(self.npc,4,3)
 
 		cinematics.showCinematic("during the test Messages and new Task will be shown on the Buttom of the Screen. start now.")

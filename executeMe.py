@@ -654,7 +654,7 @@ class FirstTutorialPhase(object):
 		# fix the setup
 		if not terrain.tutorialMachineRoom.secondOfficer:
 			name = names.characterFirstNames[(gamestate.tick+2)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)]
-			npc = characters.Character(displayChars.staffCharactersByLetter[names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)].split[-1][0].lower()],4,3,name=name)
+			npc = characters.Character(displayChars.staffCharactersByLetter[names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)].split(" ")[-1][0].lower()],4,3,name=name)
 			npc.terrain = terrain
 			npc.room = terrain.tutorialMachineRoom
 			terrain.tutorialMachineRoom.addCharacter(npc,4,3)

@@ -89,15 +89,15 @@ def show_or_exit(key):
 					footer.set_text(renderMessagebox())
 					return
 			else:
-				rooms = []
+				roomCandidates = []
 				bigX = (mainChar.xPosition)//15
 				bigY = (mainChar.yPosition-1)//15
 				for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
 					if coordinate in terrain.roomByCoordinates:
-						rooms.extend(terrain.roomByCoordinates[coordinate])
+						roomCandidates.extend(terrain.roomByCoordinates[coordinate])
 
 				hadRoomInteraction = False
-				for room in rooms:
+				for room in roomCandidates:
 					if room.yPosition*15+room.offsetY+room.sizeY == mainChar.yPosition:
 						if room.xPosition*15+room.offsetX-1 < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
 							hadRoomInteraction = True
@@ -146,15 +146,15 @@ def show_or_exit(key):
 					footer.set_text(renderMessagebox())
 					return
 			else:
-				rooms = []
+				roomCandidates = []
 				bigX = (mainChar.xPosition)//15
 				bigY = (mainChar.yPosition+1)//15
 				for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
 					if coordinate in terrain.roomByCoordinates:
-						rooms.extend(terrain.roomByCoordinates[coordinate])
+						roomCandidates.extend(terrain.roomByCoordinates[coordinate])
 
 				hadRoomInteraction = False
-				for room in rooms:
+				for room in roomCandidates:
 					if room.yPosition*15+room.offsetY == mainChar.yPosition+1:
 						if room.xPosition*15+room.offsetX-1 < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
 							hadRoomInteraction = True
@@ -201,15 +201,15 @@ def show_or_exit(key):
 					footer.set_text(renderMessagebox())
 					return
 			else:
-				rooms = []
+				roomCandidates = []
 				bigX = (mainChar.xPosition+1)//15
 				bigY = (mainChar.yPosition)//15
 				for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
 					if coordinate in terrain.roomByCoordinates:
-						rooms.extend(terrain.roomByCoordinates[coordinate])
+						roomCandidates.extend(terrain.roomByCoordinates[coordinate])
 
 				hadRoomInteraction = False
-				for room in rooms:
+				for room in roomCandidates:
 					if room.xPosition*15+room.offsetX == mainChar.xPosition+1:
 						if room.yPosition*15+room.offsetY < mainChar.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > mainChar.yPosition:
 							hadRoomInteraction = True
@@ -256,15 +256,15 @@ def show_or_exit(key):
 					footer.set_text(renderMessagebox())
 					return
 			else:
-				rooms = []
+				roomCandidates = []
 				bigX = (mainChar.xPosition)//15
 				bigY = (mainChar.yPosition-1)//15
 				for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
 					if coordinate in terrain.roomByCoordinates:
-						rooms.extend(terrain.roomByCoordinates[coordinate])
+						roomCandidates.extend(terrain.roomByCoordinates[coordinate])
 
 				hadRoomInteraction = False
-				for room in rooms:
+				for room in roomCandidates:
 					if room.xPosition*15+room.offsetX+room.sizeX == mainChar.xPosition:
 						if room.yPosition*15+room.offsetY < mainChar.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > mainChar.yPosition:
 							hadRoomInteraction = True
@@ -359,8 +359,19 @@ def show_or_exit(key):
 				del itemByCoordinates[(characters[0].xPosition,characters[0].yPosition)]
 
 		if key in (commandChars.hail):
-			messages.append(characters[0].name+": HÜ!")
-			messages.append(characters[0].name+": HOTT!")
+			if mainChar.room and type(mainChar.room) == rooms.MiniMech:
+				if not mainChar.room.npc.quests:
+					messages.append("please fire the furnace.")
+					quest0 = quests.KeepFurnaceFired(mainChar.room.furnaces[0])
+					mainChar.room.npc.assignQuest(quest0)
+				else:
+					messages.append("you may stop now.")
+					for quest in mainChar.room.npc.quests:
+						quest.deactivate()
+					mainChar.room.npc.quests = []
+			else:
+				messages.append(characters[0].name+": HÜ!")
+				messages.append(characters[0].name+": HOTT!")
 
 		if key in (commandChars.advance,commandChars.autoAdvance):
 			if len(mainChar.quests):

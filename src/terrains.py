@@ -11,6 +11,7 @@ class Terrain(object):
 		self.characters = []
 		self.walkingPath = []
 		self.rooms = []
+		self.movingRoom = None
 
 		self.itemByCoordinates = {}
 		self.roomByCoordinates = {}
@@ -88,8 +89,10 @@ class Terrain(object):
 				elif char == "?":
 					roomsOnMap.append(rooms.CpuWasterRoom(rowCounter,lineCounter,2,2))
 				elif char == "t":
-					self.movingRoom = rooms.MiniMech(rowCounter,lineCounter,2,2)
-					roomsOnMap.append(self.movingRoom)
+					miniMech = rooms.MiniMech(rowCounter,lineCounter,2,2)
+					if not self.movingRoom:
+						self.movingRoom = miniMech
+					roomsOnMap.append(miniMech)
 				else:
 					pass
 				rowCounter += 1

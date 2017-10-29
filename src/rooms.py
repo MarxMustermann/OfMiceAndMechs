@@ -992,11 +992,9 @@ XXXXXX
 		self.lever.activateAction = go
 		self.addItems([self.lever])
 
-		npc = Character(displayChars.staffCharacters[12],3,3,name="Friedrich Engelbart")
-		self.addCharacter(npc,3,3)
-		npc.room = self
-		quest0 = quests.KeepFurnaceFired(self.furnaces[0])
-		npc.assignQuest(quest0)
+		self.npc = Character(displayChars.staffCharacters[12],3,3,name="Friedrich Engelbart")
+		self.addCharacter(self.npc,3,3)
+		self.npc.room = self
 
 	def changed(self):
 		self.engineStrength = 250*self.steamGeneration

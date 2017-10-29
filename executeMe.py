@@ -600,7 +600,10 @@ class GameState():
 	def save(self):
 		saveFile = open("gamestate/gamestate.json","w")
 		state = self.getState()
-		saveFile.write(json.dumps(state))
+		if not state["gameWon"]:
+			saveFile.write(json.dumps(state))
+		else:
+			saveFile.write(json.dumps("Winning is no fun at all"))
 		saveFile.close()
 
 	def load(self):
@@ -650,7 +653,8 @@ class FirstTutorialPhase(object):
 
 		# fix the setup
 		if not terrain.tutorialMachineRoom.secondOfficer:
-			npc = characters.Character(displayChars.staffCharacters[11],4,3,name=names.characterFirstNames[(gamestate.tick+2)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)])
+			name = names.characterFirstNames[(gamestate.tick+2)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)]
+			npc = characters.Character(displayChars.staffCharactersByLetter[names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)].split[-1][0].lower()],4,3,name=name)
 			npc.terrain = terrain
 			npc.room = terrain.tutorialMachineRoom
 			terrain.tutorialMachineRoom.addCharacter(npc,4,3)
@@ -658,7 +662,8 @@ class FirstTutorialPhase(object):
 		npc = terrain.tutorialMachineRoom.secondOfficer
 
 		if not terrain.tutorialMachineRoom.firstOfficer:
-			npc2 = characters.Character(displayChars.staffCharacters[25],5,3,name=names.characterFirstNames[(gamestate.tick+9)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+4)%len(names.characterLastNames)])
+			name = name=names.characterFirstNames[(gamestate.tick+9)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+4)%len(names.characterLastNames)]
+			npc2 = characters.Character(displayChars.staffCharactersByLetter[names.characterLastNames[(gamestate.tick+4)%len(names.characterLastNames)].split(" ")[-1][0].lower()],5,3,name=name)
 			npc2.terrain = terrain
 			npc2.room = terrain.tutorialMachineRoom
 			terrain.tutorialMachineRoom.addCharacter(npc2,5,3)
@@ -747,7 +752,7 @@ class FirstTutorialPhase(object):
 			def handleEvent(subself):
 				self.end()
 
-		terrain.tutorialMachineRoom.addEvent(StartNextPhaseEvent(40))
+		terrain.tutorialMachineRoom.addEvent(StartNextPhaseEvent(gamestate.tick+40))
 
 	def end(self):
 		cinematics.showCinematic("please try to remember the Information. The lesson will now continue with movement.")
@@ -1010,8 +1015,6 @@ try:
 	gamestate.load()
 except:
 	pass
-if gamestate.gameWon:
-	gamestate = GameState()
 
 mainChar = gamestate.mainChar
 gamestate.currentPhase().start()

@@ -614,6 +614,9 @@ class GameState():
 		self.currentPhase = phasesByName[state["currentPhase"]]
 		self.tick = state["tick"]
 
+		for room in terrain.rooms:
+			room.timeIndex = self.tick
+
 	def getState(self):
 		return {"gameWon":self.gameWon,"currentPhase":self.currentPhase.name,"tick":self.tick}
 gamestate = None
@@ -647,15 +650,15 @@ class FirstTutorialPhase(object):
 
 		# fix the setup
 		if not terrain.tutorialMachineRoom.secondOfficer:
-			npc = characters.Character(displayChars.staffCharacters[11],4,3,name=names.characterFirstNames[gamestate.tick%(len(names.characterFirstNames)+2)]+" "+names.characterLastNames[gamestate.tick%(len(names.characterLastNames)+2)])
+			npc = characters.Character(displayChars.staffCharacters[11],4,3,name=names.characterFirstNames[(gamestate.tick+2)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)])
 			npc.terrain = terrain
 			npc.room = terrain.tutorialMachineRoom
 			terrain.tutorialMachineRoom.addCharacter(npc,4,3)
 			terrain.tutorialMachineRoom.secondOfficer = npc
 		npc = terrain.tutorialMachineRoom.secondOfficer
 
-		if not terrain.tutorialMachineRoom.secondOfficer:
-			npc2 = characters.Character(displayChars.staffCharacters[25],5,3,name=names.characterFirstNames[self.tick%(len(names.characterFirstNames)+9)]+" "+names.characterLastNames[self.tick%(len(names.characterLastNames)+4)])
+		if not terrain.tutorialMachineRoom.firstOfficer:
+			npc2 = characters.Character(displayChars.staffCharacters[25],5,3,name=names.characterFirstNames[(gamestate.tick+9)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+4)%len(names.characterLastNames)])
 			npc2.terrain = terrain
 			npc2.room = terrain.tutorialMachineRoom
 			terrain.tutorialMachineRoom.addCharacter(npc2,5,3)
@@ -760,15 +763,15 @@ class SecondTutorialPhase(object):
 		gamestate.currentPhase = self
 
 		if not terrain.tutorialMachineRoom.secondOfficer:
-			npc = characters.Character(displayChars.staffCharacters[11],4,3,name="Erwin von Libwig")
+			npc = characters.Character(displayChars.staffCharacters[11],4,3,name=names.characterFirstNames[(gamestate.tick+2)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)])
 			npc.terrain = terrain
 			npc.room = terrain.tutorialMachineRoom
 			terrain.tutorialMachineRoom.addCharacter(npc,4,3)
 			terrain.tutorialMachineRoom.secondOfficer = npc
 		npc = terrain.tutorialMachineRoom.secondOfficer
 
-		if not terrain.tutorialMachineRoom.secondOfficer:
-			npc2 = characters.Character(displayChars.staffCharacters[25],5,3,name="Ernst Ziegelbach")
+		if not terrain.tutorialMachineRoom.firstOfficer:
+			npc2 = characters.Character(displayChars.staffCharacters[25],5,3,name=names.characterFirstNames[(gamestate.tick+9)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+4)%len(names.characterLastNames)])
 			npc2.terrain = terrain
 			npc2.room = terrain.tutorialMachineRoom
 			terrain.tutorialMachineRoom.addCharacter(npc2,5,3)
@@ -810,10 +813,21 @@ class ThirdTutorialPhase(object):
 		gamestate.currentPhase = self
 
 		if not terrain.tutorialMachineRoom.secondOfficer:
-			npc = characters.Character(displayChars.staffCharacters[11],4,3,name="Erwin von Libwig")
+			npc = characters.Character(displayChars.staffCharacters[11],4,3,name=names.characterFirstNames[(gamestate.tick+2)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)])
+			npc.terrain = terrain
+			npc.room = terrain.tutorialMachineRoom
 			terrain.tutorialMachineRoom.addCharacter(npc,4,3)
 			terrain.tutorialMachineRoom.secondOfficer = npc
 		self.npc = terrain.tutorialMachineRoom.secondOfficer
+
+		if not terrain.tutorialMachineRoom.firstOfficer:
+			npc2 = characters.Character(displayChars.staffCharacters[25],5,3,name=names.characterFirstNames[(gamestate.tick+9)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+4)%len(names.characterLastNames)])
+			npc2.terrain = terrain
+			npc2.room = terrain.tutorialMachineRoom
+			terrain.tutorialMachineRoom.addCharacter(npc2,5,3)
+			terrain.tutorialMachineRoom.firstOfficer = npc2
+		npc2 = terrain.tutorialMachineRoom.firstOfficer
+
 
 		cinematics.showCinematic("during the test Messages and new Task will be shown on the Buttom of the Screen. start now.")
 
@@ -1088,7 +1102,9 @@ def renderQuests():
 			counter += 1
 			if counter == 2:
 				break
-		txt += str(char.xPosition)+"/"+str(char.yPosition)+" "+str(gamestate.tick)+" "+str(mainChar.inventory)
+	txt += str(char.xPosition)+"/"+str(char.yPosition)+" "+str(gamestate.tick)+" "+str(mainChar.inventory)
+	if char.room:
+		txt += str(char.room.timeIndex)
 	return txt
 	
 def renderMessagebox():

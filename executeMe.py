@@ -132,8 +132,8 @@ def show_or_exit(key):
 							footer.set_text(renderMessagebox())
 							foundItem = True
 					if not foundItem:
-						characters[0].yPosition -= 1
-						characters[0].changed()
+						mainChar.yPosition -= 1
+						mainChar.changed()
 
 		if key in (commandChars.move_south):
 			if mainChar.room:
@@ -187,8 +187,8 @@ def show_or_exit(key):
 							footer.set_text(renderMessagebox())
 							foundItem = True
 					if not foundItem:
-						characters[0].yPosition += 1
-						characters[0].changed()
+						mainChar.yPosition += 1
+						mainChar.changed()
 
 		if key in (commandChars.move_east):
 			if mainChar.room:
@@ -242,8 +242,8 @@ def show_or_exit(key):
 							footer.set_text(renderMessagebox())
 							foundItem = True
 					if not foundItem:
-						characters[0].xPosition += 1
-						characters[0].changed()
+						mainChar.xPosition += 1
+						mainChar.changed()
 
 		if key in (commandChars.move_west):
 			if mainChar.room:
@@ -297,8 +297,8 @@ def show_or_exit(key):
 							footer.set_text(renderMessagebox())
 							foundItem = True
 					if not foundItem:
-						characters[0].xPosition -= 1
-						characters[0].changed()
+						mainChar.xPosition -= 1
+						mainChar.changed()
 
 		if key in (commandChars.activate):
 			if itemMarkedLast:
@@ -309,7 +309,7 @@ def show_or_exit(key):
 				else:
 					itemList = terrain.itemsOnFloor
 				for item in itemList:
-					if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:
+					if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
 						item.apply(mainChar)
 
 		if key in (commandChars.examine):
@@ -322,19 +322,19 @@ def show_or_exit(key):
 				else:
 					itemList = terrain.itemsOnFloor
 				for item in itemList:
-					if item.xPosition == characters[0].xPosition and item.yPosition == characters[0].yPosition:
+					if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
 						messages.append(item.description)
 						messages.append(item.getDetailedInfo())
 
 		if key in (commandChars.drop):
-			if len(characters[0].inventory):
-				item = characters[0].inventory.pop()	
-				item.xPosition = characters[0].xPosition		
-				item.yPosition = characters[0].yPosition		
+			if len(mainChar.inventory):
+				item = mainChar.inventory.pop()	
+				item.xPosition = mainChar.xPosition		
+				item.yPosition = mainChar.yPosition		
 				if mainChar.room:
-					characters[0].room.addItems([item])
+					mainChar.room.addItems([item])
 				else:
-					characters[0].terrain.addItems([item])
+					mainChar.terrain.addItems([item])
 				item.changed()
 
 		if key in (commandChars.pickUp):
@@ -347,16 +347,16 @@ def show_or_exit(key):
 				itemByCoordinates = terrain.itemByCoordinates
 				itemList = terrain.itemsOnFloor
 
-			if (characters[0].xPosition,characters[0].yPosition) in itemByCoordinates:
-				for item in itemByCoordinates[(characters[0].xPosition,characters[0].yPosition)]:
+			if (mainChar.xPosition,mainChar.yPosition) in itemByCoordinates:
+				for item in itemByCoordinates[(mainChar.xPosition,mainChar.yPosition)]:
 					itemList.remove(item)
 					if hasattr(item,"xPosition"):
 						del item.xPosition
 					if hasattr(item,"yPosition"):
 						del item.yPosition
-					characters[0].inventory.append(item)
+					mainChar.inventory.append(item)
 					item.changed()
-				del itemByCoordinates[(characters[0].xPosition,characters[0].yPosition)]
+				del itemByCoordinates[(mainChar.xPosition,mainChar.yPosition)]
 
 		if key in (commandChars.hail):
 			if mainChar.room and type(mainChar.room) == rooms.MiniMech:
@@ -370,8 +370,8 @@ def show_or_exit(key):
 						quest.deactivate()
 					mainChar.room.npc.quests = []
 			else:
-				messages.append(characters[0].name+": HÜ!")
-				messages.append(characters[0].name+": HOTT!")
+				messages.append(mainChar.name+": HÜ!")
+				messages.append(mainChar.name+": HOTT!")
 
 		if key in (commandChars.advance,commandChars.autoAdvance):
 			if len(mainChar.quests):
@@ -1078,7 +1078,6 @@ quest19.followUp = quest0
 #npc2.assignQuest(quest0)
 #npc2.automated = False
 
-characters = [mainChar]
 items.characters = characters
 rooms.characters = characters
 

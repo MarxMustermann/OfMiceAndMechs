@@ -236,11 +236,11 @@ class Room(object):
 				chars[character.yPosition][character.xPosition] = character.display
 
 			if mainChar.room == self:
-				if len(characters[0].quests):
+				if len(mainChar.quests):
 					try:
 						if not self.shownQuestmarkerLastRender:
-							chars[characters[0].quests[0].dstY][characters[0].quests[0].dstX] = displayChars.questTargetMarker
-							path = calculatePath(characters[0].xPosition,characters[0].yPosition,characters[0].quests[0].dstX,characters[0].quests[0].dstY,self.walkingPath)
+							chars[mainChar.quests[0].dstY][mainChar.quests[0].dstX] = displayChars.questTargetMarker
+							path = calculatePath(mainChar.xPosition,mainChar.yPosition,mainChar.quests[0].dstX,mainChar.quests[0].dstY,self.walkingPath)
 							for item in path:
 								chars[item[1]][item[0]] = displayChars.questPathMarker
 							

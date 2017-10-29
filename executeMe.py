@@ -1123,8 +1123,6 @@ def renderQuests():
 			if counter == 2:
 				break
 	txt += str(char.xPosition)+"/"+str(char.yPosition)+" "+str(gamestate.tick)+" "+str(mainChar.inventory)
-	if char.room:
-		txt += str(char.room.timeIndex)
 	return txt
 	
 def renderMessagebox():

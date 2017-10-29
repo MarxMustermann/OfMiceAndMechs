@@ -36,6 +36,8 @@ class Room(object):
 		self.sprays = []
 		self.piles = []
 		self.steamGeneration = 0
+		self.firstOfficer = None
+		self.secondOfficer = None
 
 		self.itemByCoordinates = {}
 

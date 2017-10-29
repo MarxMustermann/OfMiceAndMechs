@@ -323,7 +323,7 @@ class Door(Item):
 
 class Pile(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal):
-		self.canBurn = True
+		self.contains_canBurn = True
 		self.type = itemType
 		super().__init__(displayChars.pile,xPosition,yPosition,name=name)
 

@@ -1,5 +1,6 @@
 import urwid 
 import sys
+import json
 
 import src.items as items
 import src.quests as quests
@@ -8,6 +9,7 @@ import src.characters as characters
 import src.terrains as terrains
 import src.cinematics as cinematics
 import config.commandChars as commandChars
+import config.names as names
 
 #import sys, pygame
 #pygame.init()
@@ -56,6 +58,7 @@ def show_or_exit(key):
 	doAdvanceGame = True
 	if len(cinematics.cinematicQueue):
 		if key in (commandChars.quit_normal, commandChars.quit_instant):
+			gamestate.save()
 			raise urwid.ExitMainLoop()
 		elif key in (commandChars.pause,commandChars.advance,commandChars.autoAdvance):
 			cinematics.cinematicQueue[0].abort()
@@ -73,6 +76,7 @@ def show_or_exit(key):
 		stealKey[key]()
 	else:
 		if key in (commandChars.quit_normal, commandChars.quit_instant):
+			gamestate.save()
 			raise urwid.ExitMainLoop()
 		if key in (commandChars.move_north):
 			if mainChar.room:
@@ -568,12 +572,40 @@ terrains.calculatePath = calculatePath
 
 rooms.Character = characters.Character
 		
+phasesByName = {}
+
 class GameState():
-	def __init__(self,characters):
-		self.characters = characters
+	def __init__(self):
 		self.gameWon = False
+		self.currentPhase = phasesByName["FirstTutorialPhase"]
 		self.tick = 0
-gamestate = GameState(characters)
+
+		self.mainChar = characters.Character(displayChars.main_char,3,3,automated=False,name=names.characterFirstNames[self.tick%len(names.characterFirstNames)]+" "+names.characterLastNames[self.tick%len(names.characterLastNames)])
+		self.mainChar.terrain = terrain
+		self.mainChar.room = terrain.tutorialMachineRoom
+		self.mainChar.watched = True
+		terrain.tutorialMachineRoom.addCharacter(self.mainChar,3,3)
+
+	def save(self):
+		saveFile = open("gamestate/gamestate.json","w")
+		state = self.getState()
+		saveFile.write(json.dumps(state))
+		saveFile.close()
+
+	def load(self):
+		saveFile = open("gamestate/gamestate.json")
+		state = json.loads(saveFile.read())
+		self.setState(state)
+		saveFile.close()
+
+	def setState(self,state):
+		self.gameWon = state["gameWon"]
+		self.currentPhase = phasesByName[state["currentPhase"]]
+		self.tick = state["tick"]
+
+	def getState(self):
+		return {"gameWon":self.gameWon,"currentPhase":self.currentPhase.name,"tick":self.tick}
+gamestate = None
 
 messages = []
 items.messages = messages
@@ -593,29 +625,31 @@ characters.roomsOnMap = terrain.rooms
 
 mapHidden = True
 
-mainChar = characters.Character(displayChars.main_char,3,3,automated=False,name="Sigmund Bärenstein")
-mainChar.terrain = terrain
-mainChar.room = terrain.tutorialMachineRoom
-mainChar.watched = True
-terrain.tutorialMachineRoom.addCharacter(mainChar,3,3)
+mainChar = None
 
 class FirstTutorialPhase(object):
-	def start(self):
-		npc = characters.Character(displayChars.staffCharacters[11],4,3,name="Erwin von Libwig")
-		#npc2.watched = True
-		terrain.tutorialMachineRoom.addCharacter(npc,4,3)
-		npc.terrain = terrain
-		npc.room = terrain.tutorialMachineRoom
-		#npc2.assignQuest(quest0)
-		#npc2.automated = False
+	def __init__(self):
+		self.name = "FirstTutorialPhase"
 
-		npc2 = characters.Character(displayChars.staffCharacters[25],5,3,name="Ernst Ziegelbach")
-		#npc2.watched = True
-		terrain.tutorialMachineRoom.addCharacter(npc2,5,3)
-		npc2.terrain = terrain
-		npc2.room = terrain.tutorialMachineRoom
-		#npc2.assignQuest(quest0)
-		#npc2.automated = False
+	def start(self):
+		gamestate.currentPhase = self
+
+		# fix the setup
+		if not terrain.tutorialMachineRoom.secondOfficer:
+			npc = characters.Character(displayChars.staffCharacters[11],4,3,name=names.characterFirstNames[gamestate.tick%(len(names.characterFirstNames)+2)]+" "+names.characterLastNames[gamestate.tick%(len(names.characterLastNames)+2)])
+			npc.terrain = terrain
+			npc.room = terrain.tutorialMachineRoom
+			terrain.tutorialMachineRoom.addCharacter(npc,4,3)
+			terrain.tutorialMachineRoom.secondOfficer = npc
+		npc = terrain.tutorialMachineRoom.secondOfficer
+
+		if not terrain.tutorialMachineRoom.secondOfficer:
+			npc2 = characters.Character(displayChars.staffCharacters[25],5,3,name=names.characterFirstNames[self.tick%(len(names.characterFirstNames)+9)]+" "+names.characterLastNames[self.tick%(len(names.characterLastNames)+4)])
+			npc2.terrain = terrain
+			npc2.room = terrain.tutorialMachineRoom
+			terrain.tutorialMachineRoom.addCharacter(npc2,5,3)
+			terrain.tutorialMachineRoom.firstOfficer = npc2
+		npc2 = terrain.tutorialMachineRoom.firstOfficer
 
 		cinematics.showCinematic("welcome to the Trainingenvironment\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
 		cinematics.showCinematic("the Trainingenvironment will show now. take a look at Everything and press "+commandChars.wait+" afterwards. You will be able to move later")
@@ -640,7 +674,7 @@ class FirstTutorialPhase(object):
 				terrain.tutorialMachineRoom.addItems([items.Coal(7,5)])
 				messages.append("*smoke clears*")
 
-		terrain.tutorialMachineRoom.addEvent(CoalRefillEvent(14))
+		terrain.tutorialMachineRoom.addEvent(CoalRefillEvent(gamestate.tick+14))
 
 		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
 		cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("8"))
@@ -686,9 +720,9 @@ class FirstTutorialPhase(object):
 			def handleEvent(subself):
 				messages.append("*Erwin von Libwig, please fire the Furnace now*")
 
-		terrain.tutorialMachineRoom.addEvent(ShowMessageEvent(17))
-		terrain.tutorialMachineRoom.addEvent(AddQuestEvent(18))
-		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(24))
+		terrain.tutorialMachineRoom.addEvent(ShowMessageEvent(gamestate.tick+17))
+		terrain.tutorialMachineRoom.addEvent(AddQuestEvent(gamestate.tick+18))
+		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(gamestate.tick+24))
 
 		cinematics.showCinematic("there are other Items in the Room that may or may not be important for you. Here is the full List for you to review:\n\n Bin ("+displayChars.binStorage+"): Used for storing Things intended to be transported further\n Pile ("+displayChars.pile+"): a Pile of Things\n Door ("+displayChars.door_opened+" or "+displayChars.door_closed+"): you can move through it when open\n Lever ("+displayChars.lever_notPulled+" or "+displayChars.lever_pulled+"): a simple Man-Machineinterface\n Furnace ("+displayChars.furnace_inactive+"): used to generate heat burning Things\n Display ("+displayChars.display+"): a complicated Machine-Maninterface\n Wall ("+displayChars.wall+"): ensures the structural Integrity of basically any Structure\n Pipe ("+displayChars.pipe+"): transports Liquids, Pseudoliquids and Gasses\n Coal ("+displayChars.coal+"): a piece of Coal, quite usefull actually\n Boiler ("+displayChars.boiler_inactive+" or "+displayChars.boiler_active+"): generates Steam using Water and and Heat\n Chains ("+displayChars.chains+"): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing\n Comlink ("+displayChars.commLink+"): a Pipe based Voicetransportationsystem that allows Communication with other Rooms\n Hutch ("+displayChars.hutch_free+"): a comfy and safe Place to sleep and eat")
 
@@ -705,9 +739,31 @@ class FirstTutorialPhase(object):
 		cinematics.showCinematic("please try to remember the Information. The lesson will now continue with movement.")
 		phase2 = SecondTutorialPhase()
 		phase2.start()
+phasesByName["FirstTutorialPhase"] = FirstTutorialPhase
 
 class SecondTutorialPhase(object):
+	def __init__(self):
+		self.name = "SecondTutorialPhase"
+
 	def start(self):
+		gamestate.currentPhase = self
+
+		if not terrain.tutorialMachineRoom.secondOfficer:
+			npc = characters.Character(displayChars.staffCharacters[11],4,3,name="Erwin von Libwig")
+			npc.terrain = terrain
+			npc.room = terrain.tutorialMachineRoom
+			terrain.tutorialMachineRoom.addCharacter(npc,4,3)
+			terrain.tutorialMachineRoom.secondOfficer = npc
+		npc = terrain.tutorialMachineRoom.secondOfficer
+
+		if not terrain.tutorialMachineRoom.secondOfficer:
+			npc2 = characters.Character(displayChars.staffCharacters[25],5,3,name="Ernst Ziegelbach")
+			npc2.terrain = terrain
+			npc2.room = terrain.tutorialMachineRoom
+			terrain.tutorialMachineRoom.addCharacter(npc2,5,3)
+			terrain.tutorialMachineRoom.firstOfficer = npc2
+		npc2 = terrain.tutorialMachineRoom.firstOfficer
+
 		questList = []
 		questList.append(quests.MoveQuest(terrain.tutorialMachineRoom,5,5,startCinematics="movement can be tricky sometimes so please make yourself comfortable with the controls.\n\nyou can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.\n\nthe basic Movementcommands are:\n "+commandChars.move_north+"=up\n "+commandChars.move_east+"=right\n "+commandChars.move_south+"=down\n "+commandChars.move_west+"=right\nplease move to the designated Target. the Implant will mark your Way"))
 		questList.append(quests.PatrolQuest([(terrain.tutorialMachineRoom,2,2),(terrain.tutorialMachineRoom,2,5),(terrain.tutorialMachineRoom,7,5),(terrain.tutorialMachineRoom,7,2)],startCinematics="now please patrol around the rooms a few times.",lifetime=80))
@@ -727,16 +783,26 @@ class SecondTutorialPhase(object):
 
 		questList[-1].endTrigger = self.end
 
+		mainChar.assignQuest(questList[0])
 
 	def end(self):
 		cinematics.showCinematic("you recieved your Preparatorytraining. Time for the Test.")
 		phase = ThirdTutorialPhase()
 		phase.start()
+phasesByName["SecondTutorialPhase"] = SecondTutorialPhase
 
 class ThirdTutorialPhase(object):
+	def __init__(self):
+		self.name = "ThirdTutorialPhase"
+
 	def start(self):
-		self.npc = characters.Character(displayChars.staffCharacters[11],4,3,name="Erwin von Libwig")
-		terrain.tutorialMachineRoom.addCharacter(self.npc,4,3)
+		gamestate.currentPhase = self
+
+		if not terrain.tutorialMachineRoom.secondOfficer:
+			npc = characters.Character(displayChars.staffCharacters[11],4,3,name="Erwin von Libwig")
+			terrain.tutorialMachineRoom.addCharacter(npc,4,3)
+			terrain.tutorialMachineRoom.secondOfficer = npc
+		self.npc = terrain.tutorialMachineRoom.secondOfficer
 
 		cinematics.showCinematic("during the test Messages and new Task will be shown on the Buttom of the Screen. start now.")
 
@@ -856,9 +922,15 @@ class ThirdTutorialPhase(object):
 			cinematics.showCinematic("you passed the test")
 			phase3 = MachineRoomPhase()
 			phase3.start()
+phasesByName["ThirdTutorialPhase"] = ThirdTutorialPhase
 
 class VatPhase(object):
+	def __init__(self):
+		self.name = "VatPhase"
+
 	def start(self):
+		gamestate.currentPhase = self
+	
 		questList = []
 		if not (mainChar.room and mainChar.room == terrain.tutorialVat):
 			questList.append(quests.EnterRoomQuest(terrain.tutorialVat,startCinematics="please goto the Vat"))
@@ -879,9 +951,15 @@ class VatPhase(object):
 	def end(self):
 		cinematics.showCinematic("you seem to be able to follow orders after all. you may go back to your training.")
 		MachineRoomPhase().start()
+phasesByName["VatPhase"] = VatPhase
 
 class MachineRoomPhase(object):
+	def __init__(self):
+		self.name = "MachineRoomPhase"
+
 	def start(self):
+		gamestate.currentPhase = self
+	
 		questList = []
 		if not (mainChar.room and mainChar.room == terrain.tutorialMachineRoom):
 			questList.append(quests.EnterRoomQuest(terrain.tutorialMachineRoom,startCinematics="please goto the Machineroom"))
@@ -899,13 +977,19 @@ class MachineRoomPhase(object):
 
 	def end(self):
 		gamestate.gameWon = True
+phasesByName["MachineRoomPhase"] = MachineRoomPhase
 
-phase1 = FirstTutorialPhase()
-phase2 = SecondTutorialPhase()
-phase3 = VatPhase()
-phase4 = MachineRoomPhase()
-phase5 = ThirdTutorialPhase()
-phase5.start()
+gamestate = GameState()
+
+try:
+	gamestate.load()
+except:
+	pass
+if gamestate.gameWon:
+	gamestate = GameState()
+
+mainChar = gamestate.mainChar
+gamestate.currentPhase().start()
 
 #cinematics.showCinematic("movement can be tricky sometimes so please make yourself comfortable with the controls.\n\nyou can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.\n\nthe basic Movementcommands are:\n w=up\n a=right\n s=down\n d=right\nplease move to the designated Target. the Implant will mark your Way")
 #"""
@@ -958,11 +1042,11 @@ quest17.followUp = quest18
 quest18.followUp = quest19
 quest19.followUp = quest0
 """
-npc2 = characters.Character(displayChars.staffCharacters[25],1,1,name="Ernst Ziegelbach")
+#npc2 = characters.Character(displayChars.staffCharacters[25],1,1,name="Ernst Ziegelbach")
 #npc2.watched = True
-terrain.tutorialMachineRoom.addCharacter(npc2,1,1)
-npc2.terrain = terrain
-npc2.room = terrain.tutorialMachineRoom
+#terrain.tutorialMachineRoom.addCharacter(npc2,1,1)
+#npc2.terrain = terrain
+#npc2.room = terrain.tutorialMachineRoom
 #npc2.assignQuest(quest0)
 #npc2.automated = False
 
@@ -1002,15 +1086,16 @@ def advanceGame():
 cinematics.advanceGame = advanceGame
 
 def renderQuests():
+	char = mainChar
 	txt = ""
-	if len(characters[0].quests):
+	if len(char.quests):
 		counter = 0
-		for quest in mainChar.quests:
+		for quest in char.quests:
 			txt+= "QUEST: "+quest.description+"\n"
 			counter += 1
 			if counter == 2:
 				break
-		txt += str(mainChar.xPosition)+"/"+str(mainChar.yPosition)+" "+str(gamestate.tick)+" "+str(mainChar.inventory)
+		txt += str(char.xPosition)+"/"+str(char.yPosition)+" "+str(gamestate.tick)+" "+str(mainChar.inventory)
 	return txt
 	
 def renderMessagebox():

@@ -378,6 +378,11 @@ class MoveQuest(Quest):
 		if hasattr(self,"dstY"):
 			del self.dstY
 
+		if not self.room:
+			return
+		if not self.character:
+			return
+
 		if self.room == self.character.room:
 			self.dstX = self.targetX
 			self.dstY = self.targetY
@@ -435,7 +440,7 @@ class CollectQuest(Quest):
 			for item in self.character.room.itemsOnFloor:
 				hasProperty = False
 				try:
-					hasProperty = getattr(item,self.toFind)
+					hasProperty = getattr(item,"contains_"+self.toFind)
 				except:
 					continue
 				

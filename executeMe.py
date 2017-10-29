@@ -898,7 +898,7 @@ class ThirdTutorialPhase(object):
 						if boiler.isBoiling:
 							boilerStillBoiling = True	
 					if boilerStillBoiling:
-						terrain.tutorialMachineRoom.addEvent(WaitForClearStart(gamestate.tick+2,0))
+						terrain.tutorialMachineRoom.addEvent(WaitForClearStart2(gamestate.tick+2,0))
 					else:
 						cinematics.showCinematic("Libwig start now.")
 						self.npc.assignQuest(quests.FireFurnace(terrain.tutorialMachineRoom.furnaces[0]))
@@ -967,7 +967,7 @@ class ThirdTutorialPhase(object):
 			phase3 = MachineRoomPhase()
 			phase3.start()
 		else:
-			cinematics.showCinematic("you passed the test")
+			cinematics.showCinematic("you passed the test. \n\nyour score: "+str(self.mainCharFurnaceIndex)+"\nLibwigs score: "+str(self.npcFurnaceIndex))
 			phase3 = MachineRoomPhase()
 			phase3.start()
 phasesByName["ThirdTutorialPhase"] = ThirdTutorialPhase

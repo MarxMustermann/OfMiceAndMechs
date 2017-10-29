@@ -980,7 +980,7 @@ class VatPhase(object):
 
 	def end(self):
 		cinematics.showCinematic("you seem to be able to follow orders after all. you may go back to your training.")
-		MachineRoomPhase().start()
+		SecondTutorialPhase().start()
 phasesByName["VatPhase"] = VatPhase
 
 class MachineRoomPhase(object):

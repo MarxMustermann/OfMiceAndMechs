@@ -888,7 +888,7 @@ class ThirdTutorialPhase(object):
 
 			self.anotherOne2 = AnotherOne2
 
-			class WaitForClearStart(object):
+			class WaitForClearStart2(object):
 				def __init__(subself,tick,index):
 					subself.tick = tick
 
@@ -905,7 +905,7 @@ class ThirdTutorialPhase(object):
 						terrain.tutorialMachineRoom.addEvent(AnotherOne2(gamestate.tick+10,0))
 
 			def tmp2():
-				terrain.tutorialMachineRoom.addEvent(WaitForClearStart(gamestate.tick+2,0))
+				terrain.tutorialMachineRoom.addEvent(WaitForClearStart2(gamestate.tick+2,0))
 
 			questList[-1].endTrigger = tmp2
 			self.npc.assignQuest(questList[0])
@@ -921,10 +921,28 @@ class ThirdTutorialPhase(object):
 				newIndex = subself.furnaceIndex+1
 				self.mainCharFurnaceIndex = subself.furnaceIndex
 				if newIndex < 8:
+					mainChar.assignQuest(quests.FireFurnace(terrain.tutorialMachineRoom.furnaces[newIndex]))
 					terrain.tutorialMachineRoom.addEvent(AnotherOne(gamestate.tick+20,newIndex))
 
+		class WaitForClearStart(object):
+			def __init__(subself,tick,index):
+				subself.tick = tick
+
+			def handleEvent(subself):
+				boilerStillBoiling = False
+				for boiler in terrain.tutorialMachineRoom.boilers:
+					if boiler.isBoiling:
+						boilerStillBoiling = True	
+				if boilerStillBoiling:
+					terrain.tutorialMachineRoom.addEvent(WaitForClearStart(gamestate.tick+2,0))
+				else:
+					cinematics.showCinematic("start now.")
+					mainChar.assignQuest(quests.FireFurnace(terrain.tutorialMachineRoom.furnaces[0]))
+					terrain.tutorialMachineRoom.addEvent(AnotherOne(gamestate.tick+10,0))
+
 		def tmp():
-			terrain.tutorialMachineRoom.addEvent(AnotherOne(gamestate.tick+1,0))
+			cinematics.showCinematic("wait for the furnaces to burn down.")
+			terrain.tutorialMachineRoom.addEvent(WaitForClearStart(gamestate.tick+2,0))
 
 		questList[-1].endTrigger = tmp
 		mainChar.assignQuest(questList[0])

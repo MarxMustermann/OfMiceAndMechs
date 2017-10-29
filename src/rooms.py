@@ -986,12 +986,6 @@ XXXXXX
 		self.gogogo = False
 		self.engineStrength = 0
 
-		self.lever = items.Lever(2,2,"gogogo button")
-		def go(otherself):
-			self.gogogo = True
-		self.lever.activateAction = go
-		self.addItems([self.lever])
-
 		self.npc = Character(displayChars.staffCharacters[12],3,3,name="Friedrich Engelbart")
 		self.addCharacter(self.npc,3,3)
 		self.npc.room = self

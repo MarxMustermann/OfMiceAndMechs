@@ -1074,24 +1074,6 @@ def advanceGame():
 	for room in terrain.rooms:
 		room.advance()
 
-	if terrain.movingRoom.gogogo:
-		if movestate == "up":
-			terrain.movingRoom.moveNorth()
-			if terrain.movingRoom.yPosition == 3 and terrain.movingRoom.offsetY == 2:
-				movestate = "left"
-		elif movestate == "left":
-			terrain.movingRoom.moveWest()
-			if terrain.movingRoom.xPosition == 2 and terrain.movingRoom.offsetX == 2:
-				movestate = "down"
-		elif movestate == "down":
-			terrain.movingRoom.moveSouth()
-			if terrain.movingRoom.yPosition == 6 and terrain.movingRoom.offsetY == 2:
-				movestate = "right"
-		elif movestate == "right":
-			terrain.movingRoom.moveEast()
-			if terrain.movingRoom.xPosition == 8 and terrain.movingRoom.offsetX == 2:
-				movestate = "up"
-
 	gamestate.tick += 1
 
 cinematics.advanceGame = advanceGame

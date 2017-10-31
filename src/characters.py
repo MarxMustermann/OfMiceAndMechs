@@ -19,6 +19,7 @@ class Character():
 		self.gotBasicSchooling = False
 		self.gotMovementSchooling = False
 		self.gotInteractionSchooling = False
+		self.gotExamineSchooling = False
 		
 		for quest in quests:
 			self.assignQuest(quest)
@@ -27,12 +28,14 @@ class Character():
 		return { "gotBasicSchooling": self.gotBasicSchooling,
 		         "gotMovementSchooling": self.gotMovementSchooling,
 		         "gotInteractionSchooling": self.gotInteractionSchooling,
+		         "gotExamineSchooling": self.gotExamineSchooling,
 		       }
 
 	def setState(self,state):
 		self.gotBasicSchooling = state["gotBasicSchooling"]
 		self.gotMovementSchooling = state["gotMovementSchooling"]
 		self.gotInteractionSchooling = state["gotInteractionSchooling"]
+		self.gotExamineSchooling = state["gotExamineSchooling"]
 
 	def startNextQuest(self):
 		if len(self.quests):

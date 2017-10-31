@@ -483,7 +483,7 @@ X X X C C C C C X X X """
                #ORRRRRRRRRRO ##ORRRRRRRRRRO# ##RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                ##RRRRRRRRRR# ###RRRRRRRRRR##  #RRRRRRRRRR#####           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                  RRRRRRRRRR  #  RRRRRRRRRR     RRRRRRRRRR XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
-               XX  O    O    ####O#   ##O####    O8   O    X                                                                                                         
+               XX  O    O    ####O#   ##O####    O8   O    X              X X X X X X X X X X X X X X X                                                              
                XX               ### X  ###        8                                                                                                                  
                   X  O   O          XX     ##     8        X                                                                                                        
                X X RRRRRRRRRR                     8                                                                                    XXXXXXXXXXXXXXX               

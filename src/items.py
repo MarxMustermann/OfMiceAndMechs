@@ -55,14 +55,25 @@ class Item(object):
 		return movementBlock
 
 	def moveNorth(self,force=1,initialMovement=True):
-		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
-		if len(self.terrain.itemByCoordinates) == 0:
-			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
-		self.yPosition -= 1
-		if (self.xPosition,self.yPosition) in self.terrain.itemByCoordinates:
-			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(self)
+		if self.walkable:
+			self.destroy()
 		else:
-			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = [self]
+			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
+			if len(self.terrain.itemByCoordinates) == 0:
+				del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
+
+			if (self.xPosition,self.yPosition-1) in self.terrain.itemByCoordinates:
+				for item in self.terrain.itemByCoordinates[(self.xPosition,self.yPosition-1)]:
+					item.destroy()
+
+			self.yPosition -= 1
+			if (self.xPosition,self.yPosition) in self.terrain.itemByCoordinates:
+				self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(self)
+			else:
+				self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = [self]
+
+			if len(self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]) > 1:
+				self.destroy()
 
 	def getAffectedByMovementSouth(self,force=1,movementBlock=set()):
 		movementBlock.add(self)
@@ -75,15 +86,25 @@ class Item(object):
 		return movementBlock
 
 	def moveSouth(self,force=1,initialMovement=True):
-		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
-		if len(self.terrain.itemByCoordinates) == 0:
-			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
-
-		self.yPosition += 1
-		if (self.xPosition,self.yPosition) in self.terrain.itemByCoordinates:
-			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(self)
+		if self.walkable:
+			self.destroy()
 		else:
-			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = [self]
+			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
+			if len(self.terrain.itemByCoordinates) == 0:
+				del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
+
+			if (self.xPosition,self.yPosition+1) in self.terrain.itemByCoordinates:
+				for item in self.terrain.itemByCoordinates[(self.xPosition,self.yPosition+1)]:
+					item.destroy()
+
+			self.yPosition += 1
+			if (self.xPosition,self.yPosition) in self.terrain.itemByCoordinates:
+				self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(self)
+			else:
+				self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = [self]
+
+			if len(self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]) > 1:
+				self.destroy()
 
 	def getAffectedByMovementWest(self,force=1,movementBlock=set()):
 		movementBlock.add(self)
@@ -96,15 +117,25 @@ class Item(object):
 		return movementBlock
 
 	def moveWest(self,force=1,initialMovement=True):
-		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
-		if len(self.terrain.itemByCoordinates) == 0:
-			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
-
-		self.xPosition -= 1
-		if (self.xPosition,self.yPosition) in self.terrain.itemByCoordinates:
-			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(self)
+		if self.walkable:
+			self.destroy()
 		else:
-			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = [self]
+			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
+			if len(self.terrain.itemByCoordinates) == 0:
+				del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
+
+			if (self.xPosition-1,self.yPosition) in self.terrain.itemByCoordinates:
+				for item in self.terrain.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+					item.destroy()
+
+			self.xPosition -= 1
+			if (self.xPosition,self.yPosition) in self.terrain.itemByCoordinates:
+				self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(self)
+			else:
+				self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = [self]
+
+			if len(self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]) > 1:
+				self.destroy()
 
 	def getAffectedByMovementEast(self,force=1,movementBlock=set()):
 		movementBlock.add(self)
@@ -117,14 +148,26 @@ class Item(object):
 		return movementBlock
 
 	def moveEast(self,force=1,initialMovement=True):
-		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
-		if len(self.terrain.itemByCoordinates) == 0:
-			del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
-		self.xPosition += 1
-		if (self.xPosition,self.yPosition) in self.terrain.itemByCoordinates:
-			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(self)
+
+		if self.walkable:
+			self.destroy()
 		else:
-			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = [self]
+			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
+			if len(self.terrain.itemByCoordinates) == 0:
+				del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
+
+			if (self.xPosition+1,self.yPosition) in self.terrain.itemByCoordinates:
+				for item in self.terrain.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+					item.destroy()
+
+			self.xPosition += 1
+			if (self.xPosition,self.yPosition) in self.terrain.itemByCoordinates:
+				self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(self)
+			else:
+				self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = [self]
+
+			if len(self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]) > 1:
+				self.destroy()
 
 	def getResistance(self):
 		if (self.walkable):
@@ -134,6 +177,104 @@ class Item(object):
 
 	def recalculate(self):
 		pass
+
+	def destroy(self):
+		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
+		self.terrain.itemsOnFloor.remove(self)
+
+		if self.walkable:
+			newItem = Scrap(self.xPosition,self.yPosition,3)
+		else:
+			newItem = Scrap(self.xPosition,self.yPosition,10)
+
+		newItem.room = self.room
+		newItem.terrain = self.terrain
+
+		self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(newItem)
+		self.terrain.itemsOnFloor.append(newItem)
+			
+
+class Scrap(Item):
+	def __init__(self,xPosition=0,yPosition=0,amount=1,name="scrap"):
+		super().__init__(displayChars.scrap_light,xPosition,yPosition)
+
+		self.amount = amount
+		if self.amount < 5:
+			self.walkable = True
+			self.display = displayChars.scrap_light
+		elif self.amount < 15:
+			self.walkable = False
+			self.display = displayChars.scrap_medium
+		else:
+			self.walkable = False
+			self.display = displayChars.scrap_heavy
+
+	def moveNorth(self,force=1,initialMovement=True):
+		self.dropStuff()
+		super().moveNorth(force=force,initialMovement=initialMovement)
+
+	def moveSouth(self,force=1,initialMovement=True):
+		self.dropStuff()
+		super().moveSouth(force=force,initialMovement=initialMovement)
+
+	def moveWest(self,force=1,initialMovement=True):
+		self.dropStuff()
+		super().moveWest(force=force,initialMovement=initialMovement)
+
+	def moveEast(self,force=1,initialMovement=True):
+		self.dropStuff()
+		super().moveEast(force=force,initialMovement=initialMovement)
+
+	def dropStuff(self):
+		if self.amount > 1:
+			fallOffAmount = 1
+			if self.amount > 2:
+				fallOffAmount = 2
+			self.amount -= fallOffAmount
+			newItem = Scrap(self.xPosition,self.yPosition,fallOffAmount)
+			newItem.room = self.room
+			newItem.terrain = self.terrain
+			self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(newItem)
+			self.terrain.itemsOnFloor.append(newItem)
+
+		if self.amount < 5:
+			self.walkable = True
+			self.display = displayChars.scrap_light
+		elif self.amount < 15:
+			self.walkable = False
+			self.display = displayChars.scrap_medium
+		else:
+			self.walkable = False
+			self.display = displayChars.scrap_heavy
+				
+
+	def getResistance(self):
+		return self.amount*2
+
+	def destroy(self):
+		foundScraps = []
+		for item in self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]:
+			if type(item) == Scrap:
+				foundScraps.append(item)
+		
+		if len(foundScraps) > 1:
+			messages.append("compressing foundScraps")
+			for item in foundScraps:
+				if item == self:
+					continue
+				self.amount += item.amount
+				self.terrain.itemsOnFloor.remove(item)
+				self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(item)
+
+		if self.amount < 5:
+			self.walkable = True
+			self.display = displayChars.scrap_light
+		elif self.amount < 15:
+			self.walkable = False
+			self.display = displayChars.scrap_medium
+		else:
+			self.walkable = False
+			self.display = displayChars.scrap_heavy
 
 class Corpse(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="corpse"):

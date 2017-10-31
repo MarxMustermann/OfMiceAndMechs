@@ -1087,7 +1087,6 @@ phasesByName["MachineRoomPhase"] = MachineRoomPhase
 
 gamestate = GameState()
 
-gamestate.load()
 try:
 	gamestate.load()
 except:

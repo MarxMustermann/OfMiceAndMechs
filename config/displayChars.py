@@ -60,3 +60,6 @@ staffCharactersByLetter = {"a":"Ⓐ ","b":"Ⓑ ","c":"Ⓒ ","d":"Ⓓ ","e":"Ⓔ 
 winch = "🞇 "
 winch_inactive = "🞅 "
 winch_active = "🞇 "
+scrap_light = "㌱"
+scrap_medium = "㌭"
+scrap_heavy = "㌕"

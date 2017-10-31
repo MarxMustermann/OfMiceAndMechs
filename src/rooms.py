@@ -9,7 +9,7 @@ calculatePath = None
 displayChars = None
 
 class Room(object):
-	def __init__(self,layout):
+	def __init__(self,layout,xPosition,yPosition,offsetX,offsetY):
 		self.layout = layout
 		self.hidden = True
 		self.itemsOnFloor = []
@@ -38,6 +38,10 @@ class Room(object):
 		self.steamGeneration = 0
 		self.firstOfficer = None
 		self.secondOfficer = None
+		self.offsetX = offsetX
+		self.offsetY = offsetY
+		self.xPosition = xPosition
+		self.yPosition = yPosition
 
 		self.itemByCoordinates = {}
 
@@ -542,12 +546,8 @@ $ ...... X
 XMMv vMMMX
 XXXXXXXXXX
 """
-		super().__init__(self.roomLayout)
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY)
 		self.name = "Vat"
-		self.offsetX = offsetX
-		self.offsetY = offsetY
-		self.xPosition = xPosition
-		self.yPosition = yPosition
 
 class Room2(Room):
 	def __init__(self,xPosition=0,yPosition=1,offsetX=4,offsetY=0):
@@ -610,12 +610,8 @@ XH......#X
 XXPPP ID#X
 XXXXXXXXXX
 """
-		super().__init__(roomLayout)
+		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY)
 		self.name = "Boilerroom"
-		self.offsetX = offsetX
-		self.offsetY = offsetY
-		self.xPosition = xPosition
-		self.yPosition = yPosition
 
 		self.lever1 = items.Lever(3,6,"engine control")
 		self.lever2 = items.Lever(1,2,"boarding alarm")
@@ -666,12 +662,8 @@ XOOOOOOOOX
 X#########
 XXXXXXXXXX
 """
-		super().__init__(roomLayout)
+		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY)
 		self.name = "Boilerroom"
-		self.offsetX = offsetX
-		self.offsetY = offsetY
-		self.xPosition = xPosition
-		self.yPosition = yPosition
 
 		self.lever1 = items.Lever(1,5,"engine control")
 		self.lever2 = items.Lever(8,5,"boarding alarm")
@@ -700,11 +692,7 @@ X?......?X
 X??v v???X
 XXXX$XXXXX
 """
-		super().__init__(self.roomLayout)
-		self.offsetX = offsetX
-		self.offsetY = offsetY
-		self.xPosition = xPosition
-		self.yPosition = yPosition
+		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY)
 
 class Room4(Room):
 	def __init__(self):
@@ -720,11 +708,7 @@ X?......#X
 X? ?????#X
 XXXXXXXXXX
 """
-		super().__init__(self.roomLayout)
-		self.offsetX = 2
-		self.offsetY = 2
-		self.xPosition = 1
-		self.yPosition = 1
+		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY)
 
 class GenericRoom(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):
@@ -740,11 +724,7 @@ X?......#X
 X? XXXXX#X
 XXXXXXXXXX
 """
-		super().__init__(self.roomLayout)
-		self.offsetX = offsetX
-		self.offsetY = offsetY
-		self.xPosition = xPosition
-		self.yPosition = yPosition
+		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY)
 
 class CpuWasterRoom(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):
@@ -760,11 +740,7 @@ X?......#X
 X? XXXXX#X
 XXXXXXXXXX
 """
-		super().__init__(self.roomLayout)
-		self.offsetX = offsetX
-		self.offsetY = offsetY
-		self.xPosition = xPosition
-		self.yPosition = yPosition
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY)
 
 		def addNPC(x,y):
 			quest1 = quests.MoveQuest(self,2,2)
@@ -813,13 +789,9 @@ X? ?? ?? ?X
 X? ?v v? ?X
 XX&XX$XX&XX
 """
-		super().__init__(self.roomLayout)
+		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY)
 		self.maxStorage = 2
 		self.store = {}
-		self.offsetX = offsetX
-		self.offsetY = offsetY
-		self.xPosition = xPosition
-		self.yPosition = yPosition
 
 class InfanteryQuarters(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):
@@ -834,11 +806,7 @@ X'.'' ''.IX
 X .......DX
 XXXXXXXXXXX
 """
-		super().__init__(self.roomLayout)
-		self.offsetX = offsetX
-		self.offsetY = offsetY
-		self.xPosition = xPosition
-		self.yPosition = yPosition
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY)
 	
 class FreePlacemenRoom(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):
@@ -853,11 +821,7 @@ X'.'' ''.IX
 X .......DX
 XXXXXXXXXXX
 """
-		super().__init__(self.roomLayout)
-		self.offsetX = offsetX
-		self.offsetY = offsetY
-		self.xPosition = xPosition
-		self.yPosition = yPosition
+		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY)
 
 class Vat1(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):
@@ -885,11 +849,7 @@ Xmhm ...DX
 Xmmmv.v.IX
 XXXXX$XXXX
 """
-		super().__init__(self.roomLayout)
-		self.offsetX = offsetX
-		self.offsetY = offsetY
-		self.xPosition = xPosition
-		self.yPosition = yPosition
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY)
 
 	def recalculate(self):
 		for spray in self.sprays:
@@ -909,12 +869,8 @@ X b. ....X
 ## ...v ##
 XXXXX$XXXX
 """
-		super().__init__(self.roomLayout)
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY)
 		self.floorDisplay = displayChars.acids
-		self.offsetX = offsetX
-		self.offsetY = offsetY
-		self.xPosition = xPosition
-		self.yPosition = yPosition
 
 class MechArmor(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):
@@ -935,12 +891,8 @@ XX X X X X X XX
 X X X X.X X X.X
 XXXXXXX$XXXXXXX
 """
-		super().__init__(self.roomLayout)
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY)
 		self.floorDisplay = [displayChars.nonWalkableUnkown]
-		self.offsetX = offsetX
-		self.offsetY = offsetY
-		self.xPosition = xPosition
-		self.yPosition = yPosition
 
 class CargoRoom(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):
@@ -960,12 +912,8 @@ X        X
 XPPPPPPPPX
 XXXXXXXXXX
 """
-		super().__init__(self.roomLayout)
+		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY)
 		self.floorDisplay = [displayChars.nonWalkableUnkown]
-		self.offsetX = offsetX
-		self.offsetY = offsetY
-		self.xPosition = xPosition
-		self.yPosition = yPosition
 
 class MiniMech(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):
@@ -977,12 +925,8 @@ XOF.PX
 Xmm.PX
 XXXXXX
 """
-		super().__init__(self.roomLayout)
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY)
 		self.floorDisplay = [displayChars.nonWalkableUnkown]
-		self.offsetX = offsetX
-		self.offsetY = offsetY
-		self.xPosition = xPosition
-		self.yPosition = yPosition
 		self.gogogo = False
 		self.engineStrength = 0
 
@@ -1011,9 +955,5 @@ X        X
 XPPPPPPPPX
 XXXXXXXXXX
 """
-		super().__init__(self.roomLayout)
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY)
 		self.floorDisplay = [displayChars.nonWalkableUnkown]
-		self.offsetX = offsetX
-		self.offsetY = offsetY
-		self.xPosition = xPosition
-		self.yPosition = yPosition

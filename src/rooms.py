@@ -43,6 +43,8 @@ class Room(object):
 		self.xPosition = xPosition
 		self.yPosition = yPosition
 
+		self.id = "room_1_"+str(self.xPosition)+"_"+str(self.yPosition)+"_1"
+
 		self.itemByCoordinates = {}
 
 
@@ -201,6 +203,20 @@ class Room(object):
 				break
 
 		self.addItems(itemsOnFloor)
+
+	def getState(self):
+		return { "offsetX":self.offsetX,
+		         "offsetY":self.offsetY,
+		         "xPosition":self.xPosition,
+		         "yPosition":self.yPosition,
+		}
+
+	def setState(self,state):
+		self.offsetX = state["offsetX"]
+		self.offsetY = state["offsetY"]
+
+		if not (self.xPosition == state["xPosition"] and self.yPosition == state["yPosition"]):
+			self.terrain.teleportRoom(self,(state["xPosition"],state["yPosition"]))
 
 	def changed(self):
 		pass

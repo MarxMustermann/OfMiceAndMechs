@@ -400,6 +400,19 @@ class Terrain(object):
 			else:
 				self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
+	def teleportRoom(self,room,newPosition):
+		oldPosition = (room.xPosition,room.yPosition)
+		if oldPosition in self.roomByCoordinates:
+			self.roomByCoordinates[oldPosition].remove(room)
+			if not len(self.roomByCoordinates[oldPosition]):
+				del self.roomByCoordinates[oldPosition]
+		if newPosition in self.roomByCoordinates:
+			self.roomByCoordinates[newPosition].append(room)
+		else:
+			self.roomByCoordinates[newPosition] = [room]
+		room.xPosition = newPosition[0]
+		room.yPosition = newPosition[1]
+
 class TutorialTerrain(Terrain):
 	def __init__(self):
 

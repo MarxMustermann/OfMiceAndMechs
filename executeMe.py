@@ -621,13 +621,24 @@ class GameState():
 		self.tick = state["tick"]
 
 		for room in terrain.rooms:
+			room.setState(state["roomStates"][room.id])
+
+		for room in terrain.rooms:
 			room.timeIndex = self.tick
 
 	def getState(self):
+		roomStates = {}
+		roomList = []
+		for room in terrain.rooms:
+			roomList.append(room.id)
+			roomStates[room.id] = room.getState()
+		
 		return {  "gameWon":self.gameWon,
 			  "currentPhase":self.currentPhase.name,
 			  "tick":self.tick,
 			  "mainChar":self.mainChar.getState(),
+		          "rooms":roomList,
+		          "roomStates":roomStates,
 		       }
 gamestate = None
 
@@ -1076,6 +1087,7 @@ phasesByName["MachineRoomPhase"] = MachineRoomPhase
 
 gamestate = GameState()
 
+gamestate.load()
 try:
 	gamestate.load()
 except:
@@ -1169,7 +1181,8 @@ def renderQuests():
 			counter += 1
 			if counter == 2:
 				break
-	txt += str(char.xPosition)+"/"+str(char.yPosition)+" "+str(gamestate.tick)+" "+str(mainChar.inventory)+str(mainChar.getState())
+	if mainChar.room:
+		txt += str(char.xPosition)+"/"+str(char.yPosition)+" "+str(gamestate.tick)+" "+str(mainChar.inventory)+str(mainChar.room.id)
 	return txt
 	
 def renderMessagebox():

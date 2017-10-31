@@ -596,6 +596,7 @@ class GameState():
 		self.mainChar.room = terrain.tutorialMachineRoom
 		self.mainChar.watched = True
 		terrain.tutorialMachineRoom.addCharacter(self.mainChar,3,3)
+		mainChar = self.mainChar
 
 	def save(self):
 		saveFile = open("gamestate/gamestate.json","w")
@@ -621,7 +622,11 @@ class GameState():
 			room.timeIndex = self.tick
 
 	def getState(self):
-		return {"gameWon":self.gameWon,"currentPhase":self.currentPhase.name,"tick":self.tick}
+		return {  "gameWon":self.gameWon,
+			  "currentPhase":self.currentPhase.name,
+			  "tick":self.tick,
+			  "mainChar":self.mainChar.getState,
+		       }
 gamestate = None
 
 messages = []
@@ -676,11 +681,13 @@ class FirstTutorialPhase(object):
 		cinematics.showCinematic("you are represented by the "+displayChars.main_char+" Character. find yourself on the Screen and press "+commandChars.wait)
 		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
 		cinematics.showCinematic("right now you are in the Boilerroom\n\nthe Floor is represented by "+displayChars.floor+" and Walls are shown as "+displayChars.wall+". the Door is represented by "+displayChars.door_closed+" or "+displayChars.door_opened+" when closed.\n\na empty Room would look like this:\n\n"+displayChars.wall*5+"\n"+displayChars.wall+displayChars.floor*3+displayChars.wall+"\n"+displayChars.wall+displayChars.floor*3+displayChars.door_closed+"\n"+displayChars.wall+displayChars.floor*3+displayChars.wall+"\n"+displayChars.wall*5+"\n\nthe Trainingenvironment will display now. please try to orient yourself in the Room.\n\npress "+commandChars.wait+" when successful")
-		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+		cinematic = cinematics.ShowGameCinematic(1)
+		cinematics.cinematicQueue.append(cinematic)
+
 		cinematics.showCinematic("on the southern Side of the Room you see the Steamgenerators. A Steamgenerator might look like this:\n\n"+displayChars.void+displayChars.pipe+displayChars.boiler_inactive+displayChars.furnace_inactive+"\n"+displayChars.pipe+displayChars.pipe+displayChars.boiler_inactive+displayChars.furnace_inactive+"\n"+displayChars.void+displayChars.pipe+displayChars.boiler_active+displayChars.furnace_active+"\n\nit consist of Furnaces marked by "+displayChars.furnace_inactive+" or "+displayChars.furnace_active+" that heat the Water in the Boilers "+displayChars.boiler_inactive+" till it boils. a Boiler with boiling Water will be shown as "+displayChars.boiler_active+".\n\nthe Steam is transfered to the Pipes marked with "+displayChars.pipe+" and used to power the Ships Mechanics and Weapons\n\nDesign of generators are often quite unique. try to recognize the Genrators in this room and press "+commandChars.wait+"")
 		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
 		cinematics.showCinematic("the Furnaces burn Coal shown as "+displayChars.coal+" . if a Furnace is burning Coal, it is shown as "+displayChars.furnace_active+" and shown as "+displayChars.furnace_inactive+" if not.\n\nthe Coal is stored in Piles shown as "+displayChars.pile+". the Coalpiles are on the right Side of the Room and are filled through the Pipes when needed.\n\nSince a Coaldelivery is incoming anyway. please wait and pay Attention.\n\ni will count down the Ticks in the Messagebox now")
-		
+	
 		class CoalRefillEvent(object):
 			def __init__(subself,tick):
 				subself.tick = tick
@@ -836,18 +843,6 @@ class ThirdTutorialPhase(object):
 
 		cinematics.showCinematic("during the test Messages and new Task will be shown on the Buttom of the Screen. start now.")
 
-		questList = []
-		questList.append(quests.FireFurnace(terrain.tutorialMachineRoom.furnaces[0],startCinematics="fire the first Furnace from the west"))
-		questList.append(quests.FireFurnace(terrain.tutorialMachineRoom.furnaces[1],startCinematics="fire the second Furnace from the west"))
-		questList.append(quests.FireFurnace(terrain.tutorialMachineRoom.furnaces[2],startCinematics="fire the third Furnace from the west"))
-		questList.append(quests.FillPocketsQuest(startCinematics="fill you Pockets with Coal now"))
-
-		lastQuest = questList[0]
-		for item in questList[1:]:
-			lastQuest.followUp = item
-			lastQuest = item
-		questList[-1].followup = None
-
 		self.mainCharFurnaceIndex = 0
 		self.npcFurnaceIndex = 0
 
@@ -884,7 +879,7 @@ class ThirdTutorialPhase(object):
 					self.npcFurnaceIndex = subself.furnaceIndex
 					if newIndex < 8:
 						self.npc.assignQuest(quests.FireFurnace(terrain.tutorialMachineRoom.furnaces[newIndex]))
-						terrain.tutorialMachineRoom.addEvent(AnotherOne2(gamestate.tick+20,newIndex))
+						terrain.tutorialMachineRoom.addEvent(AnotherOne2(gamestate.tick+gamestate.tick%20+10,newIndex))
 
 			self.anotherOne2 = AnotherOne2
 
@@ -922,7 +917,7 @@ class ThirdTutorialPhase(object):
 				self.mainCharFurnaceIndex = subself.furnaceIndex
 				if newIndex < 8:
 					mainChar.assignQuest(quests.FireFurnace(terrain.tutorialMachineRoom.furnaces[newIndex]))
-					terrain.tutorialMachineRoom.addEvent(AnotherOne(gamestate.tick+20,newIndex))
+					terrain.tutorialMachineRoom.addEvent(AnotherOne(gamestate.tick+gamestate.tick%20+5,newIndex))
 
 		class WaitForClearStart(object):
 			def __init__(subself,tick,index):
@@ -944,8 +939,7 @@ class ThirdTutorialPhase(object):
 			cinematics.showCinematic("wait for the furnaces to burn down.")
 			terrain.tutorialMachineRoom.addEvent(WaitForClearStart(gamestate.tick+2,0))
 
-		questList[-1].endTrigger = tmp
-		mainChar.assignQuest(questList[0])
+		tmp()
 
 	def end(self):
 		messages.append("your Score: "+str(self.mainCharFurnaceIndex))
@@ -958,7 +952,7 @@ class ThirdTutorialPhase(object):
 		mainChar.assignQuest(quests.MoveQuest(terrain.tutorialMachineRoom,3,3,startCinematics="please move back to the waiting position"))
 
 
-		if self.npcFurnaceIndex > self.mainCharFurnaceIndex:
+		if self.npcFurnaceIndex >= self.mainCharFurnaceIndex:
 			cinematics.showCinematic("considering your Score until now moving you directly to your proper assignment is the most efficent Way for you to proceed.")
 			phase3 = VatPhase()
 			phase3.start()

@@ -15,9 +15,19 @@ class Character():
 		self.listeners = []
 		self.room = None
 		self.path = []
+
+		self.gotBasicSchooling = False
+		self.gotMovementSchooling = False
+		self.gotInteractionSchooling = False
 		
 		for quest in quests:
 			self.assignQuest(quest)
+
+	def getState(self):
+		return { "gotBasicSchooling": self.gotBasicSchooling,
+		         "gotMovementSchooling": self.gotMovementSchooling,
+		         "gotInteractionSchooling": self.gotInteractionSchooling,
+		       }
 
 	def startNextQuest(self):
 		if len(self.quests):

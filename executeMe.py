@@ -625,7 +625,7 @@ class GameState():
 		return {  "gameWon":self.gameWon,
 			  "currentPhase":self.currentPhase.name,
 			  "tick":self.tick,
-			  "mainChar":self.mainChar.getState,
+			  "mainChar":self.mainChar.getState(),
 		       }
 gamestate = None
 
@@ -676,13 +676,17 @@ class FirstTutorialPhase(object):
 		npc2 = terrain.tutorialMachineRoom.firstOfficer
 
 		cinematics.showCinematic("welcome to the Trainingenvironment\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
-		cinematics.showCinematic("the Trainingenvironment will show now. take a look at Everything and press "+commandChars.wait+" afterwards. You will be able to move later")
-		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-		cinematics.showCinematic("you are represented by the "+displayChars.main_char+" Character. find yourself on the Screen and press "+commandChars.wait)
-		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-		cinematics.showCinematic("right now you are in the Boilerroom\n\nthe Floor is represented by "+displayChars.floor+" and Walls are shown as "+displayChars.wall+". the Door is represented by "+displayChars.door_closed+" or "+displayChars.door_opened+" when closed.\n\na empty Room would look like this:\n\n"+displayChars.wall*5+"\n"+displayChars.wall+displayChars.floor*3+displayChars.wall+"\n"+displayChars.wall+displayChars.floor*3+displayChars.door_closed+"\n"+displayChars.wall+displayChars.floor*3+displayChars.wall+"\n"+displayChars.wall*5+"\n\nthe Trainingenvironment will display now. please try to orient yourself in the Room.\n\npress "+commandChars.wait+" when successful")
-		cinematic = cinematics.ShowGameCinematic(1)
-		cinematics.cinematicQueue.append(cinematic)
+		if not mainChar.gotBasicSchooling:
+			cinematics.showCinematic("the Trainingenvironment will show now. take a look at Everything and press "+commandChars.wait+" afterwards. You will be able to move later")
+			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+			cinematics.showCinematic("you are represented by the "+displayChars.main_char+" Character. find yourself on the Screen and press "+commandChars.wait)
+			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+			cinematics.showCinematic("right now you are in the Boilerroom\n\nthe Floor is represented by "+displayChars.floor+" and Walls are shown as "+displayChars.wall+". the Door is represented by "+displayChars.door_closed+" or "+displayChars.door_opened+" when closed.\n\na empty Room would look like this:\n\n"+displayChars.wall*5+"\n"+displayChars.wall+displayChars.floor*3+displayChars.wall+"\n"+displayChars.wall+displayChars.floor*3+displayChars.door_closed+"\n"+displayChars.wall+displayChars.floor*3+displayChars.wall+"\n"+displayChars.wall*5+"\n\nthe Trainingenvironment will display now. please try to orient yourself in the Room.\n\npress "+commandChars.wait+" when successful")
+			cinematic = cinematics.ShowGameCinematic(1)
+			def setPlayerState():
+				mainChar.gotBasicSchooling = True
+			cinematic.endTrigger = setPlayerState
+			cinematics.cinematicQueue.append(cinematic)
 
 		cinematics.showCinematic("on the southern Side of the Room you see the Steamgenerators. A Steamgenerator might look like this:\n\n"+displayChars.void+displayChars.pipe+displayChars.boiler_inactive+displayChars.furnace_inactive+"\n"+displayChars.pipe+displayChars.pipe+displayChars.boiler_inactive+displayChars.furnace_inactive+"\n"+displayChars.void+displayChars.pipe+displayChars.boiler_active+displayChars.furnace_active+"\n\nit consist of Furnaces marked by "+displayChars.furnace_inactive+" or "+displayChars.furnace_active+" that heat the Water in the Boilers "+displayChars.boiler_inactive+" till it boils. a Boiler with boiling Water will be shown as "+displayChars.boiler_active+".\n\nthe Steam is transfered to the Pipes marked with "+displayChars.pipe+" and used to power the Ships Mechanics and Weapons\n\nDesign of generators are often quite unique. try to recognize the Genrators in this room and press "+commandChars.wait+"")
 		cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
@@ -1116,7 +1120,7 @@ def renderQuests():
 			counter += 1
 			if counter == 2:
 				break
-	txt += str(char.xPosition)+"/"+str(char.yPosition)+" "+str(gamestate.tick)+" "+str(mainChar.inventory)
+	txt += str(char.xPosition)+"/"+str(char.yPosition)+" "+str(gamestate.tick)+" "+str(mainChar.inventory)+str(mainChar.getState())
 	return txt
 	
 def renderMessagebox():

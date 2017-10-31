@@ -33,6 +33,7 @@ class ScrollingTextCinematic(object):
 class ShowGameCinematic(object):
 	def __init__(self,turns):
 		self.turns = turns
+		self.endTrigger = None
 
 	def advance(self):
 		if not self.turns:
@@ -47,6 +48,8 @@ class ShowGameCinematic(object):
 		while self.turns > 0:
 			self.turns -= 1
 			advanceGame()
+		if self.endTrigger:
+			self.endTrigger()
 
 class ShowMessageCinematic(object):
 	def __init__(self,message):

@@ -610,8 +610,10 @@ class GameState():
 	def load(self):
 		saveFile = open("gamestate/gamestate.json")
 		state = json.loads(saveFile.read())
-		self.setState(state)
 		saveFile.close()
+
+		self.setState(state)
+		self.mainChar.setState(state["mainChar"])
 
 	def setState(self,state):
 		self.gameWon = state["gameWon"]

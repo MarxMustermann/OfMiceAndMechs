@@ -29,6 +29,11 @@ class Character():
 		         "gotInteractionSchooling": self.gotInteractionSchooling,
 		       }
 
+	def setState(self,state):
+		self.gotBasicSchooling = state["gotBasicSchooling"]
+		self.gotMovementSchooling = state["gotMovementSchooling"]
+		self.gotInteractionSchooling = state["gotInteractionSchooling"]
+
 	def startNextQuest(self):
 		if len(self.quests):
 			self.quests[0].recalculate()

@@ -1093,6 +1093,23 @@ except:
 	pass
 
 mainChar = gamestate.mainChar
+
+cinematics.showCinematic("""
+OOO FFF          AAA N N DD
+O O FF   mice    AAA NNN D D
+OOO F            A A N N DD
+
+
+
+
+MMM   MMM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
+MMMM MMMM  EE      CC      HH   HH  SS
+MM MMM MM  EEEE    CC      HHHHHHH  SSSSSSS
+MM  M  MM  EEEE    CC      HHHHHHH  SSSSSSS
+MM     MM  EE      CC      HH   HH        S
+MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
+""")
+
 gamestate.currentPhase().start()
 
 #cinematics.showCinematic("movement can be tricky sometimes so please make yourself comfortable with the controls.\n\nyou can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.\n\nthe basic Movementcommands are:\n w=up\n a=right\n s=down\n d=right\nplease move to the designated Target. the Implant will mark your Way")
@@ -1232,6 +1249,4 @@ def render():
 		result += lineRender
 		
 	return result
-
-loop.set_alarm_in(0.0, callShow_or_exit, commandChars.ignore)
 loop.run()

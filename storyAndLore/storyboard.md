@@ -2,14 +2,14 @@
 
 authoritarian Steampunk adventure
 * country: german-siberia
-* citynames:
+* city names:
   * russian city names
-* authorian:
+* authoritarian:
   * coal centered society
-  * everybody does exacty as told 
+  * everybody does exactly as told 
 * values:
   * authority
-  * efficency
+  * efficiency
     * surpassing quotas
     * no punishment for failure
     * upranking for surpassing quotas
@@ -18,7 +18,7 @@ authoritarian Steampunk adventure
     * names and information is given 
     * failing in case of overwhelming odds is accepted
     * not having to issue commands is a virtue
-    * using idle time for productive purposes is encuraged
+    * using idle time for productive purposes is encouraged
     * education done is never thrown away
   * chain of command
   * secrecy
@@ -34,7 +34,7 @@ authoritarian Steampunk adventure
     * no unnecessary education
   * waste of resources, decadence, and luxury
 * lower caste:
-  * genetically engineered loyality
+  * genetically engineered loyalty
     * mindless slave
       * basically standing around if no explicit command was given
   * russian speaking + russian names
@@ -42,7 +42,7 @@ authoritarian Steampunk adventure
 * upper caste:
   * "german" speaking + german names
 * no money:
-  * maybe some crude regionalised system, but everbody gives and takes by orders not by trade
+  * maybe some crude regionalized system, but everybody gives and takes by orders not by trade
 * mechanics:
   * steam
   * hydraulics
@@ -54,14 +54,14 @@ authoritarian Steampunk adventure
 
 # world background story:
 
-* dark times (from the begining till 18th century)
+* dark times (from the beginning till 18th century)
   * humanity evolved
   * humanity did human stuff
-  * old Kingdoms and nation states existed were agressively colonising
+  * old Kingdoms and nation states existed were aggressively colonizing
 * the big war (15 years)
   * basically the word war but with more steam engines
   * the germans won dominance in this war converting to a strict dictatorship
-  * germany colonised the rest of the world and assimilated all allies
+  * germany colonized the rest of the world and assimilated all allies
 * the golden times (350 years)
   * creation (30 years):
     * germany stopped to exist as an nation state and grew to a world dictatorship under the imperator
@@ -72,39 +72,39 @@ authoritarian Steampunk adventure
     * introduction of the implant and strict birth control
   * duration (320 years):
     * rare appearance of mad scientists due to the implant
-    * after realising the imperator gets old and will die various longlivety treatments were build for the imperator trough mad scientists
-    * the upper cast got genetically and otherwise engeneered and modified to gain positive attributes
-    * the lower cast got genetically and otherwise engeneered to be loyal and stupid
+    * after realizing, that the imperator gets old and will die, various longevity treatments were build for the imperator trough mad scientists
+    * the upper cast got genetically and otherwise engineered and modified to gain positive attributes
+    * the lower cast got genetically and otherwise engineered to be loyal and stupid
     * degeneration of society to a construct for the imperators wishes
     * no development except very limited peaks ordered to be done by the imperator
   * say("""	computers were never developed outside of mad science
     * the dictatorship had no external enemies and no relevant internal unrest
-    * the imperator had to disapear completely for yearlong longlivety treatments and enforced his wishes by the implant and delegating most of the work to his underlings
+    * the imperator had to disappear completely for yearlong longevity treatments and enforced his wishes by the implant and delegating most of the work to his underlings
     * seeing his death as an possibility, the imperator decided that a new imperator may be crowned after his death by consensus of his highest underlings
-    * if no big Plans were obstructet the imperator allowed conflicting orders or disagreements between same ranged to escalate into small wars, the imperator was also fond of "live practices" of new tech and tactics
+    * if no big Plans were obstructed the imperator allowed conflicting orders or disagreements between same ranged to escalate into small wars, the imperator was also fond of "live practices" of new tech and tactics
   * the end of the hierarchy (1 minute):
     * the imperator was awake very rarely and no external or internal threads were feared
     * the highest of the upper class gathered in Berlin, placed with a lot of distance but in the same city
     * the whole city and everything within 50km was glassed during the awakening of the imperator
     * most of the facilities and cities in core germany were heavily damaged
-    * details are unknown, but it is assumed that the heavily mad science based lifechamber had a defect and exploded
+    * details are unknown, but it is assumed that the heavily mad science based life chamber had a defect and exploded
     * the top of the hierachy was killed
-      * imperator and direct replacemnts
+      * imperator and direct replacements
       * the whole leadership of core-germany unto regional level
       * the whole central government
-    * the remains of the hierachy started about at the governor position of the old colonies and provinces
+    * the remains of the hierarchy started about at the governor position of the old colonies and provinces
     * the hierarchy was split in 21 "branches" without a living superordinate
 * now (since ~500 years)
   * from time to time especially in the beginning there were tries to crown a new imperator but all failed because no consensus on whom could be reached
   * each of the "branches" had to survive as an independent hierarchy
   * 12 of the original branches collapsed completely or were reduced to tiny warbands
-  * the 9 remaining branches are the defacto new states of the earth but all follow the last orders recieved
+  * the 9 remaining branches are the de facto new states of the earth, but all follow the last orders received
   * since most order lost any meaning by now every branch operates with a basic set of common old rules by the imperator and a few last orders concerning only the specific branch
   * without new orders the states degenerated further and changed into a singe objective state overfullfilling the last order
-  * mad scientist appear more regulary with a few additional glassings
+  * mad scientist appear more regularly with a few additional glassings
   * larger areas and cities are unmaintained
   * pirates, monsters and warbands appear
-  * the new hierarchies constantly run out of specific ressources and steal from and fight wars against each other
+  * the new hierarchies constantly run out of specific resources and steal from and fight wars against each other
 
 ## abstracted story:
 
@@ -113,7 +113,7 @@ the gain and loss of absolute power
 ## rough story:
 
 * tutorial phase with simulation restarts
-  * restarts on fixed point with heavy handhholding and scripting
+  * restarts on fixed point with heavy handholding and scripting
   * risk: loss of live
   * risk: restart at tutorial
   * risk: low initial ranking
@@ -121,54 +121,54 @@ the gain and loss of absolute power
 * spawn as officer
   * allow class selection based on results of previous runs
   * actual play the game and order your minions to achieve overwhelming (scripted) tasks
-  * let specific npcs grow to the players heart
+  * let specific NPCs grow to the players heart
   * pro: getting your brain transplanted to a new body if it can be recovered and you are valuable enough
   * pro: get a brain transplants when injured very heavy and valuable
   * risk: getting permakilled on death with repeated bad performance
   * risk: loss of gamestate on death
-  * risk: loss of npcs
-  * risk: gameprogress without the player beeing able to watch/influence
+  * risk: loss of NPCs
+  * risk: game progress without the player beeing able to watch/influence
   * -> climb the hierachy and become the faction leader
 * faction leader
-  * manage your colony and be efficent at what you do
+  * manage your colony and be efficient at what you do
   * wage war against the other factions and risk loss of position
   * pro: get a brain transplant at every medic station
   * pro: get a brain sync by an incredible expensive process
   * risk: reduced to spawn as officer on death
   * risk: loss of gamestate on death
   * risk: relocation on death with brainsync
-  * -> follow the last Orders until realising that there is a way to restore the old hierachy by getting voted to the new imperator
+  * -> follow the last Orders until realizing that there is a way to restore the old hierarchy by getting elected as the new imperator
 * rise to imperator
-  * ain control over other factions and gain factual imortality
+  * gain control over other factions and gain factual immortality
   * eliminate the other hierarchies or convince the other faction leaders to vote for you
-  * pro: get a brain transplant to special engeniered bodys
+  * pro: get a brain transplant to special engineered bodys
   * pro: get enough brain syncs to use it for fast travel
   * -> get crowned to imperator
 * imperator
   * implant rot gets triggered by the crowning process
   * since all elements in the upper caste have implants everybody is affected by implant rot
   * active implant rot makes people unresponsive or mad scientists
-  * prepared desasters should trigger:
+  * prepared disasters should trigger:
     * bioweapons release by mad scientists
     * unstable facilities burning down by unresponsive leaders
     * mechs failing because of unresponsive base personal
     * lower caste increasingly regain sentience and revolts
     * pirates and sentient lower caste members unaffected by link rot take over idle ressources
-    * mad scientist taking over more and more infastructure and proceding to produce dangerous things
+    * mad scientist taking over more and more infrastructure and proceeding to produce dangerous things
   * implant rot triggers faster and faster to kill the player
   * higher destruction rate should result in more aggressive environment
   * player is killed despite the brain syncs and transplants because of mad scientists killing everybody and glassing facilities
     * pro: you control everybody and everything for some time
-    * pro: executioni + permadeath after death with GAME WON screen :-)
+    * pro: execution + permadeath after death with GAME WON screen :-)
 	
 
 # save system:
 
-* simulation restart = gamestate is kept, character is ported back to engine room. minor details are discarded, alle quests resettet
+* simulation restart = gamestate is kept, character is ported back to engine room. minor details are discarded, all quests resetted
   * dying with low status and never having had a high status
-* spawn as officer  = get woken up from full emersion machine get ceremony for achieving Manhood 8 Birthday. Details of world are discarded
+* spawn as officer  = get woken up from sensory deprivation tank, get ceremony for achieving Manhood 8 Birthday. Details of world are discarded
   * dying with having had a high status once
-  * dying without beeing recovered
+  * dying without being recovered
 * brain recovery = time gets forwarded
   * dying with brain recovery
 * synced brain = restart at last sync station
@@ -188,7 +188,7 @@ the gain and loss of absolute power
 ### Machine room tutorial:
 
 ```
-go to center superviser
+go to center supervisor
 fetch coal
 fire furnace
 pull lever
@@ -197,10 +197,10 @@ stand to attention
 
 pull the lever -> Vat duty
 
-good mechanic -> mecanics -> weapon loading
+good mechanic -> mechanics -> weapon loading
 killing mice -> hunter -> tunnel cleaning
-killing invaders -> soldier -> miltary education
-temporary commmand -> planning -> logistics
+killing invaders -> soldier -> military education
+temporary command -> planning -> logistics
 
 dying or failing -> simulation restart
 	
@@ -216,12 +216,12 @@ temporary
 ### Vat duty (tutorial2):
 
 ```
-follw orders till 
+follow orders till 
 		
 good mechanic -> Machine room
 killing mice/blobs -> hunter -> tunnel cleaning
-killing invaders/not really dead invader -> soldier -> miltary education
-temporary commmand -> planning -> logistics
+killing invaders/not really dead invader -> soldier -> military education
+temporary command -> planning -> logistics
 
 items to 
 
@@ -243,7 +243,7 @@ die -> permadead
   * helping repair group -> weapon loading
 
 * logistics
-  * temporary commmand -> produktionsleiter
+  * temporary command -> produktionsleiter
   * bad performance -> machine room
   * killing -> soldier
   * helping repair group -> weapon loading
@@ -251,14 +251,14 @@ die -> permadead
 * military education
   * good performance -> soldier
   * emergency repair -> weapon loading
-  * guter Nahkampf -> huntgroup
+  * guter Nahkampf -> hunting group
   * bad performance -> vat
 
 ## Level 2
 
-* huntgroup
+* hunting group
   * command -> Kapitän
-* repairgroup
+* repair group
   * command -> Kapitän
 * produktionsleiter
   * command -> Kapitän
@@ -272,12 +272,12 @@ Kapitän
 ==== first inactive tutorial phase ====
 
 #===
-say("""welcome to the Trainingenvironment
-please, try to learn fast.
+say("""welcome to the training environment
+Please, try to learn fast.
 
-Participants with low Evaluationscores will be given suitable Assignments in the Vats""")
+Participants with low evaluation scores will be given suitable Assignments in the vats""")
 #==
-say("""the Trainingenvironment will display now. take a look at everything and press . afterwards""")
+say("""the training environment will display now. Take a look at everything and press . afterwards""")
 showGame1Turn()
 #==
 say("""you are represented by the ＠ Character. find yourself on the screen and press .""")

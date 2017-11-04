@@ -9,7 +9,7 @@ calculatePath = None
 displayChars = None
 
 class Room(object):
-	def __init__(self,layout,xPosition,yPosition,offsetX,offsetY,desiredPosition):
+	def __init__(self,layout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
 		self.desiredPosition = desiredPosition
 		self.layout = layout
 		self.hidden = True
@@ -627,7 +627,7 @@ XH......#X
 XXPPP ID#X
 XXXXXXXXXX
 """
-		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None)
 		self.name = "Boilerroom"
 
 		self.lever1 = items.Lever(3,6,"engine control")
@@ -728,7 +728,7 @@ XXXXXXXXXX
 		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 
 class GenericRoom(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
 		self.roomLayout = """
 XX$XXXXXXX
 Xv v?????X
@@ -757,7 +757,7 @@ X?......#X
 X? XXXXX#X
 XXXXXXXXXX
 """
-		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None)
 
 		def addNPC(x,y):
 			quest1 = quests.MoveQuest(self,2,2)
@@ -793,7 +793,7 @@ XXXXXXXXXX
 				self.applySkippedAdvances()
 
 class StorageRoom(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
 		self.roomLayout = """
 XX&XX&XX&XX
 X?....?? ?X
@@ -811,7 +811,7 @@ XX&XX$XX&XX
 		self.store = {}
 
 class InfanteryQuarters(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
 		self.roomLayout = """
 XX$X&&XXXXX
 XX PPPPPPXX
@@ -826,7 +826,7 @@ XXXXXXXXXXX
 		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 	
 class FreePlacemenRoom(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
 		self.roomLayout = """
 XX$X&&XXXXX
 XX PPPPPPXX
@@ -841,7 +841,7 @@ XXXXXXXXXXX
 		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 
 class Vat1(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
 		self.roomLayout = """
 XXXXXXXXXX
 XababaabbX
@@ -873,7 +873,7 @@ XXXXX$XXXX
 			spray.recalculate()
 
 class Vat2(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
 		self.roomLayout = """
 XXXXXXXXXX
 X   b jjjX
@@ -890,7 +890,7 @@ XXXXX$XXXX
 		self.floorDisplay = displayChars.acids
 
 class MechArmor(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
 		self.roomLayout = """
 XXXXXXXXXXXXXXX
 XX X X X X X XX
@@ -912,7 +912,7 @@ XXXXXXX$XXXXXXX
 		self.floorDisplay = [displayChars.nonWalkableUnkown]
 
 class CargoRoom(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
 		self.roomLayout = """
 XXXXXXXXXX
 X        X
@@ -933,7 +933,7 @@ XXXXXXXXXX
 		self.floorDisplay = [displayChars.nonWalkableUnkown]
 
 class MiniMech(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
 		self.roomLayout = """
 XX$XXX
 XD.. X
@@ -955,7 +955,7 @@ XXXXXX
 		self.engineStrength = 250*self.steamGeneration
 
 class CargoRoom(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
 		self.roomLayout = """
 XXXXXXXXXX
 X        X

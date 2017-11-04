@@ -1084,13 +1084,13 @@ class MachineRoomPhase(object):
 		npc2 = terrain.tutorialMachineRoom.firstOfficer
 
 		terrain.tutorialMachineRoom.secondOfficer = mainChar
-		terrain.tutorialMachineRoom.desiredSteamGeneration = 8
-		terrain.tutorialMachineRoom.changed()
+
+		terrain.tutorialMachineRoom.endTraining()
 
 		questList = []
 		if not (mainChar.room and mainChar.room == terrain.tutorialMachineRoom):
 			questList.append(quests.EnterRoomQuest(terrain.tutorialMachineRoom,startCinematics="please goto the Machineroom"))
-		questList.append(quests.MoveQuest(terrain.tutorialMachineRoom,3,3,startCinematics="time to do some actual work. report to {machine room supervisor}"))
+		questList.append(quests.MoveQuest(terrain.tutorialMachineRoom,3,3,startCinematics="time to do some actual work. report to "+terrain.tutorialMachineRoom.firstOfficer.name))
 
 		lastQuest = questList[0]
 		for item in questList[1:]:
@@ -1098,12 +1098,10 @@ class MachineRoomPhase(object):
 			lastQuest = item
 		questList[-1].followup = None
 
-		questList[-1].endTrigger = self.end
-
 		mainChar.assignQuest(questList[0])
 
 	def end(self):
-		#gamestate.gameWon = True
+		gamestate.gameWon = True
 		gamestate.save()
 phasesByName["MachineRoomPhase"] = MachineRoomPhase
 

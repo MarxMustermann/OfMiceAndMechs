@@ -703,6 +703,7 @@ class FirstTutorialPhase(object):
 				def wrapUp():
 					mainChar.gotBasicSchooling = True
 					doSteamengineExplaination()
+					gamestate.save()
 				cinematic.endTrigger = wrapUp
 				cinematics.cinematicQueue.append(cinematic)
 			else:
@@ -715,6 +716,7 @@ class FirstTutorialPhase(object):
 			cinematic = cinematics.ShowGameCinematic(0)
 			def wrapUp():
 				doCoalDelivery()
+				gamestate.save()
 			cinematic.endTrigger = wrapUp
 			cinematics.cinematicQueue.append(cinematic)
 
@@ -757,6 +759,7 @@ class FirstTutorialPhase(object):
 			cinematic = cinematics.ShowGameCinematic(2)
 			def wrapUp():
 				doFurnaceFirering()
+				gamestate.save()
 			cinematic.endTrigger = wrapUp
 			cinematics.cinematicQueue.append(cinematic)
 
@@ -789,6 +792,7 @@ class FirstTutorialPhase(object):
 			cinematic = cinematics.ShowGameCinematic(22)
 			def wrapUp():
 				doWrapUp()
+				gamestate.save()
 			cinematic.endTrigger = wrapUp
 			cinematics.cinematicQueue.append(cinematic)
 
@@ -803,6 +807,7 @@ class FirstTutorialPhase(object):
 					self.end()
 
 			terrain.tutorialMachineRoom.addEvent(StartNextPhaseEvent(gamestate.tick+1))
+			gamestate.save()
 		doBasicSchooling()
 
 	def end(self):
@@ -855,6 +860,7 @@ class SecondTutorialPhase(object):
 			quest = quests.CollectQuest(startCinematics="next on my Checklist is to explain the Interaction with your Environment.\n\nthe basic Interationcommands are:\n\n "+commandChars.activate+"=activate/apply\n "+commandChars.examine+"=examine\n "+commandChars.pickUp+"=pick up\n "+commandChars.drop+"=drop\n\nsee this Piles of Coal marked with ӫ on the rigth Side and left Side of the Room.\n\nwhenever you bump into an Item that is to big to be walked on, you will promted for giving an extra Interactioncommand. i'll give you an Example:\n\n ΩΩ＠ӫӫ\n\n pressing "+commandChars.move_west+" and "+commandChars.activate+" would result in Activation of the Furnace\n pressing "+commandChars.move_east+" and "+commandChars.activate+" would result in Activation of the Pile\n pressing "+commandChars.move_west+" and "+commandChars.examine+" would result make you examine the Furnace\n pressing "+commandChars.move_east+" and "+commandChars.examine+" would result make you examine the Pile\n\nplease grab yourself some Coal from a pile by bumping into it and pressing j afterwards.")
 			def setPlayerState():
 				mainChar.gotInteractionSchooling = True
+				gamestate.save()
 			quest.endTrigger = setPlayerState
 			questList.append(quest)
 		else:
@@ -876,6 +882,7 @@ class SecondTutorialPhase(object):
 		mainChar.assignQuest(questList[0])
 
 	def end(self):
+		gamestate.save()
 		cinematics.showCinematic("you recieved your Preparatorytraining. Time for the Test.")
 		phase = ThirdTutorialPhase()
 		phase.start()
@@ -1015,7 +1022,6 @@ class ThirdTutorialPhase(object):
 		terrain.tutorialMachineRoom.removeEventsByType(self.anotherOne2)
 		mainChar.assignQuest(quests.MoveQuest(terrain.tutorialMachineRoom,3,3,startCinematics="please move back to the waiting position"))
 
-
 		if self.npcFurnaceIndex >= self.mainCharFurnaceIndex:
 			cinematics.showCinematic("considering your Score until now moving you directly to your proper assignment is the most efficent Way for you to proceed.")
 			phase3 = VatPhase()
@@ -1028,6 +1034,8 @@ class ThirdTutorialPhase(object):
 			cinematics.showCinematic("you passed the test. \n\nyour score: "+str(self.mainCharFurnaceIndex)+"\nLibwigs score: "+str(self.npcFurnaceIndex))
 			phase3 = MachineRoomPhase()
 			phase3.start()
+		gamestate.save()
+
 phasesByName["ThirdTutorialPhase"] = ThirdTutorialPhase
 
 class VatPhase(object):
@@ -1057,6 +1065,7 @@ class VatPhase(object):
 	def end(self):
 		cinematics.showCinematic("you seem to be able to follow orders after all. you may go back to your training.")
 		SecondTutorialPhase().start()
+		gamestate.save()
 phasesByName["VatPhase"] = VatPhase
 
 class MachineRoomPhase(object):
@@ -1065,7 +1074,19 @@ class MachineRoomPhase(object):
 
 	def start(self):
 		gamestate.currentPhase = self
-	
+
+		if not terrain.tutorialMachineRoom.firstOfficer:
+			npc2 = characters.Character(displayChars.staffCharacters[25],5,3,name=names.characterFirstNames[(gamestate.tick+9)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+4)%len(names.characterLastNames)])
+			npc2.terrain = terrain
+			npc2.room = terrain.tutorialMachineRoom
+			terrain.tutorialMachineRoom.addCharacter(npc2,5,3)
+			terrain.tutorialMachineRoom.firstOfficer = npc2
+		npc2 = terrain.tutorialMachineRoom.firstOfficer
+
+		terrain.tutorialMachineRoom.secondOfficer = mainChar
+		terrain.tutorialMachineRoom.desiredSteamGeneration = 8
+		terrain.tutorialMachineRoom.changed()
+
 		questList = []
 		if not (mainChar.room and mainChar.room == terrain.tutorialMachineRoom):
 			questList.append(quests.EnterRoomQuest(terrain.tutorialMachineRoom,startCinematics="please goto the Machineroom"))
@@ -1082,7 +1103,8 @@ class MachineRoomPhase(object):
 		mainChar.assignQuest(questList[0])
 
 	def end(self):
-		gamestate.gameWon = True
+		#gamestate.gameWon = True
+		gamestate.save()
 phasesByName["MachineRoomPhase"] = MachineRoomPhase
 
 gamestate = GameState()

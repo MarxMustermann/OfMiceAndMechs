@@ -414,15 +414,22 @@ def show_or_exit(key):
 	if key in (commandChars.show_quests):
 		specialRender = True		
 		
-		header.set_text("")
+		header.set_text("\nquest overview\n(press "+commandChars.show_quests_detailed+" for the extended quest menu)\n\n")
 		main.set_text(renderQuests())
 		footer.set_text("")
 
 	if key in (commandChars.show_inventory):
 		specialRender = True		
 		
-		header.set_text("")
+		header.set_text("\ninentory overview\n(press "+commandChars.show_inventory_detailed+" for the extended inventory menu)\n\n")
 		main.set_text(renderInventory())
+		footer.set_text("")
+
+	if key in (commandChars.show_help):
+		specialRender = True		
+		
+		header.set_text("\nhelp overview\n(press "+commandChars.show_help+" again for a list of keybindings)\n\n")
+		main.set_text(renderHelp())
 		footer.set_text("")
 
 	if gamestate.gameWon:
@@ -1268,7 +1275,7 @@ def renderInventory():
 		txt = "empty Inventory"
 	return txt
 
-def renderInventory():
+def renderHelp():
 	char = mainChar
 	txt = "the Goal of the Game is to stay alive and to gain Influence. The daily Grind can be delageted to subordinates and you are able to take Control over and to design whole Mechs and ride the to Victory. Be useful, gain Power and use your Power to be more useful."
 	return txt

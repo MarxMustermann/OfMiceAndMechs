@@ -17,4 +17,5 @@ wait = '.'
 show_quests = 'q'
 show_inventory = 'i'
 redraw = 'esc'
+show_help = '?'
 

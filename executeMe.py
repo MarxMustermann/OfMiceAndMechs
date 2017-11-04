@@ -1267,6 +1267,11 @@ def renderInventory():
 	else:
 		txt = "empty Inventory"
 	return txt
+
+def renderInventory():
+	char = mainChar
+	txt = "the Goal of the Game is to stay alive and to gain Influence. The daily Grind can be delageted to subordinates and you are able to take Control over and to design whole Mechs and ride the to Victory. Be useful, gain Power and use your Power to be more useful."
+	return txt
 	
 def renderMessagebox():
 	txt = ""

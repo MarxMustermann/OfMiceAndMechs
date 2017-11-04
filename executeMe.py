@@ -955,7 +955,7 @@ class ThirdTutorialPhase(object):
 		npc2 = terrain.tutorialMachineRoom.firstOfficer
 
 
-		cinematics.showCinematic("during the test Messages and new Task will be shown on the Buttom of the Screen. start now.")
+		cinematics.showCinematic("during the Test Messages and new Task will be shown on the Buttom of the Screen. start now.")
 
 		self.mainCharFurnaceIndex = 0
 		self.npcFurnaceIndex = 0
@@ -1070,11 +1070,11 @@ class ThirdTutorialPhase(object):
 			phase3 = VatPhase()
 			phase3.start()
 		elif self.mainCharFurnaceIndex == 8:
-			cinematics.showCinematic("you passed the test. in fact you passed the Test with a perfect Score. you will be valuable")
+			cinematics.showCinematic("you passed the Test. in fact you passed the Test with a perfect Score. you will be valuable")
 			phase3 = MachineRoomPhase()
 			phase3.start()
 		else:
-			cinematics.showCinematic("you passed the test. \n\nyour score: "+str(self.mainCharFurnaceIndex)+"\nLibwigs score: "+str(self.npcFurnaceIndex))
+			cinematics.showCinematic("you passed the Test. \n\nyour Score: "+str(self.mainCharFurnaceIndex)+"\nLibwigs Score: "+str(self.npcFurnaceIndex))
 			phase3 = MachineRoomPhase()
 			phase3.start()
 		gamestate.save()

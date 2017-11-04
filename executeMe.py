@@ -45,9 +45,25 @@ fullAutoMode = False
 stealKey = {}
 items.stealKey = stealKey
 
+import time
+
+lastLagDetection = time.time()
+lastRedraw = time.time()
+
 def show_or_exit(key):
-	if not len(key) == 1:
+	#mouse klick
+	if type(key) == tuple:
+		messages.append(str(key))
 		return
+
+	global lastLagDetection
+	if key in ("lagdetection",):
+		loop.set_alarm_in(0.2, callShow_or_exit, "lagdetection")
+		lastLagDetection = time.time()
+		return
+	if not key in (commandChars.autoAdvance, commandChars.quit_instant, commandChars.ignore):
+		if lastLagDetection < time.time()-0.4:
+			return
 
 	if key in (commandChars.autoAdvance):
 		loop.set_alarm_in(0.2, callShow_or_exit, commandChars.autoAdvance)
@@ -388,18 +404,32 @@ def show_or_exit(key):
 			lastMoveAutomated = False
 
 	itemMarkedLast = None
+
+	global lastRedraw
+	if lastRedraw < time.time()-0.016:
+		loop.draw_screen()
+		lastRedraw = time.time()
+
+	specialRender = False
+	if key in (commandChars.show_quests):
+		specialRender = True		
 		
-	if not gamestate.gameWon:
+		header.set_text("")
+		main.set_text(renderQuests())
+		footer.set_text("")
+
+	if gamestate.gameWon:
+		main.set_text("")
+		main.set_text("credits")
+		footer.set_text("good job")
+		
+	if not specialRender:
 		if doAdvanceGame:
 			advanceGame()
 
-		header.set_text(renderQuests())
+		header.set_text(renderQuests(maxQuests=2))
 		main.set_text(render());
 		footer.set_text(renderMessagebox())
-	else:
-		main.set_text("")
-		footer.set_text("good job")
-
 
 frame = urwid.Frame(urwid.Filler(main,"top"),header=header,footer=footer)
 loop = urwid.MainLoop(frame, unhandled_input=show_or_exit)
@@ -1207,7 +1237,7 @@ def advanceGame():
 
 cinematics.advanceGame = advanceGame
 
-def renderQuests():
+def renderQuests(maxQuests=0):
 	char = mainChar
 	txt = ""
 	if len(char.quests):
@@ -1215,10 +1245,10 @@ def renderQuests():
 		for quest in char.quests:
 			txt+= "QUEST: "+quest.description+"\n"
 			counter += 1
-			if counter == 2:
+			if counter == maxQuests:
 				break
-	if mainChar.room:
-		txt += str(char.xPosition)+"/"+str(char.yPosition)+" "+str(gamestate.tick)+" "+str(mainChar.inventory)+str(mainChar.room.id)
+	else:
+		txt = "Kein Quest"
 	return txt
 	
 def renderMessagebox():
@@ -1269,4 +1299,6 @@ def render():
 		result += lineRender
 		
 	return result
+
+loop.set_alarm_in(0.2, callShow_or_exit, "lagdetection")
 loop.run()

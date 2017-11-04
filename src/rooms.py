@@ -11,6 +11,7 @@ displayChars = None
 class Room(object):
 	def __init__(self,layout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
 		self.desiredPosition = desiredPosition
+		self.desiredSteamGeneration = None
 		self.layout = layout
 		self.hidden = True
 		self.itemsOnFloor = []
@@ -43,6 +44,7 @@ class Room(object):
 		self.offsetY = offsetY
 		self.xPosition = xPosition
 		self.yPosition = yPosition
+		self.lastRender = None
 
 		self.id = "room_1_"+str(self.xPosition)+"_"+str(self.yPosition)+"_1"
 
@@ -220,6 +222,7 @@ class Room(object):
 			self.terrain.teleportRoom(self,(state["xPosition"],state["yPosition"]))
 
 	def changed(self):
+		self.requestRedraw()
 		pass
 
 	def getResistance(self):
@@ -236,6 +239,9 @@ class Room(object):
 			self.open = False
 
 	def render(self):
+		if self.lastRender:
+			return self.lastRender
+		
 		if not self.hidden:
 			chars = []
 			fixedChar = None
@@ -285,7 +291,16 @@ class Room(object):
 				if item.xPosition == 0 or item.xPosition == self.sizeX-1 or item.yPosition == 0 or item.yPosition == self.sizeY-1:
 					chars[item.yPosition][item.xPosition] = item.display
 
+		self.lastRender = chars
+
 		return chars
+
+	def forceRedraw(self):
+		self.lastRender = None
+
+	def requestRedraw(self):
+		if not self.hidden:
+			self.lastRender = None
 
 	def addCharacter(self,character,x,y):
 		self.characters.append(character)
@@ -530,6 +545,7 @@ class Room(object):
 
 	def advance(self):
 		self.timeIndex += 1
+		self.requestRedraw()
 
 		while self.events and self.timeIndex >  self.events[0].tick:
 			event = self.events[0]
@@ -692,8 +708,58 @@ XXXXXXXXXX
 
 		self.addItems([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4])
 
+		self.furnaceQuests = []
+
+	def endTraining(self):
+		class ChangeRequirements(object):
+			def __init__(subself,tick):
+				subself.tick = tick
+				self.loop = [0,1,2,7,4,3,5,6]
+
+			def handleEvent(subself):
+				index = self.loop.index(self.desiredSteamGeneration)
+				index += 1
+				if index < len(self.loop):
+					messages.append("*comlink*: changed orders. please generate "+str(self.loop[index])+" power")
+					self.desiredSteamGeneration = self.loop[index]
+				else:
+					self.desiredSteamGeneration = self.loop[0]
+					
+				self.changed()
+				self.addEvent(ChangeRequirements(self.timeIndex+50))
+
+		self.desiredSteamGeneration = 0
+		self.changed()
+		self.addEvent(ChangeRequirements(self.timeIndex+20))
+		
 	def changed(self):
 		self.terrain.tutorialVatProcessing.recalculate()
+		if self.desiredSteamGeneration:
+			if not self.desiredSteamGeneration == self.steamGeneration:
+				if self.firstOfficer:
+					numFurnaces = len(self.furnaceQuests)
+					diff = self.desiredSteamGeneration - numFurnaces
+					while diff > 0:
+						officer = self.firstOfficer
+						if self.secondOfficer and numFurnaces < 4:
+							officer = self.secondOfficer
+						quest = quests.KeepFurnaceFired(self.furnaces[7-numFurnaces])
+						officer.assignQuest(quest)
+
+						self.furnaceQuests.append(quest)
+						diff -= 1
+						numFurnaces += 1
+					while diff < 0:
+						quest = self.furnaceQuests[-1]
+						quest.deactivate()
+						self.furnaceQuests.remove(quest)
+
+						diff += 1
+						numFurnaces -= 1
+					
+					
+			else:
+				messages.append("we did it! "+str(self.desiredSteamGeneration)+" instead of "+str(self.steamGeneration))
 
 class Room3(Room):
 	def __init__(self,xPosition=1,yPosition=0,offsetX=2,offsetY=2,desiredPosition=None):

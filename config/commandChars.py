@@ -7,10 +7,13 @@ pickUp = "k"
 drop = "l"
 hail = "h"
 examine = 'e'
-quit_normal = "q"
-quit_instant = "Q"
+quit_normal = "^"
+quit_instant = "^"
 autoAdvance = '*'
 advance = '+'
 pause = ' '
 ignore = '~'
 wait = '.'
+show_quests = 'q'
+redraw = 'esc'
+

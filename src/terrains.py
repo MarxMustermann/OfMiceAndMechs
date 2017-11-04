@@ -217,6 +217,8 @@ class Terrain(object):
 
 				chars[character.yPosition][character.xPosition] = character.display
 
+		self.lastRender = chars
+
 		return chars
 
 	def getAffectedByRoomMovementNorth(self,room,force=1,movementBlock=set()):

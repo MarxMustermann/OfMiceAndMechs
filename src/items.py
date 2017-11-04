@@ -456,11 +456,13 @@ class Door(Item):
 		self.walkable = True
 		self.display = displayChars.door_opened
 		self.room.open = True
+		self.room.forceRedraw()
 
 	def close(self):
 		self.walkable = False
 		self.display = displayChars.door_closed
 		self.room.open = False
+		self.room.forceRedraw()
 
 class Pile(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal):

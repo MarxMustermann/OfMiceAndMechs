@@ -177,12 +177,38 @@ class Terrain(object):
 			if mainChar.room == room:
 				room.hidden = False
 			else:
-				if not mapHidden and room.open:
+				if not mapHidden and room.open and room.hidden:
 					room.hidden = False
 					room.applySkippedAdvances()
 				else:
 					room.hidden = True
 				
+		if not mapHidden:
+
+			pos = None
+			roomContainer = None
+			if mainChar.room == None:
+				pos = (mainChar.xPosition//15,mainChar.yPosition//15)
+				roomContainer = mainChar.terrain
+			else:
+				pos = (mainChar.room.xPosition,mainChar.yPosition)
+				roomContainer = mainChar.room.terrain
+
+			roomCandidates = []
+			possiblePositions = set()
+			for i in range(-1,2):
+				for j in range(-1,2):
+					possiblePositions.add((pos[0]-i,pos[1]-j))
+			for coordinate in possiblePositions:
+				if coordinate in self.roomByCoordinates:
+					roomCandidates.extend(self.roomByCoordinates[coordinate])
+
+			for room in roomCandidates:
+				if room.open:
+					room.hidden = False
+					room.applySkippedAdvances()
+				
+
 		if not mapHidden:
 			for item in self.itemsOnFloor:
 				chars[item.yPosition][item.xPosition] = item.display

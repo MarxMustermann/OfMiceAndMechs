@@ -15,5 +15,6 @@ pause = ' '
 ignore = '~'
 wait = '.'
 show_quests = 'q'
+show_inventory = 'i'
 redraw = 'esc'
 

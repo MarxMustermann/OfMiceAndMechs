@@ -418,6 +418,13 @@ def show_or_exit(key):
 		main.set_text(renderQuests())
 		footer.set_text("")
 
+	if key in (commandChars.show_inventory):
+		specialRender = True		
+		
+		header.set_text("")
+		main.set_text(renderInventory())
+		footer.set_text("")
+
 	if gamestate.gameWon:
 		main.set_text("")
 		main.set_text("credits")
@@ -1248,7 +1255,17 @@ def renderQuests(maxQuests=0):
 			if counter == maxQuests:
 				break
 	else:
-		txt = "Kein Quest"
+		txt = "No Quest"
+	return txt
+
+def renderInventory():
+	char = mainChar
+	txt = ""
+	if len(char.inventory):
+		for item in char.inventory:
+			txt+= str(item)+"\n"
+	else:
+		txt = "empty Inventory"
 	return txt
 	
 def renderMessagebox():

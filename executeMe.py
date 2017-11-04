@@ -1271,8 +1271,10 @@ def render():
 	decorationSize = frame.frame_top_bottom(loop.screen.get_cols_rows(),True)
 	screensize = (screensize[0]-decorationSize[0][0],screensize[1]-decorationSize[0][1])
 
-	offsetX = int((screensize[0]/4)-centerX)
-	offsetY = int((screensize[1]/2)-centerY)
+	centeringOffsetX = int((screensize[0]//4)-centerX)
+	offsetY = int((screensize[1]//2)-centerY)
+
+	viewsize = 41
 
 	result = ""
 
@@ -1280,17 +1282,26 @@ def render():
 		result += "\n"*offsetY
 
 	if offsetY < 0:
-		chars = chars[-offsetY:]
+		topOffset = ((screensize[1]-viewsize)//2)+1
+		result += "\n"*topOffset
+		chars = chars[-offsetY+topOffset:-offsetY+topOffset+viewsize]
 
 	for line in chars:
 		lineRender = ""
 		rowCounter = 0
 
-		if offsetX > 0:
-			lineRender += "  "*offsetX
+		visibilityOffsetX = ((screensize[0]-viewsize*2)//4)+1
+		
+		lineRender += "  "*visibilityOffsetX
 
-		if offsetX < 0:
-			line = line[-offsetX:]
+		totalOffset = -centeringOffsetX+visibilityOffsetX
+		offsetfix = 0
+		if totalOffset<0:
+			lineRender += "  "*-totalOffset
+			offsetfix = -totalOffset
+			totalOffset = 0
+			
+		line = line[totalOffset:totalOffset+viewsize-offsetfix]
 
 		for char in line:
 			lineRender += char

@@ -9,7 +9,8 @@ calculatePath = None
 displayChars = None
 
 class Room(object):
-	def __init__(self,layout,xPosition,yPosition,offsetX,offsetY):
+	def __init__(self,layout,xPosition,yPosition,offsetX,offsetY,desiredPosition):
+		self.desiredPosition = desiredPosition
 		self.layout = layout
 		self.hidden = True
 		self.itemsOnFloor = []
@@ -549,7 +550,7 @@ class Room(object):
 			self.delayedTicks += 1
 	
 class Room1(Room):
-	def __init__(self,xPosition=0,yPosition=0,offsetX=2,offsetY=2):
+	def __init__(self,xPosition=0,yPosition=0,offsetX=2,offsetY=2,desiredPosition=None):
 		self.roomLayout = """
 XXXXXXXXXX
 X#-------X
@@ -562,11 +563,11 @@ $ ...... X
 XMMv vMMMX
 XXXXXXXXXX
 """
-		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY)
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 		self.name = "Vat"
 
 class Room2(Room):
-	def __init__(self,xPosition=0,yPosition=1,offsetX=4,offsetY=0):
+	def __init__(self,xPosition=0,yPosition=1,offsetX=4,offsetY=0,desiredPosition=None):
 		self.roomMeta = """
 """
 		roomLayout = """
@@ -626,7 +627,7 @@ XH......#X
 XXPPP ID#X
 XXXXXXXXXX
 """
-		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY)
+		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 		self.name = "Boilerroom"
 
 		self.lever1 = items.Lever(3,6,"engine control")
@@ -665,7 +666,7 @@ XXXXXXXXXX
 		self.lever2.activateAction = lever2action
 
 class TutorialMachineRoom(Room):
-	def __init__(self,xPosition=0,yPosition=1,offsetX=4,offsetY=0):
+	def __init__(self,xPosition=0,yPosition=1,offsetX=4,offsetY=0,desiredPosition=None):
 		roomLayout = """
 X#XX$XXX#X
 X#Pv vID#X
@@ -678,7 +679,7 @@ XOOOOOOOOX
 X#########
 XXXXXXXXXX
 """
-		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY)
+		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 		self.name = "Boilerroom"
 
 		self.lever1 = items.Lever(1,5,"engine control")
@@ -695,7 +696,7 @@ XXXXXXXXXX
 		self.terrain.tutorialVatProcessing.recalculate()
 
 class Room3(Room):
-	def __init__(self,xPosition=1,yPosition=0,offsetX=2,offsetY=2):
+	def __init__(self,xPosition=1,yPosition=0,offsetX=2,offsetY=2,desiredPosition=None):
 		self.roomLayout = """
 XXXXXXXXXX
 X????????X
@@ -708,7 +709,7 @@ X?......?X
 X??v v???X
 XXXX$XXXXX
 """
-		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY)
+		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 
 class Room4(Room):
 	def __init__(self):
@@ -724,10 +725,10 @@ X?......#X
 X? ?????#X
 XXXXXXXXXX
 """
-		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY)
+		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 
 class GenericRoom(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
 		self.roomLayout = """
 XX$XXXXXXX
 Xv v?????X
@@ -740,7 +741,7 @@ X?......#X
 X? XXXXX#X
 XXXXXXXXXX
 """
-		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY)
+		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 
 class CpuWasterRoom(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY):
@@ -756,7 +757,7 @@ X?......#X
 X? XXXXX#X
 XXXXXXXXXX
 """
-		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY)
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 
 		def addNPC(x,y):
 			quest1 = quests.MoveQuest(self,2,2)
@@ -792,7 +793,7 @@ XXXXXXXXXX
 				self.applySkippedAdvances()
 
 class StorageRoom(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
 		self.roomLayout = """
 XX&XX&XX&XX
 X?....?? ?X
@@ -805,12 +806,12 @@ X? ?? ?? ?X
 X? ?v v? ?X
 XX&XX$XX&XX
 """
-		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY)
+		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 		self.maxStorage = 2
 		self.store = {}
 
 class InfanteryQuarters(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
 		self.roomLayout = """
 XX$X&&XXXXX
 XX PPPPPPXX
@@ -822,10 +823,10 @@ X'.'' ''.IX
 X .......DX
 XXXXXXXXXXX
 """
-		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY)
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 	
 class FreePlacemenRoom(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
 		self.roomLayout = """
 XX$X&&XXXXX
 XX PPPPPPXX
@@ -837,10 +838,10 @@ X'.'' ''.IX
 X .......DX
 XXXXXXXXXXX
 """
-		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY)
+		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 
 class Vat1(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
 		self.roomLayout = """
 XXXXXXXXXX
 XababaabbX
@@ -865,14 +866,14 @@ Xmhm ...DX
 Xmmmv.v.IX
 XXXXX$XXXX
 """
-		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY)
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 
 	def recalculate(self):
 		for spray in self.sprays:
 			spray.recalculate()
 
 class Vat2(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
 		self.roomLayout = """
 XXXXXXXXXX
 X   b jjjX
@@ -885,11 +886,11 @@ X b. ....X
 ## ...v ##
 XXXXX$XXXX
 """
-		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY)
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 		self.floorDisplay = displayChars.acids
 
 class MechArmor(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
 		self.roomLayout = """
 XXXXXXXXXXXXXXX
 XX X X X X X XX
@@ -907,11 +908,11 @@ XX X X X X X XX
 X X X X.X X X.X
 XXXXXXX$XXXXXXX
 """
-		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY)
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 		self.floorDisplay = [displayChars.nonWalkableUnkown]
 
 class CargoRoom(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
 		self.roomLayout = """
 XXXXXXXXXX
 X        X
@@ -928,11 +929,11 @@ X        X
 XPPPPPPPPX
 XXXXXXXXXX
 """
-		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY)
+		super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 		self.floorDisplay = [displayChars.nonWalkableUnkown]
 
 class MiniMech(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
 		self.roomLayout = """
 XX$XXX
 XD.. X
@@ -941,7 +942,7 @@ XOF.PX
 Xmm.PX
 XXXXXX
 """
-		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY)
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 		self.floorDisplay = [displayChars.nonWalkableUnkown]
 		self.gogogo = False
 		self.engineStrength = 0
@@ -954,7 +955,7 @@ XXXXXX
 		self.engineStrength = 250*self.steamGeneration
 
 class CargoRoom(Room):
-	def __init__(self,xPosition,yPosition,offsetX,offsetY):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition):
 		self.roomLayout = """
 XXXXXXXXXX
 X        X
@@ -971,5 +972,5 @@ X        X
 XPPPPPPPPX
 XXXXXXXXXX
 """
-		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY)
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 		self.floorDisplay = [displayChars.nonWalkableUnkown]

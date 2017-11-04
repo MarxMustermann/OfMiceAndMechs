@@ -53,7 +53,6 @@ lastRedraw = time.time()
 def show_or_exit(key):
 	#mouse klick
 	if type(key) == tuple:
-		messages.append(str(key))
 		return
 
 	global lastLagDetection
@@ -754,7 +753,7 @@ class FirstTutorialPhase(object):
 				doSteamengineExplaination()
 
 		def doSteamengineExplaination():
-			cinematics.showCinematic("on the southern Side of the Room you see the Steamgenerators. A Steamgenerator might look like this:\n\n"+displayChars.void+displayChars.pipe+displayChars.boiler_inactive+displayChars.furnace_inactive+"\n"+displayChars.pipe+displayChars.pipe+displayChars.boiler_inactive+displayChars.furnace_inactive+"\n"+displayChars.void+displayChars.pipe+displayChars.boiler_active+displayChars.furnace_active+"\n\nit consist of Furnaces marked by "+displayChars.furnace_inactive+" or "+displayChars.furnace_active+" that heat the Water in the Boilers "+displayChars.boiler_inactive+" till it boils. a Boiler with boiling Water will be shown as "+displayChars.boiler_active+".\n\nthe Steam is transfered to the Pipes marked with "+displayChars.pipe+" and used to power the Ships Mechanics and Weapons\n\nDesign of generators are often quite unique. try to recognize the Genrators in this room and press "+commandChars.wait+"")
+			cinematics.showCinematic("on the southern Side of the Room you see the Steamgenerators. A Steamgenerator might look like this:\n\n"+displayChars.void+displayChars.pipe+displayChars.boiler_inactive+displayChars.furnace_inactive+"\n"+displayChars.pipe+displayChars.pipe+displayChars.boiler_inactive+displayChars.furnace_inactive+"\n"+displayChars.void+displayChars.pipe+displayChars.boiler_active+displayChars.furnace_active+"\n\nit consist of Furnaces marked by "+displayChars.furnace_inactive+" or "+displayChars.furnace_active+" that heat the Water in the Boilers "+displayChars.boiler_inactive+" till it boils. a Boiler with boiling Water will be shown as "+displayChars.boiler_active+".\n\nthe Steam is transfered to the Pipes marked with "+displayChars.pipe+" and used to power the Ships Mechanics and Weapons\n\nDesign of Generators are often quite unique. try to recognize the Genrators in this Room and press "+commandChars.wait+"")
 			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
 			cinematics.showCinematic("the Furnaces burn Coal shown as "+displayChars.coal+" . if a Furnace is burning Coal, it is shown as "+displayChars.furnace_active+" and shown as "+displayChars.furnace_inactive+" if not.\n\nthe Coal is stored in Piles shown as "+displayChars.pile+". the Coalpiles are on the right Side of the Room and are filled through the Pipes when needed.")
 			cinematic = cinematics.ShowGameCinematic(0)
@@ -785,7 +784,7 @@ class FirstTutorialPhase(object):
 			cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("8"))
 			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
 			cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("7"))
-			cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("by the Way: the Piles on the lower End of the Room are Storage for Replacementparts and you can sleep in the Hutches to the left shown as "+displayChars.hutch_free+" or "+displayChars.hutch_occupied))
+			cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("by the Way: the Piles on the lower End of the Room are Storage for Replacementparts and you can sleep in the Hutches n the middle of the Room shown as "+displayChars.hutch_free+" or "+displayChars.hutch_occupied))
 			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
 			cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("6"))
 			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
@@ -808,9 +807,9 @@ class FirstTutorialPhase(object):
 			cinematics.cinematicQueue.append(cinematic)
 
 		def doFurnaceFirering():
-			cinematics.showCinematic("your cohabitants in this Room are:\n 'Erwin von Libwig' ("+displayChars.staffCharacters[11]+") is this Rooms 'Raumleiter' and therefore responsible for proper Steamgeneration in this Room\n 'Ernst Ziegelbach' ("+displayChars.staffCharacters[25]+") was dispatched to support 'Erwin von Libwig' and is his Subordinate\n\nyou will likely report to 'Erwin von Libwig' later. please try to find them on the display and press "+commandChars.wait)
+			cinematics.showCinematic("your cohabitants in this Room are:\n '"+npc.name+"' ("+npc.display+") is this Rooms 'Raumleiter' and therefore responsible for proper Steamgeneration in this Room\n '"+npc2.name+"' ("+npc2.display+") was dispatched to support '"+npc.name+"' and is his Subordinate\n\nyou will likely report to '"+npc.name+"' later. please try to find them on the display and press "+commandChars.wait)
 			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-			cinematics.showCinematic("Erwin von Libwig will demonstrate how to fire a furnace now.\n\nwatch and learn.")
+			cinematics.showCinematic(npc2.name+" will demonstrate how to fire a furnace now.\n\nwatch and learn.")
 			class AddQuestEvent(object):
 				def __init__(subself,tick):
 					subself.tick = tick
@@ -855,7 +854,7 @@ class FirstTutorialPhase(object):
 		doBasicSchooling()
 
 	def end(self):
-		cinematics.showCinematic("please try to remember the Information. The lesson will now continue with movement.")
+		cinematics.showCinematic("please try to remember the Information. The lesson will now continue with Movement.")
 		phase2 = SecondTutorialPhase()
 		phase2.start()
 phasesByName["FirstTutorialPhase"] = FirstTutorialPhase
@@ -884,9 +883,9 @@ class SecondTutorialPhase(object):
 		npc2 = terrain.tutorialMachineRoom.firstOfficer
 
 		questList = []
-		questList.append(quests.MoveQuest(terrain.tutorialMachineRoom,5,5,startCinematics="movement can be tricky sometimes so please make yourself comfortable with the controls.\n\nyou can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.\n\nthe basic Movementcommands are:\n "+commandChars.move_north+"=up\n "+commandChars.move_east+"=right\n "+commandChars.move_south+"=down\n "+commandChars.move_west+"=right\nplease move to the designated Target. the Implant will mark your Way"))
+		questList.append(quests.MoveQuest(terrain.tutorialMachineRoom,5,5,startCinematics="Movement can be tricky sometimes so please make yourself comfortable with the controls.\n\nyou can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.\n\nthe basic Movementcommands are:\n "+commandChars.move_north+"=up\n "+commandChars.move_east+"=right\n "+commandChars.move_south+"=down\n "+commandChars.move_west+"=right\nplease move to the designated Target. the Implant will mark your Way"))
 		if not mainChar.gotMovementSchooling:
-			quest = quests.PatrolQuest([(terrain.tutorialMachineRoom,2,2),(terrain.tutorialMachineRoom,2,5),(terrain.tutorialMachineRoom,7,5),     (terrain.tutorialMachineRoom,7,2)],startCinematics="now please patrol around the rooms a few times.",lifetime=80)
+			quest = quests.PatrolQuest([(terrain.tutorialMachineRoom,7,5),(terrain.tutorialMachineRoom,7,2),(terrain.tutorialMachineRoom,2,2),(terrain.tutorialMachineRoom,2,5)],startCinematics="now please patrol around the Room a few times.",lifetime=80)
 			def setPlayerState():
 				mainChar.gotMovementSchooling = True
 			quest.endTrigger = setPlayerState
@@ -1176,69 +1175,12 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
 gamestate.currentPhase().start()
 
-#cinematics.showCinematic("movement can be tricky sometimes so please make yourself comfortable with the controls.\n\nyou can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.\n\nthe basic Movementcommands are:\n w=up\n a=right\n s=down\n d=right\nplease move to the designated Target. the Implant will mark your Way")
-#"""
-#*move back to waiting position*
-#"""
-#cinematics.showCinematic("you have 20 Ticks to familiarise yourself with the Movementcommands. please do.")
-#cinematics.showCinematic("next on my Checklist is to explain the Interaction with your Environment\n\ninteraction with your Environment is somewhat complicated\n\nthe basic Interationcommands are:\n j=activate/apply\n e=examine\n k=pick up\n\nsee this Piles of Coal marked with ӫ on the rigth Side of the Room.\n\nwhenever you bump into an item that is to big to be walked on, you will promted for giving an extra interaction command. I'll give you an example:\n\nΩΩ＠ӫӫ\n\n pressing a and j would result in Activation of the Furnace\n pressing d and j would result in Activation of the Pile\n pressing a and e would result make you examine the Furnace\n pressing d and e would result make you examine the Pile\n\nplease grab yourself some Coal from a pile by bumping into it and pressing j afterwards.")
 rooms.mainChar = mainChar
 terrains.mainChar = mainChar
-
-"""
-quest0 = quests.MoveQuest(terrain.tutorialMachineRoom,7,7)
-quest1 = quests.MoveQuest(room1,4,4)
-quest2 = quests.MoveQuest(room3,6,6)
-quest3 = quests.MoveQuest(room4,2,8)
-quest4 = quests.MoveQuest(room5,2,2)
-quest5 = quests.MoveQuest(room6,2,2)
-quest6 = quests.MoveQuest(room7,2,2)
-quest7 = quests.MoveQuest(room8,2,2)
-quest8 = quests.MoveQuest(room9,2,2)
-quest9 = quests.MoveQuest(room1,2,2)
-quest10 = quests.MoveQuest(room9,2,2)
-quest11 = quests.MoveQuest(room8,2,2)
-quest12 = quests.MoveQuest(room7,2,2)
-quest13 = quests.MoveQuest(room6,2,2)
-quest14 = quests.MoveQuest(room5,2,2)
-quest15 = quests.MoveQuest(room4,2,2)
-quest16 = quests.MoveQuest(room3,2,2)
-quest17 = quests.MoveQuest(room2,2,2)
-quest18 = quests.MoveQuest(room1,2,2)
-quest19 = quests.MoveQuest(room2,2,2)
-quest0.followUp = quest1
-quest1.followUp = quest2
-quest2.followUp = quest3
-quest3.followUp = quest4
-quest4.followUp = quest5
-quest5.followUp = quest6
-quest6.followUp = quest7
-quest7.followUp = quest8
-quest8.followUp = quest9
-quest9.followUp = quest10
-quest10.followUp = quest11
-quest11.followUp = quest12
-quest12.followUp = quest13
-quest13.followUp = quest14
-quest14.followUp = quest15
-quest15.followUp = quest16
-quest16.followUp = quest17
-quest17.followUp = quest18
-quest18.followUp = quest19
-quest19.followUp = quest0
-"""
-#npc2 = characters.Character(displayChars.staffCharacters[25],1,1,name="Ernst Ziegelbach")
-#npc2.watched = True
-#terrain.tutorialMachineRoom.addCharacter(npc2,1,1)
-#npc2.terrain = terrain
-#npc2.room = terrain.tutorialMachineRoom
-#npc2.assignQuest(quest0)
-#npc2.automated = False
 
 items.characters = characters
 rooms.characters = characters
 
-movestate = "up"
 def advanceGame():
 	global movestate
 	for character in terrain.characters:
@@ -1341,4 +1283,5 @@ def render():
 	return result
 
 loop.set_alarm_in(0.2, callShow_or_exit, "lagdetection")
+loop.set_alarm_in(0.0, callShow_or_exit, "~")
 loop.run()

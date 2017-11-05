@@ -50,6 +50,7 @@ class Terrain(object):
 		self.tutorialVat = None
 		self.tutorialVatProcessing = None
 		self.tutorialMachineRoom = None
+		self.tutorialLab = None
 		lineCounter = 0
 		for layoutline in layout.split("\n")[1:]:
 			rowCounter = 0
@@ -83,7 +84,12 @@ class Terrain(object):
 					if not self.tutorialMachineRoom:
 						self.tutorialMachineRoom = room
 					roomsOnMap.append(room)
-				elif char == "C":
+				elif char == "L":
+					room = rooms.LabRoom(rowCounter,lineCounter,1,1)
+					if not self.tutorialLab:
+						self.tutorialLab = room
+					roomsOnMap.append(room)
+				elif char == "C" or char == "U":
 					roomsOnMap.append(rooms.CargoRoom(rowCounter,lineCounter,3,0))
 				elif char == "?":
 					roomsOnMap.append(rooms.CpuWasterRoom(rowCounter,lineCounter,2,2))
@@ -462,11 +468,11 @@ X X X X X X X X X X X
 X X X X X X X X X X X
 X V v ? ? ? ? ? v V X
 X   . t . . . . . ? X
-X ? . M Q r ? ? . ? X
-X ? . ? ? ? ? ? . ? X
-X C . . . . . . . ? X
-X C   C C C C C   ? X
-X C   C C C C C t ? X
+X O . M Q r ? ? . O X
+X O . L ? K ? ? . O X
+X U . . . . . . . U X
+X U   C C C C C   U X
+X U   C C C C C t U X
 X X X C C C C C X X X """
 		detailedLayout = """
                                                                                                                                                                     
@@ -549,9 +555,9 @@ X X X C C C C C X X X """
                X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
                X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
                X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X             ..X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X             .###           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X             ..X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .             #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
                X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
                X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
                X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               

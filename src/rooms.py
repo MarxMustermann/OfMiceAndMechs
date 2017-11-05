@@ -1020,6 +1020,26 @@ XXXXXX
 	def changed(self):
 		self.engineStrength = 250*self.steamGeneration
 
+class LabRoom(Room):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+		self.roomLayout = """
+XXXXXXXXXX
+X        X
+X ...... X
+X .    . X
+X .    . X
+$ .    . X
+X .    . X
+X ...... X
+X        X
+X########X
+XXXXXXXXXX
+XOOOOOOOOX
+XFFFFFFFFX
+XXXXXXXXXX
+"""
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+
 class CargoRoom(Room):
 	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
 		self.roomLayout = """

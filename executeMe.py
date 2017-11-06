@@ -32,29 +32,35 @@ else:
 
 # HACK: common variables with modules
 phasesByName = {}
-
 story.phasesByName = phasesByName
 story.registerPhases()
 
+# HACK: common variables with modules
 cinematics.quests = quests
 story.quests = quests
 
+# HACK: common variables with modules
 items.displayChars = displayChars
 rooms.displayChars = displayChars
 terrains.displayChars = displayChars
 story.displayChars = displayChars
 
+# HACK: common variables with modules
 story.cinematics = cinematics
 interaction.cinematics = cinematics
 
+# HACK: common variables with modules
 items.commandChars = commandChars
 story.commandChars = commandChars
 interaction.commandChars = commandChars
 
+# HACK: common variables with modules
 story.names = names
 
+# HACK: common variables with modules
 story.items = items
 
+# HACK: common variables with modules
 items.characters = characters
 rooms.characters = characters
 story.characters = characters
@@ -62,19 +68,28 @@ story.characters = characters
 # HACK: common variables with modules
 cinematics.main = interaction.main
 
+# HACK: common variables with modules
 cinematics.loop = interaction.loop
 quests.loop = interaction.loop
 
+# HACK: common variables with modules
 cinematics.callShow_or_exit = interaction.callShow_or_exit
 quests.callShow_or_exit = interaction.callShow_or_exit
 
+# HACK: common variables with modules
 rooms.calculatePath		= gameMath.calculatePath
 quests.calculatePath		= gameMath.calculatePath
 characters.calculatePath	= gameMath.calculatePath
 terrains.calculatePath 		= gameMath.calculatePath
 
+# HACK: common variables with modules
 rooms.Character = characters.Character
 		
+##########################################
+###
+## the gamestate to be moved later
+#
+##########################################
 class GameState():
 	def __init__(self):
 		self.gameWon = False
@@ -132,6 +147,7 @@ class GameState():
 		       }
 gamestate = None
 
+# HACK: common variables with modules
 messages = []
 items.messages = messages
 quests.messages = messages
@@ -142,43 +158,59 @@ cinematics.messages = messages
 story.messages = messages
 interaction.messages = messages
 
+# HACK: common variables with modules
 quests.showCinematic = cinematics.showCinematic
 
+##########################################
+###
+## set up the trainingsterrain. A container will be made later
+#
+##########################################
 terrain = terrains.TutorialTerrain()
 
+# HACK: common variables with modules
 items.terrain = terrain
 story.terrain = terrain
 interaction.terrain = terrain
 
+# HACK: common variables with modules
 characters.roomsOnMap = terrain.rooms
 
+# gamestate that should be contained in the gamestate
 mapHidden = True
-
 mainChar = None
 
+# the available Phases
 phasesByName["FirstTutorialPhase"] = story.FirstTutorialPhase
 phasesByName["SecondTutorialPhase"] = story.SecondTutorialPhase
 phasesByName["ThirdTutorialPhase"] = story.ThirdTutorialPhase
 phasesByName["VatPhase"] = story.VatPhase
 phasesByName["MachineRoomPhase"] = story.MachineRoomPhase
 
-gamestate = GameState()
+##################################################################################################################################
+###
+##		setup the game
+#
+#################################################################################################################################
 
+# create and load the gamestate
+gamestate = GameState()
 try:
 	gamestate.load()
 except:
 	pass
 
+# HACK: common variables with modules
 story.gamestate = gamestate
 interaction.gamestate = gamestate
 
-mainChar = gamestate.mainChar
+# HACK: common variables with modules
+rooms.mainChar = gamestate.mainChar
+terrains.mainChar = gamestate.mainChar
+story.mainChar = gamestate.mainChar
+interaction.mainChar = gamestate.mainChar
 
-rooms.mainChar = mainChar
-terrains.mainChar = mainChar
-story.mainChar = mainChar
-interaction.mainChar = mainChar
-
+# set up the splash screen
 cinematics.showCinematic("""
 
 OOO FFF          AAA N N DD
@@ -196,8 +228,16 @@ MM     MM  EE      CC      HH   HH        S
 MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 """)
 
+# set up the current phase
 gamestate.currentPhase().start()
 
+##################################################################################################################################
+###
+##		the main loop
+#
+#################################################################################################################################
+
+# the game loop
 def advanceGame():
 	global movestate
 	for character in terrain.characters:
@@ -208,9 +248,9 @@ def advanceGame():
 
 	gamestate.tick += 1
 
+# HACK: common variables with modules
 cinematics.advanceGame = advanceGame
 interaction.advanceGame = advanceGame
 
-interaction.loop.set_alarm_in(0.2, interaction.callShow_or_exit, "lagdetection")
-interaction.loop.set_alarm_in(0.0, interaction.callShow_or_exit, "~")
+# start the interactio loop of the underlying library
 interaction.loop.run()

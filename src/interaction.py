@@ -522,4 +522,11 @@ def render():
 		result += lineRender
 		
 	return result
+
+# get the interaction loop from the library
 loop = urwid.MainLoop(frame, unhandled_input=show_or_exit)
+
+# kick of the interaction loop
+interaction.loop.set_alarm_in(0.2, interaction.callShow_or_exit, "lagdetection")
+interaction.loop.set_alarm_in(0.0, interaction.callShow_or_exit, "~")
+

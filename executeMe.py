@@ -11,6 +11,7 @@ import src.cinematics as cinematics
 import src.story as story
 import src.gameMath as gameMath
 import src.interaction as interaction
+import src.gamestate as gamestate
 import config.commandChars as commandChars
 import config.names as names
 
@@ -34,6 +35,7 @@ else:
 phasesByName = {}
 story.phasesByName = phasesByName
 story.registerPhases()
+gamestate.phasesByName = phasesByName
 
 # HACK: common variables with modules
 cinematics.quests = quests
@@ -44,6 +46,7 @@ items.displayChars = displayChars
 rooms.displayChars = displayChars
 terrains.displayChars = displayChars
 story.displayChars = displayChars
+gamestate.displayChars = displayChars
 
 # HACK: common variables with modules
 story.cinematics = cinematics
@@ -56,6 +59,7 @@ interaction.commandChars = commandChars
 
 # HACK: common variables with modules
 story.names = names
+gamestate.names = names
 
 # HACK: common variables with modules
 story.items = items
@@ -85,68 +89,6 @@ terrains.calculatePath 		= gameMath.calculatePath
 # HACK: common variables with modules
 rooms.Character = characters.Character
 		
-##########################################
-###
-## the gamestate to be moved later
-#
-##########################################
-class GameState():
-	def __init__(self):
-		self.gameWon = False
-		self.currentPhase = phasesByName["FirstTutorialPhase"]
-		self.tick = 0
-
-		self.mainChar = characters.Character(displayChars.main_char,3,3,automated=False,name=names.characterFirstNames[self.tick%len(names.characterFirstNames)]+" "+names.characterLastNames[self.tick%len(names.characterLastNames)])
-		self.mainChar.terrain = terrain
-		self.mainChar.room = terrain.tutorialMachineRoom
-		self.mainChar.watched = True
-		terrain.tutorialMachineRoom.addCharacter(self.mainChar,3,3)
-		mainChar = self.mainChar
-
-	def save(self):
-		saveFile = open("gamestate/gamestate.json","w")
-		state = self.getState()
-		if not state["gameWon"]:
-			saveFile.write(json.dumps(state))
-		else:
-			saveFile.write(json.dumps("Winning is no fun at all"))
-		saveFile.close()
-
-	def load(self):
-		saveFile = open("gamestate/gamestate.json")
-		state = json.loads(saveFile.read())
-		saveFile.close()
-
-		self.setState(state)
-		self.mainChar.setState(state["mainChar"])
-
-	def setState(self,state):
-		self.gameWon = state["gameWon"]
-		self.currentPhase = phasesByName[state["currentPhase"]]
-		self.tick = state["tick"]
-
-		for room in terrain.rooms:
-			room.setState(state["roomStates"][room.id])
-
-		for room in terrain.rooms:
-			room.timeIndex = self.tick
-
-	def getState(self):
-		roomStates = {}
-		roomList = []
-		for room in terrain.rooms:
-			roomList.append(room.id)
-			roomStates[room.id] = room.getState()
-		
-		return {  "gameWon":self.gameWon,
-			  "currentPhase":self.currentPhase.name,
-			  "tick":self.tick,
-			  "mainChar":self.mainChar.getState(),
-		          "rooms":roomList,
-		          "roomStates":roomStates,
-		       }
-gamestate = None
-
 # HACK: common variables with modules
 messages = []
 items.messages = messages
@@ -172,11 +114,12 @@ terrain = terrains.TutorialTerrain()
 items.terrain = terrain
 story.terrain = terrain
 interaction.terrain = terrain
+gamestate.terrain = terrain
 
 # HACK: common variables with modules
 characters.roomsOnMap = terrain.rooms
 
-# gamestate that should be contained in the gamestate
+# state that should be contained in the gamestate
 mapHidden = True
 mainChar = None
 
@@ -194,21 +137,21 @@ phasesByName["MachineRoomPhase"] = story.MachineRoomPhase
 #################################################################################################################################
 
 # create and load the gamestate
-gamestate = GameState()
+gameStateObj = gamestate.GameState()
 try:
-	gamestate.load()
+	gameStateObj.load()
 except:
 	pass
 
 # HACK: common variables with modules
-story.gamestate = gamestate
-interaction.gamestate = gamestate
+story.gamestate = gameStateObj
+interaction.gamestate = gameStateObj
 
 # HACK: common variables with modules
-rooms.mainChar = gamestate.mainChar
-terrains.mainChar = gamestate.mainChar
-story.mainChar = gamestate.mainChar
-interaction.mainChar = gamestate.mainChar
+rooms.mainChar = gameStateObj.mainChar
+terrains.mainChar = gameStateObj.mainChar
+story.mainChar = gameStateObj.mainChar
+interaction.mainChar = gameStateObj.mainChar
 
 # set up the splash screen
 cinematics.showCinematic("""
@@ -229,7 +172,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 """)
 
 # set up the current phase
-gamestate.currentPhase().start()
+gameStateObj.currentPhase().start()
 
 ##################################################################################################################################
 ###
@@ -246,7 +189,7 @@ def advanceGame():
 	for room in terrain.rooms:
 		room.advance()
 
-	gamestate.tick += 1
+	gameStateObj.tick += 1
 
 # HACK: common variables with modules
 cinematics.advanceGame = advanceGame

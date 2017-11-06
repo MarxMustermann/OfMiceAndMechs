@@ -1,4 +1,6 @@
+import src.rooms as rooms
 import src.items as items
+import src.quests as quests
 import time
 import urwid
 
@@ -527,6 +529,6 @@ def render():
 loop = urwid.MainLoop(frame, unhandled_input=show_or_exit)
 
 # kick of the interaction loop
-interaction.loop.set_alarm_in(0.2, interaction.callShow_or_exit, "lagdetection")
-interaction.loop.set_alarm_in(0.0, interaction.callShow_or_exit, "~")
+loop.set_alarm_in(0.2, callShow_or_exit, "lagdetection")
+loop.set_alarm_in(0.0, callShow_or_exit, "~")
 

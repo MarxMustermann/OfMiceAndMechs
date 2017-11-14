@@ -126,12 +126,12 @@ def show_or_exit(key):
 								messages.append("you cannot move there")
 				if not hadRoomInteraction:
 					try:
-						items = terrain.itemByCoordinates[mainChar.xPosition,mainChar.yPosition-1]
+						foundItems = terrain.itemByCoordinates[mainChar.xPosition,mainChar.yPosition-1]
 					except Exception as e:
-						items = []
+						foundItems = []
 
 					foundItem = False
-					for item in items:
+					for item in foundItems:
 						if item and not item.walkable:
 							messages.append("You cannot walk there")
 							messages.append("press "+commandChars.activate+" to apply")
@@ -181,12 +181,12 @@ def show_or_exit(key):
 								messages.append("you cannot move there")
 				if not hadRoomInteraction:
 					try:
-						items = terrain.itemByCoordinates[mainChar.xPosition,mainChar.yPosition+1]
+						foundItems = terrain.itemByCoordinates[mainChar.xPosition,mainChar.yPosition+1]
 					except Exception as e:
-						items = []
+						foundItems = []
 
 					foundItem = False
-					for item in items:
+					for item in foundItems:
 						if item and not item.walkable:
 							messages.append("You cannot walk there")
 							messages.append("press "+commandChars.activate+" to apply")
@@ -236,12 +236,12 @@ def show_or_exit(key):
 								messages.append("you cannot move there")
 				if not hadRoomInteraction:
 					try:
-						items = terrain.itemByCoordinates[mainChar.xPosition+1,mainChar.yPosition]
+						foundItems = terrain.itemByCoordinates[mainChar.xPosition+1,mainChar.yPosition]
 					except Exception as e:
-						items = []
+						foundItems = []
 
 					foundItem = False
-					for item in items:
+					for item in foundItems:
 						if item and not item.walkable:
 							messages.append("You cannot walk there")
 							messages.append("press "+commandChars.activate+" to apply")
@@ -291,12 +291,12 @@ def show_or_exit(key):
 								messages.append("you cannot move there")
 				if not hadRoomInteraction:
 					try:
-						items = terrain.itemByCoordinates[mainChar.xPosition-1,mainChar.yPosition]
+						foundItems = terrain.itemByCoordinates[mainChar.xPosition-1,mainChar.yPosition]
 					except Exception as e:
-						items = []
+						foundItems = []
 
 					foundItem = False
-					for item in items:
+					for item in foundItems:
 						if item and not item.walkable:
 							messages.append("You cannot walk there")
 							messages.append("press "+commandChars.activate+" to apply")
@@ -306,6 +306,17 @@ def show_or_exit(key):
 					if not foundItem:
 						mainChar.xPosition -= 1
 						mainChar.changed()
+
+		if key in (commandChars.attack):
+			if mainChar.room:
+				for char in mainChar.room.characters:
+					if char == mainChar:
+						continue
+					if not (mainChar.xPosition == char.xPosition and mainChar.yPosition == char.yPosition):
+						continue
+					mainChar.room.removeCharacter(char)
+					corpse = items.Corpse(mainChar.xPosition,mainChar.yPosition)
+					mainChar.room.addItems([corpse])
 
 		if key in (commandChars.activate):
 			if itemMarkedLast:

@@ -20,4 +20,5 @@ show_inventory = 'i'
 show_inventory_detailed = 'I'
 redraw = 'esc'
 show_help = '?'
+attack = 'm'
 

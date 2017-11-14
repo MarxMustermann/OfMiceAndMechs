@@ -34,6 +34,14 @@ pipe_ru = "--"
 pipe_ud = "--"
 spray_right = "-<"
 spray_left = ">-"
+spray_right_inactive = "- "
+spray_left_inactive = " -"
+spray_right_stage1 = "-."
+spray_left_stage1 = ".-"
+spray_right_stage2 = "--"
+spray_left_stage2 = "--"
+spray_right_stage3 = "-="
+spray_left_stage3 = "=-"
 outlet = "io"
 barricade = "ib"
 randomStuff1 = ["ra","rb","rc","rd","re"]
@@ -50,7 +58,7 @@ clamp_inactive = "iC"
 void = "  "
 main_char = "p@"
 staffCharacters = ["nA","nB","nC","nD","nE","nF","nG","nH","nI","nJ","nK","nL","nM","nN","nO","nP","nQ","nR","nS","nT","nU","nV","nW","nX","nY","nZ"]
-staffCharactersByLetter = ["a":"nA","b":"nB","c":"nC","d":"nD","e":"nE","f":"nF","g":"nG","h":"nH","i":"nI","j":"nJ","k":"nK","l":"nL","m":"nM","n":"nN","o":"nO","p":"nP","q":"nQ","r":"nR","s":"nS","t":"nT","u":"nU","v":"nV","w":"nW","x":"nX","y":"nY","z":"nZ"]
+staffCharactersByLetter = {"a":"nA","b":"nB","c":"nC","d":"nD","e":"nE","f":"nF","g":"nG","h":"nH","i":"nI","j":"nJ","k":"nK","l":"nL","m":"nM","n":"nN","o":"nO","p":"nP","q":"nQ","r":"nR","s":"nS","t":"nT","u":"nU","v":"nV","w":"nW","x":"nX","y":"nY","z":"nZ"}
 winch_inactive = "iw"
 winch_active = "iW"
 scrap_light = "is"

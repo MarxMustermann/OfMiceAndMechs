@@ -74,6 +74,7 @@ class FirstTutorialPhase(object):
 					messages.append("*smoke and dust on Coalpiles and neighbourng Fields*")
 					messages.append("*a chunk of Coal drops onto the floor*")
 					terrain.tutorialMachineRoom.addItems([items.Coal(7,5)])
+					terrain.tutorialMachineRoom.addCharacter(characters.Mouse(),6,5)
 					messages.append("*smoke clears*")
 
 			terrain.tutorialMachineRoom.addEvent(CoalRefillEvent(gamestate.tick+11))

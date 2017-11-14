@@ -183,3 +183,11 @@ class Character():
 	def changed(self):
 		for listenFunction in self.listeners:
 			listenFunction()
+
+	def changed(self):
+		for listenFunction in self.listeners:
+			listenFunction()
+
+class Mouse(Character):
+	def __init__(self,display="🝆 ",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse"):
+		super().__init__(display, xPosition, yPosition, quests, automated, name)

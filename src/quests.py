@@ -262,6 +262,12 @@ class EnterRoomQuest(Quest):
 		if (self.character.yPosition in (10,9)):
 			for item in self.character.room.itemByCoordinates[(self.character.xPosition,9)]:
 				item.close()
+		if (self.character.xPosition in (-1,0)):
+			for item in self.character.room.itemByCoordinates[(self.character.yPosition,0)]:
+				item.close()
+		if (self.character.xPosition in (10,9)):
+			for item in self.character.room.itemByCoordinates[(self.character.yPosition,9)]:
+				item.close()
 
 		super().postHandler()
 

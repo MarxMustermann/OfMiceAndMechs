@@ -151,11 +151,20 @@ class Room(object):
 				elif char == "j":
 					itemsOnFloor.append(items.Item(displayChars.vatSnake,rowCounter,lineCounter))
 				elif char == "c":
-					# to be corpse type I
-					itemsOnFloor.append(items.Corpse(rowCounter,lineCounter))
+					item = items.Corpse(rowCounter,lineCounter)
+					itemsOnFloor.append(item)
+				elif char == "C":
+					item = items.UnconciousBody(rowCounter,lineCounter)
+					itemsOnFloor.append(item)
 				elif char == "z":
 					item = items.Item(displayChars.pipe_ud,rowCounter,lineCounter)
 					item.walkable = True
+					itemsOnFloor.append(item)
+				elif char == "Ö":
+					item = items.GrowthTank(rowCounter,lineCounter,filled=True)
+					itemsOnFloor.append(item)
+				elif char == "ö":
+					item = items.GrowthTank(rowCounter,lineCounter,filled=False)
 					itemsOnFloor.append(item)
 				elif char == "B":
 					item = items.Item(displayChars.barricade,rowCounter,lineCounter)
@@ -277,7 +286,7 @@ class Room(object):
 					except:
 						pass
 
-			if mainChar.room == self:
+			if mainChar in self.characters:
 				chars[mainChar.yPosition][mainChar.xPosition] = mainChar.display
 		else:
 			chars = []
@@ -320,6 +329,12 @@ class Room(object):
 				self.itemByCoordinates[(item.xPosition,item.yPosition)].append(item)
 			else:
 				self.itemByCoordinates[(item.xPosition,item.yPosition)] = [item]
+
+	def removeItem(self,item):
+		self.itemByCoordinates[(item.xPosition,item.yPosition)].remove(item)
+		if not self.itemByCoordinates[(item.xPosition,item.yPosition)]:
+			del self.itemByCoordinates[(item.xPosition,item.yPosition)]
+		self.itemsOnFloor.remove(item)
 
 	def getAffectedByMovementNorth(self,initialMovement=True,force=1,movementBlock=set()):
 		self.terrain.getAffectedByRoomMovementNorth(self,force=force,movementBlock=movementBlock)
@@ -1060,3 +1075,21 @@ XXXXXXXXXX
 """
 		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 		self.floorDisplay = [displayChars.nonWalkableUnkown]
+
+class WakeUpRoom(Room):
+	def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+		self.roomLayout = """
+XXXXXXXX
+Xö     X
+XÖ ... $
+XÖ . . X
+XÖ . . X
+XÖ . . X
+XÖ . . X
+XÖ . . X
+XÖ ... X
+XÖ     X
+XXXXXXXX
+"""
+		super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+

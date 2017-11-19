@@ -3,12 +3,80 @@ gamestate = None
 names = None
 characters = None
 
+class WakeUpPhase(object):
+	def __init__(self):
+		self.name = "WakeUpPhase"
+
+	def start(self):
+		gamestate.currentPhase = self
+		mainChar.xPosition = 1
+		mainChar.yPosition = 4
+
+		currentRoom = terrain.wakeUpRoom
+
+		npc = characters.Character(displayChars.staffCharactersByLetter[names.characterLastNames[(gamestate.tick+14)%len(names.characterLastNames)].split(" ")[-1][0].lower()],5,3,name="Eduart Knoblauch")
+		terrain.wakeUpRoom.addCharacter(npc,6,7)
+		npc.terrain = terrain
+
+		cinematics.showCinematic("press . to wait/speed up cutscenes\n\npress ? for help\n\npress ^ to exit\n\npress space to skip cutscenes")
+		cinematic = cinematics.ShowGameCinematic(5,tickSpan=1)
+		def ting():
+			cinematics.showCinematic("*ting*")
+			cinematic = cinematics.ShowGameCinematic(1,tickSpan=1)
+			def screetch():
+				messages.append("*screetch*")
+				cinematic = cinematics.ShowGameCinematic(1,tickSpan=1)
+				def playerEject():
+					messages.append("*schurp**splat*")
+					item = items.UnconciousBody(2,4)
+					terrain.wakeUpRoom.addItems([item])
+					terrain.wakeUpRoom.itemByCoordinates[(1,4)][0].eject()
+					quest = quests.MoveQuest(terrain.wakeUpRoom,3,4)
+					npc.assignQuest(quest)
+					def wakeUp1():
+						messages.append("wake up, "+mainChar.name)
+						cinematic = cinematics.ShowGameCinematic(3,tickSpan=1)
+						def wakeUp2():
+							messages.append("WAKE UP.")
+							cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
+							def kick():
+								messages.append("WAKE UP. *kicks "+mainChar.name+"*")
+								cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
+								def addPlayer():
+									currentRoom.removeItem(terrain.wakeUpRoom.itemByCoordinates[(2,4)][0])
+									currentRoom.addCharacter(mainChar,2,4)
+									quest = quests.MoveQuest(terrain.wakeUpRoom,6,7)
+									npc.assignQuest(quest)
+									loop.set_alarm_in(0.1, callShow_or_exit, '.')
+								cinematic.endTrigger = addPlayer
+								cinematics.cinematicQueue.append(cinematic)
+							cinematic.endTrigger = kick
+							cinematics.cinematicQueue.append(cinematic)
+						cinematic.endTrigger = wakeUp2
+						cinematics.cinematicQueue.append(cinematic)
+					cinematic = cinematics.ShowGameCinematic(10,tickSpan=1)
+					cinematic.endTrigger = wakeUp1
+					cinematics.cinematicQueue.append(cinematic)
+				cinematic.endTrigger = playerEject
+				cinematics.cinematicQueue.append(cinematic)
+			cinematic.endTrigger = screetch
+			cinematics.cinematicQueue.append(cinematic)
+		cinematic.endTrigger = ting
+		cinematics.cinematicQueue.append(cinematic)
+
+		#terrain.wakeUpRoom.addCharacter(mainChar,4,9)
+		mainChar.room = terrain.wakeUpRoom
+		#mainChar.terrain = terrain
+
+
 class FirstTutorialPhase(object):
 	def __init__(self):
 		self.name = "FirstTutorialPhase"
 
 	def start(self):
 		gamestate.currentPhase = self
+
+		terrain.tutorialMachineRoom.addCharacter(mainChar,2,2)
 
 		# fix the setup
 		if not terrain.tutorialMachineRoom.secondOfficer:
@@ -79,24 +147,28 @@ class FirstTutorialPhase(object):
 
 			terrain.tutorialMachineRoom.addEvent(CoalRefillEvent(gamestate.tick+11))
 
-			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
 			cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("8"))
-			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
 			cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("7"))
 			cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("by the Way: the Piles on the lower End of the Room are Storage for Replacementparts and you can sleep in the Hutches n the middle of the Room shown as "+displayChars.hutch_free+" or "+displayChars.hutch_occupied))
-			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
 			cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("6"))
-			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
 			cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("5"))
-			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
 			cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("4"))
-			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
 			cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("3"))
-			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
 			cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("2"))
-			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
 			cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("1"))
-			cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
+			cinematic = cinematics.ShowGameCinematic(1,tickSpan=1)
+			def advance():
+				loop.set_alarm_in(0.1, callShow_or_exit, '.')
+			cinematic.endTrigger = advance
+			cinematics.cinematicQueue.append(cinematic)
 			cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("Coaldelivery now"))
 			cinematic = cinematics.ShowGameCinematic(2)
 			def wrapUp():
@@ -131,7 +203,7 @@ class FirstTutorialPhase(object):
 
 			terrain.tutorialMachineRoom.addEvent(ShowMessageEvent(gamestate.tick+1))
 			terrain.tutorialMachineRoom.addEvent(AddQuestEvent(gamestate.tick+2))
-			cinematic = cinematics.ShowGameCinematic(22)
+			cinematic = cinematics.ShowGameCinematic(22,tickSpan=1)
 			def wrapUp():
 				doWrapUp()
 				gamestate.save()
@@ -474,3 +546,4 @@ def registerPhases():
 	phasesByName["FirstTutorialPhase"] = FirstTutorialPhase
 	phasesByName["SecondTutorialPhase"] = SecondTutorialPhase
 	phasesByName["ThirdTutorialPhase"] = ThirdTutorialPhase
+	phasesByName["WakeUpPhase"] = WakeUpPhase

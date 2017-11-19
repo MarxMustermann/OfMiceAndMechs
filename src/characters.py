@@ -132,6 +132,48 @@ class Character():
 									self.terrain = None
 									self.changed()
 									break
+							else:
+								messages.append("you cannot move there")
+								break
+					if room.xPosition*15+room.offsetX+10 == nextPosition[1]+1:
+						if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+10 > self.yPosition:
+							localisedEntry = (self.yPosition%15-room.offsetY,nextPosition[1]%15-room.offsetX)
+							if localisedEntry in room.walkingAccess:
+								if localisedEntry in room.itemByCoordinates:
+									for listItem in room.itemByCoordinates[localisedEntry]:
+										if not listItem.walkable:
+											item = listItem
+											break
+								if item:
+									break
+								else:
+									room.addCharacter(self,localisedEntry[0],localisedEntry[1])
+									self.terrain.characters.remove(self)
+									self.terrain = None
+									self.changed()
+									break
+							else:
+								messages.append("you cannot move there")
+					if room.xPosition*15+room.offsetX == nextPosition[1]:
+						if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+10 > self.yPosition:
+							localisedEntry = ((self.yPosition-room.offsetY)%15,((nextPosition[1]-room.offsetX)%15))
+							if localisedEntry in room.walkingAccess:
+								if localisedEntry in room.itemByCoordinates:
+									for listItem in room.itemByCoordinates[localisedEntry]:
+										if not listItem.walkable:
+											item = listItem
+											break
+								if item:
+									break
+								else:
+									room.addCharacter(self,localisedEntry[0],localisedEntry[1])
+									self.terrain.characters.remove(self)
+									self.terrain = None
+									self.changed()
+									break
+							else:
+								messages.append("you cannot move there")
+								break
 				else:
 					self.xPosition = nextPosition[0]
 					self.yPosition = nextPosition[1]

@@ -13,8 +13,8 @@ import urwid
 # the containers for the shown text
 header = urwid.Text(u"")
 main = urwid.Text(u"")
-main.set_layout('left', 'clip')
 footer = urwid.Text(u"")
+main.set_layout('left', 'clip')
 
 frame = urwid.Frame(urwid.Filler(main,"top"),header=header,footer=footer)
 
@@ -38,12 +38,14 @@ itemMarkedLast = None
 lastMoveAutomated = False
 fullAutoMode = False
 
+commandHistory = []
+
 # HACK: remove unnessecary param
 def callShow_or_exit(loop,key):
 	show_or_exit(key)
 
 def show_or_exit(key):
-	#mouse klick
+	#mouse click
 	if type(key) == tuple:
 		return
 
@@ -93,7 +95,7 @@ def show_or_exit(key):
 					messages.append("You cannot walk there")
 					messages.append("press "+commandChars.activate+" to apply")
 					itemMarkedLast = item
-					footer.set_text(renderMessagebox())
+					footer.set_text(renderHeader())
 					return
 			else:
 				roomCandidates = []
@@ -117,7 +119,7 @@ def show_or_exit(key):
 										itemMarkedLast = item
 										messages.append("you need to open the door first")
 										messages.append("press "+commandChars.activate+" to apply")
-										footer.set_text(renderMessagebox())
+										footer.set_text(renderQuests())
 										return
 								
 								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
@@ -136,7 +138,7 @@ def show_or_exit(key):
 							messages.append("You cannot walk there")
 							messages.append("press "+commandChars.activate+" to apply")
 							itemMarkedLast = item
-							footer.set_text(renderMessagebox())
+							footer.set_text(renderQuests())
 							foundItem = True
 					if not foundItem:
 						mainChar.yPosition -= 1
@@ -150,7 +152,7 @@ def show_or_exit(key):
 					messages.append("You cannot walk there")
 					messages.append("press "+commandChars.activate+" to apply")
 					itemMarkedLast = item
-					footer.set_text(renderMessagebox())
+					footer.set_text(renderQuests())
 					return
 			else:
 				roomCandidates = []
@@ -172,7 +174,7 @@ def show_or_exit(key):
 										itemMarkedLast = item
 										messages.append("you need to open the door first")
 										messages.append("press "+commandChars.activate+" to apply")
-										footer.set_text(renderMessagebox())
+										footer.set_text(renderQuests())
 										return
 								
 								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
@@ -191,7 +193,7 @@ def show_or_exit(key):
 							messages.append("You cannot walk there")
 							messages.append("press "+commandChars.activate+" to apply")
 							itemMarkedLast = item
-							footer.set_text(renderMessagebox())
+							footer.set_text(renderQuests())
 							foundItem = True
 					if not foundItem:
 						mainChar.yPosition += 1
@@ -205,7 +207,7 @@ def show_or_exit(key):
 					messages.append("You cannot walk there")
 					messages.append("press "+commandChars.activate+" to apply")
 					itemMarkedLast = item
-					footer.set_text(renderMessagebox())
+					footer.set_text(renderQuests())
 					return
 			else:
 				roomCandidates = []
@@ -227,7 +229,7 @@ def show_or_exit(key):
 										itemMarkedLast = item
 										messages.append("you need to open the door first")
 										messages.append("press "+commandChars.activate+" to apply")
-										footer.set_text(renderMessagebox())
+										footer.set_text(renderQuests())
 										return
 								
 								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
@@ -246,7 +248,7 @@ def show_or_exit(key):
 							messages.append("You cannot walk there")
 							messages.append("press "+commandChars.activate+" to apply")
 							itemMarkedLast = item
-							footer.set_text(renderMessagebox())
+							footer.set_text(renderQuests())
 							foundItem = True
 					if not foundItem:
 						mainChar.xPosition += 1
@@ -260,7 +262,7 @@ def show_or_exit(key):
 					messages.append("You cannot walk there")
 					messages.append("press "+commandChars.activate+" to apply")
 					itemMarkedLast = item
-					footer.set_text(renderMessagebox())
+					footer.set_text(renderQuests())
 					return
 			else:
 				roomCandidates = []
@@ -282,7 +284,7 @@ def show_or_exit(key):
 										itemMarkedLast = item
 										messages.append("you need to open the door first")
 										messages.append("press "+commandChars.activate+" to apply")
-										footer.set_text(renderMessagebox())
+										footer.set_text(renderQuests())
 										return
 								
 								room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
@@ -301,7 +303,7 @@ def show_or_exit(key):
 							messages.append("You cannot walk there")
 							messages.append("press "+commandChars.activate+" to apply")
 							itemMarkedLast = item
-							footer.set_text(renderMessagebox())
+							footer.set_text(renderQuests())
 							foundItem = True
 					if not foundItem:
 						mainChar.xPosition -= 1
@@ -445,11 +447,11 @@ def show_or_exit(key):
 
 		header.set_text(renderQuests(maxQuests=2))
 		main.set_text(render());
-		footer.set_text(renderMessagebox())
 
 def renderQuests(maxQuests=0):
 	char = mainChar
 	txt = ""
+	txt += str(char.xPosition)+"/"+str(char.yPosition)
 	if len(char.quests):
 		counter = 0
 		for quest in char.quests:
@@ -458,7 +460,11 @@ def renderQuests(maxQuests=0):
 			if counter == maxQuests:
 				break
 	else:
-		txt = "No Quest"
+		txt += "No Quest"
+
+	txt += "\n"
+	for message in messages[-5:]:
+		txt += str(message)+"\n"
 	return txt
 
 def renderInventory():
@@ -476,12 +482,6 @@ def renderHelp():
 	txt = "the Goal of the Game is to stay alive and to gain Influence. The daily Grind can be delageted to subordinates and you are able to take Control over and to design whole Mechs and ride the to Victory. Be useful, gain Power and use your Power to be more useful."
 	return txt
 	
-def renderMessagebox():
-	txt = ""
-	for message in messages[-5:]:
-		txt += str(message)+"\n"
-	return txt
-
 def render():
 	chars = terrain.render()
 

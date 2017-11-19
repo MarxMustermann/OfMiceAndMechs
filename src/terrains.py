@@ -51,6 +51,7 @@ class Terrain(object):
 		self.tutorialVatProcessing = None
 		self.tutorialMachineRoom = None
 		self.tutorialLab = None
+		self.wakeUpRoom = None
 		lineCounter = 0
 		for layoutline in layout.split("\n")[1:]:
 			rowCounter = 0
@@ -96,6 +97,10 @@ class Terrain(object):
 				elif char == "t":
 					miniMech = rooms.MiniMech(rowCounter,lineCounter,2,2)
 					roomsOnMap.append(miniMech)
+				elif char == "W":
+					wakeUpRoom = rooms.WakeUpRoom(rowCounter,lineCounter,1,1)
+					self.wakeUpRoom = wakeUpRoom
+					roomsOnMap.append(wakeUpRoom)
 				else:
 					pass
 				rowCounter += 1
@@ -469,7 +474,7 @@ X X X X X X X X X X X
 X V v ? ? ? ? ? v V X
 X   . t . . . . . ? X
 X O . M Q r ? ? . O X
-X O . L ? K ? ? . O X
+X W . L ? K ? ? . O X
 X U . . . . . . . U X
 X U   C C C C C   U X
 X U   C C C C C t U X
@@ -553,14 +558,14 @@ X X X C C C C C X X X """
                XXXXXXXXXXXX#XX              .XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.              XX            X               
                X                            .              X                                                            .                                            
                X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#                           .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
                X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
                X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
                X#           #X              .             #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
                X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.X X X X X X X X#           #X               
+               X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X. X X X X X X XX#           #X               
+               X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.X X X X X X X X#           #X               
                X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
                X#           #X             ..X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
                X#           #X             .XX# XPXX   XPX#XX# XPX    XPX#XX# XPX    XPX#XX# XPX    XPX#XX# XPX    XPX#X.              X#           #X               

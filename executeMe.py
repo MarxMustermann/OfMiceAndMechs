@@ -75,10 +75,12 @@ cinematics.main = interaction.main
 # HACK: common variables with modules
 cinematics.loop = interaction.loop
 quests.loop = interaction.loop
+story.loop = interaction.loop
 
 # HACK: common variables with modules
 cinematics.callShow_or_exit = interaction.callShow_or_exit
 quests.callShow_or_exit = interaction.callShow_or_exit
+story.callShow_or_exit = interaction.callShow_or_exit
 
 # HACK: common variables with modules
 rooms.calculatePath		= gameMath.calculatePath

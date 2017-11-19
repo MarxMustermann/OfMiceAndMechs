@@ -31,9 +31,10 @@ class ScrollingTextCinematic(object):
 			pass
 
 class ShowGameCinematic(object):
-	def __init__(self,turns):
+	def __init__(self,turns,tickSpan = None):
 		self.turns = turns
 		self.endTrigger = None
+		self.tickSpan = tickSpan
 
 	def advance(self):
 		if not self.turns:
@@ -42,6 +43,8 @@ class ShowGameCinematic(object):
 				
 		advanceGame()
 		self.turns -= 1
+		if self.tickSpan:
+			loop.set_alarm_in(self.tickSpan, callShow_or_exit, '.')
 		return True
 
 	def abort(self):

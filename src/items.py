@@ -278,8 +278,30 @@ class Scrap(Item):
 
 class Corpse(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="corpse"):
-		super().__init__(displayChars.corpse,xPosition,yPosition)
-		self.walkable = True
+		super().__init__(displayChars.corpse,xPosition,yPosition,name=name)
+
+class UnconciousBody(Item):
+	def __init__(self,xPosition=0,yPosition=0,name="unconcious body"):
+		super().__init__(displayChars.unconciousBody,xPosition,yPosition,name=name)
+		self.activated = False
+
+	def apply(self,character):
+		if not self.activated:
+			self.activated = True
+			self.display = displayChars.hutch_occupied
+		else:
+			self.activated = False
+			self.display = displayChars.hutch_free
+
+class GrowthTank(Item):
+	def __init__(self,xPosition=0,yPosition=0,name="growth tank",filled=False):
+		if filled:
+			super().__init__(displayChars.growthTank_filled,xPosition,yPosition,name=name)
+		else:
+			super().__init__(displayChars.growthTank_unfilled,xPosition,yPosition,name=name)
+
+	def eject(self):
+		self.display = displayChars.growthTank_unfilled
 
 class Hutch(Item):
 	def __init__(self,xPosition=0,yPosition=0,name="Hutch",activated=False):

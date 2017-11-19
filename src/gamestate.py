@@ -5,13 +5,12 @@ class GameState():
 	def __init__(self):
 		self.gameWon = False
 		self.currentPhase = phasesByName["FirstTutorialPhase"]
+		self.currentPhase = phasesByName["WakeUpPhase"]
 		self.tick = 0
 
 		self.mainChar = characters.Character(displayChars.main_char,3,3,automated=False,name=names.characterFirstNames[self.tick%len(names.characterFirstNames)]+" "+names.characterLastNames[self.tick%len(names.characterLastNames)])
-		self.mainChar.terrain = terrain
-		self.mainChar.room = terrain.tutorialMachineRoom
 		self.mainChar.watched = True
-		terrain.tutorialMachineRoom.addCharacter(self.mainChar,3,3)
+		#terrain.tutorialMachineRoom.addCharacter(self.mainChar,3,3)
 		mainChar = self.mainChar
 
 	def save(self):
@@ -25,7 +24,8 @@ class GameState():
 
 	def load(self):
 		saveFile = open("gamestate/gamestate.json")
-		state = json.loads(saveFile.read())
+		rawstate = saveFile.read()
+		state = json.loads(rawstate)
 		saveFile.close()
 
 		self.setState(state)

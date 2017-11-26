@@ -125,7 +125,7 @@ If behaviour changes often, for example every turn, this probably will hurt perf
 
 === abstracted calculation ===
 
-Even if the other performance tweaks work, a truely massive AND detailed map will result in huge amounts of cpu load. In an ideal world, the boiler room would never use its internal detailed state, but use an easier secondary logic, like "produce x steam and consume x*y coal" to calculate state. The npc firering the furnace would not exist, but the interfaces to the environment would still be correct.
+Even if the other performance tweaks work, a truely massive AND detailed map will result in huge amounts of cpu load. In an ideal world, the boiler room would never use its internal detailed state, but use an easier secondary logic, like "produce x steam and consume x times y coal" to calculate state. The npc firering the furnace would not exist, but the interfaces to the environment would still be correct.
 
 This is still a fuzzy idea, but somewhere between events, defined interfaces, player assisted solving and a bit of cheating this should be possible.
 

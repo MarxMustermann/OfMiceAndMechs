@@ -493,7 +493,7 @@ def renderQuests(maxQuests=0):
 
     decorationSize = frame.frame_top_bottom(loop.screen.get_cols_rows(),True)
 
-    #txt += "━━"*decorationSize[1]
+    txt += "━━"*decorationSize[0][1]
     return txt
 
 def renderInventory():

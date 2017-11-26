@@ -3,233 +3,233 @@ calculatePath = None
 roomsOnMap = None
 
 class Character():
-	def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person"):
-		self.display = display
-		self.xPosition = xPosition
-		self.yPosition = yPosition
-		self.automated = automated
-		self.quests = []
-		self.name = name
-		self.inventory = []
-		self.watched = False
-		self.listeners = []
-		self.room = None
-		self.path = []
+    def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person"):
+        self.display = display
+        self.xPosition = xPosition
+        self.yPosition = yPosition
+        self.automated = automated
+        self.quests = []
+        self.name = name
+        self.inventory = []
+        self.watched = False
+        self.listeners = []
+        self.room = None
+        self.path = []
 
-		self.gotBasicSchooling = False
-		self.gotMovementSchooling = False
-		self.gotInteractionSchooling = False
-		self.gotExamineSchooling = False
-		
-		for quest in quests:
-			self.assignQuest(quest)
+        self.gotBasicSchooling = False
+        self.gotMovementSchooling = False
+        self.gotInteractionSchooling = False
+        self.gotExamineSchooling = False
+        
+        for quest in quests:
+            self.assignQuest(quest)
 
-	def getState(self):
-		return { "gotBasicSchooling": self.gotBasicSchooling,
-		         "gotMovementSchooling": self.gotMovementSchooling,
-		         "gotInteractionSchooling": self.gotInteractionSchooling,
-		         "gotExamineSchooling": self.gotExamineSchooling,
-		       }
+    def getState(self):
+        return { "gotBasicSchooling": self.gotBasicSchooling,
+                 "gotMovementSchooling": self.gotMovementSchooling,
+                 "gotInteractionSchooling": self.gotInteractionSchooling,
+                 "gotExamineSchooling": self.gotExamineSchooling,
+               }
 
-	def setState(self,state):
-		self.gotBasicSchooling = state["gotBasicSchooling"]
-		self.gotMovementSchooling = state["gotMovementSchooling"]
-		self.gotInteractionSchooling = state["gotInteractionSchooling"]
-		self.gotExamineSchooling = state["gotExamineSchooling"]
+    def setState(self,state):
+        self.gotBasicSchooling = state["gotBasicSchooling"]
+        self.gotMovementSchooling = state["gotMovementSchooling"]
+        self.gotInteractionSchooling = state["gotInteractionSchooling"]
+        self.gotExamineSchooling = state["gotExamineSchooling"]
 
-	def startNextQuest(self):
-		if len(self.quests):
-			self.quests[0].recalculate()
-			try:
-				self.setPathToQuest(self.quests[0])
-			except:
-				pass
+    def startNextQuest(self):
+        if len(self.quests):
+            self.quests[0].recalculate()
+            try:
+                self.setPathToQuest(self.quests[0])
+            except:
+                pass
 
-	def assignQuest(self,quest,active=False):
-			if active:
-				self.quests.insert(0,quest)
-			else:
-				self.quests.append(quest)
-			quest.assignToCharacter(self)
-			quest.activate()
-			if (active or len(self.quests) == 1):
-				try:
-					self.setPathToQuest(quest)
-				except:
-					pass
+    def assignQuest(self,quest,active=False):
+            if active:
+                self.quests.insert(0,quest)
+            else:
+                self.quests.append(quest)
+            quest.assignToCharacter(self)
+            quest.activate()
+            if (active or len(self.quests) == 1):
+                try:
+                    self.setPathToQuest(quest)
+                except:
+                    pass
 
-			if self.watched:
-				messages.append(self.name+": got a new Quest\n - "+quest.description)
+            if self.watched:
+                messages.append(self.name+": got a new Quest\n - "+quest.description)
 
-	def setPathToQuest(self,quest):
-		if hasattr(quest,"dstX") and hasattr(quest,"dstY"):
-			if self.room:
-				self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY,self.room.walkingPath)
-			else:
-				self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY,self.terrain.walkingPath)
+    def setPathToQuest(self,quest):
+        if hasattr(quest,"dstX") and hasattr(quest,"dstY"):
+            if self.room:
+                self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY,self.room.walkingPath)
+            else:
+                self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY,self.terrain.walkingPath)
 
-	def addToInventory(self,item):
-		self.inventory.append(item)
+    def addToInventory(self,item):
+        self.inventory.append(item)
 
-	def applysolver(self,solver):
-		solver(self)
+    def applysolver(self,solver):
+        solver(self)
 
-	def walkPath(self):
-		if not len(self.path):
-			self.setPathToQuest(self.quests[0])
+    def walkPath(self):
+        if not len(self.path):
+            self.setPathToQuest(self.quests[0])
 
-		if len(self.path):
-			currentPosition = (self.xPosition,self.yPosition)
-			nextPosition = self.path[0]
+        if len(self.path):
+            currentPosition = (self.xPosition,self.yPosition)
+            nextPosition = self.path[0]
 
-			item = None
-			if self.room:
-				if nextPosition[0] < currentPosition[0]:
-					item = self.room.moveCharacterWest(self)
-				elif nextPosition[0] > currentPosition[0]:
-					item = self.room.moveCharacterEast(self)
-				elif nextPosition[1] < currentPosition[1]:
-					item = self.room.moveCharacterNorth(self)
-				elif nextPosition[1] > currentPosition[1]:
-					item = self.room.moveCharacterSouth(self)
+            item = None
+            if self.room:
+                if nextPosition[0] < currentPosition[0]:
+                    item = self.room.moveCharacterWest(self)
+                elif nextPosition[0] > currentPosition[0]:
+                    item = self.room.moveCharacterEast(self)
+                elif nextPosition[1] < currentPosition[1]:
+                    item = self.room.moveCharacterNorth(self)
+                elif nextPosition[1] > currentPosition[1]:
+                    item = self.room.moveCharacterSouth(self)
 
-			else:
-				for room in self.terrain.rooms:
-					if room.yPosition*15+room.offsetY+10 == nextPosition[1]+1:
-						if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+10 > self.xPosition:
-							localisedEntry = (self.xPosition%15-room.offsetX,nextPosition[1]%15-room.offsetY)
-							if localisedEntry in room.walkingAccess:
-								if localisedEntry in room.itemByCoordinates:
-									for listItem in room.itemByCoordinates[localisedEntry]:
-										if not listItem.walkable:
-											item = listItem
-											break
-								if item:
-									break
-								else:
-									room.addCharacter(self,localisedEntry[0],localisedEntry[1])
-									self.terrain.characters.remove(self)
-									self.terrain = None
-									self.changed()
-									break
-							else:
-								messages.append("you cannot move there")
-								break
-					if room.yPosition*15+room.offsetY == nextPosition[1]:
-						if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+10 > self.xPosition:
-							localisedEntry = ((self.xPosition-room.offsetX)%15,((nextPosition[1]-room.offsetY)%15))
-							if localisedEntry in room.walkingAccess:
-								if localisedEntry in room.itemByCoordinates:
-									for listItem in room.itemByCoordinates[localisedEntry]:
-										if not listItem.walkable:
-											item = listItem
-											break
-								if item:
-									break
-								else:
-									room.addCharacter(self,localisedEntry[0],localisedEntry[1])
-									self.terrain.characters.remove(self)
-									self.terrain = None
-									self.changed()
-									break
-							else:
-								messages.append("you cannot move there")
-								break
-					if room.xPosition*15+room.offsetX+10 == nextPosition[1]+1:
-						if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+10 > self.yPosition:
-							localisedEntry = (self.yPosition%15-room.offsetY,nextPosition[1]%15-room.offsetX)
-							if localisedEntry in room.walkingAccess:
-								if localisedEntry in room.itemByCoordinates:
-									for listItem in room.itemByCoordinates[localisedEntry]:
-										if not listItem.walkable:
-											item = listItem
-											break
-								if item:
-									break
-								else:
-									room.addCharacter(self,localisedEntry[0],localisedEntry[1])
-									self.terrain.characters.remove(self)
-									self.terrain = None
-									self.changed()
-									break
-							else:
-								messages.append("you cannot move there")
-					if room.xPosition*15+room.offsetX == nextPosition[1]:
-						if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+10 > self.yPosition:
-							localisedEntry = ((self.yPosition-room.offsetY)%15,((nextPosition[1]-room.offsetX)%15))
-							if localisedEntry in room.walkingAccess:
-								if localisedEntry in room.itemByCoordinates:
-									for listItem in room.itemByCoordinates[localisedEntry]:
-										if not listItem.walkable:
-											item = listItem
-											break
-								if item:
-									break
-								else:
-									room.addCharacter(self,localisedEntry[0],localisedEntry[1])
-									self.terrain.characters.remove(self)
-									self.terrain = None
-									self.changed()
-									break
-							else:
-								messages.append("you cannot move there")
-								break
-				else:
-					self.xPosition = nextPosition[0]
-					self.yPosition = nextPosition[1]
-					self.changed()
-			
-			if item:
-				item.apply(self)
-			else:
-				if (self.xPosition == nextPosition[0] and self.yPosition == nextPosition[1]):
-					self.path = self.path[1:]
-			return False
-		else:
-			return True
+            else:
+                for room in self.terrain.rooms:
+                    if room.yPosition*15+room.offsetY+10 == nextPosition[1]+1:
+                        if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+10 > self.xPosition:
+                            localisedEntry = (self.xPosition%15-room.offsetX,nextPosition[1]%15-room.offsetY)
+                            if localisedEntry in room.walkingAccess:
+                                if localisedEntry in room.itemByCoordinates:
+                                    for listItem in room.itemByCoordinates[localisedEntry]:
+                                        if not listItem.walkable:
+                                            item = listItem
+                                            break
+                                if item:
+                                    break
+                                else:
+                                    room.addCharacter(self,localisedEntry[0],localisedEntry[1])
+                                    self.terrain.characters.remove(self)
+                                    self.terrain = None
+                                    self.changed()
+                                    break
+                            else:
+                                messages.append("you cannot move there")
+                                break
+                    if room.yPosition*15+room.offsetY == nextPosition[1]:
+                        if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+10 > self.xPosition:
+                            localisedEntry = ((self.xPosition-room.offsetX)%15,((nextPosition[1]-room.offsetY)%15))
+                            if localisedEntry in room.walkingAccess:
+                                if localisedEntry in room.itemByCoordinates:
+                                    for listItem in room.itemByCoordinates[localisedEntry]:
+                                        if not listItem.walkable:
+                                            item = listItem
+                                            break
+                                if item:
+                                    break
+                                else:
+                                    room.addCharacter(self,localisedEntry[0],localisedEntry[1])
+                                    self.terrain.characters.remove(self)
+                                    self.terrain = None
+                                    self.changed()
+                                    break
+                            else:
+                                messages.append("you cannot move there")
+                                break
+                    if room.xPosition*15+room.offsetX+10 == nextPosition[1]+1:
+                        if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+10 > self.yPosition:
+                            localisedEntry = (self.yPosition%15-room.offsetY,nextPosition[1]%15-room.offsetX)
+                            if localisedEntry in room.walkingAccess:
+                                if localisedEntry in room.itemByCoordinates:
+                                    for listItem in room.itemByCoordinates[localisedEntry]:
+                                        if not listItem.walkable:
+                                            item = listItem
+                                            break
+                                if item:
+                                    break
+                                else:
+                                    room.addCharacter(self,localisedEntry[0],localisedEntry[1])
+                                    self.terrain.characters.remove(self)
+                                    self.terrain = None
+                                    self.changed()
+                                    break
+                            else:
+                                messages.append("you cannot move there")
+                    if room.xPosition*15+room.offsetX == nextPosition[1]:
+                        if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+10 > self.yPosition:
+                            localisedEntry = ((self.yPosition-room.offsetY)%15,((nextPosition[1]-room.offsetX)%15))
+                            if localisedEntry in room.walkingAccess:
+                                if localisedEntry in room.itemByCoordinates:
+                                    for listItem in room.itemByCoordinates[localisedEntry]:
+                                        if not listItem.walkable:
+                                            item = listItem
+                                            break
+                                if item:
+                                    break
+                                else:
+                                    room.addCharacter(self,localisedEntry[0],localisedEntry[1])
+                                    self.terrain.characters.remove(self)
+                                    self.terrain = None
+                                    self.changed()
+                                    break
+                            else:
+                                messages.append("you cannot move there")
+                                break
+                else:
+                    self.xPosition = nextPosition[0]
+                    self.yPosition = nextPosition[1]
+                    self.changed()
+            
+            if item:
+                item.apply(self)
+            else:
+                if (self.xPosition == nextPosition[0] and self.yPosition == nextPosition[1]):
+                    self.path = self.path[1:]
+            return False
+        else:
+            return True
 
-	def advance(self):
-		if self.automated:
+    def advance(self):
+        if self.automated:
 
-			"""
-			if self.yPosition == 0:
-				self.room.removeCharacter(self)
-				roomsOnMap[0].addCharacter(self,4,8)
-				self.changed()
-				return
+            """
+            if self.yPosition == 0:
+                self.room.removeCharacter(self)
+                roomsOnMap[0].addCharacter(self,4,8)
+                self.changed()
+                return
 
-			if self.yPosition == 9:
-				self.room.removeCharacter(self)
-				roomsOnMap[1].addCharacter(self,4,1)
-				self.changed()
-				return
-			"""
-	
-			if len(self.quests):
-				self.applysolver(self.quests[0].solver)
-				try:
-					if not len(self.path):
-						self.quests[0].toActivate.apply(self)
-				except:
-					pass
-				self.changed()
+            if self.yPosition == 9:
+                self.room.removeCharacter(self)
+                roomsOnMap[1].addCharacter(self,4,1)
+                self.changed()
+                return
+            """
+    
+            if len(self.quests):
+                self.applysolver(self.quests[0].solver)
+                try:
+                    if not len(self.path):
+                        self.quests[0].toActivate.apply(self)
+                except:
+                    pass
+                self.changed()
 
-	def addListener(self,listenFunction):
-		if not listenFunction in self.listeners:
-			self.listeners.append(listenFunction)
+    def addListener(self,listenFunction):
+        if not listenFunction in self.listeners:
+            self.listeners.append(listenFunction)
 
-	def delListener(self,listenFunction):
-		if listenFunction in self.listeners:
-			self.listeners.remove(listenFunction)
+    def delListener(self,listenFunction):
+        if listenFunction in self.listeners:
+            self.listeners.remove(listenFunction)
 
-	def changed(self):
-		for listenFunction in self.listeners:
-			listenFunction()
+    def changed(self):
+        for listenFunction in self.listeners:
+            listenFunction()
 
-	def changed(self):
-		for listenFunction in self.listeners:
-			listenFunction()
+    def changed(self):
+        for listenFunction in self.listeners:
+            listenFunction()
 
 class Mouse(Character):
-	def __init__(self,display="🝆 ",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse"):
-		super().__init__(display, xPosition, yPosition, quests, automated, name)
+    def __init__(self,display="🝆 ",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse"):
+        super().__init__(display, xPosition, yPosition, quests, automated, name)

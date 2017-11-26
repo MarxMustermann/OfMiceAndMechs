@@ -16,13 +16,13 @@ import config.commandChars as commandChars
 import config.names as names
 
 if len(sys.argv) > 1:
-	import config.displayChars_fallback as displayChars
+    import config.displayChars_fallback as displayChars
 else:
-	import config.displayChars as displayChars
+    import config.displayChars as displayChars
 
 ##################################################################################################################################
 ###
-##		some stuff that is somehow needed but slated for removal
+##        some stuff that is somehow needed but slated for removal
 #
 #################################################################################################################################
 
@@ -83,14 +83,14 @@ quests.callShow_or_exit = interaction.callShow_or_exit
 story.callShow_or_exit = interaction.callShow_or_exit
 
 # HACK: common variables with modules
-rooms.calculatePath		= gameMath.calculatePath
-quests.calculatePath		= gameMath.calculatePath
-characters.calculatePath	= gameMath.calculatePath
-terrains.calculatePath 		= gameMath.calculatePath
+rooms.calculatePath        = gameMath.calculatePath
+quests.calculatePath        = gameMath.calculatePath
+characters.calculatePath    = gameMath.calculatePath
+terrains.calculatePath         = gameMath.calculatePath
 
 # HACK: common variables with modules
 rooms.Character = characters.Character
-		
+        
 # HACK: common variables with modules
 messages = []
 items.messages = messages
@@ -134,16 +134,16 @@ phasesByName["MachineRoomPhase"] = story.MachineRoomPhase
 
 ##################################################################################################################################
 ###
-##		setup the game
+##        setup the game
 #
 #################################################################################################################################
 
 # create and load the gamestate
 gameStateObj = gamestate.GameState()
 try:
-	gameStateObj.load()
+    gameStateObj.load()
 except:
-	pass
+    pass
 
 # HACK: common variables with modules
 story.gamestate = gameStateObj
@@ -178,20 +178,20 @@ gameStateObj.currentPhase().start()
 
 ##################################################################################################################################
 ###
-##		the main loop
+##        the main loop
 #
 #################################################################################################################################
 
 # the game loop
 def advanceGame():
-	global movestate
-	for character in terrain.characters:
-		character.advance()
+    global movestate
+    for character in terrain.characters:
+        character.advance()
 
-	for room in terrain.rooms:
-		room.advance()
+    for room in terrain.rooms:
+        room.advance()
 
-	gameStateObj.tick += 1
+    gameStateObj.tick += 1
 
 # HACK: common variables with modules
 cinematics.advanceGame = advanceGame

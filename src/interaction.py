@@ -115,7 +115,7 @@ def show_or_exit(key):
                     messages.append("You cannot walk there")
                     messages.append("press "+commandChars.activate+" to apply")
                     itemMarkedLast = item
-                    header.set_text(renderQuests())
+                    header.set_text(renderHeader())
                     return
             else:
                 roomCandidates = []
@@ -139,7 +139,7 @@ def show_or_exit(key):
                                         itemMarkedLast = item
                                         messages.append("you need to open the door first")
                                         messages.append("press "+commandChars.activate+" to apply")
-                                        header.set_text(renderQuests())
+                                        header.set_text(renderHeader())
                                         return
                                 
                                 room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
@@ -158,7 +158,7 @@ def show_or_exit(key):
                             messages.append("You cannot walk there")
                             messages.append("press "+commandChars.activate+" to apply")
                             itemMarkedLast = item
-                            header.set_text(renderQuests())
+                            header.set_text(renderHeader())
                             foundItem = True
                     if not foundItem:
                         mainChar.yPosition -= 1
@@ -172,7 +172,7 @@ def show_or_exit(key):
                     messages.append("You cannot walk there")
                     messages.append("press "+commandChars.activate+" to apply")
                     itemMarkedLast = item
-                    header.set_text(renderQuests())
+                    header.set_text(renderHeader())
                     return
             else:
                 roomCandidates = []
@@ -194,7 +194,7 @@ def show_or_exit(key):
                                         itemMarkedLast = item
                                         messages.append("you need to open the door first")
                                         messages.append("press "+commandChars.activate+" to apply")
-                                        header.set_text(renderQuests())
+                                        header.set_text(renderHeader())
                                         return
                                 
                                 room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
@@ -213,7 +213,7 @@ def show_or_exit(key):
                             messages.append("You cannot walk there")
                             messages.append("press "+commandChars.activate+" to apply")
                             itemMarkedLast = item
-                            header.set_text(renderQuests())
+                            header.set_text(renderHeader())
                             foundItem = True
                     if not foundItem:
                         mainChar.yPosition += 1
@@ -227,7 +227,7 @@ def show_or_exit(key):
                     messages.append("You cannot walk there")
                     messages.append("press "+commandChars.activate+" to apply")
                     itemMarkedLast = item
-                    header.set_text(renderQuests())
+                    header.set_text(renderHeader())
                     return
             else:
                 roomCandidates = []
@@ -249,7 +249,7 @@ def show_or_exit(key):
                                         itemMarkedLast = item
                                         messages.append("you need to open the door first")
                                         messages.append("press "+commandChars.activate+" to apply")
-                                        header.set_text(renderQuests())
+                                        header.set_text(renderHeader())
                                         return
                                 
                                 room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
@@ -268,7 +268,7 @@ def show_or_exit(key):
                             messages.append("You cannot walk there")
                             messages.append("press "+commandChars.activate+" to apply")
                             itemMarkedLast = item
-                            header.set_text(renderQuests())
+                            header.set_text(renderHeader())
                             foundItem = True
                     if not foundItem:
                         mainChar.xPosition += 1
@@ -282,7 +282,7 @@ def show_or_exit(key):
                     messages.append("You cannot walk there")
                     messages.append("press "+commandChars.activate+" to apply")
                     itemMarkedLast = item
-                    header.set_text(renderQuests())
+                    header.set_text(renderHeader())
                     return
             else:
                 roomCandidates = []
@@ -304,7 +304,7 @@ def show_or_exit(key):
                                         itemMarkedLast = item
                                         messages.append("you need to open the door first")
                                         messages.append("press "+commandChars.activate+" to apply")
-                                        header.set_text(renderQuests())
+                                        header.set_text(renderHeader())
                                         return
                                 
                                 room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
@@ -323,7 +323,7 @@ def show_or_exit(key):
                             messages.append("You cannot walk there")
                             messages.append("press "+commandChars.activate+" to apply")
                             itemMarkedLast = item
-                            header.set_text(renderQuests())
+                            header.set_text(renderHeader())
                             foundItem = True
                     if not foundItem:
                         mainChar.xPosition -= 1
@@ -468,13 +468,79 @@ def show_or_exit(key):
         if doAdvanceGame:
             advanceGame()
 
-        header.set_text(renderQuests(maxQuests=2))
+        header.set_text(renderHeader())
         main.set_text(render());
+
+def renderHeader():
+    questSection = renderQuests(maxQuests=2)
+    messagesSection = renderMessages()
+
+    screensize = loop.screen.get_cols_rows()
+
+    questWidth = (screensize[0]//3)-2
+    messagesWidth = screensize[0]-questWidth-3
+    txt = ""
+    counter = 0
+
+    splitedQuests = questSection.split("\n")
+    splitedMessages = messagesSection.split("\n")
+
+    rowCounter = 0
+
+    continueLooping = True
+    questLine = ""
+    messagesLine = ""
+    while True:
+        if questLine == "" and len(splitedQuests):
+            questLine = splitedQuests.pop(0)
+        if messagesLine == "" and len(splitedMessages):
+            messagesLine = splitedMessages.pop(0)
+
+        rowCounter += 1
+        if (rowCounter > 5):
+            break
+
+        if len(questLine) > questWidth:
+            txt += questLine[:questWidth]+"┃ "
+            questLine = questLine[questWidth:]
+        else:
+            txt += questLine+" "*(questWidth-len(questLine))+"┃ "
+            if splitedQuests:
+                questLine = splitedQuests.pop(0)
+            else:
+                questLine = ""
+
+        if len(messagesLine) > messagesWidth:
+            txt += messagesLine[:messagesWidth]
+            messagesLine = messagesLine[messagesWidth:]
+        else:
+            txt += messagesLine
+            if splitedMessages:
+                messagesLine = splitedMessages.pop(0)
+            else:
+                messagesLine = ""
+        txt += "\n"
+            
+
+    txt += "━"*+questWidth+"┻"+"━"*(screensize[0]-questWidth-1)+"\n"
+
+    return txt
+
+def renderMessages():
+    txt = ""
+    if len(messages) > 4:
+        for message in messages[-5:]:
+            txt += str(message)+"\n"
+    else:
+        for message in messages:
+            txt += str(message)+"\n"
+
+    return txt
+
 
 def renderQuests(maxQuests=0):
     char = mainChar
     txt = ""
-    txt += str(char.xPosition)+"/"+str(char.yPosition)
     if len(char.quests):
         counter = 0
         for quest in char.quests:
@@ -485,15 +551,6 @@ def renderQuests(maxQuests=0):
     else:
         txt += "No Quest"
 
-    txt += "\n"
-    for message in messages[-5:]:
-        txt += str(message)+"\n"
-
-    txt += "\n"
-
-    decorationSize = frame.frame_top_bottom(loop.screen.get_cols_rows(),True)
-
-    txt += "━━"*decorationSize[0][1]
     return txt
 
 def renderInventory():

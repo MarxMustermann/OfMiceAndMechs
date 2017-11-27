@@ -74,6 +74,11 @@ class FirstTutorialPhase(object):
         self.name = "FirstTutorialPhase"
 
     def start(self):
+        mainChar.xPosition = 1
+        mainChar.yPosition = 4
+        mainChar.room = terrain.wakeUpRoom
+        mainChar.terrain = terrain
+
         gamestate.currentPhase = self
 
         terrain.tutorialMachineRoom.addCharacter(mainChar,2,2)
@@ -236,6 +241,10 @@ class SecondTutorialPhase(object):
     def start(self):
         gamestate.currentPhase = self
 
+        currentRoom = terrain.tutorialMachineRoom
+
+        currentRoom.addCharacter(mainChar,3,3)
+
         if not terrain.tutorialMachineRoom.secondOfficer:
             npc = characters.Character(displayChars.staffCharacters[11],4,3,name=names.characterFirstNames[(gamestate.tick+2)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)])
             npc.terrain = terrain
@@ -306,6 +315,10 @@ class ThirdTutorialPhase(object):
 
     def start(self):
         gamestate.currentPhase = self
+
+        currentRoom = terrain.tutorialMachineRoom
+
+        currentRoom.addCharacter(mainChar,3,3)
 
         if not terrain.tutorialMachineRoom.secondOfficer:
             npc = characters.Character(displayChars.staffCharacters[11],4,3,name=names.characterFirstNames[(gamestate.tick+2)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)])
@@ -456,6 +469,10 @@ class LabPhase(object):
     def start(self):
         gamestate.currentPhase = self
 
+        currentRoom = terrain.tutorialLab
+
+        currentRoom.addCharacter(mainChar,3,3)
+
         questList = []
 
         questList.append(quests.MoveQuest(terrain.tutorialLab,3,3,startCinematics="please move to the waiting position"))
@@ -480,8 +497,16 @@ class VatPhase(object):
         self.name = "VatPhase"
 
     def start(self):
+        currentRoom = terrain.tutorialVat
+
+        currentRoom.addCharacter(mainChar,3,3)
+
         gamestate.currentPhase = self
     
+        currentRoom = terrain.tutorialMachineRoom
+
+        currentRoom.addCharacter(mainChar,3,3)
+
         questList = []
         if not (mainChar.room and mainChar.room == terrain.tutorialVat):
             questList.append(quests.EnterRoomQuest(terrain.tutorialVat,startCinematics="please goto the Vat"))
@@ -508,7 +533,15 @@ class MachineRoomPhase(object):
         self.name = "MachineRoomPhase"
 
     def start(self):
+        currentRoom = terrain.tutorialMachineRoom
+
+        currentRoom.addCharacter(mainChar,3,3)
+
         gamestate.currentPhase = self
+
+        currentRoom = terrain.tutorialMachineRoom
+
+        currentRoom.addCharacter(mainChar,3,3)
 
         if not terrain.tutorialMachineRoom.firstOfficer:
             npc2 = characters.Character(displayChars.staffCharacters[25],5,3,name=names.characterFirstNames[(gamestate.tick+9)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+4)%len(names.characterLastNames)])

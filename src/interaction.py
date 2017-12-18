@@ -64,10 +64,13 @@ def show_or_exit(key):
             return
         else:
             if idleCounter%5 == 0:
+                key = commandChars.wait
+                """
                 if idleCounter < 4:
                     key = commandChars.wait
                 if idleCounter > 40:
                     key = commandChars.advance
+                """
             else:
                 return
     else:
@@ -427,7 +430,8 @@ def show_or_exit(key):
         else:
             lastMoveAutomated = False
 
-    itemMarkedLast = None
+    if not key in ("lagdetection",commandChars.wait,):
+        itemMarkedLast = None
 
     global lastRedraw
     if lastRedraw < time.time()-0.016:

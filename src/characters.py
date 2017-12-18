@@ -14,6 +14,7 @@ class Character():
         self.watched = False
         self.listeners = []
         self.room = None
+        self.terrain = None
         self.path = []
 
         self.gotBasicSchooling = False

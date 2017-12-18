@@ -2,6 +2,7 @@ phasesByName = None
 gamestate = None
 names = None
 characters = None
+events = None
 
 class BasicPhase(object):
     def __init__(self):
@@ -152,13 +153,7 @@ class WakeUpPhase(BasicPhase):
 
         cinematic = cinematics.ShowMessageCinematic("follow me, please")
         cinematics.cinematicQueue.append(cinematic)
-        class ExplanEvent(object):
-            def __init__(subself,tick):
-                subself.tick = tick
-
-            def handleEvent(subself):
-                cinematics.showCinematic("you got an order. Barely awake and confused, you feel compelled to follow the order. Your feet are drawn into the direction given, this is indicated by a blinking questmarker looking like this: "+displayChars.questPathMarker)
-        self.mainCharRoom.addEvent(ExplanEvent(gamestate.tick+2))
+        self.mainCharRoom.addEvent(events.ShowCinematicEvent(gamestate.tick+1,cinematics.ScrollingTextCinematic("you got an order. Barely awake and confused, you feel compelled to follow the order.\n\n Your feet are drawn into the direction given, this is indicated by a blinking questmarker looking like this: "+displayChars.questPathMarker)))
 
     def movementRightTest1(self):
         quest = quests.MoveQuest(terrain.wakeUpRoom,3,4)

@@ -12,6 +12,7 @@ import src.story as story
 import src.gameMath as gameMath
 import src.interaction as interaction
 import src.gamestate as gamestate
+import src.events as events
 import config.commandChars as commandChars
 import config.names as names
 
@@ -51,6 +52,7 @@ gamestate.displayChars = displayChars
 # HACK: common variables with modules
 story.cinematics = cinematics
 interaction.cinematics = cinematics
+events.cinematics = cinematics
 
 # HACK: common variables with modules
 items.commandChars = commandChars
@@ -76,6 +78,9 @@ cinematics.main = interaction.main
 cinematics.loop = interaction.loop
 quests.loop = interaction.loop
 story.loop = interaction.loop
+
+# HACK: common variables with modules
+story.events = events
 
 # HACK: common variables with modules
 cinematics.callShow_or_exit = interaction.callShow_or_exit

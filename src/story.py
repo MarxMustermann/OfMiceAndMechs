@@ -175,6 +175,12 @@ class WakeUpPhase(BasicPhase):
         mainChar.assignQuest(quest)
 
     def moveToMachineRoom(self):
+        cinematic = cinematics.ShowMessageCinematic("you seem to be in working order. please move to your assigned work")
+        cinematics.cinematicQueue.append(cinematic)
+        cinematic = cinematics.ShowMessageCinematic("your next assignement is in the boiler room. The boiler room is the hallway up to the north and the first room south after the corner")
+        cinematics.cinematicQueue.append(cinematic)
+        loop.set_alarm_in(0.0, callShow_or_exit, '~')
+
         quest = quests.MoveQuest(terrain.tutorialMachineRoom,3,3)
         mainChar.assignQuest(quest)
         quest.endTrigger = self.end

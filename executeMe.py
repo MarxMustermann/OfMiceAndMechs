@@ -78,6 +78,7 @@ cinematics.main = interaction.main
 cinematics.loop = interaction.loop
 quests.loop = interaction.loop
 story.loop = interaction.loop
+events.loop = interaction.loop
 
 # HACK: common variables with modules
 story.events = events
@@ -86,6 +87,7 @@ story.events = events
 cinematics.callShow_or_exit = interaction.callShow_or_exit
 quests.callShow_or_exit = interaction.callShow_or_exit
 story.callShow_or_exit = interaction.callShow_or_exit
+events.callShow_or_exit = interaction.callShow_or_exit
 
 # HACK: common variables with modules
 rooms.calculatePath        = gameMath.calculatePath
@@ -106,6 +108,7 @@ terrains.messages = messages
 cinematics.messages = messages
 story.messages = messages
 interaction.messages = messages
+events.messages = messages
 
 # HACK: common variables with modules
 quests.showCinematic = cinematics.showCinematic

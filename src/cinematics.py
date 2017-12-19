@@ -62,10 +62,12 @@ class ShowMessageCinematic(object):
     def advance(self):
         if self.breakCinematic:
             loop.set_alarm_in(0.0, callShow_or_exit, ' ')
-            return
+            return False
+
         messages.append(self.message)
         loop.set_alarm_in(0.0, callShow_or_exit, '~')
         self.breakCinematic = True
+        return True
 
     def abort(self):
         pass

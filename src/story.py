@@ -153,7 +153,7 @@ class WakeUpPhase(BasicPhase):
 
         cinematic = cinematics.ShowMessageCinematic("follow me, please")
         cinematics.cinematicQueue.append(cinematic)
-        self.mainCharRoom.addEvent(events.ShowCinematicEvent(gamestate.tick+1,cinematics.ScrollingTextCinematic("you got an order. Barely awake and confused, you feel compelled to follow the order.\n\n Your feet are drawn into the direction given, this is indicated by a blinking questmarker looking like this: "+displayChars.questPathMarker)))
+        self.mainCharRoom.addEvent(events.ShowCinematicEvent(gamestate.tick+1,cinematics.ScrollingTextCinematic("you got an order. Barely awake and confused, you feel compelled to follow the order.\n\nYour feet are drawn into the given direction, this is indicated by a blinking questmarker looking like this: "+displayChars.questPathMarker)))
 
     def movementRightTest1(self):
         quest = quests.MoveQuest(terrain.wakeUpRoom,3,4)
@@ -165,8 +165,8 @@ class WakeUpPhase(BasicPhase):
         quest.endTrigger = self.movementRightTest2
         self.npc.assignQuest(quest)
 
-        cinematic = cinematics.ShowMessageCinematic("follow me, please")
-        cinematics.cinematicQueue.append(cinematic)
+        #cinematic = cinematics.ShowMessageCinematic("follow me, please")
+        #cinematics.cinematicQueue.append(cinematic)
 
     def movementRightTest2(self):
         quest = quests.MoveQuest(terrain.wakeUpRoom,4,4)

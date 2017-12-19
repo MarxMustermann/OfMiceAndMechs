@@ -44,10 +44,6 @@ class Quest(object):
             showCinematic(self.endCinematics)            
             loop.set_alarm_in(0.0, callShow_or_exit, '.')
 
-        # the decision of what to do with the message should not be done here, the decision should be moved inside the character
-        if self.character.watched:
-            messages.append("Thank you kindly. @"+self.character.name)
-        
         self.deactivate()
 
         # these should be a unified way to to this. probably an event

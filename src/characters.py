@@ -59,9 +59,6 @@ class Character():
                 except:
                     pass
 
-            if self.watched:
-                messages.append(self.name+": got a new Quest\n - "+quest.description)
-
     def setPathToQuest(self,quest):
         if hasattr(quest,"dstX") and hasattr(quest,"dstY"):
             if self.room:

@@ -165,8 +165,9 @@ class WakeUpPhase(BasicPhase):
         quest.endTrigger = self.movementRightTest2
         self.npc.assignQuest(quest)
 
-        #cinematic = cinematics.ShowMessageCinematic("follow me, please")
-        #cinematics.cinematicQueue.append(cinematic)
+        cinematic = cinematics.ShowMessageCinematic("follow me, please")
+        cinematics.cinematicQueue.append(cinematic)
+        loop.set_alarm_in(0.0, callShow_or_exit, '~')
 
     def movementRightTest2(self):
         quest = quests.MoveQuest(terrain.wakeUpRoom,4,4)

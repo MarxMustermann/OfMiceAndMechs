@@ -141,7 +141,7 @@ class WakeUpPhase(BasicPhase):
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("i will test for physical fitness and basic brain activity"))
         cinematic = cinematics.ShowGameCinematic(4,tickSpan=1)
         cinematics.cinematicQueue.append(cinematic)
-        cinematics.showCinematic("you are represented by the "+displayChars.main_char+" Character.\n\nyou can move using the keyboard. \n\n* press "+commandChars.move_north+" to move up/north\n* press "+commandChars.move_west+" to move left/west\n* press "+commandChars.move_south+" to move down/south\n* press "+commandChars.move_east+" to move rigth/east")
+        cinematics.showCinematic("you are represented by the "+displayChars.main_char[1]+" Character.\n\nyou can move using the keyboard. \n\n* press "+commandChars.move_north+" to move up/north\n* press "+commandChars.move_west+" to move left/west\n* press "+commandChars.move_south+" to move down/south\n* press "+commandChars.move_east+" to move rigth/east")
         cinematic = cinematics.ShowGameCinematic(4,tickSpan=1)
         cinematic.endTrigger = self.movementRightTestSetup1
         cinematics.cinematicQueue.append(cinematic)
@@ -153,7 +153,7 @@ class WakeUpPhase(BasicPhase):
 
         cinematic = cinematics.ShowMessageCinematic("follow me, please")
         cinematics.cinematicQueue.append(cinematic)
-        self.mainCharRoom.addEvent(events.ShowCinematicEvent(gamestate.tick+1,cinematics.ScrollingTextCinematic("you got an order. Barely awake and confused, you feel compelled to follow the order.\n\nYour feet are drawn into the given direction, this is indicated by a blinking questmarker looking like this: "+displayChars.questPathMarker)))
+        self.mainCharRoom.addEvent(events.ShowCinematicEvent(gamestate.tick+1,cinematics.ScrollingTextCinematic("you got an order. Barely awake and confused, you feel compelled to follow the order.\n\nYour feet are drawn into the given direction, this is indicated by a blinking questmarker looking like this: "+displayChars.questPathMarker[1])))
 
     def movementRightTest1(self):
         quest = quests.MoveQuest(terrain.wakeUpRoom,3,4)
@@ -212,9 +212,9 @@ class FirstTutorialPhase(BasicPhase):
                 cinematics.showCinematic("please, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
                 cinematics.showCinematic("the Trainingenvironment will show now. take a look at Everything and press "+commandChars.wait+" afterwards. You will be able to move later")
                 cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-                cinematics.showCinematic("you are represented by the "+displayChars.main_char+" Character. find yourself on the Screen and press "+commandChars.wait)
+                cinematics.showCinematic("you are represented by the "+str(displayChars.main_char)+" Character. find yourself on the Screen and press "+commandChars.wait)
                 cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-                cinematics.showCinematic("right now you are in the Boilerroom\n\nthe Floor is represented by "+displayChars.floor+" and Walls are shown as "+displayChars.wall+". the Door is represented by "+displayChars.door_closed+" or "+displayChars.door_opened+" when closed.\n\na empty Room would look like this:\n\n"+displayChars.wall*5+"\n"+displayChars.wall+displayChars.floor*3+displayChars.wall+"\n"+displayChars.wall+displayChars.floor*3+displayChars.door_closed+"\n"+displayChars.wall+displayChars.floor*3+displayChars.wall+"\n"+displayChars.wall*5+"\n\nthe Trainingenvironment will display now. please try to orient yourself in the Room.\n\npress "+commandChars.wait+" when successful")
+                cinematics.showCinematic("right now you are in the Boilerroom\n\nthe Floor is represented by "+displayChars.floor[1]+" and Walls are shown as "+displayChars.wall[1]+". the Door is represented by "+displayChars.door_closed+" or "+displayChars.door_opened+" when closed.\n\na empty Room would look like this:\n\n"+displayChars.wall[1]*5+"\n"+displayChars.wall[1]+displayChars.floor[1]*3+displayChars.wall[1]+"\n"+displayChars.wall[1]+displayChars.floor[1]*3+displayChars.door_closed+"\n"+displayChars.wall[1]+displayChars.floor[1]*3+displayChars.wall[1]+"\n"+displayChars.wall[1]*5+"\n\nthe Trainingenvironment will display now. please try to orient yourself in the Room.\n\npress "+commandChars.wait+" when successful")
                 cinematic = cinematics.ShowGameCinematic(1)
                 def wrapUp():
                     mainChar.gotBasicSchooling = True
@@ -318,7 +318,7 @@ class FirstTutorialPhase(BasicPhase):
             cinematics.cinematicQueue.append(cinematic)
 
         def doWrapUp():
-            cinematics.showCinematic("there are other Items in the Room that may or may not be important for you. Here is the full List for you to review:\n\n Bin ("+displayChars.binStorage+"): Used for storing Things intended to be transported further\n Pile ("+displayChars.pile+"): a Pile of Things\n Door ("+displayChars.door_opened+" or "+displayChars.door_closed+"): you can move through it when open\n Lever ("+displayChars.lever_notPulled+" or "+displayChars.lever_pulled+"): a simple Man-Machineinterface\n Furnace ("+displayChars.furnace_inactive+"): used to generate heat burning Things\n Display ("+displayChars.display+"): a complicated Machine-Maninterface\n Wall ("+displayChars.wall+"): ensures the structural Integrity of basically any Structure\n Pipe ("+displayChars.pipe+"): transports Liquids, Pseudoliquids and Gasses\n Coal ("+displayChars.coal+"): a piece of Coal, quite usefull actually\n Boiler ("+displayChars.boiler_inactive+" or "+displayChars.boiler_active+"): generates Steam using Water and and Heat\n Chains ("+displayChars.chains+"): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing\n Comlink ("+displayChars.commLink+"): a Pipe based Voicetransportationsystem that allows Communication with other Rooms\n Hutch ("+displayChars.hutch_free+"): a comfy and safe Place to sleep and eat")
+            cinematics.showCinematic("there are other Items in the Room that may or may not be important for you. Here is the full List for you to review:\n\n Bin ("+displayChars.binStorage+"): Used for storing Things intended to be transported further\n Pile ("+displayChars.pile+"): a Pile of Things\n Door ("+displayChars.door_opened+" or "+displayChars.door_closed+"): you can move through it when open\n Lever ("+displayChars.lever_notPulled+" or "+displayChars.lever_pulled+"): a simple Man-Machineinterface\n Furnace ("+displayChars.furnace_inactive+"): used to generate heat burning Things\n Display ("+displayChars.display+"): a complicated Machine-Maninterface\n Wall ("+displayChars.wall[1]+"): ensures the structural Integrity of basically any Structure\n Pipe ("+displayChars.pipe+"): transports Liquids, Pseudoliquids and Gasses\n Coal ("+displayChars.coal+"): a piece of Coal, quite usefull actually\n Boiler ("+displayChars.boiler_inactive+" or "+displayChars.boiler_active+"): generates Steam using Water and and Heat\n Chains ("+displayChars.chains+"): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing\n Comlink ("+displayChars.commLink+"): a Pipe based Voicetransportationsystem that allows Communication with other Rooms\n Hutch ("+displayChars.hutch_free+"): a comfy and safe Place to sleep and eat")
 
             class StartNextPhaseEvent(object):
                 def __init__(subself,tick):
@@ -356,7 +356,7 @@ class SecondTutorialPhase(BasicPhase):
             questList.append(quest)
             questList.append(quests.MoveQuest(self.mainCharRoom,3,3,startCinematics="thats enough. move back to waiting position"))
         if not mainChar.gotExamineSchooling:
-            quest = quests.ExamineQuest(lifetime=100,startCinematics="use e to examine items. you can get Descriptions and more detailed Information about your Environment than just by looking at things.\n\nto look at something you have to walk into or over the item and press "+commandChars.examine+". For example if you stand next to a Furnace like this:\n\n"+displayChars.furnace_inactive+displayChars.main_char+"\n\npressing "+commandChars.move_west+" and then "+commandChars.examine+" would result in the Description:\n\n\"this is a Furnace\"\n\nyou have 100 Ticks to familiarise yourself with the Movementcommands and to examine the Room. please do.")
+            quest = quests.ExamineQuest(lifetime=100,startCinematics="use e to examine items. you can get Descriptions and more detailed Information about your Environment than just by looking at things.\n\nto look at something you have to walk into or over the item and press "+commandChars.examine+". For example if you stand next to a Furnace like this:\n\n"+displayChars.furnace_inactive+displayChars.main_char[1]+"\n\npressing "+commandChars.move_west+" and then "+commandChars.examine+" would result in the Description:\n\n\"this is a Furnace\"\n\nyou have 100 Ticks to familiarise yourself with the Movementcommands and to examine the Room. please do.")
             def setPlayerState():
                 mainChar.gotExamineSchooling = True
             quest.endTrigger = setPlayerState

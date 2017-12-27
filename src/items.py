@@ -353,7 +353,8 @@ class Furnace(Item):
         super().__init__(displayChars.furnace_inactive,xPosition,yPosition,name=name)
 
     def apply(self,character):
-        messages.append("Furnace used")
+        if character.watched:
+            messages.append("Furnace used")
         foundItem = None
         for item in character.inventory:
             try:
@@ -366,15 +367,18 @@ class Furnace(Item):
             foundItem = item
 
         if not foundItem:
-            messages.append("keine KOHLE zum anfeuern")
+            if character.watched:
+                messages.append("keine KOHLE zum anfeuern")
         else:
             if self.activated:
-                messages.append("already burning")
+                if character.watched:
+                    messages.append("already burning")
             else:
                 self.activated = True
                 self.display = displayChars.furnace_active
                 character.inventory.remove(foundItem)
-                messages.append("*wush*")
+                if character.watched:
+                    messages.append("*wush*")
 
                 class FurnaceBurnoutEvent(object):
                     def __init__(subself,tick):

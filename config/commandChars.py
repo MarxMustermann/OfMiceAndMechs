@@ -9,6 +9,7 @@ hail = "h"
 examine = 'e'
 quit_normal = "^"
 quit_instant = "^"
+quit_delete = "°"
 autoAdvance = '*'
 advance = '+'
 pause = ' '

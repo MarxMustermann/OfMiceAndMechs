@@ -75,7 +75,7 @@ def show_or_exit(key):
                 return
     else:
         idleCounter = 0
-    if not key in (commandChars.autoAdvance, commandChars.quit_instant, commandChars.ignore):
+    if not key in (commandChars.autoAdvance, commandChars.quit_instant, commandChars.ignore,commandChars.quit_delete):
         if lastLagDetection < time.time()-0.4:
             return
 
@@ -107,6 +107,11 @@ def show_or_exit(key):
     if key in stealKey:
         stealKey[key]()
     else:
+        if key in (commandChars.quit_delete,):
+            saveFile = open("gamestate/gamestate.json","w")
+            saveFile.write("reset")
+            saveFile.close()
+            raise urwid.ExitMainLoop()
         if key in (commandChars.quit_normal, commandChars.quit_instant):
             gamestate.save()
             raise urwid.ExitMainLoop()

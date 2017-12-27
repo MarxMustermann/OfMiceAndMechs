@@ -591,7 +591,7 @@ def render():
 
     viewsize = 41
 
-    result = ""
+    result = []
 
     if offsetY > 0:
         result += "\n"*offsetY
@@ -602,7 +602,7 @@ def render():
         chars = chars[-offsetY+topOffset:-offsetY+topOffset+viewsize]
 
     for line in chars:
-        lineRender = ""
+        lineRender = []
         rowCounter = 0
 
         visibilityOffsetX = ((screensize[0]-viewsize*2)//4)+1
@@ -619,11 +619,11 @@ def render():
         line = line[totalOffset:totalOffset+viewsize-offsetfix]
 
         for char in line:
-            lineRender += char
+            lineRender.append(char)
             rowCounter += 1
-        lineRender += "\n"
-        result += lineRender
-        
+        lineRender.append("\n")
+        result.extend(lineRender)
+
     return result
 
 # get the interaction loop from the library

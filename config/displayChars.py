@@ -1,4 +1,6 @@
-wall = "⛝ "
+import urwid
+
+wall = (urwid.AttrSpec("#d60",'default'),"⛝ ")
 pipe = "✠✠"
 corpse = "࿊ "
 unconciousBody = "࿌ "
@@ -17,13 +19,13 @@ door_opened = '⭘ '
 pile = "ӫӫ"
 acid = "♒♒"
 notImplentedYet = "??"
-floor = "::"
+floor = (urwid.AttrSpec("#860",'default'),"::")
 binStorage = "⛛ "
 chains = "⛓ "
 commLink = "ߐߐ"
 grid = "░░"
-acids = ["♒♒","≈≈","≈♒","♒≈","≈≈"]
-foodStuffs = ["՞՞","🍖 "," ☠","💀 ","👂 ","✋ "]
+acids = ["==","≈≈","≈=","=≈","≈≈"]
+foodStuffs = ["՞՞","🍖","☠ ","💀","👂","✋"]
 machineries = ["⌺ ","⚙ ","⌼ ","⍯ ","⌸ "]
 hub = "🜹 "
 ramp = "⍌ "

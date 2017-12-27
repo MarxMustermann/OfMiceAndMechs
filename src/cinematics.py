@@ -1,3 +1,5 @@
+import urwid
+
 cinematicQueue = []
 quests = None
 main = None
@@ -8,20 +10,40 @@ advanceGame = None
 
 class ScrollingTextCinematic(object):
     def __init__(self,text):
-        self.text = text+"\n\n-- press space to proceed -- "
+        self.text = text
         self.position = 0
         self.endPosition = len(self.text)
         self.alarm = None
 
     def advance(self):
-        if self.position >= self.endPosition:
+        if self.position > self.endPosition:
             return
+        
+        def convert(payload):
+            converted = []
+            colours = ['#f50',"#a60","#f80","#fa0","#860"]
+            counter = 0
+            for char in payload:
+                counter += 1
+                if len(char):
+                    converted.append((urwid.AttrSpec(colours[counter*7%5],'default'),char))
+            return converted
 
-        main.set_text(self.text[0:self.position])
-        if self.text[self.position] in ("\n"):
-            self.alarm = loop.set_alarm_in(0.5, callShow_or_exit, '~')
+        if self.position < self.endPosition:
+            baseText = self.text[0:self.position]
+            if self.text[self.position] in ("\n"):
+                self.alarm = loop.set_alarm_in(0.5, callShow_or_exit, '~')
+            else:
+                self.alarm = loop.set_alarm_in(0.05, callShow_or_exit, '~')
+            addition = " "
         else:
-            self.alarm = loop.set_alarm_in(0.05, callShow_or_exit, '~')
+            baseText = self.text
+            addition = "\n\n-- press space to proceed -- "
+            self.alarm = loop.set_alarm_in(1, callShow_or_exit, '~')
+        base = convert(baseText)
+        base.append(addition)
+        main.set_text(base)
+
         self.position += 1
 
     def abort(self):

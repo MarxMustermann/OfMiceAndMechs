@@ -16,7 +16,13 @@ import src.events as events
 import config.commandChars as commandChars
 import config.names as names
 
-if len(sys.argv) > 1:
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("-p", "--phase", type=str, help="increase output verbosity")
+parser.add_argument("--fallBack", action="store_true", help="increase output verbosity")
+args = parser.parse_args()
+
+if args.fallBack:
     import config.displayChars_fallback as displayChars
 else:
     import config.displayChars as displayChars
@@ -139,6 +145,7 @@ phasesByName["SecondTutorialPhase"] = story.SecondTutorialPhase
 phasesByName["ThirdTutorialPhase"] = story.ThirdTutorialPhase
 phasesByName["VatPhase"] = story.VatPhase
 phasesByName["MachineRoomPhase"] = story.MachineRoomPhase
+phasesByName["OpenWorld"] = story.OpenWorld
 
 ##################################################################################################################################
 ###
@@ -147,7 +154,7 @@ phasesByName["MachineRoomPhase"] = story.MachineRoomPhase
 #################################################################################################################################
 
 # create and load the gamestate
-gameStateObj = gamestate.GameState()
+gameStateObj = gamestate.GameState(phase=args.phase)
 try:
     gameStateObj.load()
 except:

@@ -4,6 +4,15 @@ names = None
 characters = None
 events = None
 
+class OpenWorld(object):
+    def __init__(self):
+        cinematics.showCinematic("staring open world Scenario.")
+        self.mainCharRoom = terrain.wakeUpRoom
+        self.mainCharRoom.addCharacter(mainChar,2,4)
+
+    def start(self):
+        pass
+
 class BasicPhase(object):
     def __init__(self):
         self.mainCharXPosition = None
@@ -622,6 +631,8 @@ class MachineRoomPhase(BasicPhase):
         gamestate.save()
 
 def registerPhases():
+    phasesByName["OpenWorld"] = OpenWorld
+
     phasesByName["VatPhase"] = VatPhase
     phasesByName["MachineRoomPhase"] = MachineRoomPhase
     phasesByName["LabPhase"] = LabPhase

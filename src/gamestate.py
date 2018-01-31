@@ -2,10 +2,12 @@ import json
 import src.characters as characters
 
 class GameState():
-    def __init__(self):
+    def __init__(self,phase=None):
         self.gameWon = False
         self.currentPhase = phasesByName["FirstTutorialPhase"]
         self.currentPhase = phasesByName["WakeUpPhase"]
+        if phase:
+            self.currentPhase = phasesByName[phase]
         self.tick = 0
 
         self.mainChar = characters.Character(displayChars.main_char,3,3,automated=False,name=names.characterFirstNames[self.tick%len(names.characterFirstNames)]+" "+names.characterLastNames[self.tick%len(names.characterLastNames)])

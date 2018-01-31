@@ -13,6 +13,43 @@ class OpenWorld(object):
     def start(self):
         pass
 
+class ScreenSaver(object):
+    def __init__(self):
+        self.mainCharRoom = terrain.wakeUpRoom
+        self.mainCharRoom.addCharacter(mainChar,2,4)
+
+        quest = quests.MoveQuest(terrain.wakeUpRoom,4,4)
+        mainChar.assignQuest(quest)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,2,4)
+        mainChar.assignQuest(quest)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,4,3)
+        mainChar.assignQuest(quest)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,6,4)
+        mainChar.assignQuest(quest)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,4,2)
+        mainChar.assignQuest(quest)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,2,4)
+        mainChar.assignQuest(quest)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,2,2)
+        mainChar.assignQuest(quest)
+        quest = quests.MoveQuest(terrain.tutorialMachineRoom,2,2)
+        mainChar.assignQuest(quest)
+        quest = quests.MoveQuest(terrain.tutorialVat,2,2)
+        mainChar.assignQuest(quest)
+        quest = quests.MoveQuest(terrain.tutorialVatProcessing,6,6)
+        mainChar.assignQuest(quest)
+        quest = quests.MoveQuest(terrain.tutorialMachineRoom,2,2)
+        mainChar.assignQuest(quest)
+        quest = quests.MoveQuest(terrain.tutorialLab,2,2)
+        mainChar.assignQuest(quest)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,2,2)
+        mainChar.assignQuest(quest)
+        quest = quests.MoveQuest(terrain.tutorialVat,2,2)
+        mainChar.assignQuest(quest)
+
+    def start(self):
+        pass
+
 class BasicPhase(object):
     def __init__(self):
         self.mainCharXPosition = None

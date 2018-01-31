@@ -146,6 +146,7 @@ phasesByName["ThirdTutorialPhase"] = story.ThirdTutorialPhase
 phasesByName["VatPhase"] = story.VatPhase
 phasesByName["MachineRoomPhase"] = story.MachineRoomPhase
 phasesByName["OpenWorld"] = story.OpenWorld
+phasesByName["ScreenSaver"] = story.ScreenSaver
 
 ##################################################################################################################################
 ###

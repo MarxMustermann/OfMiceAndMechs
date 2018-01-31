@@ -125,6 +125,7 @@ class Character():
                                 if item:
                                     break
                                 else:
+                                    messages.append("moving into room")
                                     room.addCharacter(self,localisedEntry[0],localisedEntry[1])
                                     self.terrain.characters.remove(self)
                                     self.terrain = None

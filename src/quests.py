@@ -11,7 +11,7 @@ callShow_or_exit = None
 
 class Quest(object):
     # set up a bit state, nothing special
-    def __init__(self,followUp=None,startCinematics=None):
+    def __init__(self,followUp=None,startCinematics=None,lifetime=0):
         self.followUp = followUp # deprecate?
         self.character = None # should be more general like owner as preparation for room quests
         self.listener = [] # the list of things caring about this quest. The owner for example
@@ -20,6 +20,8 @@ class Quest(object):
         self.endCinematics = None # deprecate?
         self.startTrigger = None # deprecate?
         self.endTrigger = None # deprecate?
+
+        self.lifetime = lifetime
 
     # check whether the quest is solved or not (and trigger teardown if quest is solved)
     def triggerCompletionCheck(self):
@@ -93,6 +95,16 @@ class Quest(object):
         if self.startCinematics:
             showCinematic(self.startCinematics)            
             loop.set_alarm_in(0.0, callShow_or_exit, '.')
+
+        if self.lifetime:
+            class endQuestEvent(object):
+                def __init__(subself,tick):
+                    subself.tick = tick
+
+                def handleEvent(subself):
+                    self.postHandler()
+
+            self.character.room.events.append(endQuestEvent(self.character.room.timeIndex+self.lifetime))
 
         self.recalculate()
     def deactivate(self):
@@ -259,10 +271,10 @@ class EnterRoomQuest(Quest):
             for item in self.character.room.itemByCoordinates[(self.character.xPosition,9)]:
                 item.close()
         if (self.character.xPosition in (-1,0)):
-            for item in self.character.room.itemByCoordinates[(self.character.yPosition,0)]:
+            for item in self.character.room.itemByCoordinates[(0,self.character.yPosition)]:
                 item.close()
         if (self.character.xPosition in (10,9)):
-            for item in self.character.room.itemByCoordinates[(self.character.yPosition,9)]:
+            for item in self.character.room.itemByCoordinates[(0,self.character.yPosition)]:
                 item.close()
 
         super().postHandler()
@@ -357,7 +369,7 @@ class FillPocketsQuest(CollectQuest):
 ############################################################
 
 class FireFurnace(Quest):
-    def __init__(self,furnace,followUp=None,startCinematics=None):
+    def __init__(self,furnace,followUp=None,startCinematics=None,lifetime=None):
         self.furnace = furnace
         self.furnace.addListener(self.recalculate)
         self.description = "please fire the "+self.furnace.name+" ("+str(self.furnace.xPosition)+"/"+str(self.furnace.yPosition)+")"
@@ -412,7 +424,7 @@ class FireFurnace(Quest):
         super().recalculate()
 
 class KeepFurnaceFired(Quest):
-    def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None):
+    def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
         self.furnace = furnace
         self.furnace.addListener(self.recalculate)
         self.description = "please fire the "+self.furnace.name+" ("+str(self.furnace.xPosition)+"/"+str(self.furnace.yPosition)+")"
@@ -423,7 +435,7 @@ class KeepFurnaceFired(Quest):
         self.activateFurnaceQuest = None
         self.boilers = None
         self.failTrigger = failTrigger
-        super().__init__(followUp,startCinematics=startCinematics)
+        super().__init__(followUp,startCinematics=startCinematics,lifetime=lifetime)
 
     def assignToCharacter(self,character):
         super().assignToCharacter(character)

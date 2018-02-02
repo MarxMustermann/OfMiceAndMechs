@@ -18,37 +18,97 @@ class ScreenSaver(object):
         self.mainCharRoom = terrain.wakeUpRoom
         self.mainCharRoom.addCharacter(mainChar,2,4)
 
+        self.mainCharQuestList = []
+        
+        self.addKeepFurnaceFired()
+        self.addPseudeoFurnacefirering()
+        self.addIntraRoomMovements()
+        self.addInnerRoomMovements()
+
+        self.assignPlayerQuests()
+
+    def addKeepFurnaceFired(self):
+        quest = quests.MoveQuest(terrain.tutorialMachineRoom,2,2)
+        self.mainCharQuestList.append(quest)
+        quest = quests.FillPocketsQuest()
+        self.mainCharQuestList.append(quest)
+        quest = quests.KeepFurnaceFired(terrain.tutorialMachineRoom.furnaces[0],lifetime=80)
+        self.mainCharQuestList.append(quest)
+
+    def addPseudeoFurnacefirering(self):
+        quest = quests.MoveQuest(terrain.tutorialMachineRoom,2,2)
+        self.mainCharQuestList.append(quest)
+        quest = quests.FillPocketsQuest()
+        self.mainCharQuestList.append(quest)
+        quest = quests.ActivateQuest(terrain.tutorialMachineRoom.furnaces[0])
+        self.mainCharQuestList.append(quest)
+        quest = quests.ActivateQuest(terrain.tutorialMachineRoom.furnaces[1])
+        self.mainCharQuestList.append(quest)
+        quest = quests.ActivateQuest(terrain.tutorialMachineRoom.furnaces[2])
+        self.mainCharQuestList.append(quest)
+        quest = quests.ActivateQuest(terrain.tutorialMachineRoom.furnaces[3])
+        self.mainCharQuestList.append(quest)
+        quest = quests.ActivateQuest(terrain.tutorialMachineRoom.furnaces[4])
+        self.mainCharQuestList.append(quest)
+        quest = quests.ActivateQuest(terrain.tutorialMachineRoom.furnaces[5])
+        self.mainCharQuestList.append(quest)
+        quest = quests.ActivateQuest(terrain.tutorialMachineRoom.furnaces[6])
+        self.mainCharQuestList.append(quest)
+        quest = quests.ActivateQuest(terrain.tutorialMachineRoom.furnaces[7])
+        self.mainCharQuestList.append(quest)
+
+    def addInnerRoomMovements(self):
         quest = quests.MoveQuest(terrain.wakeUpRoom,4,4)
-        mainChar.assignQuest(quest)
+        self.mainCharQuestList.append(quest)
         quest = quests.MoveQuest(terrain.wakeUpRoom,2,4)
-        mainChar.assignQuest(quest)
+        self.mainCharQuestList.append(quest)
         quest = quests.MoveQuest(terrain.wakeUpRoom,4,3)
-        mainChar.assignQuest(quest)
+        self.mainCharQuestList.append(quest)
         quest = quests.MoveQuest(terrain.wakeUpRoom,6,4)
-        mainChar.assignQuest(quest)
+        self.mainCharQuestList.append(quest)
         quest = quests.MoveQuest(terrain.wakeUpRoom,4,2)
-        mainChar.assignQuest(quest)
+        self.mainCharQuestList.append(quest)
         quest = quests.MoveQuest(terrain.wakeUpRoom,2,4)
-        mainChar.assignQuest(quest)
+        self.mainCharQuestList.append(quest)
         quest = quests.MoveQuest(terrain.wakeUpRoom,2,2)
-        mainChar.assignQuest(quest)
+        self.mainCharQuestList.append(quest)
+
+    def addIntraRoomMovements(self):
         quest = quests.MoveQuest(terrain.tutorialMachineRoom,2,2)
-        mainChar.assignQuest(quest)
+        self.mainCharQuestList.append(quest)
         quest = quests.MoveQuest(terrain.tutorialVat,2,2)
-        mainChar.assignQuest(quest)
+        self.mainCharQuestList.append(quest)
         quest = quests.MoveQuest(terrain.tutorialVatProcessing,6,6)
-        mainChar.assignQuest(quest)
+        self.mainCharQuestList.append(quest)
         quest = quests.MoveQuest(terrain.tutorialMachineRoom,2,2)
-        mainChar.assignQuest(quest)
+        self.mainCharQuestList.append(quest)
         quest = quests.MoveQuest(terrain.tutorialLab,2,2)
-        mainChar.assignQuest(quest)
+        self.mainCharQuestList.append(quest)
         quest = quests.MoveQuest(terrain.wakeUpRoom,2,2)
-        mainChar.assignQuest(quest)
+        self.mainCharQuestList.append(quest)
         quest = quests.MoveQuest(terrain.tutorialVat,2,2)
-        mainChar.assignQuest(quest)
+        self.mainCharQuestList.append(quest)
 
     def start(self):
+        cinematics.showCinematic("yay!")
         pass
+
+    def end(self):
+        pass
+
+    def assignPlayerQuests(self):
+        if not self.mainCharQuestList:
+            return
+
+        lastQuest = self.mainCharQuestList[0]
+        for item in self.mainCharQuestList[1:]:
+            lastQuest.followUp = item
+            lastQuest = item
+        self.mainCharQuestList[-1].followup = None
+
+        self.mainCharQuestList[-1].endTrigger = self.end
+
+        mainChar.assignQuest(self.mainCharQuestList[0])
 
 class BasicPhase(object):
     def __init__(self):
@@ -545,7 +605,7 @@ class ThirdTutorialPhase(BasicPhase):
                     self.mainCharRoom.addEvent(AnotherOne(gamestate.tick+10,0))
 
         def tmp():
-            cinematics.showCinematic("wait for the furnaces to burn down.")
+            cinematics.showCinematic("wait for the furnaces to burn out.")
             self.mainCharRoom.addEvent(WaitForClearStart(gamestate.tick+2,0))
 
         tmp()

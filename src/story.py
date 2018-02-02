@@ -19,9 +19,12 @@ class ScreenSaver(object):
         self.mainCharRoom.addCharacter(mainChar,2,4)
 
         self.mainCharQuestList = []
+
+        quest = quests.ActivateQuest(terrain.tutorialMachineRoom.furnaces[0])
+        self.mainCharQuestList.append(quest)
         
         self.addKeepFurnaceFired()
-        self.addPseudeoFurnacefirering()
+        #self.addPseudeoFurnacefirering()
         self.addIntraRoomMovements()
         self.addInnerRoomMovements()
 

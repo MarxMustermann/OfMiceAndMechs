@@ -184,6 +184,9 @@ class ActivateQuest(Quest):
         if not self.active:
             return 
 
+        if ((not self.character.room) or (not self.character.room == self.toActivate.room)) and self.character.quests[0] == self:
+            self.character.assignQuest(EnterRoomQuest(self.toActivate.room),active=True)
+
         if hasattr(self,"dstX"):
             del self.dstX
         if hasattr(self,"dstY"):

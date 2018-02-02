@@ -93,6 +93,7 @@ class Character():
 
             else:
                 for room in self.terrain.rooms:
+                    # north
                     if room.yPosition*15+room.offsetY+10 == nextPosition[1]+1:
                         if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+10 > self.xPosition:
                             localisedEntry = (self.xPosition%15-room.offsetX,nextPosition[1]%15-room.offsetY)
@@ -113,6 +114,7 @@ class Character():
                             else:
                                 messages.append("you cannot move there")
                                 break
+                    # south
                     if room.yPosition*15+room.offsetY == nextPosition[1]:
                         if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+10 > self.xPosition:
                             localisedEntry = ((self.xPosition-room.offsetX)%15,((nextPosition[1]-room.offsetY)%15))
@@ -125,7 +127,6 @@ class Character():
                                 if item:
                                     break
                                 else:
-                                    messages.append("moving into room")
                                     room.addCharacter(self,localisedEntry[0],localisedEntry[1])
                                     self.terrain.characters.remove(self)
                                     self.terrain = None
@@ -134,9 +135,10 @@ class Character():
                             else:
                                 messages.append("you cannot move there")
                                 break
-                    if room.xPosition*15+room.offsetX+10 == nextPosition[1]+1:
-                        if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+10 > self.yPosition:
-                            localisedEntry = (self.yPosition%15-room.offsetY,nextPosition[1]%15-room.offsetX)
+                    # east
+                    if room.xPosition*15+room.offsetX+room.sizeX == nextPosition[0]+1:
+                        if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+room.sizeY > self.yPosition:
+                            localisedEntry = ((nextPosition[0]-room.offsetX)%15,(self.yPosition-room.offsetY)%15)
                             if localisedEntry in room.walkingAccess:
                                 if localisedEntry in room.itemByCoordinates:
                                     for listItem in room.itemByCoordinates[localisedEntry]:
@@ -153,9 +155,10 @@ class Character():
                                     break
                             else:
                                 messages.append("you cannot move there")
-                    if room.xPosition*15+room.offsetX == nextPosition[1]:
-                        if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+10 > self.yPosition:
-                            localisedEntry = ((self.yPosition-room.offsetY)%15,((nextPosition[1]-room.offsetX)%15))
+                    # west
+                    if room.xPosition*15+room.offsetX == nextPosition[0]:
+                        if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+room.sizeY > self.yPosition:
+                            localisedEntry = ((nextPosition[0]-room.offsetX)%15,(self.yPosition-room.offsetY)%15)
                             if localisedEntry in room.walkingAccess:
                                 if localisedEntry in room.itemByCoordinates:
                                     for listItem in room.itemByCoordinates[localisedEntry]:

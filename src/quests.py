@@ -20,6 +20,7 @@ class Quest(object):
         self.endCinematics = None # deprecate?
         self.startTrigger = None # deprecate?
         self.endTrigger = None # deprecate?
+        self.paused = False
 
         self.lifetime = lifetime
 
@@ -32,7 +33,16 @@ class Quest(object):
     # do one action to solve the quest, is intended to be overwritten heavily. returns None if there can't be done anything
     # should be rewritten so it returns an actual list of steps
     def solver(self,character):
-        return character.walkPath()
+        if self.paused:
+            return True
+        else:
+            return character.walkPath()
+
+    def pause(self):
+        self.paused = True
+
+    def unpause(self):
+        self.paused = False
     
     # do the teardown of the quest
     def postHandler(self):
@@ -108,6 +118,7 @@ class Quest(object):
                     subself.tick = tick
 
                 def handleEvent(subself):
+                    self.deactivate()
                     self.postHandler()
 
             self.character.room.events.append(endQuestEvent(self.character.room.timeIndex+self.lifetime))
@@ -371,9 +382,14 @@ class FillPocketsQuest(CollectQuest):
 
         super().triggerCompletionCheck()
 
-class WaitQuest(CollectQuest):
+class WaitQuest(Quest):
     def __init__(self,followUp=None,startCinematics=None,lifetime=None):
-        super().__init__(followUp,startCinematics=startCinematics,lifetime=lifetime)
+        self.description = "please wait"
+        super().__init__(lifetime=lifetime)
+
+    def solver(self,character):
+        return True
+
 
 ############################################################
 ###
@@ -477,6 +493,8 @@ class KeepFurnaceFired(Quest):
         if not self.active:
             return 
 
+        self.unpause()
+
         if self.collectQuest and not self.collectQuest.active:
             self.collectQuest = None
         if self.activateFurnaceQuest and not self.activateFurnaceQuest.active:
@@ -487,6 +505,9 @@ class KeepFurnaceFired(Quest):
                 self.collectQuest = FillPocketsQuest()
                 self.collectQuest.activate()
                 self.character.assignQuest(self.collectQuest,active=True)
+            else:
+                self.pause()
+
             super().recalculate()
             return 
 

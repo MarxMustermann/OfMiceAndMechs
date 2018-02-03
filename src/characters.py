@@ -55,7 +55,8 @@ class Character():
             quest.activate()
             if (active or len(self.quests) == 1):
                 try:
-                    self.setPathToQuest(quest)
+                    if self.quests[0] == quest:
+                        self.setPathToQuest(quest)
                 except:
                     pass
 

@@ -37,7 +37,12 @@ class Quest(object):
     # do the teardown of the quest
     def postHandler(self):
         if self in self.character.quests:
+            if self.character.quests[0] == self:
+                startNext = True
             self.character.quests.remove(self)
+
+            if startNext:
+                self.character.startNextQuest()
 
         # these should be a unified way to to this. probably an event
         if self.endTrigger:
@@ -497,7 +502,7 @@ class KeepFurnaceFired(Quest):
             super().recalculate()
             return
 
-        if not self.activateFurnaceQuest:
+        if not self.activateFurnaceQuest and not self.collectQuest:
             self.activateFurnaceQuest = ActivateQuest(self.furnace)
             self.character.assignQuest(self.activateFurnaceQuest,active=True)
             super().recalculate()

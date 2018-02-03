@@ -371,6 +371,10 @@ class FillPocketsQuest(CollectQuest):
 
         super().triggerCompletionCheck()
 
+class WaitQuest(CollectQuest):
+    def __init__(self,followUp=None,startCinematics=None,lifetime=None):
+        super().__init__(followUp,startCinematics=startCinematics,lifetime=lifetime)
+
 ############################################################
 ###
 ##  furnace specific quests
@@ -479,7 +483,7 @@ class KeepFurnaceFired(Quest):
             self.activateFurnaceQuest = None
 
         if self.furnace.activated:
-            if not self.collectQuest and not len(self.character.inventory) > 10 and self.character.quests[0] == self:
+            if not self.collectQuest and not len(self.character.inventory) > 2 and self.character.quests[0] == self:
                 self.collectQuest = FillPocketsQuest()
                 self.collectQuest.activate()
                 self.character.assignQuest(self.collectQuest,active=True)

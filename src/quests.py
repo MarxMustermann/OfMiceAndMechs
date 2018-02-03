@@ -37,6 +37,7 @@ class Quest(object):
     # do the teardown of the quest
     def postHandler(self):
         if self in self.character.quests:
+            startNext = False
             if self.character.quests[0] == self:
                 startNext = True
             self.character.quests.remove(self)

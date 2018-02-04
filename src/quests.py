@@ -121,7 +121,7 @@ class Quest(object):
                     self.deactivate()
                     self.postHandler()
 
-            self.character.room.events.append(endQuestEvent(self.character.room.timeIndex+self.lifetime))
+            self.character.room.addEvent(endQuestEvent(self.character.room.timeIndex+self.lifetime))
 
         self.recalculate()
     def deactivate(self):
@@ -624,7 +624,7 @@ class PatrolQuest(MetaQuest):
                 def handleEvent(subself):
                     self.postHandler()
 
-            self.character.room.events.append(endQuestEvent(self.character.room.timeIndex+self.lifetime))
+            self.character.room.addEvent(endQuestEvent(self.character.room.timeIndex+self.lifetime))
 
         super().activate()
 
@@ -643,6 +643,6 @@ class ExamineQuest(Quest):
                 def handleEvent(subself):
                     self.postHandler()
 
-            self.character.room.events.append(endQuestEvent(self.character.room.timeIndex+self.lifetime))
+            self.character.room.addEvent(endQuestEvent(self.character.room.timeIndex+self.lifetime))
 
         super().activate()

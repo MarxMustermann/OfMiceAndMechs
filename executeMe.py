@@ -18,8 +18,9 @@ import config.names as names
 
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument("-p", "--phase", type=str, help="increase output verbosity")
-parser.add_argument("--fallBack", action="store_true", help="increase output verbosity")
+parser.add_argument("-p", "--phase", type=str, help="the phase to start in")
+parser.add_argument("--fallBack", action="store_true", help="force fallback encoding")
+parser.add_argument("-d", "--debug", action="store_true", help="enable debug mode")
 args = parser.parse_args()
 
 if args.fallBack:
@@ -115,6 +116,21 @@ cinematics.messages = messages
 story.messages = messages
 interaction.messages = messages
 events.messages = messages
+
+if args.debug:
+    debugMessages = messages
+else:
+    debugMessages = []
+
+items.debugMessages = debugMessages
+quests.debugMessages = debugMessages
+rooms.debugMessages = debugMessages
+characters.debugMessages = debugMessages
+terrains.debugMessages = debugMessages
+cinematics.debugMessages = debugMessages
+story.debugMessages = debugMessages
+interaction.debugMessages = debugMessages
+events.debugMessages = debugMessages
 
 # HACK: common variables with modules
 quests.showCinematic = cinematics.showCinematic

@@ -16,6 +16,7 @@ class Quest(object):
         self.character = None # should be more general like owner as preparation for room quests
         self.listener = [] # the list of things caring about this quest. The owner for example
         self.active = False # active as in started
+        self.completed = False # active as in started
         self.startCinematics = startCinematics # deprecate?
         self.endCinematics = None # deprecate?
         self.startTrigger = None # deprecate?
@@ -46,6 +47,8 @@ class Quest(object):
     
     # do the teardown of the quest
     def postHandler(self):
+        self.completed = True
+
         if self in self.character.quests:
             startNext = False
             if self.character.quests[0] == self:
@@ -452,6 +455,57 @@ class FireFurnace(Quest):
         self.triggerCompletionCheck()
         super().recalculate()
 
+class KeepFurnacesFired(Quest):
+    def __init__(self,furnaces,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+        self.furnaces = furnaces
+        self.failTrigger = failTrigger
+        self.keepFurnaceFiredQuests = {}
+        self.metaQuest = None
+        self.fetchQuest = None
+        self.description = "please fire the furnaces"
+        self.furnaces[0].addListener(self.recalculate)
+        super().__init__(followUp=followUp,startCinematics=startCinematics,lifetime=lifetime)
+
+    def solver(self,character):
+        return True
+
+    def recalculate(self):
+        if not self.active:
+            return 
+
+        """
+        LEVEL1:
+        for furnace in self.furnaces:
+            if not furnace in self.keepFurnaceFiredQuests:
+                quest = KeepFurnaceFired(furnace)
+                quest.inventoryThreshold = 11-len(self.furnaces)
+                self.character.assignQuest(quest,active=True)
+
+                self.keepFurnaceFiredQuests[furnace] = quest
+        
+        """
+
+        """
+        LEVEL2:
+        """
+        if self.metaQuest and self.metaQuest.completed:
+            self.metaQuest = None
+
+        if not self.metaQuest:
+            for furnace in reversed(self.furnaces):
+                if not furnace.activated:
+                    quest = ActivateQuest(furnace)
+                    if not self.metaQuest:
+                        self.metaQuest = quest
+                    self.character.assignQuest(quest,active=True)
+
+        if len(self.character.inventory) <= 11-len(self.furnaces) and (not self.fetchQuest or not self.fetchQuest.active):
+            quest = FillPocketsQuest()
+            self.character.assignQuest(quest,active=True)
+            self.fetchQuest = quest
+
+        super().recalculate()
+
 class KeepFurnaceFired(Quest):
     def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
         self.furnace = furnace
@@ -464,6 +518,7 @@ class KeepFurnaceFired(Quest):
         self.activateFurnaceQuest = None
         self.boilers = None
         self.failTrigger = failTrigger
+        self.inventoryThreshold = 2
         super().__init__(followUp,startCinematics=startCinematics,lifetime=lifetime)
 
     def assignToCharacter(self,character):
@@ -501,7 +556,7 @@ class KeepFurnaceFired(Quest):
             self.activateFurnaceQuest = None
 
         if self.furnace.activated:
-            if not self.collectQuest and not len(self.character.inventory) > 2 and self.character.quests[0] == self:
+            if not self.collectQuest and not len(self.character.inventory) > self.inventoryThreshold and self.character.quests[0] == self:
                 self.collectQuest = FillPocketsQuest()
                 self.collectQuest.activate()
                 self.character.assignQuest(self.collectQuest,active=True)

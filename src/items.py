@@ -32,7 +32,6 @@ class Item(object):
         messages.append("i can't do anything useful with this")
 
     def changed(self):
-        messages.append(self.name+": Object changed")
         for listener in self.listeners:
             listener()
 

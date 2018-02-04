@@ -5,6 +5,7 @@ Character = None
 mainChar = None
 characters = None
 messages = None
+debugMessages = None
 calculatePath = None
 displayChars = None
 
@@ -564,7 +565,7 @@ class Room(object):
 
         while self.events and self.timeIndex >  self.events[0].tick:
             event = self.events[0]
-            messages.append("something went wrong and event"+str(event)+"was skipped")
+            debugMessages.append("something went wrong and event"+str(event)+"was skipped")
             self.events.remove(event)
         while self.events and self.timeIndex == self.events[0].tick:
             event = self.events[0]

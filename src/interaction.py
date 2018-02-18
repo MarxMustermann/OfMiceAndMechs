@@ -502,11 +502,15 @@ class SubMenu(object):
         self.options = {}
         self.selection = None
         self.selectionIndex = 1
+        self.persistentText = ""
         super().__init__()
 
-    def setSelection(self, query, options):
+    def setSelection(self, query, options, niceOptions):
         self.options = options
+        self.niceOptions = niceOptions
         self.query = query
+        self.selectionIndex = 1
+        self.lockOptions = True
         self.selection = None
 
     def getSelection(self):
@@ -516,38 +520,41 @@ class SubMenu(object):
         out = "\n"
         out += self.query+"\n"
 
-        if key == "w":
-            self.selectionIndex -= 1
-            if self.selectionIndex == 0:
-                self.selectionIndex = len(self.options)
-            key = self.selectionIndex
-        if key == "s":
-            self.selectionIndex += 1
-            if self.selectionIndex > len(self.options):
-                self.selectionIndex = 1
-            key = self.selectionIndex
-        if key in ["enter","j","k"]:
-            key = str(self.selectionIndex)
+        if not self.lockOptions:
+            if key == "w":
+                self.selectionIndex -= 1
+                if self.selectionIndex == 0:
+                    self.selectionIndex = len(self.options)
+                key = self.selectionIndex
+            if key == "s":
+                self.selectionIndex += 1
+                if self.selectionIndex > len(self.options):
+                    self.selectionIndex = 1
+                key = self.selectionIndex
+            if key in ["enter","j","k"]:
+                key = str(self.selectionIndex)
 
-        if key in self.options:
-            self.selection = self.options[key]
-            self.options = None
-            return True
+            if key in self.options:
+                self.selection = self.options[key]
+                self.options = None
+                return True
+        else:
+             self.lockOptions = False
 
-        for k,v in self.options.items():
+        for k,v in self.niceOptions.items():
             if k == str(self.selectionIndex):
-                out += k+" ->"+str(v.name)+"\n"
+                out += k+" ->"+str(v)+"\n"
             else:
-                out += k+" - "+str(v.name)+"\n"
-        out += str(self.selection)
+                out += k+" - "+str(v)+"\n"
 
-        main.set_text(out)
+        main.set_text(self.persistentText+"\n\n"+out)
 
         return False
 
 class ChatMenu(SubMenu):
     def __init__(self):
         self.state = None
+        self.partner = None
         super().__init__()
 
     def handleKey(self, key):
@@ -561,25 +568,67 @@ class ChatMenu(SubMenu):
             if not self.options and not self.getSelection():
                 counter = 1
                 options = {}
+                niceOptions = {}
                 if mainChar.room:
                     for char in mainChar.room.characters:
                         options[str(counter)] = char
+                        niceOptions[str(counter)] = char.name
                         counter += 1
-                self.setSelection("talk with whom?!",options)
+                self.setSelection("talk with whom?",options,niceOptions)
 
             if not self.getSelection():
                  super().handleKey(key)
 
             if self.getSelection():
                 self.state = "greetings"
+                self.partner = self.selection
+                self.selection = None
+                self.lockOptions = True
             else:
                 return False
 
         if self.state == "greetings":
-                out += "you say hi to  "+str(self.getSelection().name)+"\n"
-                out += str(self.getSelection().name)+" says hi to you"
+            if self.lockOptions:
+                self.persistentText += self.partner.name+": \"Everything in Order, "+self.partner.name+"?\"\n"
+                self.persistentText += mainChar.name+": \"All sorted, "+mainChar.name+"!\"\n"
+                self.lockOptions = False
+            
+            if not self.options and not self.getSelection():
+                counter = 1
+                options = {"1":"recruit","2":"exit"}
+                niceOptions = {"1":"come and help me.","2":"let us proceed, "+self.partner.name}
+                self.setSelection("answer:",options,niceOptions)
 
-        main.set_text(out)
+            if not self.getSelection():
+                super().handleKey(key)
+            if self.getSelection():
+                if self.selection == "recruit":
+                    self.state = "recruit"
+                elif self.selection == "exit":
+                    self.state = "done"
+                self.selection = None
+                self.lockOptions = True
+            else:
+                return False
+
+        if self.state == "recruit":
+            if self.lockOptions:
+                self.persistentText += self.partner.name+": \"come and help me.\"\n"
+                self.persistentText += mainChar.name+": \"sorry, too busy.\"\n"
+                self.lockOptions = False
+            else:
+                self.state = "done"
+                self.lockOptions = True
+
+        if self.state == "done":
+            if self.lockOptions:
+                self.persistentText += self.partner.name+": \"let us proceed, "+self.partner.name+".\"\n"
+                self.persistentText += mainChar.name+": \"let us proceed, "+mainChar.name+".\"\n"
+                self.lockOptions = False
+            else:
+                return True
+
+        main.set_text(self.persistentText)
 
         return False
 
@@ -624,42 +673,27 @@ class AdvancedQuestMenu(SubMenu):
             self.state = "participantSelection"
 
         if self.state == "participantSelection":
-            self.options = {}
-            self.options["1"] = mainChar
-            self.options["2"] = terrain.wakeUpRoom.firstOfficer
-            self.options["3"] = terrain.wakeUpRoom.secondOfficer
+            options = {}
+            options["1"] = mainChar
+            options["2"] = terrain.wakeUpRoom.firstOfficer
+            options["3"] = terrain.wakeUpRoom.secondOfficer
 
-            if not self.lockOptions:
-                if key == "w":
-                    self.selectionIndex -= 1
-                    if self.selectionIndex == 0:
-                        self.selectionIndex = len(self.options)
-                    key = self.selectionIndex
-                if key == "s":
-                    self.selectionIndex += 1
-                    if self.selectionIndex > len(self.options):
-                        self.selectionIndex = 1
-                    key = self.selectionIndex
-                if key in ["enter","j","k"]:
-                    key = str(self.selectionIndex)
-                if key in self.options:
-                    self.character = self.options[key]
-                    self.state = "questSelection"
-                    self.lockOptions = True
-                    out += "character: "
-                    out += str(self.character.name)
-                    out += "\n\n"
-                    self.selectionIndex = 1
+            niceOptions = {}
+            niceOptions["1"] = mainChar.name+" (you)"
+            niceOptions["2"] = terrain.wakeUpRoom.firstOfficer.name+" (firstOfficer)"
+            niceOptions["3"] = terrain.wakeUpRoom.secondOfficer.name+" (secondOfficer)"
+            self.setSelection("answer:",options,niceOptions)
 
-            if self.state == "participantSelection":
-                out += "give quest to whom?\n"
-                for k,v in self.options.items():
-                    if str(self.selectionIndex) == k:
-                        out += k+" ->"+str(v.name)+"\n"
-                    else:
-                        out += k+" - "+str(v.name)+"\n"
-                self.lockOptions = False
-
+            if not self.getSelection():
+                super().handleKey(key)
+                
+            if self.getSelection():
+                #self.state = "questSelection"
+                #self.character = self.selection
+                self.selection = None
+                #self.lockOptions = True
+            else:
+                return False
 
         if self.state == "questSelection":
             self.options = {"1":quests.MoveQuest,"2":quests.ActivateQuest,"3":quests.EnterRoomQuest,"4":quests.FireFurnaceMeta}
@@ -710,7 +744,16 @@ class AdvancedQuestMenu(SubMenu):
 
             self.lockOptions = False
 
-        main.set_text(out)
+        if self.state == "done":
+            if self.lockOptions:
+                self.persistentText += self.partner.name+": \"let us proceed, "+self.partner.name+".\"\n"
+                self.persistentText += mainChar.name+": \"let us proceed, "+mainChar.name+".\"\n"
+                self.lockOptions = False
+            else:
+                return True
+
+        main.set_text(self.persistentText)
+
         return False
 
 def renderHeader():

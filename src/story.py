@@ -18,6 +18,16 @@ class ScreenSaver(object):
         self.mainCharRoom = terrain.wakeUpRoom
         self.mainCharRoom.addCharacter(mainChar,2,4)
 
+        npc = characters.Character(displayChars.staffCharactersByLetter["e"],5,3,name="Eduart Knoblauch")
+        self.mainCharRoom.addCharacter(npc,6,7)
+        npc.terrain = terrain
+        self.mainCharRoom.firstOfficer = npc
+
+        npc = characters.Character(displayChars.staffCharactersByLetter["p"],5,3,name="Peter Stahlmann")
+        self.mainCharRoom.addCharacter(npc,5,6)
+        npc.terrain = terrain
+        self.mainCharRoom.secondOfficer = npc
+
         self.mainCharQuestList = []
 
         quest = quests.MoveQuest(terrain.tutorialMachineRoom,2,2)

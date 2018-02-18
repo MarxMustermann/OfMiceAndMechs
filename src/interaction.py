@@ -39,6 +39,8 @@ lastMoveAutomated = False
 fullAutoMode = False
 idleCounter = 0
 pauseGame = False
+questMenuActive = False
+submenue = None
 
 commandHistory = []
 
@@ -54,6 +56,9 @@ def show_or_exit(key):
     global lastLagDetection
     global idleCounter
     global pauseGame
+    global questMenuActive
+    global submenue
+
     if key in ("lagdetection",):
         loop.set_alarm_in(0.2, callShow_or_exit, "lagdetection")
         lastLagDetection = time.time()
@@ -84,399 +89,411 @@ def show_or_exit(key):
     if key in (commandChars.autoAdvance):
         loop.set_alarm_in(0.2, callShow_or_exit, commandChars.autoAdvance)
 
-    global itemMarkedLast
-    global lastMoveAutomated
-    stop = False
-    doAdvanceGame = True
-    if len(cinematics.cinematicQueue):
-        if key in (commandChars.quit_normal, commandChars.quit_instant):
-            gamestate.save()
-            raise urwid.ExitMainLoop()
-        elif key in (commandChars.pause,commandChars.advance,commandChars.autoAdvance):
-            cinematics.cinematicQueue[0].abort()
-            cinematics.cinematicQueue = cinematics.cinematicQueue[1:]
-            loop.set_alarm_in(0.0, callShow_or_exit, commandChars.ignore)
-            return
-        else:
-            if not cinematics.cinematicQueue[0].advance():
+    if not submenue:
+        global itemMarkedLast
+        global lastMoveAutomated
+        stop = False
+        doAdvanceGame = True
+        if len(cinematics.cinematicQueue):
+            if key in (commandChars.quit_normal, commandChars.quit_instant):
+                gamestate.save()
+                raise urwid.ExitMainLoop()
+            elif key in (commandChars.pause,commandChars.advance,commandChars.autoAdvance):
+                cinematics.cinematicQueue[0].abort()
+                cinematics.cinematicQueue = cinematics.cinematicQueue[1:]
+                loop.set_alarm_in(0.0, callShow_or_exit, commandChars.ignore)
                 return
-            key = commandChars.ignore
-    if key in (commandChars.ignore):
-        doAdvanceGame = False
-
-    if key in stealKey:
-        stealKey[key]()
-    else:
-        if key in (commandChars.quit_delete,):
-            saveFile = open("gamestate/gamestate.json","w")
-            saveFile.write("reset")
-            saveFile.close()
-            raise urwid.ExitMainLoop()
-        if key in (commandChars.quit_normal, commandChars.quit_instant):
-            gamestate.save()
-            raise urwid.ExitMainLoop()
-        if key in (commandChars.move_north):
-            if mainChar.room:
-                item = mainChar.room.moveCharacterNorth(mainChar)
-
-                if item:
-                    messages.append("You cannot walk there")
-                    messages.append("press "+commandChars.activate+" to apply")
-                    itemMarkedLast = item
-                    header.set_text(renderHeader())
+            else:
+                if not cinematics.cinematicQueue[0].advance():
                     return
-            else:
-                roomCandidates = []
-                bigX = (mainChar.xPosition)//15
-                bigY = (mainChar.yPosition-1)//15
-                for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
-                    if coordinate in terrain.roomByCoordinates:
-                        roomCandidates.extend(terrain.roomByCoordinates[coordinate])
+                key = commandChars.ignore
+        if key in (commandChars.ignore):
+            doAdvanceGame = False
 
-                hadRoomInteraction = False
-                for room in roomCandidates:
-                    if room.yPosition*15+room.offsetY+room.sizeY == mainChar.yPosition:
-                        if room.xPosition*15+room.offsetX-1 < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
-                            hadRoomInteraction = True
-                            localisedEntry = (mainChar.xPosition%15-room.offsetX,mainChar.yPosition%15-room.offsetY-1)
-                            if localisedEntry[1] == -1:
-                                localisedEntry = (localisedEntry[0],room.sizeY-1)
-                            if localisedEntry in room.walkingAccess:
-                                for item in room.itemByCoordinates[localisedEntry]:
-                                    if not item.walkable:
-                                        itemMarkedLast = item
-                                        messages.append("you need to open the door first")
-                                        messages.append("press "+commandChars.activate+" to apply")
-                                        header.set_text(renderHeader())
-                                        return
-                                
-                                room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
-                                terrain.characters.remove(mainChar)
-                            else:
-                                messages.append("you cannot move there")
-                if not hadRoomInteraction:
-                    try:
-                        foundItems = terrain.itemByCoordinates[mainChar.xPosition,mainChar.yPosition-1]
-                    except Exception as e:
-                        foundItems = []
-
-                    foundItem = False
-                    for item in foundItems:
-                        if item and not item.walkable:
-                            messages.append("You cannot walk there")
-                            messages.append("press "+commandChars.activate+" to apply")
-                            itemMarkedLast = item
-                            header.set_text(renderHeader())
-                            foundItem = True
-                    if not foundItem:
-                        mainChar.yPosition -= 1
-                        mainChar.changed()
-
-        if key in (commandChars.move_south):
-            if mainChar.room:
-                item = mainChar.room.moveCharacterSouth(mainChar)
-
-                if item:
-                    messages.append("You cannot walk there")
-                    messages.append("press "+commandChars.activate+" to apply")
-                    itemMarkedLast = item
-                    header.set_text(renderHeader())
-                    return
-            else:
-                roomCandidates = []
-                bigX = (mainChar.xPosition)//15
-                bigY = (mainChar.yPosition+1)//15
-                for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
-                    if coordinate in terrain.roomByCoordinates:
-                        roomCandidates.extend(terrain.roomByCoordinates[coordinate])
-
-                hadRoomInteraction = False
-                for room in roomCandidates:
-                    if room.yPosition*15+room.offsetY == mainChar.yPosition+1:
-                        if room.xPosition*15+room.offsetX-1 < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
-                            hadRoomInteraction = True
-                            localisedEntry = ((mainChar.xPosition-room.offsetX)%15,(mainChar.yPosition-room.offsetY+1)%15)
-                            if localisedEntry in room.walkingAccess:
-                                for item in room.itemByCoordinates[localisedEntry]:
-                                    if not item.walkable:
-                                        itemMarkedLast = item
-                                        messages.append("you need to open the door first")
-                                        messages.append("press "+commandChars.activate+" to apply")
-                                        header.set_text(renderHeader())
-                                        return
-                                
-                                room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
-                                terrain.characters.remove(mainChar)
-                            else:
-                                messages.append("you cannot move there")
-                if not hadRoomInteraction:
-                    try:
-                        foundItems = terrain.itemByCoordinates[mainChar.xPosition,mainChar.yPosition+1]
-                    except Exception as e:
-                        foundItems = []
-
-                    foundItem = False
-                    for item in foundItems:
-                        if item and not item.walkable:
-                            messages.append("You cannot walk there")
-                            messages.append("press "+commandChars.activate+" to apply")
-                            itemMarkedLast = item
-                            header.set_text(renderHeader())
-                            foundItem = True
-                    if not foundItem:
-                        mainChar.yPosition += 1
-                        mainChar.changed()
-
-        if key in (commandChars.move_east):
-            if mainChar.room:
-                item = mainChar.room.moveCharacterEast(mainChar)
-
-                if item:
-                    messages.append("You cannot walk there")
-                    messages.append("press "+commandChars.activate+" to apply")
-                    itemMarkedLast = item
-                    header.set_text(renderHeader())
-                    return
-            else:
-                roomCandidates = []
-                bigX = (mainChar.xPosition+1)//15
-                bigY = (mainChar.yPosition)//15
-                for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
-                    if coordinate in terrain.roomByCoordinates:
-                        roomCandidates.extend(terrain.roomByCoordinates[coordinate])
-
-                hadRoomInteraction = False
-                for room in roomCandidates:
-                    if room.xPosition*15+room.offsetX == mainChar.xPosition+1:
-                        if room.yPosition*15+room.offsetY < mainChar.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > mainChar.yPosition:
-                            hadRoomInteraction = True
-                            localisedEntry = ((mainChar.xPosition-room.offsetX+1)%15,(mainChar.yPosition-room.offsetY)%15)
-                            if localisedEntry in room.walkingAccess:
-                                for item in room.itemByCoordinates[localisedEntry]:
-                                    if not item.walkable:
-                                        itemMarkedLast = item
-                                        messages.append("you need to open the door first")
-                                        messages.append("press "+commandChars.activate+" to apply")
-                                        header.set_text(renderHeader())
-                                        return
-                                
-                                room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
-                                terrain.characters.remove(mainChar)
-                            else:
-                                messages.append("you cannot move there")
-                if not hadRoomInteraction:
-                    try:
-                        foundItems = terrain.itemByCoordinates[mainChar.xPosition+1,mainChar.yPosition]
-                    except Exception as e:
-                        foundItems = []
-
-                    foundItem = False
-                    for item in foundItems:
-                        if item and not item.walkable:
-                            messages.append("You cannot walk there")
-                            messages.append("press "+commandChars.activate+" to apply")
-                            itemMarkedLast = item
-                            header.set_text(renderHeader())
-                            foundItem = True
-                    if not foundItem:
-                        mainChar.xPosition += 1
-                        mainChar.changed()
-
-        if key in (commandChars.move_west):
-            if mainChar.room:
-                item = mainChar.room.moveCharacterWest(mainChar)
-
-                if item:
-                    messages.append("You cannot walk there")
-                    messages.append("press "+commandChars.activate+" to apply")
-                    itemMarkedLast = item
-                    header.set_text(renderHeader())
-                    return
-            else:
-                roomCandidates = []
-                bigX = (mainChar.xPosition)//15
-                bigY = (mainChar.yPosition-1)//15
-                for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
-                    if coordinate in terrain.roomByCoordinates:
-                        roomCandidates.extend(terrain.roomByCoordinates[coordinate])
-
-                hadRoomInteraction = False
-                for room in roomCandidates:
-                    if room.xPosition*15+room.offsetX+room.sizeX == mainChar.xPosition:
-                        if room.yPosition*15+room.offsetY < mainChar.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > mainChar.yPosition:
-                            hadRoomInteraction = True
-                            localisedEntry = ((mainChar.xPosition-room.offsetX-1)%15,(mainChar.yPosition-room.offsetY)%15)
-                            if localisedEntry in room.walkingAccess:
-                                for item in room.itemByCoordinates[localisedEntry]:
-                                    if not item.walkable:
-                                        itemMarkedLast = item
-                                        messages.append("you need to open the door first")
-                                        messages.append("press "+commandChars.activate+" to apply")
-                                        header.set_text(renderHeader())
-                                        return
-                                
-                                room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
-                                terrain.characters.remove(mainChar)
-                            else:
-                                messages.append("you cannot move there")
-                if not hadRoomInteraction:
-                    try:
-                        foundItems = terrain.itemByCoordinates[mainChar.xPosition-1,mainChar.yPosition]
-                    except Exception as e:
-                        foundItems = []
-
-                    foundItem = False
-                    for item in foundItems:
-                        if item and not item.walkable:
-                            messages.append("You cannot walk there")
-                            messages.append("press "+commandChars.activate+" to apply")
-                            itemMarkedLast = item
-                            header.set_text(renderHeader())
-                            foundItem = True
-                    if not foundItem:
-                        mainChar.xPosition -= 1
-                        mainChar.changed()
-
-        if key in (commandChars.attack):
-            if mainChar.room:
-                for char in mainChar.room.characters:
-                    if char == mainChar:
-                        continue
-                    if not (mainChar.xPosition == char.xPosition and mainChar.yPosition == char.yPosition):
-                        continue
-                    mainChar.room.removeCharacter(char)
-                    corpse = items.Corpse(mainChar.xPosition,mainChar.yPosition)
-                    mainChar.room.addItems([corpse])
-
-        if key in (commandChars.activate):
-            if itemMarkedLast:
-                itemMarkedLast.apply(mainChar)
-            else:
-                if mainChar.room:
-                    itemList = mainChar.room.itemsOnFloor
-                else:
-                    itemList = terrain.itemsOnFloor
-                for item in itemList:
-                    if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
-                        item.apply(mainChar)
-
-        if key in (commandChars.examine):
-            if itemMarkedLast:
-                messages.append(itemMarkedLast.description)
-                messages.append(itemMarkedLast.getDetailedInfo())
-            else:
-                if mainChar.room:
-                    itemList = mainChar.room.itemsOnFloor
-                else:
-                    itemList = terrain.itemsOnFloor
-                for item in itemList:
-                    if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
-                        messages.append(item.description)
-                        messages.append(item.getDetailedInfo())
-
-        if key in (commandChars.drop):
-            if len(mainChar.inventory):
-                item = mainChar.inventory.pop()    
-                item.xPosition = mainChar.xPosition        
-                item.yPosition = mainChar.yPosition        
-                if mainChar.room:
-                    mainChar.room.addItems([item])
-                else:
-                    mainChar.terrain.addItems([item])
-                item.changed()
-                mainChar.changed()
-
-        if key in (commandChars.pickUp):
-            if len(mainChar.inventory) > 10:
-                messages.append("you cannot carry more items")
-            if mainChar.room:
-                itemByCoordinates = mainChar.room.itemByCoordinates
-                itemList = mainChar.room.itemsOnFloor
-            else:
-                itemByCoordinates = terrain.itemByCoordinates
-                itemList = terrain.itemsOnFloor
-
-            if (mainChar.xPosition,mainChar.yPosition) in itemByCoordinates:
-                for item in itemByCoordinates[(mainChar.xPosition,mainChar.yPosition)]:
-                    itemList.remove(item)
-                    if hasattr(item,"xPosition"):
-                        del item.xPosition
-                    if hasattr(item,"yPosition"):
-                        del item.yPosition
-                    mainChar.inventory.append(item)
-                    item.changed()
-                del itemByCoordinates[(mainChar.xPosition,mainChar.yPosition)]
-
-        if key in (commandChars.hail):
-            if mainChar.room and type(mainChar.room) == rooms.MiniMech:
-                if not mainChar.room.npc.quests:
-                    messages.append("please fire the furnace.")
-                    quest0 = quests.KeepFurnaceFired(mainChar.room.furnaces[0])
-                    mainChar.room.npc.assignQuest(quest0)
-                else:
-                    messages.append("you may stop now.")
-                    for quest in mainChar.room.npc.quests:
-                        quest.deactivate()
-                    mainChar.room.npc.quests = []
-            else:
-                messages.append(mainChar.name+": HÜ!")
-                messages.append(mainChar.name+": HOTT!")
-
-        if key in (commandChars.advance,commandChars.autoAdvance):
-            if len(mainChar.quests):
-                if not lastMoveAutomated:
-                    try:
-                        mainChar.setPathToQuest(mainChar.quests[0])
-                    except:
-                        pass
-
-                lastMoveAutomated = True
-
-                mainChar.automated = True
-                mainChar.advance()
-                mainChar.automated = False
-            else:
-                pass
+        if key in stealKey:
+            stealKey[key]()
         else:
-            lastMoveAutomated = False
+            if key in (commandChars.quit_delete,):
+                saveFile = open("gamestate/gamestate.json","w")
+                saveFile.write("reset")
+                saveFile.close()
+                raise urwid.ExitMainLoop()
+            if key in (commandChars.quit_normal, commandChars.quit_instant):
+                gamestate.save()
+                raise urwid.ExitMainLoop()
+            if key in (commandChars.move_north):
+                if mainChar.room:
+                    item = mainChar.room.moveCharacterNorth(mainChar)
 
-    if not key in ("lagdetection",commandChars.wait,):
-        itemMarkedLast = None
+                    if item:
+                        messages.append("You cannot walk there")
+                        messages.append("press "+commandChars.activate+" to apply")
+                        itemMarkedLast = item
+                        header.set_text(renderHeader())
+                        return
+                else:
+                    roomCandidates = []
+                    bigX = (mainChar.xPosition)//15
+                    bigY = (mainChar.yPosition-1)//15
+                    for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
+                        if coordinate in terrain.roomByCoordinates:
+                            roomCandidates.extend(terrain.roomByCoordinates[coordinate])
 
-    global lastRedraw
-    if lastRedraw < time.time()-0.016:
-        loop.draw_screen()
-        lastRedraw = time.time()
+                    hadRoomInteraction = False
+                    for room in roomCandidates:
+                        if room.yPosition*15+room.offsetY+room.sizeY == mainChar.yPosition:
+                            if room.xPosition*15+room.offsetX-1 < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
+                                hadRoomInteraction = True
+                                localisedEntry = (mainChar.xPosition%15-room.offsetX,mainChar.yPosition%15-room.offsetY-1)
+                                if localisedEntry[1] == -1:
+                                    localisedEntry = (localisedEntry[0],room.sizeY-1)
+                                if localisedEntry in room.walkingAccess:
+                                    for item in room.itemByCoordinates[localisedEntry]:
+                                        if not item.walkable:
+                                            itemMarkedLast = item
+                                            messages.append("you need to open the door first")
+                                            messages.append("press "+commandChars.activate+" to apply")
+                                            header.set_text(renderHeader())
+                                            return
+                                    
+                                    room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
+                                    terrain.characters.remove(mainChar)
+                                else:
+                                    messages.append("you cannot move there")
+                    if not hadRoomInteraction:
+                        try:
+                            foundItems = terrain.itemByCoordinates[mainChar.xPosition,mainChar.yPosition-1]
+                        except Exception as e:
+                            foundItems = []
 
-    specialRender = False
-    if key in (commandChars.show_quests):
+                        foundItem = False
+                        for item in foundItems:
+                            if item and not item.walkable:
+                                messages.append("You cannot walk there")
+                                messages.append("press "+commandChars.activate+" to apply")
+                                itemMarkedLast = item
+                                header.set_text(renderHeader())
+                                foundItem = True
+                        if not foundItem:
+                            mainChar.yPosition -= 1
+                            mainChar.changed()
+
+            if key in (commandChars.move_south):
+                if mainChar.room:
+                    item = mainChar.room.moveCharacterSouth(mainChar)
+
+                    if item:
+                        messages.append("You cannot walk there")
+                        messages.append("press "+commandChars.activate+" to apply")
+                        itemMarkedLast = item
+                        header.set_text(renderHeader())
+                        return
+                else:
+                    roomCandidates = []
+                    bigX = (mainChar.xPosition)//15
+                    bigY = (mainChar.yPosition+1)//15
+                    for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
+                        if coordinate in terrain.roomByCoordinates:
+                            roomCandidates.extend(terrain.roomByCoordinates[coordinate])
+
+                    hadRoomInteraction = False
+                    for room in roomCandidates:
+                        if room.yPosition*15+room.offsetY == mainChar.yPosition+1:
+                            if room.xPosition*15+room.offsetX-1 < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
+                                hadRoomInteraction = True
+                                localisedEntry = ((mainChar.xPosition-room.offsetX)%15,(mainChar.yPosition-room.offsetY+1)%15)
+                                if localisedEntry in room.walkingAccess:
+                                    for item in room.itemByCoordinates[localisedEntry]:
+                                        if not item.walkable:
+                                            itemMarkedLast = item
+                                            messages.append("you need to open the door first")
+                                            messages.append("press "+commandChars.activate+" to apply")
+                                            header.set_text(renderHeader())
+                                            return
+                                    
+                                    room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
+                                    terrain.characters.remove(mainChar)
+                                else:
+                                    messages.append("you cannot move there")
+                    if not hadRoomInteraction:
+                        try:
+                            foundItems = terrain.itemByCoordinates[mainChar.xPosition,mainChar.yPosition+1]
+                        except Exception as e:
+                            foundItems = []
+
+                        foundItem = False
+                        for item in foundItems:
+                            if item and not item.walkable:
+                                messages.append("You cannot walk there")
+                                messages.append("press "+commandChars.activate+" to apply")
+                                itemMarkedLast = item
+                                header.set_text(renderHeader())
+                                foundItem = True
+                        if not foundItem:
+                            mainChar.yPosition += 1
+                            mainChar.changed()
+
+            if key in (commandChars.move_east):
+                if mainChar.room:
+                    item = mainChar.room.moveCharacterEast(mainChar)
+
+                    if item:
+                        messages.append("You cannot walk there")
+                        messages.append("press "+commandChars.activate+" to apply")
+                        itemMarkedLast = item
+                        header.set_text(renderHeader())
+                        return
+                else:
+                    roomCandidates = []
+                    bigX = (mainChar.xPosition+1)//15
+                    bigY = (mainChar.yPosition)//15
+                    for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
+                        if coordinate in terrain.roomByCoordinates:
+                            roomCandidates.extend(terrain.roomByCoordinates[coordinate])
+
+                    hadRoomInteraction = False
+                    for room in roomCandidates:
+                        if room.xPosition*15+room.offsetX == mainChar.xPosition+1:
+                            if room.yPosition*15+room.offsetY < mainChar.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > mainChar.yPosition:
+                                hadRoomInteraction = True
+                                localisedEntry = ((mainChar.xPosition-room.offsetX+1)%15,(mainChar.yPosition-room.offsetY)%15)
+                                if localisedEntry in room.walkingAccess:
+                                    for item in room.itemByCoordinates[localisedEntry]:
+                                        if not item.walkable:
+                                            itemMarkedLast = item
+                                            messages.append("you need to open the door first")
+                                            messages.append("press "+commandChars.activate+" to apply")
+                                            header.set_text(renderHeader())
+                                            return
+                                    
+                                    room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
+                                    terrain.characters.remove(mainChar)
+                                else:
+                                    messages.append("you cannot move there")
+                    if not hadRoomInteraction:
+                        try:
+                            foundItems = terrain.itemByCoordinates[mainChar.xPosition+1,mainChar.yPosition]
+                        except Exception as e:
+                            foundItems = []
+
+                        foundItem = False
+                        for item in foundItems:
+                            if item and not item.walkable:
+                                messages.append("You cannot walk there")
+                                messages.append("press "+commandChars.activate+" to apply")
+                                itemMarkedLast = item
+                                header.set_text(renderHeader())
+                                foundItem = True
+                        if not foundItem:
+                            mainChar.xPosition += 1
+                            mainChar.changed()
+
+            if key in (commandChars.move_west):
+                if mainChar.room:
+                    item = mainChar.room.moveCharacterWest(mainChar)
+
+                    if item:
+                        messages.append("You cannot walk there")
+                        messages.append("press "+commandChars.activate+" to apply")
+                        itemMarkedLast = item
+                        header.set_text(renderHeader())
+                        return
+                else:
+                    roomCandidates = []
+                    bigX = (mainChar.xPosition)//15
+                    bigY = (mainChar.yPosition-1)//15
+                    for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
+                        if coordinate in terrain.roomByCoordinates:
+                            roomCandidates.extend(terrain.roomByCoordinates[coordinate])
+
+                    hadRoomInteraction = False
+                    for room in roomCandidates:
+                        if room.xPosition*15+room.offsetX+room.sizeX == mainChar.xPosition:
+                            if room.yPosition*15+room.offsetY < mainChar.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > mainChar.yPosition:
+                                hadRoomInteraction = True
+                                localisedEntry = ((mainChar.xPosition-room.offsetX-1)%15,(mainChar.yPosition-room.offsetY)%15)
+                                if localisedEntry in room.walkingAccess:
+                                    for item in room.itemByCoordinates[localisedEntry]:
+                                        if not item.walkable:
+                                            itemMarkedLast = item
+                                            messages.append("you need to open the door first")
+                                            messages.append("press "+commandChars.activate+" to apply")
+                                            header.set_text(renderHeader())
+                                            return
+                                    
+                                    room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
+                                    terrain.characters.remove(mainChar)
+                                else:
+                                    messages.append("you cannot move there")
+                    if not hadRoomInteraction:
+                        try:
+                            foundItems = terrain.itemByCoordinates[mainChar.xPosition-1,mainChar.yPosition]
+                        except Exception as e:
+                            foundItems = []
+
+                        foundItem = False
+                        for item in foundItems:
+                            if item and not item.walkable:
+                                messages.append("You cannot walk there")
+                                messages.append("press "+commandChars.activate+" to apply")
+                                itemMarkedLast = item
+                                header.set_text(renderHeader())
+                                foundItem = True
+                        if not foundItem:
+                            mainChar.xPosition -= 1
+                            mainChar.changed()
+
+            if key in (commandChars.attack):
+                if mainChar.room:
+                    for char in mainChar.room.characters:
+                        if char == mainChar:
+                            continue
+                        if not (mainChar.xPosition == char.xPosition and mainChar.yPosition == char.yPosition):
+                            continue
+                        mainChar.room.removeCharacter(char)
+                        corpse = items.Corpse(mainChar.xPosition,mainChar.yPosition)
+                        mainChar.room.addItems([corpse])
+
+            if key in (commandChars.activate):
+                if itemMarkedLast:
+                    itemMarkedLast.apply(mainChar)
+                else:
+                    if mainChar.room:
+                        itemList = mainChar.room.itemsOnFloor
+                    else:
+                        itemList = terrain.itemsOnFloor
+                    for item in itemList:
+                        if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
+                            item.apply(mainChar)
+
+            if key in (commandChars.examine):
+                if itemMarkedLast:
+                    messages.append(itemMarkedLast.description)
+                    messages.append(itemMarkedLast.getDetailedInfo())
+                else:
+                    if mainChar.room:
+                        itemList = mainChar.room.itemsOnFloor
+                    else:
+                        itemList = terrain.itemsOnFloor
+                    for item in itemList:
+                        if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
+                            messages.append(item.description)
+                            messages.append(item.getDetailedInfo())
+
+            if key in (commandChars.drop):
+                if len(mainChar.inventory):
+                    item = mainChar.inventory.pop()    
+                    item.xPosition = mainChar.xPosition        
+                    item.yPosition = mainChar.yPosition        
+                    if mainChar.room:
+                        mainChar.room.addItems([item])
+                    else:
+                        mainChar.terrain.addItems([item])
+                    item.changed()
+                    mainChar.changed()
+
+            if key in (commandChars.pickUp):
+                if len(mainChar.inventory) > 10:
+                    messages.append("you cannot carry more items")
+                if mainChar.room:
+                    itemByCoordinates = mainChar.room.itemByCoordinates
+                    itemList = mainChar.room.itemsOnFloor
+                else:
+                    itemByCoordinates = terrain.itemByCoordinates
+                    itemList = terrain.itemsOnFloor
+
+                if (mainChar.xPosition,mainChar.yPosition) in itemByCoordinates:
+                    for item in itemByCoordinates[(mainChar.xPosition,mainChar.yPosition)]:
+                        itemList.remove(item)
+                        if hasattr(item,"xPosition"):
+                            del item.xPosition
+                        if hasattr(item,"yPosition"):
+                            del item.yPosition
+                        mainChar.inventory.append(item)
+                        item.changed()
+                    del itemByCoordinates[(mainChar.xPosition,mainChar.yPosition)]
+
+            if key in (commandChars.hail):
+                if mainChar.room and type(mainChar.room) == rooms.MiniMech:
+                    if not mainChar.room.npc.quests:
+                        messages.append("please fire the furnace.")
+                        quest0 = quests.KeepFurnaceFired(mainChar.room.furnaces[0])
+                        mainChar.room.npc.assignQuest(quest0)
+                    else:
+                        messages.append("you may stop now.")
+                        for quest in mainChar.room.npc.quests:
+                            quest.deactivate()
+                        mainChar.room.npc.quests = []
+                else:
+                    messages.append(mainChar.name+": HÜ!")
+                    messages.append(mainChar.name+": HOTT!")
+
+            if key in (commandChars.advance,commandChars.autoAdvance):
+                if len(mainChar.quests):
+                    if not lastMoveAutomated:
+                        try:
+                            mainChar.setPathToQuest(mainChar.quests[0])
+                        except:
+                            pass
+
+                    lastMoveAutomated = True
+
+                    mainChar.automated = True
+                    mainChar.advance()
+                    mainChar.automated = False
+                else:
+                    pass
+            else:
+                lastMoveAutomated = False
+
+        if not key in ("lagdetection",commandChars.wait,):
+            itemMarkedLast = None
+
+        global lastRedraw
+        if lastRedraw < time.time()-0.016:
+            loop.draw_screen()
+            lastRedraw = time.time()
+
+        specialRender = False
+        if key in (commandChars.show_quests):
+            specialRender = True        
+            pauseGame = True
+            
+            header.set_text("\nquest overview\n(press "+commandChars.show_quests_detailed+" for the extended quest menu)\n\n")
+            main.set_text(renderQuests())
+            header.set_text("")
+
+        if key in (commandChars.show_quests_detailed):
+            submenue = AdvancedQuestMenu()
+
+        if key in (commandChars.show_inventory):
+            specialRender = True        
+            pauseGame = True
+            
+            header.set_text("\ninentory overview\n(press "+commandChars.show_inventory_detailed+" for the extended inventory menu)\n\n")
+            main.set_text(renderInventory())
+            header.set_text("")
+
+        if key in (commandChars.show_help):
+            specialRender = True        
+            pauseGame = True
+
+        if gamestate.gameWon:
+            main.set_text("")
+            main.set_text("credits")
+            header.set_text("good job")
+
+    if submenue:
         specialRender = True        
         pauseGame = True
-        
-        header.set_text("\nquest overview\n(press "+commandChars.show_quests_detailed+" for the extended quest menu)\n\n")
-        main.set_text(renderQuests())
-        header.set_text("")
 
-    if key in (commandChars.show_inventory):
-        specialRender = True        
-        pauseGame = True
-        
-        header.set_text("\ninentory overview\n(press "+commandChars.show_inventory_detailed+" for the extended inventory menu)\n\n")
-        main.set_text(renderInventory())
-        header.set_text("")
+        success = submenue.handleKey(key)
 
-    if key in (commandChars.show_help):
-        specialRender = True        
-        pauseGame = True
-        
-        header.set_text("\nhelp overview\n(press "+commandChars.show_help+" again for a list of keybindings)\n\n")
-        main.set_text(renderHelp())
-        header.set_text("")
-
-    if gamestate.gameWon:
-        main.set_text("")
-        main.set_text("credits")
-        header.set_text("good job")
+        if key in ["q"] or success:
+            submenue = None
+            pauseGame = False
+            specialRender = False
+            doAdvanceGame = False
         
     if not specialRender:
         if doAdvanceGame:
@@ -484,6 +501,89 @@ def show_or_exit(key):
 
         header.set_text(renderHeader())
         main.set_text(render());
+
+class AdvancedQuestMenu(object):
+    def __init__(self):
+        self.state = None
+        self.character = None
+        self.quest = None
+        self.lockOptions = True
+        super().__init__()
+
+    def handleKey(self, key):
+        header.set_text("\nadvanced Quest management\n")
+        out = "\n"
+
+        if self.character:
+            out += "character: "+str(self.character)+"\n"
+        if self.quest:
+            out += "quest: "+str(self.quest)+"\n"
+        out += "\n"
+
+        if self.state == None:
+            self.state = "playerSelection"
+
+        if self.state == "playerSelection":
+            self.options = {}
+            self.options["a"] = mainChar
+            self.options["b"] = terrain.wakeUpRoom.firstOfficer
+            self.options["c"] = terrain.wakeUpRoom.secondOfficer
+
+            if not self.lockOptions:
+                if key in self.options:
+                    self.character = self.options[key]
+                    self.state = "questSelection"
+                    self.lockOptions = True
+                    out += "character: "
+                    out += str(self.character)
+                    out += "\n\n"
+
+            if self.state == "playerSelection":
+                out += "give quest to whom?\n"
+                for k,v in self.options.items():
+                    out += k+" - "+str(v)+"\n"
+                self.lockOptions = False
+
+
+        if self.state == "questSelection":
+            self.options = {"a":quests.MoveQuest,"b":quests.ActivateQuest,"c":quests.EnterRoomQuest,"d":quests.FireFurnaceMeta}
+
+            if not self.lockOptions:
+                if key in self.options:
+                    self.quest = self.options[key]
+                    self.state = "confirm"
+                    self.lockOptions = True
+                    out += "quest: "+str(self.quest)+"\n\n"
+
+            if self.state == "questSelection":
+                out += "what quest to give?\n"
+                for k,v in self.options.items():
+                    out += k+" - "+str(v)+"\n"
+                self.lockOptions = False
+
+        if self.state == "confirm":
+            if not self.lockOptions:
+                if key in ["y"]:
+                    questInstance = None
+                    if self.quest == quests.MoveQuest:
+                        questInstance = self.quest(mainChar.room,2,2)
+                    if self.quest == quests.ActivateQuest:
+                        questInstance = self.quest(mainChar.room.furnaces[0])
+                    if self.quest == quests.EnterRoomQuest:
+                        questInstance = self.quest(terrain.tutorialMachineRoom)
+                    if self.quest == quests.FireFurnaceMeta:
+                        questInstance = self.quest(mainChar.room.furnaces[0])
+                    self.character.assignQuest(questInstance, active=True)
+
+                    return True
+
+            if self.state == "confirm":
+                out += "confirm?\n"
+
+            self.lockOptions = False
+
+        main.set_text(out)
+        return False
 
 def renderHeader():
     questSection = renderQuests(maxQuests=2)

@@ -384,6 +384,7 @@ def show_or_exit(key):
                 else:
                     mainChar.terrain.addItems([item])
                 item.changed()
+                mainChar.changed()
 
         if key in (commandChars.pickUp):
             if len(mainChar.inventory) > 10:
@@ -424,7 +425,11 @@ def show_or_exit(key):
         if key in (commandChars.advance,commandChars.autoAdvance):
             if len(mainChar.quests):
                 if not lastMoveAutomated:
-                    mainChar.setPathToQuest(mainChar.quests[0])
+                    try:
+                        mainChar.setPathToQuest(mainChar.quests[0])
+                    except:
+                        pass
+
                 lastMoveAutomated = True
 
                 mainChar.automated = True
@@ -535,10 +540,10 @@ def renderHeader():
 
     return txt
 
-def renderMessages():
+def renderMessages(maxMessages=5):
     txt = ""
-    if len(messages) > 4:
-        for message in messages[-5:]:
+    if len(messages) > maxMessages:
+        for message in messages[-maxMessages+1:]:
             txt += str(message)+"\n"
     else:
         for message in messages:

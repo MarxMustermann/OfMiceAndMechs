@@ -20,22 +20,71 @@ class ScreenSaver(object):
 
         self.mainCharQuestList = []
 
-        quest = quests.ActivateQuest(terrain.tutorialMachineRoom.furnaces[0])
+        quest = quests.MoveQuest(terrain.tutorialMachineRoom,2,2)
         self.mainCharQuestList.append(quest)
-        
-        self.addKeepFurnaceFired()
+
+        questlist = []
+        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[2])
+        questlist.append(quest)
+        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[3])
+        questlist.append(quest)
+        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[4])
+        questlist.append(quest)
+        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[5])
+        questlist.append(quest)
+        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[6])
+        questlist.append(quest)
+        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[6])
+        #questlist = [quest]
+        #quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[2])
+        #questlist.append(quest)
+        quest = quests.MetaQuest2(questlist)
+        self.mainCharQuestList.append(quest)
+
+        #self.addKeepFurnaceFired()
+        #self.cycleDetectionTest()
+        #self.addWaitQuest()
+        #self.addKeepFurnaceFired()
         #self.addPseudeoFurnacefirering()
-        self.addIntraRoomMovements()
-        self.addInnerRoomMovements()
+        #self.addIntraRoomMovements()
+        #self.addInnerRoomMovements()
 
         self.assignPlayerQuests()
+        #self.mainCharQuestList[-1].followUp = self.mainCharQuestList[0]
+
+    def cycleDetectionTest(self):
+        quest = quests.MoveQuest(terrain.tutorialVat,2,2)
+        self.mainCharQuestList.append(quest)
+        quest = quests.MoveQuest(terrain.tutorialVatProcessing,6,6)
+        self.mainCharQuestList.append(quest)
+        quest = quests.MoveQuest(terrain.tutorialMachineRoom,2,2)
+        self.mainCharQuestList.append(quest)
+
+    def addWaitQuest(self):
+        quest = quests.WaitQuest(lifetime=40)
+        self.mainCharQuestList.append(quest)
 
     def addKeepFurnaceFired(self):
         quest = quests.MoveQuest(terrain.tutorialMachineRoom,2,2)
         self.mainCharQuestList.append(quest)
-        quest = quests.FillPocketsQuest()
-        self.mainCharQuestList.append(quest)
-        quest = quests.KeepFurnaceFired(terrain.tutorialMachineRoom.furnaces[0],lifetime=80)
+
+        questList = []
+        quest = quests.KeepFurnaceFired(terrain.tutorialMachineRoom.furnaces[0],lifetime=20)
+        questList.append(quest)
+        quest = quests.KeepFurnaceFired(terrain.tutorialMachineRoom.furnaces[1],lifetime=20)
+        questList.append(quest)
+        quest = quests.KeepFurnaceFired(terrain.tutorialMachineRoom.furnaces[2],lifetime=20)
+        questList.append(quest)
+        quest = quests.KeepFurnaceFired(terrain.tutorialMachineRoom.furnaces[3],lifetime=20)
+        questList.append(quest)
+        quest = quests.KeepFurnaceFired(terrain.tutorialMachineRoom.furnaces[4],lifetime=20)
+        questList.append(quest)
+        quest = quests.KeepFurnaceFired(terrain.tutorialMachineRoom.furnaces[5],lifetime=20)
+        questList.append(quest)
+        quest = quests.KeepFurnaceFired(terrain.tutorialMachineRoom.furnaces[6],lifetime=20)
+        questList.append(quest)
+
+        quest = quests.MetaQuest(questList)
         self.mainCharQuestList.append(quest)
 
     def addPseudeoFurnacefirering(self):

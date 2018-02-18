@@ -49,7 +49,8 @@ class Quest(object):
     def postHandler(self):
         self.completed = True
 
-        if self in self.character.quests:
+        # TODO: handle quests with no assigned character
+        if self.character and self in self.character.quests:
             startNext = False
             if self.character.quests[0] == self:
                 startNext = True
@@ -68,10 +69,11 @@ class Quest(object):
         self.deactivate()
 
         # these should be a unified way to to this. probably an event
-        if self.followUp:
-            self.character.assignQuest(self.followUp,active=True)
-        else:
-            self.character.startNextQuest()
+        if self.character:
+            if self.followUp:
+                self.character.assignQuest(self.followUp,active=True)
+            else:
+                self.character.startNextQuest()
 
     # ideally this would be a contructor param, but this may be used for reassigning quests
     def assignToCharacter(self,character):
@@ -127,6 +129,8 @@ class Quest(object):
             self.character.room.addEvent(endQuestEvent(self.character.room.timeIndex+self.lifetime))
 
         self.recalculate()
+        self.changed()
+
     def deactivate(self):
         self.active = False
         self.changed()
@@ -187,23 +191,18 @@ class ActivateQuest(Quest):
     def __init__(self,toActivate,followUp=None,desiredActive=True,startCinematics=None):
         self.toActivate = toActivate
         self.toActivate.addListener(self.recalculate)
-        self.description = "please activate the "+self.toActivate.name+" ("+str(self.toActivate.xPosition)+"/"+str(self.toActivate.yPosition)+")"
+        self.toActivate.addListener(self.triggerCompletionCheck)
         self.dstX = self.toActivate.xPosition
         self.dstY = self.toActivate.yPosition
         self.desiredActive = desiredActive
+        self.description = "please activate the "+self.toActivate.name+" ("+str(self.toActivate.xPosition)+"/"+str(self.toActivate.yPosition)+") "+str(self) 
         super().__init__(followUp,startCinematics=startCinematics)
 
     def triggerCompletionCheck(self):
-        if not self.active:
-            return 
-
         if self.toActivate.activated == self.desiredActive:
             self.postHandler()
 
     def recalculate(self):
-        if not self.active:
-            return 
-
         if ((not self.character.room) or (not self.character.room == self.toActivate.room)) and self.character.quests[0] == self:
             self.character.assignQuest(EnterRoomQuest(self.toActivate.room),active=True)
 
@@ -337,7 +336,6 @@ class CollectQuest(Quest):
 
         if foundItem:
             self.postHandler()
-            pass
 
     def assignToCharacter(self,character):
         super().assignToCharacter(character)
@@ -389,6 +387,25 @@ class WaitQuest(Quest):
     def __init__(self,followUp=None,startCinematics=None,lifetime=None):
         self.description = "please wait"
         super().__init__(lifetime=lifetime)
+
+    def solver(self,character):
+        return True
+
+class WaitForDeactivationQuest(Quest):
+    def __init__(self,item,followUp=None,startCinematics=None,lifetime=None):
+        item.addListener(self.recalculate)
+        self.item = item
+        self.description = "please wait for deactivation of "+self.item.description
+        self.item.addListener(self.recalculate)
+        super().__init__(lifetime=lifetime)
+        self.pause()
+
+    def recalculate(self):
+        super().recalculate()
+
+    def triggerCompletionCheck(self):
+        if not self.item.activated:
+            self.postHandler()
 
     def solver(self,character):
         return True
@@ -461,6 +478,7 @@ class KeepFurnacesFired(Quest):
         self.failTrigger = failTrigger
         self.keepFurnaceFiredQuests = {}
         self.metaQuest = None
+        self.metaQuest2 = None
         self.fetchQuest = None
         self.description = "please fire the furnaces"
         self.furnaces[0].addListener(self.recalculate)
@@ -473,38 +491,45 @@ class KeepFurnacesFired(Quest):
         if not self.active:
             return 
 
-        """
-        LEVEL1:
-        for furnace in self.furnaces:
-            if not furnace in self.keepFurnaceFiredQuests:
-                quest = KeepFurnaceFired(furnace)
-                quest.inventoryThreshold = 11-len(self.furnaces)
-                self.character.assignQuest(quest,active=True)
-
-                self.keepFurnaceFiredQuests[furnace] = quest
-        
-        """
-
+        self.pause()
         """
         LEVEL2:
         """
-        if self.metaQuest and self.metaQuest.completed:
-            self.metaQuest = None
+        if self.metaQuest2 and self.metaQuest2.completed:
+            self.metaQuest2 = None
 
-        if not self.metaQuest:
+        if not self.metaQuest2:
             for furnace in reversed(self.furnaces):
                 if not furnace.activated:
                     quest = ActivateQuest(furnace)
-                    if not self.metaQuest:
-                        self.metaQuest = quest
+                    if not self.metaQuest2:
+                        self.metaQuest2 = quest
                     self.character.assignQuest(quest,active=True)
+                    self.unpause()
+        else:
+            self.unpause()
+
+        """
+        LEVEL1:
+        if not self.metaQuest:
+            for furnace in self.furnaces[2:]:
+                if not furnace in self.keepFurnaceFiredQuests:
+                    quest = KeepFurnaceFired(furnace)
+                    quest.inventoryThreshold = 11-len(self.furnaces)
+                    self.character.assignQuest(quest,active=True)
+
+                    self.keepFurnaceFiredQuests[furnace] = quest
+            self.metaQuest = True
+        """
 
         if len(self.character.inventory) <= 11-len(self.furnaces) and (not self.fetchQuest or not self.fetchQuest.active):
             quest = FillPocketsQuest()
             self.character.assignQuest(quest,active=True)
             self.fetchQuest = quest
-
+            self.unpause()
+        
         super().recalculate()
+
 
 class KeepFurnaceFired(Quest):
     def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
@@ -610,18 +635,22 @@ class MetaQuest(Quest):
         try:
             return self.subQuests[0].dstX
         except:
-            return 0
+            return self.character.xPosition
 
     @property
     def dstY(self):
         try:
             return self.subQuests[0].dstY
         except:
-            return 0
+            return self.character.yPosition
 
     @property
     def description(self):
         try:
+            out =  "meta:\n"
+            for quest in self.subQuests:
+                out += "    * "+quest.description+"\n"
+            return out
             return self.subQuests[0].description
         except:
             return ""
@@ -657,6 +686,214 @@ class MetaQuest(Quest):
         if len(self.subQuests):
             self.subQuests[0].deactivate()
         super().deactivate()
+
+class MetaQuest2(Quest):
+    def __init__(self,quests,startCinematics=None,looped=False):
+        self.subQuests = quests
+
+        for quest in self.subQuests:
+            quest.addListener(self.triggerCompletionCheck)
+
+        self.lastActive = None
+
+        self.metaDescription = "meta"
+
+        super().__init__(startCinematics=startCinematics)
+
+    @property
+    def dstX(self):
+        if not self.lastActive:
+            return None
+        try:
+            return self.lastActive.dstX
+        except Exception as e:
+            #messages.append(e)
+            return None
+
+    @property
+    def dstY(self):
+        if not self.lastActive:
+            return None
+        try:
+            return self.lastActive.dstY
+        except Exception as e:
+            #messages.append(e)
+            return None
+
+    @property
+    def description(self):
+            out = ""+self.metaDescription+":\n"
+            for quest in self.subQuests:
+                questDescription = "\n    ".join(quest.description.split("\n"))+"\n"
+                if quest == self.lastActive:
+                    if quest.active:
+                        out += "  ->"+questDescription
+                    else:
+                        out += "YYYY"+questDescription
+                elif quest.paused:
+                    out += "  - "+questDescription
+                elif quest.active:
+                    out += "  * "+questDescription
+                else:
+                    out += "XXXX"+questDescription
+            return out
+            return self.subQuests[0].description
+
+    def assignToCharacter(self,character):
+        super().assignToCharacter(character)
+
+        for quest in self.subQuests:
+                quest.assignToCharacter(self.character)
+
+    def recalculate(self):
+        for quest in self.subQuests:
+            if quest.completed:
+                self.subQuests.remove(quest)
+
+        foundQuest = False
+        for quest in self.subQuests:
+            if not quest.paused:
+                self.lastActive = quest
+                foundQuest = True
+                break
+
+        if not foundQuest:
+            self.lastActive = None
+
+        super().recalculate()
+
+    def triggerCompletionCheck(self):
+        if not self.subQuests:
+                self.postHandler()
+
+    def activate(self):
+        super().activate()
+        for quest in self.subQuests:
+            if not quest.active:
+                quest.activate()
+
+    def deactivate(self):
+        for quest in self.subQuests:
+            if quest.active:
+                quest.deactivate()
+        super().deactivate()
+
+class KeepFurnacesFiredMeta(MetaQuest2):
+    def __init__(self,furnaces,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+        questList = []
+        skillLevel = 20
+        if len(furnaces) < skillLevel:
+            questList.append(KeepFurnacesFired(furnaces))
+        else:
+            for furnace in furnaces[skillLevel:]:
+                quest = KeepFurnaceFired(furnace)
+                questList.append(quest)
+            questList.append(KeepFurnacesFired(furnaces[:skillLevel]))
+        super().__init__(questList)
+        self.metaDescription = "KeepFurnacesFiredMeta"
+
+class KeepFurnaceFiredMeta(MetaQuest2):
+    def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+        self.questList = []
+        self.fireFurnaceQuest = None
+        self.waitQuest = None
+        self.furnace = furnace
+        super().__init__(self.questList)
+        self.furnace.addListener(self.recalculate)
+        self.metaDescription = "KeepFurnaceFiredMeta"
+
+    def recalculate(self):
+        if not self.character:
+            super().recalculate()
+            return
+
+        if self.furnace.activated:
+            self.pause()
+        else:
+            self.unpause()
+
+        if self.fireFurnaceQuest and self.fireFurnaceQuest.completed:
+            self.fireFurnaceQuest = None
+
+        if not self.fireFurnaceQuest and not self.furnace.activated:
+            self.fireFurnaceQuest = FireFurnaceMeta(self.furnace)
+            self.fireFurnaceQuest.assignToCharacter(self.character)
+            self.fireFurnaceQuest.activate()
+            self.fireFurnaceQuest.addListener(self.recalculate)
+            self.questList.append(self.fireFurnaceQuest)
+            self.changed()
+
+        if not self.questList:
+            self.waitQuest = WaitForDeactivationQuest(self.furnace)
+            self.waitQuest.assignToCharacter(self.character)
+            self.waitQuest.activate()
+            self.waitQuest.addListener(self.recalculate)
+            self.questList.insert(0,self.waitQuest)
+            self.changed()
+
+        super().recalculate()
+
+    def triggerCompletionCheck(self):
+        pass
+
+class FireFurnaceMeta(MetaQuest2):
+    def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+        self.activateQuest = None
+        self.collectQuest = None
+        self.questList = []
+        self.furnace = furnace
+        super().__init__(self.questList)
+        self.metaDescription = "FireFurnaceMeta"+str(self)
+
+    def recalculate(self):
+
+        if self.collectQuest and self.collectQuest.completed:
+            self.collectQuest = None
+
+        if not self.collectQuest:
+            foundItem = None
+            for item in self.character.inventory:
+                try:
+                    canBurn = item.canBurn
+                except:
+                    continue
+                if not canBurn:
+                    continue
+                foundItem = item
+
+            if not foundItem:
+                self.collectQuest = CollectQuest()
+                self.collectQuest.assignToCharacter(self.character)
+                self.collectQuest.addListener(self.recalculate)
+                self.questList.insert(0,self.collectQuest)
+                self.collectQuest.activate()
+                self.changed()
+
+                if self.activateQuest:
+                    self.activateQuest.pause()
+
+        if self.activateQuest and not self.collectQuest:
+            self.activateQuest.unpause()
+
+        if not self.activateQuest and not self.collectQuest and not self.furnace.activated:
+            self.activateQuest = ActivateQuest(self.furnace)
+            self.activateQuest.assignToCharacter(self.character)
+            self.questList.append(self.activateQuest)
+            self.activateQuest.activate()
+            self.activateQuest.addListener(self.recalculate)
+            self.changed()
+
+        super().recalculate()
+
+    def assignToCharacter(self,character):
+        character.addListener(self.recalculate)
+        super().assignToCharacter(character)
+
+    def triggerCompletionCheck(self):
+        if self.furnace.activated:
+            self.postHandler()
+            
+        super().triggerCompletionCheck()
 
 class PatrolQuest(MetaQuest):
     def __init__(self,waypoints=[],startCinematics=None,looped=True,lifetime=None):

@@ -59,7 +59,7 @@ class ScreenSaver(object):
         #self.addIntraRoomMovements()
         #self.addInnerRoomMovements()
 
-        self.assignPlayerQuests()
+        #self.assignPlayerQuests()
         #self.mainCharQuestList[-1].followUp = self.mainCharQuestList[0]
 
     def cycleDetectionTest(self):

@@ -425,8 +425,7 @@ def show_or_exit(key):
                             quest.deactivate()
                         mainChar.room.npc.quests = []
                 else:
-                    messages.append(mainChar.name+": HÜ!")
-                    messages.append(mainChar.name+": HOTT!")
+                    submenue = ChatMenu()
 
             if key in (commandChars.advance,commandChars.autoAdvance):
                 if len(mainChar.quests):
@@ -456,12 +455,7 @@ def show_or_exit(key):
 
         specialRender = False
         if key in (commandChars.show_quests):
-            specialRender = True        
-            pauseGame = True
-            
-            header.set_text("\nquest overview\n(press "+commandChars.show_quests_detailed+" for the extended quest menu)\n\n")
-            main.set_text(renderQuests())
-            header.set_text("")
+            submenue = QuestMenu()
 
         if key in (commandChars.show_quests_detailed):
             submenue = AdvancedQuestMenu()
@@ -489,7 +483,7 @@ def show_or_exit(key):
 
         success = submenue.handleKey(key)
 
-        if key in ["q"] or success:
+        if key in ["esc"] or success:
             submenue = None
             pauseGame = False
             specialRender = False
@@ -502,7 +496,56 @@ def show_or_exit(key):
         header.set_text(renderHeader())
         main.set_text(render());
 
-class ChatMenu(object):
+class SubMenu(object):
+    def __init__(self):
+        self.state = None
+        self.options = {}
+        self.selection = None
+        self.selectionIndex = 1
+        super().__init__()
+
+    def setSelection(self, query, options):
+        self.options = options
+        self.query = query
+        self.selection = None
+
+    def getSelection(self):
+        return self.selection
+
+    def handleKey(self, key):
+        out = "\n"
+        out += self.query+"\n"
+
+        if key == "w":
+            self.selectionIndex -= 1
+            if self.selectionIndex == 0:
+                self.selectionIndex = len(self.options)
+            key = self.selectionIndex
+        if key == "s":
+            self.selectionIndex += 1
+            if self.selectionIndex > len(self.options):
+                self.selectionIndex = 1
+            key = self.selectionIndex
+        if key in ["enter","j","k"]:
+            key = str(self.selectionIndex)
+
+        if key in self.options:
+            self.selection = self.options[key]
+            self.options = None
+            return True
+
+        for k,v in self.options.items():
+            if k == str(self.selectionIndex):
+                out += k+" ->"+str(v.name)+"\n"
+            else:
+                out += k+" - "+str(v.name)+"\n"
+        out += str(self.selection)
+
+        main.set_text(out)
+
+        return False
+
+class ChatMenu(SubMenu):
     def __init__(self):
         self.state = None
         super().__init__()
@@ -515,15 +558,56 @@ class ChatMenu(object):
             self.state = "participantSelection"
 
         if self.state == "participantSelection":
+            if not self.options and not self.getSelection():
+                counter = 1
+                options = {}
+                if mainChar.room:
+                    for char in mainChar.room.characters:
+                        options[str(counter)] = char
+                        counter += 1
+                self.setSelection("talk with whom?!",options)
+
+            if not self.getSelection():
+                 super().handleKey(key)
+
+            if self.getSelection():
+                self.state = "greetings"
+            else:
+                return False
+
+        if self.state == "greetings":
+                out += "you say hi to  "+str(self.getSelection().name)+"\n"
+                out += str(self.getSelection().name)+" says hi to you"
+
+        main.set_text(out)
 
         return False
 
-class AdvancedQuestMenu(object):
+class QuestMenu(SubMenu):
+    def __init__(self):
+        self.lockOptions = True
+        super().__init__()
+
+    def handleKey(self, key):
+        global submenue
+
+        header.set_text("\nquest overview\n(press "+commandChars.show_quests_detailed+" for the extended quest menu)\n\n")
+        main.set_text(renderQuests())
+        header.set_text("")
+
+        if not self.lockOptions:
+            if key in ["q"]:
+                submenue = AdvancedQuestMenu()
+                submenue.handleKey(key)
+        self.lockOptions = False
+
+class AdvancedQuestMenu(SubMenu):
     def __init__(self):
         self.state = None
         self.character = None
         self.quest = None
         self.lockOptions = True
+        self.selectionIndex = 1
         super().__init__()
 
     def handleKey(self, key):
@@ -531,7 +615,7 @@ class AdvancedQuestMenu(object):
         out = "\n"
 
         if self.character:
-            out += "character: "+str(self.character)+"\n"
+            out += "character: "+str(self.character.name)+"\n"
         if self.quest:
             out += "quest: "+str(self.quest)+"\n"
         out += "\n"
@@ -541,60 +625,88 @@ class AdvancedQuestMenu(object):
 
         if self.state == "participantSelection":
             self.options = {}
-            self.options["a"] = mainChar
-            self.options["b"] = terrain.wakeUpRoom.firstOfficer
-            self.options["c"] = terrain.wakeUpRoom.secondOfficer
+            self.options["1"] = mainChar
+            self.options["2"] = terrain.wakeUpRoom.firstOfficer
+            self.options["3"] = terrain.wakeUpRoom.secondOfficer
 
             if not self.lockOptions:
+                if key == "w":
+                    self.selectionIndex -= 1
+                    if self.selectionIndex == 0:
+                        self.selectionIndex = len(self.options)
+                    key = self.selectionIndex
+                if key == "s":
+                    self.selectionIndex += 1
+                    if self.selectionIndex > len(self.options):
+                        self.selectionIndex = 1
+                    key = self.selectionIndex
+                if key in ["enter","j","k"]:
+                    key = str(self.selectionIndex)
                 if key in self.options:
                     self.character = self.options[key]
                     self.state = "questSelection"
                     self.lockOptions = True
                     out += "character: "
-                    out += str(self.character)
+                    out += str(self.character.name)
                     out += "\n\n"
+                    self.selectionIndex = 1
 
             if self.state == "participantSelection":
                 out += "give quest to whom?\n"
                 for k,v in self.options.items():
-                    out += k+" - "+str(v)+"\n"
+                    if str(self.selectionIndex) == k:
+                        out += k+" ->"+str(v.name)+"\n"
+                    else:
+                        out += k+" - "+str(v.name)+"\n"
                 self.lockOptions = False
 
 
         if self.state == "questSelection":
-            self.options = {"a":quests.MoveQuest,"b":quests.ActivateQuest,"c":quests.EnterRoomQuest,"d":quests.FireFurnaceMeta}
+            self.options = {"1":quests.MoveQuest,"2":quests.ActivateQuest,"3":quests.EnterRoomQuest,"4":quests.FireFurnaceMeta}
 
             if not self.lockOptions:
+                if key == "w":
+                    self.selectionIndex -= 1
+                    if self.selectionIndex == 0:
+                        self.selectionIndex = len(self.options)
+                    key = self.selectionIndex
+                if key == "s":
+                    self.selectionIndex += 1
+                    if self.selectionIndex > len(self.options):
+                        self.selectionIndex = 1
+                    key = self.selectionIndex
+                if key in ["enter","j","k"]:
+                    key = str(self.selectionIndex)
                 if key in self.options:
                     self.quest = self.options[key]
                     self.state = "confirm"
                     self.lockOptions = True
                     out += "quest: "+str(self.quest)+"\n\n"
+                    self.selectionIndex = 1
 
             if self.state == "questSelection":
                 out += "what quest to give?\n"
                 for k,v in self.options.items():
-                    out += k+" - "+str(v)+"\n"
+                    if str(self.selectionIndex) == k:
+                        out += k+" ->"+str(v)+"\n"
+                    else:
+                        out += k+" - "+str(v)+"\n"
                 self.lockOptions = False
 
         if self.state == "confirm":
             if not self.lockOptions:
-                if key in ["y"]:
-                    questInstance = None
-                    if self.quest == quests.MoveQuest:
-                        questInstance = self.quest(mainChar.room,2,2)
-                    if self.quest == quests.ActivateQuest:
-                        questInstance = self.quest(mainChar.room.furnaces[0])
-                    if self.quest == quests.EnterRoomQuest:
-                        questInstance = self.quest(terrain.tutorialMachineRoom)
-                    if self.quest == quests.FireFurnaceMeta:
-                        questInstance = self.quest(mainChar.room.furnaces[0])
-                    self.character.assignQuest(questInstance, active=True)
+                questInstance = None
+                if self.quest == quests.MoveQuest:
+                    questInstance = self.quest(mainChar.room,2,2)
+                if self.quest == quests.ActivateQuest:
+                    questInstance = self.quest(mainChar.room.furnaces[0])
+                if self.quest == quests.EnterRoomQuest:
+                    questInstance = self.quest(terrain.tutorialMachineRoom)
+                if self.quest == quests.FireFurnaceMeta:
+                    questInstance = self.quest(mainChar.room.furnaces[0])
+                self.character.assignQuest(questInstance, active=True)
 
-                    return True
-
-            if self.state == "confirm":
-                out += "confirm?\n"
+                return True
 
             self.lockOptions = False
 

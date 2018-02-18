@@ -715,15 +715,19 @@ class AdvancedQuestMenu(SubMenu):
                 if self.quest == quests.MoveQuest:
                     questInstance = self.quest(mainChar.room,2,2)
                 if self.quest == quests.ActivateQuest:
-                    questInstance = self.quest(mainChar.room.furnaces[0])
+                    questInstance = self.quest(terrain.tutorialMachineRoom.furnaces[0])
                 if self.quest == quests.EnterRoomQuest:
                     questInstance = self.quest(terrain.tutorialMachineRoom)
                 if self.quest == quests.FireFurnaceMeta:
-                    questInstance = self.quest(mainChar.room.furnaces[0])
+                    questInstance = self.quest(terrain.tutorialMachineRoom.furnaces[0])
                 self.character.assignQuest(questInstance, active=True)
                 self.lockOptions = False
-                self.persistentText += self.character.name+": \"understood?\"\n"
-                self.persistentText += mainChar.name+": \"understood and in execution\"\n"
+                if not self.character == mainChar:
+                    self.persistentText += self.character.name+": \"understood?\"\n"
+                    self.persistentText += mainChar.name+": \"understood and in execution\"\n"
+                else:
+                    return True
+
             else:
                 self.state = "done"
 

@@ -502,6 +502,22 @@ def show_or_exit(key):
         header.set_text(renderHeader())
         main.set_text(render());
 
+class ChatMenu(object):
+    def __init__(self):
+        self.state = None
+        super().__init__()
+
+    def handleKey(self, key):
+        header.set_text("\nConversation menu\n")
+        out = "\n"
+
+        if self.state == None:
+            self.state = "participantSelection"
+
+        if self.state == "participantSelection":
+
+        return False
+
 class AdvancedQuestMenu(object):
     def __init__(self):
         self.state = None
@@ -521,9 +537,9 @@ class AdvancedQuestMenu(object):
         out += "\n"
 
         if self.state == None:
-            self.state = "playerSelection"
+            self.state = "participantSelection"
 
-        if self.state == "playerSelection":
+        if self.state == "participantSelection":
             self.options = {}
             self.options["a"] = mainChar
             self.options["b"] = terrain.wakeUpRoom.firstOfficer
@@ -538,7 +554,7 @@ class AdvancedQuestMenu(object):
                     out += str(self.character)
                     out += "\n\n"
 
-            if self.state == "playerSelection":
+            if self.state == "participantSelection":
                 out += "give quest to whom?\n"
                 for k,v in self.options.items():
                     out += k+" - "+str(v)+"\n"

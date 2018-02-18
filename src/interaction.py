@@ -652,11 +652,8 @@ class QuestMenu(SubMenu):
 
 class AdvancedQuestMenu(SubMenu):
     def __init__(self):
-        self.state = None
         self.character = None
         self.quest = None
-        self.lockOptions = True
-        self.selectionIndex = 1
         super().__init__()
 
     def handleKey(self, key):
@@ -673,62 +670,47 @@ class AdvancedQuestMenu(SubMenu):
             self.state = "participantSelection"
 
         if self.state == "participantSelection":
-            options = {}
-            options["1"] = mainChar
-            options["2"] = terrain.wakeUpRoom.firstOfficer
-            options["3"] = terrain.wakeUpRoom.secondOfficer
-
-            niceOptions = {}
-            niceOptions["1"] = mainChar.name+" (you)"
-            niceOptions["2"] = terrain.wakeUpRoom.firstOfficer.name+" (firstOfficer)"
-            niceOptions["3"] = terrain.wakeUpRoom.secondOfficer.name+" (secondOfficer)"
-            self.setSelection("answer:",options,niceOptions)
+            if not self.options and not self.getSelection():
+                options = {}
+                options["1"] = mainChar
+                options["2"] = terrain.wakeUpRoom.firstOfficer
+                options["3"] = terrain.wakeUpRoom.secondOfficer
+                niceOptions = {}
+                niceOptions["1"] = mainChar.name+" (you)"
+                niceOptions["2"] = terrain.wakeUpRoom.firstOfficer.name+" (firstOfficer)"
+                niceOptions["3"] = terrain.wakeUpRoom.secondOfficer.name+" (secondOfficer)"
+                self.setSelection("whom to give the order to: ",options,niceOptions)
 
             if not self.getSelection():
                 super().handleKey(key)
                 
             if self.getSelection():
-                #self.state = "questSelection"
-                #self.character = self.selection
+                self.state = "questSelection"
+                self.character = self.selection
                 self.selection = None
-                #self.lockOptions = True
+                self.lockOptions = True
             else:
                 return False
 
         if self.state == "questSelection":
-            self.options = {"1":quests.MoveQuest,"2":quests.ActivateQuest,"3":quests.EnterRoomQuest,"4":quests.FireFurnaceMeta}
+            if not self.options and not self.getSelection():
+                options = {"1":quests.MoveQuest,"2":quests.ActivateQuest,"3":quests.EnterRoomQuest,"4":quests.FireFurnaceMeta}
+                niceOptions = {"1":"MoveQuest","2":"ActivateQuest","3":"EnterRoomQuest","4":"FireFurnaceMeta"}
+                self.setSelection("what type of quest:",options,niceOptions)
 
-            if not self.lockOptions:
-                if key == "w":
-                    self.selectionIndex -= 1
-                    if self.selectionIndex == 0:
-                        self.selectionIndex = len(self.options)
-                    key = self.selectionIndex
-                if key == "s":
-                    self.selectionIndex += 1
-                    if self.selectionIndex > len(self.options):
-                        self.selectionIndex = 1
-                    key = self.selectionIndex
-                if key in ["enter","j","k"]:
-                    key = str(self.selectionIndex)
-                if key in self.options:
-                    self.quest = self.options[key]
-                    self.state = "confirm"
-                    self.lockOptions = True
-                    out += "quest: "+str(self.quest)+"\n\n"
-                    self.selectionIndex = 1
-
-            if self.state == "questSelection":
-                out += "what quest to give?\n"
-                for k,v in self.options.items():
-                    if str(self.selectionIndex) == k:
-                        out += k+" ->"+str(v)+"\n"
-                    else:
-                        out += k+" - "+str(v)+"\n"
-                self.lockOptions = False
+            if not self.getSelection():
+                super().handleKey(key)
+                
+            if self.getSelection():
+                self.state = "confirm"
+                self.quest = self.selection
+                self.selection = None
+                self.lockOptions = True
+            else:
+                return False
 
         if self.state == "confirm":
-            if not self.lockOptions:
+            if self.lockOptions:
                 questInstance = None
                 if self.quest == quests.MoveQuest:
                     questInstance = self.quest(mainChar.room,2,2)
@@ -739,15 +721,14 @@ class AdvancedQuestMenu(SubMenu):
                 if self.quest == quests.FireFurnaceMeta:
                     questInstance = self.quest(mainChar.room.furnaces[0])
                 self.character.assignQuest(questInstance, active=True)
-
-                return True
-
-            self.lockOptions = False
+                self.lockOptions = False
+                self.persistentText += self.character.name+": \"understood?\"\n"
+                self.persistentText += mainChar.name+": \"understood and in execution\"\n"
+            else:
+                self.state = "done"
 
         if self.state == "done":
             if self.lockOptions:
-                self.persistentText += self.partner.name+": \"let us proceed, "+self.partner.name+".\"\n"
-                self.persistentText += mainChar.name+": \"let us proceed, "+mainChar.name+".\"\n"
                 self.lockOptions = False
             else:
                 return True

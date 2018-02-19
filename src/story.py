@@ -45,7 +45,7 @@ class ScreenSaver(object):
         quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[6])
         questlist.append(quest)
         quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[6])
-        #questlist = [quest]
+        questlist = [quest]
         #quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[2])
         #questlist.append(quest)
         quest = quests.MetaQuest2(questlist)

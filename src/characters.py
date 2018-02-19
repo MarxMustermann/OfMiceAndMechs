@@ -16,6 +16,7 @@ class Character():
         self.room = None
         self.terrain = None
         self.path = []
+        self.subordinates = []
 
         self.gotBasicSchooling = False
         self.gotMovementSchooling = False

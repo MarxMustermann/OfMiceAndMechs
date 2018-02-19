@@ -571,6 +571,8 @@ class ChatMenu(SubMenu):
                 niceOptions = {}
                 if mainChar.room:
                     for char in mainChar.room.characters:
+                        if char == mainChar:
+                            continue
                         options[str(counter)] = char
                         niceOptions[str(counter)] = char.name
                         counter += 1
@@ -595,8 +597,13 @@ class ChatMenu(SubMenu):
             
             if not self.options and not self.getSelection():
                 counter = 1
-                options = {"1":"recruit","2":"exit"}
-                niceOptions = {"1":"come and help me.","2":"let us proceed, "+self.partner.name}
+                options = {}
+                niceOptions = {}
+                if not self.partner in mainChar.subordinates:
+                    options["1"] = "recruit"
+                    niceOptions["1"] = "come and help me."
+                options["2"] = "exit"
+                niceOptions["2"] = "let us proceed, "+self.partner.name
                 self.setSelection("answer:",options,niceOptions)
 
             if not self.getSelection():
@@ -614,7 +621,11 @@ class ChatMenu(SubMenu):
         if self.state == "recruit":
             if self.lockOptions:
                 self.persistentText += self.partner.name+": \"come and help me.\"\n"
-                self.persistentText += mainChar.name+": \"sorry, too busy.\"\n"
+                if gamestate.tick%2:
+                    self.persistentText += mainChar.name+": \"sorry, too busy.\"\n"
+                else:
+                    self.persistentText += mainChar.name+": \"on it!\"\n"
+                    mainChar.subordinates.append(self.partner)
                 self.lockOptions = False
             else:
                 self.state = "done"
@@ -641,14 +652,23 @@ class QuestMenu(SubMenu):
         global submenue
 
         header.set_text("\nquest overview\n(press "+commandChars.show_quests_detailed+" for the extended quest menu)\n\n")
-        main.set_text(renderQuests())
-        header.set_text("")
+
+        self.persistentText = ""
+
+        self.persistentText += renderQuests()
 
         if not self.lockOptions:
             if key in ["q"]:
                 submenue = AdvancedQuestMenu()
                 submenue.handleKey(key)
+                return False
         self.lockOptions = False
+
+        self.persistentText += "\n * press q for advanced quests\n\n"
+
+        main.set_text(self.persistentText)
+
+        return False
 
 class AdvancedQuestMenu(SubMenu):
     def __init__(self):
@@ -672,13 +692,14 @@ class AdvancedQuestMenu(SubMenu):
         if self.state == "participantSelection":
             if not self.options and not self.getSelection():
                 options = {}
-                options["1"] = mainChar
-                options["2"] = terrain.wakeUpRoom.firstOfficer
-                options["3"] = terrain.wakeUpRoom.secondOfficer
                 niceOptions = {}
+                options["1"] = mainChar
                 niceOptions["1"] = mainChar.name+" (you)"
-                niceOptions["2"] = terrain.wakeUpRoom.firstOfficer.name+" (firstOfficer)"
-                niceOptions["3"] = terrain.wakeUpRoom.secondOfficer.name+" (secondOfficer)"
+                counter = 1
+                for char in mainChar.subordinates:
+                    counter += 1
+                    options[str(counter)] = char
+                    niceOptions[str(counter)] = char.name
                 self.setSelection("whom to give the order to: ",options,niceOptions)
 
             if not self.getSelection():

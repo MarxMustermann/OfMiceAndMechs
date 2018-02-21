@@ -50,6 +50,9 @@ cinematics.quests = quests
 story.quests = quests
 
 # HACK: common variables with modules
+story.rooms = rooms
+
+# HACK: common variables with modules
 items.displayChars = displayChars
 rooms.displayChars = displayChars
 terrains.displayChars = displayChars

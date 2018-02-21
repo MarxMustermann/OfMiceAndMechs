@@ -28,6 +28,7 @@ class ScreenSaver(object):
         npc.terrain = terrain
         self.mainCharRoom.secondOfficer = npc
 
+        """
         self.mainCharQuestList = []
 
         quest = quests.MoveQuest(terrain.tutorialMachineRoom,2,2)
@@ -58,8 +59,17 @@ class ScreenSaver(object):
         #self.addPseudeoFurnacefirering()
         #self.addIntraRoomMovements()
         #self.addInnerRoomMovements()
+        """
 
-        #self.assignPlayerQuests()
+        questlist = []
+        for room in terrain.rooms:
+            if not isinstance(room,rooms.MechArmor):
+                quest = quests.EnterRoomQuest(room)
+                questlist.append(quest)
+        self.mainCharQuestList = questlist
+            
+
+        self.assignPlayerQuests()
         #self.mainCharQuestList[-1].followUp = self.mainCharQuestList[0]
 
     def cycleDetectionTest(self):

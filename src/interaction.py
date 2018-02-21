@@ -596,14 +596,18 @@ class ChatMenu(SubMenu):
                 self.lockOptions = False
             
             if not self.options and not self.getSelection():
-                counter = 1
                 options = {}
                 niceOptions = {}
+                counter = 1
                 if not self.partner in mainChar.subordinates:
-                    options["1"] = "recruit"
-                    niceOptions["1"] = "come and help me."
-                options["2"] = "exit"
-                niceOptions["2"] = "let us proceed, "+self.partner.name
+                    options[str(counter)] = "recruit"
+                    niceOptions[str(counter)] = "come and help me."
+                    counter += 1
+
+                options[str(counter)] = "exit"
+                niceOptions[str(counter)] = "let us proceed, "+self.partner.name
+                counter += 1
+
                 self.setSelection("answer:",options,niceOptions)
 
             if not self.getSelection():

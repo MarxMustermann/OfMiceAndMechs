@@ -1,6 +1,7 @@
 import urwid
 
 wall = (urwid.AttrSpec("#d60",'default'),"⛝ ")
+wall = (urwid.AttrSpec("#334",'default'),"⛝ ")
 pipe = "✠✠"
 corpse = "࿊ "
 unconciousBody = "࿌ "
@@ -19,7 +20,7 @@ door_opened = '⭘ '
 pile = "ӫӫ"
 acid = "♒♒"
 notImplentedYet = "??"
-floor = (urwid.AttrSpec("#860",'default'),"::")
+floor = (urwid.AttrSpec("#336",'default'),"::")
 binStorage = "⛛ "
 chains = "⛓ "
 commLink = "ߐߐ"
@@ -60,8 +61,8 @@ clamp_active = "⮹ "
 clamp_inactive = "⮽ "
 void = "  "
 main_char = (urwid.AttrSpec("white",'default'),"＠")
-staffCharacters = ["Ⓐ ","Ⓑ ","Ⓒ ","Ⓓ ","Ⓔ ","Ⓕ ","Ⓖ ","Ⓗ ","Ⓘ ","Ⓙ ","Ⓚ ","Ⓛ ","Ⓜ ","Ⓝ ","Ⓞ ","Ⓟ ","Ⓠ ","Ⓡ ","Ⓢ ","Ⓣ ","Ⓤ ","Ⓥ ","Ⓦ ","Ⓧ ","Ⓨ ","Ⓩ "]
-staffCharactersByLetter = {"a":"Ⓐ ","b":"Ⓑ ","c":"Ⓒ ","d":"Ⓓ ","e":"Ⓔ ","f":"Ⓕ ","g":"Ⓖ ","h":"Ⓗ ","i":"Ⓘ ","j":"Ⓙ ","k":"Ⓚ ","l":"Ⓛ ","m":"Ⓜ ","n":"Ⓝ ","o":"Ⓞ ","p":"Ⓟ ","q":"Ⓠ ","r":"Ⓡ ","s":"Ⓢ ","t":"Ⓣ ","u":"Ⓤ ","v":"Ⓥ ","w":"Ⓦ ","x":"Ⓧ ","y":"Ⓨ ","z":"Ⓩ "}
+staffCharacters = ["Ⓐ ","Ⓑ ","Ⓒ ","Ⓓ ",(urwid.AttrSpec("#33f","default"),"Ⓔ "),"Ⓕ ","Ⓖ ","Ⓗ ","Ⓘ ","Ⓙ ","Ⓚ ",(urwid.AttrSpec("#133","default"),"Ⓛ "),"Ⓜ ","Ⓝ ","Ⓞ ","Ⓟ ","Ⓠ ","Ⓡ ","Ⓢ ","Ⓣ ","Ⓤ ","Ⓥ ","Ⓦ ","Ⓧ ","Ⓨ ","Ⓩ "]
+staffCharactersByLetter = {"a":"Ⓐ ","b":"Ⓑ ","c":"Ⓒ ","d":"Ⓓ ","e":(urwid.AttrSpec("#33f","default"),"Ⓔ "),"f":"Ⓕ ","g":"Ⓖ ","h":"Ⓗ ","i":"Ⓘ ","j":"Ⓙ ","k":"Ⓚ ","l":(urwid.AttrSpec("#133","default"),"Ⓛ "),"m":"Ⓜ ","n":"Ⓝ ","o":"Ⓞ ","p":"Ⓟ ","q":"Ⓠ ","r":"Ⓡ ","s":"Ⓢ ","t":"Ⓣ ","u":"Ⓤ ","v":"Ⓥ ","w":"Ⓦ ","x":"Ⓧ ","y":"Ⓨ ","z":"Ⓩ "}
 winch = "🞇 "
 winch_inactive = "🞅 "
 winch_active = "🞇 "

@@ -429,12 +429,6 @@ def show_or_exit(key):
 
             if key in (commandChars.advance,commandChars.autoAdvance):
                 if len(mainChar.quests):
-                    if not lastMoveAutomated:
-                        try:
-                            mainChar.setPathToQuest(mainChar.quests[0])
-                        except:
-                            pass
-
                     lastMoveAutomated = True
 
                     mainChar.automated = True
@@ -444,6 +438,8 @@ def show_or_exit(key):
                     pass
             else:
                 lastMoveAutomated = False
+                if mainChar.quests:
+                    mainChar.setPathToQuest(mainChar.quests[0])
 
         if not key in ("lagdetection",commandChars.wait,):
             itemMarkedLast = None

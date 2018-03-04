@@ -261,7 +261,7 @@ class LeaveRoomQuest(Quest):
 
 class EnterRoomQuest(Quest):
     def __init__(self,room,followUp=None,startCinematics=None):
-        self.description = "please enter the room: "+room.name
+        self.description = "please enter the room: "+room.name+" "+str(room.xPosition)+" "+str(room.yPosition)
         self.room = room
         self.dstX = self.room.walkingAccess[0][0]+room.xPosition*15+room.offsetX
         self.dstY = self.room.walkingAccess[0][1]+room.yPosition*15+room.offsetY
@@ -286,17 +286,8 @@ class EnterRoomQuest(Quest):
         super().recalculate()
 
     def postHandler(self):
-        if (self.character.yPosition in (-1,0)):
-            for item in self.character.room.itemByCoordinates[(self.character.xPosition,0)]:
-                item.close()
-        if (self.character.yPosition in (10,9)):
-            for item in self.character.room.itemByCoordinates[(self.character.xPosition,9)]:
-                item.close()
-        if (self.character.xPosition in (-1,0)):
-            for item in self.character.room.itemByCoordinates[(0,self.character.yPosition)]:
-                item.close()
-        if (self.character.xPosition in (10,9)):
-            for item in self.character.room.itemByCoordinates[(0,self.character.yPosition)]:
+        if self.character.yPosition in (self.character.room.walkingAccess):
+            for item in self.character.room.itemByCoordinates[self.character.room.walkingAccess[0]]:
                 item.close()
 
         super().postHandler()

@@ -18,15 +18,15 @@ class ScreenSaver(object):
         self.mainCharRoom = terrain.wakeUpRoom
         self.mainCharRoom.addCharacter(mainChar,2,4)
 
-        npc = characters.Character(displayChars.staffCharactersByLetter["e"],5,3,name="Eduart Knoblauch")
-        self.mainCharRoom.addCharacter(npc,6,7)
-        npc.terrain = terrain
-        self.mainCharRoom.firstOfficer = npc
-
-        npc = characters.Character(displayChars.staffCharactersByLetter["p"],5,3,name="Peter Stahlmann")
-        self.mainCharRoom.addCharacter(npc,5,6)
-        npc.terrain = terrain
-        self.mainCharRoom.secondOfficer = npc
+        npcs = []
+        for x in range(1,7):
+            for y in range(1,7):
+                for y in range(1,4):
+                    npc1 = characters.Character(displayChars.staffCharactersByLetter["e"],5,3,name="Eduart Knoblauch")
+                    self.mainCharRoom.addCharacter(npc1,x,y)
+                    npc1.terrain = terrain
+                    self.mainCharRoom.firstOfficer = npc1
+                    npcs.append(npc1)
 
         """
         self.mainCharQuestList = []
@@ -62,15 +62,49 @@ class ScreenSaver(object):
         """
 
         questlist = []
+        counter = 1
         for room in terrain.rooms:
             if not isinstance(room,rooms.MechArmor):
-                quest = quests.EnterRoomQuest(room)
-                questlist.append(quest)
+                if not counter in (3,4,5,6,7,8,13,14,23):
+                    quest = quests.EnterRoomQuest(room)
+                    questlist.append(quest)
+                print(counter)
+                print(room)
+                print(str(room.xPosition)+" "+str(room.yPosition))
+                counter += 1
         self.mainCharQuestList = questlist
+
+        import random
+        random.shuffle(self.mainCharQuestList)
             
 
         self.assignPlayerQuests()
-        #self.mainCharQuestList[-1].followUp = self.mainCharQuestList[0]
+
+        for npc in npcs:
+            questlist = []
+            counter = 1
+            for room in terrain.rooms:
+                if not isinstance(room,rooms.MechArmor):
+                    if not counter in (3,4,5,6,7,8,13,14,23):
+                        quest = quests.EnterRoomQuest(room)
+                        questlist.append(quest)
+                    print(counter)
+                    print(room)
+                    print(str(room.xPosition)+" "+str(room.yPosition))
+                    counter += 1
+
+            random.shuffle(questlist)
+            lastQuest = questlist[0]
+            for item in questlist[1:]:
+                lastQuest.followUp = item
+                lastQuest = item
+            questlist[-1].followup = None
+
+            questlist[-1].followUp = questlist[0]
+
+            npc.assignQuest(questlist[0])
+
+        self.mainCharQuestList[-1].followUp = self.mainCharQuestList[0]
 
     def cycleDetectionTest(self):
         quest = quests.MoveQuest(terrain.tutorialVat,2,2)

@@ -66,7 +66,7 @@ class Character():
             if self.room:
                 self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY,self.room.walkingPath)
             else:
-                self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY,self.terrain.walkingPath)
+                self.path = self.terrain.findPath((self.xPosition,self.yPosition),(quest.dstX,quest.dstY))
 
     def addToInventory(self,item):
         self.inventory.append(item)
@@ -75,10 +75,10 @@ class Character():
         solver(self)
 
     def walkPath(self):
-        if not len(self.path):
+        if not self.path:
             self.setPathToQuest(self.quests[0])
 
-        if len(self.path):
+        if self.path:
             currentPosition = (self.xPosition,self.yPosition)
             nextPosition = self.path[0]
 
@@ -96,8 +96,8 @@ class Character():
             else:
                 for room in self.terrain.rooms:
                     # north
-                    if room.yPosition*15+room.offsetY+10 == nextPosition[1]+1:
-                        if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+10 > self.xPosition:
+                    if room.yPosition*15+room.offsetY+room.sizeY == nextPosition[1]+1:
+                        if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+room.sizeX > self.xPosition:
                             localisedEntry = (self.xPosition%15-room.offsetX,nextPosition[1]%15-room.offsetY)
                             if localisedEntry in room.walkingAccess:
                                 if localisedEntry in room.itemByCoordinates:
@@ -118,7 +118,7 @@ class Character():
                                 break
                     # south
                     if room.yPosition*15+room.offsetY == nextPosition[1]:
-                        if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+10 > self.xPosition:
+                        if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+room.sizeX > self.xPosition:
                             localisedEntry = ((self.xPosition-room.offsetX)%15,((nextPosition[1]-room.offsetY)%15))
                             if localisedEntry in room.walkingAccess:
                                 if localisedEntry in room.itemByCoordinates:

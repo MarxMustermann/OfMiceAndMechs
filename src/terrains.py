@@ -5,15 +5,26 @@ mainChar = None
 messages = None
 displayChars = None
 
+class Coordinate(object):
+    def __init__(self,x,y):
+        self.x = x
+        self.y = y
+
 class Terrain(object):
     def __init__(self,layout,detailedLayout):
         self.itemsOnFloor = []
         self.characters = []
         self.walkingPath = []
         self.rooms = []
+        self.overlay = None
 
         self.itemByCoordinates = {}
         self.roomByCoordinates = {}
+        self.watershedStart = []
+        self.watershedNodeMap = {}
+        self.foundPaths = {}
+        self.applicablePaths = []
+        self.obseveredCoordinates = {}
 
         mapItems = []
         self.detailedLayout = detailedLayout
@@ -62,8 +73,8 @@ class Terrain(object):
                     continue
                 else:
                     meta = True
-                if char in (" ",".",",","@"):
-                    pass
+                if char in (".",","," ","t"):
+                    self.watershedStart.extend([(rowCounter*15+1,lineCounter*15+1),(rowCounter*15+13,lineCounter*15+1),(rowCounter*15+1,lineCounter*15+13),(rowCounter*15+13,lineCounter*15+13)])
                 elif char == "X":
                     roomsOnMap.append(rooms.MechArmor(rowCounter,lineCounter,0,0))
                 elif char == "V":
@@ -102,6 +113,7 @@ class Terrain(object):
                     self.wakeUpRoom = wakeUpRoom
                     roomsOnMap.append(wakeUpRoom)
                 else:
+                    self.watershedStart.append((rowCounter*15+7,lineCounter*15+7))
                     pass
                 rowCounter += 1
             lineCounter += 1
@@ -145,6 +157,315 @@ class Terrain(object):
             else:
                 break
 
+        """
+        for i in range(0,9):
+            for j in range(0,9):
+                 self.watershedStart.append((i*20+10,j*20+10))
+        """
+
+        self.nonMovablecoordinates = {}
+        for coordinate,itemList in self.itemByCoordinates.items():
+            for item in itemList:
+                if not item.walkable:
+                    self.nonMovablecoordinates[coordinate] = True
+        for room in self.rooms:
+            for x in range(room.xPosition*15+room.offsetX,room.xPosition*15+room.offsetX+room.sizeX):
+                for y in range(room.yPosition*15+room.offsetY,room.yPosition*15+room.offsetY+room.sizeY):
+                     self.nonMovablecoordinates[(x,y)] = True
+
+        for room in self.rooms:
+
+            xCoord = room.xPosition*15+room.offsetX+room.walkingAccess[0][0]
+            yCoord = room.yPosition*15+room.offsetY+room.walkingAccess[0][1]
+
+            if (xCoord,yCoord) in self.nonMovablecoordinates:
+                del self.nonMovablecoordinates[(xCoord,yCoord)]
+
+            if room.walkingAccess[0][0] == 0:
+                xCoord -= 1
+            elif room.walkingAccess[0][0] == room.sizeX-1:
+                xCoord += 1
+
+            if room.walkingAccess[0][1] == 0:
+                yCoord -= 1
+            elif room.walkingAccess[0][1] == room.sizeY-1:
+                yCoord += 1
+            self.watershedStart.append((xCoord,yCoord))
+
+        print(self.watershedStart)
+
+        self.watershedCoordinates = {}
+
+        def walkBack(coordinate,bucket,path,last=1000):
+            testCoordinates = [(coordinate[0]-1,coordinate[1]),(coordinate[0]+1,coordinate[1]),(coordinate[0],coordinate[1]-1),(coordinate[0],coordinate[1]+1)]
+            nextStep = (None,(None,last))
+
+            for testCoordinate in testCoordinates:
+                if not testCoordinate in self.watershedCoordinates:
+                    continue
+                value = self.watershedCoordinates[testCoordinate]
+                if not value[0] == bucket:
+                    continue
+                if value[1] < nextStep[1][1]:
+                    nextStep = (testCoordinate,value)
+
+            if nextStep[1][1] < last:
+                path.append(nextStep[0])
+                walkBack(nextStep[0],bucket,path,last=nextStep[1][1]+1)
+
+        def watershed(counter,lastCoordinates):
+            counter += 1
+            
+            if counter > 60:
+                return
+
+            newLast = {}
+            for start,coordinates in lastCoordinates.items():
+                newLastList = []
+
+                for coordinate in coordinates:
+                    newCoordinates = [(coordinate[0]-1,coordinate[1]),(coordinate[0]+1,coordinate[1]),(coordinate[0],coordinate[1]-1),(coordinate[0],coordinate[1]+1)]
+                    for newCoordinate in newCoordinates:
+                        if newCoordinate in self.nonMovablecoordinates:
+                            continue
+                        if newCoordinate in self.watershedCoordinates:
+                            partnerNode = self.watershedCoordinates[newCoordinate][0]
+                            if partnerNode == start:
+                                continue
+                            if (start,partnerNode) in self.foundPaths or (partnerNode,start) in self.foundPaths:
+                                continue
+                            path = []
+                            walkBack(newCoordinate,start,path)
+                            path.reverse()
+                            path.append(newCoordinate)
+                            walkBack(newCoordinate,partnerNode,path)
+                            self.foundPaths[(start,partnerNode)] = path
+                        newLastList.append(newCoordinate)
+                        self.watershedCoordinates[newCoordinate] = (start,counter)
+
+                newLast[start] = newLastList
+
+            watershed(counter,newLast)
+
+            for pair,path in self.foundPaths.items():
+                if not pair[1] in self.watershedNodeMap[pair[0]]:
+                    self.watershedNodeMap[pair[0]].append(pair[1])
+
+                if not pair[0] in [pair[1]]:
+                    self.watershedNodeMap[pair[1]].append(pair[0])
+
+        last = {}
+        for coordinate in self.watershedStart:
+            
+            self.watershedNodeMap[coordinate] = []
+
+            self.watershedCoordinates[coordinate] = (coordinate,0)
+            last[coordinate] = [coordinate]
+        watershed(0,last)
+        self.overlay = self.addWatershedOverlay
+        self.overlay = self.usedPathsOverlay
+
+    def usedPathsOverlay(self,chars):
+        if not self.hidden:
+            import urwid
+            for dualPair,path in self.foundPaths.items():
+                for coordinate in path:
+                    chars[coordinate[1]][coordinate[0]] =  (urwid.AttrSpec("#888","default"),"::")
+
+            for coordinate in self.watershedStart:
+                chars[coordinate[1]][coordinate[0]] =  (urwid.AttrSpec("#ff0","default"),"::")
+
+            if mainChar.path:
+                for item in mainChar.path:
+                    chars[item[1]][item[0]] = displayChars.pathMarker
+
+            for character in self.characters:
+                chars[character.yPosition][character.xPosition] = character.display
+
+            chars[mainChar.yPosition][mainChar.xPosition] =  mainChar.display
+
+    def addWatershedOverlay(self,chars):
+        if mainChar.terrain:
+            self.findPath((mainChar.xPosition,mainChar.yPosition),(22,67))
+
+        import urwid
+        colors = ["#fff","#ff0","#f0f","#0ff","#f00","#0f0","#00f","#55f","#f55","#5f5","#055","#505","#550"]
+        colorByType = {}
+
+        mainCharPair = None
+        if mainChar.terrain:
+            mainCharPair = self.watershedCoordinates[(mainChar.xPosition,mainChar.yPosition)][0]
+
+        counter = 0
+        for item in self.watershedStart:
+            colorByType[item] = colors[counter%len(colors)]
+            counter += 1
+
+        for coordinate,value in self.watershedCoordinates.items():
+            if value[1] < 10:
+                display = "0"+str(value[1])
+            else:
+                display = str(value[1])
+
+            if mainCharPair == value[0]:
+                chars[coordinate[1]][coordinate[0]] = (urwid.AttrSpec("#333","default"),display)
+            else:
+                chars[coordinate[1]][coordinate[0]] = (urwid.AttrSpec(colorByType[value[0]],"default"),display)
+
+        counter = 3
+        for dualPair,path in self.foundPaths.items():
+            for coordinate in path:
+                if dualPair in self.applicablePaths:
+                    chars[coordinate[1]][coordinate[0]] =  (urwid.AttrSpec("#888","default"),"XX")
+                else:
+                    chars[coordinate[1]][coordinate[0]] =  (urwid.AttrSpec(colors[counter%len(colors)],"default"),"XX")
+            counter += 1
+
+        for newCoordinate,counter in self.obseveredCoordinates.items():
+            if counter < 10:
+                display = "0"+str(counter)
+            else:
+                display = str(counter)
+            chars[newCoordinate[1]][newCoordinate[0]] =  (urwid.AttrSpec("#888","default"),display)
+
+        chars[mainChar.yPosition][mainChar.xPosition] =  mainChar.display
+
+    def findPath(self,start,end):
+        self.applicablePaths = {}
+        self.obseveredCoordinates = {}
+
+        if not start in self.watershedCoordinates:
+            return
+        startPair = self.watershedCoordinates[start][0]
+        for dualPair,path in self.foundPaths.items():
+            if startPair in dualPair:
+                self.applicablePaths[dualPair] = path
+
+        if startPair:
+            entryPoint = self.mark([start])
+
+        self.applicablePaths = {}
+        self.obseveredCoordinates = {}
+
+        if not end in self.watershedCoordinates:
+            return
+        endPair = self.watershedCoordinates[end][0]
+        for dualPair,path in self.foundPaths.items():
+            if endPair in dualPair:
+                self.applicablePaths[dualPair] = path
+
+        if endPair:
+            exitPoint = self.mark([end])
+
+        if not entryPoint:
+            return
+        if not exitPoint:
+            return
+
+        startCoordinate = Coordinate(entryPoint[0][0],entryPoint[0][1])
+        endCoordinate = Coordinate(exitPoint[0][0],exitPoint[0][1])
+
+        return entryPoint[2]+self.findWayNodeBased(startCoordinate,endCoordinate,self.foundPaths[entryPoint[1]])+exitPoint[2]
+
+    def markWalkBack(self,coordinate,obseveredCoordinates,pathToEntry,counter=0,limit=1000):
+        pathToEntry.append((coordinate[0],coordinate[1]))
+
+        found = None
+        foundValue = 10000
+        for newCoordinate in [(coordinate[0]-1,coordinate[1]),(coordinate[0],coordinate[1]-1),(coordinate[0]+1,coordinate[1]),(coordinate[0],coordinate[1]+1)]:
+            if not newCoordinate in obseveredCoordinates:
+                continue
+            if obseveredCoordinates[newCoordinate] >= limit:
+                continue
+            if (not found) or (obseveredCoordinates[found] < obseveredCoordinates[newCoordinate]):
+                found = newCoordinate
+
+        if found:
+            self.markWalkBack(found,obseveredCoordinates,pathToEntry,counter+1, obseveredCoordinates[found])
+
+    def mark(self,coordinates,counter=0,obseveredCoordinates={}):
+        if counter > 30:
+            return
+
+        newCoordinates = []
+        if not counter == 0:
+            for coordinate in coordinates:
+                for newCoordinate in [(coordinate[0]-1,coordinate[1]),(coordinate[0],coordinate[1]-1),(coordinate[0]+1,coordinate[1]),(coordinate[0],coordinate[1]+1)]:
+                    if newCoordinate in self.nonMovablecoordinates:
+                        continue
+                    if newCoordinate in self.obseveredCoordinates:
+                        continue
+                    newCoordinates.append(newCoordinate)
+        else:
+            newCoordinates.append(coordinates[0])
+
+        for newCoordinate in newCoordinates:
+            self.obseveredCoordinates[newCoordinate] = counter
+
+            for dualPair,path in self.applicablePaths.items():
+                if newCoordinate in path:
+                    pathToEntry = []
+                    self.markWalkBack(newCoordinate,self.obseveredCoordinates,pathToEntry)
+                    return (newCoordinate,dualPair,pathToEntry)
+
+        if newCoordinates:
+            return self.mark(newCoordinates,counter+1,obseveredCoordinates)
+
+    def findWayNodeBased(self,start,end,startPath):
+        index = 0
+        for coordinate in startPath:
+            if (start.x,start.y) == coordinate:
+                break
+            index += 1
+
+        nodeMap = {}
+        neighbourNodes = []
+
+        doLoop = True
+
+        for node in (startPath[0],startPath[-1]):
+            neighbourNodes.append(node)
+            nodeMap[node] = (None,0)
+
+            if node == (end.x,end.y):
+                lastNode = node
+                doLoop = False
+
+        lastNode = None
+        counter = 1
+        while doLoop:
+            for node in neighbourNodes[:]:
+                for node2 in self.watershedNodeMap[node]:
+                    if not node2 in neighbourNodes:
+                        neighbourNodes.append(node2)
+                        nodeMap[node2] = (node,counter)
+                    if node2 == (end.x,end.y):
+                        lastNode = node2
+                        doLoop = False
+            counter += 1
+
+        outPath = []
+        if lastNode:
+            while nodeMap[lastNode][0]:
+                extension = []
+                if (lastNode,nodeMap[lastNode][0]) in self.foundPaths:
+                    extension = self.foundPaths[(lastNode,nodeMap[lastNode][0])][:-1]
+                    extension = list(reversed(extension))
+                else:
+                    extension = self.foundPaths[(nodeMap[lastNode][0],lastNode)][1:]
+                outPath = extension + outPath
+                lastNode = nodeMap[lastNode][0]
+
+        if lastNode == startPath[0]:
+            extension = startPath[:index]
+            extension.reverse()
+            outPath = extension + outPath
+        else:
+            outPath = startPath[index+1:] + outPath
+            pass
+
+        return outPath
+
     def addRooms(self,rooms):
         self.rooms.extend(rooms)
         for room in rooms:
@@ -173,6 +494,8 @@ class Terrain(object):
                 mapHidden = False
             else:
                 mapHidden = True
+
+        self.hidden = mapHidden
 
         chars = []
         for i in range(0,250):
@@ -243,18 +566,16 @@ class Terrain(object):
 
         if not mapHidden:
             for character in self.characters:
-                if character == mainChar:
-                    if len(mainChar.quests):
-                        try:
-                            path = calculatePath(mainChar.xPosition,mainChar.yPosition,mainChar.quests[0].dstX,mainChar.quests[0].dstY,self.walkingPath)
-                            for item in path[:-1]:
-                                chars[item[1]][item[0]] = displayChars.pathMarker
-                        except:
-                            pass
-
                 chars[character.yPosition][character.xPosition] = character.display
 
+            if mainChar.path:
+                for item in mainChar.path:
+                    chars[item[1]][item[0]] = displayChars.pathMarker
+
         self.lastRender = chars
+
+        if self.overlay:
+            self.overlay(chars)
 
         return chars
 
@@ -512,82 +833,82 @@ X X X C C C C C X X X """
                XXXXXXXXXXXX#XX               XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX            X               
                   ###  ###        ######                                                                                                     XXXXXXXXX               
                ####O####O####  ####O  O########  O    O   #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               # RRRRRRRRRR #  #RRRRRRRRRR#   #RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #ORRRRRRRRRRO# ##RRRRRRRRRR## ##RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               # RRRRRRRRRR # #ORRRRRRRRRRO# #ORRRRRRRRRRO#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               # RRRRRRRRRR # # RRRRRRRRRR # ##RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #ORRRRRRRRRRO# # RRRRRRRRRR #  #RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               # RRRRRRRRRR # # RRRRRRRRRR # ##RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               # RRRRRRRRRR ### RRRRRRRRRR # #ORRRRRRRRRRO#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #ORRRRRRRRRRO ##ORRRRRRRRRRO# ##RRRRRRRRRR #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               ##RRRRRRRRRR# ###RRRRRRRRRR##  #RRRRRRRRRR#####           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-                 RRRRRRRRRR  #  RRRRRRRRRR     RRRRRRRRRR XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
+               # R          #  #R        R#   #R        R #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #O          O# ##          ## ##           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #            # #O          O# #O          O#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #            # #            # ##           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #O          O# #            #  #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #            # #            # ##           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #            ###            # #O          O#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #O          O ##O          O# ##           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               ##          # ###          ##  #          #####           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+                          R  #  R        R     R        R XXXX XXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
                XX  O    O    ####O#   ##O####    O8   O    X              X X X X X X X X X X X X X X X                                                              
                XX               ### X  ###        8                                                                                                                  
                   X  O   O          XX     ##     8        X                                                                                                        
-               X X RRRRRRRRRR                     8                                                                                    XXXXXXXXXXXXXXX               
-                   RRRRRRRRRR#                    8                                                                                    X#           #X               
-                   RRRRRRRRRR#                                                                                                         X#           #X               
-                   RRRRRRRRRR#                                                                                                         X#           #X               
-                   RRRRRRRRRR#                                                                                                         X#           #X               
-                   RRRRRRRRRR#                                                                                                         X#           #X               
-                   RRRRRRRRRR#                                                                                                         X#           #X               
-                   RRRRRRRRRR#                                                                                                         X#           #X               
-                   RRRRRRRRRR#                                                                                                         X#           #X               
-                   RRRRRRRRRR#                                                                                                         X#           #X               
-                   RRRRRRRRRR#                                                                                                         X#           #X               
-                   RRRRRRRRRR#                                                                                                         X#           #X               
-                   RRRRRRRRRR#                                                                                                         X#           #X               
+               X X                                8                                                                                    XXXXXXXXXXXXXXX               
+                             #                    8                                                                                    X#           #X               
+                             #                                                                                                         X#           #X               
+                             #                                                                                                         X#           #X               
+                             #                                                                                                         X#           #X               
+                             #                                                                                                         X#           #X               
+                             #                                                                                                         X#           #X               
+                             #                                                                                                         X#           #X               
+                             #                                                                                                         X#           #X               
+                             #                                                                                                         X#           #X               
+                             #                                                                                                         X#           #X               
+                             #                                                                                                         X#           #X               
+                             #                                                                                                         X#           #X               
                 XXXX                                                                                                                                                 
-                   RRRRRRRRRR#              .............................................................................              X#           #X               
-               XXXXXXXXXXXX#XX              . #####    ### ##                                                          X.              XX            X               
-               X                            .    RRRRRRRRRR#                                                            .                                            
-               X#           #X              .X   RRRRRRRRRR#X#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X   RRRRRRRRRR#X#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X   RRRRRRRRRR#X#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X   RRRRRRRRRR#X#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X   RRRRRRRRRR#X#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X   RRRRRRRRRR#X#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X   RRRRRRRRRR#X#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X   RRRRRRRRRR#X#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X   RRRRRRRRRRXX#           #XX#           #XX#           #XX#           #X.              X#           #X               
+                             #              .............................................................................              X#           #X               
+               XXXXXXXXXXXX#XX              .X#####    ### ##                                                          X.              XX            X               
+               X                            .X   R        R#                                                            .                                            
+               X#           #X              .X             #X#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X             #X#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X             #X#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X             #X#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X             #X#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X             #X#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X             #X#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X             #X#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X              .X   R        RXX#           #XX#           #XX#           #XX#           #X.              X#           #X               
                X#           #X              .X             XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
                X#           #X              .X             XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
                X#           #X              .X             XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               XXXXXXXXXXXX#XX              .XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.              XX            X               
-               XXXXXXXXXXXX#XX              .XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.              XX            X               
-               X                            .              X                                                            .                                            
+               XXXXXXXXXXXX#XX              .XXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.              XX            X               
+               XXXXXXXXXXXX#XX              .XXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.              XX            X               
+               XXXXXXXXX                    .X#            X                                                            .                                            
+               X#      X    #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
                X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#                           .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .             #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.X X X X X X X X#           #X               
-               X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X. X X X X X X XX#           #X               
-               X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.X X X X X X X X#           #X               
-               X#           #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X             ..X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
-               X#           #X             .XX# XPXX   XPX#XX# XPX    XPX#XX# XPX    XPX#XX# XPX    XPX#XX# XPX    XPX#X.              X#           #X               
+               X#      X   X#X    X     X   .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#      X XXX                .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#      X X   X              .             #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#      X X  #XXXXXXXXXXXXXX .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#      X X  #X              .X#           #XX#           #XX#           #XX#           #XX#           #X.X X XXXXX X X X#           #X               
+               X#      X X  #X     XXXXXXX  .X#           #XX#           #XX#           #XX#           #XX#           #X. X X       X XX#           #X               
+               X#      X    #X XXXXX     XXXXX#           #XX#           #XX#           #XX#           #XX#           #X.X X X XXXXX X X#           #X               
+               XXXXXXXXX    #X     XXXXX X  .X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X         X X ..X#           #XX#           #XX#           #XX#           #XX#           #X.              X#           #X               
+               X#           #X             .XX# XPXX   XP #XX# XPX    XPX#XX# XPX    XPX#XX# XPX    XPX#XX# XPX    XPX#X.              X#           #X               
                XXXXXXXXXXXX#XX             ..XXXXC X XXXC XXXXXXC XXXXXC XXXXXXC  XXXXC XXXXXXC XX XXC XXXXXXC X XXXC XX.              XX            X               
-               X#                           .....8......8.......8......8.......8......8.......8......8.......8......8....              X#           #X               
-               XX                               ...    ...     ...    ...     ...    ...     ...    ...     ...    ...                 XX            X               
-               X#                                                                                                                      X#           #X               
-               X#                                                                                                                      X#           #X               
-               X#                                                                                                                      X#           #X               
-               X#                                                                                                                      X#           #X               
-               X#                                                                                                                      X#           #X               
-               X#                                                                                                                      X#           #X               
-               X#                                                                                                                      X#           #X               
-               X#                                                                                                                      X#           #X               
-               X#                                                                                                                      X#           #X               
-               X#                                                                                                                      X#           #X               
-               X#                                                                                                                      X#           #X               
-               X#                                                                                                                      X#           #X               
+               X#XXXXXXXXXXX                .....8......8.......8......8.......8......8.......8......8.......8......8....              X#            X               
+               XX          X                    ...    ...     ...    ...     ...    ...     ...    ...     ...    ...                 XX            X               
+               X#                                                                                                                      X#            X               
+               X#          X                                                                                                           X#           #X               
+               X#          X                                                                                                           X#           #X               
+               X#          X                                                                                                           X#           #X               
+               X#          X                                                                                                           X#           #X               
+               X#          X                                                                                                           X#           #X               
+               X#          X                                                                                                           X#           #X               
+               X#          X                                                                                                           X#           #X               
+               X#          X                                                                                                           X#           #X               
+               X#          X                                                                                                           X#           #X               
+               X#          X                                                                                                           X#           #X               
+               X#          X                                                                                                           X#           #X               
                XXXXXXXXXXXX#                  #              #              #              #              #                            XX            X               
                XXXXXXXXXXXX#                 X#X           XX#X           XX#X           XX#X           XX#X           X               XX            X               
                X                             X#X           XX#X           XX#X           XX#X           XX#X           X                                             
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
+               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#            X               
                X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
                X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
                X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
@@ -602,7 +923,7 @@ X X X C C C C C X X X """
                XXXXXXXXXXXX#                 X#X           XX#X           XX#X           XX#X           XX#X           X               XX            X               
                XXXXXXXXXXXX#                 X#X           #X#X           #X#X           #X#X           #X#X           X               XX            X               
                X                             X#X           XX#X           XX#X           XX#X           XX#X           X                                             
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
+               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#            X               
                X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
                X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
                X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
@@ -629,7 +950,7 @@ X X X C C C C C X X X """
                                              X#X           XX#X           XX#X           XX#X           XX#X           X                                             
                                              X#X           XX#X           XX#X           XX#X           XX#X           X                                             
                                              X#X           XX#X           XX#X           XX#X           XX#X           X                                             
-                                             X#X           XX#X           XX#X           XX#X           XX#X           X                                             
+                                             X#XXXXXXXXXXXXXX#XXXXXXXXXXXXXX#XXXXXXXXXXXXXX#XXXXXXXXXXXXXX#X           X                                             
 """
         super().__init__(layout,detailedLayout)
 

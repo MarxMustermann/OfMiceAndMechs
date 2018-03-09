@@ -1,5 +1,7 @@
 import src.items as items
 import src.rooms as rooms
+import src.overlays as overlays
+import src.gameMath as gameMath
 
 mainChar = None
 messages = None
@@ -319,43 +321,7 @@ class Terrain(object):
 
         self.superNodePaths
         self.overlay = self.addWatershedOverlay
-        self.overlay = self.usedPathsOverlay
-
-    def usedPathsOverlay(self,chars):
-        if not self.hidden:
-            import urwid
-            for dualPair,path in self.foundPaths.items():
-                for coordinate in path:
-                    chars[coordinate[1]][coordinate[0]] =  (urwid.AttrSpec("#888","default"),"::")
-
-            for coordinate in self.watershedStart:
-                chars[coordinate[1]][coordinate[0]] =  (urwid.AttrSpec("#ff0","default"),"::")
-
-            #for dualPair,path in self.superNodePaths.items():
-            #    for coordinate in path:
-            #        chars[coordinate[1]][coordinate[0]] =  (urwid.AttrSpec("#f33","default"),"::")
-
-            counter = 0
-            colors = ["#0f0","#ff0","#0ff","#00f"]
-            colorsMap = {}
-            for node in self.superNodes.values():
-                colorsMap[node] = colors[counter]
-                counter += 1
-            for coordinate,values in self.watershedSuperCoordinates.items():
-                chars[coordinate[1]][coordinate[0]] = (urwid.AttrSpec(colorsMap[values[0]],"default"),"0"+str(values[1]))
-
-            for path in self.foundSuperPaths.values():
-                for coordinate in path:
-                    chars[coordinate[1]][coordinate[0]] = (urwid.AttrSpec("#fff","default"),"XX")
-
-            if mainChar.path:
-                for item in mainChar.path:
-                    chars[item[1]][item[0]] = displayChars.pathMarker
-
-            for character in self.characters:
-                chars[character.yPosition][character.xPosition] = character.display
-
-            chars[mainChar.yPosition][mainChar.xPosition] =  mainChar.display
+        self.overlay = None
 
     def addWatershedOverlay(self,chars):
         import urwid
@@ -466,7 +432,7 @@ class Terrain(object):
             messages.append(traceback.format_exc().splitlines()[-1])
 
         path = entryPoint[2]+path+exitPoint[2]
-        return path
+        return gameMath.removeLoops(path)
 
         return entryPoint[2]+self.findWayNodeBased(startCoordinate,endCoordinate,self.foundPaths[entryPoint[1]])+exitPoint[2]
 
@@ -610,6 +576,8 @@ class Terrain(object):
                     line.append(displayChars.void)
             chars.append(line)
 
+        overlays.PathsOverlay().apply(chars,self)
+
         for room in self.rooms:
             if mainChar.room == room:
                 room.hidden = False
@@ -668,12 +636,9 @@ class Terrain(object):
                 lineCounter += 1
 
         if not mapHidden:
-            for character in self.characters:
-                chars[character.yPosition][character.xPosition] = character.display
-
-            if mainChar.path:
-                for item in mainChar.path:
-                    chars[item[1]][item[0]] = displayChars.pathMarker
+            overlays.QuestMarkerOverlay().apply(chars,mainChar,displayChars)
+            overlays.NPCsOverlay().apply(chars,self)
+            overlays.MainCharOverlay().apply(chars,mainChar)
 
         self.lastRender = chars
 
@@ -935,7 +900,7 @@ X X X C C C C C X X X """
                X#           #X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
                XXXXXXXXXXXX#XX               XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX            X               
                   ###  ###        ######                                                                                                     XXXXXXXXX               
-               ####O####O####  ####O  O##### ##  O    O   #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               ####O####O####  ####O  O##### ##       O   #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                # R          #  #R        R#   #R        R #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                #O          O# ##          ## ##           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                #            # #O          O# #O          O#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
@@ -973,7 +938,7 @@ X X X C C C C C X X X """
                X#           #X               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
                X#           #X               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
                X#           #X               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#           #X               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
+               X#           #X               X             #X#                          #XX#           #XX#           #X               X#X          #X               
                X#           #X               X   R        RXX#           #XX#           #XX#           #XX#           #X               X#X          #X               
                X#           #X               X             XX#           #XX#           #XX#           #XX#           #X               X#X          #X               
                X#           #X               X             XX#           #XX#           #XX#           #XX#           #X               X#X          #X               

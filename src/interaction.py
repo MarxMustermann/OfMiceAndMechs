@@ -41,6 +41,7 @@ idleCounter = 0
 pauseGame = False
 questMenuActive = False
 submenue = None
+ignoreNextAutomated = False
 
 commandHistory = []
 
@@ -58,6 +59,7 @@ def show_or_exit(key):
     global pauseGame
     global questMenuActive
     global submenue
+    global ignoreNextAutomated
 
     if key in ("lagdetection",):
         loop.set_alarm_in(0.2, callShow_or_exit, "lagdetection")
@@ -87,7 +89,10 @@ def show_or_exit(key):
     pauseGame = False
 
     if key in (commandChars.autoAdvance):
-        loop.set_alarm_in(0.2, callShow_or_exit, commandChars.autoAdvance)
+        if not ignoreNextAutomated:
+            loop.set_alarm_in(0.2, callShow_or_exit, commandChars.autoAdvance)
+        else:
+            ignoreNextAutomated = False
 
     if not submenue:
         global itemMarkedLast
@@ -121,6 +126,9 @@ def show_or_exit(key):
             if key in (commandChars.quit_normal, commandChars.quit_instant):
                 gamestate.save()
                 raise urwid.ExitMainLoop()
+            if key in (commandChars.pause):
+                ignoreNextAutomated = True
+                doAdvanceGame = False
             if key in (commandChars.move_north):
                 if mainChar.room:
                     item = mainChar.room.moveCharacterNorth(mainChar)
@@ -436,7 +444,7 @@ def show_or_exit(key):
                     mainChar.automated = False
                 else:
                     pass
-            else:
+            elif not key in (commandChars.pause):
                 lastMoveAutomated = False
                 if mainChar.quests:
                     mainChar.setPathToQuest(mainChar.quests[0])

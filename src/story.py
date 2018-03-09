@@ -19,22 +19,25 @@ class ScreenSaver(object):
         self.mainCharRoom.addCharacter(mainChar,2,4)
 
         npcs = []
-        for x in range(1,7):
-            for y in range(1,7):
-                for y in range(1,4):
+        for x in range(1,6):
+            for y in range(1,6):
+                for z in range(1,1): # can be tweaked for performance testing (500 npc and more lag but don't grid the game to halt)
                     npc1 = characters.Character(displayChars.staffCharactersByLetter["e"],5,3,name="Eduart Knoblauch")
                     self.mainCharRoom.addCharacter(npc1,x,y)
                     npc1.terrain = terrain
                     self.mainCharRoom.firstOfficer = npc1
                     npcs.append(npc1)
 
-        """
         self.mainCharQuestList = []
 
         quest = quests.MoveQuest(terrain.tutorialMachineRoom,2,2)
         self.mainCharQuestList.append(quest)
 
         questlist = []
+        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[0])
+        questlist.append(quest)
+        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[1])
+        questlist.append(quest)
         quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[2])
         questlist.append(quest)
         quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[3])
@@ -44,56 +47,46 @@ class ScreenSaver(object):
         quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[5])
         questlist.append(quest)
         quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[6])
-        questlist.append(quest)
-        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[6])
-        questlist = [quest]
-        #quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[2])
-        #questlist.append(quest)
-        quest = quests.MetaQuest2(questlist)
+
+        quest = quests.MetaQuest2(questlist,lifetime=100)
         self.mainCharQuestList.append(quest)
 
-        #self.addKeepFurnaceFired()
-        #self.cycleDetectionTest()
-        #self.addWaitQuest()
-        #self.addKeepFurnaceFired()
-        #self.addPseudeoFurnacefirering()
-        #self.addIntraRoomMovements()
-        #self.addInnerRoomMovements()
-        """
+        self.addKeepFurnaceFired()
+        self.cycleDetectionTest()
+        self.addWaitQuest()
+        self.addKeepFurnaceFired()
+        self.addPseudeoFurnacefirering()
+        self.addIntraRoomMovements()
+        self.addInnerRoomMovements()
 
         questlist = []
-        counter = 1
         for room in terrain.rooms:
             if not isinstance(room,rooms.MechArmor):
-                if not counter in (3,4,5,6,7,8,13,14,23):
-                    quest = quests.EnterRoomQuest(room)
-                    questlist.append(quest)
-                print(counter)
-                print(room)
-                print(str(room.xPosition)+" "+str(room.yPosition))
-                counter += 1
-        self.mainCharQuestList = questlist
-
-        import random
-        random.shuffle(self.mainCharQuestList)
-            
+                quest = quests.EnterRoomQuest(room)
+                questlist.append(quest)
+        self.mainCharQuestList.extend(questlist)
 
         self.assignPlayerQuests()
 
+        counter = 0
         for npc in npcs:
-            questlist = []
-            counter = 1
-            for room in terrain.rooms:
-                if not isinstance(room,rooms.MechArmor):
-                    if not counter in (3,4,5,6,7,8,13,14,23):
-                        quest = quests.EnterRoomQuest(room)
-                        questlist.append(quest)
-                    print(counter)
-                    print(room)
-                    print(str(room.xPosition)+" "+str(room.yPosition))
-                    counter += 1
+            counter += 1
+            questlists = {}
+        
+            for index in range(0,counter):
+                questlists[index] = []
 
-            random.shuffle(questlist)
+            roomCounter = 0
+            for room in terrain.rooms:
+                roomCounter += 1
+                if not isinstance(room,rooms.MechArmor):
+                    quest = quests.EnterRoomQuest(room)
+                    questlists[roomCounter%counter].append(quest)
+
+            questlist = []
+            for index in range(0,counter):
+                questlist.extend(questlists[index])
+
             lastQuest = questlist[0]
             for item in questlist[1:]:
                 lastQuest.followUp = item
@@ -104,7 +97,7 @@ class ScreenSaver(object):
 
             npc.assignQuest(questlist[0])
 
-        self.mainCharQuestList[-1].followUp = self.mainCharQuestList[0]
+        #self.mainCharQuestList[-1].followUp = self.mainCharQuestList[0]
 
     def cycleDetectionTest(self):
         quest = quests.MoveQuest(terrain.tutorialVat,2,2)

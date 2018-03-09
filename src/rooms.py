@@ -842,6 +842,7 @@ XXXXXXXXXX
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None)
 
         def addNPC(x,y):
+            #TODO: replace with patrol quest since it's actually bugging
             quest1 = quests.MoveQuest(self,2,2)
             quest2 = quests.MoveQuest(self,2,7)
             quest3 = quests.MoveQuest(self,7,7)
@@ -850,7 +851,7 @@ XXXXXXXXXX
             quest2.followUp = quest3
             quest3.followUp = quest4
             quest4.followUp = quest1
-            npc = Character("Ⓛ ",x,y,name="Erwin von Libwig")
+            npc = Character(displayChars.staffCharactersByLetter["l"],x,y,name="Erwin von Libwig")
             self.addCharacter(npc,x,y)
             npc.room = self
             npc.assignQuest(quest1)

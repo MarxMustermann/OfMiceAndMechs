@@ -47,6 +47,21 @@ class Quest(object):
     
     # do the teardown of the quest
     def postHandler(self):
+        if self.completed:
+            messages.append("this should not happen (posthandler called on completed quest ("+str(self)+")) "+str(self.character))
+            if self.character and self in self.character.quests:
+                startNext = False
+                if self.character.quests[0] == self:
+                    startNext = True
+                self.character.quests.remove(self)
+
+                if startNext:
+                    if self.followUp:
+                        self.character.assignQuest(self.followUp,active=True)
+                    else:
+                        self.character.startNextQuest()
+            return
+
         self.completed = True
 
         # TODO: handle quests with no assigned character
@@ -118,12 +133,13 @@ class Quest(object):
             loop.set_alarm_in(0.0, callShow_or_exit, '.')
 
         if self.lifetime:
+            messages.append("add endQuestEvent")
             class endQuestEvent(object):
                 def __init__(subself,tick):
                     subself.tick = tick
 
                 def handleEvent(subself):
-                    self.deactivate()
+                    messages.append("endQuestEvent triggered")
                     self.postHandler()
 
             self.character.room.addEvent(endQuestEvent(self.character.room.timeIndex+self.lifetime))
@@ -195,7 +211,7 @@ class ActivateQuest(Quest):
         self.dstX = self.toActivate.xPosition
         self.dstY = self.toActivate.yPosition
         self.desiredActive = desiredActive
-        self.description = "please activate the "+self.toActivate.name+" ("+str(self.toActivate.xPosition)+"/"+str(self.toActivate.yPosition)+") "+str(self) 
+        self.description = "please activate the "+self.toActivate.name+" ("+str(self.toActivate.xPosition)+"/"+str(self.toActivate.yPosition)+")"
         super().__init__(followUp,startCinematics=startCinematics)
 
     def triggerCompletionCheck(self):
@@ -203,6 +219,9 @@ class ActivateQuest(Quest):
             self.postHandler()
 
     def recalculate(self):
+        if not self.active:
+            return
+
         if ((not self.character.room) or (not self.character.room == self.toActivate.room)) and self.character.quests[0] == self:
             self.character.assignQuest(EnterRoomQuest(self.toActivate.room),active=True)
 
@@ -647,26 +666,28 @@ class MetaQuest(Quest):
             return ""
 
     def assignToCharacter(self,character):
-        self.subQuests[0].assignToCharacter(character)
+        if self.subQuests:
+            self.subQuests[0].assignToCharacter(character)
         super().assignToCharacter(character)
 
     def triggerCompletionCheck(self):
-        if not self.subQuests[0].active:
+        if self.subQuests and not self.subQuests[0].active:
             self.subQuests.remove(self.subQuests[0])
 
-            if len(self.subQuests):
-                self.subQuests[0].activate()
+        if len(self.subQuests):
+            if not self.subQuests[0].active:
                 self.subQuests[0].assignToCharacter(self.character)
+                self.subQuests[0].activate()
                 self.subQuests[0].addListener(self.triggerCompletionCheck)
+        else:
+            if not self.looped:
+                self.postHandler()
             else:
-                if not self.looped:
-                    self.postHandler()
-                else:
-                    self.subQuests = self.subQuestsOrig.copy()
+                self.subQuests = self.subQuestsOrig.copy()
 
-                    self.subQuests[0].activate()
-                    self.subQuests[0].assignToCharacter(self.character)
-                    self.subQuests[0].addListener(self.triggerCompletionCheck)
+                self.subQuests[0].assignToCharacter(self.character)
+                self.subQuests[0].activate()
+                self.subQuests[0].addListener(self.triggerCompletionCheck)
 
     def activate(self):
         if len(self.subQuests):
@@ -679,7 +700,7 @@ class MetaQuest(Quest):
         super().deactivate()
 
 class MetaQuest2(Quest):
-    def __init__(self,quests,startCinematics=None,looped=False):
+    def __init__(self,quests,startCinematics=None,looped=False,lifetime=None):
         self.subQuests = quests
 
         for quest in self.subQuests:
@@ -689,7 +710,7 @@ class MetaQuest2(Quest):
 
         self.metaDescription = "meta"
 
-        super().__init__(startCinematics=startCinematics)
+        super().__init__(startCinematics=startCinematics,lifetime=lifetime)
 
     @property
     def dstX(self):
@@ -789,7 +810,7 @@ class KeepFurnaceFiredMeta(MetaQuest2):
         self.fireFurnaceQuest = None
         self.waitQuest = None
         self.furnace = furnace
-        super().__init__(self.questList)
+        super().__init__(self.questList,lifetime=lifetime)
         self.furnace.addListener(self.recalculate)
         self.metaDescription = "KeepFurnaceFiredMeta"
 

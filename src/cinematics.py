@@ -26,7 +26,7 @@ class ScrollingTextCinematic(object):
             for char in payload:
                 counter += 1
                 if len(char):
-                    converted.append((urwid.AttrSpec(colours[counter*7%5],'default'),char))
+                    converted.append((urwid.AttrSpec(colours[counter*7%5],'black'),char))
             return converted
 
         if self.position < self.endPosition:

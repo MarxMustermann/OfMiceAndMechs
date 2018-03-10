@@ -1,4 +1,4 @@
-
+import urwid
 
 class DisplayMapping(object):
     def __init__(self,mode):
@@ -80,7 +80,7 @@ class Canvas(object):
         for line in self.chars:
             if self.shift[1] > 0:
                 for x in range(0,self.shift[1]):
-                    out.append("  ")
+                    out.append((urwid.AttrSpec("default","default"),"  "))
 
             for char in line:
                 if isinstance(char, int):

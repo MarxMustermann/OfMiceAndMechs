@@ -138,7 +138,7 @@ def show_or_exit(key):
                         messages.append("You cannot walk there")
                         messages.append("press "+commandChars.activate+" to apply")
                         itemMarkedLast = item
-                        header.set_text(renderHeader())
+                        header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
                         return
                 else:
                     roomCandidates = []
@@ -162,7 +162,7 @@ def show_or_exit(key):
                                             itemMarkedLast = item
                                             messages.append("you need to open the door first")
                                             messages.append("press "+commandChars.activate+" to apply")
-                                            header.set_text(renderHeader())
+                                            header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
                                             return
                                     
                                     room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
@@ -181,7 +181,7 @@ def show_or_exit(key):
                                 messages.append("You cannot walk there")
                                 messages.append("press "+commandChars.activate+" to apply")
                                 itemMarkedLast = item
-                                header.set_text(renderHeader())
+                                header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
                                 foundItem = True
                         if not foundItem:
                             mainChar.yPosition -= 1
@@ -195,7 +195,7 @@ def show_or_exit(key):
                         messages.append("You cannot walk there")
                         messages.append("press "+commandChars.activate+" to apply")
                         itemMarkedLast = item
-                        header.set_text(renderHeader())
+                        header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
                         return
                 else:
                     roomCandidates = []
@@ -217,7 +217,7 @@ def show_or_exit(key):
                                             itemMarkedLast = item
                                             messages.append("you need to open the door first")
                                             messages.append("press "+commandChars.activate+" to apply")
-                                            header.set_text(renderHeader())
+                                            header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
                                             return
                                     
                                     room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
@@ -236,7 +236,7 @@ def show_or_exit(key):
                                 messages.append("You cannot walk there")
                                 messages.append("press "+commandChars.activate+" to apply")
                                 itemMarkedLast = item
-                                header.set_text(renderHeader())
+                                header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
                                 foundItem = True
                         if not foundItem:
                             mainChar.yPosition += 1
@@ -250,7 +250,7 @@ def show_or_exit(key):
                         messages.append("You cannot walk there")
                         messages.append("press "+commandChars.activate+" to apply")
                         itemMarkedLast = item
-                        header.set_text(renderHeader())
+                        header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
                         return
                 else:
                     roomCandidates = []
@@ -272,7 +272,7 @@ def show_or_exit(key):
                                             itemMarkedLast = item
                                             messages.append("you need to open the door first")
                                             messages.append("press "+commandChars.activate+" to apply")
-                                            header.set_text(renderHeader())
+                                            header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
                                             return
                                     
                                     room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
@@ -291,7 +291,7 @@ def show_or_exit(key):
                                 messages.append("You cannot walk there")
                                 messages.append("press "+commandChars.activate+" to apply")
                                 itemMarkedLast = item
-                                header.set_text(renderHeader())
+                                header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
                                 foundItem = True
                         if not foundItem:
                             mainChar.xPosition += 1
@@ -305,7 +305,7 @@ def show_or_exit(key):
                         messages.append("You cannot walk there")
                         messages.append("press "+commandChars.activate+" to apply")
                         itemMarkedLast = item
-                        header.set_text(renderHeader())
+                        header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
                         return
                 else:
                     roomCandidates = []
@@ -327,7 +327,7 @@ def show_or_exit(key):
                                             itemMarkedLast = item
                                             messages.append("you need to open the door first")
                                             messages.append("press "+commandChars.activate+" to apply")
-                                            header.set_text(renderHeader())
+                                            header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
                                             return
                                     
                                     room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
@@ -346,7 +346,7 @@ def show_or_exit(key):
                                 messages.append("You cannot walk there")
                                 messages.append("press "+commandChars.activate+" to apply")
                                 itemMarkedLast = item
-                                header.set_text(renderHeader())
+                                header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
                                 foundItem = True
                         if not foundItem:
                             mainChar.xPosition -= 1
@@ -478,18 +478,18 @@ def show_or_exit(key):
             specialRender = True        
             pauseGame = True
             
-            header.set_text("\ninentory overview\n(press "+commandChars.show_inventory_detailed+" for the extended inventory menu)\n\n")
-            main.set_text(renderInventory())
-            header.set_text("")
+            header.set_text((urwid.AttrSpec("default","default"),"\ninentory overview\n(press "+commandChars.show_inventory_detailed+" for the extended inventory menu)\n\n"))
+            main.set_text((urwid.AttrSpec("default","default"),renderInventory()))
+            header.set_text((urwid.AttrSpec("default","default"),""))
 
         if key in (commandChars.show_help):
             specialRender = True        
             pauseGame = True
 
         if gamestate.gameWon:
-            main.set_text("")
-            main.set_text("credits")
-            header.set_text("good job")
+            main.set_text((urwid.AttrSpec("default","default"),""))
+            main.set_text((urwid.AttrSpec("default","default"),"credits"))
+            header.set_text((urwid.AttrSpec("default","default"),"good job"))
 
     if submenue:
         specialRender = True        
@@ -507,8 +507,8 @@ def show_or_exit(key):
         if doAdvanceGame:
             advanceGame()
 
-        header.set_text(renderHeader())
-        main.set_text(render().getUrwirdCompatible());
+        header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
+        main.set_text((urwid.AttrSpec("#999","black"),render().getUrwirdCompatible()));
 
 class SubMenu(object):
     def __init__(self):
@@ -561,7 +561,7 @@ class SubMenu(object):
             else:
                 out += k+" - "+str(v)+"\n"
 
-        main.set_text(self.persistentText+"\n\n"+out)
+        main.set_text((urwid.AttrSpec("default","default"),self.persistentText+"\n\n"+out))
 
         return False
 
@@ -572,7 +572,7 @@ class ChatMenu(SubMenu):
         super().__init__()
 
     def handleKey(self, key):
-        header.set_text("\nConversation menu\n")
+        header.set_text((urwid.AttrSpec("default","default"),"\nConversation menu\n"))
         out = "\n"
 
         if self.state == None:
@@ -657,7 +657,7 @@ class ChatMenu(SubMenu):
             else:
                 return True
 
-        main.set_text(self.persistentText)
+        main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
 
         return False
 
@@ -669,7 +669,7 @@ class QuestMenu(SubMenu):
     def handleKey(self, key):
         global submenue
 
-        header.set_text("\nquest overview\n(press "+commandChars.show_quests_detailed+" for the extended quest menu)\n\n")
+        header.set_text((urwid.AttrSpec("default","default"),"\nquest overview\n(press "+commandChars.show_quests_detailed+" for the extended quest menu)\n\n"))
 
         self.persistentText = ""
 
@@ -684,7 +684,7 @@ class QuestMenu(SubMenu):
 
         self.persistentText += "\n * press q for advanced quests\n\n"
 
-        main.set_text(self.persistentText)
+        main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
 
         return False
 
@@ -695,7 +695,7 @@ class AdvancedQuestMenu(SubMenu):
         super().__init__()
 
     def handleKey(self, key):
-        header.set_text("\nadvanced Quest management\n")
+        header.set_text((urwid.AttrSpec("default","default"),"\nadvanced Quest management\n"))
         out = "\n"
 
         if self.character:
@@ -776,7 +776,7 @@ class AdvancedQuestMenu(SubMenu):
             else:
                 return True
 
-        main.set_text(self.persistentText)
+        main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
 
         return False
 

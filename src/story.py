@@ -21,7 +21,7 @@ class ScreenSaver(object):
         npcs = []
         for x in range(1,6):
             for y in range(1,6):
-                for z in range(1,1): # can be tweaked for performance testing (500 npc and more lag but don't grid the game to halt)
+                for z in range(1,2): # can be tweaked for performance testing (500 npc and more lag but don't grid the game to halt)
                     npc1 = characters.Character(displayChars.staffCharactersByLetter["e"],5,3,name="Eduart Knoblauch")
                     self.mainCharRoom.addCharacter(npc1,x,y)
                     npc1.terrain = terrain

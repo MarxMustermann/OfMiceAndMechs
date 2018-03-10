@@ -19,16 +19,16 @@ import config.names as names
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--phase", type=str, help="the phase to start in")
-parser.add_argument("--fallBack", action="store_true", help="force fallback encoding")
+parser.add_argument("--unicode", action="store_true", help="force fallback encoding")
 parser.add_argument("-d", "--debug", action="store_true", help="enable debug mode")
 args = parser.parse_args()
 
 import src.canvas as canvas
 
-if args.fallBack:
-    displayChars = canvas.DisplayMapping("pureASCII")
-else:
+if args.unicode:
     displayChars = canvas.DisplayMapping("unicode")
+else:
+    displayChars = canvas.DisplayMapping("pureASCII")
 
 
 ##################################################################################################################################

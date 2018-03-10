@@ -1,6 +1,5 @@
 import urwid
 
-wall = (urwid.AttrSpec("#d60",'default'),"⛝ ")
 wall = (urwid.AttrSpec("#334",'default'),"⛝ ")
 pipe = (urwid.AttrSpec("#337","default"),"✠✠")
 corpse = "࿊ "

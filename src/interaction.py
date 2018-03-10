@@ -1,6 +1,7 @@
 import src.rooms as rooms
 import src.items as items
 import src.quests as quests
+import src.canvas as canvaslib
 import time
 import urwid
 
@@ -460,7 +461,11 @@ def show_or_exit(key):
         specialRender = False
 
         if key in (commandChars.devMenu):
-            displayChars.setRenderingMode("pureASCII")
+            if displayChars.mode == "unicode":
+                displayChars.setRenderingMode("pureASCII")
+            else:
+                displayChars.setRenderingMode("unicode")
+
             #submenue = QuestMenu()
 
         if key in (commandChars.show_quests):
@@ -503,7 +508,7 @@ def show_or_exit(key):
             advanceGame()
 
         header.set_text(renderHeader())
-        main.set_text(render());
+        main.set_text(render().getUrwirdCompatible());
 
 class SubMenu(object):
     def __init__(self):
@@ -882,14 +887,19 @@ def render():
         centerX = mainChar.xPosition
         centerY = mainChar.yPosition
 
+    viewsize = 41
+    halfviewsite = (viewsize-1)//2
+
     screensize = loop.screen.get_cols_rows()
     decorationSize = frame.frame_top_bottom(loop.screen.get_cols_rows(),True)
     screensize = (screensize[0]-decorationSize[0][0],screensize[1]-decorationSize[0][1])
 
-    centeringOffsetX = int((screensize[0]//4)-centerX)
-    offsetY = int((screensize[1]//2)-centerY)
+    shift = (screensize[1]//2-20,screensize[0]//4-20)
+    messages.append(shift)
+    canvas = canvaslib.Canvas(size=(viewsize,viewsize),chars=chars,coordinateOffset=(centerY-halfviewsite,centerX-halfviewsite),shift=shift,displayChars=displayChars)
 
-    viewsize = 41
+    """
+
 
     result = []
 
@@ -900,6 +910,7 @@ def render():
         topOffset = ((screensize[1]-viewsize)//2)+1
         result += "\n"*topOffset
         chars = chars[-offsetY+topOffset:-offsetY+topOffset+viewsize]
+
 
     for line in chars:
         lineRender = []
@@ -923,8 +934,9 @@ def render():
             rowCounter += 1
         lineRender.append("\n")
         result.extend(lineRender)
+    """
 
-    return result
+    return canvas
 
 # get the interaction loop from the library
 loop = urwid.MainLoop(frame, unhandled_input=show_or_exit)

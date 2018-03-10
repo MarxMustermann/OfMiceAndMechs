@@ -23,10 +23,13 @@ parser.add_argument("--fallBack", action="store_true", help="force fallback enco
 parser.add_argument("-d", "--debug", action="store_true", help="enable debug mode")
 args = parser.parse_args()
 
+import src.canvas as canvas
+
 if args.fallBack:
-    import config.displayChars_fallback as displayChars
+    displayChars = canvas.DisplayMapping("pureASCII")
 else:
-    import config.displayChars as displayChars
+    displayChars = canvas.DisplayMapping("unicode")
+
 
 ##################################################################################################################################
 ###
@@ -58,6 +61,7 @@ rooms.displayChars = displayChars
 terrains.displayChars = displayChars
 story.displayChars = displayChars
 gamestate.displayChars = displayChars
+interaction.displayChars = displayChars
 
 # HACK: common variables with modules
 story.cinematics = cinematics

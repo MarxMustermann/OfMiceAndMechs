@@ -458,6 +458,11 @@ def show_or_exit(key):
             lastRedraw = time.time()
 
         specialRender = False
+
+        if key in (commandChars.devMenu):
+            displayChars.setRenderingMode("pureASCII")
+            #submenue = QuestMenu()
+
         if key in (commandChars.show_quests):
             submenue = QuestMenu()
 

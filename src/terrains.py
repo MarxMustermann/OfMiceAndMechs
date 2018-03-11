@@ -278,13 +278,13 @@ class Terrain(object):
                             self.foundSuperPaths[(partnerSuperNode,start)] = path
                             self.foundSuperPaths[(start,partnerSuperNode)] = path
 
-                            completePath = []
                             last = path[0]
+                            completePath = [last]
                             for waypoint in path[1:]:
-                                completePath.extend(self.foundPaths[(last,waypoint)])
+                                completePath.extend(self.foundPaths[(last,waypoint)][1:])
                                 last = waypoint
-                            self.foundSuperPathsComplete[(start,partnerSuperNode)] = completePath
-                            completePath = completePath[:]
+                            self.foundSuperPathsComplete[(start,partnerSuperNode)] = completePath[1:]
+                            completePath = completePath[:-1]
                             completePath.reverse()
                             self.foundSuperPathsComplete[(partnerSuperNode,start)] = completePath
                             continue
@@ -417,11 +417,6 @@ class Terrain(object):
                 path = self.foundSuperPathsComplete[(startSuper[0],endSuper[0])]
                 path = self.findWayNodeBased(startCoordinate,Coordinate(startSuper[0][0],startSuper[0][1]),[(startCoordinate.x,startCoordinate.y)])+path
                 path = path + self.findWayNodeBased(Coordinate(endSuper[0][0],endSuper[0][1]),endCoordinate,[endSuper[0]])
-                """
-                path = self.findWayNodeBased(startCoordinate,startSuper,[startCoordinate]) + path
-                path = path + self.findWayNodeBased(endSuper,endCoordinate,[endSuper])
-                path = self.findWayNodeBased(startCoordinate,endCoordinate,self.foundPaths[entryPoint[1]])
-                """
             else:
                 path = self.findWayNodeBased(startCoordinate,endCoordinate,self.foundPaths[entryPoint[1]])
         except Exception as e:
@@ -431,7 +426,7 @@ class Terrain(object):
             messages.append(traceback.format_exc().splitlines()[-2])
             messages.append(traceback.format_exc().splitlines()[-1])
 
-        path = entryPoint[2]+path+exitPoint[2]
+        path = entryPoint[2]+path+exitPoint[2][1:]
         return gameMath.removeLoops(path)
 
         return entryPoint[2]+self.findWayNodeBased(startCoordinate,endCoordinate,self.foundPaths[entryPoint[1]])+exitPoint[2]

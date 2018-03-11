@@ -1,26 +1,37 @@
-def splitList(target,splitBy):
-    from itertools import groupby
-    return [list(group) for k, group in groupby(target, lambda x: x == splitBy) if not k]
-
 def removeLoops(path):
-    found = set()
-    foundTwice = set()
+    found = {}
     for waypoint in path:
         if waypoint in found:
-            foundTwice.add(waypoint)
+            found[waypoint] += 1
         else:
-            found.add(waypoint)
+            found[waypoint] = 1
 
-    for waypoint in foundTwice:
-        newPath = []
-        splitedPath = splitList(path,waypoint)
-        if not path[0] == waypoint:
-            newPath.extend(splitedPath[0])
+
+    last = 1
+    newPath = []
+    skipMode = False
+    skipWayPoint = None
+    skipcounter = 0
+    for waypoint in path:
+        if skipMode:
+            if not waypoint == skipWayPoint:
+                continue
+            skipcounter -= 1
+            if skipcounter < 1:
+                skipMode = False
+                continue
+            else:
+                continue
+
+        if last < found[waypoint]:
+            skipMode = True
+            skipWayPoint = waypoint
+            skipcounter = found[waypoint]-last
+
+        last = found[waypoint]
         newPath.append(waypoint)
-        if not path[-1] == waypoint:
-            newPath.extend(splitedPath[-1])
-        path = newPath
-    return path
+
+    return newPath
 
 def calculatePath(startX,startY,endX,endY,walkingPath):
     path = calculatePathReal(startX,startY,endX,endY,walkingPath)

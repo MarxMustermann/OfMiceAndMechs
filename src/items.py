@@ -331,6 +331,7 @@ class Lever(Item):
         if not self.activated:
             self.activated = True
             self.display = displayChars.lever_pulled
+            self.display = "!!\007"
 
             messages.append(self.name+": activated!")
 

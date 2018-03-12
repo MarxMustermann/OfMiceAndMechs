@@ -293,6 +293,14 @@ class Terrain(object):
 
                 newLast[start] = newLastList
 
+            for pair,path in self.foundSuperPaths.items():
+                if not pair[1] in self.watershedSuperNodeMap[pair[0]]:
+                    self.watershedSuperNodeMap[pair[0]].append(pair[1])
+
+                if not pair[0] in self.watershedSuperNodeMap[pair[1]]:
+                    self.watershedSuperNodeMap[pair[1]].append(pair[0])
+
+
             superWatershed(counter,newLast)
 
         last = {}
@@ -414,7 +422,10 @@ class Terrain(object):
         path = []
         try:
             if not startSuper[0] == endSuper[0]:
-                path = self.foundSuperPathsComplete[(startSuper[0],endSuper[0])]
+                if endSuper[0] in self.watershedSuperNodeMap[startSuper[0]]:
+                    path = self.foundSuperPathsComplete[(startSuper[0],endSuper[0])]
+                else:
+                    path = self.foundSuperPathsComplete[(startSuper[0],self.watershedSuperNodeMap[startSuper[0]][0])]+self.foundSuperPathsComplete[(self.watershedSuperNodeMap[startSuper[0]][0],endSuper[0])]
                 path = self.findWayNodeBased(startCoordinate,Coordinate(startSuper[0][0],startSuper[0][1]),[(startCoordinate.x,startCoordinate.y)])+path
                 path = path + self.findWayNodeBased(Coordinate(endSuper[0][0],endSuper[0][1]),endCoordinate,[endSuper[0]])
             else:
@@ -427,6 +438,7 @@ class Terrain(object):
             messages.append(traceback.format_exc().splitlines()[-1])
 
         path = entryPoint[2]+path+exitPoint[2][1:]
+        return path
         return gameMath.removeLoops(path)
 
         return entryPoint[2]+self.findWayNodeBased(startCoordinate,endCoordinate,self.foundPaths[entryPoint[1]])+exitPoint[2]
@@ -905,8 +917,8 @@ X X X C C C C C X X X """
                #            ###            # #O          O#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                #O          O ##O          O# ##           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                ##          # ###          ##  #          #####           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-                          R  #  R        R     R        R XXXX XXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
-               XX  O    O    ####O#   ##O####    O8   O    X              X X X X X X X X X X X X X X X                                              X               
+                          R  #  R        R     R        R XXXX XXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
+               XX  O    O    ####O#   ##O####    O8   O    X              X X X X X X X X X X X X X X                                                X               
                XX               ### X  ###        8        X     X                                                                                   X               
                   X  O   O          XX     ##     8        X     X                                                                                   X              
                X X                                8        X     X                                                                    XXXXXXXXXXXXXXXX              

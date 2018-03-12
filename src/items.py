@@ -331,6 +331,7 @@ class Lever(Item):
         if not self.activated:
             self.activated = True
             self.display = displayChars.lever_pulled
+
             messages.append(self.name+": activated!")
 
             if self.activateAction:
@@ -507,10 +508,17 @@ class Pile(Item):
 
         character.inventory.append(self.type())
         character.changed()
+        messages.append("you take a piece of "+str(self.type))
+
         self.numContained -= 1
 
         if self.numContained == 1:
                 messages.append("i should morph to item now")
+                self.room.removeItem(self)
+                new = self.type()
+                new.xPosition = self.xPosition
+                new.yPosition = self.yPosition
+                self.room.addItems([new])
 
     def getDetailedInfo(self):
         return super().getDetailedInfo()+"\na pile of "+str(self.type)+" containing "+str(self.numContained)

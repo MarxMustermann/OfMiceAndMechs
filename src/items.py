@@ -23,7 +23,7 @@ class Item(object):
         self.description = "a "+self.name
 
     def getDetailedInfo(self):
-        return str(self.getDetailedState)
+        return str(self.getDetailedState())
 
     def getDetailedState(self):
         return self
@@ -493,14 +493,27 @@ class Pile(Item):
     def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal):
         self.contains_canBurn = True
         self.type = itemType
+        self.numContained = 10
         super().__init__(displayChars.pile,xPosition,yPosition,name=name)
 
     def apply(self,character):
         if len(character.inventory) > 10:
             messages.append("you cannot carry more items")
             return
+
+        if self.numContained < 1:
+            messages.append("something went seriously wrong. I should have morphed by now")
+            return
+
         character.inventory.append(self.type())
         character.changed()
+        self.numContained -= 1
+
+        if self.numContained == 1:
+                messages.append("i should morph to item now")
+
+    def getDetailedInfo(self):
+        return super().getDetailedInfo()+"\na pile of "+str(self.type)+" containing "+str(self.numContained)
 
 class Acid(Item):
     def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal):

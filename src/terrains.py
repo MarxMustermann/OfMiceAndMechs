@@ -89,6 +89,9 @@ class Terrain(object):
                     self.watershedStart.extend([(rowCounter*15+1,lineCounter*15+1),(rowCounter*15+13,lineCounter*15+1),(rowCounter*15+1,lineCounter*15+13),(rowCounter*15+13,lineCounter*15+13)])
                     if char in ("."):
                         self.superNodes[(rowCounter,lineCounter)] = (rowCounter*15+1,lineCounter*15+1)
+
+                if char in (".",","," "):
+                    pass
                 elif char == "X":
                     roomsOnMap.append(rooms.MechArmor(rowCounter,lineCounter,0,0))
                 elif char == "V":

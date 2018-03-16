@@ -348,12 +348,13 @@ class PickupQuest(Quest):
         super().recalculate()
 
 class DropQuest(Quest):
-    def __init__(self,toDrop,xPosition,yPosition,followUp=None,startCinematics=None):
+    def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
         self.toDrop = toDrop
         self.toDrop.addListener(self.recalculate)
         self.toDrop.addListener(self.triggerCompletionCheck)
         self.dstX = xPosition
         self.dstY = yPosition
+        self.room = room
         self.description = "please drop the "+self.toDrop.name+" at ("+str(self.dstX)+"/"+str(self.dstY)+")"
         super().__init__(followUp,startCinematics=startCinematics)
 
@@ -369,6 +370,9 @@ class DropQuest(Quest):
             self.postHandler()
 
     def recalculate(self):
+        if ((not self.character.room) or (not self.character.room == self.room)) and self.character.quests[0] == self:
+            self.character.assignQuest(EnterRoomQuest(self.room),active=True)
+
         if not self.active:
             return
 

@@ -114,7 +114,7 @@ class Character():
                                     self.changed()
                                     break
                             else:
-                                messages.append("you cannot move there")
+                                messages.append("you cannot move there (N)"+str(localisedEntry)+" "+str(room.walkingAccess)+" "+str(room))
                                 break
                     # south
                     if room.yPosition*15+room.offsetY == nextPosition[1]:
@@ -135,7 +135,7 @@ class Character():
                                     self.changed()
                                     break
                             else:
-                                messages.append("you cannot move there")
+                                messages.append("you cannot move there (S)"+str(localisedEntry)+" "+str(room.walkingAccess)+" "+str(room))
                                 break
                     # east
                     if room.xPosition*15+room.offsetX+room.sizeX == nextPosition[0]+1:
@@ -156,7 +156,7 @@ class Character():
                                     self.changed()
                                     break
                             else:
-                                messages.append("you cannot move there")
+                                messages.append("you cannot move there (E)"+str(localisedEntry)+" "+str(room.walkingAccess)+" "+str(room))
                     # west
                     if room.xPosition*15+room.offsetX == nextPosition[0]:
                         if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+room.sizeY > self.yPosition:
@@ -176,7 +176,7 @@ class Character():
                                     self.changed()
                                     break
                             else:
-                                messages.append("you cannot move there")
+                                messages.append("you cannot move there (W)"+str(localisedEntry)+" "+str(room.walkingAccess)+" "+str(room))
                                 break
                 else:
                     self.xPosition = nextPosition[0]
@@ -185,12 +185,28 @@ class Character():
             
             if item:
                 item.apply(self)
+                try:
+                    if self.quests[0].toPickup == item:
+                        self.quests[0].toPickup.pickUp(self)
+                except:
+                    pass
             else:
                 if (self.xPosition == nextPosition[0] and self.yPosition == nextPosition[1]):
                     self.path = self.path[1:]
             return False
         else:
             return True
+
+    def drop(self,item):
+        self.inventory.remove(item)
+        item.xPosition = self.xPosition
+        item.yPosition = self.yPosition
+        if self.room:
+            self.room.addItems([item])
+        else:
+            self.terrain.addItems([item])
+        item.changed()
+        self.changed()
 
     def advance(self):
         if self.automated:
@@ -213,7 +229,18 @@ class Character():
                 self.applysolver(self.quests[0].solver)
                 try:
                     if not len(self.path):
-                        self.quests[0].toActivate.apply(self)
+                        try:
+                            self.quests[0].toActivate.apply(self)
+                        except:
+                            pass
+                        try:
+                            self.quests[0].toPickup.pickUp(self)
+                        except:
+                            pass
+                        try:
+                            self.drop(self.quests[0].toDrop)
+                        except:
+                            pass
                 except:
                     pass
                 self.changed()

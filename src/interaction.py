@@ -63,8 +63,10 @@ def show_or_exit(key):
     global ignoreNextAutomated
 
     if key in ("lagdetection",):
-        loop.set_alarm_in(0.2, callShow_or_exit, "lagdetection")
+        loop.set_alarm_in(0.1, callShow_or_exit, "lagdetection")
         lastLagDetection = time.time()
+        if terrain.alarm:
+            print('\007')
         if len(cinematics.cinematicQueue) or pauseGame:
             return
         idleCounter += 1
@@ -404,6 +406,7 @@ def show_or_exit(key):
             if key in (commandChars.pickUp):
                 if len(mainChar.inventory) > 10:
                     messages.append("you cannot carry more items")
+
                 if mainChar.room:
                     itemByCoordinates = mainChar.room.itemByCoordinates
                     itemList = mainChar.room.itemsOnFloor
@@ -411,16 +414,14 @@ def show_or_exit(key):
                     itemByCoordinates = terrain.itemByCoordinates
                     itemList = terrain.itemsOnFloor
 
-                if (mainChar.xPosition,mainChar.yPosition) in itemByCoordinates:
-                    for item in itemByCoordinates[(mainChar.xPosition,mainChar.yPosition)]:
-                        itemList.remove(item)
-                        if hasattr(item,"xPosition"):
-                            del item.xPosition
-                        if hasattr(item,"yPosition"):
-                            del item.yPosition
-                        mainChar.inventory.append(item)
-                        item.changed()
-                    del itemByCoordinates[(mainChar.xPosition,mainChar.yPosition)]
+                if itemMarkedLast:
+                    pos = (itemMarkedLast.xPosition,itemMarkedLast.yPosition)
+                else:
+                    pos = (mainChar.xPosition,mainChar.yPosition)
+
+                if pos in itemByCoordinates:
+                    for item in itemByCoordinates[pos]:
+                        item.pickUp(mainChar)
 
             if key in (commandChars.hail):
                 if mainChar.room and type(mainChar.room) == rooms.MiniMech:

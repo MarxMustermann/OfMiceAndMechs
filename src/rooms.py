@@ -1056,6 +1056,9 @@ XFFFFFFFFX
 XXXXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        bean = items.MarkerBean(1,2)
+        beanPile = items.Pile(1,1,"markerPile",items.MarkerBean)
+        self.addItems([bean,beanPile])
 
 class CargoRoom(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
@@ -1072,11 +1075,21 @@ X        X
 X        X
 X        X
 X        X
-XPPPPPPPPX
+X        X
 XXXXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.floorDisplay = [displayChars.nonWalkableUnkown]
+
+        self.storedItems = [items.Pipe(),items.Pipe(),items.Pipe(),items.Pipe(),items.Pipe(),items.Pipe(),items.Pipe()]
+
+        counter = 3
+        for item in self.storedItems:
+            item.xPosition = 3
+            item.yPosition = counter
+            counter += 1
+
+        self.addItems(self.storedItems)
 
 class WakeUpRoom(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):

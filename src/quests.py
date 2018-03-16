@@ -318,6 +318,62 @@ class EnterRoomQuest(Quest):
         if self.character.room == self.room:
             self.postHandler()
 
+class PickupQuest(Quest):
+    def __init__(self,toPickup,followUp=None,startCinematics=None):
+        self.toPickup = toPickup
+        self.toPickup.addListener(self.recalculate)
+        self.toPickup.addListener(self.triggerCompletionCheck)
+        self.dstX = self.toPickup.xPosition
+        self.dstY = self.toPickup.yPosition
+        self.description = "please pick up the "+self.toPickup.name+" ("+str(self.toPickup.xPosition)+"/"+str(self.toPickup.yPosition)+")"
+        super().__init__(followUp,startCinematics=startCinematics)
+
+    def triggerCompletionCheck(self):
+        if self.toPickup in self.character.inventory:
+            self.postHandler()
+
+    def recalculate(self):
+        if ((not self.character.room) or (not self.character.room == self.toPickup.room)) and self.character.quests[0] == self:
+            self.character.assignQuest(EnterRoomQuest(self.toPickup.room),active=True)
+
+        if hasattr(self,"dstX"):
+            del self.dstX
+        if hasattr(self,"dstY"):
+            del self.dstY
+        if hasattr(self,"toPickup"):
+            if hasattr(self.toPickup,"xPosition"):
+                self.dstX = self.toPickup.xPosition
+            if hasattr(self.toPickup,"xPosition"):
+                self.dstY = self.toPickup.yPosition
+        super().recalculate()
+
+class DropQuest(Quest):
+    def __init__(self,toDrop,xPosition,yPosition,followUp=None,startCinematics=None):
+        self.toDrop = toDrop
+        self.toDrop.addListener(self.recalculate)
+        self.toDrop.addListener(self.triggerCompletionCheck)
+        self.dstX = xPosition
+        self.dstY = yPosition
+        self.description = "please drop the "+self.toDrop.name+" at ("+str(self.dstX)+"/"+str(self.dstY)+")"
+        super().__init__(followUp,startCinematics=startCinematics)
+
+    def triggerCompletionCheck(self):
+        correctPosition = False
+        try:
+            if self.toDrop.xPosition == self.dstX and self.toDrop.yPosition == self.dstY:
+                correctPosition = True
+        except:
+            pass
+
+        if correctPosition:
+            self.postHandler()
+
+    def recalculate(self):
+        if not self.active:
+            return
+
+        super().recalculate()
+
 class CollectQuest(Quest):
     def __init__(self,toFind="canBurn",startCinematics=None):
         self.toFind = toFind

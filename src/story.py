@@ -19,9 +19,17 @@ class ScreenSaver(object):
         self.mainCharRoom.addCharacter(mainChar,2,4)
 
         npcs = []
+        npc1 = characters.Character(displayChars.staffCharactersByLetter["e"],5,3,name="Eduart Knoblauch")
+        self.mainCharRoom.addCharacter(npc1,2,2)
+        npc1.terrain = terrain
+        self.mainCharRoom.firstOfficer = npc1
+        npcs.append(npc1)
+
+        self.mainCharQuestList = []
+        '''
         for x in range(1,6):
             for y in range(1,6):
-                for z in range(1,2): # can be tweaked for performance testing (500 npc and more lag but don't grid the game to halt)
+                for z in range(1,1): # can be tweaked for performance testing (500(40) npc and more lag but don't grid the game to halt)
                     npc1 = characters.Character(displayChars.staffCharactersByLetter["e"],5,3,name="Eduart Knoblauch")
                     self.mainCharRoom.addCharacter(npc1,x,y)
                     npc1.terrain = terrain
@@ -33,6 +41,7 @@ class ScreenSaver(object):
         quest = quests.MoveQuest(terrain.tutorialMachineRoom,2,2)
         self.mainCharQuestList.append(quest)
 
+        """
         questlist = []
         quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[0])
         questlist.append(quest)
@@ -58,16 +67,64 @@ class ScreenSaver(object):
         self.addPseudeoFurnacefirering()
         self.addIntraRoomMovements()
         self.addInnerRoomMovements()
+        """
 
         questlist = []
         for room in terrain.rooms:
             if not isinstance(room,rooms.MechArmor):
                 quest = quests.EnterRoomQuest(room)
                 questlist.append(quest)
-        self.mainCharQuestList.extend(questlist)
+        '''
 
-        self.assignPlayerQuests()
 
+        #self.assignPlayerQuests()
+        self.assignFurnitureMoving([mainChar])
+        #self.assignFurnitureMoving([npcs[0]])
+
+        #self.mainCharQuestList[-1].followUp = self.mainCharQuestList[0]
+
+    def assignFurnitureMoving(self,chars):
+        for char in chars:
+            questlist = []
+            item = terrain.tutorialCargoRoom2.storedItems[0]
+            quest = quests.PickupQuest(item)
+            questlist.append(quest)
+            quest = quests.MoveQuest(terrain.tutorialCargoRoom2,4,4)
+            questlist.append(quest)
+            quest = quests.DropQuest(item,1,1)
+            questlist.append(quest)
+            quest = quests.MoveQuest(terrain.tutorialLab,4,4)
+            questlist.append(quest)
+
+            item = terrain.tutorialCargoRoom2.storedItems[1]
+            quest = quests.PickupQuest(item)
+            questlist.append(quest)
+            quest = quests.MoveQuest(terrain.tutorialCargoRoom2,4,4)
+            questlist.append(quest)
+            quest = quests.DropQuest(item,2,1)
+            questlist.append(quest)
+            quest = quests.MoveQuest(terrain.tutorialLab,4,4)
+            questlist.append(quest)
+
+            item = terrain.tutorialCargoRoom2.storedItems[2]
+            quest = quests.PickupQuest(item)
+            questlist.append(quest)
+            quest = quests.MoveQuest(terrain.tutorialCargoRoom2,4,4)
+            questlist.append(quest)
+            quest = quests.DropQuest(item,3,1)
+            questlist.append(quest)
+            quest = quests.MoveQuest(terrain.tutorialCargoRoom,4,4)
+            questlist.append(quest)
+
+            lastQuest = questlist[0]
+            for item in questlist[1:]:
+                lastQuest.followUp = item
+                lastQuest = item
+            questlist[-1].followup = None
+
+            char.assignQuest(questlist[0])
+
+    def assignWalkQuest(self,chars):
         counter = 0
         for npc in npcs:
             counter += 1
@@ -93,11 +150,7 @@ class ScreenSaver(object):
                 lastQuest = item
             questlist[-1].followup = None
 
-            questlist[-1].followUp = questlist[0]
-
             npc.assignQuest(questlist[0])
-
-        #self.mainCharQuestList[-1].followUp = self.mainCharQuestList[0]
 
     def cycleDetectionTest(self):
         quest = quests.MoveQuest(terrain.tutorialVat,2,2)

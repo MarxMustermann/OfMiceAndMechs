@@ -35,6 +35,24 @@ class Item(object):
         for listener in self.listeners:
             listener()
 
+    def pickUp(self,character):
+        if self.room:
+            container = self.room
+        else:
+            container = terrain
+
+        container.itemsOnFloor.remove(self)
+
+        character.inventory.append(self)
+        self.changed()
+
+        container.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
+        if not container.itemByCoordinates[(self.xPosition,self.yPosition)]:
+            del container.itemByCoordinates[(self.xPosition,self.yPosition)]
+
+        del self.xPosition
+        del self.yPosition
+
     def addListener(self,listenFunction):
         if not listenFunction in self.listeners:
             self.listeners.append(listenFunction)
@@ -331,7 +349,8 @@ class Lever(Item):
         if not self.activated:
             self.activated = True
             self.display = displayChars.lever_pulled
-            self.display = "!!\007"
+            self.display = "!!"
+            terrain.alarm = True
 
             messages.append(self.name+": activated!")
 
@@ -339,6 +358,7 @@ class Lever(Item):
                 self.activateAction(self)
         else:
             self.activated = False
+            terrain.alarm = False
             self.display = displayChars.lever_notPulled
             messages.append(self.name+": deactivated!")
 
@@ -682,4 +702,12 @@ class Spray(Item):
         if terrain.tutorialMachineRoom.steamGeneration == 3:
             self.display = self.display_stage3
             
+class MarkerBean(Item):
+    def __init__(self,xPosition=0,yPosition=0,name="bean"):
+        super().__init__(" -",xPosition,yPosition,name=name)
+        self.activated = False
+        self.walkable = True
 
+    def apply(self,character):
+        self.display = "x-"
+        self.activated = True

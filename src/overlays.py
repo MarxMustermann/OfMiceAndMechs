@@ -26,7 +26,14 @@ class QuestMarkerOverlay(object):
     def apply(self,chars,mainChar,displayChars):
         if not mainChar.room and mainChar.path:
             for item in mainChar.path:
-                chars[item[1]][item[0]] = displayChars.pathMarker
+                if not chars[item[1]][item[0]] in (displayChars.pathMarker,"!!","??"):
+                    chars[item[1]][item[0]] = displayChars.pathMarker
+                elif not chars[item[1]][item[0]] in ("!!","??"):
+                    chars[item[1]][item[0]] = "!!"
+                elif not chars[item[1]][item[0]] in ("??"):
+                    chars[item[1]][item[0]] = "??"
+                else:
+                    chars[item[1]][item[0]] = "**"
 
 class NPCsOverlay(object):
     def apply(self,chars,terrain):

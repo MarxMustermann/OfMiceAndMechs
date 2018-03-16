@@ -446,7 +446,6 @@ class Terrain(object):
             messages.append(traceback.format_exc().splitlines()[-1])
 
         path = entryPoint[2]+path+exitPoint[2][1:]
-        return path
         return gameMath.removeLoops(path)
 
         return entryPoint[2]+self.findWayNodeBased(startCoordinate,endCoordinate,self.foundPaths[entryPoint[1]])+exitPoint[2]

@@ -72,8 +72,7 @@ class Terrain(object):
         self.tutorialVatProcessing = None
         self.tutorialMachineRoom = None
         self.tutorialLab = None
-        self.tutorialCargoRoom = None
-        self.tutorialCargoRoom2 = None
+        self.tutorialCargoRooms = []
         self.wakeUpRoom = None
         lineCounter = 0
         for layoutline in layout.split("\n")[1:]:
@@ -120,10 +119,7 @@ class Terrain(object):
                     roomsOnMap.append(room)
                 elif char == "C" or char == "U":
                     room = rooms.CargoRoom(rowCounter,lineCounter,3,0)
-                    if not self.tutorialCargoRoom:
-                        self.tutorialCargoRoom = room
-                    if not self.tutorialCargoRoom2:
-                        self.tutorialCargoRoom2 = room
+                    self.tutorialCargoRooms.append(room)
                     roomsOnMap.append(room)
                 elif char == "?":
                     roomsOnMap.append(rooms.CpuWasterRoom(rowCounter,lineCounter,2,2))

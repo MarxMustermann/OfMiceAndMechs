@@ -994,27 +994,6 @@ XXXXXXX$XXXXXXX
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.floorDisplay = [displayChars.nonWalkableUnkown]
 
-class CargoRoom(Room):
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
-        self.roomLayout = """
-XXXXXXXXXX
-X        X
-X       .$
-X        X
-X        X
-X        X
-X        X
-X        X
-X        X
-X        X
-X        X
-X        X
-XPPPPPPPPX
-XXXXXXXXXX
-"""
-        super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
-        self.floorDisplay = [displayChars.nonWalkableUnkown]
-
 class MiniMech(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
         self.roomLayout = """
@@ -1083,10 +1062,10 @@ XXXXXXXXXX
 
         self.storedItems = [items.Pipe(),items.Pipe(),items.Pipe(),items.Pipe(),items.Pipe(),items.Pipe(),items.Pipe()]
 
-        counter = 3
+        counter = 1
         for item in self.storedItems:
-            item.xPosition = 3
-            item.yPosition = counter
+            item.xPosition = counter
+            item.yPosition = 12
             counter += 1
 
         self.addItems(self.storedItems)

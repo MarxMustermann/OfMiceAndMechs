@@ -78,43 +78,23 @@ class ScreenSaver(object):
 
 
         #self.assignPlayerQuests()
-        self.assignFurnitureMoving([mainChar])
-        #self.assignFurnitureMoving([npcs[0]])
+        self.assignFurnitureMoving([npcs[0],mainChar])
 
         #self.mainCharQuestList[-1].followUp = self.mainCharQuestList[0]
 
     def assignFurnitureMoving(self,chars):
+        counter = 0
         for char in chars:
             questlist = []
-            item = terrain.tutorialCargoRoom2.storedItems[0]
-            quest = quests.PickupQuest(item)
-            questlist.append(quest)
-            quest = quests.MoveQuest(terrain.tutorialCargoRoom2,4,4)
-            questlist.append(quest)
-            quest = quests.DropQuest(item,1,1)
-            questlist.append(quest)
-            quest = quests.MoveQuest(terrain.tutorialLab,4,4)
-            questlist.append(quest)
-
-            item = terrain.tutorialCargoRoom2.storedItems[1]
-            quest = quests.PickupQuest(item)
-            questlist.append(quest)
-            quest = quests.MoveQuest(terrain.tutorialCargoRoom2,4,4)
-            questlist.append(quest)
-            quest = quests.DropQuest(item,2,1)
-            questlist.append(quest)
-            quest = quests.MoveQuest(terrain.tutorialLab,4,4)
-            questlist.append(quest)
-
-            item = terrain.tutorialCargoRoom2.storedItems[2]
-            quest = quests.PickupQuest(item)
-            questlist.append(quest)
-            quest = quests.MoveQuest(terrain.tutorialCargoRoom2,4,4)
-            questlist.append(quest)
-            quest = quests.DropQuest(item,3,1)
-            questlist.append(quest)
-            quest = quests.MoveQuest(terrain.tutorialCargoRoom,4,4)
-            questlist.append(quest)
+            for i in range(3,8):
+                for j in range(0,7):
+                    item = terrain.tutorialCargoRooms[i+(counter*7)].storedItems[j]
+                    quest = quests.PickupQuest(item)
+                    questlist.append(quest)
+                    quest = quests.MoveQuest(terrain.tutorialCargoRooms[2+(counter*7)],4,4)
+                    questlist.append(quest)
+                    quest = quests.DropQuest(item,1+j,12-i)
+                    questlist.append(quest)
 
             lastQuest = questlist[0]
             for item in questlist[1:]:
@@ -123,6 +103,8 @@ class ScreenSaver(object):
             questlist[-1].followup = None
 
             char.assignQuest(questlist[0])
+
+            counter += 1
 
     def assignWalkQuest(self,chars):
         counter = 0

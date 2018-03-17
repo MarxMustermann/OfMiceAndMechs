@@ -1060,12 +1060,25 @@ XXXXXXXXXX
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.floorDisplay = [displayChars.nonWalkableUnkown]
 
-        self.storedItems = [items.Pipe(),items.Pipe(),items.Pipe(),items.Pipe(),items.Pipe(),items.Pipe(),items.Pipe()]
+        self.storedItems = []
+        for i in range(1,20):
+            self.storedItems.append(items.Pipe())
 
-        counter = 1
+        counter = 0
+        self.storageSpace = []
+        for j in range(1,2):
+            for i in range(1,self.sizeX-1):
+                self.storageSpace.append((i,j))
+        j = self.sizeY-2
+        while j > 1:
+            for i in range(1,self.sizeX-1):
+                self.storageSpace.append((i,j))
+            j -= 1
+
+        counter = 0
         for item in self.storedItems:
-            item.xPosition = counter
-            item.yPosition = 12
+            item.xPosition = self.storageSpace[counter][0]
+            item.yPosition = self.storageSpace[counter][1]
             counter += 1
 
         self.addItems(self.storedItems)

@@ -18,13 +18,6 @@ class ScreenSaver(object):
         self.mainCharRoom = terrain.wakeUpRoom
         self.mainCharRoom.addCharacter(mainChar,2,4)
 
-        npcs = []
-        npc1 = characters.Character(displayChars.staffCharactersByLetter["e"],5,3,name="Eduart Knoblauch")
-        self.mainCharRoom.addCharacter(npc1,2,2)
-        npc1.terrain = terrain
-        self.mainCharRoom.firstOfficer = npc1
-        npcs.append(npc1)
-
         self.mainCharQuestList = []
         '''
         for x in range(1,6):
@@ -78,23 +71,53 @@ class ScreenSaver(object):
 
 
         #self.assignPlayerQuests()
-        self.assignFurnitureMoving([npcs[0],mainChar])
 
         #self.mainCharQuestList[-1].followUp = self.mainCharQuestList[0]
+
+        self.addFurnitureMovingNpcs()
+
+    def addFurnitureMovingNpcs(self):
+        npcs = []
+        for i in range(0,2):
+            npc = characters.Character(displayChars.staffCharactersByLetter["e"],5,3,name="Eduart Knoblauch")
+            self.mainCharRoom.addCharacter(npc,2,2+i)
+            npc.terrain = terrain
+            npcs.append(npc)
+
+        self.assignFurnitureMoving(npcs)
 
     def assignFurnitureMoving(self,chars):
         counter = 0
         for char in chars:
             questlist = []
+
+            targetRoom = terrain.tutorialCargoRooms[counter*3]
+            targetIndex = len(targetRoom.storedItems)
+
+
+            for srcRoom in (terrain.tutorialCargoRooms[counter*3+1],terrain.tutorialCargoRooms[counter*3+2]):
+                srcIndex = len(srcRoom.storedItems)-1
+                while srcIndex > -1:
+                    pos = srcRoom.storageSpace[srcIndex]
+                    item = srcRoom.itemByCoordinates[pos][0]
+                    quest = quests.PickupQuest(item)
+                    questlist.append(quest)
+                    pos = targetRoom.storageSpace[targetIndex]
+                    quest = quests.DropQuest(item,targetRoom,pos[0],pos[1])
+                    questlist.append(quest)
+
+                    srcIndex -= 1
+                    targetIndex += 1
+
+            """
             for i in range(3,8):
                 for j in range(0,7):
                     item = terrain.tutorialCargoRooms[i+(counter*7)].storedItems[j]
                     quest = quests.PickupQuest(item)
                     questlist.append(quest)
-                    quest = quests.MoveQuest(terrain.tutorialCargoRooms[2+(counter*7)],4,4)
+                    quest = quests.DropQuest(item,terrain.tutorialCargoRooms[2+(counter*7)],1+j,12-i)
                     questlist.append(quest)
-                    quest = quests.DropQuest(item,1+j,12-i)
-                    questlist.append(quest)
+            """
 
             lastQuest = questlist[0]
             for item in questlist[1:]:

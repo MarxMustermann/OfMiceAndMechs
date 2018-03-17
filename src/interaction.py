@@ -896,7 +896,6 @@ def render():
     screensize = (screensize[0]-decorationSize[0][0],screensize[1]-decorationSize[0][1])
 
     shift = (screensize[1]//2-20,screensize[0]//4-20)
-    messages.append(shift)
     canvas = canvaslib.Canvas(size=(viewsize,viewsize),chars=chars,coordinateOffset=(centerY-halfviewsite,centerX-halfviewsite),shift=shift,displayChars=displayChars)
 
     """

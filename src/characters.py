@@ -114,7 +114,7 @@ class Character():
                                     self.changed()
                                     break
                             else:
-                                messages.append("you cannot move there (N)"+str(localisedEntry)+" "+str(room.walkingAccess)+" "+str(room))
+                                messages.append("you cannot move there (N)")
                                 break
                     # south
                     if room.yPosition*15+room.offsetY == nextPosition[1]:
@@ -135,7 +135,7 @@ class Character():
                                     self.changed()
                                     break
                             else:
-                                messages.append("you cannot move there (S)"+str(localisedEntry)+" "+str(room.walkingAccess)+" "+str(room))
+                                messages.append("you cannot move there (S)")
                                 break
                     # east
                     if room.xPosition*15+room.offsetX+room.sizeX == nextPosition[0]+1:
@@ -156,7 +156,7 @@ class Character():
                                     self.changed()
                                     break
                             else:
-                                messages.append("you cannot move there (E)"+str(localisedEntry)+" "+str(room.walkingAccess)+" "+str(room))
+                                messages.append("you cannot move there (E)")
                     # west
                     if room.xPosition*15+room.offsetX == nextPosition[0]:
                         if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+room.sizeY > self.yPosition:
@@ -176,7 +176,7 @@ class Character():
                                     self.changed()
                                     break
                             else:
-                                messages.append("you cannot move there (W)"+str(localisedEntry)+" "+str(room.walkingAccess)+" "+str(room))
+                                messages.append("you cannot move there (W)")
                                 break
                 else:
                     self.xPosition = nextPosition[0]

@@ -866,10 +866,14 @@ def renderQuests(maxQuests=0):
 
 def renderInventory():
     char = mainChar
-    txt = ""
+    txt = []
     if len(char.inventory):
         for item in char.inventory:
-            txt+= str(item)+"\n"
+            messages.append(item.display)
+            if isinstance(item.display,int):
+                txt.extend([displayChars.indexedMapping[item.display]," - ",item.name,"\n     ",item.getDetailedInfo(),"\n"])
+            else:
+                txt.extend([item.display," - ",item.name,"\n     ",item.getDetailedInfo(),"\n"])
     else:
         txt = "empty Inventory"
     return txt

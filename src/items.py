@@ -28,7 +28,7 @@ class Item(object):
         return str(self.getDetailedState())
 
     def getDetailedState(self):
-        return self
+        return self.description
 
     def apply(self,character):
         messages.append("i can't do anything useful with this")
@@ -544,7 +544,7 @@ class Pile(Item):
                 self.room.addItems([new])
 
     def getDetailedInfo(self):
-        return super().getDetailedInfo()+"\na pile of "+str(self.type)+" containing "+str(self.numContained)
+        return super().getDetailedInfo()+" of "+str(self.type)+" containing "+str(self.numContained)
 
 class Acid(Item):
     def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal):
@@ -715,12 +715,13 @@ class MarkerBean(Item):
         self.activated = True
 
 class GooFlask(Item):
-    def __init__(self,xPosition=None,yPosition=None,name="bean"):
+    def __init__(self,xPosition=None,yPosition=None,name="goo flask"):
         super().__init__(" -",xPosition,yPosition,name=name)
         self.walkable = True
         self.uses = 5
         self.displayByUses = ["ò ","ò.","ò,","ò-","ò~","ò="]
         self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses])
+        self.description = "a flask conatining goo"
 
     def apply(self,character):
         if self.uses > 0:
@@ -729,3 +730,6 @@ class GooFlask(Item):
             self.changed()
             character.satiation += 10
             character.changed()
+
+    def getDetailedInfo(self):
+        return super().getDetailedInfo()+" ("+str(self.uses)+" charges)"

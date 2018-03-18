@@ -413,6 +413,14 @@ def show_or_exit(key):
                     item.changed()
                     mainChar.changed()
 
+            if key in (commandChars.drink):
+                character = mainChar
+                for item in character.inventory:
+                    if isinstance(item,items.GooFlask):
+                        if item.uses > 0:
+                            item.apply(character)
+                            break
+
             if key in (commandChars.pickUp):
                 if len(mainChar.inventory) > 10:
                     messages.append("you cannot carry more items")
@@ -523,6 +531,11 @@ def show_or_exit(key):
         
     if not specialRender:
         if doAdvanceGame:
+            if mainChar.satiation < 30 and mainChar.satiation > -1:
+                if mainChar.satiation == 0:
+                    messages.append("you starved")
+                else:
+                    messages.append("you'll starve in "+str(mainChar.satiation)+" ticks!")
             advanceGame()
 
         header.set_text((urwid.AttrSpec("default","default"),renderHeader()))

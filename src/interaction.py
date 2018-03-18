@@ -361,9 +361,7 @@ def show_or_exit(key):
                             continue
                         if not (mainChar.xPosition == char.xPosition and mainChar.yPosition == char.yPosition):
                             continue
-                        mainChar.room.removeCharacter(char)
-                        corpse = items.Corpse(mainChar.xPosition,mainChar.yPosition)
-                        mainChar.room.addItems([corpse])
+                        char.die()
 
             if key in (commandChars.activate):
                 if itemMarkedLast:

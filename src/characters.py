@@ -1,3 +1,5 @@
+import src.items as items
+
 characters = None
 calculatePath = None
 roomsOnMap = None
@@ -22,9 +24,13 @@ class Character():
         self.gotMovementSchooling = False
         self.gotInteractionSchooling = False
         self.gotExamineSchooling = False
+
+        self.satiation = 16
         
         for quest in quests:
             self.assignQuest(quest)
+
+        self.inventory.append(items.GooFlask())
 
     def getState(self):
         return { "gotBasicSchooling": self.gotBasicSchooling,
@@ -74,11 +80,30 @@ class Character():
     def applysolver(self,solver):
         solver(self)
 
+    def die(self):
+        if self.room:
+            room = self.room
+            room.removeCharacter(self)
+            corpse = items.Corpse(self.xPosition,self.yPosition)
+            room.addItems([corpse])
+        else:
+            terrain = self.terrain
+            terrain.removeCharacter(self)
+            corpse = items.Corpse(self.xPosition,self.yPosition)
+            terrain.addItems([corpse])
+
+        self.changed()
+
     def walkPath(self):
         if not self.path:
             self.setPathToQuest(self.quests[0])
 
         if self.path:
+            self.satiation -= 1
+            messages.append(self.satiation)
+            if self.satiation < 0:
+                self.die()
+                return True
             currentPosition = (self.xPosition,self.yPosition)
             nextPosition = self.path[0]
 

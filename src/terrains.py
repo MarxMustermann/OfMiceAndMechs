@@ -339,6 +339,11 @@ class Terrain(object):
         self.overlay = self.addWatershedOverlay
         self.overlay = None
 
+    def removeCharacter(self,character):
+        self.characters.remove(character)
+        character.room = None
+        character.terrain = None
+
     def addWatershedOverlay(self,chars):
         import urwid
         colors = ["#fff","#ff0","#f0f","#0ff","#f00","#0f0","#00f","#55f","#f55","#5f5","#055","#505","#550"]
@@ -921,7 +926,7 @@ X X X C C C C C X X X """
                #            # #            # ##           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                #O          O# #            #  #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                #            # #            # ##           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #            ###            # #O          O#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #            ####           # #O          O#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                #O          O ##O          O# ##           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                ##          # ###          ##  #          #####           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                           R  #  R        R     R        R XXXX XXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               

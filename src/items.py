@@ -1,3 +1,5 @@
+import urwid
+
 messages = None
 characters = None
 displayChars = None
@@ -711,3 +713,17 @@ class MarkerBean(Item):
     def apply(self,character):
         self.display = "x-"
         self.activated = True
+
+class GooFlask(Item):
+    def __init__(self,xPosition=None,yPosition=None,name="bean"):
+        super().__init__(" -",xPosition,yPosition,name=name)
+        self.walkable = True
+        self.uses = 5
+        self.displayByUses = ["ò ","ò.","ò,","ò-","ò~","ò="]
+        self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses])
+
+    def apply(self,character):
+        if self.uses > 0:
+            self.uses -= 1
+            self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses])
+            self.changed()

@@ -136,8 +136,6 @@ class Terrain(object):
                 rowCounter += 1
             lineCounter += 1
 
-        print(self.superNodes)
-
         self.addRooms(roomsOnMap)
 
         self.nonMovablecoordinates = {}
@@ -410,6 +408,11 @@ class Terrain(object):
             return
 
         startCoordinate = Coordinate(entryPoint[0][0],entryPoint[0][1])
+        messages.append(entryPoint[1][0])
+        startNode = entryPoint[1][1]
+        messages.append(startCoordinate)
+        messages.append(self.foundPaths[entryPoint[1]].index((startCoordinate.x,startCoordinate.y)))
+        pathToStartNode = self.foundPaths[entryPoint[1]][self.foundPaths[entryPoint[1]].index((startCoordinate.x,startCoordinate.y))+1:]
 
         self.applicablePaths = {}
         self.obseveredCoordinates = {}
@@ -439,10 +442,10 @@ class Terrain(object):
                     path = self.foundSuperPathsComplete[(startSuper[0],endSuper[0])]
                 else:
                     path = self.foundSuperPathsComplete[(startSuper[0],self.watershedSuperNodeMap[startSuper[0]][0])]+self.foundSuperPathsComplete[(self.watershedSuperNodeMap[startSuper[0]][0],endSuper[0])]
-                path = self.findWayNodeBased(startCoordinate,Coordinate(startSuper[0][0],startSuper[0][1]),[(startCoordinate.x,startCoordinate.y)])+path
-                path = path + self.findWayNodeBased(Coordinate(endSuper[0][0],endSuper[0][1]),endCoordinate,[endSuper[0]])
+                path = pathToStartNode + self.findWayNodeBased(Coordinate(entryPoint[1][1][0],entryPoint[1][1][1]),Coordinate(startSuper[0][0],startSuper[0][1]))+path
+                path = path + self.findWayNodeBased(Coordinate(endSuper[0][0],endSuper[0][1]),endCoordinate)
             else:
-                path = self.findWayNodeBased(startCoordinate,endCoordinate,self.foundPaths[entryPoint[1]])
+                path = pathToStartNode + self.findWayNodeBased(Coordinate(startNode[0],startNode[1]),endCoordinate)
         except Exception as e:
             import traceback
             messages.append("Error: "+str(e))
@@ -499,19 +502,15 @@ class Terrain(object):
         if newCoordinates:
             return self.mark(newCoordinates,counter+1,obseveredCoordinates)
 
-    def findWayNodeBased(self,start,end,startPath):
+    def findWayNodeBased(self,start,end):
         index = 0
-        for coordinate in startPath:
-            if (start.x,start.y) == coordinate:
-                break
-            index += 1
 
         nodeMap = {}
         neighbourNodes = []
 
         doLoop = True
 
-        for node in (startPath[0],startPath[-1]):
+        for node in ((start.x,start.y),):
             neighbourNodes.append(node)
             nodeMap[node] = (None,0)
 
@@ -543,14 +542,6 @@ class Terrain(object):
                     extension = self.foundPaths[(nodeMap[lastNode][0],lastNode)][1:]
                 outPath = extension + outPath
                 lastNode = nodeMap[lastNode][0]
-
-        if lastNode == startPath[0]:
-            extension = startPath[:index]
-            extension.reverse()
-            outPath = extension + outPath
-        else:
-            outPath = startPath[index+1:] + outPath
-            pass
 
         return outPath
 

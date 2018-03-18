@@ -69,8 +69,10 @@ class ScreenSaver(object):
                 questlist.append(quest)
         '''
 
+        #self.addIntraRoomMovements()
+        #self.addInnerRoomMovements()
 
-        #self.assignPlayerQuests()
+        self.assignPlayerQuests()
 
         #self.mainCharQuestList[-1].followUp = self.mainCharQuestList[0]
 
@@ -84,7 +86,7 @@ class ScreenSaver(object):
             npc.terrain = terrain
             npcs.append(npc)
 
-        self.assignFurnitureMoving(npcs)
+        self.assignFurnitureMoving(npcs+[mainChar])
 
     def assignFurnitureMoving(self,chars):
         counter = 0

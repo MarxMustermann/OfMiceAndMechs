@@ -54,6 +54,9 @@ class Character():
             except:
                 pass
 
+    def getDetailedInfo(self):
+        return "\nname: "+str(self.name)+"\nroom: "+str(self.room)+"\nsubs: "+str(self.subordinates)+"sat: "+str(self.satiation)
+
     def assignQuest(self,quest,active=False):
             if active:
                 self.quests.insert(0,quest)
@@ -82,10 +85,6 @@ class Character():
         self.inventory.append(item)
 
     def applysolver(self,solver):
-        self.satiation -= 1
-        if self.satiation < 0:
-            self.die()
-            return
         solver(self)
 
     def die(self):
@@ -244,6 +243,10 @@ class Character():
         self.changed()
 
     def advance(self):
+        self.satiation -= 1
+        if self.satiation < 0:
+            self.die()
+            return
 
         if self.automated:
 

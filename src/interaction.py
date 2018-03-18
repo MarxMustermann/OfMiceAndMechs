@@ -438,13 +438,12 @@ def show_or_exit(key):
                 else:
                     submenue = ChatMenu()
 
+            mainChar.automated = False
             if key in (commandChars.advance,commandChars.autoAdvance):
                 if len(mainChar.quests):
                     lastMoveAutomated = True
 
                     mainChar.automated = True
-                    mainChar.advance()
-                    mainChar.automated = False
                 else:
                     pass
             elif not key in (commandChars.pause):
@@ -482,6 +481,14 @@ def show_or_exit(key):
             
             header.set_text((urwid.AttrSpec("default","default"),"\ninentory overview\n(press "+commandChars.show_inventory_detailed+" for the extended inventory menu)\n\n"))
             main.set_text((urwid.AttrSpec("default","default"),renderInventory()))
+            header.set_text((urwid.AttrSpec("default","default"),""))
+
+        if key in (commandChars.show_characterInfo):
+            specialRender = True        
+            pauseGame = True
+            
+            header.set_text((urwid.AttrSpec("default","default"),"\nchracter overview"))
+            main.set_text((urwid.AttrSpec("default","default"),mainChar.getDetailedInfo()))
             header.set_text((urwid.AttrSpec("default","default"),""))
 
         if key in (commandChars.show_help):

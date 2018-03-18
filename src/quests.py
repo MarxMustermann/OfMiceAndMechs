@@ -781,7 +781,6 @@ class MetaQuest2(Quest):
         try:
             return self.lastActive.dstX
         except Exception as e:
-            #messages.append(e)
             return None
 
     @property

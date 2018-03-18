@@ -885,7 +885,6 @@ def renderInventory():
     txt = []
     if len(char.inventory):
         for item in char.inventory:
-            messages.append(item.display)
             if isinstance(item.display,int):
                 txt.extend([displayChars.indexedMapping[item.display]," - ",item.name,"\n     ",item.getDetailedInfo(),"\n"])
             else:

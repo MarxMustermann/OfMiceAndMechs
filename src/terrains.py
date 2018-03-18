@@ -408,10 +408,7 @@ class Terrain(object):
             return
 
         startCoordinate = Coordinate(entryPoint[0][0],entryPoint[0][1])
-        messages.append(entryPoint[1][0])
         startNode = entryPoint[1][1]
-        messages.append(startCoordinate)
-        messages.append(self.foundPaths[entryPoint[1]].index((startCoordinate.x,startCoordinate.y)))
         pathToStartNode = self.foundPaths[entryPoint[1]][self.foundPaths[entryPoint[1]].index((startCoordinate.x,startCoordinate.y))+1:]
 
         self.applicablePaths = {}

@@ -25,7 +25,7 @@ class Character():
         self.gotInteractionSchooling = False
         self.gotExamineSchooling = False
 
-        self.satiation = 16
+        self.satiation = 100
         self.dead = False
         
         for quest in quests:
@@ -82,6 +82,10 @@ class Character():
         self.inventory.append(item)
 
     def applysolver(self,solver):
+        self.satiation -= 1
+        if self.satiation < 0:
+            self.die()
+            return
         solver(self)
 
     def die(self):
@@ -110,10 +114,6 @@ class Character():
             self.setPathToQuest(self.quests[0])
 
         if self.path:
-            self.satiation -= 1
-            if self.satiation < 0:
-                self.die()
-                return True
             currentPosition = (self.xPosition,self.yPosition)
             nextPosition = self.path[0]
 
@@ -244,6 +244,7 @@ class Character():
         self.changed()
 
     def advance(self):
+
         if self.automated:
 
             """
@@ -279,6 +280,7 @@ class Character():
                 except:
                     pass
                 self.changed()
+
 
     def addListener(self,listenFunction):
         if not listenFunction in self.listeners:

@@ -1,3 +1,5 @@
+import src.items as items
+
 # HACK: common variables with modules
 showCinematic = None
 loop = None
@@ -193,6 +195,9 @@ class MoveQuest(Quest):
         if not self.character:
             return
 
+        if self.character.satiation < 30:
+            self.character.assignQuest(DrinkQuest(),active=True)
+
         if self.room == self.character.room:
             self.dstX = self.targetX
             self.dstY = self.targetY
@@ -298,6 +303,9 @@ class EnterRoomQuest(Quest):
     def recalculate(self):
         if not self.active:
             return 
+
+        if self.character.satiation < 30:
+            self.character.assignQuest(DrinkQuest(),active=True)
 
         if self.character.room and not self.character.room == self.room and self.character.quests[0] == self:
             self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
@@ -918,7 +926,6 @@ class FireFurnaceMeta(MetaQuest2):
         self.metaDescription = "FireFurnaceMeta"+str(self)
 
     def recalculate(self):
-
         if self.collectQuest and self.collectQuest.completed:
             self.collectQuest = None
 
@@ -1010,3 +1017,21 @@ class ExamineQuest(Quest):
             self.character.room.addEvent(endQuestEvent(self.character.room.timeIndex+self.lifetime))
 
         super().activate()
+
+class DrinkQuest(Quest):
+    def __init__(self,startCinematics=None,looped=True,lifetime=None):
+        self.description = "please drink"
+        super().__init__(startCinematics=startCinematics)
+
+    def assignToCharacter(self,character):
+        character.addListener(self.recalculate)
+        super().assignToCharacter(character)
+
+    def solver(self,character):
+        for item in character.inventory:
+            if isinstance(item,items.GooFlask):
+                if item.uses > 0:
+                    item.apply(character)
+                    self.postHandler()
+                    break
+

@@ -718,17 +718,17 @@ class GooFlask(Item):
     def __init__(self,xPosition=None,yPosition=None,name="goo flask"):
         super().__init__(" -",xPosition,yPosition,name=name)
         self.walkable = True
-        self.uses = 5
+        self.uses = 100
         self.displayByUses = ["ò ","ò.","ò,","ò-","ò~","ò="]
-        self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses])
+        self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses//20])
         self.description = "a flask conatining goo"
 
     def apply(self,character):
         if self.uses > 0:
             self.uses -= 1
-            self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses])
+            self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses//20])
             self.changed()
-            character.satiation += 10
+            character.satiation = 100
             character.changed()
 
     def getDetailedInfo(self):

@@ -2,8 +2,8 @@ import urwid
 
 wall = (urwid.AttrSpec("#334",'black'),"XX")
 pipe = (urwid.AttrSpec("#337","black"),"**")
-corpse = "O "
-unconciousBody = "Q "
+corpse = (urwid.AttrSpec("#f00",'black'),"@ ")
+unconciousBody = (urwid.AttrSpec("#f22",'black'),"@ ")
 growthTank_filled = (urwid.AttrSpec("#3b3","black"),"OO")
 growthTank_unfilled = (urwid.AttrSpec("#3b3","black"),"00")
 hutch_free = (urwid.AttrSpec("#3b3","black"),"==")

@@ -940,11 +940,11 @@ XXXXX$XXXX
         self.roomLayout = """
 XXXXXXXXXX
 XaaaaaaaaX
-XrqqrqqsaX
-XzayzayzaX
-XuwauwxtaX
-XaayaayaaX
-XpsBBBBBBX
+#prqqrqqsX
+XazayzayzX
+XauwauwxtX
+XaaayaayaX
+#psBBBBBBX
 Xmhm ...DX
 Xmmmv.v.IX
 XXXXX$XXXX

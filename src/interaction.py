@@ -118,6 +118,9 @@ def show_or_exit(key):
         if key in (commandChars.ignore):
             doAdvanceGame = False
 
+        if mainChar.dead:
+            key = commandChars.wait
+
         if key in stealKey:
             stealKey[key]()
         else:

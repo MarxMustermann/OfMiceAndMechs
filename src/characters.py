@@ -26,6 +26,7 @@ class Character():
         self.gotExamineSchooling = False
 
         self.satiation = 16
+        self.dead = False
         
         for quest in quests:
             self.assignQuest(quest)
@@ -71,8 +72,11 @@ class Character():
         if hasattr(quest,"dstX") and hasattr(quest,"dstY"):
             if self.room:
                 self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY,self.room.walkingPath)
-            else:
+            elif self.terrain:
                 self.path = self.terrain.findPath((self.xPosition,self.yPosition),(quest.dstX,quest.dstY))
+            else:
+                messages.append("this should not happen, character tried to go sowhere but is nowhere")
+                self.path = []
 
     def addToInventory(self,item):
         self.inventory.append(item)
@@ -86,21 +90,27 @@ class Character():
             room.removeCharacter(self)
             corpse = items.Corpse(self.xPosition,self.yPosition)
             room.addItems([corpse])
-        else:
+        elif self.terrain:
             terrain = self.terrain
             terrain.removeCharacter(self)
             corpse = items.Corpse(self.xPosition,self.yPosition)
             terrain.addItems([corpse])
+        else:
+            messages.append("this chould not happen, charcter died without beeing somewhere")
 
+        self.dead = True
+        self.path = []
         self.changed()
 
     def walkPath(self):
+        if self.dead:
+            return
+
         if not self.path:
             self.setPathToQuest(self.quests[0])
 
         if self.path:
             self.satiation -= 1
-            messages.append(self.satiation)
             if self.satiation < 0:
                 self.die()
                 return True

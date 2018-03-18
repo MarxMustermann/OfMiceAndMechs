@@ -42,6 +42,7 @@ class NPCsOverlay(object):
 
 class MainCharOverlay(object):
     def apply(self,chars,mainChar):
-        chars[mainChar.yPosition][mainChar.xPosition] =  mainChar.display
+        if not mainChar.dead:
+            chars[mainChar.yPosition][mainChar.xPosition] =  mainChar.display
 
 

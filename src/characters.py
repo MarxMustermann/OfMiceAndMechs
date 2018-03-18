@@ -55,7 +55,7 @@ class Character():
                 pass
 
     def getDetailedInfo(self):
-        return "\nname: "+str(self.name)+"\nroom: "+str(self.room)+"\nsubs: "+str(self.subordinates)+"sat: "+str(self.satiation)
+        return "\nname: "+str(self.name)+"\nroom: "+str(self.room)+"\ncoord: "+str(self.xPosition)+" "+str(self.yPosition)+"\nsubs: "+str(self.subordinates)+"\nsat: "+str(self.satiation)
 
     def assignQuest(self,quest,active=False):
             if active:

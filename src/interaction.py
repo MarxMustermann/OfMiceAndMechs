@@ -43,6 +43,7 @@ pauseGame = False
 questMenuActive = False
 submenue = None
 ignoreNextAutomated = False
+ticksSinceDeath = None
 
 commandHistory = []
 
@@ -61,6 +62,7 @@ def show_or_exit(key):
     global questMenuActive
     global submenue
     global ignoreNextAutomated
+    global ticksSinceDeath
 
     if key in ("lagdetection",):
         loop.set_alarm_in(0.1, callShow_or_exit, "lagdetection")
@@ -119,7 +121,14 @@ def show_or_exit(key):
             doAdvanceGame = False
 
         if mainChar.dead:
+            if not ticksSinceDeath:
+                ticksSinceDeath = gamestate.tick
             key = commandChars.wait
+            if gamestate.tick > ticksSinceDeath+5:
+                saveFile = open("gamestate/gamestate.json","w")
+                saveFile.write("you lost")
+                saveFile.close()
+                raise urwid.ExitMainLoop()
 
         if key in stealKey:
             stealKey[key]()

@@ -727,3 +727,5 @@ class GooFlask(Item):
             self.uses -= 1
             self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses])
             self.changed()
+            character.satiation += 10
+            character.changed()

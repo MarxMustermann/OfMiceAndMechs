@@ -1,4 +1,5 @@
 import src.items as items
+import src.quests
 
 characters = None
 calculatePath = None
@@ -27,6 +28,8 @@ class Character():
 
         self.satiation = 100
         self.dead = False
+
+        self.assignQuest(src.quests.SurviveQuest())
         
         for quest in quests:
             self.assignQuest(quest)

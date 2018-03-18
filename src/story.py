@@ -127,7 +127,7 @@ class ScreenSaver(object):
                 lastQuest = item
             questlist[-1].followup = None
 
-            char.assignQuest(questlist[0])
+            char.assignQuest(questlist[0],active=True)
 
             counter += 1
 

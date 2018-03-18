@@ -195,9 +195,6 @@ class MoveQuest(Quest):
         if not self.character:
             return
 
-        if self.character.satiation < 30:
-            self.character.assignQuest(DrinkQuest(),active=True)
-
         if self.room == self.character.room:
             self.dstX = self.targetX
             self.dstY = self.targetY
@@ -303,9 +300,6 @@ class EnterRoomQuest(Quest):
     def recalculate(self):
         if not self.active:
             return 
-
-        if self.character.satiation < 30:
-            self.character.assignQuest(DrinkQuest(),active=True)
 
         if self.character.room and not self.character.room == self.room and self.character.quests[0] == self:
             self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
@@ -1034,4 +1028,23 @@ class DrinkQuest(Quest):
                     item.apply(character)
                     self.postHandler()
                     break
+
+    def triggerCompletionCheck(self):
+        if self.character.satiation > 30:
+            self.postHandler()
+            
+        super().triggerCompletionCheck()
+
+class SurviveQuest(Quest):
+    def __init__(self,startCinematics=None,looped=True,lifetime=None):
+        self.description = "survive"
+        super().__init__(startCinematics=startCinematics)
+
+    def assignToCharacter(self,character):
+        super().assignToCharacter(character)
+        character.addListener(self.recalculate)
+
+    def recalculate(self):
+        if self.character.satiation < 30:
+            self.character.assignQuest(DrinkQuest(),active=True)
 

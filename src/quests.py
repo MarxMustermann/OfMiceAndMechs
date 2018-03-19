@@ -1044,6 +1044,6 @@ class SurviveQuest(Quest):
         character.addListener(self.recalculate)
 
     def recalculate(self):
-        if self.character.satiation < 30:
+        if self.character.satiation < 31:
             self.character.assignQuest(DrinkQuest(),active=True)
 

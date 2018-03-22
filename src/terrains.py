@@ -73,6 +73,7 @@ class Terrain(object):
         self.tutorialMachineRoom = None
         self.tutorialLab = None
         self.tutorialCargoRooms = []
+        self.miniMechs = []
         self.wakeUpRoom = None
         lineCounter = 0
         for layoutline in layout.split("\n")[1:]:
@@ -125,6 +126,7 @@ class Terrain(object):
                     roomsOnMap.append(rooms.CpuWasterRoom(rowCounter,lineCounter,2,2))
                 elif char == "t":
                     miniMech = rooms.MiniMech(rowCounter,lineCounter,2,2)
+                    self.miniMechs.append(miniMech)
                     roomsOnMap.append(miniMech)
                 elif char == "W":
                     wakeUpRoom = rooms.WakeUpRoom(rowCounter,lineCounter,1,1)
@@ -135,6 +137,9 @@ class Terrain(object):
                     pass
                 rowCounter += 1
             lineCounter += 1
+
+        self.testItem = items.Scrap(25,77,3)
+        self.addItems([self.testItem])
 
         self.addRooms(roomsOnMap)
 

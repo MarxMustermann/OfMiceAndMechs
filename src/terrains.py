@@ -155,6 +155,9 @@ class Terrain(object):
 
         for room in self.rooms:
 
+            if room in self.miniMechs:
+                continue
+
             xCoord = room.xPosition*15+room.offsetX+room.walkingAccess[0][0]
             yCoord = room.yPosition*15+room.offsetY+room.walkingAccess[0][1]
 

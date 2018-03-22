@@ -335,8 +335,10 @@ class PickupQuest(Quest):
             self.postHandler()
 
     def recalculate(self):
-        if ((not self.character.room) or (not self.character.room == self.toPickup.room)) and self.character.quests[0] == self:
+        if (self.toPickup.room and ((not self.character.room) or (not self.character.room == self.toPickup.room)) and self.character.quests[0] == self):
             self.character.assignQuest(EnterRoomQuest(self.toPickup.room),active=True)
+        if ((not self.toPickup.room) and self.character.room and self.character.quests[0] == self):
+            self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
 
         if hasattr(self,"dstX"):
             del self.dstX

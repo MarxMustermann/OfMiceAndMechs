@@ -719,6 +719,33 @@ class QuestMenu(SubMenu):
 
         return False
 
+class QuestMenu(SubMenu):
+    def __init__(self):
+        self.lockOptions = True
+        super().__init__()
+
+    def handleKey(self, key):
+        global submenue
+
+        header.set_text((urwid.AttrSpec("default","default"),"\nquest overview\n(press "+commandChars.show_quests_detailed+" for the extended quest menu)\n\n"))
+
+        self.persistentText = ""
+
+        self.persistentText += renderQuests()
+
+        if not self.lockOptions:
+            if key in ["q"]:
+                submenue = AdvancedQuestMenu()
+                submenue.handleKey(key)
+                return False
+        self.lockOptions = False
+
+        self.persistentText += "\n * press q for advanced quests\n\n"
+
+        main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+
+        return False
+
 class AdvancedQuestMenu(SubMenu):
     def __init__(self):
         self.character = None

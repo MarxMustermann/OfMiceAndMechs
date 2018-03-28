@@ -138,8 +138,8 @@ class Terrain(object):
                 rowCounter += 1
             lineCounter += 1
 
-        self.testItem = items.Scrap(25,77,3)
-        self.addItems([self.testItem])
+        self.testItems = [items.Scrap(25,77,3),items.Scrap(25,77,3),items.Scrap(26,77,3),items.Scrap(25,78,3),items.Scrap(27,78,3),items.Scrap(25,78,3),items.Scrap(26,76,3),items.Scrap(25,76,3),items.Scrap(24,77,3),items.Scrap(24,76,3)]
+        self.addItems(self.testItems)
 
         self.addRooms(roomsOnMap)
 
@@ -458,10 +458,10 @@ class Terrain(object):
             messages.append(traceback.format_exc().splitlines()[-2])
             messages.append(traceback.format_exc().splitlines()[-1])
 
+        if not entryPoint[2][0] == start:
+            entryPoint[2].reverse()
         path = entryPoint[2]+path+exitPoint[2][1:]
         return gameMath.removeLoops(path)
-
-        return entryPoint[2]+self.findWayNodeBased(startCoordinate,endCoordinate,self.foundPaths[entryPoint[1]])+exitPoint[2]
 
     def markWalkBack(self,coordinate,obseveredCoordinates,pathToEntry,counter=0,limit=1000):
         pathToEntry.append((coordinate[0],coordinate[1]))

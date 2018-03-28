@@ -950,6 +950,8 @@ Xmmmv.v.IX
 XXXXX$XXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        self.gooDispenser = items.GooDispenser(6,7)
+        self.addItems([self.gooDispenser])
 
     def recalculate(self):
         for spray in self.sprays:

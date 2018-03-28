@@ -69,10 +69,27 @@ class ScreenSaver(object):
                 questlist.append(quest)
         '''
 
+        questlist = []
+        for item in terrain.testItems:
+            quest = quests.PickupQuest(item)
+            questlist.append(quest)
+            quest = quests.DropQuest(item,terrain.tutorialMachineRoom,2,2)
+            questlist.append(quest)
+
+        cleaner = characters.Character(displayChars.staffCharactersByLetter["f"],6,6,name="Friedrich Eisenhauch")
+        self.mainCharRoom.addCharacter(cleaner,6,6)
+        cleaner.terrain = terrain
+
+        lastQuest = questlist[0]
+        for item in questlist[1:]:
+            lastQuest.followUp = item
+            lastQuest = item
+        questlist[-1].followup = None
+        cleaner.assignQuest(questlist[0],active=True)
+
+
         #self.addIntraRoomMovements()
         #self.addInnerRoomMovements()
-
-        self.assignPlayerQuests()
 
         #self.mainCharQuestList[-1].followUp = self.mainCharQuestList[0]
 

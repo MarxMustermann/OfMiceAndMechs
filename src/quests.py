@@ -1013,8 +1013,18 @@ class ExamineQuest(Quest):
 
         super().activate()
 
+class RefillDrinkQuest(ActivateQuest):
+    def __init__(self,startCinematics=None):
+        super().__init__(toActivate=terrain.tutorialVatProcessing.gooDispenser,desiredActive=True,startCinematics=startCinematics)
+
+    def triggerCompletionCheck(self):
+        for item in self.character.inventory:
+            if isinstance(item,items.GooFlask):
+                if item.uses > 90:
+                    self.postHandler()
+
 class DrinkQuest(Quest):
-    def __init__(self,startCinematics=None,looped=True,lifetime=None):
+    def __init__(self,startCinematics=None):
         self.description = "please drink"
         super().__init__(startCinematics=startCinematics)
 
@@ -1039,6 +1049,8 @@ class DrinkQuest(Quest):
 class SurviveQuest(Quest):
     def __init__(self,startCinematics=None,looped=True,lifetime=None):
         self.description = "survive"
+        self.drinkQuest = None
+        self.refillQuest = None
         super().__init__(startCinematics=startCinematics)
 
     def assignToCharacter(self,character):
@@ -1046,6 +1058,20 @@ class SurviveQuest(Quest):
         character.addListener(self.recalculate)
 
     def recalculate(self):
+        if self.drinkQuest and self.drinkQuest.completed:
+            self.drinkQuest = None
+        if self.refillQuest and self.refillQuest.completed:
+            self.refillQuest = None
+
+        for item in self.character.inventory:
+            if isinstance(item,items.GooFlask):
+                if item.uses < 10 and not self.refillQuest:
+                    self.refillQuest = RefillDrinkQuest()
+                    self.character.assignQuest(self.refillQuest,active=True)
+
+
         if self.character.satiation < 31:
-            self.character.assignQuest(DrinkQuest(),active=True)
+            if not self.drinkQuest:
+                self.drinkQuest = DrinkQuest()
+                self.character.assignQuest(self.drinkQuest,active=True)
 

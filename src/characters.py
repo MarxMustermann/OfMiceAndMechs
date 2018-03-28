@@ -26,7 +26,7 @@ class Character():
         self.gotInteractionSchooling = False
         self.gotExamineSchooling = False
 
-        self.satiation = 100
+        self.satiation = 1000
         self.dead = False
 
         self.assignQuest(src.quests.SurviveQuest())

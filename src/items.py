@@ -714,6 +714,17 @@ class MarkerBean(Item):
         self.display = "x-"
         self.activated = True
 
+class GooDispenser(Item):
+    def __init__(self,xPosition=None,yPosition=None,name="goo dispenser"):
+        super().__init__("g%",xPosition,yPosition,name=name)
+        self.activated = False
+    
+    def apply(self,character):
+        for item in character.inventory:
+            if isinstance(item,GooFlask):
+                item.uses = 100
+        self.activated = True
+
 class GooFlask(Item):
     def __init__(self,xPosition=None,yPosition=None,name="goo flask"):
         super().__init__(" -",xPosition,yPosition,name=name)
@@ -728,7 +739,7 @@ class GooFlask(Item):
             self.uses -= 1
             self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses//20])
             self.changed()
-            character.satiation = 100
+            character.satiation = 1000
             character.changed()
 
     def getDetailedInfo(self):

@@ -7,29 +7,30 @@ def removeLoops(path):
             found[waypoint] = 1
 
 
-    last = 1
     newPath = []
-    skipMode = False
-    skipWayPoint = None
-    skipcounter = 0
+    brokeAt = None
     for waypoint in path:
-        if skipMode:
-            if not waypoint == skipWayPoint:
-                continue
-            skipcounter -= 1
-            if skipcounter < 1:
-                skipMode = False
-                continue
-            else:
-                continue
+        if found[waypoint] == 1:
+            newPath.append(waypoint)
+        else:
+            brokeAt = waypoint
+            break
 
-        if last < found[waypoint]:
-            skipMode = True
-            skipWayPoint = waypoint
-            skipcounter = found[waypoint]-last
+    if brokeAt:
+        try:
+            lastIndex = 0
+            while True:
+                lastIndex = path.index(waypoint,lastIndex+1)
+        except ValueError as e:
+            pass
 
-        last = found[waypoint]
-        newPath.append(waypoint)
+        counter = lastIndex
+        pathLen = len(path)
+        while counter < pathLen:
+            newPath.append(path[counter])
+            counter += 1
+
+        newPath = removeLoops(newPath)
 
     return newPath
 

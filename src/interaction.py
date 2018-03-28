@@ -484,21 +484,13 @@ def show_or_exit(key):
             else:
                 displayChars.setRenderingMode("unicode")
 
-            #submenue = QuestMenu()
-
         if key in (commandChars.show_quests):
             submenue = QuestMenu()
+        if key in (commandChars.show_inventory):
+            submenue = InventoryMenu()
 
         if key in (commandChars.show_quests_detailed):
             submenue = AdvancedQuestMenu()
-
-        if key in (commandChars.show_inventory):
-            specialRender = True        
-            pauseGame = True
-            
-            header.set_text((urwid.AttrSpec("default","default"),"\ninentory overview\n(press "+commandChars.show_inventory_detailed+" for the extended inventory menu)\n\n"))
-            main.set_text((urwid.AttrSpec("default","default"),renderInventory()))
-            header.set_text((urwid.AttrSpec("default","default"),""))
 
         if key in (commandChars.show_characterInfo):
             specialRender = True        
@@ -719,7 +711,7 @@ class QuestMenu(SubMenu):
 
         return False
 
-class QuestMenu(SubMenu):
+class InventoryMenu(SubMenu):
     def __init__(self):
         self.lockOptions = True
         super().__init__()
@@ -727,20 +719,9 @@ class QuestMenu(SubMenu):
     def handleKey(self, key):
         global submenue
 
-        header.set_text((urwid.AttrSpec("default","default"),"\nquest overview\n(press "+commandChars.show_quests_detailed+" for the extended quest menu)\n\n"))
+        header.set_text((urwid.AttrSpec("default","default"),"\ninentory overview\n(press "+commandChars.show_inventory_detailed+" for the extended inventory menu)\n\n"))
 
-        self.persistentText = ""
-
-        self.persistentText += renderQuests()
-
-        if not self.lockOptions:
-            if key in ["q"]:
-                submenue = AdvancedQuestMenu()
-                submenue.handleKey(key)
-                return False
-        self.lockOptions = False
-
-        self.persistentText += "\n * press q for advanced quests\n\n"
+        self.persistentText = (urwid.AttrSpec("default","default"),renderInventory())
 
         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
 

@@ -488,17 +488,10 @@ def show_or_exit(key):
             submenue = QuestMenu()
         if key in (commandChars.show_inventory):
             submenue = InventoryMenu()
-
         if key in (commandChars.show_quests_detailed):
             submenue = AdvancedQuestMenu()
-
         if key in (commandChars.show_characterInfo):
-            specialRender = True        
-            pauseGame = True
-            
-            header.set_text((urwid.AttrSpec("default","default"),"\nchracter overview"))
-            main.set_text((urwid.AttrSpec("default","default"),mainChar.getDetailedInfo()))
-            header.set_text((urwid.AttrSpec("default","default"),""))
+            submenue = CharacterInfoMenu()
 
         if key in (commandChars.show_help):
             specialRender = True        
@@ -719,13 +712,25 @@ class InventoryMenu(SubMenu):
     def handleKey(self, key):
         global submenue
 
-        header.set_text((urwid.AttrSpec("default","default"),"\ninentory overview\n(press "+commandChars.show_inventory_detailed+" for the extended inventory menu)\n\n"))
+        header.set_text((urwid.AttrSpec("default","default"),"\ninventory overview\n(press "+commandChars.show_inventory_detailed+" for the extended inventory menu)\n\n"))
 
         self.persistentText = (urwid.AttrSpec("default","default"),renderInventory())
 
         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
 
         return False
+
+class CharacterInfoMenu(SubMenu):
+    def __init__(self):
+        self.lockOptions = True
+        super().__init__()
+
+    def handleKey(self, key):
+        global submenue
+
+        header.set_text((urwid.AttrSpec("default","default"),"\nchracter overview"))
+        main.set_text((urwid.AttrSpec("default","default"),mainChar.getDetailedInfo()))
+        header.set_text((urwid.AttrSpec("default","default"),""))
 
 class AdvancedQuestMenu(SubMenu):
     def __init__(self):

@@ -568,7 +568,8 @@ class SubMenu(object):
             if key in self.options:
                 self.selection = self.options[key]
                 self.options = None
-                self.followUp()
+                if self.followUp:
+                    self.followUp()
                 return True
         else:
              self.lockOptions = False

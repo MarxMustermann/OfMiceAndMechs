@@ -542,7 +542,7 @@ class WakeUpPhase(BasicPhase):
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("i will test for physical fitness and basic brain activity"))
         cinematic = cinematics.ShowGameCinematic(4,tickSpan=1)
         cinematics.cinematicQueue.append(cinematic)
-        cinematics.showCinematic("you are represented by the "+displayChars.main_char[1]+" Character.\n\nyou can move using the keyboard. \n\n* press "+commandChars.move_north+" to move up/north\n* press "+commandChars.move_west+" to move left/west\n* press "+commandChars.move_south+" to move down/south\n* press "+commandChars.move_east+" to move rigth/east")
+        cinematics.showCinematic("you are represented by the "+displayChars.indexedMapping[displayChars.main_char]+" Character.\n\nyou can move using the keyboard. \n\n* press "+commandChars.move_north+" to move up/north\n* press "+commandChars.move_west+" to move left/west\n* press "+commandChars.move_south+" to move down/south\n* press "+commandChars.move_east+" to move rigth/east")
         cinematic = cinematics.ShowGameCinematic(4,tickSpan=1)
         cinematic.endTrigger = self.movementRightTestSetup1
         cinematics.cinematicQueue.append(cinematic)
@@ -554,7 +554,7 @@ class WakeUpPhase(BasicPhase):
 
         cinematic = cinematics.ShowMessageCinematic("follow me, please")
         cinematics.cinematicQueue.append(cinematic)
-        self.mainCharRoom.addEvent(events.ShowCinematicEvent(gamestate.tick+1,cinematics.ScrollingTextCinematic("you got an order. Barely awake and confused, you feel compelled to follow the order.\n\nYour feet are drawn into the given direction, this is indicated by a blinking questmarker looking like this: "+displayChars.questPathMarker[1])))
+        self.mainCharRoom.addEvent(events.ShowCinematicEvent(gamestate.tick+1,cinematics.ScrollingTextCinematic("you got an order. Barely awake and confused, you feel compelled to follow the order.\n\nYour feet are drawn into the given direction, this is indicated by a blinking questmarker looking like this: "+displayChars.indexedMapping[displayChars.questPathMarker][1])))
 
     def movementRightTest1(self):
         quest = quests.MoveQuest(terrain.wakeUpRoom,3,4)

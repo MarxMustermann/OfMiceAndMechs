@@ -533,6 +533,7 @@ class SubMenu(object):
         self.selection = None
         self.selectionIndex = 1
         self.persistentText = ""
+        self.followUp = None
         super().__init__()
 
     def setSelection(self, query, options, niceOptions):
@@ -567,6 +568,7 @@ class SubMenu(object):
             if key in self.options:
                 self.selection = self.options[key]
                 self.options = None
+                self.followUp()
                 return True
         else:
              self.lockOptions = False
@@ -580,6 +582,22 @@ class SubMenu(object):
         main.set_text((urwid.AttrSpec("default","default"),self.persistentText+"\n\n"+out))
 
         return False
+
+class Test1Menu(SubMenu):
+    def __init__(self, text, options, niceOptions):
+        super().__init__()
+        self.setSelection(text, options, niceOptions)
+
+    def handleKey(self, key):
+        header.set_text("")
+
+        if not self.getSelection():
+             super().handleKey(key)
+
+        if self.getSelection():
+            return True
+        else:
+            return False
 
 class ChatMenu(SubMenu):
     def __init__(self):
@@ -728,7 +746,7 @@ class CharacterInfoMenu(SubMenu):
     def handleKey(self, key):
         global submenue
 
-        header.set_text((urwid.AttrSpec("default","default"),"\nchracter overview"))
+        header.set_text((urwid.AttrSpec("default","default"),"\ncharacter overview"))
         main.set_text((urwid.AttrSpec("default","default"),mainChar.getDetailedInfo()))
         header.set_text((urwid.AttrSpec("default","default"),""))
 
@@ -783,15 +801,33 @@ class AdvancedQuestMenu(SubMenu):
 
             if not self.getSelection():
                 super().handleKey(key)
-                
+
             if self.getSelection():
-                self.state = "confirm"
+                self.state = "paramterSelection"
                 self.quest = self.selection
                 self.selection = None
                 self.lockOptions = True
             else:
                 return False
 
+        if self.state == "paramterSelection":
+            if self.quest == quests.EnterRoomQuest:
+                options = {"1":quests.MoveQuest,"2":quests.ActivateQuest,"3":quests.EnterRoomQuest,"4":quests.FireFurnaceMeta}
+                niceOptions = {"1":"a","2":"b","3":"c","4":"d"}
+                self.setSelection("what type of quest:",options,niceOptions)
+            else:
+                self.state = "confirm"
+
+            if not self.getSelection():
+                super().handleKey(key)
+
+            if self.getSelection():
+                self.questOptions = self.selection
+                self.selection = None
+                self.lockOptions = True
+            else:
+                return False
+                
         if self.state == "confirm":
             if self.lockOptions:
                 questInstance = None

@@ -332,12 +332,136 @@ class BasicPhase(object):
 
         mainChar.assignQuest(self.mainCharQuestList[0])
 
+class BrainTestingPhase(BasicPhase):
+    def __init__(self):
+        self.name = "Test1"
+        super().__init__()
+
+    def start(self):
+        cinematics.showCinematic("""
+basic initialization ..................................... done
+
+testing with random input 
+
+NyGUf8fDJO
+g215e4Za8U
+EpiSdpeNuV
+7vqnf7ASAO
+azZ1tESXGR
+sR6jzKMBv3
+eGAxLZCXXi
+DW9H6uAW8R
+dk8R9BXMfa
+Ttbt9kp2wZ
+
+checking brain patterns ................................... OK
+
+testing responsivity
+""")
+        cinematics.showCinematic("""
+got response
+responsivity OK
+
+inititializing implant .................................... done
+
+checking implant .......................................... OK
+
+send test information
+
+1.) Your name is """+mainChar.name+"""
+2.) A Pipe is used to transfer fluids
+3.) rust - Rust is the oxide of iron. Rust is the most common form of corrosion
+""")
+
+        cinematics.showCinematic("""
+checking stored information
+
+entering interactive mode .................................
+        """)
+
+        options = {"1":"nok","2":"ok","3":"nok"}
+        niceOptions = {"1":"Karl Weinberg","2":mainChar.name,"3":"Susanne Kreismann"}
+        text = "\nplease answer the question:\n\nwhat is your name?"
+        cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
+        cinematic.followUp = self.step2
+        self.cinematic = cinematic
+        cinematics.cinematicQueue.append(cinematic)
+
+    def step2(self):
+        if not self.cinematic.selected == "ok":
+            self.fail()
+            return
+        options = {"1":"ok","2":"nok","3":"nok"}
+        niceOptions = {"1":"A Pipe is used to transfer fluids","2":"A Grate is used to transfer fluids","3":"A Hutch is used to transfer fluids"}
+        text = "\nplease select the true statement:\n\n"
+        cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
+        cinematic.followUp = self.step3
+        self.cinematic = cinematic
+        cinematics.cinematicQueue.append(cinematic)
+
+    def step3(self):
+        if not self.cinematic.selected == "ok":
+            self.fail()
+            return
+        options = {"1":"ok","2":"nok","3":"nok"}
+        niceOptions = {"1":"Rust is the oxide of iron. Rust is the most common form of corrosion","2":"Rust is the oxide of iron. Corrosion in form of Rust is common","3":"*deny answer*"}
+        text = "\nplease repeat the definition of rust\n\n"
+        cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
+        cinematic.followUp = self.step4
+        self.cinematic = cinematic
+        cinematics.cinematicQueue.append(cinematic)
+
+    def step4(self):
+        if not self.cinematic.selected == "ok":
+            self.fail()
+            return
+        definitions = {}
+        definitions["coal"] = """vTEH20Kwa0pERLglm0TUoLi4lTT3VfFFs1pKr9Q5NdE2qCH1fVTah76\nFwcXsfJUsM1 Qmf4Vbq7hv6lPej1fX9B8eAG\nyYHO9Z3MiD5Fz8F4l7LnlXvDz\nyw8UQfGmJ1tl8E0nG2vsnzWLMpYDq 242QC4PU7hpX1Kn7YdWbk\n MvM7a2gKmRS l3lFYJ6DbsGWViJcF6V3H3lGtwK4icCbKkDIpkyTfbbYb1LyN3W\ncRdUWTMEELd0eaVgkeOzxFMHx2i3u8X2J 3KjJaCBDHG?Qegs23cSyOZmDH5WR6r9KbE2tDScE1rVrsEXgPWlWdKV odqxuK5lG?6Vmm 9mPSEaZ8ofAHiJzRYRtCp0MqzGL45sXQs0dE1WCe iFfwNodOXVnRJIX0B5a6UOFpW9VeA901fTQ56F j7R5jZ9pYfAugM1?iuBXMQv3RLT2LytWSfd9HkGxnNAY OdquEfWu4hfeivIq5CBGgMKI9gn68VnbFHkhd?cO3c"""
+        definitions["pipe"] = "P2Rw21ypVmUtOhe2kiurQAiAs1eoQ7XL2odNPOGFncWpBe1BvO8aGMxnUXkpLHgKhD1OeGvgqFW96DOsvr32YtaCNSW37OQ9KhAJbaVX0frHaoukQz3pFtXYYGmgx83y"
+        definitions["hutch"] = "lHRbpN0zeaEJtBRW5Eu93tlnZHDFBCEPu5cYcERPIxM8M4Mw92tsAvftREABI4p6HJwtNNm8V3baNMSqc9iypEcOBi99Q7QqrSC1ezdAoChKlJPJRk5QNeDBl4r8COh8"
+        definitions["door"] = "EDyS2UXE01skPzshQa08gbSxKxurvIUs0GLeTVeV6jKyvfvWU0sTQLoj1iQVBX4dj22GaQMQSPdkZNZEG0XllEMFRGF6xNSz5DlRXb24uSahptHRAn0v2PL5qo6RTKJW"
+        definitions["floor"] = "tIGR1OheoA5pdY4PoEVmeMCQvL9xcCWbgOETJVwszMTxdPIGtitcdngQA2Ly7datm7XNFTMrSlcIldv4FDCGcAE1OeRaGlDQisLHZc95Aozd8AfUXXWrYCtol4uC4uWu"
+        definitions["wall"] = "bIT64VoTQOuDq38BRr73g89Y1kpkaJwl0GJa0qMDodajY3OYmmSKvsZmtr44pTCpTYomdOVSJboUl8Xz36WgSDhXE9Fkg93c48h0tULujZKrCdrMG8O9R3x2w6c0gCTg"
+        text = """
+information storage ....................................... OK
+setting up knowledge base
+
+* misc info displaying for 1 tick and disappearing after 15 ticks *
+"""
+        for k,v in definitions.items():
+            text += "\n"+k+" - "+v
+        cinematics.showCinematic(text)
+
+        cinematic = cinematics.ScrollingTextCinematic("""
+initializing metabolism ..................................... done
+initializing motion control ................................. done
+initializing sensory organs ................................. done
+transfer control to implant, you will be unable to move for some time""")
+        cinematic.endTrigger = self.end
+        cinematics.cinematicQueue.append(cinematic)
+
+    def end(self):
+        nextPhase = WakeUpPhase()
+        nextPhase.start()
+
+    def fail(self):
+        cinematic = cinematics.ScrollingTextCinematic("""
+aborting initialisation
+resetting neural network ....................................""")
+        cinematic.endTrigger = self.forceExit
+        cinematics.cinematicQueue.append(cinematic)
+
+    def forceExit(self):
+        import urwid
+        raise urwid.ExitMainLoop()
+
 class WakeUpPhase(BasicPhase):
     def __init__(self):
         self.name = "WakeUpPhase"
         super().__init__()
 
     def start(self):
+        messages.append("WakeUpPhase started")
         self.mainCharXPosition = 1
         self.mainCharYPosition = 4
         self.requiresMainCharRoomFirstOfficer = False
@@ -354,7 +478,6 @@ class WakeUpPhase(BasicPhase):
         self.mainCharRoom.addCharacter(self.npc,6,7)
         self.npc.terrain = terrain
 
-        cinematics.showCinematic("press . to wait/speed up cutscenes\n\npress ? for help\n\npress ^ to exit\n\npress space to skip cutscenes")
         cinematic = cinematics.ShowGameCinematic(5,tickSpan=1)
         cinematic.endTrigger = self.ting
         cinematics.cinematicQueue.append(cinematic)
@@ -913,3 +1036,4 @@ def registerPhases():
     phasesByName["SecondTutorialPhase"] = SecondTutorialPhase
     phasesByName["ThirdTutorialPhase"] = ThirdTutorialPhase
     phasesByName["WakeUpPhase"] = WakeUpPhase
+    phasesByName["BrainTesting"] = BrainTestingPhase

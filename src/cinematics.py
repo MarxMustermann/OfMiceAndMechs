@@ -14,6 +14,7 @@ class ScrollingTextCinematic(object):
         self.position = 0
         self.endPosition = len(self.text)
         self.alarm = None
+        self.endTrigger = None
 
     def advance(self):
         if self.position > self.endPosition:
@@ -51,6 +52,8 @@ class ScrollingTextCinematic(object):
             loop.remove_alarm(self.alarm)
         except:
             pass
+        if self.endTrigger:
+            self.endTrigger()
 
 class ShowGameCinematic(object):
     def __init__(self,turns,tickSpan = None):
@@ -75,6 +78,37 @@ class ShowGameCinematic(object):
             advanceGame()
         if self.endTrigger:
             self.endTrigger()
+
+class SelectionCinematic(object):
+    def __init__(self,text, options, niceOptions):
+        self.showSubmenu = True
+        self.options = options
+        self.niceOptions = niceOptions
+        self.text = text
+        self.selected = None
+        self.submenue= None
+
+    def advance(self):
+        text = """
+please answer the question:
+
+what is your name?"""
+
+        self.submenue = interaction.Test1Menu(self.text, self.options, self.niceOptions)
+        interaction.submenue = self.submenue
+        interaction.submenue.followUp = self.abort
+        self.showSubmenu = False
+        return True
+
+    def abort(self):
+        global cinematicQueue
+        cinematicQueue = cinematicQueue[1:]
+        if self.followUp:
+            self.selected = self.submenue.selection
+            self.followUp()
+        if cinematicQueue:
+            cinematicQueue[0].advance()
+        loop.set_alarm_in(0.0, callShow_or_exit, '~')
 
 class ShowMessageCinematic(object):
     def __init__(self,message):

@@ -156,6 +156,8 @@ interaction.terrain = terrain
 gamestate.terrain = terrain
 quests.terrain = terrain
 
+cinematics.interaction = interaction
+
 # HACK: common variables with modules
 characters.roomsOnMap = terrain.rooms
 
@@ -194,6 +196,7 @@ rooms.mainChar = gameStateObj.mainChar
 terrains.mainChar = gameStateObj.mainChar
 story.mainChar = gameStateObj.mainChar
 interaction.mainChar = gameStateObj.mainChar
+cinematics.mainChar = gameStateObj.mainChar
 
 # set up the splash screen
 cinematics.showCinematic("""

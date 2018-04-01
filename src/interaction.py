@@ -653,6 +653,10 @@ class ChatMenu(SubMenu):
                     niceOptions[str(counter)] = "come and help me."
                     counter += 1
 
+                options[str(counter)] = "showQuests"
+                niceOptions[str(counter)] = "what are you dooing?"
+                counter += 1
+
                 options[str(counter)] = "exit"
                 niceOptions[str(counter)] = "let us proceed, "+self.partner.name
                 counter += 1
@@ -664,6 +668,10 @@ class ChatMenu(SubMenu):
             if self.getSelection():
                 if self.selection == "recruit":
                     self.state = "recruit"
+                elif self.selection == "showQuests":
+                    submenue = QuestMenu(char=self.partner)
+                    submenue.handleKey(key)
+                    return False
                 elif self.selection == "exit":
                     self.state = "done"
                 self.selection = None
@@ -697,8 +705,9 @@ class ChatMenu(SubMenu):
         return False
 
 class QuestMenu(SubMenu):
-    def __init__(self):
+    def __init__(self,char=None):
         self.lockOptions = True
+        self.char = char
         super().__init__()
 
     def handleKey(self, key):
@@ -708,7 +717,7 @@ class QuestMenu(SubMenu):
 
         self.persistentText = ""
 
-        self.persistentText += renderQuests()
+        self.persistentText += renderQuests(char=self.char)
 
         if not self.lockOptions:
             if key in ["q"]:
@@ -717,7 +726,7 @@ class QuestMenu(SubMenu):
                 return False
         self.lockOptions = False
 
-        self.persistentText += "\n * press q for advanced quests\n\n"
+        self.persistentText += "\n * press q for advanced quests "+str(self.char)+"\n\n"
 
         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
 
@@ -928,8 +937,9 @@ def renderMessages(maxMessages=5):
     return txt
 
 
-def renderQuests(maxQuests=0):
-    char = mainChar
+def renderQuests(maxQuests=0,char=None):
+    if not char:
+        char = mainChar
     txt = ""
     if len(char.quests):
         counter = 0

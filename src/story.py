@@ -416,7 +416,7 @@ entering interactive mode .................................
             self.fail()
             return
         definitions = {}
-        definitions["coal"] = """vTEH20Kwa0pERLglm0TUoLi4lTT3VfFFs1pKr9Q5NdE2qCH1fVTah76\nFwcXsfJUsM1 Qmf4Vbq7hv6lPej1fX9B8eAG\nyYHO9Z3MiD5Fz8F4l7LnlXvDz\nyw8UQfGmJ1tl8E0nG2vsnzWLMpYDq 242QC4PU7hpX1Kn7YdWbk\n MvM7a2gKmRS l3lFYJ6DbsGWViJcF6V3H3lGtwK4icCbKkDIpkyTfbbYb1LyN3W\ncRdUWTMEELd0eaVgkeOzxFMHx2i3u8X2J 3KjJaCBDHG?Qegs23cSyOZmDH5WR6r9KbE2tDScE1rVrsEXgPWlWdKV odqxuK5lG?6Vmm 9mPSEaZ8ofAHiJzRYRtCp0MqzGL45sXQs0dE1WCe iFfwNodOXVnRJIX0B5a6UOFpW9VeA901fTQ56F j7R5jZ9pYfAugM1?iuBXMQv3RLT2LytWSfd9HkGxnNAY OdquEfWu4hfeivIq5CBGgMKI9gn68VnbFHkhd?cO3c"""
+        definitions["coal"] = """vTEH20Kwa0pERLglm0TUoLi4lTT3VfFFs1pKr9Q5NdE2qCH1fVTah76\nFwcXsfJUsM1 Qmf4Vbq7hv6lPej1fX9B8eAG\nyYHO9Z3MiD5Fz8F4l7LnlXvDz\nyw8UQfGmJ1tl8E0nG2vsnzWLMpYDq 242QC4PU7hpX1Kn7YdWbk\n MvM7a2gKmRS l3lFYJ"""
         definitions["pipe"] = "P2Rw21ypVmUtOhe2kiurQAiAs1eoQ7XL2odNPOGFncWpBe1BvO8aGMxnUXkpLHgKhD1OeGvgqFW96DOsvr32YtaCNSW37OQ9KhAJbaVX0frHaoukQz3pFtXYYGmgx83y"
         definitions["hutch"] = "lHRbpN0zeaEJtBRW5Eu93tlnZHDFBCEPu5cYcERPIxM8M4Mw92tsAvftREABI4p6HJwtNNm8V3baNMSqc9iypEcOBi99Q7QqrSC1ezdAoChKlJPJRk5QNeDBl4r8COh8"
         definitions["door"] = "EDyS2UXE01skPzshQa08gbSxKxurvIUs0GLeTVeV6jKyvfvWU0sTQLoj1iQVBX4dj22GaQMQSPdkZNZEG0XllEMFRGF6xNSz5DlRXb24uSahptHRAn0v2PL5qo6RTKJW"
@@ -426,7 +426,6 @@ entering interactive mode .................................
 information storage ....................................... OK
 setting up knowledge base
 
-* misc info displaying for 1 tick and disappearing after 15 ticks *
 """
         for k,v in definitions.items():
             text += "\n"+k+" - "+v
@@ -436,7 +435,7 @@ setting up knowledge base
 initializing metabolism ..................................... done
 initializing motion control ................................. done
 initializing sensory organs ................................. done
-transfer control to implant, you will be unable to move for some time""")
+transfer control to implant""")
         cinematic.endTrigger = self.end
         cinematics.cinematicQueue.append(cinematic)
 
@@ -461,7 +460,6 @@ class WakeUpPhase(BasicPhase):
         super().__init__()
 
     def start(self):
-        messages.append("WakeUpPhase started")
         self.mainCharXPosition = 1
         self.mainCharYPosition = 4
         self.requiresMainCharRoomFirstOfficer = False
@@ -470,9 +468,6 @@ class WakeUpPhase(BasicPhase):
         self.mainCharRoom = terrain.wakeUpRoom
 
         super().start()
-
-        if not (mainChar.room and mainChar.room == terrain.wakeUpRoom):
-            questList.append(quests.EnterRoomQuest(terrain.wakeUpRoom,startCinematics="please goto the Wakeuproom"))
 
         self.npc = characters.Character(displayChars.staffCharactersByLetter[names.characterLastNames[(gamestate.tick+14)%len(names.characterLastNames)].split(" ")[-1][0].lower()],5,3,name="Eduart Knoblauch")
         self.mainCharRoom.addCharacter(self.npc,6,7)
@@ -487,7 +482,8 @@ class WakeUpPhase(BasicPhase):
         self.assignPlayerQuests()
 
     def ting(self):
-        cinematics.showCinematic("*ting*")
+        cinematic = cinematics.ShowMessageCinematic("*ting*")
+        cinematics.cinematicQueue.append(cinematic)
         cinematic = cinematics.ShowGameCinematic(1,tickSpan=1)
         cinematic.endTrigger = self.screetch
         cinematics.cinematicQueue.append(cinematic)

@@ -44,6 +44,7 @@ class ScrollingTextCinematic(object):
         base = convert(baseText)
         base.append(addition)
         main.set_text(base)
+        header.set_text("")
 
         self.position += 1
 

@@ -87,6 +87,7 @@ story.characters = characters
 
 # HACK: common variables with modules
 cinematics.main = interaction.main
+cinematics.header = interaction.header
 
 # HACK: common variables with modules
 cinematics.loop = interaction.loop

@@ -274,18 +274,40 @@ class Room(object):
 
             if mainChar.room == self:
                 if len(mainChar.quests):
-                    try:
                         if not self.shownQuestmarkerLastRender:
-                            chars[mainChar.quests[0].dstY][mainChar.quests[0].dstX] = displayChars.questTargetMarker
-                            path = calculatePath(mainChar.xPosition,mainChar.yPosition,mainChar.quests[0].dstX,mainChar.quests[0].dstY,self.walkingPath)
-                            for item in path:
-                                chars[item[1]][item[0]] = displayChars.questPathMarker
-                            
                             self.shownQuestmarkerLastRender = True
+                            for quest in mainChar.quests:
+                                if not quest.active:
+                                    continue
+                                try:
+                                    import urwid
+                                    display = chars[quest.dstY][quest.dstX]
+                                    chars[quest.dstY][quest.dstX] = displayChars.questTargetMarker
+                                    if isinstance(display, int):
+                                        display = displayChars.indexedMapping[display]
+                                    if isinstance(display, str):
+                                        display = (urwid.AttrSpec("default","black"),display)
+                                    chars[quest.dstY][quest.dstX] = (urwid.AttrSpec(display[0].foreground,"#323"),display[1])
+                                except:
+                                    pass
+                                try:
+                                    chars[mainChar.quests[0].dstY][mainChar.quests[0].dstX] = displayChars.questTargetMarker
+                                except:
+                                    pass
+                            try:
+                                path = calculatePath(mainChar.xPosition,mainChar.yPosition,mainChar.quests[0].dstX,mainChar.quests[0].dstY,self.walkingPath)
+                                for item in path:
+                                    import urwid
+                                    display = chars[item[1]][item[0]]
+                                    if isinstance(display, int):
+                                        display = displayChars.indexedMapping[display]
+                                    if isinstance(display, str):
+                                        display = (urwid.AttrSpec("default","black"),display)
+                                    chars[item[1]][item[0]] = (urwid.AttrSpec(display[0].foreground,"#333"),display[1])
+                            except:
+                                pass
                         else:
                             self.shownQuestmarkerLastRender = False
-                    except:
-                        pass
 
             if mainChar in self.characters:
                 chars[mainChar.yPosition][mainChar.xPosition] = mainChar.display

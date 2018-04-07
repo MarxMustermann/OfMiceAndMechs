@@ -27,7 +27,13 @@ class QuestMarkerOverlay(object):
         if not mainChar.room and mainChar.path:
             for item in mainChar.path:
                 if not chars[item[1]][item[0]] in (displayChars.pathMarker,"!!","??"):
-                    chars[item[1]][item[0]] = displayChars.pathMarker
+                    import urwid
+                    display = chars[item[1]][item[0]]
+                    if isinstance(display, int):
+                        display = displayChars.indexedMapping[chars[item[1]][item[0]]]
+                    if isinstance(display, str):
+                        display = (urwid.AttrSpec("default","black"),display)
+                    chars[item[1]][item[0]] = (urwid.AttrSpec(display[0].foreground,"#333"),display[1])
                 elif not chars[item[1]][item[0]] in ("!!","??"):
                     chars[item[1]][item[0]] = "!!"
                 elif not chars[item[1]][item[0]] in ("??"):

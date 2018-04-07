@@ -11,7 +11,7 @@ hutch_occupied = (urwid.AttrSpec("#3f3","black"),"=}")
 lever_notPulled = (urwid.AttrSpec("#bb3","black"),"||")
 lever_pulled = (urwid.AttrSpec("#ff3","black"),"//")
 furnace_inactive = (urwid.AttrSpec("#b33","black"),"oo")
-furnace_active = (urwid.AttrSpec("#f73","black"),"öö")
+furnace_active = (urwid.AttrSpec("#f73,bold","black"),"öö")
 display = (urwid.AttrSpec("#a63","black"),"DD")
 coal = "sc"
 door_closed = (urwid.AttrSpec("#bb3","black"),"[]")

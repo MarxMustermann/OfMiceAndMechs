@@ -517,7 +517,7 @@ class Pile(Item):
     def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal):
         self.contains_canBurn = True
         self.type = itemType
-        self.numContained = 10
+        self.numContained = 100
         super().__init__(displayChars.pile,xPosition,yPosition,name=name)
 
     def apply(self,character):

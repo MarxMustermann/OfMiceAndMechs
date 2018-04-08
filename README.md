@@ -2,8 +2,11 @@
 some prototype for a game
 
 License: GPLv3
-known-dependencies: python3 python3-urwid
+known-dependencies: 
 
-== unicode issues ==
+* python3
+* python3-urwid
 
-rigth now, the game uses unicode heavily. This breaks on basically every operation system except xubtunu. Help, Ideas and fallback encodings would be greatly apprechiated, since i'm basically stuck there.
+== news ==
+
+unicode issues are resolved by having a almost pure ASCII renderer as default. Unicode modes can still be configured and can be toggled while playing using '`' (default). This means the game is almost cross platform supporting linux and mac.

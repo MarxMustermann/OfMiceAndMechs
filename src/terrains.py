@@ -106,6 +106,8 @@ class Terrain(object):
                     roomsOnMap.append(room)
                 elif char == "Q":
                     roomsOnMap.append(rooms.InfanteryQuarters(rowCounter,lineCounter,1,2))
+                elif char == "w":
+                    roomsOnMap.append(rooms.WaitingRoom(rowCounter,lineCounter,1,2))
                 elif char == "r":
                     roomsOnMap.append(rooms.Room1(rowCounter,lineCounter,1,2))
                 elif char == "M":
@@ -876,7 +878,7 @@ XXXXXXXXXXXXXXXXXXXXXX"""
 X X X X X X X X X X X
 X X X X X X X X X X X
 X V v ? ? ? ? ? v V X
-X   . t         . ? X
+X w . t         . ? X
 X O   M Q r ? ?   O X
 X W   L ? K ? ?   O X
 X U .           . U X
@@ -930,20 +932,20 @@ X X X C C C C C X X X """
                XX               ### X  ###        8        X     X                                                                                   X               
                   X  O   O          XX     ##     8        X     X                                                                                   X              
                X X                                8        X     X                                                                    XXXXXXXXXXXXXXXX              
-                             #                    8        XXXXXXX                                                                     X#X          #X               
-                             #                                                                                                         X#X          #X               
-                             #                                                                                                         X#X          #X               
-                             #                                                                                                         X#X          #X               
-                             #                                                                                                         X#X          #X               
-                             #                                                                                                         X#X          #X               
-                             #                                                                                                         X#X          #X               
-                             #                                                                                                         X#X          #X               
-                             #                                                                                                         X#X          #X               
-                             #                                                                                                         X#X          #X               
-                             #                                                                                                         X#X          #X               
-                             #                                                                                                         X#x          #X               
-                XXXX         #                                                                                                           X                           
-                             #                                                                                                         X X          #X               
+                                                  8        XXXXXXX                                                                     X#X          #X               
+                                                                                                                                       X#X          #X               
+                                                                                                                                       X#X          #X               
+                                                                                                                                       X#X          #X               
+                                                                                                                                       X#X          #X               
+                                                                                                                                       X#X          #X               
+                                                                                                                                       X#X          #X               
+                                                                                                                                       X#X          #X               
+                                                                                                                                       X#X          #X               
+                                                                                                                                       X#X          #X               
+                                                                                                                                       X#X          #X               
+                                                                                                                                       X#x          #X               
+                XXXX                                                                                                                     X                           
+                                                                                                                                       X X          #X               
                XXXXXXXXXXXX#XX               X#####    ######              X#           #X               X#           #X               X             X               
                X                             X   R        R#X            #XX#           #XX#           #XX#           #X               X#X                           
                X#           #X               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               

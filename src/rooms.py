@@ -1124,3 +1124,18 @@ XXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 
+class WaitingRoom(Room):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+        self.roomLayout = """
+XXXXXXXXXXX
+X         X
+X  .....  X
+X  .   .  X
+X  .   .  $
+X  .   . IX
+X  ..... DX
+X         X
+X         X
+XXXXXXXXXXX
+"""
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)

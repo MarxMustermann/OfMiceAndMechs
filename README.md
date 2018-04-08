@@ -7,9 +7,9 @@ known-dependencies:
 * python3
 * python3-urwid
 
-== how to install and run the game ==
+## how to install and run the game 
 
-=== debian based sytems ===
+### debian based sytems
 
 * install the dependencies
  * sudo apt-get install python3 python3-urwid
@@ -20,7 +20,7 @@ known-dependencies:
  * cd into the OfMiceAndMechs
  * python3 
 
-== biggest current issue ==
+## biggest current issue
 
 The biggest issue is that the game doesn't feel like a game yet.
 
@@ -32,6 +32,6 @@ The biggest issue is that the game doesn't feel like a game yet.
 
 I think the thing missing is the feeling of purpose, progress, adventure and discovery.
 
-== news ==
+## news
 
 unicode issues are resolved by having a almost pure ASCII renderer as default. Unicode modes can still be configured and can be toggled while playing using '`' (default). This means the game is almost cross platform supporting linux and mac.

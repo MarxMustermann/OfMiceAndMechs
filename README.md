@@ -7,6 +7,19 @@ known-dependencies:
 * python3
 * python3-urwid
 
+== how to install and run the game ==
+
+=== debian based sytems ===
+
+* install the dependencies
+ * sudo apt-get install python3 python3-urwid
+* clone or download the game
+ * git clone https://github.com/MarxMustermann/OfMiceAndMechs.git
+ * or use the download as ZIP button and unzip
+* start the game with:
+ * cd into the OfMiceAndMechs
+ * python3 
+
 == biggest current issue ==
 
 The biggest issue is that the game doesn't feel like a game yet.

@@ -4,8 +4,7 @@ import src.characters as characters
 class GameState():
     def __init__(self,phase=None):
         self.gameWon = False
-        self.currentPhase = phasesByName["FirstTutorialPhase"]
-        self.currentPhase = phasesByName["WakeUpPhase"]
+        self.currentPhase = phasesByName["BrainTesting"]
         if phase:
             self.currentPhase = phasesByName[phase]
         self.tick = 0

@@ -339,7 +339,7 @@ class BrainTestingPhase(BasicPhase):
 
     def start(self):
         cinematics.showCinematic("""
-basic initialization ..................................... done
+initialising subject ...................................... done
 
 testing with random input 
 
@@ -401,6 +401,7 @@ entering interactive mode .................................
 
     def step3(self):
         if not self.cinematic.selected == "ok":
+            showCinematic("information storage ....................................... NOT OK")
             self.fail()
             return
         options = {"1":"ok","2":"nok","3":"nok"}
@@ -413,15 +414,12 @@ entering interactive mode .................................
 
     def step4(self):
         if not self.cinematic.selected == "ok":
+            showCinematic("information storage ....................................... NOT OK")
             self.fail()
             return
         definitions = {}
-        definitions["coal"] = """vTEH20Kwa0pERLglm0TUoLi4lTT3VfFFs1pKr9Q5NdE2qCH1fVTah76\nFwcXsfJUsM1 Qmf4Vbq7hv6lPej1fX9B8eAG\nyYHO9Z3MiD5Fz8F4l7LnlXvDz\nyw8UQfGmJ1tl8E0nG2vsnzWLMpYDq 242QC4PU7hpX1Kn7YdWbk\n MvM7a2gKmRS l3lFYJ"""
-        definitions["pipe"] = "P2Rw21ypVmUtOhe2kiurQAiAs1eoQ7XL2odNPOGFncWpBe1BvO8aGMxnUXkpLHgKhD1OeGvgqFW96DOsvr32YtaCNSW37OQ9KhAJbaVX0frHaoukQz3pFtXYYGmgx83y"
-        definitions["hutch"] = "lHRbpN0zeaEJtBRW5Eu93tlnZHDFBCEPu5cYcERPIxM8M4Mw92tsAvftREABI4p6HJwtNNm8V3baNMSqc9iypEcOBi99Q7QqrSC1ezdAoChKlJPJRk5QNeDBl4r8COh8"
-        definitions["door"] = "EDyS2UXE01skPzshQa08gbSxKxurvIUs0GLeTVeV6jKyvfvWU0sTQLoj1iQVBX4dj22GaQMQSPdkZNZEG0XllEMFRGF6xNSz5DlRXb24uSahptHRAn0v2PL5qo6RTKJW"
-        definitions["floor"] = "tIGR1OheoA5pdY4PoEVmeMCQvL9xcCWbgOETJVwszMTxdPIGtitcdngQA2Ly7datm7XNFTMrSlcIldv4FDCGcAE1OeRaGlDQisLHZc95Aozd8AfUXXWrYCtol4uC4uWu"
-        definitions["wall"] = "bIT64VoTQOuDq38BRr73g89Y1kpkaJwl0GJa0qMDodajY3OYmmSKvsZmtr44pTCpTYomdOVSJboUl8Xz36WgSDhXE9Fkg93c48h0tULujZKrCdrMG8O9R3x2w6c0gCTg"
+        definitions["pipe"] = "A Pipe is used to transfer fluids"
+        definitions["wall"] = "A Wall is a non passable building element"
         text = """
 information storage ....................................... OK
 setting up knowledge base
@@ -474,12 +472,18 @@ class WakeUpPhase(BasicPhase):
         self.npc.terrain = terrain
 
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("implant has taken control"))
-        cinematic = cinematics.ShowGameCinematic(4,tickSpan=1)
+        cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
         cinematics.cinematicQueue.append(cinematic)
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("please prepare to be ejected"))
+        cinematic = cinematics.ShowGameCinematic(4,tickSpan=1)
+        cinematics.cinematicQueue.append(cinematic)
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("note that you will be unable to move until implant imprinting"))
 
         cinematic = cinematics.ShowGameCinematic(10,tickSpan=1)
+        cinematics.cinematicQueue.append(cinematic)
+
+        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("ejecting now"))
+        cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
         cinematic.endTrigger = self.ting
         cinematics.cinematicQueue.append(cinematic)
 
@@ -512,12 +516,12 @@ class WakeUpPhase(BasicPhase):
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("please wait for assistance"))
         cinematic = cinematics.ShowGameCinematic(5,tickSpan=1)
         cinematics.cinematicQueue.append(cinematic)
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("I ,"+self.npc.name+", demand your service."))
+        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("I AM "+self.npc.name.upper()+" AND I DEMAND YOUR SERVICE."))
         cinematic = cinematics.ShowGameCinematic(1,tickSpan=1)
         cinematics.cinematicQueue.append(cinematic)
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("implant imprinted - setup complete"))
 
-        cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
+        cinematic = cinematics.ShowGameCinematic(4,tickSpan=1)
         cinematic.endTrigger = self.wakeUp1
         cinematics.cinematicQueue.append(cinematic)
 
@@ -535,7 +539,7 @@ class WakeUpPhase(BasicPhase):
 
     def kick(self):
         messages.append("WAKE UP. *kicks "+mainChar.name+"*")
-        cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
+        cinematic = cinematics.ShowGameCinematic(6,tickSpan=1)
         cinematic.endTrigger = self.addPlayer
         cinematics.cinematicQueue.append(cinematic)
 
@@ -543,8 +547,9 @@ class WakeUpPhase(BasicPhase):
         self.mainCharRoom.removeItem(terrain.wakeUpRoom.itemByCoordinates[(2,4)][0])
         self.mainCharRoom.addCharacter(mainChar,2,4)
         loop.set_alarm_in(0.1, callShow_or_exit, '.')
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("i will test for physical fitness, please execute my orders"))
-        cinematics.showCinematic("you are represented by the "+displayChars.indexedMapping[displayChars.main_char]+" Character.\n\nyou can move using the keyboard. \n\n* press "+commandChars.move_north+" to move up/north\n* press "+commandChars.move_west+" to move left/west\n* press "+commandChars.move_south+" to move down/south\n* press "+commandChars.move_east+" to move rigth/east")
+        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("\"i will test for physical fitness, please execute my orders\""))
+        cinematics.showCinematic("welcome to the trainingsenvironment.\n\nplease follow the orders "+self.npc.name+" gives you.")
+        cinematics.showCinematic("you are represented by the "+displayChars.indexedMapping[displayChars.main_char]+" Character,  "+self.npc.name+" is represented by the "+displayChars.indexedMapping[self.npc.display]+" Character. \n\nyou can move using the keyboard. \n\n* press "+commandChars.move_north+" to move up/north\n* press "+commandChars.move_west+" to move left/west\n* press "+commandChars.move_south+" to move down/south\n* press "+commandChars.move_east+" to move rigth/east")
         cinematic = cinematics.ShowGameCinematic(4,tickSpan=1)
         cinematic.endTrigger = self.movementRightTestSetup1
         cinematics.cinematicQueue.append(cinematic)

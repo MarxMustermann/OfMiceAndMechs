@@ -9,12 +9,13 @@ messages = None
 advanceGame = None
 
 class ScrollingTextCinematic(object):
-    def __init__(self,text):
+    def __init__(self,text,rusty=False):
         self.text = text
         self.position = 0
         self.endPosition = len(self.text)
         self.alarm = None
         self.endTrigger = None
+        self.rusty = rusty
 
     def advance(self):
         if self.position > self.endPosition:
@@ -41,7 +42,10 @@ class ScrollingTextCinematic(object):
             baseText = self.text
             addition = "\n\n-- press space to proceed -- "
             self.alarm = loop.set_alarm_in(1, callShow_or_exit, '~')
-        base = convert(baseText)
+        if self.rusty:
+            base = convert(baseText)
+        else:
+            base = [baseText]
         base.append(addition)
         main.set_text(base)
         header.set_text("")
@@ -129,5 +133,5 @@ class ShowMessageCinematic(object):
     def abort(self):
         pass
 
-def showCinematic(text):
-    cinematicQueue.append(ScrollingTextCinematic(text))
+def showCinematic(text,rusty=False):
+    cinematicQueue.append(ScrollingTextCinematic(text,rusty))

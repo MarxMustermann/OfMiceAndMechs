@@ -8,6 +8,65 @@ callShow_or_exit = None
 messages = None
 advanceGame = None
 
+class MessageZoomCinematic(object):
+    def __init__(self):
+        self.screensize = loop.screen.get_cols_rows()
+        self.right = self.screensize[0]
+        self.left = 0
+        self.top = self.screensize[1]
+        self.bottom = 0
+        self.alarm = None
+        self.turnOffCounter = 10
+        self.turnOnCounter = 10
+        self.text = None
+
+    def advance(self):
+        if not self.text:
+            self.text = interaction.renderMessages().split("\n")
+
+        if self.turnOnCounter:
+            self.turnOnCounter -= 1
+            header.set_text("\n"+"\n".join(self.text))
+            main.set_text("")
+            self.alarm = loop.set_alarm_in(0.2, callShow_or_exit, '~')
+            return False
+
+        textWithDeco = ""
+        for line in self.text:
+            textWithDeco += " "*self.left+"┃ "+line+"\n"
+        for i in range(0,self.top-2-len(self.text)):
+            textWithDeco += " "*self.left+"┃\n"
+        textWithDeco += " "*self.left+"┗"+"━"*(self.right-1)
+        header.set_text(textWithDeco)
+        main.set_text("")
+        questWidth = (self.screensize[0]//3)*2+4
+        if self.right > questWidth:
+            if self.right > questWidth+5:
+                self.left += 2
+                self.right -= 2
+            else:
+                self.left += 1
+                self.right -= 1
+        if self.top > 7:
+            self.top -= 1
+            self.bottom += 1
+
+        if not self.right > questWidth and not self.top > 8:
+            if self.turnOffCounter:
+                self.turnOffCounter -= 1
+            else:
+                self.alarm = loop.set_alarm_in(0.2, callShow_or_exit, ' ')
+                return False
+
+        self.alarm = loop.set_alarm_in(0.2, callShow_or_exit, '~')
+
+    def abort(self):
+        try: 
+            loop.remove_alarm(self.alarm)
+        except:
+            pass
+        pass
+
 class ScrollingTextCinematic(object):
     def __init__(self,text,rusty=False):
         self.text = text

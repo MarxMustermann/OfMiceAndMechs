@@ -266,7 +266,18 @@ class ScreenSaver(object):
         self.mainCharQuestList.append(quest)
 
     def start(self):
-        cinematics.showCinematic("yay!")
+        messages.append("1")
+        messages.append("2")
+        messages.append("3")
+        messages.append("4")
+        messages.append("5")
+        messages.append("6")
+        messages.append("7")
+        messages.append("8")
+        messages.append("9")
+        cinematics.showCinematic("testing message zoom")
+        cinematic = cinematics.MessageZoomCinematic()
+        cinematics.cinematicQueue.append(cinematic)
         pass
 
     def end(self):
@@ -341,7 +352,7 @@ class BrainTestingPhase(BasicPhase):
         cinematics.showCinematic("""
 initialising subject ...................................... done
 
-testing with random input 
+testing subject with random input 
 
 NyGUf8fDJO
 g215e4Za8U
@@ -434,12 +445,21 @@ initializing metabolism ..................................... done
 initializing motion control ................................. done
 initializing sensory organs ................................. done
 transfer control to implant""")
+        messages.append("initializing metabolism ..................................... done")
+        messages.append("initializing motion control ................................. done")
+        messages.append("initializing sensory organs ................................. done")
+        messages.append("transfer control to implant")
         cinematic.endTrigger = self.end
+        cinematics.cinematicQueue.append(cinematic)
+        cinematic = cinematics.MessageZoomCinematic()
+        cinematics.cinematicQueue.append(cinematic)
+        cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
         cinematics.cinematicQueue.append(cinematic)
 
     def end(self):
         nextPhase = WakeUpPhase()
         nextPhase.start()
+        gamestate.save()
 
     def fail(self):
         cinematic = cinematics.ScrollingTextCinematic("""
@@ -548,7 +568,7 @@ class WakeUpPhase(BasicPhase):
         self.mainCharRoom.addCharacter(mainChar,2,4)
         loop.set_alarm_in(0.1, callShow_or_exit, '.')
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("\"i will test for physical fitness, please execute my orders\""))
-        cinematics.showCinematic("welcome to the trainingsenvironment.\n\nplease follow the orders "+self.npc.name+" gives you.")
+        cinematics.showCinematic("welcome to the trainingsenvironment.\n\nplease follow the orders "+self.npc.name+" gives you.",rusty=True)
         cinematics.showCinematic("you are represented by the "+displayChars.indexedMapping[displayChars.main_char]+" Character,  "+self.npc.name+" is represented by the "+displayChars.indexedMapping[self.npc.display]+" Character. \n\nyou can move using the keyboard. \n\n* press "+commandChars.move_north+" to move up/north\n* press "+commandChars.move_west+" to move left/west\n* press "+commandChars.move_south+" to move down/south\n* press "+commandChars.move_east+" to move rigth/east")
         cinematic = cinematics.ShowGameCinematic(4,tickSpan=1)
         cinematic.endTrigger = self.movementRightTestSetup1

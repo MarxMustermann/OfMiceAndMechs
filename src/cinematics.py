@@ -8,6 +8,32 @@ callShow_or_exit = None
 messages = None
 advanceGame = None
 
+class InformationTransfer(object):
+    def __init__(self,information):
+        self.position = 0
+        self.information = list(information.items())
+
+    def advance(self):
+        if self.position < len(self.information):
+            header.set_text(self.information[self.position][0])
+            main.set_text(self.information[self.position][1])
+
+            self.position += 1
+
+            self.alarm = loop.set_alarm_in(0.2, callShow_or_exit, '~')
+            return False
+        else:
+            header.set_text("")
+            main.set_text("done")
+            self.alarm = loop.set_alarm_in(0.2, callShow_or_exit, ' ')
+            return False
+
+    def abort(self):
+        try: 
+            loop.remove_alarm(self.alarm)
+        except:
+            pass
+
 class MessageZoomCinematic(object):
     def __init__(self):
         self.screensize = loop.screen.get_cols_rows()

@@ -380,8 +380,9 @@ class BrainTestingPhase(BasicPhase):
         super().__init__()
 
     def start(self):
-        cinematics.showCinematic("""
-initialising subject ...................................... done
+        import urwid
+        cinematics.showCinematic(["""
+initialising subject ...................................... """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
 
 testing subject with random input 
 
@@ -396,24 +397,24 @@ DW9H6uAW8R
 dk8R9BXMfa
 Ttbt9kp2wZ
 
-checking brain patterns ................................... OK
+checking subjects brain patterns .......................... """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
 
 testing responsivity
-""")
-        cinematics.showCinematic("""
+"""])
+        cinematics.showCinematic(["""
 got response
-responsivity .............................................. OK
+responsivity .............................................. """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
 
-inititializing implant .................................... done
+inititializing implant .................................... """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
 
-checking implant .......................................... OK
+checking implant .......................................... """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
 
 send test information
 
 1.) Your name is """+mainChar.name+"""
 2.) A Pipe is used to transfer fluids
 3.) rust - Rust is the oxide of iron. Rust is the most common form of corrosion
-""")
+"""])
 
         cinematics.showCinematic("""
 checking stored information
@@ -443,7 +444,7 @@ entering interactive mode .................................
 
     def step3(self):
         if not self.cinematic.selected == "ok":
-            showCinematic("information storage ....................................... NOT OK")
+            showCinematic(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")])
             self.fail()
             return
         options = {"1":"ok","2":"nok","3":"nok"}
@@ -455,8 +456,9 @@ entering interactive mode .................................
         cinematics.cinematicQueue.append(cinematic)
 
     def step4(self):
+        import urwid
         if not self.cinematic.selected == "ok":
-            showCinematic("information storage ....................................... NOT OK")
+            showCinematic(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")])
             self.fail()
             return
         definitions = {}
@@ -482,21 +484,21 @@ Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lor
 
 Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc, """
 
-        text = """
-information storage ....................................... OK
+        text = ["""
+information storage ....................................... """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
 setting up knowledge base
 
-"""
+"""]
         cinematics.showCinematic(text)
 
         cinematic = cinematics.InformationTransfer(definitions)
         cinematics.cinematicQueue.append(cinematic)
         
-        cinematic = cinematics.ScrollingTextCinematic("""
-initializing metabolism ..................................... done
-initializing motion control ................................. done
-initializing sensory organs ................................. done
-transfer control to implant""")
+        cinematic = cinematics.ScrollingTextCinematic(["""
+initializing metabolism ..................................... """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
+initializing motion control ................................. """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
+initializing sensory organs ................................. """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
+transfer control to implant"""])
         messages.append("initializing metabolism ..................................... done")
         messages.append("initializing motion control ................................. done")
         messages.append("initializing sensory organs ................................. done")

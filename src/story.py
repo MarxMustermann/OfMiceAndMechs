@@ -4,6 +4,65 @@ names = None
 characters = None
 events = None
 
+"""
+
+the base class for the all phases here
+
+"""
+
+class BasicPhase(object):
+    def __init__(self):
+        self.mainCharXPosition = None
+        self.mainCharYPosition = None
+        self.mainCharRoom = None
+        self.requiresMainCharRoomFirstOfficer = True 
+        self.requiresMainCharRoomSecondOfficer = True 
+        self.mainCharQuestList = []
+
+    def start(self):
+        gamestate.currentPhase = self
+        self.tick = gamestate.tick
+
+        if self.mainCharRoom:
+            if not (mainChar.room or mainChar.terrain):
+                if self.mainCharXPosition and self.mainCharYPosition:
+                    self.mainCharRoom.addCharacter(mainChar,self.mainCharXPosition,self.mainCharYPosition)
+                else:
+                    self.mainCharRoom.addCharacter(mainChar,3,3)
+
+        if self.requiresMainCharRoomFirstOfficer:
+            if not self.mainCharRoom.firstOfficer:
+                name = names.characterFirstNames[(gamestate.tick+2)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)]
+                self.mainCharRoom.firstOfficer = characters.Character(displayChars.staffCharactersByLetter[names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)].split(" ")[-1][0].lower()],4,3,name=name)
+                self.mainCharRoom.addCharacter(self.mainCharRoom.firstOfficer,4,3)
+
+        if self.requiresMainCharRoomSecondOfficer:
+            if not self.mainCharRoom.secondOfficer:
+                name = names.characterFirstNames[(gamestate.tick+4)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+4)%len(names.characterLastNames)]
+                self.mainCharRoom.secondOfficer = characters.Character(displayChars.staffCharactersByLetter[names.characterLastNames[(gamestate.tick+4)%len(names.characterLastNames)].split(" ")[-1][0].lower()],4,3,name=name)
+                self.mainCharRoom.addCharacter(self.mainCharRoom.secondOfficer,5,3)
+
+    def assignPlayerQuests(self):
+        if not self.mainCharQuestList:
+            return
+
+        lastQuest = self.mainCharQuestList[0]
+        for item in self.mainCharQuestList[1:]:
+            lastQuest.followUp = item
+            lastQuest = item
+        self.mainCharQuestList[-1].followup = None
+
+        self.mainCharQuestList[-1].endTrigger = self.end
+
+        mainChar.assignQuest(self.mainCharQuestList[0])
+
+"""
+
+the phase is intended to give the player access to the true gameworld without manipulations
+
+this phase should be left as blank as possible
+
+"""
 class OpenWorld(object):
     def __init__(self):
         cinematics.showCinematic("staring open world Scenario.")
@@ -13,6 +72,13 @@ class OpenWorld(object):
     def start(self):
         pass
 
+"""
+
+this phase is intended to be nice to watch and to be running as demo piece or something to stare at
+
+right now experiments are done here, but that should be shifted somwhere else later
+
+"""
 class ScreenSaver(object):
     def __init__(self):
         self.mainCharRoom = terrain.wakeUpRoom
@@ -297,55 +363,20 @@ class ScreenSaver(object):
 
         mainChar.assignQuest(self.mainCharQuestList[0])
 
-class BasicPhase(object):
-    def __init__(self):
-        self.mainCharXPosition = None
-        self.mainCharYPosition = None
-        self.mainCharRoom = None
-        self.requiresMainCharRoomFirstOfficer = True 
-        self.requiresMainCharRoomSecondOfficer = True 
-        self.mainCharQuestList = []
+"""
 
-    def start(self):
-        gamestate.currentPhase = self
-        self.tick = gamestate.tick
+these are the tutorial phases. The story phases are tweeked heavily regarding to cutscenes and timing
 
-        if self.mainCharRoom:
-            if not (mainChar.room or mainChar.terrain):
-                if self.mainCharXPosition and self.mainCharYPosition:
-                    self.mainCharRoom.addCharacter(mainChar,self.mainCharXPosition,self.mainCharYPosition)
-                else:
-                    self.mainCharRoom.addCharacter(mainChar,3,3)
+ideally this phase should force the player how rudementary use of the controls. This should be done by explaining first and then preventing progress until the player proves capability.
 
-        if self.requiresMainCharRoomFirstOfficer:
-            if not self.mainCharRoom.firstOfficer:
-                name = names.characterFirstNames[(gamestate.tick+2)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)]
-                self.mainCharRoom.firstOfficer = characters.Character(displayChars.staffCharactersByLetter[names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)].split(" ")[-1][0].lower()],4,3,name=name)
-                self.mainCharRoom.addCharacter(self.mainCharRoom.firstOfficer,4,3)
+no experients here!
+half arsed solutions are still welcome here but that should end when this reaches prototype
 
-        if self.requiresMainCharRoomSecondOfficer:
-            if not self.mainCharRoom.secondOfficer:
-                name = names.characterFirstNames[(gamestate.tick+4)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+4)%len(names.characterLastNames)]
-                self.mainCharRoom.secondOfficer = characters.Character(displayChars.staffCharactersByLetter[names.characterLastNames[(gamestate.tick+4)%len(names.characterLastNames)].split(" ")[-1][0].lower()],4,3,name=name)
-                self.mainCharRoom.addCharacter(self.mainCharRoom.secondOfficer,5,3)
-
-    def assignPlayerQuests(self):
-        if not self.mainCharQuestList:
-            return
-
-        lastQuest = self.mainCharQuestList[0]
-        for item in self.mainCharQuestList[1:]:
-            lastQuest.followUp = item
-            lastQuest = item
-        self.mainCharQuestList[-1].followup = None
-
-        self.mainCharQuestList[-1].endTrigger = self.end
-
-        mainChar.assignQuest(self.mainCharQuestList[0])
+"""
 
 class BrainTestingPhase(BasicPhase):
     def __init__(self):
-        self.name = "Test1"
+        self.name = "BrainTestingPhase"
         super().__init__()
 
     def start(self):
@@ -501,7 +532,7 @@ class WakeUpPhase(BasicPhase):
     def start(self):
         self.mainCharXPosition = 1
         self.mainCharYPosition = 4
-        self.requiresMainCharRoomFirstOfficer = False
+        self.requiresMainCharRoomFirstOfficer = True
         self.requiresMainCharRoomSecondOfficer = False
 
         self.mainCharRoom = terrain.wakeUpRoom
@@ -588,6 +619,27 @@ class WakeUpPhase(BasicPhase):
         self.mainCharRoom.removeItem(terrain.wakeUpRoom.itemByCoordinates[(2,4)][0])
         self.mainCharRoom.addCharacter(mainChar,2,4)
         loop.set_alarm_in(0.1, callShow_or_exit, '.')
+        self.end()
+
+    def end(self):
+        phase2 = BasicMovementTraining()
+        phase2.start()
+
+class BasicMovementTraining(BasicPhase):
+    def __init__(self):
+        self.name = "BasicMovementTraining"
+        super().__init__()
+    
+    def start(self):
+        self.mainCharXPosition = 1
+        self.mainCharYPosition = 4
+        self.requiresMainCharRoomFirstOfficer = True
+        self.requiresMainCharRoomSecondOfficer = False
+
+        self.mainCharRoom = terrain.wakeUpRoom
+
+        super().start()
+
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("\"i will test for physical fitness, please execute my orders\""))
         cinematics.showCinematic("welcome to the trainingsenvironment.\n\nplease follow the orders "+self.npc.name+" gives you.",rusty=True)
         cinematics.showCinematic("you are represented by the "+displayChars.indexedMapping[displayChars.main_char]+" Character,  "+self.npc.name+" is represented by the "+displayChars.indexedMapping[self.npc.display]+" Character. \n\nyou can move using the keyboard. \n\n* press "+commandChars.move_north+" to move up/north\n* press "+commandChars.move_west+" to move left/west\n* press "+commandChars.move_south+" to move down/south\n* press "+commandChars.move_east+" to move rigth/east")
@@ -980,6 +1032,16 @@ class ThirdTutorialPhase(BasicPhase):
         gamestate.save()
 
 
+"""
+
+these are the room phases. The room phases are the midgame content of the to be prototype
+
+ideally these phases should servre to teach the player about how the game, a mech and the hierarchy progession works.
+
+There should be some events and cutscenes thrown in to not have a sudden drop of cutscene frequency between tutorial and the actual game
+
+"""
+
 class LabPhase(BasicPhase):
     def __init__(self):
         self.name = "LabPhase"
@@ -1072,6 +1134,13 @@ class MachineRoomPhase(BasicPhase):
         gamestate.gameWon = True
         gamestate.save()
 
+"""
+
+the glue to be able to call the phases from configs etc
+
+this should be automated some time
+
+"""
 def registerPhases():
     phasesByName["OpenWorld"] = OpenWorld
 

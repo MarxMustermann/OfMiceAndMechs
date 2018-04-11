@@ -97,7 +97,6 @@ class ScrollingTextCinematic(object):
     def __init__(self,text,rusty=False):
         self.text = text
         self.position = 0
-        self.endPosition = len(self.text)
         self.alarm = None
         self.endTrigger = None
         self.rusty = rusty
@@ -117,6 +116,7 @@ class ScrollingTextCinematic(object):
                 return result
         
         self.text = flattenToPeseudoString(self.text)
+        self.endPosition = len(self.text)
 
     def advance(self):
         if self.position > self.endPosition:
@@ -134,7 +134,7 @@ class ScrollingTextCinematic(object):
 
         if self.position < self.endPosition:
             baseText = self.text[0:self.position]
-            if self.text[self.position] in ("\n"):
+            if isinstance(self.text[self.position],str) and self.text[self.position] in ("\n"):
                 self.alarm = loop.set_alarm_in(0.5, callShow_or_exit, '~')
             else:
                 self.alarm = loop.set_alarm_in(0.05, callShow_or_exit, '~')

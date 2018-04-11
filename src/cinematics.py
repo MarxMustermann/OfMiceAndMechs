@@ -102,10 +102,26 @@ class ScrollingTextCinematic(object):
         self.endTrigger = None
         self.rusty = rusty
 
+        def flattenToPeseudoString(urwidText):
+            if isinstance(urwidText,str):
+                return list(urwidText)
+            elif isinstance(urwidText,list):
+                result = []
+                for item in urwidText:
+                    result.extend(flattenToPeseudoString(item))
+                return result
+            else:
+                result = []
+                for item in flattenToPeseudoString(urwidText[1]):
+                    result.append((urwidText[0],item))
+                return result
+        
+        self.text = flattenToPeseudoString(self.text)
+
     def advance(self):
         if self.position > self.endPosition:
             return
-        
+
         def convert(payload):
             converted = []
             colours = ['#f50',"#a60","#f80","#fa0","#860"]

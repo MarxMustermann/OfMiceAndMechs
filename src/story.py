@@ -637,12 +637,13 @@ class BasicMovementTraining(BasicPhase):
         self.requiresMainCharRoomSecondOfficer = False
 
         self.mainCharRoom = terrain.wakeUpRoom
+        self.npc = terrain.wakeUpRoom.firstOfficer
 
         super().start()
 
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("\"i will test for physical fitness, please execute my orders\""))
         cinematics.showCinematic("welcome to the trainingsenvironment.\n\nplease follow the orders "+self.npc.name+" gives you.",rusty=True)
-        cinematics.showCinematic("you are represented by the "+displayChars.indexedMapping[displayChars.main_char]+" Character,  "+self.npc.name+" is represented by the "+displayChars.indexedMapping[self.npc.display]+" Character. \n\nyou can move using the keyboard. \n\n* press "+commandChars.move_north+" to move up/north\n* press "+commandChars.move_west+" to move left/west\n* press "+commandChars.move_south+" to move down/south\n* press "+commandChars.move_east+" to move rigth/east")
+        cinematics.showCinematic(["you are represented by the ",displayChars.indexedMapping[displayChars.main_char]," Character,  ",self.npc.name," is represented by the ",displayChars.indexedMapping[self.npc.display]," Character. \n\nyou can move using the keyboard. \n\n* press ",commandChars.move_north," to move up/north\n* press ",commandChars.move_west," to move left/west\n* press ",commandChars.move_south," to move down/south\n* press ",commandChars.move_east," to move rigth/east"])
         cinematic = cinematics.ShowGameCinematic(4,tickSpan=1)
         cinematic.endTrigger = self.movementRightTestSetup1
         cinematics.cinematicQueue.append(cinematic)

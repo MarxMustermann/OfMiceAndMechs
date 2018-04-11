@@ -1,5 +1,5 @@
 # OfMiceAndMechs
-some prototype for a game
+a to be prototype for a game
 
 License: GPLv3
 known-dependencies: 

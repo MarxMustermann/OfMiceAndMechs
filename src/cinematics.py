@@ -161,6 +161,26 @@ class ScrollingTextCinematic(object):
         if self.endTrigger:
             self.endTrigger()
 
+class ShowQuestExecution(object):
+    def __init__(self,quest,tickSpan = None):
+        self.quest = quest
+        self.endTrigger = None
+        self.tickSpan = tickSpan
+
+    def advance(self):
+        if self.quest.completed:
+            loop.set_alarm_in(0.0, callShow_or_exit, ' ')
+            return
+
+        advanceGame()
+        if self.tickSpan:
+            loop.set_alarm_in(self.tickSpan, callShow_or_exit, '.')
+        return True
+
+    def abort(self):
+        if self.endTrigger:
+            self.endTrigger()
+        
 class ShowGameCinematic(object):
     def __init__(self,turns,tickSpan = None):
         self.turns = turns

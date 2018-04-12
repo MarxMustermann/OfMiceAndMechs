@@ -403,7 +403,7 @@ Ttbt9kp2wZ
 
 checking subjects brain patterns .......................... """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
 
-testing responsivity
+testing subjects responsivity
 """])
         cinematics.showCinematic(["""
 got response
@@ -424,7 +424,7 @@ send test information
 checking stored information
 
 entering interactive mode .................................
-        """)
+        """,autocontinue=True)
 
         options = {"1":"nok","2":"ok","3":"nok"}
         niceOptions = {"1":"Karl Weinberg","2":mainChar.name,"3":"Susanne Kreismann"}
@@ -437,7 +437,7 @@ entering interactive mode .................................
     def step2(self):
         import urwid
         if not self.cinematic.selected == "ok":
-            cinematics.showCinematic(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")])
+            cinematics.showCinematic(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")],autocontinue=True)
             self.fail()
             return
         options = {"1":"ok","2":"nok","3":"nok"}
@@ -451,7 +451,7 @@ entering interactive mode .................................
     def step3(self):
         import urwid
         if not self.cinematic.selected == "ok":
-            cinematics.showCinematic(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")])
+            cinematics.showCinematic(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")],autocontinue=True)
             self.fail()
             return
         options = {"1":"ok","2":"nok","3":"nok"}
@@ -465,7 +465,7 @@ entering interactive mode .................................
     def step4(self):
         import urwid
         if not self.cinematic.selected == "ok":
-            cinematics.showCinematic(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")])
+            cinematics.showCinematic(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")],autocontinue=True)
             self.fail()
             return
         definitions = {}
@@ -496,7 +496,7 @@ information storage ....................................... """,(urwid.AttrSpec(
 setting up knowledge base
 
 """]
-        cinematics.showCinematic(text)
+        cinematics.showCinematic(text,autocontinue=True)
 
         cinematic = cinematics.InformationTransfer(definitions)
         cinematics.cinematicQueue.append(cinematic)
@@ -505,7 +505,7 @@ setting up knowledge base
 initializing metabolism ..................................... """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
 initializing motion control ................................. """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
 initializing sensory organs ................................. """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
-transfer control to implant"""])
+transfer control to implant"""],autocontinue=True)
         messages.append("initializing metabolism ..................................... done")
         messages.append("initializing motion control ................................. done")
         messages.append("initializing sensory organs ................................. done")
@@ -525,7 +525,7 @@ transfer control to implant"""])
     def fail(self):
         cinematic = cinematics.ScrollingTextCinematic("""
 aborting initialisation
-resetting neural network ....................................""")
+resetting neural network ....................................""",autocontinue=True)
         cinematic.endTrigger = self.forceExit
         cinematics.cinematicQueue.append(cinematic)
 
@@ -561,11 +561,11 @@ class WakeUpPhase(BasicPhase):
         cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
         cinematics.cinematicQueue.append(cinematic)
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("please prepare to be ejected"))
-        cinematic = cinematics.ShowGameCinematic(4,tickSpan=1)
+        cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
         cinematics.cinematicQueue.append(cinematic)
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("note that you will be unable to move until implant imprinting"))
 
-        cinematic = cinematics.ShowGameCinematic(10,tickSpan=1)
+        cinematic = cinematics.ShowGameCinematic(6,tickSpan=1)
         cinematics.cinematicQueue.append(cinematic)
 
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("ejecting now"))
@@ -661,7 +661,6 @@ class BasicMovementTraining(BasicPhase):
 
         super().start()
 
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("\"i will test for physical fitness, please execute my orders\""))
         cinematics.showCinematic("welcome to the trainingsenvironment.\n\nplease follow the orders "+self.npc.name+" gives you.",rusty=True)
         cinematics.showCinematic(["you are represented by the ",displayChars.indexedMapping[displayChars.main_char]," Character,  ",self.npc.name," is represented by the ",displayChars.indexedMapping[self.npc.display]," Character. \n\nyou can move using the keyboard. \n\n* press ",commandChars.move_north," to move up/north\n* press ",commandChars.move_west," to move left/west\n* press ",commandChars.move_south," to move down/south\n* press ",commandChars.move_east," to move rigth/east"])
         cinematic = cinematics.ShowGameCinematic(4,tickSpan=1)
@@ -673,9 +672,9 @@ class BasicMovementTraining(BasicPhase):
         quest.endTrigger = self.movementRightTest1
         self.npc.assignQuest(quest,active=True)
 
-        cinematic = cinematics.ShowMessageCinematic("follow me, please")
+        cinematic = cinematics.ShowMessageCinematic("\"follow me, please\"")
         cinematics.cinematicQueue.append(cinematic)
-        self.mainCharRoom.addEvent(events.ShowMessageEvent(gamestate.tick+1,"you got an order. Barely awake and confused, you feel compelled to follow the order.\n\nYour feet are drawn into the given direction, this is indicated by a blinking questmarker looking like this: "+displayChars.indexedMapping[displayChars.questPathMarker][1]))
+        self.mainCharRoom.addEvent(events.ShowMessageEvent(gamestate.tick+1,"the current quest destination is shown as: "+displayChars.indexedMapping[displayChars.questTargetMarker][1]))
 
     def movementRightTest1(self):
         quest = quests.MoveQuest(terrain.wakeUpRoom,3,4)
@@ -687,7 +686,7 @@ class BasicMovementTraining(BasicPhase):
         quest.endTrigger = self.movementRightTest2
         self.npc.assignQuest(quest,active=True)
 
-        cinematic = cinematics.ShowMessageCinematic("follow me, please")
+        cinematic = cinematics.ShowMessageCinematic("\"follow me, please\"")
         cinematics.cinematicQueue.append(cinematic)
         loop.set_alarm_in(0.0, callShow_or_exit, '~')
 

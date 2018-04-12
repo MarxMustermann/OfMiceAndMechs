@@ -12,6 +12,7 @@ class InformationTransfer(object):
     def __init__(self,information):
         self.position = 0
         self.information = list(information.items())
+        self.triggered = False
 
     def advance(self):
         if self.position < len(self.information):
@@ -22,10 +23,13 @@ class InformationTransfer(object):
 
             self.alarm = loop.set_alarm_in(0.2, callShow_or_exit, '~')
             return False
-        else:
+        elif not self.triggered:
             header.set_text("")
             main.set_text("done")
-            self.alarm = loop.set_alarm_in(0.2, callShow_or_exit, ' ')
+            self.alarm = loop.set_alarm_in(0, callShow_or_exit, ' ')
+            self.triggered = True
+            return False
+        else:
             return False
 
     def abort(self):
@@ -94,12 +98,13 @@ class MessageZoomCinematic(object):
         pass
 
 class ScrollingTextCinematic(object):
-    def __init__(self,text,rusty=False):
+    def __init__(self,text,rusty=False, autocontinue=False):
         self.text = text
         self.position = 0
         self.alarm = None
         self.endTrigger = None
         self.rusty = rusty
+        self.autocontinue = autocontinue
 
         def flattenToPeseudoString(urwidText):
             if isinstance(urwidText,str):
@@ -138,11 +143,15 @@ class ScrollingTextCinematic(object):
                 self.alarm = loop.set_alarm_in(0.5, callShow_or_exit, '~')
             else:
                 self.alarm = loop.set_alarm_in(0.05, callShow_or_exit, '~')
-            addition = " "
+            addition = ""
         else:
             baseText = self.text
-            addition = "\n\n-- press space to proceed -- "
-            self.alarm = loop.set_alarm_in(1, callShow_or_exit, '~')
+            if not self.autocontinue:
+                addition = "\n\n-- press space to proceed -- "
+                self.alarm = loop.set_alarm_in(0, callShow_or_exit, '~')
+            else:
+                addition = ""
+                self.alarm = loop.set_alarm_in(0, callShow_or_exit, ' ')
         if self.rusty:
             base = convert(baseText)
         else:
@@ -254,5 +263,5 @@ class ShowMessageCinematic(object):
     def abort(self):
         pass
 
-def showCinematic(text,rusty=False):
-    cinematicQueue.append(ScrollingTextCinematic(text,rusty))
+def showCinematic(text,rusty=False,autocontinue=False):
+    cinematicQueue.append(ScrollingTextCinematic(text,rusty,autocontinue))

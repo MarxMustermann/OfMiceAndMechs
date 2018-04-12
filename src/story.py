@@ -18,6 +18,10 @@ class BasicPhase(object):
         self.requiresMainCharRoomFirstOfficer = True 
         self.requiresMainCharRoomSecondOfficer = True 
         self.mainCharQuestList = []
+        self.firstOfficerXPosition = 4
+        self.firstOfficerYPosition = 3
+        self.secondOfficerXPosition = 5
+        self.secondOfficerYPosition = 3
 
     def start(self):
         gamestate.currentPhase = self
@@ -34,13 +38,13 @@ class BasicPhase(object):
             if not self.mainCharRoom.firstOfficer:
                 name = names.characterFirstNames[(gamestate.tick+2)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)]
                 self.mainCharRoom.firstOfficer = characters.Character(displayChars.staffCharactersByLetter[names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)].split(" ")[-1][0].lower()],4,3,name=name)
-                self.mainCharRoom.addCharacter(self.mainCharRoom.firstOfficer,4,3)
+                self.mainCharRoom.addCharacter(self.mainCharRoom.firstOfficer,self.firstOfficerXPosition,self.firstOfficerYPosition)
 
         if self.requiresMainCharRoomSecondOfficer:
             if not self.mainCharRoom.secondOfficer:
                 name = names.characterFirstNames[(gamestate.tick+4)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+4)%len(names.characterLastNames)]
                 self.mainCharRoom.secondOfficer = characters.Character(displayChars.staffCharactersByLetter[names.characterLastNames[(gamestate.tick+4)%len(names.characterLastNames)].split(" ")[-1][0].lower()],4,3,name=name)
-                self.mainCharRoom.addCharacter(self.mainCharRoom.secondOfficer,5,3)
+                self.mainCharRoom.addCharacter(self.mainCharRoom.secondOfficer,self.secondOfficerXPosition,self.secondOfficerYPosition)
 
     def assignPlayerQuests(self):
         if not self.mainCharQuestList:
@@ -431,7 +435,9 @@ entering interactive mode .................................
         cinematics.cinematicQueue.append(cinematic)
 
     def step2(self):
+        import urwid
         if not self.cinematic.selected == "ok":
+            cinematics.showCinematic(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")])
             self.fail()
             return
         options = {"1":"ok","2":"nok","3":"nok"}
@@ -443,8 +449,9 @@ entering interactive mode .................................
         cinematics.cinematicQueue.append(cinematic)
 
     def step3(self):
+        import urwid
         if not self.cinematic.selected == "ok":
-            showCinematic(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")])
+            cinematics.showCinematic(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")])
             self.fail()
             return
         options = {"1":"ok","2":"nok","3":"nok"}
@@ -458,7 +465,7 @@ entering interactive mode .................................
     def step4(self):
         import urwid
         if not self.cinematic.selected == "ok":
-            showCinematic(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")])
+            cinematics.showCinematic(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")])
             self.fail()
             return
         definitions = {}
@@ -534,6 +541,8 @@ class WakeUpPhase(BasicPhase):
     def start(self):
         self.mainCharXPosition = 1
         self.mainCharYPosition = 4
+        self.firstOfficerXPosition = 6
+        self.firstOfficerYPosition = 7
         self.requiresMainCharRoomFirstOfficer = True
         self.requiresMainCharRoomSecondOfficer = False
 
@@ -541,9 +550,12 @@ class WakeUpPhase(BasicPhase):
 
         super().start()
 
+        """
         self.npc = characters.Character(displayChars.staffCharactersByLetter[names.characterLastNames[(gamestate.tick+14)%len(names.characterLastNames)].split(" ")[-1][0].lower()],5,3,name="Eduart Knoblauch")
         self.mainCharRoom.addCharacter(self.npc,6,7)
         self.npc.terrain = terrain
+        """
+        self.npc = self.mainCharRoom.firstOfficer
 
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("implant has taken control"))
         cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
@@ -583,12 +595,18 @@ class WakeUpPhase(BasicPhase):
         item = items.UnconciousBody(2,4)
         terrain.wakeUpRoom.addItems([item])
         terrain.wakeUpRoom.itemByCoordinates[(1,4)][0].eject()
-        quest = quests.MoveQuest(terrain.wakeUpRoom,3,4)
-        self.npc.assignQuest(quest,active=True)
         cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
         cinematics.cinematicQueue.append(cinematic)
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("please wait for assistance"))
-        cinematic = cinematics.ShowGameCinematic(5,tickSpan=1)
+        cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
+        cinematic.endTrigger = self.actualWakeUp
+        cinematics.cinematicQueue.append(cinematic)
+
+    def actualWakeUp(self):
+        quest = quests.MoveQuest(terrain.wakeUpRoom,3,4)
+        self.npc.assignQuest(quest,active=True)
+
+        cinematic = cinematics.ShowGameCinematic(10,tickSpan=1)
         cinematics.cinematicQueue.append(cinematic)
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("I AM "+self.npc.name.upper()+" AND I DEMAND YOUR SERVICE."))
         cinematic = cinematics.ShowGameCinematic(1,tickSpan=1)

@@ -608,8 +608,6 @@ class WakeUpPhase(BasicPhase):
 
         cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1)
         cinematics.cinematicQueue.append(cinematic)
-        #cinematic = cinematics.ShowGameCinematic(10,tickSpan=1)
-        #cinematics.cinematicQueue.append(cinematic)
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("I AM "+self.npc.name.upper()+" AND I DEMAND YOUR SERVICE."))
         cinematic = cinematics.ShowGameCinematic(1,tickSpan=1)
         cinematics.cinematicQueue.append(cinematic)

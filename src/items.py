@@ -351,18 +351,12 @@ class Lever(Item):
         if not self.activated:
             self.activated = True
             self.display = displayChars.lever_pulled
-            self.display = "!!"
-            terrain.alarm = True
-
-            messages.append(self.name+": activated!")
 
             if self.activateAction:
                 self.activateAction(self)
         else:
             self.activated = False
-            terrain.alarm = False
             self.display = displayChars.lever_notPulled
-            messages.append(self.name+": deactivated!")
 
             if self.deactivateAction:
                 self.activateAction(self)

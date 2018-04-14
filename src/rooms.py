@@ -1124,6 +1124,10 @@ XXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 
+        self.lever1 = items.Lever(3,1,"engine control")
+        self.addItems([self.lever1])
+
+
 class WaitingRoom(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
         self.roomLayout = """

@@ -8,13 +8,27 @@ callShow_or_exit = None
 messages = None
 advanceGame = None
 
-class InformationTransfer(object):
+class BasicCinematic(object):
+    def __init__(self):
+        self.background = False
+
+    def advance(self):
+        return False
+
+    def abort(self):
+        pass
+
+class InformationTransfer(BasicCinematic):
     def __init__(self,information):
+        super().__init__()
+
         self.position = 0
         self.information = list(information.items())
         self.triggered = False
 
     def advance(self):
+        super().advance()
+
         if self.position < len(self.information):
             header.set_text(self.information[self.position][0])
             main.set_text(self.information[self.position][1])
@@ -33,13 +47,17 @@ class InformationTransfer(object):
             return False
 
     def abort(self):
+        super().abort()
+
         try: 
             loop.remove_alarm(self.alarm)
         except:
             pass
 
-class MessageZoomCinematic(object):
+class MessageZoomCinematic(BasicCinematic):
     def __init__(self):
+        super().__init__()
+
         self.screensize = loop.screen.get_cols_rows()
         self.right = self.screensize[0]
         self.left = 0
@@ -51,6 +69,8 @@ class MessageZoomCinematic(object):
         self.text = None
 
     def advance(self):
+        super().advance()
+
         if not self.text:
             self.text = interaction.renderMessages().split("\n")
 
@@ -91,14 +111,18 @@ class MessageZoomCinematic(object):
         self.alarm = loop.set_alarm_in(0.2, callShow_or_exit, '~')
 
     def abort(self):
+        super().abort()
+
         try: 
             loop.remove_alarm(self.alarm)
         except:
             pass
         pass
 
-class ScrollingTextCinematic(object):
+class ScrollingTextCinematic(BasicCinematic):
     def __init__(self,text,rusty=False, autocontinue=False):
+        super().__init__()
+
         self.text = text
         self.position = 0
         self.alarm = None
@@ -124,6 +148,8 @@ class ScrollingTextCinematic(object):
         self.endPosition = len(self.text)
 
     def advance(self):
+        super().advance()
+
         if self.position > self.endPosition:
             return
 
@@ -163,6 +189,8 @@ class ScrollingTextCinematic(object):
         self.position += 1
 
     def abort(self):
+        super().abort()
+
         try: 
             loop.remove_alarm(self.alarm)
         except:
@@ -170,15 +198,22 @@ class ScrollingTextCinematic(object):
         if self.endTrigger:
             self.endTrigger()
 
-class ShowQuestExecution(object):
-    def __init__(self,quest,tickSpan = None, assignTo = None):
+class ShowQuestExecution(BasicCinematic):
+    def __init__(self,quest,tickSpan = None, assignTo = None, background = False):
+        super().__init__()
+
         self.quest = quest
         self.endTrigger = None
         self.tickSpan = tickSpan
         self.firstRun = True
         self.assignTo = assignTo
+        self.background = background
+        if assignTo and not assignTo.automated:
+            self.background = True
 
     def advance(self):
+        super().advance()
+
         if self.firstRun:
             self.firstRun = False
             if self.assignTo:
@@ -194,16 +229,22 @@ class ShowQuestExecution(object):
         return True
 
     def abort(self):
+        super().abort()
+
         if self.endTrigger:
             self.endTrigger()
         
-class ShowGameCinematic(object):
+class ShowGameCinematic(BasicCinematic):
     def __init__(self,turns,tickSpan = None):
+        super().__init__()
+
         self.turns = turns
         self.endTrigger = None
         self.tickSpan = tickSpan
 
     def advance(self):
+        super().advance()
+
         if not self.turns:
             loop.set_alarm_in(0.0, callShow_or_exit, ' ')
             return
@@ -215,14 +256,18 @@ class ShowGameCinematic(object):
         return True
 
     def abort(self):
+        super().abort()
+
         while self.turns > 0:
             self.turns -= 1
             advanceGame()
         if self.endTrigger:
             self.endTrigger()
 
-class SelectionCinematic(object):
+class SelectionCinematic(BasicCinematic):
     def __init__(self,text, options, niceOptions):
+        super().__init__()
+
         self.showSubmenu = True
         self.options = options
         self.niceOptions = niceOptions
@@ -231,6 +276,8 @@ class SelectionCinematic(object):
         self.submenue= None
 
     def advance(self):
+        super().advance()
+
         text = """
 please answer the question:
 
@@ -243,6 +290,8 @@ what is your name?"""
         return True
 
     def abort(self):
+        super().abort()
+
         global cinematicQueue
         cinematicQueue = cinematicQueue[1:]
         if self.followUp:
@@ -252,12 +301,16 @@ what is your name?"""
             cinematicQueue[0].advance()
         loop.set_alarm_in(0.0, callShow_or_exit, '~')
 
-class ShowMessageCinematic(object):
+class ShowMessageCinematic(BasicCinematic):
     def __init__(self,message):
+        super().__init__()
+
         self.message = message
         self.breakCinematic = False
 
     def advance(self):
+        super().advance()
+
         if self.breakCinematic:
             loop.set_alarm_in(0.0, callShow_or_exit, ' ')
             return False
@@ -266,9 +319,6 @@ class ShowMessageCinematic(object):
         loop.set_alarm_in(0.0, callShow_or_exit, '~')
         self.breakCinematic = True
         return True
-
-    def abort(self):
-        pass
 
 def showCinematic(text,rusty=False,autocontinue=False):
     cinematicQueue.append(ScrollingTextCinematic(text,rusty,autocontinue))

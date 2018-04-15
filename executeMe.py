@@ -128,6 +128,14 @@ events.messages = messages
 cinematics.interaction = interaction
 
 if args.debug:
+    class debugToFile(object):
+        def __init__(self):
+            logfile = open("debug.log","w")
+            logfile.close()
+        def append(message):
+            logfile = open("debug.log","a")
+            logfile.write(message)
+            logfile.close()
     debugMessages = messages
 else:
     debugMessages = []

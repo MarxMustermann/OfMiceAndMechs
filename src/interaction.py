@@ -105,18 +105,21 @@ def show_or_exit(key):
         stop = False
         doAdvanceGame = True
         if len(cinematics.cinematicQueue):
+            cinematic = cinematics.cinematicQueue[0]
+
             if key in (commandChars.quit_normal, commandChars.quit_instant):
                 gamestate.save()
                 raise urwid.ExitMainLoop()
             elif key in (commandChars.pause,commandChars.advance,commandChars.autoAdvance):
-                cinematics.cinematicQueue[0].abort()
+                cinematic.abort()
                 cinematics.cinematicQueue = cinematics.cinematicQueue[1:]
                 loop.set_alarm_in(0.0, callShow_or_exit, commandChars.ignore)
                 return
             else:
-                if not cinematics.cinematicQueue[0].advance():
+                if not cinematic.advance():
                     return
-                key = commandChars.ignore
+                if not cinematic.background:
+                    key = commandChars.ignore
         if key in (commandChars.ignore):
             doAdvanceGame = False
 

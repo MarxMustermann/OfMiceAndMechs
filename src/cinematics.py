@@ -208,8 +208,11 @@ class ShowQuestExecution(BasicCinematic):
         self.firstRun = True
         self.assignTo = assignTo
         self.background = background
+        self.active = True
         if assignTo and not assignTo.automated:
             self.background = True
+            self.active = False
+        self.alarm = None
 
     def advance(self):
         super().advance()
@@ -224,8 +227,13 @@ class ShowQuestExecution(BasicCinematic):
             return
 
         advanceGame()
-        if self.tickSpan:
-            loop.set_alarm_in(self.tickSpan, callShow_or_exit, '.')
+        if self.alarm:
+            loop.remove_alarm(self.alarm)
+
+        if self.tickSpan and self.active:
+            self.alarm = loop.set_alarm_in(self.tickSpan, callShow_or_exit, '.')
+        else:
+            self.alarm = loop.set_alarm_in(0.5, callShow_or_exit, '~')
         return True
 
     def abort(self):

@@ -171,12 +171,19 @@ class ScrollingTextCinematic(object):
             self.endTrigger()
 
 class ShowQuestExecution(object):
-    def __init__(self,quest,tickSpan = None):
+    def __init__(self,quest,tickSpan = None, assignTo = None):
         self.quest = quest
         self.endTrigger = None
         self.tickSpan = tickSpan
+        self.firstRun = True
+        self.assignTo = assignTo
 
     def advance(self):
+        if self.firstRun:
+            self.firstRun = False
+            if self.assignTo:
+                self.assignTo.assignQuest(self.quest,active=True)
+
         if self.quest.completed:
             loop.set_alarm_in(0.0, callShow_or_exit, ' ')
             return

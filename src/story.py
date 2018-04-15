@@ -20,9 +20,27 @@ def showGame(duration,trigger=None):
 def showQuest(quest,assignTo=None,trigger=None):
     cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=assignTo)
     cinematics.cinematicQueue.append(cinematic)
-def showText(text,rusty=False,autocontinue=False):
+    cinematic.endTrigger = trigger
+def showText(text,rusty=False,autocontinue=False,trigger=None):
     cinematic = cinematics.ScrollingTextCinematic(text,rusty=rusty,autocontinue=autocontinue)
     cinematics.cinematicQueue.append(cinematic)
+    cinematic.endTrigger = trigger
+def say(text,speaker=None,trigger=None):
+    prefix = ""
+    if speaker:
+        display = speaker.display
+        if isinstance(display,str):
+            prefix = display
+        elif isinstance(display,int):
+            display = displayChars.indexedMapping[speaker.display]
+            if isinstance(display,str):
+                prefix = display
+            else:
+                prefix = display[1]
+        else:
+            prefix = display[1]
+        prefix += ": "
+    showMessage(prefix+'"'+text+'"',trigger=trigger)
 
 class BasicPhase(object):
     def __init__(self):
@@ -597,16 +615,17 @@ class WakeUpPhase(BasicPhase):
         showGame(2)
         quest = quests.MoveQuest(terrain.wakeUpRoom,3,4)
         showQuest(quest,firstOfficer)
-        showMessage("I AM "+firstOfficer.name.upper()+" AND I DEMAND YOUR SERVICE.")
+        say("I AM "+firstOfficer.name.upper()+" AND I DEMAND YOUR SERVICE.",firstOfficer)
         showGame(1)
         showMessage("implant imprinted - setup complete")
         showGame(4)
-        showMessage("wake up, "+mainChar.name)
+        say("wake up, "+mainChar.name,firstOfficer)
         showGame(3)
-        showMessage("WAKE UP.")
+        say("WAKE UP.",firstOfficer)
         showGame(2)
-        showMessage("WAKE UP. *kicks "+mainChar.name+"*")
-        showGame(6,trigger=self.addPlayer)
+        say("WAKE UP.",firstOfficer)
+        showMessage("*kicks "+mainChar.name+"*")
+        showGame(3,trigger=self.addPlayer)
 
     def addPlayer(self):
         self.mainCharRoom.removeItem(terrain.wakeUpRoom.itemByCoordinates[(2,4)][0])
@@ -631,64 +650,73 @@ class BasicMovementTraining(BasicPhase):
         self.requiresMainCharRoomSecondOfficer = False
 
         self.mainCharRoom = terrain.wakeUpRoom
-        self.npc = terrain.wakeUpRoom.firstOfficer
+        firstOfficer = terrain.wakeUpRoom.firstOfficer
 
         super().start()
 
-        cinematics.showCinematic("welcome to the trainingsenvironment.\n\nplease follow the orders "+self.npc.name+" gives you.",rusty=True)
-        cinematics.showCinematic(["you are represented by the ",displayChars.indexedMapping[displayChars.main_char]," Character,  ",self.npc.name," is represented by the ",displayChars.indexedMapping[self.npc.display]," Character. \n\nyou can move using the keyboard. \n\n* press ",commandChars.move_north," to move up/north\n* press ",commandChars.move_west," to move left/west\n* press ",commandChars.move_south," to move down/south\n* press ",commandChars.move_east," to move rigth/east"])
-        cinematic = cinematics.ShowGameCinematic(1,tickSpan=1)
-        cinematics.cinematicQueue.append(cinematic)
+        showText("welcome to the trainingsenvironment.\n\nplease follow the orders "+firstOfficer.name+" gives you.",rusty=True)
+        showText(["you are represented by the ",displayChars.indexedMapping[displayChars.main_char]," Character,  ",firstOfficer.name," is represented by the ",displayChars.indexedMapping[firstOfficer.display]," Character. \n\nyou can move using the keyboard. \n\n* press ",commandChars.move_north," to move up/north\n* press ",commandChars.move_west," to move left/west\n* press ",commandChars.move_south," to move down/south\n* press ",commandChars.move_east," to move rigth/east"])
+        showGame(1)
 
         quest = quests.MoveQuest(terrain.wakeUpRoom,4,4)
-        cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=self.npc)
-        cinematics.cinematicQueue.append(cinematic)
-        cinematic = cinematics.ShowMessageCinematic("\"follow me, please\"")
-        self.mainCharRoom.addEvent(events.ShowMessageEvent(gamestate.tick+1,"the current quest destination is shown as: "+displayChars.indexedMapping[displayChars.questTargetMarker][1]))
+        showQuest(quest,firstOfficer)
+        say("follow me, please",firstOfficer)
+        showMessage("the current quest destination is shown as: "+displayChars.indexedMapping[displayChars.questTargetMarker][1])
         quest = quests.MoveQuest(terrain.wakeUpRoom,3,4)
-        cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=mainChar)
-        cinematics.cinematicQueue.append(cinematic)
+        showQuest(quest,mainChar)
 
         quest = quests.MoveQuest(terrain.wakeUpRoom,5,4)
-        cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=self.npc)
-        cinematics.cinematicQueue.append(cinematic)
-        cinematic = cinematics.ShowMessageCinematic("\"follow me, please\"")
-        cinematics.cinematicQueue.append(cinematic)
+        showQuest(quest,firstOfficer)
+        say("follow me, please",firstOfficer)
         quest = quests.MoveQuest(terrain.wakeUpRoom,4,4)
-        cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=mainChar)
-        cinematics.cinematicQueue.append(cinematic)
+        showQuest(quest,mainChar)
 
         quest = quests.MoveQuest(terrain.wakeUpRoom,6,7)
-        cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=self.npc)
-        cinematics.cinematicQueue.append(cinematic)
-        cinematic = cinematics.ShowMessageCinematic("\"follow me, please\"")
-        cinematics.cinematicQueue.append(cinematic)
+        showQuest(quest,firstOfficer)
+        say("follow me, please",firstOfficer)
         quest = quests.MoveQuest(terrain.wakeUpRoom,5,7)
-        cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=mainChar)
-        cinematics.cinematicQueue.append(cinematic)
+        showQuest(quest,mainChar)
 
-        cinematic = cinematics.ShowMessageCinematic("\"great. You seemed to got the hang of movement\"")
-        cinematics.cinematicQueue.append(cinematic)
-        cinematic = cinematics.ShowMessageCinematic("\"please, move over to the lever now\"")
-        cinematics.cinematicQueue.append(cinematic)
+        say("move to (2,7), please",firstOfficer)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,2,7)
+        showQuest(quest,mainChar)
+        say("move to (4,3), please",firstOfficer)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,4,3)
+        showQuest(quest,mainChar)
+        say("move to (4,4), please",firstOfficer)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,4,4)
+        showQuest(quest,mainChar)
+        say("move to (3,3), please",firstOfficer)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,3,3)
+        showQuest(quest,mainChar)
+        say("move to (6,6), please",firstOfficer)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,6,6)
+        showQuest(quest,mainChar)
+        say("great. You seemed be able to coordinate yourself",firstOfficer)
+
+        say("move over to the lever now",firstOfficer)
         quest = quests.MoveQuest(terrain.wakeUpRoom,3,2)
-        cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=mainChar)
-        cinematic.endTrigger = self.moveToMachineRoom
-        cinematics.cinematicQueue.append(cinematic)
+        showQuest(quest,mainChar)
+
+        showMessage("you can actiate levers by moving onto the lever and then pressing "+commandChars.activate)
+        say("activate the lever",firstOfficer)
+        quest = quests.ActivateQuest(terrain.wakeUpRoom.lever1)
+        showQuest(quest,mainChar)
+
+        say("well done",firstOfficer,trigger=self.moveToMachineRoom)
 
     def moveToMachineRoom(self):
-        cinematic = cinematics.ShowMessageCinematic("you seem to be in working order. please move to your assigned work")
-        cinematics.cinematicQueue.append(cinematic)
-        cinematic = cinematics.ShowMessageCinematic("your next assignement is in the boiler room. The boiler room is the hallway up to the north and the first room south after the corner")
-        cinematics.cinematicQueue.append(cinematic)
-        loop.set_alarm_in(0.0, callShow_or_exit, '~')
+        firstOfficer = terrain.wakeUpRoom.firstOfficer
+
+        say("you seem to be in working order. please move to your assigned work",firstOfficer)
+        say("your next assignement is in the boiler room. The boiler room is the hallway up to the north and the first room south after the corner",firstOfficer)
 
         quest = quests.MoveQuest(terrain.tutorialMachineRoom,3,3)
         mainChar.assignQuest(quest,active=True)
         quest.endTrigger = self.end
 
         quest = quests.MoveQuest(terrain.wakeUpRoom,5,1)
-        self.npc.assignQuest(quest,active=True)
+        firstOfficer.assignQuest(quest,active=True)
 
     def end(self):
         phase2 = FirstTutorialPhase()

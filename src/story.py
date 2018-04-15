@@ -9,6 +9,20 @@ events = None
 the base class for the all phases here
 
 """
+def showMessage(message,trigger=None):
+    cinematic = cinematics.ShowMessageCinematic(message)
+    cinematics.cinematicQueue.append(cinematic)
+    cinematic.endTrigger = trigger
+def showGame(duration,trigger=None):
+    cinematic = cinematics.ShowGameCinematic(duration,tickSpan=1)
+    cinematics.cinematicQueue.append(cinematic)
+    cinematic.endTrigger = trigger
+def showQuest(quest,assignTo=None,trigger=None):
+    cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=assignTo)
+    cinematics.cinematicQueue.append(cinematic)
+def showText(text,rusty=False,autocontinue=False):
+    cinematic = cinematics.ScrollingTextCinematic(text,rusty=rusty,autocontinue=autocontinue)
+    cinematics.cinematicQueue.append(cinematic)
 
 class BasicPhase(object):
     def __init__(self):
@@ -385,7 +399,8 @@ class BrainTestingPhase(BasicPhase):
 
     def start(self):
         import urwid
-        cinematics.showCinematic(["""
+
+        showText(["""
 initialising subject ...................................... """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
 
 testing subject with random input 
@@ -405,7 +420,7 @@ checking subjects brain patterns .......................... """,(urwid.AttrSpec(
 
 testing subjects responsivity
 """])
-        cinematics.showCinematic(["""
+        showText(["""
 got response
 responsivity .............................................. """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
 
@@ -420,7 +435,7 @@ send test information
 3.) rust - Rust is the oxide of iron. Rust is the most common form of corrosion
 """])
 
-        cinematics.showCinematic("""
+        showText("""
 checking stored information
 
 entering interactive mode .................................
@@ -437,7 +452,7 @@ entering interactive mode .................................
     def step2(self):
         import urwid
         if not self.cinematic.selected == "ok":
-            cinematics.showCinematic(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")],autocontinue=True)
+            showText(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")],autocontinue=True)
             self.fail()
             return
         options = {"1":"ok","2":"nok","3":"nok"}
@@ -451,7 +466,7 @@ entering interactive mode .................................
     def step3(self):
         import urwid
         if not self.cinematic.selected == "ok":
-            cinematics.showCinematic(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")],autocontinue=True)
+            showText(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")],autocontinue=True)
             self.fail()
             return
         options = {"1":"ok","2":"nok","3":"nok"}
@@ -465,7 +480,7 @@ entering interactive mode .................................
     def step4(self):
         import urwid
         if not self.cinematic.selected == "ok":
-            cinematics.showCinematic(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")],autocontinue=True)
+            showtText(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")],autocontinue=True)
             self.fail()
             return
         definitions = {}
@@ -491,31 +506,30 @@ Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lor
 
 Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc, """
 
-        text = ["""
+        showText([""" 
 information storage ....................................... """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
 setting up knowledge base
 
-"""]
-        cinematics.showCinematic(text,autocontinue=True)
+"""] ,autocontinue=True)
 
         cinematic = cinematics.InformationTransfer(definitions)
         cinematics.cinematicQueue.append(cinematic)
         
-        cinematic = cinematics.ScrollingTextCinematic(["""
-initializing metabolism ..................................... """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
-initializing motion control ................................. """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
-initializing sensory organs ................................. """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
-transfer control to implant"""],autocontinue=True)
         messages.append("initializing metabolism ..................................... done")
         messages.append("initializing motion control ................................. done")
         messages.append("initializing sensory organs ................................. done")
         messages.append("transfer control to implant")
-        cinematic.endTrigger = self.end
-        cinematics.cinematicQueue.append(cinematic)
+
+        showText(["""
+initializing metabolism ..................................... """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
+initializing motion control ................................. """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
+initializing sensory organs ................................. """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
+transfer control to implant"""],autocontinue=True)
+
         cinematic = cinematics.MessageZoomCinematic()
         cinematics.cinematicQueue.append(cinematic)
-        cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
-        cinematics.cinematicQueue.append(cinematic)
+
+        showGame(2,trigger=self.end)
 
     def end(self):
         nextPhase = WakeUpPhase()
@@ -523,11 +537,9 @@ transfer control to implant"""],autocontinue=True)
         gamestate.save()
 
     def fail(self):
-        cinematic = cinematics.ScrollingTextCinematic("""
+        showText("""
 aborting initialisation
 resetting neural network ....................................""",autocontinue=True)
-        cinematic.endTrigger = self.forceExit
-        cinematics.cinematicQueue.append(cinematic)
 
     def forceExit(self):
         import urwid
@@ -559,71 +571,42 @@ class WakeUpPhase(BasicPhase):
         """
         self.npc = self.mainCharRoom.firstOfficer
 
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("implant has taken control"))
-        cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
-        cinematics.cinematicQueue.append(cinematic)
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("please prepare to be ejected"))
-        cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
-        cinematics.cinematicQueue.append(cinematic)
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("note that you will be unable to move until implant imprinting"))
-
-        cinematic = cinematics.ShowGameCinematic(6,tickSpan=1)
-        cinematics.cinematicQueue.append(cinematic)
-
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("ejecting now"))
-        cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
-        cinematics.cinematicQueue.append(cinematic)
-
-        cinematic = cinematics.ShowMessageCinematic("*ting*")
-        cinematics.cinematicQueue.append(cinematic)
-        cinematic = cinematics.ShowGameCinematic(1,tickSpan=1)
-        cinematics.cinematicQueue.append(cinematic)
-
-        cinematic = cinematics.ShowMessageCinematic("*screetch*")
-        cinematics.cinematicQueue.append(cinematic)
-        cinematic = cinematics.ShowGameCinematic(1,tickSpan=1)
-        cinematic.endTrigger = self.playerEject
-        cinematics.cinematicQueue.append(cinematic)
+        showMessage("implant has taken control")
+        showGame(2)
+        showMessage("please prepare to be ejected")
+        showGame(2)
+        showMessage("note that you will be unable to move until implant imprinting")
+        showGame(6)
+        showMessage("ejecting now")
+        showGame(2)
+        showMessage("*ting*")
+        showGame(1)
+        showMessage("*screetch*")
+        showGame(1,trigger=self.playerEject)
 
     def playerEject(self):
         item = items.UnconciousBody(2,4)
         terrain.wakeUpRoom.addItems([item])
         terrain.wakeUpRoom.itemByCoordinates[(1,4)][0].eject()
 
-        cinematic = cinematics.ShowMessageCinematic("*schurp**splat*")
-        cinematics.cinematicQueue.append(cinematic)
-        cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
-        cinematics.cinematicQueue.append(cinematic)
+        firstOfficer = terrain.wakeUpRoom.firstOfficer
 
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("please wait for assistance"))
-        cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
-        cinematics.cinematicQueue.append(cinematic)
+        showMessage("*schurp**splat*")
+        showGame(2)
+        showMessage("please wait for assistance")
+        showGame(2)
         quest = quests.MoveQuest(terrain.wakeUpRoom,3,4)
-        cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=self.npc)
-        cinematics.cinematicQueue.append(cinematic)
-
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("I AM "+self.npc.name.upper()+" AND I DEMAND YOUR SERVICE."))
-        cinematic = cinematics.ShowGameCinematic(1,tickSpan=1)
-        cinematics.cinematicQueue.append(cinematic)
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("implant imprinted - setup complete"))
-
-        cinematic = cinematics.ShowGameCinematic(4,tickSpan=1)
-        cinematics.cinematicQueue.append(cinematic)
-        cinematic = cinematics.ShowMessageCinematic("wake up, "+mainChar.name)
-        cinematics.cinematicQueue.append(cinematic)
-        cinematic = cinematics.ShowGameCinematic(3,tickSpan=1)
-        cinematics.cinematicQueue.append(cinematic)
-
-        cinematic = cinematics.ShowMessageCinematic("WAKE UP.")
-        cinematics.cinematicQueue.append(cinematic)
-        cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
-        cinematics.cinematicQueue.append(cinematic)
-
-        cinematic = cinematics.ShowMessageCinematic("WAKE UP. *kicks "+mainChar.name+"*")
-        cinematics.cinematicQueue.append(cinematic)
-        cinematic = cinematics.ShowGameCinematic(6,tickSpan=1)
-        cinematic.endTrigger = self.addPlayer
-        cinematics.cinematicQueue.append(cinematic)
+        showQuest(quest,firstOfficer)
+        showMessage("I AM "+firstOfficer.name.upper()+" AND I DEMAND YOUR SERVICE.")
+        showGame(1)
+        showMessage("implant imprinted - setup complete")
+        showGame(4)
+        showMessage("wake up, "+mainChar.name)
+        showGame(3)
+        showMessage("WAKE UP.")
+        showGame(2)
+        showMessage("WAKE UP. *kicks "+mainChar.name+"*")
+        showGame(6,trigger=self.addPlayer)
 
     def addPlayer(self):
         self.mainCharRoom.removeItem(terrain.wakeUpRoom.itemByCoordinates[(2,4)][0])

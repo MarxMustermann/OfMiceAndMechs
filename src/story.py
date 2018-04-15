@@ -541,14 +541,16 @@ class WakeUpPhase(BasicPhase):
     def start(self):
         self.mainCharXPosition = 1
         self.mainCharYPosition = 4
-        self.firstOfficerXPosition = 6
-        self.firstOfficerYPosition = 7
+        self.firstOfficerXPosition = 5
+        self.firstOfficerYPosition = 1
         self.requiresMainCharRoomFirstOfficer = True
         self.requiresMainCharRoomSecondOfficer = False
 
         self.mainCharRoom = terrain.wakeUpRoom
 
         super().start()
+
+        self.mainCharRoom.characters.remove(mainChar)
 
         """
         self.npc = characters.Character(displayChars.staffCharactersByLetter[names.characterLastNames[(gamestate.tick+14)%len(names.characterLastNames)].split(" ")[-1][0].lower()],5,3,name="Eduart Knoblauch")
@@ -570,67 +572,55 @@ class WakeUpPhase(BasicPhase):
 
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("ejecting now"))
         cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
-        cinematic.endTrigger = self.ting
         cinematics.cinematicQueue.append(cinematic)
 
-        self.mainCharRoom.characters.remove(mainChar)
-
-        self.assignPlayerQuests()
-
-    def ting(self):
         cinematic = cinematics.ShowMessageCinematic("*ting*")
         cinematics.cinematicQueue.append(cinematic)
         cinematic = cinematics.ShowGameCinematic(1,tickSpan=1)
-        cinematic.endTrigger = self.screetch
         cinematics.cinematicQueue.append(cinematic)
 
-    def screetch(self):
-        messages.append("*screetch*")
+        cinematic = cinematics.ShowMessageCinematic("*screetch*")
+        cinematics.cinematicQueue.append(cinematic)
         cinematic = cinematics.ShowGameCinematic(1,tickSpan=1)
         cinematic.endTrigger = self.playerEject
         cinematics.cinematicQueue.append(cinematic)
 
     def playerEject(self):
-        messages.append("*schurp**splat*")
         item = items.UnconciousBody(2,4)
         terrain.wakeUpRoom.addItems([item])
         terrain.wakeUpRoom.itemByCoordinates[(1,4)][0].eject()
+
+        cinematic = cinematics.ShowMessageCinematic("*schurp**splat*")
+        cinematics.cinematicQueue.append(cinematic)
         cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
         cinematics.cinematicQueue.append(cinematic)
+
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("please wait for assistance"))
         cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
-        cinematic.endTrigger = self.actualWakeUp
         cinematics.cinematicQueue.append(cinematic)
-
-    def actualWakeUp(self):
         quest = quests.MoveQuest(terrain.wakeUpRoom,3,4)
-        self.npc.assignQuest(quest,active=True)
-
-        cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1)
+        cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=self.npc)
         cinematics.cinematicQueue.append(cinematic)
+
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("I AM "+self.npc.name.upper()+" AND I DEMAND YOUR SERVICE."))
         cinematic = cinematics.ShowGameCinematic(1,tickSpan=1)
         cinematics.cinematicQueue.append(cinematic)
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("implant imprinted - setup complete"))
 
         cinematic = cinematics.ShowGameCinematic(4,tickSpan=1)
-        cinematic.endTrigger = self.wakeUp1
         cinematics.cinematicQueue.append(cinematic)
-
-    def wakeUp1(self):
-        messages.append("wake up, "+mainChar.name)
+        cinematic = cinematics.ShowMessageCinematic("wake up, "+mainChar.name)
+        cinematics.cinematicQueue.append(cinematic)
         cinematic = cinematics.ShowGameCinematic(3,tickSpan=1)
-        cinematic.endTrigger = self.wakeUp2
         cinematics.cinematicQueue.append(cinematic)
 
-    def wakeUp2(self):
-        messages.append("WAKE UP.")
+        cinematic = cinematics.ShowMessageCinematic("WAKE UP.")
+        cinematics.cinematicQueue.append(cinematic)
         cinematic = cinematics.ShowGameCinematic(2,tickSpan=1)
-        cinematic.endTrigger = self.kick
         cinematics.cinematicQueue.append(cinematic)
 
-    def kick(self):
-        messages.append("WAKE UP. *kicks "+mainChar.name+"*")
+        cinematic = cinematics.ShowMessageCinematic("WAKE UP. *kicks "+mainChar.name+"*")
+        cinematics.cinematicQueue.append(cinematic)
         cinematic = cinematics.ShowGameCinematic(6,tickSpan=1)
         cinematic.endTrigger = self.addPlayer
         cinematics.cinematicQueue.append(cinematic)
@@ -643,6 +633,7 @@ class WakeUpPhase(BasicPhase):
 
     def end(self):
         phase2 = BasicMovementTraining()
+        gamestate.save()
         phase2.start()
 
 class BasicMovementTraining(BasicPhase):
@@ -663,37 +654,44 @@ class BasicMovementTraining(BasicPhase):
 
         cinematics.showCinematic("welcome to the trainingsenvironment.\n\nplease follow the orders "+self.npc.name+" gives you.",rusty=True)
         cinematics.showCinematic(["you are represented by the ",displayChars.indexedMapping[displayChars.main_char]," Character,  ",self.npc.name," is represented by the ",displayChars.indexedMapping[self.npc.display]," Character. \n\nyou can move using the keyboard. \n\n* press ",commandChars.move_north," to move up/north\n* press ",commandChars.move_west," to move left/west\n* press ",commandChars.move_south," to move down/south\n* press ",commandChars.move_east," to move rigth/east"])
-        cinematic = cinematics.ShowGameCinematic(4,tickSpan=1)
-        cinematic.endTrigger = self.movementRightTestSetup1
+        cinematic = cinematics.ShowGameCinematic(1,tickSpan=1)
         cinematics.cinematicQueue.append(cinematic)
 
-    def movementRightTestSetup1(self):
         quest = quests.MoveQuest(terrain.wakeUpRoom,4,4)
-        quest.endTrigger = self.movementRightTest1
-        self.npc.assignQuest(quest,active=True)
-
-        cinematic = cinematics.ShowMessageCinematic("\"follow me, please\"")
+        cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=self.npc)
         cinematics.cinematicQueue.append(cinematic)
+        cinematic = cinematics.ShowMessageCinematic("\"follow me, please\"")
         self.mainCharRoom.addEvent(events.ShowMessageEvent(gamestate.tick+1,"the current quest destination is shown as: "+displayChars.indexedMapping[displayChars.questTargetMarker][1]))
-
-    def movementRightTest1(self):
         quest = quests.MoveQuest(terrain.wakeUpRoom,3,4)
-        quest.endTrigger = self.movementRightTestSetup2
-        mainChar.assignQuest(quest,active=True)
+        cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=mainChar)
+        cinematics.cinematicQueue.append(cinematic)
 
-    def movementRightTestSetup2(self):
         quest = quests.MoveQuest(terrain.wakeUpRoom,5,4)
-        quest.endTrigger = self.movementRightTest2
-        self.npc.assignQuest(quest,active=True)
-
+        cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=self.npc)
+        cinematics.cinematicQueue.append(cinematic)
         cinematic = cinematics.ShowMessageCinematic("\"follow me, please\"")
         cinematics.cinematicQueue.append(cinematic)
-        loop.set_alarm_in(0.0, callShow_or_exit, '~')
-
-    def movementRightTest2(self):
         quest = quests.MoveQuest(terrain.wakeUpRoom,4,4)
-        quest.endTrigger = self.moveToMachineRoom
-        mainChar.assignQuest(quest,active=True)
+        cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=mainChar)
+        cinematics.cinematicQueue.append(cinematic)
+
+        quest = quests.MoveQuest(terrain.wakeUpRoom,6,7)
+        cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=self.npc)
+        cinematics.cinematicQueue.append(cinematic)
+        cinematic = cinematics.ShowMessageCinematic("\"follow me, please\"")
+        cinematics.cinematicQueue.append(cinematic)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,5,7)
+        cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=mainChar)
+        cinematics.cinematicQueue.append(cinematic)
+
+        cinematic = cinematics.ShowMessageCinematic("\"great. You seemed to got the hang of movement\"")
+        cinematics.cinematicQueue.append(cinematic)
+        cinematic = cinematics.ShowMessageCinematic("\"please, move over to the lever now\"")
+        cinematics.cinematicQueue.append(cinematic)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,3,2)
+        cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=mainChar)
+        cinematic.endTrigger = self.moveToMachineRoom
+        cinematics.cinematicQueue.append(cinematic)
 
     def moveToMachineRoom(self):
         cinematic = cinematics.ShowMessageCinematic("you seem to be in working order. please move to your assigned work")
@@ -706,11 +704,12 @@ class BasicMovementTraining(BasicPhase):
         mainChar.assignQuest(quest,active=True)
         quest.endTrigger = self.end
 
-        quest = quests.MoveQuest(terrain.wakeUpRoom,6,7)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,5,1)
         self.npc.assignQuest(quest,active=True)
 
     def end(self):
         phase2 = FirstTutorialPhase()
+        gamestate.save()
         phase2.start()
 
 class FirstTutorialPhase(BasicPhase):

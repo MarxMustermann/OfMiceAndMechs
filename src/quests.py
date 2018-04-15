@@ -50,7 +50,7 @@ class Quest(object):
     # do the teardown of the quest
     def postHandler(self):
         if self.completed:
-            messages.append("this should not happen (posthandler called on completed quest ("+str(self)+")) "+str(self.character))
+            debugMessages.append("this should not happen (posthandler called on completed quest ("+str(self)+")) "+str(self.character))
             if self.character and self in self.character.quests:
                 startNext = False
                 if self.character.quests[0] == self:

@@ -81,7 +81,7 @@ class Character():
             elif self.terrain:
                 self.path = self.terrain.findPath((self.xPosition,self.yPosition),(quest.dstX,quest.dstY))
             else:
-                messages.append("this should not happen, character tried to go sowhere but is nowhere")
+                debugMessages.append("this should not happen, character tried to go sowhere but is nowhere")
                 self.path = []
 
     def addToInventory(self,item):

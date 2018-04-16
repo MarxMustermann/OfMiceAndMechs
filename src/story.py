@@ -545,9 +545,8 @@ initializing sensory organs ................................. """,(urwid.AttrSpe
 transfer control to implant"""],autocontinue=True)
 
         cinematic = cinematics.MessageZoomCinematic()
+        cinematic.endTrigger = self.end
         cinematics.cinematicQueue.append(cinematic)
-
-        showGame(2,trigger=self.end)
 
     def end(self):
         nextPhase = WakeUpPhase()
@@ -571,8 +570,8 @@ class WakeUpPhase(BasicPhase):
     def start(self):
         self.mainCharXPosition = 1
         self.mainCharYPosition = 4
-        self.firstOfficerXPosition = 5
-        self.firstOfficerYPosition = 1
+        self.firstOfficerXPosition = 6
+        self.firstOfficerYPosition = 4
         self.requiresMainCharRoomFirstOfficer = True
         self.requiresMainCharRoomSecondOfficer = False
 
@@ -582,13 +581,9 @@ class WakeUpPhase(BasicPhase):
 
         self.mainCharRoom.characters.remove(mainChar)
 
-        """
-        self.npc = characters.Character(displayChars.staffCharactersByLetter[names.characterLastNames[(gamestate.tick+14)%len(names.characterLastNames)].split(" ")[-1][0].lower()],5,3,name="Eduart Knoblauch")
-        self.mainCharRoom.addCharacter(self.npc,6,7)
-        self.npc.terrain = terrain
-        """
         self.npc = self.mainCharRoom.firstOfficer
 
+        showGame(2)
         showMessage("implant has taken control")
         showGame(2)
         showMessage("please prepare to be ejected")
@@ -654,8 +649,19 @@ class BasicMovementTraining(BasicPhase):
 
         super().start()
 
-        showText("welcome to the trainingsenvironment.\n\nplease follow the orders "+firstOfficer.name+" gives you.",rusty=True)
-        showText(["you are represented by the ",displayChars.indexedMapping[displayChars.main_char]," Character,  ",firstOfficer.name," is represented by the ",displayChars.indexedMapping[firstOfficer.display]," Character. \n\nyou can move using the keyboard. \n\n* press ",commandChars.move_north," to move up/north\n* press ",commandChars.move_west," to move left/west\n* press ",commandChars.move_south," to move down/south\n* press ",commandChars.move_east," to move rigth/east"])
+        showText("""
+welcome to the trainingsenvironment.
+
+please follow the orders """+firstOfficer.name+" gives you.",rusty=True)
+        showText(["""
+you are represented by the """,displayChars.indexedMapping[displayChars.main_char]," Character,  ",firstOfficer.name," is represented by the ",displayChars.indexedMapping[firstOfficer.display],""" Character. 
+
+you can move using the keyboard. 
+
+* press """,commandChars.move_north,""" to move up/north
+* press """,commandChars.move_west,""" to move left/west
+* press """,commandChars.move_south,""" to move down/south
+* press """,commandChars.move_east,""" to move right/east"""])
         showGame(1)
 
         quest = quests.MoveQuest(terrain.wakeUpRoom,4,4)
@@ -693,23 +699,39 @@ class BasicMovementTraining(BasicPhase):
         quest = quests.MoveQuest(terrain.wakeUpRoom,6,6)
         showQuest(quest,mainChar)
         say("great. You seemed be able to coordinate yourself",firstOfficer)
+        say("one more task and you get something to drink",firstOfficer)
+
+        showGame(2)
 
         say("move over to the lever now",firstOfficer)
         quest = quests.MoveQuest(terrain.wakeUpRoom,3,2)
         showQuest(quest,mainChar)
 
-        showMessage("you can actiate levers by moving onto the lever and then pressing "+commandChars.activate)
+        showText("you can activate levers by moving onto the lever and then pressing "+commandChars.activate)
+        showMessage("you can activate levers by moving onto the lever and then pressing "+commandChars.activate)
         say("activate the lever",firstOfficer)
         quest = quests.ActivateQuest(terrain.wakeUpRoom.lever1)
+        showQuest(quest,mainChar,trigger=self.fetchDrink)
+
+    def fetchDrink(self):
+        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        drink = terrain.wakeUpRoom.itemsOnFloor[-1]
+
+        showText("you can pick up items by moving onto them and using "+commandChars.pickUp)
+        showMessage("you can pich up items by moving onto them and using "+commandChars.pickUp)
+        say("well done, come and fetch your drink",firstOfficer)
+        quest = quests.PickupQuest(drink)
         showQuest(quest,mainChar)
 
-        say("well done",firstOfficer,trigger=self.moveToMachineRoom)
+        say("move to (2,7), please",firstOfficer)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,2,7)
+        showQuest(quest,mainChar,trigger=self.moveToMachineRoom)
 
     def moveToMachineRoom(self):
         firstOfficer = terrain.wakeUpRoom.firstOfficer
 
         say("you seem to be in working order. please move to your assigned work",firstOfficer)
-        say("your next assignement is in the boiler room. The boiler room is the hallway up to the north and the first room south after the corner",firstOfficer)
+        say("your next assignment is in the boiler room. The boiler room is the hallway up to the north and the first room south after the corner",firstOfficer)
 
         quest = quests.MoveQuest(terrain.tutorialMachineRoom,3,3)
         mainChar.assignQuest(quest,active=True)
@@ -897,7 +919,7 @@ class SecondTutorialPhase(BasicPhase):
             questList.append(quests.MoveQuest(self.mainCharRoom,3,3,startCinematics="Move back to Waitingposition"))
 
         if not mainChar.gotInteractionSchooling:
-            quest = quests.CollectQuest(startCinematics="next on my Checklist is to explain the Interaction with your Environment.\n\nthe basic Interationcommands are:\n\n "+commandChars.activate+"=activate/apply\n "+commandChars.examine+"=examine\n "+commandChars.pickUp+"=pick up\n "+commandChars.drop+"=drop\n\nsee this Piles of Coal marked with ӫ on the rigth Side and left Side of the Room.\n\nwhenever you bump into an Item that is to big to be walked on, you will promted for giving an extra Interactioncommand. i'll give you an Example:\n\n ΩΩ＠ӫӫ\n\n pressing "+commandChars.move_west+" and "+commandChars.activate+" would result in Activation of the Furnace\n pressing "+commandChars.move_east+" and "+commandChars.activate+" would result in Activation of the Pile\n pressing "+commandChars.move_west+" and "+commandChars.examine+" would result make you examine the Furnace\n pressing "+commandChars.move_east+" and "+commandChars.examine+" would result make you examine the Pile\n\nplease grab yourself some Coal from a pile by bumping into it and pressing j afterwards.")
+            quest = quests.CollectQuest(startCinematics="next on my Checklist is to explain the Interaction with your Environment.\n\nthe basic Interationcommands are:\n\n "+commandChars.activate+"=activate/apply\n "+commandChars.examine+"=examine\n "+commandChars.pickUp+"=pick up\n "+commandChars.drop+"=drop\n\nsee this Piles of Coal marked with ӫ on the right Side and left Side of the Room.\n\nwhenever you bump into an Item that is to big to be walked on, you will promted for giving an extra Interactioncommand. i'll give you an Example:\n\n ΩΩ＠ӫӫ\n\n pressing "+commandChars.move_west+" and "+commandChars.activate+" would result in Activation of the Furnace\n pressing "+commandChars.move_east+" and "+commandChars.activate+" would result in Activation of the Pile\n pressing "+commandChars.move_west+" and "+commandChars.examine+" would result make you examine the Furnace\n pressing "+commandChars.move_east+" and "+commandChars.examine+" would result make you examine the Pile\n\nplease grab yourself some Coal from a pile by bumping into it and pressing j afterwards.")
             def setPlayerState():
                 mainChar.gotInteractionSchooling = True
                 gamestate.save()

@@ -1111,9 +1111,9 @@ class WakeUpRoom(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
         self.roomLayout = """
 XXXXXXXX
-Xö     X
+Xö    vX
 XÖ ... $
-XÖ . . X
+XÖ . .vX
 XÖ . . X
 XÖ . . X
 XÖ . . X
@@ -1125,8 +1125,15 @@ XXXXXXXX
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 
         self.lever1 = items.Lever(3,1,"engine control")
-        self.addItems([self.lever1])
+        self.objectDispenser = items.OjectDispenser(4,1)
+        self.gooDispenser = items.GooDispenser(4,9)
 
+        def activateDispenser(dispenser):
+            self.objectDispenser.dispenseObject()
+
+        self.lever1.activateAction = activateDispenser
+
+        self.addItems([self.lever1,self.gooDispenser,self.objectDispenser])
 
 class WaitingRoom(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):

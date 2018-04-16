@@ -738,3 +738,13 @@ class GooFlask(Item):
 
     def getDetailedInfo(self):
         return super().getDetailedInfo()+" ("+str(self.uses)+" charges)"
+
+class OjectDispenser(Item):
+    def __init__(self,xPosition=None,yPosition=None, name="oject dispenser"):
+        super().__init__("U\\",xPosition,yPosition,name=name)
+
+    def dispenseObject(self):
+        new = GooFlask()
+        new.xPosition = self.xPosition
+        new.yPosition = self.yPosition+1
+        self.room.addItems([new])

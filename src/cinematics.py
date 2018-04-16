@@ -117,7 +117,9 @@ class MessageZoomCinematic(BasicCinematic):
             loop.remove_alarm(self.alarm)
         except:
             pass
-        pass
+        
+        if self.endTrigger:
+            self.endTrigger()
 
 class ScrollingTextCinematic(BasicCinematic):
     def __init__(self,text,rusty=False, autocontinue=False):
@@ -224,7 +226,7 @@ class ShowQuestExecution(BasicCinematic):
 
         if self.quest.completed:
             loop.set_alarm_in(0.0, callShow_or_exit, ' ')
-            return
+            return True
 
         advanceGame()
         if self.alarm:

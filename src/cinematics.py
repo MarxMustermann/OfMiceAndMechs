@@ -11,6 +11,7 @@ advanceGame = None
 class BasicCinematic(object):
     def __init__(self):
         self.background = False
+        self.followUp = None
 
     def advance(self):
         return False
@@ -274,13 +275,34 @@ class ShowGameCinematic(BasicCinematic):
         if self.endTrigger:
             self.endTrigger()
 
-class SelectionCinematic(BasicCinematic):
-    def __init__(self,text, options, niceOptions):
+class ChatCinematic(BasicCinematic):
+    def __init__(self):
         super().__init__()
 
-        self.showSubmenu = True
+        self.submenue = interaction.ChatMenu()
+
+    def advance(self):
+        super().abort()
+
+        interaction.submenue = self.submenue
+        interaction.submenue.followUp = self.abort
+
+        global cinematicQueue
+        cinematicQueue = cinematicQueue[1:]
+        if self.followUp:
+            self.followUp()
+        if cinematicQueue:
+            cinematicQueue[0].advance()
+        loop.set_alarm_in(0.0, callShow_or_exit, '~')
+        return True
+
+class SelectionCinematic(BasicCinematic):
+    def __init__(self,text, options, niceOptions, followUps=None):
+        super().__init__()
+
         self.options = options
         self.niceOptions = niceOptions
+        self.followUps = followUps
         self.text = text
         self.selected = None
         self.submenue= None
@@ -296,7 +318,6 @@ what is your name?"""
         self.submenue = interaction.Test1Menu(self.text, self.options, self.niceOptions)
         interaction.submenue = self.submenue
         interaction.submenue.followUp = self.abort
-        self.showSubmenu = False
         return True
 
     def abort(self):
@@ -304,9 +325,14 @@ what is your name?"""
 
         global cinematicQueue
         cinematicQueue = cinematicQueue[1:]
-        if self.followUp:
-            self.selected = self.submenue.selection
-            self.followUp()
+
+        self.selected = self.submenue.selection
+
+        if self.followUps:
+            self.followUps[self.selected]()
+        else:
+            if self.followUp:
+                self.followUp()
         if cinematicQueue:
             cinematicQueue[0].advance()
         loop.set_alarm_in(0.0, callShow_or_exit, '~')

@@ -465,44 +465,35 @@ entering interactive mode .................................
         niceOptions = {"1":"Karl Weinberg","2":mainChar.name,"3":"Susanne Kreismann"}
         text = "\nplease answer the question:\n\nwhat is your name?"
         cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
-        cinematic.followUp = self.step2
+        cinematic.followUps = {"ok":self.step2,"nok":self.infoFail}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
 
-    def step2(self):
+    def infoFail(self):
         import urwid
-        if not self.cinematic.selected == "ok":
-            showText(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")],autocontinue=True)
-            self.fail()
-            return
+        showText(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK"),"                                        "],autocontinue=True,trigger=self.fail)
+        return
+
+    def step2(self):
         options = {"1":"ok","2":"nok","3":"nok"}
         niceOptions = {"1":"A Pipe is used to transfer fluids","2":"A Grate is used to transfer fluids","3":"A Hutch is used to transfer fluids"}
         text = "\nplease select the true statement:\n\n"
         cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
-        cinematic.followUp = self.step3
+        cinematic.followUps = {"ok":self.step3,"nok":self.infoFail}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
 
     def step3(self):
-        import urwid
-        if not self.cinematic.selected == "ok":
-            showText(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")],autocontinue=True)
-            self.fail()
-            return
         options = {"1":"ok","2":"nok","3":"nok"}
         niceOptions = {"1":"Rust is the oxide of iron. Rust is the most common form of corrosion","2":"Rust is the oxide of iron. Corrosion in form of Rust is common","3":"*deny answer*"}
         text = "\nplease repeat the definition of rust\n\n"
         cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
-        cinematic.followUp = self.step4
+        cinematic.followUps = {"ok":self.step4,"nok":self.infoFail}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
 
     def step4(self):
         import urwid
-        if not self.cinematic.selected == "ok":
-            showtText(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK")],autocontinue=True)
-            self.fail()
-            return
         definitions = {}
         definitions["pipe"] = "A Pipe is used to transfer fluids"
         definitions["wall"] = "A Wall is a non passable building element"
@@ -557,7 +548,7 @@ transfer control to implant"""],autocontinue=True)
     def fail(self):
         showText("""
 aborting initialisation
-resetting neural network ....................................""",autocontinue=True)
+resetting neural network ....................................""",autocontinue=True,trigger=self.forceExit)
 
     def forceExit(self):
         import urwid
@@ -707,7 +698,7 @@ you can move using the keyboard.
         say("move over to the lever now",firstOfficer)
         quest = quests.MoveQuest(terrain.wakeUpRoom,3,2)
         showQuest(quest,mainChar)
-
+        
         showText("you can activate levers by moving onto the lever and then pressing "+commandChars.activate)
         showMessage("you can activate levers by moving onto the lever and then pressing "+commandChars.activate)
         say("activate the lever",firstOfficer)
@@ -729,6 +720,9 @@ you can move using the keyboard.
         showMessage(msg)
         quest = quests.MoveQuest(terrain.wakeUpRoom,6,6)
         showQuest(quest,mainChar)
+
+        cinematic = cinematics.ChatCinematic()
+        cinematics.cinematicQueue.append(cinematic)
 
         say("move to (2,7), please",firstOfficer)
         quest = quests.MoveQuest(terrain.wakeUpRoom,2,7)

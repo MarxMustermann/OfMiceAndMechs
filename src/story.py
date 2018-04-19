@@ -78,6 +78,8 @@ class BasicPhase(object):
                 self.mainCharRoom.secondOfficer = characters.Character(displayChars.staffCharactersByLetter[names.characterLastNames[(gamestate.tick+4)%len(names.characterLastNames)].split(" ")[-1][0].lower()],4,3,name=name)
                 self.mainCharRoom.addCharacter(self.mainCharRoom.secondOfficer,self.secondOfficerXPosition,self.secondOfficerYPosition)
 
+        gamestate.save()
+
     def assignPlayerQuests(self):
         if not self.mainCharQuestList:
             return
@@ -412,7 +414,7 @@ half arsed solutions are still welcome here but that should end when this reache
 
 class BrainTestingPhase(BasicPhase):
     def __init__(self):
-        self.name = "BrainTestingPhase"
+        self.name = "BrainTesting"
         super().__init__()
 
     def start(self):
@@ -551,7 +553,6 @@ transfer control to implant"""],autocontinue=True)
     def end(self):
         nextPhase = WakeUpPhase()
         nextPhase.start()
-        gamestate.save()
 
     def fail(self):
         showText("""
@@ -630,7 +631,6 @@ class WakeUpPhase(BasicPhase):
 
     def end(self):
         phase2 = BasicMovementTraining()
-        gamestate.save()
         phase2.start()
 
 class BasicMovementTraining(BasicPhase):
@@ -639,15 +639,16 @@ class BasicMovementTraining(BasicPhase):
         super().__init__()
     
     def start(self):
-        self.mainCharXPosition = 1
+        self.mainCharXPosition = 2
         self.mainCharYPosition = 4
         self.requiresMainCharRoomFirstOfficer = True
         self.requiresMainCharRoomSecondOfficer = False
 
         self.mainCharRoom = terrain.wakeUpRoom
-        firstOfficer = terrain.wakeUpRoom.firstOfficer
 
         super().start()
+
+        firstOfficer = terrain.wakeUpRoom.firstOfficer
 
         showText("""
 welcome to the trainingsenvironment.
@@ -723,11 +724,9 @@ you can move using the keyboard.
         say("well done, come and fetch your drink",firstOfficer)
         quest = quests.PickupQuest(drink)
         showQuest(quest,mainChar)
-        say("great. Drink something and come over for a quick talk.",firstOfficer)
         msg = "you can drink using "+commandChars.drink+". If you do not drink for a longer time you will starve"
-        showText(msg)
+        say("great. Drink something and come over for a quick talk.",firstOfficer)
         showMessage(msg)
-        say("move to (6,6), please",firstOfficer)
         quest = quests.MoveQuest(terrain.wakeUpRoom,6,6)
         showQuest(quest,mainChar)
 
@@ -750,7 +749,6 @@ you can move using the keyboard.
 
     def end(self):
         phase2 = FirstTutorialPhase()
-        gamestate.save()
         phase2.start()
 
 class FirstTutorialPhase(BasicPhase):
@@ -952,7 +950,6 @@ class SecondTutorialPhase(BasicPhase):
         mainChar.assignQuest(questList[0],active=True)
 
     def end(self):
-        gamestate.save()
         cinematics.showCinematic("you recieved your Preparatorytraining. Time for the Test.")
         phase = ThirdTutorialPhase()
         phase.start()
@@ -1089,7 +1086,6 @@ class ThirdTutorialPhase(BasicPhase):
             cinematics.showCinematic("you passed the Test. \n\nyour Score: "+str(self.mainCharFurnaceIndex)+"\nLibwigs Score: "+str(self.npcFurnaceIndex))
             phase3 = MachineRoomPhase()
             phase3.start()
-        gamestate.save()
 
 
 """
@@ -1129,7 +1125,6 @@ class LabPhase(BasicPhase):
     def end(self):
         cinematics.showCinematic("you seem to be able to follow orders after all. you may go back to your training.")
         SecondTutorialPhase().start()
-        gamestate.save()
 
 class VatPhase(BasicPhase):
     def __init__(self):
@@ -1160,7 +1155,6 @@ class VatPhase(BasicPhase):
     def end(self):
         cinematics.showCinematic("you seem to be able to follow orders after all. you may go back to your training.")
         SecondTutorialPhase().start()
-        gamestate.save()
 
 class MachineRoomPhase(BasicPhase):
     def __init__(self):
@@ -1192,7 +1186,6 @@ class MachineRoomPhase(BasicPhase):
 
     def end(self):
         gamestate.gameWon = True
-        gamestate.save()
 
 """
 
@@ -1212,3 +1205,4 @@ def registerPhases():
     phasesByName["ThirdTutorialPhase"] = ThirdTutorialPhase
     phasesByName["WakeUpPhase"] = WakeUpPhase
     phasesByName["BrainTesting"] = BrainTestingPhase
+    phasesByName["BasicMovementTraining"] = BasicMovementTraining

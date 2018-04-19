@@ -315,7 +315,7 @@ please answer the question:
 
 what is your name?"""
 
-        self.submenue = interaction.Test1Menu(self.text, self.options, self.niceOptions)
+        self.submenue = interaction.SelectionMenu(self.text, self.options, self.niceOptions)
         interaction.submenue = self.submenue
         interaction.submenue.followUp = self.abort
         return True

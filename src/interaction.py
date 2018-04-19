@@ -587,7 +587,7 @@ class SubMenu(object):
 
         return False
 
-class Test1Menu(SubMenu):
+class SelectionMenu(SubMenu):
     def __init__(self, text, options, niceOptions):
         super().__init__()
         self.setSelection(text, options, niceOptions)

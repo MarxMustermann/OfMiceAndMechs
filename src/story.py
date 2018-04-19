@@ -699,10 +699,10 @@ you can move using the keyboard.
         quest = quests.MoveQuest(terrain.wakeUpRoom,6,6)
         showQuest(quest,mainChar)
         say("great. You seemed be able to coordinate yourself",firstOfficer)
-        say("one more task and you get something to drink",firstOfficer)
+        showGame(1)
+        say("you look thirsty, one more task and you get something to drink",firstOfficer)
 
         showGame(2)
-
         say("move over to the lever now",firstOfficer)
         quest = quests.MoveQuest(terrain.wakeUpRoom,3,2)
         showQuest(quest,mainChar)
@@ -717,10 +717,18 @@ you can move using the keyboard.
         firstOfficer = terrain.wakeUpRoom.firstOfficer
         drink = terrain.wakeUpRoom.itemsOnFloor[-1]
 
-        showText("you can pick up items by moving onto them and using "+commandChars.pickUp)
-        showMessage("you can pich up items by moving onto them and using "+commandChars.pickUp)
+        msg = "you can pick up items by moving onto them and using "+commandChars.pickUp
+        showText(msg)
+        showMessage(msg)
         say("well done, come and fetch your drink",firstOfficer)
         quest = quests.PickupQuest(drink)
+        showQuest(quest,mainChar)
+        say("great. Drink something and come over for a quick talk.",firstOfficer)
+        msg = "you can drink using "+commandChars.drink+". If you do not drink for a longer time you will starve"
+        showText(msg)
+        showMessage(msg)
+        say("move to (6,6), please",firstOfficer)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,6,6)
         showQuest(quest,mainChar)
 
         say("move to (2,7), please",firstOfficer)

@@ -62,6 +62,7 @@ terrains.displayChars = displayChars
 story.displayChars = displayChars
 gamestate.displayChars = displayChars
 interaction.displayChars = displayChars
+cinematics.displayChars = displayChars
 
 # HACK: common variables with modules
 story.cinematics = cinematics

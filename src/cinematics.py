@@ -133,6 +133,7 @@ class ScrollingTextCinematic(BasicCinematic):
         self.rusty = rusty
         self.autocontinue = autocontinue
 
+
         def flattenToPeseudoString(urwidText):
             if isinstance(urwidText,str):
                 return list(urwidText)
@@ -140,6 +141,9 @@ class ScrollingTextCinematic(BasicCinematic):
                 result = []
                 for item in urwidText:
                     result.extend(flattenToPeseudoString(item))
+                return result
+            elif isinstance(urwidText,int):
+                result = flattenToPeseudoString(displayChars.indexedMapping[urwidText][1])
                 return result
             else:
                 result = []
@@ -149,7 +153,6 @@ class ScrollingTextCinematic(BasicCinematic):
         
         self.text = flattenToPeseudoString(self.text)
         self.endPosition = len(self.text)
-
     def advance(self):
         super().advance()
 

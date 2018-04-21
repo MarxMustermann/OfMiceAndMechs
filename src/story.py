@@ -739,11 +739,8 @@ you can move using the keyboard.
         showQuest(quest,mainChar)
         self.didFurnaces = True
         say("go on and fire the furnace",firstOfficer)
-        quest = quests.FireFurnace(furnace,trigger=moveToMachineRoom)
-
-        say("move to (2,7), please",firstOfficer)
-        quest = quests.MoveQuest(terrain.wakeUpRoom,2,7)
-        showQuest(quest,mainChar,trigger=self.moveToMachineRoom)
+        quest = quests.FireFurnace(furnace)
+        showQuest(quest,mainChar,trigger=self.trainingCompleted)
 
     def noFurnaceFirering(self):
         firstOfficer = terrain.wakeUpRoom.firstOfficer
@@ -752,7 +749,7 @@ you can move using the keyboard.
         say("i understand. The burns are somewhat unpleasant")
         say("move to (2,7), please",firstOfficer)
         quest = quests.MoveQuest(terrain.wakeUpRoom,2,7)
-        showQuest(quest,mainChar,trigger=self.moveToMachineRoom)
+        showQuest(quest,mainChar,trigger=self.trainingCompleted)
 
     def trainingCompleted(self):
         firstOfficer = terrain.wakeUpRoom.firstOfficer

@@ -1126,14 +1126,16 @@ XXXXXXXX
 
         self.lever1 = items.Lever(3,1,"engine control")
         self.objectDispenser = items.OjectDispenser(4,1)
-        self.gooDispenser = items.GooDispenser(4,9)
+        self.gooDispenser = items.GooDispenser(5,9)
+        self.furnace = items.Furnace(4,9)
+        self.pile = items.Pile(6,9)
 
         def activateDispenser(dispenser):
             self.objectDispenser.dispenseObject()
 
         self.lever1.activateAction = activateDispenser
 
-        self.addItems([self.lever1,self.gooDispenser,self.objectDispenser])
+        self.addItems([self.lever1,self.gooDispenser,self.objectDispenser,self.furnace,self.pile])
 
 class WaitingRoom(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):

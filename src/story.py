@@ -720,21 +720,53 @@ you can move using the keyboard.
         showMessage(msg)
         quest = quests.MoveQuest(terrain.wakeUpRoom,6,6)
         showQuest(quest,mainChar)
+        showText("\nHello, I am "+mainChar.name+" and do the acceptance tests. \n\nAfter you complete the test you will serve as an hooper on the Falkenbaum.\n")
 
-        cinematic = cinematics.ChatCinematic()
+        options = {"1":"furnaces","2":"nofurnaces"}
+        niceOptions = {"1":"Yes","2":"No"}
+        text = "say, do you like Furnaces?"
+        cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
+        cinematic.followUps = {"furnaces":self.fireFurnaces,"nofurnaces":self.noFurnaceFirering}
+        self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
+
+    def fireFurnaces(self):
+        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        furnace = terrain.wakeUpRoom.furnace
+
+        showText("you are in luck. We have a furnace for training purposes.")
+        quest = quests.MoveQuest(terrain.wakeUpRoom,furnace.xPosition,furnace.yPosition-1)
+        showQuest(quest,mainChar)
+        self.didFurnaces = True
+        say("go on and fire the furnace",firstOfficer)
+        quest = quests.FireFurnace(furnace,trigger=moveToMachineRoom)
 
         say("move to (2,7), please",firstOfficer)
         quest = quests.MoveQuest(terrain.wakeUpRoom,2,7)
         showQuest(quest,mainChar,trigger=self.moveToMachineRoom)
 
-    def moveToMachineRoom(self):
+    def noFurnaceFirering(self):
+        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        self.didFurnaces = False
+
+        say("i understand. The burns are somewhat unpleasant")
+        say("move to (2,7), please",firstOfficer)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,2,7)
+        showQuest(quest,mainChar,trigger=self.moveToMachineRoom)
+
+    def trainingCompleted(self):
         firstOfficer = terrain.wakeUpRoom.firstOfficer
 
-        say("you seem to be in working order. please move to your assigned work",firstOfficer)
-        say("your next assignment is in the boiler room. The boiler room is the hallway up to the north and the first room south after the corner",firstOfficer)
+        text = "you completed the tests. Go to the waiting room and report for room duty.\n\nThe waiting room is the next room to the north\n\n"
+        if (self.didFurnaces):
+            text += "speak to me, if you need work"
+        showText(text,rusty=True)
+        for line in text.split("\n"):
+            if line == "":
+                continue
+            say(line,firstOfficer)
 
-        quest = quests.MoveQuest(terrain.tutorialMachineRoom,3,3)
+        quest = quests.MoveQuest(terrain.waitingRoom,3,3)
         mainChar.assignQuest(quest,active=True)
         quest.endTrigger = self.end
 

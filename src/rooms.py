@@ -58,8 +58,17 @@ class Room(object):
         for line in self.layout[1:].split("\n"):
             rowCounter = 0
             for char in line:
-                if char in (" ",".","@"):
+                if char in (" ","."):
                     pass
+                elif char in ("@",):
+                    if (not self.firstOfficer) or (not self.secondOfficer):
+                        npc = characters.Character(displayChars.staffCharactersByLetter["e"],5,3,name="Eduart Knoblauch")
+                        self.addCharacter(npc,rowCounter,lineCounter)
+                        npc.terrain = self.terrain
+                        if not self.firstOfficer:
+                            self.firstOfficer = npc
+                        else:
+                            self.secondOfficer = npc
                 elif char in ("X","&"):
                     itemsOnFloor.append(items.Wall(rowCounter,lineCounter))
                 elif char == "$":
@@ -725,7 +734,7 @@ class TutorialMachineRoom(Room):
 X#XX$XXX#X
 X#Pv vID#X
 X#......#X
-X .@@@@. X
+X .@@  . X
 X .HHHH. X
 X ...... X
 XFFFFFFFFX
@@ -989,7 +998,7 @@ X b.b bb.X
 X .. c b.X
 X .b  j .X
 X .. b b.X
-X b. ....X
+X@b. ....X
 ## ...v ##
 XXXXX$XXXX
 """
@@ -1022,7 +1031,7 @@ class MiniMech(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
         self.roomLayout = """
 XX$XXX
-XD.. X
+XD..@X
 Xm .PX
 XOF.PX
 Xmm.PX
@@ -1044,7 +1053,7 @@ class LabRoom(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
         self.roomLayout = """
 XXXXXXXXXX
-X        X
+X     @@ X
 X ...... X
 X .    . X
 X .    . X
@@ -1114,7 +1123,7 @@ XXXXXXXX
 Xö    vX
 XÖ ... $
 XÖ . .vX
-XÖ . . X
+XÖ . .@X
 XÖ . . X
 XÖ . . X
 XÖ . . X
@@ -1144,7 +1153,7 @@ XXXXXXXXXXX
 X         X
 X  .....  X
 X  .   .  X
-X  .   .  $
+X  . @ .  $
 X  .   . IX
 X  ..... DX
 X         X

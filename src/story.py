@@ -621,8 +621,8 @@ class WakeUpPhase(BasicPhase):
         self.end()
 
     def end(self):
-        phase2 = BasicMovementTraining()
-        phase2.start()
+        phase = BasicMovementTraining()
+        phase.start()
 
 class BasicMovementTraining(BasicPhase):
     def __init__(self):
@@ -763,16 +763,32 @@ you can move using the keyboard.
                 continue
             say(line,firstOfficer)
 
-        quest = quests.MoveQuest(terrain.waitingRoom,3,3)
+        quest = quests.MoveQuest(terrain.wakeUpRoom,5,1)
+        npc.assignQuest(quest,active=True)
+
+        quest = quests.MoveQuest(terrain.waitingRoom,6,4)
         mainChar.assignQuest(quest,active=True)
         quest.endTrigger = self.end
 
-        quest = quests.MoveQuest(terrain.wakeUpRoom,5,1)
-        firstOfficer.assignQuest(quest,active=True)
+    def end(self):
+        phase = FindWork()
+        phase.start()
+
+class FindWork(BasicPhase):
+    def __init__(self):
+        self.name = "FindWork"
+        super().__init__()
+
+    def start(self):
+
+        super().start()
+
+        quest = quests.MoveQuest(terrain.wakeUpRoom,2,7)
+        showQuest(quest,mainChar,trigger=self.trainingCompleted)
 
     def end(self):
-        phase2 = FirstTutorialPhase()
-        phase2.start()
+        phase = FirstTutorialPhase()
+        phase.start()
 
 class FirstTutorialPhase(BasicPhase):
     def __init__(self):
@@ -1229,3 +1245,4 @@ def registerPhases():
     phasesByName["WakeUpPhase"] = WakeUpPhase
     phasesByName["BrainTesting"] = BrainTestingPhase
     phasesByName["BasicMovementTraining"] = BasicMovementTraining
+    phasesByName["FindWork"] = FindWork

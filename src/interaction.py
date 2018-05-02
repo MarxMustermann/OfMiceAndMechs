@@ -456,7 +456,7 @@ def show_or_exit(key):
                             quest.deactivate()
                         mainChar.room.npc.quests = []
                 else:
-                    submenue = ChatMenu()
+                    submenue = ChatPartnerselection()
 
             mainChar.automated = False
             if key in (commandChars.advance,commandChars.autoAdvance):
@@ -603,10 +603,44 @@ class SelectionMenu(SubMenu):
         else:
             return False
 
-class ChatMenu(SubMenu):
+class ChatPartnerselection(SubMenu):
     def __init__(self):
+        super().__init__()
+        self.subMenu = None
+
+    def handleKey(self, key):
+        if self.subMenu:
+            return self.subMenu.handleKey(key)
+
+        header.set_text((urwid.AttrSpec("default","default"),"\nConversation menu\n"))
+        out = "\n"
+
+        if not self.options and not self.getSelection():
+            counter = 1
+            options = {}
+            niceOptions = {}
+            if mainChar.room:
+                for char in mainChar.room.characters:
+                    if char == mainChar:
+                        continue
+                    options[str(counter)] = char
+                    niceOptions[str(counter)] = char.name
+                    counter += 1
+            self.setSelection("talk with whom?",options,niceOptions)
+
+        if not self.getSelection():
+             super().handleKey(key)
+
+        if self.getSelection():
+            self.subMenu = ChatMenu(self.selection)
+            self.subMenu.handleKey(key)
+        else:
+            return False
+
+class ChatMenu(SubMenu):
+    def __init__(self,partner):
         self.state = None
-        self.partner = None
+        self.partner = partner
         super().__init__()
 
     def handleKey(self, key):
@@ -614,39 +648,11 @@ class ChatMenu(SubMenu):
         out = "\n"
 
         if self.state == None:
-            self.state = "participantSelection"
-
-        if self.state == "participantSelection":
-            if not self.options and not self.getSelection():
-                counter = 1
-                options = {}
-                niceOptions = {}
-                if mainChar.room:
-                    for char in mainChar.room.characters:
-                        if char == mainChar:
-                            continue
-                        options[str(counter)] = char
-                        niceOptions[str(counter)] = char.name
-                        counter += 1
-                self.setSelection("talk with whom?",options,niceOptions)
-
-            if not self.getSelection():
-                 super().handleKey(key)
-
-            if self.getSelection():
-                self.state = "greetings"
-                self.partner = self.selection
-                self.selection = None
-                self.lockOptions = True
-            else:
-                return False
+            self.state = "greetings"
+            self.persistentText += self.partner.name+": \"Everything in Order, "+self.partner.name+"?\"\n"
+            self.persistentText += mainChar.name+": \"All sorted, "+mainChar.name+"!\"\n"
 
         if self.state == "greetings":
-            if self.lockOptions:
-                self.persistentText += self.partner.name+": \"Everything in Order, "+self.partner.name+"?\"\n"
-                self.persistentText += mainChar.name+": \"All sorted, "+mainChar.name+"!\"\n"
-                self.lockOptions = False
-            
             if not self.options and not self.getSelection():
                 options = {}
                 niceOptions = {}

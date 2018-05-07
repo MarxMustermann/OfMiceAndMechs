@@ -764,7 +764,7 @@ you can move using the keyboard.
             say(line,firstOfficer)
 
         quest = quests.MoveQuest(terrain.wakeUpRoom,5,1)
-        npc.assignQuest(quest,active=True)
+        firstOfficer.assignQuest(quest,active=True)
 
         quest = quests.MoveQuest(terrain.waitingRoom,6,4)
         mainChar.assignQuest(quest,active=True)

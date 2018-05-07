@@ -637,10 +637,38 @@ class ChatPartnerselection(SubMenu):
         else:
             return False
 
+class RecruitChat(SubMenu):
+    dialogName = "follow my orders."
+    def __init__(self,partner):
+        self.state = None
+        self.partner = partner
+        self.firstRun = True
+        self.done = False
+        self.persistentText = ""
+        super().__init__()
+
+    def handleKey(self, key):
+        if self.firstRun:
+            self.persistentText += self.partner.name+": \"come and help me.\"\n"
+            self.persistentText += mainChar.name+": \"come and help me.\"\n"
+            if gamestate.tick%2:
+                self.persistentText += self.partner.name+": \"sorry, too busy.\"\n"
+            else:
+                self.persistentText += self.partner.name+": \"on it!\"\n"
+                mainChar.subordinates.append(self.partner)
+            text = self.persistentText+"\n\n-- press any key --"
+            main.set_text((urwid.AttrSpec("default","default"),text))
+            self.firstRun = False
+            return True
+        else:
+            self.done = True
+            return False
+
 class ChatMenu(SubMenu):
     def __init__(self,partner):
         self.state = None
         self.partner = partner
+        self.subMenu = None
         super().__init__()
 
     def handleKey(self, key):
@@ -659,7 +687,7 @@ class ChatMenu(SubMenu):
                 counter = 1
                 if not self.partner in mainChar.subordinates:
                     options[str(counter)] = "recruit"
-                    niceOptions[str(counter)] = "come and help me."
+                    niceOptions[str(counter)] = RecruitChat.dialogName
                     counter += 1
 
                 options[str(counter)] = "showQuests"
@@ -689,17 +717,18 @@ class ChatMenu(SubMenu):
                 return False
 
         if self.state == "recruit":
-            if self.lockOptions:
-                self.persistentText += self.partner.name+": \"come and help me.\"\n"
-                if gamestate.tick%2:
-                    self.persistentText += mainChar.name+": \"sorry, too busy.\"\n"
-                else:
-                    self.persistentText += mainChar.name+": \"on it!\"\n"
-                    mainChar.subordinates.append(self.partner)
-                self.lockOptions = False
+            if not self.subMenu:
+                self.subMenu = RecruitChat(self.partner)
+            self.subMenu.handleKey(key)
+            if not self.subMenu.done:
+                return False
             else:
-                self.state = "done"
+                self.persistentText += self.subMenu.persistentText
+                self.state = "greetings"
+                self.selection = None
                 self.lockOptions = True
+                self.options = []
+                return self.handleKey("~")
 
         if self.state == "done":
             if self.lockOptions:

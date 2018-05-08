@@ -676,11 +676,11 @@ class ChatMenu(SubMenu):
         out = "\n"
 
         if self.state == None:
-            self.state = "greetings"
+            self.state = "mainOptions"
             self.persistentText += self.partner.name+": \"Everything in Order, "+self.partner.name+"?\"\n"
             self.persistentText += mainChar.name+": \"All sorted, "+mainChar.name+"!\"\n"
 
-        if self.state == "greetings":
+        if self.state == "mainOptions":
             if not self.options and not self.getSelection():
                 options = {}
                 niceOptions = {}
@@ -724,7 +724,7 @@ class ChatMenu(SubMenu):
                 return False
             else:
                 self.persistentText += self.subMenu.persistentText
-                self.state = "greetings"
+                self.state = "mainOptions"
                 self.selection = None
                 self.lockOptions = True
                 self.options = []

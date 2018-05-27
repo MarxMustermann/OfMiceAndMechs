@@ -746,10 +746,7 @@ you can move using the keyboard.
         firstOfficer = terrain.wakeUpRoom.firstOfficer
         self.didFurnaces = False
 
-        say("i understand. The burns are somewhat unpleasant")
-        say("move to (2,7), please",firstOfficer)
-        quest = quests.MoveQuest(terrain.wakeUpRoom,2,7)
-        showQuest(quest,mainChar,trigger=self.trainingCompleted)
+        showText("i understand. The burns are somewhat unpleasant",trigger=self.trainingCompleted)
 
     def trainingCompleted(self):
         firstOfficer = terrain.wakeUpRoom.firstOfficer
@@ -766,7 +763,7 @@ you can move using the keyboard.
         quest = quests.MoveQuest(terrain.wakeUpRoom,5,1)
         firstOfficer.assignQuest(quest,active=True)
 
-        quest = quests.MoveQuest(terrain.waitingRoom,6,4)
+        quest = quests.MoveQuest(terrain.waitingRoom,9,4)
         mainChar.assignQuest(quest,active=True)
         quest.endTrigger = self.end
 
@@ -780,11 +777,25 @@ class FindWork(BasicPhase):
         super().__init__()
 
     def start(self):
+        self.mainCharRoom = terrain.waitingRoom
 
         super().start()
 
-        quest = quests.MoveQuest(terrain.wakeUpRoom,2,7)
-        showQuest(quest,mainChar,trigger=self.trainingCompleted)
+        options = {"1":"yes","2":"no"}
+        niceOptions = {"1":"Yes","2":"No"}
+        text = "you look like a fresh one. Were you sent to report for duty?"
+        cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
+        cinematic.followUps = {"yes":self.getIntro,"no":self.fail}
+        self.cinematic = cinematic
+        cinematics.cinematicQueue.append(cinematic)
+
+    def getIntro(self):
+        showText("great. I here by confirm the transfer and welcome you as crew on the Falkenbaum.\n\nYou will serve as an hopper under my command nominally. This means you will make yourself useful and prove your worth. I often have tasks to relay, but try not to stay idle even when i do not have tasks for you.")
+        showText("Remeber to bring recieps, your worth will be counted in a gtick.",trigger=self.end)
+
+    def fail(self):
+        say("go on then.")
+        showText("go on then.")
 
     def end(self):
         phase = FirstTutorialPhase()

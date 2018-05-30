@@ -587,6 +587,9 @@ class SubMenu(object):
 
         return False
 
+    def set_text(self,text):
+        main.set_text((urwid.AttrSpec("default","default"),text))
+
 class SelectionMenu(SubMenu):
     def __init__(self, text, options, niceOptions):
         super().__init__()

@@ -42,8 +42,6 @@ class Character():
     def getChatOptions(self,partner):
         chatOptions = self.basicChatOptions[:]
         if not self in partner.subordinates:
-            messages.append(str(self))
-            messages.append(str(partner.subordinates))
             chatOptions.append(interaction.RecruitChat)
             pass
         

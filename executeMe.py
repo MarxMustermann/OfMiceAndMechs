@@ -128,6 +128,7 @@ events.messages = messages
 
 cinematics.interaction = interaction
 characters.interaction = interaction
+story.interaction = interaction
 
 if args.debug:
     class debugToFile(object):

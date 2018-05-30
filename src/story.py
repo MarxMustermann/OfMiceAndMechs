@@ -790,7 +790,7 @@ class FindWork(BasicPhase):
         cinematics.cinematicQueue.append(cinematic)
 
     def getIntro(self):
-        showText("great. I here by confirm the transfer and welcome you as crew on the Falkenbaum.\n\nYou will serve as an hopper under my command nominally. This means you will make yourself useful and prove your worth. I often have tasks to relay, but try not to stay idle even when i do not have tasks for you.")
+        showText("great. I here by confirm the transfer and welcome you as crew on the Falkenbaum.\n\nYou will serve as an hopper under my command nominally. This means you will make yourself useful and prove your worth.\n\nI often have tasks to relay, but try not to stay idle even when i do not have tasks for you. Just ask around if somebody needs help")
         showText("Remeber to bring recieps, your worth will be counted in a gtick.",trigger=self.end)
 
     def fail(self):
@@ -798,8 +798,28 @@ class FindWork(BasicPhase):
         showText("go on then.")
 
     def end(self):
-        phase = FirstTutorialPhase()
-        phase.start()
+        class JobChat(interaction.SubMenu):
+            dialogName = "Can you use some help?"
+            def __init__(self,partner):
+                self.state = None
+                self.partner = partner
+                self.firstRun = True
+                self.done = False
+                self.persistentText = ""
+                super().__init__()
+
+            def handleKey(self, key):
+                self.persistentText = "There is something i want you to do. Please go to the machine room and get your intro"
+                self.set_text(self.persistentText)
+                self.done = True
+                phase = FirstTutorialPhase()
+                phase.start()
+                return False
+
+        terrain.waitingRoom.firstOfficer.basicChatOptions.append(JobChat)
+        terrain.waitingRoom.secondOfficer.basicChatOptions.append(JobChat)
+        terrain.wakeUpRoom.firstOfficer.basicChatOptions.append(JobChat)
+        terrain.tutorialMachineRoom.firstOfficer.basicChatOptions.append(JobChat)
 
 class FirstTutorialPhase(BasicPhase):
     def __init__(self):

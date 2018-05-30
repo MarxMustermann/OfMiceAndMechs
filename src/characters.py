@@ -29,12 +29,25 @@ class Character():
         self.satiation = 1000
         self.dead = False
 
+        #TODO: this approach is fail, but works for now. There has to be a better way
+        self.basicChatOptions = [interaction.DebugChat]
+
         self.assignQuest(src.quests.SurviveQuest())
         
         for quest in quests:
             self.assignQuest(quest)
 
         self.inventory.append(items.GooFlask())
+
+    def getChatOptions(self,partner):
+        chatOptions = self.basicChatOptions[:]
+        if not self in partner.subordinates:
+            messages.append(str(self))
+            messages.append(str(partner.subordinates))
+            chatOptions.append(interaction.RecruitChat)
+            pass
+        
+        return chatOptions
 
     def getState(self):
         return { "gotBasicSchooling": self.gotBasicSchooling,

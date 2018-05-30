@@ -127,6 +127,7 @@ interaction.messages = messages
 events.messages = messages
 
 cinematics.interaction = interaction
+characters.interaction = interaction
 
 if args.debug:
     class debugToFile(object):

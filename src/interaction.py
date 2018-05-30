@@ -649,7 +649,6 @@ class RecruitChat(SubMenu):
 
     def handleKey(self, key):
         if self.firstRun:
-            self.persistentText += self.partner.name+": \"come and help me.\"\n"
             self.persistentText += mainChar.name+": \"come and help me.\"\n"
             if gamestate.tick%2:
                 self.persistentText += self.partner.name+": \"sorry, too busy.\"\n"
@@ -664,7 +663,7 @@ class RecruitChat(SubMenu):
             self.done = True
             return False
 
-class DebugTest(SubMenu):
+class DebugChat(SubMenu):
     dialogName = "debug?"
     def __init__(self,partner):
         self.state = None
@@ -685,7 +684,6 @@ class ChatMenu(SubMenu):
         self.state = None
         self.partner = partner
         self.subMenu = None
-        self.chatOptions = [RecruitChat,DebugTest]
         super().__init__()
 
     def handleKey(self, key):
@@ -713,7 +711,7 @@ class ChatMenu(SubMenu):
                 options = {}
                 niceOptions = {}
                 counter = 1
-                for option in self.chatOptions:
+                for option in self.partner.getChatOptions(mainChar):
                     options[str(counter)] = option
                     niceOptions[str(counter)] = option.dialogName
                     counter += 1
@@ -731,7 +729,7 @@ class ChatMenu(SubMenu):
             if not self.getSelection():
                 super().handleKey(key)
             if self.getSelection():
-                if self.selection in self.chatOptions:
+                if not isinstance(self.selection,str):
                     self.subMenu = self.selection(self.partner)
                     self.subMenu.handleKey(key)
                 elif self.selection == "showQuests":

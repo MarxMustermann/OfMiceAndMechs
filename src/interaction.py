@@ -663,22 +663,6 @@ class RecruitChat(SubMenu):
             self.done = True
             return False
 
-class DebugChat(SubMenu):
-    dialogName = "debug?"
-    def __init__(self,partner):
-        self.state = None
-        self.partner = partner
-        self.firstRun = True
-        self.done = False
-        self.persistentText = ""
-        super().__init__()
-
-    def handleKey(self, key):
-        self.persistentText = "DEBUG!"
-        main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
-        self.done = True
-        return False
-
 class ChatMenu(SubMenu):
     def __init__(self,partner):
         self.state = None

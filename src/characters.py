@@ -30,7 +30,7 @@ class Character():
         self.dead = False
 
         #TODO: this approach is fail, but works for now. There has to be a better way
-        self.basicChatOptions = [interaction.DebugChat]
+        self.basicChatOptions = []
 
         self.assignQuest(src.quests.SurviveQuest())
         

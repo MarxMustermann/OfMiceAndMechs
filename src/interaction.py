@@ -664,11 +664,28 @@ class RecruitChat(SubMenu):
             self.done = True
             return False
 
+class DebugTest(SubMenu):
+    dialogName = "debug?"
+    def __init__(self,partner):
+        self.state = None
+        self.partner = partner
+        self.firstRun = True
+        self.done = False
+        self.persistentText = ""
+        super().__init__()
+
+    def handleKey(self, key):
+        self.persistentText = "DEBUG!"
+        main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+        self.done = True
+        return False
+
 class ChatMenu(SubMenu):
     def __init__(self,partner):
         self.state = None
         self.partner = partner
         self.subMenu = None
+        self.chatOptions = [RecruitChat,DebugTest]
         super().__init__()
 
     def handleKey(self, key):
@@ -680,14 +697,25 @@ class ChatMenu(SubMenu):
             self.persistentText += self.partner.name+": \"Everything in Order, "+self.partner.name+"?\"\n"
             self.persistentText += mainChar.name+": \"All sorted, "+mainChar.name+"!\"\n"
 
+        if self.subMenu:
+            if not self.subMenu.done:
+                self.subMenu.handleKey(key)
+                if not self.subMenu.done:
+                    return False
+            self.subMenu = None
+            self.state = "mainOptions"
+            self.selection = None
+            self.lockOptions = True
+            self.options = []
+
         if self.state == "mainOptions":
             if not self.options and not self.getSelection():
                 options = {}
                 niceOptions = {}
                 counter = 1
-                if not self.partner in mainChar.subordinates:
-                    options[str(counter)] = "recruit"
-                    niceOptions[str(counter)] = RecruitChat.dialogName
+                for option in self.chatOptions:
+                    options[str(counter)] = option
+                    niceOptions[str(counter)] = option.dialogName
                     counter += 1
 
                 options[str(counter)] = "showQuests"
@@ -703,8 +731,9 @@ class ChatMenu(SubMenu):
             if not self.getSelection():
                 super().handleKey(key)
             if self.getSelection():
-                if self.selection == "recruit":
-                    self.state = "recruit"
+                if self.selection in self.chatOptions:
+                    self.subMenu = self.selection(self.partner)
+                    self.subMenu.handleKey(key)
                 elif self.selection == "showQuests":
                     submenue = QuestMenu(char=self.partner)
                     submenue.handleKey(key)
@@ -716,20 +745,6 @@ class ChatMenu(SubMenu):
             else:
                 return False
 
-        if self.state == "recruit":
-            if not self.subMenu:
-                self.subMenu = RecruitChat(self.partner)
-            self.subMenu.handleKey(key)
-            if not self.subMenu.done:
-                return False
-            else:
-                self.persistentText += self.subMenu.persistentText
-                self.state = "mainOptions"
-                self.selection = None
-                self.lockOptions = True
-                self.options = []
-                return self.handleKey("~")
-
         if self.state == "done":
             if self.lockOptions:
                 self.persistentText += self.partner.name+": \"let us proceed, "+self.partner.name+".\"\n"
@@ -738,7 +753,8 @@ class ChatMenu(SubMenu):
             else:
                 return True
 
-        main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+        if not self.subMenu:
+            main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
 
         return False
 

@@ -524,6 +524,8 @@ def show_or_exit(key):
                     messages.append("you starved")
                 else:
                     messages.append("you'll starve in "+str(mainChar.satiation)+" ticks!")
+                    if mainChar.satiation == 10:
+                        showCinematic("press "+commandChars.drink+" to drink or you will starve in 10 ticks")
             advanceGame()
 
         header.set_text((urwid.AttrSpec("default","default"),renderHeader()))

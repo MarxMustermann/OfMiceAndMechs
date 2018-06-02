@@ -443,6 +443,8 @@ class Terrain(object):
             return
 
         endCoordinate = Coordinate(exitPoint[0][0],exitPoint[0][1])
+        endNode = exitPoint[1][0]
+        pathToEndNode = self.foundPaths[exitPoint[1]][1:self.foundPaths[exitPoint[1]].index((endCoordinate.x,endCoordinate.y))+1]
 
         path = []
         try:
@@ -452,9 +454,9 @@ class Terrain(object):
                 else:
                     path = self.foundSuperPathsComplete[(startSuper[0],self.watershedSuperNodeMap[startSuper[0]][0])]+self.foundSuperPathsComplete[(self.watershedSuperNodeMap[startSuper[0]][0],endSuper[0])]
                 path = pathToStartNode + self.findWayNodeBased(Coordinate(entryPoint[1][1][0],entryPoint[1][1][1]),Coordinate(startSuper[0][0],startSuper[0][1]))+path
-                path = path + self.findWayNodeBased(Coordinate(endSuper[0][0],endSuper[0][1]),endCoordinate)
+                path = path + self.findWayNodeBased(Coordinate(endSuper[0][0],endSuper[0][1]),Coordinate(endNode[0],endNode[1]))+pathToEndNode
             else:
-                path = pathToStartNode + self.findWayNodeBased(Coordinate(startNode[0],startNode[1]),endCoordinate)
+                path = pathToStartNode + self.findWayNodeBased(Coordinate(startNode[0],startNode[1]),Coordinate(endNode[0],endNode[1]))+pathToEndNode
         except Exception as e:
             import traceback
             messages.append("Error: "+str(e))
@@ -539,6 +541,9 @@ class Terrain(object):
                         lastNode = node2
                         doLoop = False
             counter += 1
+
+            if counter == 10:
+                raise Exception("unable to find end node to "+str(end.x)+" / "+str(end.y))
 
         outPath = []
         if lastNode:

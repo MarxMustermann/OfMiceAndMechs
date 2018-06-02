@@ -834,21 +834,31 @@ class FindWork(BasicPhase):
 
             def handleKey(self, key):
                 if self.firstRun:
-                    self.persistentText = "Well, yes. Please clear the rubble."
-                    self.set_text(self.persistentText)
-                    self.done = True
-
                     self.firstRun = False
 
-                    quest = quests.ClearRubble()
-                    mainChar.assignQuest(quest,active=True)
+                    if terrain.waitingRoom.quests:
+                        self.persistentText = "Well, yes."
+                        self.set_text(self.persistentText)
+                        self.done = True
 
-                    return True
+                        quest = terrain.waitingRoom.quests.pop()
+
+                        mainChar.assignQuest(quest,active=True)
+
+                        return True
+                    else:
+                        self.persistentText = "No"
+                        self.set_text(self.persistentText)
+                        self.done = True
+
+                        return True
                 else:
                     return False
 
         quest = quests.HopperDuty()
         showQuest(quest,mainChar)
+
+        terrain.waitingRoom.quests.append(quests.ClearRubble())
 
         terrain.waitingRoom.firstOfficer.basicChatOptions.append(JobChat)
         terrain.waitingRoom.secondOfficer.basicChatOptions.append(JobChat2)

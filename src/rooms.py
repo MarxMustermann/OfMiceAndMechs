@@ -1160,4 +1160,5 @@ X         X
 X         X
 XXXXXXXXXXX
 """
+        self.quests = []
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)

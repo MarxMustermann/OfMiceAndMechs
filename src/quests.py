@@ -1075,3 +1075,8 @@ class SurviveQuest(Quest):
                 self.drinkQuest = DrinkQuest()
                 self.character.assignQuest(self.drinkQuest,active=True)
 
+class HopperDuty(Quest):
+    def __init__(self,startCinematics=None,looped=True,lifetime=None):
+        self.description = "hopper duty"
+        super().__init__(startCinematics=startCinematics)
+

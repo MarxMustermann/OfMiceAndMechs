@@ -977,7 +977,7 @@ X X X C C C C C X X X """
                XXXXXXXXX    #X     XXXXX X   X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
                X#           #X         X X   X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
                X#           #X              XX# XPXX   XP #XX# XPX    XPX#XX# XPX    XPX#XX# XPX    XPX#XX# XPX    XPX#X               X#           #X               
-               XXXXXXXXXXXX#XX               XXXXC X XXXC XXXXXXC XXXXXC XXXXXXC  XXXXC XXXXXXC XX XXC XXXXXXC X XXXC XX               XX            X               
+               XXXXXXXXXXXX  X               XXXXC X XXXC XXXXXXC XXXXXC XXXXXXC  XXXXC XXXXXXC XX XXC XXXXXXC X XXXC XX               XX            X               
                X#XXXXXXXXXXX                     8      8       8      8       8      8       8      8       8      8                  X#            X               
                XX          X                                            .                                                              XX            X               
                X#                                                                                                                      X#            X               

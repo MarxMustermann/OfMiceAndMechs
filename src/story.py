@@ -822,11 +822,36 @@ class FindWork(BasicPhase):
                 else:
                     return False
 
+        class JobChat2(interaction.SubMenu):
+            dialogName = "Can you use some help?"
+            def __init__(self,partner):
+                self.state = None
+                self.partner = partner
+                self.firstRun = True
+                self.done = False
+                self.persistentText = ""
+                super().__init__()
+
+            def handleKey(self, key):
+                if self.firstRun:
+                    self.persistentText = "Well, yes. Please clear the rubble."
+                    self.set_text(self.persistentText)
+                    self.done = True
+
+                    self.firstRun = False
+
+                    quest = quests.ClearRubble()
+                    mainChar.assignQuest(quest,active=True)
+
+                    return True
+                else:
+                    return False
+
         quest = quests.HopperDuty()
         showQuest(quest,mainChar)
 
         terrain.waitingRoom.firstOfficer.basicChatOptions.append(JobChat)
-        terrain.waitingRoom.secondOfficer.basicChatOptions.append(JobChat)
+        terrain.waitingRoom.secondOfficer.basicChatOptions.append(JobChat2)
         terrain.wakeUpRoom.firstOfficer.basicChatOptions.append(JobChat)
         terrain.tutorialMachineRoom.firstOfficer.basicChatOptions.append(JobChat)
 

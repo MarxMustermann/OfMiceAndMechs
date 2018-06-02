@@ -1080,3 +1080,12 @@ class HopperDuty(Quest):
         self.description = "hopper duty"
         super().__init__(startCinematics=startCinematics)
 
+class ClearRubble(MetaQuest2):
+    def __init__(self,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+        questList = []
+        for item in terrain.itemsOnFloor:
+            if isinstance(item,items.Scrap):
+                questList.append(PickupQuest(item))
+        super().__init__(questList)
+        self.metaDescription = "clear rubble"
+

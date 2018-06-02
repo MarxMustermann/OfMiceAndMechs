@@ -790,7 +790,7 @@ class FindWork(BasicPhase):
         cinematics.cinematicQueue.append(cinematic)
 
     def getIntro(self):
-        showText("great. I here by confirm the transfer and welcome you as crew on the Falkenbaum.\n\nYou will serve as an hopper under my command nominally. This means you will make yourself useful and prove your worth.\n\nI often have tasks to relay, but try not to stay idle even when i do not have tasks for you. Just ask around if somebody needs help")
+        showText("great. I here by confirm the transfer and welcome you as crew on the Falkenbaum.\n\nYou will serve as an hopper under my command nominally. This means you will make yourself useful and prove your worth.\n\nI often have tasks to relay, but try not to stay idle even when i do not have tasks for you. Just ask around and see if somebody needs help")
         showText("Remeber to bring recieps, your worth will be counted in a gtick.",trigger=self.end)
 
     def fail(self):
@@ -809,12 +809,21 @@ class FindWork(BasicPhase):
                 super().__init__()
 
             def handleKey(self, key):
-                self.persistentText = "There is something i want you to do. Please go to the machine room and get your intro"
-                self.set_text(self.persistentText)
-                self.done = True
-                phase = FirstTutorialPhase()
-                phase.start()
-                return False
+                if self.firstRun:
+                    self.persistentText = "There is something i want you to do. Please go to the machine room and get your intro"
+                    self.set_text(self.persistentText)
+                    self.done = True
+                    #phase = FirstTutorialPhase()
+                    #phase.start()
+
+                    self.firstRun = False
+
+                    return True
+                else:
+                    return False
+
+        quest = quests.HopperDuty()
+        showQuest(quest,mainChar)
 
         terrain.waitingRoom.firstOfficer.basicChatOptions.append(JobChat)
         terrain.waitingRoom.secondOfficer.basicChatOptions.append(JobChat)

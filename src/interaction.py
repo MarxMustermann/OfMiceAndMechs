@@ -852,31 +852,13 @@ class AdvancedQuestMenu(SubMenu):
                 super().handleKey(key)
 
             if self.getSelection():
-                self.state = "paramterSelection"
+                self.state = "confirm"
                 self.quest = self.selection
                 self.selection = None
                 self.lockOptions = True
             else:
                 return False
 
-        if self.state == "paramterSelection":
-            if self.quest == quests.EnterRoomQuest:
-                options = {"1":quests.MoveQuest,"2":quests.ActivateQuest,"3":quests.EnterRoomQuest,"4":quests.FireFurnaceMeta}
-                niceOptions = {"1":"a","2":"b","3":"c","4":"d"}
-                self.setSelection("what type of quest:",options,niceOptions)
-            else:
-                self.state = "confirm"
-
-            if not self.getSelection():
-                super().handleKey(key)
-
-            if self.getSelection():
-                self.questOptions = self.selection
-                self.selection = None
-                self.lockOptions = True
-            else:
-                return False
-                
         if self.state == "confirm":
             if self.lockOptions:
                 questInstance = None

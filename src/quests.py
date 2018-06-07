@@ -335,9 +335,9 @@ class PickupQuest(Quest):
             self.postHandler()
 
     def recalculate(self):
-        if (self.toPickup.room and ((not self.character.room) or (not self.character.room == self.toPickup.room)) and self.character.quests[0] == self):
+        if (self.toPickup.room and ((not self.character.room) or (not self.character.room == self.toPickup.room)) and self.active):
             self.character.assignQuest(EnterRoomQuest(self.toPickup.room),active=True)
-        if ((not self.toPickup.room) and self.character.room and self.character.quests[0] == self):
+        if ((not self.toPickup.room) and self.character.room and self.active):
             self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
 
         if hasattr(self,"dstX"):
@@ -350,6 +350,12 @@ class PickupQuest(Quest):
             if hasattr(self.toPickup,"xPosition"):
                 self.dstY = self.toPickup.yPosition
         super().recalculate()
+
+    def solver(self,character):
+        if super().solver(character):
+            self.toPickup.pickUp(character)
+            return True
+
 
 class DropQuest(Quest):
     def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
@@ -853,6 +859,12 @@ class MetaQuest2(Quest):
                 quest.deactivate()
         super().deactivate()
 
+    def solver(self,character):
+        for quest in self.subQuests:
+            if quest.active:
+                return quest.solver(character)
+
+
 class KeepFurnacesFiredMeta(MetaQuest2):
     def __init__(self,furnaces,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
         questList = []
@@ -1088,4 +1100,3 @@ class ClearRubble(MetaQuest2):
                 questList.append(PickupQuest(item))
         super().__init__(questList)
         self.metaDescription = "clear rubble"
-

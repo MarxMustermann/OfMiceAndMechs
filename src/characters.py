@@ -126,8 +126,8 @@ class Character():
         if not self.path:
             self.setPathToQuest(self.quests[0])
 
-        if self.path:
-            currentPosition = (self.xPosition,self.yPosition)
+        currentPosition = (self.xPosition,self.yPosition)
+        if self.path and not self.path == [currentPosition]:
             nextPosition = self.path[0]
 
             item = None

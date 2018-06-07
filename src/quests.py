@@ -331,25 +331,27 @@ class PickupQuest(Quest):
         super().__init__(followUp,startCinematics=startCinematics)
 
     def triggerCompletionCheck(self):
-        if self.toPickup in self.character.inventory:
-            self.postHandler()
+        if self.active:
+            if self.toPickup in self.character.inventory:
+                self.postHandler()
 
     def recalculate(self):
-        if (self.toPickup.room and ((not self.character.room) or (not self.character.room == self.toPickup.room)) and self.active):
-            self.character.assignQuest(EnterRoomQuest(self.toPickup.room),active=True)
-        if ((not self.toPickup.room) and self.character.room and self.active):
-            self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
+        if self.active:
+            if (self.toPickup.room and ((not self.character.room) or (not self.character.room == self.toPickup.room)) and self.active):
+                self.character.assignQuest(EnterRoomQuest(self.toPickup.room),active=True)
+            if ((not self.toPickup.room) and self.character.room and self.active):
+                self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
 
-        if hasattr(self,"dstX"):
-            del self.dstX
-        if hasattr(self,"dstY"):
-            del self.dstY
-        if hasattr(self,"toPickup"):
-            if hasattr(self.toPickup,"xPosition"):
-                self.dstX = self.toPickup.xPosition
-            if hasattr(self.toPickup,"xPosition"):
-                self.dstY = self.toPickup.yPosition
-        super().recalculate()
+            if hasattr(self,"dstX"):
+                del self.dstX
+            if hasattr(self,"dstY"):
+                del self.dstY
+            if hasattr(self,"toPickup"):
+                if hasattr(self.toPickup,"xPosition"):
+                    self.dstX = self.toPickup.xPosition
+                if hasattr(self.toPickup,"xPosition"):
+                    self.dstY = self.toPickup.yPosition
+            super().recalculate()
 
     def solver(self,character):
         if super().solver(character):

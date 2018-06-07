@@ -258,21 +258,6 @@ class Character():
             return
 
         if self.automated:
-
-            """
-            if self.yPosition == 0:
-                self.room.removeCharacter(self)
-                roomsOnMap[0].addCharacter(self,4,8)
-                self.changed()
-                return
-
-            if self.yPosition == 9:
-                self.room.removeCharacter(self)
-                roomsOnMap[1].addCharacter(self,4,1)
-                self.changed()
-                return
-            """
-    
             if len(self.quests):
                 self.applysolver(self.quests[0].solver)
                 self.changed()

@@ -844,8 +844,8 @@ class AdvancedQuestMenu(SubMenu):
 
         if self.state == "questSelection":
             if not self.options and not self.getSelection():
-                options = {"1":quests.MoveQuest,"2":quests.ActivateQuest,"3":quests.EnterRoomQuest,"4":quests.FireFurnaceMeta}
-                niceOptions = {"1":"MoveQuest","2":"ActivateQuest","3":"EnterRoomQuest","4":"FireFurnaceMeta"}
+                options = {"1":quests.MoveQuest,"2":quests.ActivateQuest,"3":quests.EnterRoomQuest,"4":quests.FireFurnaceMeta,"5":quests.ClearRubble}
+                niceOptions = {"1":"MoveQuest","2":"ActivateQuest","3":"EnterRoomQuest","4":"FireFurnaceMeta","5":"ClearRubble"}
                 self.setSelection("what type of quest:",options,niceOptions)
 
             if not self.getSelection():
@@ -870,6 +870,8 @@ class AdvancedQuestMenu(SubMenu):
                     questInstance = self.quest(terrain.tutorialMachineRoom)
                 if self.quest == quests.FireFurnaceMeta:
                     questInstance = self.quest(terrain.tutorialMachineRoom.furnaces[0])
+                if self.quest == quests.ClearRubble:
+                    questInstance = self.quest()
                 self.character.assignQuest(questInstance, active=True)
                 self.lockOptions = False
                 if not self.character == mainChar:

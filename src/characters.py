@@ -233,11 +233,6 @@ class Character():
             
             if item:
                 item.apply(self)
-                try:
-                    if self.quests[0].toPickup == item:
-                        self.quests[0].toPickup.pickUp(self)
-                except:
-                    pass
             else:
                 if (self.xPosition == nextPosition[0] and self.yPosition == nextPosition[1]):
                     self.path = self.path[1:]
@@ -280,22 +275,6 @@ class Character():
     
             if len(self.quests):
                 self.applysolver(self.quests[0].solver)
-                try:
-                    if not len(self.path):
-                        try:
-                            self.quests[0].toActivate.apply(self)
-                        except:
-                            pass
-                        try:
-                            self.quests[0].toPickup.pickUp(self)
-                        except:
-                            pass
-                        try:
-                            self.drop(self.quests[0].toDrop)
-                        except:
-                            pass
-                except:
-                    pass
                 self.changed()
 
 

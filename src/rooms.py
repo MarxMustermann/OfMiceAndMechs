@@ -1219,3 +1219,20 @@ XXXXXXXXXXX
 """
         self.quests = []
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+
+class MetalWorkshop(Room):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+        self.roomLayout = """
+XXXXXXXXXXX
+XP  ???   X
+XP .....  X
+XP .   .  X
+XP . @ .  X
+XP .   .  X
+XP .....  X
+XP        X
+XP        X
+XXXXX$XXXXX
+"""
+        self.quests = []
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)

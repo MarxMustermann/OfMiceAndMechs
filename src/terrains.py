@@ -136,6 +136,10 @@ class Terrain(object):
                     wakeUpRoom = rooms.WakeUpRoom(rowCounter,lineCounter,1,1)
                     self.wakeUpRoom = wakeUpRoom
                     roomsOnMap.append(wakeUpRoom)
+                elif char == "m":
+                    room = rooms.MetalWorkshop(rowCounter,lineCounter,1,1)
+                    self.metalWorkshop = room
+                    roomsOnMap.append(room)
                 else:
                     self.watershedStart.append((rowCounter*15+7,lineCounter*15+7))
                     pass
@@ -884,7 +888,7 @@ XXXXXXXXXXXXXXXXXXXXXX"""
         layout = """
 X X X X X X X X X X X
 X X X X X X X X X X X
-X V v ? ? ? ? ? v V X
+X V v m ? ? ? ? v V X
 X O . t         . ? X
 X w   M Q r ? ?   O X
 X W   L ? K ? ?   O X

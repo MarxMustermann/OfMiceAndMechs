@@ -394,6 +394,11 @@ class DropQuest(Quest):
 
         super().recalculate()
 
+    def solver(self,character):
+        if super().solver(character):
+            self.character.drop(self.toDrop)
+            return True
+
 class CollectQuest(Quest):
     def __init__(self,toFind="canBurn",startCinematics=None):
         self.toFind = toFind

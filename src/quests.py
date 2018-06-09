@@ -238,6 +238,11 @@ class ActivateQuest(Quest):
                 self.dstY = self.toActivate.yPosition
         super().recalculate()
 
+    def solver(self,character):
+        if super().solver(character):
+            self.toActivate.apply(character)
+            return True
+
 class LeaveRoomQuest(Quest):
     def __init__(self,room,followUp=None,startCinematics=None):
         self.room = room
@@ -357,7 +362,6 @@ class PickupQuest(Quest):
         if super().solver(character):
             self.toPickup.pickUp(character)
             return True
-
 
 class DropQuest(Quest):
     def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):

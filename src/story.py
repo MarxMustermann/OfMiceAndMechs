@@ -856,7 +856,7 @@ class FindWork(BasicPhase):
                     return False
 
         quest = quests.HopperDuty()
-        showQuest(quest,mainChar)
+        mainChar.assignQuest(quest,active=True)
 
         terrain.waitingRoom.quests.append(quests.ClearRubble())
 

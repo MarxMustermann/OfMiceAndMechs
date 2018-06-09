@@ -245,6 +245,16 @@ class ShowQuestExecution(BasicCinematic):
     def abort(self):
         super().abort()
 
+        disableAutomated = False
+        while not self.quest.completed:
+            if not self.quest.character.automated:
+                disableAutomated = True
+                self.quest.character.automated = True
+
+            self.advance()
+        if disableAutomated:
+                self.quest.character.automated = False
+
         if self.endTrigger:
             self.endTrigger()
         

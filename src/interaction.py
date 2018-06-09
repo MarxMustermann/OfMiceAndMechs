@@ -445,18 +445,7 @@ def show_or_exit(key):
                         item.pickUp(mainChar)
 
             if key in (commandChars.hail):
-                if mainChar.room and type(mainChar.room) == rooms.MiniMech:
-                    if not mainChar.room.npc.quests:
-                        messages.append("please fire the furnace.")
-                        quest0 = quests.KeepFurnaceFired(mainChar.room.furnaces[0])
-                        mainChar.room.npc.assignQuest(quest0)
-                    else:
-                        messages.append("you may stop now.")
-                        for quest in mainChar.room.npc.quests:
-                            quest.deactivate()
-                        mainChar.room.npc.quests = []
-                else:
-                    submenue = ChatPartnerselection()
+                submenue = ChatPartnerselection()
 
             mainChar.automated = False
             if key in (commandChars.advance,commandChars.autoAdvance):

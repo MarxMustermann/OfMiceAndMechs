@@ -1046,6 +1046,63 @@ XXXXXX
         self.addCharacter(self.npc,3,3)
         self.npc.room = self
 
+        quest = None
+        class StopChat(interaction.SubMenu):
+            dialogName = "stop fireing the furnaces."
+            def __init__(self,partner):
+                self.state = None
+                self.partner = partner
+                self.firstRun = True
+                self.done = False
+                self.persistentText = ""
+                super().__init__()
+
+            def handleKey(self, key):
+                if self.firstRun:
+                    self.persistentText = "OK, stopping now"
+                    self.set_text(self.persistentText)
+                    self.done = True
+
+                    global quest
+                    quest.deactivate()
+                    self.partner.basicChatOptions.remove(StopChat)
+                    self.partner.basicChatOptions.append(StartChat)
+
+                    self.firstRun = False
+
+                    return True
+                else:
+                    return False
+
+        class StartChat(interaction.SubMenu):
+            dialogName = "fire the furnaces."
+            def __init__(self,partner):
+                self.state = None
+                self.partner = partner
+                self.firstRun = True
+                self.done = False
+                self.persistentText = ""
+                super().__init__()
+
+            def handleKey(self, key):
+                if self.firstRun:
+                    self.persistentText = "Starting now. The engines should be running in a few ticks"
+                    self.set_text(self.persistentText)
+                    self.done = True
+
+                    global quest
+                    quest = quests.KeepFurnaceFired(self.partner.room.furnaces[0])
+                    self.partner.assignQuest(quest)
+                    self.partner.basicChatOptions.remove(StartChat)
+                    self.partner.basicChatOptions.append(StopChat)
+
+                    self.firstRun = False
+
+                    return True
+                else:
+                    return False
+        self.npc.basicChatOptions.append(StartChat)
+
     def changed(self):
         self.engineStrength = 250*self.steamGeneration
 

@@ -359,8 +359,9 @@ class PickupQuest(Quest):
             super().recalculate()
 
     def solver(self,character):
-        if super().solver(character):
+        if super().solver(character) or (len(character.path) == 1 and self.toPickup.walkable == False):
             self.toPickup.pickUp(character)
+            self.triggerCompletionCheck()
             return True
 
 class DropQuest(Quest):
@@ -396,8 +397,12 @@ class DropQuest(Quest):
 
     def solver(self,character):
         if super().solver(character):
-            self.character.drop(self.toDrop)
-            return True
+            if self.toDrop in character.inventory:
+                self.character.drop(self.toDrop)
+                self.triggerCompletionCheck()
+                return True
+            else:
+                return False
 
 class CollectQuest(Quest):
     def __init__(self,toFind="canBurn",startCinematics=None):

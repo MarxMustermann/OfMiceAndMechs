@@ -140,6 +140,9 @@ class Terrain(object):
                     room = rooms.MetalWorkshop(rowCounter,lineCounter,1,1)
                     self.metalWorkshop = room
                     roomsOnMap.append(room)
+                elif char == "b":
+                    room = rooms.ConstructionSite(rowCounter,lineCounter,1,1)
+                    roomsOnMap.append(room)
                 else:
                     self.watershedStart.append((rowCounter*15+7,lineCounter*15+7))
                     pass
@@ -888,9 +891,9 @@ XXXXXXXXXXXXXXXXXXXXXX"""
         layout = """
 X X X X X X X X X X X
 X X X X X X X X X X X
-X V v m ? ? ? ? v V X
+X V v m b r ? ? v V X
 X O . t         . ? X
-X w   M Q r ? ?   O X
+X w   M Q C ? ?   O X
 X W   L ? K ? ?   O X
 X U .           . U X
 X U   C C C C C   U X
@@ -938,7 +941,7 @@ X X X C C C C C X X X """
                #            ####           # #O          O#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                #O          O ##O          O# ##           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                ##          # ###          ##  #          #####           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-                          R  #  R        R     R        R XXXX XXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
+                          R  #  R        R     R        R XXXX           XXXXXXXXXXXXXX XXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
                XX  O    O    ####O#   ##O####    O8   O    X              X X X X X X X X X X X X X X                                                X               
                XX               ### X  ###        8        X     X                                                                                   X               
                   X  O   O          XX     ##     8        X     X                                                                                   X              
@@ -957,9 +960,9 @@ X X X C C C C C X X X """
                                                                                                                                        X#x          #X               
                 XXXX                                                                                                                     X                           
                                                                                                                                        X X          #X               
-               XXXXXXXXXXXX#XX               X#####    ######              X#           #X               X#           #X               X             X               
-               X                             X   R        R#X            #XX#           #XX#           #XX#           #X               X#X                           
-               X#           #X               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
+               XXXXXXXXXXXX#XX               X#####    ######              X#            X               X#           #X               X             X               
+               X                             X   R        R#X            #XX#            XX#           #XX#           #X               X#X                           
+               X#           #X               X             #X#           #XX#            XX#           #XX#           #X               X#X          #X               
                X#           #X               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
                X#           #X               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
                X#           #X               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               

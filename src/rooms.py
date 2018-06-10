@@ -1239,3 +1239,92 @@ XXXXX$XXXXX
         self.artwork = items.ProductionArtwork(4,1)
         self.compactor = items.ScrapCompactor(6,1)
         self.addItems([self.artwork,self.compactor])
+
+class ConstructionSite(Room):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+        self.roomLayout = """
+XXXXXXXXXXX
+X         X
+X  .....  X
+X  .###.  X
+X  .# #.  X
+X  .###.  X
+X  .....  X
+X         X
+X   @     X
+XXXXX$XXXXX
+"""
+        self.desiredRoomlayout = """
+XXXXXXXXXXX
+X ## ## ##X
+X #..... #X
+X##.   .  X
+X  . @ .  X
+X  .   .  X
+X  .....  X
+X##   ### X
+X##   ### X
+XXXXX$XXXXX
+"""
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        
+        itemsToPlace = {}
+        x = -1
+        for line in self.desiredRoomlayout.split("\n"):
+            y = 0
+            for char in line:
+                if char == "#":
+                    itemsToPlace[(x,y)] = items.Pipe
+                y += 1
+            x += 1
+
+        itemstoAdd = []
+        for (position,itemType) in itemsToPlace.items():
+            item = items.MarkerBean(position[1],position[0])
+            item.apply(self.firstOfficer)
+            itemstoAdd.append(item)
+
+        self.itemsInStore = []
+        for item in self.itemsOnFloor:
+            if isinstance(item,items.Pipe):
+                self.itemsInStore.append(item)
+
+        self.addItems(itemstoAdd)
+
+        buildorder = []
+        x = 0
+        while x < self.sizeX//2:
+            y = 0
+            while y < self.sizeY//2:
+                buildorder.append((x,y))
+                y += 1
+            x += 1
+
+        x = self.sizeX
+        while x >= self.sizeX//2:
+            y = 0
+            while y < self.sizeY//2:
+                buildorder.append((x,y))
+                y += 1
+            x -= 1
+
+        x = self.sizeX
+        while x >= self.sizeX//2:
+            y = self.sizeY
+            while y >= self.sizeY//2:
+                buildorder.append((x,y))
+                y -= 1
+            x -= 1
+
+        x = 0
+        while x < self.sizeX//2:
+            y = self.sizeY
+            while y >= self.sizeY//2:
+                buildorder.append((x,y))
+                y -= 1
+            x += 1
+
+        self.itemsInBuildOrder = []
+        for position in buildorder:
+            if position in itemsToPlace:
+                self.itemsInBuildOrder.append((position,itemsToPlace[position]))

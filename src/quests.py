@@ -842,6 +842,8 @@ class MetaQuest2(Quest):
         for quest in self.subQuests:
                 quest.assignToCharacter(self.character)
 
+        self.recalculate()
+
     def recalculate(self):
         for quest in self.subQuests:
             if quest.completed:
@@ -1117,3 +1119,25 @@ class ClearRubble(MetaQuest2):
                 questList.append(DropQuest(item,terrain.metalWorkshop,7,1))
         super().__init__(questList)
         self.metaDescription = "clear rubble"
+
+class ConstructRoom(MetaQuest2):
+    def __init__(self,constructionSite,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+
+        questList = []
+        
+        counter = 0
+        while counter < len(constructionSite.itemsInStore):
+            quest = PickupQuest(constructionSite.itemsInStore[counter])
+            questList.append(quest)
+            quest.addListener(self.recalculate)
+            quest = DropQuest(constructionSite.itemsInStore[counter],constructionSite,constructionSite.itemsInBuildOrder[counter][0][1],constructionSite.itemsInBuildOrder[counter][0][0])
+            questList.append(quest)
+            quest.addListener(self.recalculate)
+            counter += 1 
+
+        super().__init__(questList)
+        self.metaDescription = "construct room"
+
+    def recalculate(self):
+        super().recalculate()
+

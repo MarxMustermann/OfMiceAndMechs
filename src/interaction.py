@@ -136,6 +136,8 @@ def show_or_exit(key):
         if key in stealKey:
             stealKey[key]()
         else:
+            if key in ("´",):
+                mainChar.assignQuest(quests.ConstructRoom(terrain.roomByCoordinates[(4,2)][0]),active=True)
             if key in (commandChars.quit_delete,):
                 saveFile = open("gamestate/gamestate.json","w")
                 saveFile.write("reset")

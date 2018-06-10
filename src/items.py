@@ -788,4 +788,3 @@ class ScrapCompactor(Item):
            new.xPosition = self.xPosition-1
            new.yPosition = self.yPosition
            self.room.addItems([new])
-

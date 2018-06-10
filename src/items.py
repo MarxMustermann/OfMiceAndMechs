@@ -610,6 +610,10 @@ class Winch(Item):
     def apply(self,character):
         messages.append("TODO")
 
+class MetalBars(Item):
+    def __init__(self,xPosition=0,yPosition=0,name="metal bar"):
+        super().__init__("==",xPosition,yPosition,name=name)
+
 class Boiler(Item):
     def __init__(self,xPosition=0,yPosition=0,name="boiler"):
         super().__init__(displayChars.boiler_inactive,xPosition,yPosition,name=name)
@@ -740,7 +744,7 @@ class GooFlask(Item):
         return super().getDetailedInfo()+" ("+str(self.uses)+" charges)"
 
 class OjectDispenser(Item):
-    def __init__(self,xPosition=None,yPosition=None, name="oject dispenser"):
+    def __init__(self,xPosition=None,yPosition=None, name="object dispenser"):
         super().__init__("U\\",xPosition,yPosition,name=name)
 
     def dispenseObject(self):
@@ -748,3 +752,40 @@ class OjectDispenser(Item):
         new.xPosition = self.xPosition
         new.yPosition = self.yPosition+1
         self.room.addItems([new])
+
+class ProductionArtwork(Item):
+    def __init__(self,xPosition=None,yPosition=None, name="production artwork"):
+        super().__init__("U\\",xPosition,yPosition,name=name)
+
+    def apply(self,character,resultType=None):
+       if not (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            messages.append("no scrap available")
+       else:
+           desintegratedScrap = False
+           for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+               if isinstance(item,MetalBars):
+                   self.room.removeItem(item)
+
+           new = Pipe()
+           new.xPosition = self.xPosition-1
+           new.yPosition = self.yPosition
+           self.room.addItems([new])
+
+class ScrapCompactor(Item):
+    def __init__(self,xPosition=None,yPosition=None, name="scrap compactor"):
+        super().__init__("U\\",xPosition,yPosition,name=name)
+
+    def apply(self,character,resultType=None):
+       if not (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            messages.append("no metal bars available")
+       else:
+           desintegratedScrap = False
+           for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+               if isinstance(item,Scrap):
+                   self.room.removeItem(item)
+
+           new = MetalBars()
+           new.xPosition = self.xPosition-1
+           new.yPosition = self.yPosition
+           self.room.addItems([new])
+

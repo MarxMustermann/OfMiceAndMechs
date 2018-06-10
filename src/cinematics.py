@@ -211,7 +211,7 @@ class ShowQuestExecution(BasicCinematic):
         self.quest = quest
         self.endTrigger = None
         self.tickSpan = tickSpan
-        self.firstRun = True
+        self.wasSetup = False
         self.assignTo = assignTo
         self.background = background
         self.active = True
@@ -220,13 +220,16 @@ class ShowQuestExecution(BasicCinematic):
             self.active = False
         self.alarm = None
 
+    def setup(self):
+        self.wasSetup = True
+        if self.assignTo:
+            self.assignTo.assignQuest(self.quest,active=True)
+
     def advance(self):
         super().advance()
 
-        if self.firstRun:
-            self.firstRun = False
-            if self.assignTo:
-                self.assignTo.assignQuest(self.quest,active=True)
+        if not self.wasSetup:
+            self.setup()
 
         if self.quest.completed:
             loop.set_alarm_in(0.0, callShow_or_exit, ' ')
@@ -244,6 +247,9 @@ class ShowQuestExecution(BasicCinematic):
 
     def abort(self):
         super().abort()
+
+        if not self.wasSetup:
+            self.setup()
 
         disableAutomated = False
         while not self.quest.completed:

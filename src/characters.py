@@ -232,7 +232,9 @@ class Character():
                     self.changed()
             
             if item:
-                item.apply(self)
+                if isinstance(item,items.Door):
+                    item.apply(self)
+                return False
             else:
                 if (self.xPosition == nextPosition[0] and self.yPosition == nextPosition[1]):
                     self.path = self.path[1:]

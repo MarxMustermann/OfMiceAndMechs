@@ -137,7 +137,9 @@ def show_or_exit(key):
             stealKey[key]()
         else:
             if key in ("´",):
-                mainChar.assignQuest(quests.ConstructRoom(terrain.roomByCoordinates[(4,2)][0]),active=True)
+                storageRoom = terrain.roomByCoordinates[(5,4)][0]
+                construction = terrain.roomByCoordinates[(4,2)][0]
+                mainChar.assignQuest(quests.ConstructRoom(construction,storageRoom),active=True)
             if key in (commandChars.quit_delete,):
                 saveFile = open("gamestate/gamestate.json","w")
                 saveFile.write("reset")
@@ -835,8 +837,8 @@ class AdvancedQuestMenu(SubMenu):
 
         if self.state == "questSelection":
             if not self.options and not self.getSelection():
-                options = {"1":quests.MoveQuest,"2":quests.ActivateQuest,"3":quests.EnterRoomQuest,"4":quests.FireFurnaceMeta,"5":quests.ClearRubble}
-                niceOptions = {"1":"MoveQuest","2":"ActivateQuest","3":"EnterRoomQuest","4":"FireFurnaceMeta","5":"ClearRubble"}
+                options = {"1":quests.MoveQuest,"2":quests.ActivateQuest,"3":quests.EnterRoomQuest,"4":quests.FireFurnaceMeta,"5":quests.ClearRubble,"6":quests.ConstructRoom}
+                niceOptions = {"1":"MoveQuest","2":"ActivateQuest","3":"EnterRoomQuest","4":"FireFurnaceMeta","5":"ClearRubble","6":"ConstructRoom"}
                 self.setSelection("what type of quest:",options,niceOptions)
 
             if not self.getSelection():
@@ -863,6 +865,10 @@ class AdvancedQuestMenu(SubMenu):
                     questInstance = self.quest(terrain.tutorialMachineRoom.furnaces[0])
                 if self.quest == quests.ClearRubble:
                     questInstance = self.quest()
+                if self.quest == quests.ConstructRoom:
+                    storageRoom = terrain.roomByCoordinates[(5,4)][0]
+                    construction = terrain.roomByCoordinates[(4,2)][0]
+                    questInstance = self.quest(construction,storageRoom)
                 self.character.assignQuest(questInstance, active=True)
                 self.lockOptions = False
                 if not self.character == mainChar:

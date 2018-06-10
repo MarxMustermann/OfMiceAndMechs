@@ -1151,7 +1151,7 @@ XXXXXXXXXX
         self.floorDisplay = [displayChars.nonWalkableUnkown]
 
         self.storedItems = []
-        for i in range(1,20):
+        for i in range(1,30):
             self.storedItems.append(items.Pipe())
 
         counter = 0
@@ -1246,9 +1246,9 @@ class ConstructionSite(Room):
 XXXXXXXXXXX
 X         X
 X  .....  X
-X  .###.  X
-X  .# #.  X
-X  .###.  X
+X  .   .  X
+X  .   .  X
+X  .   .  X
 X  .....  X
 X         X
 X   @     X
@@ -1256,14 +1256,14 @@ XXXXX$XXXXX
 """
         self.desiredRoomlayout = """
 XXXXXXXXXXX
-X ## ## ##X
+X ########X
 X #..... #X
-X##.   .  X
-X  . @ .  X
-X  .   .  X
-X  .....  X
-X##   ### X
-X##   ### X
+X##.   . #X
+X  . @ . #X
+X  .   . #X
+X  ..... #X
+X##      #X
+X ### ####X
 XXXXX$XXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
@@ -1283,11 +1283,6 @@ XXXXX$XXXXX
             item = items.MarkerBean(position[1],position[0])
             item.apply(self.firstOfficer)
             itemstoAdd.append(item)
-
-        self.itemsInStore = []
-        for item in self.itemsOnFloor:
-            if isinstance(item,items.Pipe):
-                self.itemsInStore.append(item)
 
         self.addItems(itemstoAdd)
 
@@ -1328,3 +1323,6 @@ XXXXX$XXXXX
         for position in buildorder:
             if position in itemsToPlace:
                 self.itemsInBuildOrder.append((position,itemsToPlace[position]))
+        self.itemsInBuildOrder.reverse()
+
+

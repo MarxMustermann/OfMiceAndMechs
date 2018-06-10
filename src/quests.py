@@ -387,13 +387,14 @@ class DropQuest(Quest):
             self.postHandler()
 
     def recalculate(self):
-        if ((not self.character.room) or (not self.character.room == self.room)) and self.character.quests[0] == self:
-            self.character.assignQuest(EnterRoomQuest(self.room),active=True)
+        if self.active:
+            if (self.room and ((not self.character.room) or (not self.character.room == self.room)) and self.active):
+                self.character.assignQuest(EnterRoomQuest(self.room),active=True)
 
-        if not self.active:
+            super().recalculate()
+        else:
             return
 
-        super().recalculate()
 
     def solver(self,character):
         if super().solver(character):
@@ -849,15 +850,17 @@ class MetaQuest2(Quest):
             if quest.completed:
                 self.subQuests.remove(quest)
 
-        foundQuest = False
+        activeQuest = None
         for quest in self.subQuests:
             if not quest.paused:
-                self.lastActive = quest
-                foundQuest = True
+                activeQuest = quest
                 break
 
-        if not foundQuest:
-            self.lastActive = None
+        if not activeQuest == self.lastActive:
+            self.lastActive = activeQuest
+
+        if self.lastActive:
+            activeQuest.recalculate()
 
         super().recalculate()
 
@@ -1120,24 +1123,122 @@ class ClearRubble(MetaQuest2):
         super().__init__(questList)
         self.metaDescription = "clear rubble"
 
-class ConstructRoom(MetaQuest2):
-    def __init__(self,constructionSite,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
-
+class FetchFurniture(MetaQuest2):
+    def __init__(self,constructionSite,storageRoom,toFetch,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
         questList = []
-        
+
+        dropoffs = [(4,4),(5,4),(5,5),(5,6),(4,6),(3,6),(3,5),(3,4)]
+
+        self.itemsInStore = []
+
+        """
+        STUPID WAY
+        """
         counter = 0
-        while counter < len(constructionSite.itemsInStore):
-            quest = PickupQuest(constructionSite.itemsInStore[counter])
-            questList.append(quest)
+        maxNum = len(toFetch)
+        if maxNum > len(dropoffs):
+            maxNum = len(dropoffs)
+        while counter < maxNum:
+            if not storageRoom.storedItems:
+                break
+
+            item = storageRoom.storedItems.pop()
+
+            questList.append(PickupQuest(item))
+            questList.append(DropQuest(item,constructionSite,dropoffs[counter][1],dropoffs[counter][0]))
+            self.itemsInStore.append(item)
+
+            counter += 1
+        """
+        SMART WAY
+        counter = 0
+        maxNum = len(toFetch)
+        if maxNum > len(dropoffs):
+            maxNum = len(dropoffs)
+        toFetch = []
+        while counter < maxNum:
+            if not storageRoom.storedItems:
+                break
+
+            item = storageRoom.storedItems.pop()
+            toFetch.append(item)
+            counter += 1
+    
+        for item in toFetch:
+            questList.append(PickupQuest(item))
+        counter = 0
+        for item in toFetch:
+            questList.append(DropQuest(item,constructionSite,dropoffs[counter][1],dropoffs[counter][0]))
+            counter += 1
+        for item in toFetch:
+            self.itemsInStore.append(item)
+        """
+
+        super().__init__(questList)
+        self.metaDescription = "fetch furniture"
+
+class PlaceFurniture(MetaQuest2):
+    def __init__(self,constructionSite,itemsInStore,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+        self.questList = []
+
+        counter = 0
+        while counter < len(itemsInStore):
+            if not constructionSite.itemsInBuildOrder:
+                break
+
+            toBuild = constructionSite.itemsInBuildOrder.pop()
+
+            quest = PickupQuest(itemsInStore[counter])
+            self.questList.append(quest)
             quest.addListener(self.recalculate)
-            quest = DropQuest(constructionSite.itemsInStore[counter],constructionSite,constructionSite.itemsInBuildOrder[counter][0][1],constructionSite.itemsInBuildOrder[counter][0][0])
-            questList.append(quest)
+            quest = DropQuest(itemsInStore[counter],constructionSite,toBuild[0][1],toBuild[0][0])
+            self.questList.append(quest)
             quest.addListener(self.recalculate)
             counter += 1 
 
-        super().__init__(questList)
+        super().__init__(self.questList)
+        self.metaDescription = "place furniture"
+
+class ConstructRoom(MetaQuest2):
+    def __init__(self,constructionSite,storageRoom,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+
+        self.questList = []
+
+        self.constructionSite = constructionSite
+        self.storageRoom = storageRoom
+        self.itemsInStore = []
+
+        self.didFetchQuest = False
+        self.didPlaceQuest = False
+
+        super().__init__(self.questList)
         self.metaDescription = "construct room"
 
     def recalculate(self):
+        if not self.questList or self.questList[0].completed:
+            if not self.didFetchQuest:
+                self.didFetchQuest = True
+                self.didPlaceQuest = False
+                self.fetchquest = FetchFurniture(self.constructionSite,self.storageRoom,self.constructionSite.itemsInBuildOrder)
+                self.fetchquest.assignToCharacter(self.character)
+                self.fetchquest.activate()
+                self.fetchquest.addListener(self.recalculate)
+                self.itemsInStore = self.fetchquest.itemsInStore
+                self.questList.append(self.fetchquest)
+            elif not self.didPlaceQuest:
+                self.didPlaceQuest = True
+                self.placeQuest = PlaceFurniture(self.constructionSite,self.itemsInStore)
+                self.placeQuest.assignToCharacter(self.character)
+                self.placeQuest.activate()
+                self.placeQuest.addListener(self.recalculate)
+                if self.constructionSite.itemsInBuildOrder:
+                    self.didFetchQuest = False
+
+                self.questList.append(self.placeQuest)
         super().recalculate()
+
+    def triggerCoppletionCheck(self):
+        if not self.didFetchQuest or not self.didPlaceQuest:
+            return
+        super().triggerCoppletionCheck()
 

@@ -51,6 +51,9 @@ def calculatePathReal(startX,startY,endX,endY,walkingPath):
     import math
     path = []
 
+    if None in (startX,startY,endX,endY):
+        return []
+
     if (startX == endX and startY == endY):
         return []
     if (startX == endX+1 and startY == endY):

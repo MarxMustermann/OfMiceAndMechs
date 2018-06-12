@@ -1132,7 +1132,7 @@ class ThirdTutorialPhase(BasicPhase):
                     if boilerStillBoiling:
                         self.mainCharRoom.addEvent(WaitForClearStart2(gamestate.tick+2,0))
                     else:
-                        cinematics.showCinematic("Libwig start now.")
+                        cinematics.showCinematic("Liebweg start now.")
                         self.mainCharRoom.secondOfficer.assignQuest(quests.FireFurnace(self.mainCharRoom.furnaces[0]),active=True)
                         self.mainCharRoom.addEvent(AnotherOne2(gamestate.tick+10,0))
 
@@ -1180,7 +1180,7 @@ class ThirdTutorialPhase(BasicPhase):
 
     def end(self):
         messages.append("your Score: "+str(self.mainCharFurnaceIndex))
-        messages.append("Libwigs Score: "+str(self.npcFurnaceIndex))
+        messages.append("Liebweg Score: "+str(self.npcFurnaceIndex))
 
         for quest in self.mainCharRoom.secondOfficer.quests:
             quest.deactivate()
@@ -1197,7 +1197,7 @@ class ThirdTutorialPhase(BasicPhase):
             phase3 = LabPhase()
             phase3.start()
         else:
-            cinematics.showCinematic("you passed the Test. \n\nyour Score: "+str(self.mainCharFurnaceIndex)+"\nLibwigs Score: "+str(self.npcFurnaceIndex))
+            cinematics.showCinematic("you passed the Test. \n\nyour Score: "+str(self.mainCharFurnaceIndex)+"\nLiebwegs Score: "+str(self.npcFurnaceIndex))
             phase3 = MachineRoomPhase()
             phase3.start()
 

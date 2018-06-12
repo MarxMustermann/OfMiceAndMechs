@@ -716,7 +716,7 @@ XXXXXXXXXX
         quest2.followUp = quest3
         quest3.followUp = quest4
         quest4.followUp = quest1
-        npc = Character(staffCharacters[11],1,2,name="Erwin von Libwig")
+        npc = Character(staffCharacters[11],1,2,name="Erwin von Liebweg")
         self.addCharacter(npc,1,3)
         npc.room = self
         npc.assignQuest(quest0)
@@ -882,7 +882,7 @@ XXXXXXXXXX
             quest2.followUp = quest3
             quest3.followUp = quest4
             quest4.followUp = quest1
-            npc = Character(displayChars.staffCharactersByLetter["l"],x,y,name="Erwin von Libwig")
+            npc = Character(displayChars.staffCharactersByLetter["l"],x,y,name="Erwin von Liebweg")
             self.addCharacter(npc,x,y)
             npc.room = self
             npc.assignQuest(quest1)

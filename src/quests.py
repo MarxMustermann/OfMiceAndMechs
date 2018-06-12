@@ -342,11 +342,6 @@ class PickupQuest(Quest):
 
     def recalculate(self):
         if self.active:
-            if (self.toPickup.room and ((not self.character.room) or (not self.character.room == self.toPickup.room)) and self.active):
-                self.character.assignQuest(EnterRoomQuest(self.toPickup.room),active=True)
-            if ((not self.toPickup.room) and self.character.room and self.active):
-                self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
-
             if hasattr(self,"dstX"):
                 del self.dstX
             if hasattr(self,"dstY"):
@@ -385,16 +380,6 @@ class DropQuest(Quest):
 
         if correctPosition:
             self.postHandler()
-
-    def recalculate(self):
-        if self.active:
-            if (self.room and ((not self.character.room) or (not self.character.room == self.room)) and self.active):
-                self.character.assignQuest(EnterRoomQuest(self.room),active=True)
-
-            super().recalculate()
-        else:
-            return
-
 
     def solver(self,character):
         if super().solver(character):
@@ -719,13 +704,14 @@ class KeepFurnaceFired(Quest):
 #
 ############################################################
 
-class MetaQuest(Quest):
-    def __init__(self,quests,startCinematics=None,looped=False):
+class MetaQuestSequence(Quest):
+    def __init__(self,quests,startCinematics=None):
         self.subQuestsOrig = quests.copy()
         self.subQuests = quests
-        self.subQuests[0].addListener(self.triggerCompletionCheck)
-        self.looped = looped
+        self.subQuests[0].addListener(self.recalculate)
         super().__init__(startCinematics=startCinematics)
+        self.listeningTo = []
+        self.metaDescription = "meta"
 
     @property
     def dstX(self):
@@ -743,14 +729,13 @@ class MetaQuest(Quest):
 
     @property
     def description(self):
-        try:
-            out =  "meta:\n"
-            for quest in self.subQuests:
-                out += "    * "+quest.description+"\n"
-            return out
-            return self.subQuests[0].description
-        except:
-            return ""
+        out =  self.metaDescription+":\n"
+        for quest in self.subQuests:
+            if quest.active:
+                out += "    > "+"\n      ".join(quest.description.split("\n"))+"\n"
+            else:
+                out += "    x "+"\n      ".join(quest.description.split("\n"))+"\n"
+        return out
 
     def assignToCharacter(self,character):
         if self.subQuests:
@@ -758,40 +743,62 @@ class MetaQuest(Quest):
         super().assignToCharacter(character)
 
     def triggerCompletionCheck(self):
-        if self.subQuests and not self.subQuests[0].active:
+        if not self.active:
+            return
+
+        if self.subQuests and self.subQuests[0].completed:
+            self.subQuests.remove(self.subQuests[0])
+
+        if not len(self.subQuests):
+            self.postHandler()
+
+    def recalculate(self):
+        if not self.active:
+            return 
+
+        if self.subQuests and self.subQuests[0].completed:
             self.subQuests.remove(self.subQuests[0])
 
         if len(self.subQuests):
+            if not self.subQuests[0].character:
+                self.subQuests[0].assignToCharacter(self.character)
             if not self.subQuests[0].active:
-                self.subQuests[0].assignToCharacter(self.character)
                 self.subQuests[0].activate()
-                self.subQuests[0].addListener(self.triggerCompletionCheck)
-        else:
-            if not self.looped:
-                self.postHandler()
-            else:
-                self.subQuests = self.subQuestsOrig.copy()
+            if not self.subQuests[0] in self.listeningTo:
+                self.subQuests[0].addListener(self.recalculate)
+        super().recalculate()
 
-                self.subQuests[0].assignToCharacter(self.character)
-                self.subQuests[0].activate()
-                self.subQuests[0].addListener(self.triggerCompletionCheck)
+        self.triggerCompletionCheck()
+
+    def addQuest(self,quest):
+        self.subQuests.insert(0,quest)
+        self.subQuests[0].addListener(self.recalculate)
+        self.listeningTo.append(self.subQuests[0])
+        if len(self.subQuests) > 1:
+            self.subQuests[1].deactivate()
 
     def activate(self):
         if len(self.subQuests):
-            self.subQuests[0].activate()
+            if not self.subQuests[0].active:
+                self.subQuests[0].activate()
         super().activate()
+
+    def solver(self,character):
+        if len(self.subQuests):
+            self.subQuests[0].solver(character)
 
     def deactivate(self):
         if len(self.subQuests):
-            self.subQuests[0].deactivate()
+            if self.subQuests[0].active:
+                self.subQuests[0].deactivate()
         super().deactivate()
 
-class MetaQuest2(Quest):
+class MetaQuestParralel(Quest):
     def __init__(self,quests,startCinematics=None,looped=False,lifetime=None):
         self.subQuests = quests
 
         for quest in self.subQuests:
-            quest.addListener(self.triggerCompletionCheck)
+            quest.addListener(self.recalculate)
 
         self.lastActive = None
 
@@ -835,7 +842,6 @@ class MetaQuest2(Quest):
                 else:
                     out += "XXXX"+questDescription
             return out
-            return self.subQuests[0].description
 
     def assignToCharacter(self,character):
         super().assignToCharacter(character)
@@ -885,8 +891,16 @@ class MetaQuest2(Quest):
             if quest.active:
                 return quest.solver(character)
 
+    def addQuest(self,quest):
+        if self.character:
+            quest.assignToCharacter(self.character)
+        if self.active:
+            quest.activate()
+        quest.recalculate()
+        self.questList.insert(0,quest)
+        quest.addListener(self.recalculate)
 
-class KeepFurnacesFiredMeta(MetaQuest2):
+class KeepFurnacesFiredMeta(MetaQuestParralel):
     def __init__(self,furnaces,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
         questList = []
         skillLevel = 20
@@ -900,7 +914,7 @@ class KeepFurnacesFiredMeta(MetaQuest2):
         super().__init__(questList)
         self.metaDescription = "KeepFurnacesFiredMeta"
 
-class KeepFurnaceFiredMeta(MetaQuest2):
+class KeepFurnaceFiredMeta(MetaQuestParralel):
     def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
         self.questList = []
         self.fireFurnaceQuest = None
@@ -944,7 +958,7 @@ class KeepFurnaceFiredMeta(MetaQuest2):
     def triggerCompletionCheck(self):
         pass
 
-class FireFurnaceMeta(MetaQuest2):
+class FireFurnaceMeta(MetaQuestParralel):
     def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
         self.activateQuest = None
         self.collectQuest = None
@@ -1002,7 +1016,7 @@ class FireFurnaceMeta(MetaQuest2):
             
         super().triggerCompletionCheck()
 
-class PatrolQuest(MetaQuest):
+class PatrolQuest(MetaQuestSequence):
     def __init__(self,waypoints=[],startCinematics=None,looped=True,lifetime=None):
         quests = []
 
@@ -1113,7 +1127,7 @@ class HopperDuty(Quest):
         self.description = "hopper duty"
         super().__init__(startCinematics=startCinematics)
 
-class ClearRubble(MetaQuest2):
+class ClearRubble(MetaQuestParralel):
     def __init__(self,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
         questList = []
         for item in terrain.itemsOnFloor:
@@ -1123,7 +1137,7 @@ class ClearRubble(MetaQuest2):
         super().__init__(questList)
         self.metaDescription = "clear rubble"
 
-class FetchFurniture(MetaQuest2):
+class FetchFurniture(MetaQuestParralel):
     def __init__(self,constructionSite,storageRoom,toFetch,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
         questList = []
 
@@ -1133,7 +1147,6 @@ class FetchFurniture(MetaQuest2):
 
         """
         STUPID WAY
-        """
         counter = 0
         maxNum = len(toFetch)
         if maxNum > len(dropoffs):
@@ -1150,7 +1163,9 @@ class FetchFurniture(MetaQuest2):
 
             counter += 1
         """
+        """
         SMART WAY
+        """
         counter = 0
         maxNum = len(toFetch)
         if maxNum > len(dropoffs):
@@ -1165,19 +1180,18 @@ class FetchFurniture(MetaQuest2):
             counter += 1
     
         for item in toFetch:
-            questList.append(PickupQuest(item))
+            questList.append(PickupQuestMeta(item))
         counter = 0
         for item in toFetch:
-            questList.append(DropQuest(item,constructionSite,dropoffs[counter][1],dropoffs[counter][0]))
+            questList.append(DropQuestMeta(item,constructionSite,dropoffs[counter][1],dropoffs[counter][0]))
             counter += 1
         for item in toFetch:
             self.itemsInStore.append(item)
-        """
 
         super().__init__(questList)
         self.metaDescription = "fetch furniture"
 
-class PlaceFurniture(MetaQuest2):
+class PlaceFurniture(MetaQuestParralel):
     def __init__(self,constructionSite,itemsInStore,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
         self.questList = []
 
@@ -1199,7 +1213,57 @@ class PlaceFurniture(MetaQuest2):
         super().__init__(self.questList)
         self.metaDescription = "place furniture"
 
-class ConstructRoom(MetaQuest2):
+class DropQuestMeta(MetaQuestParralel):
+    def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
+        self.room = room
+        self.questList = [DropQuest(toDrop,room,xPosition,yPosition)]
+        super().__init__(self.questList)
+        self.recalculate()
+        self.metaDescription = "drop Meta"
+
+    def recalculate(self):
+        if self.active:
+            if (self.room and ((not self.character.room) or (not self.character.room == self.room)) and self.active):
+                self.addQuest(EnterRoomQuestMeta(self.room))
+
+            super().recalculate()
+
+class EnterRoomQuestMeta(MetaQuestParralel):
+    def __init__(self,room,followUp=None,startCinematics=None):
+        self.room = room
+        self.questList = [EnterRoomQuest(room)]
+        super().__init__(self.questList)
+        self.recalculate()
+        self.metaDescription = "enterroom Meta"
+
+    def recalculate(self):
+        if not self.active:
+            return 
+
+        if self.character.room and not self.character.room == self.room:
+            self.addQuest(LeaveRoomQuest(self.character.room))
+
+        super().recalculate()
+
+class PickupQuestMeta(MetaQuestSequence):
+    def __init__(self,toPickup,followUp=None,startCinematics=None):
+        self.toPickup = toPickup
+        self.questList = [PickupQuest(self.toPickup)]
+        super().__init__(self.questList)
+        self.recalculate()
+        self.metaDescription = "pickup Meta"
+
+        self.hasEnterRoomQuest = False
+
+    def recalculate(self):
+        if self.active:
+            if (self.toPickup.room and ((not self.character.room) or (not self.character.room == self.toPickup.room)) and not self.hasEnterRoomQuest):
+                self.hasEnterRoomQuest = True
+                self.addQuest(EnterRoomQuestMeta(self.toPickup.room))
+
+        super().recalculate()
+
+class ConstructRoom(MetaQuestParralel):
     def __init__(self,constructionSite,storageRoom,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
 
         self.questList = []
@@ -1220,21 +1284,14 @@ class ConstructRoom(MetaQuest2):
                 self.didFetchQuest = True
                 self.didPlaceQuest = False
                 self.fetchquest = FetchFurniture(self.constructionSite,self.storageRoom,self.constructionSite.itemsInBuildOrder)
-                self.fetchquest.assignToCharacter(self.character)
-                self.fetchquest.activate()
-                self.fetchquest.addListener(self.recalculate)
+                self.addQuest(self.fetchquest)
                 self.itemsInStore = self.fetchquest.itemsInStore
-                self.questList.append(self.fetchquest)
             elif not self.didPlaceQuest:
                 self.didPlaceQuest = True
                 self.placeQuest = PlaceFurniture(self.constructionSite,self.itemsInStore)
-                self.placeQuest.assignToCharacter(self.character)
-                self.placeQuest.activate()
-                self.placeQuest.addListener(self.recalculate)
+                self.addQuest(self.placeQuest)
                 if self.constructionSite.itemsInBuildOrder:
                     self.didFetchQuest = False
-
-                self.questList.append(self.placeQuest)
         super().recalculate()
 
     def triggerCoppletionCheck(self):

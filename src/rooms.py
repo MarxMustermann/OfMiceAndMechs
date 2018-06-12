@@ -1151,7 +1151,7 @@ XXXXXXXXXX
         self.floorDisplay = [displayChars.nonWalkableUnkown]
 
         self.storedItems = []
-        for i in range(1,30):
+        for i in range(1,50):
             self.storedItems.append(items.Pipe())
 
         counter = 0
@@ -1256,14 +1256,14 @@ XXXXX$XXXXX
 """
         self.desiredRoomlayout = """
 XXXXXXXXXXX
-X ########X
-X #..... #X
-X##.   . #X
-X  . @ . #X
-X  .   . #X
-X  ..... #X
-X##      #X
-X ### ####X
+X#########X
+X##.....##X
+X##.   .##X
+X##. @ .##X
+X##.   .##X
+X##.....##X
+X#### ####X
+X#### ####X
 XXXXX$XXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)

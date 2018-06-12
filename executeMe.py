@@ -130,6 +130,7 @@ cinematics.interaction = interaction
 characters.interaction = interaction
 story.interaction = interaction
 rooms.interaction = interaction
+items.interaction = interaction
 
 if args.debug:
     class debugToFile(object):

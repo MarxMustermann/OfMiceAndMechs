@@ -758,15 +758,23 @@ class ProductionArtwork(Item):
         super().__init__("U\\",xPosition,yPosition,name=name)
 
     def apply(self,character,resultType=None):
+        self.submenue = interaction.SelectionMenu("test",{"1":Pipe,"2":Wall},{"1":"pipe","2":"wall"})
+        interaction.submenue = self.submenue
+        interaction.submenue.followUp = self.produceSelection
+
+    def produceSelection(self):
+        self.produce(interaction.submenue.selection)
+
+    def produce(self,itemType,resultType=None):
        if not (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
-            messages.append("no scrap available")
+            messages.append("no metal bars available")
        else:
            desintegratedScrap = False
            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
                if isinstance(item,MetalBars):
                    self.room.removeItem(item)
 
-           new = Pipe()
+           new = itemType()
            new.xPosition = self.xPosition-1
            new.yPosition = self.yPosition
            self.room.addItems([new])
@@ -777,7 +785,7 @@ class ScrapCompactor(Item):
 
     def apply(self,character,resultType=None):
        if not (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
-            messages.append("no metal bars available")
+            messages.append("no scraps available")
        else:
            desintegratedScrap = False
            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:

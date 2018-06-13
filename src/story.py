@@ -830,22 +830,35 @@ class FindWork(BasicPhase):
                 self.firstRun = True
                 self.done = False
                 self.persistentText = ""
+                self.submenue = None
+                self.selectedQuest = None
                 super().__init__()
 
             def handleKey(self, key):
-                if self.firstRun:
+                if self.submenue:
+                    if not self.submenue.handleKey(key):
+                        return False
+                    else:
+                        self.selectedQuest = self.submenue.selection
+                        self.submenue = None
+
                     self.firstRun = False
 
+                if not self.selectedQuest:
                     if terrain.waitingRoom.quests:
                         self.persistentText = "Well, yes."
                         self.set_text(self.persistentText)
-                        self.done = True
+                                
+                        options = {}
+                        niceOptions = {}
+                        counter = 1
+                        for quest in terrain.waitingRoom.quests:
+                            options[str(counter)] = quest
+                            niceOptions[str(counter)] = quest.description.split("\n")[0]
+                            counter += 1
+                        self.submenue = interaction.SelectionMenu("select the quest",options,niceOptions)
 
-                        quest = terrain.waitingRoom.quests.pop()
-
-                        mainChar.assignQuest(quest,active=True)
-
-                        return True
+                        return False
                     else:
                         self.persistentText = "No"
                         self.set_text(self.persistentText)
@@ -853,12 +866,18 @@ class FindWork(BasicPhase):
 
                         return True
                 else:
-                    return False
+                    quest = terrain.waitingRoom.quests.pop()
+                    mainChar.assignQuest(quest,active=True)
+                    self.done = True
+                    return True
 
         quest = quests.HopperDuty()
         mainChar.assignQuest(quest,active=True)
 
         terrain.waitingRoom.quests.append(quests.ClearRubble())
+        storageRoom = terrain.roomByCoordinates[(5,4)][0]
+        constructionSite = terrain.roomByCoordinates[(4,2)][0]
+        terrain.waitingRoom.quests.append(quests.ConstructRoom(constructionSite,storageRoom))
 
         terrain.waitingRoom.firstOfficer.basicChatOptions.append(JobChat)
         terrain.waitingRoom.secondOfficer.basicChatOptions.append(JobChat2)

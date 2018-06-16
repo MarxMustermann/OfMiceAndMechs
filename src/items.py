@@ -493,13 +493,27 @@ class Door(Item):
         if self.walkable:
             self.close()
         else:
-            self.open()
+            self.open(character)
     
-    def open(self):
-        self.walkable = True
-        self.display = displayChars.door_opened
-        self.room.open = True
-        self.room.forceRedraw()
+    def open(self,character):
+        if not (self.room.isContainment and character.room):
+            self.walkable = True
+            self.display = displayChars.door_opened
+            self.room.open = True
+            self.room.forceRedraw()
+
+            if self.room.isContainment:
+                class AutoCloseDoor(object):
+                    def __init__(subself,tick):
+                        subself.tick = tick
+            
+                    def handleEvent(subself):
+                        messages.append("*TSCHUNK*")
+                        self.close()
+
+                self.room.addEvent(AutoCloseDoor(self.room.timeIndex+5))
+        else:
+            messages.append("you cannot open the door from the inside")
 
     def close(self):
         self.walkable = False

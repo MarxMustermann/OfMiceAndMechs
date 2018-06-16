@@ -46,6 +46,7 @@ class Room(object):
         self.xPosition = xPosition
         self.yPosition = yPosition
         self.lastRender = None
+        self.isContainment = False
 
         self.id = "room_1_"+str(self.xPosition)+"_"+str(self.yPosition)+"_1"
 
@@ -1003,6 +1004,7 @@ X@b. ....X
 XXXXX$XXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        self.isContainment = True
         self.floorDisplay = displayChars.acids
 
 class MechArmor(Room):

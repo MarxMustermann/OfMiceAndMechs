@@ -1230,21 +1230,6 @@ class PlaceFurniture(MetaQuestParralel):
         super().__init__(self.questList)
         self.metaDescription = "place furniture"
 
-class DropQuestMeta(MetaQuestParralel):
-    def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
-        self.room = room
-        self.questList = [DropQuest(toDrop,room,xPosition,yPosition)]
-        super().__init__(self.questList)
-        self.recalculate()
-        self.metaDescription = "drop Meta"
-
-    def recalculate(self):
-        if self.active:
-            if (self.room and ((not self.character.room) or (not self.character.room == self.room)) and self.active):
-                self.addQuest(EnterRoomQuestMeta(self.room))
-
-            super().recalculate()
-
 class EnterRoomQuestMeta(MetaQuestParralel):
     def __init__(self,room,followUp=None,startCinematics=None):
         self.room = room
@@ -1270,6 +1255,7 @@ class MoveQuestMeta(MetaQuestSequence):
         self.leaveRoomQuest = None
         self.room = room
         super().__init__(self.questList)
+        self.metaDescription = "move meta"
 
     def recalculate(self):
         if self.active:
@@ -1282,8 +1268,32 @@ class MoveQuestMeta(MetaQuestSequence):
             if self.enterRoomQuest and self.enterRoomQuest.completed:
                 self.enterRoomQuest = None
             if (not self.enterRoomQuest and (self.room and ((not self.character.room) or (not self.character.room == self.room)))):
-                self.enterRoomQuest = EnterRoomQuestMeta(self.toPickup.room)
+                self.enterRoomQuest = EnterRoomQuestMeta(self.room)
                 self.addQuest(self.enterRoomQuest)
+        super().recalculate()
+
+    def assignToCharacter(self,character):
+        character.addListener(self.recalculate)
+        super().assignToCharacter(character)
+
+class DropQuestMeta(MetaQuestParralel):
+    def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
+        self.toDrop = toDrop
+        self.moveQuest = MoveQuestMeta(room,xPosition,yPosition)
+        self.questList = [self.moveQuest,DropQuest(toDrop,room,xPosition,yPosition)]
+        self.room = room
+        self.xPosition = xPosition
+        self.yPosition = yPosition
+        super().__init__(self.questList)
+        self.metaDescription = "drop Meta"
+
+    def recalculate(self):
+        if self.active:
+            if self.moveQuest and self.moveQuest.completed:
+                self.moveQuest = None
+            if not self.moveQuest and not (self.room == self.character.room and self.xPosition == self.character.xPosition and self.yPosition == self.character.yPosition):
+                self.moveQuest = MoveQuestMeta(self.room,self.xPosition,self.yPosition)
+                self.addQuest(self.moveQuest)
         super().recalculate()
 
     def assignToCharacter(self,character):
@@ -1292,11 +1302,20 @@ class MoveQuestMeta(MetaQuestSequence):
 
 class PickupQuestMeta(MetaQuestParralel):
     def __init__(self,toPickup,followUp=None,startCinematics=None):
-        toPickup = toPickup
-        self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,toPickup.yPosition)
+        self.toPickup = toPickup
+        self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition)
         self.questList = [self.moveQuest,NaivePickupQuest(self.toPickup)]
         super().__init__(self.questList)
         self.metaDescription = "pickup Meta"
+
+    def recalculate(self):
+        if self.active:
+            if self.moveQuest and self.moveQuest.completed:
+                self.moveQuest = None
+            if not self.moveQuest and not (self.room == self.character.room and self.xPosition == self.character.xPosition and self.yPosition == self.character.yPosition):
+                self.moveQuest = MoveQuestMeta(self.room,self.xPosition,self.yPosition)
+                self.addQuest(self.moveQuest)
+        super().recalculate()
 
 class ConstructRoom(MetaQuestParralel):
     def __init__(self,constructionSite,storageRoom,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):

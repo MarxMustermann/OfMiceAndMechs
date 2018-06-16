@@ -374,7 +374,31 @@ class NaivePickupQuest(Quest):
 
     def solver(self,character):
         self.toPickup.pickUp(character)
-        return False
+        return True
+
+class NaiveDropQuest(Quest):
+    def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
+        self.dstX = xPosition
+        self.dstY = yPosition
+        self.room = room
+        self.toDrop = toDrop
+        super().__init__(followUp,startCinematics=startCinematics)
+        self.description = "naive drop"
+
+    def triggerCompletionCheck(self):
+        correctPosition = False
+        try:
+            if self.toDrop.xPosition == self.dstX and self.toDrop.yPosition == self.dstY and self.toDrop.room == self.room:
+                correctPosition = True
+        except:
+            pass
+
+        if correctPosition:
+            self.postHandler()
+
+    def solver(self,character):
+        character.drop(self.toDrop)
+        return True
 
 class DropQuest(Quest):
     def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
@@ -1280,7 +1304,7 @@ class DropQuestMeta(MetaQuestParralel):
     def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
         self.toDrop = toDrop
         self.moveQuest = MoveQuestMeta(room,xPosition,yPosition)
-        self.questList = [self.moveQuest,DropQuest(toDrop,room,xPosition,yPosition)]
+        self.questList = [self.moveQuest,NaiveDropQuest(toDrop,room,xPosition,yPosition)]
         self.room = room
         self.xPosition = xPosition
         self.yPosition = yPosition
@@ -1312,8 +1336,8 @@ class PickupQuestMeta(MetaQuestParralel):
         if self.active:
             if self.moveQuest and self.moveQuest.completed:
                 self.moveQuest = None
-            if not self.moveQuest and not (self.room == self.character.room and self.xPosition == self.character.xPosition and self.yPosition == self.character.yPosition):
-                self.moveQuest = MoveQuestMeta(self.room,self.xPosition,self.yPosition)
+            if not self.moveQuest and not (self.toPickup.room == self.character.room and self.toPickup.xPosition == self.character.xPosition and self.toPickup.yPosition == self.character.yPosition):
+                self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition)
                 self.addQuest(self.moveQuest)
         super().recalculate()
 

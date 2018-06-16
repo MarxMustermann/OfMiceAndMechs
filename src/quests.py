@@ -18,7 +18,7 @@ class Quest(object):
         self.character = None # should be more general like owner as preparation for room quests
         self.listener = [] # the list of things caring about this quest. The owner for example
         self.active = False # active as in started
-        self.completed = False # active as in started
+        self.completed = False 
         self.startCinematics = startCinematics # deprecate?
         self.endCinematics = None # deprecate?
         self.startTrigger = None # deprecate?
@@ -160,12 +160,13 @@ class Quest(object):
 ############################################################
 
 class MoveQuest(Quest):
-    def __init__(self,room,x,y,followUp=None,startCinematics=None):
+    def __init__(self,room,x,y,sloppy=False,followUp=None,startCinematics=None):
         self.dstX = x
         self.dstY = y
         self.targetX = x
         self.targetY = y
         self.room = room
+        self.sloppy = sloppy
         self.description = "please go to coordinate "+str(self.dstX)+"/"+str(self.dstY)    
         super().__init__(followUp,startCinematics=startCinematics)
 
@@ -174,8 +175,12 @@ class MoveQuest(Quest):
         if not self.active:
             return 
         if hasattr(self,"dstX") and hasattr(self,"dstY"):
-            if self.character.xPosition == self.dstX and self.character.yPosition == self.dstY:
-                self.postHandler()
+            if not self.sloppy:
+                if self.character.xPosition == self.dstX and self.character.yPosition == self.dstY:
+                    self.postHandler()
+            else:
+                if (self.character.xPosition-self.dstX in (1,0,-1) and self.character.yPosition == self.dstY) or (self.character.yPosition-self.dstY in (1,0,-1) and self.character.xPosition == self.dstX):
+                    self.postHandler()
 
     def assignToCharacter(self,character):
         super().assignToCharacter(character)
@@ -1264,19 +1269,27 @@ class EnterRoomQuestMeta(MetaQuestParralel):
         super().__init__(self.questList)
         self.recalculate()
         self.metaDescription = "enterroom Meta"
+        self.leaveRoomQuest = None
 
     def recalculate(self):
         if not self.active:
             return 
 
-        if self.character.room and not self.character.room == self.room:
-            self.addQuest(LeaveRoomQuest(self.character.room))
+        if self.leaveRoomQuest and self.leaveRoomQuest.completed:
+            self.leaveRoomQuest = None
+        if not self.leaveRoomQuest and self.character.room and not self.character.room == self.room:
+            self.leaveRoomQuest = LeaveRoomQuest(self.character.room)
+            self.addQuest(self.leaveRoomQuest)
 
         super().recalculate()
 
+    def assignToCharacter(self,character):
+        character.addListener(self.recalculate)
+        super().assignToCharacter(character)
+
 class MoveQuestMeta(MetaQuestSequence):
-    def __init__(self,room,x,y,followUp=None,startCinematics=None):
-        self.moveQuest = MoveQuest(room,x,y)
+    def __init__(self,room,x,y,sloppy=False,followUp=None,startCinematics=None):
+        self.moveQuest = MoveQuest(room,x,y,sloppy=sloppy)
         self.questList = [self.moveQuest]
         self.enterRoomQuest = None
         self.leaveRoomQuest = None
@@ -1298,7 +1311,7 @@ class MoveQuestMeta(MetaQuestSequence):
                 self.enterRoomQuest = EnterRoomQuestMeta(self.room)
                 self.addQuest(self.enterRoomQuest)
         super().recalculate()
-
+    
     def assignToCharacter(self,character):
         character.addListener(self.recalculate)
         super().assignToCharacter(character)
@@ -1330,7 +1343,8 @@ class DropQuestMeta(MetaQuestSequence):
 class PickupQuestMeta(MetaQuestSequence):
     def __init__(self,toPickup,followUp=None,startCinematics=None):
         self.toPickup = toPickup
-        self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition)
+        self.sloppy = not self.toPickup.walkable
+        self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition,sloppy=self.sloppy)
         self.questList = [self.moveQuest,NaivePickupQuest(self.toPickup)]
         super().__init__(self.questList)
         self.metaDescription = "pickup Meta"
@@ -1339,9 +1353,20 @@ class PickupQuestMeta(MetaQuestSequence):
         if self.active:
             if self.moveQuest and self.moveQuest.completed:
                 self.moveQuest = None
-            if not self.moveQuest and not (self.toPickup.room == self.character.room and self.toPickup.xPosition == self.character.xPosition and self.toPickup.yPosition == self.character.yPosition):
-                self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition)
-                self.addQuest(self.moveQuest)
+            if not self.moveQuest:
+                reAddMove = False
+                if not self.sloppy:
+                    if not (self.toPickup.room == self.character.room and self.toPickup.xPosition == self.character.xPosition and self.toPickup.yPosition == self.character.yPosition):
+                        reAddMove = True
+                else:
+                    if not (self.toPickup.room == self.character.room and (
+					                                         (self.toPickup.xPosition-self.character.xPosition in (-1,0,1) and self.toPickup.yPosition == self.character.yPosition) or 
+															 (self.toPickup.yPosition-self.character.yPosition in (-1,0,1) and self.toPickup.xPosition == self.character.xPosition))):
+                        reAddMove = True
+
+                if reAddMove:
+                    self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition,sloppy=self.sloppy)
+                    self.addQuest(self.moveQuest)
         super().recalculate()
 
 class ConstructRoom(MetaQuestParralel):

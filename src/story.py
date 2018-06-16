@@ -879,11 +879,9 @@ class FindWork(BasicPhase):
                 subself.toCancel = toCancel
 
             def handleEvent(subself):
-                messages.append("TEST")
                 for quest in subself.toCancel:
                      quest.deactivate()
                      mainChar.quests.remove(quest)
-                     messages.append("TEST - "+str(quest))
 
                 def meeting():
                     showText("Time to prove your worth.")
@@ -897,7 +895,7 @@ class FindWork(BasicPhase):
                 quest.endTrigger = meeting
                 mainChar.assignQuest(quest,active=True)
 
-        self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15+15),[quest]))
+        self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),[quest]))
 
         terrain.waitingRoom.quests.append(quests.ClearRubble())
         storageRoom = terrain.roomByCoordinates[(5,4)][0]
@@ -1295,10 +1293,9 @@ class VatPhase(BasicPhase):
         super().start()
 
         questList = []
-        questList.append(quests.MoveQuest(terrain.tutorialVat,3,3,startCinematics="please move to the waiting position"))
+        questList.append(quests.MoveQuest(terrain.tutorialVat,3,3))
         if not (mainChar.room and mainChar.room == terrain.tutorialVat):
             questList.append(quests.EnterRoomQuest(terrain.tutorialVat,startCinematics="please goto the Vat"))
-
 
         lastQuest = questList[0]
         for item in questList[1:]:

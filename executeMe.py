@@ -230,6 +230,11 @@ MM MMM MM  EEEE    CC      HHHHHHH  SSSSSSS
 MM  M  MM  EEEE    CC      HHHHHHH  SSSSSSS
 MM     MM  EE      CC      HH   HH        S
 MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
+
+
+
+   a pipedream 
+
 """,rusty=True)
 
 # set up the current phase

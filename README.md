@@ -18,7 +18,7 @@ known-dependencies:
  * or use the download as ZIP button and unzip
 * start the game with:
  * cd into the OfMiceAndMechs
- * python3 
+ * run with: python3 executeMe.py
 
 ## biggest current issue
 

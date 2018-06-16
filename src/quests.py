@@ -1150,7 +1150,7 @@ class ClearRubble(MetaQuestParralel):
         for item in terrain.itemsOnFloor:
             if isinstance(item,items.Scrap):
                 questList.append(PickupQuestMeta(item))
-                questList.append(DropQuest(item,terrain.metalWorkshop,7,1))
+                questList.append(DropQuestMeta(item,terrain.metalWorkshop,7,1))
         super().__init__(questList)
         self.metaDescription = "clear rubble"
 
@@ -1262,41 +1262,41 @@ class EnterRoomQuestMeta(MetaQuestParralel):
 
         super().recalculate()
 
-class PickupQuestMeta(MetaQuestParralel):
-    def __init__(self,toPickup,followUp=None,startCinematics=None):
-        self.toPickup = toPickup
-        self.moveQuest = MoveQuest(self.toPickup.room,self.toPickup.xPosition,toPickup.yPosition)
-        self.questList = [self.moveQuest,NaivePickupQuest(self.toPickup)]
-        super().__init__(self.questList)
-        self.recalculate()
-        self.metaDescription = "pickup Meta"
+class MoveQuestMeta(MetaQuestSequence):
+    def __init__(self,room,x,y,followUp=None,startCinematics=None):
+        self.moveQuest = MoveQuest(room,x,y)
+        self.questList = [self.moveQuest]
         self.enterRoomQuest = None
         self.leaveRoomQuest = None
+        self.room = room
+        super().__init__(self.questList)
 
     def recalculate(self):
         if self.active:
-            if self.enterRoomQuest and self.enterRoomQuest.completed:
-                self.enterRoomQuest = None
-            if (not self.enterRoomQuest and (self.toPickup.room and ((not self.character.room) or (not self.character.room == self.toPickup.room)))):
-                self.enterRoomQuest = EnterRoomQuestMeta(self.toPickup.room)
-                self.addQuest(self.enterRoomQuest)
-
             if self.leaveRoomQuest and self.leaveRoomQuest.completed:
                 self.leaveRoomQuest = None
-            if not self.leaveRoomQuest and (not self.toPickup.room and self.character.room):
+            if not self.leaveRoomQuest and (not self.room and self.character.room):
                 self.leaveRoomQuest = LeaveRoomQuest(self.character.room)
                 self.addQuest(self.leaveRoomQuest)
 
-            if self.moveQuest and self.moveQuest.completed:
-                self.moveQuest = None
-            if not self.moveQuest and not (self.toPickup.xPosition == self.character.xPosition and self.toPickup.yPosition == self.character.yPosition):
-                self.moveQuest = MoveQuest(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition)
-                self.addQuest(self.moveQuest)
+            if self.enterRoomQuest and self.enterRoomQuest.completed:
+                self.enterRoomQuest = None
+            if (not self.enterRoomQuest and (self.room and ((not self.character.room) or (not self.character.room == self.room)))):
+                self.enterRoomQuest = EnterRoomQuestMeta(self.toPickup.room)
+                self.addQuest(self.enterRoomQuest)
         super().recalculate()
 
     def assignToCharacter(self,character):
         character.addListener(self.recalculate)
         super().assignToCharacter(character)
+
+class PickupQuestMeta(MetaQuestParralel):
+    def __init__(self,toPickup,followUp=None,startCinematics=None):
+        toPickup = toPickup
+        self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,toPickup.yPosition)
+        self.questList = [self.moveQuest,NaivePickupQuest(self.toPickup)]
+        super().__init__(self.questList)
+        self.metaDescription = "pickup Meta"
 
 class ConstructRoom(MetaQuestParralel):
     def __init__(self,constructionSite,storageRoom,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):

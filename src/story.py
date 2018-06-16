@@ -791,7 +791,7 @@ class FindWork(BasicPhase):
 
     def getIntro(self):
         showText("great. I here by confirm the transfer and welcome you as crew on the Falkenbaum.\n\nYou will serve as an hopper under my command nominally. This means you will make yourself useful and prove your worth.\n\nI often have tasks to relay, but try not to stay idle even when i do not have tasks for you. Just ask around and see if somebody needs help")
-        showText("Remeber to bring recieps, your worth will be counted in a gtick.",trigger=self.end)
+        showText("Remeber to bring recieps, your worth will be counted in a mtick.",trigger=self.end)
 
     def fail(self):
         say("go on then.")
@@ -872,6 +872,32 @@ class FindWork(BasicPhase):
 
         quest = quests.HopperDuty()
         mainChar.assignQuest(quest,active=True)
+
+        class ProofOfWorth(object):
+            def __init__(subself,tick,toCancel=[]):
+                subself.tick = tick
+                subself.toCancel = toCancel
+
+            def handleEvent(subself):
+                messages.append("TEST")
+                for quest in subself.toCancel:
+                     quest.deactivate()
+                     mainChar.quests.remove(quest)
+                     messages.append("TEST - "+str(quest))
+
+                def meeting():
+                    showText("Time to prove your worth.")
+                    showText("You currently have no recieps on you. Please report to vat duty.",trigger=startVatPhase)
+
+                def startVatPhase():
+                    phase = VatPhase()
+                    phase.start()
+
+                quest = quests.MoveQuestMeta(self.mainCharRoom,6,5)
+                quest.endTrigger = meeting
+                mainChar.assignQuest(quest,active=True)
+
+        self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15+15),[quest]))
 
         terrain.waitingRoom.quests.append(quests.ClearRubble())
         storageRoom = terrain.roomByCoordinates[(5,4)][0]
@@ -1269,10 +1295,10 @@ class VatPhase(BasicPhase):
         super().start()
 
         questList = []
+        questList.append(quests.MoveQuest(terrain.tutorialVat,3,3,startCinematics="please move to the waiting position"))
         if not (mainChar.room and mainChar.room == terrain.tutorialVat):
             questList.append(quests.EnterRoomQuest(terrain.tutorialVat,startCinematics="please goto the Vat"))
 
-        questList.append(quests.MoveQuest(terrain.tutorialVat,3,3,startCinematics="please move to the waiting position"))
 
         lastQuest = questList[0]
         for item in questList[1:]:
@@ -1280,9 +1306,7 @@ class VatPhase(BasicPhase):
             lastQuest = item
         questList[-1].followup = None
 
-        questList[-1].endTrigger = self.end
-
-        mainChar.assignQuest(questList[0])
+        mainChar.assignQuest(questList[0],active=True)
 
     def end(self):
         cinematics.showCinematic("you seem to be able to follow orders after all. you may go back to your training.")

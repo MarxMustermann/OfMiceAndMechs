@@ -382,19 +382,22 @@ class NaiveDropQuest(Quest):
         self.dstY = yPosition
         self.room = room
         self.toDrop = toDrop
+        self.toDrop.addListener(self.recalculate)
+        self.toDrop.addListener(self.triggerCompletionCheck)
         super().__init__(followUp,startCinematics=startCinematics)
         self.description = "naive drop"
 
     def triggerCompletionCheck(self):
-        correctPosition = False
-        try:
-            if self.toDrop.xPosition == self.dstX and self.toDrop.yPosition == self.dstY and self.toDrop.room == self.room:
-                correctPosition = True
-        except:
-            pass
+        if self.active:
+            correctPosition = False
+            try:
+                if self.toDrop.xPosition == self.dstX and self.toDrop.yPosition == self.dstY:
+                    correctPosition = True
+            except:
+                pass
 
-        if correctPosition:
-            self.postHandler()
+            if correctPosition:
+                self.postHandler()
 
     def solver(self,character):
         character.drop(self.toDrop)
@@ -1300,7 +1303,7 @@ class MoveQuestMeta(MetaQuestSequence):
         character.addListener(self.recalculate)
         super().assignToCharacter(character)
 
-class DropQuestMeta(MetaQuestParralel):
+class DropQuestMeta(MetaQuestSequence):
     def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
         self.toDrop = toDrop
         self.moveQuest = MoveQuestMeta(room,xPosition,yPosition)
@@ -1324,7 +1327,7 @@ class DropQuestMeta(MetaQuestParralel):
         character.addListener(self.recalculate)
         super().assignToCharacter(character)
 
-class PickupQuestMeta(MetaQuestParralel):
+class PickupQuestMeta(MetaQuestSequence):
     def __init__(self,toPickup,followUp=None,startCinematics=None):
         self.toPickup = toPickup
         self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition)

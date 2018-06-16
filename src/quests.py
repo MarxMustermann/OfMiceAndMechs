@@ -190,12 +190,10 @@ class MoveQuest(Quest):
         if hasattr(self,"dstY"):
             del self.dstY
 
-        if not self.room:
-            return
         if not self.character:
             return
 
-        if self.room == self.character.room:
+        if (self.room == self.character.room):
             self.dstX = self.targetX
             self.dstY = self.targetY
         elif self.character.room and self.character.quests and self.character.quests[0] == self:
@@ -358,6 +356,25 @@ class PickupQuest(Quest):
             self.toPickup.pickUp(character)
             self.triggerCompletionCheck()
             return True
+
+class NaivePickupQuest(Quest):
+    def __init__(self,toPickup,followUp=None,startCinematics=None):
+        self.toPickup = toPickup
+        self.dstX = self.toPickup.xPosition
+        self.dstY = self.toPickup.yPosition
+        self.toPickup.addListener(self.recalculate)
+        self.toPickup.addListener(self.triggerCompletionCheck)
+        super().__init__(followUp,startCinematics=startCinematics)
+        self.description = "naive pickup"
+    
+    def triggerCompletionCheck(self):
+        if self.active:
+            if self.toPickup in self.character.inventory:
+                self.postHandler()
+
+    def solver(self,character):
+        self.toPickup.pickUp(character)
+        return False
 
 class DropQuest(Quest):
     def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
@@ -1132,7 +1149,7 @@ class ClearRubble(MetaQuestParralel):
         questList = []
         for item in terrain.itemsOnFloor:
             if isinstance(item,items.Scrap):
-                questList.append(PickupQuest(item))
+                questList.append(PickupQuestMeta(item))
                 questList.append(DropQuest(item,terrain.metalWorkshop,7,1))
         super().__init__(questList)
         self.metaDescription = "clear rubble"
@@ -1245,23 +1262,41 @@ class EnterRoomQuestMeta(MetaQuestParralel):
 
         super().recalculate()
 
-class PickupQuestMeta(MetaQuestSequence):
+class PickupQuestMeta(MetaQuestParralel):
     def __init__(self,toPickup,followUp=None,startCinematics=None):
         self.toPickup = toPickup
-        self.questList = [PickupQuest(self.toPickup)]
+        self.moveQuest = MoveQuest(self.toPickup.room,self.toPickup.xPosition,toPickup.yPosition)
+        self.questList = [self.moveQuest,NaivePickupQuest(self.toPickup)]
         super().__init__(self.questList)
         self.recalculate()
         self.metaDescription = "pickup Meta"
-
-        self.hasEnterRoomQuest = False
+        self.enterRoomQuest = None
+        self.leaveRoomQuest = None
 
     def recalculate(self):
         if self.active:
-            if (self.toPickup.room and ((not self.character.room) or (not self.character.room == self.toPickup.room)) and not self.hasEnterRoomQuest):
-                self.hasEnterRoomQuest = True
-                self.addQuest(EnterRoomQuestMeta(self.toPickup.room))
+            if self.enterRoomQuest and self.enterRoomQuest.completed:
+                self.enterRoomQuest = None
+            if (not self.enterRoomQuest and (self.toPickup.room and ((not self.character.room) or (not self.character.room == self.toPickup.room)))):
+                self.enterRoomQuest = EnterRoomQuestMeta(self.toPickup.room)
+                self.addQuest(self.enterRoomQuest)
 
+            if self.leaveRoomQuest and self.leaveRoomQuest.completed:
+                self.leaveRoomQuest = None
+            if not self.leaveRoomQuest and (not self.toPickup.room and self.character.room):
+                self.leaveRoomQuest = LeaveRoomQuest(self.character.room)
+                self.addQuest(self.leaveRoomQuest)
+
+            if self.moveQuest and self.moveQuest.completed:
+                self.moveQuest = None
+            if not self.moveQuest and not (self.toPickup.xPosition == self.character.xPosition and self.toPickup.yPosition == self.character.yPosition):
+                self.moveQuest = MoveQuest(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition)
+                self.addQuest(self.moveQuest)
         super().recalculate()
+
+    def assignToCharacter(self,character):
+        character.addListener(self.recalculate)
+        super().assignToCharacter(character)
 
 class ConstructRoom(MetaQuestParralel):
     def __init__(self,constructionSite,storageRoom,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):

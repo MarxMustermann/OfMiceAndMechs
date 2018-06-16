@@ -137,9 +137,7 @@ def show_or_exit(key):
             stealKey[key]()
         else:
             if key in ("´",):
-                storageRoom = terrain.roomByCoordinates[(5,4)][0]
-                construction = terrain.roomByCoordinates[(4,2)][0]
-                mainChar.assignQuest(quests.ConstructRoom(construction,storageRoom),active=True)
+                mainChar.assignQuest(quests.GetQuest(terrain.waitingRoom.secondOfficer))
             if key in (commandChars.quit_delete,):
                 saveFile = open("gamestate/gamestate.json","w")
                 saveFile.write("reset")
@@ -446,6 +444,7 @@ def show_or_exit(key):
 
                 if pos in itemByCoordinates:
                     for item in itemByCoordinates[pos]:
+                        messages.append(str(item))
                         item.pickUp(mainChar)
 
             if key in (commandChars.hail):

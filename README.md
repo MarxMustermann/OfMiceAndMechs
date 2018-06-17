@@ -12,13 +12,15 @@ known-dependencies:
 ### debian based sytems
 
 * install the dependencies
-   sudo apt-get install python3 python3-urwid
+  * sudo apt-get install python3 python3-urwid
+
 * clone or download the game
-   git clone https://github.com/MarxMustermann/OfMiceAndMechs.git
-   or use the download as ZIP button and unzip
+  * git clone https://github.com/MarxMustermann/OfMiceAndMechs.git
+  * or use the download as ZIP button and unzip
+
 * start the game with:
-   cd into the OfMiceAndMechs
-   run with: python3 executeMe.py
+  * cd into the OfMiceAndMechs
+  * run with: python3 executeMe.py
 
 ## biggest current issue
 
@@ -49,9 +51,9 @@ Background music By:
 https://diezeltea.bandcamp.com/
 
 * startup and background music #1
-   Track: Kilikia (Original Mix)
-   Album: Kilikia
+  * Track: Kilikia (Original Mix)
+  * Album: Kilikia
 
 * background music #2
-   Track: Arzni (Part 1) [ft. Sam Khachatourian]
-   Album: Arzni
+  * Track: Arzni (Part 1) [ft. Sam Khachatourian]
+  * Album: Arzni

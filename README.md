@@ -48,10 +48,10 @@ Background music By:
 
 https://diezeltea.bandcamp.com/
 
-* Track: Kilikia (Original Mix)
-* Album: Kilikia
-* description: startup and background music #1
+* startup and background music #1
+ * Track: Kilikia (Original Mix)
+ * Album: Kilikia
 
-* Track: Arzni (Part 1) [ft. Sam Khachatourian]
-* Album: Arzni
-* description: background music #2
+* background music #2
+ * Track: Arzni (Part 1) [ft. Sam Khachatourian]
+ * Album: Arzni

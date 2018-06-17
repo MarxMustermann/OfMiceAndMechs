@@ -6,6 +6,7 @@ known-dependencies:
 
 * python3
 * python3-urwid
+* mplayer (for music)
 
 ## how to install and run the game 
 
@@ -42,7 +43,7 @@ unicode issues are resolved by having a almost pure ASCII renderer as default. U
 
 the game has a option to download itself some creative commons music. Since most CCs requires attribution here it is...
 
-A huge thanks to everybody releasing under CC! (despite the annoying attribution thing) And big thanks the the free music archive for hosting the music. (sorry about the traffic caused)
+A huge thanks to everybody releasing under CC! (despite the annoying attribution thing) And big thanks the https://freemusicarchive.org/ for hosting the music. (sorry about the traffic caused)
 
 Background music By:
 

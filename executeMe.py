@@ -21,6 +21,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--phase", type=str, help="the phase to start in")
 parser.add_argument("--unicode", action="store_true", help="force fallback encoding")
 parser.add_argument("-d", "--debug", action="store_true", help="enable debug mode")
+parser.add_argument("-m", "--music", action="store_true", help="enable music (downloads stuff and runs mplayer!)")
 args = parser.parse_args()
 
 import src.canvas as canvas
@@ -30,17 +31,44 @@ if args.unicode:
 else:
     displayChars = canvas.DisplayMapping("pureASCII")
 
+##################################################################################################################################
+###
+##        background music
+#
+#################################################################################################################################
+
+if args.music :
+    def playMusic():
+        import threading
+        thread = threading.currentThread()
+        import subprocess
+        import os.path
+        # I didn't ask the people at freemusicarchive about the position on traffic leeching. If you know they don't like it please create an issue
+
+        if not os.path.isfile("music/Diezel_Tea_-_01_-_Arzni_Part_1_ft_Sam_Khachatourian.mp3"):
+            subprocess.call(["wget","-q","https://freemusicarchive.org/music/download/ece1b96c8f23874bda6ffdda2dd6cf9cd2fcb582","-O","music/Diezel_Tea_-_01_-_Arzni_Part_1_ft_Sam_Khachatourian.mp3"],stdout=subprocess.PIPE,stderr=subprocess.PIPE,stdin=subprocess.PIPE)
+        if not os.path.isfile("music/Diezel_Tea_-_01_-_Kilikia_Original_Mix.mp3"):
+            subprocess.call(["wget","-q","https://freemusicarchive.org/music/download/c1a7a0cd0e262469607e26935e69ed1e5bfed538","-O","music/Diezel_Tea_-_01_-_Kilikia_Original_Mix.mp3"],stdout=subprocess.PIPE,stderr=subprocess.PIPE,stdin=subprocess.PIPE)
+        mplayer = subprocess.Popen(["mplayer","music/Diezel_Tea_-_01_-_Kilikia_Original_Mix.mp3","music/Diezel_Tea_-_01_-_Arzni_Part_1_ft_Sam_Khachatourian.mp3"],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        
+        while mplayer.stdout.read1(100):
+           if thread.stop:
+               mplayer.terminate()
+               mplayer.kill()
+               return
+        
+    from threading import Thread
+    musicThread = Thread(target=playMusic)
+    musicThread.stop = False
+    musicThread.start()
+else:
+    musicThread = None
 
 ##################################################################################################################################
 ###
 ##        some stuff that is somehow needed but slated for removal
 #
 #################################################################################################################################
-
-#import sys, pygame
-#pygame.init()
-#pygame.mixer.music.load("music/chutulu.mp3")
-#pygame.mixer.music.play()
 
 # HACK: common variables with modules
 phasesByName = {}
@@ -262,4 +290,12 @@ cinematics.advanceGame = advanceGame
 interaction.advanceGame = advanceGame
 
 # start the interactio loop of the underlying library
-interaction.loop.run()
+try:
+    interaction.loop.run()
+except:
+    if musicThread:
+        musicThread.stop = True
+    raise
+
+if musicThread:
+    musicThread.stop = True

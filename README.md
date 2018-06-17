@@ -35,3 +35,23 @@ I think the thing missing is the feeling of purpose, progress, adventure and dis
 ## news
 
 unicode issues are resolved by having a almost pure ASCII renderer as default. Unicode modes can still be configured and can be toggled while playing using '`' (default). This means the game is almost cross platform supporting linux and mac.
+
+## credits
+
+the game has a option to download itself some creative commons music. Since most CCs requires attribution here it is...
+
+A huge thanks to everybody releasing under CC! (despite the annoying attribution thing) And big thanks the the free music archive for hosting the music. (sorry about the traffic caused)
+
+Background music By:
+
+### Diezel Tea
+
+https://diezeltea.bandcamp.com/
+
+* Track: Kilikia (Original Mix)
+* Album: Kilikia
+* description: startup and background music #1
+
+* Track: Arzni (Part 1) [ft. Sam Khachatourian]
+* Album: Arzni
+* description: background music #2

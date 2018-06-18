@@ -46,6 +46,9 @@ class Quest(object):
 
     def unpause(self):
         self.paused = False
+
+    def fail(self):
+        self.postHandler()
     
     # do the teardown of the quest
     def postHandler(self):
@@ -379,6 +382,27 @@ class NaivePickupQuest(Quest):
 
     def solver(self,character):
         self.toPickup.pickUp(character)
+        return True
+
+class NaiveGetQuest(Quest):
+    def __init__(self,questDispenser,followUp=None,startCinematics=None):
+        self.questDispenser = questDispenser
+        self.quest = None
+        super().__init__(followUp,startCinematics=startCinematics)
+        self.description = "naive get quest"
+
+    def triggerCompletionCheck(self):
+        if self.active:
+            if self.quest:
+                self.postHandler()
+
+    def solver(self,character):
+        self.quest = self.questDispenser.getQuest()
+        if not self.quest:
+            self.fail()
+            return True
+        self.character.assignQuest(self.quest,active=True)
+        self.triggerCompletionCheck()
         return True
 
 class NaiveDropQuest(Quest):
@@ -1360,14 +1384,22 @@ class PickupQuestMeta(MetaQuestSequence):
                         reAddMove = True
                 else:
                     if not (self.toPickup.room == self.character.room and (
-					                                         (self.toPickup.xPosition-self.character.xPosition in (-1,0,1) and self.toPickup.yPosition == self.character.yPosition) or 
-															 (self.toPickup.yPosition-self.character.yPosition in (-1,0,1) and self.toPickup.xPosition == self.character.xPosition))):
+                                                             (self.toPickup.xPosition-self.character.xPosition in (-1,0,1) and self.toPickup.yPosition == self.character.yPosition) or 
+                                                             (self.toPickup.yPosition-self.character.yPosition in (-1,0,1) and self.toPickup.xPosition == self.character.xPosition))):
                         reAddMove = True
 
                 if reAddMove:
                     self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition,sloppy=self.sloppy)
                     self.addQuest(self.moveQuest)
         super().recalculate()
+
+class GetQuest(MetaQuestSequence):
+    def __init__(self,questDispenser,followUp=None,startCinematics=None):
+        self.questDispenser = questDispenser
+        self.moveQuest = MoveQuestMeta(self.questDispenser.room,self.questDispenser.xPosition,self.questDispenser.yPosition,sloppy=True)
+        self.questList = [self.moveQuest,NaiveGetQuest(questDispenser)]
+        super().__init__(self.questList)
+        self.metaDescription = "get Quest"
 
 class ConstructRoom(MetaQuestParralel):
     def __init__(self,constructionSite,storageRoom,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):

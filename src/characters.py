@@ -28,6 +28,7 @@ class Character():
 
         self.satiation = 1000
         self.dead = False
+        self.questsToDelegate = []
 
         #TODO: this approach is fail, but works for now. There has to be a better way
         self.basicChatOptions = []
@@ -59,6 +60,12 @@ class Character():
         self.gotMovementSchooling = state["gotMovementSchooling"]
         self.gotInteractionSchooling = state["gotInteractionSchooling"]
         self.gotExamineSchooling = state["gotExamineSchooling"]
+
+    def getQuest(self):
+        if self.room and self.room.quests:
+            return self.room.quests.pop()
+        else:
+            return None
 
     def startNextQuest(self):
         if len(self.quests):

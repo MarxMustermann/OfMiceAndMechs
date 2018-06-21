@@ -1136,7 +1136,7 @@ class CargoRoom(Room):
         self.roomLayout = """
 XXXXXXXXXX
 X        X
-X       .$
+X........$
 X        X
 X        X
 X        X

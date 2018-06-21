@@ -519,7 +519,12 @@ def show_or_exit(key):
             advanceGame()
 
         header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
-        main.set_text((urwid.AttrSpec("#999","black"),render().getUrwirdCompatible()));
+
+        canvas = render()
+        main.set_text((urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible()));
+
+        if (useTiles):
+            canvas.setPygameDisplay(pydisplay,pygame)
 
 class SubMenu(object):
     def __init__(self):

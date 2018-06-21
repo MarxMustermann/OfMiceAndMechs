@@ -141,7 +141,7 @@ class Canvas(object):
                 if isinstance(char, int):
                     try:
                         image = self.tileMapping.indexedMapping[char]
-                        pydisplay.blit(image,(counterX*10, counterY*10))
+                        pydisplay.blit(image,(counterX*11, counterY*11))
                     except:
                         pass
                 counterX += 1

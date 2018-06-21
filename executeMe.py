@@ -293,7 +293,7 @@ interaction.advanceGame = advanceGame
 if args.tiles:
     import pygame
     pygame.init()
-    pydisplay = pygame.display.set_mode((410, 410))
+    pydisplay = pygame.display.set_mode((440, 440))
     pygame.display.set_caption('Of Mice and Mechs')
     pygame.display.update()
     interaction.pygame = pygame

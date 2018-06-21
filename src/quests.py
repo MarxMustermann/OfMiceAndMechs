@@ -405,6 +405,22 @@ class NaiveGetQuest(Quest):
         self.triggerCompletionCheck()
         return True
 
+class NaiveMurderQuest(Quest):
+    def __init__(self,toKill,followUp=None,startCinematics=None):
+        self.toKill = toKill
+        super().__init__(followUp,startCinematics=startCinematics)
+        self.description = "naive murder"
+
+    def triggerCompletionCheck(self):
+        if self.active:
+            if self.toKill.dead:
+                self.postHandler()
+
+    def solver(self,character):
+        self.toKill.die()
+        self.triggerCompletionCheck()
+        return True
+
 class NaiveDropQuest(Quest):
     def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
         self.dstX = xPosition
@@ -837,7 +853,7 @@ class MetaQuestSequence(Quest):
                 self.subQuests[0].assignToCharacter(self.character)
             if not self.subQuests[0].active:
                 self.subQuests[0].activate()
-            if not self.subQuests[0] in self.listeningTo:
+            if self.subQuests and not self.subQuests[0] in self.listeningTo:
                 self.subQuests[0].addListener(self.recalculate)
         super().recalculate()
 
@@ -1401,6 +1417,28 @@ class GetQuest(MetaQuestSequence):
         super().__init__(self.questList)
         self.metaDescription = "get Quest"
 
+class MurderQuest(MetaQuestSequence):
+    def __init__(self,toKill,followUp=None,startCinematics=None):
+        self.toKill = toKill
+        self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=True)
+        self.questList = [self.moveQuest,NaiveMurderQuest(toKill)]
+        self.lastPos = (self.toKill.room,self.toKill.xPosition,self.toKill.yPosition)
+        super().__init__(self.questList)
+        self.metaDescription = "murder"
+        self.toKill.addListener(self.recalculate)
+
+    def recalculate(self):
+        if self.active:
+            pos = (self.toKill.room,self.toKill.xPosition,self.toKill.yPosition)
+            if not (pos == self.lastPos) and not self.toKill.dead:
+                self.lastPos = pos
+                self.moveQuest.deactivate()
+                if self.moveQuest in self.questList:
+                        self.questList.remove(self.moveQuest)
+                self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=True)
+                self.addQuest(self.moveQuest)
+        super().recalculate()
+          
 class ConstructRoom(MetaQuestParralel):
     def __init__(self,constructionSite,storageRoom,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
 

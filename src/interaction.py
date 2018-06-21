@@ -137,7 +137,8 @@ def show_or_exit(key):
             stealKey[key]()
         else:
             if key in ("´",):
-                mainChar.assignQuest(quests.GetQuest(terrain.waitingRoom.secondOfficer),active=True)
+                terrain.waitingRoom.secondOfficer.assignQuest(quests.MurderQuest(mainChar),active=True)
+                #mainChar.assignQuest(quests.MurderQuest(terrain.waitingRoom.secondOfficer),active=True)
             if key in (commandChars.quit_delete,):
                 saveFile = open("gamestate/gamestate.json","w")
                 saveFile.write("reset")

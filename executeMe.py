@@ -22,6 +22,7 @@ parser.add_argument("-p", "--phase", type=str, help="the phase to start in")
 parser.add_argument("--unicode", action="store_true", help="force fallback encoding")
 parser.add_argument("-d", "--debug", action="store_true", help="enable debug mode")
 parser.add_argument("-m", "--music", action="store_true", help="enable music (downloads stuff and runs mplayer!)")
+parser.add_argument("-t", "--tiles", action="store_true", help="spawn a tile based view of the map (requires pygame)")
 args = parser.parse_args()
 
 import src.canvas as canvas
@@ -288,6 +289,18 @@ def advanceGame():
 # HACK: common variables with modules
 cinematics.advanceGame = advanceGame
 interaction.advanceGame = advanceGame
+
+if args.tiles:
+    import pygame
+    pygame.init()
+    pydisplay = pygame.display.set_mode((410, 410))
+    pygame.display.set_caption('Of Mice and Mechs')
+    pygame.display.update()
+    interaction.pygame = pygame
+    interaction.pydisplay = pydisplay
+    interaction.useTiles = True
+else:
+    interaction.useTiles = False
 
 # start the interactio loop of the underlying library
 try:

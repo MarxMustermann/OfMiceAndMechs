@@ -1,5 +1,45 @@
 import urwid
 
+class TileMapping(object):
+    def __init__(self,mode):
+        self.modes = {"testTiles":"","pseudeUnicode":""}
+        self.setRenderingMode(mode)
+
+    def setRenderingMode(self,mode):
+        if mode not in self.modes:
+            mode = "testTiles"
+
+        if mode == "testTiles":
+            import config.tileMap as rawTileMap
+        self.mode = mode
+
+        import inspect
+        self.indexedMapping = []
+        raw = inspect.getmembers(rawTileMap, lambda a:not(inspect.isroutine(a)))
+        counter = 0
+        for item in raw:
+            if item[0].startswith("__"):
+                continue
+
+            if isinstance(item[1], list):
+                subList = []
+                for subItem in item[1]:
+                    self.indexedMapping.append(subItem)
+                    subList.append(counter)
+                    counter += 1
+                setattr(self, item[0], subList)
+            elif isinstance(item[1], dict):
+                subDict = {}
+                for k,v in item[1].items():
+                    subDict[k] = counter
+                    self.indexedMapping.append(v)
+                    counter += 1
+                setattr(self, item[0], subDict)
+            else:
+                self.indexedMapping.append(item[1])
+                setattr(self, item[0], counter)
+                counter += 1
+
 class DisplayMapping(object):
     def __init__(self,mode):
         self.modes = {"unicode":"","pureASCII":""}
@@ -50,6 +90,7 @@ class Canvas(object):
         self.shift = shift
         self.defaultChar = defaultChar
         self.displayChars = displayChars
+        self.tileMapping = TileMapping("testTiles")
 
         self.chars = []
         for x in range(0,41):
@@ -89,3 +130,21 @@ class Canvas(object):
                     out.append(char)
             out.append("\n")
         return out
+
+    def setPygameDisplay(self,pydisplay,pygame):
+        
+        pydisplay.fill((0,0,0))
+        counterY = 0
+        for line in self.chars:
+            counterX = 0
+            for char in line:
+                if isinstance(char, int):
+                    try:
+                        image = self.tileMapping.indexedMapping[char]
+                        pydisplay.blit(image,(counterX*10, counterY*10))
+                    except:
+                        pass
+                counterX += 1
+            counterY += 1
+
+        pygame.display.update()

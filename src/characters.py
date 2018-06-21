@@ -20,6 +20,7 @@ class Character():
         self.terrain = None
         self.path = []
         self.subordinates = []
+        self.reputation = 0
 
         self.gotBasicSchooling = False
         self.gotMovementSchooling = False

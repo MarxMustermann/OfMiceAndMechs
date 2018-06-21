@@ -1226,6 +1226,11 @@ class ClearRubble(MetaQuestParralel):
         super().__init__(questList)
         self.metaDescription = "clear rubble"
 
+    def postHandler(self):
+        self.character.reputation += 2
+        messages.append("awarded 2 reputation")
+        super().postHandler()
+
 class FetchFurniture(MetaQuestParralel):
     def __init__(self,constructionSite,storageRoom,toFetch,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
         questList = []
@@ -1474,4 +1479,9 @@ class ConstructRoom(MetaQuestParralel):
         if not self.didFetchQuest or not self.didPlaceQuest:
             return
         super().triggerCoppletionCheck()
+
+    def postHandler(self):
+        self.character.reputation += 6
+        messages.append("awarded 6 reputation")
+        super().postHandler()
 

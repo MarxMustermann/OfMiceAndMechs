@@ -885,7 +885,13 @@ class FindWork(BasicPhase):
 
                 def meeting():
                     showText("Time to prove your worth.")
-                    showText("You currently have no recieps on you. Please report to vat duty.",trigger=startVatPhase)
+                    if mainChar.reputation <= 0:
+                            showText("You currently have no recieps on you. Please report to vat duty.",trigger=startVatPhase)
+                    elif mainChar.reputation > 5:
+                            showText("great work. Keep on and maybe you will be one of us officers")
+                    else:
+                            showText("I see you did some work. Carry on")
+                    mainChar.reputation -= 1
 
                 def startVatPhase():
                     phase = VatPhase()

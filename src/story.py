@@ -785,17 +785,44 @@ class FindWork(BasicPhase):
         niceOptions = {"1":"Yes","2":"No"}
         text = "you look like a fresh one. Were you sent to report for duty?"
         cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
-        cinematic.followUps = {"yes":self.getIntro,"no":self.fail}
+        cinematic.followUps = {"yes":self.getIntroInstant,"no":self.tmpFail}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
 
+    def getIntroInstant(self):
+        showText("great, I needed to replace a hopper that was eaten by mice")
+        self.getIntro()
+
     def getIntro(self):
-        showText("great. I here by confirm the transfer and welcome you as crew on the Falkenbaum.\n\nYou will serve as an hopper under my command nominally. This means you will make yourself useful and prove your worth.\n\nI often have tasks to relay, but try not to stay idle even when i do not have tasks for you. Just ask around and see if somebody needs help")
+        showText("I hereby confirm the transfer and welcome you as crew on the Falkenbaum.\n\nYou will serve as an hopper under my command nominally. This means you will make yourself useful and prove your worth.\n\nI often have tasks to relay, but try not to stay idle even when i do not have tasks for you. Just ask around and see if somebody needs help")
         showText("Remeber to bring recieps, your worth will be counted in a mtick.",trigger=self.end)
 
-    def fail(self):
+    def tmpFail(self):
         say("go on then.")
         showText("go on then.")
+
+        class ReReport(interaction.SubMenu):
+            dialogName = "I want to report for duty"
+            def __init__(subSelf,partner):
+                subSelf.persistentText = ""
+                subSelf.firstRun = True
+                super().__init__()
+
+            def handleKey(subSelf, key):
+                if subSelf.firstRun:
+                    subSelf.persistentText = "It seems you did not report for duty imediatly. I will remember that"
+                    subSelf.set_text(subSelf.persistentText)
+                    subSelf.done = True
+                    subSelf.firstRun = False
+                    mainChar.reputation -= 1
+                    messages.append("rewarded -1 reputation")
+                    terrain.waitingRoom.firstOfficer.basicChatOptions.remove(ReReport)
+                    self.getIntro()
+                    return True
+                else:
+                    return False
+
+        terrain.waitingRoom.firstOfficer.basicChatOptions.append(ReReport)
 
     def end(self):
         class JobChat(interaction.SubMenu):

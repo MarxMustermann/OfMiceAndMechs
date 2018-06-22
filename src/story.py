@@ -867,6 +867,7 @@ class FindWork(BasicPhase):
                         return True
                 else:
                     mainChar.assignQuest(self.selectedQuest,active=True)
+                    terrain.waitingRoom.quests.remove(self.selectedQuest)
                     self.done = True
                     return True
 

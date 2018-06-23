@@ -827,23 +827,34 @@ class FindWork(BasicPhase):
     def end(self):
         class JobChat(interaction.SubMenu):
             dialogName = "Can you use some help?"
-            def __init__(self,partner):
-                self.state = None
-                self.partner = partner
-                self.firstRun = True
-                self.done = False
-                self.persistentText = ""
+            def __init__(subSelf,partner):
+                subSelf.state = None
+                subSelf.partner = partner
+                subSelf.firstRun = True
+                subSelf.done = False
+                subSelf.persistentText = ""
+                subSelf.dispatchedPhase = False
                 super().__init__()
 
-            def handleKey(self, key):
-                if self.firstRun:
-                    self.persistentText = "There is something i want you to do. Please go to the machine room and get your intro"
-                    self.set_text(self.persistentText)
-                    self.done = True
-                    #phase = FirstTutorialPhase()
-                    #phase.start()
+            def handleKey(subSelf, key):
+                if subSelf.firstRun:
+                    if not subSelf.dispatchedPhase:
+                        if mainChar.reputation < 10:
+                            subSelf.persistentText = "I have some work thats needs to be done, but you will have to proof your worth some more untill you can be trusted with this work.\n\nMaybe "+terrain.waitingRoom.secondOfficer.name+" has some work you can do"
+                        else:
+                            subSelf.persistentText = "Several Officers requested new assistants. First go to to the boiler room and apply for the position"
 
-                    self.firstRun = False
+                            quest = quests.MoveQuestMeta(terrain.tutorialMachineRoom,3,3)
+                            phase = FirstTutorialPhase()
+                            quest.endTrigger = phase.start
+                            mainChar.assignQuest(quest,active=True)
+                            subSelf.dispatchedPhase = True
+                    else:
+                        subSelf.persistentText = "Not right now"
+
+                    subSelf.set_text(subSelf.persistentText)
+                    subSelf.done = True
+                    subSelf.firstRun = False
 
                     return True
                 else:

@@ -559,19 +559,6 @@ class CollectQuest(Quest):
             pass
         super().recalculate()
 
-class FillPocketsQuest(CollectQuest):
-    def triggerCompletionCheck(self):
-        if not self.active:
-            return 
-
-        if not self.character:
-            return
-
-        if len(self.character.inventory) < 11:
-            return
-
-        super().triggerCompletionCheck()
-
 class WaitQuest(Quest):
     def __init__(self,followUp=None,startCinematics=None,lifetime=None):
         self.description = "please wait"
@@ -649,7 +636,7 @@ class FireFurnace(Quest):
 
         if not foundItem:
             if not self.collectQuest:
-                self.collectQuest = CollectQuest()
+                self.collectQuest = CollectQuestMeta()
                 self.character.assignQuest(self.collectQuest,active=True)
             return
 
@@ -1440,6 +1427,33 @@ class ActivateQuestMeta(MetaQuestSequence):
         super().__init__(self.questList)
         self.metaDescription = "activate Quest"
 
+class CollectQuestMeta(MetaQuestSequence):
+    def __init__(self,toFind="canBurn",startCinematics=None):
+        self.toFind = toFind
+        self.metaDescription = "fetch Quest Meta"
+        self.activateQuest = None
+        self.waitQuest = WaitQuest()
+        self.questList = [self.waitQuest]
+        super().__init__(self.questList)
+    
+    def assignToCharacter(self,character):
+        for item in character.room.itemsOnFloor:
+            hasProperty = False
+            try:
+                hasProperty = getattr(item,"contains_"+self.toFind)
+            except:
+                continue
+                
+            if hasProperty:
+                foundItem = item
+                # This line ist good but looks bad in current setting. reactivate later
+                #break
+
+        self.activeQuest = ActivateQuestMeta(foundItem)
+        self.addQuest(self.activeQuest)
+        self.waitQuest.postHandler()
+        super().assignToCharacter(character)
+
 class GetQuest(MetaQuestSequence):
     def __init__(self,questDispenser,followUp=None,startCinematics=None):
         self.questDispenser = questDispenser
@@ -1511,3 +1525,30 @@ class ConstructRoom(MetaQuestParralel):
         messages.append("awarded 6 reputation")
         super().postHandler()
 
+class FillPocketsQuest(MetaQuestSequence):
+    def __init__(self,followUp=None,startCinematics=None,lifetime=None):
+        self.waitQuest = WaitQuest()
+        self.questList = [self.waitQuest]
+        self.metaDescription = "fill pockets"
+        self.collectQuest = None
+        super().__init__(self.questList)
+
+    def recalculate(self):
+        if not self.active:
+            return 
+
+        if not self.character:
+            return
+
+        if self.collectQuest and self.collectQuest.completed:
+            self.collectQuest = None
+
+        if len(self.character.inventory) < 11 and not self.collectQuest:
+            self.collectQuest = CollectQuestMeta()
+            self.addQuest(self.collectQuest)
+
+        if self.waitQuest:
+            self.waitQuest.postHandler()
+            self.waitQuest = None
+
+        super().recalculate()

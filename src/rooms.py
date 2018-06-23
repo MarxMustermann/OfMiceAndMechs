@@ -791,8 +791,8 @@ XXXXXXXXXX
                         officer = self.firstOfficer
                         if self.secondOfficer and numFurnaces < 4:
                             officer = self.secondOfficer
-                        quest = quests.KeepFurnaceFired(self.furnaces[7-numFurnaces])
-                        officer.assignQuest(quest)
+                        quest = quests.KeepFurnaceFiredMeta(self.furnaces[7-numFurnaces])
+                        officer.assignQuest(quest,active=True)
 
                         self.furnaceQuests.append(quest)
                         diff -= 1
@@ -1093,8 +1093,8 @@ XXXXXX
                     self.done = True
 
                     global quest
-                    quest = quests.KeepFurnaceFired(self.partner.room.furnaces[0])
-                    self.partner.assignQuest(quest)
+                    quest = quests.KeepFurnaceFiredMeta(self.partner.room.furnaces[0])
+                    self.partner.assignQuest(quest,active=True)
                     self.partner.basicChatOptions.remove(StartChat)
                     self.partner.basicChatOptions.append(StopChat)
 

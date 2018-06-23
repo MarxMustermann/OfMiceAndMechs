@@ -425,7 +425,7 @@ class NaiveActivateQuest(Quest):
     def __init__(self,toActivate,followUp=None,startCinematics=None):
         self.toActivate = toActivate
         super().__init__(followUp,startCinematics=startCinematics)
-        self.description = "naive activate"
+        self.description = "naive activate "+str(self.toActivate)
         self.activated = False
 
     def triggerCompletionCheck(self):
@@ -434,10 +434,10 @@ class NaiveActivateQuest(Quest):
                 self.postHandler()
 
     def solver(self,character):
-        self.toActivate.apply(character)
-        self.activated = True
-        self.triggerCompletionCheck()
-        return True
+            self.toActivate.apply(character)
+            self.activated = True
+            self.triggerCompletionCheck()
+            return True
 
 class NaiveDropQuest(Quest):
     def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
@@ -1039,6 +1039,7 @@ class KeepFurnaceFiredMeta(MetaQuestParralel):
             self.questList.append(self.fireFurnaceQuest)
             self.changed()
 
+        """
         if not self.questList:
             self.waitQuest = WaitForDeactivationQuest(self.furnace)
             self.waitQuest.assignToCharacter(self.character)
@@ -1046,6 +1047,7 @@ class KeepFurnaceFiredMeta(MetaQuestParralel):
             self.waitQuest.addListener(self.recalculate)
             self.questList.insert(0,self.waitQuest)
             self.changed()
+        """
 
         super().recalculate()
 
@@ -1077,7 +1079,7 @@ class FireFurnaceMeta(MetaQuestParralel):
                 foundItem = item
 
             if not foundItem:
-                self.collectQuest = CollectQuest()
+                self.collectQuest = CollectQuestMeta()
                 self.collectQuest.assignToCharacter(self.character)
                 self.collectQuest.addListener(self.recalculate)
                 self.questList.insert(0,self.collectQuest)
@@ -1091,7 +1093,7 @@ class FireFurnaceMeta(MetaQuestParralel):
             self.activateQuest.unpause()
 
         if not self.activateQuest and not self.collectQuest and not self.furnace.activated:
-            self.activateQuest = ActivateQuest(self.furnace)
+            self.activateQuest = ActivateQuestMeta(self.furnace)
             self.activateQuest.assignToCharacter(self.character)
             self.questList.append(self.activateQuest)
             self.activateQuest.activate()
@@ -1437,21 +1439,27 @@ class CollectQuestMeta(MetaQuestSequence):
         super().__init__(self.questList)
     
     def assignToCharacter(self,character):
-        for item in character.room.itemsOnFloor:
-            hasProperty = False
-            try:
-                hasProperty = getattr(item,"contains_"+self.toFind)
-            except:
-                continue
-                
-            if hasProperty:
-                foundItem = item
-                # This line ist good but looks bad in current setting. reactivate later
-                #break
+        if character.room:
+            foundItem = None
+            for item in character.room.itemsOnFloor:
+                hasProperty = False
+                try:
+                    hasProperty = getattr(item,"contains_"+self.toFind)
+                except:
+                    continue
+                        
+                if hasProperty:
+                    foundItem = item
+                    # This line ist good but looks bad in current setting. reactivate later
+                    #break
 
-        self.activeQuest = ActivateQuestMeta(foundItem)
-        self.addQuest(self.activeQuest)
-        self.waitQuest.postHandler()
+            if foundItem:
+                self.activeQuest = ActivateQuestMeta(foundItem)
+                self.addQuest(self.activeQuest)
+            if self.waitQuest and foundItem:
+                quest = self.waitQuest
+                self.waitQuest = None
+                quest.postHandler()
         super().assignToCharacter(character)
 
 class GetQuest(MetaQuestSequence):

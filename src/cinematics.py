@@ -334,10 +334,13 @@ please answer the question:
 
 what is your name?"""
 
+        self.setUp()
+        return True
+
+    def setUp(self):
         self.submenue = interaction.SelectionMenu(self.text, self.options, self.niceOptions)
         interaction.submenue = self.submenue
         interaction.submenue.followUp = self.abort
-        return True
 
     def abort(self):
         super().abort()
@@ -345,10 +348,16 @@ what is your name?"""
         global cinematicQueue
         cinematicQueue = cinematicQueue[1:]
 
+        if not self.submenue:
+            self.setUp()
+
         self.selected = self.submenue.selection
 
         if self.followUps:
-            self.followUps[self.selected]()
+            if self.selected:
+                self.followUps[self.selected]()
+            else:
+                self.followUps[list(self.options.values())[0]]
         else:
             if self.followUp:
                 self.followUp()

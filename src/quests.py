@@ -421,6 +421,24 @@ class NaiveMurderQuest(Quest):
         self.triggerCompletionCheck()
         return True
 
+class NaiveActivateQuest(Quest):
+    def __init__(self,toActivate,followUp=None,startCinematics=None):
+        self.toActivate = toActivate
+        super().__init__(followUp,startCinematics=startCinematics)
+        self.description = "naive activate"
+        self.activated = False
+
+    def triggerCompletionCheck(self):
+        if self.active:
+            if self.activated:
+                self.postHandler()
+
+    def solver(self,character):
+        self.toActivate.apply(character)
+        self.activated = True
+        self.triggerCompletionCheck()
+        return True
+
 class NaiveDropQuest(Quest):
     def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
         self.dstX = xPosition
@@ -636,7 +654,7 @@ class FireFurnace(Quest):
             return
 
         if not self.activateFurnaceQuest:
-            self.activateFurnaceQuest = ActivateQuest(self.furnace,desiredActive=True)
+            self.activateFurnaceQuest = ActivateQuestMeta(self.furnace,desiredActive=True)
             self.character.assignQuest(self.activateFurnaceQuest,active=True)
             return
 
@@ -1413,6 +1431,14 @@ class PickupQuestMeta(MetaQuestSequence):
                     self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition,sloppy=self.sloppy)
                     self.addQuest(self.moveQuest)
         super().recalculate()
+
+class ActivateQuestMeta(MetaQuestSequence):
+    def __init__(self,toActivate,followUp=None,desiredActive=True,startCinematics=None):
+        self.toActivate = toActivate
+        self.moveQuest = MoveQuestMeta(toActivate.room,toActivate.xPosition,toActivate.yPosition,sloppy=True)
+        self.questList = [self.moveQuest,NaiveActivateQuest(toActivate)]
+        super().__init__(self.questList)
+        self.metaDescription = "activate Quest"
 
 class GetQuest(MetaQuestSequence):
     def __init__(self,questDispenser,followUp=None,startCinematics=None):

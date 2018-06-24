@@ -756,7 +756,7 @@ XXXXXXXXXX
 
         self.addItems([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4])
 
-        self.furnaceQuests = []
+        self.furnaceQuest = None
 
     def endTraining(self):
         class ChangeRequirements(object):
@@ -784,28 +784,12 @@ XXXXXXXXXX
         self.terrain.tutorialVatProcessing.recalculate()
         if self.desiredSteamGeneration:
             if not self.desiredSteamGeneration == self.steamGeneration:
-                if self.firstOfficer:
-                    numFurnaces = len(self.furnaceQuests)
-                    diff = self.desiredSteamGeneration - numFurnaces
-                    while diff > 0:
-                        officer = self.firstOfficer
-                        if self.secondOfficer and numFurnaces < 4:
-                            officer = self.secondOfficer
-                        quest = quests.KeepFurnaceFiredMeta(self.furnaces[7-numFurnaces])
-                        officer.assignQuest(quest,active=True)
-
-                        self.furnaceQuests.append(quest)
-                        diff -= 1
-                        numFurnaces += 1
-                    while diff < 0:
-                        quest = self.furnaceQuests[-1]
-                        quest.deactivate()
-                        self.furnaceQuests.remove(quest)
-
-                        diff += 1
-                        numFurnaces -= 1
-                    
-                    
+                if self.secondOfficer:
+                    if self.furnaceQuest:
+                        self.furnaceQuest.deactivate()
+                        self.furnaceQuest.postHandler()
+                    self.furnaceQuest = quests.KeepFurnacesFiredMeta(self.furnaces[:self.desiredSteamGeneration])
+                    self.secondOfficer.assignQuest(self.furnaceQuest,active=True)
             else:
                 messages.append("we did it! "+str(self.desiredSteamGeneration)+" instead of "+str(self.steamGeneration))
 

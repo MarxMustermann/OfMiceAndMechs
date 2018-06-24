@@ -982,7 +982,7 @@ class MetaQuestParralel(Quest):
 
     def solver(self,character):
         for quest in self.subQuests:
-            if quest.active:
+            if quest.active and not quest.paused:
                 return quest.solver(character)
 
     def addQuest(self,quest):
@@ -997,14 +997,8 @@ class MetaQuestParralel(Quest):
 class KeepFurnacesFiredMeta(MetaQuestParralel):
     def __init__(self,furnaces,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
         questList = []
-        skillLevel = 20
-        if len(furnaces) < skillLevel:
-            questList.append(KeepFurnacesFired(furnaces))
-        else:
-            for furnace in furnaces[skillLevel:]:
-                quest = KeepFurnaceFired(furnace)
-                questList.append(quest)
-            questList.append(KeepFurnacesFired(furnaces[:skillLevel]))
+        for furnace in furnaces:
+            questList.append(KeepFurnaceFiredMeta(furnace))
         super().__init__(questList)
         self.metaDescription = "KeepFurnacesFiredMeta"
 
@@ -1020,39 +1014,29 @@ class KeepFurnaceFiredMeta(MetaQuestParralel):
 
     def recalculate(self):
         if not self.character:
-            super().recalculate()
             return
-
-        if self.furnace.activated:
-            self.pause()
-        else:
-            self.unpause()
 
         if self.fireFurnaceQuest and self.fireFurnaceQuest.completed:
             self.fireFurnaceQuest = None
 
         if not self.fireFurnaceQuest and not self.furnace.activated:
             self.fireFurnaceQuest = FireFurnaceMeta(self.furnace)
-            self.fireFurnaceQuest.assignToCharacter(self.character)
-            self.fireFurnaceQuest.activate()
-            self.fireFurnaceQuest.addListener(self.recalculate)
-            self.questList.append(self.fireFurnaceQuest)
-            self.changed()
+            self.addQuest(self.fireFurnaceQuest)
+            self.unpause()
 
-        """
-        if not self.questList:
-            self.waitQuest = WaitForDeactivationQuest(self.furnace)
-            self.waitQuest.assignToCharacter(self.character)
-            self.waitQuest.activate()
-            self.waitQuest.addListener(self.recalculate)
-            self.questList.insert(0,self.waitQuest)
-            self.changed()
-        """
+        if self.waitQuest and self.waitQuest.completed:
+            self.waitQuest = None
+
+        if not self.waitQuest and not self.fireFurnaceQuest:
+            if self.furnace.activated:
+                self.waitQuest = WaitForDeactivationQuest(self.furnace)
+                self.waitQuest.addListener(self.recalculate)
+                self.addQuest(self.waitQuest)
+                self.pause()
+            else:
+                self.unpause()
 
         super().recalculate()
-
-    def triggerCompletionCheck(self):
-        pass
 
 class FireFurnaceMeta(MetaQuestParralel):
     def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):

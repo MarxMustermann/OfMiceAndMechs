@@ -652,11 +652,29 @@ class RecruitChat(SubMenu):
     def handleKey(self, key):
         if self.firstRun:
             self.persistentText += mainChar.name+": \"come and help me.\"\n"
-            if gamestate.tick%2:
-                self.persistentText += self.partner.name+": \"sorry, too busy.\"\n"
+
+            if self.partner.reputation > mainChar.reputation:
+                if mainChar.reputation <= 0:
+                    self.persistentText += self.partner.name+": \"No.\""
+                    mainChar.reputation -= 5
+                    messages.append("You were rewarded -5 reputation")
+                else:
+                    if self.partner.reputation//mainChar.reputation:
+                        self.persistentText += self.partner.name+": \"you will need at least have to have "+str(self.partner.reputation//mainChar.reputation)+" times as much reputation to have me consider that\"\n"
+                        messages.append("You were rewarded -"+str(2*(self.partner.reputation//mainChar.reputation))+" reputation")
+                        mainChar.reputation -= 2*(self.partner.reputation//mainChar.reputation)
+                    else:
+                        self.persistentText += self.partner.name+": \"maybe if you come back later\""
+                        mainChar.reputation -= 2
+                        messages.append("You were rewarded -2 reputation")
             else:
-                self.persistentText += self.partner.name+": \"on it!\"\n"
-                mainChar.subordinates.append(self.partner)
+                if gamestate.tick%2:
+                    self.persistentText += self.partner.name+": \"sorry, too busy.\"\n"
+                    mainChar.reputation -= 1
+                    messages.append("You were rewarded -1 reputation")
+                else:
+                    self.persistentText += self.partner.name+": \"on it!\"\n"
+                    mainChar.subordinates.append(self.partner)
             text = self.persistentText+"\n\n-- press any key --"
             main.set_text((urwid.AttrSpec("default","default"),text))
             self.firstRun = False

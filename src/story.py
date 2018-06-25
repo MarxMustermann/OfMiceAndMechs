@@ -944,36 +944,49 @@ class FindWork(BasicPhase):
 
         self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15)))
 
-        terrain.waitingRoom.quests.append(quests.ClearRubble())
+        quest = quests.ClearRubble()
+        quest.reputationReward = 3
+        terrain.waitingRoom.quests.append(quest)
+
         storageRoom = terrain.roomByCoordinates[(5,4)][0]
         constructionSite = terrain.roomByCoordinates[(4,2)][0]
-        terrain.waitingRoom.quests.append(quests.ConstructRoom(constructionSite,storageRoom))
+        quest = quests.ConstructRoom(constructionSite,storageRoom)
+        quest.reputationReward = 6
+        terrain.waitingRoom.quests.append(quest)
+
         def addQuest7():
             quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[6],(terrain.tutorialLab,8,1))
+            quest.reputationReward = 1
             terrain.waitingRoom.quests.append(quest)
         def addQuest6():
             quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[5],(terrain.tutorialLab,7,1))
             quest.endTrigger = addQuest7
+            quest.reputationReward = 1
             terrain.waitingRoom.quests.append(quest)
         def addQuest5():
             quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[4],(terrain.tutorialLab,6,1))
             quest.endTrigger = addQuest6
+            quest.reputationReward = 1
             terrain.waitingRoom.quests.append(quest)
         def addQuest4():
             quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[3],(terrain.tutorialLab,5,1))
             quest.endTrigger = addQuest5
+            quest.reputationReward = 1
             terrain.waitingRoom.quests.append(quest)
         def addQuest3():
             quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[2],(terrain.tutorialLab,4,1))
             quest.endTrigger = addQuest4
+            quest.reputationReward = 1
             terrain.waitingRoom.quests.append(quest)
         def addQuest2():
             quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[1],(terrain.tutorialLab,3,1))
             quest.endTrigger = addQuest3
+            quest.reputationReward = 1
             terrain.waitingRoom.quests.append(quest)
         def addQuest1():
             quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[0],(terrain.tutorialLab,2,1))
             quest.endTrigger = addQuest2
+            quest.reputationReward = 1
             terrain.waitingRoom.quests.append(quest)
         addQuest1()
 

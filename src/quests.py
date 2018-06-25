@@ -24,6 +24,7 @@ class Quest(object):
         self.startTrigger = None # deprecate?
         self.endTrigger = None # deprecate?
         self.paused = False
+        self.reputationReward = 0
 
         self.lifetime = lifetime
 
@@ -404,6 +405,25 @@ class NaiveGetQuest(Quest):
             return True
         if self.assign:
             self.character.assignQuest(self.quest,active=True)
+        self.triggerCompletionCheck()
+        return True
+
+class NaiveGetReward(Quest):
+    def __init__(self,quest,followUp=None,startCinematics=None):
+        super().__init__(followUp,startCinematics=startCinematics)
+        self.quest = quest
+        self.description = "naive get reward"
+        self.done = False
+
+    def triggerCompletionCheck(self):
+        if self.active:
+            if self.done:
+                self.postHandler()
+
+    def solver(self,character):
+        character.reputation += self.quest.reputationReward
+        messages.append("you were awarded "+str(self.quest.reputationReward)+" reputation")
+        self.done = True
         self.triggerCompletionCheck()
         return True
 
@@ -1216,26 +1236,33 @@ class HopperDuty(MetaQuestSequence):
         self.metaDescription = "hopper duty"
         self.recalculate()
         self.actualQuest = None
+        self.rewardQuest = None
 
     def recalculate(self):
         if self.active:
             if self.getQuest and self.getQuest.completed:
                 self.getQuest = None
 
-            if self.actualQuest and self.actualQuest.completed:
+            if self.actualQuest and self.actualQuest.completed and not self.rewardQuest:
+                self.rewardQuest = GetReward(terrain.waitingRoom.secondOfficer,self.actualQuest)
                 self.actualQuest = None
+                self.addQuest(self.rewardQuest,addFront=False)
 
-            if not self.getQuest and not self.actualQuest:
+            if self.rewardQuest and self.rewardQuest.completed:
+                self.rewardQuest = None
+
+            if not self.getQuest and not self.actualQuest and not self.rewardQuest:
                 self.getQuest = GetQuest(terrain.waitingRoom.secondOfficer,assign=False)
                 self.getQuest.endTrigger = self.setQuest
                 self.addQuest(self.getQuest,addFront=False)
+
             super().recalculate()
 
     def setQuest(self):
         self.actualQuest = self.getQuest.quest
         if self.actualQuest:
             self.addQuest(self.actualQuest,addFront=False)
-
+    
 class ClearRubble(MetaQuestParralel):
     def __init__(self,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
         questList = []
@@ -1245,11 +1272,6 @@ class ClearRubble(MetaQuestParralel):
                 questList.append(DropQuestMeta(item,terrain.metalWorkshop,7,1))
         super().__init__(questList)
         self.metaDescription = "clear rubble"
-
-    def postHandler(self):
-        self.character.reputation += 3
-        messages.append("awarded 3 reputation")
-        super().postHandler()
 
 class FetchFurniture(MetaQuestParralel):
     def __init__(self,constructionSite,storageRoom,toFetch,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
@@ -1488,6 +1510,15 @@ class GetQuest(MetaQuestSequence):
     def quest(self):
         return self.getQuest.quest
 
+class GetReward(MetaQuestSequence):
+    def __init__(self,questDispenser,quest,assign=False,followUp=None,startCinematics=None):
+        self.questDispenser = questDispenser
+        self.moveQuest = MoveQuestMeta(self.questDispenser.room,self.questDispenser.xPosition,self.questDispenser.yPosition,sloppy=True)
+        self.getQuest = NaiveGetReward(quest)
+        self.questList = [self.moveQuest,self.getQuest]
+        super().__init__(self.questList)
+        self.metaDescription = "get Reward"
+
 class MurderQuest(MetaQuestSequence):
     def __init__(self,toKill,followUp=None,startCinematics=None):
         self.toKill = toKill
@@ -1546,11 +1577,6 @@ class ConstructRoom(MetaQuestParralel):
             return
         super().triggerCoppletionCheck()
 
-    def postHandler(self):
-        self.character.reputation += 6
-        messages.append("awarded 6 reputation")
-        super().postHandler()
-
 class TransportQuest(MetaQuestSequence):
     def __init__(self,toTransport,dropOff,followUp=None,startCinematics=None,lifetime=None):
         self.toTransport = toTransport
@@ -1559,11 +1585,6 @@ class TransportQuest(MetaQuestSequence):
         self.questList.append(DropQuestMeta(toTransport,dropOff[0],dropOff[1],dropOff[2]))
         super().__init__(self.questList)
         self.metaDescription = "transport"
-
-    def postHandler(self):
-        self.character.reputation += 1
-        messages.append("awarded 1 reputation")
-        super().postHandler()
 
 class FillPocketsQuest(MetaQuestSequence):
     def __init__(self,followUp=None,startCinematics=None,lifetime=None):

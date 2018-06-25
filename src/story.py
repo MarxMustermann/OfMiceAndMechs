@@ -946,34 +946,34 @@ class FindWork(BasicPhase):
         storageRoom = terrain.roomByCoordinates[(5,4)][0]
         constructionSite = terrain.roomByCoordinates[(4,2)][0]
         terrain.waitingRoom.quests.append(quests.ConstructRoom(constructionSite,storageRoom))
-		def addQuest7():
-				quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[6],(terrain.tutorialLab,8,1)))
-				terrain.waitingRoom.quests.append(quest)
-		def addQuest6():
-				quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[5],(terrain.tutorialLab,7,1)))
-				quest.followUp = addQuest7
-				terrain.waitingRoom.quests.append(quest)
-		def addQuest5():
-				quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[4],(terrain.tutorialLab,6,1)))
-				quest.followUp = addQuest6
-				terrain.waitingRoom.quests.append(quest)
-		def addQuest4():
-				quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[3],(terrain.tutorialLab,5,1)))
-				quest.followUp = addQuest5
-				terrain.waitingRoom.quests.append(quest)
-		def addQuest3():
-				quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[2],(terrain.tutorialLab,4,1)))
-				quest.followUp = addQuest4
-				terrain.waitingRoom.quests.append(quest)
-		def addQuest2():
-				quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[1],(terrain.tutorialLab,3,1)))
-				quest.followUp = addQuest3
-				terrain.waitingRoom.quests.append(quest)
-		def addQuest1():
-				quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[0],(terrain.tutorialLab,2,1)))
-				quest.followUp = addQuest2
-				terrain.waitingRoom.quests.append(quest)
-		addQuest1()
+        def addQuest7():
+            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[6],(terrain.tutorialLab,8,1))
+            terrain.waitingRoom.quests.append(quest)
+        def addQuest6():
+            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[5],(terrain.tutorialLab,7,1))
+            quest.endTrigger = addQuest7
+            terrain.waitingRoom.quests.append(quest)
+        def addQuest5():
+            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[4],(terrain.tutorialLab,6,1))
+            quest.endTrigger = addQuest6
+            terrain.waitingRoom.quests.append(quest)
+        def addQuest4():
+            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[3],(terrain.tutorialLab,5,1))
+            quest.endTrigger = addQuest5
+            terrain.waitingRoom.quests.append(quest)
+        def addQuest3():
+            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[2],(terrain.tutorialLab,4,1))
+            quest.endTrigger = addQuest4
+            terrain.waitingRoom.quests.append(quest)
+        def addQuest2():
+            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[1],(terrain.tutorialLab,3,1))
+            quest.endTrigger = addQuest3
+            terrain.waitingRoom.quests.append(quest)
+        def addQuest1():
+            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[0],(terrain.tutorialLab,2,1))
+            quest.endTrigger = addQuest2
+            terrain.waitingRoom.quests.append(quest)
+        addQuest1()
 
         terrain.waitingRoom.firstOfficer.basicChatOptions.append(JobChat)
         terrain.waitingRoom.secondOfficer.basicChatOptions.append(JobChat2)

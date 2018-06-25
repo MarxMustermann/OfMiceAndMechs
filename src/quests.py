@@ -1233,7 +1233,8 @@ class HopperDuty(MetaQuestSequence):
 
     def setQuest(self):
         self.actualQuest = self.getQuest.quest
-        self.addQuest(self.actualQuest,addFront=False)
+        if self.actualQuest:
+            self.addQuest(self.actualQuest,addFront=False)
 
 class ClearRubble(MetaQuestParralel):
     def __init__(self,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):

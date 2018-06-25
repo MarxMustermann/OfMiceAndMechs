@@ -942,7 +942,7 @@ class FindWork(BasicPhase):
                 quest.endTrigger = meeting
                 mainChar.assignQuest(quest,active=True)
 
-        self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),[quest]))
+        self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15)))
 
         terrain.waitingRoom.quests.append(quests.ClearRubble())
         storageRoom = terrain.roomByCoordinates[(5,4)][0]

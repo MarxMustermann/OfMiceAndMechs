@@ -1202,10 +1202,24 @@ class SurviveQuest(Quest):
                 self.drinkQuest = DrinkQuest()
                 self.character.assignQuest(self.drinkQuest,active=True)
 
-class HopperDuty(Quest):
+class HopperDuty(MetaQuestSequence):
     def __init__(self,startCinematics=None,looped=True,lifetime=None):
-        self.description = "hopper duty"
-        super().__init__(startCinematics=startCinematics)
+        self.getQuest = GetQuest(terrain.waitingRoom.secondOfficer)
+        questList = [self.getQuest]
+        super().__init__(questList,startCinematics=startCinematics)
+        self.metaDescription = "hopper duty"
+        self.recalculate()
+        self.getQuest = None
+
+    def recalculate(self):
+        if self.active:
+            if self.getQuest and self.getQuest.completed:
+                self.getQuest = None
+
+            if not self.getQuest:
+                self.getQuest = GetQuest(terrain.waitingRoom.secondOfficer)
+                self.addQuest(self.getQuest)
+            super().recalculate()
 
 class ClearRubble(MetaQuestParralel):
     def __init__(self,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):

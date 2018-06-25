@@ -385,9 +385,10 @@ class NaivePickupQuest(Quest):
         return True
 
 class NaiveGetQuest(Quest):
-    def __init__(self,questDispenser,followUp=None,startCinematics=None):
+    def __init__(self,questDispenser,assign=True,followUp=None,startCinematics=None):
         self.questDispenser = questDispenser
         self.quest = None
+        self.assign = assign
         super().__init__(followUp,startCinematics=startCinematics)
         self.description = "naive get quest"
 
@@ -401,7 +402,8 @@ class NaiveGetQuest(Quest):
         if not self.quest:
             self.fail()
             return True
-        self.character.assignQuest(self.quest,active=True)
+        if self.assign:
+            self.character.assignQuest(self.quest,active=True)
         self.triggerCompletionCheck()
         return True
 
@@ -864,8 +866,11 @@ class MetaQuestSequence(Quest):
 
         self.triggerCompletionCheck()
 
-    def addQuest(self,quest):
-        self.subQuests.insert(0,quest)
+    def addQuest(self,quest,addFront=True):
+        if addFront:
+            self.subQuests.insert(0,quest)
+        else:
+            self.subQuests.append(quest)
         self.subQuests[0].addListener(self.recalculate)
         self.listeningTo.append(self.subQuests[0])
         if len(self.subQuests) > 1:
@@ -1204,22 +1209,31 @@ class SurviveQuest(Quest):
 
 class HopperDuty(MetaQuestSequence):
     def __init__(self,startCinematics=None,looped=True,lifetime=None):
-        self.getQuest = GetQuest(terrain.waitingRoom.secondOfficer)
+        self.getQuest = GetQuest(terrain.waitingRoom.secondOfficer,assign=False)
+        self.getQuest.endTrigger = self.setQuest
         questList = [self.getQuest]
         super().__init__(questList,startCinematics=startCinematics)
         self.metaDescription = "hopper duty"
         self.recalculate()
-        self.getQuest = None
+        self.actualQuest = None
 
     def recalculate(self):
         if self.active:
             if self.getQuest and self.getQuest.completed:
                 self.getQuest = None
 
-            if not self.getQuest:
-                self.getQuest = GetQuest(terrain.waitingRoom.secondOfficer)
-                self.addQuest(self.getQuest)
+            if self.actualQuest and self.actualQuest.completed:
+                self.actualQuest = None
+
+            if not self.getQuest and not self.actualQuest:
+                self.getQuest = GetQuest(terrain.waitingRoom.secondOfficer,assign=False)
+                self.getQuest.endTrigger = self.setQuest
+                self.addQuest(self.getQuest,addFront=False)
             super().recalculate()
+
+    def setQuest(self):
+        self.actualQuest = self.getQuest.quest
+        self.addQuest(self.actualQuest,addFront=False)
 
 class ClearRubble(MetaQuestParralel):
     def __init__(self,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
@@ -1461,12 +1475,17 @@ class CollectQuestMeta(MetaQuestSequence):
         super().assignToCharacter(character)
 
 class GetQuest(MetaQuestSequence):
-    def __init__(self,questDispenser,followUp=None,startCinematics=None):
+    def __init__(self,questDispenser,assign=False,followUp=None,startCinematics=None):
         self.questDispenser = questDispenser
         self.moveQuest = MoveQuestMeta(self.questDispenser.room,self.questDispenser.xPosition,self.questDispenser.yPosition,sloppy=True)
-        self.questList = [self.moveQuest,NaiveGetQuest(questDispenser)]
+        self.getQuest = NaiveGetQuest(questDispenser,assign=assign)
+        self.questList = [self.moveQuest,self.getQuest]
         super().__init__(self.questList)
         self.metaDescription = "get Quest"
+
+    @property
+    def quest(self):
+        return self.getQuest.quest
 
 class MurderQuest(MetaQuestSequence):
     def __init__(self,toKill,followUp=None,startCinematics=None):

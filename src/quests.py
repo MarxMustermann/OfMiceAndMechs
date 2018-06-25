@@ -1218,8 +1218,8 @@ class ClearRubble(MetaQuestParralel):
         self.metaDescription = "clear rubble"
 
     def postHandler(self):
-        self.character.reputation += 2
-        messages.append("awarded 2 reputation")
+        self.character.reputation += 3
+        messages.append("awarded 3 reputation")
         super().postHandler()
 
 class FetchFurniture(MetaQuestParralel):
@@ -1515,6 +1515,19 @@ class ConstructRoom(MetaQuestParralel):
     def postHandler(self):
         self.character.reputation += 6
         messages.append("awarded 6 reputation")
+        super().postHandler()
+
+class TransportQuest(MetaQuestSequence):
+    def __init__(self,toTransport,dropOff,followUp=None,startCinematics=None,lifetime=None):
+        self.toTransport = toTransport
+        self.questList = []
+        self.questList.append(PickupQuestMeta(toTransport))
+        self.questList.append(DropQuestMeta(toTransport,dropOff[0],dropOff[1],dropOff[2]))
+        super().__init__(self.questList)
+
+    def postHandler(self):
+        self.character.reputation += 1
+        messages.append("awarded 1 reputation")
         super().postHandler()
 
 class FillPocketsQuest(MetaQuestSequence):

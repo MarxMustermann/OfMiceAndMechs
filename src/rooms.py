@@ -1226,6 +1226,17 @@ XXXXX$XXXXX
         self.compactor = items.ScrapCompactor(6,1)
         self.addItems([self.artwork,self.compactor])
 
+        self.producedItems = []
+        self.producedItems.append(items.Wall(9,5))
+        self.producedItems.append(items.Wall(9,4))
+        self.producedItems.append(items.Wall(9,6))
+        self.producedItems.append(items.Wall(9,3))
+        self.producedItems.append(items.Wall(9,7))
+        self.producedItems.append(items.Wall(9,2))
+        self.producedItems.append(items.Wall(9,8))
+
+        self.addItems(self.producedItems)
+
 class ConstructionSite(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
         self.roomLayout = """

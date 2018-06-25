@@ -946,6 +946,13 @@ class FindWork(BasicPhase):
         storageRoom = terrain.roomByCoordinates[(5,4)][0]
         constructionSite = terrain.roomByCoordinates[(4,2)][0]
         terrain.waitingRoom.quests.append(quests.ConstructRoom(constructionSite,storageRoom))
+        terrain.waitingRoom.quests.append(quests.TransportQuest(terrain.metalWorkshop.producedItems[0],(terrain.tutorialLab,2,1)))
+        terrain.waitingRoom.quests.append(quests.TransportQuest(terrain.metalWorkshop.producedItems[1],(terrain.tutorialLab,3,1)))
+        terrain.waitingRoom.quests.append(quests.TransportQuest(terrain.metalWorkshop.producedItems[2],(terrain.tutorialLab,4,1)))
+        terrain.waitingRoom.quests.append(quests.TransportQuest(terrain.metalWorkshop.producedItems[3],(terrain.tutorialLab,5,1)))
+        terrain.waitingRoom.quests.append(quests.TransportQuest(terrain.metalWorkshop.producedItems[4],(terrain.tutorialLab,6,1)))
+        terrain.waitingRoom.quests.append(quests.TransportQuest(terrain.metalWorkshop.producedItems[5],(terrain.tutorialLab,7,1)))
+        terrain.waitingRoom.quests.append(quests.TransportQuest(terrain.metalWorkshop.producedItems[6],(terrain.tutorialLab,8,1)))
 
         terrain.waitingRoom.firstOfficer.basicChatOptions.append(JobChat)
         terrain.waitingRoom.secondOfficer.basicChatOptions.append(JobChat2)

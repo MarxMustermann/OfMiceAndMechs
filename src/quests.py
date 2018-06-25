@@ -1524,6 +1524,7 @@ class TransportQuest(MetaQuestSequence):
         self.questList.append(PickupQuestMeta(toTransport))
         self.questList.append(DropQuestMeta(toTransport,dropOff[0],dropOff[1],dropOff[2]))
         super().__init__(self.questList)
+        self.metaDescription = "transport"
 
     def postHandler(self):
         self.character.reputation += 1
@@ -1534,9 +1535,9 @@ class FillPocketsQuest(MetaQuestSequence):
     def __init__(self,followUp=None,startCinematics=None,lifetime=None):
         self.waitQuest = WaitQuest()
         self.questList = [self.waitQuest]
-        self.metaDescription = "fill pockets"
         self.collectQuest = None
         super().__init__(self.questList)
+        self.metaDescription = "fill pockets"
 
     def recalculate(self):
         if not self.active:

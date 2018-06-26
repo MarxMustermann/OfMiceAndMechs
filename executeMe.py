@@ -160,6 +160,7 @@ characters.interaction = interaction
 story.interaction = interaction
 rooms.interaction = interaction
 items.interaction = interaction
+quests.interaction = interaction
 
 if args.debug:
     class debugToFile(object):

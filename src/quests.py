@@ -1516,8 +1516,30 @@ class GetReward(MetaQuestSequence):
         self.moveQuest = MoveQuestMeta(self.questDispenser.room,self.questDispenser.xPosition,self.questDispenser.yPosition,sloppy=True)
         self.getQuest = NaiveGetReward(quest)
         self.questList = [self.moveQuest,self.getQuest]
+
+        class RewardChat(interaction.SubMenu):
+             dialogName = "i did the task: "+quest.description.split("\n")[0]
+             def __init__(subSelf,partner):
+                 super().__init__()
+             
+             def handleKey(subSelf, key):
+                 subSelf.persistentText = "here is your reward"
+                 subSelf.set_text(subSelf.persistentText)
+                 self.getQuest.solver(self.character)
+                 if self.moveQuest:
+                     self.moveQuest.postHandler()
+                 subSelf.done = True
+                 return True
+
+        self.rewardChat = RewardChat
+        self.questDispenser.basicChatOptions.append(self.rewardChat)
+
         super().__init__(self.questList)
         self.metaDescription = "get Reward"
+
+    def postHandler(self):
+        self.questDispenser.basicChatOptions.remove(self.rewardChat)
+        super().postHandler()
 
 class MurderQuest(MetaQuestSequence):
     def __init__(self,toKill,followUp=None,startCinematics=None):

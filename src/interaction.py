@@ -44,6 +44,7 @@ questMenuActive = False
 submenue = None
 ignoreNextAutomated = False
 ticksSinceDeath = None
+levelAutomated = 0
 
 commandHistory = []
 

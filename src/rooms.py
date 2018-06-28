@@ -63,12 +63,16 @@ class Room(object):
                     pass
                 elif char in ("@",):
                     if (not self.firstOfficer) or (not self.secondOfficer):
-                        npc = characters.Character(displayChars.staffCharactersByLetter["e"],5,3,name="Eduart Knoblauch")
-                        self.addCharacter(npc,rowCounter,lineCounter)
-                        npc.terrain = self.terrain
                         if not self.firstOfficer:
+                            npc = characters.Character(displayChars.staffCharactersByLetter["e"],5,3,name="Eduart Eisenblatt")
+                            self.addCharacter(npc,rowCounter,lineCounter)
+                            npc.terrain = self.terrain
                             self.firstOfficer = npc
                         else:
+                            npc = characters.Character(displayChars.staffCharactersByLetter["s"],5,3,name="Siegfied Knobelbecher")
+                            self.addCharacter(npc,rowCounter,lineCounter)
+                            npc.terrain = self.terrain
+                            self.firstOfficer = npc
                             self.secondOfficer = npc
                 elif char in ("X","&"):
                     itemsOnFloor.append(items.Wall(rowCounter,lineCounter))

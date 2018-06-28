@@ -797,7 +797,7 @@ class FindWork(BasicPhase):
 
     def getIntro(self):
         showText("I hereby confirm the transfer and welcome you as crew on the Falkenbaum.\n\nYou will serve as an hopper under my command nominally. This means you will make yourself useful and prove your worth.\n\nI often have tasks to relay, but try not to stay idle even when i do not have tasks for you. Just ask around and see if somebody needs help")
-        showText("Remeber to bring recieps, your worth will be counted in a mtick.",trigger=self.end)
+        showText("Remeber to report back, your worth will be counted in a mtick.",trigger=self.end)
 
     def tmpFail(self):
         say("go on then.")
@@ -812,7 +812,7 @@ class FindWork(BasicPhase):
 
             def handleKey(subSelf, key):
                 if subSelf.firstRun:
-                    subSelf.persistentText = "It seems you did not report for duty imediatly. I will remember that"
+                    subSelf.persistentText = "It seems you did not report for duty imediatly. Try to not repeat that"
                     subSelf.set_text(subSelf.persistentText)
                     subSelf.done = True
                     subSelf.firstRun = False

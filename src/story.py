@@ -954,8 +954,39 @@ class FindWork(BasicPhase):
         quest.reputationReward = 6
         terrain.waitingRoom.quests.append(quest)
 
+        def addQuest12():
+            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(2,1)][0],(terrain.metalWorkshop,9,5))
+            quest.endTrigger = addQuest1
+            quest.reputationReward = 1
+            terrain.waitingRoom.quests.append(quest)
+        def addQuest11():
+            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(3,1)][0],(terrain.metalWorkshop,9,4))
+            quest.endTrigger = addQuest12
+            quest.reputationReward = 1
+            terrain.waitingRoom.quests.append(quest)
+        def addQuest10():
+            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(4,1)][0],(terrain.metalWorkshop,9,6))
+            quest.endTrigger = addQuest11
+            quest.reputationReward = 1
+            terrain.waitingRoom.quests.append(quest)
+        def addQuest9():
+            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(5,1)][0],(terrain.metalWorkshop,9,3))
+            quest.endTrigger = addQuest10
+            quest.reputationReward = 1
+            terrain.waitingRoom.quests.append(quest)
+        def addQuest8():
+            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(6,1)][0],(terrain.metalWorkshop,9,7))
+            quest.endTrigger = addQuest9
+            quest.reputationReward = 1
+            terrain.waitingRoom.quests.append(quest)
+        def addQuest7():
+            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(7,1)][0],(terrain.metalWorkshop,9,2))
+            quest.endTrigger = addQuest8
+            quest.reputationReward = 1
+            terrain.waitingRoom.quests.append(quest)
         def addQuest6():
             quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[5],(terrain.tutorialLab,7,1))
+            quest.endTrigger = addQuest7
             quest.reputationReward = 1
             terrain.waitingRoom.quests.append(quest)
         def addQuest5():

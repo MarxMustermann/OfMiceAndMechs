@@ -1228,8 +1228,8 @@ class SurviveQuest(Quest):
                 self.character.assignQuest(self.drinkQuest,active=True)
 
 class HopperDuty(MetaQuestSequence):
-    def __init__(self,startCinematics=None,looped=True,lifetime=None):
-        self.getQuest = GetQuest(terrain.waitingRoom.secondOfficer,assign=False)
+    def __init__(self,waitingRoom,startCinematics=None,looped=True,lifetime=None):
+        self.getQuest = GetQuest(waitingRoom.secondOfficer,assign=False)
         self.getQuest.endTrigger = self.setQuest
         questList = [self.getQuest]
         super().__init__(questList,startCinematics=startCinematics)
@@ -1237,6 +1237,7 @@ class HopperDuty(MetaQuestSequence):
         self.recalculate()
         self.actualQuest = None
         self.rewardQuest = None
+        self.waitingRoom = waitingRoom
 
     def recalculate(self):
         if self.active:
@@ -1244,7 +1245,7 @@ class HopperDuty(MetaQuestSequence):
                 self.getQuest = None
 
             if self.actualQuest and self.actualQuest.completed and not self.rewardQuest:
-                self.rewardQuest = GetReward(terrain.waitingRoom.secondOfficer,self.actualQuest)
+                self.rewardQuest = GetReward(self.waitingRoom.secondOfficer,self.actualQuest)
                 self.actualQuest = None
                 self.addQuest(self.rewardQuest,addFront=False)
 
@@ -1252,7 +1253,7 @@ class HopperDuty(MetaQuestSequence):
                 self.rewardQuest = None
 
             if not self.getQuest and not self.actualQuest and not self.rewardQuest:
-                self.getQuest = GetQuest(terrain.waitingRoom.secondOfficer,assign=False)
+                self.getQuest = GetQuest(self.waitingRoom.secondOfficer,assign=False)
                 self.getQuest.endTrigger = self.setQuest
                 self.addQuest(self.getQuest,addFront=False)
 

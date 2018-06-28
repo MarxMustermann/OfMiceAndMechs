@@ -1197,7 +1197,7 @@ X         X
 X  .....  X
 X  .   .  X
 X  . @ .  $
-X  .   . IX
+X  . @ . IX
 X  ..... DX
 X         X
 X         X
@@ -1205,6 +1205,17 @@ XXXXXXXXXXX
 """
         self.quests = []
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        self.hoppers = []
+        npc = characters.Character(displayChars.staffCharactersByLetter["s"],5,3,name="Simon Kantbrett")
+        self.hoppers.append(npc)
+        self.addCharacter(npc,2,2)
+        npc = characters.Character(displayChars.staffCharactersByLetter["r"],5,3,name="Rudolf Krautbart")
+        self.hoppers.append(npc)
+        self.addCharacter(npc,2,3)
+
+        for hopper in self.hoppers:
+            quest = quests.HopperDuty(self)
+            hopper.assignQuest(quest,active=True)
 
 class MetalWorkshop(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):

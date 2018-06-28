@@ -911,7 +911,7 @@ class FindWork(BasicPhase):
                     self.done = True
                     return True
 
-        quest = quests.HopperDuty()
+        quest = quests.HopperDuty(terrain.waitingRoom)
         mainChar.assignQuest(quest,active=True)
 
         class ProofOfWorth(object):

@@ -954,13 +954,8 @@ class FindWork(BasicPhase):
         quest.reputationReward = 6
         terrain.waitingRoom.quests.append(quest)
 
-        def addQuest7():
-            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[6],(terrain.tutorialLab,8,1))
-            quest.reputationReward = 1
-            terrain.waitingRoom.quests.append(quest)
         def addQuest6():
             quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[5],(terrain.tutorialLab,7,1))
-            quest.endTrigger = addQuest7
             quest.reputationReward = 1
             terrain.waitingRoom.quests.append(quest)
         def addQuest5():

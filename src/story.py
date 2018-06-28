@@ -714,7 +714,7 @@ you can move using the keyboard.
         msg = "you can pick up items by moving onto them and using "+commandChars.pickUp
         showText(msg)
         showMessage(msg)
-        say("well done, come and fetch your drink",firstOfficer)
+        say("well done, go and fetch your drink",firstOfficer)
         quest = quests.PickupQuest(drink)
         showQuest(quest,mainChar)
         msg = "you can drink using "+commandChars.drink+". If you do not drink for a longer time you will starve"
@@ -722,6 +722,81 @@ you can move using the keyboard.
         showMessage(msg)
         quest = quests.MoveQuest(terrain.wakeUpRoom,6,6)
         showQuest(quest,mainChar)
+        msg = "you can talk to people by pressing "+commandChars.hail+" and selecting the person to talk to."
+        showMessage(msg)
+        showText(msg)
+
+        class FurnaceChat(interaction.SubMenu):
+            dialogName = "You wanted to have a chat"
+            def __init__(subSelf,partner):
+                subSelf.state = None
+                subSelf.partner = partner
+                subSelf.firstRun = True
+                subSelf.done = False
+                subSelf.persistentText = ""
+                subSelf.submenue = None
+                subSelf.wtfCounter = 0
+                super().__init__()
+
+            def handleKey(subSelf, key):
+                if subSelf.submenue:
+                    if not subSelf.submenue.handleKey(key):
+                        return False
+                    else:
+                        subSelf.done = True
+                        firstOfficer.basicChatOptions.remove(FurnaceChat)
+                        interaction.submenue = None
+                        interaction.loop.set_alarm_in(0.0, callShow_or_exit, '~')
+                        subSelf.submenue.selection()
+                        return True
+
+                if subSelf.firstRun:
+                    subSelf.persistentText = "yes.\n\nI am "+mainChar.name+" and do the acceptance tests. After you complete the test you will serve as an hooper on the Falkenbaum \n\n-- press space to proceed --"
+                    subSelf.set_text(subSelf.persistentText)
+                                
+                    options = {}
+                    niceOptions = {}
+                    counter = 1
+                    for quest in terrain.waitingRoom.quests:
+                        options[str(counter)] = quest
+                        niceOptions[str(counter)] = quest.description.split("\n")[0]
+                        counter += 1
+                    options = {"1":self.fireFurnaces,"2":self.noFurnaceFirering}
+                    niceOptions = {"1":"Yes","2":"No"}
+                    subSelf.submenue = interaction.SelectionMenu("Say, do you like Furnaces?",options,niceOptions)
+
+                    return False
+
+                    return False
+                else:
+                    return False
+                   
+                """
+                if subSelf.firstRun:
+                    if not subSelf.dispatchedPhase:
+                        if mainChar.reputation < 10:
+                            subSelf.persistentText = "I have some work thats needs to be done, but you will have to proof your worth some more untill you can be trusted with this work.\n\nMaybe "+terrain.waitingRoom.secondOfficer.name+" has some work you can do"
+                        else:
+                            subSelf.persistentText = "Several Officers requested new assistants. First go to to the boiler room and apply for the position"
+
+                            quest = quests.MoveQuestMeta(terrain.tutorialMachineRoom,3,3)
+                            quest.endTrigger = phase.start
+                            mainChar.assignQuest(quest,active=True)
+                    else:
+                        subSelf.persistentText = "Not right now"
+
+                    subSelf.set_text(subSelf.persistentText)
+                    subSelf.done = True
+                    subSelf.firstRun = False
+
+                    return True
+                else:
+                    return False
+                """
+
+        firstOfficer.basicChatOptions.append(FurnaceChat)
+
+        """
         showText("\nHello, I am "+mainChar.name+" and do the acceptance tests. \n\nAfter you complete the test you will serve as an hooper on the Falkenbaum.\n")
 
         options = {"1":"furnaces","2":"nofurnaces"}
@@ -731,6 +806,7 @@ you can move using the keyboard.
         cinematic.followUps = {"furnaces":self.fireFurnaces,"nofurnaces":self.noFurnaceFirering}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
+        """
 
     def fireFurnaces(self):
         firstOfficer = terrain.wakeUpRoom.firstOfficer

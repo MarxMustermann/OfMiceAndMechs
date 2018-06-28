@@ -422,7 +422,8 @@ class NaiveGetReward(Quest):
 
     def solver(self,character):
         character.reputation += self.quest.reputationReward
-        messages.append("you were awarded "+str(self.quest.reputationReward)+" reputation")
+        if character == mainChar:
+            messages.append("you were awarded "+str(self.quest.reputationReward)+" reputation")
         self.done = True
         self.triggerCompletionCheck()
         return True
@@ -1517,9 +1518,15 @@ class GetReward(MetaQuestSequence):
         self.moveQuest = MoveQuestMeta(self.questDispenser.room,self.questDispenser.xPosition,self.questDispenser.yPosition,sloppy=True)
         self.getQuest = NaiveGetReward(quest)
         self.questList = [self.moveQuest,self.getQuest]
+        self.actualQuest = quest
+
+        super().__init__(self.questList)
+        self.metaDescription = "get Reward"
+
+    def assignToCharacter(self,character):
 
         class RewardChat(interaction.SubMenu):
-             dialogName = "i did the task: "+quest.description.split("\n")[0]
+             dialogName = "i did the task: "+self.actualQuest.description.split("\n")[0]
              def __init__(subSelf,partner):
                  super().__init__()
              
@@ -1532,14 +1539,14 @@ class GetReward(MetaQuestSequence):
                  subSelf.done = True
                  return True
 
-        self.rewardChat = RewardChat
-        self.questDispenser.basicChatOptions.append(self.rewardChat)
-
-        super().__init__(self.questList)
-        self.metaDescription = "get Reward"
+        if character == mainChar:
+            self.rewardChat = RewardChat
+            self.questDispenser.basicChatOptions.append(self.rewardChat)
+        super().assignToCharacter(character)
 
     def postHandler(self):
-        self.questDispenser.basicChatOptions.remove(self.rewardChat)
+        if self.character == mainChar:
+            self.questDispenser.basicChatOptions.remove(self.rewardChat)
         super().postHandler()
 
 class MurderQuest(MetaQuestSequence):

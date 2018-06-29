@@ -821,6 +821,7 @@ class AdvancedQuestMenu(SubMenu):
     def __init__(self):
         self.character = None
         self.quest = None
+        self.questParams = {}
         super().__init__()
 
     def handleKey(self, key):
@@ -870,40 +871,84 @@ class AdvancedQuestMenu(SubMenu):
                 super().handleKey(key)
 
             if self.getSelection():
-                self.state = "confirm"
+                self.state = "parameter selection"
                 self.quest = self.selection
                 self.selection = None
                 self.lockOptions = True
             else:
                 return False
 
-        if self.state == "confirm":
-            if self.lockOptions:
-                questInstance = None
-                if self.quest == quests.MoveQuest:
-                    questInstance = self.quest(mainChar.room,2,2)
-                if self.quest == quests.ActivateQuest:
-                    questInstance = self.quest(terrain.tutorialMachineRoom.furnaces[0])
-                if self.quest == quests.EnterRoomQuest:
-                    questInstance = self.quest(terrain.tutorialMachineRoom)
-                if self.quest == quests.FireFurnaceMeta:
-                    questInstance = self.quest(terrain.tutorialMachineRoom.furnaces[0])
-                if self.quest == quests.ClearRubble:
-                    questInstance = self.quest()
-                if self.quest == quests.ConstructRoom:
-                    storageRoom = terrain.roomByCoordinates[(5,4)][0]
-                    construction = terrain.roomByCoordinates[(4,2)][0]
-                    questInstance = self.quest(construction,storageRoom)
-                self.character.assignQuest(questInstance, active=True)
-                self.lockOptions = False
-                if not self.character == mainChar:
-                    self.persistentText += self.character.name+": \"understood?\"\n"
-                    self.persistentText += mainChar.name+": \"understood and in execution\"\n"
-                else:
-                    return True
+        if self.state == "parameter selection":
+            if self.quest == quests.EnterRoomQuest:
+                if not self.options and not self.getSelection():
+                    options = {}
+                    niceOptions = {}
+                    counter = 1
+                    for room in terrain.rooms:
+                        if isinstance(room,rooms.MechArmor) or isinstance(room,rooms.CpuWasterRoom):
+                            continue
+                        options[str(counter)] = room
+                        niceOptions[str(counter)] = room.name
+                        counter += 1
+                    self.setSelection("select the room:",options,niceOptions)
 
+                if not self.getSelection():
+                    super().handleKey(key)
+
+                if self.getSelection():
+                    self.questParams = {"room":self.selection}
+                    self.state = "confirm"
+                    self.selection = None
+                    self.lockOptions = True
+                else:
+                    return False
             else:
-                self.state = "done"
+                self.state = "confirm"
+
+        if self.state == "confirm":
+            if not self.options and not self.getSelection():
+                options = {"1":"yes","2":"no"}
+                niceOptions = {"1":"yes","2":"no"}
+                messages.append(str(self.questParams))
+                if self.quest == quests.EnterRoomQuest:
+                    self.setSelection(str(self.questParams)+"Do you confirm?",options,niceOptions)
+                else:
+                    self.setSelection("Do you confirm?",options,niceOptions)
+
+            if not self.getSelection():
+                super().handleKey(key)
+
+            if self.getSelection():
+                if self.selection == "yes":
+                    if self.quest == quests.MoveQuest:
+                       questInstance = self.quest(mainChar.room,2,2)
+                    if self.quest == quests.ActivateQuest:
+                       questInstance = self.quest(terrain.tutorialMachineRoom.furnaces[0])
+                    if self.quest == quests.EnterRoomQuest:
+                       questInstance = self.quest(self.questParams["room"])
+                    if self.quest == quests.FireFurnaceMeta:
+                       questInstance = self.quest(terrain.tutorialMachineRoom.furnaces[0])
+                    if self.quest == quests.ClearRubble:
+                       questInstance = self.quest()
+                    if self.quest == quests.ConstructRoom:
+                       storageRoom = terrain.roomByCoordinates[(5,4)][0]
+                       construction = terrain.roomByCoordinates[(4,2)][0]
+                       questInstance = self.quest(construction,storageRoom)
+
+                    if not self.character == mainChar:
+                       self.persistentText += self.character.name+": \"understood?\"\n"
+                       self.persistentText += mainChar.name+": \"understood and in execution\"\n"
+
+                    self.character.assignQuest(questInstance, active=True)
+
+                    self.state = "done"
+                else:
+                    self.state = "questSelection"
+                    
+                self.selection = None
+                self.lockOptions = False
+            else:
+                return False
 
         if self.state == "done":
             if self.lockOptions:

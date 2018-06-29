@@ -909,9 +909,8 @@ class AdvancedQuestMenu(SubMenu):
             if not self.options and not self.getSelection():
                 options = {"1":"yes","2":"no"}
                 niceOptions = {"1":"yes","2":"no"}
-                messages.append(str(self.questParams))
                 if self.quest == quests.EnterRoomQuest:
-                    self.setSelection(str(self.questParams)+"Do you confirm?",options,niceOptions)
+                    self.setSelection("you chose the following parameters:\nroom: "+str(self.questParams["room"].name)+"\n\nDo you confirm?",options,niceOptions)
                 else:
                     self.setSelection("Do you confirm?",options,niceOptions)
 

@@ -812,6 +812,7 @@ X??v v???X
 XXXX$XXXXX
 """
         super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        self.name = "Room3"
 
 class Room4(Room):
     def __init__(self):
@@ -828,6 +829,7 @@ X? ?????#X
 XXXXXXXXXX
 """
         super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        self.name = "Room4"
 
 class GenericRoom(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
@@ -844,6 +846,7 @@ X? XXXXX#X
 XXXXXXXXXX
 """
         super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        self.name = "GenericRoom"
 
 class CpuWasterRoom(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY):
@@ -860,6 +863,7 @@ X? XXXXX#X
 XXXXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None)
+        self.name = "CpuWasterRoom"
 
         def addNPC(x,y):
             #TODO: replace with patrol quest since it's actually bugging
@@ -912,6 +916,7 @@ XX&XX$XX&XX
         super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.maxStorage = 2
         self.store = {}
+        self.name = "StorageRoom"
 
 class InfanteryQuarters(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
@@ -927,8 +932,9 @@ X .......DX
 XXXXXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        self.name = "Infanteryquarters"
     
-class FreePlacemenRoom(Room):
+class FreePlacementRoom(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
         self.roomLayout = """
 XX$X&&XXXXX
@@ -942,6 +948,7 @@ X .......DX
 XXXXXXXXXXX
 """
         super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        self.name = "FreePlacementRoom"
 
 class Vat1(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
@@ -972,6 +979,7 @@ XXXXX$XXXX
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.gooDispenser = items.GooDispenser(6,7)
         self.addItems([self.gooDispenser])
+        self.name = "Vat1"
 
     def recalculate(self):
         for spray in self.sprays:
@@ -994,6 +1002,7 @@ XXXXX$XXXX
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.isContainment = True
         self.floorDisplay = displayChars.acids
+        self.name = "Vat2"
 
 class MechArmor(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
@@ -1016,6 +1025,7 @@ XXXXXXX$XXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.floorDisplay = [displayChars.nonWalkableUnkown]
+        self.name = "MechArmor"
 
 class MiniMech(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
@@ -1092,6 +1102,7 @@ XXXXXX
                 else:
                     return False
         self.npc.basicChatOptions.append(StartChat)
+        self.name = "MiniMech"
 
     def changed(self):
         self.engineStrength = 250*self.steamGeneration
@@ -1118,6 +1129,7 @@ XXXXXXXXXX
         bean = items.MarkerBean(1,2)
         beanPile = items.Pile(1,1,"markerPile",items.MarkerBean)
         self.addItems([bean,beanPile])
+        self.name = "Lab"
 
 class CargoRoom(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
@@ -1139,6 +1151,7 @@ XXXXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.floorDisplay = [displayChars.nonWalkableUnkown]
+        self.name = "CargoRoom"
 
         self.storedItems = []
         for i in range(1,50):
@@ -1179,6 +1192,7 @@ XÖ     X
 XXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        self.name = "WakeUpRoom"
 
         self.lever1 = items.Lever(3,1,"engine control")
         self.objectDispenser = items.OjectDispenser(4,1)
@@ -1209,6 +1223,7 @@ XXXXXXXXXXX
 """
         self.quests = []
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        self.name = "WaitingRoom"
         self.hoppers = []
         npc = characters.Character(displayChars.staffCharactersByLetter["s"],5,3,name="Simon Kantbrett")
         self.hoppers.append(npc)
@@ -1237,6 +1252,7 @@ XXXXX$XXXXX
 """
         self.quests = []
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        self.name = "MetalWorkshop"
         self.artwork = items.ProductionArtwork(4,1)
         self.compactor = items.ScrapCompactor(6,1)
         self.addItems([self.artwork,self.compactor])
@@ -1279,7 +1295,8 @@ X#### ####X
 XXXXX$XXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
-        
+        self.name = "Construction Site"
+
         itemsToPlace = {}
         x = -1
         for line in self.desiredRoomlayout.split("\n"):

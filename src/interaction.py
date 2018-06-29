@@ -482,6 +482,8 @@ def show_or_exit(key):
 
         if key in (commandChars.show_quests):
             submenue = QuestMenu()
+        if key in (commandChars.show_help):
+            submenue = HelpMenu()
         if key in (commandChars.show_inventory):
             submenue = InventoryMenu()
         if key in (commandChars.show_quests_detailed):
@@ -1053,9 +1055,54 @@ def renderInventory():
         txt = "empty Inventory"
     return txt
 
+class HelpMenu(SubMenu):
+    def __init__(self):
+        super().__init__()
+
+    def handleKey(self, key):
+        global submenue
+
+        header.set_text((urwid.AttrSpec("default","default"),"\nquest overview\n(press "+commandChars.show_quests_detailed+" for the extended quest menu)\n\n"))
+
+        self.persistentText = ""
+
+        self.persistentText += renderHelp()
+
+        main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+
+        return False
+
 def renderHelp():
     char = mainChar
-    txt = "the Goal of the Game is to stay alive and to gain Influence. The daily Grind can be delageted to subordinates and you are able to take Control over and to design whole Mechs and ride the to Victory. Be useful, gain Power and use your Power to be more useful."
+    txt = "the Goal of the Game is to stay alive and to gain Influence.\nThe daily Grind can be delageted to subordinates.\nBe useful, gain Power and use your Power to be more useful.\n\n"
+    txt += "your keybindings are:\n\n"
+    txt += "* move_north: "+commandChars.move_north+"\n"
+    txt += "* move_east: "+commandChars.move_east+"\n"
+    txt += "* move_west: "+commandChars.move_west+"\n"
+    txt += "* move_south: "+commandChars.move_south+"\n"
+    txt += "* activate: "+commandChars.activate+"\n"
+    txt += "* drink: "+commandChars.drink+"\n"
+    txt += "* pickUp: "+commandChars.pickUp+"\n"
+    txt += "* drop: "+commandChars.drop+"\n"
+    txt += "* hail: "+commandChars.hail+"\n"
+    txt += "* examine: "+commandChars.examine+"\n"
+    txt += "* quit_normal: "+commandChars.quit_normal+"\n"
+    txt += "* quit_instant: "+commandChars.quit_instant+"\n"
+    txt += "* quit_delete: "+commandChars.quit_delete+"\n"
+    txt += "* autoAdvance: "+commandChars.autoAdvance+"\n"
+    txt += "* advance: "+commandChars.advance+"\n"
+    txt += "* pause: "+commandChars.pause+"\n"
+    txt += "* ignore: "+commandChars.ignore+"\n"
+    txt += "* wait: "+commandChars.wait+"\n"
+    txt += "* show_quests "+commandChars.show_quests+"\n"
+    txt += "* show_quests_detailed: "+commandChars.show_quests_detailed+"\n"
+    txt += "* show_inventory: "+commandChars.show_inventory+"\n"
+    txt += "* show_inventory_detailed: "+commandChars.show_inventory_detailed+"\n"
+    txt += "* show_characterInfo: "+commandChars.show_characterInfo+"\n"
+    txt += "* redraw: "+commandChars.redraw+"\n"
+    txt += "* show_help: "+commandChars.show_help+"\n"
+    txt += "* attack: "+commandChars.attack+"\n"
+    txt += "* devMenu: "+commandChars.devMenu+"\n"
     return txt
     
 def render():

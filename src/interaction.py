@@ -40,7 +40,6 @@ lastMoveAutomated = False
 fullAutoMode = False
 idleCounter = 0
 pauseGame = False
-questMenuActive = False
 submenue = None
 ignoreNextAutomated = False
 ticksSinceDeath = None
@@ -60,7 +59,6 @@ def show_or_exit(key):
     global lastLagDetection
     global idleCounter
     global pauseGame
-    global questMenuActive
     global submenue
     global ignoreNextAutomated
     global ticksSinceDeath

@@ -726,6 +726,61 @@ you can move using the keyboard.
         showMessage(msg)
         showText(msg)
 
+        class SternChat(interaction.SubMenu):
+            dialogName = "What did Stern modify on the implant?"
+            def __init__(subSelf,partner):
+                subSelf.submenue = None
+                subSelf.firstRun = True
+                subSelf.done = False
+                super().__init__()
+
+            def handleKey(subSelf, key):
+                if subSelf.firstRun:
+                    subSelf.persistentText = """Stern did not actually modify the implant. The modification was done elsewhere.
+But that is concerning the artworks, thats nothing you need to know.
+
+You need to know however that Sterns modification enhanced the implants guidance, control and communication abilities.
+If you stop thinking and allow the implant to take control, it will do so and continue your task.
+You can do so by pressing """+commandChars.autoAdvance+"""
+
+It is of limited practability though. It is mainly useful for stupid manual labor and often does not 
+do things the most efficent way. It will even try to handle conversion, wich does not allways lead to optimal results"""
+                    messages.append("press "+commandChars.autoAdvance+" to let the implant take control ")
+                    subSelf.set_text(subSelf.persistentText)
+                    subSelf.firstRun = False
+                    return False
+                else:
+                    firstOfficer.basicChatOptions.remove(SternChat)
+                    subSelf.done = True
+                    return True
+
+
+        class InfoChat(interaction.SubMenu):
+            dialogName = "Is there more i should know?"
+            def __init__(subSelf,partner):
+                subSelf.submenue = None
+                subSelf.firstRun = True
+                subSelf.done = False
+                super().__init__()
+
+            def handleKey(subSelf, key):
+                if subSelf.firstRun:
+                    subSelf.persistentText = """yes and a lot of it. I will give you two of these things on your way:\n
+1. You will need to pick up most of the Information along the way. Ask around and talk to people.
+   Asking questions may hurt your reputation, since you will apear like new growth. 
+   You are, so do not heasitate to learn the neccesary Information before you have a reputation to loose.\n
+2. Do not rely on the implant to guide you through dificult tasks. 
+   Sterns modifications are doing a good job for repetitive tasks but are no replacement
+   for a brain.\n\n"""
+                    subSelf.set_text(subSelf.persistentText)
+                    subSelf.firstRun = False
+                    return False
+                else:
+                    firstOfficer.basicChatOptions.remove(InfoChat)
+                    firstOfficer.basicChatOptions.append(SternChat)
+                    subSelf.done = True
+                    return True
+
         class FurnaceChat(interaction.SubMenu):
             dialogName = "You wanted to have a chat"
             def __init__(subSelf,partner):
@@ -735,7 +790,6 @@ you can move using the keyboard.
                 subSelf.done = False
                 subSelf.persistentText = ""
                 subSelf.submenue = None
-                subSelf.wtfCounter = 0
                 super().__init__()
 
             def handleKey(subSelf, key):
@@ -753,6 +807,7 @@ you can move using the keyboard.
                 if subSelf.firstRun:
                     subSelf.persistentText = "yes.\n\nI am "+mainChar.name+" and do the acceptance tests. After you complete the test you will serve as an hooper on the Falkenbaum \n\n-- press space to proceed --"
                     subSelf.set_text(subSelf.persistentText)
+                    firstOfficer.basicChatOptions.append(InfoChat)
                                 
                     options = {}
                     niceOptions = {}
@@ -765,11 +820,7 @@ you can move using the keyboard.
                     niceOptions = {"1":"Yes","2":"No"}
                     subSelf.submenue = interaction.SelectionMenu("Say, do you like Furnaces?",options,niceOptions)
 
-                    return False
-
-                    return False
-                else:
-                    return False
+                return False
                    
         firstOfficer.basicChatOptions.append(FurnaceChat)
 

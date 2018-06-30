@@ -139,13 +139,11 @@ class Quest(object):
             loop.set_alarm_in(0.0, callShow_or_exit, '.')
 
         if self.lifetime:
-            messages.append("add endQuestEvent")
             class endQuestEvent(object):
                 def __init__(subself,tick):
                     subself.tick = tick
 
                 def handleEvent(subself):
-                    messages.append("endQuestEvent triggered")
                     self.postHandler()
 
             self.character.room.addEvent(endQuestEvent(self.character.room.timeIndex+self.lifetime))

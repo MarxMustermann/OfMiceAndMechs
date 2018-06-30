@@ -771,42 +771,7 @@ you can move using the keyboard.
                 else:
                     return False
                    
-                """
-                if subSelf.firstRun:
-                    if not subSelf.dispatchedPhase:
-                        if mainChar.reputation < 10:
-                            subSelf.persistentText = "I have some work thats needs to be done, but you will have to proof your worth some more untill you can be trusted with this work.\n\nMaybe "+terrain.waitingRoom.secondOfficer.name+" has some work you can do"
-                        else:
-                            subSelf.persistentText = "Several Officers requested new assistants. First go to to the boiler room and apply for the position"
-
-                            quest = quests.MoveQuestMeta(terrain.tutorialMachineRoom,3,3)
-                            quest.endTrigger = phase.start
-                            mainChar.assignQuest(quest,active=True)
-                    else:
-                        subSelf.persistentText = "Not right now"
-
-                    subSelf.set_text(subSelf.persistentText)
-                    subSelf.done = True
-                    subSelf.firstRun = False
-
-                    return True
-                else:
-                    return False
-                """
-
         firstOfficer.basicChatOptions.append(FurnaceChat)
-
-        """
-        showText("\nHello, I am "+mainChar.name+" and do the acceptance tests. \n\nAfter you complete the test you will serve as an hooper on the Falkenbaum.\n")
-
-        options = {"1":"furnaces","2":"nofurnaces"}
-        niceOptions = {"1":"Yes","2":"No"}
-        text = "say, do you like Furnaces?"
-        cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
-        cinematic.followUps = {"furnaces":self.fireFurnaces,"nofurnaces":self.noFurnaceFirering}
-        self.cinematic = cinematic
-        cinematics.cinematicQueue.append(cinematic)
-        """
 
     def fireFurnaces(self):
         firstOfficer = terrain.wakeUpRoom.firstOfficer

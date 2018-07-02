@@ -1213,7 +1213,7 @@ XXXXXXXXXX
     def calculatePath(self,x,y,dstX,dstY,walkingPath):
         path = []
         # go to secondary path
-        if not y == 2 and x in (2,5,8,3,6):
+        if not y in (1,2) and x in (2,5,8,3,6):
             if x in (2,5,8):
                 x = x-1
             elif (x) in (3,6):
@@ -1228,7 +1228,7 @@ XXXXXXXXXX
             path.append((x,y))
         # go main path to secondary path
         tmpDstX = dstX
-        if dstX in (2,5,8,3,6):
+        if dstX in (2,5,8,3,6) and not dstY in (1,2):
             if dstX in (2,5,8):
                 tmpDstX = dstX-1
             elif x in (3,6):

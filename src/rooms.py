@@ -262,6 +262,9 @@ class Room(object):
             door.close()
             self.open = False
 
+    def calculatePath(self,x,y,dstX,dstY,walkingPath):
+        return calculatePath(x,y,dstX,dstY,walkingPath)
+
     def render(self):
         if self.lastRender:
             return self.lastRender
@@ -309,7 +312,7 @@ class Room(object):
                                 except:
                                     pass
                             try:
-                                path = calculatePath(mainChar.xPosition,mainChar.yPosition,mainChar.quests[0].dstX,mainChar.quests[0].dstY,self.walkingPath)
+                                path = self.calculatePath(mainChar.xPosition,mainChar.yPosition,mainChar.quests[0].dstX,mainChar.quests[0].dstY,self.walkingPath)
                                 for item in path:
                                     import urwid
                                     display = chars[item[1]][item[0]]
@@ -899,25 +902,6 @@ XXXXXXXXXX
             def handleEvent(subself):
                 self.applySkippedAdvances()
 
-class StorageRoom(Room):
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
-        self.roomLayout = """
-XX&XX&XX&XX
-X?....?? ?X
-X?.??.?? ?X
-X?.??.?? ?X
-X?.??.?? ?X
-X?....   ?X
-X? ?? ?? ?X
-X? ?? ?? ?X
-X? ?v v? ?X
-XX&XX$XX&XX
-"""
-        super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
-        self.maxStorage = 2
-        self.store = {}
-        self.name = "StorageRoom"
-
 class InfanteryQuarters(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
         self.roomLayout = """
@@ -1175,6 +1159,101 @@ XXXXXXXXXX
             counter += 1
 
         self.addItems(self.storedItems)
+
+class StorageRoom(Room):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+        self.roomLayout = """
+XXXXXXXXXX
+X        X
+X........$
+X        X
+X        X
+X        X
+X        X
+X        X
+X        X
+X        X
+X        X
+X        X
+X        X
+XXXXXXXXXX
+"""
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        self.floorDisplay = [displayChars.nonWalkableUnkown]
+        self.name = "StorageRoom"
+
+        self.storedItems = []
+        for i in range(1,50):
+            self.storedItems.append(items.Pipe())
+
+        counter = 0
+        self.storageSpace = []
+        for j in range(1,2):
+            for i in range(1,self.sizeX-1):
+                self.storageSpace.append((i,j))
+        i = self.sizeX-2
+        offset = 2
+        while i > 1:
+            for j in range(4,self.sizeY-1):
+                self.storageSpace.append((i,j))
+            i -= offset
+            if offset == 1:
+                offset = 2
+            else:
+                offset = 1
+
+        counter = 0
+        for item in self.storedItems:
+            item.xPosition = self.storageSpace[counter][0]
+            item.yPosition = self.storageSpace[counter][1]
+            counter += 1
+
+        self.addItems(self.storedItems)
+
+    def calculatePath(self,x,y,dstX,dstY,walkingPath):
+        path = []
+        # go to secondary path
+        if not y == 2 and x in (2,5,8,3,6):
+            if x in (2,5,8):
+                x = x-1
+            elif (x) in (3,6):
+                x = x+1
+            path.append((x,y))
+        # go to main path
+        while y<2:
+            y = y+1
+            path.append((x,y))
+        while y>2:
+            y = y-1
+            path.append((x,y))
+        # go main path to secondary path
+        tmpDstX = dstX
+        if dstX in (2,5,8,3,6):
+            if dstX in (2,5,8):
+                tmpDstX = dstX-1
+            elif x in (3,6):
+                tmpDstX = dstX+1
+        while x<tmpDstX:
+            x = x+1
+            path.append((x,y))
+        while x>tmpDstX:
+            x = x-1
+            path.append((x,y))
+        # go to end of secondary path
+        while y<dstY:
+            y = y+1
+            path.append((x,y))
+        while y>dstY:
+            y = y-1
+            path.append((x,y))
+        # go to end of path
+        while x<dstX:
+            x = x+1
+            path.append((x,y))
+        while x>dstX:
+            x = x-1
+            path.append((x,y))
+        return path
 
 class WakeUpRoom(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):

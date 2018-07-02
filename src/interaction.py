@@ -136,7 +136,8 @@ def show_or_exit(key):
             stealKey[key]()
         else:
             if key in ("´",):
-                mainChar.assignQuest(quests.TransportQuest(terrain.metalWorkshop.producedItems[0],None),active=True)
+                mainChar.assignQuest(quests.WaitQuest(lifetime=10),active=True)
+                #mainChar.assignQuest(quests.TransportQuest(terrain.metalWorkshop.producedItems[0],None),active=True)
                 #terrain.waitingRoom.secondOfficer.assignQuest(quests.MurderQuest(mainChar),active=True)
                 #mainChar.assignQuest(quests.MurderQuest(terrain.waitingRoom.secondOfficer),active=True)
             if key in (commandChars.quit_delete,):

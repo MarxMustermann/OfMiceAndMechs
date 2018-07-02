@@ -73,6 +73,7 @@ class Terrain(object):
         self.tutorialMachineRoom = None
         self.tutorialLab = None
         self.tutorialCargoRooms = []
+        self.tutorialStorageRooms = []
         self.miniMechs = []
         self.wakeUpRoom = None
         lineCounter = 0
@@ -122,9 +123,13 @@ class Terrain(object):
                     if not self.tutorialLab:
                         self.tutorialLab = room
                     roomsOnMap.append(room)
-                elif char == "C" or char == "U":
+                elif char == "C":
                     room = rooms.CargoRoom(rowCounter,lineCounter,3,0)
                     self.tutorialCargoRooms.append(room)
+                    roomsOnMap.append(room)
+                elif char == "U":
+                    room = rooms.StorageRoom(rowCounter,lineCounter,3,0)
+                    self.tutorialStorageRooms.append(room)
                     roomsOnMap.append(room)
                 elif char == "?":
                     roomsOnMap.append(rooms.CpuWasterRoom(rowCounter,lineCounter,2,2))

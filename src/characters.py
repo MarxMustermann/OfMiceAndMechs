@@ -96,7 +96,7 @@ class Character():
     def setPathToQuest(self,quest):
         if hasattr(quest,"dstX") and hasattr(quest,"dstY"):
             if self.room:
-                self.path = calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY,self.room.walkingPath)
+                self.path = self.room.calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY,self.room.walkingPath)
             elif self.terrain:
                 self.path = self.terrain.findPath((self.xPosition,self.yPosition),(quest.dstX,quest.dstY))
             else:

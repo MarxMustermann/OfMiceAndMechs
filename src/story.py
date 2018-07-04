@@ -1024,7 +1024,7 @@ class FindWork(BasicPhase):
                             showText("great work. Keep on and maybe you will be one of us officers")
                     else:
                             showText("I see you did some work. Carry on")
-                    mainChar.reputation -= 1
+                    mainChar.reputation -= 3
 
                 def startVatPhase():
                     phase = VatPhase()
@@ -1107,6 +1107,27 @@ class FindWork(BasicPhase):
             quest.reputationReward = 1
             terrain.waitingRoom.quests.append(quest)
         addQuest1()
+
+        def addCargoQuest4():
+            quest = quests.StoreCargo(terrain.tutorialCargoRooms[0],terrain.tutorialStorageRooms[1])
+            quest.reputationReward = 4
+            terrain.waitingRoom.quests.append(quest)
+        def addCargoQuest3():
+            quest = quests.StoreCargo(terrain.tutorialCargoRooms[1],terrain.tutorialStorageRooms[1])
+            quest.endTrigger = addCargoQuest4
+            quest.reputationReward = 12
+            terrain.waitingRoom.quests.append(quest)
+        def addCargoQuest2():
+            quest = quests.StoreCargo(terrain.tutorialCargoRooms[1],terrain.tutorialStorageRooms[0])
+            quest.endTrigger = addCargoQuest3
+            quest.reputationReward = 4
+            terrain.waitingRoom.quests.append(quest)
+        def addCargoQuest1():
+            quest = quests.StoreCargo(terrain.tutorialCargoRooms[0],terrain.tutorialStorageRooms[0])
+            quest.endTrigger = addCargoQuest2
+            quest.reputationReward = 12
+            terrain.waitingRoom.quests.append(quest)
+        addCargoQuest1()
 
         terrain.waitingRoom.firstOfficer.basicChatOptions.append(JobChat)
         terrain.waitingRoom.secondOfficer.basicChatOptions.append(JobChat2)

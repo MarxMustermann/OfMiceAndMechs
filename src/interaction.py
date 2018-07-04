@@ -876,6 +876,7 @@ class AdvancedQuestMenu(SubMenu):
                 self.quest = self.selection
                 self.selection = None
                 self.lockOptions = True
+                self.questParams = {}
             else:
                 return False
 
@@ -897,12 +898,58 @@ class AdvancedQuestMenu(SubMenu):
                     super().handleKey(key)
 
                 if self.getSelection():
-                    self.questParams = {"room":self.selection}
+                    self.questParams["room"] = self.selection
                     self.state = "confirm"
                     self.selection = None
                     self.lockOptions = True
                 else:
                     return False
+            elif self.quest == quests.StoreCargo:
+                if "cargoRoom" not in self.questParams:
+                    if not self.options and not self.getSelection():
+                        options = {}
+                        niceOptions = {}
+                        counter = 1
+                        for room in terrain.rooms:
+                            if not isinstance(room,rooms.CargoRoom):
+                                continue
+                            options[str(counter)] = room
+                            niceOptions[str(counter)] = room.name
+                            counter += 1
+                        self.setSelection("select the room:",options,niceOptions)
+
+                    if not self.getSelection():
+                        super().handleKey(key)
+
+                    if self.getSelection():
+                        self.questParams["cargoRoom"] = self.selection
+                        self.selection = None
+                        self.lockOptions = True
+                    else:
+                        return False
+                else:
+                    if not self.options and not self.getSelection():
+                        options = {}
+                        niceOptions = {}
+                        counter = 1
+                        for room in terrain.rooms:
+                            if not isinstance(room,rooms.StorageRoom):
+                                continue
+                            options[str(counter)] = room
+                            niceOptions[str(counter)] = room.name
+                            counter += 1
+                        self.setSelection("select the room:",options,niceOptions)
+
+                    if not self.getSelection():
+                        super().handleKey(key)
+
+                    if self.getSelection():
+                        self.questParams["storageRoom"] = self.selection
+                        self.state = "confirm"
+                        self.selection = None
+                        self.lockOptions = True
+                    else:
+                        return False
             else:
                 self.state = "confirm"
 
@@ -911,7 +958,7 @@ class AdvancedQuestMenu(SubMenu):
                 options = {"1":"yes","2":"no"}
                 niceOptions = {"1":"yes","2":"no"}
                 if self.quest == quests.EnterRoomQuest:
-                    self.setSelection("you chose the following parameters:\nroom: "+str(self.questParams["room"].name)+"\n\nDo you confirm?",options,niceOptions)
+                    self.setSelection("you chose the following parameters:\nroom: "+str(self.questParams)+"\n\nDo you confirm?",options,niceOptions)
                 else:
                     self.setSelection("Do you confirm?",options,niceOptions)
 
@@ -936,11 +983,9 @@ class AdvancedQuestMenu(SubMenu):
                        questInstance = self.quest(construction,storageRoom)
                     if self.quest == quests.StoreCargo:
                        for room in terrain.rooms:
-                           if isinstance(room,rooms.CargoRoom):
-                               cargoRoom = room
                            if isinstance(room,rooms.StorageRoom):
                                storageRoom = room
-                       questInstance = self.quest(cargoRoom,storageRoom)
+                       questInstance = self.quest(self.questParams["cargoRoom"],self.questParams["storageRoom"])
                     if not self.character == mainChar:
                        self.persistentText += self.character.name+": \"understood?\"\n"
                        self.persistentText += mainChar.name+": \"understood and in execution\"\n"

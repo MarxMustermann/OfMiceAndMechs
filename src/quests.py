@@ -1649,12 +1649,14 @@ class StoreCargo(MetaQuestSequence):
         self.questList = []
 
         amount = len(cargoRoom.storedItems)
-        if len(storageRoom.storageSpace):
-            amount = len(storageRoom.storageSpace)
+        freeSpace = len(storageRoom.storageSpace)-len(storageRoom.storedItems)
+        if freeSpace < amount:
+            amount = freeSpace
 
+        startIndex = len(storageRoom.storedItems)
         counter = 0
-        while counter < 20:
-            self.questList.append(TransportQuest(cargoRoom.storedItems.pop(),(storageRoom,storageRoom.storageSpace[counter][0],storageRoom.storageSpace[counter][1])))
+        while counter < amount:
+            self.questList.append(TransportQuest(cargoRoom.storedItems.pop(),(storageRoom,storageRoom.storageSpace[startIndex+counter][0],storageRoom.storageSpace[startIndex+counter][1])))
             counter += 1
         super().__init__(self.questList)
         self.metaDescription = "store cargo"

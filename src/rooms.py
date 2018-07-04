@@ -1178,14 +1178,14 @@ X        X
 X        X
 XXXXXXXXXX
 """
+        self.storedItems = []
+        self.storageSpace = []
+
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.floorDisplay = [displayChars.nonWalkableUnkown]
         self.name = "StorageRoom"
 
-        self.storedItems = []
-
         counter = 0
-        self.storageSpace = []
         for j in range(1,2):
             for i in range(1,self.sizeX-1):
                 self.storageSpace.append((i,j))
@@ -1252,6 +1252,18 @@ XXXXXXXXXX
             x = x-1
             path.append((x,y))
         return path
+
+    def addItems(self,items):
+        for item in items:
+            pos = (item.xPosition,item.yPosition)
+            if pos in self.storageSpace:
+                self.storedItems.append(item)
+        super().addItems(items)
+
+    def removeItem(self,item):
+        if item in self.storedItems:
+            self.storedItems.remove(item)
+        super().removeItem(item)
 
 class WakeUpRoom(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
@@ -1430,5 +1442,3 @@ XXXXX$XXXXX
             if position in itemsToPlace:
                 self.itemsInBuildOrder.append((position,itemsToPlace[position]))
         self.itemsInBuildOrder.reverse()
-
-

@@ -1229,7 +1229,7 @@ XXXXXXXXXX
         if dstX in (2,5,8,3,6) and not dstY in (1,2):
             if dstX in (2,5,8):
                 tmpDstX = dstX-1
-            elif x in (3,6):
+            elif dstX in (3,6):
                 tmpDstX = dstX+1
         while x<tmpDstX:
             x = x+1

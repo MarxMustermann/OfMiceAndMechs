@@ -148,6 +148,9 @@ class Terrain(object):
                 elif char == "b":
                     room = rooms.ConstructionSite(rowCounter,lineCounter,1,1)
                     roomsOnMap.append(room)
+                elif char == "K":
+                    room = rooms.MechCommand(rowCounter,lineCounter,1,1)
+                    roomsOnMap.append(room)
                 else:
                     self.watershedStart.append((rowCounter*15+7,lineCounter*15+7))
                     pass

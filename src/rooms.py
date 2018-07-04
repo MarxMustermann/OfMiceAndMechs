@@ -1325,6 +1325,23 @@ XXXXXXXXXXX
             quest = quests.HopperDuty(self)
             hopper.assignQuest(quest,active=True)
 
+class MechCommand(Room):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+        self.roomLayout = """
+XXXXX$XXXXX
+XI        X
+XI .....  X
+XD .   .  X
+XD .@@ .  X
+XD .   .  X
+XD .....  X
+XI        X
+XI        X
+XXXXXXXXXXX
+"""
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        self.name = "Mech Command Centre"
+
 class MetalWorkshop(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
         self.roomLayout = """

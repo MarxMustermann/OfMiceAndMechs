@@ -1183,8 +1183,6 @@ XXXXXXXXXX
         self.name = "StorageRoom"
 
         self.storedItems = []
-        for i in range(1,50):
-            self.storedItems.append(items.Pipe())
 
         counter = 0
         self.storageSpace = []

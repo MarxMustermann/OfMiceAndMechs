@@ -1643,3 +1643,18 @@ class FillPocketsQuest(MetaQuestSequence):
             self.waitQuest = None
 
         super().recalculate()
+
+class StoreCargo(MetaQuestSequence):
+    def __init__(self,cargoRoom,storageRoom,followUp=None,startCinematics=None,lifetime=None):
+        self.questList = []
+
+        amount = len(cargoRoom.storedItems)
+        if len(storageRoom.storageSpace):
+            amount = len(storageRoom.storageSpace)
+
+        counter = 0
+        while counter < 20:
+            self.questList.append(TransportQuest(cargoRoom.storedItems.pop(),(storageRoom,storageRoom.storageSpace[counter][0],storageRoom.storageSpace[counter][1])))
+            counter += 1
+        super().__init__(self.questList)
+        self.metaDescription = "store cargo"

@@ -864,8 +864,8 @@ class AdvancedQuestMenu(SubMenu):
 
         if self.state == "questSelection":
             if not self.options and not self.getSelection():
-                options = {"1":quests.MoveQuest,"2":quests.ActivateQuest,"3":quests.EnterRoomQuest,"4":quests.FireFurnaceMeta,"5":quests.ClearRubble,"6":quests.ConstructRoom}
-                niceOptions = {"1":"MoveQuest","2":"ActivateQuest","3":"EnterRoomQuest","4":"FireFurnaceMeta","5":"ClearRubble","6":"ConstructRoom"}
+                options = {"1":quests.MoveQuest,"2":quests.ActivateQuest,"3":quests.EnterRoomQuest,"4":quests.FireFurnaceMeta,"5":quests.ClearRubble,"6":quests.ConstructRoom,"7":quests.StoreCargo}
+                niceOptions = {"1":"MoveQuest","2":"ActivateQuest","3":"EnterRoomQuest","4":"FireFurnaceMeta","5":"ClearRubble","6":"ConstructRoom","7":"StoreCargo"}
                 self.setSelection("what type of quest:",options,niceOptions)
 
             if not self.getSelection():
@@ -934,7 +934,13 @@ class AdvancedQuestMenu(SubMenu):
                        storageRoom = terrain.roomByCoordinates[(5,4)][0]
                        construction = terrain.roomByCoordinates[(4,2)][0]
                        questInstance = self.quest(construction,storageRoom)
-
+                    if self.quest == quests.StoreCargo:
+                       for room in terrain.rooms:
+                           if isinstance(room,rooms.CargoRoom):
+                               cargoRoom = room
+                           if isinstance(room,rooms.StorageRoom):
+                               storageRoom = room
+                       questInstance = self.quest(cargoRoom,storageRoom)
                     if not self.character == mainChar:
                        self.persistentText += self.character.name+": \"understood?\"\n"
                        self.persistentText += mainChar.name+": \"understood and in execution\"\n"

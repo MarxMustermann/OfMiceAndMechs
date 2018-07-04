@@ -896,10 +896,10 @@ XXXXXXXXXXXXXXXXXXXXXX"""
         layout = """
 X X X X X X X X X X X
 X X X X X X X X X X X
-X V v m b r ? ? v V X
-X O . t         . ? X
-X w   M Q C ? ?   O X
-X W   L ? K ? ?   O X
+X V v ? b r ? ? v V X
+X O . t         . O X
+X w   M Q K ? ?   L X
+X W   ? ? ? ? ?   m X
 X U .           . U X
 X U   C C C C C   U X
 X U   C C C C C t U X

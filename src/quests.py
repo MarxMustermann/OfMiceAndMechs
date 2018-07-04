@@ -1660,3 +1660,12 @@ class StoreCargo(MetaQuestSequence):
             counter += 1
         super().__init__(self.questList)
         self.metaDescription = "store cargo"
+
+class HandleDelivery(MetaQuestSequence):
+    def __init__(self, cargoRooms = [],storageRooms = []):
+        self.questList = []
+        for room in cargoRooms:
+            self.questList.append(StoreCargo(room,storageRooms[0]))
+        super().__init__(self.questList)
+        self.metaDescription = "ensure the cargo is moved to storage"
+       

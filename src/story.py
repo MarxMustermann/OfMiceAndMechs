@@ -1034,6 +1034,23 @@ class FindWork(BasicPhase):
                 quest.endTrigger = meeting
                 mainChar.assignQuest(quest,active=True)
 
+        class StoreCargo(object):
+            def __init__(subself,tick,toCancel=[]):
+                subself.tick = tick
+
+            def handleEvent(subself):
+                def meeting():
+                    showText("logistics command orders us to move some of the cargo in the long term store to accesible storage.\n3 rooms are to be cleared. One room needs to be cleared within 150 ticks\nThis requires the coordinated effort of the hoppers here. Since "+mainChar.name+" did well to far, "+mainChar.name+" will be given the lead. This will be extra to the current workload")
+                    quest = quests.HandleDelivery(terrain.tutorialCargoRooms[:3],terrain.tutorialStorageRooms[:2])
+                    mainChar.assignQuest(quest,active=True)
+                    
+                quest = quests.MoveQuestMeta(self.mainCharRoom,6,5)
+                quest.endTrigger = meeting
+                mainChar.assignQuest(quest,active=True)
+                mainChar.reputation += 5
+
+
+        self.mainCharRoom.addEvent(StoreCargo(gamestate.tick+15))
         self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15)))
 
         quest = quests.ClearRubble()
@@ -1107,27 +1124,6 @@ class FindWork(BasicPhase):
             quest.reputationReward = 1
             terrain.waitingRoom.quests.append(quest)
         addQuest1()
-
-        def addCargoQuest4():
-            quest = quests.StoreCargo(terrain.tutorialCargoRooms[0],terrain.tutorialStorageRooms[1])
-            quest.reputationReward = 4
-            terrain.waitingRoom.quests.append(quest)
-        def addCargoQuest3():
-            quest = quests.StoreCargo(terrain.tutorialCargoRooms[1],terrain.tutorialStorageRooms[1])
-            quest.endTrigger = addCargoQuest4
-            quest.reputationReward = 12
-            terrain.waitingRoom.quests.append(quest)
-        def addCargoQuest2():
-            quest = quests.StoreCargo(terrain.tutorialCargoRooms[1],terrain.tutorialStorageRooms[0])
-            quest.endTrigger = addCargoQuest3
-            quest.reputationReward = 4
-            terrain.waitingRoom.quests.append(quest)
-        def addCargoQuest1():
-            quest = quests.StoreCargo(terrain.tutorialCargoRooms[0],terrain.tutorialStorageRooms[0])
-            quest.endTrigger = addCargoQuest2
-            quest.reputationReward = 12
-            terrain.waitingRoom.quests.append(quest)
-        addCargoQuest1()
 
         terrain.waitingRoom.firstOfficer.basicChatOptions.append(JobChat)
         terrain.waitingRoom.secondOfficer.basicChatOptions.append(JobChat2)

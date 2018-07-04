@@ -1040,7 +1040,7 @@ class FindWork(BasicPhase):
         quest.reputationReward = 3
         terrain.waitingRoom.quests.append(quest)
 
-        storageRoom = terrain.roomByCoordinates[(5,4)][0]
+        storageRoom = terrain.roomByCoordinates[(7,7)][0]
         constructionSite = terrain.roomByCoordinates[(4,2)][0]
         quest = quests.ConstructRoom(constructionSite,storageRoom)
         quest.reputationReward = 6

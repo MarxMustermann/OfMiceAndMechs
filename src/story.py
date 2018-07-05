@@ -1035,14 +1035,22 @@ class FindWork(BasicPhase):
                 mainChar.assignQuest(quest,active=True)
 
         class StoreCargo(object):
-            def __init__(subself,tick,toCancel=[]):
+            def __init__(subself,tick,char,toCancel=[]):
                 subself.tick = tick
+                subself.char = char
 
             def handleEvent(subself):
                 def meeting():
-                    showText("logistics command orders us to move some of the cargo in the long term store to accesible storage.\n3 rooms are to be cleared. One room needs to be cleared within 150 ticks\nThis requires the coordinated effort of the hoppers here. Since "+mainChar.name+" did well to far, "+mainChar.name+" will be given the lead. This will be extra to the current workload")
+                    showText("logistics command orders us to move some of the cargo in the long term store to accesible storage.\n3 rooms are to be cleared. One room needs to be cleared within 150 ticks\nThis requires the coordinated effort of the hoppers here. Since "+subself.char.name+" did well to far, "+subself.char.name+" will be given the lead.\nThis will be extra to the current workload")
                     quest = quests.HandleDelivery(terrain.tutorialCargoRooms[:3],terrain.tutorialStorageRooms[:2])
                     mainChar.assignQuest(quest,active=True)
+
+                    for hopper in terrain.waitingRoom.hoppers:
+                        if hopper == subself.char:
+                            continue
+                        if hopper in mainChar.subordinates:
+                            continue
+                        mainChar.subordinates.append(hopper)
                     
                 quest = quests.MoveQuestMeta(self.mainCharRoom,6,5)
                 quest.endTrigger = meeting
@@ -1050,7 +1058,7 @@ class FindWork(BasicPhase):
                 mainChar.reputation += 5
 
 
-        self.mainCharRoom.addEvent(StoreCargo(gamestate.tick+15))
+        self.mainCharRoom.addEvent(StoreCargo(gamestate.tick+15,mainChar))
         self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15)))
 
         quest = quests.ClearRubble()

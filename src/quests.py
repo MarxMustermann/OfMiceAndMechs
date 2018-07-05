@@ -487,6 +487,22 @@ class NaiveDropQuest(Quest):
         character.drop(self.toDrop)
         return True
 
+class NaiveDelegateQuest(Quest):
+    def __init__(self,quest):
+        super().__init__()
+        self.quest = quest
+        self.description = "naive delegate quest"
+        self.quest.addListener(self.triggerCompletionCheck)
+    
+    def triggerCompletionCheck(self):
+        if self.active:
+            if self.quest.character:
+                self.postHandler()
+
+    def solver(self,character):
+        character.subordinates[0].assignQuest(self.quest,active=True)
+        return True
+
 class DropQuest(Quest):
     def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
         self.toDrop = toDrop
@@ -597,9 +613,6 @@ class WaitForDeactivationQuest(Quest):
         super().__init__(lifetime=lifetime)
         self.pause()
 
-    def recalculate(self):
-        super().recalculate()
-
     def triggerCompletionCheck(self):
         if not self.item.activated:
             self.postHandler()
@@ -607,6 +620,20 @@ class WaitForDeactivationQuest(Quest):
     def solver(self,character):
         return True
 
+class WaitForQuestCompletion(Quest):
+    def __init__(self,quest):
+        self.quest = quest
+        self.quest.addListener(self.triggerCompletionCheck)
+        self.description = "please wait for the quest to completed"
+        super().__init__()
+
+    def triggerCompletionCheck(self):
+        if self.active:
+            if self.quest.completed:
+                self.postHandler()
+
+    def solver(self,character):
+        return True
 
 ############################################################
 ###
@@ -823,7 +850,8 @@ class MetaQuestSequence(Quest):
     def __init__(self,quests,startCinematics=None):
         self.subQuestsOrig = quests.copy()
         self.subQuests = quests
-        self.subQuests[0].addListener(self.recalculate)
+        if len(self.subQuests):
+            self.subQuests[0].addListener(self.recalculate)
         super().__init__(startCinematics=startCinematics)
         self.listeningTo = []
         self.metaDescription = "meta"
@@ -1662,10 +1690,29 @@ class StoreCargo(MetaQuestSequence):
         self.metaDescription = "store cargo"
 
 class HandleDelivery(MetaQuestSequence):
-    def __init__(self, cargoRooms = [],storageRooms = []):
+    def __init__(self, cargoRooms=[],storageRooms=[]):
+        self.cargoRooms = cargoRooms
+        self.storageRooms = storageRooms
         self.questList = []
-        for room in cargoRooms:
-            self.questList.append(StoreCargo(room,storageRooms[0]))
         super().__init__(self.questList)
+        self.addNewStorageRoomQuest()
         self.metaDescription = "ensure the cargo is moved to storage"
        
+    def waitForQuestCompletion(self):
+        messages.append("wait add")
+        quest = WaitForQuestCompletion(self.quest)
+        quest.endTrigger = self.addNewStorageRoomQuest
+        self.addQuest(quest)
+
+    def addNewStorageRoomQuest(self):
+        if not self.cargoRooms:
+            return
+
+        room = self.cargoRooms.pop()
+        self.quest = StoreCargo(room,self.storageRooms[0])
+        quest = NaiveDelegateQuest(self.quest)
+        quest.endTrigger = self.waitForQuestCompletion
+        self.addQuest(quest)
+
+    def triggerCoppletionCheck(self):
+        return False

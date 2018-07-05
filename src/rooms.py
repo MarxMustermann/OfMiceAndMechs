@@ -1138,7 +1138,7 @@ XXXXXXXXXX
         self.name = "CargoRoom"
 
         self.storedItems = []
-        for i in range(1,50):
+        for i in range(1,10):
             self.storedItems.append(items.Pipe())
 
         counter = 0

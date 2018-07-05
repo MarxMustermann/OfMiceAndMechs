@@ -124,7 +124,30 @@ class Terrain(object):
                         self.tutorialLab = room
                     roomsOnMap.append(room)
                 elif char == "C":
-                    room = rooms.CargoRoom(rowCounter,lineCounter,3,0)
+                    itemTypes = [items.Wall,items.Pipe]
+                    if not rowCounter%2:
+                        itemTypes.append(items.Lever)
+                    if not rowCounter%3:
+                        itemTypes.append(items.Furnace)
+                    if not rowCounter%4:
+                        itemTypes.append(items.Chain)
+                    if not rowCounter%5:
+                        itemTypes.append(items.Hutch)
+                    if not rowCounter%6:
+                        itemTypes.append(items.GrowthTank)
+                    if not lineCounter%2:
+                        itemTypes.append(items.Door)
+                    if not lineCounter%3:
+                        itemTypes.append(items.Boiler)
+                    if not lineCounter%4:
+                        itemTypes.append(items.Winch)
+                    if not lineCounter%5:
+                        itemTypes.append(items.Display)
+                    if not lineCounter%6:
+                        itemTypes.append(items.Commlink)
+                    if not itemTypes:
+                        itemTypes = [items.Pipe,items.Wall,items.Furnace,items.Boiler]
+                    room = rooms.CargoRoom(rowCounter,lineCounter,3,0,itemTypes=itemTypes)
                     self.tutorialCargoRooms.append(room)
                     roomsOnMap.append(room)
                 elif char == "U":

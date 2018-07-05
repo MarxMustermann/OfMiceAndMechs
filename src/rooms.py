@@ -1116,11 +1116,11 @@ XXXXXXXXXX
         self.name = "Lab"
 
 class CargoRoom(Room):
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,itemTypes=[items.Pipe,items.Wall,items.Furnace,items.Boiler]):
         self.roomLayout = """
 XXXXXXXXXX
 X        X
-X........$
+X       .$
 X        X
 X        X
 X        X
@@ -1138,8 +1138,19 @@ XXXXXXXXXX
         self.name = "CargoRoom"
 
         self.storedItems = []
-        for i in range(1,10):
-            self.storedItems.append(items.Pipe())
+        counter = 0
+        length = len(itemTypes)
+        for i in range(1,97):
+            i = i+i%3+i%10*2
+            if i%2:
+                counter += 1
+            elif i%4:
+                counter += 2
+            elif i%8:
+                counter += 3
+            else:
+                counter += 4
+            self.storedItems.append(itemTypes[counter%length]())
 
         counter = 0
         self.storageSpace = []

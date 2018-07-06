@@ -766,10 +766,15 @@ class QuestMenu(SubMenu):
     def __init__(self,char=None):
         self.lockOptions = True
         self.char = char
+        self.offsetX = 0
         super().__init__()
 
     def handleKey(self, key):
         global submenue
+        if key == "W":
+            self.offsetX -= 1
+        if key == "S":
+            self.offsetX += 1
 
         header.set_text((urwid.AttrSpec("default","default"),"\nquest overview\n(press "+commandChars.show_quests_detailed+" for the extended quest menu)\n\n"))
 
@@ -784,7 +789,13 @@ class QuestMenu(SubMenu):
                 return False
         self.lockOptions = False
 
-        self.persistentText += "\n * press q for advanced quests "+str(self.char)+"\n\n"
+        if self.offsetX > 0:
+            self.persistentText = "\n".join(self.persistentText.split("\n")[self.offsetX:])
+
+        self.persistentText += """
+* press q for advanced quests """+str(self.char)+"""
+* press W to scroll up
+* press S to scroll down\n\n"""
 
         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
 

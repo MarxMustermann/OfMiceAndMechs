@@ -90,7 +90,10 @@ class Canvas(object):
         self.shift = shift
         self.defaultChar = defaultChar
         self.displayChars = displayChars
-        self.tileMapping = TileMapping("testTiles")
+        try:
+            self.tileMapping = TileMapping("testTiles")
+        except:
+            pass
 
         self.chars = []
         for x in range(0,41):

@@ -1203,7 +1203,7 @@ XXXXXXXXXX
         i = self.sizeX-2
         offset = 2
         while i > 1:
-            for j in range(4,self.sizeY-1):
+            for j in range(3,self.sizeY-1):
                 self.storageSpace.append((i,j))
             i -= offset
             if offset == 1:

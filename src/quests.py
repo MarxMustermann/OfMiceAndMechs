@@ -1708,8 +1708,14 @@ class HandleDelivery(MetaQuestSequence):
         if not self.cargoRooms:
             return
 
-        room = self.cargoRooms.pop()
-        self.quest = StoreCargo(room,self.storageRooms[0])
+        if not self.cargoRooms[0].storedItems:
+            self.cargoRooms.pop()
+
+        if not self.cargoRooms:
+            return
+
+        room = self.cargoRooms[0]
+        self.quest = StoreCargo(room,self.storageRooms.pop())
         quest = NaiveDelegateQuest(self.quest)
         quest.endTrigger = self.waitForQuestCompletion
         self.addQuest(quest)

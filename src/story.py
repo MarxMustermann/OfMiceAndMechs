@@ -1042,7 +1042,7 @@ class FindWork(BasicPhase):
             def handleEvent(subself):
                 def meeting():
                     showText("logistics command orders us to move some of the cargo in the long term store to accesible storage.\n3 rooms are to be cleared. One room needs to be cleared within 150 ticks\nThis requires the coordinated effort of the hoppers here. Since "+subself.char.name+" did well to far, "+subself.char.name+" will be given the lead.\nThis will be extra to the current workload")
-                    quest = quests.HandleDelivery(terrain.tutorialCargoRooms[:3],terrain.tutorialStorageRooms[:2])
+                    quest = quests.HandleDelivery(terrain.tutorialCargoRooms[:1],terrain.tutorialStorageRooms[:2])
                     mainChar.assignQuest(quest,active=True)
 
                     for hopper in terrain.waitingRoom.hoppers:

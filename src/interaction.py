@@ -86,7 +86,7 @@ def show_or_exit(key):
                 return
     else:
         idleCounter = 0
-    if not key in (commandChars.autoAdvance, commandChars.quit_instant, commandChars.ignore,commandChars.quit_delete):
+    if not key in (commandChars.autoAdvance, commandChars.quit_instant, commandChars.ignore,commandChars.quit_delete, commandChars.pause, commandChars.show_quests, commandChars.show_quests_detailed, commandChars.show_inventory, commandChars.show_inventory_detailed, commandChars.show_characterInfo):
         if lastLagDetection < time.time()-0.4:
             return
 

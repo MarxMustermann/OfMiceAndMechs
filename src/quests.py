@@ -1492,7 +1492,9 @@ class PickupQuestMeta(MetaQuestSequence):
                     if not (self.toPickup.room == self.character.room and self.toPickup.xPosition == self.character.xPosition and self.toPickup.yPosition == self.character.yPosition):
                         reAddMove = True
                 else:
-                    if not (self.toPickup.room == self.character.room and (
+                    if not hasattr(self.toPickup,"xPosition") or not hasattr(self.toPickup,"yPosition"):
+                        reAddMove = False
+                    elif not (self.toPickup.room == self.character.room and (
                                                              (self.toPickup.xPosition-self.character.xPosition in (-1,0,1) and self.toPickup.yPosition == self.character.yPosition) or 
                                                              (self.toPickup.yPosition-self.character.yPosition in (-1,0,1) and self.toPickup.xPosition == self.character.xPosition))):
                         reAddMove = True

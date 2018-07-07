@@ -1012,9 +1012,12 @@ class AdvancedQuestMenu(SubMenu):
                     if self.quest == quests.ClearRubble:
                        questInstance = self.quest()
                     if self.quest == quests.ConstructRoom:
-                       storageRoom = terrain.roomByCoordinates[(5,4)][0]
-                       construction = terrain.roomByCoordinates[(4,2)][0]
-                       questInstance = self.quest(construction,storageRoom)
+                       storageRoom = terrain.tutorialStorageRooms[1]
+                       for room in terrain.rooms:
+                           if isinstance(room,rooms.ConstructionSite):
+                               constructionSite = room
+                               break
+                       questInstance = self.quest(constructionSite,storageRoom)
                     if self.quest == quests.StoreCargo:
                        for room in terrain.rooms:
                            if isinstance(room,rooms.StorageRoom):

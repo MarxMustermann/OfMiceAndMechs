@@ -167,13 +167,19 @@ if args.debug:
         def __init__(self):
             logfile = open("debug.log","w")
             logfile.close()
-        def append(message):
+        def append(self,message):
             logfile = open("debug.log","a")
-            logfile.write(message)
+            logfile.write(str(message)+"\n")
             logfile.close()
-    debugMessages = messages
+    debugMessages = debugToFile()
+    interaction.debug = True
 else:
-    debugMessages = []
+    class FakeLogger(object):
+        def append(self,message):
+            pass
+
+    debugMessages = FakeLogger()
+    interaction.debug = False
 
 items.debugMessages = debugMessages
 quests.debugMessages = debugMessages

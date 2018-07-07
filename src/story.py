@@ -1058,17 +1058,11 @@ class FindWork(BasicPhase):
                 mainChar.reputation += 5
 
 
-        self.mainCharRoom.addEvent(StoreCargo(gamestate.tick+15,mainChar))
+        self.mainCharRoom.addEvent(StoreCargo(gamestate.tick+(15*15*4),mainChar))
         self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15)))
 
         quest = quests.ClearRubble()
         quest.reputationReward = 3
-        terrain.waitingRoom.quests.append(quest)
-
-        storageRoom = terrain.roomByCoordinates[(7,7)][0]
-        constructionSite = terrain.roomByCoordinates[(4,2)][0]
-        quest = quests.ConstructRoom(constructionSite,storageRoom)
-        quest.reputationReward = 6
         terrain.waitingRoom.quests.append(quest)
 
         def addQuest12():

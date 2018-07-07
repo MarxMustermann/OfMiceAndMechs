@@ -136,10 +136,10 @@ def show_or_exit(key):
             stealKey[key]()
         else:
             if key in ("´",):
-                mainChar.assignQuest(quests.WaitQuest(lifetime=10),active=True)
-                #mainChar.assignQuest(quests.TransportQuest(terrain.metalWorkshop.producedItems[0],None),active=True)
-                #terrain.waitingRoom.secondOfficer.assignQuest(quests.MurderQuest(mainChar),active=True)
-                #mainChar.assignQuest(quests.MurderQuest(terrain.waitingRoom.secondOfficer),active=True)
+                if debug:
+                    submenue = DebugMenu()
+                else:
+                    messages.append("debug not enabled")
             if key in (commandChars.quit_delete,):
                 saveFile = open("gamestate/gamestate.json","w")
                 saveFile.write("reset")
@@ -761,6 +761,29 @@ class ChatMenu(SubMenu):
             main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
 
         return False
+
+class DebugMenu(SubMenu):
+    def __init__(self,char=None):
+        super().__init__()
+        self.firstRun = True
+
+    def handleKey(self, key):
+        if self.firstRun:
+            import objgraph
+            #objgraph.show_backrefs(mainChar, max_depth=4)
+            msg = ""
+            for item in objgraph.most_common_types(limit=50):
+                msg += ("\n"+str(item))
+            main.set_text(msg)
+
+            storageRoom = terrain.tutorialStorageRooms[0]
+            constructionSite = terrain.roomByCoordinates[(4,2)][0]
+            quest = quests.ConstructRoom(constructionSite,storageRoom)
+            mainChar.assignQuest(quest,active=True)
+            self.firstRun = False
+            return False
+        else:
+            return True
 
 class QuestMenu(SubMenu):
     def __init__(self,char=None):

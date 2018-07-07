@@ -171,6 +171,7 @@ class MoveQuest(Quest):
         self.sloppy = sloppy
         self.description = "please go to coordinate "+str(self.dstX)+"/"+str(self.dstY)    
         super().__init__(followUp,startCinematics=startCinematics)
+        self.listeningTo = []
 
     # success is standing in the right place. should probably check for correct room, too
     def triggerCompletionCheck(self):
@@ -187,6 +188,7 @@ class MoveQuest(Quest):
     def assignToCharacter(self,character):
         super().assignToCharacter(character)
         character.addListener(self.recalculate)
+        self.listeningTo.append((character,self.recalculate))
 
     def recalculate(self):
         if not self.active:
@@ -209,6 +211,14 @@ class MoveQuest(Quest):
             self.character.assignQuest(EnterRoomQuest(self.room),active=True)
             pass
         super().recalculate()
+
+    def postHandler(self):
+        for (objectRef,functionRef) in self.listeningTo:
+            try:
+                objectRef.listeners.remove(functionRef)
+            except:
+                debugMessages.append("failed to remove listener")
+        super().postHandler()
 
 class ActivateQuest(Quest):
     def __init__(self,toActivate,followUp=None,desiredActive=True,startCinematics=None):
@@ -907,7 +917,7 @@ class MetaQuestSequence(Quest):
                 self.subQuests[0].assignToCharacter(self.character)
             if not self.subQuests[0].active:
                 self.subQuests[0].activate()
-            if self.subQuests and not self.subQuests[0] in self.listeningTo:
+            if self.subQuests and not (self.subQuests[0],self.recalculate) in self.listeningTo:
                 self.subQuests[0].addListener(self.recalculate)
         super().recalculate()
 
@@ -919,7 +929,7 @@ class MetaQuestSequence(Quest):
         else:
             self.subQuests.append(quest)
         self.subQuests[0].addListener(self.recalculate)
-        self.listeningTo.append(self.subQuests[0])
+        self.listeningTo.append((self.subQuests[0],self.recalculate))
         if len(self.subQuests) > 1:
             self.subQuests[1].deactivate()
 
@@ -938,6 +948,14 @@ class MetaQuestSequence(Quest):
             if self.subQuests[0].active:
                 self.subQuests[0].deactivate()
         super().deactivate()
+
+    def postHandler(self):
+        for (objectRef,functionRef) in self.listeningTo:
+            try:
+                objectRef.listeners.remove(functionRef)
+            except:
+                debugMessages.append("failed to remove listener")
+        super().postHandler()
 
 class MetaQuestParralel(Quest):
     def __init__(self,quests,startCinematics=None,looped=False,lifetime=None):
@@ -1431,6 +1449,7 @@ class MoveQuestMeta(MetaQuestSequence):
     
     def assignToCharacter(self,character):
         character.addListener(self.recalculate)
+        self.listeningTo.append((character,self.recalculate))
         super().assignToCharacter(character)
 
 class DropQuestMeta(MetaQuestSequence):

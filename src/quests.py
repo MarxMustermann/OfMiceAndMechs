@@ -1329,8 +1329,6 @@ class FetchFurniture(MetaQuestParralel):
 
         self.itemsInStore = []
 
-        """
-        STUPID WAY
         counter = 0
         maxNum = len(toFetch)
         if maxNum > len(dropoffs):
@@ -1341,15 +1339,13 @@ class FetchFurniture(MetaQuestParralel):
 
             item = storageRoom.storedItems.pop()
 
-            questList.append(PickupQuest(item))
-            questList.append(DropQuest(item,constructionSite,dropoffs[counter][1],dropoffs[counter][0]))
+            questList.append(TransportQuest(item,(constructionSite,dropoffs[counter][1],dropoffs[counter][0])))
             self.itemsInStore.append(item)
 
             counter += 1
+
         """
-        """
-        SMART WAY
-        """
+        SMART WAY (cheating)
         counter = 0
         maxNum = len(toFetch)
         if maxNum > len(dropoffs):
@@ -1371,6 +1367,7 @@ class FetchFurniture(MetaQuestParralel):
             counter += 1
         for item in toFetch:
             self.itemsInStore.append(item)
+        """
 
         super().__init__(questList)
         self.metaDescription = "fetch furniture"

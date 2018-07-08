@@ -776,9 +776,8 @@ class DebugMenu(SubMenu):
                 msg += ("\n"+str(item))
             main.set_text(msg)
 
-            storageRoom = terrain.tutorialStorageRooms[0]
             constructionSite = terrain.roomByCoordinates[(4,2)][0]
-            quest = quests.ConstructRoom(constructionSite,storageRoom)
+            quest = quests.ConstructRoom(constructionSite,terrain.tutorialStorageRooms)
             mainChar.assignQuest(quest,active=True)
             self.firstRun = False
             return False
@@ -898,8 +897,8 @@ class AdvancedQuestMenu(SubMenu):
 
         if self.state == "questSelection":
             if not self.options and not self.getSelection():
-                options = {"1":quests.MoveQuest,"2":quests.ActivateQuest,"3":quests.EnterRoomQuest,"4":quests.FireFurnaceMeta,"5":quests.ClearRubble,"6":quests.ConstructRoom,"7":quests.StoreCargo}
-                niceOptions = {"1":"MoveQuest","2":"ActivateQuest","3":"EnterRoomQuest","4":"FireFurnaceMeta","5":"ClearRubble","6":"ConstructRoom","7":"StoreCargo"}
+                options = {"1":quests.MoveQuest,"2":quests.ActivateQuest,"3":quests.EnterRoomQuest,"4":quests.FireFurnaceMeta,"5":quests.ClearRubble,"6":quests.ConstructRoom,"7":quests.StoreCargo,"8":quests.WaitQuest,"9":quests.LeaveRoomQuest}
+                niceOptions = {"1":"MoveQuest","2":"ActivateQuest","3":"EnterRoomQuest","4":"FireFurnaceMeta","5":"ClearRubble","6":"ConstructRoom","7":"StoreCargo","8":"WaitQuest","9":"LeaveRoomQuest"}
                 self.setSelection("what type of quest:",options,niceOptions)
 
             if not self.getSelection():
@@ -1009,15 +1008,21 @@ class AdvancedQuestMenu(SubMenu):
                        questInstance = self.quest(self.questParams["room"])
                     if self.quest == quests.FireFurnaceMeta:
                        questInstance = self.quest(terrain.tutorialMachineRoom.furnaces[0])
+                    if self.quest == quests.WaitQuest:
+                       questInstance = self.quest()
+                    if self.quest == quests.LeaveRoomQuest:
+                       try:
+                           questInstance = self.quest(self.character.room)
+                       except:
+                           pass
                     if self.quest == quests.ClearRubble:
                        questInstance = self.quest()
                     if self.quest == quests.ConstructRoom:
-                       storageRoom = terrain.tutorialStorageRooms[1]
                        for room in terrain.rooms:
                            if isinstance(room,rooms.ConstructionSite):
                                constructionSite = room
                                break
-                       questInstance = self.quest(constructionSite,storageRoom)
+                       questInstance = self.quest(constructionSite,terrain.tutorialStorageRooms)
                     if self.quest == quests.StoreCargo:
                        for room in terrain.rooms:
                            if isinstance(room,rooms.StorageRoom):

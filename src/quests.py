@@ -1322,7 +1322,7 @@ class ClearRubble(MetaQuestParralel):
         self.metaDescription = "clear rubble"
 
 class FetchFurniture(MetaQuestParralel):
-    def __init__(self,constructionSite,storageRoom,toFetch,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+    def __init__(self,constructionSite,storageRooms,toFetch,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
         questList = []
 
         dropoffs = [(4,4),(5,4),(5,5),(5,6),(4,6),(3,6),(3,5),(3,4)]
@@ -1334,10 +1334,29 @@ class FetchFurniture(MetaQuestParralel):
         if maxNum > len(dropoffs):
             maxNum = len(dropoffs)
         while counter < maxNum:
-            if not storageRoom.storedItems:
+            selectedItem = None
+            for storageRoom in storageRooms:
+                for item in storageRoom.storedItems:
+                    if isinstance(item,items.Pipe):
+                        selectedItem = item
+                        storageRoom.storedItems.remove(selectedItem)
+                        break
+                if selectedItem:
+                    break
+
+            if not selectedItem:
                 break
 
+            """
+            selectedIitem = None
+            for item in storageRoom.storedItems:
+                if isinstance(item,items.Pipe):
+                    
+                    break
+            if not item:
+                break
             item = storageRoom.storedItems.pop()
+            """
 
             questList.append(TransportQuest(item,(constructionSite,dropoffs[counter][1],dropoffs[counter][0])))
             self.itemsInStore.append(item)
@@ -1618,12 +1637,12 @@ class MurderQuest(MetaQuestSequence):
         super().recalculate()
           
 class ConstructRoom(MetaQuestParralel):
-    def __init__(self,constructionSite,storageRoom,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+    def __init__(self,constructionSite,storageRooms,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
 
         self.questList = []
 
         self.constructionSite = constructionSite
-        self.storageRoom = storageRoom
+        self.storageRooms = storageRooms
         self.itemsInStore = []
 
         self.didFetchQuest = False
@@ -1637,7 +1656,7 @@ class ConstructRoom(MetaQuestParralel):
             if not self.didFetchQuest:
                 self.didFetchQuest = True
                 self.didPlaceQuest = False
-                self.fetchquest = FetchFurniture(self.constructionSite,self.storageRoom,self.constructionSite.itemsInBuildOrder)
+                self.fetchquest = FetchFurniture(self.constructionSite,self.storageRooms,self.constructionSite.itemsInBuildOrder)
                 self.addQuest(self.fetchquest)
                 self.itemsInStore = self.fetchquest.itemsInStore
             elif not self.didPlaceQuest:

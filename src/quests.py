@@ -1329,17 +1329,27 @@ class FetchFurniture(MetaQuestParralel):
 
         self.itemsInStore = []
 
+        thisToFetch = toFetch[:]
+
         counter = 0
         maxNum = len(toFetch)
         if maxNum > len(dropoffs):
             maxNum = len(dropoffs)
+
+        fetchType = None
         while counter < maxNum:
+            if not fetchType:
+                if not thisToFetch:
+                    break
+                fetchType = thisToFetch.pop()
+            messages.append(fetchType)
             selectedItem = None
             for storageRoom in storageRooms:
                 for item in storageRoom.storedItems:
-                    if isinstance(item,items.Pipe):
+                    if isinstance(item,fetchType[1]):
                         selectedItem = item
                         storageRoom.storedItems.remove(selectedItem)
+                        fetchType = None
                         break
                 if selectedItem:
                     break
@@ -1357,9 +1367,11 @@ class FetchFurniture(MetaQuestParralel):
                 break
             item = storageRoom.storedItems.pop()
             """
+            if not selectedItem:
+                break
 
-            questList.append(TransportQuest(item,(constructionSite,dropoffs[counter][1],dropoffs[counter][0])))
-            self.itemsInStore.append(item)
+            questList.append(TransportQuest(selectedItem,(constructionSite,dropoffs[counter][1],dropoffs[counter][0])))
+            self.itemsInStore.append(selectedItem)
 
             counter += 1
 

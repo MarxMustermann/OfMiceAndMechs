@@ -1395,19 +1395,19 @@ X  .   .  X
 X  .   .  X
 X  .   .  X
 X  .....  X
+X    @    X
 X         X
-X   @     X
 XXXXX$XXXXX
 """
         self.desiredRoomlayout = """
 XXXXXXXXXXX
-X#########X
-X##.....##X
-X##.   .##X
-X##. @ .##X
-X##.   .##X
-X##.....##X
-X#### ####X
+X########XX
+XXX.....##X
+X#X.   .X#X
+X#X. @ .##X
+X#X.   .#XX
+X#X.....##X
+X#XXX XXX#X
 X#### ####X
 XXXXX$XXXXX
 """
@@ -1417,10 +1417,18 @@ XXXXX$XXXXX
         itemsToPlace = {}
         x = -1
         for line in self.desiredRoomlayout.split("\n"):
+            if x in (-1,0,9):
+                x += 1
+                continue
             y = 0
             for char in line:
+                if y in (0,10):
+                    y += 1
+                    continue
                 if char == "#":
                     itemsToPlace[(x,y)] = items.Pipe
+                if char == "X":
+                    itemsToPlace[(x,y)] = items.Wall
                 y += 1
             x += 1
 

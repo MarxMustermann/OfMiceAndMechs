@@ -1067,7 +1067,7 @@ class FindWork(BasicPhase):
             #terrain.waitingRoom.quests.append(quest)
             mainChar.assignQuest(quest,active=True)
 
-        self.mainCharRoom.addEvent(StoreCargo(gamestate.tick+(15*15*4),mainChar))
+        self.mainCharRoom.addEvent(StoreCargo(gamestate.tick+(15*15*40),mainChar))
         self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15)))
 
         quest = quests.ClearRubble()

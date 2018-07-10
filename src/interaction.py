@@ -446,7 +446,6 @@ def show_or_exit(key):
 
                 if pos in itemByCoordinates:
                     for item in itemByCoordinates[pos]:
-                        messages.append(str(item))
                         item.pickUp(mainChar)
 
             if key in (commandChars.hail):
@@ -771,6 +770,7 @@ class DebugMenu(SubMenu):
         if self.firstRun:
             import objgraph
             #objgraph.show_backrefs(mainChar, max_depth=4)
+            """
             msg = ""
             for item in objgraph.most_common_types(limit=50):
                 msg += ("\n"+str(item))
@@ -779,6 +779,8 @@ class DebugMenu(SubMenu):
             constructionSite = terrain.roomByCoordinates[(4,2)][0]
             quest = quests.ConstructRoom(constructionSite,terrain.tutorialStorageRooms)
             mainChar.assignQuest(quest,active=True)
+            """
+            main.set_text(str(terrain.tutorialStorageRooms[3].storageSpace)+"\n"+str(list(reversed(terrain.tutorialStorageRooms[3].storageSpace)))+"\n\n"+str(terrain.tutorialStorageRooms[3].storedItems))
             self.firstRun = False
             return False
         else:

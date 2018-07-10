@@ -1265,15 +1265,18 @@ XXXXXXXXXX
         return path
 
     def addItems(self,items):
+        super().addItems(items)
         for item in items:
             pos = (item.xPosition,item.yPosition)
             if pos in self.storageSpace:
                 self.storedItems.append(item)
-        super().addItems(items)
+                self.storageSpace.remove(pos)
 
     def removeItem(self,item):
         if item in self.storedItems:
             self.storedItems.remove(item)
+            pos = (item.xPosition,item.yPosition)
+            self.storageSpace.append(pos)
         super().removeItem(item)
 
 class WakeUpRoom(Room):

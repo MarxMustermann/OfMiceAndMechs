@@ -40,20 +40,22 @@ class Item(object):
     def pickUp(self,character):
         if self.room:
             container = self.room
+            container.removeItem(self)
         else:
             container = terrain
 
-        container.itemsOnFloor.remove(self)
+            container.itemsOnFloor.remove(self)
 
-        character.inventory.append(self)
-        self.changed()
 
-        container.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
-        if not container.itemByCoordinates[(self.xPosition,self.yPosition)]:
-            del container.itemByCoordinates[(self.xPosition,self.yPosition)]
+            container.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
+            if not container.itemByCoordinates[(self.xPosition,self.yPosition)]:
+                del container.itemByCoordinates[(self.xPosition,self.yPosition)]
 
         del self.xPosition
         del self.yPosition
+
+        character.inventory.append(self)
+        self.changed()
 
     def addListener(self,listenFunction):
         if not listenFunction in self.listeners:

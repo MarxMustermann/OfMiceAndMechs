@@ -465,10 +465,10 @@ class NaiveActivateQuest(Quest):
                 self.postHandler()
 
     def solver(self,character):
-            self.toActivate.apply(character)
-            self.activated = True
-            self.triggerCompletionCheck()
-            return True
+        self.toActivate.apply(character)
+        self.activated = True
+        self.triggerCompletionCheck()
+        return True
 
 class NaiveDropQuest(Quest):
     def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
@@ -480,9 +480,12 @@ class NaiveDropQuest(Quest):
         self.toDrop.addListener(self.triggerCompletionCheck)
         super().__init__(followUp,startCinematics=startCinematics)
         self.description = "naive drop"
+        self.dropped = False
 
     def triggerCompletionCheck(self):
         if self.active:
+            """
+			does this make sense to use for naive?
             correctPosition = False
             try:
                 if self.toDrop.xPosition == self.dstX and self.toDrop.yPosition == self.dstY:
@@ -491,9 +494,14 @@ class NaiveDropQuest(Quest):
                 pass
 
             if correctPosition:
+                messages.append("droped at correct location")
+                self.postHandler()
+            """
+            if self.dropped:
                 self.postHandler()
 
     def solver(self,character):
+        self.dropped = True
         character.drop(self.toDrop)
         return True
 
@@ -1342,31 +1350,18 @@ class FetchFurniture(MetaQuestParralel):
                 if not thisToFetch:
                     break
                 fetchType = thisToFetch.pop()
-            messages.append(fetchType)
             selectedItem = None
             for storageRoom in storageRooms:
                 for item in storageRoom.storedItems:
                     if isinstance(item,fetchType[1]):
                         selectedItem = item
                         storageRoom.storedItems.remove(selectedItem)
+                        storageRoom.storageSpace.append((selectedItem.xPosition,selectedItem.yPosition))
                         fetchType = None
                         break
                 if selectedItem:
                     break
 
-            if not selectedItem:
-                break
-
-            """
-            selectedIitem = None
-            for item in storageRoom.storedItems:
-                if isinstance(item,items.Pipe):
-                    
-                    break
-            if not item:
-                break
-            item = storageRoom.storedItems.pop()
-            """
             if not selectedItem:
                 break
 
@@ -1520,7 +1515,9 @@ class PickupQuestMeta(MetaQuestSequence):
             if not self.moveQuest:
                 reAddMove = False
                 if not self.sloppy:
-                    if not (self.toPickup.room == self.character.room and self.toPickup.xPosition == self.character.xPosition and self.toPickup.yPosition == self.character.yPosition):
+                    if not hasattr(self.toPickup,"xPosition") or not hasattr(self.toPickup,"yPosition"):
+                        reAddMove = False
+                    elif not (self.toPickup.room == self.character.room and self.toPickup.xPosition == self.character.xPosition and self.toPickup.yPosition == self.character.yPosition):
                         reAddMove = True
                 else:
                     if not hasattr(self.toPickup,"xPosition") or not hasattr(self.toPickup,"yPosition"):
@@ -1687,11 +1684,16 @@ class ConstructRoom(MetaQuestParralel):
 class TransportQuest(MetaQuestSequence):
     def __init__(self,toTransport,dropOff,followUp=None,startCinematics=None,lifetime=None):
         self.toTransport = toTransport
+        self.dropOff = dropOff
         self.questList = []
-        self.questList.append(PickupQuestMeta(toTransport))
-        self.questList.append(DropQuestMeta(toTransport,dropOff[0],dropOff[1],dropOff[2]))
+        quest = PickupQuestMeta(self.toTransport)
+        quest.endTrigger = self.addDrop
+        self.questList.append(quest)
         super().__init__(self.questList)
         self.metaDescription = "transport"
+
+    def addDrop(self):
+        self.addQuest(DropQuestMeta(self.toTransport,self.dropOff[0],self.dropOff[1],self.dropOff[2]))
 
 class FillPocketsQuest(MetaQuestSequence):
     def __init__(self,followUp=None,startCinematics=None,lifetime=None):
@@ -1726,14 +1728,15 @@ class StoreCargo(MetaQuestSequence):
         self.questList = []
 
         amount = len(cargoRoom.storedItems)
-        freeSpace = len(storageRoom.storageSpace)-len(storageRoom.storedItems)
+        freeSpace = len(storageRoom.storageSpace)
         if freeSpace < amount:
             amount = freeSpace
 
         startIndex = len(storageRoom.storedItems)
         counter = 0
         while counter < amount:
-            self.questList.append(TransportQuest(cargoRoom.storedItems.pop(),(storageRoom,storageRoom.storageSpace[startIndex+counter][0],storageRoom.storageSpace[startIndex+counter][1])))
+            location = storageRoom.storageSpace[counter]
+            self.questList.append(TransportQuest(cargoRoom.storedItems.pop(),(storageRoom,location[0],location[1])))
             counter += 1
         super().__init__(self.questList)
         self.metaDescription = "store cargo"

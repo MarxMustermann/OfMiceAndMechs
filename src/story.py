@@ -1025,6 +1025,7 @@ class FindWork(BasicPhase):
                     else:
                             showText("I see you did some work. Carry on")
                     mainChar.reputation -= 3
+                    self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15)))
 
                 def startVatPhase():
                     phase = VatPhase()

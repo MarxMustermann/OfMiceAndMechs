@@ -1418,8 +1418,7 @@ class ClearRubble(MetaQuestParralel):
         questList = []
         for item in terrain.itemsOnFloor:
             if isinstance(item,items.Scrap):
-                questList.append(PickupQuestMeta(item))
-                questList.append(DropQuestMeta(item,terrain.metalWorkshop,7,1))
+                questList.append(TransportQuest(item,(terrain.metalWorkshop,7,1)))
         super().__init__(questList)
         self.metaDescription = "clear rubble"
 

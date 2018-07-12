@@ -799,12 +799,14 @@ class QuestMenu(SubMenu):
             self.offsetX -= 1
         if key == "S":
             self.offsetX += 1
+        if self.offsetX < 0:
+            self.offsetX = 0
 
         header.set_text((urwid.AttrSpec("default","default"),"\nquest overview\n(press "+commandChars.show_quests_detailed+" for the extended quest menu)\n\n"))
 
-        self.persistentText = ""
+        self.persistentText = []
 
-        self.persistentText += renderQuests(char=self.char)
+        self.persistentText.append(renderQuests(char=self.char,asList=True))
 
         if not self.lockOptions:
             if key in ["q"]:
@@ -813,13 +815,22 @@ class QuestMenu(SubMenu):
                 return False
         self.lockOptions = False
 
-        if self.offsetX > 0:
-            self.persistentText = "\n".join(self.persistentText.split("\n")[self.offsetX:])
+        #self.persistentText = "\n".join(self.persistentText.split("\n")[self.offsetX:])
 
-        self.persistentText += """
-* press q for advanced quests """+str(self.char)+"""
-* press W to scroll up
-* press S to scroll down\n\n"""
+        self.persistentText.extend(["\n","* press q for advanced quests "+str(self.char),"\n","* press W to scroll up","\n","* press S to scroll down","\n","\n"])
+
+        def flatten(pseudotext):
+            newList = []
+            for item in pseudotext:
+                if isinstance(item,list):
+                   for subitem in flatten(item):
+                      newList.append(subitem) 
+                elif isinstance(item,tuple):
+                   newList.append((item[0],flatten(item[1])))
+                else:
+                   newList.append(item)
+            return newList
+        self.persistentText = flatten(self.persistentText)
 
         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
 
@@ -1122,19 +1133,31 @@ def renderMessages(maxMessages=5):
     return txt
 
 
-def renderQuests(maxQuests=0,char=None):
+def renderQuests(maxQuests=0,char=None, asList=False):
     if not char:
         char = mainChar
-    txt = ""
+    if asList:
+        txt = []
+    else:
+        txt = ""
     if len(char.quests):
         counter = 0
         for quest in char.quests:
-            txt+= "QUEST: "+quest.description+"\n"
+            if asList:
+                if counter == 0:
+                    txt.extend([(urwid.AttrSpec("#0f0","default"),"QUEST:"),quest.getDescription(asList=asList,colored=True),"\n"])
+                else:
+                    txt.extend(["QUEST: ",quest.getDescription(asList=asList),"\n"])
+            else:
+                txt+= "QUEST: "+quest.getDescription(asList=asList)+"\n"
             counter += 1
             if counter == maxQuests:
                 break
     else:
-        txt += "No Quest"
+        if asList:
+            txt.append("No Quest")
+        else:
+            txt += "No Quest"
 
     return txt
 

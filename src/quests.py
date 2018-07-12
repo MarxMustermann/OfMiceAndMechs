@@ -51,6 +51,16 @@ class Quest(object):
     def fail(self):
         self.postHandler()
     
+    def getDescription(self,asList=False,colored=False):
+        if asList:
+            if colored:
+                import urwid
+                return [[(urwid.AttrSpec("#0f0","default"),self.description),"\n"]]
+            else:
+                return [[self.description,"\n"]]
+        else:
+            return self.description
+
     # do the teardown of the quest
     def postHandler(self):
         if self.completed:
@@ -485,7 +495,7 @@ class NaiveDropQuest(Quest):
     def triggerCompletionCheck(self):
         if self.active:
             """
-			does this make sense to use for naive?
+            does this make sense to use for naive?
             correctPosition = False
             try:
                 if self.toDrop.xPosition == self.dstX and self.toDrop.yPosition == self.dstY:
@@ -898,6 +908,40 @@ class MetaQuestSequence(Quest):
                 out += "    x "+"\n      ".join(quest.description.split("\n"))+"\n"
         return out
 
+    def getDescription(self,asList=False,colored=False):
+        if asList:
+            if colored:
+                import urwid
+                out = [[[(urwid.AttrSpec("#0f0","default"),self.metaDescription+":")],"\n"]]
+            else:
+                out = [[self.metaDescription+":","\n"]]
+        else:
+            out =  self.metaDescription+":\n"
+        for quest in self.subQuests:
+            if asList:
+                first = True
+                colored = colored
+                if quest.active:
+                    if colored:
+                        import urwid
+                        deko = (urwid.AttrSpec("#0f0","default"),"  > ")
+                    else:
+                        deko = "  > "
+                else:
+                    deko = "  x "
+                for item in quest.getDescription(asList=asList,colored=colored):
+                    if not first:
+                        deko = "    "
+                    out.append([deko,item])
+                    first = False
+                    colored = False
+            else:
+                if quest.active:
+                    out += "    > "+"\n      ".join(quest.getDescription().split("\n"))+"\n"
+                else:
+                    out += "    x "+"\n      ".join(quest.getDescription().split("\n"))+"\n"
+        return out
+
     def assignToCharacter(self,character):
         if self.subQuests:
             self.subQuests[0].assignToCharacter(character)
@@ -997,11 +1041,43 @@ class MetaQuestParralel(Quest):
             #messages.append(e)
             return None
 
-    @property
-    def description(self):
+    def getDescription(self,asList=False,colored=False):
+        if asList:
+            if colored:
+                import urwid
+                out = [[(urwid.AttrSpec("#0f0","default"),self.metaDescription+":"),"\n"]]
+            else:
+                out = [[self.metaDescription+":\n"]]
+        else:
             out = ""+self.metaDescription+":\n"
-            for quest in self.subQuests:
-                questDescription = "\n    ".join(quest.description.split("\n"))+"\n"
+        for quest in self.subQuests:
+            if asList:
+                questDescription = []
+
+                if quest == self.lastActive:
+                    if quest.active:
+                        deko = " -> "
+                    else:
+                        deko = "YYYY"
+                elif quest.paused:
+                    deko = "  - "
+                elif quest.active:
+                    deko = "  * "
+                else:
+                    deko = "XXXX"
+
+                if colored:
+                    import urwid
+                    deko = (urwid.AttrSpec("#0f0","default"),deko)
+
+                first = True
+                for item in quest.getDescription(asList=asList,colored=colored):
+                    if not first:
+                        deko = "    "
+                    out.append([deko,item])
+                    first = False
+            else:
+                questDescription = "\n    ".join(quest.getDescription().split("\n"))+"\n"
                 if quest == self.lastActive:
                     if quest.active:
                         out += "  ->"+questDescription
@@ -1013,7 +1089,25 @@ class MetaQuestParralel(Quest):
                     out += "  * "+questDescription
                 else:
                     out += "XXXX"+questDescription
-            return out
+        return out
+
+    @property
+    def description(self):
+        out = ""+self.metaDescription+":\n"
+        for quest in self.subQuests:
+            questDescription = "\n    ".join(quest.description.split("\n"))+"\n"
+            if quest == self.lastActive:
+                if quest.active:
+                    out += "  ->"+questDescription
+                else:
+                    out += "YYYY"+questDescription
+            elif quest.paused:
+                out += "  - "+questDescription
+            elif quest.active:
+                out += "  * "+questDescription
+            else:
+                out += "XXXX"+questDescription
+        return out
 
     def assignToCharacter(self,character):
         super().assignToCharacter(character)

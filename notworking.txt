@@ -1,0 +1,8 @@
+foodStuffs = ["՞՞","🍖","☠ ","💀","👂","✋"]
+hub = "🜹 "
+vatSnake = "🝇 "
+randomStuff1 = ["🜆 ","🜾 "]
+randomStuff2 = ["🝍🝍","🝍🝍","🝍🝍","🖵 ","🖵 ","🜕 "]
+winch = "🞇 "
+winch_inactive = "🞅 "
+winch_active = "🞇 "

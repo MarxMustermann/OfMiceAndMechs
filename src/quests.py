@@ -55,7 +55,7 @@ class Quest(object):
         if asList:
             if colored:
                 import urwid
-                return [[(urwid.AttrSpec("#0f0","default"),self.description),"\n"]]
+                return [[(urwid.AttrSpec("#090","default"),self.description),"\n"]]
             else:
                 return [[self.description,"\n"]]
         else:
@@ -912,7 +912,7 @@ class MetaQuestSequence(Quest):
         if asList:
             if colored:
                 import urwid
-                out = [[[(urwid.AttrSpec("#0f0","default"),self.metaDescription+":")],"\n"]]
+                out = [[[(urwid.AttrSpec("#090","default"),self.metaDescription+":")],"\n"]]
             else:
                 out = [[self.metaDescription+":","\n"]]
         else:
@@ -924,7 +924,7 @@ class MetaQuestSequence(Quest):
                 if quest.active:
                     if colored:
                         import urwid
-                        deko = (urwid.AttrSpec("#0f0","default"),"  > ")
+                        deko = (urwid.AttrSpec("#090","default"),"  > ")
                     else:
                         deko = "  > "
                 else:
@@ -1045,7 +1045,7 @@ class MetaQuestParralel(Quest):
         if asList:
             if colored:
                 import urwid
-                out = [[(urwid.AttrSpec("#0f0","default"),self.metaDescription+":"),"\n"]]
+                out = [[(urwid.AttrSpec("#090","default"),self.metaDescription+":"),"\n"]]
             else:
                 out = [[self.metaDescription+":\n"]]
         else:
@@ -1068,7 +1068,7 @@ class MetaQuestParralel(Quest):
 
                 if colored:
                     import urwid
-                    deko = (urwid.AttrSpec("#0f0","default"),deko)
+                    deko = (urwid.AttrSpec("#090","default"),deko)
 
                 first = True
                 for item in quest.getDescription(asList=asList,colored=colored):

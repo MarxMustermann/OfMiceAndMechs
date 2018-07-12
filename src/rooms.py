@@ -72,7 +72,6 @@ class Room(object):
                             npc = characters.Character(displayChars.staffCharactersByLetter["s"],5,3,name="Siegfied Knobelbecher")
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
-                            self.firstOfficer = npc
                             self.secondOfficer = npc
                 elif char in ("X","&"):
                     itemsOnFloor.append(items.Wall(rowCounter,lineCounter))

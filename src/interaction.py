@@ -789,8 +789,11 @@ class DebugMenu(SubMenu):
 class QuestMenu(SubMenu):
     def __init__(self,char=None):
         self.lockOptions = True
+        if not char:
+            char = mainChar
         self.char = char
         self.offsetX = 0
+        self.questIndex = 0
         super().__init__()
 
     def handleKey(self, key):
@@ -802,11 +805,28 @@ class QuestMenu(SubMenu):
         if self.offsetX < 0:
             self.offsetX = 0
 
+        if key == "w":
+            self.questIndex -= 1
+        if key == "s":
+            self.questIndex += 1
+        if self.questIndex < 0:
+            self.questIndex = 0
+        if self.questIndex > len(self.char.quests)-1:
+            self.questIndex = len(self.char.quests)-1
+
+        if key == "j":
+            if self.questIndex:
+                quest = self.char.quests[self.questIndex]
+                self.char.quests.remove(quest)
+                self.char.quests.insert(0,quest)
+                self.char.setPathToQuest(quest)
+                self.questIndex = 0
+
         header.set_text((urwid.AttrSpec("default","default"),"\nquest overview\n(press "+commandChars.show_quests_detailed+" for the extended quest menu)\n\n"))
 
         self.persistentText = []
 
-        self.persistentText.append(renderQuests(char=self.char,asList=True))
+        self.persistentText.append(renderQuests(char=self.char,asList=True,questIndex = self.questIndex))
 
         if not self.lockOptions:
             if key in ["q"]:
@@ -1133,7 +1153,7 @@ def renderMessages(maxMessages=5):
     return txt
 
 
-def renderQuests(maxQuests=0,char=None, asList=False):
+def renderQuests(maxQuests=0,char=None, asList=False, questIndex=0):
     if not char:
         char = mainChar
     if asList:
@@ -1144,8 +1164,8 @@ def renderQuests(maxQuests=0,char=None, asList=False):
         counter = 0
         for quest in char.quests:
             if asList:
-                if counter == 0:
-                    txt.extend([(urwid.AttrSpec("#0f0","default"),"QUEST:"),quest.getDescription(asList=asList,colored=True),"\n"])
+                if counter == questIndex:
+                    txt.extend([(urwid.AttrSpec("#0f0","default"),"QUEST: "),quest.getDescription(asList=asList,colored=True),"\n"])
                 else:
                     txt.extend(["QUEST: ",quest.getDescription(asList=asList),"\n"])
             else:

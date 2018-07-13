@@ -12,15 +12,15 @@ class PathsOverlay(object):
                     chars[coordinate[1]][coordinate[0]] =  (grey,"::")
 
             for coordinate in terrain.watershedStart:
-                chars[coordinate[1]][coordinate[0]] =  (yellow,"::")
+                chars[coordinate[1]][coordinate[0]] =  (grey,"::")
 
             for path in terrain.foundSuperPathsComplete.values():
                 for coordinate in path:
-                    chars[coordinate[1]][coordinate[0]] = (lightGrey,"::")
+                    chars[coordinate[1]][coordinate[0]] = (grey,"::")
 
             for dualPair,path in terrain.foundSuperPaths.items():
                 for coordinate in path:
-                    chars[coordinate[1]][coordinate[0]] = (lightYellow,"::")
+                    chars[coordinate[1]][coordinate[0]] = (grey,"::")
 
 class QuestMarkerOverlay(object):
     def apply(self,chars,mainChar,displayChars):

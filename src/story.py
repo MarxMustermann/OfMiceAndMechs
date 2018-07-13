@@ -463,8 +463,8 @@ checking stored information
 entering interactive mode .................................
         """,autocontinue=True)
 
-        options = {"1":"nok","2":"ok","3":"nok"}
-        niceOptions = {"1":"Karl Weinberg","2":mainChar.name,"3":"Susanne Kreismann"}
+        options = {1:"nok",2:"ok",3:"nok"}
+        niceOptions = {1:"Karl Weinberg",2:mainChar.name,3:"Susanne Kreismann"}
         text = "\nplease answer the question:\n\nwhat is your name?"
         cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
         cinematic.followUps = {"ok":self.step2,"nok":self.infoFail}
@@ -477,8 +477,8 @@ entering interactive mode .................................
         return
 
     def step2(self):
-        options = {"1":"ok","2":"nok","3":"nok"}
-        niceOptions = {"1":"A Pipe is used to transfer fluids","2":"A Grate is used to transfer fluids","3":"A Hutch is used to transfer fluids"}
+        options = {1:"ok",2:"nok",3:"nok"}
+        niceOptions = {1:"A Pipe is used to transfer fluids",2:"A Grate is used to transfer fluids",3:"A Hutch is used to transfer fluids"}
         text = "\nplease select the true statement:\n\n"
         cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
         cinematic.followUps = {"ok":self.step3,"nok":self.infoFail}
@@ -486,8 +486,8 @@ entering interactive mode .................................
         cinematics.cinematicQueue.append(cinematic)
 
     def step3(self):
-        options = {"1":"ok","2":"nok","3":"nok"}
-        niceOptions = {"1":"Rust is the oxide of iron. Rust is the most common form of corrosion","2":"Rust is the oxide of iron. Corrosion in form of Rust is common","3":"*deny answer*"}
+        options = {1:"ok",2:"nok",3:"nok"}
+        niceOptions = {1:"Rust is the oxide of iron. Rust is the most common form of corrosion",2:"Rust is the oxide of iron. Corrosion in form of Rust is common",3:"*deny answer*"}
         text = "\nplease repeat the definition of rust\n\n"
         cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
         cinematic.followUps = {"ok":self.step4,"nok":self.infoFail}
@@ -816,8 +816,8 @@ do things the most efficent way. It will even try to handle conversion, wich doe
                         options[str(counter)] = quest
                         niceOptions[str(counter)] = quest.description.split("\n")[0]
                         counter += 1
-                    options = {"1":self.fireFurnaces,"2":self.noFurnaceFirering}
-                    niceOptions = {"1":"Yes","2":"No"}
+                    options = {1:self.fireFurnaces,2:self.noFurnaceFirering}
+                    niceOptions = {1:"Yes",2:"No"}
                     subSelf.submenue = interaction.SelectionMenu("Say, do you like Furnaces?",options,niceOptions)
 
                 return False
@@ -875,8 +875,8 @@ class FindWork(BasicPhase):
 
         super().start()
 
-        options = {"1":"yes","2":"no"}
-        niceOptions = {"1":"Yes","2":"No"}
+        options = {1:"yes",2:"no"}
+        niceOptions = {1:"Yes",2:"No"}
         text = "you look like a fresh one. Were you sent to report for duty?"
         cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
         cinematic.followUps = {"yes":self.getIntroInstant,"no":self.tmpFail}
@@ -985,8 +985,8 @@ class FindWork(BasicPhase):
                         niceOptions = {}
                         counter = 1
                         for quest in terrain.waitingRoom.quests:
-                            options[str(counter)] = quest
-                            niceOptions[str(counter)] = quest.description.split("\n")[0]
+                            options[counter] = quest
+                            niceOptions[counter] = quest.description.split("\n")[0]
                             counter += 1
                         self.submenue = interaction.SelectionMenu("select the quest",options,niceOptions)
 

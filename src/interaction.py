@@ -543,8 +543,9 @@ class SubMenu(object):
         super().__init__()
 
     def setSelection(self, query, options, niceOptions):
-        self.options = options
-        self.niceOptions = niceOptions
+        import collections
+        self.options = collections.OrderedDict(sorted(options.items()))
+        self.niceOptions = collections.OrderedDict(sorted(niceOptions.items()))
         self.query = query
         self.selectionIndex = 1
         self.lockOptions = True
@@ -562,14 +563,12 @@ class SubMenu(object):
                 self.selectionIndex -= 1
                 if self.selectionIndex == 0:
                     self.selectionIndex = len(self.options)
-                key = self.selectionIndex
             if key == "s":
                 self.selectionIndex += 1
                 if self.selectionIndex > len(self.options):
                     self.selectionIndex = 1
-                key = self.selectionIndex
             if key in ["enter","j","k"]:
-                key = str(self.selectionIndex)
+                key = list(self.options.items())[self.selectionIndex-1][0]
 
             if key in self.options:
                 self.selection = self.options[key]
@@ -580,11 +579,13 @@ class SubMenu(object):
         else:
              self.lockOptions = False
 
+        counter = 0
         for k,v in self.niceOptions.items():
-            if k == str(self.selectionIndex):
-                out += k+" ->"+str(v)+"\n"
+            counter += 1
+            if counter == self.selectionIndex:
+                out += str(k)+" ->"+str(v)+"\n"
             else:
-                out += k+" - "+str(v)+"\n"
+                out += str(k)+" - "+str(v)+"\n"
 
         main.set_text((urwid.AttrSpec("default","default"),self.persistentText+"\n\n"+out))
 
@@ -629,8 +630,8 @@ class ChatPartnerselection(SubMenu):
                 for char in mainChar.room.characters:
                     if char == mainChar:
                         continue
-                    options[str(counter)] = char
-                    niceOptions[str(counter)] = char.name
+                    options[counter] = char
+                    niceOptions[counter] = char.name
                     counter += 1
             self.setSelection("talk with whom?",options,niceOptions)
 
@@ -720,16 +721,16 @@ class ChatMenu(SubMenu):
                 niceOptions = {}
                 counter = 1
                 for option in self.partner.getChatOptions(mainChar):
-                    options[str(counter)] = option
-                    niceOptions[str(counter)] = option.dialogName
+                    options[counter] = option
+                    niceOptions[counter] = option.dialogName
                     counter += 1
 
-                options[str(counter)] = "showQuests"
-                niceOptions[str(counter)] = "what are you dooing?"
+                options[counter] = "showQuests"
+                niceOptions[counter] = "what are you dooing?"
                 counter += 1
 
-                options[str(counter)] = "exit"
-                niceOptions[str(counter)] = "let us proceed, "+self.partner.name
+                options[counter] = "exit"
+                niceOptions[counter] = "let us proceed, "+self.partner.name
                 counter += 1
 
                 self.setSelection("answer:",options,niceOptions)
@@ -911,13 +912,13 @@ class AdvancedQuestMenu(SubMenu):
             if not self.options and not self.getSelection():
                 options = {}
                 niceOptions = {}
-                options["1"] = mainChar
-                niceOptions["1"] = mainChar.name+" (you)"
+                options[1] = mainChar
+                niceOptions[1] = mainChar.name+" (you)"
                 counter = 1
                 for char in mainChar.subordinates:
                     counter += 1
-                    options[str(counter)] = char
-                    niceOptions[str(counter)] = char.name
+                    options[counter] = char
+                    niceOptions[counter] = char.name
                 self.setSelection("whom to give the order to: ",options,niceOptions)
 
             if not self.getSelection():
@@ -933,8 +934,8 @@ class AdvancedQuestMenu(SubMenu):
 
         if self.state == "questSelection":
             if not self.options and not self.getSelection():
-                options = {"1":quests.MoveQuest,"2":quests.ActivateQuest,"3":quests.EnterRoomQuest,"4":quests.FireFurnaceMeta,"5":quests.ClearRubble,"6":quests.ConstructRoom,"7":quests.StoreCargo,"8":quests.WaitQuest,"9":quests.LeaveRoomQuest}
-                niceOptions = {"1":"MoveQuest","2":"ActivateQuest","3":"EnterRoomQuest","4":"FireFurnaceMeta","5":"ClearRubble","6":"ConstructRoom","7":"StoreCargo","8":"WaitQuest","9":"LeaveRoomQuest"}
+                options = {1:quests.MoveQuest,2:quests.ActivateQuest,3:quests.EnterRoomQuest,4:quests.FireFurnaceMeta,5:quests.ClearRubble,6:quests.ConstructRoom,7:quests.StoreCargo,8:quests.WaitQuest,9:quests.LeaveRoomQuest}
+                niceOptions = {1:"MoveQuest",2:"ActivateQuest",3:"EnterRoomQuest",4:"FireFurnaceMeta",5:"ClearRubble",6:"ConstructRoom",7:"StoreCargo",8:"WaitQuest",9:"LeaveRoomQuest"}
                 self.setSelection("what type of quest:",options,niceOptions)
 
             if not self.getSelection():
@@ -958,8 +959,8 @@ class AdvancedQuestMenu(SubMenu):
                     for room in terrain.rooms:
                         if isinstance(room,rooms.MechArmor) or isinstance(room,rooms.CpuWasterRoom):
                             continue
-                        options[str(counter)] = room
-                        niceOptions[str(counter)] = room.name
+                        options[counter] = room
+                        niceOptions[counter] = room.name
                         counter += 1
                     self.setSelection("select the room:",options,niceOptions)
 
@@ -982,8 +983,8 @@ class AdvancedQuestMenu(SubMenu):
                         for room in terrain.rooms:
                             if not isinstance(room,rooms.CargoRoom):
                                 continue
-                            options[str(counter)] = room
-                            niceOptions[str(counter)] = room.name
+                            options[counter] = room
+                            niceOptions[counter] = room.name
                             counter += 1
                         self.setSelection("select the room:",options,niceOptions)
 
@@ -1004,8 +1005,8 @@ class AdvancedQuestMenu(SubMenu):
                         for room in terrain.rooms:
                             if not isinstance(room,rooms.StorageRoom):
                                 continue
-                            options[str(counter)] = room
-                            niceOptions[str(counter)] = room.name
+                            options[counter] = room
+                            niceOptions[counter] = room.name
                             counter += 1
                         self.setSelection("select the room:",options,niceOptions)
 
@@ -1024,8 +1025,8 @@ class AdvancedQuestMenu(SubMenu):
 
         if self.state == "confirm":
             if not self.options and not self.getSelection():
-                options = {"1":"yes","2":"no"}
-                niceOptions = {"1":"yes","2":"no"}
+                options = {1:"yes",2:"no"}
+                niceOptions = {1:"yes",2:"no"}
                 if self.quest == quests.EnterRoomQuest:
                     self.setSelection("you chose the following parameters:\nroom: "+str(self.questParams)+"\n\nDo you confirm?",options,niceOptions)
                 else:

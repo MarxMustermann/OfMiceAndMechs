@@ -774,7 +774,7 @@ class ProductionArtwork(Item):
         super().__init__("U\\",xPosition,yPosition,name=name)
 
     def apply(self,character,resultType=None):
-        self.submenue = interaction.SelectionMenu("test",{"1":Pipe,"2":Wall},{"1":"pipe","2":"wall"})
+        self.submenue = interaction.SelectionMenu("test",{1:Pipe,2:Wall},{1:"pipe",2:"wall"})
         interaction.submenue = self.submenue
         interaction.submenue.followUp = self.produceSelection
 

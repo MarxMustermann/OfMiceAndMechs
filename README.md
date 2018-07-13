@@ -7,6 +7,7 @@ known-dependencies:
 * python3
 * python3-urwid
 * mplayer (for music)
+* pygame for python3 (for tile based mode)
 
 ## how to install and run the game 
 
@@ -22,6 +23,11 @@ known-dependencies:
 * start the game with:
   * cd into the OfMiceAndMechs
   * run with: python3 executeMe.py
+
+* for tile based:
+  * sudo apt-get python3-pip
+  * sudo pip3 install pygame
+  * run with: python3 executeMe.py -t
 
 ## biggest current issue
 

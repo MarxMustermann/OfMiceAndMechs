@@ -881,7 +881,7 @@ class CharacterInfoMenu(SubMenu):
         global submenue
 
         header.set_text((urwid.AttrSpec("default","default"),"\ncharacter overview"))
-        main.set_text((urwid.AttrSpec("default","default"),mainChar.getDetailedInfo()))
+        main.set_text((urwid.AttrSpec("default","default"),[mainChar.getDetailedInfo(),"\ntick: "+str(gamestate.tick)]))
         header.set_text((urwid.AttrSpec("default","default"),""))
 
 class AdvancedQuestMenu(SubMenu):

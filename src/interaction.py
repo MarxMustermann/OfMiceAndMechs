@@ -530,7 +530,7 @@ def show_or_exit(key):
         main.set_text((urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible()));
 
         if (useTiles):
-            canvas.setPygameDisplay(pydisplay,pygame)
+            canvas.setPygameDisplay(pydisplay,pygame,tileSize)
 
 class SubMenu(object):
     def __init__(self):

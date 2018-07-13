@@ -134,7 +134,7 @@ class Canvas(object):
             out.append("\n")
         return out
 
-    def setPygameDisplay(self,pydisplay,pygame):
+    def setPygameDisplay(self,pydisplay,pygame,tileSize):
         
         pydisplay.fill((0,0,0))
         counterY = 0
@@ -144,7 +144,9 @@ class Canvas(object):
                 if isinstance(char, int):
                     try:
                         image = self.tileMapping.indexedMapping[char]
-                        pydisplay.blit(image,(counterX*11, counterY*11))
+                        if not tileSize == 10:
+                            image = pygame.transform.scale(image,(int(tileSize*(image.get_width()/10)),int(tileSize*(image.get_height()/10))))
+                        pydisplay.blit(image,(counterX*(tileSize+1), counterY*(tileSize+1)))
                     except:
                         pass
                 counterX += 1

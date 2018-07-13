@@ -23,6 +23,7 @@ parser.add_argument("--unicode", action="store_true", help="force fallback encod
 parser.add_argument("-d", "--debug", action="store_true", help="enable debug mode")
 parser.add_argument("-m", "--music", action="store_true", help="enable music (downloads stuff and runs mplayer!)")
 parser.add_argument("-t", "--tiles", action="store_true", help="spawn a tile based view of the map (requires pygame)")
+parser.add_argument("-ts", "--tileSize", type=int, help="the base size of tiles")
 args = parser.parse_args()
 
 import src.canvas as canvas
@@ -301,7 +302,11 @@ interaction.advanceGame = advanceGame
 if args.tiles:
     import pygame
     pygame.init()
-    pydisplay = pygame.display.set_mode((440, 440))
+    if args.tileSize:
+        interaction.tileSize = args.tileSize
+    else:
+        interaction.tileSize = 10
+    pydisplay = pygame.display.set_mode((41*(interaction.tileSize+1), 41*(interaction.tileSize+1)))
     pygame.display.set_caption('Of Mice and Mechs')
     pygame.display.update()
     interaction.pygame = pygame

@@ -1165,9 +1165,9 @@ def renderQuests(maxQuests=0,char=None, asList=False, questIndex=0):
         for quest in char.quests:
             if asList:
                 if counter == questIndex:
-                    txt.extend([(urwid.AttrSpec("#0f0","default"),"QUEST: "),quest.getDescription(asList=asList,colored=True),"\n"])
+                    txt.extend([(urwid.AttrSpec("#0f0","default"),"QUEST: "),quest.getDescription(asList=asList,colored=True,active=True),"\n"])
                 else:
-                    txt.extend(["QUEST: ",quest.getDescription(asList=asList),"\n"])
+                    txt.extend([(urwid.AttrSpec("#090","default"),"QUEST: "),quest.getDescription(asList=asList,colored=True),"\n"])
             else:
                 txt+= "QUEST: "+quest.getDescription(asList=asList)+"\n"
             counter += 1

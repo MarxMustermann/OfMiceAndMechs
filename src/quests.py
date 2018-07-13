@@ -51,11 +51,15 @@ class Quest(object):
     def fail(self):
         self.postHandler()
     
-    def getDescription(self,asList=False,colored=False):
+    def getDescription(self,asList=False,colored=False,active=False):
         if asList:
             if colored:
                 import urwid
-                return [[(urwid.AttrSpec("#090","default"),self.description),"\n"]]
+                if active:
+                    color = "#0f0"
+                else:
+                    color = "#090"
+                return [[(urwid.AttrSpec(color,"default"),self.description),"\n"]]
             else:
                 return [[self.description,"\n"]]
         else:
@@ -908,11 +912,15 @@ class MetaQuestSequence(Quest):
                 out += "    x "+"\n      ".join(quest.description.split("\n"))+"\n"
         return out
 
-    def getDescription(self,asList=False,colored=False):
+    def getDescription(self,asList=False,colored=False,active=False):
         if asList:
             if colored:
                 import urwid
-                out = [[[(urwid.AttrSpec("#090","default"),self.metaDescription+":")],"\n"]]
+                if active:
+                    color = "#0f0"
+                else:
+                    color = "#090"
+                out = [[[(urwid.AttrSpec(color,"default"),self.metaDescription+":")],"\n"]]
             else:
                 out = [[self.metaDescription+":","\n"]]
         else:
@@ -924,12 +932,16 @@ class MetaQuestSequence(Quest):
                 if quest.active:
                     if colored:
                         import urwid
-                        deko = (urwid.AttrSpec("#090","default"),"  > ")
+                        if active:
+                            color = "#0f0"
+                        else:
+                            color = "#090"
+                        deko = (urwid.AttrSpec(color,"default"),"  > ")
                     else:
                         deko = "  > "
                 else:
                     deko = "  x "
-                for item in quest.getDescription(asList=asList,colored=colored):
+                for item in quest.getDescription(asList=asList,colored=colored,active=active):
                     if not first:
                         deko = "    "
                     out.append([deko,item])
@@ -1041,15 +1053,21 @@ class MetaQuestParralel(Quest):
             #messages.append(e)
             return None
 
-    def getDescription(self,asList=False,colored=False):
+    def getDescription(self,asList=False,colored=False,active=False):
         if asList:
             if colored:
                 import urwid
-                out = [[(urwid.AttrSpec("#090","default"),self.metaDescription+":"),"\n"]]
+                if active:
+                    color = "#0f0"
+                else:
+                    color = "#090"
+                out = [[(urwid.AttrSpec(color,"default"),self.metaDescription+":"),"\n"]]
             else:
                 out = [[self.metaDescription+":\n"]]
         else:
             out = ""+self.metaDescription+":\n"
+
+        counter = 0
         for quest in self.subQuests:
             if asList:
                 questDescription = []
@@ -1068,10 +1086,18 @@ class MetaQuestParralel(Quest):
 
                 if colored:
                     import urwid
-                    deko = (urwid.AttrSpec("#090","default"),deko)
+                    if active and quest == self.lastActive:
+                        color = "#0f0"
+                    else:
+                        color = "#090"
+                    deko = (urwid.AttrSpec(color,"default"),deko)
 
                 first = True
-                for item in quest.getDescription(asList=asList,colored=colored):
+                if quest == self.lastActive:
+                    descriptions = quest.getDescription(asList=asList,colored=colored,active=active)
+                else:
+                    descriptions = quest.getDescription(asList=asList,colored=colored)
+                for item in descriptions:
                     if not first:
                         deko = "    "
                     out.append([deko,item])
@@ -1089,6 +1115,7 @@ class MetaQuestParralel(Quest):
                     out += "  * "+questDescription
                 else:
                     out += "XXXX"+questDescription
+            counter += 1
         return out
 
     @property

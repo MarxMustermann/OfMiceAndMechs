@@ -1261,7 +1261,8 @@ XXXXXXXXXX
         while x>dstX:
             x = x-1
             path.append((x,y))
-        return path
+        import src.gameMath as gameMath
+        return gameMath.removeLoops(path)
 
     def addItems(self,items):
         super().addItems(items)

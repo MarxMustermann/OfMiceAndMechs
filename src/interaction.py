@@ -504,7 +504,10 @@ def show_or_exit(key):
         specialRender = True        
         pauseGame = True
 
-        success = submenue.handleKey(key)
+        if not key in (commandChars.autoAdvance):
+            success = submenue.handleKey(key)
+        else:
+            success = False
 
         if key in ["esc"] or success:
             submenue = None

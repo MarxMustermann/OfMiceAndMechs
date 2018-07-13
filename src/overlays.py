@@ -2,11 +2,7 @@ class PathsOverlay(object):
     def apply(self,chars,terrain):
         if not terrain.hidden:
             import urwid
-            grey = urwid.AttrSpec("#888","black")
-            lightGrey = urwid.AttrSpec("#ccc","black")
-            yellow = urwid.AttrSpec("#ff5","black")
-            lightYellow = urwid.AttrSpec("#ff5","black")
-            white = urwid.AttrSpec("#fff","black")
+            grey = urwid.AttrSpec("#666","black")
             for dualPair,path in terrain.foundPaths.items():
                 for coordinate in path:
                     chars[coordinate[1]][coordinate[0]] =  (grey,"::")

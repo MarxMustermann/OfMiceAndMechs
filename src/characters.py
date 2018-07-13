@@ -102,6 +102,8 @@ class Character():
             else:
                 debugMessages.append("this should not happen, character tried to go sowhere but is nowhere")
                 self.path = []
+        else:
+            self.path = []
 
     def addToInventory(self,item):
         self.inventory.append(item)

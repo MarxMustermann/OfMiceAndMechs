@@ -12,6 +12,7 @@ class BasicCinematic(object):
     def __init__(self):
         self.background = False
         self.followUp = None
+        self.skipable = False
 
     def advance(self):
         return False
@@ -32,8 +33,7 @@ class InformationTransfer(BasicCinematic):
 
         if self.position < len(self.information):
             header.set_text(self.information[self.position][0])
-            main.set_text(self.information[self.position][1])
-
+            main.set_text(self.information[self.position][1]) 
             self.position += 1
 
             self.alarm = loop.set_alarm_in(0.2, callShow_or_exit, '~')
@@ -43,6 +43,7 @@ class InformationTransfer(BasicCinematic):
             main.set_text("done")
             self.alarm = loop.set_alarm_in(0, callShow_or_exit, ' ')
             self.triggered = True
+            self.skipable = True
             return False
         else:
             return False
@@ -107,6 +108,7 @@ class MessageZoomCinematic(BasicCinematic):
                 self.turnOffCounter -= 1
             else:
                 self.alarm = loop.set_alarm_in(0.2, callShow_or_exit, ' ')
+                self.skipable = True
                 return False
 
         self.alarm = loop.set_alarm_in(0.2, callShow_or_exit, '~')
@@ -178,6 +180,7 @@ class ScrollingTextCinematic(BasicCinematic):
             addition = ""
         else:
             baseText = self.text
+            self.skipable = True
             if not self.autocontinue:
                 addition = "\n\n-- press space to proceed -- "
                 self.alarm = loop.set_alarm_in(0, callShow_or_exit, '~')
@@ -219,6 +222,7 @@ class ShowQuestExecution(BasicCinematic):
             self.background = True
             self.active = False
         self.alarm = None
+        self.skipable = True
 
     def setup(self):
         self.wasSetup = True
@@ -233,6 +237,7 @@ class ShowQuestExecution(BasicCinematic):
 
         if self.quest.completed:
             loop.set_alarm_in(0.0, callShow_or_exit, ' ')
+            self.skipable = True
             return True
 
         advanceGame()
@@ -277,6 +282,7 @@ class ShowGameCinematic(BasicCinematic):
 
         if not self.turns:
             loop.set_alarm_in(0.0, callShow_or_exit, ' ')
+            self.skipable = True
             return
                 
         advanceGame()
@@ -377,6 +383,7 @@ class ShowMessageCinematic(BasicCinematic):
 
         if self.breakCinematic:
             loop.set_alarm_in(0.0, callShow_or_exit, ' ')
+            self.skipable = True
             return False
 
         messages.append(self.message)

@@ -400,7 +400,7 @@ class Terrain(object):
             if not toTransport:
                 return
             quest = quests.MoveToStorage([self.tutorialLab.itemByCoordinates[toTransport.pop()][0]],self.tutorialStorageRooms[1])
-            quest.reputation = 1
+            quest.reputationReward = 1
             quest.endTrigger = addStorageQuest
             self.waitingRoom.quests.append(quest)
         addStorageQuest()

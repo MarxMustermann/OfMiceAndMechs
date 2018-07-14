@@ -1706,6 +1706,7 @@ class GetQuest(MetaQuestSequence):
         if self.active:
             if self.quest:
                 self.postHandler()
+        super().triggerCompletionCheck()
 
     @property
     def quest(self):
@@ -1869,7 +1870,7 @@ class StoreCargo(MetaQuestSequence):
 class MoveToStorage(MetaQuestParralel):
     def __init__(self, items, storageRoom):
         self.questList = []
-		    
+            
         amount = len(items)
         freeSpace = len(storageRoom.storageSpace)
         if freeSpace < amount:

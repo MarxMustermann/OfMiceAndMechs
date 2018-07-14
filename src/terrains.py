@@ -381,8 +381,6 @@ class Terrain(object):
                 self.superNodePaths[(startNode,endNode)] = self.findWayNodeBased(start,end,[self.superNodes[startNode]])
         """
 
-        print(self.superNodePaths)
-
         self.superNodePaths
         self.overlay = self.addWatershedOverlay
         self.overlay = None

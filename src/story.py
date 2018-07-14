@@ -919,6 +919,9 @@ class FindWork(BasicPhase):
         terrain.waitingRoom.firstOfficer.basicChatOptions.append(ReReport)
 
     def end(self):
+        hopperDutyQuest = quests.HopperDuty(terrain.waitingRoom)
+        mainChar.assignQuest(hopperDutyQuest,active=True)
+
         class JobChat(interaction.SubMenu):
             dialogName = "Can you use some help?"
             def __init__(subSelf,partner):
@@ -941,7 +944,7 @@ class FindWork(BasicPhase):
                             quest = quests.MoveQuestMeta(terrain.tutorialMachineRoom,3,3)
                             phase = FirstTutorialPhase()
                             quest.endTrigger = phase.start
-                            mainChar.assignQuest(quest,active=True)
+                            hopperDutyQuest.addQuest(quest)
                             subSelf.dispatchedPhase = True
                     else:
                         subSelf.persistentText = "Not right now"
@@ -998,13 +1001,10 @@ class FindWork(BasicPhase):
 
                         return True
                 else:
-                    mainChar.assignQuest(self.selectedQuest,active=True)
+                    hopperDutyQuest.addQuest(self.selectedQuest)
                     terrain.waitingRoom.quests.remove(self.selectedQuest)
                     self.done = True
                     return True
-
-        quest = quests.HopperDuty(terrain.waitingRoom)
-        mainChar.assignQuest(quest,active=True)
 
         class ProofOfWorth(object):
             def __init__(subself,tick,toCancel=[]):

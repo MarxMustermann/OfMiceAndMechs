@@ -1702,6 +1702,11 @@ class GetQuest(MetaQuestSequence):
         super().__init__(self.questList)
         self.metaDescription = "get Quest"
 
+    def triggerCompletionCheck(self):
+        if self.active:
+            if self.quest:
+                self.postHandler()
+
     @property
     def quest(self):
         return self.getQuest.quest

@@ -386,6 +386,24 @@ class Terrain(object):
         self.superNodePaths
         self.overlay = self.addWatershedOverlay
         self.overlay = None
+                    
+        # add some tasks to keep npc busy
+        toTransport = []
+        x = 12
+        while x > 8:
+            y = 1
+            while y < 9:
+                toTransport.append((y,x))
+                y += 1
+            x -= 1
+        def addStorageQuest():
+            if not toTransport:
+                return
+            quest = quests.MoveToStorage([self.tutorialLab.itemByCoordinates[toTransport.pop()][0]],self.tutorialStorageRooms[1])
+            quest.reputation = 1
+            quest.endTrigger = addStorageQuest
+            self.waitingRoom.quests.append(quest)
+        addStorageQuest()
 
     def removeCharacter(self,character):
         self.characters.remove(character)

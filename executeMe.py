@@ -81,6 +81,7 @@ gamestate.phasesByName = phasesByName
 # HACK: common variables with modules
 cinematics.quests = quests
 story.quests = quests
+terrains.quests = quests
 
 # HACK: common variables with modules
 story.rooms = rooms

@@ -944,6 +944,7 @@ class FindWork(BasicPhase):
                             quest = quests.MoveQuestMeta(terrain.tutorialMachineRoom,3,3)
                             phase = FirstTutorialPhase()
                             quest.endTrigger = phase.start
+				            hopperDutyQuest.actualQuest = self.selectedQuest
                             hopperDutyQuest.addQuest(quest)
                             subSelf.dispatchedPhase = True
                     else:
@@ -980,6 +981,8 @@ class FindWork(BasicPhase):
                     self.firstRun = False
 
                 if not self.selectedQuest:
+				    if hopperDutyQuest.actualQuest:
+                        self.persistentText = "you already have a quest. Complete it and you can get a new one."
                     if terrain.waitingRoom.quests:
                         self.persistentText = "Well, yes."
                         self.set_text(self.persistentText)
@@ -995,12 +998,13 @@ class FindWork(BasicPhase):
 
                         return False
                     else:
-                        self.persistentText = "No"
+                        self.persistentText = "Not right now. Ask again later"
                         self.set_text(self.persistentText)
                         self.done = True
 
                         return True
                 else:
+				    hopperDutyQuest.actualQuest = self.selectedQuest
                     hopperDutyQuest.addQuest(self.selectedQuest)
                     terrain.waitingRoom.quests.remove(self.selectedQuest)
                     self.done = True

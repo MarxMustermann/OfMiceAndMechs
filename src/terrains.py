@@ -180,7 +180,7 @@ class Terrain(object):
                 rowCounter += 1
             lineCounter += 1
 
-        self.testItems = [items.Scrap(25,77,3),items.Scrap(25,77,3),items.Scrap(26,77,3),items.Scrap(25,78,3),items.Scrap(27,78,3),items.Scrap(25,78,3),items.Scrap(26,76,3),items.Scrap(25,76,3),items.Scrap(24,77,3),items.Scrap(24,76,3)]
+        self.testItems = [items.Scrap(20,52,3),items.Scrap(19,53,3),items.Scrap(20,51,3),items.Scrap(18,49,3),items.Scrap(21,53,3),items.Scrap(19,48,3),items.Scrap(20,52,3),items.Scrap(20,48,3),items.Scrap(18,50,3),items.Scrap(18,51,3)]
         self.addItems(self.testItems)
 
         self.addRooms(roomsOnMap)
@@ -961,65 +961,65 @@ X X X C C C C C X X X """
                X#           #X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
                X#           #X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
                XXXXXXXXXXXX#XX               XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX            X               
-                  ###  ###        ######                                                                                                     XXXXXXXXX               
-               ####O####O####  ####O  O##### ##       O   #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               # R          #  #R        R#   #R        R #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #O          O# ##          ## ##           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #            # #O          O# #O          O#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #            # #            # ##           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #O          O# #            #  #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #            # #            # ##           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #            ####           ###O          O#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #O          O ##O          O# ##           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               ##          # ###          ##  #          #####           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-                          R  #  R        R     R        R XXXX           XXXXXXXXXXXXXX XXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
-               XX  O    O    ####O#   ##O####    O8   O    X              X X X X X X X X X X X X X X                                                X               
-               XX               ### X  ###        8        X     X                                                                                   X               
-                  X  O   O          XX     ##     8        X     X                                                                                   X              
-               X X                                8        X     X                                                                    XXXXXXXXXXXXXXXX              
-                                                  8        XXXXXXX                                                                     X#X          #X               
-                                                                                                                                       X#X          #X               
-                                                                                                                                       X#X          #X               
-                                                                                                                                       X#X          #X               
-                                                                                                                                       X#X          #X               
-                                                                                                                                       X#X          #X               
-                                                                                                                                       X#X          #X               
-                                                                                                                                       X#X          #X               
-                                                                                                                                       X#X          #X               
-                                                                                                                                       X#X          #X               
-                                                                                                                                       X#X          #X               
-                                                                                                                                       X#x          #X               
-                XXXX                                                                                                                     X                           
-                                                                                                                                       X X          #X               
-               XXXXXXXXXXXX#XX               X#####    ######              X#            X               X#           #X               X             X               
-               X                             X   R        R#X            #XX#            XX#           #XX#           #X               X#X                           
-               X#           #X               X             #X#           #XX#            XX#           #XX#           #X               X#X          #X               
-               X#           #X               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#           #X               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#           #X               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
+                  ###  ###                                                                                                                   XXXXXXXXX               
+               ####O####O####      O  O       ################           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               # R          #   R        R    #R        R #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #O          O#  O             ##           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #            # ##          O  #O          O#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #            # #              ##           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #O          O# #               #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #            # #              ##          ##XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #            ####             #O          OXXX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #O          O#  O          O  ##           XXX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               ##          ##  X              #           XXX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
+               #X         RX####R        R    #R        R                XXXXXXXXXXXXXX XXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
+               #X          XXXX###### ########XXXX8  O                                                                                              X               
+               #X             XXXXXXX XXXXXXXXX   8                                                                                                  X               
+               #XXXXXXXXXX  X                     8                                                                                                  X              
+               ############ #X                    8                                                                                   XXXXXXXXXXXXXXXX              
+               XXXXXXXXXXX  #X                    8                                                                                    X#X          #X               
+                            #X                                                                                                         X#X          #X               
+                            #X                                                                                                         X#X          #X               
+                            #X                                                                                                         X#X          #X               
+                            #X                                                                                                         X#X          #X               
+                            #X                                                                                                         X#X          #X               
+                            #X                                                                                                         X#X          #X               
+                            #X                                                                                                         X#X          #X               
+                            #X                                                                                                         X#X          #X               
+                            #X                                                                                                         X#X          #X               
+                            #X                                                                                                         X#X          #X               
+                           ##X                                                                                                         X#X          #X               
+               XXXXXXXXXXX   X                                                                                                           X                           
+               #############                                                                                                           X X          #X               
+               XXXXXXXXXXXXXXX               X#####    #######            XX             XX             XX             X               X             X               
+               X          X                  X   R        R#X#           #XX#           #XX#           #XX#           #X               X#X                           
+               X#           XX               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
+               X#           XX               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
+               X#           XX               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
+               X#           XX               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
                X#                            X             #X#           #XX#           #XX#           #XX#           #X                            #X               
-               X#           #X               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#           #X               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#           #X               X             #X#                          #XX#           #XX#           #X               X#X          #X               
-               X#           #X               X   R        RXX#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#           #X               X             XX#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#           #X               X             XX#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#           #X               X             XX#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               XXXXXXXXXXXX #X               XXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               XXX           X               
-               XXXXXXXXXXXX #X               XXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               XXX           X               
-               XXXXXXXXX    #X               X#            X                                                                             X                           
-               X#      X    #X               X#           #XX#           #XX#           #XX#           #XX#           #X               X            #X               
-               X#           #X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#      X   X#X    X     X    X#           #XX#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#      X XXX                 X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
-               X#      X X   X                            #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
-               X#      X X  #XXXXXXXXXXXXXX  X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
-               X#      X X  #X               X#           #XX#           #XX#           #XX#           #XX#           #X X X XXXXX X X X#           #X               
-               X#      X X  #X     XXXXXXX   X#           #XX#           #XX#           #XX#           #XX#           #XXXX X       X XX#           #X               
-               X#      X    #X XXXXX     XXXXX#           #XX#           #XX#           #XX#           #XX#           #X X X X XXXXX X X#           #X               
-               XXXXXXXXX    #X     XXXXX X   X#           #XX#           #XX#           #XX#           #XX#           #X                            #X               
-               X#           #X         X X   X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
-               X#           #X              XX# XPXX   XP #XX# XPX    XPX#XX# XPX    XPX#XX# XPX    XPX#XX# XPX    XPX#X               X#           #X               
+               X#           XX               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
+               X#           XX               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
+               X#           XX               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
+               X#           XX               X   R        RXX#           #XX#           #XX#           #XX#           #X               X#X          #X               
+               X#           XX               X             XX#           #XX#           #XX#           #XX#           #X               X#X          #X               
+               X#      X    XX               X             XX#           #XX#           #XX#           #XX#           #X               X#X          #X               
+               X#      X    XX               X             XX#           #XX#           #XX#           #XX#           #X               X#X          #X               
+               X#XXXXXXX    XX               XXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               XXX           X               
+               X#########   #X               XXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               XXX           X               
+               XXXXXXXXX    #X       X       X#            X                                                                   X         X                           
+               X#      X    #X  X   XXX   X  X#           #XX#           #XX#           #XX#           #XX#           #X  X   XXX   X  X            #X               
+               X#           #X XXX  XXX  XXX X#           #XX#           #XX#           #XX#           #XX#           #X XXX  XXX  XXX X#X          #X               
+               X#      X    #X  X    X    X  X#           #XX#           #XX#           #XX#           #XX#           #X  X    X    X  X#X          #X               
+               X#      X    #XXXXXXX   XXXXXXX#           #XX#           #XX#           #XX#           #XX#           #XXXXXXX   XXXXXXX#           #X               
+               X#      X    #XX X XXX XXX X XX#           #XX#           #XX#           #XX#           #XX#           #XX X XXX XXX X XX#           #X               
+               X#      X    #XXXXXXX   XXXXXXX#           #XX#           #XX#           #XX#           #XX#           #XXXXXXX   XXXXXXX#           #X               
+               X#      X    #X  X    X    X  X#           #XX#           #XX#           #XX#           #XX#           #X  X    X    X  X#           #X               
+               X#      X    #X XXX  XXX  XXX X#           #XX#           #XX#           #XX#           #XX#           #X XXX  XXX  XXX X#           #X               
+               X#      X    #X  X   XXX   X  X#           #XX#           #XX#           #XX#           #XX#           #X  X   XXX   X  X#           #X               
+               XXXXXXXXX    #X       X       X#           #XX#           #XX#           #XX#           #XX#           #X       X                    #X               
+               X######### ###X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
+               X#XXXXXXX    #X               X# XPXX   XP #XX# XPX    XPX#XX# XPX    XPX#XX# XPX    XPX#XX# XPX    XPX#X               X#           #X               
                XXXXXXXXXXXX  X               XXXXC X XXXC XXXXXXC XXXXXC XXXXXXC  XXXXC XXXXXXC XX XXC XXXXXXC X XXXC XX               XX            X               
                X#XXXXXXXXXXX                     8      8       8      8       8      8       8      8       8      8                  X#            X               
                XX          X                                            .                                                              XX            X               

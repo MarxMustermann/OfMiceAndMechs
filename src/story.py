@@ -1010,7 +1010,8 @@ class FindWork(BasicPhase):
                 else:
                     hopperDutyQuest.getQuest.getQuest.quest = self.selectedQuest
                     hopperDutyQuest.getQuest.getQuest.recalculate()
-                    hopperDutyQuest.getQuest.recalculate()
+                    if hopperDutyQuest.getQuest:
+                        hopperDutyQuest.getQuest.recalculate()
                     terrain.waitingRoom.quests.remove(self.selectedQuest)
                     self.done = True
                     return True

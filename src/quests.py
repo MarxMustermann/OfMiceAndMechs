@@ -1866,6 +1866,25 @@ class StoreCargo(MetaQuestSequence):
         super().__init__(self.questList)
         self.metaDescription = "store cargo"
 
+class MoveToStorage(MetaQuestParralel):
+    def __init__(self, items, storageRoom):
+        self.questList = []
+		    
+        amount = len(items)
+        freeSpace = len(storageRoom.storageSpace)
+        if freeSpace < amount:
+            amount = freeSpace
+
+        startIndex = len(storageRoom.storedItems)
+        counter = 0
+        while counter < amount:
+            location = storageRoom.storageSpace[counter]
+            self.questList.append(TransportQuest(items.pop(),(storageRoom,location[0],location[1])))
+            counter += 1
+        super().__init__(self.questList)
+
+        self.metaDescription = "move to storage"
+
 class HandleDelivery(MetaQuestSequence):
     def __init__(self, cargoRooms=[],storageRooms=[]):
         self.cargoRooms = cargoRooms

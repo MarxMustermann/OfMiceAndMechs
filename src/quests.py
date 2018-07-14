@@ -1896,7 +1896,6 @@ class HandleDelivery(MetaQuestSequence):
         self.metaDescription = "ensure the cargo is moved to storage"
        
     def waitForQuestCompletion(self):
-        messages.append("wait add")
         quest = WaitForQuestCompletion(self.quest)
         quest.endTrigger = self.addNewStorageRoomQuest
         self.addQuest(quest)

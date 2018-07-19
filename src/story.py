@@ -834,13 +834,41 @@ do things the most efficent way. It will even try to handle conversion, wich doe
         self.didFurnaces = True
         say("go on and fire the furnace",firstOfficer)
         quest = quests.FireFurnace(furnace)
-        showQuest(quest,mainChar,trigger=self.trainingCompleted)
+        showQuest(quest,mainChar,trigger=self.examineStuff)
 
     def noFurnaceFirering(self):
         firstOfficer = terrain.wakeUpRoom.firstOfficer
         self.didFurnaces = False
 
-        showText("i understand. The burns are somewhat unpleasant",trigger=self.trainingCompleted)
+        showText("i understand. The burns are somewhat unpleasant",trigger=self.examineStuff)
+
+    def examineStuff(self):
+        showText("you can now examine the room and learn to find your way around. talk to me when you are done and we can proceed")
+        firstOfficer = terrain.wakeUpRoom.firstOfficer
+
+        class LetsGoChat(interaction.SubMenu):
+            dialogName = "i am ready to continue"
+            def __init__(subSelf,partner):
+                subSelf.state = None
+                subSelf.done = False
+                subSelf.persistentText = ""
+                subSelf.firstRun = True
+                subSelf.submenue = None
+                super().__init__()
+
+            def handleKey(subSelf, key):
+                if subSelf.firstRun:
+                    subSelf.persistentText = "let us continue then."
+                    subSelf.set_text(subSelf.persistentText)
+                    if LetsGoChat in firstOfficer.basicChatOptions:
+                        firstOfficer.basicChatOptions.remove(LetsGoChat)
+                    self.trainingCompleted()
+                    subSelf.firstRun = False
+                else:
+                    subSelf.done = True
+
+                return False
+        firstOfficer.basicChatOptions.append(LetsGoChat)
 
     def trainingCompleted(self):
         firstOfficer = terrain.wakeUpRoom.firstOfficer

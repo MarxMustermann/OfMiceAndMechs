@@ -701,8 +701,8 @@ class ChatMenu(SubMenu):
 
         if self.state == None:
             self.state = "mainOptions"
-            self.persistentText += self.partner.name+": \"Everything in Order, "+self.partner.name+"?\"\n"
-            self.persistentText += mainChar.name+": \"All sorted, "+mainChar.name+"!\"\n"
+            self.persistentText += self.partner.name+": \"Everything in Order, "+mainChar.name+"?\"\n"
+            self.persistentText += mainChar.name+": \"All sorted, "+self.partner.name+"!\"\n"
 
         if self.subMenu:
             if not self.subMenu.done:
@@ -754,8 +754,8 @@ class ChatMenu(SubMenu):
 
         if self.state == "done":
             if self.lockOptions:
-                self.persistentText += self.partner.name+": \"let us proceed, "+self.partner.name+".\"\n"
-                self.persistentText += mainChar.name+": \"let us proceed, "+mainChar.name+".\"\n"
+                self.persistentText += self.partner.name+": \"let us proceed, "+mainChar.name+".\"\n"
+                self.persistentText += mainChar.name+": \"let us proceed, "+self.partner.name+".\"\n"
                 self.lockOptions = False
             else:
                 return True

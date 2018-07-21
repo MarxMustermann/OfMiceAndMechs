@@ -569,6 +569,8 @@ class WakeUpPhase(BasicPhase):
         self.requiresMainCharRoomFirstOfficer = True
         self.requiresMainCharRoomSecondOfficer = False
 
+        mainChar.tutorialStart = gamestate.tick
+
         self.mainCharRoom = terrain.wakeUpRoom
 
         super().start()
@@ -840,7 +842,7 @@ do things the most efficent way. It will even try to handle conversion, wich doe
         firstOfficer = terrain.wakeUpRoom.firstOfficer
         self.didFurnaces = False
 
-        showText("i understand. The burns are somewhat unpleasant",trigger=self.examineStuff)
+        showText("i understand. The burns are somewhat unpleasant",trigger=self.iamready)
 
     def examineStuff(self):
         showText("you can now examine the room and learn to find your way around. talk to me when you are done and we can proceed")
@@ -862,13 +864,28 @@ do things the most efficent way. It will even try to handle conversion, wich doe
                     subSelf.set_text(subSelf.persistentText)
                     if LetsGoChat in firstOfficer.basicChatOptions:
                         firstOfficer.basicChatOptions.remove(LetsGoChat)
-                    self.trainingCompleted()
+                    self.iamready()
                     subSelf.firstRun = False
                 else:
                     subSelf.done = True
 
                 return False
         firstOfficer.basicChatOptions.append(LetsGoChat)
+
+    def iamready(self):
+        timeTaken = gamestate.tick-mainChar.tutorialStart
+        normTime = 500
+        text = "it took you "+str(timeTaken)+" ticks to do it. The allocated completion time is 500 ticks.\n\n"
+        if timeTaken > normTime:
+            text += "you better speed up and stop wasting time.\n\n"
+            showText(text)
+            self.trainingCompleted()
+        else:
+            text += "We are "+str(normTime-timeTaken)+" ticks ahead of plan. We need to make up for this. Please wait for "+str(normTime-timeTaken)+" ticks.\nIn order to not waste time, feel free to aks questions in the meantime.\n"
+            quest = quests.WaitQuest(lifetime=normTime-timeTaken)
+            showText(text)
+            showQuest(quest,mainChar,trigger=self.trainingCompleted)
+        
 
     def trainingCompleted(self):
         firstOfficer = terrain.wakeUpRoom.firstOfficer

@@ -45,6 +45,53 @@ ignoreNextAutomated = False
 ticksSinceDeath = None
 levelAutomated = 0
 
+footerInfo = []
+footerText = ""
+doubleFooterText = footerText+footerText
+footerPosition = 0
+footerLength = len(footerText)
+footerSkipCounter = 20
+
+def setFooter():
+    global footerInfo
+    global footerText
+    global doubleFooterText
+    global footerPosition
+    global footerLength
+    global footerSkipCounter
+
+    footerInfo = [
+    "@  = you",
+    "XX = Wall",
+    ":: = floor",
+    "[] = door",
+    "** = pipe",
+    "is = scrap",
+    "is = scrap",
+    "oo / öö = furnce",
+    "OO / 00 = growth tank",
+    "|| / // = lever",
+    "@a / @b ... @z = npcs",
+    "xX = quest marker (your current target)",
+    "press "+commandChars.show_help+" for help",
+    "press "+commandChars.move_north+" to move north",
+    "press "+commandChars.move_south+" to move south",
+    "press "+commandChars.show_quests+" for quests",
+    "press "+commandChars.show_quests_detailed+" for advanced quests",
+    "press "+commandChars.show_inventory+" for inventory",
+    "press "+commandChars.move_west+" to move west",
+    "press "+commandChars.move_east+" to move east",
+    "press "+commandChars.activate+" to activate",
+    "press "+commandChars.pickUp+" to pick up",
+    "press "+commandChars.hail+" to talk",
+    "press "+commandChars.drop+" to drop",
+    ]
+    footerText = ", ".join(footerInfo)+", "
+    doubleFooterText = footerText+footerText
+    footerPosition = 0
+    footerLength = len(footerText)
+    footerSkipCounter = 20
+
 commandHistory = []
 
 # HACK: remove unnessecary param
@@ -62,6 +109,26 @@ def show_or_exit(key):
     global submenue
     global ignoreNextAutomated
     global ticksSinceDeath
+
+    if key in ("lagdetection",):
+        if (not len(cinematics.cinematicQueue)) or cinematics.cinematicQueue[0].showFooter:
+            global footerPosition
+            global footerLength
+            global footerSkipCounter
+
+            if footerSkipCounter == 20:
+               footerSkipCounter = 0
+               screensize = loop.screen.get_cols_rows()
+               footer.set_text(doubleFooterText[footerPosition:screensize[0]-1+footerPosition])
+               if footerPosition == footerLength:
+                   footerPosition = 0
+               else:
+                   footerPosition += 1
+            footerSkipCounter += 1
+        else:
+            footerSkipCounter = 20
+            footer.set_text("")
+
 
     if key in ("lagdetection",):
         loop.set_alarm_in(0.1, callShow_or_exit, "lagdetection")

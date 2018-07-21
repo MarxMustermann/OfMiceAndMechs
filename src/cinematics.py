@@ -13,6 +13,7 @@ class BasicCinematic(object):
         self.background = False
         self.followUp = None
         self.skipable = False
+        self.showFooter = False
 
     def advance(self):
         return False
@@ -223,6 +224,7 @@ class ShowQuestExecution(BasicCinematic):
             self.active = False
         self.alarm = None
         self.skipable = True
+        self.showFooter = True
 
     def setup(self):
         self.wasSetup = True
@@ -276,6 +278,7 @@ class ShowGameCinematic(BasicCinematic):
         self.turns = turns
         self.endTrigger = None
         self.tickSpan = tickSpan
+        self.showFooter = True
 
     def advance(self):
         super().advance()
@@ -377,6 +380,7 @@ class ShowMessageCinematic(BasicCinematic):
 
         self.message = message
         self.breakCinematic = False
+        self.showFooter = True
 
     def advance(self):
         super().advance()

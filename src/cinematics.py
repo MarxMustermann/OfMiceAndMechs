@@ -137,7 +137,7 @@ class ScrollingTextCinematic(BasicCinematic):
         self.rusty = rusty
         self.autocontinue = autocontinue
         if not rusty:
-           self.footerText = "press any key to speed up cutscene"
+           self.footerText = "press any key to speed up cutscene (not space)"
         else:
            self.footerText = ""
 

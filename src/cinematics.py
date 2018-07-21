@@ -13,7 +13,8 @@ class BasicCinematic(object):
         self.background = False
         self.followUp = None
         self.skipable = False
-        self.showFooter = False
+        self.overwriteFooter = True
+        self.footerText = ""
 
     def advance(self):
         return False
@@ -135,6 +136,10 @@ class ScrollingTextCinematic(BasicCinematic):
         self.endTrigger = None
         self.rusty = rusty
         self.autocontinue = autocontinue
+        if not rusty:
+           self.footerText = "press any key to speed up cutscene"
+        else:
+           self.footerText = ""
 
 
         def flattenToPeseudoString(urwidText):
@@ -183,16 +188,15 @@ class ScrollingTextCinematic(BasicCinematic):
             baseText = self.text
             self.skipable = True
             if not self.autocontinue:
-                addition = "\n\n-- press space to proceed -- "
+                self.footerText = "press space to proceed"
                 self.alarm = loop.set_alarm_in(0, callShow_or_exit, '~')
             else:
-                addition = ""
                 self.alarm = loop.set_alarm_in(0, callShow_or_exit, ' ')
         if self.rusty:
             base = convert(baseText)
         else:
             base = [baseText]
-        base.append(addition)
+        base.append("")
         main.set_text(base)
         header.set_text("")
 
@@ -224,7 +228,7 @@ class ShowQuestExecution(BasicCinematic):
             self.active = False
         self.alarm = None
         self.skipable = True
-        self.showFooter = True
+        self.overwriteFooter = False
 
     def setup(self):
         self.wasSetup = True
@@ -278,7 +282,7 @@ class ShowGameCinematic(BasicCinematic):
         self.turns = turns
         self.endTrigger = None
         self.tickSpan = tickSpan
-        self.showFooter = True
+        self.overwriteFooter = False
 
     def advance(self):
         super().advance()
@@ -338,11 +342,6 @@ class SelectionCinematic(BasicCinematic):
     def advance(self):
         super().advance()
 
-        text = """
-please answer the question:
-
-what is your name?"""
-
         self.setUp()
         return True
 
@@ -380,7 +379,7 @@ class ShowMessageCinematic(BasicCinematic):
 
         self.message = message
         self.breakCinematic = False
-        self.showFooter = True
+        self.overwriteFooter = False
 
     def advance(self):
         super().advance()

@@ -111,7 +111,7 @@ def show_or_exit(key):
     global ticksSinceDeath
 
     if key in ("lagdetection",):
-        if (not len(cinematics.cinematicQueue)) or cinematics.cinematicQueue[0].showFooter:
+        if (not submenue) and (not len(cinematics.cinematicQueue) or not cinematics.cinematicQueue[0].overwriteFooter):
             global footerPosition
             global footerLength
             global footerSkipCounter
@@ -127,8 +127,10 @@ def show_or_exit(key):
             footerSkipCounter += 1
         else:
             footerSkipCounter = 20
-            footer.set_text("")
-
+            if not submenue:
+                footer.set_text(" "+cinematics.cinematicQueue[0].footerText)
+            else:
+                footer.set_text(" "+submenue.footerText)
 
     if key in ("lagdetection",):
         loop.set_alarm_in(0.1, callShow_or_exit, "lagdetection")
@@ -606,6 +608,7 @@ class SubMenu(object):
         self.selection = None
         self.selectionIndex = 1
         self.persistentText = ""
+        self.footerText = "press w / s to move selection up / down, press enter / j / k to select"
         self.followUp = None
         super().__init__()
 

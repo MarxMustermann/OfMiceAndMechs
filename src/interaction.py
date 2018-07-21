@@ -1277,7 +1277,7 @@ class HelpMenu(SubMenu):
     def handleKey(self, key):
         global submenue
 
-        header.set_text((urwid.AttrSpec("default","default"),"\nquest overview\n(press "+commandChars.show_quests_detailed+" for the extended quest menu)\n\n"))
+        header.set_text((urwid.AttrSpec("default","default"),"\nquest overview\n\n"))
 
         self.persistentText = ""
 

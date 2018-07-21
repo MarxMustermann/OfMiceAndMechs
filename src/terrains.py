@@ -988,7 +988,7 @@ X X X C C C C C X X X """
                #            ####             #O          OXXX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                #O          O#  O          O  ##           XXX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
                ##          ##  X              #           XXX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #X         RX####R        R    #R        R                XXXXXXXXXXXXXX XXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
+               #X         RX####R        R   ##R        R                XXXXXXXXXXXXXX XXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
                #X          XXXX###### ########XXXX8  O                                                                                              X               
                #X             XXXXXXX XXXXXXXXX   8                                                                                                  X               
                #XXXXXXXXXX  X                     8                                                                                                  X              

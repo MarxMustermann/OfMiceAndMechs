@@ -635,6 +635,7 @@ class BasicMovementTraining(BasicPhase):
     def __init__(self):
         self.name = "BasicMovementTraining"
         super().__init__()
+        self.didFurnaces = False
     
     def start(self):
         self.mainCharXPosition = 2
@@ -682,19 +683,19 @@ you can move using the keyboard.
         quest = quests.MoveQuest(terrain.wakeUpRoom,5,7)
         showQuest(quest,mainChar)
 
-        say("move to (2,7), please",firstOfficer)
+        say("move to the designated target, please",firstOfficer)
         quest = quests.MoveQuest(terrain.wakeUpRoom,2,7)
         showQuest(quest,mainChar)
-        say("move to (4,3), please",firstOfficer)
+        say("move to the designated target, please",firstOfficer)
         quest = quests.MoveQuest(terrain.wakeUpRoom,4,3)
         showQuest(quest,mainChar)
-        say("move to (4,4), please",firstOfficer)
+        say("move to the designated target, please",firstOfficer)
         quest = quests.MoveQuest(terrain.wakeUpRoom,4,4)
         showQuest(quest,mainChar)
-        say("move to (3,3), please",firstOfficer)
+        say("move to the designated target, please",firstOfficer)
         quest = quests.MoveQuest(terrain.wakeUpRoom,3,3)
         showQuest(quest,mainChar)
-        say("move to (6,6), please",firstOfficer)
+        say("move to the designated target, please",firstOfficer)
         quest = quests.MoveQuest(terrain.wakeUpRoom,6,6)
         showQuest(quest,mainChar)
         say("great. You seemed be able to coordinate yourself",firstOfficer)
@@ -788,8 +789,29 @@ do things the most efficent way. It will even try to handle conversion, wich doe
                     subSelf.done = True
                     return True
 
-        class FurnaceChat(interaction.SubMenu):
+        class FirstChat(interaction.SubMenu):
             dialogName = "You wanted to have a chat"
+            def __init__(subSelf,partner):
+                subSelf.done = False
+                subSelf.persistentText = ""
+                subSelf.firstRun = True
+                super().__init__()
+
+            def handleKey(subSelf, key):
+                if subSelf.firstRun:
+                    subSelf.persistentText = "indeed.\n\nI am "+firstOfficer.name+" and do the acceptance tests. This means i order you to do some things and you will comply.\n\nYour implant will store the orders given. When you press q you will get a list of your current orders. Try to get familiar with the implant,\nit is an important tool for keeping things in order.\n\nDo not mind that the tests seem somewhat without purpose, protocol demands them and after you complete the test you will serve as an hooper on the Falkenbaum."
+                    messages.append("press q to see your questlist")
+                    interaction.submenue = None
+                    subSelf.set_text(subSelf.persistentText)
+                    firstOfficer.basicChatOptions.remove(FirstChat)
+                    self.examineStuff()
+                    return False
+                else:
+                    subSelf.done = True
+                    return True
+
+        class FurnaceChat(interaction.SubMenu):
+            dialogName = "What are these machines in this room?"
             def __init__(subSelf,partner):
                 subSelf.state = None
                 subSelf.partner = partner
@@ -812,7 +834,7 @@ do things the most efficent way. It will even try to handle conversion, wich doe
                         return True
 
                 if subSelf.firstRun:
-                    subSelf.persistentText = "yes.\n\nI am "+mainChar.name+" and do the acceptance tests. After you complete the test you will serve as an hooper on the Falkenbaum"
+                    subSelf.persistentText = ["There are some growth tanks (",displayChars.indexedMapping[displayChars.growthTank_filled],"/",displayChars.indexedMapping[displayChars.growthTank_unfilled],"), walls (",displayChars.indexedMapping[displayChars.wall],"), a pile of coal (",displayChars.indexedMapping[displayChars.pile],") and a furnace (",displayChars.indexedMapping[displayChars.furnace_inactive],"/",displayChars.indexedMapping[displayChars.furnace_active],")."]
                     subSelf.set_text(subSelf.persistentText)
                     firstOfficer.basicChatOptions.append(InfoChat)
                                 
@@ -825,32 +847,61 @@ do things the most efficent way. It will even try to handle conversion, wich doe
                         counter += 1
                     options = {1:self.fireFurnaces,2:self.noFurnaceFirering}
                     niceOptions = {1:"Yes",2:"No"}
-                    subSelf.submenue = interaction.SelectionMenu("Say, do you like Furnaces?",options,niceOptions)
+                    subSelf.submenue = interaction.SelectionMenu("Say, do you like furnaces?",options,niceOptions)
 
                 return False
                    
+        firstOfficer.basicChatOptions.append(FirstChat)
         firstOfficer.basicChatOptions.append(FurnaceChat)
 
     def fireFurnaces(self):
         firstOfficer = terrain.wakeUpRoom.firstOfficer
         furnace = terrain.wakeUpRoom.furnace
 
-        showText("you are in luck. We have a furnace for training purposes.")
-        quest = quests.MoveQuest(terrain.wakeUpRoom,furnace.xPosition,furnace.yPosition-1)
-        showQuest(quest,mainChar)
+        showText("you are in luck. The furnace is for training and you are free to use it.\n\nYou need something to burn in the furnace first, so fetch some coal from the pile and then you can light the furnace.\nIt will stop burning after some ticks so keeping a fire burning can get quite tricky sometimes.\nPress i to check your inventory and see how much coal you have on you.")
+        showText(["""Here is an example on how to do this:\n\nImagine you are standing next to a pile of coal
+
+""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],"""
+""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.main_char],displayChars.indexedMapping[displayChars.floor],"""
+""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.furnace_inactive],displayChars.indexedMapping[displayChars.pile],displayChars.indexedMapping[displayChars.floor],"""
+""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],"""
+
+take a piece of coal by pressing """+commandChars.move_south+""" to walk against the pile and activating it by pressing """+commandChars.activate+""" immediatly afterwards.
+
+You may press """+commandChars.show_inventory+""" to confirm you have a piece of coal in your inventory.
+
+To activate the furnace press """+commandChars.move_west+""" to move next to it, press s to walk against it and press """+commandChars.activate+""" immediatly afterwards to activate it.
+
+If you check your inventory afterwards you will see that you have on piece of coal less than before."""]) 
         self.didFurnaces = True
         say("go on and fire the furnace",firstOfficer)
         quest = quests.FireFurnace(furnace)
-        showQuest(quest,mainChar,trigger=self.examineStuff)
+        showQuest(quest,mainChar)
 
     def noFurnaceFirering(self):
         firstOfficer = terrain.wakeUpRoom.firstOfficer
-        self.didFurnaces = False
 
         showText("i understand. The burns are somewhat unpleasant",trigger=self.iamready)
 
     def examineStuff(self):
-        showText("you can now examine the room and learn to find your way around. talk to me when you are done and we can proceed")
+        showText("""you can now examine the room and learn to find your way around. talk to me when you are done and we can proceed""")
+        showText(["""Here is an example on how to do this:\n\nWalk onto or against the items you want to examine and press e directly afterwards to examine something.\nImagine you are standing next to a lever:
+
+""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],"""
+""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.lever_notPulled],displayChars.indexedMapping[displayChars.main_char],displayChars.indexedMapping[displayChars.floor],"""
+""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],"""
+
+To examine the lever you have to press """+commandChars.move_west+""" to move onto the lever and then press """+commandChars.examine+""" to examine it.
+
+Imagine a situation where you want to examine an object you can not walk onto something:
+
+""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],"""
+""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.furnace_inactive],displayChars.indexedMapping[displayChars.main_char],displayChars.indexedMapping[displayChars.floor],"""
+""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],"""
+
+In this case you still have to press """+commandChars.move_west+""" to walk against the object and the press """+commandChars.examine+""" directly afterwards to examine it.
+"""])
+        showMessage("walk onto or into something and press e directly afterwards to examine something")
         firstOfficer = terrain.wakeUpRoom.firstOfficer
 
         class LetsGoChat(interaction.SubMenu):
@@ -880,7 +931,7 @@ do things the most efficent way. It will even try to handle conversion, wich doe
     def iamready(self):
         timeTaken = gamestate.tick-mainChar.tutorialStart
         normTime = 500
-        text = "it took you "+str(timeTaken)+" ticks to do it. The allocated completion time is 500 ticks.\n\n"
+        text = "it took you "+str(timeTaken)+" ticks to do it. The norm completion time is 500 ticks.\n\n"
         if timeTaken > normTime:
             text += "you better speed up and stop wasting time.\n\n"
             showText(text)

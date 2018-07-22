@@ -1367,7 +1367,7 @@ class DrinkQuest(Quest):
                     break
 
     def triggerCompletionCheck(self):
-        if self.character.satiation > 30:
+        if self.character.satiation > 800:
             self.postHandler()
             
         super().triggerCompletionCheck()

@@ -570,6 +570,9 @@ class WakeUpPhase(BasicPhase):
         self.requiresMainCharRoomSecondOfficer = False
 
         mainChar.tutorialStart = gamestate.tick
+        mainChar.satiation = 250
+        mainChar.inventory = []
+        mainChar.quests = []
 
         self.mainCharRoom = terrain.wakeUpRoom
 
@@ -720,8 +723,10 @@ you can move using the keyboard.
         quest = quests.PickupQuest(drink)
         showQuest(quest,mainChar)
         msg = "you can drink using "+commandChars.drink+". If you do not drink for a longer time you will starve"
-        say("great. Drink something and come over for a quick talk.",firstOfficer)
+        say("great. Drink from the flask you just fetched and come over for a quick talk.",firstOfficer)
         showMessage(msg)
+        quest = quests.DrinkQuest()
+        showQuest(quest,mainChar)
         quest = quests.MoveQuest(terrain.wakeUpRoom,6,6)
         showQuest(quest,mainChar)
         msg = "you can talk to people by pressing "+commandChars.hail+" and selecting the person to talk to."
@@ -807,7 +812,7 @@ do things the most efficent way. It will even try to handle conversion, wich doe
                         return True
 
                 if subSelf.firstRun:
-                    subSelf.persistentText = "yes.\n\nI am "+mainChar.name+" and do the acceptance tests. After you complete the test you will serve as an hooper on the Falkenbaum \n\n-- press space to proceed --"
+                    subSelf.persistentText = "yes.\n\nI am "+mainChar.name+" and do the acceptance tests. After you complete the test you will serve as an hooper on the Falkenbaum"
                     subSelf.set_text(subSelf.persistentText)
                     firstOfficer.basicChatOptions.append(InfoChat)
                                 

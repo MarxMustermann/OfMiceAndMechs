@@ -24,6 +24,7 @@ parser.add_argument("-d", "--debug", action="store_true", help="enable debug mod
 parser.add_argument("-m", "--music", action="store_true", help="enable music (downloads stuff and runs mplayer!)")
 parser.add_argument("-t", "--tiles", action="store_true", help="spawn a tile based view of the map (requires pygame)")
 parser.add_argument("-ts", "--tileSize", type=int, help="the base size of tiles")
+parser.add_argument("-T", "--terrain", type=str, help="select the terrain")
 args = parser.parse_args()
 
 import src.canvas as canvas
@@ -202,7 +203,10 @@ quests.showCinematic = cinematics.showCinematic
 ## set up the trainingsterrain. A container will be made later
 #
 ##########################################
-terrain = terrains.TutorialTerrain()
+if args.terrain and args.terrain == "scrapField":
+    terrain = terrains.TutorialTerrain2()
+else:
+    terrain = terrains.TutorialTerrain()
 
 # HACK: common variables with modules
 items.terrain = terrain

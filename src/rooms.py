@@ -1090,6 +1090,28 @@ XXXXXX
     def changed(self):
         self.engineStrength = 250*self.steamGeneration
 
+class MiniBase(Room):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+        self.roomLayout = """
+XXXXXXXXXXXXX
+X           X
+X           X
+X           X
+X           X
+X          vX
+X  .........$
+X          vX
+X           X
+X           X
+X           X
+X           X
+XXXXXXXXXXXXX
+"""
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        self.artwork = items.ProductionArtwork(4,1)
+        self.compactor = items.ScrapCompactor(6,1)
+        self.addItems([self.artwork,self.compactor])
+
 class LabRoom(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
         self.roomLayout = """

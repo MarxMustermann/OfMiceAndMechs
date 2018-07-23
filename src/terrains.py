@@ -180,9 +180,6 @@ class Terrain(object):
                 rowCounter += 1
             lineCounter += 1
 
-        self.testItems = [items.Scrap(20,52,3),items.Scrap(19,53,3),items.Scrap(20,51,3),items.Scrap(18,49,3),items.Scrap(21,53,3),items.Scrap(19,48,3),items.Scrap(20,52,3),items.Scrap(20,48,3),items.Scrap(18,50,3),items.Scrap(18,51,3)]
-        self.addItems(self.testItems)
-
         self.addRooms(roomsOnMap)
 
         self.nonMovablecoordinates = {}
@@ -385,24 +382,6 @@ class Terrain(object):
         self.overlay = self.addWatershedOverlay
         self.overlay = None
                     
-        # add some tasks to keep npc busy
-        toTransport = []
-        x = 12
-        while x > 8:
-            y = 1
-            while y < 9:
-                toTransport.append((y,x))
-                y += 1
-            x -= 1
-        def addStorageQuest():
-            if not toTransport:
-                return
-            quest = quests.MoveToStorage([self.tutorialLab.itemByCoordinates[toTransport.pop()][0]],self.tutorialStorageRooms[1])
-            quest.reputationReward = 1
-            quest.endTrigger = addStorageQuest
-            self.waitingRoom.quests.append(quest)
-        addStorageQuest()
-
     def removeCharacter(self,character):
         self.characters.remove(character)
         character.room = None
@@ -919,6 +898,93 @@ class Terrain(object):
         room.xPosition = newPosition[0]
         room.yPosition = newPosition[1]
 
+class TutorialTerrain2(Terrain):
+    def __init__(self):
+        layout = """
+
+
+    U    U 
+     U 
+        U
+      U    U
+
+        """
+        detailedLayout = """
+        """
+        super().__init__(layout,detailedLayout)
+        self.testItems = []
+        for x in range(20,30):
+            for y in range(30,110):
+                if not x%2 and not y%3:
+                    continue
+                if not x%3 and not y%2:
+                    continue
+                if not x%4 and not y%5:
+                    continue
+                if not x%5 and not y%4:
+                    continue
+                self.testItems.append(items.Scrap(x,y,3))
+        for x in range(20,120):
+            for y in range(20,30):
+                if not x%2 and not y%3:
+                    continue
+                if not x%3 and not y%2:
+                    continue
+                if not x%4 and not y%5:
+                    continue
+                if not x%5 and not y%4:
+                    continue
+                self.testItems.append(items.Scrap(x,y,3))
+        for x in range(110,120):
+            for y in range(30,110):
+                if not x%2 and not y%3:
+                    continue
+                if not x%3 and not y%2:
+                    continue
+                if not x%4 and not y%5:
+                    continue
+                if not x%5 and not y%4:
+                    continue
+                self.testItems.append(items.Scrap(x,y,3))
+        for x in range(20,120):
+            for y in range(110,120):
+                if not x%2 and not y%3:
+                    continue
+                if not x%3 and not y%2:
+                    continue
+                if not x%4 and not y%5:
+                    continue
+                if not x%5 and not y%4:
+                    continue
+                self.testItems.append(items.Scrap(x,y,3))
+        for x in range(30,110):
+            for y in range(30,110):
+                if not x%2 and not y%7:
+                    continue
+                if not x%5 and not y%3:
+                    continue
+                if not x%23 and not y%2:
+                    continue
+                if not x%13 and not y%9:
+                    continue
+                if not x%5 and not y%17:
+                    continue
+                self.testItems.append(items.Scrap(x,y,3))
+        for x in range(30,110):
+            for y in range(30,110):
+                if x%23 and y%7 or (not x%2 and not x%3) or x%2 or not y%4:
+                    continue
+                self.testItems.append(items.Wall(x,y))
+        for x in range(30,110):
+            for y in range(30,110):
+                if x%13 and y%15 or (not x%3 and not x%5) or x%3 or not y%2:
+                    continue
+                self.testItems.append(items.Pipe(x,y))
+        self.addItems(self.testItems)
+
+        self.wakeUpRoom = rooms.MiniBase(0,4,0,0)
+        self.addRooms([self.wakeUpRoom])
+
 class TutorialTerrain(Terrain):
     def __init__(self):
 
@@ -1099,4 +1165,26 @@ X X X C C C C C X X X """
                                              X#XXXXXXXXXXXXXX#XXXXXXXXXXXXXX#XXXXXXXXXXXXXX#XXXXXXXXXXXXXX#XXXXXXXXXXXXX                                             
 """
         super().__init__(layout,detailedLayout)
+
+        # add some tasks to keep npc busy
+        toTransport = []
+        x = 12
+        while x > 8:
+            y = 1
+            while y < 9:
+                toTransport.append((y,x))
+                y += 1
+            x -= 1
+
+        def addStorageQuest():
+            if not toTransport:
+                return
+            quest = quests.MoveToStorage([self.tutorialLab.itemByCoordinates[toTransport.pop()][0]],self.tutorialStorageRooms[1])
+            quest.reputationReward = 1
+            quest.endTrigger = addStorageQuest
+            self.waitingRoom.quests.append(quest)
+        addStorageQuest()
+
+        self.testItems = [items.Scrap(20,52,3),items.Scrap(19,53,3),items.Scrap(20,51,3),items.Scrap(18,49,3),items.Scrap(21,53,3),items.Scrap(19,48,3),items.Scrap(20,52,3),items.Scrap(20,48,3),items.Scrap(18,50,3),items.Scrap(18,51,3)]
+        self.addItems(self.testItems)
 

@@ -205,6 +205,8 @@ quests.showCinematic = cinematics.showCinematic
 ##########################################
 if args.terrain and args.terrain == "scrapField":
     terrain = terrains.TutorialTerrain2()
+if args.terrain and args.terrain == "nothingness":
+    terrain = terrains.Nothingness()
 else:
     terrain = terrains.TutorialTerrain()
 

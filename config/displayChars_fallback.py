@@ -2,6 +2,7 @@ import urwid
 
 wall = (urwid.AttrSpec("#334",'black'),"XX")
 dirt = (urwid.AttrSpec("#330",'black'),".´")
+grass = (urwid.AttrSpec("#030",'black'),",`")
 pipe = (urwid.AttrSpec("#337","black"),"**")
 corpse = (urwid.AttrSpec("#f00",'black'),"@ ")
 unconciousBody = (urwid.AttrSpec("#f22",'black'),"@ ")

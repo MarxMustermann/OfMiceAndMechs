@@ -612,6 +612,18 @@ class Terrain(object):
             else:
                 self.itemByCoordinates[(item.xPosition,item.yPosition)] = [item]
 
+    def paintFloor(self):
+        chars = []
+        for i in range(0,250):
+            line = []
+            for j in range(0,250):
+                if not self.hidden:
+                    line.append(self.floordisplay)
+                else:
+                    line.append(displayChars.void)
+            chars.append(line)
+        return chars
+
     def render(self):
         global mapHidden
         if mainChar.room == None:
@@ -624,15 +636,7 @@ class Terrain(object):
 
         self.hidden = mapHidden
 
-        chars = []
-        for i in range(0,250):
-            line = []
-            for j in range(0,250):
-                if not mapHidden:
-                    line.append(self.floordisplay)
-                else:
-                    line.append(displayChars.void)
-            chars.append(line)
+        chars = self.paintFloor()
 
         for room in self.rooms:
             if mainChar.room == room:
@@ -896,6 +900,48 @@ class Terrain(object):
             self.roomByCoordinates[newPosition] = [room]
         room.xPosition = newPosition[0]
         room.yPosition = newPosition[1]
+
+class Nothingness(Terrain):
+    def paintFloor(self):
+        chars = []
+        for i in range(0,250):
+            line = []
+            for j in range(0,250):
+                if not self.hidden:
+                    if not i%7 and not j%12 and not (i+j)%3:
+                        line.append(displayChars.grass)
+                    else:
+                        line.append(self.floordisplay)
+                else:
+                    line.append(displayChars.void)
+            chars.append(line)
+        return chars
+
+    def __init__(self):
+        layout = """
+        """
+        detailedLayout = """
+        """
+
+        super().__init__(layout,detailedLayout)
+
+        self.testItems = []
+        for x in range(0,120):
+            for y in range(0,120):
+                item = None
+                if not x%23 and not y%35 and not (x+y)%5:
+                    item = items.Scrap(x,y,1)
+                if not x%57 and not y%22 and not (x+y)%3:
+                    item = items.Item(displayChars.foodStuffs[((2*x)+y)%6],x,y)
+                    item.walkable = True
+                if not x%19 and not y%27 and not (x+y)%4:
+                    item = items.Item(displayChars.foodStuffs[((2*x)+y)%6],x,y)
+                    item.walkable = True
+                if item:
+                    self.testItems.append(item)
+        self.addItems(self.testItems)
+
+        self.floordisplay = displayChars.dirt
 
 class TutorialTerrain2(Terrain):
     def __init__(self):

@@ -106,8 +106,14 @@ this phase should be left as blank as possible
 class OpenWorld(object):
     def __init__(self):
         cinematics.showCinematic("staring open world Scenario.")
-        self.mainCharRoom = terrain.wakeUpRoom
-        self.mainCharRoom.addCharacter(mainChar,2,4)
+        if terrain.wakeUpRoom:
+            self.mainCharRoom = terrain.wakeUpRoom
+            self.mainCharRoom.addCharacter(mainChar,2,4)
+        else:
+            mainChar.xPosition = 2
+            mainChar.yPosition = 4
+            mainChar.terrain = terrain
+            terrain.characters.append(mainChar)
 
     def start(self):
         pass

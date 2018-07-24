@@ -1,6 +1,7 @@
 import urwid
 
 wall = (urwid.AttrSpec("#334",'black'),"⛝ ")
+dirt = (urwid.AttrSpec("#330",'black'),".´")
 pipe = (urwid.AttrSpec("#337","black"),"✠✠")
 corpse = "࿊ "
 unconciousBody = "࿌ "

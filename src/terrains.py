@@ -17,6 +17,7 @@ class Terrain(object):
         self.itemsOnFloor = []
         self.characters = []
         self.rooms = []
+        self.floordisplay = displayChars.floor
 
         self.overlay = None
 
@@ -628,12 +629,10 @@ class Terrain(object):
             line = []
             for j in range(0,250):
                 if not mapHidden:
-                    line.append(displayChars.floor)
+                    line.append(self.floordisplay)
                 else:
                     line.append(displayChars.void)
             chars.append(line)
-
-        overlays.PathsOverlay().apply(chars,self)
 
         for room in self.rooms:
             if mainChar.room == room:
@@ -912,6 +911,9 @@ class TutorialTerrain2(Terrain):
         detailedLayout = """
         """
         super().__init__(layout,detailedLayout)
+
+        self.floordisplay = displayChars.dirt
+
         self.testItems = []
         for x in range(20,30):
             for y in range(30,110):

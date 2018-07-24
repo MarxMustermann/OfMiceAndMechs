@@ -1,6 +1,7 @@
 import pygame
 
 wall = pygame.image.load('config/Images/perspectiveTry/wall.png')
+dirt = pygame.image.load('config/Images/perspectiveTry/floor.png')
 pipe = pygame.image.load('config/Images/perspectiveTry/pipe.png')
 corpse = pygame.image.load('config/Images/perspectiveTry/corpse.png')
 unconciousBody = pygame.image.load('config/Images/perspectiveTry/unconciousBody.png')

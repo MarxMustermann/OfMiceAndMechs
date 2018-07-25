@@ -952,9 +952,9 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
     def trainingCompleted(self):
         firstOfficer = terrain.wakeUpRoom.firstOfficer
 
-        text = "you completed the tests. Go to the waiting room and report for room duty.\n\nThe waiting room is the next room to the north\n\n"
+        text = "you completed the tests and it is time to take on your duty. You will no longer server under my command, but under "+terrain.wakeUpRoom.firstOfficer.name+" as a hopper.\n\nSo please go to the waiting room and report for room duty.\n\nThe waiting room is the next room to the north. Simply go there speak to "+terrain.wakeUpRoom.firstOfficer.name+" and confirm that you are reporting for duty.\nYou will get instruction on how to proceed afterwards.\n\n"
         if (self.didFurnaces):
-            text += "speak to me, if you need work"
+            text += "A word of advice from my part:\nYou are able to just not report for duty, but you have to expect to die alone.\nAlso staying on a mech with expired permit will get the guards attention pretty fast.\nSo just follow your orders and work hard, so you will be giving the orders."
         showText(text,rusty=True)
         for line in text.split("\n"):
             if line == "":

@@ -466,7 +466,8 @@ def show_or_exit(key):
             if key in (commandChars.examine):
                 if itemMarkedLast:
                     messages.append(itemMarkedLast.description)
-                    messages.append(itemMarkedLast.getDetailedInfo())
+                    if itemMarkedLast.description != itemMarkedLast.getDetailedInfo():
+                        messages.append(itemMarkedLast.getDetailedInfo())
                 else:
                     if mainChar.room:
                         itemList = mainChar.room.itemsOnFloor
@@ -475,7 +476,8 @@ def show_or_exit(key):
                     for item in itemList:
                         if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
                             messages.append(item.description)
-                            messages.append(item.getDetailedInfo())
+                            if item.description != item.getDetailedInfo():
+                                messages.append(item.getDetailedInfo())
 
             if key in (commandChars.drop):
                 if len(mainChar.inventory):

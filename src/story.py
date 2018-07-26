@@ -669,7 +669,9 @@ you can move using the keyboard.
 * press """,commandChars.move_north,""" to move up/north
 * press """,commandChars.move_west,""" to move left/west
 * press """,commandChars.move_south,""" to move down/south
-* press """,commandChars.move_east,""" to move right/east"""])
+* press """,commandChars.move_east,""" to move right/east
+
+Your target is marked by """+displayChars.indexedMapping[displayChars.questTargetMarker][1]+""" and a path to your target is highlighted. You may follow this path or find your own way,"""])
         showGame(1)
 
         quest = quests.MoveQuest(terrain.wakeUpRoom,4,4)
@@ -715,7 +717,24 @@ you can move using the keyboard.
         quest = quests.MoveQuest(terrain.wakeUpRoom,3,2)
         showQuest(quest,mainChar)
         
-        showText("you can activate levers by moving onto the lever and then pressing "+commandChars.activate)
+        import urwid
+        showText(["you can activate levers by moving onto the lever and then pressing "+commandChars.activate+"""\n
+Here is how to do this:\n\nImagine you are standing next to a lever
+
+""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],"""
+""",displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.lever_notPulled],"U\\",displayChars.indexedMapping[displayChars.floor],"""
+""",displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.main_char],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],"""
+
+press """+commandChars.move_north+""" to move onto the lever and press """+commandChars.activate+""" to activate the lever.
+After pulling the lever a flask should apear like this.
+
+""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],"""
+""",displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.main_char],"U\\",displayChars.indexedMapping[displayChars.floor],"""
+""",displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],(urwid.AttrSpec("#3f3","black"),"ò="),displayChars.indexedMapping[displayChars.floor],"""
+
+now, pull the lever
+"""])
+
         showMessage("you can activate levers by moving onto the lever and then pressing "+commandChars.activate)
         say("activate the lever",firstOfficer)
         quest = quests.ActivateQuest(terrain.wakeUpRoom.lever1)
@@ -725,6 +744,7 @@ you can move using the keyboard.
         firstOfficer = terrain.wakeUpRoom.firstOfficer
         drink = terrain.wakeUpRoom.itemsOnFloor[-1]
 
+        showGame(3)
         msg = "you can pick up items by moving onto them and using "+commandChars.pickUp
         showText(msg)
         showMessage(msg)
@@ -880,7 +900,8 @@ You may press """+commandChars.show_inventory+""" to confirm you have a piece of
 
 To activate the furnace press """+commandChars.move_west+""" to move next to it, press s to walk against it and press """+commandChars.activate+""" immediatly afterwards to activate it.
 
-If you check your inventory afterwards you will see that you have on piece of coal less than before."""]) 
+The furnace should be fired now and if you check your inventory afterwards you will see
+that you have on piece of coal less than before."""]) 
         self.didFurnaces = True
         say("go on and fire the furnace",firstOfficer)
         quest = quests.FireFurnace(furnace)

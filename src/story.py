@@ -732,7 +732,7 @@ After pulling the lever a flask should apear like this.
 """,displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.main_char],"U\\",displayChars.indexedMapping[displayChars.floor],"""
 """,displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],(urwid.AttrSpec("#3f3","black"),"ò="),displayChars.indexedMapping[displayChars.floor],"""
 
-now, pull the lever
+now, go and pull the lever
 """])
 
         showMessage("you can activate levers by moving onto the lever and then pressing "+commandChars.activate)
@@ -886,7 +886,7 @@ do things the most efficent way. It will even try to handle conversion, wich doe
         firstOfficer = terrain.wakeUpRoom.firstOfficer
         furnace = terrain.wakeUpRoom.furnace
 
-        showText("you are in luck. The furnace is for training and you are free to use it.\n\nYou need something to burn in the furnace first, so fetch some coal from the pile and then you can light the furnace.\nIt will stop burning after some ticks so keeping a fire burning can get quite tricky sometimes.\nPress i to check your inventory and see how much coal you have on you.")
+        showText("you are in luck. The furnace is for training and you are free to use it.\n\nYou need something to burn in the furnace first, so fetch some coal from the pile and then you can light the furnace.\nIt will stop burning after some ticks so keeping a fire burning can get quite tricky sometimes")
         showText(["""Here is an example on how to do this:\n\nImagine you are standing next to a pile of coal
 
 """,displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],"""
@@ -900,8 +900,8 @@ You may press """+commandChars.show_inventory+""" to confirm you have a piece of
 
 To activate the furnace press """+commandChars.move_west+""" to move next to it, press s to walk against it and press """+commandChars.activate+""" immediatly afterwards to activate it.
 
-The furnace should be fired now and if you check your inventory afterwards you will see
-that you have on piece of coal less than before."""]) 
+The furnace should be fired now and if you check your inventory afterwards you will see that
+you have on piece of coal less than before."""]) 
         self.didFurnaces = True
         say("go on and fire the furnace",firstOfficer)
         quest = quests.FireFurnace(furnace)

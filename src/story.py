@@ -671,7 +671,7 @@ you can move using the keyboard.
 * press """,commandChars.move_south,""" to move down/south
 * press """,commandChars.move_east,""" to move right/east
 
-Your target is marked by """+displayChars.indexedMapping[displayChars.questTargetMarker][1]+""" and a path to your target is highlighted. You may follow this path or find your own way,"""])
+Your target is marked by """+displayChars.indexedMapping[displayChars.questTargetMarker][1]+""" and a path to your target is highlighted. You may follow this path or find your own way"""])
         showGame(1)
 
         quest = quests.MoveQuest(terrain.wakeUpRoom,4,4)

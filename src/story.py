@@ -554,6 +554,8 @@ transfer control to implant"""],autocontinue=True)
         nextPhase.start()
 
     def fail(self):
+        mainChar.dead = True
+        mainChar.deathReason = "reset of neural network due to inability to store information\nPrevent this by answering the questions correctly"
         showText("""
 aborting initialisation
 resetting neural network ....................................""",autocontinue=True,trigger=self.forceExit)

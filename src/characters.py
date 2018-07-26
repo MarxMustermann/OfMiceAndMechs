@@ -29,6 +29,7 @@ class Character():
 
         self.satiation = 1000
         self.dead = False
+        self.deathReason = None
         self.questsToDelegate = []
 
         #TODO: this approach is fail, but works for now. There has to be a better way
@@ -111,7 +112,7 @@ class Character():
     def applysolver(self,solver):
         solver(self)
 
-    def die(self):
+    def die(self,reason=None):
         if self.room:
             room = self.room
             room.removeCharacter(self)
@@ -126,6 +127,8 @@ class Character():
             messages.append("this chould not happen, charcter died without beeing somewhere")
 
         self.dead = True
+        if reason:
+            self.deathReason = reason
         self.path = []
         self.changed()
 
@@ -266,7 +269,7 @@ class Character():
     def advance(self):
         self.satiation -= 1
         if self.satiation < 0:
-            self.die()
+            self.die(reason="you starved. This happens when your satiation falls below 0\nPrevent this by drinking using the "+commandChars.drink+" key")
             return
 
         if self.automated:

@@ -104,6 +104,7 @@ events.cinematics = cinematics
 # HACK: common variables with modules
 items.commandChars = commandChars
 story.commandChars = commandChars
+characters.commandChars = commandChars
 interaction.commandChars = commandChars
 interaction.setFooter()
 
@@ -333,3 +334,8 @@ except:
 
 if musicThread:
     musicThread.stop = True
+
+if gameStateObj.mainChar.dead:
+    print("you died.")
+    if gameStateObj.mainChar.deathReason:
+        print("Cause of death:\n"+gameStateObj.mainChar.deathReason)

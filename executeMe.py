@@ -264,23 +264,21 @@ quests.mainChar = gameStateObj.mainChar
 # set up the splash screen
 cinematics.showCinematic("""
 
-OOO FFF          AAA N N DD
-O O FF   mice    AAA NNN D D
-OOO F            A A N N DD
+     OOO FFF          AAA N N DD
+     O O FF   mice    AAA NNN D D
+     OOO F            A A N N DD
 
 
 
-
-MMM   MMM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
-MMMM MMMM  EE      CC      HH   HH  SS
-MM MMM MM  EEEE    CC      HHHHHHH  SSSSSSS
-MM  M  MM  EEEE    CC      HHHHHHH  SSSSSSS
-MM     MM  EE      CC      HH   HH        S
-MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
-
+     MMM   MMM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
+     MMMM MMMM  EE      CC      HH   HH  SS
+     MM MMM MM  EEEE    CC      HHHHHHH  SSSSSSS
+     MM  M  MM  EEEE    CC      HHHHHHH  SSSSSSS
+     MM     MM  EE      CC      HH   HH        S
+     MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
 
-   a pipedream 
+        - a pipedream 
 
 """,rusty=True)
 

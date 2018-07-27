@@ -1236,6 +1236,9 @@ class KeepFurnaceFiredMeta(MetaQuestParralel):
                 self.unpause()
 
         super().recalculate()
+    
+    def triggerCompletionCheck(self):
+        return
 
 class FireFurnaceMeta(MetaQuestParralel):
     def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):

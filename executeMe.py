@@ -104,7 +104,7 @@ events.cinematics = cinematics
 # HACK: common variables with modules
 items.commandChars = commandChars
 story.commandChars = commandChars
-characters.commandChars = commandChars
+characters.commandchars = commandChars
 interaction.commandChars = commandChars
 interaction.setFooter()
 
@@ -252,6 +252,8 @@ except:
 # HACK: common variables with modules
 story.gamestate = gameStateObj
 interaction.gamestate = gameStateObj
+quests.gamestate = gameStateObj
+characters.gamestate = gameStateObj
 
 # HACK: common variables with modules
 rooms.mainChar = gameStateObj.mainChar

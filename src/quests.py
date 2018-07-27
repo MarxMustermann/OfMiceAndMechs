@@ -160,7 +160,7 @@ class Quest(object):
                 def handleEvent(subself):
                     self.postHandler()
 
-            self.character.room.addEvent(endQuestEvent(self.character.room.timeIndex+self.lifetime))
+            self.character.addEvent(endQuestEvent(gamestate.tick+self.lifetime))
 
         self.recalculate()
         self.changed()

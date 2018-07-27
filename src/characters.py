@@ -21,6 +21,7 @@ class Character():
         self.path = []
         self.subordinates = []
         self.reputation = 0
+        self.events = []
 
         self.gotBasicSchooling = False
         self.gotMovementSchooling = False
@@ -41,6 +42,17 @@ class Character():
             self.assignQuest(quest)
 
         self.inventory.append(items.GooFlask())
+
+    def addEvent(self,event):
+        index = 0
+        for existingEvent in self.events:
+            if event.tick < existingEvent.tick:
+                break
+            index += 1
+        self.events.insert(index,event)
+
+    def removeEvent(self,event):
+        self.events.remove(event)
 
     def getChatOptions(self,partner):
         chatOptions = self.basicChatOptions[:]
@@ -267,6 +279,15 @@ class Character():
         self.changed()
 
     def advance(self):
+        while self.events and gamestate.tick >  self.events[0].tick:
+            event = self.events[0]
+            debugMessages.append("something went wrong and event"+str(event)+"was skipped")
+            self.events.remove(event)
+        while self.events and gamestate.tick == self.events[0].tick:
+            event = self.events[0]
+            event.handleEvent()
+            self.events.remove(event)
+
         self.satiation -= 1
         if self.satiation < 0:
             self.die(reason="you starved. This happens when your satiation falls below 0\nPrevent this by drinking using the "+commandChars.drink+" key")

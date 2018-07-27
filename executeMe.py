@@ -104,7 +104,7 @@ events.cinematics = cinematics
 # HACK: common variables with modules
 items.commandChars = commandChars
 story.commandChars = commandChars
-characters.commandchars = commandChars
+characters.commandChars = commandChars
 interaction.commandChars = commandChars
 interaction.setFooter()
 

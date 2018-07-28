@@ -1,9 +1,9 @@
 # OfMiceAndMechs
 a to be prototype for a game
 
-* [INSTALL.md]
-* [NEWS.md]
-* [CREDITS.md]
+* [install and run](INSTALL.md)
+* [news(latest: "commit 400-500")](NEWS.md)
+* [credits](CREDITS.md)
 
 ## state of the game
 

@@ -949,7 +949,7 @@ class TutorialTerrain2(Terrain):
 
 
     U    U 
-     U 
+U    U 
         U
       U    U
 
@@ -961,6 +961,7 @@ class TutorialTerrain2(Terrain):
         self.floordisplay = displayChars.dirt
 
         self.testItems = []
+        counter = 3
         for x in range(20,30):
             for y in range(30,110):
                 if not x%2 and not y%3:
@@ -971,7 +972,10 @@ class TutorialTerrain2(Terrain):
                     continue
                 if not x%5 and not y%4:
                     continue
-                self.testItems.append(items.Scrap(x,y,3))
+                self.testItems.append(items.Scrap(x,y,counter))
+                counter += 1
+                if counter == 16:
+                    counter = 1
         for x in range(20,120):
             for y in range(20,30):
                 if not x%2 and not y%3:
@@ -982,7 +986,10 @@ class TutorialTerrain2(Terrain):
                     continue
                 if not x%5 and not y%4:
                     continue
-                self.testItems.append(items.Scrap(x,y,3))
+                self.testItems.append(items.Scrap(x,y,counter))
+                counter += 1
+                if counter == 16:
+                    counter = 1
         for x in range(110,120):
             for y in range(30,110):
                 if not x%2 and not y%3:
@@ -993,7 +1000,10 @@ class TutorialTerrain2(Terrain):
                     continue
                 if not x%5 and not y%4:
                     continue
-                self.testItems.append(items.Scrap(x,y,3))
+                self.testItems.append(items.Scrap(x,y,counter))
+                counter += 1
+                if counter == 16:
+                    counter = 1
         for x in range(20,120):
             for y in range(110,120):
                 if not x%2 and not y%3:
@@ -1004,7 +1014,10 @@ class TutorialTerrain2(Terrain):
                     continue
                 if not x%5 and not y%4:
                     continue
-                self.testItems.append(items.Scrap(x,y,3))
+                self.testItems.append(items.Scrap(x,y,counter))
+                counter += 1
+                if counter == 16:
+                    counter = 1
         for x in range(30,110):
             for y in range(30,110):
                 if not x%2 and not y%7:
@@ -1017,7 +1030,10 @@ class TutorialTerrain2(Terrain):
                     continue
                 if not x%5 and not y%17:
                     continue
-                self.testItems.append(items.Scrap(x,y,3))
+                self.testItems.append(items.Scrap(x,y,counter))
+                counter += 1
+                if counter == 30:
+                    counter = 1
         for x in range(30,110):
             for y in range(30,110):
                 if x%23 and y%7 or (not x%2 and not x%3) or x%2 or not y%4:

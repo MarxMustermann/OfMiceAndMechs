@@ -387,7 +387,7 @@ class Furnace(Item):
 
         if not foundItem:
             if character.watched:
-                messages.append("keine KOHLE zum anfeuern")
+                messages.append("you need coal to fire the furnace and you have none")
         else:
             if self.activated:
                 if character.watched:

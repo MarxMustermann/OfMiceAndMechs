@@ -11,7 +11,7 @@ contibutors:
 
 If you contribute and want to be listed, you add youself here.
 
-## dependecies
+## dependencies
 
 * python3
   * https://www.python.org/

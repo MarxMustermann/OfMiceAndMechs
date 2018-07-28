@@ -1,9 +1,9 @@
 # OfMiceAndMechs
 a to be prototype for a game
 
-* [INSTALL]
-* [NEWS]
-* [CREDITS]
+* [[INSTALL.md]]
+* [[NEWS.md]]
+* [[CREDITS.md]]
 
 ## state of the game
 

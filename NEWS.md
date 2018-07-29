@@ -1,5 +1,29 @@
 # news
 
+### commit 500-608
+
+The main focus was to make the basic game mechanic visible and understandable and failed to do so. I made the following changes
+
+* forced the player to talk to npc at least a bit
+* added chat options hinting at and explaining the automode
+* added interaction options to the quest menu
+* added more quests and options to the advanced quest menu
+* added npc that compete with the player for quests
+* added a longish period of repetetive quest to coerce the player into using auto mode
+* added a big quest that the player has to delegate to npcs. This is kind of broken.
+
+I made some progress but i kind of failed and there is a lot of work left to do. I hade some people test play the game and getting sidetracked by the issues uncovered and features requested. Notable changes and features added are:
+
+* lot of bugfixes
+* added a list of music as a baseline for discussions on how game music should be like. The music can (i think) be put into the game legally. [LIST](technicalConcepts/music)
+* added 2 additional terrains. The can only be accessed by using the -T (scrapYard,nothingness) parameter and pretty much broken at this point of time.
+* added various dialoge
+* added dialog pictures explaining how to move
+* added a scolling bar at the bottom of the screen explaining the display characters and the command chars
+* tweaked turorialroom
+* added a perspective rendered mode. It is still incomplete
+* added a crude debug menu
+
 ### commit 400-500
 
 The main focus was to solve the missing feeling of purpose, progress, adventure and discovery. I wrote all commits by myself, so this will reflect my perspective only.

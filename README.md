@@ -2,7 +2,7 @@
 a to be prototype for a game
 
 * [install and run](INSTALL.md)
-* [news(latest: "commit 400-500")](NEWS.md)
+* [news (latest: "commit 500-608")](NEWS.md)
 * [credits](CREDITS.md)
 
 ## state of the game
@@ -14,4 +14,6 @@ a to be prototype for a game
 * crashes do happen but not constantly
 * The game feels like a game (a boring one, but like a game)
 
-I think the biggest issue currenty is that the main game mechanic is not working or is not clearly visible. This is gaining control (over npcs), controlling npcs and exercising power to gain power. The negation of this is also missing. This is loosing power by inefficent use of power or by not defending your position.
+While trying to address the issue below i realized, the the biggest issue currently is the bad quality of code and the mockuped features. Players and me are hampert by encountering Not-Implemented-Yets and bugs. This slowed development down and needs to be adressed first.
+
+I think the second issue is that the main game mechanic is not working or is not clearly visible. This is gaining control (over npcs), controlling npcs and exercising power to gain power. The negation of this is also missing. This is loosing power by inefficent use of power or by not defending your position.

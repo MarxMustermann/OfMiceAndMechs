@@ -1,7 +1,5 @@
 # installation
-a to be prototype for a game
 
-License: GPLv3
 known-dependencies: 
 
 * python3
@@ -10,6 +8,8 @@ known-dependencies:
 * pygame for python3 (for tile based mode)
 
 ## how to install and run the game 
+
+install the dependencies and run the executeMe.py file
 
 ### debian based sytems
 

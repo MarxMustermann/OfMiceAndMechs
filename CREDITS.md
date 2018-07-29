@@ -7,9 +7,9 @@ since the is no credis screen in the game yet. It is here as a file.
 The game is licensed GPLv3, so thanks at everybody involved for creating the licence and making it popular.
 
 contibutors:
-* me. Code is written by me at the time of this commit (github lists me as 3 contributors somehow)
+* MarxMustermann. Code is written by me at the time of this commit (github lists me as 3 contributors somehow)
 
-If you contribute and want to be listed, you add youself here.
+If you contribute and want to be listed, add yourself here.
 
 ## dependencies
 
@@ -26,9 +26,7 @@ thanks at everybody involved for creating and maintaining the tech needed to bui
 
 ## music
 
-the game has a option to download itself some creative commons music. Since most CCs requires attribution here it is...
-
-A huge thanks to everybody releasing under CC! And big thanks the https://freemusicarchive.org/ for hosting the music. Since everybody can use the music i took and used it without asking, so i cannot be assumed that the artists like, endorse or even know about the game.
+A huge thanks to everybody releasing under CC! And big thanks the https://freemusicarchive.org/ for hosting the music. Since everybody can use the music i took and used it without asking, so it cannot be assumed that the artists like, endorse or even know about the game.
 
 Background music By:
 

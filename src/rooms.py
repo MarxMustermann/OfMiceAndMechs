@@ -1319,7 +1319,7 @@ XXXXXXXX
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.name = "WakeUpRoom"
 
-        self.lever1 = items.Lever(3,1,"engine control")
+        self.lever1 = items.Lever(3,1,"training lever")
         self.objectDispenser = items.OjectDispenser(4,1)
         self.gooDispenser = items.GooDispenser(5,9)
         self.furnace = items.Furnace(4,9)

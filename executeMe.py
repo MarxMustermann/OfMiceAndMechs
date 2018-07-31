@@ -282,7 +282,7 @@ cinematics.showCinematic("""
 
         - a pipedream 
 
-""",rusty=True)
+""",rusty=True,scrolling=True)
 
 # set up the current phase
 gameStateObj.currentPhase().start()

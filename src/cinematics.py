@@ -126,8 +126,8 @@ class MessageZoomCinematic(BasicCinematic):
         if self.endTrigger:
             self.endTrigger()
 
-class ScrollingTextCinematic(BasicCinematic):
-    def __init__(self,text,rusty=False, autocontinue=False):
+class TextCinematic(BasicCinematic):
+    def __init__(self,text,rusty=False, autocontinue=False, scrolling=False):
         super().__init__()
 
         self.text = text
@@ -158,9 +158,12 @@ class ScrollingTextCinematic(BasicCinematic):
                 for item in flattenToPeseudoString(urwidText[1]):
                     result.append((urwidText[0],item))
                 return result
-        
+
         self.text = flattenToPeseudoString(self.text)
         self.endPosition = len(self.text)
+        if not scrolling:
+            self.position = self.endPosition
+            
     def advance(self):
         super().advance()
 
@@ -394,5 +397,5 @@ class ShowMessageCinematic(BasicCinematic):
         self.breakCinematic = True
         return True
 
-def showCinematic(text,rusty=False,autocontinue=False):
-    cinematicQueue.append(ScrollingTextCinematic(text,rusty,autocontinue))
+def showCinematic(text,rusty=False,autocontinue=False,scrolling=False):
+    cinematicQueue.append(TextCinematic(text,rusty,autocontinue,scrolling))

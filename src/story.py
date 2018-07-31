@@ -21,8 +21,8 @@ def showQuest(quest,assignTo=None,trigger=None):
     cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=assignTo)
     cinematics.cinematicQueue.append(cinematic)
     cinematic.endTrigger = trigger
-def showText(text,rusty=False,autocontinue=False,trigger=None):
-    cinematic = cinematics.ScrollingTextCinematic(text,rusty=rusty,autocontinue=autocontinue)
+def showText(text,rusty=False,autocontinue=False,trigger=None,scrolling=False):
+    cinematic = cinematics.TextCinematic(text,rusty=rusty,autocontinue=autocontinue,scrolling=scrolling)
     cinematics.cinematicQueue.append(cinematic)
     cinematic.endTrigger = trigger
 def say(text,speaker=None,trigger=None):
@@ -447,7 +447,7 @@ Ttbt9kp2wZ
 checking subjects brain patterns .......................... """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
 
 testing subjects responsivity
-"""])
+"""],scrolling=True)
         showText(["""
 got response
 responsivity .............................................. """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
@@ -461,13 +461,13 @@ send test information
 1.) Your name is """+mainChar.name+"""
 2.) A Pipe is used to transfer fluids
 3.) rust - Rust is the oxide of iron. Rust is the most common form of corrosion
-"""])
+"""],scrolling=True)
 
         showText("""
 checking stored information
 
 entering interactive mode .................................
-        """,autocontinue=True)
+        """,autocontinue=True,scrolling=True)
 
         options = {1:"nok",2:"ok",3:"nok"}
         niceOptions = {1:"Karl Weinberg",2:mainChar.name,3:"Susanne Kreismann"}
@@ -479,7 +479,7 @@ entering interactive mode .................................
 
     def infoFail(self):
         import urwid
-        showText(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK"),"                                        "],autocontinue=True,trigger=self.fail)
+        showText(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK"),"                                        "],autocontinue=True,trigger=self.fail,scrolling=True)
         return
 
     def step2(self):
@@ -529,7 +529,7 @@ Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, s
 information storage ....................................... """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
 setting up knowledge base
 
-"""] ,autocontinue=True)
+"""] ,autocontinue=True,scrolling=True)
 
         cinematic = cinematics.InformationTransfer(definitions)
         cinematics.cinematicQueue.append(cinematic)
@@ -543,7 +543,7 @@ setting up knowledge base
 initializing metabolism ..................................... """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
 initializing motion control ................................. """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
 initializing sensory organs ................................. """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
-transfer control to implant"""],autocontinue=True)
+transfer control to implant"""],autocontinue=True,scrolling=True)
 
         cinematic = cinematics.MessageZoomCinematic()
         cinematic.endTrigger = self.end
@@ -558,7 +558,7 @@ transfer control to implant"""],autocontinue=True)
         mainChar.deathReason = "reset of neural network due to inability to store information\nPrevent this by answering the questions correctly"
         showText("""
 aborting initialisation
-resetting neural network ....................................""",autocontinue=True,trigger=self.forceExit)
+resetting neural network ....................................""",autocontinue=True,trigger=self.forceExit,scrolling=True)
 
     def forceExit(self):
         import urwid
@@ -660,7 +660,7 @@ class BasicMovementTraining(BasicPhase):
         showText("""
 welcome to the trainingsenvironment.
 
-please follow the orders """+firstOfficer.name+" gives you.",rusty=True)
+please follow the orders """+firstOfficer.name+" gives you.",rusty=True,scrolling=True)
         showText(["""
 you are represented by the """,displayChars.indexedMapping[displayChars.main_char]," Character,  ",firstOfficer.name," is represented by the ",displayChars.indexedMapping[firstOfficer.display],""" Character. 
 
@@ -978,7 +978,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
         text = "you completed the tests and it is time to take on your duty. You will no longer server under my command, but under "+terrain.wakeUpRoom.firstOfficer.name+" as a hopper.\n\nSo please go to the waiting room and report for room duty.\n\nThe waiting room is the next room to the north. Simply go there speak to "+terrain.wakeUpRoom.firstOfficer.name+" and confirm that you are reporting for duty.\nYou will get instruction on how to proceed afterwards.\n\n"
         if (self.didFurnaces):
             text += "A word of advice from my part:\nYou are able to just not report for duty, but you have to expect to die alone.\nAlso staying on a mech with expired permit will get the guards attention pretty fast.\nSo just follow your orders and work hard, so you will be giving the orders."
-        showText(text,rusty=True)
+        showText(text,rusty=True,scrolling=True)
         for line in text.split("\n"):
             if line == "":
                 continue

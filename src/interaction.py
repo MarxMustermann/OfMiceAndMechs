@@ -98,7 +98,31 @@ commandHistory = []
 def callShow_or_exit(loop,key):
     show_or_exit(key)
 
+
 def show_or_exit(key):
+    commandKeyQueue = []
+    commandKeyQueue.append(key)
+
+    try:
+        import pygame
+        for item in pygame.event.get():
+            try:
+                key = item.unicode
+                if key == "\x1b":
+                    key = "esc"
+                commandKeyQueue.append(key)
+                debugMessages.append("pressed "+key+" ")
+            except:
+                pass
+    except:
+        pass
+    processAllInput(commandKeyQueue)
+
+def processAllInput(commandKeyQueue):
+    for key in commandKeyQueue:
+        processInput(key)
+
+def processInput(key):
     #mouse click
     if type(key) == tuple:
         return

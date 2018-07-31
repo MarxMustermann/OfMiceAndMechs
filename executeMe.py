@@ -311,6 +311,7 @@ interaction.advanceGame = advanceGame
 if args.tiles:
     import pygame
     pygame.init()
+    pygame.key.set_repeat(200,20)
     if args.tileSize:
         interaction.tileSize = args.tileSize
     else:

@@ -1921,3 +1921,15 @@ class HandleDelivery(MetaQuestSequence):
 
     def triggerCoppletionCheck(self):
         return False
+
+class RoomDuty(MetaQuestParralel):
+    def __init__(self, cargoRooms=[],storageRooms=[]):
+        self.questList = []
+        super().__init__(self.questList)
+        self.metaDescription = "room duty"
+
+    def recalculate(self):
+        return 
+
+    def triggerCoppletionCheck(self):
+        return 

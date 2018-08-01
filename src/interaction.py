@@ -1030,8 +1030,8 @@ class AdvancedQuestMenu(SubMenu):
 
         if self.state == "questSelection":
             if not self.options and not self.getSelection():
-                options = {1:quests.MoveQuest,2:quests.ActivateQuest,3:quests.EnterRoomQuest,4:quests.FireFurnaceMeta,5:quests.ClearRubble,6:quests.ConstructRoom,7:quests.StoreCargo,8:quests.WaitQuest,9:quests.LeaveRoomQuest,10:quests.MoveToStorage}
-                niceOptions = {1:"MoveQuest",2:"ActivateQuest",3:"EnterRoomQuest",4:"FireFurnaceMeta",5:"ClearRubble",6:"ConstructRoom",7:"StoreCargo",8:"WaitQuest",9:"LeaveRoomQuest",10:"MoveToStorage"}
+                options = {1:quests.MoveQuest,2:quests.ActivateQuest,3:quests.EnterRoomQuest,4:quests.FireFurnaceMeta,5:quests.ClearRubble,6:quests.ConstructRoom,7:quests.StoreCargo,8:quests.WaitQuest,9:quests.LeaveRoomQuest,10:quests.MoveToStorage,11:quests.RoomDuty}
+                niceOptions = {1:"MoveQuest",2:"ActivateQuest",3:"EnterRoomQuest",4:"FireFurnaceMeta",5:"ClearRubble",6:"ConstructRoom",7:"StoreCargo",8:"WaitQuest",9:"LeaveRoomQuest",10:"MoveToStorage",11:"RoomDuty"}
                 self.setSelection("what type of quest:",options,niceOptions)
 
             if not self.getSelection():
@@ -1149,6 +1149,8 @@ class AdvancedQuestMenu(SubMenu):
                        except:
                            pass
                     if self.quest == quests.ClearRubble:
+                       questInstance = self.quest()
+                    if self.quest == quests.RoomDuty:
                        questInstance = self.quest()
                     if self.quest == quests.ConstructRoom:
                        for room in terrain.rooms:

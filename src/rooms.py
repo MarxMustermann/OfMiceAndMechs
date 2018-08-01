@@ -68,11 +68,15 @@ class Room(object):
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.firstOfficer = npc
+                            quest = quests.RoomDuty()
+                            npc.assignQuest(quest,active=True)
                         else:
                             npc = characters.Character(displayChars.staffCharactersByLetter["s"],5,3,name="Siegfied Knobelbecher")
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.secondOfficer = npc
+                            quest = quests.RoomDuty()
+                            npc.assignQuest(quest,active=True)
                 elif char in ("X","&"):
                     itemsOnFloor.append(items.Wall(rowCounter,lineCounter))
                 elif char == "$":

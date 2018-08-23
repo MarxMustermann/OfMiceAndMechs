@@ -233,9 +233,9 @@ class ScreenSaver(object):
         '''
 
         # add items to be picked up
-		# bad code: should use transport quest
         questlist = []
         for item in terrain.testItems:
+            quest = quests.TransportQuest(item,(terrain.tutorialMachineRoom,2,2))
             quest = quests.PickupQuestMeta(item)
             questlist.append(quest)
             quest = quests.DropQuestMeta(item,terrain.tutorialMachineRoom,2,2)
@@ -288,22 +288,23 @@ class ScreenSaver(object):
             targetIndex = len(targetRoom.storedItems)
 
             # generate transport quests
-            # bad code: should actually use transport quest
             questlist = []
             for srcRoom in (terrain.tutorialCargoRooms[counter*3+1],terrain.tutorialCargoRooms[counter*3+2]):
                 srcIndex = len(srcRoom.storedItems)-1
                 while srcIndex > -1:
-                    # pick up item
+                    # get item to transport
                     pos = srcRoom.storageSpace[srcIndex]
                     item = srcRoom.itemByCoordinates[pos][0]
-                    quest = quests.PickupQuestMe(item)
-                    questlist.append(quest)
-
-                    # drop item
+                    
+                    # get transport target
                     pos = targetRoom.storageSpace[targetIndex]
-                    quest = quests.DropQuestMeta(item,targetRoom,pos[0],pos[1])
+                    pos = (targetRoom,pos[0],pos[1])
+
+                    # add transport quest
+                    quest = quests.TransportQuest(item,pos)
                     questlist.append(quest)
 
+                    # move to next item
                     srcIndex -= 1
                     targetIndex += 1
 

@@ -82,7 +82,7 @@ def calculatePathReal(startX,startY,endX,endY,walkingPath):
         return [(endX,endY)]
 
     # bad code: this code doesn't actually do anything
-	# bug: this code should select wether or not the path is looped
+	# bug: this code should select whether or not the path is looped
     circlePath = True
     if (startY > 11 and not startX==endX):
         circlePath = True

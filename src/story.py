@@ -63,7 +63,7 @@ the base class for the all phases here
 """
 class BasicPhase(object):
     '''
-    state initialisation
+    state initialization
     bad code: creating default attributes in init and set them externally later
     '''
     def __init__(self):
@@ -559,7 +559,7 @@ show some fluff messages and enforce learning how to use a selection
 '''
 class BrainTestingPhase(BasicPhase):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self):
         self.name = "BrainTesting" # should be outside of constructor
@@ -574,7 +574,7 @@ class BrainTestingPhase(BasicPhase):
 
         # show fluff
         showText(["""
-initialising subject ...................................... """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
+initializing subject ...................................... """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
 
 testing subject with random input 
 
@@ -739,7 +739,7 @@ transfer control to implant"""],autocontinue=True,scrolling=True)
 
         # show fluff
         showText("""
-aborting initialisation
+aborting initialization
 resetting neural network ....................................""",autocontinue=True,trigger=self.forceExit,scrolling=True)
 
     '''
@@ -2263,7 +2263,7 @@ class ThirdTutorialPhase(BasicPhase):
                 wait for a clean start and make the npc start their part of the competition
                 '''
                 def handleEvent(subself):
-                    # check wether the boilers cooled down
+                    # check whether the boilers cooled down
                     boilerStillBoiling = False
                     for boiler in self.mainCharRoom.boilers:
                         if boiler.isBoiling:
@@ -2324,7 +2324,7 @@ class ThirdTutorialPhase(BasicPhase):
             wait for a clean start and make the player start their part of the competition
             '''
             def handleEvent(subself):
-                # check wether the boilers cooled down
+                # check whether the boilers cooled down
                 boilerStillBoiling = False
                 for boiler in self.mainCharRoom.boilers:
                     if boiler.isBoiling:

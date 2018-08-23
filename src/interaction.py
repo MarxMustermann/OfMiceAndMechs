@@ -844,7 +844,7 @@ bad code: there is redundant code from the specific submenus that should be put 
 '''
 class SubMenu(object):
     '''
-    straightforward state initialision
+    straightforward state initialization
     '''
     def __init__(self):
         self.state = None
@@ -959,7 +959,7 @@ bad code: sub menues should be implemented in the base class
 '''
 class ChatPartnerselection(SubMenu):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self):
         super().__init__()
@@ -976,7 +976,7 @@ class ChatPartnerselection(SubMenu):
         header.set_text((urwid.AttrSpec("default","default"),"\nConversation menu\n"))
         out = "\n"
 
-        # initialise the options
+        # initialize the options
         # bad code: should be done in __init__
         if not self.options and not self.getSelection():
             counter = 1
@@ -1009,7 +1009,7 @@ class RecruitChat(SubMenu):
     dialogName = "follow my orders." # the name for this chat when presented as dialog option
 
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,partner):
         self.state = None
@@ -1074,7 +1074,7 @@ bad code: sub menues should be implemented in the base class
 class ChatMenu(SubMenu):
 
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,partner):
         self.state = None
@@ -1179,7 +1179,7 @@ minimal debug ability
 '''
 class DebugMenu(SubMenu):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,char=None):
         super().__init__()
@@ -1216,7 +1216,7 @@ show the quests for a character and allow player interaction
 '''
 class QuestMenu(SubMenu):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,char=None):
         self.lockOptions = True

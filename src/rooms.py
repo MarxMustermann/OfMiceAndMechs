@@ -15,11 +15,11 @@ the base class for all rooms
 '''
 class Room(object):
     '''
-    state initialisation
+    state initialization
     bad code: too many attributes
     '''
     def __init__(self,layout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
-        # initialise attributes
+        # initialize attributes
         self.desiredPosition = desiredPosition
         self.desiredSteamGeneration = None
         self.layout = layout
@@ -1049,7 +1049,7 @@ XXXXXXXXXX
         '''
         class ChangeRequirements(object):
             '''
-            state initialisation
+            state initialization
             '''
             def __init__(subself,tick):
                 subself.tick = tick
@@ -1413,7 +1413,7 @@ XXXXXX
         class StopChat(interaction.SubMenu):
             dialogName = "stop fireing the furnaces."
             '''
-            basic state initialisation
+            basic state initialization
             '''
             def __init__(self,partner):
                 self.state = None
@@ -1452,7 +1452,7 @@ XXXXXX
         class StartChat(interaction.SubMenu):
             dialogName = "fire the furnaces."
             '''
-            basic state initialisation
+            basic state initialization
             '''
             def __init__(self,partner):
                 self.state = None

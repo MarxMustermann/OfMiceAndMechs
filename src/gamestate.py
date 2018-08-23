@@ -6,8 +6,8 @@ the container for the gamestate that is not contained elsewhere
 '''
 class GameState():
     '''
-	basic state setting with some initialisation
-	bad code: initialisation should happen in story or from loading
+	basic state setting with some initialization
+	bad code: initialization should happen in story or from loading
 	'''
     def __init__(self,phase=None):
         self.gameWon = False

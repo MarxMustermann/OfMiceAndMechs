@@ -16,7 +16,7 @@ the base class for all Cinamatics. Nothing fancy
 """
 class BasicCinematic(object):
     def __init__(self):
-        # initialise basic state
+        # initialize basic state
         self.background = False
         self.followUp = None
         self.skipable = False
@@ -93,7 +93,7 @@ bad code: this should be abstracted to have a zoom in/out for various things lik
 """
 class MessageZoomCinematic(BasicCinematic):
     """
-    almost straightforward state initialisation
+    almost straightforward state initialization
     """
     def __init__(self):
         super().__init__()
@@ -186,7 +186,7 @@ a cinematic showing a text in various ways
 """
 class TextCinematic(BasicCinematic):
     """
-    straightforward state initialisation
+    straightforward state initialization
     options include a rusty look and scrolling
     """
     def __init__(self,text,rusty=False, autocontinue=False, scrolling=False):
@@ -315,7 +315,7 @@ bad pattern: locking the players controls without ingame reason results breaking
 '''
 class ShowQuestExecution(BasicCinematic):
     '''
-    straightforward initialisation with options like a character to do the quest or making
+    straightforward initialization with options like a character to do the quest or making
     it run in the background. A second setup happens when the cinematic actually starts
     '''
     def __init__(self,quest,tickSpan = None, assignTo = None, background = False):
@@ -402,7 +402,7 @@ bad pattern: locking the players controls without ingame reason results breaking
 '''
 class ShowGameCinematic(BasicCinematic):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,turns,tickSpan = None):
         super().__init__()
@@ -485,7 +485,7 @@ bad pattern: choices should be in game actions not magic cutscene choices
 '''
 class SelectionCinematic(BasicCinematic):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,text, options, niceOptions, followUps=None):
         super().__init__()

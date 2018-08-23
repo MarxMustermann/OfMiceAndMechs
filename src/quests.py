@@ -10,7 +10,7 @@ the base class for all quests
 '''
 class Quest(object):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,followUp=None,startCinematics=None,lifetime=0):
         self.followUp = followUp # deprecate?
@@ -454,7 +454,7 @@ bad code: is to be repaced by EnterRoomQuestMeta but switch is not done yet
 '''
 class EnterRoomQuest(Quest):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,room,followUp=None,startCinematics=None):
         self.description = "please enter the room: "+room.name+" "+str(room.xPosition)+" "+str(room.yPosition)
@@ -520,7 +520,7 @@ bad code: is to be replaced by PickupQuestMeta but switch is not done yet
 '''
 class PickupQuest(Quest):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,toPickup,followUp=None,startCinematics=None):
         self.toPickup = toPickup
@@ -532,7 +532,7 @@ class PickupQuest(Quest):
         super().__init__(followUp,startCinematics=startCinematics)
 
     '''
-    check wether the item is in the mainchars inventory
+    check whether the item is in the mainchars inventory
     '''
     def triggerCompletionCheck(self):
         if self.active:
@@ -573,7 +573,7 @@ You probably want to use PickupQuest instead
 '''
 class NaivePickupQuest(Quest):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,toPickup,followUp=None,startCinematics=None):
         self.toPickup = toPickup
@@ -585,7 +585,7 @@ class NaivePickupQuest(Quest):
         self.description = "naive pickup"
    
     '''
-    check wether item is in characters inventory
+    check wnether item is in characters inventory
     '''
     def triggerCompletionCheck(self):
         if self.active:
@@ -605,7 +605,7 @@ You probably want to use GetQuest instead
 '''
 class NaiveGetQuest(Quest):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,questDispenser,assign=True,followUp=None,startCinematics=None):
         self.questDispenser = questDispenser
@@ -615,7 +615,7 @@ class NaiveGetQuest(Quest):
         self.description = "naive get quest"
 
     '''
-    check wether the chracter has gotten a quest
+    check wnether the chracter has gotten a quest
     '''
     def triggerCompletionCheck(self):
         if self.active:
@@ -648,7 +648,7 @@ You probably want to use GetReward instead
 '''
 class NaiveGetReward(Quest):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,quest,followUp=None,startCinematics=None):
         super().__init__(followUp,startCinematics=startCinematics)
@@ -683,7 +683,7 @@ You probably want to use MurderQuest instead
 '''
 class NaiveMurderQuest(Quest):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,toKill,followUp=None,startCinematics=None):
         self.toKill = toKill
@@ -691,7 +691,7 @@ class NaiveMurderQuest(Quest):
         self.description = "naive murder"
 
     '''
-    check wether target is dead
+    check whether target is dead
     '''
     def triggerCompletionCheck(self):
         if self.active:
@@ -713,7 +713,7 @@ You probably want to use ActivateQuest instead
 '''
 class NaiveActivateQuest(Quest):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,toActivate,followUp=None,startCinematics=None):
         self.toActivate = toActivate
@@ -722,7 +722,7 @@ class NaiveActivateQuest(Quest):
         self.activated = False
 
     '''
-    check wether target was activated
+    check wnether target was activated
     '''
     def triggerCompletionCheck(self):
         if self.active:
@@ -745,7 +745,7 @@ You probably want to use ActivateQuest instead
 '''
 class NaiveDropQuest(Quest):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
         self.dstX = xPosition
@@ -759,7 +759,7 @@ class NaiveDropQuest(Quest):
         self.dropped = False
 
     '''
-    check wether item was dropped
+    check wnether item was dropped
     '''
     def triggerCompletionCheck(self):
         if self.active:
@@ -795,7 +795,7 @@ You probably want to use ActivateQuest instead
 '''
 class NaiveDelegateQuest(Quest):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,quest):
         super().__init__()
@@ -824,7 +824,7 @@ bad code: this is to be replaced by DropQuestMeta but switch is not done yet
 '''
 class DropQuest(Quest):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
         self.toDrop = toDrop
@@ -837,7 +837,7 @@ class DropQuest(Quest):
         super().__init__(followUp,startCinematics=startCinematics)
 
     '''
-    check wether item is placed correctly
+    check whether item is placed correctly
     '''
     def triggerCompletionCheck(self):
         correctPosition = False
@@ -868,7 +868,7 @@ bad code: this is to be replaced by CollectQuestMeta but switch is not done yet
 '''
 class CollectQuest(Quest):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,toFind="canBurn",startCinematics=None):
         self.toFind = toFind
@@ -950,7 +950,7 @@ wait until quest is aborted
 '''
 class WaitQuest(Quest):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,followUp=None,startCinematics=None,lifetime=None):
         self.description = "please wait"
@@ -967,7 +967,7 @@ wait till something was deactivated
 '''
 class WaitForDeactivationQuest(Quest):
     '''
-    state initialisation
+    state initialization
     '''
     def __init__(self,item,followUp=None,startCinematics=None,lifetime=None):
         self.item = item
@@ -999,7 +999,7 @@ wail till a specific quest was completed
 '''
 class WaitForQuestCompletion(Quest):
     '''
-    state initialisation
+    state initialization
     '''
     def __init__(self,quest):
         self.quest = quest
@@ -1033,7 +1033,7 @@ bad code: is to be replaced FireFurnaceMeta but switch is not done yet
 '''
 class FireFurnace(Quest):
     '''
-    state initialisation
+    state initialization
     '''
     def __init__(self,furnace,followUp=None,startCinematics=None,lifetime=None):
         self.furnace = furnace
@@ -1054,7 +1054,7 @@ class FireFurnace(Quest):
         character.addListener(self.recalculate)
 
     '''
-    check wether furnace is active
+    check wnether furnace is active
     '''
     def triggerCompletionCheck(self):
         if not self.active:
@@ -1110,7 +1110,7 @@ bad code: is to be replaced KeepFurnacesFiredMeta but switch is not done yet
 '''
 class KeepFurnacesFired(Quest):
     '''
-    state initialisation
+    state initialization
     '''
     def __init__(self,furnaces,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
         self.furnaces = furnaces
@@ -1189,7 +1189,7 @@ bad code: is to be replaced KeepFurnaceFiredMeta but switch is not done yet
 '''
 class KeepFurnaceFired(Quest):
     '''
-    state initialisation
+    state initialization
     '''
     def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
         self.furnace = furnace
@@ -1311,7 +1311,7 @@ a container quest containing a list of quests that have to be handled in sequenc
 '''
 class MetaQuestSequence(Quest):
     '''
-    state initialisation
+    state initialization
     '''
     def __init__(self,quests,startCinematics=None):
         # listen to subquests
@@ -1520,7 +1520,7 @@ a container quest containing a list of quests that have to be handled in any ord
 '''
 class MetaQuestParralel(Quest):
     '''
-    state initialisation
+    state initialization
     '''
     def __init__(self,quests,startCinematics=None,looped=False,lifetime=None):
         self.subQuests = quests
@@ -1801,7 +1801,7 @@ fire a furnace once
 '''
 class FireFurnaceMeta(MetaQuestParralel):
     '''
-    state initialisation
+    state initialization
     '''
     def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
         self.activateQuest = None
@@ -1881,7 +1881,7 @@ bad code: this quest is not used and may be broken
 '''
 class PatrolQuest(MetaQuestSequence):
     '''
-    state initialisation
+    state initialization
     '''
     def __init__(self,waypoints=[],startCinematics=None,looped=True,lifetime=None):
         # add movement between waypoints
@@ -1905,7 +1905,7 @@ class PatrolQuest(MetaQuestSequence):
             '''
             class endQuestEvent(object):
                 '''
-                state initialisation
+                state initialization
                 '''
                 def __init__(subself,tick):
                     subself.tick = tick
@@ -1924,7 +1924,7 @@ quest to examine the environment
 '''
 class ExamineQuest(Quest):
     '''
-    state initialisation
+    state initialization
     '''
     def __init__(self,waypoints=[],startCinematics=None,looped=True,lifetime=None):
         self.lifetime = lifetime
@@ -1941,7 +1941,7 @@ class ExamineQuest(Quest):
             '''
             class endQuestEvent(object):
                 '''
-                state initialisation
+                state initialization
                 '''
                 def __init__(subself,tick):
                     subself.tick = tick
@@ -1967,7 +1967,7 @@ class RefillDrinkQuest(ActivateQuest):
         super().__init__(toActivate=terrain.tutorialVatProcessing.gooDispenser,desiredActive=True,startCinematics=startCinematics)
 
     '''
-    check wether the character has a filled goo flask
+    check wnether the character has a filled goo flask
     '''
     def triggerCompletionCheck(self):
         for item in self.character.inventory:
@@ -1980,7 +1980,7 @@ quest to drink something
 '''
 class DrinkQuest(Quest):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,startCinematics=None):
         self.description = "please drink"
@@ -2018,7 +2018,7 @@ ensure own survival
 '''
 class SurviveQuest(Quest):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,startCinematics=None,looped=True,lifetime=None):
         self.description = "survive"
@@ -2060,7 +2060,7 @@ class SurviveQuest(Quest):
 '''
 class HopperDuty(MetaQuestSequence):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,waitingRoom,startCinematics=None,looped=True,lifetime=None):
         self.getQuest = GetQuest(waitingRoom.secondOfficer,assign=False)
@@ -2244,7 +2244,7 @@ quest for entering a room
 '''
 class EnterRoomQuestMeta(MetaQuestParralel):
     '''
-    basic state initialisation
+    basic state initialization
     '''
     def __init__(self,room,followUp=None,startCinematics=None):
         self.room = room
@@ -2280,7 +2280,7 @@ move to a position
 '''
 class MoveQuestMeta(MetaQuestSequence):
     '''
-    state initialisation
+    state initialization
     '''
     def __init__(self,room,x,y,sloppy=False,followUp=None,startCinematics=None):
         self.moveQuest = MoveQuest(room,x,y,sloppy=sloppy)
@@ -2380,7 +2380,7 @@ class PickupQuestMeta(MetaQuestSequence):
                 self.moveQuest = None
 
             if not self.moveQuest:
-                # check wether it is neccessary to re add the movement
+                # check whether it is neccessary to re add the movement
                 reAddMove = False
                 if not self.sloppy:
                     if not hasattr(self.toPickup,"xPosition") or not hasattr(self.toPickup,"yPosition"):
@@ -2427,7 +2427,7 @@ collect items with some quality
 '''
 class CollectQuestMeta(MetaQuestSequence):
     '''
-    state initialisation
+    state initialization
     '''
     def __init__(self,toFind="canBurn",startCinematics=None):
         self.toFind = toFind
@@ -2595,7 +2595,7 @@ construct a room
 '''
 class ConstructRoom(MetaQuestParralel):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,constructionSite,storageRooms,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
 
@@ -2669,7 +2669,7 @@ bad code: only fetches fuel
 '''
 class FillPocketsQuest(MetaQuestSequence):
     '''
-    state initialisation
+    state initialization
     '''
     def __init__(self,followUp=None,startCinematics=None,lifetime=None):
         self.waitQuest = WaitQuest()
@@ -2765,7 +2765,7 @@ bad pattern: the quest can only be solved by delegation
 '''
 class HandleDelivery(MetaQuestSequence):
     '''
-    state initialisation
+    state initialization
     '''
     def __init__(self, cargoRooms=[],storageRooms=[]):
         self.cargoRooms = cargoRooms
@@ -2818,7 +2818,7 @@ dummy quest for doing the room duty
 '''
 class RoomDuty(MetaQuestParralel):
     '''
-    state initialisation
+    state initialization
     '''
     def __init__(self, cargoRooms=[],storageRooms=[]):
         self.questList = []
@@ -2842,7 +2842,7 @@ dummy quest for following somebodies orders
 '''
 class Serve(MetaQuestParralel):
     '''
-    state initialisation
+    state initialization
     '''
     def __init__(self, cargoRooms=[],storageRooms=[]):
         self.questList = []

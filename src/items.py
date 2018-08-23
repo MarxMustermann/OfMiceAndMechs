@@ -13,7 +13,7 @@ the base class for all items.
 '''
 class Item(object):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,display=None,xPosition=0,yPosition=0,name="item"):
         if not display:
@@ -324,7 +324,7 @@ crushed something basically raw metal
 '''
 class Scrap(Item):
     '''
-    almost straightforward state initialisation
+    almost straightforward state initialization
     '''
     def __init__(self,xPosition=0,yPosition=0,amount=1,name="scrap"):
         super().__init__(displayChars.scrap_light,xPosition,yPosition)
@@ -522,7 +522,7 @@ item for letting characters
 '''
 class Lever(Item):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,xPosition=0,yPosition=0,name="lever",activated=False):
         self.activated = activated
@@ -560,7 +560,7 @@ heat source for generating steam and similar
 '''
 class Furnace(Item):
     '''
-    straightforward state initialisation
+    straightforward state initialization
     '''
     def __init__(self,xPosition=0,yPosition=0,name="Furnace"):
         self.activated = False
@@ -623,7 +623,7 @@ class Furnace(Item):
                 '''
                 class FurnaceBurnoutEvent(object):
                     '''
-                    straightforward state initialisation
+                    straightforward state initialization
                     '''
                     def __init__(subself,tick):
                         subself.tick = tick
@@ -674,7 +674,7 @@ class Commlink(Item):
         '''
         class CoalRefillEvent(object):
             '''
-            straightforward state initialisation
+            straightforward state initialization
             '''
             def __init__(subself,tick):
                 subself.tick = tick
@@ -805,7 +805,7 @@ class Door(Item):
                 '''
                 class AutoCloseDoor(object):
                     '''
-                    straightforward state initialisation
+                    straightforward state initialization
                     '''
                     def __init__(subself,tick):
                         subself.tick = tick
@@ -1040,7 +1040,7 @@ class Boiler(Item):
                 '''
                 class StartBoilingEvent(object):
                     '''
-                    straightforward state initialisation
+                    straightforward state initialization
                     '''
                     def __init__(subself,tick):
                         subself.tick = tick
@@ -1089,7 +1089,7 @@ class Boiler(Item):
                 '''
                 class StopBoilingEvent(object):
                     '''
-                    straightforward state initialisation
+                    straightforward state initialization
                     '''
                     def __init__(subself,tick):
                         subself.tick = tick

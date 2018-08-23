@@ -287,21 +287,6 @@ class Terrain(object):
             last[smallCoord] = [smallCoord]
         self.superWatershed(0,last)
 
-        # bad code: commented out code
-        """
-        for startNode in self.superNodes:
-            for endNode in self.superNodes:
-                if startNode == endNode:
-                    continue
-                start = self.superNodes[startNode]
-                end = self.superNodes[endNode]
-
-                start = Coordinate(start[0],start[1])
-                end = Coordinate(end[0],end[1])
-
-                self.superNodePaths[(startNode,endNode)] = self.findWayNodeBased(start,end,[self.superNodes[startNode]])
-        """
-
         # try to find paths between all nodes by placing growing circles around the starting points until the meet each other
         self.superNodePaths
         self.overlay = self.addWatershedOverlay

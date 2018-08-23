@@ -301,7 +301,6 @@ class ScreenSaver(object):
                     item = srcRoom.itemByCoordinates[pos][0]
                     
                     # get transport target
-                    print(targetIndex)
                     pos = targetRoom.storageSpace[targetIndex]
                     pos = (targetRoom,pos[0],pos[1])
 

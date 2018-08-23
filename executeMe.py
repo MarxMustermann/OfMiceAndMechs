@@ -16,6 +16,7 @@ import src.events as events
 import config.commandChars as commandChars
 import config.names as names
 
+# parse arguments
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--phase", type=str, help="the phase to start in")
@@ -29,6 +30,7 @@ args = parser.parse_args()
 
 import src.canvas as canvas
 
+# set rendering mode
 if args.unicode:
     displayChars = canvas.DisplayMapping("unicode")
 else:
@@ -40,26 +42,31 @@ else:
 #
 #################################################################################################################################
 
+# play music
 if args.music :
     def playMusic():
         import threading
         thread = threading.currentThread()
         import subprocess
         import os.path
-        # I didn't ask the people at freemusicarchive about the position on traffic leeching. If you know they don't like it please create an issue
 
+        # download music
+        # bad pattern: I didn't ask the people at freemusicarchive about the position on traffic leeching. If you know they don't like it please create an issue
+        # bad code: it obviously is an issue, since the knowingly broke this mechanism
         if not os.path.isfile("music/Diezel_Tea_-_01_-_Arzni_Part_1_ft_Sam_Khachatourian.mp3"):
             subprocess.call(["wget","-q","https://freemusicarchive.org/music/download/ece1b96c8f23874bda6ffdda2dd6cf9cd2fcb582","-O","music/Diezel_Tea_-_01_-_Arzni_Part_1_ft_Sam_Khachatourian.mp3"],stdout=subprocess.PIPE,stderr=subprocess.PIPE,stdin=subprocess.PIPE)
         if not os.path.isfile("music/Diezel_Tea_-_01_-_Kilikia_Original_Mix.mp3"):
             subprocess.call(["wget","-q","https://freemusicarchive.org/music/download/c1a7a0cd0e262469607e26935e69ed1e5bfed538","-O","music/Diezel_Tea_-_01_-_Kilikia_Original_Mix.mp3"],stdout=subprocess.PIPE,stderr=subprocess.PIPE,stdin=subprocess.PIPE)
         mplayer = subprocess.Popen(["mplayer","music/Diezel_Tea_-_01_-_Kilikia_Original_Mix.mp3","music/Diezel_Tea_-_01_-_Arzni_Part_1_ft_Sam_Khachatourian.mp3"],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         
+        # play music
         while mplayer.stdout.read1(100):
            if thread.stop:
                mplayer.terminate()
                mplayer.kill()
                return
         
+    # start music as subprocess
     from threading import Thread
     musicThread = Thread(target=playMusic)
     musicThread.stop = False
@@ -168,24 +175,43 @@ items.interaction = interaction
 quests.interaction = interaction
 
 if args.debug:
+    '''
+    logger object for logging to file
+    '''
     class debugToFile(object):
+        '''
+        clear file
+        '''
         def __init__(self):
             logfile = open("debug.log","w")
             logfile.close()
+        '''
+        add log message to file
+        '''
         def append(self,message):
             logfile = open("debug.log","a")
             logfile.write(str(message)+"\n")
             logfile.close()
+    
+    # set debug mode
     debugMessages = debugToFile()
     interaction.debug = True
 else:
+    '''
+    dummy logger
+    '''
     class FakeLogger(object):
+        '''
+        discard input
+        '''
         def append(self,message):
             pass
 
+    # set debug mode
     debugMessages = FakeLogger()
     interaction.debug = False
 
+# HACK: common variables with modules
 items.debugMessages = debugMessages
 quests.debugMessages = debugMessages
 rooms.debugMessages = debugMessages
@@ -204,6 +230,8 @@ quests.showCinematic = cinematics.showCinematic
 ## set up the trainingsterrain. A container will be made later
 #
 ##########################################
+
+# spawn selected terrain
 if args.terrain and args.terrain == "scrapField":
     terrain = terrains.TutorialTerrain2()
 elif args.terrain and args.terrain == "nothingness":
@@ -218,6 +246,7 @@ interaction.terrain = terrain
 gamestate.terrain = terrain
 quests.terrain = terrain
 
+# HACK: common variables with modules
 cinematics.interaction = interaction
 
 # HACK: common variables with modules
@@ -309,6 +338,7 @@ cinematics.advanceGame = advanceGame
 interaction.advanceGame = advanceGame
 
 if args.tiles:
+    # spawn tile based rendered window
     import pygame
     pygame.init()
     pygame.key.set_repeat(200,20)
@@ -333,9 +363,11 @@ except:
         musicThread.stop = True
     raise
 
+# stop the music
 if musicThread:
     musicThread.stop = True
 
+# print death messages
 if gameStateObj.mainChar.dead:
     print("you died.")
     if gameStateObj.mainChar.deathReason:

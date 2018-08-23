@@ -2401,6 +2401,13 @@ class PickupQuestMeta(MetaQuestSequence):
                     self.addQuest(self.moveQuest)
         super().recalculate()
 
+    '''
+    assign to character and listen to character
+    '''
+    def assignToCharacter(self,character):
+        character.addListener(self.recalculate)
+        super().assignToCharacter(character)
+
 '''
 activate an item
 '''

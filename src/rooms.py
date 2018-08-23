@@ -1583,7 +1583,7 @@ XXXXXXXXXX
         self.storedItems = []
         counter = 0
         length = len(itemTypes)
-        for i in range(1,97):
+        for i in range(1,80):
             i = i+i%3+i%10*2
             if i%2:
                 counter += 1

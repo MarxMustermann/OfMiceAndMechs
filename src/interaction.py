@@ -1749,13 +1749,6 @@ the help submenue
 '''
 class HelpMenu(SubMenu):
     '''
-	straightforwar state initialisation
-	bad code: does nothing
-	'''
-    def __init__(self):
-        super().__init__()
-
-    '''
 	show the help text
 	'''
     def handleKey(self, key):

@@ -290,6 +290,10 @@ class ScreenSaver(object):
             # generate transport quests
             questlist = []
             for srcRoom in (terrain.tutorialCargoRooms[counter*3+1],terrain.tutorialCargoRooms[counter*3+2]):
+                # skip filled target room
+                if targetIndex > len(targetRoom.storageSpace)-1:
+                    break
+
                 srcIndex = len(srcRoom.storedItems)-1
                 while srcIndex > -1:
                     # get item to transport
@@ -297,6 +301,7 @@ class ScreenSaver(object):
                     item = srcRoom.itemByCoordinates[pos][0]
                     
                     # get transport target
+                    print(targetIndex)
                     pos = targetRoom.storageSpace[targetIndex]
                     pos = (targetRoom,pos[0],pos[1])
 
@@ -307,6 +312,10 @@ class ScreenSaver(object):
                     # move to next item
                     srcIndex -= 1
                     targetIndex += 1
+
+                    # skip filled target room
+                    if targetIndex > len(targetRoom.storageSpace)-1:
+                        break
 
             # bad code: commented out code
             """

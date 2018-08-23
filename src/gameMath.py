@@ -52,15 +52,6 @@ def calculatePath(startX,startY,endX,endY,walkingPath):
     # get path with loops
     path = calculatePathReal(startX,startY,endX,endY,walkingPath)
 
-    # bad code: redundant loop removal?
-    index = 0
-    lastFoundIndex = index
-    for wayPoint in path:
-        if wayPoint == (startX,startY):
-            lastFoundIndex = index
-        index += 1
-    path = path[lastFoundIndex:]
-
     # remove loops
     return removeLoops(path)
 

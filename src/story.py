@@ -233,11 +233,12 @@ class ScreenSaver(object):
         '''
 
         # add items to be picked up
+		# bad code: should use transport quest
         questlist = []
         for item in terrain.testItems:
-            quest = quests.PickupQuest(item)
+            quest = quests.PickupQuestMeta(item)
             questlist.append(quest)
-            quest = quests.DropQuest(item,terrain.tutorialMachineRoom,2,2)
+            quest = quests.DropQuestMeta(item,terrain.tutorialMachineRoom,2,2)
             questlist.append(quest)
 
         # add npc to pick stuff up
@@ -287,7 +288,7 @@ class ScreenSaver(object):
             targetIndex = len(targetRoom.storedItems)
 
             # generate transport quests
-            # bad code: should actually 
+            # bad code: should actually use transport quest
             questlist = []
             for srcRoom in (terrain.tutorialCargoRooms[counter*3+1],terrain.tutorialCargoRooms[counter*3+2]):
                 srcIndex = len(srcRoom.storedItems)-1
@@ -295,12 +296,12 @@ class ScreenSaver(object):
                     # pick up item
                     pos = srcRoom.storageSpace[srcIndex]
                     item = srcRoom.itemByCoordinates[pos][0]
-                    quest = quests.PickupQuest(item)
+                    quest = quests.PickupQuestMe(item)
                     questlist.append(quest)
 
                     # drop item
                     pos = targetRoom.storageSpace[targetIndex]
-                    quest = quests.DropQuest(item,targetRoom,pos[0],pos[1])
+                    quest = quests.DropQuestMeta(item,targetRoom,pos[0],pos[1])
                     questlist.append(quest)
 
                     srcIndex -= 1
@@ -991,7 +992,7 @@ now, go and pull the lever
         say("well done, go and fetch your drink",firstOfficer)
 
         # ask the player to pick up the flask
-        quest = quests.PickupQuest(drink)
+        quest = quests.PickupQuestMeta(drink)
         showQuest(quest,mainChar)
 
         # show instructions

@@ -22,6 +22,7 @@ class BasicCinematic(object):
         self.skipable = False
         self.overwriteFooter = True
         self.footerText = ""
+        self.endTrigger = None
 
     def advance(self):
         return False

@@ -33,21 +33,8 @@ class Terrain(object):
         self.characters = []
         self.rooms = []
         self.floordisplay = displayChars.floor
-
-        # container for pathfinding information
         self.itemByCoordinates = {}
         self.roomByCoordinates = {}
-        self.watershedStart = []
-        self.watershedNodeMap = {}
-        self.foundPaths = {}
-        self.applicablePaths = []
-        self.obseveredCoordinates = {}
-        self.superNodes = {}
-        self.superNodePaths = {}
-        self.watershedSuperNodeMap = {}
-        self.watershedSuperCoordinates = {}
-        self.foundSuperPaths = {}
-        self.foundSuperPathsComplete = {}
 
         # misc state
         self.overlay = None
@@ -96,9 +83,13 @@ class Terrain(object):
         self.miniMechs = []
         self.wakeUpRoom = None
 
+        self.watershedStart = []
+        self.superNodes = {}
+
         # add rooms
         # bad code: this should be abstracted
         # bad code: repetetive code
+        # bad code: watershed coordinates should not be set here
         lineCounter = 0
         for layoutline in layout.split("\n")[1:]:
             rowCounter = 0
@@ -223,6 +214,24 @@ class Terrain(object):
         # actually add the rooms to the map
         self.addRooms(roomsOnMap)
 
+        # precalculate paths to make pathfinding faster
+        self.calculatePathMap()
+
+    '''
+    precalculate pathfinding data
+    '''
+    def calculatePathMap(self):
+        # container for pathfinding information
+        self.watershedNodeMap = {}
+        self.foundPaths = {}
+        self.applicablePaths = []
+        self.obseveredCoordinates = {}
+        self.superNodePaths = {}
+        self.watershedSuperNodeMap = {}
+        self.watershedSuperCoordinates = {}
+        self.foundSuperPaths = {}
+        self.foundSuperPathsComplete = {}
+
         # create a map of non passable tiles
         # bad code: should be a method
         self.nonMovablecoordinates = {}
@@ -260,209 +269,13 @@ class Terrain(object):
         # container for pathfinding information
         self.watershedCoordinates = {}
 
-        '''
-        get a path to node from within the nodes section
-        result is not returned but a modifcation of a argument
-        '''
-        def walkBack(coordinate,bucket,path,last=1000):
-            # get neighbouring coordinates
-            testCoordinates = [(coordinate[0]-1,coordinate[1]),(coordinate[0]+1,coordinate[1]),(coordinate[0],coordinate[1]-1),(coordinate[0],coordinate[1]+1)]
-            nextStep = (None,(None,last))
-
-            # select step back to node
-            for testCoordinate in testCoordinates:
-                if not testCoordinate in self.watershedCoordinates:
-                    continue
-
-                # get node for coordinate
-                value = self.watershedCoordinates[testCoordinate]
-
-                # stay within the current section
-                if not value[0] == bucket:
-                    continue
-
-                # select tile with lower distance to node
-                if value[1] < nextStep[1][1]:
-                    nextStep = (testCoordinate,value)
-            
-            # continue till no improvement
-            if nextStep[1][1] < last:
-                path.append(nextStep[0])
-                walkBack(nextStep[0],bucket,path,last=nextStep[1][1]+1)
-
-        '''
-        expand the section around a node in a circular pattern until it reaches the section of another node and connect them
-        '''
-        def watershed(counter,lastCoordinates):
-            # limit size to not destroy performace/get endless loops
-            counter += 1
-            if counter > 60:
-                return
-
-            # grow the section for each starting point
-            newLast = {}
-            for start,coordinates in lastCoordinates.items():
-                newLastList = []
-
-                for coordinate in coordinates:
-                    # expand the section
-                    newCoordinates = [(coordinate[0]-1,coordinate[1]),(coordinate[0]+1,coordinate[1]),(coordinate[0],coordinate[1]-1),(coordinate[0],coordinate[1]+1)]
-                    for newCoordinate in newCoordinates:
-                     
-                        # ignore non walkable terrain
-                        if newCoordinate in self.nonMovablecoordinates:
-                            continue
-
-                        # handle hitting another section
-                        if newCoordinate in self.watershedCoordinates:
-                            # skip sections with a known path
-                            partnerNode = self.watershedCoordinates[newCoordinate][0]
-                            if partnerNode == start:
-                                continue
-                            if (start,partnerNode) in self.foundPaths or (partnerNode,start) in self.foundPaths:
-                                continue
-
-                            # add path from node to intersection
-                            path = []
-                            walkBack(newCoordinate,start,path)
-                            path.reverse()
-                            path.append(newCoordinate)
-
-                            # add path from intersection to partner node
-                            walkBack(newCoordinate,partnerNode,path)
-                            self.foundPaths[(start,partnerNode)] = path
-                            path2 = path[:]
-                            path2.reverse()
-
-                            # save path
-                            self.foundPaths[(partnerNode,start)] = path2
-                            continue
-
-                        # add coordinates to section
-                        newLastList.append(newCoordinate)
-                        self.watershedCoordinates[newCoordinate] = (start,counter)
-
-                # store the coordinates visited for next interaction
-                newLast[start] = newLastList
-
-            # recursevly increase section
-            watershed(counter,newLast)
-
-            # add found path between nodes to map
-            for pair,path in self.foundPaths.items():
-                if not pair[1] in self.watershedNodeMap[pair[0]]:
-                    self.watershedNodeMap[pair[0]].append(pair[1])
-                if not pair[0] in [pair[1]]:
-                    self.watershedNodeMap[pair[1]].append(pair[0])
-
         # try to find paths between all nodes by placing growing circles around the starting points until the meet each other
         last = {}
         for coordinate in self.watershedStart:
             self.watershedNodeMap[coordinate] = []
             self.watershedCoordinates[coordinate] = (coordinate,0)
             last[coordinate] = [coordinate]
-        watershed(0,last)
-
-        '''
-        get a path to supernode from within the supernodes section
-        result is not returned but a modifcation of a argument
-        bad code: similar to pathfinding for nodes
-        '''
-        def walkBackSuper(coordinate,bucket,path,last=1000):
-            # get neighbouring nodes
-            testCoordinates = self.watershedNodeMap[coordinate]
-            nextStep = (None,(None,last))
-
-            for testCoordinate in testCoordinates:
-                if not testCoordinate in self.watershedSuperCoordinates:
-                    continue
-
-                # get supernode for node
-                value = self.watershedSuperCoordinates[testCoordinate]
-
-                # stay within the current section
-                if not value[0] == bucket:
-                    continue
-
-                # select node with lower distance to supernode
-                if value[1] < nextStep[1][1]:
-                    nextStep = (testCoordinate,value)
-
-            # continue till no improvement
-            if nextStep[1][1] < last:
-                path.append(nextStep[0])
-                walkBackSuper(nextStep[0],bucket,path,last=nextStep[1][1]+1)
-
-        '''
-        expand the section around a supernode in a circular pattern until it reaches the section of another supernode and connect them
-        bad code: similar to pathfinding for nodes
-        '''
-        def superWatershed(counter,lastCoordinates):
-            # limit size to not destroy performace/get endless loops
-            counter += 1
-            if counter > 60:
-                return
-
-            # grow the section for each starting point
-            newLast = {}
-            for start,coordinates in lastCoordinates.items():
-                newLastList = []
-
-                for coordinate in coordinates:
-
-                    # expand the section
-                    newCoordinates = self.watershedNodeMap[coordinate]
-                    for newCoordinate in newCoordinates:
-
-                        # handle hitting another section
-                        if newCoordinate in self.watershedSuperCoordinates:
-                            # skip sections with a known path
-                            partnerSuperNode = self.watershedSuperCoordinates[newCoordinate][0]
-                            if partnerSuperNode == start:
-                                continue
-                            if (start,partnerSuperNode) in self.foundSuperPaths or (partnerSuperNode,start) in self.foundSuperPaths:
-                                continue
-
-                            # add path from supernode to intersection
-                            path = []
-                            walkBackSuper(newCoordinate,start,path)
-                            path.reverse()
-                            path.append(newCoordinate)
-
-                            # add path from intersection to supernode
-                            walkBackSuper(newCoordinate,partnerSuperNode,path)
-                            self.foundSuperPaths[(partnerSuperNode,start)] = path
-                            self.foundSuperPaths[(start,partnerSuperNode)] = path
-
-                            # save path
-                            last = path[0]
-                            completePath = [last]
-                            for waypoint in path[1:]:
-                                completePath.extend(self.foundPaths[(last,waypoint)][1:])
-                                last = waypoint
-                            self.foundSuperPathsComplete[(start,partnerSuperNode)] = completePath[1:]
-                            completePath = completePath[:-1]
-                            completePath.reverse()
-                            self.foundSuperPathsComplete[(partnerSuperNode,start)] = completePath
-                            continue
-
-                        # add nodes to section
-                        newLastList.append(newCoordinate)
-                        self.watershedSuperCoordinates[newCoordinate] = (start,counter)
-
-                # store the nodes visited for next iteration
-                newLast[start] = newLastList
-
-            # add found path between supernodes to map
-            for pair,path in self.foundSuperPaths.items():
-                if not pair[1] in self.watershedSuperNodeMap[pair[0]]:
-                    self.watershedSuperNodeMap[pair[0]].append(pair[1])
-
-                if not pair[0] in self.watershedSuperNodeMap[pair[1]]:
-                    self.watershedSuperNodeMap[pair[1]].append(pair[0])
-
-            # recursevly increase section
-            superWatershed(counter,newLast)
+        self.watershed(0,last)
 
         # try to connect the super nodes using the paths between the nodes
         # bad code: redudant code with the pathfinding between nodes
@@ -472,7 +285,7 @@ class Terrain(object):
 
             self.watershedSuperCoordinates[smallCoord] = (smallCoord,0)
             last[smallCoord] = [smallCoord]
-        superWatershed(0,last)
+        self.superWatershed(0,last)
 
         # bad code: commented out code
         """
@@ -493,6 +306,202 @@ class Terrain(object):
         self.superNodePaths
         self.overlay = self.addWatershedOverlay
         self.overlay = None
+
+    '''
+    get a path to node from within the nodes section
+    result is not returned but a modifcation of a argument
+    '''
+    def walkBack(self,coordinate,bucket,path,last=1000):
+        # get neighbouring coordinates
+        testCoordinates = [(coordinate[0]-1,coordinate[1]),(coordinate[0]+1,coordinate[1]),(coordinate[0],coordinate[1]-1),(coordinate[0],coordinate[1]+1)]
+        nextStep = (None,(None,last))
+
+        # select step back to node
+        for testCoordinate in testCoordinates:
+            if not testCoordinate in self.watershedCoordinates:
+                continue
+
+            # get node for coordinate
+            value = self.watershedCoordinates[testCoordinate]
+
+            # stay within the current section
+            if not value[0] == bucket:
+                continue
+
+            # select tile with lower distance to node
+            if value[1] < nextStep[1][1]:
+                nextStep = (testCoordinate,value)
+            
+        # continue till no improvement
+        if nextStep[1][1] < last:
+            path.append(nextStep[0])
+            self.walkBack(nextStep[0],bucket,path,last=nextStep[1][1]+1)
+
+    '''
+    expand the section around a node in a circular pattern until it reaches the section of another node and connect them
+    '''
+    def watershed(self,counter,lastCoordinates):
+        # limit size to not destroy performace/get endless loops
+        counter += 1
+        if counter > 60:
+            return
+
+        # grow the section for each starting point
+        newLast = {}
+        for start,coordinates in lastCoordinates.items():
+            newLastList = []
+
+            for coordinate in coordinates:
+                # expand the section
+                newCoordinates = [(coordinate[0]-1,coordinate[1]),(coordinate[0]+1,coordinate[1]),(coordinate[0],coordinate[1]-1),(coordinate[0],coordinate[1]+1)]
+                for newCoordinate in newCoordinates:
+                     
+                    # ignore non walkable terrain
+                    if newCoordinate in self.nonMovablecoordinates:
+                        continue
+
+                    # handle hitting another section
+                    if newCoordinate in self.watershedCoordinates:
+                        # skip sections with a known path
+                        partnerNode = self.watershedCoordinates[newCoordinate][0]
+                        if partnerNode == start:
+                            continue
+                        if (start,partnerNode) in self.foundPaths or (partnerNode,start) in self.foundPaths:
+                            continue
+
+                        # add path from node to intersection
+                        path = []
+                        self.walkBack(newCoordinate,start,path)
+                        path.reverse()
+                        path.append(newCoordinate)
+
+                        # add path from intersection to partner node
+                        self.walkBack(newCoordinate,partnerNode,path)
+                        self.foundPaths[(start,partnerNode)] = path
+                        path2 = path[:]
+                        path2.reverse()
+
+                        # save path
+                        self.foundPaths[(partnerNode,start)] = path2
+                        continue
+
+                    # add coordinates to section
+                    newLastList.append(newCoordinate)
+                    self.watershedCoordinates[newCoordinate] = (start,counter)
+
+            # store the coordinates visited for next interaction
+            newLast[start] = newLastList
+
+        # recursevly increase section
+        self.watershed(counter,newLast)
+
+        # add found path between nodes to map
+        for pair,path in self.foundPaths.items():
+            if not pair[1] in self.watershedNodeMap[pair[0]]:
+                self.watershedNodeMap[pair[0]].append(pair[1])
+            if not pair[0] in [pair[1]]:
+                self.watershedNodeMap[pair[1]].append(pair[0])
+
+    '''
+    get a path to supernode from within the supernodes section
+    result is not returned but a modifcation of a argument
+    bad code: similar to pathfinding for nodes
+    '''
+    def walkBackSuper(self,coordinate,bucket,path,last=1000):
+        # get neighbouring nodes
+        testCoordinates = self.watershedNodeMap[coordinate]
+        nextStep = (None,(None,last))
+
+        for testCoordinate in testCoordinates:
+            if not testCoordinate in self.watershedSuperCoordinates:
+                continue
+
+            # get supernode for node
+            value = self.watershedSuperCoordinates[testCoordinate]
+
+            # stay within the current section
+            if not value[0] == bucket:
+                continue
+
+            # select node with lower distance to supernode
+            if value[1] < nextStep[1][1]:
+                nextStep = (testCoordinate,value)
+
+        # continue till no improvement
+        if nextStep[1][1] < last:
+            path.append(nextStep[0])
+            self.walkBackSuper(nextStep[0],bucket,path,last=nextStep[1][1]+1)
+
+    '''
+    expand the section around a supernode in a circular pattern until it reaches the section of another supernode and connect them
+    bad code: similar to pathfinding for nodes
+    '''
+    def superWatershed(self,counter,lastCoordinates):
+        # limit size to not destroy performace/get endless loops
+        counter += 1
+        if counter > 60:
+            return
+
+        # grow the section for each starting point
+        newLast = {}
+        for start,coordinates in lastCoordinates.items():
+            newLastList = []
+
+            for coordinate in coordinates:
+
+                # expand the section
+                newCoordinates = self.watershedNodeMap[coordinate]
+                for newCoordinate in newCoordinates:
+
+                    # handle hitting another section
+                    if newCoordinate in self.watershedSuperCoordinates:
+                        # skip sections with a known path
+                        partnerSuperNode = self.watershedSuperCoordinates[newCoordinate][0]
+                        if partnerSuperNode == start:
+                            continue
+                        if (start,partnerSuperNode) in self.foundSuperPaths or (partnerSuperNode,start) in self.foundSuperPaths:
+                            continue
+
+                        # add path from supernode to intersection
+                        path = []
+                        self.walkBackSuper(newCoordinate,start,path)
+                        path.reverse()
+                        path.append(newCoordinate)
+
+                        # add path from intersection to supernode
+                        self.walkBackSuper(newCoordinate,partnerSuperNode,path)
+                        self.foundSuperPaths[(partnerSuperNode,start)] = path
+                        self.foundSuperPaths[(start,partnerSuperNode)] = path
+
+                        # save path
+                        last = path[0]
+                        completePath = [last]
+                        for waypoint in path[1:]:
+                            completePath.extend(self.foundPaths[(last,waypoint)][1:])
+                            last = waypoint
+                        self.foundSuperPathsComplete[(start,partnerSuperNode)] = completePath[1:]
+                        completePath = completePath[:-1]
+                        completePath.reverse()
+                        self.foundSuperPathsComplete[(partnerSuperNode,start)] = completePath
+                        continue
+
+                    # add nodes to section
+                    newLastList.append(newCoordinate)
+                    self.watershedSuperCoordinates[newCoordinate] = (start,counter)
+
+            # store the nodes visited for next iteration
+            newLast[start] = newLastList
+
+        # add found path between supernodes to map
+        for pair,path in self.foundSuperPaths.items():
+            if not pair[1] in self.watershedSuperNodeMap[pair[0]]:
+                self.watershedSuperNodeMap[pair[0]].append(pair[1])
+
+            if not pair[0] in self.watershedSuperNodeMap[pair[1]]:
+                self.watershedSuperNodeMap[pair[1]].append(pair[0])
+
+        # recursevly increase section
+        self.superWatershed(counter,newLast)
                     
     '''
     remove a character from the terrain

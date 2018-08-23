@@ -352,7 +352,8 @@ class Room(object):
     bad code: should have proper pathfinding
     '''
     def calculatePath(self,x,y,dstX,dstY,walkingPath):
-        return calculatePath(x,y,dstX,dstY,walkingPath)
+        path = calculatePath(x,y,dstX,dstY,walkingPath)
+        return path
 
     '''
     render the room

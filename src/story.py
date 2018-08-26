@@ -406,19 +406,19 @@ class ScreenSaver(object):
 
         # generate fireing quests
         questList = []
-        quest = quests.KeepFurnaceFired(terrain.tutorialMachineRoom.furnaces[0],lifetime=20)
+        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[0],lifetime=20)
         questList.append(quest)
-        quest = quests.KeepFurnaceFired(terrain.tutorialMachineRoom.furnaces[1],lifetime=20)
+        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[1],lifetime=20)
         questList.append(quest)
-        quest = quests.KeepFurnaceFired(terrain.tutorialMachineRoom.furnaces[2],lifetime=20)
+        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[2],lifetime=20)
         questList.append(quest)
-        quest = quests.KeepFurnaceFired(terrain.tutorialMachineRoom.furnaces[3],lifetime=20)
+        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[3],lifetime=20)
         questList.append(quest)
-        quest = quests.KeepFurnaceFired(terrain.tutorialMachineRoom.furnaces[4],lifetime=20)
+        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[4],lifetime=20)
         questList.append(quest)
-        quest = quests.KeepFurnaceFired(terrain.tutorialMachineRoom.furnaces[5],lifetime=20)
+        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[5],lifetime=20)
         questList.append(quest)
-        quest = quests.KeepFurnaceFired(terrain.tutorialMachineRoom.furnaces[6],lifetime=20)
+        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[6],lifetime=20)
         questList.append(quest)
 
         # assign quest
@@ -827,7 +827,7 @@ class WakeUpPhase(BasicPhase):
         showGame(2)
         showMessage("please wait for assistance")
         showGame(2)
-        quest = quests.MoveQuest(terrain.wakeUpRoom,3,4)
+        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,3,4)
         showQuest(quest,firstOfficer)
         say("I AM "+firstOfficer.name.upper()+" AND I DEMAND YOUR SERVICE.",firstOfficer)
         showGame(1)
@@ -1229,7 +1229,7 @@ you have on piece of coal less than before."""])
         # ask the player to fire a furnace
         self.didFurnaces = True
         say("go on and fire the furnace",firstOfficer)
-        quest = quests.FireFurnace(furnace)
+        quest = quests.FireFurnaceMeta(furnace)
         showQuest(quest,mainChar)
 
     '''
@@ -2239,11 +2239,11 @@ class ThirdTutorialPhase(BasicPhase):
                 add another furnace for the npc to fire
                 '''
                 def handleEvent(subself):
-                    self.mainCharRoom.secondOfficer.assignQuest(quests.KeepFurnaceFired(self.mainCharRoom.furnaces[subself.furnaceIndex],failTrigger=self.end),active=True)
+                    self.mainCharRoom.secondOfficer.assignQuest(quests.KeepFurnaceFiredMeta(self.mainCharRoom.furnaces[subself.furnaceIndex],failTrigger=self.end),active=True)
                     newIndex = subself.furnaceIndex+1
                     self.npcFurnaceIndex = subself.furnaceIndex
                     if newIndex < 8:
-                        self.mainCharRoom.secondOfficer.assignQuest(quests.FireFurnace(self.mainCharRoom.furnaces[newIndex]),active=True)
+                        self.mainCharRoom.secondOfficer.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[newIndex]),active=True)
                         self.mainCharRoom.addEvent(AnotherOne2(gamestate.tick+gamestate.tick%20+10,newIndex))
 
             # remember event type to be able to remove it later
@@ -2275,7 +2275,7 @@ class ThirdTutorialPhase(BasicPhase):
                     else:
                         # make the npc start
                         cinematics.showCinematic("Liebweg start now.")
-                        self.mainCharRoom.secondOfficer.assignQuest(quests.FireFurnace(self.mainCharRoom.furnaces[0]),active=True)
+                        self.mainCharRoom.secondOfficer.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[0]),active=True)
                         self.mainCharRoom.addEvent(AnotherOne2(gamestate.tick+10,0))
 
             '''
@@ -2303,11 +2303,11 @@ class ThirdTutorialPhase(BasicPhase):
             '''
             def handleEvent(subself):
                 messages.append("another one")
-                mainChar.assignQuest(quests.KeepFurnaceFired(self.mainCharRoom.furnaces[subself.furnaceIndex],failTrigger=endMainChar))
+                mainChar.assignQuest(quests.KeepFurnaceFiredMeta(self.mainCharRoom.furnaces[subself.furnaceIndex],failTrigger=endMainChar))
                 newIndex = subself.furnaceIndex+1
                 self.mainCharFurnaceIndex = subself.furnaceIndex
                 if newIndex < 8:
-                    mainChar.assignQuest(quests.FireFurnace(self.mainCharRoom.furnaces[newIndex]))
+                    mainChar.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[newIndex]))
                     self.mainCharRoom.addEvent(AnotherOne(gamestate.tick+gamestate.tick%20+5,newIndex))
 
         '''
@@ -2336,7 +2336,7 @@ class ThirdTutorialPhase(BasicPhase):
                 else:
                     # make the player start
                     cinematics.showCinematic("start now.")
-                    mainChar.assignQuest(quests.FireFurnace(self.mainCharRoom.furnaces[0]))
+                    mainChar.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[0]))
                     self.mainCharRoom.addEvent(AnotherOne(gamestate.tick+10,0))
 
         '''

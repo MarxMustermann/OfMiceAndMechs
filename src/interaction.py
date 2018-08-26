@@ -645,6 +645,7 @@ def processInput(key):
                 if itemMarkedLast:
                     # active marked item
                     itemMarkedLast.apply(mainChar)
+                    mainChar.changed("activate",itemMarkedLast)
                 else:
                     # active an item on floor
                     if mainChar.room:
@@ -654,6 +655,7 @@ def processInput(key):
                     for item in itemList:
                         if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
                             item.apply(mainChar)
+                            mainChar.changed("activate",item)
 
             # examine an item 
             if key in (commandChars.examine):

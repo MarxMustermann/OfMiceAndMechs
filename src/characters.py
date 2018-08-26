@@ -219,15 +219,6 @@ class Character():
             item = None
             if self.room:
                 # move naively within a room
-                if nextPosition[0] < currentPosition[0]:
-                    item = self.room.moveCharacterWest(self)
-                elif nextPosition[0] > currentPosition[0]:
-                    item = self.room.moveCharacterEast(self)
-                elif nextPosition[1] < currentPosition[1]:
-                    item = self.room.moveCharacterNorth(self)
-                elif nextPosition[1] > currentPosition[1]:
-                    item = self.room.moveCharacterSouth(self)
-
                 if nextPosition[0] == currentPosition[0]:
                     if nextPosition[1] < currentPosition[1]:
                         item = self.room.moveCharacterNorth(self)

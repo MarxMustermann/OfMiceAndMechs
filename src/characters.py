@@ -24,7 +24,7 @@ class Character():
         self.name = name
         self.inventory = []
         self.watched = False
-        self.listeners = []
+        self.listeners = {"default":[],"activate":[]}
         self.path = []
         self.subordinates = []
         self.reputation = 0
@@ -396,25 +396,31 @@ class Character():
                 self.changed()
 
     '''
-    straightforward registering for notifications
+    registering for notifications
     '''
-    def addListener(self,listenFunction):
-        if not listenFunction in self.listeners:
-            self.listeners.append(listenFunction)
+    def addListener(self,listenFunction,tag="default"):
+        if not listenFunction in self.listeners[tag]:
+            self.listeners[tag].append(listenFunction)
 
     '''
-    straightforward deregistering for notifications
+    deregistering for notifications
     '''
-    def delListener(self,listenFunction):
-        if listenFunction in self.listeners:
-            self.listeners.remove(listenFunction)
+    def delListener(self,listenFunction,tag="default"):
+        if listenFunction in self.listeners[tag]:
+            self.listeners[tag].remove(listenFunction)
 
     '''
-    straightforward sending notifications
+    sending notifications
     bad code: probably misnamed
     '''
-    def changed(self):
-        for listenFunction in self.listeners:
+    def changed(self,tag="default",info=None):
+        if not tag == "default":
+            for listenFunction in self.listeners[tag]:
+                if tag == "activate":
+                    listenFunction(info)
+                else:
+                    listenFunction()
+        for listenFunction in self.listeners["default"]:
             listenFunction()
 
 """

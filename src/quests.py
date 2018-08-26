@@ -280,11 +280,11 @@ class MoveQuest(Quest):
         if hasattr(self,"dstX") and hasattr(self,"dstY"):
             if not self.sloppy:
                 # check for exact position
-                if self.character.xPosition == self.dstX and self.character.yPosition == self.dstY:
+                if self.character.xPosition == self.dstX and self.character.yPosition == self.dstY and self.character.room == self.room:
                     self.postHandler()
             else:
                 # check for neighbouring position
-                if (self.character.xPosition-self.dstX in (1,0,-1) and self.character.yPosition == self.dstY) or (self.character.yPosition-self.dstY in (1,0,-1) and self.character.xPosition == self.dstX):
+                if self.character.room == self.room and((self.character.xPosition-self.dstX in (1,0,-1) and self.character.yPosition == self.dstY) or (self.character.yPosition-self.dstY in (1,0,-1) and self.character.xPosition == self.dstX)):
                     self.postHandler()
 
     '''
@@ -848,7 +848,7 @@ class DropQuest(Quest):
         correctPosition = False
         # bad code: this exception handling is confusing
         try:
-            if self.toDrop.xPosition == self.dstX and self.toDrop.yPosition == self.dstY:
+            if self.toDrop.xPosition == self.dstX and self.toDrop.yPosition == self.dstY and self.toDrop.room == self.room:
                 correctPosition = True
         except:
             pass

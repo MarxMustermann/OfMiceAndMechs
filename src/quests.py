@@ -730,6 +730,15 @@ class NaiveActivateQuest(Quest):
         self.description = "naive activate "+str(self.toActivate)
         self.activated = False
 
+    def registerActivation(self,info):
+        if self.toActivate == info:
+            self.activated = True
+            self.triggerCompletionCheck()
+
+    def assignToCharacter(self,character):
+        super().assignToCharacter(character)
+        self.character.addListener(self.registerActivation,"activate")
+
     '''
     check wnether target was activated
     '''
@@ -744,8 +753,6 @@ class NaiveActivateQuest(Quest):
     '''
     def solver(self,character):
         self.toActivate.apply(character)
-        self.activated = True
-        self.triggerCompletionCheck()
         return True
 
 '''

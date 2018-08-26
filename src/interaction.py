@@ -1305,15 +1305,15 @@ bad code: uses global functions to render
 '''
 class InventoryMenu(SubMenu):
     '''
-	straighforwad state initalisation
-	bad code: has no effect
+    straighforwad state initalisation
+    bad code: has no effect
     '''
     def __init__(self):
         self.lockOptions = True
         super().__init__()
 
     '''
-	show the inventory
+    show the inventory
     '''
     def handleKey(self, key):
         global submenue
@@ -1333,16 +1333,16 @@ bad code: uses global functions to render
 '''
 class CharacterInfoMenu(SubMenu):
     '''
-	straighforwad state initalisation
-	bad code: has no effect
+    straighforwad state initalisation
+    bad code: has no effect
     '''
     def __init__(self):
         self.lockOptions = True
         super().__init__()
 
     '''
-	show the attributes
-	'''
+    show the attributes
+    '''
     def handleKey(self, key):
         global submenue
 
@@ -1355,7 +1355,7 @@ player interaction for delegating a quest
 '''
 class AdvancedQuestMenu(SubMenu):
     '''
-	straighforwad state initalisation
+    straighforwad state initalisation
     '''
     def __init__(self):
         self.character = None
@@ -1364,10 +1364,10 @@ class AdvancedQuestMenu(SubMenu):
         super().__init__()
 
     '''
-	gather the quests parameters and assign the quest
+    gather the quests parameters and assign the quest
     '''
     def handleKey(self, key):
-	    # start rendering
+        # start rendering
         header.set_text((urwid.AttrSpec("default","default"),"\nadvanced Quest management\n"))
         out = "\n"
         if self.character:
@@ -1383,25 +1383,25 @@ class AdvancedQuestMenu(SubMenu):
             # set up the options
             # bad code: bad data structure leads to ugly code
             if not self.options and not self.getSelection():
-			    # add the main player as target
+                # add the main player as target
                 options = {}
                 niceOptions = {}
                 options[1] = mainChar
                 niceOptions[1] = mainChar.name+" (you)"
                 counter = 1
 
-			    # add the main players subordinates as target
+                # add the main players subordinates as target
                 for char in mainChar.subordinates:
                     counter += 1
                     options[counter] = char
                     niceOptions[counter] = char.name
                 self.setSelection("whom to give the order to: ",options,niceOptions)
 
-			# let the superclass handle the actual selection
+            # let the superclass handle the actual selection
             if not self.getSelection():
                 super().handleKey(key)
                 
-			# store the character to assign the quest to
+            # store the character to assign the quest to
             if self.getSelection():
                 self.state = "questSelection"
                 self.character = self.selection
@@ -1410,19 +1410,19 @@ class AdvancedQuestMenu(SubMenu):
             else:
                 return False
 
-		# let the player select the type of quest to create
+        # let the player select the type of quest to create
         if self.state == "questSelection":
-		    # add a list of hardcoded quests
+            # add a list of hardcoded quests
             if not self.options and not self.getSelection():
                 options = {1:quests.MoveQuest,2:quests.ActivateQuest,3:quests.EnterRoomQuest,4:quests.FireFurnaceMeta,5:quests.ClearRubble,6:quests.ConstructRoom,7:quests.StoreCargo,8:quests.WaitQuest,9:quests.LeaveRoomQuest,10:quests.MoveToStorage,11:quests.RoomDuty}
                 niceOptions = {1:"MoveQuest",2:"ActivateQuest",3:"EnterRoomQuest",4:"FireFurnaceMeta",5:"ClearRubble",6:"ConstructRoom",7:"StoreCargo",8:"WaitQuest",9:"LeaveRoomQuest",10:"MoveToStorage",11:"RoomDuty"}
                 self.setSelection("what type of quest:",options,niceOptions)
 
-			# let the superclass handle the actual selection
+            # let the superclass handle the actual selection
             if not self.getSelection():
                 super().handleKey(key)
 
-			# store the type of quest to create
+            # store the type of quest to create
             if self.getSelection():
                 self.state = "parameter selection"
                 self.quest = self.selection
@@ -1442,7 +1442,7 @@ class AdvancedQuestMenu(SubMenu):
                     niceOptions = {}
                     counter = 1
 
-		            # add a list of of rooms
+                    # add a list of of rooms
                     for room in terrain.rooms:
                         if isinstance(room,rooms.MechArmor) or isinstance(room,rooms.CpuWasterRoom):
                             continue
@@ -1451,11 +1451,11 @@ class AdvancedQuestMenu(SubMenu):
                         counter += 1
                     self.setSelection("select the room:",options,niceOptions)
 
-			    # let the superclass handle the actual selection
+                # let the superclass handle the actual selection
                 if not self.getSelection():
                     super().handleKey(key)
 
-			    # store the parameter
+                # store the parameter
                 if self.getSelection():
                     self.questParams["room"] = self.selection
                     self.state = "confirm"
@@ -1473,7 +1473,7 @@ class AdvancedQuestMenu(SubMenu):
                         niceOptions = {}
                         counter = 1
 
-		                # add a list of of rooms
+                        # add a list of of rooms
                         for room in terrain.rooms:
                             if not isinstance(room,rooms.CargoRoom):
                                 continue
@@ -1482,11 +1482,11 @@ class AdvancedQuestMenu(SubMenu):
                             counter += 1
                         self.setSelection("select the room:",options,niceOptions)
 
-			        # let the superclass handle the actual selection
+                    # let the superclass handle the actual selection
                     if not self.getSelection():
                         super().handleKey(key)
 
-			        # store the parameter
+                    # store the parameter
                     if self.getSelection():
                         self.questParams["cargoRoom"] = self.selection
                         self.selection = None
@@ -1501,7 +1501,7 @@ class AdvancedQuestMenu(SubMenu):
                         niceOptions = {}
                         counter = 1
 
-		                # add a list of of rooms
+                        # add a list of of rooms
                         for room in terrain.rooms:
                             if not isinstance(room,rooms.StorageRoom):
                                 continue
@@ -1510,11 +1510,11 @@ class AdvancedQuestMenu(SubMenu):
                             counter += 1
                         self.setSelection("select the room:",options,niceOptions)
 
-			        # let the superclass handle the actual selection
+                    # let the superclass handle the actual selection
                     if not self.getSelection():
                         super().handleKey(key)
 
-			        # store the parameter
+                    # store the parameter
                     if self.getSelection():
                         self.questParams["storageRoom"] = self.selection
                         self.state = "confirm"
@@ -1523,7 +1523,7 @@ class AdvancedQuestMenu(SubMenu):
                     else:
                         return False
             else:
-			    # skip parameter selection
+                # skip parameter selection
                 self.state = "confirm"
 
         # get confirmation and assign quest
@@ -1538,13 +1538,13 @@ class AdvancedQuestMenu(SubMenu):
                 else:
                     self.setSelection("Do you confirm?",options,niceOptions)
 
-			# let the superclass handle the actual selection
+            # let the superclass handle the actual selection
             if not self.getSelection():
                 super().handleKey(key)
 
             if self.getSelection():
                 if self.selection == "yes":
-				    # instanciate quest
+                    # instanciate quest
                     if self.quest == quests.MoveQuest:
                        questInstance = self.quest(mainChar.room,2,2)
                     if self.quest == quests.ActivateQuest:
@@ -1578,17 +1578,17 @@ class AdvancedQuestMenu(SubMenu):
                     if self.quest == quests.MoveToStorage:
                        questInstance = self.quest([terrain.tutorialLab.itemByCoordinates[(1,9)][0],terrain.tutorialLab.itemByCoordinates[(2,9)][0]],terrain.tutorialStorageRooms[1])
 
-					# show some messages
+                    # show some messages
                     if not self.character == mainChar:
                        self.persistentText += self.character.name+": \"understood?\"\n"
                        self.persistentText += mainChar.name+": \"understood and in execution\"\n"
 
-					# assign the quest
+                    # assign the quest
                     self.character.assignQuest(questInstance, active=True)
 
                     self.state = "done"
                 else:
-				    # reset progress
+                    # reset progress
                     self.state = "questSelection"
                     
                 self.selection = None
@@ -1632,44 +1632,44 @@ def renderHeader():
     questLine = ""
     messagesLine = ""
     while True:
-	    # get the next line for each element
+        # get the next line for each element
         if questLine == "" and len(splitedQuests):
             questLine = splitedQuests.pop(0)
         if messagesLine == "" and len(splitedMessages):
             messagesLine = splitedMessages.pop(0)
 
-		# stop adding lines after some rounds
+        # stop adding lines after some rounds
         rowCounter += 1
         if (rowCounter > 5):
             break
 
         if len(questLine) > questWidth:
-		    # cut off left line
+            # cut off left line
             txt += questLine[:questWidth]+"┃ "
             questLine = questLine[questWidth:]
         else:
-		    # padd left line
+            # padd left line
             txt += questLine+" "*(questWidth-len(questLine))+"┃ "
-			# bug?: doen't this pop twice?
+            # bug?: doen't this pop twice?
             if splitedQuests:
                 questLine = splitedQuests.pop(0)
             else:
                 questLine = ""
 
         if len(messagesLine) > messagesWidth:
-		    # cut off right line
+            # cut off right line
             txt += messagesLine[:messagesWidth]
             messagesLine = messagesLine[messagesWidth:]
         else:
             txt += messagesLine
-			# bug?: doen't this pop twice?
+            # bug?: doen't this pop twice?
             if splitedMessages:
                 messagesLine = splitedMessages.pop(0)
             else:
                 messagesLine = ""
         txt += "\n"
             
-	# add the lower decoration
+    # add the lower decoration
     txt += "━"*+questWidth+"┻"+"━"*(screensize[0]-questWidth-1)+"\n"
 
     return txt
@@ -1703,10 +1703,10 @@ def renderQuests(maxQuests=0,char=None, asList=False, questIndex=0):
         txt = ""
 
     if len(char.quests):
-	    # render the quests
+        # render the quests
         counter = 0
         for quest in char.quests:
-		    # render quest
+            # render quest
             if asList:
                 if counter == questIndex:
                     txt.extend([(urwid.AttrSpec("#0f0","default"),"QUEST: "),quest.getDescription(asList=asList,colored=True,active=True),"\n"])
@@ -1715,12 +1715,12 @@ def renderQuests(maxQuests=0,char=None, asList=False, questIndex=0):
             else:
                 txt+= "QUEST: "+quest.getDescription(asList=asList)+"\n"
 
-			# break if maximum reached
+            # break if maximum reached
             counter += 1
             if counter == maxQuests:
                 break
     else:
-	    # return placeholder for no quests
+        # return placeholder for no quests
         if asList:
             txt.append("No Quest")
         else:
@@ -1749,8 +1749,8 @@ the help submenue
 '''
 class HelpMenu(SubMenu):
     '''
-	show the help text
-	'''
+    show the help text
+    '''
     def handleKey(self, key):
         global submenue
 

@@ -734,7 +734,7 @@ class Terrain(object):
                         doLoop = False
             counter += 1
 
-            if counter == 10:
+            if counter == 20:
                 raise Exception("unable to find end node to "+str(end.x)+" / "+str(end.y))
 
         # walk back to start node and stitch together path

@@ -742,6 +742,7 @@ class Room(object):
     bad code: almost identical code for each direction
     '''
     def moveCharacterWest(self,character):
+
         # teleport character to terrain if moved of terrain
         if not character.xPosition:
             newYPos = character.yPosition+character.room.yPosition*15+character.room.offsetY

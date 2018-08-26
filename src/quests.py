@@ -24,8 +24,22 @@ class Quest(object):
         self.endTrigger = None # deprecate?
         self.paused = False
         self.reputationReward = 0
+        self.watched = []
 
         self.lifetime = lifetime
+
+    def startWatching(self, target, callback):
+        target.addListener(callback)
+        self.watched.append((target,callback))
+    
+    def stopWatching(self, target, callback):
+        target.delListener(callback)
+        self.watched.remove((target,callback))
+
+    def stopWatchingAll(self):
+        for listenItem in self.watched[:]:
+            self.stopWatching(listenItem[0],listenItem[1])
+
 
     '''
     check whether the quest is solved or not (and trigger teardown if quest is solved)
@@ -86,6 +100,8 @@ class Quest(object):
     bad code: self.character should be checked at the beginning
     '''
     def postHandler(self):
+        self.stopWatchingAll()
+
         if self.completed:
             debugMessages.append("this should not happen (posthandler called on completed quest ("+str(self)+")) "+str(self.character))
             if self.character and self in self.character.quests:
@@ -277,8 +293,7 @@ class MoveQuest(Quest):
     '''
     def assignToCharacter(self,character):
         super().assignToCharacter(character)
-        character.addListener(self.recalculate)
-        self.listeningTo.append((character,self.recalculate))
+        self.startWatching(character,self.recalculate)
 
     '''
     split up the quest into subquest if nesseccary
@@ -305,6 +320,7 @@ class MoveQuest(Quest):
             # set target coordinates to the actual target
             self.dstX = self.targetX
             self.dstY = self.targetY
+
         elif self.character.room and self.character.quests and self.character.quests[0] == self:
             # make the character leave the room
             # bad code: adds a new quest instead of using sub quests
@@ -316,17 +332,6 @@ class MoveQuest(Quest):
             pass # bad code: does nothing
         super().recalculate()
 
-    '''
-    remove listener and call superclass handler
-    '''
-    def postHandler(self):
-        for (objectRef,functionRef) in self.listeningTo:
-            try:
-                objectRef.listeners.remove(functionRef)
-            except:
-                debugMessages.append("failed to remove listener")
-        super().postHandler()
-
 '''
 quest to activate something
 bad code: is to be replaced by ActivateQuestMeta but switch is not done yet
@@ -337,13 +342,13 @@ class ActivateQuest(Quest):
     '''
     def __init__(self,toActivate,followUp=None,desiredActive=True,startCinematics=None):
         self.toActivate = toActivate
-        self.toActivate.addListener(self.recalculate)
-        self.toActivate.addListener(self.triggerCompletionCheck)
         self.dstX = self.toActivate.xPosition
         self.dstY = self.toActivate.yPosition
         self.desiredActive = desiredActive
         self.description = "please activate the "+self.toActivate.name+" ("+str(self.toActivate.xPosition)+"/"+str(self.toActivate.yPosition)+")"
         super().__init__(followUp,startCinematics=startCinematics)
+        self.startWatching(self.toActivate,self.recalculate)
+        self.startWatching(self.toActivate,self.triggerCompletionCheck)
 
     '''
     check if target has the desired state
@@ -428,7 +433,7 @@ class LeaveRoomQuest(Quest):
     def assignToCharacter(self,character):
 
         super().assignToCharacter(character)
-        character.addListener(self.recalculate)
+        self.startWatching(character,self.recalculate)
 
         super().recalculate()
 
@@ -469,7 +474,7 @@ class EnterRoomQuest(Quest):
     '''
     def assignToCharacter(self,character):
         super().assignToCharacter(character)
-        character.addListener(self.recalculate)
+        self.startWatching(character,self.recalculate)
 
     '''
     walk to target
@@ -524,8 +529,8 @@ class PickupQuest(Quest):
     '''
     def __init__(self,toPickup,followUp=None,startCinematics=None):
         self.toPickup = toPickup
-        self.toPickup.addListener(self.recalculate)
-        self.toPickup.addListener(self.triggerCompletionCheck)
+        self.startWatching(self.toPickup,self.recalculate)
+        self.startWatching(self.toPickup,self.triggerCompletionCheck)
         self.dstX = self.toPickup.xPosition
         self.dstY = self.toPickup.yPosition
         self.description = "please pick up the "+self.toPickup.name+" ("+str(self.toPickup.xPosition)+"/"+str(self.toPickup.yPosition)+")"
@@ -579,9 +584,9 @@ class NaivePickupQuest(Quest):
         self.toPickup = toPickup
         self.dstX = self.toPickup.xPosition
         self.dstY = self.toPickup.yPosition
-        self.toPickup.addListener(self.recalculate)
-        self.toPickup.addListener(self.triggerCompletionCheck)
         super().__init__(followUp,startCinematics=startCinematics)
+        self.startWatching(self.toPickup,self.recalculate)
+        self.startWatching(self.toPickup,self.triggerCompletionCheck)
         self.description = "naive pickup"
    
     '''
@@ -752,9 +757,9 @@ class NaiveDropQuest(Quest):
         self.dstY = yPosition
         self.room = room
         self.toDrop = toDrop
-        self.toDrop.addListener(self.recalculate)
-        self.toDrop.addListener(self.triggerCompletionCheck)
         super().__init__(followUp,startCinematics=startCinematics)
+        self.startWatching(self.toDrop,self.recalculate)
+        self.startWatching(self.toDrop,self.triggerCompletionCheck)
         self.description = "naive drop"
         self.dropped = False
 
@@ -801,7 +806,7 @@ class NaiveDelegateQuest(Quest):
         super().__init__()
         self.quest = quest
         self.description = "naive delegate quest"
-        self.quest.addListener(self.triggerCompletionCheck)
+        self.startWatching(self.quest,self.triggerCompletionCheck)
     
     '''
     check if the quest has a character assigned
@@ -828,8 +833,8 @@ class DropQuest(Quest):
     '''
     def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
         self.toDrop = toDrop
-        self.toDrop.addListener(self.recalculate)
-        self.toDrop.addListener(self.triggerCompletionCheck)
+        self.startWatching(self.toDrop,self.recalculate)
+        self.startWatching(self.toDrop,self.triggerCompletionCheck)
         self.dstX = xPosition
         self.dstY = yPosition
         self.room = room
@@ -907,7 +912,7 @@ class CollectQuest(Quest):
     '''
     def assignToCharacter(self,character):
         super().assignToCharacter(character)
-        character.addListener(self.recalculate)
+        self.startWatching(self.character,self.recalculate)
 
     '''
     set target to item with correct property
@@ -974,9 +979,7 @@ class WaitForDeactivationQuest(Quest):
         self.description = "please wait for deactivation of "+self.item.description
 
         # listen to item
-        # bad code: listen twice
-        item.addListener(self.recalculate)
-        self.item.addListener(self.recalculate)
+        self.startWatching(self.item,self.recalculate)
 
         super().__init__(lifetime=lifetime)
         self.pause() # bad code: why pause by default
@@ -1003,7 +1006,7 @@ class WaitForQuestCompletion(Quest):
     '''
     def __init__(self,quest):
         self.quest = quest
-        self.quest.addListener(self.triggerCompletionCheck)
+        self.startWatching(self.quest,self.triggerCompletionCheck)
         self.description = "please wait for the quest to completed"
         super().__init__()
 
@@ -1037,7 +1040,7 @@ class FireFurnace(Quest):
     '''
     def __init__(self,furnace,followUp=None,startCinematics=None,lifetime=None):
         self.furnace = furnace
-        self.furnace.addListener(self.recalculate)
+        self.startWatching(self.furnace,self.recalculate)
         self.description = "please fire the "+self.furnace.name+" ("+str(self.furnace.xPosition)+"/"+str(self.furnace.yPosition)+")"
         self.dstX = self.furnace.xPosition
         self.dstY = self.furnace.yPosition
@@ -1051,7 +1054,7 @@ class FireFurnace(Quest):
     '''
     def assignToCharacter(self,character):
         super().assignToCharacter(character)
-        character.addListener(self.recalculate)
+        self.startWatching(self.character,self.recalculate)
 
     '''
     check wnether furnace is active
@@ -1120,7 +1123,7 @@ class KeepFurnacesFired(Quest):
         self.metaQuest2 = None
         self.fetchQuest = None
         self.description = "please fire the furnaces"
-        self.furnaces[0].addListener(self.recalculate)
+        self.startWatching(self.furnaces[0],self.recalculate)
         super().__init__(followUp=followUp,startCinematics=startCinematics,lifetime=lifetime)
 
     '''
@@ -1193,7 +1196,7 @@ class KeepFurnaceFired(Quest):
     '''
     def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
         self.furnace = furnace
-        self.furnace.addListener(self.recalculate)
+        self.startWatching(self.furnace,self.recalculate)
         self.description = "please fire the "+self.furnace.name+" ("+str(self.furnace.xPosition)+"/"+str(self.furnace.yPosition)+")"
         self.dstX = self.furnace.xPosition
         self.dstY = self.furnace.yPosition
@@ -1212,7 +1215,7 @@ class KeepFurnaceFired(Quest):
         super().assignToCharacter(character)
 
         # listen to character
-        character.addListener(self.recalculate)
+        self.startWatching(self.character,self.recalculate)
 
         # store and listen to affected boilers
         self.boilers = self.furnace.boilers
@@ -1220,7 +1223,7 @@ class KeepFurnaceFired(Quest):
             for boiler in self.boilers:
                 def fail():
                     self.fail(boiler)
-                boiler.addListener(fail)
+                self.startWatching(self.boiler,fail)
 
     '''
     check if a boiler stopped boiling and trigger the callback
@@ -1323,7 +1326,7 @@ class MetaQuestSequence(Quest):
         
         # listen to subquests
         if len(self.subQuests):
-            self.subQuests[0].addListener(self.recalculate)
+            self.startWatching(self.subQuests[0],self.recalculate)
 
     '''
     get target position from first subquest
@@ -1423,6 +1426,7 @@ class MetaQuestSequence(Quest):
     check if there are quests left
     '''
     def triggerCompletionCheck(self):
+
         # do nothing on inactive quest
         if not self.active:
             return
@@ -1454,7 +1458,7 @@ class MetaQuestSequence(Quest):
             if not self.subQuests[0].active:
                 self.subQuests[0].activate()
             if self.subQuests and not (self.subQuests[0],self.recalculate) in self.listeningTo:
-                self.subQuests[0].addListener(self.recalculate)
+                self.startWatching(self.subQuests[0],self.recalculate)
         super().recalculate()
 
         # check for completeion
@@ -1471,8 +1475,7 @@ class MetaQuestSequence(Quest):
             self.subQuests.append(quest)
 
         # listen to quest
-        self.subQuests[0].addListener(self.recalculate)
-        self.listeningTo.append((self.subQuests[0],self.recalculate))
+        self.startWatching(self.subQuests[0],self.recalculate)
 
         # deactivate last active quest
         # bad code: should only happen on addFront
@@ -1504,17 +1507,6 @@ class MetaQuestSequence(Quest):
                 self.subQuests[0].deactivate()
         super().deactivate()
 
-    '''
-    remove listener and call superclass
-    '''
-    def postHandler(self):
-        for (objectRef,functionRef) in self.listeningTo:
-            try:
-                objectRef.listeners.remove(functionRef)
-            except:
-                debugMessages.append("failed to remove listener")
-        super().postHandler()
-
 '''
 a container quest containing a list of quests that have to be handled in any order
 '''
@@ -1527,11 +1519,11 @@ class MetaQuestParralel(Quest):
         self.lastActive = None
         self.metaDescription = "meta"
 
+        super().__init__(startCinematics=startCinematics,lifetime=lifetime)
+
         # listen to subquests
         for quest in self.subQuests:
-            quest.addListener(self.recalculate)
-
-        super().__init__(startCinematics=startCinematics,lifetime=lifetime)
+            self.startWatching(quest,self.recalculate)
 
     '''
     forward position from last active quest
@@ -1731,7 +1723,7 @@ class MetaQuestParralel(Quest):
             quest.activate()
         quest.recalculate()
         self.questList.insert(0,quest)
-        quest.addListener(self.recalculate)
+        self.startWatching(quest,self.recalculate)
 
 '''
 fire a list of furnaces an keep them fired
@@ -1762,7 +1754,7 @@ class KeepFurnaceFiredMeta(MetaQuestParralel):
         self.metaDescription = "KeepFurnaceFiredMeta"
 
         # listen to furnace
-        self.furnace.addListener(self.recalculate)
+        self.startWatching(self.furnace,self.recalculate)
 
     def recalculate(self):
         if not self.character:
@@ -1782,7 +1774,7 @@ class KeepFurnaceFiredMeta(MetaQuestParralel):
         if not self.waitQuest and not self.fireFurnaceQuest:
             if self.furnace.activated:
                 self.waitQuest = WaitForDeactivationQuest(self.furnace)
-                self.waitQuest.addListener(self.recalculate)
+                self.startWatching(self.waitQuest,self.recalculate)
                 self.addQuest(self.waitQuest)
                 self.pause()
             else:
@@ -1835,7 +1827,7 @@ class FireFurnaceMeta(MetaQuestParralel):
                 # collect fuel
                 self.collectQuest = CollectQuestMeta()
                 self.collectQuest.assignToCharacter(self.character)
-                self.collectQuest.addListener(self.recalculate)
+                self.startWatching(self.collectQuest,self.recalculate)
                 self.questList.insert(0,self.collectQuest)
                 self.collectQuest.activate()
                 self.changed()
@@ -1854,7 +1846,7 @@ class FireFurnaceMeta(MetaQuestParralel):
             self.activateQuest.assignToCharacter(self.character)
             self.questList.append(self.activateQuest)
             self.activateQuest.activate()
-            self.activateQuest.addListener(self.recalculate)
+            self.startWatching(self.activateQuest,self.recalculate)
             self.changed()
 
         super().recalculate()
@@ -1990,7 +1982,7 @@ class DrinkQuest(Quest):
     assign to character and listen to character
     '''
     def assignToCharacter(self,character):
-        character.addListener(self.recalculate)
+        self.startWatching(character,self.recalculate)
         super().assignToCharacter(character)
 
     '''
@@ -2031,7 +2023,7 @@ class SurviveQuest(Quest):
     '''
     def assignToCharacter(self,character):
         super().assignToCharacter(character)
-        character.addListener(self.recalculate)
+        self.startWatching(character,self.recalculate)
 
     '''
     spawn quests to take care of basic needs
@@ -2228,12 +2220,12 @@ class PlaceFurniture(MetaQuestParralel):
             # pick up item
             quest = PickupQuest(itemsInStore[counter])
             self.questList.append(quest)
-            quest.addListener(self.recalculate)
+            self.startWatching(quest,self.recalculate)
 
             # drop item
             quest = DropQuest(itemsInStore[counter],constructionSite,toBuild[0][1],toBuild[0][0])
             self.questList.append(quest)
-            quest.addListener(self.recalculate)
+            self.startWatching(quest,self.recalculate)
             counter += 1 
 
         super().__init__(self.questList)
@@ -2272,7 +2264,7 @@ class EnterRoomQuestMeta(MetaQuestParralel):
     assign quest and listen to character
     '''
     def assignToCharacter(self,character):
-        character.addListener(self.recalculate)
+        self.startWatching(character,self.recalculate)
         super().assignToCharacter(character)
 
 '''
@@ -2315,8 +2307,7 @@ class MoveQuestMeta(MetaQuestSequence):
     assign to character and listen to character
     '''
     def assignToCharacter(self,character):
-        character.addListener(self.recalculate)
-        self.listeningTo.append((character,self.recalculate))
+        self.startWatching(character,self.recalculate)
         super().assignToCharacter(character)
 
 '''
@@ -2352,7 +2343,7 @@ class DropQuestMeta(MetaQuestSequence):
     assign to character and listen to character
     '''
     def assignToCharacter(self,character):
-        character.addListener(self.recalculate)
+        self.startWatching(character,self.recalculate)
         super().assignToCharacter(character)
 
 '''
@@ -2405,7 +2396,7 @@ class PickupQuestMeta(MetaQuestSequence):
     assign to character and listen to character
     '''
     def assignToCharacter(self,character):
-        character.addListener(self.recalculate)
+        self.startWatching(character,self.recalculate)
         super().assignToCharacter(character)
 
 '''
@@ -2573,7 +2564,7 @@ class MurderQuest(MetaQuestSequence):
         self.lastPos = (self.toKill.room,self.toKill.xPosition,self.toKill.yPosition)
         super().__init__(self.questList)
         self.metaDescription = "murder"
-        self.toKill.addListener(self.recalculate)
+        self.startWatching(self.toKill,self.recalculate)
 
     '''
     adjust movement to follow target

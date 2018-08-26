@@ -277,7 +277,7 @@ class MoveQuest(Quest):
         if not self.active:
             # bad code: should write a "this should not happen" log entry
             return 
-        if hasattr(self,"dstX") and hasattr(self,"dstY"):
+        if hasattr(self,"dstX") and hasattr(self,"dstY"): # bad code: should do nothing
             if not self.sloppy:
                 # check for exact position
                 if self.character.xPosition == self.dstX and self.character.yPosition == self.dstY and self.character.room == self.room:

@@ -93,14 +93,7 @@ class Terrain(object):
         lineCounter = 0
         for layoutline in layout.split("\n")[1:]:
             rowCounter = 0
-            meta = False # bad code: does nothing
             for char in layoutline:
-                # bad code: doeas nothing
-                if meta:
-                    meta = False
-                    continue
-                else:
-                    meta = True
                 if char in (".",","," ","t"):
                     # add starting points for pathfinding
                     self.watershedStart.extend([(rowCounter*15+1,lineCounter*15+1),(rowCounter*15+13,lineCounter*15+1),(rowCounter*15+1,lineCounter*15+13),(rowCounter*15+13,lineCounter*15+13)])
@@ -1213,10 +1206,10 @@ class TutorialTerrain2(Terrain):
         layout = """
 
 
-    U    U 
-U    U 
-        U
-      U    U
+  U  U 
+U  U 
+     U
+  U  U
 
         """
         detailedLayout = """
@@ -1358,16 +1351,16 @@ XXXXXXXXXXXXXXXXXXXXXX"""
 
         # the layout for the mech
         layout = """
-X X X X X X X X X X X
-X X X X X X X X X X X
-X V v ? b r ? ? v V X
-X O . t         . O X
-X w   M Q K ? ?   L X
-X W   ? ? ? ? ?   m X
-X U .           . U X
-X U   C C C C C   U X
-X U   C C C C C t U X
-X X X C C C C C X X X """
+XXXXXXXXXXX
+XXXXXXXXXXX
+XVv?br??vVX
+XO.t    .OX
+Xw MQK?? LX
+XW ????? mX
+XU.     .UX
+XU CCCCC UX
+XU CCCCCtUX
+XXXCCCCCXXX """
         detailedLayout = """
                                                                                                                                                                     
                                                                                                                                                                     

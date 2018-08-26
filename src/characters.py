@@ -233,6 +233,7 @@ class Character():
                 # basically checks if a walkable space/door within a room on the coordinate the chracter walks on. If there is
                 # an item it will be saved for interaction
                 # bad code: repetition of the movement code is bad
+
                 for room in self.terrain.rooms:
                     # check north
                     if room.yPosition*15+room.offsetY+room.sizeY == nextPosition[1]+1:
@@ -329,6 +330,10 @@ class Character():
                     item.apply(self)
                 return False
             else:
+                if not debug:
+                    if not self.path or not nextPosition == self.path[0]:
+                        return False
+
                 # remove last step from path
                 if (self.xPosition == nextPosition[0] and self.yPosition == nextPosition[1]):
                     self.path = self.path[1:]

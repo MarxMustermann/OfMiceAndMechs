@@ -2426,11 +2426,11 @@ class CollectQuestMeta(MetaQuestSequence):
     '''
     def __init__(self,toFind="canBurn",startCinematics=None):
         self.toFind = toFind
-        self.metaDescription = "fetch Quest Meta"
         self.activateQuest = None
         self.waitQuest = WaitQuest()
         self.questList = [self.waitQuest]
         super().__init__(self.questList)
+        self.metaDescription = "fetch Quest Meta"
     
     '''
     assign to character and add the quest to fetch from a pile

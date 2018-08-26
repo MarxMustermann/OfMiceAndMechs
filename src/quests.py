@@ -1044,7 +1044,6 @@ class FireFurnace(Quest):
     '''
     def __init__(self,furnace,followUp=None,startCinematics=None,lifetime=None):
         self.furnace = furnace
-        self.startWatching(self.furnace,self.recalculate)
         self.description = "please fire the "+self.furnace.name+" ("+str(self.furnace.xPosition)+"/"+str(self.furnace.yPosition)+")"
         self.dstX = self.furnace.xPosition
         self.dstY = self.furnace.yPosition
@@ -1052,6 +1051,7 @@ class FireFurnace(Quest):
         self.collectQuest = None
         self.activateFurnaceQuest = None
         super().__init__(followUp,startCinematics=startCinematics)
+        self.startWatching(self.furnace,self.recalculate)
 
     '''
     assign to character and listen to character

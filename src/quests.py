@@ -1746,7 +1746,7 @@ class KeepFurnacesFiredMeta(MetaQuestParralel):
 '''
 fire a furnace an keep it fired
 '''
-class KeepFurnaceFiredMeta(MetaQuestParralel):
+class KeepFurnaceFiredMeta(MetaQuestSequence):
     '''
     '''
     def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
@@ -1795,7 +1795,7 @@ class KeepFurnaceFiredMeta(MetaQuestParralel):
 '''
 fire a furnace once
 '''
-class FireFurnaceMeta(MetaQuestParralel):
+class FireFurnaceMeta(MetaQuestSequence):
     '''
     state initialization
     '''
@@ -2729,7 +2729,7 @@ class StoreCargo(MetaQuestSequence):
 '''
 move items to accessible storage
 '''
-class MoveToStorage(MetaQuestParralel):
+class MoveToStorage(MetaQuestSequence):
     '''
     generate the quests to transport each item
     '''

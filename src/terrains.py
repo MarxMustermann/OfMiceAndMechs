@@ -140,7 +140,6 @@ class Terrain(object):
                     roomsOnMap.append(room)
                 elif char == "C":
                     # generate pseudo random content type
-                    # bad code: the room should take item types ans amounts
                     itemTypes = [items.Wall,items.Pipe]
                     amount = 40
                     if not rowCounter%2:

@@ -740,7 +740,7 @@ class NaiveActivateQuest(Quest):
         self.character.addListener(self.registerActivation,"activate")
 
     '''
-    check wnether target was activated
+    check whether target was activated
     '''
     def triggerCompletionCheck(self):
         if self.active:

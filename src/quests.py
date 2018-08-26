@@ -2238,7 +2238,7 @@ class PlaceFurniture(MetaQuestParralel):
 '''
 quest for entering a room
 '''
-class EnterRoomQuestMeta(MetaQuestParralel):
+class EnterRoomQuestMeta(MetaQuestSequence):
     '''
     basic state initialization
     '''

@@ -200,7 +200,7 @@ class Character():
         self.changed()
 
     '''
-    kill the character and do a bit of extra stuff like placing corpses
+    walk the predetermined path
     '''
     def walkPath(self):
         # bad code: a dead charactor should not try to walk

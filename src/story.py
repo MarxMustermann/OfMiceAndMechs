@@ -236,9 +236,6 @@ class ScreenSaver(object):
         questlist = []
         for item in terrain.testItems:
             quest = quests.TransportQuest(item,(terrain.tutorialMachineRoom,2,2))
-            quest = quests.PickupQuestMeta(item)
-            questlist.append(quest)
-            quest = quests.DropQuestMeta(item,terrain.tutorialMachineRoom,2,2)
             questlist.append(quest)
 
         # add npc to pick stuff up

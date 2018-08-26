@@ -102,6 +102,10 @@ class Quest(object):
     def postHandler(self):
         self.stopWatchingAll()
 
+        if not self.active:
+            debugMessages.append("this should not happen (posthandler called on inactive quest ("+str(self)+")) "+str(self.character))
+            return
+
         if self.completed:
             debugMessages.append("this should not happen (posthandler called on completed quest ("+str(self)+")) "+str(self.character))
             if self.character and self in self.character.quests:

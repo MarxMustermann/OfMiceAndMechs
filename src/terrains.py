@@ -1336,7 +1336,7 @@ U    U
         self.addRooms([self.wakeUpRoom])
 
 '''
-the tutorail mech
+the tutorial mech
 '''
 class TutorialTerrain(Terrain):
     def __init__(self):

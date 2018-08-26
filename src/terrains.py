@@ -142,31 +142,43 @@ class Terrain(object):
                     # generate pseudo random content type
                     # bad code: the room should take item types ans amounts
                     itemTypes = [items.Wall,items.Pipe]
+                    amount = 40
                     if not rowCounter%2:
                         itemTypes.append(items.Lever)
+                        amount += 10
                     if not rowCounter%3:
                         itemTypes.append(items.Furnace)
+                        amount += 15
                     if not rowCounter%4:
                         itemTypes.append(items.Chain)
+                        amount += 20
                     if not rowCounter%5:
                         itemTypes.append(items.Hutch)
+                        amount += 7
                     if not rowCounter%6:
                         itemTypes.append(items.GrowthTank)
+                        amount += 8
                     if not lineCounter%2:
                         itemTypes.append(items.Door)
+                        amount += 15
                     if not lineCounter%3:
                         itemTypes.append(items.Boiler)
+                        amount += 10
                     if not lineCounter%4:
                         itemTypes.append(items.Winch)
+                        amount += 7
                     if not lineCounter%5:
                         itemTypes.append(items.Display)
+                        amount += 7
                     if not lineCounter%6:
                         itemTypes.append(items.Commlink)
+                        amount += 7
                     if not itemTypes:
                         itemTypes = [items.Pipe,items.Wall,items.Furnace,items.Boiler]
+                        amount += 30
 
                     # add room and add to room list
-                    room = rooms.CargoRoom(rowCounter,lineCounter,3,0,itemTypes=itemTypes)
+                    room = rooms.CargoRoom(rowCounter,lineCounter,3,0,itemTypes=itemTypes,amount=amount)
                     self.tutorialCargoRooms.append(room)
                     roomsOnMap.append(room)
                 elif char == "U":

@@ -1560,7 +1560,7 @@ class CargoRoom(Room):
     '''
     create room, set storage order and fill with items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,itemTypes=[items.Pipe,items.Wall,items.Furnace,items.Boiler]):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,itemTypes=[items.Pipe,items.Wall,items.Furnace,items.Boiler],amount=80):
         self.roomLayout = """
 XXXXXXXXXX
 X        X
@@ -1585,7 +1585,7 @@ XXXXXXXXXX
         self.storedItems = []
         counter = 0
         length = len(itemTypes)
-        for i in range(1,80):
+        for i in range(1,amount):
             i = i+i%3+i%10*2
             if i%2:
                 counter += 1

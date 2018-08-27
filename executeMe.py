@@ -118,6 +118,7 @@ interaction.setFooter()
 # HACK: common variables with modules
 story.names = names
 gamestate.names = names
+rooms.names = names
 
 # HACK: common variables with modules
 story.items = items

@@ -71,11 +71,17 @@ class Room(object):
                     # skip non items
                     pass
                 elif char in ("@",):
+                    def getRandomName(seed1=0,seed2=None):
+                        if seed2 == None:
+                            seed2 = seed1+(seed1//5)
+                        return names.characterFirstNames[seed1%len(names.characterFirstNames)]+" "+names.characterLastNames[seed2%len(names.characterLastNames)]
+                        
                     # add default npc
                     if (not self.firstOfficer) or (not self.secondOfficer):
                         if not self.firstOfficer:
                             # add first officer
-                            npc = characters.Character(displayChars.staffCharactersByLetter["e"],5,3,name="Eduart Eisenblatt")
+                            name = getRandomName(self.xPosition+2*self.offsetY,self.offsetX+2*self.yPosition)
+                            npc = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],5,3,name=name)
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.firstOfficer = npc
@@ -83,7 +89,8 @@ class Room(object):
                             npc.assignQuest(quest,active=True)
                         else:
                             # add second officer
-                            npc = characters.Character(displayChars.staffCharactersByLetter["s"],5,3,name="Siegfied Knobelbecher")
+                            name = getRandomName(self.yPosition+2*self.offsetX,self.offsetY+2*self.xPosition)
+                            npc = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],5,3,name=name)
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.secondOfficer = npc

@@ -2468,8 +2468,9 @@ class CollectQuestMeta(MetaQuestSequence):
             # terminate when done
             if self.waitQuest and foundItem:
                 quest = self.waitQuest
-                self.waitQuest = None
+                self.questList.remove(quest)
                 quest.postHandler()
+                self.waitQuest = None
 
         super().assignToCharacter(character)
 

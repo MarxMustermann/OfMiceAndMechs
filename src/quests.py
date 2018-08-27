@@ -735,8 +735,8 @@ class NaiveActivateQuest(Quest):
             self.activated = True
             self.triggerCompletionCheck()
 
-    def assignToCharacter(self,character):
-        super().assignToCharacter(character)
+    def activate(self):
+        super().activate()
         self.character.addListener(self.registerActivation,"activate")
 
     '''

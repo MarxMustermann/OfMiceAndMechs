@@ -812,8 +812,6 @@ class WakeUpPhase(BasicPhase):
     '''
     def playerEject(self):
         # add players body
-        item = items.UnconciousBody(2,4)
-        terrain.wakeUpRoom.addItems([item])
         terrain.wakeUpRoom.itemByCoordinates[(1,4)][0].eject()
 
         # alias attributes

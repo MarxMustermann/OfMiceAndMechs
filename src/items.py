@@ -478,21 +478,28 @@ class UnconciousBody(Item):
             self.display = displayChars.hutch_free
 
 '''
-dummy class for an chracter spawning item
+an character spawning item
 '''
 class GrowthTank(Item):
     def __init__(self,xPosition=0,yPosition=0,name="growth tank",filled=False):
+        self.filled = filled
         if filled:
             super().__init__(displayChars.growthTank_filled,xPosition,yPosition,name=name)
         else:
             super().__init__(displayChars.growthTank_unfilled,xPosition,yPosition,name=name)
 
+    def apply(self,character):
+	    if self.filled:
+            self.eject()
+
     '''
-    dummy function for ejecting a character
-    bad code: this should actually eject the character
+    ejecting a character
     '''
     def eject(self):
+        self.filled = False
         self.display = displayChars.growthTank_unfilled
+        item = UnconciousBody(self.xPosition+1,self.yPosition)
+        self.room.addItems([item])
 
 '''
 basically a bed with a activatable cover

@@ -2173,8 +2173,8 @@ class ThirdTutorialPhase(BasicPhase):
             questList = []
             # bad code: commented out code
             #questList.append(quests.FillPocketsQuest())
-            #questList.append(quests.FireFurnace(terrain.tutorialMachineRoom.furnaces[1]))
-            #questList.append(quests.FireFurnace(terrain.tutorialMachineRoom.furnaces[2]))
+            #questList.append(quests.FireFurnaceMeta(terrain.tutorialMachineRoom.furnaces[1]))
+            #questList.append(quests.FireFurnaceMeta(terrain.tutorialMachineRoom.furnaces[2]))
             questList.append(quests.FillPocketsQuest())
 
             # chain quests

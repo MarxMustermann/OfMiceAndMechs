@@ -320,7 +320,7 @@ def processInput(key):
             if key in (commandChars.move_north):
                 # do inner room movement
                 if mainChar.room:
-                    item = mainChar.room.moveCharacterNorth(mainChar)
+                    item = mainChar.room.moveCharacterDirection(mainChar,"north")
 
                     # remeber items bumped into for possible interaction
                     if item:
@@ -400,7 +400,7 @@ def processInput(key):
             if key in (commandChars.move_south):
                 # do inner room movement
                 if mainChar.room:
-                    item = mainChar.room.moveCharacterSouth(mainChar)
+                    item = mainChar.room.moveCharacterDirection(mainChar,"south")
 
                     # remeber items bumped into for possible interaction
                     if item:
@@ -479,7 +479,7 @@ def processInput(key):
             if key in (commandChars.move_east):
                 # do inner room movement
                 if mainChar.room:
-                    item = mainChar.room.moveCharacterEast(mainChar)
+                    item = mainChar.room.moveCharacterDirection(mainChar,"east")
 
                     # remeber items bumped into for possible interaction
                     if item:
@@ -558,7 +558,7 @@ def processInput(key):
             if key in (commandChars.move_west):
                 # do inner room movement
                 if mainChar.room:
-                    item = mainChar.room.moveCharacterWest(mainChar)
+                    item = mainChar.room.moveCharacterDirection(mainChar,"west")
 
                     # remeber items bumped into for possible interaction
                     if item:

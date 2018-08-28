@@ -698,90 +698,54 @@ class Room(object):
         self.terrain.moveRoomEast(self)
         messages.append("*RUMBLE*")
 
-    '''
-    move character north within the room
-    bad code: almost identical code for each direction
-    '''
-    def moveCharacterNorth(self,character):
-        # teleport character to terrain if moved of terrain
-        if not character.yPosition:
-            newYPos = character.yPosition+character.room.yPosition*15+character.room.offsetY-1
-            newXPos = character.xPosition+character.room.xPosition*15+character.room.offsetX
-            character.xPosition = newXPos
-            character.yPosition = newYPos
-            self.removeCharacter(character)
-            self.terrain.characters.append(character)
-            character.terrain = self.terrain
-            character.changed()
-            return
+    def moveCharacterDirection(self,character,direction):
+        # check whether movement is contained in the room
+        innerRoomMovement = True
+        if direction == "south" and character.yPosition == self.sizeY-1:
+            innerRoomMovement = False
+        elif direction == "north" and not character.yPosition:
+            innerRoomMovement = False
+        elif direction == "west" and not character.xPosition:
+            innerRoomMovement = False
+        elif direction == "east" and character.xPosition == self.sizeX-1:
+            innerRoomMovement = False
 
-        # move character
-        newPosition = (character.xPosition,character.yPosition-1)
-        return self.moveCharacter(character,newPosition)
-
-    '''
-    move character south within the room
-    bad code: almost identical code for each direction
-    '''
-    def moveCharacterSouth(self,character):
-        # teleport character to terrain if moved of terrain
-        if character.yPosition == self.sizeY-1:
-            newYPos = character.yPosition+character.room.yPosition*15+character.room.offsetY+1
-            newXPos = character.xPosition+character.room.xPosition*15+character.room.offsetX
-            character.xPosition = newXPos
-            character.yPosition = newYPos
-            self.removeCharacter(character)
-            self.terrain.characters.append(character)
-            character.terrain = self.terrain
-            character.changed()
-            return
-
-        # move character
-        newPosition = (character.xPosition,character.yPosition+1)
-        return self.moveCharacter(character,newPosition)
-
-    '''
-    move character west within the room
-    bad code: almost identical code for each direction
-    '''
-    def moveCharacterWest(self,character):
-
-        # teleport character to terrain if moved of terrain
-        if not character.xPosition:
-            newYPos = character.yPosition+character.room.yPosition*15+character.room.offsetY
-            newXPos = character.xPosition+character.room.xPosition*15+character.room.offsetX-1
-            character.xPosition = newXPos
-            character.yPosition = newYPos
-            self.removeCharacter(character)
-            self.terrain.characters.append(character)
-            character.terrain = self.terrain
-            character.changed()
-            return
-
-        # move character
-        newPosition = (character.xPosition-1,character.yPosition)
-        return self.moveCharacter(character,newPosition)
-
-    '''
-    move character east within the room
-    bad code: almost identical code for each direction
-    '''
-    def moveCharacterEast(self,character):
-        # teleport character to terrain if moved of terrain
-        if character.xPosition == self.sizeX-1:
-            newYPos = character.yPosition+character.room.yPosition*15+character.room.offsetY
-            newXPos = character.xPosition+character.room.xPosition*15+character.room.offsetX+1
-            character.xPosition = newXPos
-            character.yPosition = newYPos
-            self.removeCharacter(character)
-            self.terrain.characters.append(character)
-            character.terrain = self.terrain
-            character.changed()
-            return
-
-        # move character
-        newPosition = (character.xPosition+1,character.yPosition)
-        return self.moveCharacter(character,newPosition)
+        # move instide the room
+        if innerRoomMovement:
+            # move character
+            newPosition = [character.xPosition,character.yPosition]
+            if direction == "south":
+                newPosition[1] += 1
+            elif direction == "north":
+                newPosition[1] -= 1
+            elif direction == "west":
+                newPosition[0] -= 1
+            elif direction == "east":
+                newPosition[0] += 1
+            else:
+                debugMessages.append("invalid movement direction")
+            return self.moveCharacter(character,tuple(newPosition))
+        
+        # move onto terrain
+        newYPos = character.yPosition+character.room.yPosition*15+character.room.offsetY
+        newXPos = character.xPosition+character.room.xPosition*15+character.room.offsetX
+        if direction == "south":
+            newYPos += 1
+        elif direction == "north":
+            newYPos -= 1
+        elif direction == "west":
+            newXPos -= 1
+        elif direction == "east":
+            newXPos += 1
+        else:
+            debugMessages.append("invalid movement direction")
+        character.xPosition = newXPos
+        character.yPosition = newYPos
+        self.removeCharacter(character)
+        self.terrain.characters.append(character)
+        character.terrain = self.terrain
+        character.changed()
+        return
 
     '''
     move a character to a new position within room

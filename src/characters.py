@@ -231,9 +231,9 @@ class Character():
                 # move naively within a room
                 if nextPosition[0] == currentPosition[0]:
                     if nextPosition[1] < currentPosition[1]:
-                        item = self.room.moveCharacterNorth(self)
+                        item = self.room.moveCharacterDirection(self,"north")
                     elif nextPosition[1] > currentPosition[1]:
-                        item = self.room.moveCharacterSouth(self)
+                        item = self.room.moveCharacterDirection(self,"south")
                     else:
                         if not debug:
                             # resorting to teleport
@@ -242,9 +242,9 @@ class Character():
                             self.yPosition = nextPosition[1]
                             self.changed()
                 elif nextPosition[0] == currentPosition[0]-1 and nextPosition[1] == currentPosition[1]:
-                    item = self.room.moveCharacterWest(self)
+                    item = self.room.moveCharacterDirection(self,"west")
                 elif nextPosition[0] == currentPosition[0]+1 and nextPosition[1] == currentPosition[1]:
-                    item = self.room.moveCharacterEast(self)
+                    item = self.room.moveCharacterDirection(self,"east")
                 else:
                     if not debug:
                         # resorting to teleport

@@ -5,6 +5,13 @@ showCinematic = None
 loop = None
 callShow_or_exit = None
 
+############################################################
+###
+##  building block quests
+#   not intended for direct use unless you know what you are dooing
+#
+############################################################
+
 '''
 the base class for all quests
 '''
@@ -246,692 +253,6 @@ class Quest(object):
     def deactivate(self):
         self.active = False
         self.changed()
-
-############################################################
-###
-##  the basic most quests like moving or activating something
-#
-############################################################
-
-'''
-make a character move somewhere. It assumes nothing goes wrong. 
-You probably want to use MoveQuestMeta instead
-'''
-class NaiveMoveQuest(Quest):
-    '''
-    straightfoward state setting
-    '''
-    def __init__(self,room,x,y,sloppy=False,followUp=None,startCinematics=None):
-        self.dstX = x
-        self.dstY = y
-        self.targetX = x
-        self.targetY = y
-        self.room = room
-        self.sloppy = sloppy
-        self.description = "please go to coordinate "+str(self.dstX)+"/"+str(self.dstY)    
-        super().__init__(followUp,startCinematics=startCinematics)
-        self.listeningTo = []
-
-    '''
-    check if character is in the right place
-    bad code: should check for correct room, too
-    '''
-    def triggerCompletionCheck(self):
-        # a inactive quest cannot complete
-        if not self.active:
-            # bad code: should write a "this should not happen" log entry
-            return 
-        if hasattr(self,"dstX") and hasattr(self,"dstY"): # bad code: should do nothing
-            if not self.sloppy:
-                # check for exact position
-                if self.character.xPosition == self.dstX and self.character.yPosition == self.dstY and self.character.room == self.room:
-                    self.postHandler()
-            else:
-                # check for neighbouring position
-                if self.character.room == self.room and((self.character.xPosition-self.dstX in (1,0,-1) and self.character.yPosition == self.dstY) or (self.character.yPosition-self.dstY in (1,0,-1) and self.character.xPosition == self.dstX)):
-                    self.postHandler()
-
-    '''
-    assign to character and add listener
-    bad code: should be more specific regarding what to listen
-    '''
-    def assignToCharacter(self,character):
-        super().assignToCharacter(character)
-        self.startWatching(character,self.recalculate)
-
-    '''
-    split up the quest into subquest if nesseccary
-    bad code: action does not fit to the methods name
-    '''
-    def recalculate(self):
-        # do not recalculate inactive quests
-        # bad code: should log a warning
-        if not self.active:
-            return 
-
-        # delete current target position
-        if hasattr(self,"dstX"):
-            del self.dstX
-        if hasattr(self,"dstY"):
-            del self.dstY
-
-        # do not try to move character if there is no character
-        # bad code: should log a warning
-        if not self.character:
-            return
-
-        if (self.room == self.character.room):
-            # set target coordinates to the actual target
-            self.dstX = self.targetX
-            self.dstY = self.targetY
-
-        elif self.character.room and self.character.quests and self.character.quests[0] == self:
-            # make the character leave the room
-            # bad code: adds a new quest instead of using sub quests
-            self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
-        elif not self.character.room and self.character.quests and self.character.quests[0] == self:
-            # make the character enter the correct room
-            # bad code: adds a new quest instead of using sub quests
-            self.character.assignQuest(EnterRoomQuestMeta(self.room),active=True)
-            pass # bad code: does nothing
-        super().recalculate()
-
-'''
-quest to leave the room
-'''
-class LeaveRoomQuest(Quest):
-    def __init__(self,room,followUp=None,startCinematics=None):
-        self.room = room
-        self.description = "please leave the room."
-        self.dstX = self.room.walkingAccess[0][0]
-        self.dstY = self.room.walkingAccess[0][1]
-        super().__init__(followUp,startCinematics=startCinematics)
-
-    '''
-    move to door and step out of the room
-    '''
-    def solver(self,character):
-        if super().solver(character):
-            if character.room:
-                # close door
-                for item in character.room.itemByCoordinates[(character.xPosition,character.yPosition)]:
-                    item.close()
-
-                # add step out of the room
-                if character.yPosition == 0:
-                    character.path.append((character.xPosition,character.yPosition-1))
-                elif character.yPosition == character.room.sizeY-1:
-                    character.path.append((character.xPosition,character.yPosition+1))
-                if character.xPosition == 0: #bad code: should be elif
-                    character.path.append((character.xPosition-1,character.yPosition))
-                elif character.xPosition == character.room.sizeX-1:
-                    character.path.append((character.xPosition+1,character.yPosition))
-                character.walkPath()
-                return False
-            return True
-
-    '''
-    assign to and listen to character
-    '''
-    def assignToCharacter(self,character):
-
-        super().assignToCharacter(character)
-        self.startWatching(character,self.recalculate)
-
-        super().recalculate()
-
-    '''
-    check if the character left the room
-    '''
-    def triggerCompletionCheck(self):
-        # do nothing on inactive quest
-        if not self.active:
-            return 
-
-        # do nothing without character
-        if not self.character:
-            return
-
-        # trigger followup when done
-        if not self.character.room == self.room:
-            self.postHandler()
-
-'''
-quest to enter a room. It assumes nothing goes wrong. 
-You probably want to use MoveQuestMeta instead
-'''
-class NaiveEnterRoomQuest(Quest):
-    '''
-    straightforward state initialization
-    '''
-    def __init__(self,room,followUp=None,startCinematics=None):
-        self.description = "please enter the room: "+room.name+" "+str(room.xPosition)+" "+str(room.yPosition)
-        self.room = room
-        # set door as target
-        self.dstX = self.room.walkingAccess[0][0]+room.xPosition*15+room.offsetX
-        self.dstY = self.room.walkingAccess[0][1]+room.yPosition*15+room.offsetY
-        super().__init__(followUp,startCinematics=startCinematics)
-
-    '''
-    assign character and 
-    '''
-    def assignToCharacter(self,character):
-        super().assignToCharacter(character)
-        self.startWatching(character,self.recalculate)
-
-    '''
-    walk to target
-    bad code: does nothing?
-    '''
-    def solver(self,character):
-        if character.walkPath():
-            return True
-        return False
-
-    '''
-    leave room and go to target
-    '''
-    def recalculate(self):
-        if not self.active:
-            return 
-
-        if self.character.room and not self.character.room == self.room and self.character.quests[0] == self:
-            self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
-
-        super().recalculate()
-
-    '''
-    close door and call superclass
-    '''
-    def postHandler(self):
-        if self.character.yPosition in (self.character.room.walkingAccess):
-            for item in self.character.room.itemByCoordinates[self.character.room.walkingAccess[0]]:
-                item.close()
-
-        super().postHandler()
-
-    '''
-    check if the character is in the correct roon
-    '''
-    def triggerCompletionCheck(self):
-        # bad code: 
-        if not self.active:
-            return 
-
-        # start teardown when done
-        if self.character.room == self.room:
-            self.postHandler()
-
-'''
-The naive pickup quest. It assumes nothing goes wrong. 
-You probably want to use PickupQuest instead
-'''
-class NaivePickupQuest(Quest):
-    '''
-    straightforward state initialization
-    '''
-    def __init__(self,toPickup,followUp=None,startCinematics=None):
-        self.toPickup = toPickup
-        self.dstX = self.toPickup.xPosition
-        self.dstY = self.toPickup.yPosition
-        super().__init__(followUp,startCinematics=startCinematics)
-        self.startWatching(self.toPickup,self.recalculate)
-        self.startWatching(self.toPickup,self.triggerCompletionCheck)
-        self.description = "naive pickup"
-   
-    '''
-    check wnether item is in characters inventory
-    '''
-    def triggerCompletionCheck(self):
-        if self.active:
-            if self.toPickup in self.character.inventory:
-                self.postHandler()
-
-    '''
-    pick up the item
-    '''
-    def solver(self,character):
-        self.toPickup.pickUp(character)
-        return True
-
-'''
-The naive quest to get a quest from somebody. It assumes nothing goes wrong. 
-You probably want to use GetQuest instead
-'''
-class NaiveGetQuest(Quest):
-    '''
-    straightforward state initialization
-    '''
-    def __init__(self,questDispenser,assign=True,followUp=None,startCinematics=None):
-        self.questDispenser = questDispenser
-        self.quest = None
-        self.assign = assign
-        super().__init__(followUp,startCinematics=startCinematics)
-        self.description = "naive get quest"
-
-    '''
-    check wnether the chracter has gotten a quest
-    '''
-    def triggerCompletionCheck(self):
-        if self.active:
-            if self.quest:
-                self.postHandler()
-
-    '''
-    get quest directly from quest dispenser
-    '''
-    def solver(self,character):
-        # get quest
-        self.quest = self.questDispenser.getQuest()
-
-        # fail if there is no quest
-        if not self.quest:
-            self.fail()
-            return True
-
-        # assign quest
-        if self.assign:
-            self.character.assignQuest(self.quest,active=True)
-
-        # trigger cleanuo
-        self.triggerCompletionCheck()
-        return True
-
-'''
-The naive quest to fetch the reward for a quest. It assumes nothing goes wrong. 
-You probably want to use GetReward instead
-'''
-class NaiveGetReward(Quest):
-    '''
-    straightforward state initialization
-    '''
-    def __init__(self,quest,followUp=None,startCinematics=None):
-        super().__init__(followUp,startCinematics=startCinematics)
-        self.quest = quest
-        self.description = "naive get reward"
-        self.done = False
-
-    '''
-    check for a done flag
-    bad code: general pattern is to actually check if the reward was given
-    '''
-    def triggerCompletionCheck(self):
-        if self.active:
-            if self.done:
-                self.postHandler()
-
-    '''
-    assign reward
-    bad code: rwarding should be handled within the quest
-    '''
-    def solver(self,character):
-        character.reputation += self.quest.reputationReward
-        if character == mainChar:
-            messages.append("you were awarded "+str(self.quest.reputationReward)+" reputation")
-        self.done = True
-        self.triggerCompletionCheck()
-        return True
-
-'''
-The naive quest to murder someone. It assumes nothing goes wrong. 
-You probably want to use MurderQuest instead
-'''
-class NaiveMurderQuest(Quest):
-    '''
-    straightforward state initialization
-    '''
-    def __init__(self,toKill,followUp=None,startCinematics=None):
-        self.toKill = toKill
-        super().__init__(followUp,startCinematics=startCinematics)
-        self.description = "naive murder"
-
-    '''
-    check whether target is dead
-    '''
-    def triggerCompletionCheck(self):
-        if self.active:
-            if self.toKill.dead:
-                self.postHandler()
-
-    '''
-    kill the target
-    bad code: murdering should happen within a character
-    '''
-    def solver(self,character):
-        self.toKill.die()
-        self.triggerCompletionCheck()
-        return True
-
-'''
-The naive quest to activate something. It assumes nothing goes wrong. 
-You probably want to use ActivateQuest instead
-'''
-class NaiveActivateQuest(Quest):
-    '''
-    straightforward state initialization
-    '''
-    def __init__(self,toActivate,followUp=None,startCinematics=None):
-        self.toActivate = toActivate
-        super().__init__(followUp,startCinematics=startCinematics)
-        self.description = "naive activate "+str(self.toActivate)
-        self.activated = False
-
-    def registerActivation(self,info):
-        if self.toActivate == info:
-            self.activated = True
-            self.triggerCompletionCheck()
-
-    def activate(self):
-        super().activate()
-        self.character.addListener(self.registerActivation,"activate")
-
-    '''
-    check whether target was activated
-    '''
-    def triggerCompletionCheck(self):
-        if self.active:
-            if self.activated:
-                self.postHandler()
-
-    '''
-    activate the target
-    bad code: sucess state is used instead of state checking
-    '''
-    def solver(self,character):
-        self.toActivate.apply(character)
-        return True
-
-'''
-The naive quest to drop something. It assumes nothing goes wrong. 
-You probably want to use ActivateQuest instead
-'''
-class NaiveDropQuest(Quest):
-    '''
-    straightforward state initialization
-    '''
-    def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
-        self.dstX = xPosition
-        self.dstY = yPosition
-        self.room = room
-        self.toDrop = toDrop
-        super().__init__(followUp,startCinematics=startCinematics)
-        self.startWatching(self.toDrop,self.recalculate)
-        self.startWatching(self.toDrop,self.triggerCompletionCheck)
-        self.description = "naive drop"
-        self.dropped = False
-
-    '''
-    check wnether item was dropped
-    '''
-    def triggerCompletionCheck(self):
-        if self.active:
-            # bad code: commented out code
-            """
-            does this make sense to use for naive?
-            correctPosition = False
-            try:
-                if self.toDrop.xPosition == self.dstX and self.toDrop.yPosition == self.dstY:
-                    correctPosition = True
-            except:
-                pass
-
-            if correctPosition:
-                messages.append("droped at correct location")
-                self.postHandler()
-            """
-            if self.dropped:
-                self.postHandler()
-
-    '''
-    drop item
-    bad code: success attribute instead of checking world state
-    '''
-    def solver(self,character):
-        self.dropped = True
-        character.drop(self.toDrop)
-        return True
-
-'''
-The naive quest to drop something. It assumes nothing goes wrong. 
-You probably want to use ActivateQuest instead
-'''
-class NaiveDelegateQuest(Quest):
-    '''
-    straightforward state initialization
-    '''
-    def __init__(self,quest):
-        super().__init__()
-        self.quest = quest
-        self.description = "naive delegate quest"
-        self.startWatching(self.quest,self.triggerCompletionCheck)
-    
-    '''
-    check if the quest has a character assigned
-    '''
-    def triggerCompletionCheck(self):
-        if self.active:
-            if self.quest.character:
-                self.postHandler()
-
-    '''
-    assign quest to first subordinate
-    '''
-    def solver(self,character):
-        character.subordinates[0].assignQuest(self.quest,active=True)
-        return True
-
-'''
-quest to drop something somewhere
-bad code: this is to be replaced by DropQuestMeta but switch is not done yet
-'''
-class DropQuest(Quest):
-    '''
-    straightforward state initialization
-    '''
-    def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
-        self.toDrop = toDrop
-        self.startWatching(self.toDrop,self.recalculate)
-        self.startWatching(self.toDrop,self.triggerCompletionCheck)
-        self.dstX = xPosition
-        self.dstY = yPosition
-        self.room = room
-        self.description = "please drop the "+self.toDrop.name+" at ("+str(self.dstX)+"/"+str(self.dstY)+")"
-        super().__init__(followUp,startCinematics=startCinematics)
-
-    '''
-    check whether item is placed correctly
-    '''
-    def triggerCompletionCheck(self):
-        correctPosition = False
-        # bad code: this exception handling is confusing
-        try:
-            if self.toDrop.xPosition == self.dstX and self.toDrop.yPosition == self.dstY and self.toDrop.room == self.room:
-                correctPosition = True
-        except:
-            pass
-        if correctPosition:
-            self.postHandler()
-
-    '''
-    move to target and drop item
-    '''
-    def solver(self,character):
-        if super().solver(character):
-            if self.toDrop in character.inventory:
-                self.character.drop(self.toDrop)
-                self.triggerCompletionCheck()
-                return True
-            else:
-                return False
-
-'''
-quest to collect a item with some property
-bad code: this is to be replaced by CollectQuestMeta but switch is not done yet
-'''
-class CollectQuest(Quest):
-    '''
-    straightforward state initialization
-    '''
-    def __init__(self,toFind="canBurn",startCinematics=None):
-        self.toFind = toFind
-        self.description = "please fetch things with property: "+toFind
-        foundItem = None
-
-        super().__init__(startCinematics=startCinematics)
-
-    '''
-    check if item to collect is in inventory
-    '''
-    def triggerCompletionCheck(self):
-        # do not check if not properly active
-        if not self.active:
-            return 
-        if not self.character:
-            return
-
-        # search inventory for item 
-        foundItem = None
-        for item in self.character.inventory:
-            hasProperty = False
-            try:
-                hasProperty = getattr(item,self.toFind)
-            except:
-                continue
-            if hasProperty:
-                foundItem = item
-
-        # trigger cleanup if item was found
-        if foundItem:
-            self.postHandler()
-
-    '''
-    assign to character and listen to the character
-    '''
-    def assignToCharacter(self,character):
-        super().assignToCharacter(character)
-        self.startWatching(self.character,self.recalculate)
-
-    '''
-    set target to item with correct property
-    '''
-    def recalculate(self):
-        # bad code: remove current position
-        if hasattr(self,"dstX"):
-            del self.dstX
-        if hasattr(self,"dstY"):
-            del self.dstY
-
-        # do nothing if inactive
-        if not self.active:
-            return 
-
-        try:
-            # bad code: confusing excetion handling
-            for item in self.character.room.itemsOnFloor:
-                hasProperty = False
-                try:
-                    hasProperty = getattr(item,"contains_"+self.toFind)
-                except:
-                    continue
-                if hasProperty:
-                    foundItem = item
-                    # commented out code
-                    # This line ist good but looks bad in current setting. reactivate later
-                    #break
-
-            # set target to item
-            if foundItem:
-                self.dstX = foundItem.xPosition
-                self.dstY = foundItem.yPosition
-        except:
-            pass
-        super().recalculate()
-
-'''
-wait until quest is aborted
-'''
-class WaitQuest(Quest):
-    '''
-    straightforward state initialization
-    '''
-    def __init__(self,followUp=None,startCinematics=None,lifetime=None):
-        self.description = "please wait"
-        super().__init__(lifetime=lifetime)
-
-    '''
-    do nothing
-    '''
-    def solver(self,character):
-        return True
-
-'''
-wait till something was deactivated
-'''
-class WaitForDeactivationQuest(Quest):
-    '''
-    state initialization
-    '''
-    def __init__(self,item,followUp=None,startCinematics=None,lifetime=None):
-        self.item = item
-        self.description = "please wait for deactivation of "+self.item.description
-
-        # listen to item
-        self.startWatching(self.item,self.recalculate)
-
-        super().__init__(lifetime=lifetime)
-        self.pause() # bad code: why pause by default
-
-    '''
-    check if item is inactive
-    '''
-    def triggerCompletionCheck(self):
-        if not self.item.activated:
-            self.postHandler()
-
-    '''
-    do nothing
-    '''
-    def solver(self,character):
-        return True
-
-'''
-wail till a specific quest was completed
-'''
-class WaitForQuestCompletion(Quest):
-    '''
-    state initialization
-    '''
-    def __init__(self,quest):
-        self.quest = quest
-        self.startWatching(self.quest,self.triggerCompletionCheck)
-        self.description = "please wait for the quest to completed"
-        super().__init__()
-
-    '''
-    check if the quest was completed
-    '''
-    def triggerCompletionCheck(self):
-        if self.active:
-            if self.quest.completed:
-                self.postHandler()
-
-    '''
-    do nothing
-    '''
-    def solver(self,character):
-        return True
-
-############################################################
-###
-##  furnace specific quests
-#
-############################################################
-
-############################################################
-###
-##  experimental quests
-#
-############################################################
 
 '''
 a container quest containing a list of quests that have to be handled in sequence
@@ -1350,221 +671,624 @@ class MetaQuestParralel(Quest):
         self.startWatching(quest,self.recalculate)
 
 '''
-fire a list of furnaces an keep them fired
+make a character move somewhere. It assumes nothing goes wrong. 
+You probably want to use MoveQuestMeta instead
 '''
-class KeepFurnacesFiredMeta(MetaQuestParralel):
+class NaiveMoveQuest(Quest):
     '''
-    add a quest to keep each furnace fired
+    straightfoward state setting
     '''
-    def __init__(self,furnaces,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
-        questList = []
-        for furnace in furnaces:
-            questList.append(KeepFurnaceFiredMeta(furnace))
-        super().__init__(questList)
-        self.metaDescription = "KeepFurnacesFiredMeta"
+    def __init__(self,room,x,y,sloppy=False,followUp=None,startCinematics=None):
+        self.dstX = x
+        self.dstY = y
+        self.targetX = x
+        self.targetY = y
+        self.room = room
+        self.sloppy = sloppy
+        self.description = "please go to coordinate "+str(self.dstX)+"/"+str(self.dstY)    
+        super().__init__(followUp,startCinematics=startCinematics)
+        self.listeningTo = []
 
-'''
-fire a furnace an keep it fired
-'''
-class KeepFurnaceFiredMeta(MetaQuestSequence):
     '''
+    check if character is in the right place
+    bad code: should check for correct room, too
     '''
-    def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
-        self.questList = []
-        self.fireFurnaceQuest = None
-        self.waitQuest = None
-        self.furnace = furnace
-        super().__init__(self.questList,lifetime=lifetime)
-        self.metaDescription = "KeepFurnaceFiredMeta"
+    def triggerCompletionCheck(self):
+        # a inactive quest cannot complete
+        if not self.active:
+            # bad code: should write a "this should not happen" log entry
+            return 
+        if hasattr(self,"dstX") and hasattr(self,"dstY"): # bad code: should do nothing
+            if not self.sloppy:
+                # check for exact position
+                if self.character.xPosition == self.dstX and self.character.yPosition == self.dstY and self.character.room == self.room:
+                    self.postHandler()
+            else:
+                # check for neighbouring position
+                if self.character.room == self.room and((self.character.xPosition-self.dstX in (1,0,-1) and self.character.yPosition == self.dstY) or (self.character.yPosition-self.dstY in (1,0,-1) and self.character.xPosition == self.dstX)):
+                    self.postHandler()
 
-        # listen to furnace
-        self.startWatching(self.furnace,self.recalculate)
+    '''
+    assign to character and add listener
+    bad code: should be more specific regarding what to listen
+    '''
+    def assignToCharacter(self,character):
+        super().assignToCharacter(character)
+        self.startWatching(character,self.recalculate)
 
+    '''
+    split up the quest into subquest if nesseccary
+    bad code: action does not fit to the methods name
+    '''
     def recalculate(self):
+        # do not recalculate inactive quests
+        # bad code: should log a warning
+        if not self.active:
+            return 
+
+        # delete current target position
+        if hasattr(self,"dstX"):
+            del self.dstX
+        if hasattr(self,"dstY"):
+            del self.dstY
+
+        # do not try to move character if there is no character
+        # bad code: should log a warning
         if not self.character:
             return
 
-        if self.fireFurnaceQuest and self.fireFurnaceQuest.completed:
-            self.fireFurnaceQuest = None
+        if (self.room == self.character.room):
+            # set target coordinates to the actual target
+            self.dstX = self.targetX
+            self.dstY = self.targetY
 
-        if not self.fireFurnaceQuest and not self.furnace.activated:
-            self.fireFurnaceQuest = FireFurnaceMeta(self.furnace)
-            self.addQuest(self.fireFurnaceQuest)
-            self.unpause()
-
-        if self.waitQuest and self.waitQuest.completed:
-            self.waitQuest = None
-
-        if not self.waitQuest and not self.fireFurnaceQuest:
-            if self.furnace.activated:
-                self.waitQuest = WaitForDeactivationQuest(self.furnace)
-                self.startWatching(self.waitQuest,self.recalculate)
-                self.addQuest(self.waitQuest)
-                self.pause()
-            else:
-                self.unpause()
-
-        super().recalculate()
-    
-    '''
-    never complete
-    '''
-    def triggerCompletionCheck(self):
-        return
-
-'''
-fire a furnace once
-'''
-class FireFurnaceMeta(MetaQuestSequence):
-    '''
-    state initialization
-    '''
-    def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
-        self.activateQuest = None
-        self.collectQuest = None
-        self.questList = []
-        self.furnace = furnace
-        super().__init__(self.questList)
-        self.metaDescription = "FireFurnaceMeta"+str(self)
-
-    '''
-    collect coal and fire furnace
-    '''
-    def recalculate(self):
-        # remove completed quest
-        if self.collectQuest and self.collectQuest.completed:
-            self.collectQuest = None
-
-        if not self.collectQuest:
-            # search for fuel in inventory
-            foundItem = None
-            for item in self.character.inventory:
-                try:
-                    canBurn = item.canBurn
-                except:
-                    continue
-                if not canBurn:
-                    continue
-                foundItem = item
-
-            if not foundItem:
-                # collect fuel
-                self.collectQuest = CollectQuestMeta()
-                self.collectQuest.assignToCharacter(self.character)
-                self.startWatching(self.collectQuest,self.recalculate)
-                self.questList.insert(0,self.collectQuest)
-                self.collectQuest.activate()
-                self.changed()
-
-                # pause quest to fire furnace
-                if self.activateQuest:
-                    self.activateQuest.pause()
-
-        # unpause quest to fire furnace if coal is avalable
-        if self.activateQuest and not self.collectQuest:
-            self.activateQuest.unpause()
-
-        # add quest to fire furnace
-        if not self.activateQuest and not self.collectQuest and not self.furnace.activated:
-            self.activateQuest = ActivateQuestMeta(self.furnace)
-            self.activateQuest.assignToCharacter(self.character)
-            self.questList.append(self.activateQuest)
-            self.activateQuest.activate()
-            self.startWatching(self.activateQuest,self.recalculate)
-            self.changed()
-
+        elif self.character.room and self.character.quests and self.character.quests[0] == self:
+            # make the character leave the room
+            # bad code: adds a new quest instead of using sub quests
+            self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
+        elif not self.character.room and self.character.quests and self.character.quests[0] == self:
+            # make the character enter the correct room
+            # bad code: adds a new quest instead of using sub quests
+            self.character.assignQuest(EnterRoomQuestMeta(self.room),active=True)
+            pass # bad code: does nothing
         super().recalculate()
 
+'''
+quest to enter a room. It assumes nothing goes wrong. 
+You probably want to use MoveQuestMeta instead
+'''
+class NaiveEnterRoomQuest(Quest):
     '''
-    assign to character and listen to character
+    straightforward state initialization
+    '''
+    def __init__(self,room,followUp=None,startCinematics=None):
+        self.description = "please enter the room: "+room.name+" "+str(room.xPosition)+" "+str(room.yPosition)
+        self.room = room
+        # set door as target
+        self.dstX = self.room.walkingAccess[0][0]+room.xPosition*15+room.offsetX
+        self.dstY = self.room.walkingAccess[0][1]+room.yPosition*15+room.offsetY
+        super().__init__(followUp,startCinematics=startCinematics)
+
+    '''
+    assign character and 
     '''
     def assignToCharacter(self,character):
-        character.addListener(self.recalculate)
         super().assignToCharacter(character)
+        self.startWatching(character,self.recalculate)
 
     '''
-    check if furnace is burning
+    walk to target
+    bad code: does nothing?
+    '''
+    def solver(self,character):
+        if character.walkPath():
+            return True
+        return False
+
+    '''
+    leave room and go to target
+    '''
+    def recalculate(self):
+        if not self.active:
+            return 
+
+        if self.character.room and not self.character.room == self.room and self.character.quests[0] == self:
+            self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
+
+        super().recalculate()
+
+    '''
+    close door and call superclass
+    '''
+    def postHandler(self):
+        if self.character.yPosition in (self.character.room.walkingAccess):
+            for item in self.character.room.itemByCoordinates[self.character.room.walkingAccess[0]]:
+                item.close()
+
+        super().postHandler()
+
+    '''
+    check if the character is in the correct roon
     '''
     def triggerCompletionCheck(self):
-        if self.furnace.activated:
+        # bad code: 
+        if not self.active:
+            return 
+
+        # start teardown when done
+        if self.character.room == self.room:
             self.postHandler()
-            
-        super().triggerCompletionCheck()
 
 '''
-patrol along a cirqular path
-bad code: this quest is not used and may be broken
+The naive pickup quest. It assumes nothing goes wrong. 
+You probably want to use PickupQuest instead
 '''
-class PatrolQuest(MetaQuestSequence):
+class NaivePickupQuest(Quest):
     '''
-    state initialization
+    straightforward state initialization
     '''
-    def __init__(self,waypoints=[],startCinematics=None,looped=True,lifetime=None):
-        # add movement between waypoints
-        quests = []
-        for waypoint in waypoints:
-            quest = MoveQuestMeta(waypoint[0],waypoint[1],waypoint[2])
-            quests.append(quest)
+    def __init__(self,toPickup,followUp=None,startCinematics=None):
+        self.toPickup = toPickup
+        self.dstX = self.toPickup.xPosition
+        self.dstY = self.toPickup.yPosition
+        super().__init__(followUp,startCinematics=startCinematics)
+        self.startWatching(self.toPickup,self.recalculate)
+        self.startWatching(self.toPickup,self.triggerCompletionCheck)
+        self.description = "naive pickup"
+   
+    '''
+    check wnether item is in characters inventory
+    '''
+    def triggerCompletionCheck(self):
+        if self.active:
+            if self.toPickup in self.character.inventory:
+                self.postHandler()
 
-        self.lifetime = lifetime
+    '''
+    pick up the item
+    '''
+    def solver(self,character):
+        self.toPickup.pickUp(character)
+        return True
 
-        # bad code: superconstructor doesn't actually process the looped parameter
-        super().__init__(quests,startCinematics=startCinematics,looped=looped)
+'''
+The naive quest to get a quest from somebody. It assumes nothing goes wrong. 
+You probably want to use GetQuest instead
+'''
+class NaiveGetQuest(Quest):
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,questDispenser,assign=True,followUp=None,startCinematics=None):
+        self.questDispenser = questDispenser
+        self.quest = None
+        self.assign = assign
+        super().__init__(followUp,startCinematics=startCinematics)
+        self.description = "naive get quest"
 
     '''
-    activate and prepare termination after lifespan
+    check wnether the chracter has gotten a quest
     '''
+    def triggerCompletionCheck(self):
+        if self.active:
+            if self.quest:
+                self.postHandler()
+
+    '''
+    get quest directly from quest dispenser
+    '''
+    def solver(self,character):
+        # get quest
+        self.quest = self.questDispenser.getQuest()
+
+        # fail if there is no quest
+        if not self.quest:
+            self.fail()
+            return True
+
+        # assign quest
+        if self.assign:
+            self.character.assignQuest(self.quest,active=True)
+
+        # trigger cleanuo
+        self.triggerCompletionCheck()
+        return True
+
+'''
+The naive quest to fetch the reward for a quest. It assumes nothing goes wrong. 
+You probably want to use GetReward instead
+'''
+class NaiveGetReward(Quest):
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,quest,followUp=None,startCinematics=None):
+        super().__init__(followUp,startCinematics=startCinematics)
+        self.quest = quest
+        self.description = "naive get reward"
+        self.done = False
+
+    '''
+    check for a done flag
+    bad code: general pattern is to actually check if the reward was given
+    '''
+    def triggerCompletionCheck(self):
+        if self.active:
+            if self.done:
+                self.postHandler()
+
+    '''
+    assign reward
+    bad code: rwarding should be handled within the quest
+    '''
+    def solver(self,character):
+        character.reputation += self.quest.reputationReward
+        if character == mainChar:
+            messages.append("you were awarded "+str(self.quest.reputationReward)+" reputation")
+        self.done = True
+        self.triggerCompletionCheck()
+        return True
+
+'''
+The naive quest to murder someone. It assumes nothing goes wrong. 
+You probably want to use MurderQuest instead
+'''
+class NaiveMurderQuest(Quest):
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,toKill,followUp=None,startCinematics=None):
+        self.toKill = toKill
+        super().__init__(followUp,startCinematics=startCinematics)
+        self.description = "naive murder"
+
+    '''
+    check whether target is dead
+    '''
+    def triggerCompletionCheck(self):
+        if self.active:
+            if self.toKill.dead:
+                self.postHandler()
+
+    '''
+    kill the target
+    bad code: murdering should happen within a character
+    '''
+    def solver(self,character):
+        self.toKill.die()
+        self.triggerCompletionCheck()
+        return True
+
+'''
+The naive quest to activate something. It assumes nothing goes wrong. 
+You probably want to use ActivateQuest instead
+'''
+class NaiveActivateQuest(Quest):
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,toActivate,followUp=None,startCinematics=None):
+        self.toActivate = toActivate
+        super().__init__(followUp,startCinematics=startCinematics)
+        self.description = "naive activate "+str(self.toActivate)
+        self.activated = False
+
+    def registerActivation(self,info):
+        if self.toActivate == info:
+            self.activated = True
+            self.triggerCompletionCheck()
+
     def activate(self):
-        if self.lifetime:
-            '''
-            event for wrapping up the quest
-            '''
-            class endQuestEvent(object):
-                '''
-                state initialization
-                '''
-                def __init__(subself,tick):
-                    subself.tick = tick
-
-                '''
-                wrap up the quest
-                '''
-                def handleEvent(subself):
-                    self.postHandler()
-            self.character.room.addEvent(endQuestEvent(self.character.room.timeIndex+self.lifetime))
-
         super().activate()
+        self.character.addListener(self.registerActivation,"activate")
+
+    '''
+    check whether target was activated
+    '''
+    def triggerCompletionCheck(self):
+        if self.active:
+            if self.activated:
+                self.postHandler()
+
+    '''
+    activate the target
+    bad code: sucess state is used instead of state checking
+    '''
+    def solver(self,character):
+        self.toActivate.apply(character)
+        return True
 
 '''
-quest to examine the environment
+The naive quest to drop something. It assumes nothing goes wrong. 
+You probably want to use ActivateQuest instead
 '''
-class ExamineQuest(Quest):
+class NaiveDropQuest(Quest):
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
+        self.dstX = xPosition
+        self.dstY = yPosition
+        self.room = room
+        self.toDrop = toDrop
+        super().__init__(followUp,startCinematics=startCinematics)
+        self.startWatching(self.toDrop,self.recalculate)
+        self.startWatching(self.toDrop,self.triggerCompletionCheck)
+        self.description = "naive drop"
+        self.dropped = False
+
+    '''
+    check wnether item was dropped
+    '''
+    def triggerCompletionCheck(self):
+        if self.active:
+            # bad code: commented out code
+            """
+            does this make sense to use for naive?
+            correctPosition = False
+            try:
+                if self.toDrop.xPosition == self.dstX and self.toDrop.yPosition == self.dstY:
+                    correctPosition = True
+            except:
+                pass
+
+            if correctPosition:
+                messages.append("droped at correct location")
+                self.postHandler()
+            """
+            if self.dropped:
+                self.postHandler()
+
+    '''
+    drop item
+    bad code: success attribute instead of checking world state
+    '''
+    def solver(self,character):
+        self.dropped = True
+        character.drop(self.toDrop)
+        return True
+
+'''
+The naive quest to drop something. It assumes nothing goes wrong. 
+You probably want to use ActivateQuest instead
+'''
+class NaiveDelegateQuest(Quest):
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,quest):
+        super().__init__()
+        self.quest = quest
+        self.description = "naive delegate quest"
+        self.startWatching(self.quest,self.triggerCompletionCheck)
+    
+    '''
+    check if the quest has a character assigned
+    '''
+    def triggerCompletionCheck(self):
+        if self.active:
+            if self.quest.character:
+                self.postHandler()
+
+    '''
+    assign quest to first subordinate
+    '''
+    def solver(self,character):
+        character.subordinates[0].assignQuest(self.quest,active=True)
+        return True
+
+############################################################
+###
+##  wait quests
+#
+############################################################
+
+'''
+wait until quest is aborted
+'''
+class WaitQuest(Quest):
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,followUp=None,startCinematics=None,lifetime=None):
+        self.description = "please wait"
+        super().__init__(lifetime=lifetime)
+
+    '''
+    do nothing
+    '''
+    def solver(self,character):
+        return True
+
+'''
+wait till something was deactivated
+'''
+class WaitForDeactivationQuest(Quest):
     '''
     state initialization
-    bad code: useless constructor arguments
     '''
-    def __init__(self,waypoints=[],startCinematics=None,looped=True,lifetime=None,completionThreshold=5):
-        self.completionThreshold = completionThreshold
-        self.description = "please examine your environment"
-        self.examinedItems = []
+    def __init__(self,item,followUp=None,startCinematics=None,lifetime=None):
+        self.item = item
+        self.description = "please wait for deactivation of "+self.item.description
+
+        # listen to item
+        self.startWatching(self.item,self.recalculate)
+
+        super().__init__(lifetime=lifetime)
+        self.pause() # bad code: why pause by default
+
+    '''
+    check if item is inactive
+    '''
+    def triggerCompletionCheck(self):
+        if not self.item.activated:
+            self.postHandler()
+
+    '''
+    do nothing
+    '''
+    def solver(self,character):
+        return True
+
+'''
+wail till a specific quest was completed
+'''
+class WaitForQuestCompletion(Quest):
+    '''
+    state initialization
+    '''
+    def __init__(self,quest):
+        self.quest = quest
+        self.startWatching(self.quest,self.triggerCompletionCheck)
+        self.description = "please wait for the quest to completed"
+        super().__init__()
+
+    '''
+    check if the quest was completed
+    '''
+    def triggerCompletionCheck(self):
+        if self.active:
+            if self.quest.completed:
+                self.postHandler()
+
+    '''
+    do nothing
+    '''
+    def solver(self,character):
+        return True
+
+###############################################################
+###
+##     common actions
+#
+###############################################################
+
+'''
+quest to drop something somewhere
+bad code: this is to be replaced by DropQuestMeta but switch is not done yet
+'''
+class DropQuest(Quest):
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
+        self.toDrop = toDrop
+        self.startWatching(self.toDrop,self.recalculate)
+        self.startWatching(self.toDrop,self.triggerCompletionCheck)
+        self.dstX = xPosition
+        self.dstY = yPosition
+        self.room = room
+        self.description = "please drop the "+self.toDrop.name+" at ("+str(self.dstX)+"/"+str(self.dstY)+")"
+        super().__init__(followUp,startCinematics=startCinematics)
+
+    '''
+    check whether item is placed correctly
+    '''
+    def triggerCompletionCheck(self):
+        correctPosition = False
+        # bad code: this exception handling is confusing
+        try:
+            if self.toDrop.xPosition == self.dstX and self.toDrop.yPosition == self.dstY and self.toDrop.room == self.room:
+                correctPosition = True
+        except:
+            pass
+        if correctPosition:
+            self.postHandler()
+
+    '''
+    move to target and drop item
+    '''
+    def solver(self,character):
+        if super().solver(character):
+            if self.toDrop in character.inventory:
+                self.character.drop(self.toDrop)
+                self.triggerCompletionCheck()
+                return True
+            else:
+                return False
+
+'''
+quest to collect a item with some property
+bad code: this is to be replaced by CollectQuestMeta but switch is not done yet
+'''
+class CollectQuest(Quest):
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,toFind="canBurn",startCinematics=None):
+        self.toFind = toFind
+        self.description = "please fetch things with property: "+toFind
+        foundItem = None
+
         super().__init__(startCinematics=startCinematics)
 
+    '''
+    check if item to collect is in inventory
+    '''
     def triggerCompletionCheck(self):
-        if len(self.examinedItems) >= 5:
+        # do not check if not properly active
+        if not self.active:
+            return 
+        if not self.character:
+            return
+
+        # search inventory for item 
+        foundItem = None
+        for item in self.character.inventory:
+            hasProperty = False
+            try:
+                hasProperty = getattr(item,self.toFind)
+            except:
+                continue
+            if hasProperty:
+                foundItem = item
+
+        # trigger cleanup if item was found
+        if foundItem:
             self.postHandler()
 
     '''
-    activate and prepare termination after lifespan
+    assign to character and listen to the character
     '''
-    def activate(self):
-        self.character.addListener(self.registerExaminination,"examine")
-        super().activate()
+    def assignToCharacter(self,character):
+        super().assignToCharacter(character)
+        self.startWatching(self.character,self.recalculate)
 
-    def registerExaminination(self,item):
-        itemType = type(item)
-        if not itemType in self.examinedItems:
-            self.examinedItems.append(itemType)
-        self.triggerCompletionCheck()
+    '''
+    set target to item with correct property
+    '''
+    def recalculate(self):
+        # bad code: remove current position
+        if hasattr(self,"dstX"):
+            del self.dstX
+        if hasattr(self,"dstY"):
+            del self.dstY
+
+        # do nothing if inactive
+        if not self.active:
+            return 
+
+        try:
+            # bad code: confusing excetion handling
+            for item in self.character.room.itemsOnFloor:
+                hasProperty = False
+                try:
+                    hasProperty = getattr(item,"contains_"+self.toFind)
+                except:
+                    continue
+                if hasProperty:
+                    foundItem = item
+                    # commented out code
+                    # This line ist good but looks bad in current setting. reactivate later
+                    #break
+
+            # set target to item
+            if foundItem:
+                self.dstX = foundItem.xPosition
+                self.dstY = foundItem.yPosition
+        except:
+            pass
+        super().recalculate()
 
 '''
 quest to drink something
@@ -1646,189 +1370,6 @@ class SurviveQuest(Quest):
             if not self.drinkQuest:
                 self.drinkQuest = DrinkQuest()
                 self.character.assignQuest(self.drinkQuest,active=True)
-
-'''
-'''
-class HopperDuty(MetaQuestSequence):
-    '''
-    straightforward state initialization
-    '''
-    def __init__(self,waitingRoom,startCinematics=None,looped=True,lifetime=None):
-        self.getQuest = GetQuest(waitingRoom.secondOfficer,assign=False)
-        self.getQuest.endTrigger = self.setQuest
-        questList = [self.getQuest]
-        super().__init__(questList,startCinematics=startCinematics)
-        self.metaDescription = "hopper duty"
-        self.recalculate()
-        self.actualQuest = None
-        self.rewardQuest = None
-        self.waitingRoom = waitingRoom
-
-    '''
-    get quest, do it, collect reward - repeat
-    '''
-    def recalculate(self):
-        if self.active:
-            # remove completed quest
-            if self.getQuest and self.getQuest.completed:
-                self.getQuest = None
-
-            # add quest to fetch reward
-            if self.actualQuest and self.actualQuest.completed and not self.rewardQuest:
-                self.rewardQuest = GetReward(self.waitingRoom.secondOfficer,self.actualQuest)
-                self.actualQuest = None
-                self.addQuest(self.rewardQuest,addFront=False)
-
-            # remove completed quest
-            if self.rewardQuest and self.rewardQuest.completed:
-                self.rewardQuest = None
-
-            # add quest to get a new quest
-            if not self.getQuest and not self.actualQuest and not self.rewardQuest:
-                self.getQuest = GetQuest(self.waitingRoom.secondOfficer,assign=False)
-                self.getQuest.endTrigger = self.setQuest # call handling directly though the trigger mechanism
-                self.addQuest(self.getQuest,addFront=False)
-
-            super().recalculate()
-
-    '''
-    add the actual quest as subquest
-    '''
-    def setQuest(self):
-        self.actualQuest = self.getQuest.quest
-        if self.actualQuest:
-            self.addQuest(self.actualQuest,addFront=False)
-        else:
-            self.addQuest(WaitQuest(lifetime=10),addFront=False)
-    
-'''
-clear the rubble from the mech
-bad pattern: there is no way to determine
-'''
-class ClearRubble(MetaQuestParralel):
-    '''
-    create subquest to move each piece of scrap to the metalworkshop
-    '''
-    def __init__(self,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
-        questList = []
-        for item in terrain.itemsOnFloor:
-            if isinstance(item,items.Scrap):
-                questList.append(TransportQuest(item,(terrain.metalWorkshop,7,1)))
-        super().__init__(questList)
-        self.metaDescription = "clear rubble"
-
-'''
-move some furniture to the construction room
-bad code: name lies somewhat
-'''
-class FetchFurniture(MetaQuestParralel):
-    '''
-    create subquest to move each piece of scrap to the metalworkshop
-    '''
-    def __init__(self,constructionSite,storageRooms,toFetch,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
-        questList = []
-        dropoffs = [(4,4),(5,4),(5,5),(5,6),(4,6),(3,6),(3,5),(3,4)]
-        self.itemsInStore = []
-        thisToFetch = toFetch[:]
-
-        # calculate how many items should be moved
-        counter = 0
-        maxNum = len(toFetch)
-        if maxNum > len(dropoffs):
-            maxNum = len(dropoffs)
-
-        fetchType = None
-        while counter < maxNum:
-            # set item to search for
-            if not fetchType:
-                if not thisToFetch:
-                    break
-                fetchType = thisToFetch.pop()
-
-            # search for item in storage rooms
-            selectedItem = None
-            for storageRoom in storageRooms:
-                for item in storageRoom.storedItems:
-                    if isinstance(item,fetchType[1]):
-                        selectedItem = item
-                        storageRoom.storedItems.remove(selectedItem)
-                        storageRoom.storageSpace.append((selectedItem.xPosition,selectedItem.yPosition))
-                        fetchType = None
-                        break
-                if selectedItem:
-                    break
-
-            if not selectedItem:
-                # do nothing
-                break
-
-            # add quest to transport the item
-            questList.append(TransportQuest(selectedItem,(constructionSite,dropoffs[counter][1],dropoffs[counter][0])))
-            self.itemsInStore.append(selectedItem)
-
-            counter += 1
-
-        # bad code: commented out code
-        """
-        SMART WAY (cheating)
-        counter = 0
-        maxNum = len(toFetch)
-        if maxNum > len(dropoffs):
-            maxNum = len(dropoffs)
-        toFetch = []
-        while counter < maxNum:
-            if not storageRoom.storedItems:
-                break
-
-            item = storageRoom.storedItems.pop()
-            toFetch.append(item)
-            counter += 1
-    
-        for item in toFetch:
-            questList.append(PickupQuestMeta(item))
-        counter = 0
-        for item in toFetch:
-            questList.append(DropQuestMeta(item,constructionSite,dropoffs[counter][1],dropoffs[counter][0]))
-            counter += 1
-        for item in toFetch:
-            self.itemsInStore.append(item)
-        """
-
-        super().__init__(questList)
-        self.metaDescription = "fetch furniture"
-
-'''
-place furniture within a contruction site
-'''
-class PlaceFurniture(MetaQuestParralel):
-    '''
-    generates quests picking up the furniture and dropping it at the right place
-    bad code: generating transport quests would me better
-    '''
-    def __init__(self,constructionSite,itemsInStore,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
-        self.questList = []
-
-        # handle each item
-        counter = 0
-        while counter < len(itemsInStore):
-            # get item to place
-            if not constructionSite.itemsInBuildOrder:
-                break
-            toBuild = constructionSite.itemsInBuildOrder.pop()
-
-            # pick up item
-            quest = PickupQuestMeta(itemsInStore[counter])
-            self.questList.append(quest)
-            self.startWatching(quest,self.recalculate)
-
-            # drop item
-            quest = DropQuest(itemsInStore[counter],constructionSite,toBuild[0][1],toBuild[0][0])
-            self.questList.append(quest)
-            self.startWatching(quest,self.recalculate)
-            counter += 1 
-
-        super().__init__(self.questList)
-        self.metaDescription = "place furniture"
 
 '''
 quest for entering a room
@@ -2235,6 +1776,301 @@ class MurderQuest(MetaQuestSequence):
                 self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=True)
                 self.addQuest(self.moveQuest)
         super().recalculate()
+
+'''
+fill inventory with something
+bad code: only fetches fuel
+'''
+class FillPocketsQuest(MetaQuestSequence):
+    '''
+    state initialization
+    '''
+    def __init__(self,followUp=None,startCinematics=None,lifetime=None):
+        self.waitQuest = WaitQuest()
+        self.questList = [self.waitQuest]
+        self.collectQuest = None
+        super().__init__(self.questList)
+        self.metaDescription = "fill pockets"
+
+    '''
+    add collect quest till inventory is full
+    '''
+    def recalculate(self):
+        # do nothing on not really active quests
+        if not self.active:
+            return 
+        if not self.character:
+            return
+
+        # remove completed quests
+        if self.collectQuest and self.collectQuest.completed:
+            self.collectQuest = None
+
+        # add collect quest
+        if len(self.character.inventory) < 11 and not self.collectQuest:
+            self.collectQuest = CollectQuestMeta()
+            self.addQuest(self.collectQuest)
+
+        # remove wait quest on first occasion
+        if self.waitQuest:
+            self.waitQuest.postHandler()
+            self.waitQuest = None
+
+        super().recalculate()
+
+'''
+quest to leave the room
+'''
+class LeaveRoomQuest(Quest):
+    def __init__(self,room,followUp=None,startCinematics=None):
+        self.room = room
+        self.description = "please leave the room."
+        self.dstX = self.room.walkingAccess[0][0]
+        self.dstY = self.room.walkingAccess[0][1]
+        super().__init__(followUp,startCinematics=startCinematics)
+
+    '''
+    move to door and step out of the room
+    '''
+    def solver(self,character):
+        if super().solver(character):
+            if character.room:
+                # close door
+                for item in character.room.itemByCoordinates[(character.xPosition,character.yPosition)]:
+                    item.close()
+
+                # add step out of the room
+                if character.yPosition == 0:
+                    character.path.append((character.xPosition,character.yPosition-1))
+                elif character.yPosition == character.room.sizeY-1:
+                    character.path.append((character.xPosition,character.yPosition+1))
+                if character.xPosition == 0: #bad code: should be elif
+                    character.path.append((character.xPosition-1,character.yPosition))
+                elif character.xPosition == character.room.sizeX-1:
+                    character.path.append((character.xPosition+1,character.yPosition))
+                character.walkPath()
+                return False
+            return True
+
+    '''
+    assign to and listen to character
+    '''
+    def assignToCharacter(self,character):
+
+        super().assignToCharacter(character)
+        self.startWatching(character,self.recalculate)
+
+        super().recalculate()
+
+    '''
+    check if the character left the room
+    '''
+    def triggerCompletionCheck(self):
+        # do nothing on inactive quest
+        if not self.active:
+            return 
+
+        # do nothing without character
+        if not self.character:
+            return
+
+        # trigger followup when done
+        if not self.character.room == self.room:
+            self.postHandler()
+
+'''
+patrol along a cirqular path
+bad code: this quest is not used and may be broken
+'''
+class PatrolQuest(MetaQuestSequence):
+    '''
+    state initialization
+    '''
+    def __init__(self,waypoints=[],startCinematics=None,looped=True,lifetime=None):
+        # add movement between waypoints
+        quests = []
+        for waypoint in waypoints:
+            quest = MoveQuestMeta(waypoint[0],waypoint[1],waypoint[2])
+            quests.append(quest)
+
+        self.lifetime = lifetime
+
+        # bad code: superconstructor doesn't actually process the looped parameter
+        super().__init__(quests,startCinematics=startCinematics,looped=looped)
+
+    '''
+    activate and prepare termination after lifespan
+    '''
+    def activate(self):
+        if self.lifetime:
+            '''
+            event for wrapping up the quest
+            '''
+            class endQuestEvent(object):
+                '''
+                state initialization
+                '''
+                def __init__(subself,tick):
+                    subself.tick = tick
+
+                '''
+                wrap up the quest
+                '''
+                def handleEvent(subself):
+                    self.postHandler()
+            self.character.room.addEvent(endQuestEvent(self.character.room.timeIndex+self.lifetime))
+
+        super().activate()
+
+'''
+quest to examine the environment
+'''
+class ExamineQuest(Quest):
+    '''
+    state initialization
+    bad code: useless constructor arguments
+    '''
+    def __init__(self,waypoints=[],startCinematics=None,looped=True,lifetime=None,completionThreshold=5):
+        self.completionThreshold = completionThreshold
+        self.description = "please examine your environment"
+        self.examinedItems = []
+        super().__init__(startCinematics=startCinematics)
+
+    def triggerCompletionCheck(self):
+        if len(self.examinedItems) >= 5:
+            self.postHandler()
+
+    '''
+    activate and prepare termination after lifespan
+    '''
+    def activate(self):
+        self.character.addListener(self.registerExaminination,"examine")
+        super().activate()
+
+    def registerExaminination(self,item):
+        itemType = type(item)
+        if not itemType in self.examinedItems:
+            self.examinedItems.append(itemType)
+        self.triggerCompletionCheck()
+
+##############################################################################
+###
+## construction quests
+#
+#############################################################################
+
+'''
+move some furniture to the construction room
+bad code: name lies somewhat
+'''
+class FetchFurniture(MetaQuestParralel):
+    '''
+    create subquest to move each piece of scrap to the metalworkshop
+    '''
+    def __init__(self,constructionSite,storageRooms,toFetch,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+        questList = []
+        dropoffs = [(4,4),(5,4),(5,5),(5,6),(4,6),(3,6),(3,5),(3,4)]
+        self.itemsInStore = []
+        thisToFetch = toFetch[:]
+
+        # calculate how many items should be moved
+        counter = 0
+        maxNum = len(toFetch)
+        if maxNum > len(dropoffs):
+            maxNum = len(dropoffs)
+
+        fetchType = None
+        while counter < maxNum:
+            # set item to search for
+            if not fetchType:
+                if not thisToFetch:
+                    break
+                fetchType = thisToFetch.pop()
+
+            # search for item in storage rooms
+            selectedItem = None
+            for storageRoom in storageRooms:
+                for item in storageRoom.storedItems:
+                    if isinstance(item,fetchType[1]):
+                        selectedItem = item
+                        storageRoom.storedItems.remove(selectedItem)
+                        storageRoom.storageSpace.append((selectedItem.xPosition,selectedItem.yPosition))
+                        fetchType = None
+                        break
+                if selectedItem:
+                    break
+
+            if not selectedItem:
+                # do nothing
+                break
+
+            # add quest to transport the item
+            questList.append(TransportQuest(selectedItem,(constructionSite,dropoffs[counter][1],dropoffs[counter][0])))
+            self.itemsInStore.append(selectedItem)
+
+            counter += 1
+
+        # bad code: commented out code
+        """
+        SMART WAY (cheating)
+        counter = 0
+        maxNum = len(toFetch)
+        if maxNum > len(dropoffs):
+            maxNum = len(dropoffs)
+        toFetch = []
+        while counter < maxNum:
+            if not storageRoom.storedItems:
+                break
+
+            item = storageRoom.storedItems.pop()
+            toFetch.append(item)
+            counter += 1
+    
+        for item in toFetch:
+            questList.append(PickupQuestMeta(item))
+        counter = 0
+        for item in toFetch:
+            questList.append(DropQuestMeta(item,constructionSite,dropoffs[counter][1],dropoffs[counter][0]))
+            counter += 1
+        for item in toFetch:
+            self.itemsInStore.append(item)
+        """
+
+        super().__init__(questList)
+        self.metaDescription = "fetch furniture"
+
+'''
+place furniture within a contruction site
+'''
+class PlaceFurniture(MetaQuestParralel):
+    '''
+    generates quests picking up the furniture and dropping it at the right place
+    bad code: generating transport quests would me better
+    '''
+    def __init__(self,constructionSite,itemsInStore,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+        self.questList = []
+
+        # handle each item
+        counter = 0
+        while counter < len(itemsInStore):
+            # get item to place
+            if not constructionSite.itemsInBuildOrder:
+                break
+            toBuild = constructionSite.itemsInBuildOrder.pop()
+
+            # pick up item
+            quest = PickupQuestMeta(itemsInStore[counter])
+            self.questList.append(quest)
+            self.startWatching(quest,self.recalculate)
+
+            # drop item
+            quest = DropQuest(itemsInStore[counter],constructionSite,toBuild[0][1],toBuild[0][0])
+            self.questList.append(quest)
+            self.startWatching(quest,self.recalculate)
+            counter += 1 
+
+        super().__init__(self.questList)
+        self.metaDescription = "place furniture"
           
 '''
 construct a room
@@ -2286,6 +2122,12 @@ class ConstructRoom(MetaQuestParralel):
             return
         super().triggerCompletionCheck()
 
+#########################################################################
+###
+##   logistics related quests
+#
+#########################################################################
+
 '''
 transport an item to a position
 '''
@@ -2308,47 +2150,6 @@ class TransportQuest(MetaQuestSequence):
     '''
     def addDrop(self):
         self.addQuest(DropQuestMeta(self.toTransport,self.dropOff[0],self.dropOff[1],self.dropOff[2]))
-
-'''
-fill inventory with something
-bad code: only fetches fuel
-'''
-class FillPocketsQuest(MetaQuestSequence):
-    '''
-    state initialization
-    '''
-    def __init__(self,followUp=None,startCinematics=None,lifetime=None):
-        self.waitQuest = WaitQuest()
-        self.questList = [self.waitQuest]
-        self.collectQuest = None
-        super().__init__(self.questList)
-        self.metaDescription = "fill pockets"
-
-    '''
-    add collect quest till inventory is full
-    '''
-    def recalculate(self):
-        # do nothing on not really active quests
-        if not self.active:
-            return 
-        if not self.character:
-            return
-
-        # remove completed quests
-        if self.collectQuest and self.collectQuest.completed:
-            self.collectQuest = None
-
-        # add collect quest
-        if len(self.character.inventory) < 11 and not self.collectQuest:
-            self.collectQuest = CollectQuestMeta()
-            self.addQuest(self.collectQuest)
-
-        # remove wait quest on first occasion
-        if self.waitQuest:
-            self.waitQuest.postHandler()
-            self.waitQuest = None
-
-        super().recalculate()
 
 '''
 move items from permanent storage to accesible storage
@@ -2458,6 +2259,231 @@ class HandleDelivery(MetaQuestSequence):
     '''
     def triggerCompletionCheck(self):
         return False
+
+############################################################
+###
+##  furnace specific quests
+#
+############################################################
+
+'''
+fire a list of furnaces an keep them fired
+'''
+class KeepFurnacesFiredMeta(MetaQuestParralel):
+    '''
+    add a quest to keep each furnace fired
+    '''
+    def __init__(self,furnaces,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+        questList = []
+        for furnace in furnaces:
+            questList.append(KeepFurnaceFiredMeta(furnace))
+        super().__init__(questList)
+        self.metaDescription = "KeepFurnacesFiredMeta"
+
+'''
+fire a furnace an keep it fired
+'''
+class KeepFurnaceFiredMeta(MetaQuestSequence):
+    '''
+    '''
+    def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+        self.questList = []
+        self.fireFurnaceQuest = None
+        self.waitQuest = None
+        self.furnace = furnace
+        super().__init__(self.questList,lifetime=lifetime)
+        self.metaDescription = "KeepFurnaceFiredMeta"
+
+        # listen to furnace
+        self.startWatching(self.furnace,self.recalculate)
+
+    def recalculate(self):
+        if not self.character:
+            return
+
+        if self.fireFurnaceQuest and self.fireFurnaceQuest.completed:
+            self.fireFurnaceQuest = None
+
+        if not self.fireFurnaceQuest and not self.furnace.activated:
+            self.fireFurnaceQuest = FireFurnaceMeta(self.furnace)
+            self.addQuest(self.fireFurnaceQuest)
+            self.unpause()
+
+        if self.waitQuest and self.waitQuest.completed:
+            self.waitQuest = None
+
+        if not self.waitQuest and not self.fireFurnaceQuest:
+            if self.furnace.activated:
+                self.waitQuest = WaitForDeactivationQuest(self.furnace)
+                self.startWatching(self.waitQuest,self.recalculate)
+                self.addQuest(self.waitQuest)
+                self.pause()
+            else:
+                self.unpause()
+
+        super().recalculate()
+    
+    '''
+    never complete
+    '''
+    def triggerCompletionCheck(self):
+        return
+
+'''
+fire a furnace once
+'''
+class FireFurnaceMeta(MetaQuestSequence):
+    '''
+    state initialization
+    '''
+    def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+        self.activateQuest = None
+        self.collectQuest = None
+        self.questList = []
+        self.furnace = furnace
+        super().__init__(self.questList)
+        self.metaDescription = "FireFurnaceMeta"+str(self)
+
+    '''
+    collect coal and fire furnace
+    '''
+    def recalculate(self):
+        # remove completed quest
+        if self.collectQuest and self.collectQuest.completed:
+            self.collectQuest = None
+
+        if not self.collectQuest:
+            # search for fuel in inventory
+            foundItem = None
+            for item in self.character.inventory:
+                try:
+                    canBurn = item.canBurn
+                except:
+                    continue
+                if not canBurn:
+                    continue
+                foundItem = item
+
+            if not foundItem:
+                # collect fuel
+                self.collectQuest = CollectQuestMeta()
+                self.collectQuest.assignToCharacter(self.character)
+                self.startWatching(self.collectQuest,self.recalculate)
+                self.questList.insert(0,self.collectQuest)
+                self.collectQuest.activate()
+                self.changed()
+
+                # pause quest to fire furnace
+                if self.activateQuest:
+                    self.activateQuest.pause()
+
+        # unpause quest to fire furnace if coal is avalable
+        if self.activateQuest and not self.collectQuest:
+            self.activateQuest.unpause()
+
+        # add quest to fire furnace
+        if not self.activateQuest and not self.collectQuest and not self.furnace.activated:
+            self.activateQuest = ActivateQuestMeta(self.furnace)
+            self.activateQuest.assignToCharacter(self.character)
+            self.questList.append(self.activateQuest)
+            self.activateQuest.activate()
+            self.startWatching(self.activateQuest,self.recalculate)
+            self.changed()
+
+        super().recalculate()
+
+    '''
+    assign to character and listen to character
+    '''
+    def assignToCharacter(self,character):
+        character.addListener(self.recalculate)
+        super().assignToCharacter(character)
+
+    '''
+    check if furnace is burning
+    '''
+    def triggerCompletionCheck(self):
+        if self.furnace.activated:
+            self.postHandler()
+            
+        super().triggerCompletionCheck()
+
+##############################################################################
+###
+## actual tasks
+#
+#############################################################################
+
+'''
+basically janitor duty
+'''
+class HopperDuty(MetaQuestSequence):
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,waitingRoom,startCinematics=None,looped=True,lifetime=None):
+        self.getQuest = GetQuest(waitingRoom.secondOfficer,assign=False)
+        self.getQuest.endTrigger = self.setQuest
+        questList = [self.getQuest]
+        super().__init__(questList,startCinematics=startCinematics)
+        self.metaDescription = "hopper duty"
+        self.recalculate()
+        self.actualQuest = None
+        self.rewardQuest = None
+        self.waitingRoom = waitingRoom
+
+    '''
+    get quest, do it, collect reward - repeat
+    '''
+    def recalculate(self):
+        if self.active:
+            # remove completed quest
+            if self.getQuest and self.getQuest.completed:
+                self.getQuest = None
+
+            # add quest to fetch reward
+            if self.actualQuest and self.actualQuest.completed and not self.rewardQuest:
+                self.rewardQuest = GetReward(self.waitingRoom.secondOfficer,self.actualQuest)
+                self.actualQuest = None
+                self.addQuest(self.rewardQuest,addFront=False)
+
+            # remove completed quest
+            if self.rewardQuest and self.rewardQuest.completed:
+                self.rewardQuest = None
+
+            # add quest to get a new quest
+            if not self.getQuest and not self.actualQuest and not self.rewardQuest:
+                self.getQuest = GetQuest(self.waitingRoom.secondOfficer,assign=False)
+                self.getQuest.endTrigger = self.setQuest # call handling directly though the trigger mechanism
+                self.addQuest(self.getQuest,addFront=False)
+
+            super().recalculate()
+
+    '''
+    add the actual quest as subquest
+    '''
+    def setQuest(self):
+        self.actualQuest = self.getQuest.quest
+        if self.actualQuest:
+            self.addQuest(self.actualQuest,addFront=False)
+        else:
+            self.addQuest(WaitQuest(lifetime=10),addFront=False)
+    
+'''
+clear the rubble from the mech
+bad pattern: there is no way to determine
+'''
+class ClearRubble(MetaQuestParralel):
+    '''
+    create subquest to move each piece of scrap to the metalworkshop
+    '''
+    def __init__(self,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+        questList = []
+        for item in terrain.itemsOnFloor:
+            if isinstance(item,items.Scrap):
+                questList.append(TransportQuest(item,(terrain.metalWorkshop,7,1)))
+        super().__init__(questList)
+        self.metaDescription = "clear rubble"
 
 '''
 dummy quest for doing the room duty

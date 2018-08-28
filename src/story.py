@@ -313,17 +313,6 @@ class ScreenSaver(object):
                     if targetIndex > len(targetRoom.storageSpace)-1:
                         break
 
-            # bad code: commented out code
-            """
-            for i in range(3,8):
-                for j in range(0,7):
-                    item = terrain.tutorialCargoRooms[i+(counter*7)].storedItems[j]
-                    quest = quests.PickupQuestMeta(item)
-                    questlist.append(quest)
-                    quest = quests.DropQuest(item,terrain.tutorialCargoRooms[2+(counter*7)],1+j,12-i)
-                    questlist.append(quest)
-            """
-
             # chain the quests
             lastQuest = questlist[0]
             for item in questlist[1:]:

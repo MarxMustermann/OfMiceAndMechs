@@ -489,7 +489,7 @@ class GrowthTank(Item):
             super().__init__(displayChars.growthTank_unfilled,xPosition,yPosition,name=name)
 
     def apply(self,character):
-	    if self.filled:
+        if self.filled:
             self.eject()
 
     '''

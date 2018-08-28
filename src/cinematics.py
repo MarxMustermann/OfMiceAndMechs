@@ -318,7 +318,7 @@ class ShowQuestExecution(BasicCinematic):
     straightforward initialization with options like a character to do the quest or making
     it run in the background. A second setup happens when the cinematic actually starts
     '''
-    def __init__(self,quest,tickSpan = None, assignTo = None, background = False):
+    def __init__(self,quest,tickSpan = None, assignTo = None, background = False, container=None):
         super().__init__()
 
         self.quest = quest
@@ -334,6 +334,7 @@ class ShowQuestExecution(BasicCinematic):
         self.alarm = None
         self.skipable = True
         self.overwriteFooter = False
+        self.container = container
 
     '''
     assign the quest
@@ -341,7 +342,10 @@ class ShowQuestExecution(BasicCinematic):
     def setup(self):
         self.wasSetup = True
         if self.assignTo:
-            self.assignTo.assignQuest(self.quest,active=True)
+            if not self.container:
+                self.assignTo.assignQuest(self.quest,active=True)
+            else:
+                self.container.addQuest(self.quest)
 
     '''
     advance and show game

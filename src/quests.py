@@ -254,10 +254,10 @@ class Quest(object):
 ############################################################
 
 '''
-make a character move somewhere
-bad code: is to be replaced by MoveQuestMeta but switch is not done yet
+make a character move somewhere. It assumes nothing goes wrong. 
+You probably want to use MoveQuestMeta instead
 '''
-class MoveQuest(Quest):
+class NaiveMoveQuest(Quest):
     '''
     straightfoward state setting
     '''
@@ -1890,7 +1890,7 @@ class PatrolQuest(MetaQuestSequence):
         # add movement between waypoints
         quests = []
         for waypoint in waypoints:
-            quest = MoveQuest(waypoint[0],waypoint[1],waypoint[2])
+            quest = MoveQuestMeta(waypoint[0],waypoint[1],waypoint[2])
             quests.append(quest)
 
         self.lifetime = lifetime
@@ -2280,7 +2280,7 @@ class MoveQuestMeta(MetaQuestSequence):
     state initialization
     '''
     def __init__(self,room,x,y,sloppy=False,followUp=None,startCinematics=None):
-        self.moveQuest = MoveQuest(room,x,y,sloppy=sloppy)
+        self.moveQuest = NaiveMoveQuest(room,x,y,sloppy=sloppy)
         self.questList = [self.moveQuest]
         self.enterRoomQuest = None
         self.leaveRoomQuest = None

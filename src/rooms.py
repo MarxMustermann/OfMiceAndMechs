@@ -964,10 +964,10 @@ XXXXXXXXXX
         def addNPC(x,y):
             # generate quests
             #TODO: replace with patrol quest since it's actually bugging
-            quest1 = quests.MoveQuest(self,2,2)
-            quest2 = quests.MoveQuest(self,2,7)
-            quest3 = quests.MoveQuest(self,7,7)
-            quest4 = quests.MoveQuest(self,7,2)
+            quest1 = quests.MoveQuestMeta(self,2,2)
+            quest2 = quests.MoveQuestMeta(self,2,7)
+            quest3 = quests.MoveQuestMeta(self,7,7)
+            quest4 = quests.MoveQuestMeta(self,7,2)
             quest1.followUp = quest2
             quest2.followUp = quest3
             quest3.followUp = quest4

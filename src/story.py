@@ -436,21 +436,21 @@ class ScreenSaver(object):
         self.mainCharQuestList.append(quest)
 
         # activate furnace
-        quest = quests.ActivateQuest(terrain.tutorialMachineRoom.furnaces[0])
+        quest = quests.ActivateQuestMeta(terrain.tutorialMachineRoom.furnaces[0])
         self.mainCharQuestList.append(quest)
-        quest = quests.ActivateQuest(terrain.tutorialMachineRoom.furnaces[1])
+        quest = quests.ActivateQuestMeta(terrain.tutorialMachineRoom.furnaces[1])
         self.mainCharQuestList.append(quest)
-        quest = quests.ActivateQuest(terrain.tutorialMachineRoom.furnaces[2])
+        quest = quests.ActivateQuestMeta(terrain.tutorialMachineRoom.furnaces[2])
         self.mainCharQuestList.append(quest)
-        quest = quests.ActivateQuest(terrain.tutorialMachineRoom.furnaces[3])
+        quest = quests.ActivateQuestMeta(terrain.tutorialMachineRoom.furnaces[3])
         self.mainCharQuestList.append(quest)
-        quest = quests.ActivateQuest(terrain.tutorialMachineRoom.furnaces[4])
+        quest = quests.ActivateQuestMeta(terrain.tutorialMachineRoom.furnaces[4])
         self.mainCharQuestList.append(quest)
-        quest = quests.ActivateQuest(terrain.tutorialMachineRoom.furnaces[5])
+        quest = quests.ActivateQuestMeta(terrain.tutorialMachineRoom.furnaces[5])
         self.mainCharQuestList.append(quest)
-        quest = quests.ActivateQuest(terrain.tutorialMachineRoom.furnaces[6])
+        quest = quests.ActivateQuestMeta(terrain.tutorialMachineRoom.furnaces[6])
         self.mainCharQuestList.append(quest)
-        quest = quests.ActivateQuest(terrain.tutorialMachineRoom.furnaces[7])
+        quest = quests.ActivateQuestMeta(terrain.tutorialMachineRoom.furnaces[7])
         self.mainCharQuestList.append(quest)
 
     '''
@@ -977,7 +977,7 @@ now, go and pull the lever
 
         # ask player to pull the lever and add trigger
         say("activate the lever",firstOfficer)
-        quest = quests.ActivateQuest(terrain.wakeUpRoom.lever1)
+        quest = quests.ActivateQuestMeta(terrain.wakeUpRoom.lever1)
         showQuest(quest,mainChar,trigger=self.fetchDrink)
 
     '''

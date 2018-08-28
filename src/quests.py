@@ -2414,10 +2414,46 @@ class ActivateQuestMeta(MetaQuestSequence):
     '''
     def __init__(self,toActivate,followUp=None,desiredActive=True,startCinematics=None):
         self.toActivate = toActivate
-        self.moveQuest = MoveQuestMeta(toActivate.room,toActivate.xPosition,toActivate.yPosition,sloppy=True)
+        self.sloppy = not self.toActivate.walkable
+        self.moveQuest = MoveQuestMeta(toActivate.room,toActivate.xPosition,toActivate.yPosition,sloppy=self.sloppy)
         self.questList = [self.moveQuest,NaiveActivateQuest(toActivate)]
         super().__init__(self.questList)
         self.metaDescription = "activate Quest"
+
+    '''
+    re-add the movement quest if neccessary
+    '''
+    def recalculate(self):
+        if self.active:
+            # remove completed quests
+            if self.moveQuest and self.moveQuest.completed:
+                self.moveQuest = None
+
+            if not self.moveQuest:
+                # check whether it is neccessary to re add the movement
+                reAddMove = False
+                if not self.sloppy:
+                    if not hasattr(self.toActivate,"xPosition") or not hasattr(self.toActivate,"yPosition"):
+                        reAddMove = False
+                    elif not (self.toActivate.room == self.character.room and self.toActivate.xPosition == self.character.xPosition and self.toActivate.yPosition == self.character.yPosition):
+                        reAddMove = True
+                else:
+                    if not hasattr(self.toActivate,"xPosition") or not hasattr(self.toActivate,"yPosition"):
+                        reAddMove = False
+                    elif not (self.toActivate.room == self.character.room and (
+                                                             (self.toActivate.xPosition-self.character.xPosition in (-1,0,1) and self.toActivate.yPosition == self.character.yPosition) or 
+                                                             (self.toActivate.yPosition-self.character.yPosition in (-1,0,1) and self.toActivate.xPosition == self.character.xPosition))):
+                        reAddMove = True
+
+                # re add the movement
+                if reAddMove:
+                    self.moveQuest = MoveQuestMeta(self.toActivate.room,self.toActivate.xPosition,self.toActivate.yPosition,sloppy=self.sloppy)
+                    self.addQuest(self.moveQuest)
+        super().recalculate()
+
+    def activate(self):
+        self.startWatching(self.character,self.recalculate)
+        super().activate()
 
 '''
 collect items with some quality

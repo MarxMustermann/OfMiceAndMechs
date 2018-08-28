@@ -37,6 +37,8 @@ class Character():
         self.dead = False
         self.deathReason = None
         self.questsToDelegate = []
+        self.unconcious = False
+        self.displayOriginal = display
 
         # bad code: story specific state
         self.gotBasicSchooling = False
@@ -171,10 +173,18 @@ class Character():
 
     '''
     this wrapper converts a character centred call to a solver centered call
-    bad code: i think this shouldn't be an extra method
     '''
     def applysolver(self,solver):
-        solver(self)
+        if not self.unconcious and not self.dead:
+            solver(self)
+
+    def fallUnconcious(self):
+        self.unconcious = True
+        self.display = displayChars.unconciousBody
+
+    def wakeUp(self):
+        self.unconcious = False
+        self.display = self.displayOrig
 
     '''
     kill the character and do a bit of extra stuff like placing corpses

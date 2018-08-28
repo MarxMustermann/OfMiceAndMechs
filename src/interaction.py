@@ -275,6 +275,10 @@ def processInput(key):
         if key in (commandChars.ignore):
             doAdvanceGame = False
 
+        # invalidate input for unconcious char
+        if mainChar.unconcious:
+            key = commandChars.wait
+
         # show a few rounds after death and exit
         if mainChar.dead:
             if not ticksSinceDeath:

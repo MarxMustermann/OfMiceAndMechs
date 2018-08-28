@@ -2878,16 +2878,11 @@ class Serve(MetaQuestParralel):
     '''
     state initialization
     '''
-    def __init__(self, cargoRooms=[],storageRooms=[]):
+    def __init__(self, superior):
         self.questList = []
+        self.superior = superior
         super().__init__(self.questList)
-        self.metaDescription = "serve"
-
-    '''
-    do nothing
-    '''
-    def recalculate(self):
-        return
+        self.metaDescription = "serve "+superior.name
 
     '''
     never complete

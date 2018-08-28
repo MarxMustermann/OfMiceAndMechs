@@ -619,7 +619,7 @@ entering interactive mode .................................
         niceOptions = {1:"Karl Weinberg",2:mainChar.name,3:"Susanne Kreismann"}
         text = "\nplease answer the question:\n\nwhat is your name?"
         cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
-        cinematic.followUps = {"ok":self.step2,"nok":self.infoFail}
+        cinematic.followUps = {"ok":self.askSecondQuestion,"nok":self.infoFail}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
 
@@ -633,38 +633,35 @@ entering interactive mode .................................
 
     '''
     ask question and place trigger
-    bad code: bad name
     bad code: bad datastructure leads tu ugly code
     '''
-    def step2(self):
+    def askSecondQuestion(self):
         options = {1:"ok",2:"nok",3:"nok"}
         niceOptions = {1:"A Pipe is used to transfer fluids",2:"A Grate is used to transfer fluids",3:"A Hutch is used to transfer fluids"}
         text = "\nplease select the true statement:\n\n"
         cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
-        cinematic.followUps = {"ok":self.step3,"nok":self.infoFail}
+        cinematic.followUps = {"ok":self.askThirdQuestion,"nok":self.infoFail}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
 
     '''
     ask question and place trigger
-    bad code: bad name
     bad code: bad datastructure leads tu ugly code
     '''
-    def step3(self):
+    def askThirdQuestion(self):
         options = {1:"ok",2:"nok",3:"nok"}
         niceOptions = {1:"Rust is the oxide of iron. Rust is the most common form of corrosion",2:"Rust is the oxide of iron. Corrosion in form of Rust is common",3:"*deny answer*"}
         text = "\nplease repeat the definition of rust\n\n"
         cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
-        cinematic.followUps = {"ok":self.step4,"nok":self.infoFail}
+        cinematic.followUps = {"ok":self.flashInformation,"nok":self.infoFail}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
 
     '''
     show fluff info with effect and place trigger
-    bad code: bad name
     bad code: bad datastructure leads tu ugly code
     '''
-    def step4(self):
+    def flashInformation(self):
         import urwid
         
         # set bogus information

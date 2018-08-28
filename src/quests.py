@@ -332,7 +332,7 @@ class NaiveMoveQuest(Quest):
         elif not self.character.room and self.character.quests and self.character.quests[0] == self:
             # make the character enter the correct room
             # bad code: adds a new quest instead of using sub quests
-            self.character.assignQuest(EnterRoomQuest(self.room),active=True)
+            self.character.assignQuest(EnterRoomQuestMeta(self.room),active=True)
             pass # bad code: does nothing
         super().recalculate()
 
@@ -397,10 +397,10 @@ class LeaveRoomQuest(Quest):
             self.postHandler()
 
 '''
-quest to enter a room
-bad code: is to be repaced by EnterRoomQuestMeta but switch is not done yet
+quest to enter a room. It assumes nothing goes wrong. 
+You probably want to use MoveQuestMeta instead
 '''
-class EnterRoomQuest(Quest):
+class NaiveEnterRoomQuest(Quest):
     '''
     straightforward state initialization
     '''
@@ -2165,7 +2165,7 @@ class EnterRoomQuestMeta(MetaQuestSequence):
     '''
     def __init__(self,room,followUp=None,startCinematics=None):
         self.room = room
-        self.questList = [EnterRoomQuest(room)]
+        self.questList = [NaiveEnterRoomQuest(room)]
         super().__init__(self.questList)
         self.recalculate()
         self.metaDescription = "enterroom Meta"

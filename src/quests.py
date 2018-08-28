@@ -1928,36 +1928,31 @@ quest to examine the environment
 class ExamineQuest(Quest):
     '''
     state initialization
+    bad code: useless constructor arguments
     '''
-    def __init__(self,waypoints=[],startCinematics=None,looped=True,lifetime=None):
-        self.lifetime = lifetime
+    def __init__(self,waypoints=[],startCinematics=None,looped=True,lifetime=None,completionThreshold=5):
+        self.completionThreshold = completionThreshold
         self.description = "please examine your environment"
+        self.examinedItems = []
         super().__init__(startCinematics=startCinematics)
+
+    def triggerCompletionCheck(self):
+        if len(self.examinedItems) >= 5:
+            self.postHandler()
 
     '''
     activate and prepare termination after lifespan
     '''
     def activate(self):
-        if self.lifetime:
-            '''
-            event for wrapping up the quest
-            '''
-            class endQuestEvent(object):
-                '''
-                state initialization
-                '''
-                def __init__(subself,tick):
-                    subself.tick = tick
-
-                '''
-                wrap up the quest
-                '''
-                def handleEvent(subself):
-                    self.postHandler()
-
-            self.character.room.addEvent(endQuestEvent(self.character.room.timeIndex+self.lifetime))
-
+        self.character.addListener(self.registerExaminination,"examine")
         super().activate()
+
+    def registerExaminination(self,item):
+        itemType = type(item)
+        if not itemType in self.examinedItems:
+            self.examinedItems.append(itemType)
+        messages.append(self.examinedItems)
+        self.triggerCompletionCheck()
 
 '''
 quest to refill the goo flask

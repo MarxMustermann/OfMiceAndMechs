@@ -457,27 +457,6 @@ class Corpse(Item):
         super().__init__(displayChars.corpse,xPosition,yPosition,name=name)
 
 '''
-dummy class for an unconcious body
-bad code: transforming a character to item and back begs for trouble
-'''
-class UnconciousBody(Item):
-    def __init__(self,xPosition=0,yPosition=0,name="unconcious body"):
-        super().__init__(displayChars.unconciousBody,xPosition,yPosition,name=name)
-        self.activated = False
-
-    '''
-    random code from elsewhere
-    bad code: this seem to be a copy paste error or something, delete this
-    '''
-    def apply(self,character):
-        if not self.activated:
-            self.activated = True
-            self.display = displayChars.hutch_occupied
-        else:
-            self.activated = False
-            self.display = displayChars.hutch_free
-
-'''
 an character spawning item
 '''
 class GrowthTank(Item):

@@ -222,10 +222,6 @@ class Room(object):
                     # add corpse
                     item = items.Corpse(rowCounter,lineCounter)
                     itemsOnFloor.append(item)
-                elif char == "C":
-                    # add unconcious body
-                    item = items.UnconciousBody(rowCounter,lineCounter)
-                    itemsOnFloor.append(item)
                 elif char == "z":
                     # add special pipe
                     # bad code: pipe connection should be done some other way

@@ -1288,7 +1288,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
             self.trainingCompleted()
         else:
             # make the player wait till norm completion time
-            text += "We are "+str(normTime-timeTaken)+" ticks ahead of plan. We need to make up for this. Please wait for "+str(normTime-timeTaken)+" ticks.\nIn order to not waste time, feel free to aks questions in the meantime.\n"
+            text += "We are "+str(normTime-timeTaken)+" ticks ahead of plan. We need to make up for this. Please wait for "+str(normTime-timeTaken)+" ticks.\nIn order to not waste time, feel free to ask questions in the meantime.\n"
             quest = quests.WaitQuest(lifetime=normTime-timeTaken)
             showText(text)
             showQuest(quest,mainChar,trigger=self.trainingCompleted,container=mainChar.serveQuest)

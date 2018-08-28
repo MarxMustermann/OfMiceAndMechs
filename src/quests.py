@@ -1951,7 +1951,6 @@ class ExamineQuest(Quest):
         itemType = type(item)
         if not itemType in self.examinedItems:
             self.examinedItems.append(itemType)
-        messages.append(self.examinedItems)
         self.triggerCompletionCheck()
 
 '''

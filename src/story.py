@@ -1244,7 +1244,7 @@ you have on piece of coal less than before."""])
     '''
     def examineStuff(self):
         # show fluff
-        showText("""you can now examine the room and learn to find your way around. talk to me when you are done and we can proceed""")
+        showText("""examine the room and learn to find your way around, please""")
 
         # show instructions
         showText(["""Here is an example on how to do this:\n\nWalk onto or against the items you want to examine and press e directly afterwards to examine something.\nImagine you are standing next to a lever:
@@ -1268,46 +1268,10 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
         # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
 
-        '''
-        Chat option to show the player is done examining
-        '''
-        class LetsGoChat(interaction.SubMenu):
-            dialogName = "i am ready to continue"
-            '''
-            straightforward state setting
-            '''
-            def __init__(subSelf,partner):
-                subSelf.state = None
-                subSelf.done = False
-                subSelf.persistentText = ""
-                subSelf.firstRun = True
-                subSelf.submenue = None
-                super().__init__()
-
-            '''
-            straightforward state setting
-            '''
-            def handleKey(subSelf, key):
-                if subSelf.firstRun:
-                    # show fluff 
-                    subSelf.persistentText = "let us continue then."
-                    subSelf.set_text(subSelf.persistentText)
-
-                    # remove this chat option
-                    if LetsGoChat in firstOfficer.basicChatOptions:
-                        firstOfficer.basicChatOptions.remove(LetsGoChat)
-
-                    # inite wrap up
-                    self.iamready()
-                    subSelf.firstRun = False
-                else:
-                    # show dialog for one keystroke
-                    subSelf.done = True
-
-                return False
-
-        # add chat option to continue
-        firstOfficer.basicChatOptions.append(LetsGoChat)
+        # add examine quest
+        quest = quests.ExamineQuest()
+        quest.endTrigger = self.iamready
+        mainChar.assignQuest(quest,active=True)
 
     '''
     wait till expected completion time has passed
@@ -1316,7 +1280,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
         # get time needed
         timeTaken = gamestate.tick-mainChar.tutorialStart
         normTime = 500
-        text = "it took you "+str(timeTaken)+" ticks to do it. The norm completion time is 500 ticks.\n\n"
+        text = "it took you "+str(timeTaken)+" ticks to complete the tests. The norm completion time is 500 ticks.\n\n"
             
         if timeTaken > normTime:
             # scold the player for taking to long

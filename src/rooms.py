@@ -834,142 +834,6 @@ class Room(object):
             self.delayedTicks += 1
     
 '''
-a test
-bad code: is unused and silly
-'''
-class Room1(Room):
-    '''
-    create room
-    '''
-    def __init__(self,xPosition=0,yPosition=0,offsetX=2,offsetY=2,desiredPosition=None):
-        self.roomLayout = """
-XXXXXXXXXX
-X#-------X
-X#......-X
-X#.- --.-X
-X#.   -.-X
-X#.----.-X
-XB.BBBB.BX
-$ ...... X
-XMMv vMMMX
-XXXXXXXXXX
-"""
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
-        self.name = "Vat"
-
-'''
-a test
-bad code: is unused and silly
-'''
-class Room2(Room):
-    '''
-    create rooms content
-    '''
-    def __init__(self,xPosition=0,yPosition=1,offsetX=4,offsetY=0,desiredPosition=None):
-        self.roomMeta = """
-"""
-        roomLayout = """
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-XXXXXXXXXX
-
-XXX↓X↓↓X↓X
-X  #8## #X
-X  #8## #X
-X  #8##8#X
-X  # ## #X
-X  # ##8#X
-X  #8## #X
-X  #8## #X
-X  #8## #X
-XXX↓X↓↓↓↓X
-
-XXXXXXXXXX
-X        X
-X        X
-X  88##8 X
-X  #8##8 X
-X  88##8 X
-X   8    X
-X        X
-X        X
-XXXXXXXXXX
-
-XXXXHXXXXX
-X@Iv vID#X
-X@      #X
-X@ 8#OF PX
-X@ ##OF PX
-XB 8#OF PX
-XB |DI  PX
-XB      #X
-XPPPPPID#X
-XXXXXXXXXX
-"""
-        roomLayout = """
-XXXX$XXXXX
-X@ v vID#X
-X@......#X
-X@.8#O . X
-X@.##O . X
-XH.8#O . X
-XH.|DI . X
-XH......#X
-XXPPP ID#X
-XXXXXXXXXX
-"""
-        super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None)
-        self.name = "Boilerroom"
-
-        # create special items
-        self.lever1 = items.Lever(3,6,"engine control")
-        self.lever2 = items.Lever(1,2,"boarding alarm")
-        coalPile1 = items.Pile(8,3,"coal Pile1",items.Coal)
-        coalPile2 = items.Pile(8,4,"coal Pile2",items.Coal)
-        coalPile3 = items.Pile(8,5,"coal Pile3",items.Coal)
-        coalPile4 = items.Pile(8,6,"coal Pile4",items.Coal)
-        self.furnace1 = items.Furnace(6,3,"Furnace")
-        self.furnace2 = items.Furnace(6,4,"Furnace")
-        self.furnace3 = items.Furnace(6,5,"Furnace")
-        
-        # actually add items
-        self.addItems([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4,self.furnace])
-
-        # create special quests
-        quest0 = quests.ActivateQuest(self.lever1)
-        quest1 = quests.MoveQuest(self,2,2)
-        quest2 = quests.MoveQuest(self,2,7)
-        quest3 = quests.MoveQuest(self,7,7)
-        quest4 = quests.MoveQuest(self,7,2)
-        quest0.followUp = quest1
-        quest1.followUp = quest2
-        quest2.followUp = quest3
-        quest3.followUp = quest4
-        quest4.followUp = quest1
-
-        # add npc dooing these quests
-        npc = Character(staffCharacters[11],1,2,name="Erwin von Liebweg")
-        self.addCharacter(npc,1,3)
-        npc.room = self
-        npc.assignQuest(quest0)
-        # bad code: commented out code
-        #npc.automated = False
-
-        # bind lever to action
-        lever2 = self.lever2
-        def lever2action(self):
-            deactivateLeaverQuest = quests.ActivateQuest(lever2,desiredActive=False)
-            npc.assignQuest(deactivateLeaverQuest,active=True)
-        self.lever2.activateAction = lever2action
-
-'''
 the machine room used in the tutorial
 bad pattern: should be abstracted
 bad code: name and classname do not agree
@@ -1066,78 +930,6 @@ XXXXXXXXXX
                 messages.append("we did it! "+str(self.desiredSteamGeneration)+" instead of "+str(self.steamGeneration))
 
 '''
-a test
-bad code: is unused and silly
-'''
-class Room3(Room):
-    '''
-    create room
-    '''
-    def __init__(self,xPosition=1,yPosition=0,offsetX=2,offsetY=2,desiredPosition=None):
-        self.roomLayout = """
-XXXXXXXXXX
-X????????X
-X?......?X
-X?.X#X?.?X
-XP.?#??.?X
-XP.X#X?.?X
-X?.X#  .?X
-X?......?X
-X??v v???X
-XXXX$XXXXX
-"""
-        super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
-        self.name = "Room3"
-
-'''
-a test
-bad code: is unused and silly
-'''
-class Room4(Room):
-    '''
-    create room
-    '''
-    def __init__(self):
-        self.roomLayout = """
-XX$XXXXXXX
-Xv v?????X
-X?......PX
-X?.????.PX
-X?.????.#X
-X?.???P.#X
-X?.?X??.#X
-X?......#X
-X? ?????#X
-XXXXXXXXXX
-"""
-        super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
-        self.name = "Room4"
-
-'''
-a test for a automatic item placement
-bad code: is unused and silly
-'''
-class GenericRoom(Room):
-    '''
-    create room
-    '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
-        self.roomLayout = """
-XX$XXXXXXX
-Xv v?????X
-X?......PX
-X?.????.PX
-X?.????.#X
-X?.???P.#X
-X?.?X??.#X
-X?......#X
-X? XXXXX#X
-XXXXXXXXXX
-"""
-        super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
-        self.name = "GenericRoom"
-
-'''
 a room to waste cpu power. used for performance testing
 '''
 class CpuWasterRoom(Room):
@@ -1225,28 +1017,6 @@ XXXXXXXXXXX
         self.name = "Infanteryquarters"
     
 '''
-a test for a automatic item placement
-'''
-class FreePlacementRoom(Room):
-    '''
-    create room
-    '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
-        self.roomLayout = """
-XX$X&&XXXXX
-XX PPPPPPXX
-X .......DX
-X'.'' ''.IX
-X'.'' ''.|X
-X'.'' ''.|X
-X'.'' ''.IX
-X .......DX
-XXXXXXXXXXX
-"""
-        super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
-        self.name = "FreePlacementRoom"
-
-'''
 the room where raw goo is processed into eatable form
 '''
 class Vat1(Room):
@@ -1254,18 +1024,6 @@ class Vat1(Room):
     create room and add special item
     '''
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
-        self.roomLayout = """
-XXXXXXXXXX
-XababaabbX
-XrqqrqqsaX
-XzayzayzaX
-XuwbuwxtbX
-XabybayaaX
-XpsaabbaiX
-XmhmooooDX
-Xmmmv.voIX
-XXXXX$XXXX
-"""
         self.roomLayout = """
 XXXXXXXXXX
 XaaaaaaaaX

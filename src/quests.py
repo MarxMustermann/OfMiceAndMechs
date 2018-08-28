@@ -2669,10 +2669,10 @@ class ConstructRoom(MetaQuestParralel):
     '''
     do not terminate until all fetching and placing was done
     '''
-    def triggerCoppletionCheck(self):
+    def triggerCompletionCheck(self):
         if not self.didFetchQuest or not self.didPlaceQuest:
             return
-        super().triggerCoppletionCheck()
+        super().triggerCompletionCheck()
 
 '''
 transport an item to a position
@@ -2844,7 +2844,7 @@ class HandleDelivery(MetaQuestSequence):
     does nothing
     bad code: misspelled method name. does nothing
     '''
-    def triggerCoppletionCheck(self):
+    def triggerCompletionCheck(self):
         return False
 
 '''
@@ -2868,7 +2868,7 @@ class RoomDuty(MetaQuestParralel):
     '''
     never complete
     '''
-    def triggerCoppletionCheck(self):
+    def triggerCompletionCheck(self):
         return 
 
 '''
@@ -2887,10 +2887,10 @@ class Serve(MetaQuestParralel):
     do nothing
     '''
     def recalculate(self):
-        return 
+        return
 
     '''
     never complete
     '''
-    def triggerCoppletionCheck(self):
+    def triggerCompletionCheck(self):
         return 

@@ -463,59 +463,6 @@ class NaiveEnterRoomQuest(Quest):
             self.postHandler()
 
 '''
-quest to pick up an item
-bad code: is to be replaced by PickupQuestMeta but switch is not done yet
-'''
-class PickupQuest(Quest):
-    '''
-    straightforward state initialization
-    '''
-    def __init__(self,toPickup,followUp=None,startCinematics=None):
-        self.toPickup = toPickup
-        self.startWatching(self.toPickup,self.recalculate)
-        self.startWatching(self.toPickup,self.triggerCompletionCheck)
-        self.dstX = self.toPickup.xPosition
-        self.dstY = self.toPickup.yPosition
-        self.description = "please pick up the "+self.toPickup.name+" ("+str(self.toPickup.xPosition)+"/"+str(self.toPickup.yPosition)+")"
-        super().__init__(followUp,startCinematics=startCinematics)
-
-    '''
-    check whether the item is in the mainchars inventory
-    '''
-    def triggerCompletionCheck(self):
-        if self.active:
-            if self.toPickup in self.character.inventory:
-                self.postHandler()
-
-    '''
-    set item as target
-    '''
-    def recalculate(self):
-        if self.active:
-            # remove current target
-            if hasattr(self,"dstX"):
-                del self.dstX
-            if hasattr(self,"dstY"):
-                del self.dstY
-
-            # set item as target
-            if hasattr(self,"toPickup"):
-                if hasattr(self.toPickup,"xPosition"):
-                    self.dstX = self.toPickup.xPosition
-                if hasattr(self.toPickup,"xPosition"):
-                    self.dstY = self.toPickup.yPosition
-            super().recalculate()
-
-    '''
-    move to target and pick up
-    '''
-    def solver(self,character):
-        if super().solver(character) or (len(character.path) == 1 and self.toPickup.walkable == False):
-            self.toPickup.pickUp(character)
-            self.triggerCompletionCheck()
-            return True
-
-'''
 The naive pickup quest. It assumes nothing goes wrong. 
 You probably want to use PickupQuest instead
 '''
@@ -2143,7 +2090,7 @@ class PlaceFurniture(MetaQuestParralel):
             toBuild = constructionSite.itemsInBuildOrder.pop()
 
             # pick up item
-            quest = PickupQuest(itemsInStore[counter])
+            quest = PickupQuestMeta(itemsInStore[counter])
             self.questList.append(quest)
             self.startWatching(quest,self.recalculate)
 

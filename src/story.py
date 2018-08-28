@@ -318,7 +318,7 @@ class ScreenSaver(object):
             for i in range(3,8):
                 for j in range(0,7):
                     item = terrain.tutorialCargoRooms[i+(counter*7)].storedItems[j]
-                    quest = quests.PickupQuest(item)
+                    quest = quests.PickupQuestMeta(item)
                     questlist.append(quest)
                     quest = quests.DropQuest(item,terrain.tutorialCargoRooms[2+(counter*7)],1+j,12-i)
                     questlist.append(quest)

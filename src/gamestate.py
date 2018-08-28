@@ -21,8 +21,6 @@ class GameState():
         # add the main char
         self.mainChar = characters.Character(displayChars.main_char,3,3,automated=False,name=names.characterFirstNames[self.tick%len(names.characterFirstNames)]+" "+names.characterLastNames[self.tick%len(names.characterLastNames)])
         self.mainChar.watched = True
-		# bad code: commented out code
-        #terrain.tutorialMachineRoom.addCharacter(self.mainChar,3,3)
         mainChar = self.mainChar
 
     '''

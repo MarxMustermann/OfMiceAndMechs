@@ -229,20 +229,4 @@ def calculatePathReal(startX,startY,endX,endY,walkingPath):
                 diffY  -= 1
             path.append((startX,startY))
 
-            # bad code: commented out code
-            """
-                if (diffX<1):
-                    endX-1
-                    diffX+1
-                else:
-                    endX+1
-                    diffX-1
-                if (diffY<1):
-                    endY-1
-                    diffY+1
-                else:
-                    endY+1
-                    diffY-1
-                path.append((startX,startY))
-            """
     return path

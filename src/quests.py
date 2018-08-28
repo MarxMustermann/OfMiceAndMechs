@@ -1022,20 +1022,6 @@ class NaiveDropQuest(Quest):
     '''
     def triggerCompletionCheck(self):
         if self.active:
-            # bad code: commented out code
-            """
-            does this make sense to use for naive?
-            correctPosition = False
-            try:
-                if self.toDrop.xPosition == self.dstX and self.toDrop.yPosition == self.dstY:
-                    correctPosition = True
-            except:
-                pass
-
-            if correctPosition:
-                messages.append("droped at correct location")
-                self.postHandler()
-            """
             if self.dropped:
                 self.postHandler()
 

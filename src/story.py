@@ -181,56 +181,6 @@ class ScreenSaver(object):
         self.mainCharRoom.addCharacter(mainChar,2,4)
 
         self.mainCharQuestList = []
-        # bad code: commented out code
-        '''
-        for x in range(1,6):
-            for y in range(1,6):
-                for z in range(1,1): # can be tweaked for performance testing (500(40) npc and more lag but don't grid the game to halt)
-                    npc1 = characters.Character(displayChars.staffCharactersByLetter["e"],5,3,name="Eduart Knoblauch")
-                    self.mainCharRoom.addCharacter(npc1,x,y)
-                    npc1.terrain = terrain
-                    self.mainCharRoom.firstOfficer = npc1
-                    npcs.append(npc1)
-
-        self.mainCharQuestList = []
-
-        quest = quests.MoveQuestMeta(terrain.tutorialMachineRoom,2,2)
-        self.mainCharQuestList.append(quest)
-
-        """
-        questlist = []
-        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[0])
-        questlist.append(quest)
-        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[1])
-        questlist.append(quest)
-        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[2])
-        questlist.append(quest)
-        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[3])
-        questlist.append(quest)
-        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[4])
-        questlist.append(quest)
-        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[5])
-        questlist.append(quest)
-        quest = quests.KeepFurnaceFiredMeta(terrain.tutorialMachineRoom.furnaces[6])
-
-        quest = quests.MetaQuest2(questlist,lifetime=100)
-        self.mainCharQuestList.append(quest)
-
-        self.addKeepFurnaceFired()
-        self.cycleDetectionTest()
-        self.addWaitQuest()
-        self.addKeepFurnaceFired()
-        self.addPseudeoFurnacefirering()
-        self.addIntraRoomMovements()
-        self.addInnerRoomMovements()
-        """
-
-        questlist = []
-        for room in terrain.rooms:
-            if not isinstance(room,rooms.MechArmor):
-                quest = quests.EnterRoomQuestMeta(room)
-                questlist.append(quest)
-        '''
 
         # add items to be picked up
         questlist = []
@@ -250,11 +200,6 @@ class ScreenSaver(object):
             lastQuest = item
         questlist[-1].followup = None
         cleaner.assignQuest(questlist[0],active=True)
-
-        # bad code: commented out code
-        #self.addIntraRoomMovements()
-        #self.addInnerRoomMovements()
-        #self.mainCharQuestList[-1].followUp = self.mainCharQuestList[0]
 
         # add more active npcs
         self.addFurnitureMovingNpcs()
@@ -1649,8 +1594,6 @@ class FindWork(BasicPhase):
                     constructionSite = room
                     break
             quest = quests.ConstructRoom(constructionSite,terrain.tutorialStorageRooms)
-            # bad code: commented out code
-            #terrain.waitingRoom.quests.append(quest)
             mainChar.assignQuest(quest,active=True)
 
         # add events to keep loose control
@@ -1822,12 +1765,6 @@ class FirstTutorialPhase(BasicPhase):
             if not mainChar.gotBasicSchooling:
                 # show greeting one time
                 cinematics.showCinematic("welcome to the boiler room\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
-                # bad code: commented out code
-                #cinematics.showCinematic("the Trainingenvironment will show now. take a look at Everything and press "+commandChars.wait+" afterwards. You will be able to move later")
-                #cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-                #cinematics.showCinematic("you are represented by the "+str(displayChars.main_char)+" Character. find yourself on the Screen and press "+commandChars.wait)
-                #cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-                #cinematics.showCinematic("right now you are in the Boilerroom\n\nthe Floor is represented by "+displayChars.indexedMapping[displayChars.floor][1]+" and Walls are shown as "+displayChars.indexedMapping[displayChars.wall][1]+". the Door is represented by "+displayChars.indexedMapping[displayChars.door_closed][1]+" or "+displayChars.indexedMapping[displayChars.door_opened][1]+" when closed.\n\na empty Room would look like this:\n\n"+displayChars.indexedMapping[displayChars.wall][1]*5+"\n"+displayChars.indexedMapping[displayChars.wall][1]+displayChars.indexedMapping[displayChars.floor][1]*3+displayChars.indexedMapping[displayChars.wall][1]+"\n"+displayChars.indexedMapping[displayChars.wall][1]+displayChars.indexedMapping[displayChars.floor][1]*3+displayChars.indexedMapping[displayChars.door_closed][1]+"\n"+displayChars.indexedMapping[displayChars.wall][1]+displayChars.indexedMapping[displayChars.floor][1]*3+displayChars.indexedMapping[displayChars.wall][1]+"\n"+displayChars.indexedMapping[displayChars.wall][1]*5+"\n\nthe Trainingenvironment will display now. please try to orient yourself in the Room.\n\npress "+commandChars.wait+" when successful")
                 cinematic = cinematics.ShowGameCinematic(1)
                 def wrapUp():
                     mainChar.gotBasicSchooling = True

@@ -388,7 +388,10 @@ class Room(object):
 
             # draw characters
             for character in self.characters:
-                chars[character.yPosition][character.xPosition] = character.display
+                if character.yPosition < len(chars) and character.xPosition < len(chars[character.yPosition]):
+                    chars[character.yPosition][character.xPosition] = character.display
+                else:
+                    debugMessages.append("chracter is rendered outside of room")
 
             # draw quest markers
             # bad code: should be an overlay
@@ -442,7 +445,10 @@ class Room(object):
 
             # draw main char
             if mainChar in self.characters:
-                chars[mainChar.yPosition][mainChar.xPosition] = mainChar.display
+                if mainChar.yPosition < len(chars) and mainChar.xPosition < len(chars[mainChar.yPosition]):
+                    chars[mainChar.yPosition][mainChar.xPosition] = mainChar.display
+                else:
+                    debugMessages.append("chracter is rendered outside of room")
         # show dummy of the room
         else:
             # fill inside the room with invisibility

@@ -664,6 +664,7 @@ def processInput(key):
                     messages.append(itemMarkedLast.description)
                     if itemMarkedLast.description != itemMarkedLast.getDetailedInfo():
                         messages.append(itemMarkedLast.getDetailedInfo())
+                    mainChar.changed("examine",itemMarkedLast)
                 else:
                     # examine an item on floor
                     if mainChar.room:
@@ -675,6 +676,7 @@ def processInput(key):
                             messages.append(item.description)
                             if item.description != item.getDetailedInfo():
                                 messages.append(item.getDetailedInfo())
+                            mainChar.changed("examine",itemMarkedLast)
 
             # drop first item from inventory
             # bad pattern: the user has to have the choice for what item to drop

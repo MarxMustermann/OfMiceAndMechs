@@ -1164,50 +1164,6 @@ class WaitForQuestCompletion(Quest):
 ###############################################################
 
 '''
-quest to drop something somewhere
-bad code: this is to be replaced by DropQuestMeta but switch is not done yet
-'''
-class DropQuest(Quest):
-    '''
-    straightforward state initialization
-    '''
-    def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
-        self.toDrop = toDrop
-        self.startWatching(self.toDrop,self.recalculate)
-        self.startWatching(self.toDrop,self.triggerCompletionCheck)
-        self.dstX = xPosition
-        self.dstY = yPosition
-        self.room = room
-        self.description = "please drop the "+self.toDrop.name+" at ("+str(self.dstX)+"/"+str(self.dstY)+")"
-        super().__init__(followUp,startCinematics=startCinematics)
-
-    '''
-    check whether item is placed correctly
-    '''
-    def triggerCompletionCheck(self):
-        correctPosition = False
-        # bad code: this exception handling is confusing
-        try:
-            if self.toDrop.xPosition == self.dstX and self.toDrop.yPosition == self.dstY and self.toDrop.room == self.room:
-                correctPosition = True
-        except:
-            pass
-        if correctPosition:
-            self.postHandler()
-
-    '''
-    move to target and drop item
-    '''
-    def solver(self,character):
-        if super().solver(character):
-            if self.toDrop in character.inventory:
-                self.character.drop(self.toDrop)
-                self.triggerCompletionCheck()
-                return True
-            else:
-                return False
-
-'''
 quest to collect a item with some property
 bad code: this is to be replaced by CollectQuestMeta but switch is not done yet
 '''
@@ -2064,7 +2020,7 @@ class PlaceFurniture(MetaQuestParralel):
             self.startWatching(quest,self.recalculate)
 
             # drop item
-            quest = DropQuest(itemsInStore[counter],constructionSite,toBuild[0][1],toBuild[0][0])
+            quest = DropQuestMeta(itemsInStore[counter],constructionSite,toBuild[0][1],toBuild[0][0])
             self.questList.append(quest)
             self.startWatching(quest,self.recalculate)
             counter += 1 

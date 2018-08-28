@@ -495,11 +495,22 @@ class GrowthTank(Item):
     '''
     ejecting a character
     '''
-    def eject(self):
+    def eject(self,character=None):
+        # emtpy growth tank
         self.filled = False
         self.display = displayChars.growthTank_unfilled
-        item = UnconciousBody(self.xPosition+1,self.yPosition)
-        self.room.addItems([item])
+
+        def getRandomName(seed1=0,seed2=None):
+            if seed2 == None:
+                seed2 = seed1+(seed1//5)
+            return names.characterFirstNames[seed1%len(names.characterFirstNames)]+" "+names.characterLastNames[seed2%len(names.characterLastNames)]
+
+        # add character
+        if not character:
+            name = getRandomName(self.xPosition+self.room.timeIndex,self.yPosition+self.room.timeIndex)
+            character = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],self.xPosition+1,self.yPosition,name=name)
+        character.fallUnconcious()
+        self.room.addCharacter(character,self.xPosition+1,self.yPosition)
 
 '''
 basically a bed with a activatable cover

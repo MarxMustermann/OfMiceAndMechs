@@ -774,7 +774,7 @@ class WakeUpPhase(BasicPhase):
         mainChar.tutorialStart = gamestate.tick
 
         # make main char hungry and naked
-        mainChar.satiation = 250
+        mainChar.satiation = 400
         mainChar.inventory = []
         mainChar.quests = []
 
@@ -812,7 +812,7 @@ class WakeUpPhase(BasicPhase):
     '''
     def playerEject(self):
         # add players body
-        terrain.wakeUpRoom.itemByCoordinates[(1,4)][0].eject()
+        terrain.wakeUpRoom.itemByCoordinates[(1,4)][0].eject(mainChar)
 
         # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
@@ -843,7 +843,8 @@ class WakeUpPhase(BasicPhase):
     '''
     def addPlayer(self):
         # remove players body
-        self.mainCharRoom.removeItem(terrain.wakeUpRoom.itemByCoordinates[(2,4)][0])
+        # self.mainCharRoom.removeItem(terrain.wakeUpRoom.itemByCoordinates[(2,4)][0])
+        mainChar.wakeUp()
 
         # add player chracter
         self.mainCharRoom.addCharacter(mainChar,2,4)

@@ -184,7 +184,7 @@ class Character():
 
     def wakeUp(self):
         self.unconcious = False
-        self.display = self.displayOrig
+        self.display = self.displayOriginal
 
     '''
     kill the character and do a bit of extra stuff like placing corpses

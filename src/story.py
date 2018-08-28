@@ -27,8 +27,8 @@ def showGame(duration,trigger=None):
 '''
 add show quest cinematic
 '''
-def showQuest(quest,assignTo=None,trigger=None):
-    cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=assignTo)
+def showQuest(quest,assignTo=None,trigger=None,container=None):
+    cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=assignTo,container=container)
     cinematics.cinematicQueue.append(cinematic)
     cinematic.endTrigger = trigger
 '''
@@ -825,6 +825,9 @@ class WakeUpPhase(BasicPhase):
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,3,4)
         showQuest(quest,firstOfficer)
         say("I AM "+firstOfficer.name.upper()+" AND I DEMAND YOUR SERVICE.",firstOfficer)
+        quest = quests.Serve(firstOfficer)
+        mainChar.serveQuest = quest
+        mainChar.assignQuest(quest,active=True)
         showGame(1)
         showMessage("implant imprinted - setup complete")
         showGame(4)
@@ -917,34 +920,34 @@ Your target is marked by """+displayChars.indexedMapping[displayChars.questTarge
         say("follow me, please",firstOfficer)
         showMessage("the current quest destination is shown as: "+displayChars.indexedMapping[displayChars.questTargetMarker][1])
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,3,4)
-        showQuest(quest,mainChar)
+        showQuest(quest,mainChar,container=mainChar.serveQuest)
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,5,4)
         showQuest(quest,firstOfficer)
         say("follow me, please",firstOfficer)
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,4,4)
-        showQuest(quest,mainChar)
+        showQuest(quest,mainChar,container=mainChar.serveQuest)
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,6,7)
         showQuest(quest,firstOfficer)
         say("follow me, please",firstOfficer)
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,5,7)
-        showQuest(quest,mainChar)
+        showQuest(quest,mainChar,container=mainChar.serveQuest)
 
         # ask player to move around
         say("move to the designated target, please",firstOfficer)
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,2,7)
-        showQuest(quest,mainChar)
+        showQuest(quest,mainChar,container=mainChar.serveQuest)
         say("move to the designated target, please",firstOfficer)
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,4,3)
-        showQuest(quest,mainChar)
+        showQuest(quest,mainChar,container=mainChar.serveQuest)
         say("move to the designated target, please",firstOfficer)
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,4,4)
-        showQuest(quest,mainChar)
+        showQuest(quest,mainChar,container=mainChar.serveQuest)
         say("move to the designated target, please",firstOfficer)
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,3,3)
-        showQuest(quest,mainChar)
+        showQuest(quest,mainChar,container=mainChar.serveQuest)
         say("move to the designated target, please",firstOfficer)
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,6,6)
-        showQuest(quest,mainChar)
+        showQuest(quest,mainChar,container=mainChar.serveQuest)
         say("great. You seemed be able to coordinate yourself",firstOfficer)
         showGame(1)
         say("you look thirsty, one more task and you get something to drink",firstOfficer)
@@ -953,7 +956,7 @@ Your target is marked by """+displayChars.indexedMapping[displayChars.questTarge
         showGame(2)
         say("move over to the lever now",firstOfficer)
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,3,2)
-        showQuest(quest,mainChar)
+        showQuest(quest,mainChar,container=mainChar.serveQuest)
         
         import urwid
         # show instructions
@@ -978,7 +981,7 @@ now, go and pull the lever
         # ask player to pull the lever and add trigger
         say("activate the lever",firstOfficer)
         quest = quests.ActivateQuestMeta(terrain.wakeUpRoom.lever1)
-        showQuest(quest,mainChar,trigger=self.fetchDrink)
+        showQuest(quest,mainChar,trigger=self.fetchDrink,container=mainChar.serveQuest)
 
     '''
     make the main char drink and have a chat
@@ -998,7 +1001,7 @@ now, go and pull the lever
 
         # ask the player to pick up the flask
         quest = quests.PickupQuestMeta(drink)
-        showQuest(quest,mainChar)
+        showQuest(quest,mainChar,container=mainChar.serveQuest)
 
         # show instructions
         msg = "you can drink using "+commandChars.drink+". If you do not drink for a longer time you will starve"
@@ -1007,11 +1010,11 @@ now, go and pull the lever
 
         # ask the player to pick up the flask
         quest = quests.DrinkQuest()
-        showQuest(quest,mainChar)
+        showQuest(quest,mainChar,container=mainChar.serveQuest)
 
         # make the player talk to the npc
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,6,6)
-        showQuest(quest,mainChar)
+        showQuest(quest,mainChar,container=mainChar.serveQuest)
         msg = "you can talk to people by pressing "+commandChars.hail+" and selecting the person to talk to."
         showMessage(msg)
         showText(msg)
@@ -1226,7 +1229,7 @@ you have on piece of coal less than before."""])
         self.didFurnaces = True
         say("go on and fire the furnace",firstOfficer)
         quest = quests.FireFurnaceMeta(furnace)
-        showQuest(quest,mainChar)
+        showQuest(quest,mainChar,container=mainChar.serveQuest)
 
     '''
     abort the optional furnace fireing and place trigger
@@ -1270,7 +1273,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
         # add examine quest
         quest = quests.ExamineQuest()
         quest.endTrigger = self.iamready
-        mainChar.assignQuest(quest,active=True)
+        mainChar.serveQuest.addQuest(quest)
 
     '''
     wait till expected completion time has passed
@@ -1291,7 +1294,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
             text += "We are "+str(normTime-timeTaken)+" ticks ahead of plan. We need to make up for this. Please wait for "+str(normTime-timeTaken)+" ticks.\nIn order to not waste time, feel free to aks questions in the meantime.\n"
             quest = quests.WaitQuest(lifetime=normTime-timeTaken)
             showText(text)
-            showQuest(quest,mainChar,trigger=self.trainingCompleted)
+            showQuest(quest,mainChar,trigger=self.trainingCompleted,container=mainChar.serveQuest)
         
 
     '''

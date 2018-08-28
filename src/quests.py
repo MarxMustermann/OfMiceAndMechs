@@ -337,67 +337,6 @@ class NaiveMoveQuest(Quest):
         super().recalculate()
 
 '''
-quest to activate something
-bad code: is to be replaced by ActivateQuestMeta but switch is not done yet
-'''
-class ActivateQuest(Quest):
-    '''
-    straightfoward state setting
-    '''
-    def __init__(self,toActivate,followUp=None,desiredActive=True,startCinematics=None):
-        self.toActivate = toActivate
-        self.dstX = self.toActivate.xPosition
-        self.dstY = self.toActivate.yPosition
-        self.desiredActive = desiredActive
-        self.description = "please activate the "+self.toActivate.name+" ("+str(self.toActivate.xPosition)+"/"+str(self.toActivate.yPosition)+")"
-        super().__init__(followUp,startCinematics=startCinematics)
-        self.startWatching(self.toActivate,self.recalculate)
-        self.startWatching(self.toActivate,self.triggerCompletionCheck)
-
-    '''
-    check if target has the desired state
-    '''
-    def triggerCompletionCheck(self):
-        if self.toActivate.activated == self.desiredActive:
-            self.postHandler()
-
-    '''
-    split the quest into sub quests
-    bad code: 
-    '''
-    def recalculate(self):
-        # do not recalculate inactive quests
-        if not self.active:
-            return
-
-        # go to the room the item is in
-        if ((not self.character.room) or (not self.character.room == self.toActivate.room)) and self.character.quests[0] == self:
-            self.character.assignQuest(EnterRoomQuest(self.toActivate.room),active=True)
-
-        # remove current destination
-        if hasattr(self,"dstX"):
-            del self.dstX
-        if hasattr(self,"dstY"):
-            del self.dstY
-
-        # set item to activate as target
-        if hasattr(self,"toActivate"):
-            if hasattr(self.toActivate,"xPosition"):
-                self.dstX = self.toActivate.xPosition
-            if hasattr(self.toActivate,"xPosition"):
-                self.dstY = self.toActivate.yPosition
-
-        super().recalculate()
-
-    '''
-    walk path and then activate
-    '''
-    def solver(self,character):
-        if super().solver(character):
-            self.toActivate.apply(character)
-            return True
-
-'''
 quest to leave the room
 '''
 class LeaveRoomQuest(Quest):
@@ -1166,7 +1105,7 @@ class KeepFurnacesFired(Quest):
         if not self.metaQuest2:
             for furnace in reversed(self.furnaces):
                 if not furnace.activated:
-                    quest = ActivateQuest(furnace)
+                    quest = ActivateQuestMeta(furnace)
                     if not self.metaQuest2:
                         self.metaQuest2 = quest
                     self.character.assignQuest(quest,active=True)
@@ -1307,7 +1246,7 @@ class KeepFurnaceFired(Quest):
 
         # activate furnace
         if not self.activateFurnaceQuest and not self.collectQuest:
-            self.activateFurnaceQuest = ActivateQuest(self.furnace)
+            self.activateFurnaceQuest = ActivateQuestMeta(self.furnace)
             self.character.assignQuest(self.activateFurnaceQuest,active=True)
             super().recalculate()
             return
@@ -1954,25 +1893,6 @@ class ExamineQuest(Quest):
         self.triggerCompletionCheck()
 
 '''
-quest to refill the goo flask
-'''
-class RefillDrinkQuest(ActivateQuest):
-    '''
-    call superconstructor with modified parameters
-    '''
-    def __init__(self,startCinematics=None):
-        super().__init__(toActivate=terrain.tutorialVatProcessing.gooDispenser,desiredActive=True,startCinematics=startCinematics)
-
-    '''
-    check wnether the character has a filled goo flask
-    '''
-    def triggerCompletionCheck(self):
-        for item in self.character.inventory:
-            if isinstance(item,items.GooFlask):
-                if item.uses > 90:
-                    self.postHandler()
-
-'''
 quest to drink something
 '''
 class DrinkQuest(Quest):
@@ -2453,6 +2373,25 @@ class ActivateQuestMeta(MetaQuestSequence):
     def activate(self):
         self.startWatching(self.character,self.recalculate)
         super().activate()
+
+'''
+quest to refill the goo flask
+'''
+class RefillDrinkQuest(ActivateQuestMeta):
+    '''
+    call superconstructor with modified parameters
+    '''
+    def __init__(self,startCinematics=None):
+        super().__init__(toActivate=terrain.tutorialVatProcessing.gooDispenser,desiredActive=True,startCinematics=startCinematics)
+
+    '''
+    check wnether the character has a filled goo flask
+    '''
+    def triggerCompletionCheck(self):
+        for item in self.character.inventory:
+            if isinstance(item,items.GooFlask):
+                if item.uses > 90:
+                    self.postHandler()
 
 '''
 collect items with some quality

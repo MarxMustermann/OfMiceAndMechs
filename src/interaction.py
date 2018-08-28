@@ -1422,7 +1422,7 @@ class AdvancedQuestMenu(SubMenu):
         if self.state == "questSelection":
             # add a list of hardcoded quests
             if not self.options and not self.getSelection():
-                options = {1:quests.MoveQuest,2:quests.ActivateQuest,3:quests.EnterRoomQuest,4:quests.FireFurnaceMeta,5:quests.ClearRubble,6:quests.ConstructRoom,7:quests.StoreCargo,8:quests.WaitQuest,9:quests.LeaveRoomQuest,10:quests.MoveToStorage,11:quests.RoomDuty}
+                options = {1:quests.MoveQuest,2:quests.ActivateQuestMeta,3:quests.EnterRoomQuest,4:quests.FireFurnaceMeta,5:quests.ClearRubble,6:quests.ConstructRoom,7:quests.StoreCargo,8:quests.WaitQuest,9:quests.LeaveRoomQuest,10:quests.MoveToStorage,11:quests.RoomDuty}
                 niceOptions = {1:"MoveQuest",2:"ActivateQuest",3:"EnterRoomQuest",4:"FireFurnaceMeta",5:"ClearRubble",6:"ConstructRoom",7:"StoreCargo",8:"WaitQuest",9:"LeaveRoomQuest",10:"MoveToStorage",11:"RoomDuty"}
                 self.setSelection("what type of quest:",options,niceOptions)
 
@@ -1555,7 +1555,7 @@ class AdvancedQuestMenu(SubMenu):
                     # instanciate quest
                     if self.quest == quests.MoveQuest:
                        questInstance = self.quest(mainChar.room,2,2)
-                    if self.quest == quests.ActivateQuest:
+                    if self.quest == quests.ActivateQuestMeta:
                        questInstance = self.quest(terrain.tutorialMachineRoom.furnaces[0])
                     if self.quest == quests.EnterRoomQuest:
                        questInstance = self.quest(self.questParams["room"])

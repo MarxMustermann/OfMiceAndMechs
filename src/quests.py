@@ -2498,12 +2498,6 @@ class RoomDuty(MetaQuestParralel):
         self.metaDescription = "room duty"
 
     '''
-    do nothing
-    '''
-    def recalculate(self):
-        return 
-
-    '''
     never complete
     '''
     def triggerCompletionCheck(self):

@@ -346,6 +346,7 @@ class ShowQuestExecution(BasicCinematic):
                 self.assignTo.assignQuest(self.quest,active=True)
             else:
                 self.container.addQuest(self.quest)
+                self.container.recalculate()
 
     '''
     advance and show game

@@ -183,7 +183,7 @@ this phase is intended to be nice to watch and to be running as demo piece or so
 right now experiments are done here, but that should be shifted somwhere else later
 
 """
-class ScreenSaver(BasicPhases):
+class ScreenSaver(BasicPhase):
     '''
     place main char and initiate some actions to look at
     '''

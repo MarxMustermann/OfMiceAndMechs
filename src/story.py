@@ -460,16 +460,23 @@ class ScreenSaver(BasicPhases):
         cinematics.cinematicQueue.append(cinematic)
         pass
 
-########################################################################################
-###
-##   these are the tutorial phases. The story phases are tweeked heavily regarding to cutscenes and timing
-#    ideally this phase should force the player how rudementary use of the controls. This should be done by 
-#    explaining first and then preventing progress until the player proves capability.
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+#XX
+#X   these are the tutorial phases. The story phases are tweeked heavily regarding to cutscenes and timing
 #
 #    no experients here!
 #    half arsed solutions are still welcome here but that should end when this reaches prototype
 #
-########################################################################################
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+#######################################################################################
+###
+##    The interaction between the implant before until birth
+#
+#     this should be a lot of fluff and guide the player into the game
+#
+#######################################################################################
+
 
 '''
 show some fluff messages and enforce learning how to use a selection
@@ -776,6 +783,15 @@ class WakeUpPhase(BasicPhase):
     def end(self):
         phase = BasicMovementTraining()
         phase.start()
+
+#######################################################################################
+###
+##   The testing/tutorial phases
+#
+#    ideally these phases should force the player how rudementary use of the controls. This should be done by 
+#    explaining first and then preventing progress until the player proves capability.
+#
+#######################################################################################
 
 '''
 explain and test basic movement and interaction
@@ -1243,467 +1259,6 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
     def end(self):
         phase = FindWork()
         phase.start()
-
-'''
-
-'''
-class FindWork(BasicPhase):
-    '''
-    basic state initialization
-    '''
-    def __init__(self):
-        self.name = "FindWork"
-        super().__init__()
-
-    '''
-    create selection and place triggrers
-    '''
-    def start(self):
-        self.mainCharRoom = terrain.waitingRoom
-
-        super().start()
-
-        # create selection
-        # bad code: bad datastructure leads to bad code
-        options = {1:"yes",2:"no"}
-        niceOptions = {1:"Yes",2:"No"}
-        text = "you look like a fresh one. Were you sent to report for duty?"
-        cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
-        cinematic.followUps = {"yes":self.getIntroInstant,"no":self.tmpFail}
-        self.cinematic = cinematic
-        cinematics.cinematicQueue.append(cinematic)
-
-    '''
-    show fluff and show intro
-    '''
-    def getIntroInstant(self):
-        showText("great, I needed to replace a hopper that was eaten by mice")
-        self.getIntro()
-
-    '''
-    show intro and trigger teardown
-    '''
-    def getIntro(self):
-        showText("I hereby confirm the transfer and welcome you as crew on the Falkenbaum.\n\nYou will serve as an hopper under my command nominally. This means you will make yourself useful and prove your worth.\n\nI often have tasks to relay, but try not to stay idle even when i do not have tasks for you. Just ask around and see if somebody needs help")
-        showText("Remeber to report back, your worth will be counted in a mtick.",trigger=self.end)
-
-    '''
-    drop the player out of the command chain and place trigger for return
-    '''
-    def tmpFail(self):
-        # show 
-        say("go on then.")
-        showText("go on then.")
-
-        '''
-        a dialog for reentering the command chain
-        '''
-        class ReReport(interaction.SubMenu):
-            dialogName = "I want to report for duty"
-
-            '''
-            state initialization
-            '''
-            def __init__(subSelf,partner):
-                subSelf.persistentText = ""
-                subSelf.firstRun = True
-                super().__init__()
-
-            '''
-            scold the player and start intro
-            '''
-            def handleKey(subSelf, key):
-                if subSelf.firstRun:
-                    # show message
-                    subSelf.persistentText = "It seems you did not report for duty imediatly. Try to not repeat that"
-                    subSelf.set_text(subSelf.persistentText)
-                    subSelf.done = True
-                    subSelf.firstRun = False
-
-                    # punish player
-                    mainChar.reputation -= 1
-                    messages.append("rewarded -1 reputation")
-
-                    # remove dialog option
-                    terrain.waitingRoom.firstOfficer.basicChatOptions.remove(ReReport)
-
-                    # start intro
-                    self.getIntro()
-                    return True
-                else:
-                    return False
-
-        # add option to reenter the command chain
-        terrain.waitingRoom.firstOfficer.basicChatOptions.append(ReReport)
-
-    '''
-    make the player to some task until allowing advancement elsewhere
-    bad code: very chaotic. probably needs to be split up and partially rewritten
-    '''
-    def end(self):
-        hopperDutyQuest = quests.HopperDuty(terrain.waitingRoom)
-        mainChar.assignQuest(hopperDutyQuest,active=True)
-
-        '''
-        the dialog for asking somebody somwhat important for a job
-        bad code: nameing
-        '''
-        class JobChat(interaction.SubMenu):
-            dialogName = "Can you use some help?"
-
-            '''
-            basic state initialization
-            '''
-            def __init__(subSelf,partner):
-                subSelf.state = None
-                subSelf.partner = partner
-                subSelf.firstRun = True
-                subSelf.done = False
-                subSelf.persistentText = ""
-                subSelf.dispatchedPhase = False
-                super().__init__()
-
-            '''
-            show dialog and assign quest 
-            '''
-            def handleKey(subSelf, key):
-                if subSelf.firstRun:
-                    if not subSelf.dispatchedPhase:
-                        if mainChar.reputation < 10:
-                            # deny the request
-                            subSelf.persistentText = "I have some work thats needs to be done, but you will have to proof your worth some more untill you can be trusted with this work.\n\nMaybe "+terrain.waitingRoom.secondOfficer.name+" has some work you can do"
-                        else:
-                            # show fluff
-                            subSelf.persistentText = "Several Officers requested new assistants. First go to to the boiler room and apply for the position"
-
-                            # start next story phase
-                            quest = quests.MoveQuestMeta(terrain.tutorialMachineRoom,3,3)
-                            phase = FirstTutorialPhase()
-                            quest.endTrigger = phase.start
-                            hopperDutyQuest.getQuest.quest = self.selectedQuest
-                            hopperDutyQuest.getQuest.recalculate()
-                            subSelf.dispatchedPhase = True
-                    else:
-                        # deny the request
-                        subSelf.persistentText = "Not right now"
-
-                    # show text
-                    subSelf.set_text(subSelf.persistentText)
-                    subSelf.done = True
-                    subSelf.firstRun = False
-
-                    return True
-                else:
-                    return False
-
-        '''
-        bad code:
-        bad code: nameing
-        '''
-        class JobChat2(interaction.SubMenu):
-            '''
-            basic state initialization
-            '''
-            dialogName = "Can you use some help?"
-
-            '''
-            basic state initialization
-            '''
-            def __init__(self,partner):
-                self.state = None
-                self.partner = partner
-                self.firstRun = True
-                self.done = False
-                self.persistentText = ""
-                self.submenue = None
-                self.selectedQuest = None
-                super().__init__()
-
-            '''
-            show dialog and assign quest 
-            '''
-            def handleKey(self, key):
-                # let the superclass do the selections
-                if self.submenue:
-                    if not self.submenue.handleKey(key):
-                        return False
-                    else:
-                        self.selectedQuest = self.submenue.selection
-                        self.submenue = None
-
-                    self.firstRun = False
-
-                if not self.selectedQuest:
-                    if hopperDutyQuest.actualQuest:
-                        # refuse to give two quests
-                        self.persistentText = "you already have a quest. Complete it and you can get a new one."
-                        self.set_text(self.persistentText)
-                        self.done = True
-
-                        return True
-                    elif terrain.waitingRoom.quests:
-                        # show fluff
-                        self.persistentText = "Well, yes."
-                        self.set_text(self.persistentText)
-                                
-                        # let the player select the quest to do
-                        # bad code: bad datastructure leads to bad code
-                        options = {}
-                        niceOptions = {}
-                        counter = 1
-                        for quest in terrain.waitingRoom.quests:
-                            options[counter] = quest
-                            niceOptions[counter] = quest.description.split("\n")[0]
-                            counter += 1
-                        self.submenue = interaction.SelectionMenu("select the quest",options,niceOptions)
-
-                        return False
-                    else:
-                        # refuse to give quests
-                        self.persistentText = "Not right now. Ask again later"
-                        self.set_text(self.persistentText)
-                        self.done = True
-
-                        return True
-                else:
-                    # assign the selected quest
-                    hopperDutyQuest.getQuest.getQuest.quest = self.selectedQuest
-                    hopperDutyQuest.getQuest.getQuest.recalculate()
-                    if hopperDutyQuest.getQuest:
-                        hopperDutyQuest.getQuest.recalculate()
-                    terrain.waitingRoom.quests.remove(self.selectedQuest)
-                    self.done = True
-                    return True
-
-        '''
-        check reputation and punish/reward player
-        '''
-        class ProofOfWorth(object):
-            '''
-            basic state initialization
-            '''
-            def __init__(subself,tick,toCancel=[]):
-                subself.tick = tick
-                subself.toCancel = toCancel
-
-            '''
-            call player to the waiting room and give a short speech
-            '''
-            def handleEvent(subself):
-                # cancel current quests
-                # bad code: canceling destroys the ongoing process, pausing might be better
-                for quest in subself.toCancel:
-                     quest.deactivate()
-                     mainChar.quests.remove(quest)
-
-                '''
-                bad code: should be a method
-                '''
-                def meeting():
-                    showText("Time to prove your worth.")
-                    if mainChar.reputation <= 0:
-                            # punish player for low performance near to killing player
-                            showText("You currently have no recieps on you. Please report to vat duty.",trigger=startVatPhase)
-                    elif mainChar.reputation > 5:
-                            # do nothing on ok performance
-                            showText("great work. Keep on and maybe you will be one of us officers")
-                    else:
-                            # aplaud the player on good performance
-                            showText("I see you did some work. Carry on")
-
-                    # decrease reputation so the player will be forced to work continiously or to save up reputation
-                    mainChar.reputation -= 3
-                    self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15)))
-
-                '''
-                bad code: should be a method
-                '''
-                def startVatPhase():
-                    phase = VatPhase()
-                    phase.start()
-
-                # call the player for the speech
-                quest = quests.MoveQuestMeta(self.mainCharRoom,6,5)
-                quest.endTrigger = meeting
-                mainChar.assignQuest(quest,active=True)
-
-        '''
-        the event for making the player coordinate unloding the cargo
-        '''
-        class StoreCargo(object):
-            '''
-            basic state initialization
-            '''
-            def __init__(subself,tick,char,toCancel=[]):
-                subself.tick = tick
-                subself.char = char
-
-            '''
-            set up the quests and lend npcs
-            '''
-            def handleEvent(subself):
-                '''
-                bad code: should be method
-                '''
-                def meeting():
-                    # add the quest
-                    showText("logistics command orders us to move some of the cargo in the long term store to accesible storage.\n3 rooms are to be cleared. One room needs to be cleared within 150 ticks\nThis requires the coordinated effort of the hoppers here. Since "+subself.char.name+" did well to far, "+subself.char.name+" will be given the lead.\nThis will be extra to the current workload")
-                    quest = quests.HandleDelivery([terrain.tutorialCargoRooms[4]],[terrain.tutorialStorageRooms[1],terrain.tutorialStorageRooms[3],terrain.tutorialStorageRooms[5]])
-                    quest.endTrigger = addRoomConstruction
-                    mainChar.assignQuest(quest,active=True)
-
-                    # add subordinates
-                    for hopper in terrain.waitingRoom.hoppers:
-                        if hopper == subself.char:
-                            continue
-                        if hopper in mainChar.subordinates:
-                            continue
-                        mainChar.subordinates.append(hopper)
-                    
-                # call the player for a meeting
-                quest = quests.MoveQuestMeta(self.mainCharRoom,6,5)
-                quest.endTrigger = meeting
-                mainChar.assignQuest(quest,active=True)
-                mainChar.reputation += 5
-
-        '''
-        helper function to make the main char build a room
-        '''
-        def addRoomConstruction():
-            for room in terrain.rooms:
-                if isinstance(room,rooms.ConstructionSite):
-                    constructionSite = room
-                    break
-            quest = quests.ConstructRoom(constructionSite,terrain.tutorialStorageRooms)
-            mainChar.assignQuest(quest,active=True)
-
-        # add events to keep loose control
-        self.mainCharRoom.addEvent(StoreCargo(gamestate.tick+(15*15*40),mainChar))
-        self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15)))
-
-        # add quest to pool
-        quest = quests.ClearRubble()
-        quest.reputationReward = 3
-        terrain.waitingRoom.quests.append(quest)
-
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest12():
-            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(2,1)][0],(terrain.metalWorkshop,9,5))
-            quest.endTrigger = addQuest1
-            quest.reputationReward = 1
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest11():
-            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(3,1)][0],(terrain.metalWorkshop,9,4))
-            quest.endTrigger = addQuest12
-            quest.reputationReward = 1
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest10():
-            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(4,1)][0],(terrain.metalWorkshop,9,6))
-            quest.endTrigger = addQuest11
-            quest.reputationReward = 1
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest9():
-            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(5,1)][0],(terrain.metalWorkshop,9,3))
-            quest.endTrigger = addQuest10
-            quest.reputationReward = 1
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest8():
-            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(6,1)][0],(terrain.metalWorkshop,9,7))
-            quest.endTrigger = addQuest9
-            quest.reputationReward = 1
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest7():
-            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(7,1)][0],(terrain.metalWorkshop,9,2))
-            quest.endTrigger = addQuest8
-            quest.reputationReward = 1
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest6():
-            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[5],(terrain.tutorialLab,7,1))
-            quest.endTrigger = addQuest7
-            quest.reputationReward = 1
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest5():
-            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[4],(terrain.tutorialLab,6,1))
-            quest.endTrigger = addQuest6
-            quest.reputationReward = 1
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest4():
-            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[3],(terrain.tutorialLab,5,1))
-            quest.endTrigger = addQuest5
-            quest.reputationReward = 1
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest3():
-            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[2],(terrain.tutorialLab,4,1))
-            quest.endTrigger = addQuest4
-            quest.reputationReward = 1
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest2():
-            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[1],(terrain.tutorialLab,3,1))
-            quest.endTrigger = addQuest3
-            quest.reputationReward = 1
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest1():
-            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[0],(terrain.tutorialLab,2,1))
-            quest.endTrigger = addQuest2
-            quest.reputationReward = 1
-            terrain.waitingRoom.quests.append(quest)
-
-        # start series of quests that were looped to keep the system active
-        addQuest1()
-
-        # add the dialog for getting a job
-        terrain.waitingRoom.firstOfficer.basicChatOptions.append(JobChat)
-        terrain.waitingRoom.secondOfficer.basicChatOptions.append(JobChat2)
-        terrain.wakeUpRoom.firstOfficer.basicChatOptions.append(JobChat)
-        terrain.tutorialMachineRoom.firstOfficer.basicChatOptions.append(JobChat)
-
 
 #######################################################
 ###
@@ -2253,6 +1808,466 @@ class ThirdTutorialPhase(BasicPhase):
 #    There should be some events and cutscenes thrown in to not have a sudden drop of cutscene frequency between tutorial and the actual game
 #
 ################################################################################################################
+
+'''
+do opportunity work as hopper until a permanent position was found
+'''
+class FindWork(BasicPhase):
+    '''
+    basic state initialization
+    '''
+    def __init__(self):
+        self.name = "FindWork"
+        super().__init__()
+
+    '''
+    create selection and place triggrers
+    '''
+    def start(self):
+        self.mainCharRoom = terrain.waitingRoom
+
+        super().start()
+
+        # create selection
+        # bad code: bad datastructure leads to bad code
+        options = {1:"yes",2:"no"}
+        niceOptions = {1:"Yes",2:"No"}
+        text = "you look like a fresh one. Were you sent to report for duty?"
+        cinematic = cinematics.SelectionCinematic(text,options,niceOptions)
+        cinematic.followUps = {"yes":self.getIntroInstant,"no":self.tmpFail}
+        self.cinematic = cinematic
+        cinematics.cinematicQueue.append(cinematic)
+
+    '''
+    show fluff and show intro
+    '''
+    def getIntroInstant(self):
+        showText("great, I needed to replace a hopper that was eaten by mice")
+        self.getIntro()
+
+    '''
+    show intro and trigger teardown
+    '''
+    def getIntro(self):
+        showText("I hereby confirm the transfer and welcome you as crew on the Falkenbaum.\n\nYou will serve as an hopper under my command nominally. This means you will make yourself useful and prove your worth.\n\nI often have tasks to relay, but try not to stay idle even when i do not have tasks for you. Just ask around and see if somebody needs help")
+        showText("Remeber to report back, your worth will be counted in a mtick.",trigger=self.end)
+
+    '''
+    drop the player out of the command chain and place trigger for return
+    '''
+    def tmpFail(self):
+        # show 
+        say("go on then.")
+        showText("go on then.")
+
+        '''
+        a dialog for reentering the command chain
+        '''
+        class ReReport(interaction.SubMenu):
+            dialogName = "I want to report for duty"
+
+            '''
+            state initialization
+            '''
+            def __init__(subSelf,partner):
+                subSelf.persistentText = ""
+                subSelf.firstRun = True
+                super().__init__()
+
+            '''
+            scold the player and start intro
+            '''
+            def handleKey(subSelf, key):
+                if subSelf.firstRun:
+                    # show message
+                    subSelf.persistentText = "It seems you did not report for duty imediatly. Try to not repeat that"
+                    subSelf.set_text(subSelf.persistentText)
+                    subSelf.done = True
+                    subSelf.firstRun = False
+
+                    # punish player
+                    mainChar.reputation -= 1
+                    messages.append("rewarded -1 reputation")
+
+                    # remove dialog option
+                    terrain.waitingRoom.firstOfficer.basicChatOptions.remove(ReReport)
+
+                    # start intro
+                    self.getIntro()
+                    return True
+                else:
+                    return False
+
+        # add option to reenter the command chain
+        terrain.waitingRoom.firstOfficer.basicChatOptions.append(ReReport)
+
+    '''
+    make the player to some task until allowing advancement elsewhere
+    bad code: very chaotic. probably needs to be split up and partially rewritten
+    '''
+    def end(self):
+        hopperDutyQuest = quests.HopperDuty(terrain.waitingRoom)
+        mainChar.assignQuest(hopperDutyQuest,active=True)
+
+        '''
+        the dialog for asking somebody somwhat important for a job
+        bad code: nameing
+        '''
+        class JobChat(interaction.SubMenu):
+            dialogName = "Can you use some help?"
+
+            '''
+            basic state initialization
+            '''
+            def __init__(subSelf,partner):
+                subSelf.state = None
+                subSelf.partner = partner
+                subSelf.firstRun = True
+                subSelf.done = False
+                subSelf.persistentText = ""
+                subSelf.dispatchedPhase = False
+                super().__init__()
+
+            '''
+            show dialog and assign quest 
+            '''
+            def handleKey(subSelf, key):
+                if subSelf.firstRun:
+                    if not subSelf.dispatchedPhase:
+                        if mainChar.reputation < 10:
+                            # deny the request
+                            subSelf.persistentText = "I have some work thats needs to be done, but you will have to proof your worth some more untill you can be trusted with this work.\n\nMaybe "+terrain.waitingRoom.secondOfficer.name+" has some work you can do"
+                        else:
+                            # show fluff
+                            subSelf.persistentText = "Several Officers requested new assistants. First go to to the boiler room and apply for the position"
+
+                            # start next story phase
+                            quest = quests.MoveQuestMeta(terrain.tutorialMachineRoom,3,3)
+                            phase = FirstTutorialPhase()
+                            quest.endTrigger = phase.start
+                            hopperDutyQuest.getQuest.quest = self.selectedQuest
+                            hopperDutyQuest.getQuest.recalculate()
+                            subSelf.dispatchedPhase = True
+                    else:
+                        # deny the request
+                        subSelf.persistentText = "Not right now"
+
+                    # show text
+                    subSelf.set_text(subSelf.persistentText)
+                    subSelf.done = True
+                    subSelf.firstRun = False
+
+                    return True
+                else:
+                    return False
+
+        '''
+        bad code:
+        bad code: nameing
+        '''
+        class JobChat2(interaction.SubMenu):
+            '''
+            basic state initialization
+            '''
+            dialogName = "Can you use some help?"
+
+            '''
+            basic state initialization
+            '''
+            def __init__(self,partner):
+                self.state = None
+                self.partner = partner
+                self.firstRun = True
+                self.done = False
+                self.persistentText = ""
+                self.submenue = None
+                self.selectedQuest = None
+                super().__init__()
+
+            '''
+            show dialog and assign quest 
+            '''
+            def handleKey(self, key):
+                # let the superclass do the selections
+                if self.submenue:
+                    if not self.submenue.handleKey(key):
+                        return False
+                    else:
+                        self.selectedQuest = self.submenue.selection
+                        self.submenue = None
+
+                    self.firstRun = False
+
+                if not self.selectedQuest:
+                    if hopperDutyQuest.actualQuest:
+                        # refuse to give two quests
+                        self.persistentText = "you already have a quest. Complete it and you can get a new one."
+                        self.set_text(self.persistentText)
+                        self.done = True
+
+                        return True
+                    elif terrain.waitingRoom.quests:
+                        # show fluff
+                        self.persistentText = "Well, yes."
+                        self.set_text(self.persistentText)
+                                
+                        # let the player select the quest to do
+                        # bad code: bad datastructure leads to bad code
+                        options = {}
+                        niceOptions = {}
+                        counter = 1
+                        for quest in terrain.waitingRoom.quests:
+                            options[counter] = quest
+                            niceOptions[counter] = quest.description.split("\n")[0]
+                            counter += 1
+                        self.submenue = interaction.SelectionMenu("select the quest",options,niceOptions)
+
+                        return False
+                    else:
+                        # refuse to give quests
+                        self.persistentText = "Not right now. Ask again later"
+                        self.set_text(self.persistentText)
+                        self.done = True
+
+                        return True
+                else:
+                    # assign the selected quest
+                    hopperDutyQuest.getQuest.getQuest.quest = self.selectedQuest
+                    hopperDutyQuest.getQuest.getQuest.recalculate()
+                    if hopperDutyQuest.getQuest:
+                        hopperDutyQuest.getQuest.recalculate()
+                    terrain.waitingRoom.quests.remove(self.selectedQuest)
+                    self.done = True
+                    return True
+
+        '''
+        check reputation and punish/reward player
+        '''
+        class ProofOfWorth(object):
+            '''
+            basic state initialization
+            '''
+            def __init__(subself,tick,toCancel=[]):
+                subself.tick = tick
+                subself.toCancel = toCancel
+
+            '''
+            call player to the waiting room and give a short speech
+            '''
+            def handleEvent(subself):
+                # cancel current quests
+                # bad code: canceling destroys the ongoing process, pausing might be better
+                for quest in subself.toCancel:
+                     quest.deactivate()
+                     mainChar.quests.remove(quest)
+
+                '''
+                bad code: should be a method
+                '''
+                def meeting():
+                    showText("Time to prove your worth.")
+                    if mainChar.reputation <= 0:
+                            # punish player for low performance near to killing player
+                            showText("You currently have no recieps on you. Please report to vat duty.",trigger=startVatPhase)
+                    elif mainChar.reputation > 5:
+                            # do nothing on ok performance
+                            showText("great work. Keep on and maybe you will be one of us officers")
+                    else:
+                            # aplaud the player on good performance
+                            showText("I see you did some work. Carry on")
+
+                    # decrease reputation so the player will be forced to work continiously or to save up reputation
+                    mainChar.reputation -= 3
+                    self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15)))
+
+                '''
+                bad code: should be a method
+                '''
+                def startVatPhase():
+                    phase = VatPhase()
+                    phase.start()
+
+                # call the player for the speech
+                quest = quests.MoveQuestMeta(self.mainCharRoom,6,5)
+                quest.endTrigger = meeting
+                mainChar.assignQuest(quest,active=True)
+
+        '''
+        the event for making the player coordinate unloding the cargo
+        '''
+        class StoreCargo(object):
+            '''
+            basic state initialization
+            '''
+            def __init__(subself,tick,char,toCancel=[]):
+                subself.tick = tick
+                subself.char = char
+
+            '''
+            set up the quests and lend npcs
+            '''
+            def handleEvent(subself):
+                '''
+                bad code: should be method
+                '''
+                def meeting():
+                    # add the quest
+                    showText("logistics command orders us to move some of the cargo in the long term store to accesible storage.\n3 rooms are to be cleared. One room needs to be cleared within 150 ticks\nThis requires the coordinated effort of the hoppers here. Since "+subself.char.name+" did well to far, "+subself.char.name+" will be given the lead.\nThis will be extra to the current workload")
+                    quest = quests.HandleDelivery([terrain.tutorialCargoRooms[4]],[terrain.tutorialStorageRooms[1],terrain.tutorialStorageRooms[3],terrain.tutorialStorageRooms[5]])
+                    quest.endTrigger = addRoomConstruction
+                    mainChar.assignQuest(quest,active=True)
+
+                    # add subordinates
+                    for hopper in terrain.waitingRoom.hoppers:
+                        if hopper == subself.char:
+                            continue
+                        if hopper in mainChar.subordinates:
+                            continue
+                        mainChar.subordinates.append(hopper)
+                    
+                # call the player for a meeting
+                quest = quests.MoveQuestMeta(self.mainCharRoom,6,5)
+                quest.endTrigger = meeting
+                mainChar.assignQuest(quest,active=True)
+                mainChar.reputation += 5
+
+        '''
+        helper function to make the main char build a room
+        '''
+        def addRoomConstruction():
+            for room in terrain.rooms:
+                if isinstance(room,rooms.ConstructionSite):
+                    constructionSite = room
+                    break
+            quest = quests.ConstructRoom(constructionSite,terrain.tutorialStorageRooms)
+            mainChar.assignQuest(quest,active=True)
+
+        # add events to keep loose control
+        self.mainCharRoom.addEvent(StoreCargo(gamestate.tick+(15*15*40),mainChar))
+        self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15)))
+
+        # add quest to pool
+        quest = quests.ClearRubble()
+        quest.reputationReward = 3
+        terrain.waitingRoom.quests.append(quest)
+
+        '''
+        quest to carry stuff and trigger adding a new quest afterwards
+        bad code: very repetetive code
+        '''
+        def addQuest12():
+            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(2,1)][0],(terrain.metalWorkshop,9,5))
+            quest.endTrigger = addQuest1
+            quest.reputationReward = 1
+            terrain.waitingRoom.quests.append(quest)
+        '''
+        quest to carry stuff and trigger adding a new quest afterwards
+        bad code: very repetetive code
+        '''
+        def addQuest11():
+            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(3,1)][0],(terrain.metalWorkshop,9,4))
+            quest.endTrigger = addQuest12
+            quest.reputationReward = 1
+            terrain.waitingRoom.quests.append(quest)
+        '''
+        quest to carry stuff and trigger adding a new quest afterwards
+        bad code: very repetetive code
+        '''
+        def addQuest10():
+            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(4,1)][0],(terrain.metalWorkshop,9,6))
+            quest.endTrigger = addQuest11
+            quest.reputationReward = 1
+            terrain.waitingRoom.quests.append(quest)
+        '''
+        quest to carry stuff and trigger adding a new quest afterwards
+        bad code: very repetetive code
+        '''
+        def addQuest9():
+            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(5,1)][0],(terrain.metalWorkshop,9,3))
+            quest.endTrigger = addQuest10
+            quest.reputationReward = 1
+            terrain.waitingRoom.quests.append(quest)
+        '''
+        quest to carry stuff and trigger adding a new quest afterwards
+        bad code: very repetetive code
+        '''
+        def addQuest8():
+            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(6,1)][0],(terrain.metalWorkshop,9,7))
+            quest.endTrigger = addQuest9
+            quest.reputationReward = 1
+            terrain.waitingRoom.quests.append(quest)
+        '''
+        quest to carry stuff and trigger adding a new quest afterwards
+        bad code: very repetetive code
+        '''
+        def addQuest7():
+            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(7,1)][0],(terrain.metalWorkshop,9,2))
+            quest.endTrigger = addQuest8
+            quest.reputationReward = 1
+            terrain.waitingRoom.quests.append(quest)
+        '''
+        quest to carry stuff and trigger adding a new quest afterwards
+        bad code: very repetetive code
+        '''
+        def addQuest6():
+            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[5],(terrain.tutorialLab,7,1))
+            quest.endTrigger = addQuest7
+            quest.reputationReward = 1
+            terrain.waitingRoom.quests.append(quest)
+        '''
+        quest to carry stuff and trigger adding a new quest afterwards
+        bad code: very repetetive code
+        '''
+        def addQuest5():
+            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[4],(terrain.tutorialLab,6,1))
+            quest.endTrigger = addQuest6
+            quest.reputationReward = 1
+            terrain.waitingRoom.quests.append(quest)
+        '''
+        quest to carry stuff and trigger adding a new quest afterwards
+        bad code: very repetetive code
+        '''
+        def addQuest4():
+            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[3],(terrain.tutorialLab,5,1))
+            quest.endTrigger = addQuest5
+            quest.reputationReward = 1
+            terrain.waitingRoom.quests.append(quest)
+        '''
+        quest to carry stuff and trigger adding a new quest afterwards
+        bad code: very repetetive code
+        '''
+        def addQuest3():
+            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[2],(terrain.tutorialLab,4,1))
+            quest.endTrigger = addQuest4
+            quest.reputationReward = 1
+            terrain.waitingRoom.quests.append(quest)
+        '''
+        quest to carry stuff and trigger adding a new quest afterwards
+        bad code: very repetetive code
+        '''
+        def addQuest2():
+            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[1],(terrain.tutorialLab,3,1))
+            quest.endTrigger = addQuest3
+            quest.reputationReward = 1
+            terrain.waitingRoom.quests.append(quest)
+        '''
+        quest to carry stuff and trigger adding a new quest afterwards
+        bad code: very repetetive code
+        '''
+        def addQuest1():
+            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[0],(terrain.tutorialLab,2,1))
+            quest.endTrigger = addQuest2
+            quest.reputationReward = 1
+            terrain.waitingRoom.quests.append(quest)
+
+        # start series of quests that were looped to keep the system active
+        addQuest1()
+
+        # add the dialog for getting a job
+        terrain.waitingRoom.firstOfficer.basicChatOptions.append(JobChat)
+        terrain.waitingRoom.secondOfficer.basicChatOptions.append(JobChat2)
+        terrain.wakeUpRoom.firstOfficer.basicChatOptions.append(JobChat)
+        terrain.tutorialMachineRoom.firstOfficer.basicChatOptions.append(JobChat)
 
 '''
 dummmy for the lab phase

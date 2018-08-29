@@ -1147,6 +1147,27 @@ class Terrain(object):
         room.xPosition = newPosition[0]
         room.yPosition = newPosition[1]
 
+    def setState(self,state):
+        for room in terrain.rooms:
+            room.setState(state["roomStates"][room.id])
+        for room in terrain.rooms:
+            room.timeIndex = self.tick
+
+    def getState(self):
+        # the rooms
+        roomStates = {}
+        roomList = []
+        for room in terrain.rooms:
+            roomList.append(room.id)
+            roomStates[room.id] = room.getState()
+
+        return {
+                  "roomIds":roomList,
+                  "roomStates":roomStates,
+               }
+        
+        
+
 '''
 a almost empty terrain
 '''

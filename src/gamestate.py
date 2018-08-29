@@ -6,9 +6,9 @@ the container for the gamestate that is not contained elsewhere
 '''
 class GameState():
     '''
-	basic state setting with some initialization
-	bad code: initialization should happen in story or from loading
-	'''
+    basic state setting with some initialization
+    bad code: initialization should happen in story or from loading
+    '''
     def __init__(self,phase=None):
         self.gameWon = False
         self.tick = 0
@@ -24,21 +24,23 @@ class GameState():
         mainChar = self.mainChar
 
     '''
-	save the gamestate to disc
-	'''
+    save the gamestate to disc
+    bad pattern: loading and saving one massive json will break on the long run. load function should be delegated down to be able to scale json size
+    '''
     def save(self):
         saveFile = open("gamestate/gamestate.json","w")
         state = self.getState()
         if not state["gameWon"]:
             saveFile.write(json.dumps(state))
         else:
-		    # destroy the savefile
+            # destroy the savefile
             saveFile.write(json.dumps("Winning is no fun at all"))
         saveFile.close()
 
     '''
-	load the gamestate from disc
-	'''
+    load the gamestate from disc
+    bad pattern: loading and saving one massive json will break on the long run. load function should be delegated down to be able to scale json size
+    '''
     def load(self):
         saveFile = open("gamestate/gamestate.json")
         rawstate = saveFile.read()
@@ -46,38 +48,28 @@ class GameState():
         saveFile.close()
 
         self.setState(state)
-        self.mainChar.setState(state["mainChar"])
 
     '''
-	rebuild gamestate from half serialized form
-	'''
+    rebuild gamestate from half serialized form
+    '''
     def setState(self,state):
-	    # the object itself
+        # the object itself
         self.gameWon = state["gameWon"]
         self.currentPhase = phasesByName[state["currentPhase"]]
         self.tick = state["tick"]
 
-	    # the rooms
-        for room in terrain.rooms:
-            room.setState(state["roomStates"][room.id])
-        for room in terrain.rooms:
-            room.timeIndex = self.tick
+        # the terrain
+        self.terrain.setState(state["terrain"])
+        self.mainChar.setState(state["mainChar"])
 
     '''
-	get gamestate in half serialized form
-	'''
+    get gamestate in half serialized form
+    '''
     def getState(self):
-	    # the rooms
-        roomStates = {}
-        roomList = []
-        for room in terrain.rooms:
-            roomList.append(room.id)
-            roomStates[room.id] = room.getState()
-        
-        return {  "gameWon":self.gameWon,
-              "currentPhase":self.currentPhase.name,
-              "tick":self.tick,
+        return {  
+              "currentPhase":self.currentPhase.getState(),
               "mainChar":self.mainChar.getState(),
-                  "rooms":roomList,
-                  "roomStates":roomStates,
+              "terrain":terrain.getState(),
+              "tick":self.tick,
+              "gameWon":self.gameWon
                }

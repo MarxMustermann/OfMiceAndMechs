@@ -147,6 +147,12 @@ class BasicPhase(object):
     def end(self):
         pass
 
+    def getState(self):
+        return []
+
+    def setState(self,state):
+        pass
+
 #########################################################################
 ###
 ##    general purpose phases

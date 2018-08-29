@@ -249,6 +249,7 @@ items.terrain = terrain
 story.terrain = terrain
 interaction.terrain = terrain
 gamestate.terrain = terrain
+terrains.terrain = terrain
 quests.terrain = terrain
 
 # HACK: common variables with modules

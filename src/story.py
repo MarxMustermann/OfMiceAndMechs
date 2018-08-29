@@ -216,7 +216,7 @@ class ScreenSaver(BasicPhases):
         # add more active npcs
         self.addFurnitureMovingNpcs()
 
-		super().start()
+        super().start()
 
     '''
     add npcs moving furniture around
@@ -816,10 +816,18 @@ class BasicMovementTraining(BasicPhase):
         self.requiresMainCharRoomSecondOfficer = False
         self.mainCharRoom = terrain.wakeUpRoom
 
-        super().start()
-
         # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
+
+        if not hasattr(mainChar,"tutorialStart"):
+            mainChar.tutorialStart = gamestate.tick - 100
+
+        if not hasattr(mainChar,"serveQuest"):
+            quest = quests.Serve(firstOfficer)
+            mainChar.serveQuest = quest
+            mainChar.assignQuest(quest,active=True)
+
+        super().start()
 
         
         # show fluff

@@ -58,6 +58,12 @@ def say(text,speaker=None,trigger=None):
         prefix += ": "
     showMessage(prefix+'"'+text+'"',trigger=trigger)
 
+#########################################################################
+###
+##    building block phases
+#
+#########################################################################
+
 """
 the base class for the all phases here
 """
@@ -134,6 +140,12 @@ class BasicPhase(object):
 
         # assign the first quest
         mainChar.assignQuest(self.mainCharQuestList[0])
+
+#########################################################################
+###
+##    general purpose phases
+#
+#########################################################################
 
 """
 

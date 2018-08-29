@@ -330,7 +330,6 @@ gameStateObj.currentPhase().start()
 
 # the game loop
 def advanceGame():
-    global movestate
     for character in terrain.characters:
         character.advance()
 

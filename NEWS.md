@@ -1,5 +1,26 @@
 # news
 
+### commit 609-700
+
+The main focus was to eliminate bugs and to clean up the code. Tasks completed are:
+
+* commented the whole codebase
+* removed debug output from gui
+* fixed typos
+* removed useless / dead / commented out code
+* removed most of the non meta quest based quests
+* reduced number of inline functions
+* added deregistering for listeners resulting in better performance, less bugs and hopfully less memory bloat
+* converted story sections from step to step instructions to quests
+* bugfixes
+* reordered/reformated code
+* added unconcous state
+* made the growth tank actually dispense unconcious bodies
+* added categories for listening to reduce spam and to allowing quest to listen for actions
+* made a container quest for the tutorial questions to prepare proper npc spawning
+
+I made good progress but i will need another cleanup later.
+
 ### commit 500-608
 
 The main focus was to make the basic game mechanic visible and understandable and failed to do so. I made the following changes

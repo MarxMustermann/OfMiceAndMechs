@@ -142,11 +142,12 @@ the phase is intended to give the player access to the true gameworld without ma
 this phase should be left as blank as possible
 
 """
-class OpenWorld(object):
+class OpenWorld(BasicPhase):
     '''
     place main char
+    bad code: superclass call should not be prevented
     '''
-    def __init__(self):
+    def start(self):
         cinematics.showCinematic("staring open world Scenario.")
         if terrain.wakeUpRoom:
             self.mainCharRoom = terrain.wakeUpRoom
@@ -157,13 +158,6 @@ class OpenWorld(object):
             mainChar.terrain = terrain
             terrain.characters.append(mainChar)
 
-    '''
-    forcebly do nothing
-    bad code: superclass call should not be prevented
-    '''
-    def start(self):
-        pass
-
 """
 
 this phase is intended to be nice to watch and to be running as demo piece or something to stare at
@@ -171,11 +165,11 @@ this phase is intended to be nice to watch and to be running as demo piece or so
 right now experiments are done here, but that should be shifted somwhere else later
 
 """
-class ScreenSaver(object):
+class ScreenSaver(BasicPhases):
     '''
     place main char and initiate some actions to look at
     '''
-    def __init__(self):
+    def start(self):
         # place main char
         self.mainCharRoom = terrain.wakeUpRoom
         self.mainCharRoom.addCharacter(mainChar,2,4)
@@ -203,6 +197,8 @@ class ScreenSaver(object):
 
         # add more active npcs
         self.addFurnitureMovingNpcs()
+
+		super().start()
 
     '''
     add npcs moving furniture around

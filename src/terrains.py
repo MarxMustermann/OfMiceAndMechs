@@ -1147,11 +1147,11 @@ class Terrain(object):
         room.xPosition = newPosition[0]
         room.yPosition = newPosition[1]
 
-    def setState(self,state):
+    def setState(self,state,tick):
         for room in terrain.rooms:
             room.setState(state["roomStates"][room.id])
         for room in terrain.rooms:
-            room.timeIndex = self.tick
+            room.timeIndex = tick
 
     def getState(self):
         # the rooms

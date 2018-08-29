@@ -55,11 +55,11 @@ class GameState():
     def setState(self,state):
         # the object itself
         self.gameWon = state["gameWon"]
-        self.currentPhase = phasesByName[state["currentPhase"]]
+        self.currentPhase = phasesByName[state["currentPhase"]["name"]]
         self.tick = state["tick"]
 
         # the terrain
-        self.terrain.setState(state["terrain"])
+        terrain.setState(state["terrain"],self.tick)
         self.mainChar.setState(state["mainChar"])
 
     '''

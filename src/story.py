@@ -72,7 +72,7 @@ class BasicPhase(object):
     state initialization
     bad code: creating default attributes in init and set them externally later
     '''
-    def __init__(self):
+    def __init__(self,name):
         self.mainCharXPosition = None
         self.mainCharYPosition = None
         self.mainCharRoom = None
@@ -84,6 +84,7 @@ class BasicPhase(object):
         self.firstOfficerYPosition = 3
         self.secondOfficerXPosition = 5
         self.secondOfficerYPosition = 3
+        self.name = name
 
     '''
     start the game phase
@@ -148,7 +149,9 @@ class BasicPhase(object):
         pass
 
     def getState(self):
-        return []
+        return {
+                 "name":self.name,
+               }
 
     def setState(self,state):
         pass
@@ -492,8 +495,7 @@ class BrainTestingPhase(BasicPhase):
     straightforward state initialization
     '''
     def __init__(self):
-        self.name = "BrainTesting" # should be outside of constructor
-        super().__init__()
+        super().__init__("BrainTesting")
 
     '''
     show some messages and place trigger
@@ -685,8 +687,7 @@ class WakeUpPhase(BasicPhase):
     basic state initialization
     '''
     def __init__(self):
-        self.name = "WakeUpPhase"
-        super().__init__()
+        super().__init__("WakeUpPhase")
 
     '''
     show some fluff and place trigger
@@ -807,8 +808,7 @@ class BasicMovementTraining(BasicPhase):
     basic state initialization
     '''
     def __init__(self):
-        self.name = "BasicMovementTraining"
-        super().__init__()
+        super().__init__("BasicMovementTraining")
         self.didFurnaces = False
     
     '''
@@ -1289,8 +1289,7 @@ class FirstTutorialPhase(BasicPhase):
     straightforward state initialization
     '''
     def __init__(self):
-        self.name = "FirstTutorialPhase"
-        super().__init__()
+        super().__init__("FirstTutorialPhase")
 
     '''
 
@@ -1529,8 +1528,7 @@ class SecondTutorialPhase(BasicPhase):
     straightforward state initialization
     '''
     def __init__(self):
-        self.name = "SecondTutorialPhase"
-        super().__init__()
+        super().__init__("SecondTutorialPhase")
 
     '''
     explain interaction and make the player apply lessons
@@ -1612,8 +1610,7 @@ class ThirdTutorialPhase(BasicPhase):
     straightforward state initialization
     '''
     def __init__(self):
-        self.name = "ThirdTutorialPhase"
-        super().__init__()
+        super().__init__("ThirdTutorialPhase")
 
     '''
     '''
@@ -1831,8 +1828,7 @@ class FindWork(BasicPhase):
     basic state initialization
     '''
     def __init__(self):
-        self.name = "FindWork"
-        super().__init__()
+        super().__init__("FindWork")
 
     '''
     create selection and place triggrers
@@ -2292,8 +2288,7 @@ class LabPhase(BasicPhase):
     straightforward state initialization
     '''
     def __init__(self):
-        self.name = "LabPhase"
-        super().__init__()
+        super().__init__("LabPhase")
 
     '''
     make the dummy movemnt and switch phase
@@ -2334,8 +2329,7 @@ class VatPhase(BasicPhase):
     straightforward state initialization
     '''
     def __init__(self):
-        self.name = "VatPhase"
-        super().__init__()
+        super().__init__("VatPhase")
 
     '''
     do a dummy action and switch phase
@@ -2380,8 +2374,7 @@ class MachineRoomPhase(BasicPhase):
     straightforward state initialization
     '''
     def __init__(self):
-        self.name = "MachineRoomPhase"
-        super().__init__()
+        super().__init__("MachineRoomPhase")
 
     '''
     switch completely the free play

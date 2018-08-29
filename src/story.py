@@ -776,12 +776,7 @@ class WakeUpPhase(BasicPhase):
     add the player and place triggers
     '''
     def addPlayer(self):
-        # remove players body
-        # self.mainCharRoom.removeItem(terrain.wakeUpRoom.itemByCoordinates[(2,4)][0])
         mainChar.wakeUp()
-
-        # add player chracter
-        self.mainCharRoom.addCharacter(mainChar,2,4)
 
         # redraw
         loop.set_alarm_in(0.1, callShow_or_exit, '.')

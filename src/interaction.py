@@ -246,8 +246,6 @@ def processInput(key):
         global itemMarkedLast
         global lastMoveAutomated
 
-        stop = False # bad code: useless variable
-
         # handle cinematics
         if len(cinematics.cinematicQueue):
             cinematic = cinematics.cinematicQueue[0]

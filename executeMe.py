@@ -281,8 +281,10 @@ phasesByName["ScreenSaver"] = story.ScreenSaver
 gameStateObj = gamestate.GameState(phase=args.phase)
 try:
     gameStateObj.load()
-except:
-    pass
+except Exception as e:
+    ignore = input("could not load gamestate. abort (y/n)?")
+    if ignore == "y":
+	    raise e
 
 # HACK: common variables with modules
 story.gamestate = gameStateObj

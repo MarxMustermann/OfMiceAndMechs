@@ -31,7 +31,7 @@ class GameState():
         saveFile = open("gamestate/gamestate.json","w")
         state = self.getState()
         if not state["gameWon"]:
-            saveFile.write(json.dumps(state))
+            saveFile.write(json.dumps(state,indent=4, sort_keys=True))
         else:
             # destroy the savefile
             saveFile.write(json.dumps("Winning is no fun at all"))

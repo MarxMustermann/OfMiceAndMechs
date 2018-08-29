@@ -627,12 +627,11 @@ class Terrain(object):
             else:
                 path = pathToStartNode + self.findWayNodeBased(Coordinate(startNode[0],startNode[1]),Coordinate(endNode[0],endNode[1]))+pathToEndNode
         except Exception as e:
-            # bad code: debug output on gui
             import traceback
-            messages.append("Error: "+str(e))
-            messages.append(traceback.format_exc().splitlines()[-3])
-            messages.append(traceback.format_exc().splitlines()[-2])
-            messages.append(traceback.format_exc().splitlines()[-1])
+            debugMessages.append("Error: "+str(e))
+            debugMessages.append(traceback.format_exc().splitlines()[-3])
+            debugMessages.append(traceback.format_exc().splitlines()[-2])
+            debugMessages.append(traceback.format_exc().splitlines()[-1])
 
         # stitch together the path
         if not entryPoint[2][0] == start:

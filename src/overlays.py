@@ -48,15 +48,6 @@ class QuestMarkerOverlay(object):
                         display = (urwid.AttrSpec("default","black"),display)
                     chars[item[1]][item[0]] = (urwid.AttrSpec(display[0].foreground,"#333"),display[1])
 
-			    # make loops visible
-				# bad code: debug output in ui
-                elif not chars[item[1]][item[0]] in ("!!","??"):
-                    chars[item[1]][item[0]] = "!!"
-                elif not chars[item[1]][item[0]] in ("??"):
-                    chars[item[1]][item[0]] = "??"
-                else:
-                    chars[item[1]][item[0]] = "**"
-
 '''
 adds npcs
 '''

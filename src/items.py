@@ -428,7 +428,6 @@ class Scrap(Item):
         
         # merge existing and new scrap
         if len(foundScraps) > 1:
-            messages.append("compressing foundScraps") # bad code: debug output in ui
             for item in foundScraps:
                 if item == self:
                     continue
@@ -569,10 +568,6 @@ class Furnace(Item):
     fire the furnace
     '''
     def apply(self,character):
-        # bad code: debug out in ui
-        if character.watched:
-            messages.append("Furnace used")
-
         # select fuel
         # bad pattern: the player should be able to select fuel
         # bad pattern: coal should be preferred
@@ -852,9 +847,8 @@ class Pile(Item):
             return
 
         # print debug code on impossible state
-        # bad code: debug output in ui
         if self.numContained < 1:
-            messages.append("something went seriously wrong. I should have morphed by now")
+            debugMessages.append("something went seriously wrong. I should have morphed by now")
             return
 
         # spawn item to inventory
@@ -867,8 +861,6 @@ class Pile(Item):
 
         if self.numContained == 1:
             # morph into a single item
-            # bad code: debug output in ui
-            messages.append("i should morph to item now")
             self.room.removeItem(self)
             new = self.type()
             new.xPosition = self.xPosition

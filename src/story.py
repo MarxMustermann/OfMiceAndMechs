@@ -141,6 +141,12 @@ class BasicPhase(object):
         # assign the first quest
         mainChar.assignQuest(self.mainCharQuestList[0])
 
+    '''
+    do nothing when done
+    '''
+    def end(self):
+        pass
+
 #########################################################################
 ###
 ##    general purpose phases
@@ -453,34 +459,6 @@ class ScreenSaver(BasicPhases):
         cinematic = cinematics.MessageZoomCinematic()
         cinematics.cinematicQueue.append(cinematic)
         pass
-
-    '''
-    do nothing when done
-    bad code: overwriting super class should not be neccessary
-    '''
-    def end(self):
-        pass
-
-    '''
-    bad code: duplicate code from super class
-    '''
-    def assignPlayerQuests(self):
-        # do nothing
-        if not self.mainCharQuestList:
-            return
-
-        # chain quests
-        lastQuest = self.mainCharQuestList[0]
-        for item in self.mainCharQuestList[1:]:
-            lastQuest.followUp = item
-            lastQuest = item
-        self.mainCharQuestList[-1].followup = None
-
-        # chain last quest to the phases teardown
-        self.mainCharQuestList[-1].endTrigger = self.end
-
-        # assign the first quest
-        mainChar.assignQuest(self.mainCharQuestList[0])
 
 ########################################################################################
 ###

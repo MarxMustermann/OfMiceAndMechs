@@ -261,11 +261,11 @@ class MetaQuestSequence(Quest):
     '''
     state initialization
     '''
-    def __init__(self,quests,startCinematics=None):
+    def __init__(self,quests,startCinematics=None,lifetime=None):
         # listen to subquests
         self.subQuestsOrig = quests.copy()
         self.subQuests = quests
-        super().__init__(startCinematics=startCinematics)
+        super().__init__(startCinematics=startCinematics,lifetime=lifetime)
         self.listeningTo = []
         self.metaDescription = "meta"
         
@@ -2209,6 +2209,10 @@ class FireFurnaceMeta(MetaQuestSequence):
     collect coal and fire furnace
     '''
     def recalculate(self):
+        if not self.active:
+            return
+        if not self.character:
+            return
         # remove completed quest
         if self.collectQuest and self.collectQuest.completed:
             self.collectQuest = None

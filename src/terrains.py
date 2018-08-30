@@ -1149,7 +1149,8 @@ class Terrain(object):
 
     def setState(self,state,tick):
         for room in terrain.rooms:
-            room.setState(state["roomStates"][room.id])
+            if room.id in state["roomStates"]:
+                room.setState(state["roomStates"][room.id])
         for room in terrain.rooms:
             room.timeIndex = tick
 
@@ -1158,8 +1159,10 @@ class Terrain(object):
         roomStates = {}
         roomList = []
         for room in terrain.rooms:
-            roomList.append(room.id)
-            roomStates[room.id] = room.getState()
+            currentState = room.getState()
+            if not currentState == room.initialState:
+                roomList.append(room.id)
+                roomStates[room.id] = room.getState()
 
         return {
                   "roomIds":roomList,

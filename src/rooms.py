@@ -301,6 +301,43 @@ class Room(object):
 
         self.initialState = self.getState()
 
+    def getDiffState(self):
+        currentState = self.getState()
+
+        result = {}
+        for attribute in ("yPosition","xPosition","offsetX","offsetY"):
+            if not self.initialState[attribute] == currentState[attribute]:
+                result[attribute] = currentState[attribute]
+
+        changedItems = []
+        newItems = []
+        removedItems = []
+        itemStates = {}
+
+        foundItems = []
+        for item in self.itemsOnFloor:
+            foundItems.append(item.id)
+            if item.id in self.initialState["itemIds"] and item.id in currentState["itemStates"]:
+                changedItems.append(item.id)
+                itemStates[item.id] = item.getState()
+            if not item.id in self.initialState["itemIds"]:
+                newItems.append(item.id)
+                itemStates[item.id] = item.getState()
+        for itemId in self.initialState["itemIds"]:
+            if not itemId in foundItems:
+                removedItems.append(itemId)
+
+        if changedItems:
+            result["changedItems"] = changedItems
+        if newItems:
+            result["newItems"] = newItems
+        if changedItems:
+            result["removedItems"] = removedItems
+        if itemStates:
+            result["itemStates"] = itemStates
+
+        return result
+
     '''
     get semi serialised room state
     bad code: incomplete
@@ -310,8 +347,8 @@ class Room(object):
         itemStates = {}
         for item in self.itemsOnFloor:
             currentState = item.getState()
+            itemIds.append(item.id)
             if not currentState == item.initialState:
-                itemIds.append(item.id)
                 itemStates[item.id] = currentState
 
         return { 
@@ -329,15 +366,36 @@ class Room(object):
     '''
     def setState(self,state):
         # move room to correct position
-        self.offsetX = state["offsetX"]
-        self.offsetY = state["offsetY"]
-        if not (self.xPosition == state["xPosition"] and self.yPosition == state["yPosition"]):
-            self.terrain.teleportRoom(self,(state["xPosition"],state["yPosition"]))
+        if "offsetX" in state:
+            self.offsetX = state["offsetX"]
+        if "offsetY" in state:
+            self.offsetY = state["offsetY"]
 
-        for item in self.itemsOnFloor:
-            if item.id in state["itemStates"]:
-                item.setState(state["itemStates"][item.id])
+        xPosition = None
+        yPosition = None
+        if "xPosition" in state and not "yPosition" in state:
+            xPosition = state["xPosition"]
+            yPosition = self.yPosition
+        if not "xPosition" in state and "yPosition" in state:
+            xPosition = self.xPosition
+            yPosition = state["yPosition"]
+        if "xPosition" in state and "yPosition" in state:
+            xPosition = state["xPosition"]
+            yPosition = state["yPosition"]
+        if not xPosition == None and not yPosition == None:
+            self.terrain.teleportRoom(self,(xPosition,yPosition))
 
+        if "changedItems" in state:
+            for item in self.itemsOnFloor:
+                if item.id in state["changedItems"]:
+                    item.setState(state["itemStates"][item.id])
+
+        if "removedItems" in state:
+            for item in self.itemsOnFloor[:]:
+                if item.id in state["removedItems"]:
+                    self.removeItem(item)
+            
+ 
     '''
     invalidate render
     '''

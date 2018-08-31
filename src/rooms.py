@@ -331,7 +331,7 @@ class Room(object):
             result["changedItems"] = changedItems
         if newItems:
             result["newItems"] = newItems
-        if changedItems:
+        if removedItems:
             result["removedItems"] = removedItems
         if itemStates:
             result["itemStates"] = itemStates

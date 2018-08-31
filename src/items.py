@@ -53,12 +53,15 @@ class Item(object):
                }
 
     def setState(self,state):
+        self.id = state["id"]
         self.name = state["name"]
         self.walkable = state["walkable"]
-        self.room.removeItem(self)
+        if self.room:
+            self.room.removeItem(self)
         self.xPosition = state["xPosition"]
         self.yPosition = state["yPosition"]
-        self.room.addItems([self])
+        if self.room:
+            self.room.addItems([self])
 
     '''
     generate a text with a detailed description of the items state
@@ -1276,7 +1279,7 @@ class OjectDispenser(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="object dispenser",room=None):
-        self.type = "OjectDispenser"
+        self.type = "ObjectDispenser"
         super().__init__("U\\",xPosition,yPosition,name=name,room=room)
 
     '''
@@ -1369,3 +1372,37 @@ class ScrapCompactor(Item):
            new.xPosition = self.xPosition-1
            new.yPosition = self.yPosition
            self.room.addItems([new])
+
+itemMap = {
+            "Item":Item,
+            "Scrap":Scrap,
+            "Corpse":Corpse,
+            "GrowthTank":GrowthTank,
+            "Hutch":Hutch,
+            "Lever":Lever,
+            "Furnace":Furnace,
+            "CommLink":Commlink,
+            "Display":Display,
+            "Wall":Wall,
+            "Pipe":Pipe,
+            "Coal":Coal,
+            "Door":Door,
+            "Pile":Pile,
+            "Acid":Acid,
+            "Chain":Chain,
+            "Winch":Winch,
+            "MetalBars":MetalBars,
+            "Boiler":Boiler,
+            "Spray":Spray,
+            "MarkerBean":MarkerBean,
+            "GooDispenser":GooDispenser,
+            "GooFlask":GooFlask,
+            "ProductionArtwork":ProductionArtwork,
+            "ScrapCompactor":ScrapCompactor,
+			"ObjectDispenser":OjectDispenser
+}
+
+def getItemFromState(state):
+    print(state)
+    print(state["type"])
+    return itemMap[state["type"]]()

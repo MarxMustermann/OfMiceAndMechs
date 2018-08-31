@@ -395,6 +395,12 @@ class Room(object):
                 if item.id in state["removedItems"]:
                     self.removeItem(item)
             
+        if "newItems" in state:
+            for itemId in state["newItems"]:
+                itemState = state["itemStates"][itemId]
+                item = items.getItemFromState(itemState)
+                item.setState(itemState)
+                self.addItems([item])
  
     '''
     invalidate render

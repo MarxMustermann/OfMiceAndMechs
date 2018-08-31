@@ -399,7 +399,6 @@ class Room(object):
             for itemId in state["newItems"]:
                 itemState = state["itemStates"][itemId]
                 item = items.getItemFromState(itemState)
-                item.setState(itemState)
                 self.addItems([item])
  
     '''

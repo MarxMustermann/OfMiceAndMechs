@@ -1399,10 +1399,11 @@ itemMap = {
             "GooFlask":GooFlask,
             "ProductionArtwork":ProductionArtwork,
             "ScrapCompactor":ScrapCompactor,
-			"ObjectDispenser":OjectDispenser
+            "ObjectDispenser":OjectDispenser
 }
 
 def getItemFromState(state):
-    print(state)
-    print(state["type"])
-    return itemMap[state["type"]]()
+    item = itemMap[state["type"]]()
+    item.setState(state)
+    return item
+

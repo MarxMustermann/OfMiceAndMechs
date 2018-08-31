@@ -16,6 +16,10 @@ class Item(object):
     straightforward state initialization
     '''
     def __init__(self,display=None,xPosition=0,yPosition=0,room=None,name="item"):
+
+        if not hasattr(self,"type"):
+            self.type = "Item"
+
         if not display:
             self.display = displayChars.notImplentedYet
         else:
@@ -42,6 +46,7 @@ class Item(object):
         return {
                  "id":self.id,
                  "name":self.name,
+                 "type":self.type,
                  "walkable":self.walkable,
                  "xPosition":self.xPosition,
                  "yPosition":self.yPosition
@@ -351,6 +356,7 @@ class Scrap(Item):
     almost straightforward state initialization
     '''
     def __init__(self,xPosition=0,yPosition=0,amount=1,name="scrap",room=None):
+        self.type = "Scrap"
         super().__init__(displayChars.scrap_light,xPosition,yPosition,room=room)
         self.amount = amount
 
@@ -477,6 +483,7 @@ dummy class for a corpse
 '''
 class Corpse(Item):
     def __init__(self,xPosition=0,yPosition=0,name="corpse",room=None):
+        self.type = "Corpse"
         super().__init__(displayChars.corpse,xPosition,yPosition,name=name,room=room)
 
 '''
@@ -484,6 +491,7 @@ an character spawning item
 '''
 class GrowthTank(Item):
     def __init__(self,xPosition=0,yPosition=0,name="growth tank",filled=False,room=None):
+        self.type = "GrowthTank"
         self.filled = filled
         if filled:
             super().__init__(displayChars.growthTank_filled,xPosition,yPosition,name=name,room=room)
@@ -519,6 +527,7 @@ basically a bed with a activatable cover
 '''
 class Hutch(Item):
     def __init__(self,xPosition=0,yPosition=0,name="Hutch",activated=False,room=None):
+        self.type = "Hutch"
         self.activated = activated
         if self.activated:
             super().__init__(displayChars.hutch_free,xPosition,yPosition,room=room)
@@ -545,6 +554,7 @@ class Lever(Item):
     straightforward state initialization
     '''
     def __init__(self,xPosition=0,yPosition=0,name="lever",activated=False,room=None):
+        self.type = "Lever"
         self.activated = activated
         self.display = {True:displayChars.lever_pulled,False:displayChars.lever_notPulled}
         super().__init__(displayChars.lever_notPulled,xPosition,yPosition,name=name,room=room)
@@ -586,6 +596,7 @@ class Furnace(Item):
         self.activated = False
         self.boilers = None
         self.stopBoilingEvent = None
+        self.type = "Furnace"
         super().__init__(displayChars.furnace_inactive,xPosition,yPosition,name=name,room=room)
 
     '''
@@ -674,6 +685,7 @@ class Commlink(Item):
     call superclass constructor with modified paramters
     '''
     def __init__(self,xPosition=0,yPosition=0,name="Commlink",room=None):
+        self.type = "CommLink"
         super().__init__(displayChars.commLink,xPosition,yPosition,name=name,room=room)
 
     '''
@@ -717,6 +729,7 @@ class Display(Item):
     call superclass constructor with modified paramters
     '''
     def __init__(self,xPosition=0,yPosition=0,name="Display",room=None):
+        self.type = "Display"
         super().__init__(displayChars.display,xPosition,yPosition,name=name,room=room)
 
     '''
@@ -756,6 +769,7 @@ class Wall(Item):
     call superclass constructor with modified paramters
     '''
     def __init__(self,xPosition=0,yPosition=0,name="Wall",room=None):
+        self.type = "Wall"
         super().__init__(displayChars.wall,xPosition,yPosition,name=name,room=room)
 
 '''
@@ -766,6 +780,7 @@ class Pipe(Item):
     call superclass constructor with modified paramters
     '''
     def __init__(self,xPosition=0,yPosition=0,name="Pipe",room=None):
+        self.type = "Pipe"
         super().__init__(displayChars.pipe,xPosition,yPosition,name=name,room=room)
 
 '''
@@ -777,6 +792,7 @@ class Coal(Item):
     '''
     def __init__(self,xPosition=0,yPosition=0,name="Coal",room=None):
         self.canBurn = True
+        self.type = "Coal"
         super().__init__(displayChars.coal,xPosition,yPosition,name=name,room=room)
         self.walkable = True
 
@@ -788,6 +804,7 @@ class Door(Item):
     call superclass constructor with modified paramters and set some state
     '''
     def __init__(self,xPosition=0,yPosition=0,name="Door",room=None):
+        self.type = "Door"
         super().__init__(displayChars.door_closed,xPosition,yPosition,name=name,room=room)
         self.walkable = False
 
@@ -859,6 +876,7 @@ class Pile(Item):
         self.contains_canBurn = True
         self.type = itemType
         self.numContained = 100
+        self.type = "Pile"
         super().__init__(displayChars.pile,xPosition,yPosition,name=name,room=room)
 
     '''
@@ -907,6 +925,7 @@ class Acid(Item):
     def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal,room=None):
         self.canBurn = True
         self.type = itemType
+        self.type = "Acid"
         super().__init__(displayChars.acid,xPosition,yPosition,name=name,room=room)
 
     '''
@@ -926,6 +945,7 @@ class Chain(Item):
     call superclass constructor with modified paramters and set some state
     '''
     def __init__(self,xPosition=0,yPosition=0,name="chain",room=None):
+        self.type = "Chain"
         super().__init__(displayChars.chains,xPosition,yPosition,name=name,room=room)
         self.walkable = True
 
@@ -1000,6 +1020,7 @@ class Winch(Item):
     call superclass constructor with modified paramters 
     '''
     def __init__(self,xPosition=0,yPosition=0,name="winch",room=None):
+        self.type = "Winch"
         super().__init__(displayChars.winch_inactive,xPosition,yPosition,name=name,room=room)
 
     '''
@@ -1014,6 +1035,7 @@ basic item with different appearance
 '''
 class MetalBars(Item):
     def __init__(self,xPosition=0,yPosition=0,name="metal bar",room=None):
+        self.type = "MetalBars"
         super().__init__("==",xPosition,yPosition,name=name,room=room)
 
 '''
@@ -1025,6 +1047,7 @@ class Boiler(Item):
     call superclass constructor with modified paramters and set some state
     '''
     def __init__(self,xPosition=0,yPosition=0,name="boiler",room=None):
+        self.type = "Boiler"
         super().__init__(displayChars.boiler_inactive,xPosition,yPosition,name=name,room=room)
         self.isBoiling = False
         self.isHeated = False
@@ -1153,6 +1176,7 @@ class Spray(Item):
             self.display_stage2 = displayChars.spray_right_stage2
             self.display_stage3 = displayChars.spray_right_stage3
 
+        self.type = "Spray"
         super().__init__(self.display_inactive,xPosition,yPosition,name=name,room=room)
 
     '''
@@ -1177,6 +1201,7 @@ class MarkerBean(Item):
     call superclass constructor with modified paramters and set some state
     '''
     def __init__(self,xPosition=0,yPosition=0,name="bean",room=None):
+        self.type = "MarkerBean"
         super().__init__(" -",xPosition,yPosition,name=name,room=room)
         self.activated = False
         self.walkable = True
@@ -1196,6 +1221,7 @@ class GooDispenser(Item):
     call superclass constructor with modified paramters and set some state
     '''
     def __init__(self,xPosition=None,yPosition=None,name="goo dispenser",room=None):
+        self.type = "GooDispenser"
         super().__init__("g%",xPosition,yPosition,name=name,room=room)
         self.activated = False
     
@@ -1216,6 +1242,7 @@ class GooFlask(Item):
     call superclass constructor with modified paramters and set some state
     '''
     def __init__(self,xPosition=None,yPosition=None,name="goo flask",room=None):
+        self.type = "GooFlask"
         super().__init__(" -",xPosition,yPosition,name=name,room=room)
         self.walkable = True
         self.uses = 100
@@ -1249,6 +1276,7 @@ class OjectDispenser(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="object dispenser",room=None):
+        self.type = "OjectDispenser"
         super().__init__("U\\",xPosition,yPosition,name=name,room=room)
 
     '''
@@ -1270,6 +1298,7 @@ class ProductionArtwork(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="production artwork",room=None):
+        self.type = "ProductionArtwork"
         super().__init__("U\\",xPosition,yPosition,name=name,room=room)
 
     '''
@@ -1316,6 +1345,7 @@ class ScrapCompactor(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="scrap compactor",room=None):
+        self.type = "ScrapCompactor"
         super().__init__("U\\",xPosition,yPosition,name=name,room=room)
 
     '''

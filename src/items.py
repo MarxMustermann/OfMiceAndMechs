@@ -374,6 +374,7 @@ class Scrap(Item):
         else:
             self.walkable = False
             self.display = displayChars.scrap_heavy
+        self.initialState = self.getState()
 
     '''
     move and leave a trail of pieces
@@ -488,6 +489,7 @@ class Corpse(Item):
     def __init__(self,xPosition=0,yPosition=0,name="corpse",room=None):
         self.type = "Corpse"
         super().__init__(displayChars.corpse,xPosition,yPosition,name=name,room=room)
+        self.initialState = self.getState()
 
 '''
 an character spawning item
@@ -500,6 +502,7 @@ class GrowthTank(Item):
             super().__init__(displayChars.growthTank_filled,xPosition,yPosition,name=name,room=room)
         else:
             super().__init__(displayChars.growthTank_unfilled,xPosition,yPosition,name=name,room=room)
+        self.initialState = self.getState()
 
     def apply(self,character):
         if self.filled:
@@ -536,6 +539,7 @@ class Hutch(Item):
             super().__init__(displayChars.hutch_free,xPosition,yPosition,room=room)
         else:
             super().__init__(displayChars.hutch_occupied,xPosition,yPosition,room=room)
+        self.initialState = self.getState()
 
     '''
     open/close cover
@@ -564,6 +568,7 @@ class Lever(Item):
         self.activateAction = None
         self.deactivateAction = None
         self.walkable = True
+        self.initialState = self.getState()
 
     '''
     pull the lever!
@@ -601,6 +606,7 @@ class Furnace(Item):
         self.stopBoilingEvent = None
         self.type = "Furnace"
         super().__init__(displayChars.furnace_inactive,xPosition,yPosition,name=name,room=room)
+        self.initialState = self.getState()
 
     '''
     fire the furnace
@@ -798,6 +804,7 @@ class Coal(Item):
         self.type = "Coal"
         super().__init__(displayChars.coal,xPosition,yPosition,name=name,room=room)
         self.walkable = True
+        self.initialState = self.getState()
 
 '''
 a door for opening/closing and looking people in/out
@@ -810,6 +817,7 @@ class Door(Item):
         self.type = "Door"
         super().__init__(displayChars.door_closed,xPosition,yPosition,name=name,room=room)
         self.walkable = False
+        self.initialState = self.getState()
 
     '''
     open or close door depending on state
@@ -881,6 +889,7 @@ class Pile(Item):
         self.numContained = 100
         self.type = "Pile"
         super().__init__(displayChars.pile,xPosition,yPosition,name=name,room=room)
+        self.initialState = self.getState()
 
     '''
     take from the pile
@@ -930,6 +939,7 @@ class Acid(Item):
         self.type = itemType
         self.type = "Acid"
         super().__init__(displayChars.acid,xPosition,yPosition,name=name,room=room)
+        self.initialState = self.getState()
 
     '''
     do someting stupid
@@ -951,6 +961,7 @@ class Chain(Item):
         self.type = "Chain"
         super().__init__(displayChars.chains,xPosition,yPosition,name=name,room=room)
         self.walkable = True
+        self.initialState = self.getState()
 
         self.chainedTo = []
         self.fixed = False
@@ -1056,6 +1067,7 @@ class Boiler(Item):
         self.isHeated = False
         self.startBoilingEvent = None
         self.stopBoilingEvent = None
+        self.initialState = self.getState()
 
     '''
     start producing steam after a delay
@@ -1181,6 +1193,7 @@ class Spray(Item):
 
         self.type = "Spray"
         super().__init__(self.display_inactive,xPosition,yPosition,name=name,room=room)
+        self.initialState = self.getState()
 
     '''
     set appearance depending on energy supply
@@ -1208,6 +1221,7 @@ class MarkerBean(Item):
         super().__init__(" -",xPosition,yPosition,name=name,room=room)
         self.activated = False
         self.walkable = True
+        self.initialState = self.getState()
 
     '''
     avtivate marker
@@ -1227,6 +1241,7 @@ class GooDispenser(Item):
         self.type = "GooDispenser"
         super().__init__("g%",xPosition,yPosition,name=name,room=room)
         self.activated = False
+        self.initialState = self.getState()
     
     '''
     fill goo flask
@@ -1252,6 +1267,7 @@ class GooFlask(Item):
         self.displayByUses = ["ò ","ò.","ò,","ò-","ò~","ò="]
         self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses//20])
         self.description = "a flask conatining goo"
+        self.initialState = self.getState()
 
     '''
     drink from flask
@@ -1281,6 +1297,7 @@ class OjectDispenser(Item):
     def __init__(self,xPosition=None,yPosition=None, name="object dispenser",room=None):
         self.type = "ObjectDispenser"
         super().__init__("U\\",xPosition,yPosition,name=name,room=room)
+        self.initialState = self.getState()
 
     '''
     drop goo flask

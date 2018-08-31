@@ -1161,8 +1161,10 @@ class Terrain(object):
         for room in terrain.rooms:
             currentState = room.getState()
             if not currentState == room.initialState:
-                roomList.append(room.id)
-                roomStates[room.id] = room.getDiffState()
+                diffState = room.getDiffState()
+                if diffState:
+                    roomList.append(room.id)
+                    roomStates[room.id] = diffState
 
         return {
                   "roomIds":roomList,

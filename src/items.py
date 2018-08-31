@@ -885,7 +885,7 @@ class Pile(Item):
     '''
     def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal,room=None):
         self.contains_canBurn = True
-        self.type = itemType
+        self.itemType = itemType
         self.numContained = 100
         self.type = "Pile"
         super().__init__(displayChars.pile,xPosition,yPosition,name=name,room=room)
@@ -906,9 +906,9 @@ class Pile(Item):
             return
 
         # spawn item to inventory
-        character.inventory.append(self.type())
+        character.inventory.append(self.itemType())
         character.changed()
-        messages.append("you take a piece of "+str(self.type))
+        messages.append("you take a piece of "+str(self.itemType))
 
         # reduce item count
         self.numContained -= 1
@@ -916,7 +916,7 @@ class Pile(Item):
         if self.numContained == 1:
             # morph into a single item
             self.room.removeItem(self)
-            new = self.type()
+            new = self.itemType()
             new.xPosition = self.xPosition
             new.yPosition = self.yPosition
             self.room.addItems([new])

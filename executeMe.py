@@ -303,7 +303,8 @@ cinematics.mainChar = gameStateObj.mainChar
 quests.mainChar = gameStateObj.mainChar
 
 # set up the splash screen
-cinematics.showCinematic("""
+if not args.debug:
+    cinematics.showCinematic("""
 
      OOO FFF          AAA N N DD
      O O FF   mice    AAA NNN D D

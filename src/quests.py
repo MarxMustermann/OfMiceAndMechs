@@ -998,6 +998,7 @@ class NaiveActivateQuest(Quest):
     '''
     def solver(self,character):
         self.toActivate.apply(character)
+        character.changed("activate",self.toActivate)
         return True
 
 '''

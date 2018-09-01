@@ -1127,9 +1127,9 @@ class WaitForQuestCompletion(Quest):
     '''
     def __init__(self,quest):
         self.quest = quest
-        self.startWatching(self.quest,self.triggerCompletionCheck)
         self.description = "please wait for the quest to completed"
         super().__init__()
+        self.startWatching(self.quest,self.triggerCompletionCheck)
 
     '''
     check if the quest was completed

@@ -59,6 +59,8 @@ class Character():
             self.assignQuest(quest)
         self.inventory.append(items.GooFlask())
 
+        self.initialState = self.getState()
+
     '''
     almost straightforward adding of events to the characters event queue
     '''
@@ -86,6 +88,26 @@ class Character():
             pass
         
         return chatOptions
+
+    def getDiffState(self):
+        result = {}
+
+        if not self.gotBasicSchooling == self.initialState["gotBasicSchooling"]:
+            result["gotBasicSchooling"] = self.gotBasicSchooling
+        if not self.gotMovementSchooling == self.initialState["gotMovementSchooling"]:
+            result["gotMovementSchooling"] = self.gotMovementSchooling
+        if not self.gotInteractionSchooling == self.initialState["gotInteractionSchooling"]:
+            result["gotInteractionSchooling"] = self.gotInteractionSchooling
+        if not self.gotExamineSchooling == self.initialState["gotExamineSchooling"]:
+            result["gotExamineSchooling"] = self.gotExamineSchooling
+        if not self.xPosition == self.initialState["xPosition"]:
+            result["xPosition"] = self.xPosition
+        if not self.yPosition == self.initialState["yPosition"]:
+            result["yPosition"] = self.yPosition
+        if not self.name == self.initialState["name"]:
+            result["name"] = self.name
+
+        return result
 
     '''
     mostly non working getter for the players state

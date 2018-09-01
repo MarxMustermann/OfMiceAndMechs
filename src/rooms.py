@@ -309,23 +309,38 @@ class Room(object):
             if not self.initialState[attribute] == currentState[attribute]:
                 result[attribute] = currentState[attribute]
 
-        changedItems = []
-        newItems = []
-        removedItems = []
-        itemStates = {}
+        def getDiffList(toDiff,containerName,exclude=[]):
+            currentThingsList = []
+            states = {}
+            newThingsList = []
+            changedThingsList = []
+            removedThingsList = []
 
-        foundItems = []
-        for item in self.itemsOnFloor:
-            foundItems.append(item.id)
-            if item.id in self.initialState["itemIds"] and item.id in currentState["itemStates"]:
-                changedItems.append(item.id)
-                itemStates[item.id] = item.getState()
-            if not item.id in self.initialState["itemIds"]:
-                newItems.append(item.id)
-                itemStates[item.id] = item.getState()
-        for itemId in self.initialState["itemIds"]:
-            if not itemId in foundItems:
-                removedItems.append(itemId)
+            for thing in toDiff:
+                if thing.id in exclude:
+                    continue
+                currentState = thing.getState()
+                currentThingsList.append(thing.id)
+
+                if thing.id in self.initialState[containerName]:
+                    if not currentState == thing.initialState:
+                        diffState = thing.getDiffState()
+                        if diffState:
+                            changedThingsList.append(thing.id)
+                            states[thing.id] = diffState
+                else:
+                    newThingsList.append(thing.id)
+                    states[thing.id] = thing.getState()
+
+            for thingId in self.initialState[containerName]:
+                if thingId in exclude:
+                    continue
+                if not thingId in currentThingsList:
+                    removedThingsList.append(thingId)
+
+            return (states,changedThingsList,newThingsList,removedThingsList)
+
+        (itemStates,changedItems,newItems,removedItems) = getDiffList(self.itemsOnFloor,"itemIds")
 
         if changedItems:
             result["changedItems"] = changedItems
@@ -336,6 +351,20 @@ class Room(object):
         if itemStates:
             result["itemStates"] = itemStates
 
+        exclude = []
+        if mainChar:
+            exclude.append(mainChar.id)
+        (charStates,changedChars,newChars,removedChars) = getDiffList(self.characters,"characterIds",exclude=exclude)
+
+        if changedChars:
+            result["changedCharList"] = changedChars
+        if newChars:
+            result["newCharList"] = newChars
+        if removedChars:
+            result["removedCharList"] = removedChars
+        if charStates:
+            result["charStates"] = charStates
+
         return result
 
     '''
@@ -343,17 +372,26 @@ class Room(object):
     bad code: incomplete
     '''
     def getState(self):
-        itemIds = []
-        itemStates = {}
-        for item in self.itemsOnFloor:
-            currentState = item.getState()
-            itemIds.append(item.id)
-            if not currentState == item.initialState:
-                itemStates[item.id] = currentState
+        def storeStateList(sourceList,exclude=[]):
+            ids = []
+            states = {}
+
+            for thing in sourceList:
+                if thing.id in exclude:
+                    continue
+                ids.append(thing.id)
+                states[thing.id] = thing.getDiffState()
+
+            return (states,ids)
+
+        (itemIds,itemStates) = storeStateList(self.itemsOnFloor)
+        (charIds,charStates) = storeStateList(self.characters)
 
         return { 
                  "itemIds":itemIds,
                  "itemStates":itemStates,
+                 "characterIds":charIds,
+                 "characterStates":charStates,
                  "offsetX":self.offsetX,
                  "offsetY":self.offsetY,
                  "xPosition":self.xPosition,

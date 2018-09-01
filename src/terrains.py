@@ -1181,7 +1181,7 @@ class Terrain(object):
             self.addItems([item])
 
     def getDiffState(self):
-        def getDiffList(toDiff,containerName):
+        def getDiffList(toDiff,containerName,exclude=[]):
             currentThingsList = []
             states = {}
             newThingsList = []
@@ -1189,6 +1189,8 @@ class Terrain(object):
             removedThingsList = []
             
             for thing in toDiff:
+                if thing.id in exclude:
+                    continue
                 currentState = thing.getState()
                 currentThingsList.append(thing.id)
 
@@ -1203,6 +1205,8 @@ class Terrain(object):
                     states[thing.id] = thing.getState()
 
             for thingId in self.initialState[containerName]:
+                if thing.id in exclude:
+                    continue
                 if not thingId in currentThingsList:
                     removedThingsList.append(thingId)
 
@@ -1210,6 +1214,10 @@ class Terrain(object):
             
         (roomStates,changedRoomList,newRoomList,removedRoomList) = getDiffList(self.rooms,"roomIds")
         (itemStates,changedItemList,newItemList,removedItemList) = getDiffList(self.itemsOnFloor,"itemIds")
+        exclude = []
+        if mainChar:
+            exclude.append(mainChar.id)
+        (charStates,changedCharList,newCharList,removedCharList) = getDiffList(self.characters,"characterIds",exclude=exclude)
 
         return {
                   "changedRoomList":changedRoomList,
@@ -1220,14 +1228,20 @@ class Terrain(object):
                   "changedItemList":changedItemList,
                   "removedItemList":removedItemList,
                   "itemStates":itemStates,
+                  "newCharList":newCharList,
+                  "changedCharList":changedCharList,
+                  "removedCharList":removedCharList,
+                  "charStates":charStates,
                }
 
     def getState(self):
-        def storeStateList(sourceList):
+        def storeStateList(sourceList,exclude=[]):
             ids = []
             states = {}
 
             for thing in sourceList:
+                if thing.id in exclude:
+                    continue
                 ids.append(thing.id)
                 states[thing.id] = thing.getDiffState()
 
@@ -1235,12 +1249,18 @@ class Terrain(object):
 
         (roomIds,roomStates) = storeStateList(self.rooms)
         (itemIds,itemStates) = storeStateList(self.itemsOnFloor)
+        exclude = []
+        if mainChar:
+            exclude.append(mainChar.id)
+        (characterIds,chracterStates) = storeStateList(self.characters,exclude=exclude)
 
         return {
                   "roomIds":roomIds,
                   "roomStates":roomStates,
                   "itemIds":itemIds,
-                  "itemStates":itemStates
+                  "itemStates":itemStates,
+                  "characterIds":characterIds,
+                  "chracterStates":chracterStates,
                }
 
 '''

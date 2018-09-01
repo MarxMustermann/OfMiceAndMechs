@@ -81,7 +81,7 @@ class Room(object):
                         if not self.firstOfficer:
                             # add first officer
                             name = getRandomName(self.xPosition+2*self.offsetY,self.offsetX+2*self.yPosition)
-                            npc = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],5,3,name=name)
+                            npc = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],5,3,name=name,container=self)
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.firstOfficer = npc
@@ -90,7 +90,7 @@ class Room(object):
                         else:
                             # add second officer
                             name = getRandomName(self.yPosition+2*self.offsetX,self.offsetY+2*self.xPosition)
-                            npc = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],5,3,name=name)
+                            npc = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],5,3,name=name,container=self)
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.secondOfficer = npc

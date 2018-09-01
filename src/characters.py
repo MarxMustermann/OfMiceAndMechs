@@ -16,7 +16,7 @@ class Character():
     sets basic info AND adds default behaviour/items
     bad code: adding the default behaviour/items here makes it harder to create instances with fixed state
     '''
-    def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person"):
+    def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person",container=None):
         # set basic state
         self.display = display
         self.automated = automated
@@ -39,6 +39,10 @@ class Character():
         self.questsToDelegate = []
         self.unconcious = False
         self.displayOriginal = display
+        if not container:
+            self.id = "void+"+str(self.xPosition)+"_"+str(self.yPosition)
+        else:
+            self.id = container.id+"+"+str(self.xPosition)+"_"+str(self.yPosition)
 
         # bad code: story specific state
         self.gotBasicSchooling = False
@@ -95,6 +99,7 @@ class Character():
                  "gotExamineSchooling": self.gotExamineSchooling,
                  "xPosition": self.xPosition,
                  "yPosition": self.yPosition,
+                 "name": self.name,
                }
 
         if self.room:

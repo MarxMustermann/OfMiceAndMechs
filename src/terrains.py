@@ -1194,9 +1194,9 @@ class Terrain(object):
 
                 if thing.id in self.initialState[containerName]:
                     if not currentState == thing.initialState:
-                        changedThingsList.append(thing.id)
                         diffState = thing.getDiffState()
                         if diffState:
+                            changedThingsList.append(thing.id)
                             states[thing.id] = diffState
                 else:
                     newThingsList.append(thing.id)

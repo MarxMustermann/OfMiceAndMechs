@@ -200,6 +200,7 @@ if args.debug:
     debugMessages = debugToFile()
     interaction.debug = True
     characters.debug = True
+    quests.debug = True
 else:
     '''
     dummy logger
@@ -215,6 +216,7 @@ else:
     debugMessages = FakeLogger()
     interaction.debug = False
     characters.debug = False
+    quests.debug = False
 
 # HACK: common variables with modules
 items.debugMessages = debugMessages

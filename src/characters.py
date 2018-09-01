@@ -88,11 +88,18 @@ class Character():
     bad code: this state is basicall useless
     '''
     def getState(self):
-        return { "gotBasicSchooling": self.gotBasicSchooling,
+        state = { 
+                 "gotBasicSchooling": self.gotBasicSchooling,
                  "gotMovementSchooling": self.gotMovementSchooling,
                  "gotInteractionSchooling": self.gotInteractionSchooling,
                  "gotExamineSchooling": self.gotExamineSchooling,
+                 "xPosition": self.xPosition,
+                 "yPosition": self.yPosition,
                }
+
+        if self.room:
+            state["room"] = self.room.id
+        return state
 
     '''
     mostly non working setter for the players state
@@ -103,6 +110,8 @@ class Character():
         self.gotMovementSchooling = state["gotMovementSchooling"]
         self.gotInteractionSchooling = state["gotInteractionSchooling"]
         self.gotExamineSchooling = state["gotExamineSchooling"]
+        self.yPosition = state["yPosition"]
+        self.xPosition = state["xPosition"]
 
     '''
     bad code: this should be handled with a get quest quest

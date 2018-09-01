@@ -100,7 +100,8 @@ class BasicPhase(object):
                 if self.mainCharXPosition and self.mainCharYPosition:
                     self.mainCharRoom.addCharacter(mainChar,self.mainCharXPosition,self.mainCharYPosition)
                 else:
-                    self.mainCharRoom.addCharacter(mainChar,3,3)
+                    if mainChar.xPosition == None or mainChar.yPosition == None:
+                        self.mainCharRoom.addCharacter(mainChar,3,3)
 
         # create first officer
         if self.requiresMainCharRoomFirstOfficer:

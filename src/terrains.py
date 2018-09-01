@@ -498,6 +498,13 @@ class Terrain(object):
         character.room = None
         character.terrain = None
 
+    def addCharacter(self,character,x,y):
+        self.characters.append(character)
+        character.terrain = self
+        character.room = None
+        character.xPosition = x
+        character.yPosition = y
+
     '''
     paint the information for the pathfinding
     bad code: is part visual debugging and partially looking nice, it still has to be integrated properly

@@ -129,6 +129,7 @@ story.items = items
 items.characters = characters
 rooms.characters = characters
 story.characters = characters
+terrains.characters = characters
 
 # HACK: common variables with modules
 cinematics.main = interaction.main

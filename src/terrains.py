@@ -1167,7 +1167,7 @@ class Terrain(object):
         for room in terrain.rooms:
             room.timeIndex = tick
 
-        for item in terrain.itemsOnFloor[:]:
+        for item in self.itemsOnFloor[:]:
             if item.id in state["changedItemList"]:
                 self.removeItem(item)
                 item.setState(state["itemStates"][item.id])
@@ -1175,10 +1175,20 @@ class Terrain(object):
 
             if item.id in state["removedItemList"]:
                 self.removeItem(item)
-
         for itemId in state["newItemList"]:
             item = items.getItemFromState(state["itemStates"][itemId])
             self.addItems([item])
+
+        for char in self.characters:
+            if char.id in state["changedCharList"]:
+                char.setState(state["charStates"][item.id])
+
+            if char.id in state["removedCharList"]:
+                self.removeCharacter(char)
+        for charId in state["newCharList"]:
+            charState = state["charStates"][charId]
+            char = characters.Character()
+            self.addCharacter(char,charState["xPosition"],charState["yPosition"])
 
     def getDiffState(self):
         def getDiffList(toDiff,containerName,exclude=[]):

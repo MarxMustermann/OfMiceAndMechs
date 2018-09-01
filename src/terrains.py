@@ -219,6 +219,8 @@ class Terrain(object):
         # precalculate paths to make pathfinding faster
         self.calculatePathMap()
 
+        self.initialState = self.getState()
+
     '''
     precalculate pathfinding data
     '''
@@ -772,6 +774,10 @@ class Terrain(object):
             else:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
+    def removeItem(self,item):
+        self.itemsOnFloor.remove(item)
+        self.itemByCoordinates[(item.xPosition,item.yPosition)].remove(item)
+
     '''
     add items to terrain and add them to internal datastructures
     '''
@@ -1156,29 +1162,86 @@ class Terrain(object):
 
     def setState(self,state,tick):
         for room in terrain.rooms:
-            if room.id in state["roomStates"]:
+            if room.id in state["changedRoomList"]:
                 room.setState(state["roomStates"][room.id])
         for room in terrain.rooms:
             room.timeIndex = tick
 
-    def getState(self):
-        # the rooms
-        roomStates = {}
-        roomList = []
-        for room in terrain.rooms:
-            currentState = room.getState()
-            if not currentState == room.initialState:
-                diffState = room.getDiffState()
-                if diffState:
-                    roomList.append(room.id)
-                    roomStates[room.id] = diffState
+        for item in terrain.itemsOnFloor[:]:
+            if item.id in state["changedItemList"]:
+                self.removeItem(item)
+                item.setState(state["itemStates"][item.id])
+                self.addItems([item])
+
+            if item.id in state["removedItemList"]:
+                self.removeItem(item)
+
+        for itemId in state["newItemList"]:
+            item = items.getItemFromState(state["itemStates"][itemId])
+            self.addItems([item])
+
+    def getDiffState(self):
+        def getDiffList(toDiff,containerName):
+            currentThingsList = []
+            states = {}
+            newThingsList = []
+            changedThingsList = []
+            removedThingsList = []
+            
+            for thing in toDiff:
+                currentState = thing.getState()
+                currentThingsList.append(thing.id)
+
+                if thing.id in self.initialState[containerName]:
+                    if not currentState == thing.initialState:
+                        changedThingsList.append(thing.id)
+                        diffState = thing.getDiffState()
+                        if diffState:
+                            states[thing.id] = diffState
+                else:
+                    newThingsList.append(thing.id)
+                    states[thing.id] = thing.getState()
+
+            for thingId in self.initialState[containerName]:
+                if not thingId in currentThingsList:
+                    removedThingsList.append(thingId)
+
+            return (states,changedThingsList,newThingsList,removedThingsList)
+            
+        (roomStates,changedRoomList,newRoomList,removedRoomList) = getDiffList(self.rooms,"roomIds")
+        (itemStates,changedItemList,newItemList,removedItemList) = getDiffList(self.itemsOnFloor,"itemIds")
 
         return {
-                  "roomIds":roomList,
+                  "changedRoomList":changedRoomList,
+                  "newRoomList":newRoomList,
+                  "removedRoomList":removedRoomList,
                   "roomStates":roomStates,
+                  "newItemList":newItemList,
+                  "changedItemList":changedItemList,
+                  "removedItemList":removedItemList,
+                  "itemStates":itemStates,
                }
-        
-        
+
+    def getState(self):
+        def storeStateList(sourceList):
+            ids = []
+            states = {}
+
+            for thing in sourceList:
+                ids.append(thing.id)
+                states[thing.id] = thing.getDiffState()
+
+            return (states,ids)
+
+        (roomIds,roomStates) = storeStateList(self.rooms)
+        (itemIds,itemStates) = storeStateList(self.itemsOnFloor)
+
+        return {
+                  "roomIds":roomIds,
+                  "roomStates":roomStates,
+                  "itemIds":itemIds,
+                  "itemStates":itemStates
+               }
 
 '''
 a almost empty terrain
@@ -1569,3 +1632,4 @@ XXXCCCCCXXX """
         self.testItems = [items.Scrap(20,52,3),items.Scrap(19,53,3),items.Scrap(20,51,3),items.Scrap(18,49,3),items.Scrap(21,53,3),items.Scrap(19,48,3),items.Scrap(20,52,3),items.Scrap(20,48,3),items.Scrap(18,50,3),items.Scrap(18,51,3)]
         self.addItems(self.testItems)
 
+        self.initialState = self.getState()

@@ -77,7 +77,7 @@ class GameState():
         return {  
               "currentPhase":self.currentPhase.getState(),
               "mainChar":self.mainChar.getState(),
-              "terrain":terrain.getState(),
+              "terrain":terrain.getDiffState(),
               "tick":self.tick,
               "gameWon":self.gameWon
                }

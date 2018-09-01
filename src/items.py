@@ -42,6 +42,15 @@ class Item(object):
 
         self.initialState = self.getState()
 
+    def getDiffState(self):
+        result = {}
+        currentState = self.getState()
+        for attribute in ("id","name","type","walkable","xPosition","yPosition"):
+            if not currentState[attribute] == self.initialState[attribute]:
+                result[attribute] = currentState[attribute]
+
+        return result
+
     def getState(self):
         return {
                  "id":self.id,
@@ -53,13 +62,18 @@ class Item(object):
                }
 
     def setState(self,state):
-        self.id = state["id"]
-        self.name = state["name"]
-        self.walkable = state["walkable"]
+        if "id" in state:
+            self.id = state["id"]
+        if "name" in state:
+            self.name = state["name"]
+        if "walkable" in state:
+            self.walkable = state["walkable"]
         if self.room:
             self.room.removeItem(self)
-        self.xPosition = state["xPosition"]
-        self.yPosition = state["yPosition"]
+        if "xPosition" in state:
+            self.xPosition = state["xPosition"]
+        if "yPosition" in state:
+            self.yPosition = state["yPosition"]
         if self.room:
             self.room.addItems([self])
 
@@ -818,6 +832,11 @@ class Door(Item):
         super().__init__(displayChars.door_closed,xPosition,yPosition,name=name,room=room)
         self.walkable = False
         self.initialState = self.getState()
+
+    def setState(self,state):
+        super().setState(state)
+        if self.walkable:
+            self.open(None)
 
     '''
     open or close door depending on state

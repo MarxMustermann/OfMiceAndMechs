@@ -90,7 +90,7 @@ class Room(object):
                         else:
                             # add second officer
                             name = getRandomName(self.yPosition+2*self.offsetX,self.offsetY+2*self.xPosition)
-                            npc = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],5,3,name=name,container=self)
+                            npc = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],6,4,name=name,container=self)
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.secondOfficer = npc
@@ -357,11 +357,11 @@ class Room(object):
         (charStates,changedChars,newChars,removedChars) = getDiffList(self.characters,"characterIds",exclude=exclude)
 
         if changedChars:
-            result["changedCharList"] = changedChars
+            result["changedChars"] = changedChars
         if newChars:
-            result["newCharList"] = newChars
+            result["newChars"] = newChars
         if removedChars:
-            result["removedCharList"] = removedChars
+            result["removedChars"] = removedChars
         if charStates:
             result["charStates"] = charStates
 
@@ -426,7 +426,9 @@ class Room(object):
         if "changedItems" in state:
             for item in self.itemsOnFloor:
                 if item.id in state["changedItems"]:
+                    self.removeItem(item)
                     item.setState(state["itemStates"][item.id])
+                    self.addItems([item])
 
         if "removedItems" in state:
             for item in self.itemsOnFloor[:]:
@@ -438,7 +440,25 @@ class Room(object):
                 itemState = state["itemStates"][itemId]
                 item = items.getItemFromState(itemState)
                 self.addItems([item])
- 
+
+        if "changedChars" in state:
+            for char in self.characters:
+                if char.id in state["changedChars"]:
+                    char.setState(state["charStates"][char.id])
+
+        if "removedChars" in state:
+            for char in self.characters[:]:
+                if char.id in state["removedChars"]:
+                    self.removeCharacter(char)
+            
+        if "newChars" in state:
+            for charId in state["newChars"]:
+                charState = state["charStates"][charId]
+                char = characters.Character()
+                self.addCharacter(char,charState["xPosition"],charState["yPosition"])
+
+        self.forceRedraw()
+
     '''
     invalidate render
     '''
@@ -1680,10 +1700,10 @@ XXXXXXXXXXX
         self.hoppers = []
 
         # add hoppers
-        npc = characters.Character(displayChars.staffCharactersByLetter["s"],5,3,name="Simon Kantbrett")
+        npc = characters.Character(displayChars.staffCharactersByLetter["s"],4,4,name="Simon Kantbrett")
         self.hoppers.append(npc)
         self.addCharacter(npc,2,2)
-        npc = characters.Character(displayChars.staffCharactersByLetter["r"],5,3,name="Rudolf Krautbart")
+        npc = characters.Character(displayChars.staffCharactersByLetter["r"],4,5,name="Rudolf Krautbart")
         self.hoppers.append(npc)
         self.addCharacter(npc,2,3)
 

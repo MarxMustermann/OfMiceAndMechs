@@ -133,12 +133,18 @@ class Character():
     bad code: this state is basicall useless
     '''
     def setState(self,state):
-        self.gotBasicSchooling = state["gotBasicSchooling"]
-        self.gotMovementSchooling = state["gotMovementSchooling"]
-        self.gotInteractionSchooling = state["gotInteractionSchooling"]
-        self.gotExamineSchooling = state["gotExamineSchooling"]
-        self.yPosition = state["yPosition"]
-        self.xPosition = state["xPosition"]
+        if "gotBasicSchooling" in state:
+            self.gotBasicSchooling = state["gotBasicSchooling"]
+        if "gotMovementSchooling" in state:
+            self.gotMovementSchooling = state["gotMovementSchooling"]
+        if "gotInteractionSchooling" in state:
+            self.gotInteractionSchooling = state["gotInteractionSchooling"]
+        if "gotExamineSchooling" in state:
+            self.gotExamineSchooling = state["gotExamineSchooling"]
+        if "yPosition" in state:
+            self.yPosition = state["yPosition"]
+        if "xPosition" in state:
+            self.xPosition = state["xPosition"]
 
     '''
     bad code: this should be handled with a get quest quest

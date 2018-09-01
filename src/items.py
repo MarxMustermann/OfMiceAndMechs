@@ -68,14 +68,10 @@ class Item(object):
             self.name = state["name"]
         if "walkable" in state:
             self.walkable = state["walkable"]
-        if self.room:
-            self.room.removeItem(self)
         if "xPosition" in state:
             self.xPosition = state["xPosition"]
         if "yPosition" in state:
             self.yPosition = state["yPosition"]
-        if self.room:
-            self.room.addItems([self])
 
     '''
     generate a text with a detailed description of the items state

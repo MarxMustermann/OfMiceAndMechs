@@ -424,7 +424,7 @@ class Room(object):
             self.terrain.teleportRoom(self,(xPosition,yPosition))
 
         if "changedItems" in state:
-            for item in self.itemsOnFloor:
+            for item in self.itemsOnFloor[:]:
                 if item.id in state["changedItems"]:
                     self.removeItem(item)
                     item.setState(state["itemStates"][item.id])

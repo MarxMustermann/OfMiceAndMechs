@@ -196,6 +196,22 @@ class Character():
         if "xPosition" in state:
             self.xPosition = state["xPosition"]
 
+        if "inventory" in state:
+            if "changed" in state["inventory"]:
+                for item in self.inventory:
+                    if item.id in state["inventory"]["changed"]:
+                        item.setState(state["inventory"]["states"][item.id])
+            if "removed" in state["inventory"]:
+                for item in self.inventory:
+                    if item.id in state["inventory"]["removed"]:
+                        self.inventory.remove(item)
+            if "new" in state["inventory"]:
+                for itemId in state["inventory"]["new"]:
+                    itemState = state["inventory"]["states"][itemId]
+                    item = items.getItemFromState(itemState)
+                    item.setState(itemState)
+                    self.inventory.append(item)
+
     '''
     bad code: this should be handled with a get quest quest
     '''

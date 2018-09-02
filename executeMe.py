@@ -282,12 +282,6 @@ phasesByName["ScreenSaver"] = story.ScreenSaver
 
 # create and load the gamestate
 gameStateObj = gamestate.GameState(phase=args.phase)
-try:
-    gameStateObj.load()
-except Exception as e:
-    ignore = input("could not load gamestate. abort (y/n)?")
-    if ignore == "y":
-	    raise e
 
 # HACK: common variables with modules
 story.gamestate = gameStateObj
@@ -325,9 +319,6 @@ if not args.debug:
 
 """,rusty=True,scrolling=True)
 
-# set up the current phase
-gameStateObj.currentPhase().start()
-
 ##################################################################################################################################
 ###
 ##        the main loop
@@ -347,6 +338,16 @@ def advanceGame():
 # HACK: common variables with modules
 cinematics.advanceGame = advanceGame
 interaction.advanceGame = advanceGame
+
+try:
+    gameStateObj.load()
+except Exception as e:
+    ignore = input("could not load gamestate. abort (y/n)?")
+    if ignore == "y":
+	    raise e
+
+    # set up the current phase
+    gameStateObj.currentPhase().start()
 
 if args.tiles:
     # spawn tile based rendered window

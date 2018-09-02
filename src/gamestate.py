@@ -61,18 +61,24 @@ class GameState():
         # the terrain
         terrain.setState(state["terrain"],self.tick)
 
-        if "xPosition" in state["mainChar"]:
-            xPosition = mainChar.xPosition
-        if "yPosition" in state["mainChar"]:
-            yPosition = mainChar.yPosition
+        self.currentPhase().start()
 
+        xPosition = self.mainChar.xPosition
+        if "xPosition" in state["mainChar"]:
+            xPosition = state["mainChar"]["xPosition"]
+        yPosition = self.mainChar.yPosition
+        if "yPosition" in state["mainChar"]:
+            yPosition = state["mainChar"]["yPosition"]
+
+        """
         if "room" in state["mainChar"]:
             for room in terrain.rooms:
                 if room.id == state["mainChar"]["room"]:
-                    room.addCharacter(self.mainChar,state["mainChar"]["xPosition"],state["mainChar"]["yPosition"])
+                    room.addCharacter(self.mainChar,xPosition,yPosition)
                     break
         else:
-            terrain.addCharacter(self.mainChar,state["mainChar"]["xPosition"],state["mainChar"]["yPosition"])
+            terrain.addCharacter(self.mainChar,xPosition,yPosition)
+        """
         self.mainChar.setState(state["mainChar"])
 
     '''

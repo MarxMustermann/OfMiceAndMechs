@@ -35,6 +35,8 @@ class Terrain(object):
         self.floordisplay = displayChars.floor
         self.itemByCoordinates = {}
         self.roomByCoordinates = {}
+        self.id = "terrain"
+
 
         # misc state
         self.overlay = None
@@ -50,23 +52,23 @@ class Terrain(object):
                 if char in (" ",".",",","@"):
                     pass
                 elif char == "X":
-                    mapItems.append(items.Wall(rowCounter,lineCounter))
+                    mapItems.append(items.Wall(rowCounter,lineCounter,container=self))
                 elif char == "#":
-                    mapItems.append(items.Pipe(rowCounter,lineCounter))
+                    mapItems.append(items.Pipe(rowCounter,lineCounter,container=self))
                 elif char == "R":
                     pass
                 elif char == "O":
-                    mapItems.append(items.Item(displayChars.clamp_active,rowCounter,lineCounter))
+                    mapItems.append(items.Item(displayChars.clamp_active,rowCounter,lineCounter,container=self))
                 elif char == "0":
-                    mapItems.append(items.Item(displayChars.clamp_inactive,rowCounter,lineCounter))
+                    mapItems.append(items.Item(displayChars.clamp_inactive,rowCounter,lineCounter,container=self))
                 elif char == "8":
-                    mapItems.append(items.Chain(rowCounter,lineCounter))
+                    mapItems.append(items.Chain(rowCounter,lineCounter,container=self))
                 elif char == "C":
-                    mapItems.append(items.Winch(rowCounter,lineCounter))
+                    mapItems.append(items.Winch(rowCounter,lineCounter,container=self))
                 elif char == "P":
-                    mapItems.append(items.Pile(rowCounter,lineCounter))
+                    mapItems.append(items.Pile(rowCounter,lineCounter,container=self))
                 else:
-                    mapItems.append(items.Item(displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter))
+                    mapItems.append(items.Item(displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter,container=self))
                 rowCounter += 1
             lineCounter += 1
         self.addItems(mapItems)

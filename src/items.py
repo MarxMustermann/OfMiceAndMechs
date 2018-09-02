@@ -351,9 +351,9 @@ class Item(object):
 
         # generatate scrao
         if self.walkable:
-            newItem = Scrap(self.xPosition,self.yPosition,3)
+            newItem = Scrap(self.xPosition,self.yPosition,3,container=self)
         else:
-            newItem = Scrap(self.xPosition,self.yPosition,10)
+            newItem = Scrap(self.xPosition,self.yPosition,10,container=self)
         newItem.room = self.room
         newItem.terrain = self.terrain
 
@@ -1318,7 +1318,7 @@ class OjectDispenser(Item):
     drop goo flask
     '''
     def dispenseObject(self):
-        new = GooFlask()
+        new = GooFlask(container=self)
         new.xPosition = self.xPosition
         new.yPosition = self.yPosition+1
         self.room.addItems([new])

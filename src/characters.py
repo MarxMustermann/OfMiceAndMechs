@@ -57,7 +57,7 @@ class Character():
         self.assignQuest(src.quests.SurviveQuest())
         for quest in quests:
             self.assignQuest(quest)
-        self.inventory.append(items.GooFlask())
+        self.inventory.append(items.GooFlask(container=self))
 
         self.initialState = self.getState()
 

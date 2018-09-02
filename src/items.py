@@ -370,8 +370,9 @@ class Scrap(Item):
     '''
     def __init__(self,xPosition=0,yPosition=0,amount=1,name="scrap",container=None):
         self.type = "Scrap"
-        super().__init__(displayChars.scrap_light,xPosition,yPosition,container=container)
         self.amount = amount
+
+        super().__init__(displayChars.scrap_light,xPosition,yPosition,container=container)
 
         # set display char
         # bad code: redundant
@@ -492,6 +493,34 @@ class Scrap(Item):
             self.walkable = False
             self.display = displayChars.scrap_heavy
 
+    def getDiffState(self):
+        state = super().getState()
+        if not self.initialState["amount"] == self.amount:
+            state["amount"] = self.amount
+        return state
+
+    def getState(self):
+        state = super().getState()
+        state["amount"] = self.amount
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        self.amount = state["amount"]
+
+        # recalculate the display char
+        # bad code: redundant
+        if self.amount < 5:
+            self.walkable = True
+            self.display = displayChars.scrap_light
+        elif self.amount < 15:
+            self.walkable = False
+            self.display = displayChars.scrap_medium
+        else:
+            self.walkable = False
+            self.display = displayChars.scrap_heavy
+                
+
 '''
 dummy class for a corpse
 '''
@@ -538,6 +567,25 @@ class GrowthTank(Item):
         character.fallUnconcious()
         self.room.addCharacter(character,self.xPosition+1,self.yPosition)
 
+    def getDiffState(self):
+        state = super().getState()
+        if not self.initialState["filled"] == self.filled:
+            state["filled"] = self.filled
+        return state
+
+    def getState(self):
+        state = super().getState()
+        state["filled"] = self.filled
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        self.filled = state["filled"]
+        if self.filled:
+            self.display = displayChars.growthTank_filled
+        else:
+            self.display = displayChars.growthTank_unfilled
+
 '''
 basically a bed with a activatable cover
 '''
@@ -561,6 +609,25 @@ class Hutch(Item):
             self.display = displayChars.hutch_occupied
         else:
             self.activated = False
+            self.display = displayChars.hutch_free
+
+    def getDiffState(self):
+        state = super().getState()
+        if not self.initialState["activated"] == self.activated:
+            state["activated"] = self.activated
+        return state
+
+    def getState(self):
+        state = super().getState()
+        state["activated"] = self.activated
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        self.activated = state["activated"]
+        if self.activated:
+            self.display = displayChars.hutch_occupied
+        else:
             self.display = displayChars.hutch_free
 
 '''
@@ -602,6 +669,25 @@ class Lever(Item):
 
         # notify listeners
         self.changed()
+
+    def getDiffState(self):
+        state = super().getState()
+        if not self.initialState["activated"] == self.activated:
+            state["activated"] = self.activated
+        return state
+
+    def getState(self):
+        state = super().getState()
+        state["activated"] = self.activated
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        self.activated = state["activated"]
+        if self.activated:
+            self.display = displayChars.lever_pulled
+        else:
+            self.display = displayChars.lever_notPulled
 
 '''
 heat source for generating steam and similar
@@ -942,6 +1028,21 @@ class Pile(Item):
     def getDetailedInfo(self):
         return super().getDetailedInfo()+" of "+str(self.type)+" containing "+str(self.numContained)
 
+    def getDiffState(self):
+        state = super().getState()
+        if not self.initialState["numContained"] == self.numContained:
+            state["numContained"] = self.numContained
+        return state
+
+    def getState(self):
+        state = super().getState()
+        state["numContained"] = self.numContained
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        self.numContained = state["numContained"]
+
 '''
 basic item with different appearance
 '''
@@ -1233,8 +1334,8 @@ class MarkerBean(Item):
     '''
     def __init__(self,xPosition=0,yPosition=0,name="bean",container=None):
         self.type = "MarkerBean"
-        super().__init__(" -",xPosition,yPosition,name=name,container=container)
         self.activated = False
+        super().__init__(" -",xPosition,yPosition,name=name,container=container)
         self.walkable = True
         self.initialState = self.getState()
 
@@ -1245,6 +1346,23 @@ class MarkerBean(Item):
         self.display = "x-"
         self.activated = True
 
+    def getDiffState(self):
+        state = super().getState()
+        if not self.initialState["activated"] == self.activated:
+            state["activated"] = self.activated
+        return state
+
+    def getState(self):
+        state = super().getState()
+        state["activated"] = self.activated
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        self.activated = state["activated"]
+        if self.activated:
+            self.display = "x-"
+
 '''
 machine for filling up goo flasks
 '''
@@ -1254,8 +1372,8 @@ class GooDispenser(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None,name="goo dispenser",container=None):
         self.type = "GooDispenser"
-        super().__init__("g%",xPosition,yPosition,name=name,container=container)
         self.activated = False
+        super().__init__("g%",xPosition,yPosition,name=name,container=container)
         self.initialState = self.getState()
     
     '''
@@ -1267,6 +1385,21 @@ class GooDispenser(Item):
                 item.uses = 100
         self.activated = True
 
+    def getDiffState(self):
+        state = super().getState()
+        if not self.initialState["activated"] == self.activated:
+            state["activated"] = self.activated
+        return state
+
+    def getState(self):
+        state = super().getState()
+        state["activated"] = self.activated
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        self.activated = state["activated"]
+
 '''
 flask with food to carry around and drink from
 '''
@@ -1276,9 +1409,9 @@ class GooFlask(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None,name="goo flask",container=None):
         self.type = "GooFlask"
+        self.uses = 100
         super().__init__(" -",xPosition,yPosition,name=name,container=container)
         self.walkable = True
-        self.uses = 100
         self.displayByUses = ["ò ","ò.","ò,","ò-","ò~","ò="]
         self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses//20])
         self.description = "a flask conatining goo"
@@ -1294,6 +1427,22 @@ class GooFlask(Item):
             self.changed()
             character.satiation = 1000
             character.changed()
+
+    def getDiffState(self):
+        state = super().getState()
+        if not self.initialState["uses"] == self.uses:
+            state["uses"] = self.uses
+        return state
+
+    def getState(self):
+        state = super().getState()
+        state["uses"] = self.uses
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        self.uses = state["uses"]
+        self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses//20])
 
     '''
     get info including the charges on the flask

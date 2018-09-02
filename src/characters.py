@@ -92,6 +92,37 @@ class Character():
     def getDiffState(self):
         result = {}
 
+        def getDiffList(toDiff,containerName,exclude=[]):
+            currentThingsList = []
+            states = {}
+            newThingsList = []
+            changedThingsList = []
+            removedThingsList = []
+
+            for thing in toDiff:
+                if thing.id in exclude:
+                    continue
+                currentState = thing.getState()
+                currentThingsList.append(thing.id)
+
+                if thing.id in self.initialState[containerName]:
+                    if not currentState == thing.initialState:
+                        diffState = thing.getDiffState()
+                        if diffState:
+                            changedThingsList.append(thing.id)
+                            states[thing.id] = diffState
+                else:
+                    newThingsList.append(thing.id)
+                    states[thing.id] = thing.getState()
+
+            for thingId in self.initialState[containerName]:
+                if thingId in exclude:
+                    continue
+                if not thingId in currentThingsList:
+                    removedThingsList.append(thingId)
+
+            return (states,changedThingsList,newThingsList,removedThingsList)
+
         if not self.gotBasicSchooling == self.initialState["gotBasicSchooling"]:
             result["gotBasicSchooling"] = self.gotBasicSchooling
         if not self.gotMovementSchooling == self.initialState["gotMovementSchooling"]:
@@ -106,6 +137,19 @@ class Character():
             result["yPosition"] = self.yPosition
         if not self.name == self.initialState["name"]:
             result["name"] = self.name
+
+        (itemStates,changedItems,newItems,removedItems) = getDiffList(self.inventory,"inventoryIds")
+        inventory = {}
+        if changedItems:
+            inventory["changed"] = changedItems
+        if newItems:
+            inventory["new"] = newItems
+        if removedItems:
+            inventory["removed"] = removedItems
+        if itemStates:
+            inventory["states"] = itemStates
+        if itemStates or removedItems:
+            result["inventory"] = inventory
 
         return result
 
@@ -123,6 +167,11 @@ class Character():
                  "yPosition": self.yPosition,
                  "name": self.name,
                }
+                 
+        inventory = []
+        for item in self.inventory:
+            inventory.append(item.id)
+        state["inventoryIds"] = inventory
 
         if self.room:
             state["room"] = self.room.id

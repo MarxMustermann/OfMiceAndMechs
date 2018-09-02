@@ -1100,10 +1100,10 @@ class WaitForDeactivationQuest(Quest):
         self.item = item
         self.description = "please wait for deactivation of "+self.item.description
 
+        super().__init__(lifetime=lifetime)
+
         # listen to item
         self.startWatching(self.item,self.recalculate)
-
-        super().__init__(lifetime=lifetime)
         self.pause() # bad code: why pause by default
 
     '''

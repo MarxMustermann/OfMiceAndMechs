@@ -137,6 +137,12 @@ class Character():
             result["yPosition"] = self.yPosition
         if not self.name == self.initialState["name"]:
             result["name"] = self.name
+        if not self.satiation == self.initialState["satiation"]:
+            result["satiation"] = self.satiation
+        if not self.unconcious == self.initialState["unconcious"]:
+            result["unconcious"] = self.unconcious
+        if not self.reputation == self.initialState["reputation"]:
+            result["reputation"] = self.reputation
 
         (itemStates,changedItems,newItems,removedItems) = getDiffList(self.inventory,self.initialState["inventory"]["inventoryIds"])
         inventory = {}
@@ -159,6 +165,7 @@ class Character():
     '''
     def getState(self):
         state = { 
+		         "id": self.id,
                  "gotBasicSchooling": self.gotBasicSchooling,
                  "gotMovementSchooling": self.gotMovementSchooling,
                  "gotInteractionSchooling": self.gotInteractionSchooling,
@@ -166,6 +173,9 @@ class Character():
                  "xPosition": self.xPosition,
                  "yPosition": self.yPosition,
                  "name": self.name,
+                 "satiation": self.satiation,
+                 "unconcious": self.unconcious,
+                 "reputation": self.reputation,
                  "inventory": {}
                }
                  
@@ -183,6 +193,8 @@ class Character():
     bad code: this state is basicall useless
     '''
     def setState(self,state):
+        if "id" in state:
+            self.id = state["id"]
         if "gotBasicSchooling" in state:
             self.gotBasicSchooling = state["gotBasicSchooling"]
         if "gotMovementSchooling" in state:
@@ -195,6 +207,17 @@ class Character():
             self.yPosition = state["yPosition"]
         if "xPosition" in state:
             self.xPosition = state["xPosition"]
+        if "name" in state:
+            self.name = state["name"]
+        if "satiation" in state:
+            self.satiation = state["satiation"]
+        if "unconcious" in state:
+            self.unconcious = state["unconcious"]
+            if self.unconcious:
+                self.fallUnconcious()
+                self.display = displayChars.unconciousBody
+        if "reputation" in state:
+            self.reputation = state["reputation"]
 
         if "inventory" in state:
             if "changed" in state["inventory"]:

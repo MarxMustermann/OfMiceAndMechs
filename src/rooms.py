@@ -455,6 +455,7 @@ class Room(object):
             for charId in state["newChars"]:
                 charState = state["charStates"][charId]
                 char = characters.Character()
+                char.setState(charState)
                 self.addCharacter(char,charState["xPosition"],charState["yPosition"])
 
         self.forceRedraw()

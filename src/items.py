@@ -563,7 +563,7 @@ class GrowthTank(Item):
         # add character
         if not character:
             name = getRandomName(self.xPosition+self.room.timeIndex,self.yPosition+self.room.timeIndex)
-            character = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],self.xPosition+1,self.yPosition,name=name)
+            character = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],self.xPosition+1,self.yPosition,name=name,container=self)
         character.fallUnconcious()
         self.room.addCharacter(character,self.xPosition+1,self.yPosition)
 

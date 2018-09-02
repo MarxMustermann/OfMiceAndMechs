@@ -119,8 +119,8 @@ class Item(object):
                 del container.itemByCoordinates[(self.xPosition,self.yPosition)]
 
         # remove position information to place item in the void
-        del self.xPosition
-        del self.yPosition
+        self.xPosition = None
+        self.yPosition = None
 
         # add item to characters inventory
         character.inventory.append(self)

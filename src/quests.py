@@ -1376,12 +1376,12 @@ class PickupQuestMeta(MetaQuestSequence):
                 # check whether it is neccessary to re add the movement
                 reAddMove = False
                 if not self.sloppy:
-                    if not hasattr(self.toPickup,"xPosition") or not hasattr(self.toPickup,"yPosition"):
+                    if self.toPickup.xPosition == None or self.toPickup.yPosition == None:
                         reAddMove = False
                     elif not (self.toPickup.room == self.character.room and self.toPickup.xPosition == self.character.xPosition and self.toPickup.yPosition == self.character.yPosition):
                         reAddMove = True
                 else:
-                    if not hasattr(self.toPickup,"xPosition") or not hasattr(self.toPickup,"yPosition"):
+                    if self.toPickup.xPosition == None or self.toPickup.yPosition == None:
                         reAddMove = False
                     elif not (self.toPickup.room == self.character.room and (
                                                              (self.toPickup.xPosition-self.character.xPosition in (-1,0,1) and self.toPickup.yPosition == self.character.yPosition) or 

@@ -61,6 +61,11 @@ class GameState():
         # the terrain
         terrain.setState(state["terrain"],self.tick)
 
+        if "xPosition" in state["mainChar"]:
+            xPosition = mainChar.xPosition
+        if "yPosition" in state["mainChar"]:
+            yPosition = mainChar.yPosition
+
         if "room" in state["mainChar"]:
             for room in terrain.rooms:
                 if room.id == state["mainChar"]["room"]:
@@ -76,7 +81,7 @@ class GameState():
     def getState(self):
         return {  
               "currentPhase":self.currentPhase.getState(),
-              "mainChar":self.mainChar.getState(),
+              "mainChar":self.mainChar.getDiffState(),
               "terrain":terrain.getDiffState(),
               "tick":self.tick,
               "gameWon":self.gameWon

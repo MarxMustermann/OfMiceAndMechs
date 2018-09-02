@@ -92,7 +92,7 @@ class Character():
     def getDiffState(self):
         result = {}
 
-        def getDiffList(toDiff,containerName,exclude=[]):
+        def getDiffList(toDiff,toCompare,exclude=[]):
             currentThingsList = []
             states = {}
             newThingsList = []
@@ -105,7 +105,7 @@ class Character():
                 currentState = thing.getState()
                 currentThingsList.append(thing.id)
 
-                if thing.id in self.initialState[containerName]:
+                if thing.id in toCompare:
                     if not currentState == thing.initialState:
                         diffState = thing.getDiffState()
                         if diffState:
@@ -115,7 +115,7 @@ class Character():
                     newThingsList.append(thing.id)
                     states[thing.id] = thing.getState()
 
-            for thingId in self.initialState[containerName]:
+            for thingId in toCompare:
                 if thingId in exclude:
                     continue
                 if not thingId in currentThingsList:
@@ -138,7 +138,7 @@ class Character():
         if not self.name == self.initialState["name"]:
             result["name"] = self.name
 
-        (itemStates,changedItems,newItems,removedItems) = getDiffList(self.inventory,"inventoryIds")
+        (itemStates,changedItems,newItems,removedItems) = getDiffList(self.inventory,self.initialState["inventory"]["inventoryIds"])
         inventory = {}
         if changedItems:
             inventory["changed"] = changedItems
@@ -166,12 +166,13 @@ class Character():
                  "xPosition": self.xPosition,
                  "yPosition": self.yPosition,
                  "name": self.name,
+                 "inventory": {}
                }
                  
         inventory = []
         for item in self.inventory:
             inventory.append(item.id)
-        state["inventoryIds"] = inventory
+        state["inventory"]["inventoryIds"] = inventory
 
         if self.room:
             state["room"] = self.room.id

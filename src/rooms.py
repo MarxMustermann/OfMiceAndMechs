@@ -1,5 +1,6 @@
 import src.items as items
 import src.quests as quests
+import json
 
 # bad code: global state
 Character = None
@@ -18,7 +19,7 @@ class Room(object):
     state initialization
     bad code: too many attributes
     '''
-    def __init__(self,layout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+    def __init__(self,layout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         # initialize attributes
         self.desiredPosition = desiredPosition
         self.desiredSteamGeneration = None
@@ -56,7 +57,19 @@ class Room(object):
         self.yPosition = yPosition
         self.lastRender = None
         self.isContainment = False
-        self.id = "room_"+str(self.xPosition)+"_"+str(self.yPosition)+"_"
+
+        self.id = {
+                   "other":"room",
+                   "xPosition":xPosition,
+                   "yPosition":yPosition,
+                   "counter":0,
+                  }
+        if creator:
+           self.id["creator"] = creator.id
+        else:
+           self.id["creator"] = "void"
+        self.id = json.dumps(self.id, sort_keys=True)
+		    
         self.itemByCoordinates = {}
 
         # generate the items the room consists of from definition
@@ -81,7 +94,7 @@ class Room(object):
                         if not self.firstOfficer:
                             # add first officer
                             name = getRandomName(self.xPosition+2*self.offsetY,self.offsetX+2*self.yPosition)
-                            npc = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],5,3,name=name,container=self)
+                            npc = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],5,3,name=name,creator=self)
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.firstOfficer = npc
@@ -90,7 +103,7 @@ class Room(object):
                         else:
                             # add second officer
                             name = getRandomName(self.yPosition+2*self.offsetX,self.offsetY+2*self.xPosition)
-                            npc = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],6,4,name=name,container=self)
+                            npc = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],6,4,name=name,creator=self)
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.secondOfficer = npc
@@ -98,156 +111,156 @@ class Room(object):
                             npc.assignQuest(quest,active=True)
                 elif char in ("X","&"):
                     # add wall
-                    itemsOnFloor.append(items.Wall(rowCounter,lineCounter,container=self))
+                    itemsOnFloor.append(items.Wall(rowCounter,lineCounter,creator=self))
                 elif char == "$":
                     # add door and mark position as entry point
-                    door = items.Door(rowCounter,lineCounter,container=self)
+                    door = items.Door(rowCounter,lineCounter,creator=self)
                     itemsOnFloor.append(door)
                     self.walkingAccess.append((rowCounter,lineCounter))
                     self.doors.append(door)
                 elif char == "P":
                     # add pile and save to list
-                    item = items.Pile(rowCounter,lineCounter,container=self)
+                    item = items.Pile(rowCounter,lineCounter,creator=self)
                     itemsOnFloor.append(item)
                     self.piles.append(item)
                 elif char == "F":
                     # add furnace and save to list
-                    item = items.Furnace(rowCounter,lineCounter,container=self)
+                    item = items.Furnace(rowCounter,lineCounter,creator=self)
                     itemsOnFloor.append(item)
                     self.furnaces.append(item)
                 elif char == "#":
                     # add pipe and save to list
-                    item = items.Pipe(rowCounter,lineCounter,container=self)
+                    item = items.Pipe(rowCounter,lineCounter,creator=self)
                     itemsOnFloor.append(item)
                     self.pipes.append(item)
                 elif char == "D":
                     # add display
-                    itemsOnFloor.append(items.Display(rowCounter,lineCounter,container=self))
+                    itemsOnFloor.append(items.Display(rowCounter,lineCounter,creator=self))
                 elif char == "v":
                     #to be bin
-                    itemsOnFloor.append(items.Item(displayChars.binStorage,rowCounter,lineCounter,container=self))
+                    itemsOnFloor.append(items.Item(displayChars.binStorage,rowCounter,lineCounter,creator=self))
                 elif char == "O":
                     #to be pressure Tank
-                    item = items.Boiler(rowCounter,lineCounter,container=self)
+                    item = items.Boiler(rowCounter,lineCounter,creator=self)
                     itemsOnFloor.append(item)
                     self.boilers.append(item)
                     #itemsOnFloor.append(items.Item(displayChars.boiler_active,rowCounter,lineCounter))
                 elif char == "8":
                     #to be chains
-                    itemsOnFloor.append(items.Item(displayChars.chains,rowCounter,lineCounter,container=self))
+                    itemsOnFloor.append(items.Item(displayChars.chains,rowCounter,lineCounter,creator=self))
                 elif char == "I":
                     #to be commlink
-                    itemsOnFloor.append(items.Commlink(rowCounter,lineCounter,container=self))
+                    itemsOnFloor.append(items.Commlink(rowCounter,lineCounter,creator=self))
                 elif char == "H":
                     # add hutch
                     # bad code: handle state some other way
-                    itemsOnFloor.append(items.Hutch(rowCounter,lineCounter,container=self))
+                    itemsOnFloor.append(items.Hutch(rowCounter,lineCounter,creator=self))
                 elif char == "'":
                     # add hutch
                     # bad code: handle state some other way
-                    itemsOnFloor.append(items.Hutch(rowCounter,lineCounter,container=self,activated=True))
+                    itemsOnFloor.append(items.Hutch(rowCounter,lineCounter,creator=self,activated=True))
                 elif char == "o":
                     #to be grid
-                    itemsOnFloor.append(items.Item(displayChars.grid,rowCounter,lineCounter,container=self))
+                    itemsOnFloor.append(items.Item(displayChars.grid,rowCounter,lineCounter,creator=self))
                 elif char == "a":
                     #to be acid
-                    item = items.Item(displayChars.acids[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter,container=self)
+                    item = items.Item(displayChars.acids[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter,creator=self)
                     item.walkable = True
                     itemsOnFloor.append(item)
                 elif char == "b":
                     # to be foodstuffs
-                    itemsOnFloor.append(items.Item(displayChars.foodStuffs[((2*rowCounter)+lineCounter)%6],rowCounter,lineCounter,container=self))
+                    itemsOnFloor.append(items.Item(displayChars.foodStuffs[((2*rowCounter)+lineCounter)%6],rowCounter,lineCounter,creator=self))
                 elif char == "m":
                     # to be machinery
-                    itemsOnFloor.append(items.Item(displayChars.machineries[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter,container=self))
+                    itemsOnFloor.append(items.Item(displayChars.machineries[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter,creator=self))
                 elif char == "h":
                     # add steam hub
-                    itemsOnFloor.append(items.Item(displayChars.hub,rowCounter,lineCounter,container=self))
+                    itemsOnFloor.append(items.Item(displayChars.hub,rowCounter,lineCounter,creator=self))
                 elif char == "i":
                     # add ramp
-                    itemsOnFloor.append(items.Item(displayChars.ramp,rowCounter,lineCounter,container=self))
+                    itemsOnFloor.append(items.Item(displayChars.ramp,rowCounter,lineCounter,creator=self))
                 elif char == "p":
                     # add something
                     # bad code: either find out what this does or delete the code
-                    itemsOnFloor.append(items.Item(displayChars.noClue,rowCounter,lineCounter,container=self))
+                    itemsOnFloor.append(items.Item(displayChars.noClue,rowCounter,lineCounter,creator=self))
                 elif char == "q":
                     # add special pipe
                     # bad code: pipe connection should be done some other way
-                    item = items.Item(displayChars.pipe_lr,rowCounter,lineCounter,container=self)
+                    item = items.Item(displayChars.pipe_lr,rowCounter,lineCounter,creator=self)
                     item.walkable = True
                     itemsOnFloor.append(item)
                 elif char == "r":
                     # add special pipe
                     # bad code: pipe connection should be done some other way
-                    item = items.Item(displayChars.pipe_lrd,rowCounter,lineCounter,container=self)
+                    item = items.Item(displayChars.pipe_lrd,rowCounter,lineCounter,creator=self)
                     item.walkable = True
                     itemsOnFloor.append(item)
                 elif char == "s":
                     # add special pipe
                     # bad code: pipe connection should be done some other way
-                    item = items.Item(displayChars.pipe_ld,rowCounter,lineCounter,container=self)
+                    item = items.Item(displayChars.pipe_ld,rowCounter,lineCounter,creator=self)
                     item.walkable = True
                     itemsOnFloor.append(item)
                 elif char == "t":
                     # add special pipe
                     # bad code: pipe connection should be done some other way
-                    item = items.Item(displayChars.pipe_lu,rowCounter,lineCounter,container=self)
+                    item = items.Item(displayChars.pipe_lu,rowCounter,lineCounter,creator=self)
                     item.walkable = True
                     itemsOnFloor.append(item)
                 elif char == "u":
                     # add special pipe
                     # bad code: pipe connection should be done some other way
-                    item = items.Item(displayChars.pipe_ru,rowCounter,lineCounter,container=self)
+                    item = items.Item(displayChars.pipe_ru,rowCounter,lineCounter,creator=self)
                     item.walkable = True
                     itemsOnFloor.append(item)
                 elif char == "w":
                     # add spray
                     # bad code: handle orientation some other way
-                    item = items.Spray(rowCounter,lineCounter,direction="right",container=self)
+                    item = items.Spray(rowCounter,lineCounter,direction="right",creator=self)
                     itemsOnFloor.append(item)
                     self.sprays.append(item)
                 elif char == "x":
                     # add spray
                     # bad code: handle orientation some other way
-                    item = items.Spray(rowCounter,lineCounter,direction="left",container=self)
+                    item = items.Spray(rowCounter,lineCounter,direction="left",creator=self)
                     itemsOnFloor.append(item)
                     self.sprays.append(item)
                 elif char == "y":
                     # to be outlet
-                    itemsOnFloor.append(items.Item(displayChars.outlet,rowCounter,lineCounter,container=self))
+                    itemsOnFloor.append(items.Item(displayChars.outlet,rowCounter,lineCounter,creator=self))
                 elif char == "j":
                     # to be vat snake
-                    itemsOnFloor.append(items.Item(displayChars.vatSnake,rowCounter,lineCounter,container=self))
+                    itemsOnFloor.append(items.Item(displayChars.vatSnake,rowCounter,lineCounter,creator=self))
                 elif char == "c":
                     # add corpse
-                    item = items.Corpse(rowCounter,lineCounter,container=self)
+                    item = items.Corpse(rowCounter,lineCounter,creator=self)
                     itemsOnFloor.append(item)
                 elif char == "z":
                     # add special pipe
                     # bad code: pipe connection should be done some other way
-                    item = items.Item(displayChars.pipe_ud,rowCounter,lineCounter,container=self)
+                    item = items.Item(displayChars.pipe_ud,rowCounter,lineCounter,creator=self)
                     item.walkable = True
                     itemsOnFloor.append(item)
                 elif char == "Ö":
                     # add growth tank
                     # bad code: specal chars should not be used in code
                     # bad code: handle state some other way
-                    item = items.GrowthTank(rowCounter,lineCounter,filled=True,container=self)
+                    item = items.GrowthTank(rowCounter,lineCounter,filled=True,creator=self)
                     itemsOnFloor.append(item)
                 elif char == "ö":
                     # add growth tank
                     # bad code: specal chars should not be used in code
                     # bad code: handle state some other way
-                    item = items.GrowthTank(rowCounter,lineCounter,filled=False,container=self)
+                    item = items.GrowthTank(rowCounter,lineCounter,filled=False,creator=self)
                     itemsOnFloor.append(item)
                 elif char == "B":
                     # add to be barricade
-                    item = items.Item(displayChars.barricade,rowCounter,lineCounter,container=self)
+                    item = items.Item(displayChars.barricade,rowCounter,lineCounter,creator=self)
                     item.walkable = True
                     itemsOnFloor.append(item)
                 else:
                     # add undefined stuff
-                    itemsOnFloor.append(items.Item(displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter,container=self))
+                    itemsOnFloor.append(items.Item(displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter,creator=self))
                 rowCounter += 1
                 self.sizeX = rowCounter
             lineCounter += 1

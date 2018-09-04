@@ -1,5 +1,6 @@
 import src.items as items
 import src.quests
+import json
 
 # bad code: containers for global state
 characters = None
@@ -16,7 +17,7 @@ class Character():
     sets basic info AND adds default behaviour/items
     bad code: adding the default behaviour/items here makes it harder to create instances with fixed state
     '''
-    def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person",container=None):
+    def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person",creator=None):
         # set basic state
         self.display = display
         self.automated = automated
@@ -39,10 +40,17 @@ class Character():
         self.questsToDelegate = []
         self.unconcious = False
         self.displayOriginal = display
-        if not container:
-            self.id = "void+"+str(self.xPosition)+"_"+str(self.yPosition)
+        self.id = {
+                   "other":"character",
+                   "xPosition":xPosition,
+                   "yPosition":yPosition,
+                   "counter":0,
+                  }
+        if creator:
+           self.id["creator"] = creator.id
         else:
-            self.id = container.id+"+"+str(self.xPosition)+"_"+str(self.yPosition)
+           self.id["creator"] = "void"
+        self.id = json.dumps(self.id, sort_keys=True)
 
         # bad code: story specific state
         self.gotBasicSchooling = False
@@ -57,7 +65,7 @@ class Character():
         self.assignQuest(src.quests.SurviveQuest())
         for quest in quests:
             self.assignQuest(quest)
-        self.inventory.append(items.GooFlask(container=self))
+        self.inventory.append(items.GooFlask(creator=self))
 
         self.initialState = self.getState()
 
@@ -165,7 +173,7 @@ class Character():
     '''
     def getState(self):
         state = { 
-		         "id": self.id,
+                 "id": self.id,
                  "gotBasicSchooling": self.gotBasicSchooling,
                  "gotMovementSchooling": self.gotMovementSchooling,
                  "gotInteractionSchooling": self.gotInteractionSchooling,

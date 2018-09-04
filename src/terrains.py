@@ -2,6 +2,7 @@ import src.items as items
 import src.rooms as rooms
 import src.overlays as overlays
 import src.gameMath as gameMath
+import json
 
 # bad code: global varaibles
 mainChar = None
@@ -27,7 +28,7 @@ class Terrain(object):
     '''
     straightforward state initialization
     '''
-    def __init__(self,layout,detailedLayout):
+    def __init__(self,layout,detailedLayout,creator=None):
         # store terrain content
         self.itemsOnFloor = []
         self.characters = []
@@ -35,8 +36,16 @@ class Terrain(object):
         self.floordisplay = displayChars.floor
         self.itemByCoordinates = {}
         self.roomByCoordinates = {}
-        self.id = "terrain"
 
+        self.id = {
+                   "other":"terrain",
+                  }
+        if creator:
+           self.id["creator"] = creator.id
+        else:
+           self.id["creator"] = "void"
+        self.id = json.dumps(self.id, sort_keys=True)
+		    
 
         # misc state
         self.overlay = None
@@ -52,23 +61,23 @@ class Terrain(object):
                 if char in (" ",".",",","@"):
                     pass
                 elif char == "X":
-                    mapItems.append(items.Wall(rowCounter,lineCounter,container=self))
+                    mapItems.append(items.Wall(rowCounter,lineCounter,creator=self))
                 elif char == "#":
-                    mapItems.append(items.Pipe(rowCounter,lineCounter,container=self))
+                    mapItems.append(items.Pipe(rowCounter,lineCounter,creator=self))
                 elif char == "R":
                     pass
                 elif char == "O":
-                    mapItems.append(items.Item(displayChars.clamp_active,rowCounter,lineCounter,container=self))
+                    mapItems.append(items.Item(displayChars.clamp_active,rowCounter,lineCounter,creator=self))
                 elif char == "0":
-                    mapItems.append(items.Item(displayChars.clamp_inactive,rowCounter,lineCounter,container=self))
+                    mapItems.append(items.Item(displayChars.clamp_inactive,rowCounter,lineCounter,creator=self))
                 elif char == "8":
-                    mapItems.append(items.Chain(rowCounter,lineCounter,container=self))
+                    mapItems.append(items.Chain(rowCounter,lineCounter,creator=self))
                 elif char == "C":
-                    mapItems.append(items.Winch(rowCounter,lineCounter,container=self))
+                    mapItems.append(items.Winch(rowCounter,lineCounter,creator=self))
                 elif char == "P":
-                    mapItems.append(items.Pile(rowCounter,lineCounter,container=self))
+                    mapItems.append(items.Pile(rowCounter,lineCounter,creator=self))
                 else:
-                    mapItems.append(items.Item(displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter,container=self))
+                    mapItems.append(items.Item(displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter,creator=self))
                 rowCounter += 1
             lineCounter += 1
         self.addItems(mapItems)

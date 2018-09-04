@@ -1,4 +1,5 @@
 import urwid
+import json
 
 # bad code: global state
 messages = None
@@ -15,7 +16,7 @@ class Item(object):
     '''
     straightforward state initialization
     '''
-    def __init__(self,display=None,xPosition=0,yPosition=0,container=None,name="item"):
+    def __init__(self,display=None,xPosition=0,yPosition=0,creator=None,name="item"):
 
         if not hasattr(self,"type"):
             self.type = "Item"
@@ -32,11 +33,16 @@ class Item(object):
         self.lastMovementToken = None
         self.chainedTo = []
         self.name = name
-        self.id = "item_"+str(self.xPosition)+"_"+str(self.yPosition)+"_1"
-        if container:
-           self.id = container.id+"+"+self.id
+        self.id = {
+                   "other":"item",
+                   "xPosition":xPosition,
+                   "yPosition":yPosition,
+                  }
+        if creator:
+           self.id["creator"] = creator.id
         else:
-           self.id = "void+"+self.id
+           self.id["creator"] = "void"
+        self.id = json.dumps(self.id, sort_keys=True)
 
         self.description = "a "+self.name
 
@@ -351,9 +357,9 @@ class Item(object):
 
         # generatate scrao
         if self.walkable:
-            newItem = Scrap(self.xPosition,self.yPosition,3,container=self)
+            newItem = Scrap(self.xPosition,self.yPosition,3,creator=self)
         else:
-            newItem = Scrap(self.xPosition,self.yPosition,10,container=self)
+            newItem = Scrap(self.xPosition,self.yPosition,10,creator=self)
         newItem.room = self.room
         newItem.terrain = self.terrain
 
@@ -368,11 +374,11 @@ class Scrap(Item):
     '''
     almost straightforward state initialization
     '''
-    def __init__(self,xPosition=0,yPosition=0,amount=1,name="scrap",container=None):
+    def __init__(self,xPosition=0,yPosition=0,amount=1,name="scrap",creator=None):
         self.type = "Scrap"
         self.amount = amount
 
-        super().__init__(displayChars.scrap_light,xPosition,yPosition,container=container)
+        super().__init__(displayChars.scrap_light,xPosition,yPosition,creator=creator)
 
         # set display char
         # bad code: redundant
@@ -525,22 +531,22 @@ class Scrap(Item):
 dummy class for a corpse
 '''
 class Corpse(Item):
-    def __init__(self,xPosition=0,yPosition=0,name="corpse",container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="corpse",creator=None):
         self.type = "Corpse"
-        super().__init__(displayChars.corpse,xPosition,yPosition,name=name,container=container)
+        super().__init__(displayChars.corpse,xPosition,yPosition,name=name,creator=creator)
         self.initialState = self.getState()
 
 '''
 an character spawning item
 '''
 class GrowthTank(Item):
-    def __init__(self,xPosition=0,yPosition=0,name="growth tank",filled=False,container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="growth tank",filled=False,creator=None):
         self.type = "GrowthTank"
         self.filled = filled
         if filled:
-            super().__init__(displayChars.growthTank_filled,xPosition,yPosition,name=name,container=container)
+            super().__init__(displayChars.growthTank_filled,xPosition,yPosition,name=name,creator=creator)
         else:
-            super().__init__(displayChars.growthTank_unfilled,xPosition,yPosition,name=name,container=container)
+            super().__init__(displayChars.growthTank_unfilled,xPosition,yPosition,name=name,creator=creator)
         self.initialState = self.getState()
 
     def apply(self,character):
@@ -563,7 +569,7 @@ class GrowthTank(Item):
         # add character
         if not character:
             name = getRandomName(self.xPosition+self.room.timeIndex,self.yPosition+self.room.timeIndex)
-            character = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],self.xPosition+1,self.yPosition,name=name,container=self)
+            character = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],self.xPosition+1,self.yPosition,name=name,creator=self)
         character.fallUnconcious()
         self.room.addCharacter(character,self.xPosition+1,self.yPosition)
 
@@ -590,13 +596,13 @@ class GrowthTank(Item):
 basically a bed with a activatable cover
 '''
 class Hutch(Item):
-    def __init__(self,xPosition=0,yPosition=0,name="Hutch",activated=False,container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="Hutch",activated=False,creator=None):
         self.type = "Hutch"
         self.activated = activated
         if self.activated:
-            super().__init__(displayChars.hutch_free,xPosition,yPosition,container=container)
+            super().__init__(displayChars.hutch_free,xPosition,yPosition,creator=creator)
         else:
-            super().__init__(displayChars.hutch_occupied,xPosition,yPosition,container=container)
+            super().__init__(displayChars.hutch_occupied,xPosition,yPosition,creator=creator)
         self.initialState = self.getState()
 
     '''
@@ -637,11 +643,11 @@ class Lever(Item):
     '''
     straightforward state initialization
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="lever",activated=False,container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="lever",activated=False,creator=None):
         self.type = "Lever"
         self.activated = activated
         self.display = {True:displayChars.lever_pulled,False:displayChars.lever_notPulled}
-        super().__init__(displayChars.lever_notPulled,xPosition,yPosition,name=name,container=container)
+        super().__init__(displayChars.lever_notPulled,xPosition,yPosition,name=name,creator=creator)
         self.activateAction = None
         self.deactivateAction = None
         self.walkable = True
@@ -696,12 +702,12 @@ class Furnace(Item):
     '''
     straightforward state initialization
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="Furnace",container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="Furnace",creator=None):
         self.activated = False
         self.boilers = None
         self.stopBoilingEvent = None
         self.type = "Furnace"
-        super().__init__(displayChars.furnace_inactive,xPosition,yPosition,name=name,container=container)
+        super().__init__(displayChars.furnace_inactive,xPosition,yPosition,name=name,creator=creator)
         self.initialState = self.getState()
 
     '''
@@ -789,9 +795,9 @@ class Commlink(Item):
     '''
     call superclass constructor with modified paramters
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="Commlink",container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="Commlink",creator=None):
         self.type = "CommLink"
-        super().__init__(displayChars.commLink,xPosition,yPosition,name=name,container=container)
+        super().__init__(displayChars.commLink,xPosition,yPosition,name=name,creator=creator)
 
     '''
     fake requesting and getting a coal refill
@@ -833,9 +839,9 @@ class Display(Item):
     '''
     call superclass constructor with modified paramters
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="Display",container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="Display",creator=None):
         self.type = "Display"
-        super().__init__(displayChars.display,xPosition,yPosition,name=name,container=container)
+        super().__init__(displayChars.display,xPosition,yPosition,name=name,creator=creator)
 
     '''
     map player controls to room movement 
@@ -873,9 +879,9 @@ class Wall(Item):
     '''
     call superclass constructor with modified paramters
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="Wall",container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="Wall",creator=None):
         self.type = "Wall"
-        super().__init__(displayChars.wall,xPosition,yPosition,name=name,container=container)
+        super().__init__(displayChars.wall,xPosition,yPosition,name=name,creator=creator)
 
 '''
 basic item with different appearance
@@ -884,9 +890,9 @@ class Pipe(Item):
     '''
     call superclass constructor with modified paramters
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="Pipe",container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="Pipe",creator=None):
         self.type = "Pipe"
-        super().__init__(displayChars.pipe,xPosition,yPosition,name=name,container=container)
+        super().__init__(displayChars.pipe,xPosition,yPosition,name=name,creator=creator)
 
 '''
 basic item with different appearance
@@ -895,10 +901,10 @@ class Coal(Item):
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="Coal",container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="Coal",creator=None):
         self.canBurn = True
         self.type = "Coal"
-        super().__init__(displayChars.coal,xPosition,yPosition,name=name,container=container)
+        super().__init__(displayChars.coal,xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
         self.initialState = self.getState()
 
@@ -909,9 +915,9 @@ class Door(Item):
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="Door",container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="Door",creator=None):
         self.type = "Door"
-        super().__init__(displayChars.door_closed,xPosition,yPosition,name=name,container=container)
+        super().__init__(displayChars.door_closed,xPosition,yPosition,name=name,creator=creator)
         self.walkable = False
         self.initialState = self.getState()
 
@@ -984,12 +990,12 @@ class Pile(Item):
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal,container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal,creator=None):
         self.contains_canBurn = True
         self.itemType = itemType
         self.numContained = 100
         self.type = "Pile"
-        super().__init__(displayChars.pile,xPosition,yPosition,name=name,container=container)
+        super().__init__(displayChars.pile,xPosition,yPosition,name=name,creator=creator)
         self.initialState = self.getState()
 
     '''
@@ -1050,11 +1056,11 @@ class Acid(Item):
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal,container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal,creator=None):
         self.canBurn = True
         self.type = itemType
         self.type = "Acid"
-        super().__init__(displayChars.acid,xPosition,yPosition,name=name,container=container)
+        super().__init__(displayChars.acid,xPosition,yPosition,name=name,creator=creator)
         self.initialState = self.getState()
 
     '''
@@ -1073,9 +1079,9 @@ class Chain(Item):
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="chain",container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="chain",creator=None):
         self.type = "Chain"
-        super().__init__(displayChars.chains,xPosition,yPosition,name=name,container=container)
+        super().__init__(displayChars.chains,xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
         self.initialState = self.getState()
 
@@ -1149,9 +1155,9 @@ class Winch(Item):
     '''
     call superclass constructor with modified paramters 
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="winch",container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="winch",creator=None):
         self.type = "Winch"
-        super().__init__(displayChars.winch_inactive,xPosition,yPosition,name=name,container=container)
+        super().__init__(displayChars.winch_inactive,xPosition,yPosition,name=name,creator=creator)
 
     '''
     print "TODO"
@@ -1164,9 +1170,9 @@ class Winch(Item):
 basic item with different appearance
 '''
 class MetalBars(Item):
-    def __init__(self,xPosition=0,yPosition=0,name="metal bar",container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="metal bar",creator=None):
         self.type = "MetalBars"
-        super().__init__("==",xPosition,yPosition,name=name,container=container)
+        super().__init__("==",xPosition,yPosition,name=name,creator=creator)
 
 '''
 produces steam from heat
@@ -1176,9 +1182,9 @@ class Boiler(Item):
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="boiler",container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="boiler",creator=None):
         self.type = "Boiler"
-        super().__init__(displayChars.boiler_inactive,xPosition,yPosition,name=name,container=container)
+        super().__init__(displayChars.boiler_inactive,xPosition,yPosition,name=name,creator=creator)
         self.isBoiling = False
         self.isHeated = False
         self.startBoilingEvent = None
@@ -1291,7 +1297,7 @@ class Spray(Item):
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="spray",direction=None,container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="spray",direction=None,creator=None):
         # skin acording to spray direction
         if direction == None:
             direction = "left"
@@ -1308,7 +1314,7 @@ class Spray(Item):
             self.display_stage3 = displayChars.spray_right_stage3
 
         self.type = "Spray"
-        super().__init__(self.display_inactive,xPosition,yPosition,name=name,container=container)
+        super().__init__(self.display_inactive,xPosition,yPosition,name=name,creator=creator)
         self.initialState = self.getState()
 
     '''
@@ -1332,10 +1338,10 @@ class MarkerBean(Item):
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="bean",container=None):
+    def __init__(self,xPosition=0,yPosition=0,name="bean",creator=None):
         self.type = "MarkerBean"
         self.activated = False
-        super().__init__(" -",xPosition,yPosition,name=name,container=container)
+        super().__init__(" -",xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
         self.initialState = self.getState()
 
@@ -1370,10 +1376,10 @@ class GooDispenser(Item):
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=None,yPosition=None,name="goo dispenser",container=None):
+    def __init__(self,xPosition=None,yPosition=None,name="goo dispenser",creator=None):
         self.type = "GooDispenser"
         self.activated = False
-        super().__init__("g%",xPosition,yPosition,name=name,container=container)
+        super().__init__("g%",xPosition,yPosition,name=name,creator=creator)
         self.initialState = self.getState()
     
     '''
@@ -1407,10 +1413,10 @@ class GooFlask(Item):
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=None,yPosition=None,name="goo flask",container=None):
+    def __init__(self,xPosition=None,yPosition=None,name="goo flask",creator=None):
         self.type = "GooFlask"
         self.uses = 100
-        super().__init__(" -",xPosition,yPosition,name=name,container=container)
+        super().__init__(" -",xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
         self.displayByUses = ["ò ","ò.","ò,","ò-","ò~","ò="]
         self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses//20])
@@ -1458,9 +1464,9 @@ class OjectDispenser(Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="object dispenser",container=None):
+    def __init__(self,xPosition=None,yPosition=None, name="object dispenser",creator=None):
         self.type = "ObjectDispenser"
-        super().__init__("U\\",xPosition,yPosition,name=name,container=container)
+        super().__init__("U\\",xPosition,yPosition,name=name,creator=creator)
         self.initialState = self.getState()
 
     '''
@@ -1481,9 +1487,9 @@ class ProductionArtwork(Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="production artwork",container=None):
+    def __init__(self,xPosition=None,yPosition=None, name="production artwork",creator=None):
         self.type = "ProductionArtwork"
-        super().__init__("U\\",xPosition,yPosition,name=name,container=container)
+        super().__init__("U\\",xPosition,yPosition,name=name,creator=creator)
 
     '''
     trigger production of a player selected item
@@ -1528,9 +1534,9 @@ class ScrapCompactor(Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="scrap compactor",container=None):
+    def __init__(self,xPosition=None,yPosition=None, name="scrap compactor",creator=None):
         self.type = "ScrapCompactor"
-        super().__init__("U\\",xPosition,yPosition,name=name,container=container)
+        super().__init__("U\\",xPosition,yPosition,name=name,creator=creator)
 
     '''
     produce a metal bar

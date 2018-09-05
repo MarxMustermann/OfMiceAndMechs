@@ -3,7 +3,7 @@ import src.characters as characters
 
 class Void():
     def __init__(self):
-       self.id = "void"
+       self.id = "void**#"
 
 '''
 the container for the gamestate that is not contained elsewhere

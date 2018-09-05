@@ -1476,7 +1476,7 @@ class OjectDispenser(Item):
     drop goo flask
     '''
     def dispenseObject(self):
-        new = GooFlask(container=self)
+        new = GooFlask(creator=self)
         new.xPosition = self.xPosition
         new.yPosition = self.yPosition+1
         self.room.addItems([new])

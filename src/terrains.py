@@ -1310,14 +1310,14 @@ class Nothingness(Terrain):
     '''
     state initialization
     '''
-    def __init__(self):
+    def __init__(self,creator=None):
         # leave layout empty
         layout = """
         """
         detailedLayout = """
         """
 
-        super().__init__(layout,detailedLayout)
+        super().__init__(layout,detailedLayout,creator=creator)
 
         # add a few items scattered around
         self.testItems = []
@@ -1346,7 +1346,7 @@ class TutorialTerrain2(Terrain):
     '''
     state initialization
     '''
-    def __init__(self):
+    def __init__(self,creator=None):
         # add only a few scattered intact rooms
         layout = """
 
@@ -1359,7 +1359,7 @@ U  U
         """
         detailedLayout = """
         """
-        super().__init__(layout,detailedLayout)
+        super().__init__(layout,detailedLayout,creator=creator)
 
         self.floordisplay = displayChars.dirt
 
@@ -1477,7 +1477,7 @@ U  U
 the tutorial mech
 '''
 class TutorialTerrain(Terrain):
-    def __init__(self):
+    def __init__(self,creator=None):
 
         # the layout for the mech
         layout = """
@@ -1643,7 +1643,7 @@ XXXCCCCCXXX """
                                              X#X           XX#X           XX#X           XX#X           XX#X           X                                             
                                              X#XXXXXXXXXXXXXX#XXXXXXXXXXXXXX#XXXXXXXXXXXXXX#XXXXXXXXXXXXXX#XXXXXXXXXXXXX                                             
 """
-        super().__init__(layout,detailedLayout)
+        super().__init__(layout,detailedLayout,creator=creator)
 
         # add some tasks to keep npc busy
         toTransport = []

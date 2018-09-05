@@ -586,7 +586,8 @@ class GrowthTank(Item):
 
     def setState(self,state):
         super().setState(state)
-        self.filled = state["filled"]
+        if "filled" in state:
+            self.filled = state["filled"]
         if self.filled:
             self.display = displayChars.growthTank_filled
         else:

@@ -440,7 +440,7 @@ class Scrap(Item):
             self.amount -= fallOffAmount
 
             # generate the fallen off scrap
-            newItem = Scrap(self.xPosition,self.yPosition,fallOffAmount)
+            newItem = Scrap(self.xPosition,self.yPosition,fallOffAmount,creator=self)
             newItem.room = self.room
             newItem.terrain = self.terrain
 
@@ -1014,7 +1014,7 @@ class Pile(Item):
             return
 
         # spawn item to inventory
-        character.inventory.append(self.itemType())
+        character.inventory.append(self.itemType(creator=self))
         character.changed()
         messages.append("you take a piece of "+str(self.itemType))
 

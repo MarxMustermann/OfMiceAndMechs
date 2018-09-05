@@ -1204,7 +1204,7 @@ class Terrain(object):
                 self.removeCharacter(char)
         for charId in state["newCharList"]:
             charState = state["charStates"][charId]
-            char = characters.Character()
+            char = characters.Character(creator=None)
             self.addCharacter(char,charState["xPosition"],charState["yPosition"])
 
     def getDiffState(self):

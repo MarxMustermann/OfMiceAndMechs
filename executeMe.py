@@ -84,6 +84,7 @@ void = gamestate.Void()
 characters.void = void
 rooms.void = void
 items.void = void
+terrains.void = void
 
 # HACK: common variables with modules
 phasesByName = {}

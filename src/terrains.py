@@ -28,7 +28,10 @@ class Terrain(object):
     '''
     straightforward state initialization
     '''
-    def __init__(self,layout,detailedLayout,creator=None):
+    def __init__(self,layout,detailedLayout,creator="void"):
+        if creator == "void":
+            creator = void
+
         # store terrain content
         self.itemsOnFloor = []
         self.characters = []
@@ -45,7 +48,7 @@ class Terrain(object):
         else:
            self.id["creator"] = "void"
         self.id = json.dumps(self.id, sort_keys=True)
-		    
+            
 
         # misc state
         self.overlay = None

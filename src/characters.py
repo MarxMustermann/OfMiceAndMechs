@@ -17,7 +17,10 @@ class Character():
     sets basic info AND adds default behaviour/items
     bad code: adding the default behaviour/items here makes it harder to create instances with fixed state
     '''
-    def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person",creator=None):
+    def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person",creator="void"):
+        if creator == "void":
+            creator = void
+
         # set basic state
         self.display = display
         self.automated = automated

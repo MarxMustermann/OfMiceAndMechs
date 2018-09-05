@@ -19,7 +19,10 @@ class Room(object):
     state initialization
     bad code: too many attributes
     '''
-    def __init__(self,layout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+    def __init__(self,layout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator="void"):
+        if creator == "void":
+            creator = void
+
         # initialize attributes
         self.desiredPosition = desiredPosition
         self.desiredSteamGeneration = None

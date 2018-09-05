@@ -1,5 +1,6 @@
 import urwid
 import json
+import gamestate
 
 # bad code: global state
 messages = None
@@ -16,7 +17,9 @@ class Item(object):
     '''
     straightforward state initialization
     '''
-    def __init__(self,display=None,xPosition=0,yPosition=0,creator=None,name="item"):
+    def __init__(self,display=None,xPosition=0,yPosition=0,creator="void",name="item"):
+        if creator == "void":
+            creator = void
 
         if not hasattr(self,"type"):
             self.type = "Item"

@@ -80,6 +80,11 @@ else:
 #
 #################################################################################################################################
 
+void = gamestate.Void()
+characters.void = void
+rooms.void = void
+items.void = void
+
 # HACK: common variables with modules
 phasesByName = {}
 story.phasesByName = phasesByName

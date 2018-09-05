@@ -332,12 +332,12 @@ class Character():
         if self.room:
             room = self.room
             room.removeCharacter(self)
-            corpse = items.Corpse(self.xPosition,self.yPosition)
+            corpse = items.Corpse(self.xPosition,self.yPosition,creator=self)
             room.addItems([corpse])
         elif self.terrain:
             terrain = self.terrain
             terrain.removeCharacter(self)
-            corpse = items.Corpse(self.xPosition,self.yPosition)
+            corpse = items.Corpse(self.xPosition,self.yPosition,creator=self)
             terrain.addItems([corpse])
         else:
             messages.append("this chould not happen, charcter died without beeing somewhere")

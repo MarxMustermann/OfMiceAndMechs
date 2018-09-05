@@ -19,7 +19,7 @@ class Room(object):
     state initialization
     bad code: too many attributes
     '''
-    def __init__(self,layout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator="void"):
+    def __init__(self,layout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         if creator == "void":
             creator = void
 
@@ -67,10 +67,7 @@ class Room(object):
                    "yPosition":yPosition,
                    "counter":0,
                   }
-        if creator:
-           self.id["creator"] = creator.id
-        else:
-           self.id["creator"] = "void"
+        self.id["creator"] = creator.id
         self.id = json.dumps(self.id, sort_keys=True)
 		    
         self.itemByCoordinates = {}

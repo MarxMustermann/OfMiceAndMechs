@@ -17,7 +17,7 @@ class Item(object):
     '''
     straightforward state initialization
     '''
-    def __init__(self,display=None,xPosition=0,yPosition=0,creator="void",name="item"):
+    def __init__(self,display=None,xPosition=0,yPosition=0,creator=None,name="item"):
         if creator == "void":
             creator = void
 
@@ -41,10 +41,7 @@ class Item(object):
                    "xPosition":xPosition,
                    "yPosition":yPosition,
                   }
-        if creator:
-           self.id["creator"] = creator.id
-        else:
-           self.id["creator"] = "void"
+        self.id["creator"] = creator.id
         self.id = json.dumps(self.id, sort_keys=True)
 
         self.description = "a "+self.name

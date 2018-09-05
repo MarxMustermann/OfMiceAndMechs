@@ -28,7 +28,7 @@ class Terrain(object):
     '''
     straightforward state initialization
     '''
-    def __init__(self,layout,detailedLayout,creator="void"):
+    def __init__(self,layout,detailedLayout,creator=None):
         if creator == "void":
             creator = void
 
@@ -43,10 +43,7 @@ class Terrain(object):
         self.id = {
                    "other":"terrain",
                   }
-        if creator:
-           self.id["creator"] = creator.id
-        else:
-           self.id["creator"] = "void"
+        self.id["creator"] = creator.id
         self.id = json.dumps(self.id, sort_keys=True)
             
 

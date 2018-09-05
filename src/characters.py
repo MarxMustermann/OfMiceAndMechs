@@ -17,7 +17,7 @@ class Character():
     sets basic info AND adds default behaviour/items
     bad code: adding the default behaviour/items here makes it harder to create instances with fixed state
     '''
-    def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person",creator="void"):
+    def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person",creator=None):
         if creator == "void":
             creator = void
 
@@ -49,10 +49,7 @@ class Character():
                    "yPosition":yPosition,
                    "counter":0,
                   }
-        if creator:
-           self.id["creator"] = creator.id
-        else:
-           self.id["creator"] = "void"
+        self.id["creator"] = creator.id
         self.id = json.dumps(self.id, sort_keys=True)
 
         # bad code: story specific state

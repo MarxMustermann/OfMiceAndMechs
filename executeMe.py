@@ -85,6 +85,7 @@ characters.void = void
 rooms.void = void
 items.void = void
 terrains.void = void
+gamestate.void = void
 
 # HACK: common variables with modules
 phasesByName = {}

@@ -115,35 +115,35 @@ class Terrain(object):
                 if char in (".",","," "):
                     pass
                 elif char == "X":
-                    roomsOnMap.append(rooms.MechArmor(rowCounter,lineCounter,0,0))
+                    roomsOnMap.append(rooms.MechArmor(rowCounter,lineCounter,0,0,creator=self))
                 elif char == "V":
                     # add room and save first reference
-                    room = rooms.Vat2(rowCounter,lineCounter,2,2)
+                    room = rooms.Vat2(rowCounter,lineCounter,2,2,creator=self)
                     if not self.tutorialVat:
                         self.tutorialVat = room
                     roomsOnMap.append(room)
                 elif char == "v":
                     # add room and save first reference
-                    room = rooms.Vat1(rowCounter,lineCounter,2,2)
+                    room = rooms.Vat1(rowCounter,lineCounter,2,2,creator=self)
                     if not self.tutorialVatProcessing:
                         self.tutorialVatProcessing = room
                     roomsOnMap.append(room)
                 elif char == "Q":
-                    roomsOnMap.append(rooms.InfanteryQuarters(rowCounter,lineCounter,1,2))
+                    roomsOnMap.append(rooms.InfanteryQuarters(rowCounter,lineCounter,1,2,creator=self))
                 elif char == "w":
                     # add room and add to room list
-                    room = rooms.WaitingRoom(rowCounter,lineCounter,1,2)
+                    room = rooms.WaitingRoom(rowCounter,lineCounter,1,2,creator=self)
                     self.waitingRoom = room
                     roomsOnMap.append(room)
                 elif char == "M":
                     # add room and add to room list
-                    room = rooms.TutorialMachineRoom(rowCounter,lineCounter,4,1)
+                    room = rooms.TutorialMachineRoom(rowCounter,lineCounter,4,1,creator=self)
                     if not self.tutorialMachineRoom:
                         self.tutorialMachineRoom = room
                     roomsOnMap.append(room)
                 elif char == "L":
                     # add room and add to room list
-                    room = rooms.LabRoom(rowCounter,lineCounter,1,1)
+                    room = rooms.LabRoom(rowCounter,lineCounter,1,1,creator=self)
                     if not self.tutorialLab:
                         self.tutorialLab = room
                     roomsOnMap.append(room)
@@ -186,36 +186,36 @@ class Terrain(object):
                         amount += 30
 
                     # add room and add to room list
-                    room = rooms.CargoRoom(rowCounter,lineCounter,3,0,itemTypes=itemTypes,amount=amount)
+                    room = rooms.CargoRoom(rowCounter,lineCounter,3,0,itemTypes=itemTypes,amount=amount,creator=self)
                     self.tutorialCargoRooms.append(room)
                     roomsOnMap.append(room)
                 elif char == "U":
                     # add room and add to room list
-                    room = rooms.StorageRoom(rowCounter,lineCounter,3,0)
+                    room = rooms.StorageRoom(rowCounter,lineCounter,3,0,creator=self)
                     self.tutorialStorageRooms.append(room)
                     roomsOnMap.append(room)
                 elif char == "?":
-                    roomsOnMap.append(rooms.CpuWasterRoom(rowCounter,lineCounter,2,2))
+                    roomsOnMap.append(rooms.CpuWasterRoom(rowCounter,lineCounter,2,2,creator=self))
                 elif char == "t":
                     # add room and add to room list
-                    miniMech = rooms.MiniMech(rowCounter,lineCounter,2,2)
+                    miniMech = rooms.MiniMech(rowCounter,lineCounter,2,2,creator=self)
                     self.miniMechs.append(miniMech)
                     roomsOnMap.append(miniMech)
                 elif char == "W":
                     # add room and add to room list
-                    wakeUpRoom = rooms.WakeUpRoom(rowCounter,lineCounter,1,1)
+                    wakeUpRoom = rooms.WakeUpRoom(rowCounter,lineCounter,1,1,creator=self)
                     self.wakeUpRoom = wakeUpRoom
                     roomsOnMap.append(wakeUpRoom)
                 elif char == "m":
                     # add room and add to room list
-                    room = rooms.MetalWorkshop(rowCounter,lineCounter,1,1)
+                    room = rooms.MetalWorkshop(rowCounter,lineCounter,1,1,creator=self)
                     self.metalWorkshop = room
                     roomsOnMap.append(room)
                 elif char == "b":
-                    room = rooms.ConstructionSite(rowCounter,lineCounter,1,1)
+                    room = rooms.ConstructionSite(rowCounter,lineCounter,1,1,creator=self)
                     roomsOnMap.append(room)
                 elif char == "K":
-                    room = rooms.MechCommand(rowCounter,lineCounter,1,1)
+                    room = rooms.MechCommand(rowCounter,lineCounter,1,1,creator=self)
                     roomsOnMap.append(room)
                 else:
                     # add starting points for pathfinding
@@ -1670,7 +1670,16 @@ XXXCCCCCXXX """
         addStorageQuest()
 
         # add scrap to be cleaned up
-        self.testItems = [items.Scrap(20,52,3),items.Scrap(19,53,3),items.Scrap(20,51,3),items.Scrap(18,49,3),items.Scrap(21,53,3),items.Scrap(19,48,3),items.Scrap(20,52,3),items.Scrap(20,48,3),items.Scrap(18,50,3),items.Scrap(18,51,3)]
+        self.testItems = [items.Scrap(20,52,3,creator=self),
+		                  items.Scrap(19,53,3,creator=self),
+						  items.Scrap(20,51,3,creator=self),
+						  items.Scrap(18,49,3,creator=self),
+						  items.Scrap(21,53,3,creator=self),
+						  items.Scrap(19,48,3,creator=self),
+						  items.Scrap(20,52,3,creator=self),
+						  items.Scrap(20,48,3,creator=self),
+						  items.Scrap(18,50,3,creator=self),
+						  items.Scrap(18,51,3,creator=self)]
         self.addItems(self.testItems)
 
         self.initialState = self.getState()

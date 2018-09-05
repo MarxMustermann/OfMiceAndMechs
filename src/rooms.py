@@ -1000,7 +1000,7 @@ class TutorialMachineRoom(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition=0,yPosition=1,offsetX=4,offsetY=0,desiredPosition=None):
+    def __init__(self,xPosition=0,yPosition=1,offsetX=4,offsetY=0,desiredPosition=None,creator=None):
         roomLayout = """
 X#XX$XXX#X
 X#Pv vID#X
@@ -1013,16 +1013,16 @@ XOOOOOOOOX
 X#########
 XXXXXXXXXX
 """
-        super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.name = "Boilerroom"
 
         # generate special items
-        self.lever1 = items.Lever(1,5,"engine control")
-        self.lever2 = items.Lever(8,5,"boarding alarm")
-        coalPile1 = items.Pile(8,3,"coal Pile1",items.Coal)
-        coalPile2 = items.Pile(8,4,"coal Pile2",items.Coal)
-        coalPile3 = items.Pile(1,3,"coal Pile1",items.Coal)
-        coalPile4 = items.Pile(1,4,"coal Pile2",items.Coal)
+        self.lever1 = items.Lever(1,5,"engine control",creator=self)
+        self.lever2 = items.Lever(8,5,"boarding alarm",creator=self)
+        coalPile1 = items.Pile(8,3,"coal Pile1",items.Coal,creator=self)
+        coalPile2 = items.Pile(8,4,"coal Pile2",items.Coal,creator=self)
+        coalPile3 = items.Pile(1,3,"coal Pile1",items.Coal,creator=self)
+        coalPile4 = items.Pile(1,4,"coal Pile2",items.Coal,creator=self)
 
         # actually add items
         self.addItems([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4])
@@ -1096,7 +1096,7 @@ class CpuWasterRoom(Room):
     '''
     create room and add patroling npcs
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,creator=None):
         self.roomLayout = """
 XX$XXXXXXX
 Xv vD????X
@@ -1109,7 +1109,7 @@ X?......#X
 X? XXXXX#X
 XXXXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=creator)
         self.name = "CpuWasterRoom"
 
         '''
@@ -1128,7 +1128,7 @@ XXXXXXXXXX
             quest4.followUp = quest1
 
             # add npc
-            npc = Character(displayChars.staffCharactersByLetter["l"],x,y,name="Erwin von Liebweg")
+            npc = Character(displayChars.staffCharactersByLetter["l"],x,y,name="Erwin von Liebweg",creator=self)
             self.addCharacter(npc,x,y)
             npc.room = self
             npc.assignQuest(quest1)
@@ -1163,7 +1163,7 @@ class InfanteryQuarters(Room):
     '''
     create room
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
 XX$X&&XXXXX
 XX PPPPPPXX
@@ -1175,7 +1175,7 @@ X'.'' ''.IX
 X .......DX
 XXXXXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.name = "Infanteryquarters"
     
 '''
@@ -1185,7 +1185,7 @@ class Vat1(Room):
     '''
     create room and add special item
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXX
 XaaaaaaaaX
@@ -1198,10 +1198,10 @@ Xmhm ...DX
 Xmmmv.v.IX
 XXXXX$XXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
 
         # add special items
-        self.gooDispenser = items.GooDispenser(6,7)
+        self.gooDispenser = items.GooDispenser(6,7,creator=self)
         self.addItems([self.gooDispenser])
         self.name = "Vat1"
 
@@ -1222,7 +1222,7 @@ class Vat2(Room):
     '''
     create room and set some state
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXX
 X   b jjjX
@@ -1235,7 +1235,7 @@ X@b. ....X
 ## ...v ##
 XXXXX$XXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.isContainment = True
         self.floorDisplay = displayChars.acids
         self.name = "Vat2"
@@ -1249,7 +1249,7 @@ class MechArmor(Room):
     '''
     create room
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXXXXXXX
 XX X X X X X XX
@@ -1267,7 +1267,7 @@ XX X X X X X XX
 X X X X.X X X.X
 XXXXXXX$XXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.floorDisplay = [displayChars.nonWalkableUnkown]
         self.name = "MechArmor"
 
@@ -1278,7 +1278,7 @@ class MiniMech(Room):
     '''
     create the room and add the npc
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
 XX$XXX
 XD..@X
@@ -1287,14 +1287,14 @@ XOF.PX
 Xmm.PX
 XXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.floorDisplay = [displayChars.nonWalkableUnkown]
         self.gogogo = False
         self.engineStrength = 0
         self.name = "MiniMech"
 
         # add npc
-        self.npc = Character(displayChars.staffCharacters[12],3,3,name="Friedrich Engelbart")
+        self.npc = Character(displayChars.staffCharacters[12],3,3,name="Friedrich Engelbart",creator=self)
         self.addCharacter(self.npc,3,3)
         self.npc.room = self
 
@@ -1394,7 +1394,7 @@ class MiniBase(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXXXXX
 X           X
@@ -1410,7 +1410,7 @@ X           X
 X           X
 XXXXXXXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.artwork = items.ProductionArtwork(4,1)
         self.compactor = items.ScrapCompactor(6,1)
         self.addItems([self.artwork,self.compactor])
@@ -1423,7 +1423,7 @@ class LabRoom(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXX
 X     @@ X
@@ -1440,9 +1440,9 @@ XOOOOOOOOX
 XFFFFFFFFX
 XXXXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
-        bean = items.MarkerBean(1,2)
-        beanPile = items.Pile(1,1,"markerPile",items.MarkerBean)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        bean = items.MarkerBean(1,2,creator=self)
+        beanPile = items.Pile(1,1,"markerPile",items.MarkerBean,creator=self)
         self.addItems([bean,beanPile])
         self.name = "Lab"
         self.initialState = self.getState()
@@ -1454,7 +1454,7 @@ class CargoRoom(Room):
     '''
     create room, set storage order and fill with items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,itemTypes=[items.Pipe,items.Wall,items.Furnace,items.Boiler],amount=80):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,itemTypes=[items.Pipe,items.Wall,items.Furnace,items.Boiler],amount=80,creator=None):
         self.roomLayout = """
 XXXXXXXXXX
 X        X
@@ -1471,7 +1471,7 @@ X        X
 X        X
 XXXXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.floorDisplay = [displayChars.nonWalkableUnkown]
         self.name = "CargoRoom"
 
@@ -1489,7 +1489,7 @@ XXXXXXXXXX
                 counter += 3
             else:
                 counter += 4
-            self.storedItems.append(itemTypes[counter%length]())
+            self.storedItems.append(itemTypes[counter%length](creator=self))
 
         # determine in what order storage space should be used
         counter = 0
@@ -1521,7 +1521,7 @@ class StorageRoom(Room):
     '''
     create room, set storage order 
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXX
 X        X
@@ -1541,7 +1541,7 @@ XXXXXXXXXX
         self.storedItems = []
         self.storageSpace = []
 
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.floorDisplay = [displayChars.nonWalkableUnkown]
         self.name = "StorageRoom"
 
@@ -1655,7 +1655,7 @@ class WakeUpRoom(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXX
 Xö    vX
@@ -1669,15 +1669,15 @@ XÖ ... X
 XÖ     X
 XXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.name = "WakeUpRoom"
 
         # generate special items
-        self.lever1 = items.Lever(3,1,"training lever")
-        self.objectDispenser = items.OjectDispenser(4,1)
-        self.gooDispenser = items.GooDispenser(5,9)
-        self.furnace = items.Furnace(4,9)
-        self.pile = items.Pile(6,9)
+        self.lever1 = items.Lever(3,1,"training lever",creator=self)
+        self.objectDispenser = items.OjectDispenser(4,1,creator=self)
+        self.gooDispenser = items.GooDispenser(5,9,creator=self)
+        self.furnace = items.Furnace(4,9,creator=self)
+        self.pile = items.Pile(6,9,creator=self)
 
         # connect lever
         def activateDispenser(dispenser):
@@ -1695,7 +1695,7 @@ class WaitingRoom(Room):
     '''
     create room and add hoppers
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXXX
 X         X
@@ -1709,15 +1709,15 @@ X         X
 XXXXXXXXXXX
 """
         self.quests = []
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.name = "WaitingRoom"
         self.hoppers = []
 
         # add hoppers
-        npc = characters.Character(displayChars.staffCharactersByLetter["s"],4,4,name="Simon Kantbrett")
+        npc = characters.Character(displayChars.staffCharactersByLetter["s"],4,4,name="Simon Kantbrett",creator=self)
         self.hoppers.append(npc)
         self.addCharacter(npc,2,2)
-        npc = characters.Character(displayChars.staffCharactersByLetter["r"],4,5,name="Rudolf Krautbart")
+        npc = characters.Character(displayChars.staffCharactersByLetter["r"],4,5,name="Rudolf Krautbart",creator=self)
         self.hoppers.append(npc)
         self.addCharacter(npc,2,3)
 
@@ -1732,7 +1732,7 @@ XXXXXXXXXXX
 a dummy for the mechs command centre
 '''
 class MechCommand(Room):
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXX$XXXXX
 XI        X
@@ -1745,7 +1745,7 @@ XI        X
 XI        X
 XXXXXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.name = "Mech Command Centre"
 
 '''
@@ -1755,7 +1755,7 @@ class MetalWorkshop(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXXX
 XP        X
@@ -1769,23 +1769,23 @@ XP        X
 XXXXX$XXXXX
 """
         self.quests = []
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.name = "MetalWorkshop"
 
         # add production machines
-        self.artwork = items.ProductionArtwork(4,1)
-        self.compactor = items.ScrapCompactor(6,1)
+        self.artwork = items.ProductionArtwork(4,1,creator=self)
+        self.compactor = items.ScrapCompactor(6,1,creator=self)
         self.addItems([self.artwork,self.compactor])
 
         # add some produced items
         self.producedItems = []
-        self.producedItems.append(items.Wall(9,5))
-        self.producedItems.append(items.Wall(9,4))
-        self.producedItems.append(items.Wall(9,6))
-        self.producedItems.append(items.Wall(9,3))
-        self.producedItems.append(items.Wall(9,7))
-        self.producedItems.append(items.Wall(9,2))
-        self.producedItems.append(items.Wall(9,8))
+        self.producedItems.append(items.Wall(9,5,creator=self))
+        self.producedItems.append(items.Wall(9,4,creator=self))
+        self.producedItems.append(items.Wall(9,6,creator=self))
+        self.producedItems.append(items.Wall(9,3,creator=self))
+        self.producedItems.append(items.Wall(9,7,creator=self))
+        self.producedItems.append(items.Wall(9,2,creator=self))
+        self.producedItems.append(items.Wall(9,8,creator=self))
         self.addItems(self.producedItems)
         self.initialState = self.getState()
 
@@ -1796,7 +1796,7 @@ class ConstructionSite(Room):
     '''
     create room and plan construction
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXXX
 X         X
@@ -1821,7 +1821,7 @@ X#XXX XXX#X
 X#### ####X
 XXXXX$XXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.name = "Construction Site"
 
         # get a map of items that need to be placed
@@ -1846,7 +1846,7 @@ XXXXX$XXXXX
         # add marker for items
         itemstoAdd = []
         for (position,itemType) in itemsToPlace.items():
-            item = items.MarkerBean(position[1],position[0])
+            item = items.MarkerBean(position[1],position[0],creator=self)
             item.apply(self.firstOfficer)
             itemstoAdd.append(item)
         self.addItems(itemstoAdd)

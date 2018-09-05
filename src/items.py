@@ -1590,7 +1590,7 @@ itemMap = {
 }
 
 def getItemFromState(state):
-    item = itemMap[state["type"]]()
+    item = itemMap[state["type"]](creator=void)
     item.setState(state)
     return item
 

@@ -31,6 +31,7 @@ class Terrain(object):
     def __init__(self,layout,detailedLayout,creator=None):
         if creator == "void":
             creator = void
+        self.creationCounter = 0
 
         # store terrain content
         self.itemsOnFloor = []
@@ -42,6 +43,7 @@ class Terrain(object):
 
         self.id = {
                    "other":"terrain",
+                   "counter":creator.getCreationCounter()
                   }
         self.id["creator"] = creator.id
         self.id = json.dumps(self.id, sort_keys=True)
@@ -231,6 +233,10 @@ class Terrain(object):
         self.calculatePathMap()
 
         self.initialState = self.getState()
+
+    def getCreationCounter(self):
+        self.creationCounter += 1
+        return self.creationCounter
 
     '''
     precalculate pathfinding data
@@ -1671,15 +1677,15 @@ XXXCCCCCXXX """
 
         # add scrap to be cleaned up
         self.testItems = [items.Scrap(20,52,3,creator=self),
-		                  items.Scrap(19,53,3,creator=self),
-						  items.Scrap(20,51,3,creator=self),
-						  items.Scrap(18,49,3,creator=self),
-						  items.Scrap(21,53,3,creator=self),
-						  items.Scrap(19,48,3,creator=self),
-						  items.Scrap(20,52,3,creator=self),
-						  items.Scrap(20,48,3,creator=self),
-						  items.Scrap(18,50,3,creator=self),
-						  items.Scrap(18,51,3,creator=self)]
+                          items.Scrap(19,53,3,creator=self),
+                          items.Scrap(20,51,3,creator=self),
+                          items.Scrap(18,49,3,creator=self),
+                          items.Scrap(21,53,3,creator=self),
+                          items.Scrap(19,48,3,creator=self),
+                          items.Scrap(20,52,3,creator=self),
+                          items.Scrap(20,48,3,creator=self),
+                          items.Scrap(18,50,3,creator=self),
+                          items.Scrap(18,51,3,creator=self)]
         self.addItems(self.testItems)
 
         self.initialState = self.getState()

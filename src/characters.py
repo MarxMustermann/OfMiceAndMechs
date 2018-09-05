@@ -20,6 +20,7 @@ class Character():
     def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person",creator=None):
         if creator == "void":
             creator = void
+        self.creationCounter = 0
 
         # set basic state
         self.display = display
@@ -47,7 +48,7 @@ class Character():
                    "other":"character",
                    "xPosition":xPosition,
                    "yPosition":yPosition,
-                   "counter":0,
+                   "counter":creator.getCreationCounter()
                   }
         self.id["creator"] = creator.id
         self.id = json.dumps(self.id, sort_keys=True)
@@ -68,6 +69,10 @@ class Character():
         self.inventory.append(items.GooFlask(creator=self))
 
         self.initialState = self.getState()
+
+    def getCreationCounter(self):
+        self.creationCounter += 1
+        return self.creationCounter
 
     '''
     almost straightforward adding of events to the characters event queue

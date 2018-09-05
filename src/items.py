@@ -20,6 +20,7 @@ class Item(object):
     def __init__(self,display=None,xPosition=0,yPosition=0,creator=None,name="item"):
         if creator == "void":
             creator = void
+        self.creationCounter = 0
 
         if not hasattr(self,"type"):
             self.type = "Item"
@@ -40,6 +41,7 @@ class Item(object):
                    "other":"item",
                    "xPosition":xPosition,
                    "yPosition":yPosition,
+                   "counter":creator.getCreationCounter()
                   }
         self.id["creator"] = creator.id
         self.id = json.dumps(self.id, sort_keys=True)
@@ -47,6 +49,10 @@ class Item(object):
         self.description = "a "+self.name
 
         self.initialState = self.getState()
+
+    def getCreationCounter(self):
+        self.creationCounter += 1
+        return self.creationCounter
 
     def getDiffState(self):
         result = {}

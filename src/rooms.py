@@ -23,6 +23,8 @@ class Room(object):
         if creator == "void":
             creator = void
 
+        self.creationCounter = 0
+
         # initialize attributes
         self.desiredPosition = desiredPosition
         self.desiredSteamGeneration = None
@@ -65,11 +67,11 @@ class Room(object):
                    "other":"room",
                    "xPosition":xPosition,
                    "yPosition":yPosition,
-                   "counter":0,
+                   "counter":creator.getCreationCounter()
                   }
         self.id["creator"] = creator.id
         self.id = json.dumps(self.id, sort_keys=True)
-		    
+            
         self.itemByCoordinates = {}
 
         # generate the items the room consists of from definition
@@ -313,6 +315,10 @@ class Room(object):
         self.addItems(itemsOnFloor)
 
         self.initialState = self.getState()
+
+    def getCreationCounter(self):
+        self.creationCounter += 1
+        return self.creationCounter
 
     def getDiffState(self):
         currentState = self.getState()

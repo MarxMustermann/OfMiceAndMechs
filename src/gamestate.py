@@ -2,8 +2,12 @@ import json
 import src.characters as characters
 
 class Void():
-    def __init__(self):
-       self.id = "void**#"
+    id = "void**#"
+    creationCounter = 0
+
+    def getCreationCounter(self):
+        self.creationCounter += 1
+        return self.creationCounter
 
 '''
 the container for the gamestate that is not contained elsewhere

@@ -1,4 +1,5 @@
 import src.items as items
+import json
 
 # HACK: common variables with modules
 showCinematic = None
@@ -19,7 +20,8 @@ class Quest(object):
     '''
     straightforward state initialization
     '''
-    def __init__(self,followUp=None,startCinematics=None,lifetime=0):
+    def __init__(self,followUp=None,startCinematics=None,lifetime=0,creator=None):
+        self.creationCounter = 0
         self.followUp = followUp # deprecate?
         self.character = None # should be more general like owner as preparation for room quests
         self.listener = [] # the list of things caring about this quest. The owner for example
@@ -33,7 +35,17 @@ class Quest(object):
         self.reputationReward = 0
         self.watched = []
 
+        self.id = {
+                    "counter":creator.getCreationCounter()
+                  }
+        self.id["creator"] = creator.id
+        self.id = json.dumps(self.id, sort_keys=True)
+
         self.lifetime = lifetime
+
+    def getCreationCounter(self):
+        self.creationCounter += 1
+        return self.creationCounter
 
     def startWatching(self, target, callback):
         target.addListener(callback)
@@ -261,11 +273,11 @@ class MetaQuestSequence(Quest):
     '''
     state initialization
     '''
-    def __init__(self,quests,startCinematics=None,lifetime=None):
+    def __init__(self,quests,startCinematics=None,lifetime=None,creator=None):
         # listen to subquests
         self.subQuestsOrig = quests.copy()
         self.subQuests = quests
-        super().__init__(startCinematics=startCinematics,lifetime=lifetime)
+        super().__init__(startCinematics=startCinematics,lifetime=lifetime,creator=creator)
         self.listeningTo = []
         self.metaDescription = "meta"
         
@@ -459,12 +471,12 @@ class MetaQuestParralel(Quest):
     '''
     state initialization
     '''
-    def __init__(self,quests,startCinematics=None,looped=False,lifetime=None):
+    def __init__(self,quests,startCinematics=None,looped=False,lifetime=None,creator=None):
         self.subQuests = quests
         self.lastActive = None
         self.metaDescription = "meta"
 
-        super().__init__(startCinematics=startCinematics,lifetime=lifetime)
+        super().__init__(startCinematics=startCinematics,lifetime=lifetime,creator=creator)
 
         # listen to subquests
         for quest in self.subQuests:
@@ -680,7 +692,7 @@ class NaiveMoveQuest(Quest):
     '''
     straightfoward state setting
     '''
-    def __init__(self,room,x,y,sloppy=False,followUp=None,startCinematics=None):
+    def __init__(self,room,x,y,sloppy=False,followUp=None,startCinematics=None,creator=None):
         self.dstX = x
         self.dstY = y
         self.targetX = x
@@ -688,7 +700,7 @@ class NaiveMoveQuest(Quest):
         self.room = room
         self.sloppy = sloppy
         self.description = "please go to coordinate "+str(self.dstX)+"/"+str(self.dstY)    
-        super().__init__(followUp,startCinematics=startCinematics)
+        super().__init__(followUp,startCinematics=startCinematics,creator=creator)
         self.listeningTo = []
 
     '''
@@ -751,7 +763,7 @@ class NaiveMoveQuest(Quest):
         elif not self.character.room and self.character.quests and self.character.quests[0] == self:
             # make the character enter the correct room
             # bad code: adds a new quest instead of using sub quests
-            self.character.assignQuest(EnterRoomQuestMeta(self.room),active=True)
+            self.character.assignQuest(EnterRoomQuestMeta(self.room,creator=self),active=True)
             pass # bad code: does nothing
         super().recalculate()
 
@@ -763,13 +775,13 @@ class NaiveEnterRoomQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,room,followUp=None,startCinematics=None):
+    def __init__(self,room,followUp=None,startCinematics=None,creator=None):
         self.description = "please enter the room: "+room.name+" "+str(room.xPosition)+" "+str(room.yPosition)
         self.room = room
         # set door as target
         self.dstX = self.room.walkingAccess[0][0]+room.xPosition*15+room.offsetX
         self.dstY = self.room.walkingAccess[0][1]+room.yPosition*15+room.offsetY
-        super().__init__(followUp,startCinematics=startCinematics)
+        super().__init__(followUp,startCinematics=startCinematics,creator=creator)
 
     '''
     assign character and 
@@ -829,11 +841,11 @@ class NaivePickupQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,toPickup,followUp=None,startCinematics=None):
+    def __init__(self,toPickup,followUp=None,startCinematics=None,creator=None):
         self.toPickup = toPickup
         self.dstX = self.toPickup.xPosition
         self.dstY = self.toPickup.yPosition
-        super().__init__(followUp,startCinematics=startCinematics)
+        super().__init__(followUp,startCinematics=startCinematics,creator=creator)
         self.startWatching(self.toPickup,self.recalculate)
         self.startWatching(self.toPickup,self.triggerCompletionCheck)
         self.description = "naive pickup"
@@ -861,11 +873,11 @@ class NaiveGetQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,questDispenser,assign=True,followUp=None,startCinematics=None):
+    def __init__(self,questDispenser,assign=True,followUp=None,startCinematics=None,creator=None):
         self.questDispenser = questDispenser
         self.quest = None
         self.assign = assign
-        super().__init__(followUp,startCinematics=startCinematics)
+        super().__init__(followUp,startCinematics=startCinematics,creator=creator)
         self.description = "naive get quest"
 
     '''
@@ -904,8 +916,8 @@ class NaiveGetReward(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,quest,followUp=None,startCinematics=None):
-        super().__init__(followUp,startCinematics=startCinematics)
+    def __init__(self,quest,followUp=None,startCinematics=None,creator=None):
+        super().__init__(followUp,startCinematics=startCinematics,creator=creator)
         self.quest = quest
         self.description = "naive get reward"
         self.done = False
@@ -939,9 +951,9 @@ class NaiveMurderQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,toKill,followUp=None,startCinematics=None):
+    def __init__(self,toKill,followUp=None,startCinematics=None,creator=None):
         self.toKill = toKill
-        super().__init__(followUp,startCinematics=startCinematics)
+        super().__init__(followUp,startCinematics=startCinematics,creator=creator)
         self.description = "naive murder"
 
     '''
@@ -969,9 +981,9 @@ class NaiveActivateQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,toActivate,followUp=None,startCinematics=None):
+    def __init__(self,toActivate,followUp=None,startCinematics=None,creator=None):
         self.toActivate = toActivate
-        super().__init__(followUp,startCinematics=startCinematics)
+        super().__init__(followUp,startCinematics=startCinematics,creator=creator)
         self.description = "naive activate "+str(self.toActivate)
         self.activated = False
 
@@ -1009,12 +1021,12 @@ class NaiveDropQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
+    def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None,creator=None):
         self.dstX = xPosition
         self.dstY = yPosition
         self.room = room
         self.toDrop = toDrop
-        super().__init__(followUp,startCinematics=startCinematics)
+        super().__init__(followUp,startCinematics=startCinematics,creator=creator)
         self.startWatching(self.toDrop,self.recalculate)
         self.startWatching(self.toDrop,self.triggerCompletionCheck)
         self.description = "naive drop"
@@ -1045,8 +1057,8 @@ class NaiveDelegateQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,quest):
-        super().__init__()
+    def __init__(self,quest,creator=None):
+        super().__init__(creator=creator)
         self.quest = quest
         self.description = "naive delegate quest"
         self.startWatching(self.quest,self.triggerCompletionCheck)
@@ -1079,9 +1091,9 @@ class WaitQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,followUp=None,startCinematics=None,lifetime=None):
+    def __init__(self,followUp=None,startCinematics=None,lifetime=None,creator=None):
         self.description = "please wait"
-        super().__init__(lifetime=lifetime)
+        super().__init__(lifetime=lifetime,creator=creator)
 
     '''
     do nothing
@@ -1096,11 +1108,11 @@ class WaitForDeactivationQuest(Quest):
     '''
     state initialization
     '''
-    def __init__(self,item,followUp=None,startCinematics=None,lifetime=None):
+    def __init__(self,item,followUp=None,startCinematics=None,lifetime=None,creator=None):
         self.item = item
         self.description = "please wait for deactivation of "+self.item.description
 
-        super().__init__(lifetime=lifetime)
+        super().__init__(lifetime=lifetime,creator=creator)
 
         # listen to item
         self.startWatching(self.item,self.recalculate)
@@ -1126,10 +1138,10 @@ class WaitForQuestCompletion(Quest):
     '''
     state initialization
     '''
-    def __init__(self,quest):
+    def __init__(self,quest,creator=None):
         self.quest = quest
         self.description = "please wait for the quest to completed"
-        super().__init__()
+        super().__init__(creator=creator)
         self.startWatching(self.quest,self.triggerCompletionCheck)
 
     '''
@@ -1159,9 +1171,9 @@ class DrinkQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,startCinematics=None):
+    def __init__(self,startCinematics=None,creator=None):
         self.description = "please drink"
-        super().__init__(startCinematics=startCinematics)
+        super().__init__(startCinematics=startCinematics,creator=creator)
 
     '''
     assign to character and listen to character
@@ -1197,11 +1209,11 @@ class SurviveQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,startCinematics=None,looped=True,lifetime=None):
+    def __init__(self,startCinematics=None,looped=True,lifetime=None,creator=None):
         self.description = "survive"
         self.drinkQuest = None
         self.refillQuest = None
-        super().__init__(startCinematics=startCinematics)
+        super().__init__(startCinematics=startCinematics,creator=creator)
 
     '''
     assign to character and listen to the character
@@ -1224,13 +1236,13 @@ class SurviveQuest(Quest):
         for item in self.character.inventory:
             if isinstance(item,items.GooFlask):
                 if item.uses < 10 and not self.refillQuest:
-                    self.refillQuest = RefillDrinkQuest()
+                    self.refillQuest = RefillDrinkQuest(creator=self)
                     self.character.assignQuest(self.refillQuest,active=True)
 
         # drink
         if self.character.satiation < 31:
             if not self.drinkQuest:
-                self.drinkQuest = DrinkQuest()
+                self.drinkQuest = DrinkQuest(creator=self)
                 self.character.assignQuest(self.drinkQuest,active=True)
 
 '''
@@ -1240,10 +1252,10 @@ class EnterRoomQuestMeta(MetaQuestSequence):
     '''
     basic state initialization
     '''
-    def __init__(self,room,followUp=None,startCinematics=None):
+    def __init__(self,room,followUp=None,startCinematics=None,creator=None):
+        super().__init__([],creator=creator)
         self.room = room
-        self.questList = [NaiveEnterRoomQuest(room)]
-        super().__init__(self.questList)
+        self.addQuest(NaiveEnterRoomQuest(room,creator=self))
         self.recalculate()
         self.metaDescription = "enterroom Meta"
         self.leaveRoomQuest = None
@@ -1257,7 +1269,7 @@ class EnterRoomQuestMeta(MetaQuestSequence):
         if self.leaveRoomQuest and self.leaveRoomQuest.completed:
             self.leaveRoomQuest = None
         if not self.leaveRoomQuest and self.character.room and not self.character.room == self.room:
-            self.leaveRoomQuest = LeaveRoomQuest(self.character.room)
+            self.leaveRoomQuest = LeaveRoomQuest(self.character.room,creator=self)
             self.addQuest(self.leaveRoomQuest)
 
         super().recalculate()
@@ -1276,13 +1288,15 @@ class MoveQuestMeta(MetaQuestSequence):
     '''
     state initialization
     '''
-    def __init__(self,room,x,y,sloppy=False,followUp=None,startCinematics=None):
-        self.moveQuest = NaiveMoveQuest(room,x,y,sloppy=sloppy)
+    def __init__(self,room,x,y,sloppy=False,followUp=None,startCinematics=None,creator=None):
+        super().__init__([],creator=creator)
+        self.moveQuest = NaiveMoveQuest(room,x,y,sloppy=sloppy,creator=self)
         self.questList = [self.moveQuest]
         self.enterRoomQuest = None
         self.leaveRoomQuest = None
         self.room = room
-        super().__init__(self.questList)
+        for quest in reversed(self.questList):
+            self.addQuest(quest)
         self.metaDescription = "move meta"
 
     '''
@@ -1294,14 +1308,14 @@ class MoveQuestMeta(MetaQuestSequence):
             if self.leaveRoomQuest and self.leaveRoomQuest.completed:
                 self.leaveRoomQuest = None
             if not self.leaveRoomQuest and (not self.room and self.character.room):
-                self.leaveRoomQuest = LeaveRoomQuest(self.character.room)
+                self.leaveRoomQuest = LeaveRoomQuest(self.character.room,creator=self)
                 self.addQuest(self.leaveRoomQuest)
 
             # enter correct room
             if self.enterRoomQuest and self.enterRoomQuest.completed:
                 self.enterRoomQuest = None
             if (not self.enterRoomQuest and (self.room and ((not self.character.room) or (not self.character.room == self.room)))):
-                self.enterRoomQuest = EnterRoomQuestMeta(self.room)
+                self.enterRoomQuest = EnterRoomQuestMeta(self.room,creator=self)
                 self.addQuest(self.enterRoomQuest)
         super().recalculate()
     
@@ -1319,14 +1333,16 @@ class DropQuestMeta(MetaQuestSequence):
     '''
     generate quests to move and drop item
     '''
-    def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None):
+    def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None,creator=None):
+        super().__init__([],creator=creator)
         self.toDrop = toDrop
-        self.moveQuest = MoveQuestMeta(room,xPosition,yPosition)
-        self.questList = [self.moveQuest,NaiveDropQuest(toDrop,room,xPosition,yPosition)]
+        self.moveQuest = MoveQuestMeta(room,xPosition,yPosition,creator=self)
+        self.questList = [self.moveQuest,NaiveDropQuest(toDrop,room,xPosition,yPosition,creator=self)]
         self.room = room
         self.xPosition = xPosition
         self.yPosition = yPosition
-        super().__init__(self.questList)
+        for quest in reversed(questList):
+            self.addQuest(quest)
         self.metaDescription = "drop Meta"
 
     '''
@@ -1337,7 +1353,7 @@ class DropQuestMeta(MetaQuestSequence):
             if self.moveQuest and self.moveQuest.completed:
                 self.moveQuest = None
             if not self.moveQuest and not (self.room == self.character.room and self.xPosition == self.character.xPosition and self.yPosition == self.character.yPosition):
-                self.moveQuest = MoveQuestMeta(self.room,self.xPosition,self.yPosition)
+                self.moveQuest = MoveQuestMeta(self.room,self.xPosition,self.yPosition,creator=self)
                 self.addQuest(self.moveQuest)
         super().recalculate()
 
@@ -1355,12 +1371,14 @@ class PickupQuestMeta(MetaQuestSequence):
     '''
     generate quests to move and pick up 
     '''
-    def __init__(self,toPickup,followUp=None,startCinematics=None):
+    def __init__(self,toPickup,followUp=None,startCinematics=None,creator=None):
+        super().__init__([],creator=creator)
         self.toPickup = toPickup
         self.sloppy = not self.toPickup.walkable
-        self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition,sloppy=self.sloppy)
-        self.questList = [self.moveQuest,NaivePickupQuest(self.toPickup)]
-        super().__init__(self.questList)
+        self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition,sloppy=self.sloppy,creator=self)
+        self.questList = [self.moveQuest,NaivePickupQuest(self.toPickup,creator=self)]
+        for quest in reversed(self.questList):
+            self.addQuest(quest)
         self.metaDescription = "pickup Meta"
 
     '''
@@ -1390,7 +1408,7 @@ class PickupQuestMeta(MetaQuestSequence):
 
                 # re add the movement
                 if reAddMove:
-                    self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition,sloppy=self.sloppy)
+                    self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition,sloppy=self.sloppy,creator=self)
                     self.addQuest(self.moveQuest)
         super().recalculate()
 
@@ -1408,12 +1426,14 @@ class ActivateQuestMeta(MetaQuestSequence):
     '''
     generate quests to move and activate
     '''
-    def __init__(self,toActivate,followUp=None,desiredActive=True,startCinematics=None):
+    def __init__(self,toActivate,followUp=None,desiredActive=True,startCinematics=None,creator=None):
+        super().__init__([],creator=creator)
         self.toActivate = toActivate
         self.sloppy = not self.toActivate.walkable
-        self.moveQuest = MoveQuestMeta(toActivate.room,toActivate.xPosition,toActivate.yPosition,sloppy=self.sloppy)
-        self.questList = [self.moveQuest,NaiveActivateQuest(toActivate)]
-        super().__init__(self.questList)
+        self.moveQuest = MoveQuestMeta(toActivate.room,toActivate.xPosition,toActivate.yPosition,sloppy=self.sloppy,creator=self)
+        self.questList = [self.moveQuest,NaiveActivateQuest(toActivate,creator=self)]
+        for quest in reversed(self.questList):
+            self.addQuest(quest)
         self.metaDescription = "activate Quest"
 
     '''
@@ -1443,7 +1463,7 @@ class ActivateQuestMeta(MetaQuestSequence):
 
                 # re add the movement
                 if reAddMove:
-                    self.moveQuest = MoveQuestMeta(self.toActivate.room,self.toActivate.xPosition,self.toActivate.yPosition,sloppy=self.sloppy)
+                    self.moveQuest = MoveQuestMeta(self.toActivate.room,self.toActivate.xPosition,self.toActivate.yPosition,sloppy=self.sloppy,creator=self)
                     self.addQuest(self.moveQuest)
         super().recalculate()
 
@@ -1477,12 +1497,14 @@ class CollectQuestMeta(MetaQuestSequence):
     '''
     state initialization
     '''
-    def __init__(self,toFind="canBurn",startCinematics=None):
+    def __init__(self,toFind="canBurn",startCinematics=None,creator=None):
+        super().__init__([],creator=creator)
         self.toFind = toFind
         self.activateQuest = None
-        self.waitQuest = WaitQuest()
+        self.waitQuest = WaitQuest(creator=self)
         self.questList = [self.waitQuest]
-        super().__init__(self.questList)
+        for quest in reversed(self.questList):
+            self.addQuest(quest)
         self.metaDescription = "fetch Quest Meta"
     
     '''
@@ -1508,7 +1530,7 @@ class CollectQuestMeta(MetaQuestSequence):
 
             # activate the pile
             if foundItem:
-                self.activeQuest = ActivateQuestMeta(foundItem)
+                self.activeQuest = ActivateQuestMeta(foundItem,creator=self)
                 self.addQuest(self.activeQuest)
 
             # terminate when done
@@ -1527,12 +1549,14 @@ class GetQuest(MetaQuestSequence):
     '''
     generate quests to move to the quest dispenser and get the quest
     '''
-    def __init__(self,questDispenser,assign=False,followUp=None,startCinematics=None):
+    def __init__(self,questDispenser,assign=False,followUp=None,startCinematics=None,creator=None):
+        super().__init__([],creator=creator)
         self.questDispenser = questDispenser
-        self.moveQuest = MoveQuestMeta(self.questDispenser.room,self.questDispenser.xPosition,self.questDispenser.yPosition,sloppy=True)
-        self.getQuest = NaiveGetQuest(questDispenser,assign=assign)
+        self.moveQuest = MoveQuestMeta(self.questDispenser.room,self.questDispenser.xPosition,self.questDispenser.yPosition,sloppy=True,creator=self)
+        self.getQuest = NaiveGetQuest(questDispenser,assign=assign,creator=self)
         self.questList = [self.moveQuest,self.getQuest]
-        super().__init__(self.questList)
+        for quest in reversed(self.questList):
+            self.addQuest(quest)
         self.metaDescription = "get Quest"
 
     '''
@@ -1555,14 +1579,14 @@ class GetQuest(MetaQuestSequence):
 get the reward for a completed quest
 '''
 class GetReward(MetaQuestSequence):
-    def __init__(self,questDispenser,quest,assign=False,followUp=None,startCinematics=None):
+    def __init__(self,questDispenser,quest,assign=False,followUp=None,startCinematics=None,creator=None):
         self.questDispenser = questDispenser
-        self.moveQuest = MoveQuestMeta(self.questDispenser.room,self.questDispenser.xPosition,self.questDispenser.yPosition,sloppy=True)
+        self.moveQuest = MoveQuestMeta(self.questDispenser.room,self.questDispenser.xPosition,self.questDispenser.yPosition,sloppy=True,creator=self)
         self.getQuest = NaiveGetReward(quest)
         self.questList = [self.moveQuest,self.getQuest]
         self.actualQuest = quest
 
-        super().__init__(self.questList)
+        super().__init__(self.questList,creator=creator)
         self.metaDescription = "get Reward"
 
     '''
@@ -1615,13 +1639,15 @@ class MurderQuest(MetaQuestSequence):
     '''
     generate quests for moving to and murdering the target
     '''
-    def __init__(self,toKill,followUp=None,startCinematics=None):
+    def __init__(self,toKill,followUp=None,startCinematics=None,creator=None):
+        super().__init__([],creator=creator)
         self.toKill = toKill
-        self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=True)
-        self.questList = [self.moveQuest,NaiveMurderQuest(toKill)]
+        self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=True,creator=self)
+        self.questList = [self.moveQuest,NaiveMurderQuest(toKill,creator=self)]
         self.lastPos = (self.toKill.room,self.toKill.xPosition,self.toKill.yPosition)
-        super().__init__(self.questList)
         self.metaDescription = "murder"
+        for quest in reversed(questList):
+            self.addQuest(quest)
         self.startWatching(self.toKill,self.recalculate)
 
     '''
@@ -1635,7 +1661,7 @@ class MurderQuest(MetaQuestSequence):
                 self.moveQuest.deactivate()
                 if self.moveQuest in self.questList:
                         self.questList.remove(self.moveQuest)
-                self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=True)
+                self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=True,creator=self)
                 self.addQuest(self.moveQuest)
         super().recalculate()
 
@@ -1647,11 +1673,11 @@ class FillPocketsQuest(MetaQuestSequence):
     '''
     state initialization
     '''
-    def __init__(self,followUp=None,startCinematics=None,lifetime=None):
-        self.waitQuest = WaitQuest()
+    def __init__(self,followUp=None,startCinematics=None,lifetime=None,creator=None):
+        self.waitQuest = WaitQuest(creator=self)
         self.questList = [self.waitQuest]
         self.collectQuest = None
-        super().__init__(self.questList)
+        super().__init__(self.questList,creator=creator)
         self.metaDescription = "fill pockets"
 
     '''
@@ -1670,7 +1696,7 @@ class FillPocketsQuest(MetaQuestSequence):
 
         # add collect quest
         if len(self.character.inventory) < 11 and not self.collectQuest:
-            self.collectQuest = CollectQuestMeta()
+            self.collectQuest = CollectQuestMeta(creator=self)
             self.addQuest(self.collectQuest)
 
         # remove wait quest on first occasion
@@ -1684,12 +1710,12 @@ class FillPocketsQuest(MetaQuestSequence):
 quest to leave the room
 '''
 class LeaveRoomQuest(Quest):
-    def __init__(self,room,followUp=None,startCinematics=None):
+    def __init__(self,room,followUp=None,startCinematics=None,creator=None):
         self.room = room
         self.description = "please leave the room."
         self.dstX = self.room.walkingAccess[0][0]
         self.dstY = self.room.walkingAccess[0][1]
-        super().__init__(followUp,startCinematics=startCinematics)
+        super().__init__(followUp,startCinematics=startCinematics,creator=creator)
 
     '''
     move to door and step out of the room
@@ -1748,17 +1774,17 @@ class PatrolQuest(MetaQuestSequence):
     '''
     state initialization
     '''
-    def __init__(self,waypoints=[],startCinematics=None,looped=True,lifetime=None):
+    def __init__(self,waypoints=[],startCinematics=None,looped=True,lifetime=None,creator=None):
+        # bad code: superconstructor doesn't actually process the looped parameter
+        super().__init__(quests,startCinematics=startCinematics,looped=looped,creator=creator)
+
         # add movement between waypoints
         quests = []
         for waypoint in waypoints:
-            quest = MoveQuestMeta(waypoint[0],waypoint[1],waypoint[2])
-            quests.append(quest)
+            quest = MoveQuestMeta(waypoint[0],waypoint[1],waypoint[2],creator=self)
+            self.addQuest(quest)
 
         self.lifetime = lifetime
-
-        # bad code: superconstructor doesn't actually process the looped parameter
-        super().__init__(quests,startCinematics=startCinematics,looped=looped)
 
     '''
     activate and prepare termination after lifespan
@@ -1792,11 +1818,11 @@ class ExamineQuest(Quest):
     state initialization
     bad code: useless constructor arguments
     '''
-    def __init__(self,waypoints=[],startCinematics=None,looped=True,lifetime=None,completionThreshold=5):
+    def __init__(self,waypoints=[],startCinematics=None,looped=True,lifetime=None,completionThreshold=5,creator=None):
         self.completionThreshold = completionThreshold
         self.description = "please examine your environment"
         self.examinedItems = []
-        super().__init__(startCinematics=startCinematics)
+        super().__init__(startCinematics=startCinematics,creator=creator)
 
     def triggerCompletionCheck(self):
         if len(self.examinedItems) >= 5:
@@ -1829,7 +1855,8 @@ class FetchFurniture(MetaQuestParralel):
     '''
     create subquest to move each piece of scrap to the metalworkshop
     '''
-    def __init__(self,constructionSite,storageRooms,toFetch,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+    def __init__(self,constructionSite,storageRooms,toFetch,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
+        super().__init__(questList,creator=creator)
         questList = []
         dropoffs = [(4,4),(5,4),(5,5),(5,6),(4,6),(3,6),(3,5),(3,4)]
         self.itemsInStore = []
@@ -1867,7 +1894,7 @@ class FetchFurniture(MetaQuestParralel):
                 break
 
             # add quest to transport the item
-            questList.append(TransportQuest(selectedItem,(constructionSite,dropoffs[counter][1],dropoffs[counter][0])))
+            questList.append(TransportQuest(selectedItem,(constructionSite,dropoffs[counter][1],dropoffs[counter][0])),creator=self)
             self.itemsInStore.append(selectedItem)
 
             counter += 1
@@ -1889,7 +1916,7 @@ class FetchFurniture(MetaQuestParralel):
             counter += 1
     
         for item in toFetch:
-            questList.append(PickupQuestMeta(item))
+            questList.append(PickupQuestMeta(item,creator=self))
         counter = 0
         for item in toFetch:
             questList.append(DropQuestMeta(item,constructionSite,dropoffs[counter][1],dropoffs[counter][0]))
@@ -1898,7 +1925,9 @@ class FetchFurniture(MetaQuestParralel):
             self.itemsInStore.append(item)
         """
 
-        super().__init__(questList)
+        for quest in reversed(questList):
+            self.addQuest(quest)
+
         self.metaDescription = "fetch furniture"
 
 '''
@@ -1909,7 +1938,7 @@ class PlaceFurniture(MetaQuestParralel):
     generates quests picking up the furniture and dropping it at the right place
     bad code: generating transport quests would me better
     '''
-    def __init__(self,constructionSite,itemsInStore,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+    def __init__(self,constructionSite,itemsInStore,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
         self.questList = []
 
         # handle each item
@@ -1921,7 +1950,7 @@ class PlaceFurniture(MetaQuestParralel):
             toBuild = constructionSite.itemsInBuildOrder.pop()
 
             # pick up item
-            quest = PickupQuestMeta(itemsInStore[counter])
+            quest = PickupQuestMeta(itemsInStore[counter],creator=self)
             self.questList.append(quest)
             self.startWatching(quest,self.recalculate)
 
@@ -1931,7 +1960,7 @@ class PlaceFurniture(MetaQuestParralel):
             self.startWatching(quest,self.recalculate)
             counter += 1 
 
-        super().__init__(self.questList)
+        super().__init__(self.questList,creator=creator)
         self.metaDescription = "place furniture"
           
 '''
@@ -1941,7 +1970,7 @@ class ConstructRoom(MetaQuestParralel):
     '''
     straightforward state initialization
     '''
-    def __init__(self,constructionSite,storageRooms,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+    def __init__(self,constructionSite,storageRooms,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
 
         self.questList = []
 
@@ -1952,7 +1981,7 @@ class ConstructRoom(MetaQuestParralel):
         self.didFetchQuest = False
         self.didPlaceQuest = False
 
-        super().__init__(self.questList)
+        super().__init__(self.questList,creator=creator)
         self.metaDescription = "construct room"
 
     '''
@@ -1997,14 +2026,16 @@ class TransportQuest(MetaQuestSequence):
     '''
     generate quest for picking up the item
     '''
-    def __init__(self,toTransport,dropOff,followUp=None,startCinematics=None,lifetime=None):
+    def __init__(self,toTransport,dropOff,followUp=None,startCinematics=None,lifetime=None,creator=None):
+        super().__init__([],creator=creator)
         self.toTransport = toTransport
         self.dropOff = dropOff
         self.questList = []
-        quest = PickupQuestMeta(self.toTransport)
+        quest = PickupQuestMeta(self.toTransport,creator=self)
         quest.endTrigger = self.addDrop # add drop quest in follow up
         self.questList.append(quest)
-        super().__init__(self.questList)
+        for quest in reversed(self.questList):
+            self.addQuest(quest)
         self.metaDescription = "transport"
 
     '''
@@ -2020,7 +2051,8 @@ class StoreCargo(MetaQuestSequence):
     '''
     generate quests for transporting each item
     '''
-    def __init__(self,cargoRoom,storageRoom,followUp=None,startCinematics=None,lifetime=None):
+    def __init__(self,cargoRoom,storageRoom,followUp=None,startCinematics=None,lifetime=None,creator=None):
+        super().__init__([],creator=creator)
         self.questList = []
 
         # determine how many items should be moved
@@ -2034,10 +2066,9 @@ class StoreCargo(MetaQuestSequence):
         counter = 0
         while counter < amount:
             location = storageRoom.storageSpace[counter]
-            self.questList.append(TransportQuest(cargoRoom.storedItems.pop(),(storageRoom,location[0],location[1])))
+            self.addQuest(TransportQuest(cargoRoom.storedItems.pop(),(storageRoom,location[0],location[1]),creator=self))
             counter += 1
 
-        super().__init__(self.questList)
         self.metaDescription = "store cargo"
 
 '''
@@ -2047,7 +2078,8 @@ class MoveToStorage(MetaQuestSequence):
     '''
     generate the quests to transport each item
     '''
-    def __init__(self, items, storageRoom):
+    def __init__(self, items, storageRoom, creator=None):
+        super().__init__([],creator=creator)
         self.questList = []
             
         # determine how many items should be moved
@@ -2061,9 +2093,8 @@ class MoveToStorage(MetaQuestSequence):
         counter = 0
         while counter < amount:
             location = storageRoom.storageSpace[counter]
-            self.questList.append(TransportQuest(items.pop(),(storageRoom,location[0],location[1])))
+            self.addQuest(TransportQuest(items.pop(),(storageRoom,location[0],location[1]),creator=self))
             counter += 1
-        super().__init__(self.questList)
 
         self.metaDescription = "move to storage"
 
@@ -2076,11 +2107,11 @@ class HandleDelivery(MetaQuestSequence):
     '''
     state initialization
     '''
-    def __init__(self, cargoRooms=[],storageRooms=[]):
+    def __init__(self, cargoRooms=[],storageRooms=[],creator=None):
         self.cargoRooms = cargoRooms
         self.storageRooms = storageRooms
         self.questList = []
-        super().__init__(self.questList)
+        super().__init__(self.questList,creator=creator)
         self.addNewStorageRoomQuest()
         self.metaDescription = "ensure the cargo is moved to storage"
        
@@ -2135,11 +2166,11 @@ class KeepFurnacesFiredMeta(MetaQuestParralel):
     '''
     add a quest to keep each furnace fired
     '''
-    def __init__(self,furnaces,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+    def __init__(self,furnaces,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
         questList = []
         for furnace in furnaces:
             questList.append(KeepFurnaceFiredMeta(furnace))
-        super().__init__(questList)
+        super().__init__(questList,creator=creator)
         self.metaDescription = "KeepFurnacesFiredMeta"
 
 '''
@@ -2148,12 +2179,12 @@ fire a furnace an keep it fired
 class KeepFurnaceFiredMeta(MetaQuestSequence):
     '''
     '''
-    def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+    def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
         self.questList = []
         self.fireFurnaceQuest = None
         self.waitQuest = None
         self.furnace = furnace
-        super().__init__(self.questList,lifetime=lifetime)
+        super().__init__(self.questList,lifetime=lifetime,creator=creator)
         self.metaDescription = "KeepFurnaceFiredMeta"
 
         # listen to furnace
@@ -2198,12 +2229,12 @@ class FireFurnaceMeta(MetaQuestSequence):
     '''
     state initialization
     '''
-    def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+    def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
         self.activateQuest = None
         self.collectQuest = None
         self.questList = []
         self.furnace = furnace
-        super().__init__(self.questList)
+        super().__init__(self.questList,creator=creator)
         self.metaDescription = "FireFurnaceMeta"+str(self)
 
     '''
@@ -2232,7 +2263,7 @@ class FireFurnaceMeta(MetaQuestSequence):
 
             if not foundItem:
                 # collect fuel
-                self.collectQuest = CollectQuestMeta()
+                self.collectQuest = CollectQuestMeta(creator=self)
                 self.collectQuest.assignToCharacter(self.character)
                 self.startWatching(self.collectQuest,self.recalculate)
                 self.questList.insert(0,self.collectQuest)
@@ -2249,7 +2280,7 @@ class FireFurnaceMeta(MetaQuestSequence):
 
         # add quest to fire furnace
         if not self.activateQuest and not self.collectQuest and not self.furnace.activated:
-            self.activateQuest = ActivateQuestMeta(self.furnace)
+            self.activateQuest = ActivateQuestMeta(self.furnace,creator=self)
             self.activateQuest.assignToCharacter(self.character)
             self.questList.append(self.activateQuest)
             self.activateQuest.activate()
@@ -2287,11 +2318,11 @@ class HopperDuty(MetaQuestSequence):
     '''
     straightforward state initialization
     '''
-    def __init__(self,waitingRoom,startCinematics=None,looped=True,lifetime=None):
-        self.getQuest = GetQuest(waitingRoom.secondOfficer,assign=False)
+    def __init__(self,waitingRoom,startCinematics=None,looped=True,lifetime=None,creator=None):
+        super().__init__([],startCinematics=startCinematics,creator=creator)
+        self.getQuest = GetQuest(waitingRoom.secondOfficer,assign=False,creator=self)
         self.getQuest.endTrigger = self.setQuest
-        questList = [self.getQuest]
-        super().__init__(questList,startCinematics=startCinematics)
+        self.addQuest(self.getQuest)
         self.metaDescription = "hopper duty"
         self.recalculate()
         self.actualQuest = None
@@ -2319,7 +2350,7 @@ class HopperDuty(MetaQuestSequence):
 
             # add quest to get a new quest
             if not self.getQuest and not self.actualQuest and not self.rewardQuest:
-                self.getQuest = GetQuest(self.waitingRoom.secondOfficer,assign=False)
+                self.getQuest = GetQuest(self.waitingRoom.secondOfficer,assign=False,creator=self)
                 self.getQuest.endTrigger = self.setQuest # call handling directly though the trigger mechanism
                 self.addQuest(self.getQuest,addFront=False)
 
@@ -2333,7 +2364,7 @@ class HopperDuty(MetaQuestSequence):
         if self.actualQuest:
             self.addQuest(self.actualQuest,addFront=False)
         else:
-            self.addQuest(WaitQuest(lifetime=10),addFront=False)
+            self.addQuest(WaitQuest(lifetime=10,creator=self),addFront=False)
     
 '''
 clear the rubble from the mech
@@ -2343,12 +2374,12 @@ class ClearRubble(MetaQuestParralel):
     '''
     create subquest to move each piece of scrap to the metalworkshop
     '''
-    def __init__(self,followUp=None,startCinematics=None,failTrigger=None,lifetime=None):
+    def __init__(self,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
+        super().__init__([],creator=creator)
         questList = []
         for item in terrain.itemsOnFloor:
             if isinstance(item,items.Scrap):
-                questList.append(TransportQuest(item,(terrain.metalWorkshop,7,1)))
-        super().__init__(questList)
+                self.addQuest(TransportQuest(item,(terrain.metalWorkshop,7,1),creator=self))
         self.metaDescription = "clear rubble"
 
 '''
@@ -2358,9 +2389,9 @@ class RoomDuty(MetaQuestParralel):
     '''
     state initialization
     '''
-    def __init__(self, cargoRooms=[],storageRooms=[]):
+    def __init__(self, cargoRooms=[],storageRooms=[],creator=None):
         self.questList = []
-        super().__init__(self.questList)
+        super().__init__(self.questList,creator=creator)
         self.metaDescription = "room duty"
 
     '''
@@ -2376,10 +2407,10 @@ class Serve(MetaQuestParralel):
     '''
     state initialization
     '''
-    def __init__(self, superior):
+    def __init__(self, superior, creator=None):
         self.questList = []
         self.superior = superior
-        super().__init__(self.questList)
+        super().__init__(self.questList,creator=creator)
         self.metaDescription = "serve "+superior.name
 
     '''

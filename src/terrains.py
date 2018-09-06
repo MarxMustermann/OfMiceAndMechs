@@ -1667,7 +1667,7 @@ XXXCCCCCXXX """
         def addStorageQuest():
             if not toTransport:
                 return
-            quest = quests.MoveToStorage([self.tutorialLab.itemByCoordinates[toTransport.pop()][0]],self.tutorialStorageRooms[1])
+            quest = quests.MoveToStorage([self.tutorialLab.itemByCoordinates[toTransport.pop()][0]],self.tutorialStorageRooms[1],creator=self)
             quest.reputationReward = 1
             quest.endTrigger = addStorageQuest
             self.waitingRoom.quests.append(quest)

@@ -63,7 +63,7 @@ class Character():
         self.basicChatOptions = []
 
         # bad code: story specific state
-        self.assignQuest(src.quests.SurviveQuest())
+        self.assignQuest(src.quests.SurviveQuest(creator=self))
         for quest in quests:
             self.assignQuest(quest)
         self.inventory.append(items.GooFlask(creator=self))

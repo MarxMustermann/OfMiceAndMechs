@@ -86,6 +86,8 @@ rooms.void = void
 items.void = void
 terrains.void = void
 gamestate.void = void
+story.void = void
+interaction.void = void
 
 # HACK: common variables with modules
 phasesByName = {}

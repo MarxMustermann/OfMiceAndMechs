@@ -100,7 +100,7 @@ class Room(object):
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.firstOfficer = npc
-                            quest = quests.RoomDuty()
+                            quest = quests.RoomDuty(creator=self)
                             npc.assignQuest(quest,active=True)
                         else:
                             # add second officer
@@ -109,7 +109,7 @@ class Room(object):
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.secondOfficer = npc
-                            quest = quests.RoomDuty()
+                            quest = quests.RoomDuty(creator=self)
                             npc.assignQuest(quest,active=True)
                 elif char in ("X","&"):
                     # add wall
@@ -1124,10 +1124,10 @@ XXXXXXXXXX
         def addNPC(x,y):
             # generate quests
             #TODO: replace with patrol quest since it's actually bugging
-            quest1 = quests.MoveQuestMeta(self,2,2)
-            quest2 = quests.MoveQuestMeta(self,2,7)
-            quest3 = quests.MoveQuestMeta(self,7,7)
-            quest4 = quests.MoveQuestMeta(self,7,2)
+            quest1 = quests.MoveQuestMeta(self,2,2,creator=self)
+            quest2 = quests.MoveQuestMeta(self,2,7,creator=self)
+            quest3 = quests.MoveQuestMeta(self,7,7,creator=self)
+            quest4 = quests.MoveQuestMeta(self,7,2,creator=self)
             quest1.followUp = quest2
             quest2.followUp = quest3
             quest3.followUp = quest4
@@ -1729,7 +1729,7 @@ XXXXXXXXXXX
 
         # assign hopper duty to hoppers
         for hopper in self.hoppers:
-            quest = quests.HopperDuty(self)
+            quest = quests.HopperDuty(self,creator=self)
             hopper.assignQuest(quest,active=True)
 
         self.initialState = self.getState()

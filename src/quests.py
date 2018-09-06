@@ -2067,10 +2067,14 @@ class StoreCargo(MetaQuestSequence):
         # add transport quest for each item
         startIndex = len(storageRoom.storedItems)
         counter = 0
+        questList = []
         while counter < amount:
             location = storageRoom.storageSpace[counter]
-            self.addQuest(TransportQuest(cargoRoom.storedItems.pop(),(storageRoom,location[0],location[1]),creator=self))
+            questList.append(TransportQuest(cargoRoom.storedItems.pop(),(storageRoom,location[0],location[1]),creator=self))
             counter += 1
+
+        for quest in reversed(questList):
+            self.addQuest(quest)
 
         self.metaDescription = "store cargo"
 

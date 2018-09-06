@@ -67,6 +67,16 @@ class Quest(object):
             "type":self.type
         }
 
+    def setState(self,state):
+       if "id" in state:
+           self.id = state["id"]
+       if "active" in state:
+           self.active = state["active"]
+       if "completed" in state:
+           self.completed = state["completed"]
+       if "reputationReward" in state:
+           self.reputationReward = state["reputationReward"]
+
     def getCreationCounter(self):
         self.creationCounter += 1
         return self.creationCounter

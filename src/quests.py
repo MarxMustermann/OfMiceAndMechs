@@ -681,7 +681,7 @@ class MetaQuestParralel(Quest):
         if self.active:
             quest.activate()
         quest.recalculate()
-        self.questList.insert(0,quest)
+        self.subQuests.insert(0,quest)
         self.startWatching(quest,self.recalculate)
 
 '''
@@ -1536,7 +1536,7 @@ class CollectQuestMeta(MetaQuestSequence):
             # terminate when done
             if self.waitQuest and foundItem:
                 quest = self.waitQuest
-                self.questList.remove(quest)
+                self.subQuests.remove(quest)
                 quest.postHandler()
                 self.waitQuest = None
 

@@ -69,8 +69,6 @@ class GameState():
         # the terrain
         terrain.setState(state["terrain"],self.tick)
 
-        self.currentPhase().start()
-
         xPosition = self.mainChar.xPosition
         if "xPosition" in state["mainChar"]:
             xPosition = state["mainChar"]["xPosition"]

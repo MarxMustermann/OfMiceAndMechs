@@ -170,6 +170,19 @@ class Character():
         if itemStates or removedItems:
             result["inventory"] = inventory
 
+        (questStates,changedQuests,newQuests,removedQuests) = getDiffList(self.quests,self.initialState["quests"]["questIds"])
+        quests = {}
+        if changedQuests:
+            quests["changed"] = changedQuests
+        if newQuests:
+            quests["new"] = newQuests
+        if removedQuests:
+            quests["removed"] = removedQuests
+        if questStates:
+            quests["states"] = questStates
+        if questStates or removedQuests:
+            result["quests"] = quests
+
         return result
 
     '''
@@ -189,13 +202,19 @@ class Character():
                  "satiation": self.satiation,
                  "unconcious": self.unconcious,
                  "reputation": self.reputation,
-                 "inventory": {}
+                 "inventory": {},
+                 "quests": {},
                }
                  
         inventory = []
         for item in self.inventory:
             inventory.append(item.id)
         state["inventory"]["inventoryIds"] = inventory
+
+        quests = []
+        for quest in self.quests:
+            quests.append(quest.id)
+        state["quests"]["questIds"] = quests
 
         if self.room:
             state["room"] = self.room.id

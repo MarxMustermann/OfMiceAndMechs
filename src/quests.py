@@ -43,6 +43,14 @@ class Quest(object):
 
         self.lifetime = lifetime
 
+        self.initialState = self.getState()
+
+    def getDifState(self):
+        return {}
+
+    def getState(self):
+        return {}
+
     def getCreationCounter(self):
         self.creationCounter += 1
         return self.creationCounter

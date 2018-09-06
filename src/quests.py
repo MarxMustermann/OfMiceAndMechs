@@ -1859,7 +1859,7 @@ class FetchFurniture(MetaQuestParralel):
     create subquest to move each piece of scrap to the metalworkshop
     '''
     def __init__(self,constructionSite,storageRooms,toFetch,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
-        super().__init__(questList,creator=creator)
+        super().__init__([],creator=creator)
         questList = []
         dropoffs = [(4,4),(5,4),(5,5),(5,6),(4,6),(3,6),(3,5),(3,4)]
         self.itemsInStore = []
@@ -1897,7 +1897,7 @@ class FetchFurniture(MetaQuestParralel):
                 break
 
             # add quest to transport the item
-            questList.append(TransportQuest(selectedItem,(constructionSite,dropoffs[counter][1],dropoffs[counter][0])),creator=self)
+            questList.append(TransportQuest(selectedItem,(constructionSite,dropoffs[counter][1],dropoffs[counter][0]),creator=self))
             self.itemsInStore.append(selectedItem)
 
             counter += 1
@@ -1942,6 +1942,7 @@ class PlaceFurniture(MetaQuestParralel):
     bad code: generating transport quests would me better
     '''
     def __init__(self,constructionSite,itemsInStore,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
+        super().__init__([],creator=creator)
         self.questList = []
 
         # handle each item
@@ -1963,7 +1964,9 @@ class PlaceFurniture(MetaQuestParralel):
             self.startWatching(quest,self.recalculate)
             counter += 1 
 
-        super().__init__(self.questList,creator=creator)
+        for quest in reversed(self.questList):
+            self.addQuest(quest)
+
         self.metaDescription = "place furniture"
           
 '''
@@ -1996,13 +1999,13 @@ class ConstructRoom(MetaQuestParralel):
                 # fetch some furniture from storage
                 self.didFetchQuest = True
                 self.didPlaceQuest = False
-                self.fetchquest = FetchFurniture(self.constructionSite,self.storageRooms,self.constructionSite.itemsInBuildOrder)
+                self.fetchquest = FetchFurniture(self.constructionSite,self.storageRooms,self.constructionSite.itemsInBuildOrder,creator=self)
                 self.addQuest(self.fetchquest)
                 self.itemsInStore = self.fetchquest.itemsInStore
             elif not self.didPlaceQuest:
                 # place furniture in desired position
                 self.didPlaceQuest = True
-                self.placeQuest = PlaceFurniture(self.constructionSite,self.itemsInStore)
+                self.placeQuest = PlaceFurniture(self.constructionSite,self.itemsInStore,creator=self)
                 self.addQuest(self.placeQuest)
                 if self.constructionSite.itemsInBuildOrder:
                     self.didFetchQuest = False

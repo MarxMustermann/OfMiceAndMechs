@@ -88,6 +88,7 @@ terrains.void = void
 gamestate.void = void
 story.void = void
 interaction.void = void
+quests.void = void
 
 # HACK: common variables with modules
 phasesByName = {}
@@ -99,6 +100,7 @@ gamestate.phasesByName = phasesByName
 cinematics.quests = quests
 story.quests = quests
 terrains.quests = quests
+characters.quests = quests
 
 # HACK: common variables with modules
 story.rooms = rooms

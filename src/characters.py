@@ -267,6 +267,22 @@ class Character():
                     item.setState(itemState)
                     self.inventory.append(item)
 
+        if "quests" in state:
+            if "changed" in state["quests"]:
+                for item in self.quests:
+                    if item.id in state["quests"]["states"]:
+                        item.setState(state["quests"]["states"][item.id])
+            if "removed" in state["quests"]:
+                for item in self.quests:
+                    if item.id in state["quests"]["removed"]:
+                        self.quests.remove(item)
+            if "new" in state["quests"]:
+                for itemId in state["quests"]["new"]:
+                    itemState = state["quests"]["states"][itemId]
+                    item = quests.getQuestFromState(itemState)
+                    item.setState(itemState)
+                    self.quests.append(item)
+
     '''
     bad code: this should be handled with a get quest quest
     '''

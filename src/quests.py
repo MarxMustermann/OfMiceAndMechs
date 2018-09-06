@@ -2573,11 +2573,13 @@ class Serve(MetaQuestParralel):
     '''
     state initialization
     '''
-    def __init__(self, superior, creator=None):
+    def __init__(self, superior=None, creator=None):
         self.questList = []
         self.superior = superior
         super().__init__(self.questList,creator=creator)
-        self.metaDescription = "serve "+superior.name
+        self.metaDescription = "serve"
+        if superior:
+            self.metaDescription += " "+superior.name
 
         self.type = "Serve"
         self.initialState = self.getState()

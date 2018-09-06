@@ -1341,7 +1341,7 @@ class DropQuestMeta(MetaQuestSequence):
         self.room = room
         self.xPosition = xPosition
         self.yPosition = yPosition
-        for quest in reversed(questList):
+        for quest in reversed(self.questList):
             self.addQuest(quest)
         self.metaDescription = "drop Meta"
 
@@ -1580,13 +1580,16 @@ get the reward for a completed quest
 '''
 class GetReward(MetaQuestSequence):
     def __init__(self,questDispenser,quest,assign=False,followUp=None,startCinematics=None,creator=None):
+        super().__init__([],creator=creator)
         self.questDispenser = questDispenser
         self.moveQuest = MoveQuestMeta(self.questDispenser.room,self.questDispenser.xPosition,self.questDispenser.yPosition,sloppy=True,creator=self)
-        self.getQuest = NaiveGetReward(quest)
+        self.getQuest = NaiveGetReward(quest,creator=self)
         self.questList = [self.moveQuest,self.getQuest]
         self.actualQuest = quest
 
-        super().__init__(self.questList,creator=creator)
+        for quest in reversed(self.questList):
+            self.addQuest(quest)
+
         self.metaDescription = "get Reward"
 
     '''
@@ -1919,7 +1922,7 @@ class FetchFurniture(MetaQuestParralel):
             questList.append(PickupQuestMeta(item,creator=self))
         counter = 0
         for item in toFetch:
-            questList.append(DropQuestMeta(item,constructionSite,dropoffs[counter][1],dropoffs[counter][0]))
+            questList.append(DropQuestMeta(item,constructionSite,dropoffs[counter][1],dropoffs[counter][0],creator=self))
             counter += 1
         for item in toFetch:
             self.itemsInStore.append(item)
@@ -1955,7 +1958,7 @@ class PlaceFurniture(MetaQuestParralel):
             self.startWatching(quest,self.recalculate)
 
             # drop item
-            quest = DropQuestMeta(itemsInStore[counter],constructionSite,toBuild[0][1],toBuild[0][0])
+            quest = DropQuestMeta(itemsInStore[counter],constructionSite,toBuild[0][1],toBuild[0][0],creator=self)
             self.questList.append(quest)
             self.startWatching(quest,self.recalculate)
             counter += 1 
@@ -2042,7 +2045,7 @@ class TransportQuest(MetaQuestSequence):
     drop the item after picking it up
     '''
     def addDrop(self):
-        self.addQuest(DropQuestMeta(self.toTransport,self.dropOff[0],self.dropOff[1],self.dropOff[2]))
+        self.addQuest(DropQuestMeta(self.toTransport,self.dropOff[0],self.dropOff[1],self.dropOff[2],creator=self))
 
 '''
 move items from permanent storage to accesible storage
@@ -2119,7 +2122,7 @@ class HandleDelivery(MetaQuestSequence):
     wait the cargo to be moved to storage
     '''
     def waitForQuestCompletion(self):
-        quest = WaitForQuestCompletion(self.quest)
+        quest = WaitForQuestCompletion(self.quest,creator=self)
         quest.endTrigger = self.addNewStorageRoomQuest
         self.addQuest(quest)
 
@@ -2141,8 +2144,8 @@ class HandleDelivery(MetaQuestSequence):
 
         # add quest to delegate moving the cargo to somebody
         room = self.cargoRooms[0]
-        self.quest = StoreCargo(room,self.storageRooms.pop())
-        quest = NaiveDelegateQuest(self.quest)
+        self.quest = StoreCargo(room,self.storageRooms.pop(),creator=self)
+        quest = NaiveDelegateQuest(self.quest,creator=self)
         quest.endTrigger = self.waitForQuestCompletion
         self.addQuest(quest)
 
@@ -2340,7 +2343,7 @@ class HopperDuty(MetaQuestSequence):
 
             # add quest to fetch reward
             if self.actualQuest and self.actualQuest.completed and not self.rewardQuest:
-                self.rewardQuest = GetReward(self.waitingRoom.secondOfficer,self.actualQuest)
+                self.rewardQuest = GetReward(self.waitingRoom.secondOfficer,self.actualQuest,creator=self)
                 self.actualQuest = None
                 self.addQuest(self.rewardQuest,addFront=False)
 

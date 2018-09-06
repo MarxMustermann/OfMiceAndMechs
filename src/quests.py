@@ -2153,13 +2153,6 @@ class HandleDelivery(MetaQuestSequence):
         quest.endTrigger = self.waitForQuestCompletion
         self.addQuest(quest)
 
-    '''
-    does nothing
-    bad code: misspelled method name. does nothing
-    '''
-    def triggerCompletionCheck(self):
-        return False
-
 ############################################################
 ###
 ##  furnace specific quests

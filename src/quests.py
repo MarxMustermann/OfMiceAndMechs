@@ -2617,6 +2617,17 @@ class Serve(MetaQuestParralel):
         if superior:
             self.metaDescription += " "+superior.name
 
+    def getDiffState(self):
+        state = super().getDiffState()
+        if not self.metaDescription == state["superior"]:
+            state["superior"] = self.metaDescription
+        return state
+
+    def getState(self):
+        state = super().getState()
+        state["superior"] = self.superior.id
+        return state
+    
     '''
     never complete
     '''

@@ -70,7 +70,7 @@ class Room(object):
                    "counter":creator.getCreationCounter()
                   }
         self.id["creator"] = creator.id
-        self.id = json.dumps(self.id, sort_keys=True)
+        self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
             
         self.itemByCoordinates = {}
 

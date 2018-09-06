@@ -309,11 +309,11 @@ class MetaQuestSequence(Quest):
     '''
     def __init__(self,quests,startCinematics=None,lifetime=None,creator=None):
         # listen to subquests
+        self.metaDescription = "meta"
         self.subQuestsOrig = quests.copy()
         self.subQuests = quests
         super().__init__(startCinematics=startCinematics,lifetime=lifetime,creator=creator)
         self.listeningTo = []
-        self.metaDescription = "meta"
         
         # listen to subquests
         if len(self.subQuests):
@@ -321,6 +321,21 @@ class MetaQuestSequence(Quest):
 
         self.type = "MetaQuestSequence"
         self.initialState = self.getState()
+
+    def getDiffState(self):
+        state = super().getDiffState()
+        if not self.metaDescription == state["metaDescription"]:
+            state["metaDescription"] = self.metaDescription
+        return state
+
+    def getState(self):
+        state = super().getState()
+        state["metaDescription"] = self.metaDescription
+        return state
+    
+    def setState(self,state):
+        if "metaDescription" in self.metaDescription:
+            self.metaDescription = state["metaDescription"]
 
     '''
     get target position from first subquest
@@ -521,6 +536,23 @@ class MetaQuestParralel(Quest):
 
         self.type = "MetaQuestParralel"
         self.initialState = self.getState()
+
+    def getDiffState(self):
+        state = super().getDiffState()
+        if not self.metaDescription == state["metaDescription"]:
+            state["metaDescription"] = self.metaDescription
+        return state
+
+    def getState(self):
+        state = super().getState()
+        state["metaDescription"] = self.metaDescription
+        return state
+    
+    def setState(self,state):
+        super().setState(state)
+        if "metaDescription" in state:
+            print(state)
+            self.metaDescription = state["metaDescription"]
 
     '''
     forward position from last active quest
@@ -2578,11 +2610,12 @@ class Serve(MetaQuestParralel):
         self.superior = superior
         super().__init__(self.questList,creator=creator)
         self.metaDescription = "serve"
-        if superior:
-            self.metaDescription += " "+superior.name
 
         self.type = "Serve"
         self.initialState = self.getState()
+
+        if superior:
+            self.metaDescription += " "+superior.name
 
     '''
     never complete
@@ -2639,4 +2672,6 @@ questMap = {
 }
 
 def getQuestFromState(state):
-    return questMap[state["type"]](creator=void)
+    quest = questMap[state["type"]](creator=void)
+    quest.setState(state)
+    return quest

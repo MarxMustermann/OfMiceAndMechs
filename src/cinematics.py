@@ -373,20 +373,49 @@ class ShowQuestExecution(BasicCinematic):
     
     def setState(self,state):
         super().setState(state)
-        if state["quest"]:
+        if "quest" in state and state["quest"]:
             if isinstance(state["quest"],str):
                 def setQuest(quest):
                     self.quest = quest
                 loadingRegistry.callWhenAvailable(state["quest"],setQuest)
             else:
                 self.quest = quests.getQuestFromState(state["quest"])
+        else:
+            self.quest = None
+
+        if "assignTo" in state:
+            if state["assignTo"]:
+                def setAssignee(character):
+                    self.assignTo = character
+                loadingRegistry.callWhenAvailable(state["assignTo"],setAssignee)
+            else:
+                self.assignTo = None
+
+        if "container" in state:
+            if state["container"]:
+                def setContainer(container):
+                    self.container = container
+                loadingRegistry.callWhenAvailable(state["container"],setContainer)
+            else:
+                self.container = None
+
+        self.wasSetup = state["wasSetup"]
 
     def getState(self):
         state = super().getState()
+        state["wasSetup"] = self.wasSetup
         if self.quest.character:
             state["quest"] = self.quest.id
         else:
             state["quest"] = self.quest.getState()
+        if self.assignTo:
+            state["assignTo"] = self.assignTo.id
+        else:
+            state["assignTo"] = None
+        if self.container:
+            state["container"] = self.container.id
+        else:
+            state["container"] = None
         return state
 
     '''

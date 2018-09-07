@@ -90,6 +90,30 @@ story.void = void
 interaction.void = void
 quests.void = void
 
+class LoadingRegistry(object):
+    registered = {}
+    delayedCalls = {}
+
+    def register(self,thing):
+        if thing.id in self.registered:
+            print("double registration for "+thing.id)
+        self.registered[thing.id] = thing
+        if thing.id in self.delayedCalls:
+            for callback in self.delayedCalls[thing.id]:
+                callback(thing)
+
+    def callWhenAvailable(self,thingId,callback):
+        if thingId in self.registered:
+            callback(self.registered[thingId])
+        else:
+            if not thingId in self.delayedCalls:
+                self.delayedCalls[thingId] = []
+            self.delayedCalls[thingId].append(callback)
+
+loadingRegistry = LoadingRegistry()
+characters.loadingRegistry = loadingRegistry
+quests.loadingRegistry = loadingRegistry
+
 # HACK: common variables with modules
 phasesByName = {}
 story.phasesByName = phasesByName
@@ -355,7 +379,7 @@ try:
 except Exception as e:
     ignore = input("could not load gamestate. abort (y/n)?")
     if ignore == "y":
-	    raise e
+        raise e
 
     # set up the current phase
     gameStateObj.currentPhase().start()
@@ -377,6 +401,8 @@ if args.tiles:
     interaction.useTiles = True
 else:
     interaction.useTiles = False
+
+print(loadingRegistry.registered)
 
 # start the interactio loop of the underlying library
 try:

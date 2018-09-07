@@ -95,8 +95,6 @@ class LoadingRegistry(object):
     delayedCalls = {}
 
     def register(self,thing):
-        if thing.id in self.registered:
-            print("double registration for "+thing.id)
         self.registered[thing.id] = thing
         if thing.id in self.delayedCalls:
             for callback in self.delayedCalls[thing.id]:

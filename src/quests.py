@@ -417,7 +417,6 @@ class MetaQuestSequence(Quest):
                     thingState = state["subQuests"]["states"][thingId]
                     thing = getQuestFromState(thingState)
                     thing.setState(thingState)
-                    print("adding "+str(thingId))
                     self.subQuests.append(thing)
             if "changed" in state["subQuests"]:
                 for thing in self.quests:
@@ -715,7 +714,6 @@ class MetaQuestParralel(Quest):
                     thingState = state["subQuests"]["states"][thingId]
                     thing = getQuestFromState(thingState)
                     thing.setState(thingState)
-                    print("adding "+str(thingId))
                     self.subQuests.append(thing)
             if "changed" in state["subQuests"]:
                 for thing in self.quests:
@@ -2975,7 +2973,6 @@ questMap = {
 }
 
 def getQuestFromState(state):
-    print(state["type"])
     quest = questMap[state["type"]](creator=void)
     quest.setState(state)
     return quest

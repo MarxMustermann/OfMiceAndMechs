@@ -57,6 +57,8 @@ class Quest(object):
             result["completed"] = self.completed
         if not self.reputationReward == self.initialState["reputationReward"]:
             result["reputationReward"] = self.reputationReward
+        if not self.creationCounter == self.initialState["creationCounter"]:
+            result["creationCounter"] = self.creationCounter
         character = None
         if self.character:
             character = self.character.id
@@ -70,6 +72,7 @@ class Quest(object):
             "active":self.active,
             "completed":self.completed,
             "reputationReward":self.reputationReward,
+            "creationCounter":self.creationCounter,
             "type":self.type
         }
         if self.character:
@@ -79,6 +82,9 @@ class Quest(object):
         return state
 
     def setState(self,state):
+       if "creationCounter" in state:
+           self.creationCounter = state["creationCounter"]
+
        if "id" in state:
            self.id = state["id"]
        if "active" in state:

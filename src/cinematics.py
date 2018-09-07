@@ -18,6 +18,7 @@ the base class for all Cinamatics. Nothing fancy
 class BasicCinematic(object):
     def __init__(self,creator=None):
         # initialize basic state
+        self.creationCounter = 0
         self.background = False
         self.followUp = None
         self.skipable = False
@@ -33,6 +34,9 @@ class BasicCinematic(object):
         self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
 
     def setState(self,state):
+        if "creationCounter" in state:
+            self.creationCounter = state["creationCounter"]
+
         if "id" in state:
             self.id = state["id"]
         if "background" in state:
@@ -52,6 +56,7 @@ class BasicCinematic(object):
                    "overwriteFooter": self.overwriteFooter,
                    "footerText": self.footerText,
                    "type": self.type,
+                   "creationCounter":self.creationCounter,
                 }
         return state
 

@@ -157,6 +157,8 @@ class Character():
             result["unconcious"] = self.unconcious
         if not self.reputation == self.initialState["reputation"]:
             result["reputation"] = self.reputation
+        if not self.creationCounter == self.initialState["creationCounter"]:
+            result["creationCounter"] = self.creationCounter
 
         (itemStates,changedItems,newItems,removedItems) = getDiffList(self.inventory,self.initialState["inventory"]["inventoryIds"])
         inventory = {}
@@ -205,6 +207,7 @@ class Character():
                  "reputation": self.reputation,
                  "inventory": {},
                  "quests": {},
+                 "creationCounter":self.creationCounter,
                }
                  
         inventory = []
@@ -226,6 +229,9 @@ class Character():
     bad code: this state is basicall useless
     '''
     def setState(self,state):
+        if "creationCounter" in state:
+            self.creationCounter = state["creationCounter"]
+
         if "id" in state:
             self.id = state["id"]
         if "gotBasicSchooling" in state:

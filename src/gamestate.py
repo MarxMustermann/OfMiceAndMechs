@@ -66,6 +66,8 @@ class GameState():
         self.currentPhase = phasesByName[state["currentPhase"]["name"]]
         self.tick = state["tick"]
 
+        void.creationCounter = state["creationCounter"]
+
         # the terrain
         terrain.setState(state["terrain"],self.tick)
 
@@ -111,4 +113,5 @@ class GameState():
               "tick":self.tick,
               "gameWon":self.gameWon,
               "cinematics":cinematicStorage,
+              "creationCounter":void.creationCounter,
                }

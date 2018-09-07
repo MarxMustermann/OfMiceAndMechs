@@ -328,6 +328,8 @@ class Room(object):
         for attribute in ("yPosition","xPosition","offsetX","offsetY"):
             if not self.initialState[attribute] == currentState[attribute]:
                 result[attribute] = currentState[attribute]
+        if not self.creationCounter == self.initialState["creationCounter"]:
+            result["creationCounter"] = self.creationCounter
 
         def getDiffList(toDiff,containerName,exclude=[]):
             currentThingsList = []
@@ -416,6 +418,7 @@ class Room(object):
                  "offsetY":self.offsetY,
                  "xPosition":self.xPosition,
                  "yPosition":self.yPosition,
+                 "creationCounter":self.creationCounter,
         }
 
     '''
@@ -423,6 +426,9 @@ class Room(object):
     bad code: incomplete
     '''
     def setState(self,state):
+        if "creationCounter" in state:
+            self.creationCounter = state["creationCounter"]
+
         # move room to correct position
         if "offsetX" in state:
             self.offsetX = state["offsetX"]

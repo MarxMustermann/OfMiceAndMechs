@@ -61,6 +61,9 @@ class Item(object):
             if not currentState[attribute] == self.initialState[attribute]:
                 result[attribute] = currentState[attribute]
 
+        if not self.creationCounter == self.initialState["creationCounter"]:
+            result["creationCounter"] = self.creationCounter
+
         return result
 
     def getState(self):
@@ -70,10 +73,14 @@ class Item(object):
                  "type":self.type,
                  "walkable":self.walkable,
                  "xPosition":self.xPosition,
-                 "yPosition":self.yPosition
+                 "yPosition":self.yPosition,
+                 "creationCounter":self.creationCounter,
                }
 
     def setState(self,state):
+        if "creationCounter" in state:
+            self.creationCounter = state["creationCounter"]
+
         if "id" in state:
             self.id = state["id"]
         if "name" in state:

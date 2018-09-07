@@ -113,6 +113,7 @@ loadingRegistry = LoadingRegistry()
 characters.loadingRegistry = loadingRegistry
 quests.loadingRegistry = loadingRegistry
 rooms.loadingRegistry = loadingRegistry
+cinematics.loadingRegistry = loadingRegistry
 
 # HACK: common variables with modules
 phasesByName = {}

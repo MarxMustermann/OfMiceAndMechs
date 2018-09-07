@@ -32,6 +32,18 @@ class BasicCinematic(object):
         self.id["creator"] = creator.id
         self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
 
+    def setState(self,state):
+        if "id" in state:
+            self.id = state["id"]
+        if "background" in state:
+            self.background = state["background"]
+        if "overwriteFooter" in state:
+            self.overwriteFooter = state["overwriteFooter"]
+        if "footerText" in state:
+            self.footerText = state["footerText"]
+        if "type" in state:
+            self.type = state["type"]
+
     def getState(self):
         state = {
                    "id": self.id,
@@ -358,6 +370,24 @@ class ShowQuestExecution(BasicCinematic):
         self.overwriteFooter = False
         self.container = container
         self.type = "ShowQuestExecution"
+    
+    def setState(self,state):
+        super().setState(state)
+        if state["quest"]:
+            if isinstance(state["quest"],str):
+                def setQuest(room):
+                    self.quest = quest
+                loadingRegistry.callWhenAvailable(state["quest"],setQuest)
+            else:
+                self.quest = quests.getQuestFromState(state["quest"])
+
+    def getState(self):
+        state = super().getState()
+        if self.quest.character:
+            state["quest"] = self.quest.id
+        else:
+            state["quest"] = self.quest.getState()
+        return state
 
     '''
     assign the quest
@@ -600,7 +630,7 @@ class ShowMessageCinematic(BasicCinematic):
         loop.set_alarm_in(0.0, callShow_or_exit, '~')
         self.breakCinematic = True
         return True
-	
+    
 '''
 shortcut for adding a textcinematic
 bad code: this should be a generalised wrapper for adding cinematics
@@ -622,5 +652,6 @@ cinematicMap = {
 
 def getCinematicFromState(state):
     cinematic = cinematicMap[state["type"]](creator=void)
+    cinematic.setState(state)
     return cinematic
 

@@ -45,6 +45,7 @@ class Quest(object):
         self.lifetime = lifetime
 
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     def getDiffState(self):
         result = {}
@@ -335,6 +336,7 @@ class MetaQuestSequence(Quest):
 
         self.type = "MetaQuestSequence"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     def getDiffState(self):
         state = super().getDiffState()
@@ -632,6 +634,7 @@ class MetaQuestParralel(Quest):
 
         self.type = "MetaQuestParralel"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     def getDiffState(self):
         state = super().getDiffState()
@@ -953,6 +956,7 @@ class NaiveMoveQuest(Quest):
 
         self.type = "NaiveMoveQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     check if character is in the right place
@@ -1100,6 +1104,7 @@ class NaiveEnterRoomQuest(Quest):
 
         self.type = "NaiveEnterRoomQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     assign character and 
@@ -1170,6 +1175,7 @@ class NaivePickupQuest(Quest):
 
         self.type = "NaivePickupQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
    
     '''
     check wnether item is in characters inventory
@@ -1203,6 +1209,7 @@ class NaiveGetQuest(Quest):
 
         self.type = "NaiveGetQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     check wnether the chracter has gotten a quest
@@ -1248,6 +1255,7 @@ class NaiveGetReward(Quest):
 
         self.type = "NaiveGetReward"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     check for a done flag
@@ -1285,6 +1293,7 @@ class NaiveMurderQuest(Quest):
 
         self.type = "NaiveMurderQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     check whether target is dead
@@ -1319,6 +1328,7 @@ class NaiveActivateQuest(Quest):
 
         self.type = "NaiveActivateQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     def registerActivation(self,info):
         if self.toActivate == info:
@@ -1367,6 +1377,7 @@ class NaiveDropQuest(Quest):
 
         self.type = "NaiveDropQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     check wnether item was dropped
@@ -1401,6 +1412,7 @@ class NaiveDelegateQuest(Quest):
 
         self.type = "NaiveDelegateQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
     
     '''
     check if the quest has a character assigned
@@ -1436,6 +1448,7 @@ class WaitQuest(Quest):
 
         self.type = "WaitQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     do nothing
@@ -1462,6 +1475,7 @@ class WaitForDeactivationQuest(Quest):
 
         self.type = "WaitForDeactivationQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     check if item is inactive
@@ -1491,6 +1505,7 @@ class WaitForQuestCompletion(Quest):
 
         self.type = "WaitForQuestCompletion"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     check if the quest was completed
@@ -1525,6 +1540,7 @@ class DrinkQuest(Quest):
 
         self.type = "DrinkQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     assign to character and listen to character
@@ -1568,6 +1584,7 @@ class SurviveQuest(Quest):
 
         self.type = "SurviveQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     assign to character and listen to the character
@@ -1616,6 +1633,7 @@ class EnterRoomQuestMeta(MetaQuestSequence):
 
         self.type = "EnterRoomQuestMeta"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     add quest to leave room if needed
@@ -1661,6 +1679,7 @@ class MoveQuestMeta(MetaQuestSequence):
 
         self.type = "MoveQuestMeta"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     move to correct room if nesseccary
@@ -1743,6 +1762,7 @@ class DropQuestMeta(MetaQuestSequence):
 
         self.type = "DropQuestMeta"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     re-add the movement quest if neccessary
@@ -1782,6 +1802,7 @@ class PickupQuestMeta(MetaQuestSequence):
 
         self.type = "PickupQuestMeta"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     re-add the movement quest if neccessary
@@ -1840,6 +1861,7 @@ class ActivateQuestMeta(MetaQuestSequence):
 
         self.type = "ActivateQuestMeta"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     re-add the movement quest if neccessary
@@ -1888,6 +1910,7 @@ class RefillDrinkQuest(ActivateQuestMeta):
 
         self.type = "RefillDrinkQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     check wnether the character has a filled goo flask
@@ -1917,6 +1940,7 @@ class CollectQuestMeta(MetaQuestSequence):
 
         self.type = "CollectQuestMeta"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
     
     '''
     assign to character and add the quest to fetch from a pile
@@ -1972,6 +1996,7 @@ class GetQuest(MetaQuestSequence):
 
         self.type = "GetQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     check if a quest was aquired
@@ -2008,6 +2033,7 @@ class GetReward(MetaQuestSequence):
 
         self.type = "GetReward"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     assign to character and spawn a chat option to collect reward
@@ -2072,6 +2098,7 @@ class MurderQuest(MetaQuestSequence):
 
         self.type = "MurderQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     adjust movement to follow target
@@ -2105,6 +2132,7 @@ class FillPocketsQuest(MetaQuestSequence):
 
         self.type = "FillPocketsQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     add collect quest till inventory is full
@@ -2145,6 +2173,7 @@ class LeaveRoomQuest(Quest):
 
         self.type = "LeaveRoomQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     move to door and step out of the room
@@ -2217,6 +2246,7 @@ class PatrolQuest(MetaQuestSequence):
 
         self.type = "PatrolQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     activate and prepare termination after lifespan
@@ -2258,6 +2288,7 @@ class ExamineQuest(Quest):
 
         self.type = "ExamineQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     def triggerCompletionCheck(self):
         if len(self.examinedItems) >= 5:
@@ -2367,6 +2398,7 @@ class FetchFurniture(MetaQuestParralel):
 
         self.type = "FetchFurniture"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
 '''
 place furniture within a contruction site
@@ -2406,6 +2438,7 @@ class PlaceFurniture(MetaQuestParralel):
 
         self.type = "PlaceFurniture"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
           
 '''
 construct a room
@@ -2430,6 +2463,7 @@ class ConstructRoom(MetaQuestParralel):
 
         self.type = "ConstructRoom"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     add quests to fetch and place furniture
@@ -2487,6 +2521,7 @@ class TransportQuest(MetaQuestSequence):
 
         self.type = "TransportQuest"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     drop the item after picking it up
@@ -2527,6 +2562,7 @@ class StoreCargo(MetaQuestSequence):
 
         self.type = "StoreCargo"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
 '''
 move items to accessible storage
@@ -2557,6 +2593,7 @@ class MoveToStorage(MetaQuestSequence):
 
         self.type = "MoveToStorage"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
 '''
 handle a delivery
@@ -2577,6 +2614,7 @@ class HandleDelivery(MetaQuestSequence):
 
         self.type = "HandleDelivery"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
        
     '''
     wait the cargo to be moved to storage
@@ -2631,6 +2669,7 @@ class KeepFurnacesFiredMeta(MetaQuestParralel):
 
         self.type = "KeepFurnacesFiredMeta"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
 '''
 fire a furnace an keep it fired
@@ -2651,6 +2690,7 @@ class KeepFurnaceFiredMeta(MetaQuestSequence):
 
         self.type = "KeepFurnaceFiredMeta"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     def recalculate(self):
         if not self.character:
@@ -2701,6 +2741,7 @@ class FireFurnaceMeta(MetaQuestSequence):
 
         self.type = "FireFurnaceMeta"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     collect coal and fire furnace
@@ -2796,6 +2837,7 @@ class HopperDuty(MetaQuestSequence):
 
         self.type = "HopperDuty"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     get quest, do it, collect reward - repeat
@@ -2852,6 +2894,7 @@ class ClearRubble(MetaQuestParralel):
 
         self.type = "ClearRubble"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
 '''
 dummy quest for doing the room duty
@@ -2867,6 +2910,7 @@ class RoomDuty(MetaQuestParralel):
 
         self.type = "RoomDuty"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     never complete
@@ -2889,6 +2933,7 @@ class Serve(MetaQuestParralel):
 
         self.type = "Serve"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
         if superior:
             self.metaDescription += " "+superior.name

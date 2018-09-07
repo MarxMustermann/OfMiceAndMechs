@@ -541,17 +541,99 @@ class MetaQuestParralel(Quest):
         state = super().getDiffState()
         if not self.metaDescription == state["metaDescription"]:
             state["metaDescription"] = self.metaDescription
+
+        def getDiffList(toDiff,toCompare,exclude=[]):
+            currentThingsList = []
+            states = {}
+            newThingsList = []
+            changedThingsList = []
+            removedThingsList = []
+
+            for thing in toDiff:
+                if thing.id in exclude:
+                    continue
+                currentState = thing.getState()
+                currentThingsList.append(thing.id)
+
+                if thing.id in toCompare:
+                    if not currentState == thing.initialState:
+                        diffState = thing.getDiffState()
+                        if diffState:
+                            changedThingsList.append(thing.id)
+                            states[thing.id] = diffState
+                else:
+                    newThingsList.append(thing.id)
+                    states[thing.id] = thing.getState()
+
+            for thingId in toCompare:
+                if thingId in exclude:
+                    continue
+                if not thingId in currentThingsList:
+                    removedThingsList.append(thingId)
+
+            return (states,changedThingsList,newThingsList,removedThingsList)
+
+        (questStates,changedQuests,newQuests,removedQuests) = getDiffList(self.subQuests,self.initialState["subQuests"]["ids"])
+        quests = {}
+        if changedQuests:
+            quests["changed"] = changedQuests
+        if newQuests:
+            quests["new"] = newQuests
+        if removedQuests:
+            quests["removed"] = removedQuests
+        if questStates:
+            quests["states"] = questStates
+        if questStates or removedQuests:
+            state["subQuests"] = quests
+
         return state
 
     def getState(self):
         state = super().getState()
         state["metaDescription"] = self.metaDescription
+        state["subQuests"] = {}
+        state["subQuests"]["ids"] = []
+        state["subQuests"]["states"] = {}
+        for quest in self.subQuests:
+            state["subQuests"]["ids"].append(quest.id)
+            state["subQuests"]["states"][quest.id] = quest.getState()
         return state
     
     def setState(self,state):
         super().setState(state)
         if "metaDescription" in state:
             self.metaDescription = state["metaDescription"]
+                    
+        if "subQuests" in state:
+            if "ids" in state["subQuests"]:
+                for thingId in state["subQuests"]["ids"]:
+                    skip = False
+                    for thing in self.subQuests:
+                       if thingId == thing.id:
+                           skip = True
+                           continue
+                    if skip:
+                        continue
+                    
+                    thingState = state["subQuests"]["states"][thingId]
+                    thing = getQuestFromState(thingState)
+                    thing.setState(thingState)
+                    print("adding "+str(thingId))
+                    self.subQuests.append(thing)
+            if "changed" in state["subQuests"]:
+                for thing in self.quests:
+                    if thing.id in state["subQuests"]["states"]:
+                        thing.setState(state["subQuests"]["states"][thing.id])
+            if "removed" in state["subQuests"]:
+                for thing in self.quests:
+                    if thing.id in state["subQuests"]["removed"]:
+                        self.quests.remove(thing)
+            if "new" in state["subQuests"]:
+                for thingId in state["subQuests"]["new"]:
+                    thingState = state["subQuests"]["states"][thingId]
+                    thing = getQuestFromState(thingState)
+                    thing.setState(thingState)
+                    self.subQuests.append(thing)
 
     '''
     forward position from last active quest

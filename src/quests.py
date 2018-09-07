@@ -551,7 +551,6 @@ class MetaQuestParralel(Quest):
     def setState(self,state):
         super().setState(state)
         if "metaDescription" in state:
-            print(state)
             self.metaDescription = state["metaDescription"]
 
     '''

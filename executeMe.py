@@ -402,8 +402,6 @@ if args.tiles:
 else:
     interaction.useTiles = False
 
-print(loadingRegistry.registered)
-
 # start the interactio loop of the underlying library
 try:
     interaction.loop.run()

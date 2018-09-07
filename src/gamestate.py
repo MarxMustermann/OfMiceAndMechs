@@ -86,6 +86,10 @@ class GameState():
 
         self.mainChar.setState(state["mainChar"])
 
+        for cinematicId in state["cinematics"]["ids"]:
+            cinematic = cinematics.getCinematicFromState(state["cinematics"]["states"][cinematicId])
+            cinematics.cinematicQueue.append(cinematic)
+
     '''
     get gamestate in half serialized form
     '''
@@ -100,11 +104,11 @@ class GameState():
         for cinematic in cinematics.cinematicQueue:
             cinematicStorage["ids"].append(cinematic.id)
             cinematicStorage["states"][cinematic.id] = cinematic.getState()
-        mainCharState["cinematics"] = cinematicStorage
         return {  
               "currentPhase":self.currentPhase.getState(),
               "mainChar":mainCharState,
               "terrain":terrain.getDiffState(),
               "tick":self.tick,
-              "gameWon":self.gameWon
+              "gameWon":self.gameWon,
+              "cinematics":cinematicStorage,
                }

@@ -607,3 +607,20 @@ bad code: this should be a generalised wrapper for adding cinematics
 '''
 def showCinematic(text,rusty=False,autocontinue=False,scrolling=False):
     cinematicQueue.append(TextCinematic(text,rusty,autocontinue,scrolling,creator=void))
+
+cinematicMap = {
+     "BasicCinematic":BasicCinematic,
+     "InformationTransfer":InformationTransfer,
+     "MessageZoomCinematic":MessageZoomCinematic,
+     "TextCinematic":TextCinematic,
+     "ShowQuestExecution":ShowQuestExecution,
+     "ShowGameCinematic":ShowGameCinematic,
+     "ChatCinematic":ChatCinematic,
+     "SelectionCinematic":SelectionCinematic,
+     "ShowMessageCinematic":ShowMessageCinematic,
+}
+
+def getCinematicFromState(state):
+    cinematic = cinematicMap[state["type"]](creator=void)
+    return cinematic
+

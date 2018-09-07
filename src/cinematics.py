@@ -24,12 +24,24 @@ class BasicCinematic(object):
         self.overwriteFooter = True
         self.footerText = ""
         self.endTrigger = None
+        self.type = "BasicCinematic"
 
         self.id = {
                     "counter":creator.getCreationCounter()
                   }
         self.id["creator"] = creator.id
         self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
+
+    def getState(self):
+        state = {
+                   "id": self.id,
+                   "background": self.background,
+                   "skipable": self.skipable,
+                   "overwriteFooter": self.overwriteFooter,
+                   "footerText": self.footerText,
+                   "type": self.type,
+                }
+        return state
 
     def advance(self):
         return False
@@ -53,6 +65,7 @@ class InformationTransfer(BasicCinematic):
         self.information = list(information.items())
 
         self.triggered = False
+        self.type = "InformationTransfer"
 
     """
     blink a piece of information
@@ -115,6 +128,7 @@ class MessageZoomCinematic(BasicCinematic):
         self.turnOffCounter = 10
         self.turnOnCounter = 10
         self.text = None
+        self.type = "MessageZoomCinematic"
 
     """
     render the message window smaller each step
@@ -209,6 +223,7 @@ class TextCinematic(BasicCinematic):
            self.footerText = "press any key to speed up cutscene (not space)"
         else:
            self.footerText = ""
+        self.type = "TextCinematic"
 
         """
         split a mix of strings and uwid formating into a list where each element contains exactly
@@ -342,6 +357,7 @@ class ShowQuestExecution(BasicCinematic):
         self.skipable = True
         self.overwriteFooter = False
         self.container = container
+        self.type = "ShowQuestExecution"
 
     '''
     assign the quest
@@ -423,6 +439,7 @@ class ShowGameCinematic(BasicCinematic):
         self.endTrigger = None
         self.tickSpan = tickSpan
         self.overwriteFooter = False
+        self.type = "ShowGameCinematic"
 
     '''
     advance the game
@@ -470,6 +487,7 @@ class ChatCinematic(BasicCinematic):
         super().__init__(creator=creator)
 
         self.submenue = interaction.ChatMenu()
+        self.type = "ChatCinematic"
 
     '''
     triggers a chat and aborts
@@ -508,6 +526,7 @@ class SelectionCinematic(BasicCinematic):
         self.text = text
         self.selected = None
         self.submenue= None
+        self.type = "SelectionCinematic"
 
     '''
     set up and do nothing
@@ -567,6 +586,7 @@ class ShowMessageCinematic(BasicCinematic):
         self.message = message
         self.breakCinematic = False
         self.overwriteFooter = False
+        self.type = "ShowMessageCinematic"
 
     def advance(self):
         super().advance()

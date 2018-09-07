@@ -99,7 +99,7 @@ class GameState():
         cinematicStorage["states"] = {}
         for cinematic in cinematics.cinematicQueue:
             cinematicStorage["ids"].append(cinematic.id)
-            cinematicStorage["states"][cinematic.id] = {}
+            cinematicStorage["states"][cinematic.id] = cinematic.getState()
         mainCharState["cinematics"] = cinematicStorage
         return {  
               "currentPhase":self.currentPhase.getState(),

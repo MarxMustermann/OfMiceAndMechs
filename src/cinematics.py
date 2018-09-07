@@ -375,7 +375,7 @@ class ShowQuestExecution(BasicCinematic):
         super().setState(state)
         if state["quest"]:
             if isinstance(state["quest"],str):
-                def setQuest(room):
+                def setQuest(quest):
                     self.quest = quest
                 loadingRegistry.callWhenAvailable(state["quest"],setQuest)
             else:

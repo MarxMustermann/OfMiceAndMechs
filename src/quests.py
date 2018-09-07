@@ -1320,7 +1320,7 @@ class NaiveActivateQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,toActivate,followUp=None,startCinematics=None,creator=None):
+    def __init__(self,toActivate=None,followUp=None,startCinematics=None,creator=None):
         self.toActivate = toActivate
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
         self.description = "naive activate "+str(self.toActivate)
@@ -1849,12 +1849,17 @@ class ActivateQuestMeta(MetaQuestSequence):
     '''
     generate quests to move and activate
     '''
-    def __init__(self,toActivate,followUp=None,desiredActive=True,startCinematics=None,creator=None):
+    def __init__(self,toActivate=None,followUp=None,desiredActive=True,startCinematics=None,creator=None):
         super().__init__([],creator=creator)
         self.toActivate = toActivate
-        self.sloppy = not self.toActivate.walkable
-        self.moveQuest = MoveQuestMeta(toActivate.room,toActivate.xPosition,toActivate.yPosition,sloppy=self.sloppy,creator=self)
-        self.questList = [self.moveQuest,NaiveActivateQuest(toActivate,creator=self)]
+        if toActivate:
+            self.sloppy = not self.toActivate.walkable
+            self.moveQuest = MoveQuestMeta(toActivate.room,toActivate.xPosition,toActivate.yPosition,sloppy=self.sloppy,creator=self)
+            self.questList = [self.moveQuest,NaiveActivateQuest(toActivate,creator=self)]
+        else:
+            self.sloppy = False
+            self.questList = []
+
         for quest in reversed(self.questList):
             self.addQuest(quest)
         self.metaDescription = "activate Quest"
@@ -3020,4 +3025,5 @@ questMap = {
 def getQuestFromState(state):
     quest = questMap[state["type"]](creator=void)
     quest.setState(state)
+    loadingRegistry.register(quest)
     return quest

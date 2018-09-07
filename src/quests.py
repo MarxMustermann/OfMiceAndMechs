@@ -2625,9 +2625,23 @@ class Serve(MetaQuestParralel):
 
     def getState(self):
         state = super().getState()
-        state["superior"] = self.superior.id
+        if self.superior:
+            state["superior"] = self.superior.id
+        else:
+            state["superior"] = None
         return state
     
+    def setState(self,state):
+        super().setState(state)
+        if "superior" in state:
+            if state["superior"]:
+                def setSuperior(superior):
+                    self.superior = superior
+                loadingRegistry.callWhenAvailable(state["superior"],setSuperior)
+                pass
+            else:
+                self.superior = None
+
     '''
     never complete
     '''

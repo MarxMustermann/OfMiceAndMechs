@@ -210,7 +210,7 @@ class TextCinematic(BasicCinematic):
     straightforward state initialization
     options include a rusty look and scrolling
     """
-    def __init__(self,text,rusty=False, autocontinue=False, scrolling=False,creator=None):
+    def __init__(self,text="",rusty=False, autocontinue=False, scrolling=False,creator=None):
         super().__init__(creator=creator)
 
         self.text = text
@@ -340,7 +340,7 @@ class ShowQuestExecution(BasicCinematic):
     straightforward initialization with options like a character to do the quest or making
     it run in the background. A second setup happens when the cinematic actually starts
     '''
-    def __init__(self,quest,tickSpan = None, assignTo = None, background = False, container=None,creator=None):
+    def __init__(self,quest=None,tickSpan = None, assignTo = None, background = False, container=None,creator=None):
         super().__init__(creator=creator)
 
         self.quest = quest
@@ -432,7 +432,7 @@ class ShowGameCinematic(BasicCinematic):
     '''
     straightforward state initialization
     '''
-    def __init__(self,turns,tickSpan = None,creator=None):
+    def __init__(self,turns=0,tickSpan = None,creator=None):
         super().__init__(creator=creator)
 
         self.turns = turns
@@ -580,7 +580,7 @@ class SelectionCinematic(BasicCinematic):
 this cutscenes shows some message 
 '''
 class ShowMessageCinematic(BasicCinematic):
-    def __init__(self,message,creator=None):
+    def __init__(self,message="",creator=None):
         super().__init__(creator=creator)
 
         self.message = message
@@ -600,7 +600,7 @@ class ShowMessageCinematic(BasicCinematic):
         loop.set_alarm_in(0.0, callShow_or_exit, '~')
         self.breakCinematic = True
         return True
-
+	
 '''
 shortcut for adding a textcinematic
 bad code: this should be a generalised wrapper for adding cinematics

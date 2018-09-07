@@ -56,16 +56,26 @@ class Quest(object):
             result["completed"] = self.completed
         if not self.reputationReward == self.initialState["reputationReward"]:
             result["reputationReward"] = self.reputationReward
+        character = None
+        if self.character:
+            character = self.character.id
+        if not character == self.initialState["character"]:
+            result["character"] = character
         return result
 
     def getState(self):
-        return {
+        state = {
             "id":self.id,
             "active":self.active,
             "completed":self.completed,
             "reputationReward":self.reputationReward,
             "type":self.type
         }
+        if self.character:
+            state["character"] = self.character.id
+        else:
+            state["character"] = None
+        return state
 
     def setState(self,state):
        if "id" in state:
@@ -76,6 +86,10 @@ class Quest(object):
            self.completed = state["completed"]
        if "reputationReward" in state:
            self.reputationReward = state["reputationReward"]
+       if "character" in state and state["character"]:
+           def setCharacter(character):
+               self.character = character
+           loadingRegistry.callWhenAvailable(state["character"],setCharacter)
 
     def getCreationCounter(self):
         self.creationCounter += 1
@@ -1065,6 +1079,11 @@ class NaiveMoveQuest(Quest):
         if "sloppy" in state:
             self.sloppy = state["sloppy"]
 
+        if "character" in state and state["character"]:
+           def watchCharacter(character):
+               self.startWatching(character,self.recalculate)
+           loadingRegistry.callWhenAvailable(state["character"],watchCharacter)
+
 '''
 quest to enter a room. It assumes nothing goes wrong. 
 You probably want to use MoveQuestMeta instead
@@ -1699,6 +1718,11 @@ class MoveQuestMeta(MetaQuestSequence):
                 pass
             else:
                 self.room = None
+
+        if "character" in state and state["character"]:
+           def watchCharacter(character):
+               self.startWatching(character,self.recalculate)
+           loadingRegistry.callWhenAvailable(state["character"],watchCharacter)
 
 '''
 drop a item somewhere

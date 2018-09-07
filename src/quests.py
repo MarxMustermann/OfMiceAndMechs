@@ -928,7 +928,7 @@ class NaiveMoveQuest(Quest):
     '''
     straightfoward state setting
     '''
-    def __init__(self,room,x,y,sloppy=False,followUp=None,startCinematics=None,creator=None):
+    def __init__(self,room=None,x=None,y=None,sloppy=False,followUp=None,startCinematics=None,creator=None):
         self.dstX = x
         self.dstY = y
         self.targetX = x
@@ -1005,6 +1005,65 @@ class NaiveMoveQuest(Quest):
             self.character.assignQuest(EnterRoomQuestMeta(self.room,creator=self),active=True)
             pass # bad code: does nothing
         super().recalculate()
+
+    def getDiffState(self):
+        state = super().getDiffState()
+        room = None
+        if hasattr(self,"room") and self.room:
+            room = None
+        if not room == self.initialState["room"]:
+            state["room"] = room.id
+        if not self.dstX == self.initialState["dstX"]:
+            state["dstX"] = self.dstX
+        if not self.dstY == self.initialState["dstY"]:
+            state["dstY"] = self.dstY
+        if not self.targetX == self.initialState["targetX"]:
+            state["targetX"] = self.targetX
+        if not self.targetY == self.initialState["targetY"]:
+            state["targetY"] = self.targetY
+        if not self.description == self.initialState["description"]:
+            state["description"] = self.description
+        if not self.sloppy == self.initialState["sloppy"]:
+            state["sloppy"] = self.sloppy
+        return state
+
+    def getState(self):
+        state = super().getState()
+        if hasattr(self,"room") and self.room:
+            state["room"] = self.room.id
+        else:
+            state["room"] = None
+        state["dstX"] = self.dstX
+        state["targetX"] = self.targetX
+        state["dstY"] = self.dstY
+        state["targetY"] = self.targetY
+        state["description"] = self.description
+        state["sloppy"] = self.sloppy
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        if "room" in state:
+            if state["room"]:
+                def setRoom(room):
+                    self.room = room
+                loadingRegistry.callWhenAvailable(state["room"],setRoom)
+                pass
+            else:
+                self.room = None
+
+        if "dstX" in state:
+            self.dstX = state["dstX"]
+        if "targetX" in state:
+            self.targetX = state["targetX"]
+        if "dstY" in state:
+            self.dstY = state["dstY"]
+        if "targetY" in state:
+            self.targetY = state["targetY"]
+        if "description" in state:
+            self.description = state["description"]
+        if "sloppy" in state:
+            self.sloppy = state["sloppy"]
 
 '''
 quest to enter a room. It assumes nothing goes wrong. 
@@ -1569,10 +1628,13 @@ class MoveQuestMeta(MetaQuestSequence):
     '''
     state initialization
     '''
-    def __init__(self,room,x,y,sloppy=False,followUp=None,startCinematics=None,creator=None):
+    def __init__(self,room=None,x=None,y=None,sloppy=False,followUp=None,startCinematics=None,creator=None):
         super().__init__([],creator=creator)
-        self.moveQuest = NaiveMoveQuest(room,x,y,sloppy=sloppy,creator=self)
-        self.questList = [self.moveQuest]
+        if room and x and y:
+            self.moveQuest = NaiveMoveQuest(room,x,y,sloppy=sloppy,creator=self)
+            self.questList = [self.moveQuest]
+        else:
+            self.questList = []
         self.enterRoomQuest = None
         self.leaveRoomQuest = None
         self.room = room
@@ -1609,6 +1671,34 @@ class MoveQuestMeta(MetaQuestSequence):
     def assignToCharacter(self,character):
         self.startWatching(character,self.recalculate)
         super().assignToCharacter(character)
+
+    def getDiffState(self):
+        state = super().getDiffState()
+        room = None
+        if hasattr(self,"room") and self.room:
+            room = None
+        if not room == self.initialState["room"]:
+            state["room"] = room.id
+        return state
+
+    def getState(self):
+        state = super().getState()
+        if hasattr(self,"room") and self.room:
+            state["room"] = self.room.id
+        else:
+            state["room"] = None
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        if "room" in state:
+            if state["room"]:
+                def setRoom(room):
+                    self.room = room
+                loadingRegistry.callWhenAvailable(state["room"],setRoom)
+                pass
+            else:
+                self.room = None
 
 '''
 drop a item somewhere
@@ -2861,6 +2951,7 @@ questMap = {
 }
 
 def getQuestFromState(state):
+    print(state["type"])
     quest = questMap[state["type"]](creator=void)
     quest.setState(state)
     return quest

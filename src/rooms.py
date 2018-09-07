@@ -315,6 +315,7 @@ class Room(object):
         self.addItems(itemsOnFloor)
 
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     def getCreationCounter(self):
         self.creationCounter += 1
@@ -1036,6 +1037,7 @@ XXXXXXXXXX
         self.furnaceQuest = None
 
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     move from training to mocked up day to day activity
@@ -1161,6 +1163,7 @@ XXXXXXXXXX
                 self.applySkippedAdvances()
 
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
 '''
 the living space for soldiers
@@ -1212,6 +1215,7 @@ XXXXX$XXXX
         self.name = "Vat1"
 
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     recalculate sprayer state
@@ -1247,6 +1251,7 @@ XXXXX$XXXX
         self.name = "Vat2"
 
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
 '''
 the armor plates of a mech
@@ -1386,6 +1391,7 @@ XXXXXX
         # add dialog options
         self.npc.basicChatOptions.append(StartChat)
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     recalculate engine strength
@@ -1421,6 +1427,7 @@ XXXXXXXXXXXXX
         self.compactor = items.ScrapCompactor(6,1)
         self.addItems([self.artwork,self.compactor])
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
 '''
 a lab for behaviour testing
@@ -1452,6 +1459,7 @@ XXXXXXXXXX
         self.addItems([bean,beanPile])
         self.name = "Lab"
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
 '''
 cargo storage for tighty packing items
@@ -1519,6 +1527,7 @@ XXXXXXXXXX
         # actually add the items
         self.addItems(self.storedItems)
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
 '''
 storage for storing items in an accessible way
@@ -1578,6 +1587,7 @@ XXXXXXXXXX
         # actually add the items
         self.addItems(self.storedItems)
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     '''
     use specialised pathfinding
@@ -1693,6 +1703,7 @@ XXXXXXXX
         # actually add items
         self.addItems([self.lever1,self.gooDispenser,self.objectDispenser,self.furnace,self.pile])
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
 '''
 the room where hoppers wait for jobs
@@ -1733,6 +1744,7 @@ XXXXXXXXXXX
             hopper.assignQuest(quest,active=True)
 
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
 '''
 a dummy for the mechs command centre
@@ -1794,6 +1806,7 @@ XXXXX$XXXXX
         self.producedItems.append(items.Wall(9,8,creator=self))
         self.addItems(self.producedItems)
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
 '''
 a room in the process of beeing constructed. The room itself exists but no items within
@@ -1901,3 +1914,4 @@ XXXXX$XXXXX
                 self.itemsInBuildOrder.append((position,itemsToPlace[position]))
         self.itemsInBuildOrder.reverse()
         self.initialState = self.getState()
+        loadingRegistry.register(self)

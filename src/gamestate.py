@@ -76,7 +76,6 @@ class GameState():
         if "yPosition" in state["mainChar"]:
             yPosition = state["mainChar"]["yPosition"]
 
-        """
         if "room" in state["mainChar"]:
             for room in terrain.rooms:
                 if room.id == state["mainChar"]["room"]:
@@ -84,16 +83,20 @@ class GameState():
                     break
         else:
             terrain.addCharacter(self.mainChar,xPosition,yPosition)
-        """
+
         self.mainChar.setState(state["mainChar"])
 
     '''
     get gamestate in half serialized form
     '''
     def getState(self):
+        mainCharState = self.mainChar.getDiffState()
+        mainCharState["room"] = self.mainChar.room.id
+        mainCharState["xPosition"] = self.mainChar.xPosition
+        mainCharState["yPosition"] =  self.mainChar.yPosition
         return {  
               "currentPhase":self.currentPhase.getState(),
-              "mainChar":self.mainChar.getDiffState(),
+              "mainChar":mainCharState,
               "terrain":terrain.getDiffState(),
               "tick":self.tick,
               "gameWon":self.gameWon

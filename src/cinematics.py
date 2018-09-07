@@ -1,4 +1,5 @@
 import urwid
+import json
 
 """
 bad code: containers for global state
@@ -15,7 +16,7 @@ advanceGame = None
 the base class for all Cinamatics. Nothing fancy
 """
 class BasicCinematic(object):
-    def __init__(self):
+    def __init__(self,creator=None):
         # initialize basic state
         self.background = False
         self.followUp = None
@@ -23,6 +24,12 @@ class BasicCinematic(object):
         self.overwriteFooter = True
         self.footerText = ""
         self.endTrigger = None
+
+        self.id = {
+                    "counter":creator.getCreationCounter()
+                  }
+        self.id["creator"] = creator.id
+        self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
 
     def advance(self):
         return False
@@ -39,8 +46,8 @@ class InformationTransfer(BasicCinematic):
     """
     almost straightforward state initilisation with the information as parameter
     """
-    def __init__(self,information):
-        super().__init__()
+    def __init__(self,information,creator=None):
+        super().__init__(creator=creator)
 
         self.position = 0
         self.information = list(information.items())
@@ -95,8 +102,8 @@ class MessageZoomCinematic(BasicCinematic):
     """
     almost straightforward state initialization
     """
-    def __init__(self):
-        super().__init__()
+    def __init__(self,creator=None):
+        super().__init__(creator=creator)
 
         # bad code: the screensize can change while the cinematic is running
         self.screensize = loop.screen.get_cols_rows()
@@ -189,8 +196,8 @@ class TextCinematic(BasicCinematic):
     straightforward state initialization
     options include a rusty look and scrolling
     """
-    def __init__(self,text,rusty=False, autocontinue=False, scrolling=False):
-        super().__init__()
+    def __init__(self,text,rusty=False, autocontinue=False, scrolling=False,creator=None):
+        super().__init__(creator=creator)
 
         self.text = text
         self.position = 0
@@ -318,8 +325,8 @@ class ShowQuestExecution(BasicCinematic):
     straightforward initialization with options like a character to do the quest or making
     it run in the background. A second setup happens when the cinematic actually starts
     '''
-    def __init__(self,quest,tickSpan = None, assignTo = None, background = False, container=None):
-        super().__init__()
+    def __init__(self,quest,tickSpan = None, assignTo = None, background = False, container=None,creator=None):
+        super().__init__(creator=creator)
 
         self.quest = quest
         self.endTrigger = None
@@ -409,8 +416,8 @@ class ShowGameCinematic(BasicCinematic):
     '''
     straightforward state initialization
     '''
-    def __init__(self,turns,tickSpan = None):
-        super().__init__()
+    def __init__(self,turns,tickSpan = None,creator=None):
+        super().__init__(creator=creator)
 
         self.turns = turns
         self.endTrigger = None
@@ -459,8 +466,8 @@ class ShowGameCinematic(BasicCinematic):
 triggers a chat
 '''
 class ChatCinematic(BasicCinematic):
-    def __init__(self):
-        super().__init__()
+    def __init__(self,creator=None):
+        super().__init__(creator=creator)
 
         self.submenue = interaction.ChatMenu()
 
@@ -492,8 +499,8 @@ class SelectionCinematic(BasicCinematic):
     '''
     straightforward state initialization
     '''
-    def __init__(self,text, options, niceOptions, followUps=None):
-        super().__init__()
+    def __init__(self,text, options, niceOptions, followUps=None,creator=None):
+        super().__init__(creator=creator)
 
         self.options = options
         self.niceOptions = niceOptions
@@ -554,8 +561,8 @@ class SelectionCinematic(BasicCinematic):
 this cutscenes shows some message 
 '''
 class ShowMessageCinematic(BasicCinematic):
-    def __init__(self,message):
-        super().__init__()
+    def __init__(self,message,creator=None):
+        super().__init__(creator=creator)
 
         self.message = message
         self.breakCinematic = False
@@ -579,4 +586,4 @@ shortcut for adding a textcinematic
 bad code: this should be a generalised wrapper for adding cinematics
 '''
 def showCinematic(text,rusty=False,autocontinue=False,scrolling=False):
-    cinematicQueue.append(TextCinematic(text,rusty,autocontinue,scrolling))
+    cinematicQueue.append(TextCinematic(text,rusty,autocontinue,scrolling,creator=void))

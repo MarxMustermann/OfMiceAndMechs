@@ -93,7 +93,14 @@ class GameState():
         mainCharState = self.mainChar.getDiffState()
         mainCharState["room"] = self.mainChar.room.id
         mainCharState["xPosition"] = self.mainChar.xPosition
-        mainCharState["yPosition"] =  self.mainChar.yPosition
+        mainCharState["yPosition"] = self.mainChar.yPosition
+        cinematicStorage = {}
+        cinematicStorage["ids"] = []
+        cinematicStorage["states"] = {}
+        for cinematic in cinematics.cinematicQueue:
+            cinematicStorage["ids"].append(cinematic.id)
+            cinematicStorage["states"][cinematic.id] = {}
+        mainCharState["cinematics"] = cinematicStorage
         return {  
               "currentPhase":self.currentPhase.getState(),
               "mainChar":mainCharState,

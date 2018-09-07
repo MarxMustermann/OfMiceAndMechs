@@ -89,6 +89,7 @@ gamestate.void = void
 story.void = void
 interaction.void = void
 quests.void = void
+cinematics.void = void
 
 class LoadingRegistry(object):
     registered = {}
@@ -142,6 +143,7 @@ characters.displayChars = displayChars
 story.cinematics = cinematics
 interaction.cinematics = cinematics
 events.cinematics = cinematics
+gamestate.cinematics = cinematics
 
 # HACK: common variables with modules
 items.commandChars = commandChars

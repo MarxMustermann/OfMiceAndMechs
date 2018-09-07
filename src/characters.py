@@ -69,6 +69,7 @@ class Character():
         self.inventory.append(items.GooFlask(creator=self))
 
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     def getCreationCounter(self):
         self.creationCounter += 1

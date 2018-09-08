@@ -233,6 +233,7 @@ class Terrain(object):
         self.calculatePathMap()
 
         self.initialState = self.getState()
+        loadingRegistry.register(self)
 
     def getCreationCounter(self):
         self.creationCounter += 1

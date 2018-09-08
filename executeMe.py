@@ -121,6 +121,7 @@ cinematics.loadingRegistry = loadingRegistry
 items.loadingRegistry = loadingRegistry
 story.loadingRegistry = loadingRegistry
 events.loadingRegistry = loadingRegistry
+terrains.loadingRegistry = loadingRegistry
 
 # HACK: common variables with modules
 phasesByName = {}
@@ -147,6 +148,7 @@ interaction.displayChars = displayChars
 cinematics.displayChars = displayChars
 characters.displayChars = displayChars
 events.displayChars = displayChars
+chats.displayChars = displayChars
 
 # HACK: common variables with modules
 story.cinematics = cinematics
@@ -196,6 +198,7 @@ cinematics.callShow_or_exit = interaction.callShow_or_exit
 quests.callShow_or_exit = interaction.callShow_or_exit
 story.callShow_or_exit = interaction.callShow_or_exit
 events.callShow_or_exit = interaction.callShow_or_exit
+chats.callShow_or_exit = interaction.callShow_or_exit
 
 # HACK: common variables with modules
 rooms.calculatePath        = gameMath.calculatePath

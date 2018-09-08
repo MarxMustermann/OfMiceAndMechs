@@ -44,6 +44,8 @@ class Character():
         self.questsToDelegate = []
         self.unconcious = False
         self.displayOriginal = display
+        self.serveQuest = None
+        self.tutorialStart = 0
         self.id = {
                    "other":"character",
                    "xPosition":xPosition,
@@ -157,8 +159,15 @@ class Character():
             result["unconcious"] = self.unconcious
         if not self.reputation == self.initialState["reputation"]:
             result["reputation"] = self.reputation
+        if not self.tutorialStart == self.initialState["tutorialStart"]:
+            result["tutorialStart"] = self.tutorialStart
         if not self.creationCounter == self.initialState["creationCounter"]:
             result["creationCounter"] = self.creationCounter
+        serveQuest = None
+        if self.serveQuest:
+            serveQuest = self.serveQuest.id
+        if not serveQuest == self.initialState["serveQuest"]:
+            result["serveQuest"] = serveQuest
 
         (itemStates,changedItems,newItems,removedItems) = getDiffList(self.inventory,self.initialState["inventory"]["inventoryIds"])
         inventory = {}
@@ -208,6 +217,7 @@ class Character():
                  "inventory": {},
                  "quests": {},
                  "creationCounter":self.creationCounter,
+                 "tutorialStart":self.tutorialStart,
                }
                  
         inventory = []
@@ -222,6 +232,11 @@ class Character():
 
         if self.room:
             state["room"] = self.room.id
+
+        if self.serveQuest:
+            state["serveQuest"] = self.serveQuest.id
+        else:
+            state["serveQuest"] = None
         return state
 
     '''
@@ -257,6 +272,16 @@ class Character():
                 self.display = displayChars.unconciousBody
         if "reputation" in state:
             self.reputation = state["reputation"]
+        if "tutorialStart" in state:
+            self.tutorialStart = state["tutorialStart"]
+
+        if "serveQuest" in state:
+            if state["serveQuest"]:
+                def setServeQuest(quest):
+                    self.serveQuest = quest
+                loadingRegistry.callWhenAvailable(state["serveQuest"],setServeQuest)
+            else:
+                self.serveQuest = None
 
         if "inventory" in state:
             if "changed" in state["inventory"]:

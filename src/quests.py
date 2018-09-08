@@ -1622,6 +1622,12 @@ class DrinkQuest(Quest):
             
         super().triggerCompletionCheck()
 
+    def setState(self,state):
+        super().setState(state)
+        if state["character"]:
+            self.startWatching(self.character,self.recalculate)
+
+
 '''
 ensure own survival
 '''

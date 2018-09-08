@@ -1377,9 +1377,6 @@ class NaiveActivateQuest(Quest):
             if state["toActivate"]:
                 def setState(thing):
                     self.toActivate = thing
-                    print("callback called")
-                print("callback set")
-                print(state["toActivate"])
                 loadingRegistry.callWhenAvailable(state["toActivate"],setState)
             else:
                 self.toActivate = None

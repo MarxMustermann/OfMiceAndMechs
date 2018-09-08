@@ -115,6 +115,7 @@ quests.loadingRegistry = loadingRegistry
 rooms.loadingRegistry = loadingRegistry
 cinematics.loadingRegistry = loadingRegistry
 items.loadingRegistry = loadingRegistry
+story.loadingRegistry = loadingRegistry
 
 # HACK: common variables with modules
 phasesByName = {}

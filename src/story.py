@@ -86,6 +86,9 @@ class BasicPhase(object):
         self.secondOfficerYPosition = 3
         self.name = name
 
+        self.id = "currentPhase"
+        loadingRegistry.register(self)
+
     '''
     start the game phase
     '''
@@ -151,6 +154,7 @@ class BasicPhase(object):
 
     def getState(self):
         return {
+                 "id":self.id,
                  "name":self.name,
                }
 
@@ -805,12 +809,16 @@ class WakeUpPhase(BasicPhase):
 explain and test basic movement and interaction
 '''
 class BasicMovementTraining(BasicPhase):
+
     '''
     basic state initialization
     '''
     def __init__(self):
         super().__init__("BasicMovementTraining")
         self.didFurnaces = False
+        self.methods = {
+            "fetchDrink":self.fetchDrink,
+        }
     
     '''
     make the player move around and place triggers
@@ -924,7 +932,7 @@ now, go and pull the lever
         # ask player to pull the lever and add trigger
         say("activate the lever",firstOfficer)
         quest = quests.ActivateQuestMeta(terrain.wakeUpRoom.lever1,creator=void)
-        showQuest(quest,mainChar,trigger=self.fetchDrink,container=mainChar.serveQuest)
+        showQuest(quest,mainChar,trigger={"container":self,"method":"fetchDrink"},container=mainChar.serveQuest)
 
     '''
     make the main char drink and have a chat

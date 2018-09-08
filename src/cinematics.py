@@ -47,6 +47,19 @@ class BasicCinematic(object):
             self.footerText = state["footerText"]
         if "type" in state:
             self.type = state["type"]
+        if "endTrigger" in state:
+            if state["endTrigger"]:
+                if not self.endTrigger:
+                    self.endTrigger = {}
+
+                if "method" in state["endTrigger"]:
+                    self.endTrigger["method"] = state["endTrigger"]["method"]
+                if "container" in state["endTrigger"]:
+                    def setContainer(thing):
+                        self.endTrigger["container"] = thing
+                    loadingRegistry.callWhenAvailable(state["endTrigger"]["container"],setContainer)
+            else:
+                self.endTrigger = None
 
     def getState(self):
         state = {
@@ -58,6 +71,16 @@ class BasicCinematic(object):
                    "type": self.type,
                    "creationCounter":self.creationCounter,
                 }
+
+        if self.endTrigger:
+            if isinstance(self.endTrigger,dict):
+                endTrigger = {}
+                endTrigger["container"] = self.endTrigger["container"].id
+                endTrigger["method"] = self.endTrigger["method"]
+                state["endTrigger"] = endTrigger
+            else:
+                state["endTrigger"] = str(self.endTrigger)
+
         return state
 
     def advance(self):
@@ -217,7 +240,12 @@ class MessageZoomCinematic(BasicCinematic):
         
         # trigger follow up functions
         if self.endTrigger:
-            self.endTrigger()
+            if not isinstance(self.endTrigger,dict):
+                self.endTrigger()
+            else:
+                container = self.endTrigger["container"]
+                function = container.methods[self.endTrigger["method"]]
+                function()
 
 """
 a cinematic showing a text in various ways
@@ -486,7 +514,12 @@ class ShowQuestExecution(BasicCinematic):
 
         # trigger follow up actions
         if self.endTrigger:
-            self.endTrigger()
+            if not isinstance(self.endTrigger,dict):
+                self.endTrigger()
+            else:
+                container = self.endTrigger["container"]
+                function = container.methods[self.endTrigger["method"]]
+                function()
         
 '''
 shows the game

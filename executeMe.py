@@ -116,6 +116,7 @@ rooms.loadingRegistry = loadingRegistry
 cinematics.loadingRegistry = loadingRegistry
 items.loadingRegistry = loadingRegistry
 story.loadingRegistry = loadingRegistry
+events.loadingRegistry = loadingRegistry
 
 # HACK: common variables with modules
 phasesByName = {}
@@ -184,6 +185,7 @@ events.loop = interaction.loop
 # HACK: common variables with modules
 story.events = events
 items.events = events
+rooms.events = events
 
 # HACK: common variables with modules
 cinematics.callShow_or_exit = interaction.callShow_or_exit

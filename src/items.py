@@ -719,7 +719,7 @@ class Furnace(Item):
     '''
     def __init__(self,xPosition=0,yPosition=0,name="Furnace",creator=None):
         self.activated = False
-        self.boilers = None
+        self.boilers = []
         self.stopBoilingEvent = None
         self.type = "Furnace"
         super().__init__(displayChars.furnace_inactive,xPosition,yPosition,name=name,creator=creator)

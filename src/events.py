@@ -23,7 +23,16 @@ class Event(object):
         return {
                  "id":self.id,
                  "tick":self.tick,
+                 "type":self.type,
                }
+
+    def setState(self, state):
+        if "id" in state:
+            self.id = state["id"]
+        if "tick" in state:
+            self.tick = state["tick"]
+        if "type" in state:
+            self.type = state["type"]
 
 '''
 straigthforward adding a message
@@ -85,8 +94,17 @@ class FurnaceBurnoutEvent(Event):
         # notify listeners
         self.furnace.changed()
 
-    def getDiffState(self):
-        return self.getState()
+    def setState(self,state):
+        if "furnace" in state:
+           if state["furnace"]:
+               def setFurnace(furnace):
+                   self.furnace = furnace
+                   print("callback called")
+               print("callback set")
+               loadingRegistry.callWhenAvailable(state["furnace"],setFurnace)
+           else:
+               self.furnace = None
+
        
     def getState(self):
         state = super().getState()
@@ -95,3 +113,16 @@ class FurnaceBurnoutEvent(Event):
         else:
             state["furnace"] = None
         return state
+
+eventMap = {
+             "Event":Event,
+             "ShowMessageEvent":ShowMessageEvent,
+             "ShowCinematicEvent":ShowCinematicEvent,
+             "FurnaceBurnoutEvent":FurnaceBurnoutEvent,
+           }
+
+def getEventFromState(state):
+    event = eventMap[state["type"]](state["tick"])
+    event.setState(state)
+    return event
+

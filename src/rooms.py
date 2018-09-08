@@ -498,6 +498,12 @@ class Room(object):
                 char.setState(charState)
                 self.addCharacter(char,charState["xPosition"],charState["yPosition"])
 
+        if "newEvents" in state:
+            for eventId in state["newEvents"]:
+                eventState = state["eventStates"][eventId]
+                event = events.getEventFromState(eventState)
+                self.addEvent(event)
+
         self.forceRedraw()
 
     '''

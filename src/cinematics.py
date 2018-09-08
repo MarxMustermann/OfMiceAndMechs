@@ -293,7 +293,8 @@ class TextCinematic(BasicCinematic):
                 # handle formatters
                 result = []
                 for item in flattenToPeseudoString(urwidText[1]):
-                    result.append((urwidText[0],item))
+                    #result.append((urwidText[0],item)) 
+                    result.append(item) # bad code: nukes all the pretty colors
                 return result
 
         # flatten text and text information
@@ -375,6 +376,19 @@ class TextCinematic(BasicCinematic):
         # trigger follow up actions
         if self.endTrigger:
             self.endTrigger()
+
+    def getState(self):
+        state = super().getState()
+        state["text"] = self.text
+        state["endPosition"] = self.endPosition
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        if "text" in state:
+            self.text = state["text"]
+        if "endPosition" in state:
+            self.endPosition = state["endPosition"]
 
 '''
 a cinematic that shows the execution of a quest

@@ -163,6 +163,8 @@ class Character():
             result["tutorialStart"] = self.tutorialStart
         if not self.creationCounter == self.initialState["creationCounter"]:
             result["creationCounter"] = self.creationCounter
+        if not self.path == self.initialState["path"]:
+            result["path"] = self.path
         serveQuest = None
         if self.serveQuest:
             serveQuest = self.serveQuest.id
@@ -218,6 +220,7 @@ class Character():
                  "quests": {},
                  "creationCounter":self.creationCounter,
                  "tutorialStart":self.tutorialStart,
+                 "path":self.path,
                }
                  
         inventory = []
@@ -274,6 +277,8 @@ class Character():
             self.reputation = state["reputation"]
         if "tutorialStart" in state:
             self.tutorialStart = state["tutorialStart"]
+        if "path" in state:
+            self.path = state["path"]
 
         if "serveQuest" in state:
             if state["serveQuest"]:
@@ -340,7 +345,7 @@ class Character():
     straightforward getting a string with a detailed info about the character
     '''
     def getDetailedInfo(self):
-        return "\nname: "+str(self.name)+"\nroom: "+str(self.room)+"\ncoord: "+str(self.xPosition)+" "+str(self.yPosition)+"\nsubs: "+str(self.subordinates)+"\nsat: "+str(self.satiation)+"\nreputation: "+str(self.reputation)
+        return "\nname: "+str(self.name)+"\nroom: "+str(self.room)+"\ncoord: "+str(self.xPosition)+" "+str(self.yPosition)+"\nsubs: "+str(self.subordinates)+"\nsat: "+str(self.satiation)+"\nreputation: "+str(self.reputation)+"\npath: "+str(self.path)
 
     '''
     adds a quest to the characters quest list

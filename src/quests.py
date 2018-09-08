@@ -644,8 +644,13 @@ class MetaQuestParralel(Quest):
 
     def getDiffState(self):
         state = super().getDiffState()
-        if not self.metaDescription == state["metaDescription"]:
+        if not self.metaDescription == self.initialState["metaDescription"]:
             state["metaDescription"] = self.metaDescription
+        lastActive = None
+        if self.lastActive:
+            lastActive = lastActive.id
+        if not lastActive == self.initialState["lastActive"]:
+            state["lastActive"] = lastActive
 
         def getDiffList(toDiff,toCompare,exclude=[]):
             currentThingsList = []
@@ -702,6 +707,10 @@ class MetaQuestParralel(Quest):
         for quest in self.subQuests:
             state["subQuests"]["ids"].append(quest.id)
             state["subQuests"]["states"][quest.id] = quest.getState()
+        if self.lastActive:
+            state["lastActive"] = self.lastActive.id
+        else:
+            state["lastActive"] = None
         return state
     
     def setState(self,state):
@@ -739,6 +748,13 @@ class MetaQuestParralel(Quest):
                     thing.setState(thingState)
                     self.subQuests.append(thing)
 
+        if "lastActive" in state:
+            if state["lastActive"]:
+                def setState(thing):
+                    self.lastActive = thing
+                loadingRegistry.callWhenAvailable(state["lastActive"],setState)
+            else:
+                state["lastActive"] = None
     '''
     forward position from last active quest
     '''

@@ -1329,12 +1329,13 @@ class NaiveActivateQuest(Quest):
     def __init__(self,toActivate=None,followUp=None,startCinematics=None,creator=None):
         self.toActivate = toActivate
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
-        self.description = "naive activate "+str(self.toActivate)
         self.activated = False
 
         self.type = "NaiveActivateQuest"
         self.initialState = self.getState()
         loadingRegistry.register(self)
+
+        self.description = "naive activate "+str(self.toActivate)
 
     def registerActivation(self,info):
         if self.toActivate == info:
@@ -1352,6 +1353,39 @@ class NaiveActivateQuest(Quest):
         if self.active:
             if self.activated:
                 self.postHandler()
+
+    def getDiffState(self):
+        state = super().getDiffState()
+        toActivate = None
+        if hasattr(self,"toActivate") and self.toActivate:
+            toActivate = self.toActivate.id
+        if not toActivate == self.initialState["toActivate"]:
+            state["toActivate"] = toActivate
+        return state
+
+    def getState(self):
+        state = super().getState()
+        if hasattr(self,"toActivate") and self.toActivate:
+            state["toActivate"] = self.toActivate.id
+        else:
+            state["toActivate"] = None
+        return state
+    
+    def setState(self,state):
+        super().setState(state)
+        if "toActivate" in state:
+            if state["toActivate"]:
+                def setState(thing):
+                    self.toActivate = thing
+                    print("callback called")
+                print("callback set")
+                print(state["toActivate"])
+                loadingRegistry.callWhenAvailable(state["toActivate"],setState)
+            else:
+                self.toActivate = None
+
+        if self.active and self.character:
+            self.character.addListener(self.registerActivation,"activate")
 
     '''
     activate the target
@@ -1904,6 +1938,60 @@ class ActivateQuestMeta(MetaQuestSequence):
                     self.moveQuest = MoveQuestMeta(self.toActivate.room,self.toActivate.xPosition,self.toActivate.yPosition,sloppy=self.sloppy,creator=self)
                     self.addQuest(self.moveQuest)
         super().recalculate()
+        
+    def getDiffState(self):
+        state = super().getDiffState()
+        sloppy = None
+        if hasattr(self,"sloppy") and self.sloppy:
+            sloppy = self.sloppy
+        if not sloppy == self.initialState["sloppy"]:
+            state["sloppy"] = sloppy
+        moveQuest = None
+        if hasattr(self,"moveQuest") and self.moveQuest:
+            moveQuest = self.moveQuest.id
+        if not moveQuest == self.initialState["moveQuest"]:
+            state["moveQuest"] = moveQuest
+        toActivate = None
+        if hasattr(self,"toActivate") and self.toActivate:
+            toActivate = self.toActivate.id
+        if not toActivate == self.initialState["toActivate"]:
+            state["toActivate"] = toActivate
+        return state
+
+    def getState(self):
+        state = super().getState()
+        if hasattr(self,"sloppy") and self.sloppy:
+            state["sloppy"] = self.sloppy
+        else:
+            self.sloppy = None
+        if hasattr(self,"moveQuest") and self.moveQuest:
+            state["moveQuest"] = self.moveQuest.id
+        else:
+            state["moveQuest"] = None
+        if hasattr(self,"toActivate") and self.toActivate:
+            state["toActivate"] = self.toActivate.id
+        else:
+            state["toActivate"] = None
+        return state
+    
+    def setState(self,state):
+        super().setState(state)
+        if "sloppy" in state:
+            self.sloppy = state["sloppy"]
+        if "moveQuest" in state:
+            if state["moveQuest"]:
+                def setState(quest):
+                    self.moveQuest = quest
+                loadingRegistry.callWhenAvailable(state["moveQuest"],setState)
+            else:
+                self.moveQuest = None
+        if "toActivate" in state:
+            if state["toActivate"]:
+                def setState(thing):
+                    self.toActivate = thing
+                loadingRegistry.callWhenAvailable(state["toActivate"],setState)
+            else:
+                self.toActivate = None
 
     def activate(self):
         self.startWatching(self.character,self.recalculate)

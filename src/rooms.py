@@ -387,6 +387,17 @@ class Room(object):
         if charStates:
             result["charStates"] = charStates
 
+        (eventStates,changedEvents,newEvents,removedEvents) = getDiffList(self.events,"eventIds")
+
+        if changedEvents:
+            result["changedEvents"] = changedEvents
+        if newEvents:
+            result["newEvents"] = newEvents
+        if removedEvents:
+            result["removedEvents"] = removedEvents
+        if eventStates:
+            result["eventStates"] = eventStates
+
         return result
 
     '''
@@ -406,10 +417,13 @@ class Room(object):
 
             return (states,ids)
 
+        (eventIds,eventStates) = storeStateList(self.events)
         (itemIds,itemStates) = storeStateList(self.itemsOnFloor)
         (charIds,charStates) = storeStateList(self.characters)
 
         return { 
+                 "eventIds": eventIds,
+                 "eventStates":eventStates,
                  "itemIds":itemIds,
                  "itemStates":itemStates,
                  "characterIds":charIds,

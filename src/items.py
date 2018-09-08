@@ -775,6 +775,8 @@ class Furnace(Item):
                 bad code: should be an abstact event calling a method
                 '''
                 class FurnaceBurnoutEvent(object):
+                    id = "FurnaceBurnoutEvent"
+
                     '''
                     straightforward state initialization
                     '''
@@ -795,6 +797,17 @@ class Furnace(Item):
 
                         # notify listeners
                         self.changed()
+
+                    def getDiffState(subself):
+                        return self.getState()
+                       
+                    def getState(subself):
+                        return {
+                                 "id":subself.id,
+                                 "tick":subself.tick,
+                               }
+                        
+                       
 
                 # add burnout event 
                 self.room.addEvent(FurnaceBurnoutEvent(self.room.timeIndex+30))

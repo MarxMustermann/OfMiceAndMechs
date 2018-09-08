@@ -99,8 +99,6 @@ class FurnaceBurnoutEvent(Event):
            if state["furnace"]:
                def setFurnace(furnace):
                    self.furnace = furnace
-                   print("callback called")
-               print("callback set")
                loadingRegistry.callWhenAvailable(state["furnace"],setFurnace)
            else:
                self.furnace = None

@@ -199,7 +199,17 @@ class Character():
 
         chatOptions = []
         for chat in self.basicChatOptions:
-            chatOptions.append(chat.id)
+            if not isinstance(chat,dict):
+                chatOptions.append(chat.id)
+            else:
+                option = {}
+                option["chat"] = chat["chat"].id
+                option["dialogName"] = chat["dialogName"]
+                option["params"] = {}
+                if "params" in chat:
+                    for key, value in chat["params"].items():
+                        option["params"][key] = value.id
+                chatOptions.append(option)
         result["chatOptions"] = chatOptions
 
         return result
@@ -248,7 +258,17 @@ class Character():
 
         chatOptions = []
         for chat in self.basicChatOptions:
-            chatOptions.append(chat.id)
+            if not isinstance(chat,dict):
+                chatOptions.append(chat.id)
+            else:
+                option = {}
+                option["chat"] = chat["chat"].id
+                option["dialogName"] = chat["dialogName"]
+                option["params"] = {}
+                if "params" in chat:
+                    for key, value in chat["params"].items():
+                        option["params"][key] = value.id
+                    chatOptions.append(option)
         state["chatOptions"] = chatOptions
 
         return state
@@ -334,7 +354,20 @@ class Character():
         if "chatOptions" in state:
             chatOptions = []
             for chatType in state["chatOptions"]:
-                chatOptions.append(chats.chatMap[chatType])
+                if not isinstance(chatType,dict):
+                    chatOptions.append(chats.chatMap[chatType])
+                else:
+                    option = {}
+                    option["chat"] = chats.chatMap[chatType["chat"]]
+                    option["dialogName"] = chatType["dialogName"]
+                    if "params" in chatType:
+                        params = {}
+                        for (key,value) in chatType["params"].items():
+                            def setParam(instance):
+                                params[key] = instance
+                            loadingRegistry.callWhenAvailable(value,setParam)
+                        option["params"] = params
+                    chatOptions.append(option)
             self.basicChatOptions = chatOptions
 
         return state

@@ -1340,6 +1340,9 @@ XXXXXX
         the chat for making the npc stop firering the furnace
         '''
         class StopChat(interaction.SubMenu):
+            id = "StopChat"
+            type = "StopChat"
+
             dialogName = "stop fireing the furnaces."
             '''
             basic state initialization
@@ -1379,6 +1382,9 @@ XXXXXX
         the chat for making the npc start firering the furnace
         '''
         class StartChat(interaction.SubMenu):
+            id = "StartChat"
+            type = "StartChat"
+
             dialogName = "fire the furnaces."
             '''
             basic state initialization

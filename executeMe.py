@@ -13,6 +13,7 @@ import src.gameMath as gameMath
 import src.interaction as interaction
 import src.gamestate as gamestate
 import src.events as events
+import src.chats as chats
 import config.commandChars as commandChars
 import config.names as names
 
@@ -90,6 +91,9 @@ story.void = void
 interaction.void = void
 quests.void = void
 cinematics.void = void
+
+story.chats = chats
+characters.chats = chats
 
 class LoadingRegistry(object):
     registered = {}
@@ -220,6 +224,7 @@ story.interaction = interaction
 rooms.interaction = interaction
 items.interaction = interaction
 quests.interaction = interaction
+chats.interaction = interaction
 
 if args.debug:
     '''

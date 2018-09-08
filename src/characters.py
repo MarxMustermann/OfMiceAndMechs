@@ -197,6 +197,11 @@ class Character():
         if questStates or removedQuests:
             result["quests"] = quests
 
+        chatOptions = []
+        for chat in self.basicChatOptions:
+            chatOptions.append(chat.id)
+        result["chatOptions"] = chatOptions
+
         return result
 
     '''
@@ -240,6 +245,12 @@ class Character():
             state["serveQuest"] = self.serveQuest.id
         else:
             state["serveQuest"] = None
+
+        chatOptions = []
+        for chat in self.basicChatOptions:
+            chatOptions.append(chat.id)
+        state["chatOptions"] = chatOptions
+
         return state
 
     '''
@@ -319,6 +330,14 @@ class Character():
                     item = quests.getQuestFromState(itemState)
                     item.setState(itemState)
                     self.quests.append(item)
+
+        if "chatOptions" in state:
+            chatOptions = []
+            for chatType in state["chatOptions"]:
+                chatOptions.append(chats.chatMap[chatType])
+            self.basicChatOptions = chatOptions
+
+        return state
 
     '''
     bad code: this should be handled with a get quest quest

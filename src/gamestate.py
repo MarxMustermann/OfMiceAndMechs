@@ -63,8 +63,7 @@ class GameState():
     def setState(self,state):
         # the object itself
         self.gameWon = state["gameWon"]
-        self.currentPhase = phasesByName[state["currentPhase"]["name"]]
-        phase = self.currentPhase()
+        self.currentPhase = phasesByName[state["currentPhase"]["name"]]()
         self.tick = state["tick"]
 
         void.creationCounter = state["creationCounter"]

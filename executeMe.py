@@ -217,6 +217,7 @@ cinematics.messages = messages
 story.messages = messages
 interaction.messages = messages
 events.messages = messages
+chats.messages = messages
 
 cinematics.interaction = interaction
 characters.interaction = interaction

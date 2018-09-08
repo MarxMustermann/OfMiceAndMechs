@@ -1128,8 +1128,12 @@ class ChatMenu(SubMenu):
                 niceOptions = {}
                 counter = 1
                 for option in self.partner.getChatOptions(mainChar):
-                    options[counter] = option
-                    niceOptions[counter] = option.dialogName
+                    if not isinstance(option,dict):
+                        options[counter] = option
+                        niceOptions[counter] = option.dialogName
+                    else:
+                        options[counter] = option
+                        niceOptions[counter] = option["dialogName"]
                     counter += 1
 
                 # add default dialog options
@@ -1151,7 +1155,13 @@ class ChatMenu(SubMenu):
             if self.getSelection():
                 if not isinstance(self.selection,str):
                     # spawn the selected dialog option
-                    self.subMenu = self.selection(self.partner)
+                    if not isinstance(self.selection,dict):
+                        self.subMenu = self.selection(self.partner)
+                    else:
+                        self.subMenu = self.selection["chat"](self.partner)
+                        if "params" in self.selection:
+                            self.subMenu.setUp(self.selection["params"])
+
                     self.subMenu.handleKey(key)
                 elif self.selection == "showQuests":
                     # spawn quest submenu for partner

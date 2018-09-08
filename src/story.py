@@ -971,8 +971,8 @@ now, go and pull the lever
         showText(msg)
                    
         # add chat options
-        firstOfficer.basicChatOptions.append(chats.FirstChat)
-        firstOfficer.basicChatOptions.append(chats.FurnaceChat)
+        firstOfficer.basicChatOptions.append({"dialogName":"first Chat","chat":chats.FirstChat,"params":{"firstOfficer":firstOfficer,"phase":self}})
+        firstOfficer.basicChatOptions.append({"dialogName":"furnace Chat","chat":chats.FurnaceChat})
 
     '''
     make the player fire a furnace. no triggers placed

@@ -802,6 +802,24 @@ class Furnace(Item):
                 # notify listeners
                 self.changed()
 
+    def setState(self,state):
+        super().setState(state)
+        if "activated" in state:
+            self.activated = state["activated"]
+            if self.activated:
+                self.display = displayChars.furnace_active
+    
+    def getDiffState(self):
+        state = super().getDiffState()
+        if not self.activated == self.initialState["activated"]:
+            state["activated"] = self.activated
+        return state
+    
+    def getState(self):
+        state = super().getState()
+        state["activated"] = self.activated
+        return state
+
 '''
 a dummy for an interface with the mech communication network
 bad code: this class is dummy only and basically is to be implemented

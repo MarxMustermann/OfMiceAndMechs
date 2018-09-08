@@ -141,6 +141,7 @@ gamestate.displayChars = displayChars
 interaction.displayChars = displayChars
 cinematics.displayChars = displayChars
 characters.displayChars = displayChars
+events.displayChars = displayChars
 
 # HACK: common variables with modules
 story.cinematics = cinematics
@@ -182,6 +183,7 @@ events.loop = interaction.loop
 
 # HACK: common variables with modules
 story.events = events
+items.events = events
 
 # HACK: common variables with modules
 cinematics.callShow_or_exit = interaction.callShow_or_exit

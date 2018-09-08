@@ -769,48 +769,12 @@ class Furnace(Item):
 
                 for boiler in self.boilers:
                     boiler.startHeatingUp()
-
-                '''
-                the event for stopping to burn after a while
-                bad code: should be an abstact event calling a method
-                '''
-                class FurnaceBurnoutEvent(object):
-                    id = "FurnaceBurnoutEvent"
-
-                    '''
-                    straightforward state initialization
-                    '''
-                    def __init__(subself,tick):
-                        subself.tick = tick
-
-                    '''
-                    stop burning
-                    '''
-                    def handleEvent(subself):
-                        # stop burning
-                        self.activated = False
-                        self.display = displayChars.furnace_inactive
-
-                        # stop heating the boilers
-                        for boiler in self.boilers:
-                            boiler.stopHeatingUp()
-
-                        # notify listeners
-                        self.changed()
-
-                    def getDiffState(subself):
-                        return self.getState()
-                       
-                    def getState(subself):
-                        return {
-                                 "id":subself.id,
-                                 "tick":subself.tick,
-                               }
-                        
-                       
+                
+                event = events.FurnaceBurnoutEvent(self.room.timeIndex+30)
+                event.furnace = self
 
                 # add burnout event 
-                self.room.addEvent(FurnaceBurnoutEvent(self.room.timeIndex+30))
+                self.room.addEvent(event)
 
                 # notify listeners
                 self.changed()

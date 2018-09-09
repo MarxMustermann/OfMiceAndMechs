@@ -18,10 +18,6 @@ class Item(object):
     state initialization and id generation
     '''
     def __init__(self,display=None,xPosition=0,yPosition=0,creator=None,name="item"):
-        # bad code: obsolete - delete
-        if creator == "void":
-            creator = void
-
         # bad code: should be in extra class
         self.creationCounter = 0
 

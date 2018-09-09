@@ -20,10 +20,6 @@ class Room(object):
     bad code: too many attributes
     '''
     def __init__(self,layout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
-        # bad code: not needed - delete
-        if creator == "void":
-            creator = void
-
         # should be in extra class
         self.creationCounter = 0
 

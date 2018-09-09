@@ -18,10 +18,6 @@ class Character():
     bad code: adding the default behaviour/items here makes it harder to create instances with fixed state
     '''
     def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person",creator=None):
-        # bad code: obsolete, can be deleted
-        if creator == "void":
-            creator = void
-
         # bad code: should be in extra class
         self.creationCounter = 0
 

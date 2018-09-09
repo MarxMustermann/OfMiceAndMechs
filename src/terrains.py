@@ -29,10 +29,6 @@ class Terrain(object):
     straightforward state initialization
     '''
     def __init__(self,layout,detailedLayout,creator=None):
-        # bad code: obsolete should be removed
-        if creator == "void":
-            creator = void
-
         # should be an extra class
         self.creationCounter = 0
 

@@ -30,9 +30,6 @@ class Terrain(saveing.Saveable):
     straightforward state initialization
     '''
     def __init__(self,layout,detailedLayout,creator=None):
-        # should be an extra class
-        self.creationCounter = 0
-
         # store terrain content
         self.itemsOnFloor = []
         self.characters = []

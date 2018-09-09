@@ -19,9 +19,6 @@ class Character(saving.Saveable):
     bad code: adding the default behaviour/items here makes it harder to create instances with fixed state
     '''
     def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person",creator=None):
-        # bad code: should be in extra class
-        self.creationCounter = 0
-
         # set basic state
         self.display = display # bad code: the character should have a rendering+chaching caching method instead of attrbute
         self.automated = automated

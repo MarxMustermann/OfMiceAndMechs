@@ -1,19 +1,6 @@
-'''
-the creator that should be used if there is no valid creator object
-basically supply ids for unique ids
-'''
-class Void():
-    id = "void**#"
+class Saveable(object):
     creationCounter = 0
 
-    '''
-    supply a counter to allow unique id creation
-    '''
-    def getCreationCounter(self):
-        self.creationCounter += 1
-        return self.creationCounter
-
-class Saveable(object):
     '''
     get the difference of a list between existing and initial state
     '''
@@ -57,3 +44,18 @@ class Saveable(object):
                 removedThingsList.append(thingId)
 
         return (states,changedThingsList,newThingsList,removedThingsList)
+
+'''
+the creator that should be used if there is no valid creator object
+basically supply ids for unique ids
+'''
+class Void(Saveable):
+    id = "void**#"
+
+    '''
+    supply a counter to allow unique id creation
+    '''
+    def getCreationCounter(self):
+        self.creationCounter += 1
+        return self.creationCounter
+

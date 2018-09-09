@@ -23,9 +23,6 @@ class Room(saveing.Saveable):
     def __init__(self,layout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         super().__init__()
 
-        # should be in extra class
-        self.creationCounter = 0
-
         # initialize attributes
         self.desiredPosition = desiredPosition
         self.desiredSteamGeneration = None

@@ -1,5 +1,6 @@
 import urwid
 import json
+import src.saveing
 
 """
 bad code: containers for global state
@@ -15,13 +16,12 @@ advanceGame = None
 """
 the base class for all Cinamatics
 """
-class BasicCinematic(object):
+class BasicCinematic(saving.Saveable):
     '''
     basic state setting and id generation
     '''
     def __init__(self,creator=None):
-        # bad code: should in extra class
-        self.creationCounter = 0
+        super().__init__()
 
         # initialize basic state
         self.background = False

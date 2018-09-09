@@ -22,9 +22,6 @@ class Quest(saveing.Saveable):
     straightforward state initialization
     '''
     def __init__(self,followUp=None,startCinematics=None,lifetime=0,creator=None):
-        # should be an extra class
-        self.creationCounter = 0
-
         # set basic attributes
         self.type = "Quest"
         self.followUp = followUp # deprecate?

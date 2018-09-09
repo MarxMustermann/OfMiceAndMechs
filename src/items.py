@@ -1,6 +1,7 @@
 import urwid
 import json
 import gamestate
+import src.saveing as saving
 
 # bad code: global state
 messages = None
@@ -13,13 +14,12 @@ terrain = None
 '''
 the base class for all items.
 '''
-class Item(object):
+class Item(saving.Savable):
     '''
     state initialization and id generation
     '''
     def __init__(self,display=None,xPosition=0,yPosition=0,creator=None,name="item"):
-        # bad code: should be in extra class
-        self.creationCounter = 0
+	    super().__init__()
 
         # set attributes
         if not hasattr(self,"type"):

@@ -293,7 +293,9 @@ class Character(saving.Saveable):
 
         if "serveQuest" in state:
             if state["serveQuest"]:
-                # bad code: should be abstracted
+                '''
+                set value
+                '''
                 def setServeQuest(quest):
                     self.serveQuest = quest
                 loadingRegistry.callWhenAvailable(state["serveQuest"],setServeQuest)
@@ -322,7 +324,9 @@ class Character(saving.Saveable):
                     if "params" in chatType:
                         params = {}
                         for (key,value) in chatType["params"].items():
-                            # bad code: should be abstracted
+                            '''
+                            set value
+                            '''
                             def setParam(instance):
                                 params[key] = instance
                             loadingRegistry.callWhenAvailable(value,setParam)

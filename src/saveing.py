@@ -39,8 +39,8 @@ class Saveable(object):
         return state
 
     '''
-	load list of instances from list
-	'''
+    load list of instances from list
+    '''
     def loadFromList(self,info,target,creationFunction):
         if "changed" in info:
             for item in target:

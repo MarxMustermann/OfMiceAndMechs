@@ -104,7 +104,9 @@ class Quest(saveing.Saveable):
        if "reputationReward" in state:
            self.reputationReward = state["reputationReward"]
        if "character" in state and state["character"]:
-           # bad code: should be abstracted
+           '''
+           set value
+           '''
            def setCharacter(character):
                self.character = character
            loadingRegistry.callWhenAvailable(state["character"],setCharacter)
@@ -757,7 +759,9 @@ class MetaQuestParralel(Quest):
         # bad code: repetetive load from id or none pattern
         if "lastActive" in state:
             if state["lastActive"]:
-                # bad code: should be abstracted
+                '''
+                set value
+                '''
                 def setState(thing):
                     self.lastActive = thing
                 loadingRegistry.callWhenAvailable(state["lastActive"],setState)
@@ -1067,7 +1071,9 @@ class NaiveMoveQuest(Quest):
         # bad code: repetetive load from id or none pattern
         if "room" in state:
             if state["room"]:
-                # bad code: should be abstracted
+                '''
+                set value
+                '''
                 def setRoom(room):
                     self.room = room
                 loadingRegistry.callWhenAvailable(state["room"],setRoom)
@@ -1086,7 +1092,9 @@ class NaiveMoveQuest(Quest):
             self.sloppy = state["sloppy"]
 
         if "character" in state and state["character"]:
-           # bad code: should be abstracted
+           '''
+           set value
+           '''
            def watchCharacter(character):
                self.startWatching(character,self.recalculate)
            loadingRegistry.callWhenAvailable(state["character"],watchCharacter)
@@ -1377,7 +1385,9 @@ class NaiveActivateQuest(Quest):
         if "toActivate" in state:
             # bad code: repetetive load from id or none pattern
             if state["toActivate"]:
-                # bad code: should be abstracted
+                '''
+                set value
+                '''
                 def setState(thing):
                     self.toActivate = thing
                 loadingRegistry.callWhenAvailable(state["toActivate"],setState)
@@ -1800,6 +1810,9 @@ class MoveQuestMeta(MetaQuestSequence):
         if "room" in state:
             # bad code: repetetive load from id or none pattern
             if state["room"]:
+                '''
+                set value
+                '''
                 def setRoom(room):
                     self.room = room
                 loadingRegistry.callWhenAvailable(state["room"],setRoom)
@@ -1808,6 +1821,9 @@ class MoveQuestMeta(MetaQuestSequence):
                 self.room = None
 
         if "character" in state and state["character"]:
+           '''
+           set value
+           '''
            def watchCharacter(character):
                self.startWatching(character,self.recalculate)
            loadingRegistry.callWhenAvailable(state["character"],watchCharacter)
@@ -2030,6 +2046,9 @@ class ActivateQuestMeta(MetaQuestSequence):
         if "moveQuest" in state:
             # bad code: repetetive load from id or none pattern
             if state["moveQuest"]:
+                '''
+                set value
+                '''
                 def setState(quest):
                     self.moveQuest = quest
                 loadingRegistry.callWhenAvailable(state["moveQuest"],setState)
@@ -2038,6 +2057,9 @@ class ActivateQuestMeta(MetaQuestSequence):
         if "toActivate" in state:
             # bad code: repetetive load from id or none pattern
             if state["toActivate"]:
+                '''
+                set value
+                '''
                 def setState(thing):
                     self.toActivate = thing
                 loadingRegistry.callWhenAvailable(state["toActivate"],setState)
@@ -3155,6 +3177,9 @@ class Serve(MetaQuestParralel):
         if "superior" in state:
             # bad code: repetetive load from id or none pattern
             if state["superior"]:
+                '''
+                set value
+                '''
                 def setSuperior(superior):
                     self.superior = superior
                 loadingRegistry.callWhenAvailable(state["superior"],setSuperior)

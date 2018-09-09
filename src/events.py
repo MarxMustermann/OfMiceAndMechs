@@ -131,6 +131,9 @@ class FurnaceBurnoutEvent(Event):
         # load target furnace
         if "furnace" in state:
            if state["furnace"]:
+               '''
+               set value
+               '''
                def setFurnace(furnace):
                    self.furnace = furnace
                loadingRegistry.callWhenAvailable(state["furnace"],setFurnace)

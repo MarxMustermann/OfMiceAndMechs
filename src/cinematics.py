@@ -64,7 +64,9 @@ class BasicCinematic(saveing.Saveable):
                 if "method" in state["endTrigger"]:
                     self.endTrigger["method"] = state["endTrigger"]["method"]
                 if "container" in state["endTrigger"]:
-                    # bad code: this should be abstracted
+                    '''
+                    set value
+                    '''
                     def setContainer(thing):
                         self.endTrigger["container"] = thing
                     loadingRegistry.callWhenAvailable(state["endTrigger"]["container"],setContainer)
@@ -460,7 +462,9 @@ class ShowQuestExecution(BasicCinematic):
         # set quest related attributes
         if "quest" in state and state["quest"]:
             if isinstance(state["quest"],str):
-                # bad code: this should be abstracted
+                '''
+                set value
+                '''
                 def setQuest(quest):
                     self.quest = quest
                 loadingRegistry.callWhenAvailable(state["quest"],setQuest)
@@ -471,7 +475,9 @@ class ShowQuestExecution(BasicCinematic):
 
         if "assignTo" in state:
             if state["assignTo"]:
-                # bad code: this should be abstracted
+                '''
+                set value
+                '''
                 def setAssignee(character):
                     self.assignTo = character
                 loadingRegistry.callWhenAvailable(state["assignTo"],setAssignee)
@@ -480,7 +486,9 @@ class ShowQuestExecution(BasicCinematic):
 
         if "container" in state:
             if state["container"]:
-                # bad code: this should be abstracted
+                '''
+                set value
+                '''
                 def setContainer(container):
                     self.container = container
                 loadingRegistry.callWhenAvailable(state["container"],setContainer)

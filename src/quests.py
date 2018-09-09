@@ -379,7 +379,7 @@ class MetaQuestSequence(Quest):
         if not self.metaDescription == state["metaDescription"]:
             state["metaDescription"] = self.metaDescription
 
-		# store quests
+        # store quests
         (questStates,changedQuests,newQuests,removedQuests) = self.getDiffList(self.subQuests,self.initialState["subQuests"]["ids"])
         quests = {}
         if changedQuests:

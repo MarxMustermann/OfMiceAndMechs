@@ -19,7 +19,7 @@ class Item(saving.Savable):
     state initialization and id generation
     '''
     def __init__(self,display=None,xPosition=0,yPosition=0,creator=None,name="item"):
-	    super().__init__()
+        super().__init__()
 
         # set attributes
         if not hasattr(self,"type"):

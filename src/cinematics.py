@@ -335,8 +335,6 @@ class TextCinematic(BasicCinematic):
         super().advance()
 
         # do nothing if done
-        # bad code: this should be unnecessary
-        # bad code: should log
         if self.position > self.endPosition:
             return
 
@@ -384,7 +382,6 @@ class TextCinematic(BasicCinematic):
         header.set_text("")
 
         # scroll further
-        # bad code: should hang around with the other scrolling stuff
         self.position += 1
 
     '''

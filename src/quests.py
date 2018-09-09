@@ -1094,7 +1094,7 @@ class NaiveMoveQuest(Quest):
     def triggerCompletionCheck(self):
         # a inactive quest cannot complete
         if not self.active:
-			debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
+            debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
             return 
 
         if not self.sloppy:
@@ -1209,15 +1209,6 @@ class NaiveEnterRoomQuest(Quest):
     def assignToCharacter(self,character):
         super().assignToCharacter(character)
         self.startWatching(character,self.recalculate)
-
-    '''
-    walk to target
-    bad code: does nothing?
-    '''
-    def solver(self,character):
-        if character.walkPath():
-            return True
-        return False
 
     '''
     close door and call superclass

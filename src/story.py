@@ -2202,9 +2202,10 @@ class MachineRoomPhase(BasicPhase):
         # assign player quest
         mainChar.assignQuest(questList[0])
 
+        self.end()
+
     '''
     win the game
-    bad code: is never called
     '''
     def end(self):
         gamestate.gameWon = True

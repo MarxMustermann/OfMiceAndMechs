@@ -1095,7 +1095,7 @@ class NaiveMoveQuest(Quest):
     def triggerCompletionCheck(self):
         # a inactive quest cannot complete
         if not self.active:
-            # bad code: should write a "this should not happen" log entry
+			debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
             return 
 
         if not self.sloppy:

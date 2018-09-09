@@ -1173,15 +1173,6 @@ class Acid(Item):
         super().__init__(displayChars.acid,xPosition,yPosition,name=name,creator=creator)
         self.initialState = self.getState()
 
-    '''
-    do someting stupid
-    bad code: copy paste eror probably. delete
-    '''
-    def apply(self,character):
-        messages.append("Pile used")
-        character.inventory.append(self.type())
-        character.changed()
-
 '''
 used to connect rooms and items to drag them around
 '''
@@ -1268,13 +1259,6 @@ class Winch(Item):
     def __init__(self,xPosition=0,yPosition=0,name="winch",creator=None):
         self.type = "Winch"
         super().__init__(displayChars.winch_inactive,xPosition,yPosition,name=name,creator=creator)
-
-    '''
-    print "TODO"
-    bad code: this useless. delete
-    '''
-    def apply(self,character):
-        messages.append("TODO")
 
 '''
 basic item with different appearance

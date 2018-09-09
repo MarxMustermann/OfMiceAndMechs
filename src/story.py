@@ -2116,7 +2116,7 @@ class LabPhase(BasicPhase):
     move on to next phase
     '''
     def end(self):
-        cinematics.showCinematic("you seem to be able to follow orders after all. you may go back to your training.",creator=void) # bad pattern: text is badly copy pasted
+        cinematics.showCinematic("we are done with the tests. return to work",creator=void)
         SecondTutorialPhase().start()
 
 '''

@@ -1622,7 +1622,6 @@ class ProductionArtwork(Item):
             messages.append("no metal bars available")
        else:
            # remove ressources
-           desintegratedScrap = False # bad code: copy paste error
            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
                if isinstance(item,MetalBars):
                    self.room.removeItem(item)

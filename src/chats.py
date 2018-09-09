@@ -110,7 +110,7 @@ class FurnaceChat(interaction.SubMenu):
                             toRemove = item
                             break
                     else:
-                        if item["chat"] == FirstChat:
+                        if item["chat"] == FurnaceChat:
                             toRemove = item
                             break
                 self.firstOfficer.basicChatOptions.remove(toRemove)

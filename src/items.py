@@ -14,7 +14,7 @@ terrain = None
 '''
 the base class for all items.
 '''
-class Item(saving.Savable):
+class Item(saving.Saveable):
     '''
     state initialization and id generation
     '''

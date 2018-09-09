@@ -1601,8 +1601,10 @@ class ProductionArtwork(Item):
     trigger production of a player selected item
     '''
     def apply(self,character,resultType=None):
-        # bad pattern: should be able to produce any item
-        self.submenue = interaction.SelectionMenu("test",[(Pipe,"pipe"),(Wall,"wall")])
+        options = []
+        for key,value in itemMap:
+            options.append((value,key))
+        self.submenue = interaction.SelectionMenu("test",options)
         interaction.submenue = self.submenue
         interaction.submenue.followUp = self.produceSelection
 

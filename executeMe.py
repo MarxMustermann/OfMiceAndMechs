@@ -98,35 +98,8 @@ cinematics.void = void
 story.chats = chats
 characters.chats = chats
 
-'''
-a registry to allow resoving references during loading
-'''
-class LoadingRegistry(object):
-    registered = {}
-    delayedCalls = {}
-
-    '''
-    register a new id and call backlog
-    '''
-    def register(self,thing):
-        self.registered[thing.id] = thing
-        if thing.id in self.delayedCalls:
-            for callback in self.delayedCalls[thing.id]:
-                callback(thing)
-
-    '''
-    trigger a call or register as backlog
-    '''
-    def callWhenAvailable(self,thingId,callback):
-        if thingId in self.registered:
-            callback(self.registered[thingId])
-        else:
-            if not thingId in self.delayedCalls:
-                self.delayedCalls[thingId] = []
-            self.delayedCalls[thingId].append(callback)
-
 # HACK: common variables with modules
-loadingRegistry = LoadingRegistry()
+loadingRegistry = saveing.LoadingRegistry()
 characters.loadingRegistry = loadingRegistry
 quests.loadingRegistry = loadingRegistry
 rooms.loadingRegistry = loadingRegistry

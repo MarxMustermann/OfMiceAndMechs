@@ -1,3 +1,30 @@
+'''
+a registry to allow resoving references during loading
+'''
+class LoadingRegistry(object):
+    registered = {}
+    delayedCalls = {}
+
+    '''
+    register a new id and call backlog
+    '''
+    def register(self,thing):
+        self.registered[thing.id] = thing
+        if thing.id in self.delayedCalls:
+            for callback in self.delayedCalls[thing.id]:
+                callback(thing)
+
+    '''
+    trigger a call or register as backlog
+    '''
+    def callWhenAvailable(self,thingId,callback):
+        if thingId in self.registered:
+            callback(self.registered[thingId])
+        else:
+            if not thingId in self.delayedCalls:
+                self.delayedCalls[thingId] = []
+            self.delayedCalls[thingId].append(callback)
+
 class Saveable(object):
     creationCounter = 0
 
@@ -37,6 +64,8 @@ class Saveable(object):
         result = {}
         if not self.creationCounter == self.initialState["creationCounter"]:
             result["creationCounter"] = self.creationCounter
+        if not self.id == self.initialState["id"]:
+            result["id"] = self.id
         return result
 
     '''
@@ -45,6 +74,8 @@ class Saveable(object):
     def setState(self,state):
        if "creationCounter" in state:
            self.creationCounter = state["creationCounter"]
+       if "id" in state:
+           self.id = state["id"]
 
     '''
     get a list of ids an a dict of their states from a list of objects

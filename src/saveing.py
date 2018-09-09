@@ -2,6 +2,21 @@ class Saveable(object):
     creationCounter = 0
 
     '''
+    get a list of ids an a dict of their states from a list of objects
+    '''
+    def storeStateList(self,sourceList,exclude=[]):
+        ids = []
+        states = {}
+
+        for thing in sourceList:
+            if thing.id in exclude:
+                continue
+            ids.append(thing.id)
+            states[thing.id] = thing.getDiffState()
+
+        return (states,ids)
+
+    '''
     get the difference of a list between existing and initial state
     '''
     def getDiffList(self,current,orig,exclude=[]):

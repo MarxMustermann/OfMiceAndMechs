@@ -1252,29 +1252,13 @@ class Terrain(saveing.Saveable):
     get state as dict
     '''
     def getState(self):
-        '''
-        get a list of ids an a dict of their states from a list of objects
-        bad code: should be in extra class
-        '''
-        def storeStateList(sourceList,exclude=[]):
-            ids = []
-            states = {}
-
-            for thing in sourceList:
-                if thing.id in exclude:
-                    continue
-                ids.append(thing.id)
-                states[thing.id] = thing.getDiffState()
-
-            return (states,ids)
-
         # get states for lists
-        (roomIds,roomStates) = storeStateList(self.rooms)
-        (itemIds,itemStates) = storeStateList(self.itemsOnFloor)
+        (roomIds,roomStates) = self.storeStateList(self.rooms)
+        (itemIds,itemStates) = self.storeStateList(self.itemsOnFloor)
         exclude = []
         if mainChar:
             exclude.append(mainChar.id)
-        (characterIds,chracterStates) = storeStateList(self.characters,exclude=exclude)
+        (characterIds,chracterStates) = self.storeStateList(self.characters,exclude=exclude)
 
         # generate state
         return {

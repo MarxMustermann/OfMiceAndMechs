@@ -374,26 +374,10 @@ class Room(saveing.Saveable):
     get semi serialised room state
     '''
     def getState(self):
-        '''
-        get a list of ids an a dict of their states from a list of objects
-        bad code: should be in extra class
-        '''
-        def storeStateList(sourceList,exclude=[]):
-            ids = []
-            states = {}
-
-            for thing in sourceList:
-                if thing.id in exclude:
-                    continue
-                ids.append(thing.id)
-                states[thing.id] = thing.getDiffState()
-
-            return (states,ids)
-
         # get states from lists
-        (eventIds,eventStates) = storeStateList(self.events)
-        (itemIds,itemStates) = storeStateList(self.itemsOnFloor)
-        (charIds,charStates) = storeStateList(self.characters)
+        (eventIds,eventStates) = self.storeStateList(self.events)
+        (itemIds,itemStates) = self.storeStateList(self.itemsOnFloor)
+        (charIds,charStates) = self.storeStateList(self.characters)
 
         # generate state
         return { 

@@ -714,7 +714,7 @@ def processInput(key):
                 # check inventory space
                 if len(mainChar.inventory) > 10:
                     messages.append("you cannot carry more items")
-					break
+                    break
 
                 # get the list of items from room or terrain
                 # bad code: getting abtracted lists is a start but there should be a container class

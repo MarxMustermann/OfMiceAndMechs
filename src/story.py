@@ -972,8 +972,8 @@ now, go and pull the lever
         showText(msg)
                    
         # add chat options
-        firstOfficer.basicChatOptions.append({"dialogName":"first Chat","chat":chats.FirstChat,"params":{"firstOfficer":firstOfficer,"phase":self}})
-        firstOfficer.basicChatOptions.append({"dialogName":"furnace Chat","chat":chats.FurnaceChat,"params":{"firstOfficer":firstOfficer,"phase":self,"terrain":terrain}})
+        firstOfficer.basicChatOptions.append({"dialogName":"You wanted to have a chat","chat":chats.FirstChat,"params":{"firstOfficer":firstOfficer,"phase":self}})
+        firstOfficer.basicChatOptions.append({"dialogName":"What are these machines in this room?","chat":chats.FurnaceChat,"params":{"firstOfficer":firstOfficer,"phase":self,"terrain":terrain}})
 
     '''
     make the player fire a furnace. no triggers placed
@@ -1702,6 +1702,7 @@ class FindWork(BasicPhase):
 
         # add option to reenter the command chain
         terrain.waitingRoom.firstOfficer.basicChatOptions.append(ReReport)
+        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I want to report for duty","chat":chats.ReReport})
 
     '''
     make the player to some task until allowing advancement elsewhere

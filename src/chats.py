@@ -10,8 +10,6 @@ class FirstChat(interaction.SubMenu):
     id = "FirstChat"
     type = "FirstChat"
 
-    dialogName = "You wanted to have a chat" # bad code: deprecated, remove
-
     '''
     straightforward state setting
     '''
@@ -69,8 +67,6 @@ class FurnaceChat(interaction.SubMenu):
     id = "FurnaceChat"
     type = "FurnaceChat"
 
-    dialogName = "What are these machines in this room?" # bad code: deprecated, remove
-
     '''
     straightforward state setting
     '''
@@ -103,7 +99,7 @@ class FurnaceChat(interaction.SubMenu):
             else:
                 self.done = True
 
-                # remove self from the chracters chat
+                # remove self from the characters chat options
                 for item in self.firstOfficer.basicChatOptions:
                     if not isinstance(item,dict):
                         if item == FurnaceChat:
@@ -131,7 +127,7 @@ class FurnaceChat(interaction.SubMenu):
             self.set_text(self.persistentText)
 
             # add new chat option
-            self.firstOfficer.basicChatOptions.append(InfoChat)
+            self.firstOfficer.basicChatOptions.append({"dialogName":"Is there more i should know?","chat":chats.InfoChat})
                         
             # offer a selection of different story phasses
             options = {}
@@ -153,8 +149,6 @@ a monologe explaining automovement
 class SternChat(interaction.SubMenu):
     id = "SternChat"
     type = "SternChat"
-
-    dialogName = "What did Stern modify on the implant?" # bad code: deprecated, remove
 
     '''
     straight forwar state setting
@@ -185,9 +179,20 @@ do things the most efficent way. It will even try to handle conversion, wich doe
             self.firstRun = False
             return False
         else:
-            # remove chat option and finish
+            # remove self from the characters chat options
+            for item in self.firstOfficer.basicChatOptions:
+                if not isinstance(item,dict):
+                    if item == SternChat:
+                        toRemove = item
+                        break
+                else:
+                    if item["chat"] == SternChat:
+                        toRemove = item
+                        break
             # bad code: crashes
-            firstOfficer.basicChatOptions.remove(SternChat)
+            firstOfficer.basicChatOptions.remove(toRemove)
+
+            # finish
             self.done = True
             return True
 
@@ -197,8 +202,6 @@ a instruction to ask questions and hinting at the auto mode
 class InfoChat(interaction.SubMenu):
     id = "InfoChat"
     type = "InfoChat"
-
-    dialogName = "Is there more i should know?" # bad code: deprecated, remove
 
     '''
     straight forwar state setting
@@ -226,10 +229,21 @@ for a brain.\n\n"""
             self.firstRun = False
             return False
         else:
-            # remove chat option and finish
+            # remove chat option
+            for item in self.firstOfficer.basicChatOptions:
+                if not isinstance(item,dict):
+                    if item == InfoChat:
+                        toRemove = item
+                        break
+                else:
+                    if item["chat"] == InfoChat:
+                        toRemove = item
+                        break
             # bad code: crashes
-            firstOfficer.basicChatOptions.remove(InfoChat)
-            firstOfficer.basicChatOptions.append(SternChat)
+            firstOfficer.basicChatOptions.remove(toRemove)
+
+            # finish
+            firstOfficer.basicChatOptions.append({"dialogName":"What did Stern modify on the implant?","chat":SternChat})
             self.done = True
             return True
 
@@ -239,8 +253,6 @@ a dialog for reentering the command chain
 class ReReport(interaction.SubMenu):
     id = "ReReport"
     type = "ReReport"
-
-    dialogName = "I want to report for duty" # bad code: deprecated, remove
 
     '''
     state initialization
@@ -265,8 +277,18 @@ class ReReport(interaction.SubMenu):
             mainChar.reputation -= 1
             messages.append("rewarded -1 reputation")
 
-            # remove dialog option
-            terrain.waitingRoom.firstOfficer.basicChatOptions.remove(ReReport)
+            # remove chat option
+            for item in terrain.waitingRoom.firstOfficer.basicChatOptions:
+                if not isinstance(item,dict):
+                    if item == ReReport:
+                        toRemove = item
+                        break
+                else:
+                    if item["chat"] == ReReport:
+                        toRemove = item
+                        break
+            # bad code: crashes
+            terrain.waitingRoom.firstOfficer.basicChatOptions.remove(toRemove)
 
             # start intro
             # bad code: crashes

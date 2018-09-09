@@ -301,40 +301,12 @@ class Character(saving.Saveable):
                 self.serveQuest = None
 
         # set inventory
-        # bad codes: repetetive code
         if "inventory" in state:
-            if "changed" in state["inventory"]:
-                for item in self.inventory:
-                    if item.id in state["inventory"]["changed"]:
-                        item.setState(state["inventory"]["states"][item.id])
-            if "removed" in state["inventory"]:
-                for item in self.inventory:
-                    if item.id in state["inventory"]["removed"]:
-                        self.inventory.remove(item)
-            if "new" in state["inventory"]:
-                for itemId in state["inventory"]["new"]:
-                    itemState = state["inventory"]["states"][itemId]
-                    item = items.getItemFromState(itemState)
-                    item.setState(itemState)
-                    self.inventory.append(item)
+            self.loadFromList(state["inventory"],self.inventory,items.getItemFromState)
 
         # set quests
-        # bad codes: repetetive code
         if "quests" in state:
-            if "changed" in state["quests"]:
-                for item in self.quests:
-                    if item.id in state["quests"]["states"]:
-                        item.setState(state["quests"]["states"][item.id])
-            if "removed" in state["quests"]:
-                for item in self.quests:
-                    if item.id in state["quests"]["removed"]:
-                        self.quests.remove(item)
-            if "new" in state["quests"]:
-                for itemId in state["quests"]["new"]:
-                    itemState = state["quests"]["states"][itemId]
-                    item = quests.getQuestFromState(itemState)
-                    item.setState(itemState)
-                    self.quests.append(item)
+            self.loadFromList(state["quests"],self.quests,quests.getQuestFromState)
 
         # set chat options
         # bad code: storing the Chat options as class instead of object complicates things

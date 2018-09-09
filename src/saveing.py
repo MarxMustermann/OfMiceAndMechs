@@ -12,6 +12,25 @@ class Saveable(object):
         return state
 
     '''
+	load list of instances from list
+	'''
+    def loadFromList(self,info,target,creationFunction):
+        if "changed" in info:
+            for item in target:
+                if item.id in info["states"]:
+                    item.setState(info["states"][item.id])
+        if "removed" in info:
+            for item in target:
+                if item.id in info["removed"]:
+                    target.remove(item)
+        if "new" in info:
+            for itemId in info["new"]:
+                itemState = info["states"][itemId]
+                item = creationFunction(itemState)
+                item.setState(itemState)
+                target.append(item)
+            
+    '''
     get difference in state since creation
     '''
     def getDiffState(self):

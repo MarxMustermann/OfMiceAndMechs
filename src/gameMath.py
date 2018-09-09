@@ -60,8 +60,6 @@ def calculatePath(startX,startY,endX,endY,walkingPath):
 recusively calcualate a unoptimized path
 '''
 def calculatePathReal(startX,startY,endX,endY,walkingPath):
-    # bad code: useless import -_-
-    import math
     path = []
 
     # bad code: return empty path on broken input

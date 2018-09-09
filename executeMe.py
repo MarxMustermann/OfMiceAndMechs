@@ -173,6 +173,8 @@ items.commandChars = commandChars
 story.commandChars = commandChars
 characters.commandChars = commandChars
 interaction.commandChars = commandChars
+chats.commandChars = commandChars
+
 interaction.setFooter()
 
 # HACK: common variables with modules

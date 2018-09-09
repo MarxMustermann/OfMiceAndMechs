@@ -127,7 +127,7 @@ class FurnaceChat(interaction.SubMenu):
             self.set_text(self.persistentText)
 
             # add new chat option
-            self.firstOfficer.basicChatOptions.append({"dialogName":"Is there more i should know?","chat":InfoChat})
+            self.firstOfficer.basicChatOptions.append({"dialogName":"Is there more i should know?","chat":InfoChat,"params":{"firstOfficer":self.firstOfficer}})
                         
             # offer a selection of different story phasses
             options = {}
@@ -160,6 +160,13 @@ class SternChat(interaction.SubMenu):
         super().__init__()
 
     '''
+    add internal state
+    bad pattern: chat option stored as references to class complicates this
+    '''
+    def setUp(self,state):
+        self.firstOfficer = state["firstOfficer"]
+
+    '''
     show the dialog for one keystroke
     '''
     def handleKey(self, key):
@@ -190,7 +197,7 @@ do things the most efficent way. It will even try to handle conversion, wich doe
                         toRemove = item
                         break
             # bad code: crashes
-            firstOfficer.basicChatOptions.remove(toRemove)
+            self.firstOfficer.basicChatOptions.remove(toRemove)
 
             # finish
             self.done = True
@@ -211,6 +218,13 @@ class InfoChat(interaction.SubMenu):
         self.firstRun = True
         self.done = False
         super().__init__()
+
+    '''
+    add internal state
+    bad pattern: chat option stored as references to class complicates this
+    '''
+    def setUp(self,state):
+        self.firstOfficer = state["firstOfficer"]
 
     '''
     show the dialog for one keystroke
@@ -240,10 +254,10 @@ for a brain.\n\n"""
                         toRemove = item
                         break
             # bad code: crashes
-            firstOfficer.basicChatOptions.remove(toRemove)
+            self.firstOfficer.basicChatOptions.remove(toRemove)
 
             # finish
-            firstOfficer.basicChatOptions.append({"dialogName":"What did Stern modify on the implant?","chat":SternChat})
+            self.firstOfficer.basicChatOptions.append({"dialogName":"What did Stern modify on the implant?","chat":SternChat,"params":{"firstOfficer":self.firstOfficer}})
             self.done = True
             return True
 

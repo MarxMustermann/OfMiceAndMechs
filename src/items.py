@@ -78,6 +78,7 @@ class Item(saving.Saveable):
                  "xPosition":self.xPosition,
                  "yPosition":self.yPosition,
                })
+        return state
 
     '''
     set state from dict

@@ -2903,7 +2903,7 @@ class KeepFurnaceFiredMeta(MetaQuestSequence):
         if self.fireFurnaceQuest and self.fireFurnaceQuest.completed:
             self.fireFurnaceQuest = None
         if not self.fireFurnaceQuest and not self.furnace.activated:
-            self.fireFurnaceQuest = FireFurnaceMeta(self.furnace)
+            self.fireFurnaceQuest = FireFurnaceMeta(self.furnace,creator=self)
             self.addQuest(self.fireFurnaceQuest)
             self.unpause()
 
@@ -2912,7 +2912,7 @@ class KeepFurnaceFiredMeta(MetaQuestSequence):
             self.waitQuest = None
         if not self.waitQuest and not self.fireFurnaceQuest:
             if self.furnace.activated:
-                self.waitQuest = WaitForDeactivationQuest(self.furnace)
+                self.waitQuest = WaitForDeactivationQuest(self.furnace,creator=self)
                 self.startWatching(self.waitQuest,self.recalculate)
                 self.addQuest(self.waitQuest)
                 self.pause()

@@ -1363,7 +1363,7 @@ XXXXXX
                     self.set_text(self.persistentText)
                     self.done = True
                     global quest
-                    quest = quests.KeepFurnaceFiredMeta(self.partner.room.furnaces[0])
+                    quest = quests.KeepFurnaceFiredMeta(self.partner.room.furnaces[0],creator=void)
                     self.partner.assignQuest(quest,active=True)
 
                     # replace dialog option

@@ -1630,7 +1630,7 @@ class ProductionArtwork(Item):
                    # bad code: should break here to only take one metal bar
 
            # spawn new item
-           new = itemType()
+           new = itemType(creator=self)
            new.xPosition = self.xPosition-1
            new.yPosition = self.yPosition
            self.room.addItems([new])
@@ -1663,7 +1663,7 @@ class ScrapCompactor(Item):
                    # bad code: should break here to only take only x scrap
 
            # spawn the metal bar
-           new = MetalBars()
+           new = MetalBars(creator=self)
            new.xPosition = self.xPosition-1
            new.yPosition = self.yPosition
            self.room.addItems([new])

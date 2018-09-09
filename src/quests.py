@@ -600,8 +600,8 @@ class MetaQuestSequence(Quest):
     def triggerCompletionCheck(self):
 
         # do nothing on inactive quest
-		# bad code: should log
         if not self.active:
+            debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
             return
 
         # remove completed quests
@@ -617,8 +617,8 @@ class MetaQuestSequence(Quest):
     '''
     def recalculate(self):
         # do nothing on inactive quest
-		# bad code: should log
         if not self.active:
+            debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
             return 
 
         # remove completed quests
@@ -2396,10 +2396,11 @@ class FillPocketsQuest(MetaQuestSequence):
     '''
     def recalculate(self):
         # do nothing on not really active quests
-		# bad code: should log
         if not self.active:
+            debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
             return 
         if not self.character:
+            debugMessages.append("triggerCompletionCheck called without character on "+str(self))
             return
 
         # remove completed quests
@@ -2471,14 +2472,12 @@ class LeaveRoomQuest(Quest):
     check if the character left the room
     '''
     def triggerCompletionCheck(self):
-        # do nothing on inactive quest
-		# bad code: should log
+        # do nothing on invalid quest
         if not self.active:
+            debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
             return 
-
-        # do nothing without character
-		# bad code: should log
         if not self.character:
+            debugMessages.append("triggerCompletionCheck called without character on "+str(self))
             return
 
         # trigger followup when done
@@ -3032,10 +3031,11 @@ class FireFurnaceMeta(MetaQuestSequence):
     '''
     def recalculate(self):
         # smooth over impossible state
-        # should log something
         if not self.active:
+            debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
             return
         if not self.character:
+            debugMessages.append("triggerCompletionCheck called without character on "+str(self))
             return
 
         # add wuest th collect fuel if needed

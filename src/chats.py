@@ -127,7 +127,7 @@ class FurnaceChat(interaction.SubMenu):
             self.set_text(self.persistentText)
 
             # add new chat option
-            self.firstOfficer.basicChatOptions.append({"dialogName":"Is there more i should know?","chat":chats.InfoChat})
+            self.firstOfficer.basicChatOptions.append({"dialogName":"Is there more i should know?","chat":InfoChat})
                         
             # offer a selection of different story phasses
             options = {}

@@ -130,6 +130,7 @@ class FurnaceChat(interaction.SubMenu):
             self.firstOfficer.basicChatOptions.append({"dialogName":"Is there more i should know?","chat":InfoChat,"params":{"firstOfficer":self.firstOfficer}})
                         
             # offer a selection of different story phasses
+            # bad code: copy paste error delete till options =
             options = {}
             niceOptions = {}
             counter = 1
@@ -137,9 +138,8 @@ class FurnaceChat(interaction.SubMenu):
                 options[str(counter)] = quest
                 niceOptions[str(counter)] = quest.description.split("\n")[0]
                 counter += 1
-            options = {1:self.phase.fireFurnaces,2:self.phase.noFurnaceFirering}
-            niceOptions = {1:"Yes",2:"No"}
-            self.submenue = interaction.SelectionMenu("Say, do you like furnaces?",options,niceOptions)
+            options = [(self.phase.fireFurnaces,"yes"),(self.phase.noFurnaceFirering,"no")]
+            self.submenue = interaction.SelectionMenu("Say, do you like furnaces?",options)
 
         return False
 

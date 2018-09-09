@@ -556,10 +556,13 @@ entering interactive mode .................................
         """,autocontinue=True,scrolling=True)
 
         # add trigger for false and true answers
-        options = {1:"nok",2:"ok",3:"nok"}
-        niceOptions = {1:"Karl Weinberg",2:mainChar.name,3:"Susanne Kreismann"}
+        options = [
+                     ("nok","Karl Weinberg"),
+                     ("ok",mainChar.name),
+                     ("nok","Susanne Kreismann")
+                  ]
         text = "\nplease answer the question:\n\nwhat is your name?"
-        cinematic = cinematics.SelectionCinematic(text,options,niceOptions,creator=void)
+        cinematic = cinematics.SelectionCinematic(text,options,creator=void)
         cinematic.followUps = {"ok":self.askSecondQuestion,"nok":self.infoFail}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
@@ -577,10 +580,13 @@ entering interactive mode .................................
     bad code: bad datastructure leads tu ugly code
     '''
     def askSecondQuestion(self):
-        options = {1:"ok",2:"nok",3:"nok"}
-        niceOptions = {1:"A Pipe is used to transfer fluids",2:"A Grate is used to transfer fluids",3:"A Hutch is used to transfer fluids"}
+        options = [
+                    ("ok","A Pipe is used to transfer fluids"),
+                    ("nok","A Grate is used to transfer fluids"),
+                    ("nok","A Hutch is used to transfer fluids"),
+                  ]
         text = "\nplease select the true statement:\n\n"
-        cinematic = cinematics.SelectionCinematic(text,options,niceOptions,creator=void)
+        cinematic = cinematics.SelectionCinematic(text,options,creator=void)
         cinematic.followUps = {"ok":self.askThirdQuestion,"nok":self.infoFail}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
@@ -590,10 +596,13 @@ entering interactive mode .................................
     bad code: bad datastructure leads tu ugly code
     '''
     def askThirdQuestion(self):
-        options = {1:"ok",2:"nok",3:"nok"}
-        niceOptions = {1:"Rust is the oxide of iron. Rust is the most common form of corrosion",2:"Rust is the oxide of iron. Corrosion in form of Rust is common",3:"*deny answer*"}
+        options = [
+                     ("ok","Rust is the oxide of iron. Rust is the most common form of corrosion"),
+                     ("nok","Rust is the oxide of iron. Corrosion in form of Rust is common"),
+                     ("nok","*deny answer*"),
+                  ]
         text = "\nplease repeat the definition of rust\n\n"
-        cinematic = cinematics.SelectionCinematic(text,options,niceOptions,creator=void)
+        cinematic = cinematics.SelectionCinematic(text,options,creator=void)
         cinematic.followUps = {"ok":self.flashInformation,"nok":self.infoFail}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
@@ -1670,10 +1679,9 @@ class FindWork(BasicPhase):
 
         # create selection
         # bad code: bad datastructure leads to bad code
-        options = {1:"yes",2:"no"}
-        niceOptions = {1:"Yes",2:"No"}
+        options = [("yes","Yes"),("no","No")]
         text = "you look like a fresh one. Were you sent to report for duty?"
-        cinematic = cinematics.SelectionCinematic(text,options,niceOptions,creator=void)
+        cinematic = cinematics.SelectionCinematic(text,options,creator=void)
         cinematic.followUps = {"yes":self.getIntroInstant,"no":self.tmpFail}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
@@ -1818,15 +1826,10 @@ class FindWork(BasicPhase):
                         self.set_text(self.persistentText)
                                 
                         # let the player select the quest to do
-                        # bad code: bad datastructure leads to bad code
-                        options = {}
-                        niceOptions = {}
-                        counter = 1
+                        options = []
                         for quest in terrain.waitingRoom.quests:
-                            options[counter] = quest
-                            niceOptions[counter] = quest.description.split("\n")[0]
-                            counter += 1
-                        self.submenue = interaction.SelectionMenu("select the quest",options,niceOptions)
+                            options.append((quest,quest.description.split("\n")[0]))
+                        self.submenue = interaction.SelectionMenu("select the quest",options)
 
                         return False
                     else:

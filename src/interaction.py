@@ -866,12 +866,16 @@ class SubMenu(object):
 
     '''
     sets the options to select from
-    bad code: the name of this method lies
     '''
-    def setSelection(self, query, options, niceOptions):
+    def setOptions(self, query, options):
         import collections
-        self.options = collections.OrderedDict(sorted(options.items()))
-        self.niceOptions = collections.OrderedDict(sorted(niceOptions.items()))
+        self.options = collections.OrderedDict()
+        self.niceOptions = collections.OrderedDict()
+        counter = 1
+        for option in options:
+            self.options[str(counter)] = option[0]
+            self.niceOptions[str(counter)] = option[1]
+            counter += 1
         self.query = query
         self.selectionIndex = 1
         self.lockOptions = True
@@ -945,9 +949,9 @@ class SelectionMenu(SubMenu):
     '''
     set up the selection
     '''
-    def __init__(self, text, options, niceOptions):
+    def __init__(self, text, options):
         super().__init__()
-        self.setSelection(text, options, niceOptions)
+        self.setOptions(text, options)
 
     '''
     handles the key
@@ -991,17 +995,13 @@ class ChatPartnerselection(SubMenu):
         # offer the player to select from characters in room
         # bad code: should be done in __init__
         if not self.options and not self.getSelection():
-            counter = 1
-            options = {}
-            niceOptions = {}
+            options = []
             if mainChar.room:
                 for char in mainChar.room.characters:
                     if char == mainChar:
                         continue
-                    options[counter] = char
-                    niceOptions[counter] = char.name
-                    counter += 1
-            self.setSelection("talk with whom?",options,niceOptions)
+                    options.append((char,char.name))
+            self.setOptions("talk with whom?",options)
 
         # delegate the actual selection to the super class
         if not self.getSelection():
@@ -1128,31 +1128,21 @@ class ChatMenu(SubMenu):
         # show selection of sub chats
         if self.state == "mainOptions":
             # set up selection for the main dialog options 
-            # bad code: bad data structure leads to ugly code
             if not self.options and not self.getSelection():
                 # add the chat partners special dialog options
-                options = {}
-                niceOptions = {}
-                counter = 1
+                options = []
                 for option in self.partner.getChatOptions(mainChar):
                     if not isinstance(option,dict):
-                        options[counter] = option
-                        niceOptions[counter] = option.dialogName
+                        options.append((option,option.dialogName))
                     else:
-                        options[counter] = option
-                        niceOptions[counter] = option["dialogName"]
-                    counter += 1
+                        options.append((option,option["dialogName"]))
 
                 # add default dialog options
-                options[counter] = "showQuests"
-                niceOptions[counter] = "what are you dooing?"
-                counter += 1
-                options[counter] = "exit"
-                niceOptions[counter] = "let us proceed, "+self.partner.name
-                counter += 1
+                options.append(("showQuests","what are you dooing?"))
+                options.append(("exit","let us proceed, "+self.partner.name))
 
                 # set the options
-                self.setSelection("answer:",options,niceOptions)
+                self.setOptions("answer:",options)
 
             # let the superclass handle the actual selection
             if not self.getSelection():
@@ -1406,21 +1396,15 @@ class AdvancedQuestMenu(SubMenu):
             self.state = "participantSelection"
         if self.state == "participantSelection":
             # set up the options
-            # bad code: bad data structure leads to ugly code
             if not self.options and not self.getSelection():
                 # add the main player as target
-                options = {}
-                niceOptions = {}
-                options[1] = mainChar
-                niceOptions[1] = mainChar.name+" (you)"
-                counter = 1
+                options = []
+                options.append((mainChar,mainChar.name+" (you)"))
 
                 # add the main players subordinates as target
                 for char in mainChar.subordinates:
-                    counter += 1
-                    options[counter] = char
-                    niceOptions[counter] = char.name
-                self.setSelection("whom to give the order to: ",options,niceOptions)
+                    options.append((char,char.name))
+                self.setOptions("whom to give the order to: ",options)
 
             # let the superclass handle the actual selection
             if not self.getSelection():
@@ -1440,9 +1424,20 @@ class AdvancedQuestMenu(SubMenu):
             # add a list of hardcoded quests
             # bad pattern: should be generated from mapping
             if not self.options and not self.getSelection():
-                options = {1:quests.MoveQuestMeta,2:quests.ActivateQuestMeta,3:quests.EnterRoomQuestMeta,4:quests.FireFurnaceMeta,5:quests.ClearRubble,6:quests.ConstructRoom,7:quests.StoreCargo,8:quests.WaitQuest,9:quests.LeaveRoomQuest,10:quests.MoveToStorage,11:quests.RoomDuty}
-                niceOptions = {1:"MoveQuest",2:"ActivateQuest",3:"EnterRoomQuest",4:"FireFurnaceMeta",5:"ClearRubble",6:"ConstructRoom",7:"StoreCargo",8:"WaitQuest",9:"LeaveRoomQuest",10:"MoveToStorage",11:"RoomDuty"}
-                self.setSelection("what type of quest:",options,niceOptions)
+                options = [
+                            (quests.MoveQuestMeta,"MoveQuest"),
+                            (quests.ActivateQuestMeta,"ActivateQuest"),
+                            (quests.EnterRoomQuestMeta,"EnterRoomQuest"),
+                            (quests.FireFurnaceMeta,"FireFurnaceMeta"),
+                            (quests.ClearRubble,"ClearRubble"),
+                            (quests.ConstructRoom,"ConstructRoom"),
+                            (quests.StoreCargo,"StoreCargo"),
+                            (quests.WaitQuest,"WaitQuest"),
+                            (quests.LeaveRoomQuest,"LeaveRoomQuest"),
+                            (quests.MoveToStorage,"MoveToStorage"),
+                            (quests.RoomDuty,"RoomDuty"),
+                          ]
+                self.setOptions("what type of quest:",options)
 
             # let the superclass handle the actual selection
             if not self.getSelection():
@@ -1462,20 +1457,14 @@ class AdvancedQuestMenu(SubMenu):
         if self.state == "parameter selection":
             if self.quest == quests.EnterRoomQuestMeta:
                 # set up the options
-                # bad code: bad data structure leads to ugly code
                 if not self.options and not self.getSelection():
-                    options = {}
-                    niceOptions = {}
-                    counter = 1
-
                     # add a list of of rooms
+                    options = []
                     for room in terrain.rooms:
                         if isinstance(room,rooms.MechArmor) or isinstance(room,rooms.CpuWasterRoom):
                             continue
-                        options[counter] = room
-                        niceOptions[counter] = room.name
-                        counter += 1
-                    self.setSelection("select the room:",options,niceOptions)
+                        options.append((room,room.name))
+                    self.setOptions("select the room:",options)
 
                 # let the superclass handle the actual selection
                 if not self.getSelection():
@@ -1492,21 +1481,15 @@ class AdvancedQuestMenu(SubMenu):
 
             elif self.quest == quests.StoreCargo:
                 # set up the options for selecting the cargo room
-                # bad code: bad data structure leads to ugly code
                 if "cargoRoom" not in self.questParams:
                     if not self.options and not self.getSelection():
-                        options = {}
-                        niceOptions = {}
-                        counter = 1
-
                         # add a list of of rooms
+                        options = []
                         for room in terrain.rooms:
                             if not isinstance(room,rooms.CargoRoom):
                                 continue
-                            options[counter] = room
-                            niceOptions[counter] = room.name
-                            counter += 1
-                        self.setSelection("select the room:",options,niceOptions)
+                            options.append((room,room.name))
+                        self.setOptions("select the room:",options)
 
                     # let the superclass handle the actual selection
                     if not self.getSelection():
@@ -1521,20 +1504,14 @@ class AdvancedQuestMenu(SubMenu):
                         return False
                 else:
                     # set up the options for selecting the storage room
-                    # bad code: bad data structure leads to ugly code
                     if not self.options and not self.getSelection():
-                        options = {}
-                        niceOptions = {}
-                        counter = 1
-
                         # add a list of of rooms
+                        options = []
                         for room in terrain.rooms:
                             if not isinstance(room,rooms.StorageRoom):
                                 continue
-                            options[counter] = room
-                            niceOptions[counter] = room.name
-                            counter += 1
-                        self.setSelection("select the room:",options,niceOptions)
+                            options.append((room,room.name))
+                        self.setOptions("select the room:",options)
 
                     # let the superclass handle the actual selection
                     if not self.getSelection():
@@ -1555,14 +1532,12 @@ class AdvancedQuestMenu(SubMenu):
         # get confirmation and assign quest
         if self.state == "confirm":
             # set the options for confirming the selection
-            # bad code: bad data structure leads to ugly code
             if not self.options and not self.getSelection():
-                options = {1:"yes",2:"no"}
-                niceOptions = {1:"yes",2:"no"}
+                options = [("yes","yes"),("no","no")]
                 if self.quest == quests.EnterRoomQuestMeta:
-                    self.setSelection("you chose the following parameters:\nroom: "+str(self.questParams)+"\n\nDo you confirm?",options,niceOptions)
+                    self.setOptions("you chose the following parameters:\nroom: "+str(self.questParams)+"\n\nDo you confirm?",options)
                 else:
-                    self.setSelection("Do you confirm?",options,niceOptions)
+                    self.setOptions("Do you confirm?",options)
 
             # let the superclass handle the actual selection
             if not self.getSelection():

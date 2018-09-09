@@ -1602,7 +1602,7 @@ class ProductionArtwork(Item):
     '''
     def apply(self,character,resultType=None):
         # bad pattern: should be able to produce any item
-        self.submenue = interaction.SelectionMenu("test",{1:Pipe,2:Wall},{1:"pipe",2:"wall"})
+        self.submenue = interaction.SelectionMenu("test",[(Pipe,"pipe"),(Wall,"wall")])
         interaction.submenue = self.submenue
         interaction.submenue.followUp = self.produceSelection
 

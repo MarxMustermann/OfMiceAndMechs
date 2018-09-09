@@ -14,6 +14,7 @@ import src.interaction as interaction
 import src.gamestate as gamestate
 import src.events as events
 import src.chats as chats
+import src.saveing as saveing
 import config.commandChars as commandChars
 import config.names as names
 
@@ -82,7 +83,7 @@ else:
 #################################################################################################################################
 
 # HACK: common variables with modules
-void = gamestate.Void()
+void = saveing.Void()
 characters.void = void
 rooms.void = void
 items.void = void

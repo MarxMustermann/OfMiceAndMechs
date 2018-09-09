@@ -1,5 +1,6 @@
 import src.items as items
 import src.quests as quests
+import src.saveing as saveing
 import json
 
 # bad code: global state
@@ -14,12 +15,14 @@ displayChars = None
 '''
 the base class for all rooms
 '''
-class Room(object):
+class Room(saveing.Saveable):
     '''
     state initialization
     bad code: too many attributes
     '''
     def __init__(self,layout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+        super().__init__()
+
         # should be in extra class
         self.creationCounter = 0
 
@@ -339,54 +342,8 @@ class Room(object):
         if not self.creationCounter == self.initialState["creationCounter"]:
             result["creationCounter"] = self.creationCounter
 
-        '''
-        get the difference of a list between existing and initial state
-        bad code: should be in extra class
-        bad code: redundant code
-        '''
-        def getDiffList(toDiff,containerName,exclude=[]):
-            # the to be result
-            states = {}
-            newThingsList = []
-            changedThingsList = []
-            removedThingsList = []
-
-            # helper state
-            currentThingsList = []
-
-            # handle things that exist right now
-            for thing in toDiff:
-                # skip excludes
-                if thing.id in exclude:
-                    continue
-
-                # register thing as existing
-                currentState = thing.getState()
-                currentThingsList.append(thing.id)
-
-                if thing.id in self.initialState[containerName]:
-                    # handle changed things
-                    if not currentState == thing.initialState:
-                        diffState = thing.getDiffState()
-                        if diffState: # bad code: this should not be neccessary
-                            changedThingsList.append(thing.id)
-                            states[thing.id] = diffState
-                else:
-                    # handle new things
-                    newThingsList.append(thing.id)
-                    states[thing.id] = thing.getState()
-
-            # handle removed things
-            for thingId in self.initialState[containerName]:
-                if thingId in exclude:
-                    continue
-                if not thingId in currentThingsList:
-                    removedThingsList.append(thingId)
-
-            return (states,changedThingsList,newThingsList,removedThingsList)
-
         # store item diff
-        (itemStates,changedItems,newItems,removedItems) = getDiffList(self.itemsOnFloor,"itemIds")
+        (itemStates,changedItems,newItems,removedItems) = self.getDiffList(self.itemsOnFloor,"itemIds")
         if changedItems:
             result["changedItems"] = changedItems
         if newItems:
@@ -400,7 +357,7 @@ class Room(object):
         exclude = []
         if mainChar:
             exclude.append(mainChar.id)
-        (charStates,changedChars,newChars,removedChars) = getDiffList(self.characters,"characterIds",exclude=exclude)
+        (charStates,changedChars,newChars,removedChars) = self.getDiffList(self.characters,"characterIds",exclude=exclude)
         if changedChars:
             result["changedChars"] = changedChars
         if newChars:
@@ -411,7 +368,7 @@ class Room(object):
             result["charStates"] = charStates
 
         # store events diff
-        (eventStates,changedEvents,newEvents,removedEvents) = getDiffList(self.events,"eventIds")
+        (eventStates,changedEvents,newEvents,removedEvents) = self.getDiffList(self.events,"eventIds")
         if changedEvents:
             result["changedEvents"] = changedEvents
         if newEvents:

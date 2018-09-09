@@ -2,21 +2,6 @@ import json
 import src.characters as characters
 
 '''
-the creator that should be used if there is no valid creator object
-basically supply ids for unique ids
-'''
-class Void():
-    id = "void**#"
-    creationCounter = 0
-
-    '''
-    supply a counter to allow unique id creation
-    '''
-    def getCreationCounter(self):
-        self.creationCounter += 1
-        return self.creationCounter
-
-'''
 the container for the gamestate that is not contained elsewhere
 '''
 class GameState():

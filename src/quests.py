@@ -2599,9 +2599,8 @@ bad pattern: has no solver
 class ExamineQuest(Quest):
     '''
     state initialization
-    bad code: useless constructor arguments
     '''
-    def __init__(self,waypoints=[],startCinematics=None,looped=True,lifetime=None,completionThreshold=5,creator=None):
+    def __init__(self,startCinematics=None,completionThreshold=5,creator=None):
         self.completionThreshold = completionThreshold
         self.description = "please examine your environment"
         self.examinedItems = []

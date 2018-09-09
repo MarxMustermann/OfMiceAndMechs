@@ -1262,7 +1262,6 @@ class FirstTutorialPhase(BasicPhase):
 
             '''
             add the quests for firering a furnace
-            bad code:
             '''
             class AddQuestEvent(object):
                 '''

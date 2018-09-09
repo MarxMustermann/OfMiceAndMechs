@@ -447,10 +447,9 @@ class Character():
 
     '''
     straightforward getting a string with a detailed info about the character
-    bad code: debug output on GUI
     '''
     def getDetailedInfo(self):
-        return "\nname: "+str(self.name)+"\nroom: "+str(self.room)+"\ncoord: "+str(self.xPosition)+" "+str(self.yPosition)+"\nsubs: "+str(self.subordinates)+"\nsat: "+str(self.satiation)+"\nreputation: "+str(self.reputation)+"\npath: "+str(self.path)
+        return "\nname: "+str(self.name)+"\nroom: "+str(self.room)+"\ncoordinate: "+str(self.xPosition)+" "+str(self.yPosition)+"\nsubordinates: "+str(self.subordinates)+"\nsat: "+str(self.satiation)+"\nreputation: "+str(self.reputation)
 
     '''
     adds a quest to the characters quest list

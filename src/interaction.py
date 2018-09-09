@@ -1375,8 +1375,7 @@ class CharacterInfoMenu(SubMenu):
         global submenue
 
         header.set_text((urwid.AttrSpec("default","default"),"\ncharacter overview"))
-        # bad code: ticks are debug output on GUI
-        main.set_text((urwid.AttrSpec("default","default"),[mainChar.getDetailedInfo(),"\ntick: "+str(gamestate.tick)]))
+        main.set_text((urwid.AttrSpec("default","default"),[mainChar.getDetailedInfo()]))
         header.set_text((urwid.AttrSpec("default","default"),""))
 
 '''

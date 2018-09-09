@@ -714,27 +714,26 @@ def processInput(key):
                 # check inventory space
                 if len(mainChar.inventory) > 10:
                     messages.append("you cannot carry more items")
-                    break
-
-                # get the list of items from room or terrain
-                # bad code: getting abtracted lists is a start but there should be a container class
-                if mainChar.room:
-                    itemByCoordinates = mainChar.room.itemByCoordinates
-                    itemList = mainChar.room.itemsOnFloor
                 else:
-                    itemByCoordinates = terrain.itemByCoordinates
-                    itemList = terrain.itemsOnFloor
+                    # get the list of items from room or terrain
+                    # bad code: getting abtracted lists is a start but there should be a container class
+                    if mainChar.room:
+                        itemByCoordinates = mainChar.room.itemByCoordinates
+                        itemList = mainChar.room.itemsOnFloor
+                    else:
+                        itemByCoordinates = terrain.itemByCoordinates
+                        itemList = terrain.itemsOnFloor
 
-                # get the position to pickup from
-                if itemMarkedLast:
-                    pos = (itemMarkedLast.xPosition,itemMarkedLast.yPosition)
-                else:
-                    pos = (mainChar.xPosition,mainChar.yPosition)
+                    # get the position to pickup from
+                    if itemMarkedLast:
+                        pos = (itemMarkedLast.xPosition,itemMarkedLast.yPosition)
+                    else:
+                        pos = (mainChar.xPosition,mainChar.yPosition)
 
-                # pickup all items from this coordinate
-                if pos in itemByCoordinates:
-                    for item in itemByCoordinates[pos]:
-                        item.pickUp(mainChar)
+                    # pickup all items from this coordinate
+                    if pos in itemByCoordinates:
+                        for item in itemByCoordinates[pos]:
+                            item.pickUp(mainChar)
 
             # open chat menu
             if key in (commandChars.hail):

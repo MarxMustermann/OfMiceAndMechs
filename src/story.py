@@ -1380,8 +1380,6 @@ class SecondTutorialPhase(BasicPhase):
         # make the player move around
         if not mainChar.gotMovementSchooling:
             quest = quests.MoveQuestMeta(self.mainCharRoom,4,3,creator=void)
-            # bad code: commented out code
-            #quest = quests.PatrolQuest([(self.mainCharRoom,7,5),(self.mainCharRoom,7,2),(self.mainCharRoom,2,2),(self.mainCharRoom,2,5)],startCinematics="now please patrol around the Room a few times.",lifetime=80)
             def setPlayerState():
                 mainChar.gotMovementSchooling = True
             quest.endTrigger = setPlayerState
@@ -1390,8 +1388,6 @@ class SecondTutorialPhase(BasicPhase):
 
         # make the player examine the map
         if not mainChar.gotExamineSchooling:
-            # bad code: commented out code
-            #quest = quests.ExamineQuest(lifetime=100,startCinematics="use e to examine items. you can get Descriptions and more detailed Information about your Environment than just by looking at things.\n\nto look at something you have to walk into or over the item and press "+commandChars.examine+". For example if you stand next to a Furnace like this:\n\n"+displayChars.indexedMapping[displayChars.furnace_inactive][1]+displayChars.indexedMapping[displayChars.main_char][1]+"\n\npressing "+commandChars.move_west+" and then "+commandChars.examine+" would result in the Description:\n\n\"this is a Furnace\"\n\nyou have 100 Ticks to familiarise yourself with the Movementcommands and to examine the Room. please do.",creator=void)
             quest = quests.MoveQuestMeta(self.mainCharRoom,4,3,creator=void)
             def setPlayerState():
                 mainChar.gotExamineSchooling = True
@@ -1479,10 +1475,6 @@ class ThirdTutorialPhase(BasicPhase):
             # let the npc prepare itself
             messages.append("your turn Ludwig")
             questList = []
-            # bad code: commented out code
-            #questList.append(quests.FillPocketsQuest(creator=void))
-            #questList.append(quests.FireFurnaceMeta(terrain.tutorialMachineRoom.furnaces[1],creator=void))
-            #questList.append(quests.FireFurnaceMeta(terrain.tutorialMachineRoom.furnaces[2],creator=void))
             questList.append(quests.FillPocketsQuest(creator=void))
 
             # chain quests

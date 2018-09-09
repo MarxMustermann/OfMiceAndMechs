@@ -981,10 +981,6 @@ class Room(object):
             for item in self.itemByCoordinates[newPosition]:
                 if not item.walkable:
                     return item
-            # bad code: does nothing
-            else:
-                character.xPosition = newPosition[0]
-                character.yPosition = newPosition[1]
 
         # teleport character to new position
         character.xPosition = newPosition[0]
@@ -1215,14 +1211,6 @@ XXXXXXXXXX
         addNPC(7,5)
         addNPC(7,6)
         
-        # bad code: does nothing
-        class Event(object):
-            def __init__(subself,tick):
-                subself.tick = tick
-
-            def handleEvent(subself):
-                self.applySkippedAdvances()
-
         self.initialState = self.getState()
         loadingRegistry.register(self)
 

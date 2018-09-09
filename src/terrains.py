@@ -865,13 +865,10 @@ class Terrain(object):
         if not mapHidden:
             # get players position in tiles (15*15 segments)
             pos = None
-            roomContainer = None # bad code: does nothing
             if mainChar.room == None:
                 pos = (mainChar.xPosition//15,mainChar.yPosition//15)
-                roomContainer = mainChar.terrain # bad code: does nothing
             else:
                 pos = (mainChar.room.xPosition,mainChar.yPosition)
-                roomContainer = mainChar.room.terrain # bad code: does nothing
 
             # get rooms near the player
             roomCandidates = []

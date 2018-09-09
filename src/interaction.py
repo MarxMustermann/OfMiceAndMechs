@@ -101,9 +101,6 @@ def setFooter():
     footerLength = len(footerText)
     footerSkipCounter = 20
 
-# bad code: unused variable
-commandHistory = []
-
 '''
 calls show_or_exit with on param less
 bad code: keystrokes should not be injected in the first place

@@ -234,13 +234,6 @@ class Terrain(saveing.Saveable):
         loadingRegistry.register(self)
 
     '''
-    get counter for cildren to derive a unique id from
-    '''
-    def getCreationCounter(self):
-        self.creationCounter += 1
-        return self.creationCounter
-
-    '''
     create a map of non passable tiles
     '''
     def setNonMovableMap(self):

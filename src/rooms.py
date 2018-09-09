@@ -318,13 +318,6 @@ class Room(saveing.Saveable):
         loadingRegistry.register(self)
 
     '''
-    get count of children for creating unique ids
-    '''
-    def getCreationCounter(self):
-        self.creationCounter += 1
-        return self.creationCounter
-
-    '''
     get the difference in state since creation
     '''
     def getDiffState(self):

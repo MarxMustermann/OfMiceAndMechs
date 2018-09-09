@@ -116,13 +116,6 @@ class Quest(saveing.Saveable):
            loadingRegistry.callWhenAvailable(state["character"],setCharacter)
 
     '''
-    return counter for creation unique ids
-    '''
-    def getCreationCounter(self):
-        self.creationCounter += 1
-        return self.creationCounter
-
-    '''
     register callback
     '''
     def startWatching(self, target, callback):

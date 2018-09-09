@@ -45,17 +45,17 @@ class Saveable(object):
 
         return (states,changedThingsList,newThingsList,removedThingsList)
 
+    '''
+    get a new creation counter
+    '''
+    def getCreationCounter(self):
+        self.creationCounter += 1
+        return self.creationCounter
+
 '''
 the creator that should be used if there is no valid creator object
 basically supply ids for unique ids
 '''
 class Void(Saveable):
     id = "void**#"
-
-    '''
-    supply a counter to allow unique id creation
-    '''
-    def getCreationCounter(self):
-        self.creationCounter += 1
-        return self.creationCounter
 

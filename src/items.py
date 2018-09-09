@@ -52,15 +52,6 @@ class Item(saving.Savable):
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
-    ''' 
-    get a new creation counter
-    # bad code: should be in extra class
-    # bad code: redundant code
-    '''
-    def getCreationCounter(self):
-        self.creationCounter += 1
-        return self.creationCounter
-
     '''
     get difference in state since creation as dict
     '''

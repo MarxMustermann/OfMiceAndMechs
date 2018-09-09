@@ -72,15 +72,6 @@ class Character(saving.Saveable):
         loadingRegistry.register(self)
 
     '''
-    get a new creation counter
-    # bad code: should be in extra class
-    # bad code: redundant code
-    '''
-    def getCreationCounter(self):
-        self.creationCounter += 1
-        return self.creationCounter
-
-    '''
     almost straightforward adding of events to the characters event queue
     ensures that the events are added in proper order
     '''

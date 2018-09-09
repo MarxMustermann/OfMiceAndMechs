@@ -1602,7 +1602,7 @@ class ProductionArtwork(Item):
     '''
     def apply(self,character,resultType=None):
         options = []
-        for key,value in itemMap:
+        for key,value in itemMap.items():
             options.append((value,key))
         self.submenue = interaction.SelectionMenu("test",options)
         interaction.submenue = self.submenue

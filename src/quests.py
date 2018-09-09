@@ -1076,8 +1076,6 @@ class NaiveMoveQuest(Quest):
     def __init__(self,room=None,x=None,y=None,sloppy=False,followUp=None,startCinematics=None,creator=None):
         self.dstX = x
         self.dstY = y
-        self.targetX = x
-        self.targetY = y
         self.room = room
         self.sloppy = sloppy
         self.description = "please go to coordinate "+str(self.dstX)+"/"+str(self.dstY)    
@@ -1097,15 +1095,15 @@ class NaiveMoveQuest(Quest):
         if not self.active:
             # bad code: should write a "this should not happen" log entry
             return 
-        if hasattr(self,"dstX") and hasattr(self,"dstY"): # bad code: should do nothing
-            if not self.sloppy:
-                # check for exact position
-                if self.character.xPosition == self.dstX and self.character.yPosition == self.dstY and self.character.room == self.room:
-                    self.postHandler()
-            else:
-                # check for neighbouring position
-                if self.character.room == self.room and((self.character.xPosition-self.dstX in (1,0,-1) and self.character.yPosition == self.dstY) or (self.character.yPosition-self.dstY in (1,0,-1) and self.character.xPosition == self.dstX)):
-                    self.postHandler()
+
+        if not self.sloppy:
+            # check for exact position
+            if self.character.xPosition == self.dstX and self.character.yPosition == self.dstY and self.character.room == self.room:
+                self.postHandler()
+        else:
+            # check for neighbouring position
+            if self.character.room == self.room and((self.character.xPosition-self.dstX in (1,0,-1) and self.character.yPosition == self.dstY) or (self.character.yPosition-self.dstY in (1,0,-1) and self.character.xPosition == self.dstX)):
+                self.postHandler()
 
     '''
     assign to character and add listener
@@ -1114,44 +1112,6 @@ class NaiveMoveQuest(Quest):
     def assignToCharacter(self,character):
         super().assignToCharacter(character)
         self.startWatching(character,self.recalculate)
-
-    '''
-    split up the quest into subquest if nesseccary
-    bad code: should not split up on Naive
-    bad code: action does not fit to the methods name
-    '''
-    def recalculate(self):
-        # do not recalculate inactive quests
-        # bad code: should log a warning
-        if not self.active:
-            return 
-
-        # delete current target position
-        if hasattr(self,"dstX"):
-            del self.dstX
-        if hasattr(self,"dstY"):
-            del self.dstY
-
-        # do not try to move character if there is no character
-        # bad code: should log a warning
-        if not self.character:
-            return
-
-        if (self.room == self.character.room):
-            # set target coordinates to the actual target
-            self.dstX = self.targetX
-            self.dstY = self.targetY
-
-        elif self.character.room and self.character.quests and self.character.quests[0] == self:
-            # make the character leave the room
-            # bad code: adds a new quest instead of using sub quests
-            self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
-        elif not self.character.room and self.character.quests and self.character.quests[0] == self:
-            # make the character enter the correct room
-            # bad code: adds a new quest instead of using sub quests
-            self.character.assignQuest(EnterRoomQuestMeta(self.room,creator=self),active=True)
-            pass # bad code: does nothing
-        super().recalculate()
 
     '''
     get difference in state since creation
@@ -1167,10 +1127,6 @@ class NaiveMoveQuest(Quest):
             state["dstX"] = self.dstX
         if not self.dstY == self.initialState["dstY"]:
             state["dstY"] = self.dstY
-        if not self.targetX == self.initialState["targetX"]:
-            state["targetX"] = self.targetX
-        if not self.targetY == self.initialState["targetY"]:
-            state["targetY"] = self.targetY
         if not self.description == self.initialState["description"]:
             state["description"] = self.description
         if not self.sloppy == self.initialState["sloppy"]:
@@ -1188,9 +1144,7 @@ class NaiveMoveQuest(Quest):
         else:
             state["room"] = None
         state["dstX"] = self.dstX
-        state["targetX"] = self.targetX
         state["dstY"] = self.dstY
-        state["targetY"] = self.targetY
         state["description"] = self.description
         state["sloppy"] = self.sloppy
         return state
@@ -1214,12 +1168,8 @@ class NaiveMoveQuest(Quest):
         # load attributes
         if "dstX" in state:
             self.dstX = state["dstX"]
-        if "targetX" in state:
-            self.targetX = state["targetX"]
         if "dstY" in state:
             self.dstY = state["dstY"]
-        if "targetY" in state:
-            self.targetY = state["targetY"]
         if "description" in state:
             self.description = state["description"]
         if "sloppy" in state:
@@ -1267,19 +1217,6 @@ class NaiveEnterRoomQuest(Quest):
         if character.walkPath():
             return True
         return False
-
-    '''
-    leave room and go to target
-    bad code: should mot be done in naive
-    '''
-    def recalculate(self):
-        if not self.active:
-            return 
-
-        if self.character.room and not self.character.room == self.room and self.character.quests[0] == self:
-            self.character.assignQuest(LeaveRoomQuest(self.character.room),active=True)
-
-        super().recalculate()
 
     '''
     close door and call superclass

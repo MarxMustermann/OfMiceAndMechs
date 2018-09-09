@@ -600,6 +600,7 @@ class MetaQuestSequence(Quest):
     def triggerCompletionCheck(self):
 
         # do nothing on inactive quest
+		# bad code: should log
         if not self.active:
             return
 
@@ -616,6 +617,7 @@ class MetaQuestSequence(Quest):
     '''
     def recalculate(self):
         # do nothing on inactive quest
+		# bad code: should log
         if not self.active:
             return 
 
@@ -1498,7 +1500,7 @@ class NaiveActivateQuest(Quest):
 
 '''
 The naive quest to drop something. It assumes nothing goes wrong. 
-You probably want to use ActivateQuest instead
+You probably want to use DropQuest instead
 '''
 class NaiveDropQuest(Quest):
     '''
@@ -1539,7 +1541,7 @@ class NaiveDropQuest(Quest):
 
 '''
 The naive quest to drop something. It assumes nothing goes wrong. 
-You probably want to use ActivateQuest instead
+You probably want to use DelegateQuest instead
 '''
 class NaiveDelegateQuest(Quest):
     '''
@@ -2394,6 +2396,7 @@ class FillPocketsQuest(MetaQuestSequence):
     '''
     def recalculate(self):
         # do nothing on not really active quests
+		# bad code: should log
         if not self.active:
             return 
         if not self.character:
@@ -2469,10 +2472,12 @@ class LeaveRoomQuest(Quest):
     '''
     def triggerCompletionCheck(self):
         # do nothing on inactive quest
+		# bad code: should log
         if not self.active:
             return 
 
         # do nothing without character
+		# bad code: should log
         if not self.character:
             return
 

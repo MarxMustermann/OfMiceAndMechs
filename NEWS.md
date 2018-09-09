@@ -1,5 +1,25 @@
 # news
 
+### commit 701-800
+
+The sole focus of theses commits was to create a system to save and load the gamestate with. This was successfull in implementing a system for saving the game but was not successfull in creating a reliable save/load function. A saveing/loading system exist for every important part of the game, but the game crashes a lot during saving/loading because many of the getters/setter for the specific instances and subtypes are missing.
+
+The main changes are:
+
+* saveing/loading of characters
+* saveing/loading of items
+* saveing/loading of rooms
+* saveing/loading of cinematics
+* saveing/loading of events
+* saveing/loading of chat options
+* added a system to create unique ids for everything
+* added tracking of the creator of everything including a void object for thing created out of the blue
+* added a mechanism to reduce the savestate to the difference from initial generation to current state
+* added a mechanism to serialize function calls
+* moved chats to a chat file
+
+Since the core mechanics for saving/loading exists there was good progress, but a new clean up round is needed to fix all the bad code introduced and to fix the crashes resulting from this feature.
+
 ### commit 609-700
 
 The main focus was to eliminate bugs and to clean up the code. Tasks completed are:

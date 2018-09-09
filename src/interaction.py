@@ -814,14 +814,13 @@ def processInput(key):
         pauseGame = True
 
         # let the submenu handle the keystroke
-        # bad code: the name success lies
         if not key in (commandChars.autoAdvance):
-            success = submenue.handleKey(key)
+            stillActive = submenue.handleKey(key)
         else:
-            success = False
+            stillActive = False
 
         # abort rendering submenue when done
-        if key in ["esc"] or success:
+        if key in ["esc"] or stillActive:
             submenue = None
             pauseGame = False
             specialRender = False

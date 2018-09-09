@@ -2190,8 +2190,6 @@ class MachineRoomPhase(BasicPhase):
 
         # do a dummy action
         questList = []
-        if not (mainChar.room and mainChar.room == terrain.tutorialMachineRoom):
-            questList.append(quests.EnterRoomQuestMeta(terrain.tutorialMachineRoom,startCinematics="please goto the Machineroom",creator=void))
         questList.append(quests.MoveQuestMeta(terrain.tutorialMachineRoom,3,3,startCinematics="time to do some actual work. report to "+terrain.tutorialMachineRoom.firstOfficer.name,creator=void))
 
         # chain quests

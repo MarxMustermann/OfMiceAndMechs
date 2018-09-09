@@ -343,7 +343,7 @@ class Room(saveing.Saveable):
             result["creationCounter"] = self.creationCounter
 
         # store item diff
-        (itemStates,changedItems,newItems,removedItems) = self.getDiffList(self.itemsOnFloor,"itemIds")
+        (itemStates,changedItems,newItems,removedItems) = self.getDiffList(self.itemsOnFloor,self.initialState["itemIds"])
         if changedItems:
             result["changedItems"] = changedItems
         if newItems:
@@ -357,7 +357,7 @@ class Room(saveing.Saveable):
         exclude = []
         if mainChar:
             exclude.append(mainChar.id)
-        (charStates,changedChars,newChars,removedChars) = self.getDiffList(self.characters,"characterIds",exclude=exclude)
+        (charStates,changedChars,newChars,removedChars) = self.getDiffList(self.characters,self.initialState["characterIds"],exclude=exclude)
         if changedChars:
             result["changedChars"] = changedChars
         if newChars:
@@ -368,7 +368,7 @@ class Room(saveing.Saveable):
             result["charStates"] = charStates
 
         # store events diff
-        (eventStates,changedEvents,newEvents,removedEvents) = self.getDiffList(self.events,"eventIds")
+        (eventStates,changedEvents,newEvents,removedEvents) = self.getDiffList(self.events,self.initialState["eventIds"])
         if changedEvents:
             result["changedEvents"] = changedEvents
         if newEvents:

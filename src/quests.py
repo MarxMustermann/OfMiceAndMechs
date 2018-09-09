@@ -1,4 +1,5 @@
 import src.items as items
+import src.saveing as saveing
 import json
 
 # HACK: common variables with modules
@@ -16,7 +17,7 @@ callShow_or_exit = None
 '''
 the base class for all quests
 '''
-class Quest(object):
+class Quest(saveing.Saveable):
     '''
     straightforward state initialization
     '''
@@ -388,38 +389,8 @@ class MetaQuestSequence(Quest):
         if not self.metaDescription == state["metaDescription"]:
             state["metaDescription"] = self.metaDescription
 
-        def getDiffList(toDiff,toCompare,exclude=[]):
-            currentThingsList = []
-            states = {}
-            newThingsList = []
-            changedThingsList = []
-            removedThingsList = []
-
-            for thing in toDiff:
-                if thing.id in exclude:
-                    continue
-                currentState = thing.getState()
-                currentThingsList.append(thing.id)
-
-                if thing.id in toCompare:
-                    if not currentState == thing.initialState:
-                        diffState = thing.getDiffState()
-                        if diffState:
-                            changedThingsList.append(thing.id)
-                            states[thing.id] = diffState
-                else:
-                    newThingsList.append(thing.id)
-                    states[thing.id] = thing.getState()
-
-            for thingId in toCompare:
-                if thingId in exclude:
-                    continue
-                if not thingId in currentThingsList:
-                    removedThingsList.append(thingId)
-
-            return (states,changedThingsList,newThingsList,removedThingsList)
-
-        (questStates,changedQuests,newQuests,removedQuests) = getDiffList(self.subQuests,self.initialState["subQuests"]["ids"])
+		# store quests
+        (questStates,changedQuests,newQuests,removedQuests) = self.getDiffList(self.subQuests,self.initialState["subQuests"]["ids"])
         quests = {}
         if changedQuests:
             quests["changed"] = changedQuests
@@ -719,54 +690,8 @@ class MetaQuestParralel(Quest):
         if not lastActive == self.initialState["lastActive"]:
             state["lastActive"] = lastActive
 
-        '''
-        get the difference of a list between existing and initial state
-        bad code: should be in extra class
-        bad code: redundant code
-        '''
-        def getDiffList(toDiff,toCompare,exclude=[]):
-            # the to be result
-            states = {}
-            newThingsList = []
-            changedThingsList = []
-            removedThingsList = []
-
-            # helper state
-            currentThingsList = []
-
-            # handle things that exist right now
-            for thing in toDiff:
-                # skip excludes
-                if thing.id in exclude:
-                    continue
-
-                # register thing as existing
-                currentState = thing.getState()
-                currentThingsList.append(thing.id)
-
-                if thing.id in toCompare:
-                    # handle changed things
-                    if not currentState == thing.initialState:
-                        diffState = thing.getDiffState()
-                        if diffState: # bad code: this should not be neccessary
-                            changedThingsList.append(thing.id)
-                            states[thing.id] = diffState
-                else:
-                    # handle new things
-                    newThingsList.append(thing.id)
-                    states[thing.id] = thing.getState()
-
-            # handle removed things
-            for thingId in toCompare:
-                if thingId in exclude:
-                    continue
-                if not thingId in currentThingsList:
-                    removedThingsList.append(thingId)
-
-            return (states,changedThingsList,newThingsList,removedThingsList)
-
         # store quests
-        (questStates,changedQuests,newQuests,removedQuests) = getDiffList(self.subQuests,self.initialState["subQuests"]["ids"])
+        (questStates,changedQuests,newQuests,removedQuests) = self.getDiffList(self.subQuests,self.initialState["subQuests"]["ids"])
         quests = {}
         if changedQuests:
             quests["changed"] = changedQuests

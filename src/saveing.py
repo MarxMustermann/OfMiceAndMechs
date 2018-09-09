@@ -17,7 +17,7 @@ class Saveable(object):
     '''
     get the difference of a list between existing and initial state
     '''
-    def getDiffList(self,toDiff,containerName,exclude=[]):
+    def getDiffList(self,current,orig,exclude=[]):
         # the to be result
         states = {}
         newThingsList = []
@@ -28,7 +28,7 @@ class Saveable(object):
         currentThingsList = []
 
         # handle things that exist right now
-        for thing in toDiff:
+        for thing in current:
             # skip excludes
             if thing.id in exclude:
                 continue
@@ -37,7 +37,7 @@ class Saveable(object):
             currentState = thing.getState()
             currentThingsList.append(thing.id)
 
-            if thing.id in self.initialState[containerName]:
+            if thing.id in orig:
                 # handle changed things
                 if not currentState == thing.initialState:
                     diffState = thing.getDiffState()
@@ -50,7 +50,7 @@ class Saveable(object):
                 states[thing.id] = thing.getState()
 
         # handle removed things
-        for thingId in self.initialState[containerName]:
+        for thingId in orig:
             if thingId in exclude:
                 continue
             if not thingId in currentThingsList:

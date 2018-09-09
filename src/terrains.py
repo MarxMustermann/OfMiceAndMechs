@@ -2,6 +2,7 @@ import src.items as items
 import src.rooms as rooms
 import src.overlays as overlays
 import src.gameMath as gameMath
+import src.saveing as saveing
 import json
 
 # bad code: global varaibles
@@ -24,7 +25,7 @@ class Coordinate(object):
 '''
 the base class for terrains
 '''
-class Terrain(object):
+class Terrain(saveing.Saveable):
     '''
     straightforward state initialization
     '''
@@ -1233,59 +1234,13 @@ class Terrain(object):
     get difference between initial and current state
     '''
     def getDiffState(self):
-        '''
-        get the difference of a list between existing and initial state
-        bad code: should be in extra class
-        bad code: redundant code
-        '''
-        def getDiffList(toDiff,containerName,exclude=[]):
-            # the to be result
-            states = {}
-            newThingsList = []
-            changedThingsList = []
-            removedThingsList = []
-
-            # helper state
-            currentThingsList = []
-            
-            # handle things that exist right now
-            for thing in toDiff:
-                # skip excludes
-                if thing.id in exclude:
-                    continue
-
-                # register thing as existing
-                currentState = thing.getState()
-                currentThingsList.append(thing.id)
-
-                if thing.id in self.initialState[containerName]:
-                    # handle changed things
-                    if not currentState == thing.initialState:
-                        diffState = thing.getDiffState()
-                        if diffState: # bad code: this should not be neccessary
-                            changedThingsList.append(thing.id)
-                            states[thing.id] = diffState
-                else:
-                    # handle new things
-                    newThingsList.append(thing.id)
-                    states[thing.id] = thing.getState()
-
-            # handle removed things
-            for thingId in self.initialState[containerName]:
-                if thing.id in exclude:
-                    continue
-                if not thingId in currentThingsList:
-                    removedThingsList.append(thingId)
-
-            return (states,changedThingsList,newThingsList,removedThingsList)
-            
         # serialize list
-        (roomStates,changedRoomList,newRoomList,removedRoomList) = getDiffList(self.rooms,"roomIds")
-        (itemStates,changedItemList,newItemList,removedItemList) = getDiffList(self.itemsOnFloor,"itemIds")
+        (roomStates,changedRoomList,newRoomList,removedRoomList) = self.getDiffList(self.rooms,self.initialState["roomIds"])
+        (itemStates,changedItemList,newItemList,removedItemList) = self.getDiffList(self.itemsOnFloor,self.initialState["itemIds"])
         exclude = []
         if mainChar:
             exclude.append(mainChar.id)
-        (charStates,changedCharList,newCharList,removedCharList) = getDiffList(self.characters,"characterIds",exclude=exclude)
+        (charStates,changedCharList,newCharList,removedCharList) = self.getDiffList(self.characters,self.initialState["characterIds"],exclude=exclude)
 
         # generate state dict
         return {

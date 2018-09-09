@@ -1,4 +1,5 @@
 import src.items as items
+import src.saveing as saving
 import src.quests
 import json
 
@@ -12,7 +13,7 @@ this is the class for characters meaning both npc and pcs.
 all characters except the pcs always have automated = True to
 make them to things on their own
 """
-class Character():
+class Character(saving.Saveable):
     '''
     sets basic info AND adds default behaviour/items
     bad code: adding the default behaviour/items here makes it harder to create instances with fixed state
@@ -118,52 +119,6 @@ class Character():
         # the to be result
         result = {}
 
-        '''
-        get the difference of a list between existing and initial state
-        bad code: should be in extra class
-        bad code: redundant code
-        '''
-        def getDiffList(toDiff,toCompare,exclude=[]):
-            # the to be result
-            states = {}
-            newThingsList = []
-            changedThingsList = []
-            removedThingsList = []
-
-            # helper state
-            currentThingsList = []
-
-            # handle things that exist right now
-            for thing in toDiff:
-                # skip excludes
-                if thing.id in exclude:
-                    continue
-
-                # register thing as existing
-                currentThingsList.append(thing.id)
-
-                if thing.id in toCompare:
-                    # handle changed things
-                    currentState = thing.getState()
-                    if not currentState == thing.initialState:
-                        diffState = thing.getDiffState()
-                        if diffState: # bad code: this should not be neccessary
-                            changedThingsList.append(thing.id)
-                            states[thing.id] = diffState
-                else:
-                    # handle new things
-                    newThingsList.append(thing.id)
-                    states[thing.id] = thing.getState()
-
-            # handle removed things
-            for thingId in toCompare:
-                if thingId in exclude:
-                    continue
-                if not thingId in currentThingsList:
-                    removedThingsList.append(thingId)
-
-            return (states,changedThingsList,newThingsList,removedThingsList)
-
         # serialize attributes
         # bad code: very repetetive code
         if not self.gotBasicSchooling == self.initialState["gotBasicSchooling"]:
@@ -200,7 +155,7 @@ class Character():
             result["serveQuest"] = serveQuest
 
         # save inventory
-        (itemStates,changedItems,newItems,removedItems) = getDiffList(self.inventory,self.initialState["inventory"]["inventoryIds"])
+        (itemStates,changedItems,newItems,removedItems) = self.getDiffList(self.inventory,self.initialState["inventory"]["inventoryIds"])
         inventory = {}
         if changedItems:
             inventory["changed"] = changedItems
@@ -214,7 +169,7 @@ class Character():
             result["inventory"] = inventory
 
         # save quests
-        (questStates,changedQuests,newQuests,removedQuests) = getDiffList(self.quests,self.initialState["quests"]["questIds"])
+        (questStates,changedQuests,newQuests,removedQuests) = self.getDiffList(self.quests,self.initialState["quests"]["questIds"])
         quests = {}
         if changedQuests:
             quests["changed"] = changedQuests

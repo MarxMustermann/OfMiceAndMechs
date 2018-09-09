@@ -117,5 +117,5 @@ the creator that should be used if there is no valid creator object
 basically supply ids for unique ids
 '''
 class Void(Saveable):
-    id = "void**#"
+    id = "void"
 

@@ -349,7 +349,6 @@ class Quest(object):
 
     '''
     switch from active to just existing
-    bad code: should stop watching
     '''
     def deactivate(self):
         self.active = False

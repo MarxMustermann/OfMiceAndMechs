@@ -15,16 +15,19 @@ the base class for all items.
 '''
 class Item(object):
     '''
-    straightforward state initialization
+    state initialization and id generation
     '''
     def __init__(self,display=None,xPosition=0,yPosition=0,creator=None,name="item"):
+        # bad code: obsolete - delete
         if creator == "void":
             creator = void
+
+        # bad code: should be in extra class
         self.creationCounter = 0
 
+        # set attributes
         if not hasattr(self,"type"):
             self.type = "Item"
-
         if not display:
             self.display = displayChars.notImplentedYet
         else:
@@ -37,6 +40,9 @@ class Item(object):
         self.lastMovementToken = None
         self.chainedTo = []
         self.name = name
+        self.description = "a "+self.name
+
+        # set id
         self.id = {
                    "other":"item",
                    "xPosition":xPosition,
@@ -46,27 +52,40 @@ class Item(object):
         self.id["creator"] = creator.id
         self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
 
-        self.description = "a "+self.name
-
+        # store state and register self
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
+    ''' 
+    get a new creation counter
+    # bad code: should be in extra class
+    # bad code: redundant code
+    '''
     def getCreationCounter(self):
         self.creationCounter += 1
         return self.creationCounter
 
+    '''
+    get difference in state since creation as dict
+    '''
     def getDiffState(self):
         result = {}
         currentState = self.getState()
+        
+        # only carry changed attributes
         for attribute in ("id","name","type","walkable","xPosition","yPosition"):
             if not currentState[attribute] == self.initialState[attribute]:
                 result[attribute] = currentState[attribute]
 
+        # bad code: should be in extra class
         if not self.creationCounter == self.initialState["creationCounter"]:
             result["creationCounter"] = self.creationCounter
 
         return result
 
+    '''
+    get state as dict
+    '''
     def getState(self):
         return {
                  "id":self.id,
@@ -78,10 +97,16 @@ class Item(object):
                  "creationCounter":self.creationCounter,
                }
 
+    '''
+    set state from dict
+    '''
     def setState(self,state):
+        # bad code: should be in extra class
         if "creationCounter" in state:
             self.creationCounter = state["creationCounter"]
 
+        # set attribute
+        # bad code: very repetetive code
         if "id" in state:
             self.id = state["id"]
         if "name" in state:
@@ -101,7 +126,8 @@ class Item(object):
         return str(self.getDetailedState())
 
     '''
-    get a short 
+    get a short description
+    bad code: name and function say diffrent things
     '''
     def getDetailedState(self):
         return self.description
@@ -121,7 +147,7 @@ class Item(object):
             listener()
 
     '''
-    get picked up by the suplied character
+    get picked up by the supplied character
     '''
     def pickUp(self,character):
         # bad code: should be a simple self.container.removeItem(self)
@@ -165,6 +191,7 @@ class Item(object):
     bad code: a method for each direction
     '''
     def getAffectedByMovementNorth(self,force=1,movementBlock=set()):
+        # add self
         movementBlock.add(self)
         
         # add things chained to the item
@@ -211,6 +238,7 @@ class Item(object):
     bad code: a method for each direction
     '''
     def getAffectedByMovementSouth(self,force=1,movementBlock=set()):
+        # add self
         movementBlock.add(self)
         
         # add things chained to the item
@@ -257,6 +285,7 @@ class Item(object):
     bad code: a method for each direction
     '''
     def getAffectedByMovementWest(self,force=1,movementBlock=set()):
+        # add self
         movementBlock.add(self)
         
         # add things chained to the item
@@ -303,6 +332,7 @@ class Item(object):
     bad code: a method for each direction
     '''
     def getAffectedByMovementEast(self,force=1,movementBlock=set()):
+        # add self
         movementBlock.add(self)
         
         # add things chained to the item
@@ -355,7 +385,7 @@ class Item(object):
             return 50
 
     '''
-    dummy for state correction
+    do nothing
     '''
     def recalculate(self):
         pass
@@ -382,7 +412,7 @@ class Item(object):
         self.terrain.itemsOnFloor.append(newItem)
             
 '''
-crushed something basically raw metal
+crushed something, basically raw metal
 '''
 class Scrap(Item):
     '''
@@ -458,7 +488,7 @@ class Scrap(Item):
             newItem.room = self.room
             newItem.terrain = self.terrain
 
-            # place the fallen off map
+            # place the fallen off parts on map
             # bad code: should be handled by terrain
             self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(newItem)
             self.terrain.itemsOnFloor.append(newItem)
@@ -482,6 +512,7 @@ class Scrap(Item):
         return self.amount*2
 
     '''
+    create bigger ball of scrap
     '''
     def destroy(self):
         # get list of scrap on same location
@@ -513,17 +544,26 @@ class Scrap(Item):
             self.walkable = False
             self.display = displayChars.scrap_heavy
 
+    '''
+    get state difference since creation
+    '''
     def getDiffState(self):
         state = super().getState()
         if not self.initialState["amount"] == self.amount:
             state["amount"] = self.amount
         return state
 
+    '''
+    get state as dict
+    '''
     def getState(self):
         state = super().getState()
         state["amount"] = self.amount
         return state
 
+    '''
+    set state from dict
+    '''
     def setState(self,state):
         super().setState(state)
         self.amount = state["amount"]
@@ -545,15 +585,23 @@ class Scrap(Item):
 dummy class for a corpse
 '''
 class Corpse(Item):
+    '''
+    almost straightforward state initialization
+    '''
     def __init__(self,xPosition=0,yPosition=0,name="corpse",creator=None):
         self.type = "Corpse"
         super().__init__(displayChars.corpse,xPosition,yPosition,name=name,creator=creator)
+
+        # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
 
 '''
 an character spawning item
 '''
 class GrowthTank(Item):
+    '''
+    almost straightforward state initialization
+    '''
     def __init__(self,xPosition=0,yPosition=0,name="growth tank",filled=False,creator=None):
         self.type = "GrowthTank"
         self.filled = filled
@@ -561,8 +609,13 @@ class GrowthTank(Item):
             super().__init__(displayChars.growthTank_filled,xPosition,yPosition,name=name,creator=creator)
         else:
             super().__init__(displayChars.growthTank_unfilled,xPosition,yPosition,name=name,creator=creator)
+
+        # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
 
+    '''
+    manually eject character
+    '''
     def apply(self,character):
         if self.filled:
             self.eject()
@@ -575,6 +628,9 @@ class GrowthTank(Item):
         self.filled = False
         self.display = displayChars.growthTank_unfilled
 
+        # generate a name
+        # bad code: should be somewhere else
+        # bad code: redundant code
         def getRandomName(seed1=0,seed2=None):
             if seed2 == None:
                 seed2 = seed1+(seed1//5)
@@ -587,17 +643,26 @@ class GrowthTank(Item):
         character.fallUnconcious()
         self.room.addCharacter(character,self.xPosition+1,self.yPosition)
 
+    '''
+    get state difference since creation
+    '''
     def getDiffState(self):
         state = super().getState()
         if not self.initialState["filled"] == self.filled:
             state["filled"] = self.filled
         return state
 
+    '''
+    get state as dict
+    '''
     def getState(self):
         state = super().getState()
         state["filled"] = self.filled
         return state
 
+    '''
+    set state from dict
+    '''
     def setState(self,state):
         super().setState(state)
         if "filled" in state:
@@ -632,17 +697,26 @@ class Hutch(Item):
             self.activated = False
             self.display = displayChars.hutch_free
 
+    '''
+    get state difference since creation
+    '''
     def getDiffState(self):
         state = super().getState()
         if not self.initialState["activated"] == self.activated:
             state["activated"] = self.activated
         return state
 
+    '''
+    get state as dict
+    '''
     def getState(self):
         state = super().getState()
         state["activated"] = self.activated
         return state
 
+    '''
+    set state from dict
+    '''
     def setState(self,state):
         super().setState(state)
         self.activated = state["activated"]
@@ -652,7 +726,7 @@ class Hutch(Item):
             self.display = displayChars.hutch_free
 
 '''
-item for letting characters 
+item for letting characters trigger somesthing
 '''
 class Lever(Item):
     '''
@@ -691,17 +765,26 @@ class Lever(Item):
         # notify listeners
         self.changed()
 
+    '''
+    get state difference since creation
+    '''
     def getDiffState(self):
         state = super().getState()
         if not self.initialState["activated"] == self.activated:
             state["activated"] = self.activated
         return state
 
+    '''
+    get state as dict
+    '''
     def getState(self):
         state = super().getState()
         state["activated"] = self.activated
         return state
 
+    '''
+    set state from dict
+    '''
     def setState(self,state):
         super().setState(state)
         self.activated = state["activated"]
@@ -779,6 +862,9 @@ class Furnace(Item):
                 # notify listeners
                 self.changed()
 
+    '''
+    set state from dict
+    '''
     def setState(self,state):
         super().setState(state)
         if "activated" in state:
@@ -786,12 +872,18 @@ class Furnace(Item):
             if self.activated:
                 self.display = displayChars.furnace_active
     
+    '''
+    get state difference since creation
+    '''
     def getDiffState(self):
         state = super().getDiffState()
         if not self.activated == self.initialState["activated"]:
             state["activated"] = self.activated
         return state
     
+    '''
+    get state as dict
+    '''
     def getState(self):
         state = super().getState()
         state["activated"] = self.activated
@@ -931,6 +1023,9 @@ class Door(Item):
         self.walkable = False
         self.initialState = self.getState()
 
+    '''
+    set state from dict
+    '''
     def setState(self,state):
         super().setState(state)
         if self.walkable:
@@ -1001,7 +1096,7 @@ class Pile(Item):
     call superclass constructor with modified paramters and set some state
     '''
     def __init__(self,xPosition=0,yPosition=0,name="pile",itemType=Coal,creator=None):
-        self.contains_canBurn = True
+        self.contains_canBurn = True # bad code: should be abstracted
         self.itemType = itemType
         self.numContained = 100
         self.type = "Pile"
@@ -1044,17 +1139,26 @@ class Pile(Item):
     def getDetailedInfo(self):
         return super().getDetailedInfo()+" of "+str(self.type)+" containing "+str(self.numContained)
 
+    '''
+    get state difference since creation
+    '''
     def getDiffState(self):
         state = super().getState()
         if not self.initialState["numContained"] == self.numContained:
             state["numContained"] = self.numContained
         return state
 
+    '''
+    get state as dict
+    '''
     def getState(self):
         state = super().getState()
         state["numContained"] = self.numContained
         return state
 
+    '''
+    set state from dict
+    '''
     def setState(self,state):
         super().setState(state)
         self.numContained = state["numContained"]
@@ -1362,17 +1466,26 @@ class MarkerBean(Item):
         self.display = "x-"
         self.activated = True
 
+    '''
+    get state difference since creation
+    '''
     def getDiffState(self):
         state = super().getState()
         if not self.initialState["activated"] == self.activated:
             state["activated"] = self.activated
         return state
 
+    '''
+    get state as dict
+    '''
     def getState(self):
         state = super().getState()
         state["activated"] = self.activated
         return state
 
+    '''
+    set state from dict
+    '''
     def setState(self,state):
         super().setState(state)
         self.activated = state["activated"]
@@ -1401,17 +1514,26 @@ class GooDispenser(Item):
                 item.uses = 100
         self.activated = True
 
+    '''
+    get state difference since creation
+    '''
     def getDiffState(self):
         state = super().getState()
         if not self.initialState["activated"] == self.activated:
             state["activated"] = self.activated
         return state
 
+    '''
+    get state as dict
+    '''
     def getState(self):
         state = super().getState()
         state["activated"] = self.activated
         return state
 
+    '''
+    set state from dict
+    '''
     def setState(self,state):
         super().setState(state)
         self.activated = state["activated"]
@@ -1444,17 +1566,26 @@ class GooFlask(Item):
             character.satiation = 1000
             character.changed()
 
+    '''
+    get state difference since creation
+    '''
     def getDiffState(self):
         state = super().getState()
         if not self.initialState["uses"] == self.uses:
             state["uses"] = self.uses
         return state
 
+    '''
+    get state as dict
+    '''
     def getState(self):
         state = super().getState()
         state["uses"] = self.uses
         return state
 
+    '''
+    set state from dict
+    '''
     def setState(self,state):
         super().setState(state)
         self.uses = state["uses"]
@@ -1505,6 +1636,7 @@ class ProductionArtwork(Item):
     trigger production of a player selected item
     '''
     def apply(self,character,resultType=None):
+        # bad pattern: should be able to produce any item
         self.submenue = interaction.SelectionMenu("test",{1:Pipe,2:Wall},{1:"pipe",2:"wall"})
         interaction.submenue = self.submenue
         interaction.submenue.followUp = self.produceSelection
@@ -1570,6 +1702,8 @@ class ScrapCompactor(Item):
            new.yPosition = self.yPosition
            self.room.addItems([new])
 
+# maping from strings to all items
+# should be extendable
 itemMap = {
             "Item":Item,
             "Scrap":Scrap,
@@ -1599,6 +1733,9 @@ itemMap = {
             "ObjectDispenser":OjectDispenser
 }
 
+'''
+get item instances from dict state
+'''
 def getItemFromState(state):
     item = itemMap[state["type"]](creator=void)
     item.setState(state)

@@ -20,9 +20,11 @@ class Room(object):
     bad code: too many attributes
     '''
     def __init__(self,layout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+        # bad code: not needed - delete
         if creator == "void":
             creator = void
 
+        # should be in extra class
         self.creationCounter = 0
 
         # initialize attributes
@@ -63,6 +65,7 @@ class Room(object):
         self.lastRender = None
         self.isContainment = False
 
+        # set id
         self.id = {
                    "other":"room",
                    "xPosition":xPosition,
@@ -86,6 +89,7 @@ class Room(object):
                     # skip non items
                     pass
                 elif char in ("@",):
+                    # bad code: name generation should happen somewhere else
                     def getRandomName(seed1=0,seed2=None):
                         if seed2 == None:
                             seed2 = seed1+(seed1//5)
@@ -317,43 +321,66 @@ class Room(object):
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
+    '''
+    get count of children for creating unique ids
+    '''
     def getCreationCounter(self):
         self.creationCounter += 1
         return self.creationCounter
 
+    '''
+    get the difference in state since creation
+    '''
     def getDiffState(self):
         currentState = self.getState()
 
         result = {}
+
+        # diff attributes
         for attribute in ("yPosition","xPosition","offsetX","offsetY"):
             if not self.initialState[attribute] == currentState[attribute]:
                 result[attribute] = currentState[attribute]
         if not self.creationCounter == self.initialState["creationCounter"]:
             result["creationCounter"] = self.creationCounter
 
+        '''
+        get the difference of a list between existing and initial state
+        bad code: should be in extra class
+        bad code: redundant code
+        '''
         def getDiffList(toDiff,containerName,exclude=[]):
-            currentThingsList = []
+            # the to be result
             states = {}
             newThingsList = []
             changedThingsList = []
             removedThingsList = []
 
+            # helper state
+            currentThingsList = []
+
+            # handle things that exist right now
             for thing in toDiff:
+                # skip excludes
                 if thing.id in exclude:
                     continue
+
+                # register thing as existing
                 currentState = thing.getState()
                 currentThingsList.append(thing.id)
 
                 if thing.id in self.initialState[containerName]:
+                    # handle changed things
                     if not currentState == thing.initialState:
                         diffState = thing.getDiffState()
-                        if diffState:
+                        if diffState: # bad code: this should not be neccessary
                             changedThingsList.append(thing.id)
                             states[thing.id] = diffState
                 else:
+                    # handle new things
                     newThingsList.append(thing.id)
                     states[thing.id] = thing.getState()
 
+            # handle removed things
             for thingId in self.initialState[containerName]:
                 if thingId in exclude:
                     continue
@@ -362,8 +389,8 @@ class Room(object):
 
             return (states,changedThingsList,newThingsList,removedThingsList)
 
+        # store item diff
         (itemStates,changedItems,newItems,removedItems) = getDiffList(self.itemsOnFloor,"itemIds")
-
         if changedItems:
             result["changedItems"] = changedItems
         if newItems:
@@ -373,11 +400,11 @@ class Room(object):
         if itemStates:
             result["itemStates"] = itemStates
 
+        # store characters diff
         exclude = []
         if mainChar:
             exclude.append(mainChar.id)
         (charStates,changedChars,newChars,removedChars) = getDiffList(self.characters,"characterIds",exclude=exclude)
-
         if changedChars:
             result["changedChars"] = changedChars
         if newChars:
@@ -387,8 +414,8 @@ class Room(object):
         if charStates:
             result["charStates"] = charStates
 
+        # store events diff
         (eventStates,changedEvents,newEvents,removedEvents) = getDiffList(self.events,"eventIds")
-
         if changedEvents:
             result["changedEvents"] = changedEvents
         if newEvents:
@@ -402,9 +429,12 @@ class Room(object):
 
     '''
     get semi serialised room state
-    bad code: incomplete
     '''
     def getState(self):
+        '''
+        get a list of ids an a dict of their states from a list of objects
+        bad code: should be in extra class
+        '''
         def storeStateList(sourceList,exclude=[]):
             ids = []
             states = {}
@@ -417,10 +447,12 @@ class Room(object):
 
             return (states,ids)
 
+        # get states from lists
         (eventIds,eventStates) = storeStateList(self.events)
         (itemIds,itemStates) = storeStateList(self.itemsOnFloor)
         (charIds,charStates) = storeStateList(self.characters)
 
+        # generate state
         return { 
                  "eventIds": eventIds,
                  "eventStates":eventStates,
@@ -448,7 +480,6 @@ class Room(object):
             self.offsetX = state["offsetX"]
         if "offsetY" in state:
             self.offsetY = state["offsetY"]
-
         xPosition = None
         yPosition = None
         if "xPosition" in state and not "yPosition" in state:
@@ -463,6 +494,7 @@ class Room(object):
         if not xPosition == None and not yPosition == None:
             self.terrain.teleportRoom(self,(xPosition,yPosition))
 
+        # update changed items
         if "changedItems" in state:
             for item in self.itemsOnFloor[:]:
                 if item.id in state["changedItems"]:
@@ -470,27 +502,32 @@ class Room(object):
                     item.setState(state["itemStates"][item.id])
                     self.addItems([item])
 
+        # remove items
         if "removedItems" in state:
             for item in self.itemsOnFloor[:]:
                 if item.id in state["removedItems"]:
                     self.removeItem(item)
             
+        # add new items
         if "newItems" in state:
             for itemId in state["newItems"]:
                 itemState = state["itemStates"][itemId]
                 item = items.getItemFromState(itemState)
                 self.addItems([item])
 
+        # update changed chars
         if "changedChars" in state:
             for char in self.characters:
                 if char.id in state["changedChars"]:
                     char.setState(state["charStates"][char.id])
 
+        # remove chars
         if "removedChars" in state:
             for char in self.characters[:]:
                 if char.id in state["removedChars"]:
                     self.removeCharacter(char)
             
+        # add new chars
         if "newChars" in state:
             for charId in state["newChars"]:
                 charState = state["charStates"][charId]
@@ -498,6 +535,7 @@ class Room(object):
                 char.setState(charState)
                 self.addCharacter(char,charState["xPosition"],charState["yPosition"])
 
+        # add new events
         if "newEvents" in state:
             for eventId in state["newEvents"]:
                 eventState = state["eventStates"][eventId]
@@ -636,7 +674,7 @@ class Room(object):
                     debugMessages.append("chracter is rendered outside of room")
         # show dummy of the room
         else:
-            # fill inside the room with invisibility
+            # fill the rooms inside with invisibility char
             chars = []
             for i in range(0,self.sizeY):
                 subChars = []
@@ -1062,6 +1100,7 @@ XXXXXXXXXX
 
         self.furnaceQuest = None
 
+        # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
@@ -1240,6 +1279,7 @@ XXXXX$XXXX
         self.addItems([self.gooDispenser])
         self.name = "Vat1"
 
+        # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
@@ -1276,6 +1316,7 @@ XXXXX$XXXX
         self.floorDisplay = displayChars.acids
         self.name = "Vat2"
 
+        # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
@@ -1490,6 +1531,8 @@ XXXXXXXXXX
         beanPile = items.Pile(1,1,"markerPile",items.MarkerBean,creator=self)
         self.addItems([bean,beanPile])
         self.name = "Lab"
+
+        # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
@@ -1734,6 +1777,8 @@ XXXXXXXX
 
         # actually add items
         self.addItems([self.lever1,self.gooDispenser,self.objectDispenser,self.furnace,self.pile])
+
+        # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
@@ -1775,6 +1820,7 @@ XXXXXXXXXXX
             quest = quests.HopperDuty(self,creator=self)
             hopper.assignQuest(quest,active=True)
 
+        # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
@@ -1837,6 +1883,8 @@ XXXXX$XXXXX
         self.producedItems.append(items.Wall(9,2,creator=self))
         self.producedItems.append(items.Wall(9,8,creator=self))
         self.addItems(self.producedItems)
+
+        # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
@@ -1945,5 +1993,7 @@ XXXXX$XXXXX
             if position in itemsToPlace:
                 self.itemsInBuildOrder.append((position,itemsToPlace[position]))
         self.itemsInBuildOrder.reverse()
+
+        # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)

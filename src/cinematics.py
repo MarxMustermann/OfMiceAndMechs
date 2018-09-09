@@ -13,12 +13,17 @@ messages = None
 advanceGame = None
 
 """
-the base class for all Cinamatics. Nothing fancy
+the base class for all Cinamatics
 """
 class BasicCinematic(object):
+    '''
+    basic state setting and id generation
+    '''
     def __init__(self,creator=None):
-        # initialize basic state
+        # bad code: should in extra class
         self.creationCounter = 0
+
+        # initialize basic state
         self.background = False
         self.followUp = None
         self.skipable = False
@@ -27,16 +32,22 @@ class BasicCinematic(object):
         self.endTrigger = None
         self.type = "BasicCinematic"
 
+        # generate unique id
         self.id = {
                     "counter":creator.getCreationCounter()
                   }
         self.id["creator"] = creator.id
         self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
 
+    '''
+    set state from dict
+    '''
     def setState(self,state):
+        # bad code: should in extra class
         if "creationCounter" in state:
             self.creationCounter = state["creationCounter"]
 
+        # set attributes
         if "id" in state:
             self.id = state["id"]
         if "background" in state:
@@ -55,13 +66,18 @@ class BasicCinematic(object):
                 if "method" in state["endTrigger"]:
                     self.endTrigger["method"] = state["endTrigger"]["method"]
                 if "container" in state["endTrigger"]:
+                    # bad code: this should be abstracted
                     def setContainer(thing):
                         self.endTrigger["container"] = thing
                     loadingRegistry.callWhenAvailable(state["endTrigger"]["container"],setContainer)
             else:
                 self.endTrigger = None
 
+    '''
+    gets the state as dict
+    '''
     def getState(self):
+        # store simple attributes
         state = {
                    "id": self.id,
                    "background": self.background,
@@ -72,6 +88,8 @@ class BasicCinematic(object):
                    "creationCounter":self.creationCounter,
                 }
 
+        # store follow up action
+        # serializing method calls should be abstracted
         if self.endTrigger:
             if isinstance(self.endTrigger,dict):
                 endTrigger = {}
@@ -83,16 +101,21 @@ class BasicCinematic(object):
 
         return state
 
+    '''
+    do nothing
+    '''
     def advance(self):
         return False
 
+    '''
+    do nothing
+    '''
     def abort(self):
         pass
 
 """
 this is a single use cinematic basically. It flashes some info too fast to read to sybolise information transfer to the implant
 bad code: should be abstracted and called with a parameter instead of single use special class
-bad code: the triggered state has no obvious pupose and should be rewritten/removed
 """
 class InformationTransfer(BasicCinematic):
     """
@@ -123,7 +146,7 @@ class InformationTransfer(BasicCinematic):
             self.alarm = loop.set_alarm_in(0.2, callShow_or_exit, '~')
             return False
         elif not self.triggered:
-            # bad code: unknown purpose
+            # show final message and wait for input
             header.set_text("")
             main.set_text("done")
             self.triggered = True
@@ -196,7 +219,7 @@ class MessageZoomCinematic(BasicCinematic):
             textWithDeco += " "*self.left+"┃\n"
         textWithDeco += " "*self.left+"┗"+"━"*(self.right-1)
 
-        # reduce the size till the border fits the 
+        # reduce the size till the border fits the message boxes borders
         # bad code: the dimension of the message box is calculated based on assumtions. Size should be asked from the message box
         header.set_text(textWithDeco)
         main.set_text("")
@@ -214,6 +237,7 @@ class MessageZoomCinematic(BasicCinematic):
             self.top -= 1
             self.bottom += 1
 
+        # stop when done
         if not self.right > questWidth and not self.top > 8:
             # wait for some time and stop the cinematic
             if self.turnOffCounter:
@@ -240,6 +264,7 @@ class MessageZoomCinematic(BasicCinematic):
         
         # trigger follow up functions
         if self.endTrigger:
+            # bad code: direct function calls are deprecated, but not completely removed
             if not isinstance(self.endTrigger,dict):
                 self.endTrigger()
             else:
@@ -252,7 +277,7 @@ a cinematic showing a text in various ways
 """
 class TextCinematic(BasicCinematic):
     """
-    straightforward state initialization
+    almost straightforward state initialization
     options include a rusty look and scrolling
     """
     def __init__(self,text="",rusty=False, autocontinue=False, scrolling=False,creator=None):
@@ -311,6 +336,7 @@ class TextCinematic(BasicCinematic):
 
         # do nothing if done
         # bad code: this should be unnecessary
+        # bad code: should log
         if self.position > self.endPosition:
             return
 
@@ -346,7 +372,7 @@ class TextCinematic(BasicCinematic):
             else:
                 self.alarm = loop.set_alarm_in(0, callShow_or_exit, ' ')
 
-        # show the complete text
+        # set or not set rusty colors
         if self.rusty:
             base = convert(baseText)
         else:
@@ -375,16 +401,28 @@ class TextCinematic(BasicCinematic):
 
         # trigger follow up actions
         if self.endTrigger:
+            # bad code: direct funtion call
             self.endTrigger()
 
+    '''
+    get state as dict
+    '''
     def getState(self):
         state = super().getState()
+
+        # store text related attributes
         state["text"] = self.text
         state["endPosition"] = self.endPosition
+
         return state
 
+    '''
+    set state from dict
+    '''
     def setState(self,state):
         super().setState(state)
+
+        # set text related attributes
         if "text" in state:
             self.text = state["text"]
         if "endPosition" in state:
@@ -418,10 +456,16 @@ class ShowQuestExecution(BasicCinematic):
         self.container = container
         self.type = "ShowQuestExecution"
     
+    '''
+    set state from dict
+    '''
     def setState(self,state):
         super().setState(state)
+
+        # set quest related attributes
         if "quest" in state and state["quest"]:
             if isinstance(state["quest"],str):
+                # bad code: this should be abstracted
                 def setQuest(quest):
                     self.quest = quest
                 loadingRegistry.callWhenAvailable(state["quest"],setQuest)
@@ -432,6 +476,7 @@ class ShowQuestExecution(BasicCinematic):
 
         if "assignTo" in state:
             if state["assignTo"]:
+                # bad code: this should be abstracted
                 def setAssignee(character):
                     self.assignTo = character
                 loadingRegistry.callWhenAvailable(state["assignTo"],setAssignee)
@@ -440,17 +485,26 @@ class ShowQuestExecution(BasicCinematic):
 
         if "container" in state:
             if state["container"]:
+                # bad code: this should be abstracted
                 def setContainer(container):
                     self.container = container
                 loadingRegistry.callWhenAvailable(state["container"],setContainer)
             else:
                 self.container = None
 
+        # set setup information
         self.wasSetup = state["wasSetup"]
 
+    '''
+    get state from dict
+    '''
     def getState(self):
         state = super().getState()
+
+        # get setup information
         state["wasSetup"] = self.wasSetup
+
+        # get quest related attributes
         if self.quest.character:
             state["quest"] = self.quest.id
         else:
@@ -483,7 +537,7 @@ class ShowQuestExecution(BasicCinematic):
     def advance(self):
         super().advance()
 
-        # do setup the first run
+        # do setup on the first run
         if not self.wasSetup:
             self.setup()
 
@@ -493,6 +547,7 @@ class ShowQuestExecution(BasicCinematic):
             self.skipable = True
             return True
 
+        # do the quest
         advanceGame()
 
         # trigger next state
@@ -621,7 +676,7 @@ class ChatCinematic(BasicCinematic):
         return True
 
 '''
-this cinematic offers the user a choice and calls a trigger depending on this choice
+this cinematic offers the user a choice and calls a callback depending on this choice
 bad pattern: choices should be in game actions not magic cutscene choices
 '''
 class SelectionCinematic(BasicCinematic):
@@ -682,7 +737,7 @@ class SelectionCinematic(BasicCinematic):
             if self.followUp:
                 self.followUp()
 
-        # bad code: trigger next cinematic ans redraw
+        # bad code: trigger next cinematic and redraw
         if cinematicQueue:
             cinematicQueue[0].advance()
         loop.set_alarm_in(0.0, callShow_or_exit, '~')
@@ -691,6 +746,10 @@ class SelectionCinematic(BasicCinematic):
 this cutscenes shows some message 
 '''
 class ShowMessageCinematic(BasicCinematic):
+
+    '''
+    basic state setting
+    '''
     def __init__(self,message="",creator=None):
         super().__init__(creator=creator)
 
@@ -699,14 +758,19 @@ class ShowMessageCinematic(BasicCinematic):
         self.overwriteFooter = False
         self.type = "ShowMessageCinematic"
 
+    '''
+    show message and abort
+    '''
     def advance(self):
         super().advance()
 
+        # abort
         if self.breakCinematic:
             loop.set_alarm_in(0.0, callShow_or_exit, ' ')
             self.skipable = True
             return False
 
+        # add message
         messages.append(self.message)
         loop.set_alarm_in(0.0, callShow_or_exit, '~')
         self.breakCinematic = True
@@ -719,6 +783,7 @@ bad code: this should be a generalised wrapper for adding cinematics
 def showCinematic(text,rusty=False,autocontinue=False,scrolling=False):
     cinematicQueue.append(TextCinematic(text,rusty,autocontinue,scrolling,creator=void))
 
+# map of string the cinematic classes
 cinematicMap = {
      "BasicCinematic":BasicCinematic,
      "InformationTransfer":InformationTransfer,
@@ -731,6 +796,9 @@ cinematicMap = {
      "ShowMessageCinematic":ShowMessageCinematic,
 }
 
+'''
+spawner for cinematics from dicts
+'''
 def getCinematicFromState(state):
     cinematic = cinematicMap[state["type"]](creator=void)
     cinematic.setState(state)

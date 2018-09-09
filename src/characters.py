@@ -10,7 +10,7 @@ roomsOnMap = None
 """
 this is the class for characters meaning both npc and pcs. 
 all characters except the pcs always have automated = True to
-make them to things
+make them to things on their own
 """
 class Character():
     '''
@@ -18,12 +18,15 @@ class Character():
     bad code: adding the default behaviour/items here makes it harder to create instances with fixed state
     '''
     def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person",creator=None):
+        # bad code: obsolete, can be deleted
         if creator == "void":
             creator = void
+
+        # bad code: should be in extra class
         self.creationCounter = 0
 
         # set basic state
-        self.display = display
+        self.display = display # bad code: the character should have a rendering+chaching caching method instead of attrbute
         self.automated = automated
         self.quests = []
         self.name = name
@@ -44,8 +47,6 @@ class Character():
         self.questsToDelegate = []
         self.unconcious = False
         self.displayOriginal = display
-        self.serveQuest = None
-        self.tutorialStart = 0
         self.id = {
                    "other":"character",
                    "xPosition":xPosition,
@@ -56,6 +57,8 @@ class Character():
         self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
 
         # bad code: story specific state
+        self.serveQuest = None
+        self.tutorialStart = 0
         self.gotBasicSchooling = False
         self.gotMovementSchooling = False
         self.gotInteractionSchooling = False
@@ -64,21 +67,28 @@ class Character():
         #TODO: this approach is fail, but works for now. There has to be a better way
         self.basicChatOptions = []
 
-        # bad code: story specific state
+        # default items
         self.assignQuest(src.quests.SurviveQuest(creator=self))
         for quest in quests:
             self.assignQuest(quest)
         self.inventory.append(items.GooFlask(creator=self))
 
+        # save state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
+    '''
+    get a new creation counter
+    # bad code: should be in extra class
+    # bad code: redundant code
+    '''
     def getCreationCounter(self):
         self.creationCounter += 1
         return self.creationCounter
 
     '''
     almost straightforward adding of events to the characters event queue
+    ensures that the events are added in proper order
     '''
     def addEvent(self,event):
         index = 0
@@ -96,41 +106,60 @@ class Character():
 
     '''
     almost straightforward getter for chat options
+    # bad code: adds default chat options
     '''
     def getChatOptions(self,partner):
         chatOptions = self.basicChatOptions[:]
         if not self in partner.subordinates:
             chatOptions.append(interaction.RecruitChat)
             pass
-        
         return chatOptions
 
+    '''
+    get the changes in state since creation
+    '''
     def getDiffState(self):
+        # the to be result
         result = {}
 
+        '''
+        get the difference of a list between existing and initial state
+        bad code: should be in extra class
+        bad code: redundant code
+        '''
         def getDiffList(toDiff,toCompare,exclude=[]):
-            currentThingsList = []
+            # the to be result
             states = {}
             newThingsList = []
             changedThingsList = []
             removedThingsList = []
 
+            # helper state
+            currentThingsList = []
+
+            # handle things that exist right now
             for thing in toDiff:
+                # skip excludes
                 if thing.id in exclude:
                     continue
-                currentState = thing.getState()
+
+                # register thing as existing
                 currentThingsList.append(thing.id)
 
                 if thing.id in toCompare:
+                    # handle changed things
+                    currentState = thing.getState()
                     if not currentState == thing.initialState:
                         diffState = thing.getDiffState()
-                        if diffState:
+                        if diffState: # bad code: this should not be neccessary
                             changedThingsList.append(thing.id)
                             states[thing.id] = diffState
                 else:
+                    # handle new things
                     newThingsList.append(thing.id)
                     states[thing.id] = thing.getState()
 
+            # handle removed things
             for thingId in toCompare:
                 if thingId in exclude:
                     continue
@@ -139,6 +168,8 @@ class Character():
 
             return (states,changedThingsList,newThingsList,removedThingsList)
 
+        # serialize attributes
+        # bad code: very repetetive code
         if not self.gotBasicSchooling == self.initialState["gotBasicSchooling"]:
             result["gotBasicSchooling"] = self.gotBasicSchooling
         if not self.gotMovementSchooling == self.initialState["gotMovementSchooling"]:
@@ -165,12 +196,14 @@ class Character():
             result["creationCounter"] = self.creationCounter
         if not self.path == self.initialState["path"]:
             result["path"] = self.path
+        # bad code: repetetive handling of non-or-id serialization
         serveQuest = None
         if self.serveQuest:
             serveQuest = self.serveQuest.id
         if not serveQuest == self.initialState["serveQuest"]:
             result["serveQuest"] = serveQuest
 
+        # save inventory
         (itemStates,changedItems,newItems,removedItems) = getDiffList(self.inventory,self.initialState["inventory"]["inventoryIds"])
         inventory = {}
         if changedItems:
@@ -184,6 +217,7 @@ class Character():
         if itemStates or removedItems:
             result["inventory"] = inventory
 
+        # save quests
         (questStates,changedQuests,newQuests,removedQuests) = getDiffList(self.quests,self.initialState["quests"]["questIds"])
         quests = {}
         if changedQuests:
@@ -197,6 +231,8 @@ class Character():
         if questStates or removedQuests:
             result["quests"] = quests
 
+        # save chat options
+        # bad code: storing the Chat options as class instead of object complicates things
         chatOptions = []
         for chat in self.basicChatOptions:
             if not isinstance(chat,dict):
@@ -215,10 +251,10 @@ class Character():
         return result
 
     '''
-    mostly non working getter for the players state
-    bad code: this state is basicall useless
+    getter for the players state
     '''
     def getState(self):
+        # simple attributes
         state = { 
                  "id": self.id,
                  "gotBasicSchooling": self.gotBasicSchooling,
@@ -238,24 +274,32 @@ class Character():
                  "path":self.path,
                }
                  
+        # store inventory
         inventory = []
         for item in self.inventory:
             inventory.append(item.id)
         state["inventory"]["inventoryIds"] = inventory
 
+        # store quests
         quests = []
         for quest in self.quests:
             quests.append(quest.id)
         state["quests"]["questIds"] = quests
 
+        # store room
+        # bad code: else case not handled
         if self.room:
             state["room"] = self.room.id
 
+        # store serve quest
+        # bad code: story specific code
         if self.serveQuest:
             state["serveQuest"] = self.serveQuest.id
         else:
             state["serveQuest"] = None
 
+        # store serve quest
+        # bad code: storing the Chat options as class instead of object complicates things
         chatOptions = []
         for chat in self.basicChatOptions:
             if not isinstance(chat,dict):
@@ -274,13 +318,15 @@ class Character():
         return state
 
     '''
-    mostly non working setter for the players state
-    bad code: this state is basicall useless
+    setter for the players state
     '''
     def setState(self,state):
+        # bad code: should be in extra class
         if "creationCounter" in state:
             self.creationCounter = state["creationCounter"]
 
+        # set attributes
+        # bad codes: very repetetive code
         if "id" in state:
             self.id = state["id"]
         if "gotBasicSchooling" in state:
@@ -313,12 +359,15 @@ class Character():
 
         if "serveQuest" in state:
             if state["serveQuest"]:
+                # bad code: should be abstracted
                 def setServeQuest(quest):
                     self.serveQuest = quest
                 loadingRegistry.callWhenAvailable(state["serveQuest"],setServeQuest)
             else:
                 self.serveQuest = None
 
+        # set inventory
+        # bad codes: repetetive code
         if "inventory" in state:
             if "changed" in state["inventory"]:
                 for item in self.inventory:
@@ -335,6 +384,8 @@ class Character():
                     item.setState(itemState)
                     self.inventory.append(item)
 
+        # set quests
+        # bad codes: repetetive code
         if "quests" in state:
             if "changed" in state["quests"]:
                 for item in self.quests:
@@ -351,6 +402,8 @@ class Character():
                     item.setState(itemState)
                     self.quests.append(item)
 
+        # set chat options
+        # bad code: storing the Chat options as class instead of object complicates things
         if "chatOptions" in state:
             chatOptions = []
             for chatType in state["chatOptions"]:
@@ -363,6 +416,7 @@ class Character():
                     if "params" in chatType:
                         params = {}
                         for (key,value) in chatType["params"].items():
+                            # bad code: should be abstracted
                             def setParam(instance):
                                 params[key] = instance
                             loadingRegistry.callWhenAvailable(value,setParam)
@@ -374,6 +428,7 @@ class Character():
 
     '''
     bad code: this should be handled with a get quest quest
+    TODO: delete this
     '''
     def getQuest(self):
         if self.room and self.room.quests:
@@ -391,10 +446,12 @@ class Character():
             try:
                 self.setPathToQuest(self.quests[0])
             except:
+                # bad pattern: exceptions should be logged
                 pass
 
     '''
     straightforward getting a string with a detailed info about the character
+    bad code: debug output on GUI
     '''
     def getDetailedInfo(self):
         return "\nname: "+str(self.name)+"\nroom: "+str(self.room)+"\ncoord: "+str(self.xPosition)+" "+str(self.yPosition)+"\nsubs: "+str(self.subordinates)+"\nsat: "+str(self.satiation)+"\nreputation: "+str(self.reputation)+"\npath: "+str(self.path)
@@ -415,14 +472,17 @@ class Character():
                     if self.quests[0] == quest:
                         self.setPathToQuest(quest)
                 except:
+                    # bad pattern: exceptions should be logged
                     pass
 
     '''
     set the path to a quest
-    bad code: this should be determined by a quests solver
+    bad pattern: this should be determined by a quests solver
+    bad pattern: the walking should be done in a quest solver so this method should removed on the long run
     '''
     def setPathToQuest(self,quest):
         if hasattr(quest,"dstX") and hasattr(quest,"dstY"):
+            # bad code: room and terrain should be unified into a container object
             if self.room:
                 self.path = self.room.calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY,self.room.walkingPath)
             elif self.terrain:
@@ -446,10 +506,16 @@ class Character():
         if not self.unconcious and not self.dead:
             solver(self)
 
+    '''
+    set state and display to unconcious
+    '''
     def fallUnconcious(self):
         self.unconcious = True
         self.display = displayChars.unconciousBody
 
+    '''
+    set state and display to not unconcious
+    '''
     def wakeUp(self):
         self.unconcious = False
         self.display = self.displayOriginal
@@ -458,6 +524,8 @@ class Character():
     kill the character and do a bit of extra stuff like placing corpses
     '''
     def die(self,reason=None):
+        # replace charcter with corpse
+        # terain and room should be unified in container object
         if self.room:
             room = self.room
             room.removeCharacter(self)
@@ -471,21 +539,31 @@ class Character():
         else:
             messages.append("this chould not happen, charcter died without beeing somewhere")
 
+        # set attributes
         self.dead = True
         if reason:
             self.deathReason = reason
         self.path = []
+
+        # notify listeners
         self.changed()
 
     '''
     walk the predetermined path
+    return:
+        True when done
+        False when not done
+
+    bad pattern: should be contained in quest solver
     '''
     def walkPath(self):
         # bad code: a dead charactor should not try to walk
+        # bad pattern: this should be a logging assertion
         if self.dead:
             return
 
         # bad code: a charactor should not try to walk if it has no path
+        # bad pattern: this should be a logging assertion
         if not self.path:
             self.setPathToQuest(self.quests[0])
 
@@ -497,12 +575,14 @@ class Character():
             item = None
             if self.room:
                 # move naively within a room
+                # bad code: repetitive code
                 if nextPosition[0] == currentPosition[0]:
                     if nextPosition[1] < currentPosition[1]:
                         item = self.room.moveCharacterDirection(self,"north")
                     elif nextPosition[1] > currentPosition[1]:
                         item = self.room.moveCharacterDirection(self,"south")
                     else:
+                        # smooth over impossible state
                         if not debug:
                             # resorting to teleport
                             debugMessages.append("character moved on non continious path")
@@ -514,6 +594,7 @@ class Character():
                 elif nextPosition[0] == currentPosition[0]+1 and nextPosition[1] == currentPosition[1]:
                     item = self.room.moveCharacterDirection(self,"east")
                 else:
+                    # smooth over impossible state
                     if not debug:
                         # resorting to teleport
                         debugMessages.append("character moved on non continious path")
@@ -525,13 +606,19 @@ class Character():
                 # basically checks if a walkable space/door within a room on the coordinate the chracter walks on. If there is
                 # an item it will be saved for interaction
                 # bad code: repetition of the movement code is bad
+                # bad pattern: collision detection and room teleportation should be done in terrain
 
                 for room in self.terrain.rooms:
                     # check north
+                    # bad code repetetive code
+
+                    # handle the character moving into the rooms boundaries
                     if room.yPosition*15+room.offsetY+room.sizeY == nextPosition[1]+1:
                         if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+room.sizeX > self.xPosition:
+                            # get the characters entry point in localizes coordinates
                             localisedEntry = (self.xPosition%15-room.offsetX,nextPosition[1]%15-room.offsetY)
                             if localisedEntry in room.walkingAccess:
+                                # check whether the chracter walked into something
                                 if localisedEntry in room.itemByCoordinates:
                                     for listItem in room.itemByCoordinates[localisedEntry]:
                                         if not listItem.walkable:
@@ -540,19 +627,27 @@ class Character():
                                 if item:
                                     break
                                 else:
+                                    # move the chracter into the room
                                     room.addCharacter(self,localisedEntry[0],localisedEntry[1])
                                     self.terrain.characters.remove(self)
                                     self.terrain = None
                                     self.changed()
                                     break
                             else:
+                                # show message the character bumped into a wall
+                                # bad pattern: why restrict the player to standard entry points?
                                 messages.append("you cannot move there (N)")
                                 break
                     # check south
+                    # bad code repetetive code
+
+                    # handle the character moving into the rooms boundaries
                     if room.yPosition*15+room.offsetY == nextPosition[1]:
                         if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+room.sizeX > self.xPosition:
+                            # get the characters entry point in localizes coordinates
                             localisedEntry = ((self.xPosition-room.offsetX)%15,((nextPosition[1]-room.offsetY)%15))
                             if localisedEntry in room.walkingAccess:
+                                # check whether the chracter walked into something
                                 if localisedEntry in room.itemByCoordinates:
                                     for listItem in room.itemByCoordinates[localisedEntry]:
                                         if not listItem.walkable:
@@ -561,19 +656,27 @@ class Character():
                                 if item:
                                     break
                                 else:
+                                    # move the chracter into the room
                                     room.addCharacter(self,localisedEntry[0],localisedEntry[1])
                                     self.terrain.characters.remove(self)
                                     self.terrain = None
                                     self.changed()
                                     break
                             else:
+                                # show message the character bumped into a wall
+                                # bad pattern: why restrict the player to standard entry points?
                                 messages.append("you cannot move there (S)")
                                 break
                     # check east
+                    # bad code repetetive code
+
+                    # handle the character moving into the rooms boundaries
                     if room.xPosition*15+room.offsetX+room.sizeX == nextPosition[0]+1:
                         if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+room.sizeY > self.yPosition:
+                            # get the characters entry point in localizes coordinates
                             localisedEntry = ((nextPosition[0]-room.offsetX)%15,(self.yPosition-room.offsetY)%15)
                             if localisedEntry in room.walkingAccess:
+                                # check whether the chracter walked into something
                                 if localisedEntry in room.itemByCoordinates:
                                     for listItem in room.itemByCoordinates[localisedEntry]:
                                         if not listItem.walkable:
@@ -582,18 +685,26 @@ class Character():
                                 if item:
                                     break
                                 else:
+                                    # move the chracter into the room
                                     room.addCharacter(self,localisedEntry[0],localisedEntry[1])
                                     self.terrain.characters.remove(self)
                                     self.terrain = None
                                     self.changed()
                                     break
                             else:
+                                # show message the character bumped into a wall
+                                # bad pattern: why restrict the player to standard entry points?
                                 messages.append("you cannot move there (E)")
                     # check west
+                    # bad code repetetive code
+
+                    # handle the character moving into the rooms boundaries
                     if room.xPosition*15+room.offsetX == nextPosition[0]:
                         if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+room.sizeY > self.yPosition:
+                            # get the characters entry point in localizes coordinates
                             localisedEntry = ((nextPosition[0]-room.offsetX)%15,(self.yPosition-room.offsetY)%15)
                             if localisedEntry in room.walkingAccess:
+                                # check whether the chracter walked into something
                                 if localisedEntry in room.itemByCoordinates:
                                     for listItem in room.itemByCoordinates[localisedEntry]:
                                         if not listItem.walkable:
@@ -602,6 +713,7 @@ class Character():
                                 if item:
                                     break
                                 else:
+                                    # move the chracter into the room
                                     room.addCharacter(self,localisedEntry[0],localisedEntry[1])
                                     self.terrain.characters.remove(self)
                                     self.terrain = None
@@ -618,10 +730,12 @@ class Character():
             
             if item:
                 # open doors
+                # bad pattern: this should not happen here
                 if isinstance(item,items.Door):
                     item.apply(self)
                 return False
             else:
+                # smooth ovor impossible state
                 if not debug:
                     if not self.path or not nextPosition == self.path[0]:
                         return False
@@ -640,6 +754,7 @@ class Character():
         self.inventory.remove(item)
         item.xPosition = self.xPosition
         item.yPosition = self.yPosition
+        # bad pattern: room and terrain should be combined into a container object
         if self.room:
             self.room.addItems([item])
         else:
@@ -652,7 +767,7 @@ class Character():
     """
     def advance(self):
         # handle events
-        while self.events and gamestate.tick >  self.events[0].tick:
+        while self.events and gamestate.tick > self.events[0].tick:
             event = self.events[0]
             debugMessages.append("something went wrong and event"+str(event)+"was skipped")
             self.events.remove(event)

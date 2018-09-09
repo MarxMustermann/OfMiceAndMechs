@@ -6,6 +6,7 @@ bad code: indices have to be the same as for DisplayMapping
 """
 class TileMapping(object):
     """
+    basic state setting
     bad code: hardcoded modes for now
     """
     def __init__(self,mode):
@@ -20,6 +21,7 @@ class TileMapping(object):
         if mode not in self.modes:
             mode = "testTiles"
 
+        # bad pattern: no way to load arbitrary files
         if mode == "testTiles":
             # bad code: reimport the config as library, i don't think this is a good thing to do
             import config.tileMap as rawTileMap
@@ -27,7 +29,9 @@ class TileMapping(object):
         # set mode flag
         self.mode = mode
 
-        # rebuild the tile mapping
+        # (re)build the tile mapping
+        # bad code: the indexing relies on order in the config file instead of names in the config file
+        # bad code: redundant code
         import inspect
         self.indexedMapping = []
         raw = inspect.getmembers(rawTileMap, lambda a:not(inspect.isroutine(a)))
@@ -72,6 +76,7 @@ time of writing.
 """
 class DisplayMapping(object):
     """
+    basic state setting
     bad code: hardcoded modes for now
     """
     def __init__(self,mode):
@@ -94,6 +99,8 @@ class DisplayMapping(object):
         self.mode = mode
 
         # rebuild the tile mapping
+        # bad code: the indexing relies on order in the config file instead of names in the config file
+        # bad code: redundant code
         import inspect
         self.indexedMapping = []
         raw = inspect.getmembers(rawDisplayChars, lambda a:not(inspect.isroutine(a)))
@@ -127,11 +134,11 @@ class DisplayMapping(object):
                 counter += 1
 
 """
-The canvas is supposed to hold the content of a piece drawn things.
+The canvas is supposed to hold the content of a piece screen.
 It is used to allow for pixel setting and to be able to cache rendered state.
 Recursive canvases would be great but are not implemented yet.
 
-bad code: actual rendering beyond the abstracted form is done here
+bad code: actual rendering beyond the abstracted form (urwid formatting, tiles) is done here
 """
 class Canvas(object):
     """
@@ -145,6 +152,7 @@ class Canvas(object):
         self.defaultChar = defaultChar
         self.displayChars = displayChars
         # bad code: i don't think try should be used like that
+        # bad code: this should be somewhere else
         try:
             self.tileMapping = TileMapping("testTiles")
         except:
@@ -164,15 +172,20 @@ class Canvas(object):
                 self.setPixel(x,y,chars[x][y])
 
     """
-    plain and simple pixel checking 
+    plain and simple pixel setting
+    bad code: this says pixel but sets one ore more chars
     """
     def setPixel(self,x,y,char):
+        # shift coordinates
         x -= self.coordinateOffset[0]
         y -= self.coordinateOffset[1]
 
+        # validate input
         if x < 0 or y < 0 or x > self.size[0] or y > self.size[1]:
+            # bad code: should raise an out of bounds error
             return 
 
+        # set pixel
         self.chars[x][y] = char
 
     """
@@ -181,22 +194,29 @@ class Canvas(object):
     bad code: urwid specific code should be in one place not everywhere
     """
     def getUrwirdCompatible(self):
+        # the to be result
         out = []
 
+        # add newlines on top
         if self.shift[0] > 0:
             for x in range(0,self.shift[0]):
                  out.append("\n")
         
+        # add rendered content
         for line in self.chars:
+            # add spaces left of the canvas
             if self.shift[1] > 0:
                 for x in range(0,self.shift[1]):
                     out.append((urwid.AttrSpec("default","default"),"  "))
 
+            # add this lines content
             for char in line:
                 if isinstance(char, int):
                     out.append(self.displayChars.indexedMapping[char])
                 else:
                     out.append(char)
+
+            # start new line
             out.append("\n")
         return out
 
@@ -206,14 +226,21 @@ class Canvas(object):
     bad code: the method should return a rendered result instead of rendering directly
     """
     def setPygameDisplay(self,pydisplay,pygame,tileSize):
+        # fill game area
         pydisplay.fill((0,0,0))
+
+        # add rendered content
+        # bad pattern: this rendering relies on strict top left to botom right rendering with overlapping tiles to create perspective without having propper mechanism to enforce and control this
         counterY = 0
         for line in self.chars:
             counterX = 0
             for char in line:
+                # bad code: only tiles are rendered. special chars are not rendered
+                # bad code: colour information is lost
                 if isinstance(char, int):
                     # scale the tile
                     # bad code: rescales each tile individually and on each render
+                    # bad code: exceptions should be prevented/handled not hidden
                     try:
                         image = self.tileMapping.indexedMapping[char]
                         if not tileSize == 10:
@@ -224,4 +251,5 @@ class Canvas(object):
                 counterX += 1
             counterY += 1
 
+        # refresh display
         pygame.display.update()

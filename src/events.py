@@ -8,17 +8,30 @@ loop = None
 base class for events
 '''
 class Event(object):
+    '''
+    basic state setting
+    '''
     def __init__(self,tick):
         self.id = "Event"
         self.type = "Event"
         self.tick = tick
 
+    '''
+    do nothing
+    '''
     def handleEvent(self):
         pass
 
+    '''
+    get state difference since creation
+    bad code: returns state without creating a diff
+    '''
     def getDiffState(self):
         return self.getState()
        
+    '''
+    get state as dict
+    '''
     def getState(self):
         return {
                  "id":self.id,
@@ -26,7 +39,12 @@ class Event(object):
                  "type":self.type,
                }
 
+    '''
+    set state from dict
+    '''
     def setState(self, state):
+        # set attribute
+        # bad code: repetetive code
         if "id" in state:
             self.id = state["id"]
         if "tick" in state:
@@ -38,12 +56,18 @@ class Event(object):
 straigthforward adding a message
 '''
 class ShowMessageEvent(Event):
+    '''
+    basic state setting
+    '''
     def __init__(self,tick,message):
         super().__init__(tick)
         self.id = "ShowMessageEvent"
         self.type = "ShowMessageEvent"
         self.message = message
 
+    '''
+    add message
+    '''
     def handleEvent(self):
         messages.append(self.message)
 
@@ -51,12 +75,18 @@ class ShowMessageEvent(Event):
 straigthforward showing a cinematic
 '''
 class ShowCinematicEvent(Event):
+    '''
+    basic state setting
+    '''
     def __init__(self,tick,cinematic):
         super().__init__(tick)
         self.id = "ShowCinematicEvent"
         self.type = "ShowCinematicEvent"
         self.cinematic = cinematic
 
+    '''
+    start cinematic
+    '''
     def handleEvent(self):
         # bad code: a wrapper should be called here
         cinematics.cinematicQueue.append(self.cinematic)
@@ -94,7 +124,11 @@ class FurnaceBurnoutEvent(Event):
         # notify listeners
         self.furnace.changed()
 
+    '''
+    set state from dict
+    '''
     def setState(self,state):
+        # load target furnace
         if "furnace" in state:
            if state["furnace"]:
                def setFurnace(furnace):
@@ -103,8 +137,11 @@ class FurnaceBurnoutEvent(Event):
            else:
                self.furnace = None
 
-       
+    '''
+    get state as dict
+    '''
     def getState(self):
+        # store target furnace
         state = super().getState()
         if self.furnace:
             state["furnace"] = self.furnace.id
@@ -112,6 +149,8 @@ class FurnaceBurnoutEvent(Event):
             state["furnace"] = None
         return state
 
+# supply a mapping from strings to events
+# bad pattern: has to be extendable
 eventMap = {
              "Event":Event,
              "ShowMessageEvent":ShowMessageEvent,
@@ -119,6 +158,9 @@ eventMap = {
              "FurnaceBurnoutEvent":FurnaceBurnoutEvent,
            }
 
+'''
+create an event from a dict
+'''
 def getEventFromState(state):
     event = eventMap[state["type"]](state["tick"])
     event.setState(state)

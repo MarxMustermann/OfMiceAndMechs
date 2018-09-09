@@ -8,6 +8,7 @@ import urwid
 ##################################################################################################################################
 ###
 ##        setting up the basic user interaction library
+#         bad code: urwid specific code should be somewhere else
 #
 #################################################################################################################################
 
@@ -105,10 +106,10 @@ commandHistory = []
 
 '''
 calls show_or_exit with on param less
+bad code: keystrokes should not be injected in the first place
 '''
 def callShow_or_exit(loop,key):
     show_or_exit(key)
-
 
 '''
 the callback for urwid keystrokes
@@ -647,9 +648,10 @@ def processInput(key):
                 if itemMarkedLast:
                     # active marked item
                     itemMarkedLast.apply(mainChar)
-                    mainChar.changed("activate",itemMarkedLast)
+                    mainChar.changed("activate",itemMarkedLast) # should happen in apply
                 else:
                     # active an item on floor
+                    # bad code: room and terrain should be a abstracted container
                     if mainChar.room:
                         itemList = mainChar.room.itemsOnFloor
                     else:
@@ -663,12 +665,14 @@ def processInput(key):
             if key in (commandChars.examine):
                 if itemMarkedLast:
                     # examine marked item
+                    # should happen in character
                     messages.append(itemMarkedLast.description)
                     if itemMarkedLast.description != itemMarkedLast.getDetailedInfo():
                         messages.append(itemMarkedLast.getDetailedInfo())
                     mainChar.changed("examine",itemMarkedLast)
                 else:
                     # examine an item on floor
+                    # bad code: room and terrain should be a abstracted container
                     if mainChar.room:
                         itemList = mainChar.room.itemsOnFloor
                     else:
@@ -683,6 +687,8 @@ def processInput(key):
 
             # drop first item from inventory
             # bad pattern: the user has to have the choice for what item to drop
+            # bad code: no drop event sent
+            # bad code: dropping should happen within character
             if key in (commandChars.drop):
                 if len(mainChar.inventory):
                     item = mainChar.inventory.pop()    
@@ -695,8 +701,9 @@ def processInput(key):
                     item.changed()
                     mainChar.changed()
 
-            # drint from the first available item in inventory
+            # drink from the first available item in inventory
             # bad pattern: the user has to have the choice for what item to drop
+            # bad code: drinking should happen in character
             if key in (commandChars.drink):
                 character = mainChar
                 for item in character.inventory:
@@ -883,7 +890,7 @@ class SubMenu(object):
         return self.selection
 
     '''
-    
+    show the options and allow the user to select one
     '''
     def handleKey(self, key):
         out = "\n"
@@ -929,6 +936,10 @@ class SubMenu(object):
 
         return False
 
+    '''
+    set text in urwid
+    bad code: should either be used everywhere or be removed
+    '''
     def set_text(self,text):
         main.set_text((urwid.AttrSpec("default","default"),text))
 
@@ -976,14 +987,14 @@ class ChatPartnerselection(SubMenu):
     set up the selection and spawn the chat 
     '''
     def handleKey(self, key):
-        # wrao around the chat menu
+        # wrap around the chat menu
         if self.subMenu:
             return self.subMenu.handleKey(key)
 
         header.set_text((urwid.AttrSpec("default","default"),"\nConversation menu\n"))
         out = "\n"
 
-        # initialize the options
+        # offer the player to select from characters in room
         # bad code: should be done in __init__
         if not self.options and not self.getSelection():
             counter = 1
@@ -1011,6 +1022,7 @@ class ChatPartnerselection(SubMenu):
 
 '''
 the chat option for recruiting a character
+# bad code: should be in chats.py
 '''
 class RecruitChat(SubMenu):
     dialogName = "follow my orders." # the name for this chat when presented as dialog option
@@ -1075,7 +1087,7 @@ class RecruitChat(SubMenu):
             return False
 
 '''
-a chat with a character, partially hardcoded partially dynamically genrated 
+a chat with a character, partially hardcoded partially dynamically generated 
 bad code: sub menues should be implemented in the base class
 '''
 class ChatMenu(SubMenu):
@@ -1119,6 +1131,7 @@ class ChatMenu(SubMenu):
             self.persistentText += self.partner.name+": \"Everything in Order, "+mainChar.name+"?\"\n"
             self.persistentText += mainChar.name+": \"All sorted, "+self.partner.name+"!\"\n"
 
+        # show selection of sub chats
         if self.state == "mainOptions":
             # set up selection for the main dialog options 
             # bad code: bad data structure leads to ugly code
@@ -1207,7 +1220,7 @@ class DebugMenu(SubMenu):
     '''
     def handleKey(self, key):
         if self.firstRun:
-            # bad code: commented out code
+            # bad code: unstructred chaos
             import objgraph
             #objgraph.show_backrefs(mainChar, max_depth=4)
             """
@@ -1297,6 +1310,7 @@ class QuestMenu(SubMenu):
         self.persistentText.extend(["\n","* press q for advanced quests "+str(self.char),"\n","* press W to scroll up","\n","* press S to scroll down","\n","\n"])
 
         # flatten the mix of strings and urwid format so that it is less recursive to workaround an urwid bug
+        # bad code: should be elsewhere
         def flatten(pseudotext):
             newList = []
             for item in pseudotext:
@@ -1331,6 +1345,7 @@ class InventoryMenu(SubMenu):
 
     '''
     show the inventory
+    bad pattern: no player interaction
     '''
     def handleKey(self, key):
         global submenue
@@ -1346,7 +1361,6 @@ class InventoryMenu(SubMenu):
 '''
 show the players attributes
 bad code: should be abstracted
-bad code: uses global functions to render
 '''
 class CharacterInfoMenu(SubMenu):
     '''
@@ -1364,6 +1378,7 @@ class CharacterInfoMenu(SubMenu):
         global submenue
 
         header.set_text((urwid.AttrSpec("default","default"),"\ncharacter overview"))
+        # bad code: ticks are debug output on GUI
         main.set_text((urwid.AttrSpec("default","default"),[mainChar.getDetailedInfo(),"\ntick: "+str(gamestate.tick)]))
         header.set_text((urwid.AttrSpec("default","default"),""))
 
@@ -1430,6 +1445,7 @@ class AdvancedQuestMenu(SubMenu):
         # let the player select the type of quest to create
         if self.state == "questSelection":
             # add a list of hardcoded quests
+            # bad pattern: should be generated from mapping
             if not self.options and not self.getSelection():
                 options = {1:quests.MoveQuestMeta,2:quests.ActivateQuestMeta,3:quests.EnterRoomQuestMeta,4:quests.FireFurnaceMeta,5:quests.ClearRubble,6:quests.ConstructRoom,7:quests.StoreCargo,8:quests.WaitQuest,9:quests.LeaveRoomQuest,10:quests.MoveToStorage,11:quests.RoomDuty}
                 niceOptions = {1:"MoveQuest",2:"ActivateQuest",3:"EnterRoomQuest",4:"FireFurnaceMeta",5:"ClearRubble",6:"ConstructRoom",7:"StoreCargo",8:"WaitQuest",9:"LeaveRoomQuest",10:"MoveToStorage",11:"RoomDuty"}
@@ -1449,7 +1465,7 @@ class AdvancedQuestMenu(SubMenu):
             else:
                 return False
 
-        # let the player select the paramters for the quest
+        # let the player select the parameters for the quest
         if self.state == "parameter selection":
             if self.quest == quests.EnterRoomQuestMeta:
                 # set up the options
@@ -1562,6 +1578,7 @@ class AdvancedQuestMenu(SubMenu):
             if self.getSelection():
                 if self.selection == "yes":
                     # instanciate quest
+                    # bad code: repetive code, should use create from state
                     if self.quest == quests.MoveQuestMeta:
                        questInstance = self.quest(mainChar.room,2,2,creator=void)
                     if self.quest == quests.ActivateQuestMeta:
@@ -1595,7 +1612,7 @@ class AdvancedQuestMenu(SubMenu):
                     if self.quest == quests.MoveToStorage:
                        questInstance = self.quest([terrain.tutorialLab.itemByCoordinates[(1,9)][0],terrain.tutorialLab.itemByCoordinates[(2,9)][0]],terrain.tutorialStorageRooms[1],creator=void)
 
-                    # show some messages
+                    # show some fluff
                     if not self.character == mainChar:
                        self.persistentText += self.character.name+": \"understood?\"\n"
                        self.persistentText += mainChar.name+": \"understood and in execution\"\n"
@@ -1627,6 +1644,7 @@ class AdvancedQuestMenu(SubMenu):
 
 '''
 render the information section on top of the screen
+bad pattern: should be configurable
 '''
 def renderHeader():
     # render the sections to display
@@ -1645,6 +1663,7 @@ def renderHeader():
     splitedMessages = messagesSection.split("\n")
     rowCounter = 0
 
+    # add header lines
     continueLooping = True
     questLine = ""
     messagesLine = ""
@@ -1783,6 +1802,7 @@ class HelpMenu(SubMenu):
 
 '''
 return the help text
+bad code: should not be a global function
 '''
 def renderHelp():
     char = mainChar

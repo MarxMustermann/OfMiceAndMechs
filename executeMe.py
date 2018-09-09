@@ -81,6 +81,7 @@ else:
 #
 #################################################################################################################################
 
+# HACK: common variables with modules
 void = gamestate.Void()
 characters.void = void
 rooms.void = void
@@ -92,19 +93,29 @@ interaction.void = void
 quests.void = void
 cinematics.void = void
 
+# HACK: common variables with modules
 story.chats = chats
 characters.chats = chats
 
+'''
+a registry to allow resoving references during loading
+'''
 class LoadingRegistry(object):
     registered = {}
     delayedCalls = {}
 
+    '''
+    register a new id and call backlog
+    '''
     def register(self,thing):
         self.registered[thing.id] = thing
         if thing.id in self.delayedCalls:
             for callback in self.delayedCalls[thing.id]:
                 callback(thing)
 
+    '''
+    trigger a call or register as backlog
+    '''
     def callWhenAvailable(self,thingId,callback):
         if thingId in self.registered:
             callback(self.registered[thingId])
@@ -113,6 +124,7 @@ class LoadingRegistry(object):
                 self.delayedCalls[thingId] = []
             self.delayedCalls[thingId].append(callback)
 
+# HACK: common variables with modules
 loadingRegistry = LoadingRegistry()
 characters.loadingRegistry = loadingRegistry
 quests.loadingRegistry = loadingRegistry
@@ -392,6 +404,7 @@ cinematics.advanceGame = advanceGame
 interaction.advanceGame = advanceGame
 
 try:
+    # load the game
     gameStateObj.load()
 except Exception as e:
     ignore = input("could not load gamestate. abort (y/n)?")
@@ -400,6 +413,8 @@ except Exception as e:
 
     # set up the current phase
     gameStateObj.currentPhase().start()
+
+# bad code: loading registry should be cleared
 
 if args.tiles:
     # spawn tile based rendered window

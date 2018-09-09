@@ -22,7 +22,8 @@ def removeLoops(path):
             break
 
     if brokeAt:
-	    # bad code: non intuitive exception handling
+        # get last ocourance of the first duplicate waypoint
+        # bad code: non intuitive exception handling
         try:
             lastIndex = 0
             while True:
@@ -30,15 +31,15 @@ def removeLoops(path):
         except ValueError as e:
             pass
 
-        # copy the patha after the last occourance of the cutoff position
-		# bad code: should be using extend or something
+        # copy the path after the last occourance of the cutoff position
+        # bad code: should be using extend or something
         counter = lastIndex
         pathLen = len(path)
         while counter < pathLen:
             newPath.append(path[counter])
             counter += 1
 
-	    # recusivly remove remaining loops
+        # recusivly remove remaining loops
         newPath = removeLoops(newPath)
 
     return newPath
@@ -82,7 +83,7 @@ def calculatePathReal(startX,startY,endX,endY,walkingPath):
         return [(endX,endY)]
 
     # bad code: this code doesn't actually do anything
-	# bug: this code should select whether or not the path is looped
+    # bug: this code should select whether or not the path is looped
     circlePath = True
     if (startY > 11 and not startX==endX):
         circlePath = True
@@ -90,10 +91,10 @@ def calculatePathReal(startX,startY,endX,endY,walkingPath):
         circlePath = True
 
     
-	# calculate movement on the default path
+    # calculate movement on the default path
     if (startX,startY) in walkingPath and (endX,endY) in walkingPath:
-	    # get the start/end indices
-		# bad code: should use a build in function to find indices
+        # get the start/end indices
+        # bad code: should use a build in function to find indices
         startIndex = None
         index = 0
         for wayPoint in walkingPath:
@@ -107,44 +108,44 @@ def calculatePathReal(startX,startY,endX,endY,walkingPath):
                 endIndex = index
             index += 1
 
-	    # extract and return the correct part of the default path
+        # extract and return the correct part of the default path
         distance = startIndex-endIndex
         if distance > 0:
             if circlePath:
                 if distance < len(walkingPath)/2:
-				    # use the path between start and end staying within the path
+                    # use the path between start and end staying within the path
                     result = []
                     result.extend(reversed(walkingPath[endIndex:startIndex]))
                     return result
                 else:
-				    # use the path between start and end connecting over the ends of the path
+                    # use the path between start and end connecting over the ends of the path
                     result = []
                     result.extend(walkingPath[startIndex:])
                     result.extend(walkingPath[:endIndex+1])
                     return result
             else:
-		        # bad code: impossible to reach
+                # bad code: impossible to reach
                 result = []
                 result.extend(reversed(walkingPath[endIndex:startIndex]))
                 return result
         else:
             if circlePath:
                 if (-distance) <= len(walkingPath)/2:
-				    # use the path between start and end staying within the path
+                    # use the path between start and end staying within the path
                     return walkingPath[startIndex+1:endIndex+1]
                 else:
-				    # use the path between start and end connecting over the ends of the path
+                    # use the path between start and end connecting over the ends of the path
                     result = []
                     result.extend(reversed(walkingPath[:startIndex]))
                     result.extend(reversed(walkingPath[endIndex:]))
                     return result
             else:
-		        # bad code: impossible to reach
+                # bad code: impossible to reach
                 return walkingPath[startIndex+1:endIndex+1]
 
-	# calculate movement to the default path
+    # calculate movement to the default path
     elif (endX,endY) in walkingPath:
-	    # select the nearest waypoint
+        # select the nearest waypoint
         nearestPoint = None
         lowestDistance = 1234567890 # bad code: silly constant
         for waypoint in walkingPath:
@@ -154,18 +155,18 @@ def calculatePathReal(startX,startY,endX,endY,walkingPath):
                 nearestPoint = waypoint
 
         if (endX,endY) == nearestPoint:
-		    # break recursion if this is already shortest path
+            # break recursion if this is already shortest path
             pass
         else:
-		    # stitch path together from recursive calculation
+            # stitch path together from recursive calculation
             result = []
             result.extend(calculatePathReal(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
             result.extend(calculatePathReal(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
             return result
 
-	# calculate movement from the default path 
+    # calculate movement from the default path 
     elif (startX,startY) in walkingPath:
-	    # select the nearest waypoint
+        # select the nearest waypoint
         nearestPoint = None
         lowestDistance = 1234567890 # bad code: silly constant
         for waypoint in walkingPath:
@@ -175,15 +176,15 @@ def calculatePathReal(startX,startY,endX,endY,walkingPath):
                 nearestPoint = waypoint
 
         if (startX,startY) == nearestPoint:
-		    # break recursion if this is already shortest path
+            # break recursion if this is already shortest path
             pass
         else:
-		    # stitch path together from recursive calculation
+            # stitch path together from recursive calculation
             result = []
             result.extend(calculatePathReal(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
             result.extend(calculatePathReal(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
             return result
-	# split calcualtion into to - within - from default path
+    # split calcualtion into to - within - from default path
     else:
         path = []
         startPoint = None
@@ -202,7 +203,7 @@ def calculatePathReal(startX,startY,endX,endY,walkingPath):
                 lowestDistance = distance
                 endPoint = waypoint
 
-		# stitch path together from recursive calculation
+        # stitch path together from recursive calculation
         path.extend(calculatePathReal(startX,startY,startPoint[0],startPoint[1],walkingPath))
         path.extend(calculatePathReal(startPoint[0],startPoint[1],endPoint[0],endPoint[1],walkingPath))
         path.extend(calculatePathReal(endPoint[0],endPoint[1],endX,endY,walkingPath))

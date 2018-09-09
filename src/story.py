@@ -86,6 +86,7 @@ class BasicPhase(object):
         self.secondOfficerYPosition = 3
         self.name = name
 
+        # register with dummy id
         self.id = "currentPhase"
         loadingRegistry.register(self)
 
@@ -397,7 +398,7 @@ class ScreenSaver(BasicPhase):
         quest = quests.FillPocketsQuest(creator=void)
         self.mainCharQuestList.append(quest)
 
-        # activate furnace
+        # activate furnaces
         quest = quests.ActivateQuestMeta(terrain.tutorialMachineRoom.furnaces[0],creator=void)
         self.mainCharQuestList.append(quest)
         quest = quests.ActivateQuestMeta(terrain.tutorialMachineRoom.furnaces[1],creator=void)
@@ -478,7 +479,7 @@ class ScreenSaver(BasicPhase):
 #XX
 #X   these are the tutorial phases. The story phases are tweeked heavily regarding to cutscenes and timing
 #
-#    no experients here!
+#    no experiments here!
 #    half arsed solutions are still welcome here but that should end when this reaches prototype
 #
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -1019,7 +1020,7 @@ you have on piece of coal less than before."""])
         showText("i understand. The burns are somewhat unpleasant",trigger=self.iamready)
 
     '''
-
+    make the player examine things
     '''
     def examineStuff(self):
         # show fluff
@@ -1337,7 +1338,7 @@ class FirstTutorialPhase(BasicPhase):
                 def handleEvent(subself):
                     self.end()
 
-            # shedule the wrap up
+            # schedule the wrap up
             self.mainCharRoom.addEvent(StartNextPhaseEvent(gamestate.tick+1))
 
             # save the game
@@ -1494,6 +1495,7 @@ class ThirdTutorialPhase(BasicPhase):
 
             '''
             event to make the npc fire another furnace
+            bad code: xxx2
             '''
             class AnotherOne2(object):
                 '''
@@ -1519,6 +1521,7 @@ class ThirdTutorialPhase(BasicPhase):
 
             '''
             the event for waiting for a clean start and making the npc start
+            bad code: xxx2
             '''
             class WaitForClearStart2(object):
                 '''
@@ -1548,6 +1551,7 @@ class ThirdTutorialPhase(BasicPhase):
 
             '''
             kickstart the npcs part of the competition
+            bad code: xxx2
             '''
             def tmp2():
                 self.mainCharRoom.addEvent(WaitForClearStart2(gamestate.tick+2,0))
@@ -1717,7 +1721,7 @@ class FindWork(BasicPhase):
         mainChar.assignQuest(hopperDutyQuest,active=True)
 
         '''
-        the dialog for asking somebody somwhat important for a job
+        the dialog for asking somebody somewhat important for a job
         bad code: nameing
         '''
         class JobChat(interaction.SubMenu):
@@ -1772,17 +1776,14 @@ class FindWork(BasicPhase):
                     return False
 
         '''
+        the dialog for asking somebody for a job
         bad code:
-        bad code: nameing
+        bad code: xxx2
         '''
         class JobChat2(interaction.SubMenu):
             id = "JobChat2"
             type = "JobChat2"
-
-            '''
-            basic state initialization
-            '''
-            dialogName = "Can you use some help?"
+            dialogName = "Can you use some help?" # bad code: deprecated
 
             '''
             basic state initialization

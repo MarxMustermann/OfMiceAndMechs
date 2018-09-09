@@ -1,10 +1,17 @@
 import json
 import src.characters as characters
 
+'''
+the creator that should be used if there is no valid creator object
+basically supply ids for unique ids
+'''
 class Void():
     id = "void**#"
     creationCounter = 0
 
+    '''
+    supply a counter to allow unique id creation
+    '''
     def getCreationCounter(self):
         self.creationCounter += 1
         return self.creationCounter
@@ -33,7 +40,7 @@ class GameState():
 
     '''
     save the gamestate to disc
-    bad pattern: loading and saving one massive json will break on the long run. load function should be delegated down to be able to scale json size
+    bad pattern: loading and saving one massive json will break on the long run. save function should be delegated down to be able to scale json size
     '''
     def save(self):
         saveFile = open("gamestate/gamestate.json","w")
@@ -50,11 +57,13 @@ class GameState():
     bad pattern: loading and saving one massive json will break on the long run. load function should be delegated down to be able to scale json size
     '''
     def load(self):
+        # load state from disc
         saveFile = open("gamestate/gamestate.json")
         rawstate = saveFile.read()
         state = json.loads(rawstate)
         saveFile.close()
 
+        # set state
         self.setState(state)
 
     '''
@@ -66,18 +75,19 @@ class GameState():
         self.currentPhase = phasesByName[state["currentPhase"]["name"]]()
         self.tick = state["tick"]
 
+        # update void
         void.creationCounter = state["creationCounter"]
 
-        # the terrain
+        # load the terrain
         terrain.setState(state["terrain"],self.tick)
 
+        # load the main character
         xPosition = self.mainChar.xPosition
         if "xPosition" in state["mainChar"]:
             xPosition = state["mainChar"]["xPosition"]
         yPosition = self.mainChar.yPosition
         if "yPosition" in state["mainChar"]:
             yPosition = state["mainChar"]["yPosition"]
-
         if "room" in state["mainChar"]:
             for room in terrain.rooms:
                 if room.id == state["mainChar"]["room"]:
@@ -85,9 +95,9 @@ class GameState():
                     break
         else:
             terrain.addCharacter(self.mainChar,xPosition,yPosition)
-
         self.mainChar.setState(state["mainChar"])
 
+        # load cinematics
         for cinematicId in state["cinematics"]["ids"]:
             cinematic = cinematics.getCinematicFromState(state["cinematics"]["states"][cinematicId])
             cinematics.cinematicQueue.append(cinematic)
@@ -96,16 +106,21 @@ class GameState():
     get gamestate in half serialized form
     '''
     def getState(self):
+        # load the main characters state
         mainCharState = self.mainChar.getDiffState()
         mainCharState["room"] = self.mainChar.room.id
         mainCharState["xPosition"] = self.mainChar.xPosition
         mainCharState["yPosition"] = self.mainChar.yPosition
+
+        # load the cinematics
         cinematicStorage = {}
         cinematicStorage["ids"] = []
         cinematicStorage["states"] = {}
         for cinematic in cinematics.cinematicQueue:
             cinematicStorage["ids"].append(cinematic.id)
             cinematicStorage["states"][cinematic.id] = cinematic.getState()
+
+        # generate state dict
         return {  
               "currentPhase":self.currentPhase.getState(),
               "mainChar":mainCharState,

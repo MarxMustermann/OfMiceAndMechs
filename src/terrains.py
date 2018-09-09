@@ -29,8 +29,11 @@ class Terrain(object):
     straightforward state initialization
     '''
     def __init__(self,layout,detailedLayout,creator=None):
+        # bad code: obsolete should be removed
         if creator == "void":
             creator = void
+
+        # should be an extra class
         self.creationCounter = 0
 
         # store terrain content
@@ -41,6 +44,7 @@ class Terrain(object):
         self.itemByCoordinates = {}
         self.roomByCoordinates = {}
 
+        # set id
         self.id = {
                    "other":"terrain",
                    "counter":creator.getCreationCounter()
@@ -48,7 +52,6 @@ class Terrain(object):
         self.id["creator"] = creator.id
         self.id = json.dumps(self.id, sort_keys=True)
             
-
         # misc state
         self.overlay = None
         self.alarm = False
@@ -232,9 +235,13 @@ class Terrain(object):
         # precalculate paths to make pathfinding faster
         self.calculatePathMap()
 
+        # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
+    '''
+    get counter for cildren to derive a unique id from
+    '''
     def getCreationCounter(self):
         self.creationCounter += 1
         return self.creationCounter
@@ -399,7 +406,7 @@ class Terrain(object):
             # store the coordinates visited for next interaction
             newLast[start] = newLastList
 
-        # recursevly increase section
+        # recursivly increase section
         self.watershed(counter,newLast)
 
         # add found path between nodes to map
@@ -518,6 +525,9 @@ class Terrain(object):
         character.room = None
         character.terrain = None
 
+    '''
+    add a character to the terrain
+    '''
     def addCharacter(self,character,x,y):
         self.characters.append(character)
         character.terrain = self
@@ -694,6 +704,7 @@ class Terrain(object):
             self.markWalkBack(found,obseveredCoordinates,pathToEntry,counter+1, obseveredCoordinates[found])
 
     '''
+    find path to the nearest entry point to a path
     '''
     def mark(self,coordinates,counter=0,obseveredCoordinates={}):
         # limit recursion depth
@@ -792,6 +803,9 @@ class Terrain(object):
             else:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
+    '''
+    remove item from terrain
+    '''
     def removeItem(self,item):
         self.itemsOnFloor.remove(item)
         self.itemByCoordinates[(item.xPosition,item.yPosition)].remove(item)
@@ -853,7 +867,7 @@ class Terrain(object):
                     room.hidden = True
                 
         if not mapHidden:
-            # get players position in tiles (15*15) segments
+            # get players position in tiles (15*15 segments)
             pos = None
             roomContainer = None # bad code: does nothing
             if mainChar.room == None:
@@ -1178,7 +1192,11 @@ class Terrain(object):
         room.xPosition = newPosition[0]
         room.yPosition = newPosition[1]
 
+    '''
+    set state from dict
+    '''
     def setState(self,state,tick):
+        # update rooms
         for room in terrain.rooms:
             if room.id in state["changedRoomList"]:
                 room.setState(state["roomStates"][room.id])
@@ -1186,52 +1204,76 @@ class Terrain(object):
             room.timeIndex = tick
 
         for item in self.itemsOnFloor[:]:
+            # update items
             if item.id in state["changedItemList"]:
                 self.removeItem(item)
                 item.setState(state["itemStates"][item.id])
                 self.addItems([item])
 
+            # remove items
             if item.id in state["removedItemList"]:
                 self.removeItem(item)
+        # add items
         for itemId in state["newItemList"]:
             item = items.getItemFromState(state["itemStates"][itemId])
             self.addItems([item])
 
         for char in self.characters:
+            # update characters
             if char.id in state["changedCharList"]:
                 char.setState(state["charStates"][item.id])
 
+            # remove characters
             if char.id in state["removedCharList"]:
                 self.removeCharacter(char)
+        # add new characters
         for charId in state["newCharList"]:
             charState = state["charStates"][charId]
             char = characters.Character(creator=self)
             self.addCharacter(char,charState["xPosition"],charState["yPosition"])
 
+    '''
+    get difference between initial and current state
+    '''
     def getDiffState(self):
+        '''
+        get the difference of a list between existing and initial state
+        bad code: should be in extra class
+        bad code: redundant code
+        '''
         def getDiffList(toDiff,containerName,exclude=[]):
-            currentThingsList = []
+            # the to be result
             states = {}
             newThingsList = []
             changedThingsList = []
             removedThingsList = []
+
+            # helper state
+            currentThingsList = []
             
+            # handle things that exist right now
             for thing in toDiff:
+                # skip excludes
                 if thing.id in exclude:
                     continue
+
+                # register thing as existing
                 currentState = thing.getState()
                 currentThingsList.append(thing.id)
 
                 if thing.id in self.initialState[containerName]:
+                    # handle changed things
                     if not currentState == thing.initialState:
                         diffState = thing.getDiffState()
-                        if diffState:
+                        if diffState: # bad code: this should not be neccessary
                             changedThingsList.append(thing.id)
                             states[thing.id] = diffState
                 else:
+                    # handle new things
                     newThingsList.append(thing.id)
                     states[thing.id] = thing.getState()
 
+            # handle removed things
             for thingId in self.initialState[containerName]:
                 if thing.id in exclude:
                     continue
@@ -1240,6 +1282,7 @@ class Terrain(object):
 
             return (states,changedThingsList,newThingsList,removedThingsList)
             
+        # serialize list
         (roomStates,changedRoomList,newRoomList,removedRoomList) = getDiffList(self.rooms,"roomIds")
         (itemStates,changedItemList,newItemList,removedItemList) = getDiffList(self.itemsOnFloor,"itemIds")
         exclude = []
@@ -1247,6 +1290,7 @@ class Terrain(object):
             exclude.append(mainChar.id)
         (charStates,changedCharList,newCharList,removedCharList) = getDiffList(self.characters,"characterIds",exclude=exclude)
 
+        # generate state dict
         return {
                   "changedRoomList":changedRoomList,
                   "newRoomList":newRoomList,
@@ -1262,7 +1306,14 @@ class Terrain(object):
                   "charStates":charStates,
                }
 
+    '''
+    get state as dict
+    '''
     def getState(self):
+        '''
+        get a list of ids an a dict of their states from a list of objects
+        bad code: should be in extra class
+        '''
         def storeStateList(sourceList,exclude=[]):
             ids = []
             states = {}
@@ -1275,6 +1326,7 @@ class Terrain(object):
 
             return (states,ids)
 
+        # get states for lists
         (roomIds,roomStates) = storeStateList(self.rooms)
         (itemIds,itemStates) = storeStateList(self.itemsOnFloor)
         exclude = []
@@ -1282,6 +1334,7 @@ class Terrain(object):
             exclude.append(mainChar.id)
         (characterIds,chracterStates) = storeStateList(self.characters,exclude=exclude)
 
+        # generate state
         return {
                   "roomIds":roomIds,
                   "roomStates":roomStates,

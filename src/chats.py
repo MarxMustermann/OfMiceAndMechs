@@ -1,13 +1,16 @@
 import src.interaction as interaction
 
+# bad pattern: chats should have a parent class
+
 '''
 the chat to proof the player is able to chat
+bad code: story specific
 '''
 class FirstChat(interaction.SubMenu):
     id = "FirstChat"
     type = "FirstChat"
 
-    dialogName = "You wanted to have a chat"
+    dialogName = "You wanted to have a chat" # bad code: deprecated, remove
 
     '''
     straightforward state setting
@@ -18,6 +21,10 @@ class FirstChat(interaction.SubMenu):
         subSelf.firstRun = True
         super().__init__()
 
+    '''
+    add internal state
+    bad pattern: chat option stored as references to class complicates this
+    '''
     def setUp(self,state):
         self.firstOfficer = state["firstOfficer"]
         self.phase = state["phase"]
@@ -34,6 +41,8 @@ class FirstChat(interaction.SubMenu):
             subSelf.set_text(subSelf.persistentText)
 
             # remove chat option
+            # bad code: this removal results in bugs if to chats of the same type exist
+            # bad pattern: chat option stored as references to class complicates this
             for item in subSelf.firstOfficer.basicChatOptions:
                 if not isinstance(item,dict):
                     if item == FirstChat:
@@ -60,7 +69,7 @@ class FurnaceChat(interaction.SubMenu):
     id = "FurnaceChat"
     type = "FurnaceChat"
 
-    dialogName = "What are these machines in this room?"
+    dialogName = "What are these machines in this room?" # bad code: deprecated, remove
 
     '''
     straightforward state setting
@@ -74,6 +83,10 @@ class FurnaceChat(interaction.SubMenu):
         subSelf.submenue = None
         super().__init__()
 
+    '''
+    add internal state
+    bad pattern: chat option stored as references to class complicates this
+    '''
     def setUp(self,state):
         self.firstOfficer = state["firstOfficer"]
         self.terrain = state["terrain"]
@@ -90,7 +103,7 @@ class FurnaceChat(interaction.SubMenu):
             else:
                 subSelf.done = True
 
-                # let the selection option hande the keystroke
+                # remove self from the chracters chat
                 for item in subSelf.firstOfficer.basicChatOptions:
                     if not isinstance(item,dict):
                         if item == FurnaceChat:
@@ -102,8 +115,12 @@ class FurnaceChat(interaction.SubMenu):
                             break
                 subSelf.firstOfficer.basicChatOptions.remove(toRemove)
              
+                # clear submenue
+                # bad code: direct state setting
                 interaction.submenue = None
                 interaction.loop.set_alarm_in(0.0, callShow_or_exit, '~')
+
+                # do the selected action
                 subSelf.submenue.selection()
                 return True
 
@@ -116,7 +133,7 @@ class FurnaceChat(interaction.SubMenu):
             # add new chat option
             subSelf.firstOfficer.basicChatOptions.append(InfoChat)
                         
-            # set up the selection
+            # offer a selection of different story phasses
             options = {}
             niceOptions = {}
             counter = 1
@@ -137,7 +154,7 @@ class SternChat(interaction.SubMenu):
     id = "SternChat"
     type = "SternChat"
 
-    dialogName = "What did Stern modify on the implant?"
+    dialogName = "What did Stern modify on the implant?" # bad code: deprecated, remove
 
     '''
     straight forwar state setting
@@ -169,6 +186,7 @@ do things the most efficent way. It will even try to handle conversion, wich doe
             return False
         else:
             # remove chat option and finish
+            # bad code: crashes
             firstOfficer.basicChatOptions.remove(SternChat)
             subSelf.done = True
             return True
@@ -180,7 +198,7 @@ class InfoChat(interaction.SubMenu):
     id = "InfoChat"
     type = "InfoChat"
 
-    dialogName = "Is there more i should know?"
+    dialogName = "Is there more i should know?" # bad code: deprecated, remove
 
     '''
     straight forwar state setting
@@ -209,6 +227,7 @@ for a brain.\n\n"""
             return False
         else:
             # remove chat option and finish
+            # bad code: crashes
             firstOfficer.basicChatOptions.remove(InfoChat)
             firstOfficer.basicChatOptions.append(SternChat)
             subSelf.done = True
@@ -221,7 +240,7 @@ class ReReport(interaction.SubMenu):
     id = "ReReport"
     type = "ReReport"
 
-    dialogName = "I want to report for duty"
+    dialogName = "I want to report for duty" # bad code: deprecated, remove
 
     '''
     state initialization
@@ -250,6 +269,7 @@ class ReReport(interaction.SubMenu):
             terrain.waitingRoom.firstOfficer.basicChatOptions.remove(ReReport)
 
             # start intro
+            # bad code: crashes
             self.getIntro()
             return True
         else:

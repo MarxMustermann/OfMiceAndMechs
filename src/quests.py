@@ -54,18 +54,14 @@ class Quest(saveing.Saveable):
     get difference in state since creation
     '''
     def getDiffState(self):
-        result = {}
+        result = super().getDiffState()
         # store attributes
-        if not self.id == self.initialState["id"]:
-            result["id"] = self.id
         if not self.active == self.initialState["active"]:
             result["active"] = self.active
         if not self.completed == self.initialState["completed"]:
             result["completed"] = self.completed
         if not self.reputationReward == self.initialState["reputationReward"]:
             result["reputationReward"] = self.reputationReward
-        if not self.creationCounter == self.initialState["creationCounter"]:
-            result["creationCounter"] = self.creationCounter
         # bad code: repeated store none or id scheme
         character = None
         if self.character:
@@ -78,14 +74,14 @@ class Quest(saveing.Saveable):
     get state as dict
     '''
     def getState(self):
-        state = {
-            "id":self.id,
+        state = super().getState()
+        
+        state.update({
             "active":self.active,
             "completed":self.completed,
             "reputationReward":self.reputationReward,
-            "creationCounter":self.creationCounter,
             "type":self.type
-        }
+        })
         if self.character:
             state["character"] = self.character.id
         else:
@@ -96,9 +92,7 @@ class Quest(saveing.Saveable):
     set state as dict
     '''
     def setState(self,state):
-       # bad code: should be in extra class
-       if "creationCounter" in state:
-           self.creationCounter = state["creationCounter"]
+       super().setState(state)
 
        # set attributes
        if "id" in state:

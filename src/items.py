@@ -56,7 +56,7 @@ class Item(saving.Saveable):
     get difference in state since creation as dict
     '''
     def getDiffState(self):
-        result = {}
+        result = super().getDiffState()
         currentState = self.getState()
         
         # only carry changed attributes
@@ -64,33 +64,26 @@ class Item(saving.Saveable):
             if not currentState[attribute] == self.initialState[attribute]:
                 result[attribute] = currentState[attribute]
 
-        # bad code: should be in extra class
-        if not self.creationCounter == self.initialState["creationCounter"]:
-            result["creationCounter"] = self.creationCounter
-
         return result
 
     '''
     get state as dict
     '''
     def getState(self):
-        return {
-                 "id":self.id,
+        state = super().getState()
+        state.update({
                  "name":self.name,
                  "type":self.type,
                  "walkable":self.walkable,
                  "xPosition":self.xPosition,
                  "yPosition":self.yPosition,
-                 "creationCounter":self.creationCounter,
-               }
+               })
 
     '''
     set state from dict
     '''
     def setState(self,state):
-        # bad code: should be in extra class
-        if "creationCounter" in state:
-            self.creationCounter = state["creationCounter"]
+        super().setState(state)
 
         # set attribute
         # bad code: very repetetive code

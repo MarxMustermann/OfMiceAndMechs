@@ -2,6 +2,32 @@ class Saveable(object):
     creationCounter = 0
 
     '''
+    get state as dict
+    '''
+    def getState(self):
+        state = {
+            "id":self.id,
+            "creationCounter":self.creationCounter,
+        }
+        return state
+
+    '''
+    get difference in state since creation
+    '''
+    def getDiffState(self):
+        result = {}
+        if not self.creationCounter == self.initialState["creationCounter"]:
+            result["creationCounter"] = self.creationCounter
+        return result
+
+    '''
+    set state as dict
+    '''
+    def setState(self,state):
+       if "creationCounter" in state:
+           self.creationCounter = state["creationCounter"]
+
+    '''
     get a list of ids an a dict of their states from a list of objects
     '''
     def storeStateList(self,sourceList,exclude=[]):

@@ -105,7 +105,7 @@ class Character(saving.Saveable):
     '''
     def getDiffState(self):
         # the to be result
-        result = {}
+        result = super().getDiffState()
 
         # serialize attributes
         # bad code: very repetetive code
@@ -131,8 +131,6 @@ class Character(saving.Saveable):
             result["reputation"] = self.reputation
         if not self.tutorialStart == self.initialState["tutorialStart"]:
             result["tutorialStart"] = self.tutorialStart
-        if not self.creationCounter == self.initialState["creationCounter"]:
-            result["creationCounter"] = self.creationCounter
         if not self.path == self.initialState["path"]:
             result["path"] = self.path
         # bad code: repetetive handling of non-or-id serialization
@@ -193,9 +191,9 @@ class Character(saving.Saveable):
     getter for the players state
     '''
     def getState(self):
+        state = super().getState()
         # simple attributes
-        state = { 
-                 "id": self.id,
+        state.update({ 
                  "gotBasicSchooling": self.gotBasicSchooling,
                  "gotMovementSchooling": self.gotMovementSchooling,
                  "gotInteractionSchooling": self.gotInteractionSchooling,
@@ -208,10 +206,9 @@ class Character(saving.Saveable):
                  "reputation": self.reputation,
                  "inventory": {},
                  "quests": {},
-                 "creationCounter":self.creationCounter,
                  "tutorialStart":self.tutorialStart,
                  "path":self.path,
-               }
+               })
                  
         # store inventory
         inventory = []
@@ -260,9 +257,7 @@ class Character(saving.Saveable):
     setter for the players state
     '''
     def setState(self,state):
-        # bad code: should be in extra class
-        if "creationCounter" in state:
-            self.creationCounter = state["creationCounter"]
+        super().setState(state)
 
         # set attributes
         # bad codes: very repetetive code

@@ -61,7 +61,7 @@ class GameState():
         self.tick = state["tick"]
 
         # update void
-        void.creationCounter = state["creationCounter"]
+        void.setState(state["void"])
 
         # load the terrain
         terrain.setState(state["terrain"],self.tick)
@@ -113,5 +113,5 @@ class GameState():
               "tick":self.tick,
               "gameWon":self.gameWon,
               "cinematics":cinematicStorage,
-              "creationCounter":void.creationCounter,
+              "void":void.getState(),
                }

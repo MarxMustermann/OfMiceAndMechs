@@ -43,9 +43,7 @@ class BasicCinematic(saveing.Saveable):
     set state from dict
     '''
     def setState(self,state):
-        # bad code: should in extra class
-        if "creationCounter" in state:
-            self.creationCounter = state["creationCounter"]
+        super().setState(state)
 
         # set attributes
         if "id" in state:
@@ -78,15 +76,15 @@ class BasicCinematic(saveing.Saveable):
     '''
     def getState(self):
         # store simple attributes
-        state = {
+        state = super().getState()
+        state.update({
                    "id": self.id,
                    "background": self.background,
                    "skipable": self.skipable,
                    "overwriteFooter": self.overwriteFooter,
                    "footerText": self.footerText,
                    "type": self.type,
-                   "creationCounter":self.creationCounter,
-                }
+                })
 
         # store follow up action
         # serializing method calls should be abstracted

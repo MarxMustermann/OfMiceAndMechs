@@ -2509,7 +2509,7 @@ class LeaveRoomQuest(Quest):
                     character.path.append((character.xPosition,character.yPosition-1))
                 elif character.yPosition == character.room.sizeY-1:
                     character.path.append((character.xPosition,character.yPosition+1))
-                if character.xPosition == 0: #bad code: should be elif
+                elif character.xPosition == 0:
                     character.path.append((character.xPosition-1,character.yPosition))
                 elif character.xPosition == character.room.sizeX-1:
                     character.path.append((character.xPosition+1,character.yPosition))

@@ -243,6 +243,20 @@ class Terrain(object):
         return self.creationCounter
 
     '''
+    create a map of non passable tiles
+    '''
+    def setNonMovableMap(self):
+        self.nonMovablecoordinates = {}
+        for coordinate,itemList in self.itemByCoordinates.items():
+            for item in itemList:
+                if not item.walkable:
+                    self.nonMovablecoordinates[coordinate] = True
+        for room in self.rooms:
+            for x in range(room.xPosition*15+room.offsetX,room.xPosition*15+room.offsetX+room.sizeX):
+                for y in range(room.yPosition*15+room.offsetY,room.yPosition*15+room.offsetY+room.sizeY):
+                     self.nonMovablecoordinates[(x,y)] = True
+
+    '''
     precalculate pathfinding data
     '''
     def calculatePathMap(self):
@@ -257,17 +271,7 @@ class Terrain(object):
         self.foundSuperPaths = {}
         self.foundSuperPathsComplete = {}
 
-        # create a map of non passable tiles
-        # bad code: should be a method
-        self.nonMovablecoordinates = {}
-        for coordinate,itemList in self.itemByCoordinates.items():
-            for item in itemList:
-                if not item.walkable:
-                    self.nonMovablecoordinates[coordinate] = True
-        for room in self.rooms:
-            for x in range(room.xPosition*15+room.offsetX,room.xPosition*15+room.offsetX+room.sizeX):
-                for y in range(room.yPosition*15+room.offsetY,room.yPosition*15+room.offsetY+room.sizeY):
-                     self.nonMovablecoordinates[(x,y)] = True
+        self.setNonMovableMap()
 
         # place starting points for pathfinding at 
         for room in self.rooms:

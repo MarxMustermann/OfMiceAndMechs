@@ -40,7 +40,6 @@ itemMarkedLast = None
 lastMoveAutomated = False
 fullAutoMode = False
 idleCounter = 0
-pauseGame = False # bad code: this variable seems to be important but isn't used
 submenue = None
 ignoreNextAutomated = False
 ticksSinceDeath = None

@@ -2146,11 +2146,6 @@ class VatPhase(BasicPhase):
         questList = []
         questList.append(quests.MoveQuestMeta(terrain.tutorialVat,3,3,creator=void))
 
-        # make the player move to the vat
-        # bad code: does nothing in combination with the Move quest
-        if not (mainChar.room and mainChar.room == terrain.tutorialVat):
-            questList.append(quests.EnterRoomQuestMeta(terrain.tutorialVat,startCinematics="please goto the Vat",creator=void))
-
         # chain quests
         lastQuest = questList[0]
         for item in questList[1:]:

@@ -34,6 +34,7 @@ class BasicCinematic(saveing.Saveable):
 
         self.attributesToStore.extend([
 		       "background","overwriteFooter","footerText","type","skipable"])
+        self.callbacksToStore.append("endTrigger")
 
         # generate unique id
         self.id = {
@@ -41,49 +42,6 @@ class BasicCinematic(saveing.Saveable):
                   }
         self.id["creator"] = creator.id
         self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
-
-    '''
-    set state from dict
-    '''
-    def setState(self,state):
-        super().setState(state)
-
-        if "endTrigger" in state:
-            if state["endTrigger"]:
-                if not self.endTrigger:
-                    self.endTrigger = {}
-
-                if "method" in state["endTrigger"]:
-                    self.endTrigger["method"] = state["endTrigger"]["method"]
-                if "container" in state["endTrigger"]:
-                    '''
-                    set value
-                    '''
-                    def setContainer(thing):
-                        self.endTrigger["container"] = thing
-                    loadingRegistry.callWhenAvailable(state["endTrigger"]["container"],setContainer)
-            else:
-                self.endTrigger = None
-
-    '''
-    gets the state as dict
-    '''
-    def getState(self):
-        # store simple attributes
-        state = super().getState()
-
-        # store follow up action
-        # serializing method calls should be abstracted
-        if self.endTrigger:
-            if isinstance(self.endTrigger,dict):
-                endTrigger = {}
-                endTrigger["container"] = self.endTrigger["container"].id
-                endTrigger["method"] = self.endTrigger["method"]
-                state["endTrigger"] = endTrigger
-            else:
-                state["endTrigger"] = str(self.endTrigger)
-
-        return state
 
     '''
     do nothing

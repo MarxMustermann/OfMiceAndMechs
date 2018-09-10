@@ -27,7 +27,12 @@ class LoadingRegistry(object):
 
 class Saveable(object):
     creationCounter = 0
-    attributesToStore = ["id","creationCounter"]
+    '''
+    basic state setting
+    '''
+    def __init__(self):
+        super().__init__()
+        self.attributesToStore = ["id","creationCounter"]
 
     '''
     get state as dict
@@ -35,7 +40,10 @@ class Saveable(object):
     def getState(self):
         state = {}
         for attribute in self.attributesToStore:
-            state[attribute] = getattr(self,attribute)
+            if hasattr(self,attribute):
+                state[attribute] = getattr(self,attribute)
+            else:
+                state[attribute] = None
         return state
 
     '''
@@ -63,9 +71,14 @@ class Saveable(object):
     def getDiffState(self):
         result = {}
         for attribute in self.attributesToStore:
-            currentValue = getattr(self,attribute)
+            if hasattr(self,attribute):
+                currentValue = getattr(self,attribute)
+            else:
+                currentValue = None
+
             if not currentValue == self.initialState[attribute]:
                 result[attribute] = currentValue
+               
         return result
 
     '''

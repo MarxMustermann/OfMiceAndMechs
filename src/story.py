@@ -823,10 +823,6 @@ class BasicMovementTraining(BasicPhase):
     def __init__(self):
         super().__init__("BasicMovementTraining")
         self.didFurnaces = False
-        self.methods = {
-            "fetchDrink":self.fetchDrink,
-            "iamready":self.iamready,
-        }
     
     '''
     make the player move around and place triggers

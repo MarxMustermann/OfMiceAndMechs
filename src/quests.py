@@ -364,8 +364,6 @@ class MetaQuestSequence(Quest):
         self.subQuests = quests
         super().__init__(startCinematics=startCinematics,lifetime=lifetime,creator=creator)
         
-        self.listeningTo = [] # bad code: obsolete
-
         # listen to subquests
         if len(self.subQuests):
             self.startWatching(self.subQuests[0],self.recalculate)
@@ -595,8 +593,6 @@ class MetaQuestSequence(Quest):
                 self.subQuests[0].assignToCharacter(self.character)
             if not self.subQuests[0].active:
                 self.subQuests[0].activate()
-            if self.subQuests and not (self.subQuests[0],self.recalculate) in self.listeningTo:
-                self.startWatching(self.subQuests[0],self.recalculate)
         super().recalculate()
 
         # check for completeion
@@ -1002,7 +998,6 @@ class NaiveMoveQuest(Quest):
         self.sloppy = sloppy
         self.description = "please go to coordinate "+str(self.dstX)+"/"+str(self.dstY)    
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
-        self.listeningTo = []
 
         # save initial state and register
         self.type = "NaiveMoveQuest"

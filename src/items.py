@@ -1618,22 +1618,25 @@ class ProductionArtwork(Item):
     produce an item
     '''
     def produce(self,itemType,resultType=None):
-       if not (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+        metalBar = None
+        for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+            if isinstance(item,MetalBars):
+                metalBar = item
+                break
+        
+        if not metalBar:
             # refuse production without ressources
-            # bad code: guard with return would be preferrable to if/else
             messages.append("no metal bars available")
-       else:
-           # remove ressources
-           for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
-               if isinstance(item,MetalBars):
-                   self.room.removeItem(item)
-                   # bad code: should break here to only take one metal bar
+            return
 
-           # spawn new item
-           new = itemType(creator=self)
-           new.xPosition = self.xPosition-1
-           new.yPosition = self.yPosition
-           self.room.addItems([new])
+        # remove ressources
+        self.room.removeItem(item)
+
+        # spawn new item
+        new = itemType(creator=self)
+        new.xPosition = self.xPosition-1
+        new.yPosition = self.yPosition
+        self.room.addItems([new])
 
 '''
 scrap to metal bar converter
@@ -1650,23 +1653,24 @@ class ScrapCompactor(Item):
     produce a metal bar
     '''
     def apply(self,character,resultType=None):
-       if not (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
-            # refuse to produce without ressources
-            # bad code: guard with return would be preferrable to if/else
-            messages.append("no scraps available")
-       else:
-           # remove ressources
-           desintegratedScrap = False # bad code: unused variable
-           for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
-               if isinstance(item,Scrap):
-                   self.room.removeItem(item)
-                   # bad code: should break here to only take only x scrap
+        scrap = None
+        for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+            if isinstance(item,Scrap):
+                scrap = item
 
-           # spawn the metal bar
-           new = MetalBars(creator=self)
-           new.xPosition = self.xPosition-1
-           new.yPosition = self.yPosition
-           self.room.addItems([new])
+        if not scrap:
+            # refuse to produce without ressources
+            messages.append("no scraps available")
+            return
+       
+        # remove ressources
+        self.room.removeItem(item)
+
+        # spawn the metal bar
+        new = MetalBars(creator=self)
+        new.xPosition = self.xPosition-1
+        new.yPosition = self.yPosition
+        self.room.addItems([new])
 
 # maping from strings to all items
 # should be extendable

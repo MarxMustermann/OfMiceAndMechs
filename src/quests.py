@@ -39,6 +39,11 @@ class Quest(saveing.Saveable):
         self.reputationReward = 0
         self.watched = []
 
+        self.attributesToStore.append("type")
+        self.attributesToStore.append("active")
+        self.attributesToStore.append("completed")
+        self.attributesToStore.append("reputationReward")
+
         self.lifetime = lifetime
 
         # set id
@@ -57,13 +62,6 @@ class Quest(saveing.Saveable):
     '''
     def getDiffState(self):
         result = super().getDiffState()
-        # store attributes
-        if not self.active == self.initialState["active"]:
-            result["active"] = self.active
-        if not self.completed == self.initialState["completed"]:
-            result["completed"] = self.completed
-        if not self.reputationReward == self.initialState["reputationReward"]:
-            result["reputationReward"] = self.reputationReward
         # bad code: repeated store none or id scheme
         character = None
         if self.character:
@@ -78,12 +76,6 @@ class Quest(saveing.Saveable):
     def getState(self):
         state = super().getState()
         
-        state.update({
-            "active":self.active,
-            "completed":self.completed,
-            "reputationReward":self.reputationReward,
-            "type":self.type
-        })
         if self.character:
             state["character"] = self.character.id
         else:
@@ -96,15 +88,6 @@ class Quest(saveing.Saveable):
     def setState(self,state):
        super().setState(state)
 
-       # set attributes
-       if "id" in state:
-           self.id = state["id"]
-       if "active" in state:
-           self.active = state["active"]
-       if "completed" in state:
-           self.completed = state["completed"]
-       if "reputationReward" in state:
-           self.reputationReward = state["reputationReward"]
        if "character" in state and state["character"]:
            '''
            set value

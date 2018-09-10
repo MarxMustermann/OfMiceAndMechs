@@ -1,6 +1,5 @@
 '''
 Overlay showing the precalculated paths
-bad code: path was hidden instead of disabling the overlay
 '''
 class PathsOverlay(object):
     '''
@@ -9,7 +8,10 @@ class PathsOverlay(object):
     def apply(self,chars,terrain):
         if not terrain.hidden:
             import urwid
-            grey = urwid.AttrSpec("#666","black")
+            grey = urwid.AttrSpec("#777","black")
+            ltgrey = urwid.AttrSpec("#999","black")
+            yelow = urwid.AttrSpec("#066","black")
+            ltyellow = urwid.AttrSpec("#088","black")
 
             # add paths
             for dualPair,path in terrain.foundPaths.items():
@@ -18,15 +20,15 @@ class PathsOverlay(object):
 
             # add intersections
             for coordinate in terrain.watershedStart:
-                chars[coordinate[1]][coordinate[0]] =  (grey,"::")
+                chars[coordinate[1]][coordinate[0]] =  (yellow,"::")
 
             # add important paths
             for path in terrain.foundSuperPathsComplete.values():
                 for coordinate in path:
-                    chars[coordinate[1]][coordinate[0]] = (grey,"::")
+                    chars[coordinate[1]][coordinate[0]] = (ltgrey,"::")
             for dualPair,path in terrain.foundSuperPaths.items():
                 for coordinate in path:
-                    chars[coordinate[1]][coordinate[0]] = (grey,"::")
+                    chars[coordinate[1]][coordinate[0]] = (ltyellow,"::")
 
 '''
 Overlay showing quest marker

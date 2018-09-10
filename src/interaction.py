@@ -1320,14 +1320,6 @@ bad code: uses global functions to render
 '''
 class InventoryMenu(SubMenu):
     '''
-    straighforwad state initalisation
-    bad code: has no effect
-    '''
-    def __init__(self):
-        self.lockOptions = True
-        super().__init__()
-
-    '''
     show the inventory
     bad pattern: no player interaction
     '''
@@ -1347,14 +1339,6 @@ show the players attributes
 bad code: should be abstracted
 '''
 class CharacterInfoMenu(SubMenu):
-    '''
-    straighforwad state initalisation
-    bad code: has no effect
-    '''
-    def __init__(self):
-        self.lockOptions = True
-        super().__init__()
-
     '''
     show the attributes
     '''

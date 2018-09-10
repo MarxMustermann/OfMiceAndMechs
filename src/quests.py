@@ -1741,12 +1741,10 @@ class MoveQuestMeta(MetaQuestSequence):
     '''
     def __init__(self,room=None,x=None,y=None,sloppy=False,followUp=None,startCinematics=None,creator=None):
         super().__init__([],creator=creator)
-        if room and x and y:
+        if not ( x == None and y == None ):
             self.moveQuest = NaiveMoveQuest(room,x,y,sloppy=sloppy,creator=self)
             self.questList = [self.moveQuest]
-            self.wasSetup = True
         else:
-            self.wasSetup = False
             self.questList = []
         self.enterRoomQuest = None
         self.leaveRoomQuest = None
@@ -1764,9 +1762,6 @@ class MoveQuestMeta(MetaQuestSequence):
     move to correct room if nesseccary
     '''
     def recalculate(self):
-        if not self.wasSetup:
-            return
-
         if self.active:
             # leave wrong room
             if self.leaveRoomQuest and self.leaveRoomQuest.completed:

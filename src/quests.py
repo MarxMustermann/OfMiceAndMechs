@@ -1744,7 +1744,9 @@ class MoveQuestMeta(MetaQuestSequence):
         if room and x and y:
             self.moveQuest = NaiveMoveQuest(room,x,y,sloppy=sloppy,creator=self)
             self.questList = [self.moveQuest]
+            self.wasSetup = True
         else:
+            self.wasSetup = False
             self.questList = []
         self.enterRoomQuest = None
         self.leaveRoomQuest = None
@@ -1762,6 +1764,9 @@ class MoveQuestMeta(MetaQuestSequence):
     move to correct room if nesseccary
     '''
     def recalculate(self):
+        if not self.wasSetup:
+            return
+
         if self.active:
             # leave wrong room
             if self.leaveRoomQuest and self.leaveRoomQuest.completed:

@@ -389,7 +389,7 @@ except Exception as e:
         raise e
 
     # set up the current phase
-    gameStateObj.currentPhase().start()
+    gameStateObj.currentPhase.start()
 
 # bad code: loading registry should be cleared
 

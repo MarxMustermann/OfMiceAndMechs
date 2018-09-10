@@ -1846,7 +1846,7 @@ class FindWork(BasicPhase):
         '''
         check reputation and punish/reward player
         '''
-        class ProofOfWorth(object):
+        class ProofOfWorth(events.Event):
             '''
             basic state initialization
             '''

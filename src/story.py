@@ -1869,7 +1869,7 @@ class FindWork(BasicPhase):
 
                 # call the player for the speech
                 quest = quests.MoveQuestMeta(self.mainCharRoom,6,5,creator=void)
-                quest.endTrigger = self.meeting
+                quest.endTrigger = subself.meeting
                 mainChar.assignQuest(quest,active=True)
 
             '''
@@ -1915,7 +1915,7 @@ class FindWork(BasicPhase):
             def handleEvent(subself):
                 # call the player for a meeting
                 quest = quests.MoveQuestMeta(self.mainCharRoom,6,5,creator=void)
-                quest.endTrigger = meeting
+                quest.endTrigger = subself.meeting
                 mainChar.assignQuest(quest,active=True)
                 mainChar.reputation += 5
 

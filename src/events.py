@@ -1,3 +1,5 @@
+import src.saveing as saveing
+
 #bad code: global state
 cinematics = None
 messages = None
@@ -7,7 +9,7 @@ loop = None
 '''
 base class for events
 '''
-class Event(object):
+class Event(saveing.Saveable):
     '''
     basic state setting
     '''

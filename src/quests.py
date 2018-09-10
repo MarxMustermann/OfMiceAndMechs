@@ -194,15 +194,25 @@ class Quest(saveing.Saveable):
         # stop listening
         self.stopWatchingAll()
 
-        # smooth over impossible state
+        # smooth over impossible states
         if not self.active:
             debugMessages.append("this should not happen (posthandler called on inactive quest ("+str(self)+")) "+str(self.character))
             return
+        if not self.character:
+            debugMessages.append("this should not happen (posthandler called on quest without character ("+str(self)+")) "+str(self.character))
+            if self.endTrigger:
+                self.endTrigger()
+            if self.endCinematics:
+                showCinematic(self.endCinematics)            
+                loop.set_alarm_in(0.0, callShow_or_exit, '.')
+            
+            # deactivate
+            self.deactivate()
 
-        # smooth over impossible state
+            return
         if self.completed:
             debugMessages.append("this should not happen (posthandler called on completed quest ("+str(self)+")) "+str(self.character))
-            if self.character and self in self.character.quests:
+            if self in self.character.quests:
                 # remove quest
                 startNext = False
                 if self.character.quests[0] == self:
@@ -220,8 +230,7 @@ class Quest(saveing.Saveable):
         # flag self as completed
         self.completed = True
 
-        # TODO: handle quests with no assigned character
-        if self.character and self in self.character.quests:
+        if self in self.character.quests:
             # remove self from characters quest list
             # bad code: direct manipulation
             startNext = False
@@ -241,15 +250,14 @@ class Quest(saveing.Saveable):
             showCinematic(self.endCinematics)            
             loop.set_alarm_in(0.0, callShow_or_exit, '.')
 
-        # dactivate
+        # deactivate
         self.deactivate()
 
         # start next quest
-        if self.character:
-            if self.followUp:
-                self.character.assignQuest(self.followUp,active=True)
-            else:
-                self.character.startNextQuest()
+        if self.followUp:
+            self.character.assignQuest(self.followUp,active=True)
+        else:
+            self.character.startNextQuest()
 
     '''
     assign the quest to a character

@@ -187,6 +187,18 @@ class Saveable(object):
         return (states,changedThingsList,newThingsList,removedThingsList)
 
     '''
+    call a callback in savable format
+    '''
+    def callIndirect(self,callback):
+        # bad code: direct function calls are deprecated, but not completely removed
+        if not isinstance(callback,dict):
+            callback()
+        else:
+            container = callback["container"]
+            function = getattr(container,callback["method"])
+            function()
+
+    '''
     get a new creation counter
     '''
     def getCreationCounter(self):

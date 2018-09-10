@@ -33,7 +33,7 @@ class BasicCinematic(saveing.Saveable):
         self.type = "BasicCinematic"
 
         self.attributesToStore.extend([
-		       "background","overwriteFooter","footerText","type","skipable"])
+               "background","overwriteFooter","footerText","type","skipable"])
         self.callbacksToStore.append("endTrigger")
 
         # generate unique id
@@ -206,13 +206,7 @@ class MessageZoomCinematic(BasicCinematic):
         
         # trigger follow up functions
         if self.endTrigger:
-            # bad code: direct function calls are deprecated, but not completely removed
-            if not isinstance(self.endTrigger,dict):
-                self.endTrigger()
-            else:
-                container = self.endTrigger["container"]
-                function = container.methods[self.endTrigger["method"]]
-                function()
+            self.callIndirect(self.endTrigger)
 
 """
 a cinematic showing a text in various ways

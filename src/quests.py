@@ -188,13 +188,7 @@ class Quest(saveing.Saveable):
             debugMessages.append("this should not happen (posthandler called on quest without character ("+str(self)+")) "+str(self.character))
             # trigger follow up functions
             if self.endTrigger:
-                # bad code: direct function calls are deprecated, but not completely removed
-                if not isinstance(self.endTrigger,dict):
-                    self.endTrigger()
-                else:
-                    container = self.endTrigger["container"]
-                    function = container.methods[self.endTrigger["method"]]
-                    function()
+                self.callIndirect(self.endTrigger)
             if self.endCinematics:
                 showCinematic(self.endCinematics)            
                 loop.set_alarm_in(0.0, callShow_or_exit, '.')
@@ -238,13 +232,7 @@ class Quest(saveing.Saveable):
         # trigger follow ups
         # these should be a unified way to to this. probably an event
         if self.endTrigger:
-            # bad code: direct function calls are deprecated, but not completely removed
-            if not isinstance(self.endTrigger,dict):
-                self.endTrigger()
-            else:
-                container = self.endTrigger["container"]
-                function = container.methods[self.endTrigger["method"]]
-                function()
+            self.callIndirect(self.endTrigger)
         if self.endCinematics:
             showCinematic(self.endCinematics)            
             loop.set_alarm_in(0.0, callShow_or_exit, '.')

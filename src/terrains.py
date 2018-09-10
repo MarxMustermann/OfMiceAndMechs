@@ -925,7 +925,7 @@ class Terrain(saveing.Saveable):
     get things that would be affected if a rom would move north
     bad code: nearly identical code for each direction
     '''
-    def getAffectedByRoomMovementNorth(self,room,force=1,movementBlock=set()):
+    def getAffectedByRoomMovementDirection(self,room,direction,force=1,movementBlock=set()):
         # determine rooms that the room could collide with
         roomCandidates = []
         bigX = room.xPosition
@@ -941,22 +941,61 @@ class Terrain(saveing.Saveable):
         # get the rooms the room actually collides with
         roomCollisions = set()
         for roomCandidate in roomCandidates:
-            if (room.yPosition*15 + room.offsetY) == (roomCandidate.yPosition*15+roomCandidate.offsetY+roomCandidate.sizeY):
-                if (room.xPosition*15+room.offsetX < roomCandidate.xPosition*15+roomCandidate.offsetX+roomCandidate.sizeX) and (room.xPosition*15+room.offsetX+room.sizeX > roomCandidate.xPosition*15+roomCandidate.offsetX):
-                    roomCollisions.add(roomCandidate)
+            if direction == "north":
+                if (room.yPosition*15 + room.offsetY) == (roomCandidate.yPosition*15+roomCandidate.offsetY+roomCandidate.sizeY):
+                    if (room.xPosition*15+room.offsetX < roomCandidate.xPosition*15+roomCandidate.offsetX+roomCandidate.sizeX) and (room.xPosition*15+room.offsetX+room.sizeX > roomCandidate.xPosition*15+roomCandidate.offsetX):
+                        roomCollisions.add(roomCandidate)
+            elif direction == "south":
+                if (room.yPosition*15 + room.offsetY+room.sizeY) == (roomCandidate.yPosition*15+roomCandidate.offsetY):
+                    if (room.xPosition*15+room.offsetX < roomCandidate.xPosition*15+roomCandidate.offsetX+roomCandidate.sizeX) and (room.xPosition*15+room.offsetX+room.sizeX > roomCandidate.xPosition*15+roomCandidate.offsetX):
+                        roomCollisions.add(roomCandidate)
+            elif direction == "west":
+                if (room.xPosition*15 + room.offsetX) == (roomCandidate.xPosition*15+roomCandidate.offsetX+roomCandidate.sizeX):
+                    if (room.yPosition*15+room.offsetY < roomCandidate.yPosition*15+roomCandidate.offsetY+roomCandidate.sizeY) and (room.yPosition*15+room.offsetY+room.sizeY > roomCandidate.yPosition*15+roomCandidate.offsetY):
+                        roomCollisions.add(roomCandidate)
+            elif direction == "east":
+                if (room.xPosition*15 + room.offsetX+ room.sizeX) == (roomCandidate.xPosition*15+roomCandidate.offsetX):
+                    if (room.yPosition*15+room.offsetY < roomCandidate.yPosition*15+roomCandidate.offsetY+roomCandidate.sizeY) and (room.yPosition*15+room.offsetY+room.sizeY > roomCandidate.yPosition*15+roomCandidate.offsetY):
+                        roomCollisions.add(roomCandidate)
+            else:
+                debugMessages.append("invalid movement direction: "+str(direction))
 
         # get collusions from the pushed rooms recursively
         for roomCollision in roomCollisions:
             movementBlock.add(roomCollision)
-            self.getAffectedByRoomMovementNorth(roomCollision,force=force,movementBlock=movementBlock)
+            self.getAffectedByRoomMovementDirection(roomCollision,direction,force=force,movementBlock=movementBlock)
 
         # add affected items
-        posX = room.xPosition*15+room.offsetX-1
-        maxX = room.xPosition*15+room.offsetX+room.sizeX-1
-        while posX < maxX:
-            posX += 1
-            if (posX,room.yPosition*15+room.offsetY-1) in self.itemByCoordinates:
-                movementBlock.update(self.itemByCoordinates[(posX,room.yPosition*15+room.offsetY-1)])
+        if direction == "north":
+            posX = room.xPosition*15+room.offsetX-1
+            maxX = room.xPosition*15+room.offsetX+room.sizeX-1
+            while posX < maxX:
+                posX += 1
+                if (posX,room.yPosition*15+room.offsetY-1) in self.itemByCoordinates:
+                    movementBlock.update(self.itemByCoordinates[(posX,room.yPosition*15+room.offsetY-1)])
+        elif direction == "south":
+            posX = room.xPosition*15+room.offsetX-1
+            maxX = room.xPosition*15+room.offsetX+room.sizeX-1
+            while posX < maxX:
+                posX += 1
+                if (posX,room.yPosition*15+room.offsetY+room.sizeY) in self.itemByCoordinates:
+                    movementBlock.update(self.itemByCoordinates[(posX,room.yPosition*15+room.offsetY+room.sizeY)])
+        elif direction == "west":
+            posY = room.yPosition*15+room.offsetY-1
+            maxY = room.yPosition*15+room.offsetY+room.sizeY-1
+            while posY < maxY:
+                posY += 1
+                if (room.xPosition*15+room.offsetX-1,posY) in self.itemByCoordinates:
+                    movementBlock.update(self.itemByCoordinates[(room.xPosition*15+room.offsetX-1,posY)])
+        elif direction == "east":
+            posY = room.yPosition*15+room.offsetY-1
+            maxY = room.yPosition*15+room.offsetY+room.sizeY-1
+            while posY < maxY:
+                posY += 1
+                if (room.xPosition*15+room.offsetX+room.sizeX,posY) in self.itemByCoordinates:
+                    movementBlock.update(self.itemByCoordinates[(room.xPosition*15+room.offsetX+room.sizeX,posY)])
+        else:
+            debugMessages.append("invalid movement direction: "+str(direction))
 
     '''
     move a room to the north
@@ -982,43 +1021,6 @@ class Terrain(saveing.Saveable):
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
     '''
-    get things that would be affected if a rom would move south
-    bad code: nearly identical code for each direction
-    '''
-    def getAffectedByRoomMovementSouth(self,room,force=1,movementBlock=set()):
-        # determine rooms that the room could collide with
-        roomCandidates = []
-        bigX = room.xPosition
-        bigY = room.yPosition
-        possiblePositions = set()
-        for i in range(-2,2):
-            for j in range(-2,2):
-                possiblePositions.add((bigX-i,bigY-j))
-        for coordinate in possiblePositions:
-            if coordinate in self.roomByCoordinates:
-                roomCandidates.extend(self.roomByCoordinates[coordinate])
-
-        # get the rooms the room actually collides with
-        roomCollisions = set()
-        for roomCandidate in roomCandidates:
-            if (room.yPosition*15 + room.offsetY+room.sizeY) == (roomCandidate.yPosition*15+roomCandidate.offsetY):
-                if (room.xPosition*15+room.offsetX < roomCandidate.xPosition*15+roomCandidate.offsetX+roomCandidate.sizeX) and (room.xPosition*15+room.offsetX+room.sizeX > roomCandidate.xPosition*15+roomCandidate.offsetX):
-                    roomCollisions.add(roomCandidate)
-
-        # get collusions from the pushed rooms recursively
-        for roomCollision in roomCollisions:
-            movementBlock.add(roomCollision)
-            self.getAffectedByRoomMovementSouth(roomCollision,force=force,movementBlock=movementBlock)
-
-        # add affected items
-        posX = room.xPosition*15+room.offsetX-1
-        maxX = room.xPosition*15+room.offsetX+room.sizeX-1
-        while posX < maxX:
-            posX += 1
-            if (posX,room.yPosition*15+room.offsetY+room.sizeY) in self.itemByCoordinates:
-                movementBlock.update(self.itemByCoordinates[(posX,room.yPosition*15+room.offsetY+room.sizeY)])
-
-    '''
     move a room to the south
     bad code: nearly identical code for each direction
     '''
@@ -1042,43 +1044,6 @@ class Terrain(saveing.Saveable):
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
     '''
-    get things that would be affected if a rom would move west
-    bad code: nearly identical code for each direction
-    '''
-    def getAffectedByRoomMovementWest(self,room,force=1,movementBlock=set()):
-        # determine rooms that the room could collide with
-        roomCandidates = []
-        bigX = room.xPosition
-        bigY = room.yPosition
-        possiblePositions = set()
-        for i in range(-2,2):
-            for j in range(-2,2):
-                possiblePositions.add((bigX-i,bigY-j))
-        for coordinate in possiblePositions:
-            if coordinate in self.roomByCoordinates:
-                roomCandidates.extend(self.roomByCoordinates[coordinate])
-
-        # get the rooms the room actually collides with
-        roomCollisions = set()
-        for roomCandidate in roomCandidates:
-            if (room.xPosition*15 + room.offsetX) == (roomCandidate.xPosition*15+roomCandidate.offsetX+roomCandidate.sizeX):
-                if (room.yPosition*15+room.offsetY < roomCandidate.yPosition*15+roomCandidate.offsetY+roomCandidate.sizeY) and (room.yPosition*15+room.offsetY+room.sizeY > roomCandidate.yPosition*15+roomCandidate.offsetY):
-                    roomCollisions.add(roomCandidate)
-
-        # get collusions from the pushed rooms recursively
-        for roomCollision in roomCollisions:
-            movementBlock.add(roomCollision)
-            self.getAffectedByRoomMovementWest(roomCollision,force=force,movementBlock=movementBlock)
-
-        # add affected items
-        posY = room.yPosition*15+room.offsetY-1
-        maxY = room.yPosition*15+room.offsetY+room.sizeY-1
-        while posY < maxY:
-            posY += 1
-            if (room.xPosition*15+room.offsetX-1,posY) in self.itemByCoordinates:
-                movementBlock.update(self.itemByCoordinates[(room.xPosition*15+room.offsetX-1,posY)])
-
-    '''
     move a room to the west
     bad code: nearly identical code for each direction
     '''
@@ -1100,43 +1065,6 @@ class Terrain(saveing.Saveable):
                 self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
             else:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
-
-    '''
-    get things that would be affected if a rom would move east
-    bad code: nearly identical code for each direction
-    '''
-    def getAffectedByRoomMovementEast(self,room,force=1,movementBlock=set()):
-        # determine rooms that the room could collide with
-        roomCandidates = []
-        bigX = room.xPosition
-        bigY = room.yPosition
-        possiblePositions = set()
-        for i in range(-2,2):
-            for j in range(-2,2):
-                possiblePositions.add((bigX-i,bigY-j))
-        for coordinate in possiblePositions:
-            if coordinate in self.roomByCoordinates:
-                roomCandidates.extend(self.roomByCoordinates[coordinate])
-
-        # get the rooms the room actually collides with
-        roomCollisions = set()
-        for roomCandidate in roomCandidates:
-            if (room.xPosition*15 + room.offsetX+ room.sizeX) == (roomCandidate.xPosition*15+roomCandidate.offsetX):
-                if (room.yPosition*15+room.offsetY < roomCandidate.yPosition*15+roomCandidate.offsetY+roomCandidate.sizeY) and (room.yPosition*15+room.offsetY+room.sizeY > roomCandidate.yPosition*15+roomCandidate.offsetY):
-                    roomCollisions.add(roomCandidate)
-
-        # get collusions from the pushed rooms recursively
-        for roomCollision in roomCollisions:
-            movementBlock.add(roomCollision)
-            self.getAffectedByRoomMovementEast(roomCollision,force=force,movementBlock=movementBlock)
-
-        # add affected items
-        posY = room.yPosition*15+room.offsetY-1
-        maxY = room.yPosition*15+room.offsetY+room.sizeY-1
-        while posY < maxY:
-            posY += 1
-            if (room.xPosition*15+room.offsetX+room.sizeX,posY) in self.itemByCoordinates:
-                movementBlock.update(self.itemByCoordinates[(room.xPosition*15+room.offsetX+room.sizeX,posY)])
 
     '''
     move a room to the east

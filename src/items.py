@@ -169,9 +169,8 @@ class Item(saving.Saveable):
 
     '''
     get a list of items that is affected if the item would move north
-    bad code: a method for each direction
     '''
-    def getAffectedByMovementNorth(self,force=1,movementBlock=set()):
+    def getAffectedByMovementDirection(self,direction,force=1,movementBlock=set()):
         # add self
         movementBlock.add(self)
         
@@ -179,7 +178,7 @@ class Item(saving.Saveable):
         for thing in self.chainedTo:
             if thing not in movementBlock and not thing == self:
                 movementBlock.add(thing)
-                thing.getAffectedByMovementNorth(force=force,movementBlock=movementBlock)
+                thing.getAffectedByMovementDirection(direction,force=force,movementBlock=movementBlock)
 
         return movementBlock
 
@@ -215,22 +214,6 @@ class Item(saving.Saveable):
                 self.destroy()
 
     '''
-    get a list of items that is affected if the item would move south
-    bad code: a method for each direction
-    '''
-    def getAffectedByMovementSouth(self,force=1,movementBlock=set()):
-        # add self
-        movementBlock.add(self)
-        
-        # add things chained to the item
-        for thing in self.chainedTo:
-            if thing not in movementBlock and not thing == self:
-                movementBlock.add(thing)
-                thing.getAffectedByMovementSouth(force=force,movementBlock=movementBlock)
-
-        return movementBlock
-
-    '''
     move the item to the south
     bad code: a method for each direction
     '''
@@ -262,22 +245,6 @@ class Item(saving.Saveable):
                 self.destroy()
 
     '''
-    get a list of items that is affected if the item would move west
-    bad code: a method for each direction
-    '''
-    def getAffectedByMovementWest(self,force=1,movementBlock=set()):
-        # add self
-        movementBlock.add(self)
-        
-        # add things chained to the item
-        for thing in self.chainedTo:
-            if thing not in movementBlock and not thing == self:
-                movementBlock.add(thing)
-                thing.getAffectedByMovementWest(force=force,movementBlock=movementBlock)
-
-        return movementBlock
-
-    '''
     move the item to the west
     bad code: a method for each direction
     '''
@@ -307,22 +274,6 @@ class Item(saving.Saveable):
             # bad code: this cannot happen since everything on the target position was destroyed already
             if len(self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]) > 1:
                 self.destroy()
-
-    '''
-    get a list of items that is affected if the item would move east
-    bad code: a method for each direction
-    '''
-    def getAffectedByMovementEast(self,force=1,movementBlock=set()):
-        # add self
-        movementBlock.add(self)
-        
-        # add things chained to the item
-        for thing in self.chainedTo:
-            if thing not in movementBlock and not thing == self:
-                movementBlock.add(thing)
-                thing.getAffectedByMovementEast(force=force,movementBlock=movementBlock)
-
-        return movementBlock
 
     '''
     move the item to the east

@@ -671,22 +671,6 @@ class Room(saveing.Saveable):
         self.itemsOnFloor.remove(item)
 
     '''
-    get a list of things affected if the room would move north
-    bad code: nearly identical code for each direction
-    '''
-    def getAffectedByMovementNorth(self,initialMovement=True,force=1,movementBlock=set()):
-        # gather things that would be affected on terrain level
-        self.terrain.getAffectedByRoomMovementNorth(self,force=force,movementBlock=movementBlock)
-
-        # gather things chained to the room
-        for thing in self.chainedTo:
-            if thing not in movementBlock:
-                movementBlock.add(thing)
-                thing.getAffectedByMovementNorth(force=force,movementBlock=movementBlock)
-
-        return movementBlock
-
-    '''
     move the room to the north
     bad code: nearly identical code for each direction
     '''
@@ -695,7 +679,7 @@ class Room(saveing.Saveable):
             # collect the things that would be affected by the movement
             movementBlock = set()
             movementBlock.add(self)
-            self.getAffectedByMovementNorth(force=force,movementBlock=movementBlock)
+            self.getAffectedByMovementDirection("north",force=force,movementBlock=movementBlock)
 
             # calculate total resistance against beeing moved
             totalResistance = 0
@@ -717,22 +701,6 @@ class Room(saveing.Saveable):
         messages.append("*RUMBLE*")
 
     '''
-    get a list of things affected if the room would move south
-    bad code: nearly identical code for each direction
-    '''
-    def getAffectedByMovementSouth(self,initialMovement=True,force=1,movementBlock=set()):
-        # gather things that would be affected on terrain level
-        self.terrain.getAffectedByRoomMovementSouth(self,force=force,movementBlock=movementBlock)
-
-        # gather things chained to the room
-        for thing in self.chainedTo:
-            if thing not in movementBlock:
-                movementBlock.add(thing)
-                thing.getAffectedByMovementSouth(force=force,movementBlock=movementBlock)
-
-        return movementBlock
-
-    '''
     move the room to the south
     bad code: nearly identical code for each direction
     '''
@@ -741,7 +709,7 @@ class Room(saveing.Saveable):
             # collect the things that would be affected by the movement
             movementBlock = set()
             movementBlock.add(self)
-            self.getAffectedByMovementSouth(force=force,movementBlock=movementBlock)
+            self.getAffectedByMovementDirection("south",force=force,movementBlock=movementBlock)
 
             # calculate total resistance against beeing moved
             totalResistance = 0
@@ -763,22 +731,6 @@ class Room(saveing.Saveable):
         messages.append("*RUMBLE*")
 
     '''
-    get a list of things affected if the room would move west
-    bad code: nearly identical code for each direction
-    '''
-    def getAffectedByMovementWest(self,initialMovement=True,force=1,movementBlock=set()):
-        # gather things that would be affected on terrain level
-        self.terrain.getAffectedByRoomMovementWest(self,force=force,movementBlock=movementBlock)
-
-        # gather things chained to the room
-        for thing in self.chainedTo:
-            if thing not in movementBlock:
-                movementBlock.add(thing)
-                thing.getAffectedByMovementWest(force=force,movementBlock=movementBlock)
-
-        return movementBlock
-
-    '''
     move the room to the west
     bad code: nearly identical code for each direction
     '''
@@ -787,7 +739,7 @@ class Room(saveing.Saveable):
             # collect the things that would be affected by the movement
             movementBlock = set()
             movementBlock.add(self)
-            self.getAffectedByMovementWest(force=force,movementBlock=movementBlock)
+            self.getAffectedByMovementDirection("west",force=force,movementBlock=movementBlock)
 
             # calculate total resistance against beeing moved
             totalResistance = 0
@@ -809,22 +761,6 @@ class Room(saveing.Saveable):
         messages.append("*RUMBLE*")
 
     '''
-    get a list of things affected if the room would move east
-    bad code: nearly identical code for each direction
-    '''
-    def getAffectedByMovementEast(self,force=1,movementBlock=set()):
-        # gather things that would be affected on terrain level
-        self.terrain.getAffectedByRoomMovementEast(self,force=force,movementBlock=movementBlock)
-
-        # gather things chained to the room
-        for thing in self.chainedTo:
-            if thing not in movementBlock:
-                movementBlock.add(thing)
-                thing.getAffectedByMovementEast(force=force,movementBlock=movementBlock)
-
-        return movementBlock
-
-    '''
     move the room to the east
     bad code: nearly identical code for each direction
     '''
@@ -833,7 +769,7 @@ class Room(saveing.Saveable):
             # collect the things that would be affected by the movement
             movementBlock = set()
             movementBlock.add(self)
-            self.getAffectedByMovementEast(force=force,movementBlock=movementBlock)
+            self.getAffectedByMovementDirection("east",force=force,movementBlock=movementBlock)
 
             # calculate total resistance against beeing moved
             totalResistance = 0
@@ -853,6 +789,19 @@ class Room(saveing.Saveable):
         # actually move the room
         self.terrain.moveRoomEast(self)
         messages.append("*RUMBLE*")
+    
+    def getAffectedByMovementDirection(self,direction,force=1,movementBlock=set()):
+        # gather things that would be affected on terrain level
+        self.terrain.getAffectedByRoomMovementDirection(self,direction,force=force,movementBlock=movementBlock)
+
+        # gather things chained to the room
+        for thing in self.chainedTo:
+            if thing not in movementBlock:
+                movementBlock.add(thing)
+                thing.getAffectedByMovementDirection(direction,force=force,movementBlock=movementBlock)
+
+        return movementBlock
+
 
     def moveCharacterDirection(self,character,direction):
         # check whether movement is contained in the room

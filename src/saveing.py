@@ -33,6 +33,7 @@ class Saveable(object):
     def __init__(self):
         super().__init__()
         self.attributesToStore = ["id","creationCounter"]
+        self.callbacksToStore = []
 
     '''
     get state as dict
@@ -44,6 +45,23 @@ class Saveable(object):
                 state[attribute] = getattr(self,attribute)
             else:
                 state[attribute] = None
+
+        for callbackName in self.callbacksToStore:
+            if hasattr(self,attribute):
+                callback = getattr(self,callbackName)
+            else:
+                callback = None
+            if callback:
+                if isinstance(callback,dict):
+                    serializedCallback = {}
+                    serializedCallback["container"] = callback["container"].id
+                    serializedCallback["method"] = callback["method"]
+                    state[callbackName] = serializedCallback
+                else:
+                    state[callbackName] = str(callback)
+            else:
+                state[callbackName] = None
+
         return state
 
     '''
@@ -88,6 +106,26 @@ class Saveable(object):
         for attribute in self.attributesToStore:
             if attribute in state:
                 setattr(self,attribute,state[attribute])
+
+        for callbackName in self.callbacksToStore:
+            if callbackName in state:
+                if state[callbackName]:
+                    callback = getattr(self,callbackName)
+                    if not callback:
+                        callback = {}
+
+                    if "method" in state[callbackName]:
+                        callback["method"] = state[callbackName]["method"]
+                    if "container" in state[callbackName]:
+                        '''
+                        set value
+                        '''
+                        def setContainer(thing):
+                            callback["container"] = thing
+                        loadingRegistry.callWhenAvailable(state[callbackName]["container"],setContainer)
+                    setattr(self,callbackName,callback)
+                else:
+                    setattr(self,callbackName,None)
 
     '''
     get a list of ids an a dict of their states from a list of objects

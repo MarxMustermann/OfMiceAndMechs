@@ -108,6 +108,7 @@ items.loadingRegistry = loadingRegistry
 story.loadingRegistry = loadingRegistry
 events.loadingRegistry = loadingRegistry
 terrains.loadingRegistry = loadingRegistry
+saveing.loadingRegistry = loadingRegistry
 
 # HACK: common variables with modules
 phasesByName = {}

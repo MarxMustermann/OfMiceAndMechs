@@ -577,7 +577,6 @@ entering interactive mode .................................
 
     '''
     ask question and place trigger
-    bad code: bad datastructure leads tu ugly code
     '''
     def askSecondQuestion(self):
         options = [
@@ -593,7 +592,6 @@ entering interactive mode .................................
 
     '''
     ask question and place trigger
-    bad code: bad datastructure leads tu ugly code
     '''
     def askThirdQuestion(self):
         options = [
@@ -609,7 +607,6 @@ entering interactive mode .................................
 
     '''
     show fluff info with effect and place trigger
-    bad code: bad datastructure leads tu ugly code
     '''
     def flashInformation(self):
         import urwid

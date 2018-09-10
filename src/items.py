@@ -776,11 +776,10 @@ class Furnace(Item):
                     messages.append("*wush*")
 
                 # get the boilers affected
-                if self.boilers == None:
-                    self.boilers = []
-                    for boiler in self.room.boilers:
-                        if ((boiler.xPosition in [self.xPosition,self.xPosition-1,self.xPosition+1] and boiler.yPosition == self.yPosition) or boiler.yPosition in [self.yPosition-1,self.yPosition+1] and boiler.xPosition == self.xPosition):
-                            self.boilers.append(boiler)
+                self.boilers = []
+                for boiler in self.room.boilers:
+                    if ((boiler.xPosition in [self.xPosition,self.xPosition-1,self.xPosition+1] and boiler.yPosition == self.yPosition) or boiler.yPosition in [self.yPosition-1,self.yPosition+1] and boiler.xPosition == self.xPosition):
+                        self.boilers.append(boiler)
 
                 for boiler in self.boilers:
                     boiler.startHeatingUp()

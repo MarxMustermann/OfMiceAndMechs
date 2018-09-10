@@ -74,10 +74,13 @@ class GameState():
         if "yPosition" in state["mainChar"]:
             yPosition = state["mainChar"]["yPosition"]
         if "room" in state["mainChar"]:
-            for room in terrain.rooms:
-                if room.id == state["mainChar"]["room"]:
-                    room.addCharacter(self.mainChar,xPosition,yPosition)
-                    break
+            if state["mainChar"]["room"]:
+                for room in terrain.rooms:
+                    if room.id == state["mainChar"]["room"]:
+                        room.addCharacter(self.mainChar,xPosition,yPosition)
+                        break
+            else:
+                terrain.addCharacter(self.mainChar,xPosition,yPosition)
         else:
             terrain.addCharacter(self.mainChar,xPosition,yPosition)
         self.mainChar.setState(state["mainChar"])
@@ -93,7 +96,10 @@ class GameState():
     def getState(self):
         # load the main characters state
         mainCharState = self.mainChar.getDiffState()
-        mainCharState["room"] = self.mainChar.room.id
+        if self.mainChar.room:
+            mainCharState["room"] = self.mainChar.room.id
+        else:
+            mainCharState["room"] = None
         mainCharState["xPosition"] = self.mainChar.xPosition
         mainCharState["yPosition"] = self.mainChar.yPosition
 

@@ -2500,6 +2500,11 @@ class ExamineQuest(Quest):
             self.examinedItems.append(itemType)
         self.triggerCompletionCheck()
 
+    def setState(self,state):
+        super().setState(state)
+        if self.active and self.character:
+            self.character.addListener(self.registerExaminination,"examine")
+
 ##############################################################################
 ###
 ## construction quests

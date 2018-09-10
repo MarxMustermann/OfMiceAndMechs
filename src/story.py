@@ -825,6 +825,7 @@ class BasicMovementTraining(BasicPhase):
         self.didFurnaces = False
         self.methods = {
             "fetchDrink":self.fetchDrink,
+            "iamready":self.iamready,
         }
     
     '''
@@ -1056,7 +1057,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
 
         # add examine quest
         quest = quests.ExamineQuest(creator=void)
-        quest.endTrigger = self.iamready
+        quest.endTrigger = {"container":self,"method":"iamready"}
         mainChar.serveQuest.addQuest(quest)
 
     '''

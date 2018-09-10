@@ -27,15 +27,15 @@ class LoadingRegistry(object):
 
 class Saveable(object):
     creationCounter = 0
+    attributesToStore = ["id","creationCounter"]
 
     '''
     get state as dict
     '''
     def getState(self):
-        state = {
-            "id":self.id,
-            "creationCounter":self.creationCounter,
-        }
+        state = {}
+        for attribute in self.attributesToStore:
+            state[attribute] = getattr(self,attribute)
         return state
 
     '''
@@ -62,20 +62,19 @@ class Saveable(object):
     '''
     def getDiffState(self):
         result = {}
-        if not self.creationCounter == self.initialState["creationCounter"]:
-            result["creationCounter"] = self.creationCounter
-        if not self.id == self.initialState["id"]:
-            result["id"] = self.id
+        for attribute in self.attributesToStore:
+            currentValue = getattr(self,attribute)
+            if not currentValue == self.initialState[attribute]:
+                result[attribute] = currentValue
         return result
 
     '''
     set state as dict
     '''
     def setState(self,state):
-       if "creationCounter" in state:
-           self.creationCounter = state["creationCounter"]
-       if "id" in state:
-           self.id = state["id"]
+        for attribute in self.attributesToStore:
+            if attribute in state:
+                setattr(self,attribute,state[attribute])
 
     '''
     get a list of ids an a dict of their states from a list of objects

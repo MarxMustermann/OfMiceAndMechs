@@ -32,6 +32,9 @@ class BasicCinematic(saveing.Saveable):
         self.endTrigger = None
         self.type = "BasicCinematic"
 
+        self.attributesToStore.extend([
+		       "background","overwriteFooter","footerText","type","skipable"])
+
         # generate unique id
         self.id = {
                     "counter":creator.getCreationCounter()
@@ -45,17 +48,6 @@ class BasicCinematic(saveing.Saveable):
     def setState(self,state):
         super().setState(state)
 
-        # set attributes
-        if "id" in state:
-            self.id = state["id"]
-        if "background" in state:
-            self.background = state["background"]
-        if "overwriteFooter" in state:
-            self.overwriteFooter = state["overwriteFooter"]
-        if "footerText" in state:
-            self.footerText = state["footerText"]
-        if "type" in state:
-            self.type = state["type"]
         if "endTrigger" in state:
             if state["endTrigger"]:
                 if not self.endTrigger:
@@ -79,14 +71,6 @@ class BasicCinematic(saveing.Saveable):
     def getState(self):
         # store simple attributes
         state = super().getState()
-        state.update({
-                   "id": self.id,
-                   "background": self.background,
-                   "skipable": self.skipable,
-                   "overwriteFooter": self.overwriteFooter,
-                   "footerText": self.footerText,
-                   "type": self.type,
-                })
 
         # store follow up action
         # serializing method calls should be abstracted

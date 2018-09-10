@@ -522,12 +522,7 @@ class ShowQuestExecution(BasicCinematic):
 
         # trigger follow up actions
         if self.endTrigger:
-            if not isinstance(self.endTrigger,dict):
-                self.endTrigger()
-            else:
-                container = self.endTrigger["container"]
-                function = container.methods[self.endTrigger["method"]]
-                function()
+            self.callIndirect(self.endTrigger)
         
 '''
 shows the game

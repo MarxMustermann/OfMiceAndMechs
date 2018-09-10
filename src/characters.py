@@ -52,6 +52,10 @@ class Character(saving.Saveable):
         self.id["creator"] = creator.id
         self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
 
+        self.attributesToStore.extend([
+		       "gotBasicSchooling","gotMovementSchooling","gotInteractionSchooling","gotExamineSchooling",
+			   "xPosition","yPosition","name","satiation","unconcious","reputation","tutorialStart"])
+
         # bad code: story specific state
         self.serveQuest = None
         self.tutorialStart = 0
@@ -109,32 +113,9 @@ class Character(saving.Saveable):
         # the to be result
         result = super().getDiffState()
 
-        # serialize attributes
-        # bad code: very repetetive code
-        if not self.gotBasicSchooling == self.initialState["gotBasicSchooling"]:
-            result["gotBasicSchooling"] = self.gotBasicSchooling
-        if not self.gotMovementSchooling == self.initialState["gotMovementSchooling"]:
-            result["gotMovementSchooling"] = self.gotMovementSchooling
-        if not self.gotInteractionSchooling == self.initialState["gotInteractionSchooling"]:
-            result["gotInteractionSchooling"] = self.gotInteractionSchooling
-        if not self.gotExamineSchooling == self.initialState["gotExamineSchooling"]:
-            result["gotExamineSchooling"] = self.gotExamineSchooling
-        if not self.xPosition == self.initialState["xPosition"]:
-            result["xPosition"] = self.xPosition
-        if not self.yPosition == self.initialState["yPosition"]:
-            result["yPosition"] = self.yPosition
-        if not self.name == self.initialState["name"]:
-            result["name"] = self.name
-        if not self.satiation == self.initialState["satiation"]:
-            result["satiation"] = self.satiation
-        if not self.unconcious == self.initialState["unconcious"]:
-            result["unconcious"] = self.unconcious
-        if not self.reputation == self.initialState["reputation"]:
-            result["reputation"] = self.reputation
-        if not self.tutorialStart == self.initialState["tutorialStart"]:
-            result["tutorialStart"] = self.tutorialStart
         if not self.path == self.initialState["path"]:
             result["path"] = self.path
+
         # bad code: repetetive handling of non-or-id serialization
         serveQuest = None
         if self.serveQuest:
@@ -194,21 +175,10 @@ class Character(saving.Saveable):
     '''
     def getState(self):
         state = super().getState()
-        # simple attributes
+
         state.update({ 
-                 "gotBasicSchooling": self.gotBasicSchooling,
-                 "gotMovementSchooling": self.gotMovementSchooling,
-                 "gotInteractionSchooling": self.gotInteractionSchooling,
-                 "gotExamineSchooling": self.gotExamineSchooling,
-                 "xPosition": self.xPosition,
-                 "yPosition": self.yPosition,
-                 "name": self.name,
-                 "satiation": self.satiation,
-                 "unconcious": self.unconcious,
-                 "reputation": self.reputation,
                  "inventory": {},
                  "quests": {},
-                 "tutorialStart":self.tutorialStart,
                  "path":self.path,
                })
                  
@@ -261,35 +231,11 @@ class Character(saving.Saveable):
     def setState(self,state):
         super().setState(state)
 
-        # set attributes
-        # bad codes: very repetetive code
-        if "id" in state:
-            self.id = state["id"]
-        if "gotBasicSchooling" in state:
-            self.gotBasicSchooling = state["gotBasicSchooling"]
-        if "gotMovementSchooling" in state:
-            self.gotMovementSchooling = state["gotMovementSchooling"]
-        if "gotInteractionSchooling" in state:
-            self.gotInteractionSchooling = state["gotInteractionSchooling"]
-        if "gotExamineSchooling" in state:
-            self.gotExamineSchooling = state["gotExamineSchooling"]
-        if "yPosition" in state:
-            self.yPosition = state["yPosition"]
-        if "xPosition" in state:
-            self.xPosition = state["xPosition"]
-        if "name" in state:
-            self.name = state["name"]
-        if "satiation" in state:
-            self.satiation = state["satiation"]
         if "unconcious" in state:
-            self.unconcious = state["unconcious"]
             if self.unconcious:
                 self.fallUnconcious()
                 self.display = displayChars.unconciousBody
-        if "reputation" in state:
-            self.reputation = state["reputation"]
-        if "tutorialStart" in state:
-            self.tutorialStart = state["tutorialStart"]
+
         if "path" in state:
             self.path = state["path"]
 

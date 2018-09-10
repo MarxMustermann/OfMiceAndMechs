@@ -2472,6 +2472,7 @@ class ExamineQuest(Quest):
         self.description = "please examine your environment"
         self.examinedItems = []
         super().__init__(startCinematics=startCinematics,creator=creator)
+        self.attributesToStore.append("completionThreshold")
 
         # save initial state and register
         self.type = "ExamineQuest"

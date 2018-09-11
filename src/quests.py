@@ -308,24 +308,7 @@ class Quest(saveing.Saveable):
 
         # add automatic termination
         if self.lifetime:
-            '''
-            the event for automatically terminating the quest
-            '''
-            class endQuestEvent(events.Event):
-                '''
-                straightforward state setting
-                '''
-                def __init__(subself,tick):
-                    super().__init__(tick)
-                    subself.tick = tick
-
-                '''
-                terminate the quest
-                '''
-                def handleEvent(subself):
-                    self.postHandler()
-
-            self.character.addEvent(endQuestEvent(gamestate.tick+self.lifetime))
+            self.character.addEvent(events.EndQuestEvent(gamestate.tick+self.lifetime))
 
         # recalculate and notify listeners
         self.recalculate()

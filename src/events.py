@@ -154,6 +154,25 @@ class FurnaceBurnoutEvent(Event):
             state["furnace"] = None
         return state
 
+'''
+the event for automatically terminating the quest
+'''
+class EndQuestEvent(Event):
+    type = "EndQuestEvent"
+
+    '''
+    straightforward state setting
+    '''
+    def __init__(subself,tick):
+        super().__init__(tick)
+
+    '''
+    terminate the quest
+    '''
+    def handleEvent(subself):
+        self.postHandler()
+
+
 # supply a mapping from strings to events
 # bad pattern: has to be extendable
 eventMap = {
@@ -161,6 +180,7 @@ eventMap = {
              "ShowMessageEvent":ShowMessageEvent,
              "ShowCinematicEvent":ShowCinematicEvent,
              "FurnaceBurnoutEvent":FurnaceBurnoutEvent,
+             "EndQuestEvent":EndQuestEvent,
            }
 
 '''

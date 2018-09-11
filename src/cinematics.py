@@ -334,8 +334,7 @@ class TextCinematic(BasicCinematic):
 
         # trigger follow up actions
         if self.endTrigger:
-            # bad code: direct funtion call
-            self.endTrigger()
+            self.callIndirect(self.endTrigger)
 
     '''
     get state as dict

@@ -1192,11 +1192,12 @@ class FirstTutorialPhase(BasicPhase):
             '''
             the event for faking a coal delivery
             '''
-            class CoalRefillEvent(object):
+            class CoalRefillEvent(events.Event):
                 '''
                 basic state initialization
                 '''
                 def __init__(subself,tick):
+                    super().__init__(tick)
                     subself.tick = tick
 
                 '''
@@ -1266,11 +1267,12 @@ class FirstTutorialPhase(BasicPhase):
             '''
             add the quests for firering a furnace
             '''
-            class AddQuestEvent(object):
+            class AddQuestEvent(events.Event):
                 '''
                 straightforward state initialization
                 '''
                 def __init__(subself,tick):
+                    super().__init__(tick)
                     subself.tick = tick
 
                 '''
@@ -1294,7 +1296,8 @@ class FirstTutorialPhase(BasicPhase):
                 '''
                 straightforward state initialization
                 '''
-                def __init__(subself,tick):
+                def __init__(subself,events.Event):
+                    super().__init__(tick)
                     subself.tick = tick
 
                 '''
@@ -1327,11 +1330,12 @@ class FirstTutorialPhase(BasicPhase):
             '''
             event for starting the next phase
             '''
-            class StartNextPhaseEvent(object):
+            class StartNextPhaseEvent(events.Event):
                 '''
                 straightforward state initialization
                 '''
                 def __init__(subself,tick):
+                    super().__init__(tick)
                     subself.tick = tick
 
                 '''
@@ -1491,11 +1495,12 @@ class ThirdTutorialPhase(BasicPhase):
             event to make the npc fire another furnace
             bad code: xxx2
             '''
-            class AnotherOne2(object):
+            class AnotherOne2(events.Event):
                 '''
                 straightforward state initialization
                 '''
                 def __init__(subself,tick,index):
+                    super().__init__(tick)
                     subself.tick = tick
                     subself.furnaceIndex = index
 
@@ -1517,11 +1522,12 @@ class ThirdTutorialPhase(BasicPhase):
             the event for waiting for a clean start and making the npc start
             bad code: xxx2
             '''
-            class WaitForClearStart2(object):
+            class WaitForClearStart2(events.Event):
                 '''
                 straightforward state initialization
                 '''
                 def __init__(subself,tick,index):
+                    super().__init__(tick)
                     subself.tick = tick
 
                 '''
@@ -1556,11 +1562,12 @@ class ThirdTutorialPhase(BasicPhase):
         '''
         event to make the player fire another furnace
         '''
-        class AnotherOne(object):
+        class AnotherOne(events.Event):
             '''
             straightforward state initialization
             '''
             def __init__(subself,tick,index):
+                super().__init__(tick)
                 subself.tick = tick
                 subself.furnaceIndex = index
 
@@ -1579,11 +1586,12 @@ class ThirdTutorialPhase(BasicPhase):
         '''
         the event for waiting for a clean start and making the player start
         '''
-        class WaitForClearStart(object):
+        class WaitForClearStart(events.Event):
             '''
             straightforward state initialization
             '''
             def __init__(subself,tick,index):
+                super().__init__(tick)
                 subself.tick = tick
 
             '''
@@ -1899,11 +1907,12 @@ class FindWork(BasicPhase):
         '''
         the event for making the player coordinate unloding the cargo
         '''
-        class StoreCargo(object):
+        class StoreCargo(events.Event):
             '''
             basic state initialization
             '''
             def __init__(subself,tick,char,toCancel=[]):
+                super().__init__(tick)
                 subself.tick = tick
                 subself.char = char
 

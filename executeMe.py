@@ -181,6 +181,7 @@ events.loop = interaction.loop
 story.events = events
 items.events = events
 rooms.events = events
+quests.events = events
 
 # HACK: common variables with modules
 cinematics.callShow_or_exit = interaction.callShow_or_exit

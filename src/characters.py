@@ -151,6 +151,17 @@ class Character(saving.Saveable):
         if questStates or removedQuests:
             result["quests"] = quests
 
+        # store events diff
+        (eventStates,changedEvents,newEvents,removedEvents) = self.getDiffList(self.events,self.initialState["eventIds"])
+        if changedEvents:
+            result["changedEvents"] = changedEvents
+        if newEvents:
+            result["newEvents"] = newEvents
+        if removedEvents:
+            result["removedEvents"] = removedEvents
+        if eventStates:
+            result["eventStates"] = eventStates
+
         # save chat options
         # bad code: storing the Chat options as class instead of object complicates things
         chatOptions = []
@@ -205,6 +216,9 @@ class Character(saving.Saveable):
             state["serveQuest"] = self.serveQuest.id
         else:
             state["serveQuest"] = None
+
+        (eventIds,eventStates) = self.storeStateList(self.events)
+        state["eventIds"] = eventIds
 
         # store serve quest
         # bad code: storing the Chat options as class instead of object complicates things
@@ -281,6 +295,13 @@ class Character(saving.Saveable):
                         option["params"] = params
                     chatOptions.append(option)
             self.basicChatOptions = chatOptions
+
+        # add new events
+        if "newEvents" in state:
+            for eventId in state["newEvents"]:
+                eventState = state["eventStates"][eventId]
+                event = events.getEventFromState(eventState)
+                self.addEvent(event)
 
         return state
 

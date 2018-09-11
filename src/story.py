@@ -1851,6 +1851,7 @@ class FindWork(BasicPhase):
             basic state initialization
             '''
             def __init__(subself,tick,toCancel=[]):
+                super().__init__(tick)
                 subself.tick = tick
                 subself.toCancel = toCancel
 

@@ -1292,11 +1292,11 @@ class FirstTutorialPhase(BasicPhase):
             event for showing a message
             bad code: should be abstracted
             '''
-            class ShowMessageEvent(object):
+            class ShowMessageEvent(events.Event):
                 '''
                 straightforward state initialization
                 '''
-                def __init__(subself,events.Event):
+                def __init__(subself,tick):
                     super().__init__(tick)
                     subself.tick = tick
 

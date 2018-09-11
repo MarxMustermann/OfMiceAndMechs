@@ -311,11 +311,12 @@ class Quest(saveing.Saveable):
             '''
             the event for automatically terminating the quest
             '''
-            class endQuestEvent(object):
+            class endQuestEvent(events.Event):
                 '''
                 straightforward state setting
                 '''
                 def __init__(subself,tick):
+                    super().__init__(tick)
                     subself.tick = tick
 
                 '''
@@ -2429,11 +2430,12 @@ class PatrolQuest(MetaQuestSequence):
             '''
             event for wrapping up the quest
             '''
-            class endQuestEvent(object):
+            class endQuestEvent(events.Event):
                 '''
                 state initialization
                 '''
                 def __init__(subself,tick):
+                    super().__init__(tick)
                     subself.tick = tick
 
                 '''

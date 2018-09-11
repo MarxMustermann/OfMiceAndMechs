@@ -142,7 +142,7 @@ class BasicPhase(object):
         self.mainCharQuestList[-1].followup = None
 
         # chain last quest to the phases teardown
-        self.mainCharQuestList[-1].endTrigger = self.end
+        self.mainCharQuestList[-1].endTrigger = {"container":self,"method":"end"}
 
         # assign the first quest
         mainChar.assignQuest(self.mainCharQuestList[0])
@@ -660,7 +660,7 @@ transfer control to implant"""],autocontinue=True,scrolling=True)
 
         # zooom out and end phase
         cinematic = cinematics.MessageZoomCinematic(creator=void)
-        cinematic.endTrigger = self.end
+        cinematic.endTrigger = {"container":self,"method":"end"}
         cinematics.cinematicQueue.append(cinematic)
 
     '''
@@ -1075,7 +1075,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
             text += "We are "+str(normTime-timeTaken)+" ticks ahead of plan. We need to make up for this. Please wait for "+str(normTime-timeTaken)+" ticks.\nIn order to not waste time, feel free to ask questions in the meantime.\n"
             quest = quests.WaitQuest(lifetime=normTime-timeTaken,creator=void)
             showText(text)
-            quest.endTrigger = self.trainingCompleted
+            quest.endTrigger = {"container":self,"method":"trainingCompleted"}
             mainChar.serveQuest.addQuest(quest)
 
     '''
@@ -1104,7 +1104,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
         mainChar.assignQuest(quest,active=True)
 
         # trigger final wrap up
-        quest.endTrigger = self.end
+        quest.endTrigger = {"container":self,"method":"end"}
 
     '''
     start next phase
@@ -1422,7 +1422,7 @@ class SecondTutorialPhase(BasicPhase):
             lastQuest.followUp = item
             lastQuest = item
         questList[-1].followup = None
-        questList[-1].endTrigger = self.end
+        questList[-1] = {"container":self,"method":"end"}
 
         # assign first quest
         mainChar.assignQuest(questList[0],active=True)
@@ -1752,7 +1752,7 @@ class FindWork(BasicPhase):
                             # start next story phase
                             quest = quests.MoveQuestMeta(terrain.tutorialMachineRoom,3,3,creator=void)
                             phase = FirstTutorialPhase()
-                            quest.endTrigger = phase.start
+                            quest.endTrigger = {"container":phase,"method":"start"}
                             hopperDutyQuest.getQuest.quest = self.selectedQuest
                             hopperDutyQuest.getQuest.recalculate()
                             subSelf.dispatchedPhase = True
@@ -1867,7 +1867,7 @@ class FindWork(BasicPhase):
 
                 # call the player for the speech
                 quest = quests.MoveQuestMeta(self.mainCharRoom,6,5,creator=void)
-                quest.endTrigger = subself.meeting
+                quest.endTrigger = {"container":subself,"method":"meeting"}
                 mainChar.assignQuest(quest,active=True)
 
             '''
@@ -1913,7 +1913,7 @@ class FindWork(BasicPhase):
             def handleEvent(subself):
                 # call the player for a meeting
                 quest = quests.MoveQuestMeta(self.mainCharRoom,6,5,creator=void)
-                quest.endTrigger = subself.meeting
+                quest.endTrigger = {"container":subself,"method":"meeting"}
                 mainChar.assignQuest(quest,active=True)
                 mainChar.reputation += 5
 
@@ -2102,7 +2102,7 @@ class LabPhase(BasicPhase):
             lastQuest.followUp = item
             lastQuest = item
         questList[-1].followup = None
-        questList[-1].endTrigger = self.end
+        questList[-1].endTrigger = {"container":self,"method":"end"}
 
         # assign player quest
         mainChar.assignQuest(questList[0])

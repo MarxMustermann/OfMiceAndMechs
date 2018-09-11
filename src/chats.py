@@ -308,55 +308,65 @@ the dialog for asking somebody somewhat important for a job
 bad code: nameing
 '''
 class JobChat(interaction.SubMenu):
-	id = "JobChat"
-	type = "JobChat"
+    id = "JobChat"
+    type = "JobChat"
 
-	dialogName = "Can you use some help?"
+    dialogName = "Can you use some help?"
 
-	'''
-	basic state initialization
-	'''
-	def __init__(subSelf,partner):
-		subSelf.state = None
-		subSelf.partner = partner
-		subSelf.firstRun = True
-		subSelf.done = False
-		subSelf.persistentText = ""
-		subSelf.dispatchedPhase = False
-		super().__init__()
+    '''
+    add internal state
+    bad pattern: chat option stored as references to class complicates this
+    '''
+    def setUp(self,state):
+        self.mainChar = state["mainChar"]
+        self.terrain = state["terrain"]
+        self.hopperDutyQuest = state["hopperDutyQuest"]
+        self.selectedQuest = state["selectedQuest"]
 
-	'''
-	show dialog and assign quest 
-	'''
-	def handleKey(subSelf, key):
-		if subSelf.firstRun:
-			if not subSelf.dispatchedPhase:
-				if mainChar.reputation < 10:
-					# deny the request
-					subSelf.persistentText = "I have some work thats needs to be done, but you will have to proof your worth some more untill you can be trusted with this work.\n\nMaybe "+terrain.waitingRoom.secondOfficer.name+" has some work you can do"
-				else:
-					# show fluff
-					subSelf.persistentText = "Several Officers requested new assistants. First go to to the boiler room and apply for the position"
+    '''
+    basic state initialization
+    '''
+    def __init__(subSelf,partner):
+        subSelf.state = None
+        subSelf.partner = partner
+        subSelf.firstRun = True
+        subSelf.done = False
+        subSelf.persistentText = ""
+        subSelf.dispatchedPhase = False
+        super().__init__()
 
-					# start next story phase
-					quest = quests.MoveQuestMeta(terrain.tutorialMachineRoom,3,3,creator=void)
-					phase = FirstTutorialPhase()
-					quest.endTrigger = {"container":phase,"method":"start"}
-					hopperDutyQuest.getQuest.quest = self.selectedQuest
-					hopperDutyQuest.getQuest.recalculate()
-					subSelf.dispatchedPhase = True
-			else:
-				# deny the request
-				subSelf.persistentText = "Not right now"
+    '''
+    show dialog and assign quest 
+    '''
+    def handleKey(subSelf, key):
+        if subSelf.firstRun:
+            if not subSelf.dispatchedPhase:
+                if subSelf.mainChar.reputation < 10:
+                    # deny the request
+                    subSelf.persistentText = "I have some work thats needs to be done, but you will have to proof your worth some more untill you can be trusted with this work.\n\nMaybe "+subSelf.terrain.waitingRoom.secondOfficer.name+" has some work you can do"
+                else:
+                    # show fluff
+                    subSelf.persistentText = "Several Officers requested new assistants. First go to to the boiler room and apply for the position"
 
-			# show text
-			subSelf.set_text(subSelf.persistentText)
-			subSelf.done = True
-			subSelf.firstRun = False
+                    # start next story phase
+                    quest = quests.MoveQuestMeta(subSelf.terrain.tutorialMachineRoom,3,3,creator=void)
+                    phase = story.FirstTutorialPhase()
+                    quest.endTrigger = {"container":phase,"method":"start"}
+                    subSelf.hopperDutyQuest.getQuest.quest = subSelf.selectedQuest
+                    subSelf.hopperDutyQuest.getQuest.recalculate()
+                    subSelf.dispatchedPhase = True
+            else:
+                # deny the request
+                subSelf.persistentText = "Not right now"
 
-			return True
-		else:
-			return False
+            # show text
+            subSelf.set_text(subSelf.persistentText)
+            subSelf.done = True
+            subSelf.firstRun = False
+
+            return True
+        else:
+            return False
 
 '''
 the dialog for asking somebody for a job
@@ -364,73 +374,73 @@ bad code:
 bad code: xxx2
 '''
 class JobChat2(interaction.SubMenu):
-	id = "JobChat2"
-	type = "JobChat2"
-	dialogName = "Can you use some help?" # bad code: deprecated
+    id = "JobChat2"
+    type = "JobChat2"
+    dialogName = "Can you use some help?" # bad code: deprecated
 
-	'''
-	basic state initialization
-	'''
-	def __init__(self,partner):
-		self.state = None
-		self.partner = partner
-		self.firstRun = True
-		self.done = False
-		self.persistentText = ""
-		self.submenue = None
-		self.selectedQuest = None
-		super().__init__()
+    '''
+    basic state initialization
+    '''
+    def __init__(self,partner):
+        self.state = None
+        self.partner = partner
+        self.firstRun = True
+        self.done = False
+        self.persistentText = ""
+        self.submenue = None
+        self.selectedQuest = None
+        super().__init__()
 
-	'''
-	show dialog and assign quest 
-	'''
-	def handleKey(self, key):
-		# let the superclass do the selections
-		if self.submenue:
-			if not self.submenue.handleKey(key):
-				return False
-			else:
-				self.selectedQuest = self.submenue.selection
-				self.submenue = None
+    '''
+    show dialog and assign quest 
+    '''
+    def handleKey(self, key):
+        # let the superclass do the selections
+        if self.submenue:
+            if not self.submenue.handleKey(key):
+                return False
+            else:
+                self.selectedQuest = self.submenue.selection
+                self.submenue = None
 
-			self.firstRun = False
+            self.firstRun = False
 
-		if not self.selectedQuest:
-			if hopperDutyQuest.actualQuest:
-				# refuse to give two quests
-				self.persistentText = "you already have a quest. Complete it and you can get a new one."
-				self.set_text(self.persistentText)
-				self.done = True
+        if not self.selectedQuest:
+            if hopperDutyQuest.actualQuest:
+                # refuse to give two quests
+                self.persistentText = "you already have a quest. Complete it and you can get a new one."
+                self.set_text(self.persistentText)
+                self.done = True
 
-				return True
-			elif terrain.waitingRoom.quests:
-				# show fluff
-				self.persistentText = "Well, yes."
-				self.set_text(self.persistentText)
-						
-				# let the player select the quest to do
-				options = []
-				for quest in terrain.waitingRoom.quests:
-					options.append((quest,quest.description.split("\n")[0]))
-				self.submenue = interaction.SelectionMenu("select the quest",options)
+                return True
+            elif terrain.waitingRoom.quests:
+                # show fluff
+                self.persistentText = "Well, yes."
+                self.set_text(self.persistentText)
+                        
+                # let the player select the quest to do
+                options = []
+                for quest in terrain.waitingRoom.quests:
+                    options.append((quest,quest.description.split("\n")[0]))
+                self.submenue = interaction.SelectionMenu("select the quest",options)
 
-				return False
-			else:
-				# refuse to give quests
-				self.persistentText = "Not right now. Ask again later"
-				self.set_text(self.persistentText)
-				self.done = True
+                return False
+            else:
+                # refuse to give quests
+                self.persistentText = "Not right now. Ask again later"
+                self.set_text(self.persistentText)
+                self.done = True
 
-				return True
-		else:
-			# assign the selected quest
-			hopperDutyQuest.getQuest.getQuest.quest = self.selectedQuest
-			hopperDutyQuest.getQuest.getQuest.recalculate()
-			if hopperDutyQuest.getQuest:
-				hopperDutyQuest.getQuest.recalculate()
-			terrain.waitingRoom.quests.remove(self.selectedQuest)
-			self.done = True
-			return True
+                return True
+        else:
+            # assign the selected quest
+            hopperDutyQuest.getQuest.getQuest.quest = self.selectedQuest
+            hopperDutyQuest.getQuest.getQuest.recalculate()
+            if hopperDutyQuest.getQuest:
+                hopperDutyQuest.getQuest.recalculate()
+            terrain.waitingRoom.quests.remove(self.selectedQuest)
+            self.done = True
+            return True
 
 
 chatMap = {

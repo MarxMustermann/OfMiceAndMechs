@@ -43,6 +43,7 @@ class Quest(saveing.Saveable):
         self.attributesToStore.append("active")
         self.attributesToStore.append("completed")
         self.attributesToStore.append("reputationReward")
+        self.attributesToStore.append("lifetime")
         self.callbacksToStore.append("endTrigger")
 
         self.lifetime = lifetime

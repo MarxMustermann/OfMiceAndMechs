@@ -308,7 +308,7 @@ class Quest(saveing.Saveable):
 
         # add automatic termination
         if self.lifetime:
-            self.character.addEvent(events.EndQuestEvent(gamestate.tick+self.lifetime))
+            self.character.addEvent(events.EndQuestEvent(gamestate.tick+self.lifetime,callback={"container":self,"method":"postHandler"},creator=void))
 
         # recalculate and notify listeners
         self.recalculate()

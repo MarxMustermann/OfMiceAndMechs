@@ -93,6 +93,7 @@ story.void = void
 interaction.void = void
 quests.void = void
 cinematics.void = void
+events.void = void
 
 # HACK: common variables with modules
 story.chats = chats

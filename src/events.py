@@ -1,4 +1,5 @@
 import src.saveing as saveing
+import json
 
 #bad code: global state
 cinematics = None
@@ -13,9 +14,18 @@ class Event(saveing.Saveable):
     '''
     basic state setting
     '''
-    def __init__(self,tick):
-        self.id = "Event"
+    def __init__(self,tick,creator=None):
+        super().__init__()
         self.type = "Event"
+
+        # set id
+        self.id = {
+                    "counter":creator.getCreationCounter(),
+                    "type": self.type,
+                  }
+        self.id["creator"] = creator.id
+        self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
+
         self.tick = tick
 
     '''
@@ -158,20 +168,24 @@ class FurnaceBurnoutEvent(Event):
 the event for automatically terminating the quest
 '''
 class EndQuestEvent(Event):
-    type = "EndQuestEvent"
-
     '''
     straightforward state setting
     '''
-    def __init__(subself,tick):
-        super().__init__(tick)
+    def __init__(subself,tick,callback=None,creator=None):
+        super().__init__(tick,creator=creator)
+        subself.type = "EndQuestEvent"
+        subself.callback = callback
+
+        subself.callbacksToStore.append("callback")
 
     '''
     terminate the quest
     '''
     def handleEvent(subself):
-        self.postHandler()
-
+        if (subself.callback):
+            subself.callIndirect(subself.callback)
+        else:
+            pass
 
 # supply a mapping from strings to events
 # bad pattern: has to be extendable
@@ -187,7 +201,7 @@ eventMap = {
 create an event from a dict
 '''
 def getEventFromState(state):
-    event = eventMap[state["type"]](state["tick"])
+    event = eventMap[state["type"]](state["tick"],creator=void)
     event.setState(state)
     return event
 

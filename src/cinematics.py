@@ -577,7 +577,7 @@ class ShowGameCinematic(BasicCinematic):
 
         # trigger follow up options
         if self.endTrigger:
-            self.endTrigger()
+            self.callIndirect(self.endTrigger)
 
 '''
 triggers a chat

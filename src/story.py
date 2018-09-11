@@ -572,7 +572,7 @@ entering interactive mode .................................
     '''
     def infoFail(self):
         import urwid
-        showText(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK"),"                                        "],autocontinue=True,trigger=self.fail,scrolling=True)
+        showText(["information storage ....................................... ",(urwid.AttrSpec("#f22",'default'),"NOT OK"),"                                        "],autocontinue=True,trigger={"container":self,"method":"fail"},scrolling=True)
         return
 
     '''
@@ -681,7 +681,7 @@ transfer control to implant"""],autocontinue=True,scrolling=True)
         # show fluff
         showText("""
 aborting initialization
-resetting neural network ....................................""",autocontinue=True,trigger=self.forceExit,scrolling=True)
+resetting neural network ....................................""",autocontinue=True,trigger={"container":self,"method":"forceExit"},scrolling=True)
 
     '''
     exit game
@@ -748,7 +748,7 @@ class WakeUpPhase(BasicPhase):
         showMessage("*screetch*")
 
         # add trigger
-        showGame(1,trigger=self.playerEject)
+        showGame(1,trigger={"container":self,"method":"playerEject"})
 
     '''
     spawn players body and place trigger
@@ -782,7 +782,7 @@ class WakeUpPhase(BasicPhase):
         showMessage("*kicks "+mainChar.name+"*")
 
         # show fluff
-        showGame(3,trigger=self.addPlayer)
+        showGame(3,trigger={"container":self,"method":"addPlayer"})
 
     '''
     add the player and place triggers
@@ -1020,7 +1020,7 @@ you have on piece of coal less than before."""])
         firstOfficer = terrain.wakeUpRoom.firstOfficer
 
         # place trigger
-        showText("i understand. The burns are somewhat unpleasant",trigger=self.iamready)
+        showText("i understand. The burns are somewhat unpleasant",trigger={"container":self,"method":"iamready"})
 
     '''
     make the player examine things
@@ -1692,7 +1692,7 @@ class FindWork(BasicPhase):
     '''
     def getIntro(self):
         showText("I hereby confirm the transfer and welcome you as crew on the Falkenbaum.\n\nYou will serve as an hopper under my command nominally. This means you will make yourself useful and prove your worth.\n\nI often have tasks to relay, but try not to stay idle even when i do not have tasks for you. Just ask around and see if somebody needs help")
-        showText("Remeber to report back, your worth will be counted in a mtick.",trigger=self.end)
+        showText("Remeber to report back, your worth will be counted in a mtick.",trigger={"container":self,"method":"end"})
 
     '''
     drop the player out of the command chain and place trigger for return
@@ -1877,7 +1877,7 @@ class FindWork(BasicPhase):
                 showText("Time to prove your worth.")
                 if mainChar.reputation <= 0:
                     # punish player for low performance near to killing player
-                    showText("You currently have no recieps on you. Please report to vat duty.",trigger=subself.startVatPhase)
+                    showText("You currently have no recieps on you. Please report to vat duty.",trigger={"container":subself,"method":"startVatPhase"})
                 elif mainChar.reputation > 5:
                     # do nothing on ok performance
                     showText("great work. Keep on and maybe you will be one of us officers")

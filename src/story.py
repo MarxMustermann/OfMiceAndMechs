@@ -1196,8 +1196,8 @@ class FirstTutorialPhase(BasicPhase):
                 '''
                 basic state initialization
                 '''
-                def __init__(subself,tick):
-                    super().__init__(tick)
+                def __init__(subself,tick,creator=None):
+                    super().__init__(tick,creator=creator)
                     subself.tick = tick
 
                 '''
@@ -1216,7 +1216,7 @@ class FirstTutorialPhase(BasicPhase):
                     self.mainCharRoom.addCharacter(characters.Mouse(),6,5)
 
             # add the coal delivery
-            self.mainCharRoom.addEvent(CoalRefillEvent(gamestate.tick+11))
+            self.mainCharRoom.addEvent(CoalRefillEvent(gamestate.tick+11),creator=self)
 
             # count down to the coal delivery
             cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1,creator=void))
@@ -1271,8 +1271,8 @@ class FirstTutorialPhase(BasicPhase):
                 '''
                 straightforward state initialization
                 '''
-                def __init__(subself,tick):
-                    super().__init__(tick)
+                def __init__(subself,tick,creator=None):
+                    super().__init__(tick,creator=creator)
                     subself.tick = tick
 
                 '''
@@ -1296,8 +1296,8 @@ class FirstTutorialPhase(BasicPhase):
                 '''
                 straightforward state initialization
                 '''
-                def __init__(subself,tick):
-                    super().__init__(tick)
+                def __init__(subself,tick,creator=None):
+                    super().__init__(tick,creator=creator)
                     subself.tick = tick
 
                 '''
@@ -1307,8 +1307,8 @@ class FirstTutorialPhase(BasicPhase):
                     messages.append("*"+self.mainCharRoom.secondOfficer.name+", please fire the Furnace now*")
 
             # set up the events
-            self.mainCharRoom.addEvent(ShowMessageEvent(gamestate.tick+1))
-            self.mainCharRoom.addEvent(AddQuestEvent(gamestate.tick+2))
+            self.mainCharRoom.addEvent(ShowMessageEvent(gamestate.tick+1,creator=self))
+            self.mainCharRoom.addEvent(AddQuestEvent(gamestate.tick+2,creator=self))
             cinematic = cinematics.ShowGameCinematic(22,tickSpan=1,creator=void) #bad code: should be showQuest to prevent having a fixed timing
 
             '''
@@ -1334,8 +1334,8 @@ class FirstTutorialPhase(BasicPhase):
                 '''
                 straightforward state initialization
                 '''
-                def __init__(subself,tick):
-                    super().__init__(tick)
+                def __init__(subself,tick,creator=None):
+                    super().__init__(tick,creator=creator)
                     subself.tick = tick
 
                 '''
@@ -1345,7 +1345,7 @@ class FirstTutorialPhase(BasicPhase):
                     self.end()
 
             # schedule the wrap up
-            self.mainCharRoom.addEvent(StartNextPhaseEvent(gamestate.tick+1))
+            self.mainCharRoom.addEvent(StartNextPhaseEvent(gamestate.tick+1),creator=self)
 
             # save the game
             gamestate.save()
@@ -1499,8 +1499,8 @@ class ThirdTutorialPhase(BasicPhase):
                 '''
                 straightforward state initialization
                 '''
-                def __init__(subself,tick,index):
-                    super().__init__(tick)
+                def __init__(subself,tick,index,creator=None):
+                    super().__init__(tick,creator=creator)
                     subself.tick = tick
                     subself.furnaceIndex = index
 
@@ -1513,7 +1513,7 @@ class ThirdTutorialPhase(BasicPhase):
                     self.npcFurnaceIndex = subself.furnaceIndex
                     if newIndex < 8:
                         self.mainCharRoom.secondOfficer.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[newIndex],creator=void),active=True)
-                        self.mainCharRoom.addEvent(AnotherOne2(gamestate.tick+gamestate.tick%20+10,newIndex))
+                        self.mainCharRoom.addEvent(AnotherOne2(gamestate.tick+gamestate.tick%20+10,newIndex,creator=self))
 
             # remember event type to be able to remove it later
             self.anotherOne2 = AnotherOne2
@@ -1526,8 +1526,8 @@ class ThirdTutorialPhase(BasicPhase):
                 '''
                 straightforward state initialization
                 '''
-                def __init__(subself,tick,index):
-                    super().__init__(tick)
+                def __init__(subself,tick,index,creator=None):
+                    super().__init__(tick,creator=creator)
                     subself.tick = tick
 
                 '''
@@ -1542,19 +1542,19 @@ class ThirdTutorialPhase(BasicPhase):
 
                     if boilerStillBoiling:
                         # wait some more
-                        self.mainCharRoom.addEvent(WaitForClearStart2(gamestate.tick+2,0))
+                        self.mainCharRoom.addEvent(WaitForClearStart2(gamestate.tick+2,0,creator=self))
                     else:
                         # make the npc start
                         cinematics.showCinematic("Liebweg start now.",creator=void)
                         self.mainCharRoom.secondOfficer.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[0],creator=void),active=True)
-                        self.mainCharRoom.addEvent(AnotherOne2(gamestate.tick+10,0))
+                        self.mainCharRoom.addEvent(AnotherOne2(gamestate.tick+10,0,creator=self))
 
             '''
             kickstart the npcs part of the competition
             bad code: xxx2
             '''
             def tmp2():
-                self.mainCharRoom.addEvent(WaitForClearStart2(gamestate.tick+2,0))
+                self.mainCharRoom.addEvent(WaitForClearStart2(gamestate.tick+2,0,creator=self))
 
             questList[-1].endTrigger = tmp2
             self.mainCharRoom.secondOfficer.assignQuest(questList[0],active=True)
@@ -1566,8 +1566,8 @@ class ThirdTutorialPhase(BasicPhase):
             '''
             straightforward state initialization
             '''
-            def __init__(subself,tick,index):
-                super().__init__(tick)
+            def __init__(subself,tick,index,creator=None):
+                super().__init__(tick,creator=creator)
                 subself.tick = tick
                 subself.furnaceIndex = index
 
@@ -1581,7 +1581,7 @@ class ThirdTutorialPhase(BasicPhase):
                 self.mainCharFurnaceIndex = subself.furnaceIndex
                 if newIndex < 8:
                     mainChar.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[newIndex],creator=void))
-                    self.mainCharRoom.addEvent(AnotherOne(gamestate.tick+gamestate.tick%20+5,newIndex))
+                    self.mainCharRoom.addEvent(AnotherOne(gamestate.tick+gamestate.tick%20+5,newIndex,creator=self))
 
         '''
         the event for waiting for a clean start and making the player start
@@ -1590,8 +1590,8 @@ class ThirdTutorialPhase(BasicPhase):
             '''
             straightforward state initialization
             '''
-            def __init__(subself,tick,index):
-                super().__init__(tick)
+            def __init__(subself,tick,index,creator=None):
+                super().__init__(tick,creator=creator)
                 subself.tick = tick
 
             '''
@@ -1606,19 +1606,19 @@ class ThirdTutorialPhase(BasicPhase):
 
                 if boilerStillBoiling:
                     # wait some more
-                    self.mainCharRoom.addEvent(WaitForClearStart(gamestate.tick+2,0))
+                    self.mainCharRoom.addEvent(WaitForClearStart(gamestate.tick+2,0,creator=self))
                 else:
                     # make the player start
                     cinematics.showCinematic("start now.",creator=void)
                     mainChar.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[0],creator=void))
-                    self.mainCharRoom.addEvent(AnotherOne(gamestate.tick+10,0))
+                    self.mainCharRoom.addEvent(AnotherOne(gamestate.tick+10,0,creator=self))
 
         '''
         kickstart the npcs part of the competition
         '''
         def tmp():
             cinematics.showCinematic("wait for the furnaces to burn out.",creator=void)
-            self.mainCharRoom.addEvent(WaitForClearStart(gamestate.tick+2,0))
+            self.mainCharRoom.addEvent(WaitForClearStart(gamestate.tick+2,0,creator=self))
 
         tmp()
 
@@ -1728,8 +1728,8 @@ class FindWork(BasicPhase):
             '''
             basic state initialization
             '''
-            def __init__(subself,tick,toCancel=[]):
-                super().__init__(tick)
+            def __init__(subself,tick,toCancel=[],creator=None):
+                super().__init__(tick,creator=creator)
                 subself.tick = tick
                 subself.toCancel = toCancel
 
@@ -1765,7 +1765,7 @@ class FindWork(BasicPhase):
 
                 # decrease reputation so the player will be forced to work continiously or to save up reputation
                 mainChar.reputation -= 3
-                self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15)))
+                self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),creator=self))
 
             '''
             trigger failure phase
@@ -1826,8 +1826,8 @@ class FindWork(BasicPhase):
             mainChar.assignQuest(quest,active=True)
 
         # add events to keep loose control
-        self.mainCharRoom.addEvent(StoreCargo(gamestate.tick+(15*15*40),mainChar))
-        self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15)))
+        self.mainCharRoom.addEvent(StoreCargo(gamestate.tick+(15*15*40),mainChar,creator=self))
+        self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),creator=self))
 
         # add quest to pool
         quest = quests.ClearRubble(creator=void)

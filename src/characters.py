@@ -53,8 +53,8 @@ class Character(saving.Saveable):
         self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
 
         self.attributesToStore.extend([
-		       "gotBasicSchooling","gotMovementSchooling","gotInteractionSchooling","gotExamineSchooling",
-			   "xPosition","yPosition","name","satiation","unconcious","reputation","tutorialStart"])
+               "gotBasicSchooling","gotMovementSchooling","gotInteractionSchooling","gotExamineSchooling",
+               "xPosition","yPosition","name","satiation","unconcious","reputation","tutorialStart"])
 
         # bad code: story specific state
         self.serveQuest = None

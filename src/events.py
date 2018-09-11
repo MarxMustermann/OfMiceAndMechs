@@ -71,8 +71,8 @@ class ShowMessageEvent(Event):
     '''
     basic state setting
     '''
-    def __init__(self,tick,message):
-        super().__init__(tick)
+    def __init__(self,tick,message,creator=None):
+        super().__init__(tick,creator=creator)
         self.id = "ShowMessageEvent"
         self.type = "ShowMessageEvent"
         self.message = message
@@ -90,8 +90,8 @@ class ShowCinematicEvent(Event):
     '''
     basic state setting
     '''
-    def __init__(self,tick,cinematic):
-        super().__init__(tick)
+    def __init__(self,tick,cinematic,creator=None):
+        super().__init__(tick,creator=creator)
         self.id = "ShowCinematicEvent"
         self.type = "ShowCinematicEvent"
         self.cinematic = cinematic
@@ -113,8 +113,8 @@ class FurnaceBurnoutEvent(Event):
     '''
     straightforward state initialization
     '''
-    def __init__(self,tick):
-        super().__init__(tick)
+    def __init__(self,tick,creator=None):
+        super().__init__(tick,creator=creator)
         self.id = "FurnaceBurnoutEvent"
         self.type = "FurnaceBurnoutEvent"
         self.furnace = None

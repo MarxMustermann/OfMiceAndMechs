@@ -2,6 +2,7 @@ import urwid
 import json
 import gamestate
 import src.saveing as saving
+import src.events as events
 
 # bad code: global state
 messages = None
@@ -784,7 +785,7 @@ class Furnace(Item):
                 for boiler in self.boilers:
                     boiler.startHeatingUp()
                 
-                event = events.FurnaceBurnoutEvent(self.room.timeIndex+30)
+                event = events.FurnaceBurnoutEvent(self.room.timeIndex+30,creator=self)
                 event.furnace = self
 
                 # add burnout event 
@@ -844,11 +845,12 @@ class Commlink(Item):
         the event for stopping to burn after a while
         bad code: should be an abstact event calling a method
         '''
-        class CoalRefillEvent(object):
+        class CoalRefillEvent(events.Event):
             '''
             straightforward state initialization
             '''
-            def __init__(subself,tick):
+            def __init__(subself,tick,creator=None):
+                super().__init__(tick,creator=creator)
                 subself.tick = tick
 
             '''
@@ -862,7 +864,7 @@ class Commlink(Item):
                 messages.append("*smoke clears*")
 
         # add event for the faked coal delivery
-        self.room.events.append(CoalRefillEvent(self.room.timeIndex+10))
+        self.room.events.append(CoalRefillEvent(self.room.timeIndex+10,creator=self))
 
 '''
 should be a display, but is abused as vehicle control

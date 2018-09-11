@@ -308,7 +308,7 @@ class Quest(saveing.Saveable):
 
         # add automatic termination
         if self.lifetime:
-            self.character.addEvent(events.EndQuestEvent(gamestate.tick+self.lifetime,callback={"container":self,"method":"postHandler"},creator=void))
+            self.character.addEvent(events.EndQuestEvent(gamestate.tick+self.lifetime,callback={"container":self,"method":"postHandler"},creator=self))
 
         # recalculate and notify listeners
         self.recalculate()
@@ -2417,8 +2417,8 @@ class PatrolQuest(MetaQuestSequence):
                 '''
                 state initialization
                 '''
-                def __init__(subself,tick):
-                    super().__init__(tick)
+                def __init__(subself,tick,creator=None):
+                    super().__init__(tick,creator=creator)
                     subself.tick = tick
 
                 '''
@@ -2426,7 +2426,7 @@ class PatrolQuest(MetaQuestSequence):
                 '''
                 def handleEvent(subself):
                     self.postHandler()
-            self.character.room.addEvent(endQuestEvent(self.character.room.timeIndex+self.lifetime))
+            self.character.room.addEvent(endQuestEvent(self.character.room.timeIndex+self.lifetime,creator=self))
 
         super().activate()
 

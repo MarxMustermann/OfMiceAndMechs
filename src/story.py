@@ -1765,7 +1765,7 @@ class FindWork(BasicPhase):
 
                 # decrease reputation so the player will be forced to work continiously or to save up reputation
                 mainChar.reputation -= 3
-                self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),creator=self))
+                self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),creator=void))
 
             '''
             trigger failure phase
@@ -1781,8 +1781,8 @@ class FindWork(BasicPhase):
             '''
             basic state initialization
             '''
-            def __init__(subself,tick,char,toCancel=[]):
-                super().__init__(tick)
+            def __init__(subself,tick,char,toCancel=[],creator=None):
+                super().__init__(tick,creator=creator)
                 subself.tick = tick
                 subself.char = char
 
@@ -1826,8 +1826,8 @@ class FindWork(BasicPhase):
             mainChar.assignQuest(quest,active=True)
 
         # add events to keep loose control
-        self.mainCharRoom.addEvent(StoreCargo(gamestate.tick+(15*15*40),mainChar,creator=self))
-        self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),creator=self))
+        self.mainCharRoom.addEvent(StoreCargo(gamestate.tick+(15*15*40),mainChar,creator=void))
+        self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),creator=void))
 
         # add quest to pool
         quest = quests.ClearRubble(creator=void)

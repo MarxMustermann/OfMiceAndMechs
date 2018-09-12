@@ -2,7 +2,7 @@
 a to be prototype for a game
 
 * [install and run](INSTALL.md)
-* [news (latest: "commit 701-800")](NEWS.md)
+* [news (latest: "commit 801-901")](NEWS.md)
 * [credits](CREDITS.md)
 
 ## state of the game
@@ -15,6 +15,8 @@ a to be prototype for a game
 * The game feels like a game (a boring one, but like a game)
 * a save/load system exists
 
-While trying to address the issue below i realized, the the biggest issue currently is the bad quality of code and the mockuped features. Players and me are hampered by encountering Not-Implemented-Yets and bugs. This slowed development down and needs to be adressed first.
+I cannot pinpoint the biggest issue with the game at this point of time. Many parts of the game are not done yet, so i'll go with a user question: "What can go wrong when dooing your task?". My takeaway from this question is: The game lacks challenge. I don't think this means making the game more deadly, but adding small hostile influences, that need to be monitored and handled. Not handling these influences should lead to loss of influence and eventual death. 
 
 I think the second issue is that the main game mechanic is not working or is not clearly visible. This is gaining control (over npcs), controlling npcs and exercising power to gain power. The negation of this is also missing. This is loosing power by inefficent use of power or by not defending your position.
+
+Development speed depends on Code quality, so it is a important issue. It is a pretty big issue and grows with every change done on the code, so this issue will probably never be solved. But it seems like code quality will improve if i keep a pattern of doing a round of new features and a round of code cleanup. Since code qualtiy cannot be too good it seems more reasonable to skip a feature adding round than skipping a cleanup round.

@@ -1,5 +1,24 @@
 # news
 
+### commit 801-901
+
+These commit were another cleanup round. It feals like the codebase got better, but there is still a lot of work to do. For example the save system still doesn't work reliably and lots of code is still marked as bad code.
+
+* made callbacks savable
+* fixed crashes
+* made save system more abstract
+* made callbacks savable
+* reduced redundant code
+* added saving for more details
+* sourced lists of all items/quests from mapping
+* fixed copy&paste fails
+* moved more code to saveing
+* fixed bugs
+* removed debug code from GUI
+* removed dead code
+
+I made progress, but clean up rounds will need to happen periodically.
+
 ### commit 701-800
 
 The sole focus of theses commits was to create a system to save and load the gamestate with. This was successfull in implementing a system for saving the game but was not successfull in creating a reliable save/load function. A saveing/loading system exist for every important part of the game, but the game crashes a lot during saving/loading because many of the getters/setter for the specific instances and subtypes are missing.

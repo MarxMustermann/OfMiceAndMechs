@@ -2249,16 +2249,13 @@ class MurderQuest(MetaQuestSequence):
         self.metaDescription = "murder"
         for quest in reversed(self.questList):
             self.addQuest(quest)
-        self.startWatching(self.toKill,self.test)
+        self.startWatching(self.toKill,self.recalculate)
 
         # save initial state and register
         self.type = "MurderQuest"
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
-    def test(self):
-        messages.append("test")
-        self.recalculate()
     '''
     adjust movement to follow target
     '''

@@ -580,13 +580,17 @@ class MetaQuestSequence(Quest):
         else:
             self.subQuests.append(quest)
 
+        if self.character:
+            self.subQuests[0].assignToCharacter(self.character)
+            self.character.recalculatePath()
+
         # listen to quest
         self.startWatching(self.subQuests[0],self.recalculate)
 
         # deactivate last active quest
-        # bad code: should only happen on addFront
-        if len(self.subQuests) > 1:
-            self.subQuests[1].deactivate()
+        if addFront:
+            if len(self.subQuests) > 1:
+                self.subQuests[1].deactivate()
 
     '''
     activate self and first subquest
@@ -2239,19 +2243,22 @@ class MurderQuest(MetaQuestSequence):
     def __init__(self,toKill,followUp=None,startCinematics=None,creator=None):
         super().__init__([],creator=creator)
         self.toKill = toKill
-        self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=True,creator=self)
+        self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=False,creator=self)
         self.questList = [self.moveQuest,NaiveMurderQuest(toKill,creator=self)]
         self.lastPos = (self.toKill.room,self.toKill.xPosition,self.toKill.yPosition)
         self.metaDescription = "murder"
-        for quest in reversed(questList):
+        for quest in reversed(self.questList):
             self.addQuest(quest)
-        self.startWatching(self.toKill,self.recalculate)
+        self.startWatching(self.toKill,self.test)
 
         # save initial state and register
         self.type = "MurderQuest"
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
+    def test(self):
+        messages.append("test")
+        self.recalculate()
     '''
     adjust movement to follow target
     '''
@@ -2261,8 +2268,8 @@ class MurderQuest(MetaQuestSequence):
             if not (pos == self.lastPos) and not self.toKill.dead:
                 self.lastPos = pos
                 self.moveQuest.deactivate()
-                if self.moveQuest in self.questList:
-                        self.questList.remove(self.moveQuest)
+                if self.moveQuest in self.subQuests:
+                        self.subQuests.remove(self.moveQuest)
                 self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=True,creator=self)
                 self.addQuest(self.moveQuest)
         super().recalculate()

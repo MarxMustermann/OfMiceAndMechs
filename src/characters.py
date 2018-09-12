@@ -89,6 +89,9 @@ class Character(saving.Saveable):
             index += 1
         self.events.insert(index,event)
 
+    def recalculatePath(self):
+        self.setPathToQuest(self.quests[0])
+
     '''
     straightforward removeing of events from the characters event queue
     '''
@@ -704,5 +707,5 @@ class Character(saving.Saveable):
 bad code: animals should not be characters. This means it is possible to chat with a mouse 
 """
 class Mouse(Character):
-    def __init__(self,display="🝆 ",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse"):
-        super().__init__(display, xPosition, yPosition, quests, automated, name)
+    def __init__(self,display="🝆 ",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None):
+        super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator)

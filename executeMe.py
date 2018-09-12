@@ -122,6 +122,7 @@ cinematics.quests = quests
 story.quests = quests
 terrains.quests = quests
 characters.quests = quests
+items.quests = quests
 
 # HACK: common variables with modules
 story.rooms = rooms
@@ -332,6 +333,7 @@ story.gamestate = gameStateObj
 interaction.gamestate = gameStateObj
 quests.gamestate = gameStateObj
 characters.gamestate = gameStateObj
+items.gamestate = gameStateObj
 
 # HACK: common variables with modules
 rooms.mainChar = gameStateObj.mainChar

@@ -146,6 +146,18 @@ class Item(saving.Saveable):
             if not container.itemByCoordinates[(self.xPosition,self.yPosition)]:
                 del container.itemByCoordinates[(self.xPosition,self.yPosition)]
 
+        if (gamestate.tick+self.xPosition+self.yPosition)%10 == 0:
+            rat = characters.Mouse(creator=self)
+            quest = quests.MurderQuest(character,creator=self)
+            rat.assignQuest(quest,active=True)
+            quest = quests.WaitQuest(lifetime=20,creator=self)
+            rat.assignQuest(quest,active=True)
+            if self.room:
+                self.room.addCharacter(rat,self.xPosition,self.yPosition)
+            else:
+                self.terrain.addCharacter(rat,self.xPosition,self.yPosition)
+
+
         # remove position information to place item in the void
         self.xPosition = None
         self.yPosition = None

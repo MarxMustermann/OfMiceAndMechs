@@ -709,3 +709,9 @@ bad code: animals should not be characters. This means it is possible to chat wi
 class Mouse(Character):
     def __init__(self,display="🝆 ",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None):
         super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator)
+
+    def vanish(self):
+        if self.room:
+            self.room.removeCharacter(self)
+        else:
+            self.terrain.removeCharacter(self)

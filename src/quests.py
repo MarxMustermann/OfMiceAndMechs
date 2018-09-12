@@ -565,6 +565,7 @@ class MetaQuestSequence(Quest):
                 self.subQuests[0].assignToCharacter(self.character)
             if not self.subQuests[0].active:
                 self.subQuests[0].activate()
+                self.character.recalculatePath()
         super().recalculate()
 
         # check for completeion
@@ -2240,8 +2241,8 @@ class MurderQuest(MetaQuestSequence):
     '''
     generate quests for moving to and murdering the target
     '''
-    def __init__(self,toKill,followUp=None,startCinematics=None,creator=None):
-        super().__init__([],creator=creator)
+    def __init__(self,toKill,followUp=None,startCinematics=None,creator=None,lifetime=None):
+        super().__init__([],creator=creator,lifetime=lifetime)
         self.toKill = toKill
         self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=False,creator=self)
         self.questList = [self.moveQuest,NaiveMurderQuest(toKill,creator=self)]

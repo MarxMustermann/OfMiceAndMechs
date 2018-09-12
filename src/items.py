@@ -146,11 +146,13 @@ class Item(saving.Saveable):
             if not container.itemByCoordinates[(self.xPosition,self.yPosition)]:
                 del container.itemByCoordinates[(self.xPosition,self.yPosition)]
 
-        if (gamestate.tick+self.xPosition+self.yPosition)%10 == 0:
+        if (gamestate.tick+self.xPosition+self.yPosition)%10 == 0 and not self.walkable:
             rat = characters.Mouse(creator=self)
-            quest = quests.MurderQuest(character,creator=self)
-            rat.assignQuest(quest,active=True)
-            quest = quests.WaitQuest(lifetime=20,creator=self)
+            quest = quests.MetaQuestSequence([],creator=self)
+            quest.addQuest(quests.MoveQuestMeta(room=self.room,x=self.xPosition,y=self.yPosition,creator=self))
+            quest.addQuest(quests.MurderQuest(character,lifetime=30,creator=self))
+            quest.addQuest(quests.WaitQuest(lifetime=5,creator=self))
+            quest.endTrigger = {"container":rat,"method":"vanish"}
             rat.assignQuest(quest,active=True)
             if self.room:
                 self.room.addCharacter(rat,self.xPosition,self.yPosition)

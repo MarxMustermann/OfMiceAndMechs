@@ -1461,6 +1461,7 @@ XXXXXXXXXX
         for item in self.storedItems:
             item.xPosition = self.storageSpace[counter][0]
             item.yPosition = self.storageSpace[counter][1]
+            item.mayContainMice = True
             counter += 1
 
         # actually add the items

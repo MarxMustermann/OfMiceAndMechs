@@ -38,6 +38,10 @@ class Item(saving.Saveable):
         self.chainedTo = []
         self.name = name
         self.description = "a "+self.name
+        self.mayContainMice = False
+
+        self.attributesToStore.extend([
+               "mayContainMice"])
 
         # set id
         self.id = {
@@ -146,7 +150,8 @@ class Item(saving.Saveable):
             if not container.itemByCoordinates[(self.xPosition,self.yPosition)]:
                 del container.itemByCoordinates[(self.xPosition,self.yPosition)]
 
-        if (gamestate.tick+self.xPosition+self.yPosition)%10 == 0 and not self.walkable:
+        if ((self.mayContainMice and (gamestate.tick+self.xPosition+self.yPosition)%10 == 0) or
+           (not self.mayContainMice and (gamestate.tick+self.xPosition+self.yPosition)%100 == 0)):
             rat = characters.Mouse(creator=self)
             quest = quests.MetaQuestSequence([],creator=self)
             quest.addQuest(quests.MoveQuestMeta(room=self.room,x=self.xPosition,y=self.yPosition,creator=self))

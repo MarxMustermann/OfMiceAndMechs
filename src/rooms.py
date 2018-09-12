@@ -922,7 +922,7 @@ class Room(saveing.Saveable):
             event.handleEvent()
             self.events.remove(event)
 
-        if not self.hidden or 1==1:
+        if not self.hidden:
             # redo delayed calculation
             if self.delayedTicks > 0:
                 self.applySkippedAdvances()

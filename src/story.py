@@ -1841,7 +1841,7 @@ class FindWork(BasicPhase):
         def addQuest12():
             quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(2,1)][0],(terrain.metalWorkshop,9,5),creator=void)
             quest.endTrigger = addQuest1
-            quest.reputationReward = 1
+            quest.reputationReward = 0
             terrain.waitingRoom.quests.append(quest)
         '''
         quest to carry stuff and trigger adding a new quest afterwards
@@ -1850,7 +1850,7 @@ class FindWork(BasicPhase):
         def addQuest11():
             quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(3,1)][0],(terrain.metalWorkshop,9,4),creator=void)
             quest.endTrigger = addQuest12
-            quest.reputationReward = 1
+            quest.reputationReward = 0
             terrain.waitingRoom.quests.append(quest)
         '''
         quest to carry stuff and trigger adding a new quest afterwards
@@ -1859,7 +1859,7 @@ class FindWork(BasicPhase):
         def addQuest10():
             quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(4,1)][0],(terrain.metalWorkshop,9,6),creator=void)
             quest.endTrigger = addQuest11
-            quest.reputationReward = 1
+            quest.reputationReward = 0
             terrain.waitingRoom.quests.append(quest)
         '''
         quest to carry stuff and trigger adding a new quest afterwards
@@ -1868,7 +1868,7 @@ class FindWork(BasicPhase):
         def addQuest9():
             quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(5,1)][0],(terrain.metalWorkshop,9,3),creator=void)
             quest.endTrigger = addQuest10
-            quest.reputationReward = 1
+            quest.reputationReward = 0
             terrain.waitingRoom.quests.append(quest)
         '''
         quest to carry stuff and trigger adding a new quest afterwards
@@ -1877,7 +1877,7 @@ class FindWork(BasicPhase):
         def addQuest8():
             quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(6,1)][0],(terrain.metalWorkshop,9,7),creator=void)
             quest.endTrigger = addQuest9
-            quest.reputationReward = 1
+            quest.reputationReward = 0
             terrain.waitingRoom.quests.append(quest)
         '''
         quest to carry stuff and trigger adding a new quest afterwards
@@ -1886,7 +1886,7 @@ class FindWork(BasicPhase):
         def addQuest7():
             quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(7,1)][0],(terrain.metalWorkshop,9,2),creator=void)
             quest.endTrigger = addQuest8
-            quest.reputationReward = 1
+            quest.reputationReward = 0
             terrain.waitingRoom.quests.append(quest)
         '''
         quest to carry stuff and trigger adding a new quest afterwards
@@ -1895,7 +1895,7 @@ class FindWork(BasicPhase):
         def addQuest6():
             quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[5],(terrain.tutorialLab,7,1),creator=void)
             quest.endTrigger = addQuest7
-            quest.reputationReward = 1
+            quest.reputationReward = 0
             terrain.waitingRoom.quests.append(quest)
         '''
         quest to carry stuff and trigger adding a new quest afterwards
@@ -1904,7 +1904,7 @@ class FindWork(BasicPhase):
         def addQuest5():
             quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[4],(terrain.tutorialLab,6,1),creator=void)
             quest.endTrigger = addQuest6
-            quest.reputationReward = 1
+            quest.reputationReward = 0
             terrain.waitingRoom.quests.append(quest)
         '''
         quest to carry stuff and trigger adding a new quest afterwards
@@ -1913,7 +1913,7 @@ class FindWork(BasicPhase):
         def addQuest4():
             quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[3],(terrain.tutorialLab,5,1),creator=void)
             quest.endTrigger = addQuest5
-            quest.reputationReward = 1
+            quest.reputationReward = 0
             terrain.waitingRoom.quests.append(quest)
         '''
         quest to carry stuff and trigger adding a new quest afterwards
@@ -1922,7 +1922,7 @@ class FindWork(BasicPhase):
         def addQuest3():
             quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[2],(terrain.tutorialLab,4,1),creator=void)
             quest.endTrigger = addQuest4
-            quest.reputationReward = 1
+            quest.reputationReward = 0
             terrain.waitingRoom.quests.append(quest)
         '''
         quest to carry stuff and trigger adding a new quest afterwards
@@ -1931,7 +1931,7 @@ class FindWork(BasicPhase):
         def addQuest2():
             quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[1],(terrain.tutorialLab,3,1),creator=void)
             quest.endTrigger = addQuest3
-            quest.reputationReward = 1
+            quest.reputationReward = 0
             terrain.waitingRoom.quests.append(quest)
         '''
         quest to carry stuff and trigger adding a new quest afterwards
@@ -1940,7 +1940,7 @@ class FindWork(BasicPhase):
         def addQuest1():
             quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[0],(terrain.tutorialLab,2,1),creator=void)
             quest.endTrigger = addQuest2
-            quest.reputationReward = 1
+            quest.reputationReward = 0
             terrain.waitingRoom.quests.append(quest)
 
         # start series of quests that were looped to keep the system active

@@ -1001,6 +1001,12 @@ class ChatPartnerselection(SubMenu):
                     if char == mainChar:
                         continue
                     options.append((char,char.name))
+            else:
+                for char in mainChar.terrain.characters:
+                    if char == mainChar:
+                        continue
+                    options.append((char,char.name))
+                
             self.setOptions("talk with whom?",options)
 
         # delegate the actual selection to the super class

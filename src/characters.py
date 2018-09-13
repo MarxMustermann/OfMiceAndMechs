@@ -393,6 +393,7 @@ class Character(saving.Saveable):
     def fallUnconcious(self):
         self.unconcious = True
         self.display = displayChars.unconciousBody
+        messages.append("*thump,snort*")
 
     '''
     set state and display to not unconcious
@@ -400,6 +401,7 @@ class Character(saving.Saveable):
     def wakeUp(self):
         self.unconcious = False
         self.display = self.displayOriginal
+        messages.append("*grown*")
 
     '''
     kill the character and do a bit of extra stuff like placing corpses

@@ -1312,7 +1312,7 @@ class NaiveKnockOutQuest(Quest):
     '''
     def triggerCompletionCheck(self):
         if self.active:
-            if self.target.dead:
+            if self.target.unconcious:
                 self.postHandler()
 
     '''

@@ -1101,6 +1101,10 @@ class ChatMenu(SubMenu):
     bad code: the dialog should be generated within the characters
     '''
     def handleKey(self, key):
+        if self.partner.unconcious:
+            messages.append("wake up!")
+            self.partner.wakeUp()
+            return True
         header.set_text((urwid.AttrSpec("default","default"),"\nConversation menu\n"))
         out = "\n"
 

@@ -150,8 +150,8 @@ class Item(saving.Saveable):
             if not container.itemByCoordinates[(self.xPosition,self.yPosition)]:
                 del container.itemByCoordinates[(self.xPosition,self.yPosition)]
 
-        if ((self.mayContainMice and (gamestate.tick+self.xPosition+self.yPosition)%1 == 0 and not self.walkable) or
-           (not self.mayContainMice and (gamestate.tick+self.xPosition+self.yPosition)%1 == 0 and not self.walkable)):
+        if ((self.mayContainMice and (gamestate.tick+self.xPosition+self.yPosition)%10 == 0 and not self.walkable) or
+           (not self.mayContainMice and (gamestate.tick+self.xPosition-self.yPosition)%100 == 0 and not self.walkable)):
             rat = characters.Mouse(creator=self)
             quest = quests.MetaQuestSequence([],creator=self)
             quest.addQuest(quests.MoveQuestMeta(room=self.room,x=self.xPosition,y=self.yPosition,creator=self))

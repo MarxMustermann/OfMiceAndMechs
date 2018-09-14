@@ -430,7 +430,10 @@ class JobChat2(interaction.SubMenu):
                 # let the player select the quest to do
                 options = []
                 for quest in self.terrain.waitingRoom.quests:
-                    options.append((quest,quest.description.split("\n")[0]))
+                    addition = ""
+                    if self.mainChar.reputation < 6:
+                        addition += " ("+str(quest.reputationReward)+")"
+                    options.append((quest,quest.description.split("\n")[0]+addition))
                 self.submenue = interaction.SelectionMenu("select the quest",options)
 
                 return False

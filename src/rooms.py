@@ -1464,6 +1464,18 @@ XXXXXXXXXX
             item.mayContainMice = True
             counter += 1
 
+        if (self.xPosition + yPosition*2 - offsetX - offsetY)%5 == 0:
+            mouse = characters.Mouse(creator=self)
+            self.addCharacter(mouse,2,2)
+            mouse = characters.Mouse(creator=self)
+            self.addCharacter(mouse,2,4)
+            mouse = characters.Mouse(creator=self)
+            self.addCharacter(mouse,4,2)
+            mouse = characters.Mouse(creator=self)
+            self.addCharacter(mouse,4,4)
+            mouse = characters.Mouse(creator=self)
+            self.addCharacter(mouse,8,3)
+
         # actually add the items
         self.addItems(self.storedItems)
         self.initialState = self.getState()

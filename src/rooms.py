@@ -1224,7 +1224,7 @@ class MiniMech(Room):
         self.roomLayout = """
 XX$XXX
 XD..@X
-Xm .PX
+X  . X
 XOF.PX
 Xmm.PX
 XXXXXX

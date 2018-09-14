@@ -414,6 +414,13 @@ class JobChat2(interaction.SubMenu):
 
             self.firstRun = False
 
+        if not self.hopperDutyQuest.getQuest:
+            self.persistentText = "please collect your reward first"
+            self.set_text(self.persistentText)
+            self.done = True
+
+            return True
+
         if not self.selectedQuest:
             if self.hopperDutyQuest.actualQuest:
                 # refuse to give two quests

@@ -60,6 +60,7 @@ class Room(saveing.Saveable):
         self.yPosition = yPosition
         self.lastRender = None
         self.isContainment = False
+        self.listeners = {"default":[]}
 
         # set id
         self.id = {
@@ -318,6 +319,41 @@ class Room(saveing.Saveable):
         loadingRegistry.register(self)
 
     '''
+    registering for notifications
+    '''
+    def addListener(self,listenFunction,tag="default"):
+        if not tag in self.listeners:
+            self.listeners[tag] = []
+
+        if not listenFunction in self.listeners[tag]:
+            self.listeners[tag].append(listenFunction)
+
+    '''
+    deregistering for notifications
+    '''
+    def delListener(self,listenFunction,tag="default"):
+        if listenFunction in self.listeners[tag]:
+            self.listeners[tag].remove(listenFunction)
+
+        if not self.listeners[tag]:
+            del self.listeners[tag]
+
+    '''
+    sending notifications
+    bad code: probably misnamed
+    '''
+    def changed(self,tag="default",info=None):
+        self.requestRedraw()
+        if not tag == "default":
+            if not tag in self.listeners:
+                return
+
+            for listenFunction in self.listeners[tag]:
+                listenFunction(info)
+        for listenFunction in self.listeners["default"]:
+            listenFunction()
+
+    '''
     get the difference in state since creation
     '''
     def getDiffState(self):
@@ -470,13 +506,6 @@ class Room(saveing.Saveable):
                 self.addEvent(event)
 
         self.forceRedraw()
-
-    '''
-    invalidate render
-    '''
-    def changed(self):
-        self.requestRedraw()
-        pass
 
     '''
     get physical resistance against beeing moved
@@ -636,6 +665,7 @@ class Room(saveing.Saveable):
     teleport character into the room
     '''
     def addCharacter(self,character,x,y):
+        self.changed("entered room",character)
         self.characters.append(character)
         character.room = self
         character.xPosition = x
@@ -1017,10 +1047,12 @@ XXXXXXXXXX
     '''
     handle changed steam production/demand
     '''
-    def changed(self):
+    def changed(self,tag="default",info=None):
+        super().changed(tag,info)
         # notify vat
         # bad code: vat should listen
-        self.terrain.tutorialVatProcessing.recalculate()
+        if self.terrain:
+            self.terrain.tutorialVatProcessing.recalculate()
 
         if self.desiredSteamGeneration:
             if not self.desiredSteamGeneration == self.steamGeneration:
@@ -1333,7 +1365,8 @@ XXXXXX
     '''
     recalculate engine strength
     '''
-    def changed(self):
+    def changed(self,tag="default",info=None):
+        super().changed(tag,info)
         self.engineStrength = 250*self.steamGeneration
 
 '''
@@ -1465,16 +1498,28 @@ XXXXXXXXXX
             counter += 1
 
         if (self.xPosition + yPosition*2 - offsetX - offsetY)%5 == 0:
+            mice = []
             mouse = characters.Mouse(creator=self)
             self.addCharacter(mouse,2,2)
+            mice.append(mouse)
             mouse = characters.Mouse(creator=self)
             self.addCharacter(mouse,2,4)
+            mice.append(mouse)
             mouse = characters.Mouse(creator=self)
             self.addCharacter(mouse,4,2)
+            mice.append(mouse)
             mouse = characters.Mouse(creator=self)
             self.addCharacter(mouse,4,4)
+            mice.append(mouse)
             mouse = characters.Mouse(creator=self)
             self.addCharacter(mouse,8,3)
+            mice.append(mouse)
+            def killInvader(character):
+                for mouse in mice:
+                    quest = quests.MurderQuest(character,creator=self)
+                    mouse.assignQuest(quest,active=True)
+
+            self.addListener(killInvader,"entered room")
 
         # actually add the items
         self.addItems(self.storedItems)

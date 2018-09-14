@@ -1947,10 +1947,10 @@ class FindWork(BasicPhase):
         addQuest1()
 
         # add the dialog for getting a job
-        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChat})
-        terrain.waitingRoom.secondOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChat2})
-        terrain.wakeUpRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChat})
-        terrain.tutorialMachineRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChat})
+        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChat,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":hopperDutyQuest}})
+        terrain.waitingRoom.secondOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChat2,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":hopperDutyQuest}})
+        terrain.wakeUpRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChat,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":hopperDutyQuest}})
+        terrain.tutorialMachineRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChat,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":hopperDutyQuest}})
 
 '''
 dummmy for the lab phase

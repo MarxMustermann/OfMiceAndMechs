@@ -321,7 +321,6 @@ class JobChat(interaction.SubMenu):
         self.mainChar = state["mainChar"]
         self.terrain = state["terrain"]
         self.hopperDutyQuest = state["hopperDutyQuest"]
-        self.selectedQuest = state["selectedQuest"]
 
     '''
     basic state initialization
@@ -333,6 +332,7 @@ class JobChat(interaction.SubMenu):
         subSelf.done = False
         subSelf.persistentText = ""
         subSelf.dispatchedPhase = False
+        subSelf.selectedQuest = None
         super().__init__()
 
     '''
@@ -392,6 +392,15 @@ class JobChat2(interaction.SubMenu):
         super().__init__()
 
     '''
+    add internal state
+    bad pattern: chat option stored as references to class complicates this
+    '''
+    def setUp(self,state):
+        self.mainChar = state["mainChar"]
+        self.terrain = state["terrain"]
+        self.hopperDutyQuest = state["hopperDutyQuest"]
+
+    '''
     show dialog and assign quest 
     '''
     def handleKey(self, key):
@@ -406,21 +415,21 @@ class JobChat2(interaction.SubMenu):
             self.firstRun = False
 
         if not self.selectedQuest:
-            if hopperDutyQuest.actualQuest:
+            if self.hopperDutyQuest.actualQuest:
                 # refuse to give two quests
                 self.persistentText = "you already have a quest. Complete it and you can get a new one."
                 self.set_text(self.persistentText)
                 self.done = True
 
                 return True
-            elif terrain.waitingRoom.quests:
+            elif self.terrain.waitingRoom.quests:
                 # show fluff
                 self.persistentText = "Well, yes."
                 self.set_text(self.persistentText)
                         
                 # let the player select the quest to do
                 options = []
-                for quest in terrain.waitingRoom.quests:
+                for quest in self.terrain.waitingRoom.quests:
                     options.append((quest,quest.description.split("\n")[0]))
                 self.submenue = interaction.SelectionMenu("select the quest",options)
 
@@ -434,11 +443,11 @@ class JobChat2(interaction.SubMenu):
                 return True
         else:
             # assign the selected quest
-            hopperDutyQuest.getQuest.getQuest.quest = self.selectedQuest
-            hopperDutyQuest.getQuest.getQuest.recalculate()
-            if hopperDutyQuest.getQuest:
-                hopperDutyQuest.getQuest.recalculate()
-            terrain.waitingRoom.quests.remove(self.selectedQuest)
+            self.hopperDutyQuest.getQuest.getQuest.quest = self.selectedQuest
+            self.hopperDutyQuest.getQuest.getQuest.recalculate()
+            if self.hopperDutyQuest.getQuest:
+                self.hopperDutyQuest.getQuest.recalculate()
+            self.terrain.waitingRoom.quests.remove(self.selectedQuest)
             self.done = True
             return True
 

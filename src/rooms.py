@@ -1431,9 +1431,9 @@ XXXXXXXXXX
         self.name = "Lab"
 
         for item in self.itemsOnFloor:
-            if item.xPosition == 1 or item.yPosition == 1:
+            if item.xPosition == 0 or item.yPosition == 0:
                continue
-            if item.xPosition == self.sizeX or item.yPosition == self.sizeY:
+            if item.xPosition == self.sizeX-1 or item.yPosition == self.sizeY-1:
                continue
             item.bolted = False
 

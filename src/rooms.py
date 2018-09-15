@@ -1152,6 +1152,28 @@ XXXXXXXXXXX
         self.firstOfficer.isMilitary = True
         self.secondOfficer.isMilitary = True
 
+        for item in self.itemsOnFloor:
+            if not isinstance(item,items.Door):
+                continue
+
+            thisRoundsItem = item
+
+            def handleDoorOpened():
+                if not thisRoundsItem.walkable:
+                    return
+
+                messages.append(self.firstOfficer.name+"@"+self.secondOfficer.name+": close the door")
+                mainChar.reputation -= 5
+                messages.append("you were rewarded -5 reputation")
+                messages.append(self.firstOfficer.name+": military area. Do not enter.")
+
+                quest = quests.MoveQuestMeta(self,5,3,creator=self)
+                self.secondOfficer.assignQuest(quest,active=True)
+                quest = quests.ActivateQuestMeta(thisRoundsItem,creator=self)
+                self.secondOfficer.assignQuest(quest,active=True)
+
+            item.addListener(handleDoorOpened)
+
         def enforceMilitaryRestriction(character):
             if character.isMilitary:
                 return

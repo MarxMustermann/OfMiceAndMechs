@@ -1000,6 +1000,7 @@ class Door(Item):
             self.close()
         else:
             self.open(character)
+        self.changed()
     
     '''
     open door

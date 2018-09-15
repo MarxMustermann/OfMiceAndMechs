@@ -891,7 +891,7 @@ class SubMenu(object):
     '''
     def handleKey(self, key):
         if key == "esc":
-            return False
+            return True
 
         out = "\n"
         out += self.query+"\n"
@@ -959,6 +959,8 @@ class SelectionMenu(SubMenu):
     handles the key
     '''
     def handleKey(self, key):
+        if key == "esc":
+            return True
         header.set_text("")
 
         if not self.getSelection():
@@ -987,6 +989,8 @@ class ChatPartnerselection(SubMenu):
     set up the selection and spawn the chat 
     '''
     def handleKey(self, key):
+        if key == "esc":
+            return True
         # wrap around the chat menu
         if self.subMenu:
             return self.subMenu.handleKey(key)
@@ -1061,6 +1065,8 @@ class RecruitChat(SubMenu):
     bad code: the dialog and reactions should be generated within the characters
     '''
     def handleKey(self, key):
+        if key == "esc":
+            return True
         if self.firstRun:
             # add player text
             self.persistentText += mainChar.name+": \"come and help me.\"\n"
@@ -1247,6 +1253,8 @@ class DebugMenu(SubMenu):
     show some debug output
     '''
     def handleKey(self, key):
+        if key == "esc":
+            return True
         if self.firstRun:
             # bad code: unstructred chaos
             import objgraph
@@ -1290,6 +1298,8 @@ class QuestMenu(SubMenu):
     overrides the superclasses method completely
     '''
     def handleKey(self, key):
+        if key == "esc":
+            return True
         # scroll
         # bad code: doesn't actually work
         if key == "W":
@@ -1368,6 +1378,8 @@ class InventoryMenu(SubMenu):
     bad pattern: no player interaction
     '''
     def handleKey(self, key):
+        if key == "esc":
+            return True
         global submenue
 
         header.set_text((urwid.AttrSpec("default","default"),"\ninventory overview\n(press "+commandChars.show_inventory_detailed+" for the extended inventory menu)\n\n"))
@@ -1387,6 +1399,8 @@ class CharacterInfoMenu(SubMenu):
     show the attributes
     '''
     def handleKey(self, key):
+        if key == "esc":
+            return True
         global submenue
 
         header.set_text((urwid.AttrSpec("default","default"),"\ncharacter overview"))
@@ -1410,6 +1424,8 @@ class AdvancedQuestMenu(SubMenu):
     gather the quests parameters and assign the quest
     '''
     def handleKey(self, key):
+        if key == "esc":
+            return True
         # start rendering
         header.set_text((urwid.AttrSpec("default","default"),"\nadvanced Quest management\n"))
         out = "\n"
@@ -1778,6 +1794,8 @@ class HelpMenu(SubMenu):
     show the help text
     '''
     def handleKey(self, key):
+        if key == "esc":
+            return True
         global submenue
 
         header.set_text((urwid.AttrSpec("default","default"),"\nquest overview\n\n"))

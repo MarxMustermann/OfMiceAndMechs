@@ -2235,6 +2235,7 @@ class GetReward(MetaQuestSequence):
         the chat for collecting the reward
         '''
         class RewardChat(interaction.SubMenu):
+             id = "RewardChat"
              dialogName = "i did the task: "+self.actualQuest.description.split("\n")[0]
              '''
              call superclass with less params

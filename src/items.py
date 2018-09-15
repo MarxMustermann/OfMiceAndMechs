@@ -1115,7 +1115,7 @@ class Pile(Item):
         if self.numContained == 1:
             # morph into a single item
             self.room.removeItem(self)
-            new = self.itemType()
+            new = self.itemType(creator=self)
             new.xPosition = self.xPosition
             new.yPosition = self.yPosition
             self.room.addItems([new])

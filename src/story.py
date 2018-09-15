@@ -1841,7 +1841,7 @@ class FindWork(BasicPhase):
         def addQuest12():
             quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(2,1)][0],(terrain.metalWorkshop,9,5),creator=void)
             quest.endTrigger = addQuest1
-            quest.reputationReward = 5
+            quest.reputationReward = 0
             terrain.waitingRoom.quests.append(quest)
         '''
         quest to carry stuff and trigger adding a new quest afterwards

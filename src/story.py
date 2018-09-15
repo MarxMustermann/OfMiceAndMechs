@@ -1764,7 +1764,7 @@ class FindWork(BasicPhase):
                     showText("I see you did some work. Carry on")
 
                 # decrease reputation so the player will be forced to work continiously or to save up reputation
-                mainChar.reputation -= 3
+                mainChar.reputation -= 3+(2*len(mainChar.subordinates))
                 self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),creator=void))
 
             '''

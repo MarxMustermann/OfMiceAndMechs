@@ -1497,6 +1497,7 @@ XXXXXXXXXX
             item.xPosition = self.storageSpace[counter][0]
             item.yPosition = self.storageSpace[counter][1]
             item.mayContainMice = True
+            item.bolted = False
             counter += 1
 
         if (self.xPosition + yPosition*2 - offsetX - offsetY)%5 == 0:
@@ -1583,6 +1584,7 @@ XXXXXXXXXX
         for item in self.storedItems:
             item.xPosition = self.storageSpace[counter][0]
             item.yPosition = self.storageSpace[counter][1]
+            item.bolted = False
             counter += 1
 
         # actually add the items
@@ -1801,13 +1803,24 @@ XXXXX$XXXXX
 
         # add some produced items
         self.producedItems = []
-        self.producedItems.append(items.Wall(9,5,creator=self))
-        self.producedItems.append(items.Wall(9,4,creator=self))
-        self.producedItems.append(items.Wall(9,6,creator=self))
-        self.producedItems.append(items.Wall(9,3,creator=self))
-        self.producedItems.append(items.Wall(9,7,creator=self))
-        self.producedItems.append(items.Wall(9,2,creator=self))
-        self.producedItems.append(items.Wall(9,8,creator=self))
+        item = items.Wall(9,4,creator=self)
+        item.bolted = False
+        self.producedItems.append(item)
+        item = items.Wall(9,6,creator=self)
+        item.bolted = False
+        self.producedItems.append(item)
+        item = items.Wall(9,3,creator=self)
+        item.bolted = False
+        self.producedItems.append(item)
+        item = items.Wall(9,7,creator=self)
+        item.bolted = False
+        self.producedItems.append(item)
+        item = items.Wall(9,2,creator=self)
+        item.bolted = False
+        self.producedItems.append(item)
+        item = items.Wall(9,8,creator=self)
+        item.bolted = False
+        self.producedItems.append(item)
         self.addItems(self.producedItems)
 
         # save initial state and register

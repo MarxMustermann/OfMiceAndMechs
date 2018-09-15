@@ -39,6 +39,7 @@ class Item(saving.Saveable):
         self.name = name
         self.description = "a "+self.name
         self.mayContainMice = False
+        self.bolted = not self.walkable
 
         self.attributesToStore.extend([
                "mayContainMice"])
@@ -136,6 +137,9 @@ class Item(saving.Saveable):
     get picked up by the supplied character
     '''
     def pickUp(self,character):
+        if self.bolted:
+            messages.append("you cannot pick up bolted items")
+            return
         # bad code: should be a simple self.container.removeItem(self)
         if self.room:
             # remove item from room
@@ -375,6 +379,7 @@ class Scrap(Item):
         self.amount = amount
 
         super().__init__(displayChars.scrap_light,xPosition,yPosition,creator=creator)
+        self.bolted = False
 
         # set display char
         # bad code: redundant
@@ -544,6 +549,7 @@ class Corpse(Item):
         self.type = "Corpse"
         super().__init__(displayChars.corpse,xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
+        self.bolted = False
 
         # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
@@ -693,6 +699,7 @@ class Lever(Item):
         self.activateAction = None
         self.deactivateAction = None
         self.walkable = True
+        self.bolted = True
         self.initialState = self.getState()
 
     '''
@@ -961,6 +968,7 @@ class Coal(Item):
         self.type = "Coal"
         super().__init__(displayChars.coal,xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
+        self.bolted = False
         self.initialState = self.getState()
 
 '''
@@ -1141,6 +1149,7 @@ class Chain(Item):
         self.type = "Chain"
         super().__init__(displayChars.chains,xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
+        self.bolted = False
         self.initialState = self.getState()
 
         self.chainedTo = []
@@ -1224,6 +1233,8 @@ class MetalBars(Item):
     def __init__(self,xPosition=0,yPosition=0,name="metal bar",creator=None):
         self.type = "MetalBars"
         super().__init__("==",xPosition,yPosition,name=name,creator=creator)
+        self.walkable = True
+        self.bolted = False
 
 '''
 produces steam from heat
@@ -1394,6 +1405,7 @@ class MarkerBean(Item):
         self.activated = False
         super().__init__(" -",xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
+        self.bolted = False
         self.initialState = self.getState()
 
     '''
@@ -1487,6 +1499,7 @@ class GooFlask(Item):
         self.uses = 100
         super().__init__(" -",xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
+        self.bolted = False
         self.displayByUses = ["ò ","ò.","ò,","ò-","ò~","ò="]
         self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses//20])
         self.description = "a flask conatining goo"
@@ -1608,6 +1621,7 @@ class ProductionArtwork(Item):
         new = itemType(creator=self)
         new.xPosition = self.xPosition-1
         new.yPosition = self.yPosition
+        new.bolted = False
         self.room.addItems([new])
 
 '''

@@ -2417,7 +2417,8 @@ class LeaveRoomQuest(Quest):
             if character.room:
                 # close door
                 for item in character.room.itemByCoordinates[(character.xPosition,character.yPosition)]:
-                    item.close()
+                    if isinstance(item,items.Door):
+                        item.close()
 
                 # add step out of the room
                 if character.yPosition == 0:

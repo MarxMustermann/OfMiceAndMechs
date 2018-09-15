@@ -1006,6 +1006,21 @@ class ChatPartnerselection(SubMenu):
                     if char == mainChar:
                         continue
                     options.append((char,char.name))
+
+                bigX = mainChar.xPosition//15
+                bigY = mainChar.yPosition//15
+                rooms = []
+                coordinates = [(bigX,bigY),(bigX-1,bigY),(bigX+1,bigY),(bigX,bigY-1),(bigX,bigY+1)]
+                for coordinate in coordinates:
+                    if not coordinate in terrain.roomByCoordinates:
+                        continue
+                    rooms.extend(terrain.roomByCoordinates[coordinate])
+                for room in rooms:
+                    if not room.open:
+                        continue 
+
+                    for char in room.characters:
+                        options.append((char,char.name))
                 
             self.setOptions("talk with whom?",options)
 

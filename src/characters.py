@@ -43,6 +43,7 @@ class Character(saving.Saveable):
         self.questsToDelegate = []
         self.unconcious = False
         self.displayOriginal = display
+        self.isMilitary = False
         self.id = {
                    "other":"character",
                    "xPosition":xPosition,

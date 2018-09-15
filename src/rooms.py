@@ -1138,8 +1138,8 @@ class InfanteryQuarters(Room):
         self.roomLayout = """
 XX$X&&XXXXX
 XX PPPPPPXX
-X .......DX
-X'.'' ''.IX
+X@.......DX
+X'.''@''.IX
 X'.'' ''.|X
 X'.'' ''.|X
 X'.'' ''.IX
@@ -1148,6 +1148,42 @@ XXXXXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.name = "Infanteryquarters"
+
+        self.firstOfficer.isMilitary = True
+        self.secondOfficer.isMilitary = True
+
+        def enforceMilitaryRestriction(character):
+            if character.isMilitary:
+                return
+            quest = quests.MurderQuest(character,creator=self)
+            self.secondOfficer.assignQuest(quest,active=True)
+
+            # show fluff
+            messages.append(self.firstOfficer.name+"@"+self.secondOfficer.name+": perimeter breached. neutralize threat.")
+
+            # punish player
+            character.reputation -= 100
+            messages.append("you were rewarded -100 reputation")
+
+            def abort(character2):
+                if not character2 == character:
+                    return
+
+                # show fluff
+                messages.append(self.firstOfficer.name+"@"+self.secondOfficer.name+": stop persuit. return to position.")
+
+                self.delListener(abort,"left room")
+
+                quest = self.secondOfficer.quests[0]
+                quest.deactivate()
+                self.secondOfficer.quests.remove(quest)
+                quest = quests.MoveQuestMeta(self,5,3,creator=self)
+                self.secondOfficer.assignQuest(quest,active=True)
+
+            quest = quests.MurderQuest(character,creator=self)
+            self.secondOfficer.assignQuest(quest,active=True)
+            self.addListener(abort,"left room")
+        self.addListener(enforceMilitaryRestriction,"entered room")
     
 '''
 the room where raw goo is processed into eatable form

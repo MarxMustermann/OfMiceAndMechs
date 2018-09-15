@@ -814,12 +814,11 @@ def processInput(key):
 
         # let the submenu handle the keystroke
         if not key in (commandChars.autoAdvance):
-            stillActive = submenue.handleKey(key)
+            done = submenue.handleKey(key)
         else:
-            stillActive = False
+            done = False
 
-        # abort rendering submenue when done
-        if key in ["esc"] or stillActive:
+        if done:
             submenue = None
             pauseGame = False
             specialRender = False
@@ -891,6 +890,9 @@ class SubMenu(object):
     show the options and allow the user to select one
     '''
     def handleKey(self, key):
+        if key == "esc":
+            return False
+
         out = "\n"
         out += self.query+"\n"
 
@@ -1114,6 +1116,7 @@ class ChatMenu(SubMenu):
         self.state = None
         self.partner = partner
         self.subMenu = None
+        self.skipTurn = False
         super().__init__()
 
     '''
@@ -1126,6 +1129,22 @@ class ChatMenu(SubMenu):
             messages.append("wake up!")
             self.partner.wakeUp()
             return True
+
+        if key == "esc":
+           if self.partner.reputation < 2*mainChar.reputation:
+               return True
+           else:
+               self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
+               mainChar.reputation -= 1
+               messages.append("you were rewarded -1 reputation")
+               main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+               self.skipTurn = True
+               return False
+                             
+        if self.skipTurn:
+           self.skipTurn = False
+           key = "."
+
         header.set_text((urwid.AttrSpec("default","default"),"\nConversation menu\n"))
         out = "\n"
 

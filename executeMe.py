@@ -123,6 +123,7 @@ story.quests = quests
 terrains.quests = quests
 characters.quests = quests
 items.quests = quests
+chats.quests = quests
 
 # HACK: common variables with modules
 story.rooms = rooms

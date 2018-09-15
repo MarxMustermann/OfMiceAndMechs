@@ -665,11 +665,11 @@ class Room(saveing.Saveable):
     teleport character into the room
     '''
     def addCharacter(self,character,x,y):
-        self.changed("entered room",character)
         self.characters.append(character)
         character.room = self
         character.xPosition = x
         character.yPosition = y
+        self.changed("entered room",character)
 
     '''
     teleport character out of the room

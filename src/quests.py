@@ -2317,7 +2317,7 @@ class KnockOutQuest(MetaQuestSequence):
     def __init__(self,target,followUp=None,startCinematics=None,creator=None,lifetime=None):
         super().__init__([],creator=creator,lifetime=lifetime)
         self.target = target
-        self.moveQuest = MoveQuestMeta(self.target.room,self.target.xPosition,self.target.yPosition,sloppy=False,creator=self)
+        self.moveQuest = MoveQuestMeta(self.target.room,self.target.xPosition,self.target.yPosition,sloppy=True,creator=self)
         self.questList = [self.moveQuest,NaiveKnockOutQuest(target,creator=self)]
         self.lastPos = (self.target.room,self.target.xPosition,self.target.yPosition)
         self.metaDescription = "knock out"

@@ -174,19 +174,40 @@ class Item(saving.Saveable):
                     if not character == character2:
                        return
 
+                    ambushXPosition = None
+                    ambushYPosition = None
+                    for item in room.itemsOnFloor:
+                        if not isinstance(item,Door):
+                            continue
+                        ambushXPosition = item.xPosition
+                        ambushYPosition = item.yPosition
+                        if ambushXPosition == 0:
+                          ambushXPosition += 1
+                        if ambushYPosition == 0:
+                          ambushYPosition += 1
+                        if ambushXPosition == room.sizeX-1:
+                          ambushXPosition -= 1
+                        if ambushYPosition == room.sizeY-1:
+                          ambushYPosition -= 1
+
                     while len(quest.subQuests) > 1:
-                         quest.subQuests.pop().deactivate()
-                        
+                        subQuest = quest.subQuests.pop()
+                        subQuest.deactivate()
+
+                    if (not yPosition == None) and (not xPosition == None):
+                        quest.addQuest(quests.WaitQuest(creator=self))
+                        quest.addQuest(quests.MoveQuestMeta(room=room,x=ambushXPosition,y=ambushYPosition,creator=self))
+
                     room.delListener(test,"left room")
                     def test2(character3):
+                        quest.addQuest(quests.MoveQuestMeta(room=room,x=xPosition,y=yPosition,creator=self))
+                        quest.addQuest(quests.KnockOutQuest(character3,lifetime=10,creator=self))
+                        messages.append(str(quest.subQuests))
+                        while len(quest.subQuests) > 2:
+                            subQuest = quest.subQuests[-1]
+                            subQuest.deactivate()
+                            quest.subQuests.remove(subQuest)
                         room.delListener(test2,"entered room")
-                        mouse = characters.Mouse(creator=self)
-                        room.addCharacter(mouse,xPosition,yPosition)
-                        quest = quests.MetaQuestSequence([],creator=self)
-                        quest.addQuest(quests.MoveQuestMeta(room=self.room,x=xPosition,y=yPosition,creator=self))
-                        quest.addQuest(quests.KnockOutQuest(character3,lifetime=15,creator=self))
-                        quest.endTrigger = {"container":mouse,"method":"vanish"}
-                        mouse.assignQuest(quest,active=True)
                         
                     room.addListener(test2,"entered room")
                 room.addListener(test,"left room")

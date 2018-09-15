@@ -176,6 +176,7 @@ do things the most efficent way. It will even try to handle conversion, wich doe
             messages.append("press "+commandChars.autoAdvance+" to let the implant take control ")
             self.set_text(self.persistentText)
             self.firstRun = False
+            mainChar.reputation = mainChar.reputation//2+2
             return False
         else:
             # remove self from the characters chat options
@@ -233,6 +234,7 @@ Sterns modifications are doing a good job for repetitive tasks but are no replac
 for a brain.\n\n"""
             self.set_text(self.persistentText)
             self.firstRun = False
+            mainChar.reputation = mainChar.reputation//2+2
             return False
         else:
             # remove chat option

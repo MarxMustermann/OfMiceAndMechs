@@ -954,7 +954,7 @@ class Room(saveing.Saveable):
             event.handleEvent()
             self.events.remove(event)
 
-        if not self.hidden:
+        if not self.hidden or 1 == 1:
             # redo delayed calculation
             if self.delayedTicks > 0:
                 self.applySkippedAdvances()
@@ -1104,7 +1104,6 @@ XXXXXXXXXX
             quest1.followUp = quest2
             quest2.followUp = quest3
             quest3.followUp = quest4
-            quest4.followUp = quest1
 
             # add npc
             npc = Character(displayChars.staffCharactersByLetter["l"],x,y,name="Erwin von Liebweg",creator=self)
@@ -1430,6 +1429,13 @@ XXXXXXXXXX
         beanPile = items.Pile(1,1,"markerPile",items.MarkerBean,creator=self)
         self.addItems([bean,beanPile])
         self.name = "Lab"
+
+        for item in self.itemsOnFloor:
+            if item.xPosition == 1 or item.yPosition == 1:
+               continue
+            if item.xPosition == self.sizeX or item.yPosition == self.sizeY:
+               continue
+            item.bolted = False
 
         # save initial state and register
         self.initialState = self.getState()

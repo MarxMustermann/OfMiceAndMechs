@@ -164,7 +164,32 @@ class Item(saving.Saveable):
             quest.endTrigger = {"container":rat,"method":"vanish"}
             rat.assignQuest(quest,active=True)
             if self.room:
-                self.room.addCharacter(rat,self.xPosition,self.yPosition)
+                room = self.room
+                xPosition = self.xPosition
+                yPosition = self.yPosition
+
+                room.addCharacter(rat,xPosition,yPosition)
+
+                def test(character2):
+                    if not character == character2:
+                       return
+
+                    while len(quest.subQuests) > 1:
+                         quest.subQuests.pop().deactivate()
+                        
+                    room.delListener(test,"left room")
+                    def test2(character3):
+                        room.delListener(test2,"entered room")
+                        mouse = characters.Mouse(creator=self)
+                        room.addCharacter(mouse,xPosition,yPosition)
+                        quest = quests.MetaQuestSequence([],creator=self)
+                        quest.addQuest(quests.MoveQuestMeta(room=self.room,x=xPosition,y=yPosition,creator=self))
+                        quest.addQuest(quests.KnockOutQuest(character3,lifetime=15,creator=self))
+                        quest.endTrigger = {"container":mouse,"method":"vanish"}
+                        mouse.assignQuest(quest,active=True)
+                        
+                    room.addListener(test2,"entered room")
+                room.addListener(test,"left room")
             else:
                 self.terrain.addCharacter(rat,self.xPosition,self.yPosition)
 

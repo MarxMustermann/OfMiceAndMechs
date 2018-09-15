@@ -675,6 +675,8 @@ class Room(saveing.Saveable):
     teleport character out of the room
     '''
     def removeCharacter(self,character):
+        self.changed("left room",character)
+        character.changed("left room",self)
         self.characters.remove(character)
         character.room = None
 
@@ -1499,25 +1501,27 @@ XXXXXXXXXX
 
         if (self.xPosition + yPosition*2 - offsetX - offsetY)%5 == 0:
             mice = []
-            mouse = characters.Mouse(creator=self)
-            self.addCharacter(mouse,2,2)
-            mice.append(mouse)
-            mouse = characters.Mouse(creator=self)
-            self.addCharacter(mouse,2,4)
-            mice.append(mouse)
-            mouse = characters.Mouse(creator=self)
-            self.addCharacter(mouse,4,2)
-            mice.append(mouse)
-            mouse = characters.Mouse(creator=self)
-            self.addCharacter(mouse,4,4)
-            mice.append(mouse)
-            mouse = characters.Mouse(creator=self)
-            self.addCharacter(mouse,8,3)
-            mice.append(mouse)
+            mousePositions = [(2,2),(2,4),(4,2),(4,4),(8,3)]
+            for mousePosition in mousePositions:
+                mouse = characters.Mouse(creator=self)
+                self.addCharacter(mouse,mousePosition[0],mousePosition[1])
+                mice.append(mouse)
             def killInvader(character):
                 for mouse in mice:
                     quest = quests.MurderQuest(character,creator=self)
                     mouse.assignQuest(quest,active=True)
+                def vanish(character2):
+                    if not character == character2:
+                        return
+
+                    counter = 0
+                    for mouse in mice:
+                        mouse.quests[0].deactivate()
+                        mouse.quests.remove(mouse.quests[0])
+                        quest = quests.MoveQuestMeta(self,mousePositions[counter][0],mousePositions[counter][1],creator=self)
+                        mouse.assignQuest(quest,active=True)
+                        counter += 1
+                self.addListener(vanish,"left room")
 
             self.addListener(killInvader,"entered room")
 

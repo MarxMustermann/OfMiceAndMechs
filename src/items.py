@@ -543,6 +543,7 @@ class Corpse(Item):
     def __init__(self,xPosition=0,yPosition=0,name="corpse",creator=None):
         self.type = "Corpse"
         super().__init__(displayChars.corpse,xPosition,yPosition,name=name,creator=creator)
+        self.walkable = True
 
         # bad code: repetetive and easy to forgett
         self.initialState = self.getState()

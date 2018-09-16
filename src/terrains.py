@@ -563,6 +563,8 @@ class Terrain(saveing.Saveable):
         character.room = None
         character.xPosition = x
         character.yPosition = y
+        character.changed()
+        self.changed("entered terrain",character)
 
     '''
     paint the information for the pathfinding

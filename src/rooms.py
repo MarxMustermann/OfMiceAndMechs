@@ -876,12 +876,8 @@ class Room(saveing.Saveable):
             newXPos += 1
         else:
             debugMessages.append("invalid movement direction")
-        character.xPosition = newXPos
-        character.yPosition = newYPos
         self.removeCharacter(character)
-        self.terrain.characters.append(character)
-        character.terrain = self.terrain
-        character.changed()
+        self.terrain.addCharacter(character,newXPos,newYPos)
         return
 
     '''

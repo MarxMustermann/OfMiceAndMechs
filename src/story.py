@@ -189,7 +189,7 @@ class OpenWorld(BasicPhase):
             mainChar.xPosition = 2
             mainChar.yPosition = 4
             mainChar.terrain = terrain
-            terrain.characters.append(mainChar)
+            terrain.addCharacter(mainChar)
 
 """
 

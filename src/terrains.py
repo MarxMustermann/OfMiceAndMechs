@@ -92,6 +92,7 @@ class Terrain(saveing.Saveable):
         self.tutorialStorageRooms = []
         self.miniMechs = []
         self.wakeUpRoom = None
+        self.militaryRooms = []
 
         self.watershedStart = []
         self.superNodes = {}
@@ -128,7 +129,9 @@ class Terrain(saveing.Saveable):
                         self.tutorialVatProcessing = room
                     roomsOnMap.append(room)
                 elif char == "Q":
-                    roomsOnMap.append(rooms.InfanteryQuarters(rowCounter,lineCounter,1,2,creator=self))
+                    room = rooms.InfanteryQuarters(rowCounter,lineCounter,1,2,creator=self)
+                    roomsOnMap.append(room)
+                    self.militaryRooms.append(room)
                 elif char == "w":
                     # add room and add to room list
                     room = rooms.WaitingRoom(rowCounter,lineCounter,1,2,creator=self)

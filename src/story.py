@@ -2002,16 +2002,20 @@ class VatPhase(BasicPhase):
 
         quest = quests.MoveQuestMeta(terrain.tutorialVat,3,3,creator=void,lifetime=500)
         def fail():
-            messages.append("*alarm* refusal to honour vat assignemnt detected. Possible artisan. Dispatch kill squads *alarm*")
+            messages.append("*alarm* refusal to honour vat assignemnt detected. likely artisan. Dispatch kill squads *alarm*")
             for room in terrain.militaryRooms:
                 quest = quests.MurderQuest(mainChar,creator=void)
                 mainChar.reputation -= 1000
                 room.secondOfficer.assignQuest(quest,active=True)
                 room.onMission = True
         quest.fail = fail
+        quest.endTrigger = {"container":self,"method":"revokeFloorPermit"}
 
         # assign player quest
         mainChar.assignQuest(quest,active=True)
+
+    def revokeFloorPermit(self):
+        mainChar.hasFloorPermit = False
 
     '''
     move on to next phase

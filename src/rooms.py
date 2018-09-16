@@ -1207,6 +1207,17 @@ XXXXXXXXXXX
             self.addListener(abort,"left room")
         self.addListener(enforceMilitaryRestriction,"entered room")
     
+    def enforceFloorPermit(self,character):
+        if character.hasFloorPermit:
+            return
+
+        messages.append("O2 military please enforce floor permit")
+        quest = quests.MoveQuestMeta(self,5,3,creator=self)
+        self.secondOfficer.assignQuest(quest,active=True)
+        quest = quests.MurderQuest(character,creator=self)
+        self.secondOfficer.assignQuest(quest,active=True)
+        self.onMission = True
+
 '''
 the room where raw goo is processed into eatable form
 '''

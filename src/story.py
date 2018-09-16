@@ -1060,6 +1060,17 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
     wait till expected completion time has passed
     '''
     def iamready(self):
+        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        # show evaluation
+        text = "you completed the tests and it is time to take on your duty. You will no longer server under my command, but under "+terrain.wakeUpRoom.firstOfficer.name+" as a hopper.\n\nSo please go to the waiting room and report for room duty.\n\nThe waiting room is the next room to the north. Simply go there speak to "+terrain.wakeUpRoom.firstOfficer.name+" and confirm that you are reporting for duty.\nYou will get instruction on how to proceed afterwards.\n\n"
+        if (self.didFurnaces):
+            text += "A word of advice from my part:\nYou are able to just not report for duty, but you have to expect to die alone.\nAlso staying on a mech with expired permit will get the guards attention pretty fast.\nSo just follow your orders and work hard, so you will be giving the orders."
+        showText(text,rusty=True)
+        for line in text.split("\n"):
+            if line == "":
+                continue
+            say(line,firstOfficer)
+
         # get time needed
         timeTaken = gamestate.tick-mainChar.tutorialStart
         normTime = 500
@@ -1072,7 +1083,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
             self.trainingCompleted()
         else:
             # make the player wait till norm completion time
-            text += "We are "+str(normTime-timeTaken)+" ticks ahead of plan. We need to make up for this. Please wait for "+str(normTime-timeTaken)+" ticks.\nIn order to not waste time, feel free to ask questions in the meantime.\n"
+            text += "We are "+str(normTime-timeTaken)+" ticks ahead of plan. This means your floor permit is not valid yet. Please wait for "+str(normTime-timeTaken)+" ticks.\n\nNoncompliance will result in a kill order to the military. Military zones and movement restrictions are security and therefore high priority.\n\nIn order to not waste time, feel free to ask questions in the meantime.\n"
             quest = quests.WaitQuest(lifetime=normTime-timeTaken,creator=void)
             showText(text)
             quest.endTrigger = {"container":self,"method":"trainingCompleted"}
@@ -1084,16 +1095,6 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
     def trainingCompleted(self):
         firstOfficer = terrain.wakeUpRoom.firstOfficer
 
-        # show evaluation
-        text = "you completed the tests and it is time to take on your duty. You will no longer server under my command, but under "+terrain.wakeUpRoom.firstOfficer.name+" as a hopper.\n\nSo please go to the waiting room and report for room duty.\n\nThe waiting room is the next room to the north. Simply go there speak to "+terrain.wakeUpRoom.firstOfficer.name+" and confirm that you are reporting for duty.\nYou will get instruction on how to proceed afterwards.\n\n"
-        if (self.didFurnaces):
-            text += "A word of advice from my part:\nYou are able to just not report for duty, but you have to expect to die alone.\nAlso staying on a mech with expired permit will get the guards attention pretty fast.\nSo just follow your orders and work hard, so you will be giving the orders."
-        showText(text,rusty=True,scrolling=True)
-        for line in text.split("\n"):
-            if line == "":
-                continue
-            say(line,firstOfficer)
-
         # make player mode to the next room
         # bad pattern: this should be part of the next phase
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,5,1,creator=void)
@@ -1102,6 +1103,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
         # move npc to default position
         quest = quests.MoveQuestMeta(terrain.waitingRoom,9,4,creator=void)
         mainChar.assignQuest(quest,active=True)
+        mainChar.hasFloorPermit = True
 
         # trigger final wrap up
         quest.endTrigger = {"container":self,"method":"end"}

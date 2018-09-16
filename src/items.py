@@ -646,6 +646,7 @@ class GrowthTank(Item):
             name = getRandomName(self.xPosition+self.room.timeIndex,self.yPosition+self.room.timeIndex)
             character = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],self.xPosition+1,self.yPosition,name=name,creator=self)
         character.fallUnconcious()
+        character.hasFloorPermit = False
         self.room.addCharacter(character,self.xPosition+1,self.yPosition)
 
     '''

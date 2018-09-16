@@ -44,6 +44,7 @@ class Character(saving.Saveable):
         self.unconcious = False
         self.displayOriginal = display
         self.isMilitary = False
+        self.hasFloorPermit = True
         self.id = {
                    "other":"character",
                    "xPosition":xPosition,

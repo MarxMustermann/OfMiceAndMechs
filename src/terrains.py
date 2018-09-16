@@ -133,6 +133,7 @@ class Terrain(saveing.Saveable):
                     room = rooms.InfanteryQuarters(rowCounter,lineCounter,1,2,creator=self)
                     roomsOnMap.append(room)
                     self.militaryRooms.append(room)
+                    self.addListener(room.enforceFloorPermit,"entered terrain")
                 elif char == "w":
                     # add room and add to room list
                     room = rooms.WaitingRoom(rowCounter,lineCounter,1,2,creator=self)

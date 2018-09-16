@@ -1839,7 +1839,7 @@ XXXXXXXXXXX
         self.quests.append(quest)
 
     def disposeOfCorpse(self,info):
-        quest = quests.PickUpQuestMeta(info["corpse"],creator=self)
+        quest = quests.PickupQuestMeta(info["corpse"],creator=self)
         quest.reputationReward = 1
         self.quests.append(quest)
 

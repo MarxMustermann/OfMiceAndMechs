@@ -1723,6 +1723,8 @@ class FindWork(BasicPhase):
         hopperDutyQuest = quests.HopperDuty(terrain.waitingRoom,creator=void)
         mainChar.assignQuest(hopperDutyQuest,active=True)
 
+        self.didStoreCargo = False
+
         '''
         check reputation and punish/reward player
         '''
@@ -1730,9 +1732,10 @@ class FindWork(BasicPhase):
             '''
             basic state initialization
             '''
-            def __init__(subself,tick,toCancel=[],creator=None):
+            def __init__(subself,tick,char,toCancel=[],creator=None):
                 super().__init__(tick,creator=creator)
                 subself.tick = tick
+                subself.char = char
                 subself.toCancel = toCancel
 
             '''
@@ -1762,20 +1765,36 @@ class FindWork(BasicPhase):
             fake a meeting with the player superordinate
             '''
             def meeting(subself):
-                showText("Time to prove your worth.")
-                if mainChar.reputation <= 0:
-                    # punish player for low performance near to killing player
-                    showText("You currently have no recieps on you. Please report to vat duty.",trigger={"container":subself,"method":"startVatPhase"})
-                elif mainChar.reputation > 5:
-                    # do nothing on ok performance
-                    showText("great work. Keep on and maybe you will be one of us officers")
-                else:
-                    # aplaud the player on good performance
-                    showText("I see you did some work. Carry on")
+                if mainChar.reputation < 15 or self.didStoreCargo:
+                    showText("Time to prove your worth.")
+                    if mainChar.reputation <= 0:
+                        # punish player for low performance near to killing player
+                        showText("You currently have no recieps on you. Please report to vat duty.",trigger={"container":subself,"method":"startVatPhase"})
+                    elif mainChar.reputation > 5:
+                        # do nothing on ok performance
+                        showText("great work. Keep on and maybe you will be one of us officers")
+                    else:
+                        # aplaud the player on good performance
+                        showText("I see you did some work. Carry on")
 
-                # decrease reputation so the player will be forced to work continiously or to save up reputation
-                mainChar.reputation -= 3+(2*len(mainChar.subordinates))
-                self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),creator=void))
+                    # decrease reputation so the player will be forced to work continiously or to save up reputation
+                    mainChar.reputation -= 3+(2*len(mainChar.subordinates))
+                    self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),subself.char,creator=void))
+                else:
+                    mainChar.reputation += 5
+                    # add the quest
+                    showText("logistics command orders us to move some of the cargo in the long term store to accesible storage.\n3 rooms are to be cleared. One room needs to be cleared within 150 ticks\nThis requires the coordinated effort of the hoppers here. Since "+subself.char.name+" did well to far, "+subself.char.name+" will be given the lead.\nThis will be extra to the current workload")
+                    quest = quests.HandleDelivery([terrain.tutorialCargoRooms[4]],[terrain.tutorialStorageRooms[1],terrain.tutorialStorageRooms[3],terrain.tutorialStorageRooms[5]],creator=void)
+                    quest.endTrigger = addRoomConstruction
+                    mainChar.assignQuest(quest,active=True)
+
+                    # add subordinates
+                    for hopper in terrain.waitingRoom.hoppers:
+                        if hopper == subself.char:
+                            continue
+                        if hopper in mainChar.subordinates:
+                            continue
+                        mainChar.subordinates.append(hopper)
 
             '''
             trigger failure phase
@@ -1784,46 +1803,6 @@ class FindWork(BasicPhase):
                 phase = VatPhase()
                 phase.start()
 
-        '''
-        the event for making the player coordinate unloding the cargo
-        '''
-        class StoreCargo(events.Event):
-            '''
-            basic state initialization
-            '''
-            def __init__(subself,tick,char,toCancel=[],creator=None):
-                super().__init__(tick,creator=creator)
-                subself.tick = tick
-                subself.char = char
-
-            '''
-            set up the quests and lend npcs
-            '''
-            def handleEvent(subself):
-                # call the player for a meeting
-                quest = quests.MoveQuestMeta(self.mainCharRoom,6,5,creator=void,lifetime=300)
-                quest.endTrigger = {"container":subself,"method":"meeting"}
-                mainChar.assignQuest(quest,active=True)
-                mainChar.reputation += 5
-
-            '''
-            fake a meeting with the player superordinate
-            '''
-            def meeting(subself):
-                # add the quest
-                showText("logistics command orders us to move some of the cargo in the long term store to accesible storage.\n3 rooms are to be cleared. One room needs to be cleared within 150 ticks\nThis requires the coordinated effort of the hoppers here. Since "+subself.char.name+" did well to far, "+subself.char.name+" will be given the lead.\nThis will be extra to the current workload")
-                quest = quests.HandleDelivery([terrain.tutorialCargoRooms[4]],[terrain.tutorialStorageRooms[1],terrain.tutorialStorageRooms[3],terrain.tutorialStorageRooms[5]],creator=void)
-                quest.endTrigger = addRoomConstruction
-                mainChar.assignQuest(quest,active=True)
-
-                # add subordinates
-                for hopper in terrain.waitingRoom.hoppers:
-                    if hopper == subself.char:
-                        continue
-                    if hopper in mainChar.subordinates:
-                        continue
-                    mainChar.subordinates.append(hopper)
-                    
         '''
         helper function to make the main char build a room
         '''
@@ -1836,8 +1815,7 @@ class FindWork(BasicPhase):
             mainChar.assignQuest(quest,active=True)
 
         # add events to keep loose control
-        self.mainCharRoom.addEvent(StoreCargo(gamestate.tick+(15*15*40),mainChar,creator=void))
-        self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),creator=void))
+        self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),mainChar,creator=void))
 
         # add quest to pool
         quest = quests.ClearRubble(creator=void)

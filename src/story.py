@@ -1744,7 +1744,7 @@ class FindWork(BasicPhase):
                      mainChar.quests.remove(quest)
 
                 # call the player for the speech
-                quest = quests.MoveQuestMeta(self.mainCharRoom,6,5,creator=void,lifetime=200)
+                quest = quests.MoveQuestMeta(self.mainCharRoom,6,5,creator=void,lifetime=300)
                 quest.endTrigger = {"container":subself,"method":"meeting"}
                 def fail():
                     messages.append("*alarm* non rensponsive personal detected. Possible artist. Dispatch kill squads *alarm*")
@@ -1799,7 +1799,7 @@ class FindWork(BasicPhase):
             '''
             def handleEvent(subself):
                 # call the player for a meeting
-                quest = quests.MoveQuestMeta(self.mainCharRoom,6,5,creator=void,lifetime=200)
+                quest = quests.MoveQuestMeta(self.mainCharRoom,6,5,creator=void,lifetime=300)
                 quest.endTrigger = {"container":subself,"method":"meeting"}
                 mainChar.assignQuest(quest,active=True)
                 mainChar.reputation += 5

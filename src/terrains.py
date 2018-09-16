@@ -1438,10 +1438,10 @@ class TutorialTerrain(Terrain):
         layout = """
 XXXXXXXXXXX
 XXXXXXXXXXX
-XVv?b???vVX
+XVv?b?Q?vVX
 XO.t    .OX
 Xw MQK?? LX
-XW ????? mX
+XW Q???Q mX
 XU.     .UX
 XU CCCCC UX
 XU CCCCCtUX
@@ -1522,7 +1522,7 @@ XXXCCCCCXXX """
                X#      X    XX               X             XX#           #XX#           #XX#           #XX#           #X               X#X          #X               
                X#      X    XX               X             XX#           #XX#           #XX#           #XX#           #X               X#X          #X               
                X#XXXXXXX    XX               XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               XXX           X               
-               X#########   #X               XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               XXX           X               
+               X#########   #X               XX           XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX           XX               XXX           X               
                XXXXXXXXX    #X       X       X#           #XX#           #XX#           #XX#           #XX#           #X       X         X                           
                X#      X    #X  X   XXX   X  X#           #XX#           #XX#           #XX#           #XX#           #X  X   XXX   X  X            #X               
                X#           #X XXX  XXX  XXX X#           #XX#           #XX#           #XX#           #XX#           #X XXX  XXX  XXX X#X          #X               

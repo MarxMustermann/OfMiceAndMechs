@@ -218,6 +218,8 @@ class Quest(saveing.Saveable):
 
         # flag self as completed
         self.completed = True
+        if not self.type in self.character.questsDone:
+            self.character.questsDone.append(self.type)
 
         if self in self.character.quests:
             # remove self from characters quest list

@@ -25,6 +25,7 @@ class Character(saving.Saveable):
         self.display = display # bad code: the character should have a rendering+chaching caching method instead of attrbute
         self.automated = automated
         self.quests = []
+        self.questsDone = []
         self.name = name
         self.inventory = []
         self.watched = False

@@ -397,6 +397,7 @@ class Character(saving.Saveable):
         self.unconcious = True
         self.display = displayChars.unconciousBody
         messages.append("*thump,snort*")
+        self.changed("fallen unconcious",self)
 
     '''
     set state and display to not unconcious
@@ -427,6 +428,7 @@ class Character(saving.Saveable):
 
         # set attributes
         self.dead = True
+        self.changed("died",{"character":self,"corpse":corpse,"reason":reason})
         if reason:
             self.deathReason = reason
         self.path = []

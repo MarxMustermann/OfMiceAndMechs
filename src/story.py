@@ -1787,7 +1787,7 @@ class FindWork(BasicPhase):
                     # add the quest
                     showText("logistics command orders us to move some of the cargo in the long term store to accesible storage.\n3 rooms are to be cleared. One room needs to be cleared within 150 ticks\nThis requires the coordinated effort of the hoppers here. Since "+subself.char.name+" did well to far, "+subself.char.name+" will be given the lead.\nThis will be extra to the current workload")
                     quest = quests.HandleDelivery([terrain.tutorialCargoRooms[4]],[terrain.tutorialStorageRooms[1],terrain.tutorialStorageRooms[3],terrain.tutorialStorageRooms[5]],creator=void)
-                    quest.endTrigger = addRoomConstruction
+                    quest.endTrigger = {"container":self,"method":"subordinateHandover"}
                     mainChar.assignQuest(quest,active=True)
 
                     # add subordinates
@@ -1795,6 +1795,8 @@ class FindWork(BasicPhase):
                         if hopper == subself.char:
                             continue
                         if hopper in mainChar.subordinates:
+                            continue
+                        if hopper.dead:
                             continue
                         mainChar.subordinates.append(hopper)
 
@@ -1805,10 +1807,20 @@ class FindWork(BasicPhase):
                 phase = VatPhase()
                 phase.start()
 
+        def subordinateHandover(self):
+            for hopper in terrain.waitingRoom.hoppers:
+                if hopper in mainChar.subordinates:
+                    if hopper.dead:
+                        messages.append(hopper.name+" died. that is unfortunate")
+                        messages.append("you were rewarded -100 reputation")
+                        mainChar.reputation -= 100
+                    mainChar.subordinates.remove(hopper)
+            self.addRoomConstruction()
+
         '''
         helper function to make the main char build a room
         '''
-        def addRoomConstruction():
+        def addRoomConstruction(self):
             for room in terrain.rooms:
                 if isinstance(room,rooms.ConstructionSite):
                     constructionSite = room

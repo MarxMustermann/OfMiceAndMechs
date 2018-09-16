@@ -1470,6 +1470,8 @@ class AdvancedQuestMenu(SubMenu):
             if not self.options and not self.getSelection():
                 options = []
                 for key,value in quests.questMap.items():
+                    if not key in mainChar.questsDone:
+                        continue
                     if key.startswith("Naive"):
                         continue
                     options.append((value,key))

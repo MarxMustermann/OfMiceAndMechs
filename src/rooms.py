@@ -1151,6 +1151,7 @@ XXXXXXXXXXX
 
         self.firstOfficer.isMilitary = True
         self.secondOfficer.isMilitary = True
+        self.onMission = False
 
         for item in self.itemsOnFloor:
             if not isinstance(item,items.Door):
@@ -1159,6 +1160,9 @@ XXXXXXXXXXX
             thisRoundsItem = item
 
             def handleDoorOpened():
+                if self.onMission:
+                    return
+
                 if not thisRoundsItem.walkable:
                     return
 

@@ -1601,28 +1601,25 @@ XXXCCCCCXXX """
         super().__init__(layout,detailedLayout,creator=creator)
 
         # add some tasks to keep npc busy
-        toTransport = []
+        self.toTransport = []
+        
+        roomsIndices = [0,1,2,3,5,6]
+        for index in reversed(roomsIndices):
+            room = self.tutorialCargoRooms[index]
+            for item in room.storedItems:
+                self.toTransport.append((room,(item.xPosition,item.yPosition)))
+
         x = 12
         while x > 8:
             y = 1
             while y < 9:
-                toTransport.append((y,x))
+                self.toTransport.append((self.tutorialLab,(y,x)))
                 y += 1
             x -= 1
 
-        '''
-        add quest to move something from the lab to storage
-        '''
-        def addStorageQuest():
-            if not toTransport:
-                return
-            quest = quests.MoveToStorage([self.tutorialLab.itemByCoordinates[toTransport.pop()][0]],self.tutorialStorageRooms[1],creator=self)
-            quest.reputationReward = 1
-            quest.endTrigger = addStorageQuest
-            self.waitingRoom.quests.append(quest)
 
         # add some tasks to keep npc busy
-        addStorageQuest()
+        self.addStorageQuest()
 
         # add scrap to be cleaned up
         self.testItems = [items.Scrap(20,52,3,creator=self),
@@ -1638,3 +1635,26 @@ XXXCCCCCXXX """
         self.addItems(self.testItems)
 
         self.initialState = self.getState()
+
+    '''
+    add quest to move something from the lab to storage
+    '''
+    def addStorageQuest(self):
+        if not self.toTransport:
+            return
+        task = self.toTransport.pop()
+
+        roomIndices = [1,0,2,5,4]
+        room = None
+        for index in roomIndices:
+            if self.tutorialStorageRooms[index].storageSpace:
+               room = self.tutorialStorageRooms[index]
+               break
+
+        if not room:
+            return
+
+        quest = quests.MoveToStorage([task[0].itemByCoordinates[task[1]][0]],self.tutorialStorageRooms[1],creator=self)
+        quest.reputationReward = 1
+        quest.endTrigger = {"container":self,"method":"addStorageQuest"}
+        self.waitingRoom.quests.append(quest)

@@ -291,6 +291,9 @@ class Quest(saveing.Saveable):
         if listenFunction in self.listener:
             self.listener.remove(listenFunction)
 
+    def timeOut(self):
+        self.fail()
+
     '''
     switch from just existing to active
     '''
@@ -308,7 +311,7 @@ class Quest(saveing.Saveable):
 
         # add automatic termination
         if self.lifetime:
-            self.character.addEvent(events.EndQuestEvent(gamestate.tick+self.lifetime,callback={"container":self,"method":"postHandler"},creator=self))
+            self.character.addEvent(events.EndQuestEvent(gamestate.tick+self.lifetime,callback={"container":self,"method":"timeOut"},creator=self))
 
         # recalculate and notify listeners
         self.recalculate()
@@ -1746,8 +1749,8 @@ class MoveQuestMeta(MetaQuestSequence):
     '''
     state initialization
     '''
-    def __init__(self,room=None,x=None,y=None,sloppy=False,followUp=None,startCinematics=None,creator=None):
-        super().__init__([],creator=creator)
+    def __init__(self,room=None,x=None,y=None,sloppy=False,followUp=None,startCinematics=None,creator=None,lifetime=None):
+        super().__init__([],creator=creator,lifetime=lifetime)
         if not ( x == None and y == None ):
             self.moveQuest = NaiveMoveQuest(room,x,y,sloppy=sloppy,creator=self)
             self.questList = [self.moveQuest]

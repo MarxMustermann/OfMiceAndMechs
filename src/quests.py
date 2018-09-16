@@ -2956,6 +2956,15 @@ class HandleDelivery(MetaQuestSequence):
         self.type = "HandleDelivery"
         self.initialState = self.getState()
         loadingRegistry.register(self)
+
+    def activate(self):
+        super().activate()
+        if self.character:
+            for sub in self.character.subordinates:
+                sub.addListener(self.rescueSub,"fallen unconcious")
+
+    def rescueSub(self,character):
+        self.addQuest(WakeUpQuest(character,creator=self),addFront=True)
        
     '''
     wait the cargo to be moved to storage

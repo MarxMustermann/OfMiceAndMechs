@@ -1827,6 +1827,22 @@ XXXXXXXXXXX
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
+        for hopper in self.hoppers:
+            hopper.addListener(self.addRescueQuest,"fallen unconcious")
+
+        for hopper in self.hoppers:
+            hopper.addListener(self.disposeOfCorpse,"died")
+
+    def addRescueQuest(self,character):
+        quest = quests.WakeUpQuest(character,creator=self)
+        quest.reputationReward = 2
+        self.quests.append(quest)
+
+    def disposeOfCorpse(self,info):
+        quest = quests.PickUpQuestMeta(info["corpse"],creator=self)
+        quest.reputationReward = 1
+        self.quests.append(quest)
+
 '''
 a dummy for the mechs command centre
 '''

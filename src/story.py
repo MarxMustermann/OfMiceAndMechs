@@ -1724,6 +1724,9 @@ class FindWork(BasicPhase):
     def end(self):
         hopperDutyQuest = quests.HopperDuty(terrain.waitingRoom,creator=void)
         mainChar.assignQuest(hopperDutyQuest,active=True)
+        mainChar.addListener(terrain.waitingRoom.addRescueQuest,"fallen unconcious")
+        mainChar.addListener(terrain.waitingRoom.disposeOfCorpse,"died")
+
 
         self.didStoreCargo = False
 

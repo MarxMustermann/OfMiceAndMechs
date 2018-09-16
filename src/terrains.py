@@ -1534,7 +1534,7 @@ XXXCCCCCXXX """
                X#      X    #X XXX  XXX  XXX X#           #XX#           #XX#           #XX#           #XX#           #X XXX  XXX  XXX X#           #X               
                X#      X    #X  X   XXX   X  X#           #XX#           #XX#           #XX#           #XX#           #X  X   XXX   X  X#           #X               
                XXXXXXXXX    #X       X       X#           #XX#           #XX#           #XX#           #XX#           #X       X                    #X               
-               X######### ###X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
+               X#############X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
                X#XXXXXXX    #X               X# XPXX   XP #XX# XPX    XPX#XX# XPX    XPX#XX# XPX    XPX#XX# XPX    XPX#X               X#           #X               
                XXXXXXXXXXXX  X               XXXXC X XXXC XXXXXXC  XXXXC XXXXXXC  XXXXC XXXXXXC XX XXC XXXXXXC X XXXC XX               XX            X               
                X#XXXXXXXXXXX                     8      8       8      8       8      8       8      8       8      8                  X#            X               
@@ -1654,7 +1654,7 @@ XXXCCCCCXXX """
         if not room:
             return
 
-        quest = quests.MoveToStorage([task[0].itemByCoordinates[task[1]][0]],self.tutorialStorageRooms[1],creator=self)
+        quest = quests.MoveToStorage([task[0].itemByCoordinates[task[1]][0]],room,creator=self)
         quest.reputationReward = 1
         quest.endTrigger = {"container":self,"method":"addStorageQuest"}
         self.waitingRoom.quests.append(quest)

@@ -1359,6 +1359,8 @@ class NaiveWakeUpQuest(Quest):
         if self.active:
             if not self.target.unconcious:
                 self.postHandler()
+            elif self.target.dead:
+                self.fail()
 
     '''
     knock the target out

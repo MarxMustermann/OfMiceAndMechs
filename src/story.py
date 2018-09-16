@@ -176,12 +176,14 @@ this phase should be left as blank as possible
 
 """
 class OpenWorld(BasicPhase):
+    def __init__(self):
+        super().__init__("OpenWorld")
     '''
     place main char
     bad code: superclass call should not be prevented
     '''
     def start(self):
-        cinematics.showCinematic("staring open world Scenario.",creator=void)
+        cinematics.showCinematic("staring open world Scenario.")
         if terrain.wakeUpRoom:
             self.mainCharRoom = terrain.wakeUpRoom
             self.mainCharRoom.addCharacter(mainChar,2,4)

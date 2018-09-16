@@ -47,6 +47,7 @@ class Quest(saveing.Saveable):
         self.callbacksToStore.append("endTrigger")
 
         self.lifetime = lifetime
+        self.lifetimeEvent = None
 
         # set id
         self.id = {
@@ -310,8 +311,9 @@ class Quest(saveing.Saveable):
             loop.set_alarm_in(0.0, callShow_or_exit, '.')
 
         # add automatic termination
-        if self.lifetime:
-            self.character.addEvent(events.EndQuestEvent(gamestate.tick+self.lifetime,callback={"container":self,"method":"timeOut"},creator=self))
+        if self.lifetime and not self.lifetimeEvent:
+            self.lifetimeEvent = events.EndQuestEvent(gamestate.tick+self.lifetime,callback={"container":self,"method":"timeOut"},creator=self)
+            self.character.addEvent(self.lifetimeEvent)
 
         # recalculate and notify listeners
         self.recalculate()
@@ -322,6 +324,9 @@ class Quest(saveing.Saveable):
     '''
     def deactivate(self):
         self.active = False
+        if self.lifetimeEvent and self.character and self.lifetimeEvent in self.character.events:
+            self.character.removeEvent(self.lifetimeEvent)
+            self.lifetimeEvent = None
         self.changed()
 
 '''

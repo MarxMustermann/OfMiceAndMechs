@@ -658,7 +658,8 @@ class Character(saving.Saveable):
         while self.events and gamestate.tick == self.events[0].tick:
             event = self.events[0]
             event.handleEvent()
-            self.events.remove(event)
+            if event in self.events:
+                self.events.remove(event)
 
         # handle satiation
         self.satiation -= 1

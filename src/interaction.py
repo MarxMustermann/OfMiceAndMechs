@@ -989,11 +989,12 @@ class ChatPartnerselection(SubMenu):
     set up the selection and spawn the chat 
     '''
     def handleKey(self, key):
-        if key == "esc":
-            return True
         # wrap around the chat menu
         if self.subMenu:
             return self.subMenu.handleKey(key)
+
+        if key == "esc":
+            return True
 
         header.set_text((urwid.AttrSpec("default","default"),"\nConversation menu\n"))
         out = "\n"

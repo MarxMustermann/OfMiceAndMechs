@@ -341,6 +341,17 @@ class JobChat(interaction.SubMenu):
     show dialog and assign quest 
     '''
     def handleKey(subSelf, key):
+        if key == "esc":
+           if self.partner.reputation < 2*mainChar.reputation:
+               return True
+           else:
+               self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
+               mainChar.reputation -= 2
+               messages.append("you were rewarded -2 reputation")
+               main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+               self.skipTurn = True
+               return False
+                             
         if subSelf.firstRun:
             if not subSelf.dispatchedPhase:
                 if subSelf.mainChar.reputation < 10:
@@ -406,6 +417,17 @@ class JobChat2(interaction.SubMenu):
     show dialog and assign quest 
     '''
     def handleKey(self, key):
+        if key == "esc":
+           if self.partner.reputation < 2*mainChar.reputation:
+               return True
+           else:
+               self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
+               mainChar.reputation -= 2
+               messages.append("you were rewarded -2 reputation")
+               main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+               self.skipTurn = True
+               return False
+                             
         # let the superclass do the selections
         if self.submenue:
             if not self.submenue.handleKey(key):

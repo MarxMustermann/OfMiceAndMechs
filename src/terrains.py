@@ -37,6 +37,7 @@ class Terrain(saveing.Saveable):
         self.floordisplay = displayChars.floor
         self.itemByCoordinates = {}
         self.roomByCoordinates = {}
+        self.listeners = {"default":[]}
 
         # set id
         self.id = {
@@ -235,6 +236,40 @@ class Terrain(saveing.Saveable):
         # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
+
+    '''
+    registering for notifications
+    '''
+    def addListener(self,listenFunction,tag="default"):
+        if not tag in self.listeners:
+            self.listeners[tag] = []
+
+        if not listenFunction in self.listeners[tag]:
+            self.listeners[tag].append(listenFunction)
+
+    '''
+    deregistering for notifications
+    '''
+    def delListener(self,listenFunction,tag="default"):
+        if listenFunction in self.listeners[tag]:
+            self.listeners[tag].remove(listenFunction)
+
+        if not self.listeners[tag]:
+            del self.listeners[tag]
+
+    '''
+    sending notifications
+    bad code: probably misnamed
+    '''
+    def changed(self,tag="default",info=None):
+        if not tag == "default":
+            if not tag in self.listeners:
+                return
+
+            for listenFunction in self.listeners[tag]:
+                listenFunction(info)
+        for listenFunction in self.listeners["default"]:
+            listenFunction()
 
     '''
     create a map of non passable tiles

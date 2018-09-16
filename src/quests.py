@@ -1741,7 +1741,7 @@ class SurviveQuest(Quest):
                     self.character.assignQuest(self.refillQuest,active=True)
 
         # drink
-        if self.character.satiation < 31:
+        if self.character.satiation < 301:
             if not self.drinkQuest:
                 self.drinkQuest = DrinkQuest(creator=self)
                 self.character.assignQuest(self.drinkQuest,active=True)

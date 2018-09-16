@@ -1335,6 +1335,40 @@ class NaiveKnockOutQuest(Quest):
         return True
 
 '''
+The naive quest to wape up someone. It assumes nothing goes wrong. 
+You probably want to use WakeUpQuest instead
+'''
+class NaiveWakeUpQuest(Quest):
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,target,followUp=None,startCinematics=None,creator=None):
+        self.target = target
+        super().__init__(followUp,startCinematics=startCinematics,creator=creator)
+        self.description = "naive wake up"
+
+        # save initial state and register
+        self.type = "NaiveWakeUpQuest"
+        self.initialState = self.getState()
+        loadingRegistry.register(self)
+
+    '''
+    check whether target is dead
+    '''
+    def triggerCompletionCheck(self):
+        if self.active:
+            if not self.target.unconcious:
+                self.postHandler()
+
+    '''
+    knock the target out
+    '''
+    def solver(self,character):
+        self.target.wakeUp()
+        self.triggerCompletionCheck()
+        return True
+
+'''
 The naive quest to activate something. It assumes nothing goes wrong. 
 You probably want to use ActivateQuest instead
 '''
@@ -2348,6 +2382,44 @@ class KnockOutQuest(MetaQuestSequence):
         if self.active:
             pos = (self.target.room,self.target.xPosition,self.target.yPosition)
             if not (pos == self.lastPos) and not self.target.dead:
+                self.lastPos = pos
+                self.moveQuest.deactivate()
+                if self.moveQuest in self.subQuests:
+                        self.subQuests.remove(self.moveQuest)
+                self.moveQuest = MoveQuestMeta(self.target.room,self.target.xPosition,self.target.yPosition,sloppy=True,creator=self)
+                self.addQuest(self.moveQuest)
+        super().recalculate()
+
+'''
+the quest for waking somebody
+'''
+class WakeUpQuest(MetaQuestSequence):
+    '''
+    generate quests for moving to and the tking up the target
+    '''
+    def __init__(self,target,followUp=None,startCinematics=None,creator=None,lifetime=None):
+        super().__init__([],creator=creator,lifetime=lifetime)
+        self.target = target
+        self.moveQuest = MoveQuestMeta(self.target.room,self.target.xPosition,self.target.yPosition,sloppy=True,creator=self)
+        self.questList = [self.moveQuest,NaiveWakeUpQuest(target,creator=self)]
+        self.lastPos = (self.target.room,self.target.xPosition,self.target.yPosition)
+        self.metaDescription = "wake up somebody"
+        for quest in reversed(self.questList):
+            self.addQuest(quest)
+        self.startWatching(self.target,self.recalculate)
+
+        # save initial state and register
+        self.type = "WakeUpQuest"
+        self.initialState = self.getState()
+        loadingRegistry.register(self)
+
+    '''
+    adjust movement to follow target
+    '''
+    def recalculate(self):
+        if self.active:
+            pos = (self.target.room,self.target.xPosition,self.target.yPosition)
+            if not (pos == self.lastPos):
                 self.lastPos = pos
                 self.moveQuest.deactivate()
                 if self.moveQuest in self.subQuests:

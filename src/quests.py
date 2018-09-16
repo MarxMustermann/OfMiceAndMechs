@@ -154,6 +154,8 @@ class Quest(saveing.Saveable):
     handle a failure to resolve te quest
     '''
     def fail(self):
+        if self.reputationReward:
+            self.reputationReward *= -2
         self.postHandler()
     
     '''

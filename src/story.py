@@ -1752,7 +1752,7 @@ class FindWork(BasicPhase):
                 quest = quests.MoveQuestMeta(self.mainCharRoom,6,5,creator=void,lifetime=300)
                 quest.endTrigger = {"container":subself,"method":"meeting"}
                 def fail():
-                    messages.append("*alarm* non rensponsive personal detected. Possible artist. Dispatch kill squads *alarm*")
+                    messages.append("*alarm* non rensponsive personal detected. possible artisan. dispatch kill squads *alarm*")
                     for room in terrain.militaryRooms:
                         quest = quests.MurderQuest(mainChar,creator=void)
                         mainChar.reputation -= 1000
@@ -2000,19 +2000,18 @@ class VatPhase(BasicPhase):
 
         super().start()
 
-        # do a dummy action
-        questList = []
-        questList.append(quests.MoveQuestMeta(terrain.tutorialVat,3,3,creator=void))
-
-        # chain quests
-        lastQuest = questList[0]
-        for item in questList[1:]:
-            lastQuest.followUp = item
-            lastQuest = item
-        questList[-1].followup = None
+        quest = quests.MoveQuestMeta(terrain.tutorialVat,3,3,creator=void,lifetime=500)
+        def fail():
+            messages.append("*alarm* refusal to honour vat assignemnt detected. Possible artisan. Dispatch kill squads *alarm*")
+            for room in terrain.militaryRooms:
+                quest = quests.MurderQuest(mainChar,creator=void)
+                mainChar.reputation -= 1000
+                room.secondOfficer.assignQuest(quest,active=True)
+                room.onMission = True
+        quest.fail = fail
 
         # assign player quest
-        mainChar.assignQuest(questList[0],active=True)
+        mainChar.assignQuest(quest,active=True)
 
     '''
     move on to next phase

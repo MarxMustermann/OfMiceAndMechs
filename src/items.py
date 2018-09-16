@@ -1371,6 +1371,9 @@ class Boiler(Item):
                 bad code: should be an abstact event calling a method
                 '''
                 class StopBoilingEvent(object):
+                    id = "StopBoilingEvent"
+                    type = "StopBoilingEvent"
+
                     '''
                     straightforward state initialization
                     '''

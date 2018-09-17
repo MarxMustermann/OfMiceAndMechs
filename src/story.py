@@ -721,6 +721,8 @@ class WakeUpPhase(BasicPhase):
         # make main char hungry and naked
         mainChar.satiation = 400
         mainChar.inventory = []
+        for quest in mainChar.quests:
+            quest.deactivate()
         mainChar.quests = []
 
         # set the wake up room as play area
@@ -958,7 +960,11 @@ now, go and pull the lever
 
         # ask the player to pick up the flask
         quest = quests.PickupQuestMeta(drink,creator=void)
-        showQuest(quest,mainChar,container=mainChar.serveQuest)
+        showQuest(quest,mainChar,trigger={"container":self,"method":"drinkStuff"},container=mainChar.serveQuest)
+    
+    def drinkStuff(self):
+        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        mainChar.assignQuest(quests.SurviveQuest(creator=void))
 
         # show instructions
         msg = "you can drink using "+commandChars.drink+". If you do not drink for a longer time you will starve"

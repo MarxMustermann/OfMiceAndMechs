@@ -1731,6 +1731,11 @@ class SurviveQuest(Quest):
     spawn quests to take care of basic needs
     '''
     def recalculate(self):
+        if not self.active:
+            return
+        if not self.character:
+            return
+
         # remove completed quests
         if self.drinkQuest and self.drinkQuest.completed:
             self.drinkQuest = None

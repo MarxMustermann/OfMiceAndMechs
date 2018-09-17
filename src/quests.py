@@ -1357,12 +1357,16 @@ class NaiveWakeUpQuest(Quest):
     '''
     check whether target is dead
     '''
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,discardParam=None):
         if self.active:
             if not self.target.unconcious:
                 self.postHandler()
             elif self.target.dead:
                 self.fail()
+
+    def activate(self):
+        super().activate()
+        self.target.addListener(self.triggerCompletionCheck,"fallen unconcious")
 
     '''
     knock the target out

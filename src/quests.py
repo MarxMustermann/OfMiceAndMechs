@@ -21,7 +21,7 @@ class Quest(saveing.Saveable):
     '''
     straightforward state initialization
     '''
-    def __init__(self,followUp=None,startCinematics=None,lifetime=0,creator=None):
+    def __init__(self,followUp=None,startCinematics=None,lifetime=None,creator=None):
         super().__init__()
 
         # set basic attributes
@@ -170,7 +170,10 @@ class Quest(saveing.Saveable):
                     color = "#0f0"
                 else:
                     color = "#090"
-                return [[(urwid.AttrSpec(color,"default"),self.description),"\n"]]
+                description = self.description
+                if self.lifetimeEvent:
+                    description += " ("+str(self.lifetimeEvent.tick-gamestate.tick)+" / "+str(self.lifetime)+")"
+                return [[(urwid.AttrSpec(color,"default"),description),"\n"]]
             else:
                 return [[self.description,"\n"]]
         else:

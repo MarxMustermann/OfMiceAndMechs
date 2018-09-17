@@ -2914,8 +2914,8 @@ class MoveToStorage(MetaQuestSequence):
     '''
     generate the quests to transport each item
     '''
-    def __init__(self, items, storageRoom, creator=None):
-        super().__init__([],creator=creator)
+    def __init__(self, items, storageRoom, creator=None, lifetime=None):
+        super().__init__([],creator=creator,lifetime=lifetime)
         self.questList = []
             
         # determine how many items should be moved

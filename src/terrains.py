@@ -1629,6 +1629,7 @@ XXXCCCCCXXX """
                           items.Scrap(21,53,3,creator=self),
                           items.Scrap(19,48,3,creator=self),
                           items.Scrap(20,52,3,creator=self),
+                          items.Scrap(19,49,3,creator=self),
                           items.Scrap(20,48,3,creator=self),
                           items.Scrap(18,50,3,creator=self),
                           items.Scrap(18,51,3,creator=self)]

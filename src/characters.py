@@ -25,7 +25,6 @@ class Character(saving.Saveable):
         self.display = display # bad code: the character should have a rendering+chaching caching method instead of attrbute
         self.automated = automated
         self.quests = []
-        self.questsDone = []
         self.name = name
         self.inventory = []
         self.watched = False
@@ -69,6 +68,9 @@ class Character(saving.Saveable):
 
         #TODO: this approach is fail, but works for now. There has to be a better way
         self.basicChatOptions = []
+
+        self.questsDone = []
+        self.solvers = []
 
         # default items
         self.assignQuest(src.quests.SurviveQuest(creator=self))
@@ -345,6 +347,8 @@ class Character(saving.Saveable):
     bad code: this is kind of incompatible with the meta quests
     '''
     def assignQuest(self,quest,active=False):
+            if not quest.type in self.solvers:
+                self.solvers.append(quest.type)
             if active:
                 self.quests.insert(0,quest)
             else:

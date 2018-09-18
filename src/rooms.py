@@ -1784,10 +1784,17 @@ XXXXXXXX
         for item in self.itemsOnFloor:
             if isinstance(item,items.GrowthTank):
                 item.addListener(self.handleUnexpectedGrowthTankActivation,"activated")
+            if isinstance(item,items.Door):
+                item.addListener(self.handleDoorOpening,"activated")
 
         # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
+
+    def handleDoorOpening(self,character):
+        if self.firstOfficer and not character.hasFloorPermit:
+            messages.append(self.firstOfficer.name+": moving through this door will be your death.")
+            character.reputation -= 1
     
     def handleUnexpectedGrowthTankActivation(self,character):
         messages.append("handler called")

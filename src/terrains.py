@@ -841,6 +841,8 @@ class Terrain(saveing.Saveable):
     def removeItem(self,item):
         self.itemsOnFloor.remove(item)
         self.itemByCoordinates[(item.xPosition,item.yPosition)].remove(item)
+        if hasattr(self,"watershedStart"):
+            self.calculatePathMap()
 
     '''
     add items to terrain and add them to internal datastructures
@@ -853,6 +855,8 @@ class Terrain(saveing.Saveable):
                 self.itemByCoordinates[(item.xPosition,item.yPosition)].append(item)
             else:
                 self.itemByCoordinates[(item.xPosition,item.yPosition)] = [item]
+        if hasattr(self,"watershedStart"):
+            self.calculatePathMap()
 
     '''
     draw the floor
@@ -1060,6 +1064,8 @@ class Terrain(saveing.Saveable):
                 self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
             else:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
+        if hasattr(self,"watershedStart"):
+            self.calculatePathMap()
 
     '''
     move a room to the south
@@ -1083,6 +1089,8 @@ class Terrain(saveing.Saveable):
                 self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
             else:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
+        if hasattr(self,"watershedStart"):
+            self.calculatePathMap()
 
     '''
     move a room to the west
@@ -1106,6 +1114,8 @@ class Terrain(saveing.Saveable):
                 self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
             else:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
+        if hasattr(self,"watershedStart"):
+            self.calculatePathMap()
 
     '''
     move a room to the east
@@ -1129,6 +1139,8 @@ class Terrain(saveing.Saveable):
                 self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
             else:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
+        if hasattr(self,"watershedStart"):
+            self.calculatePathMap()
 
     '''
     teleport a room to another position
@@ -1148,6 +1160,8 @@ class Terrain(saveing.Saveable):
             self.roomByCoordinates[newPosition] = [room]
         room.xPosition = newPosition[0]
         room.yPosition = newPosition[1]
+        if hasattr(self,"watershedStart"):
+            self.calculatePathMap()
 
     '''
     set state from dict

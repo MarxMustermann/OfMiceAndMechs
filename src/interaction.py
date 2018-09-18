@@ -630,74 +630,86 @@ def processInput(key):
 
             # murder the next available character
             if key in (commandChars.attack):
-                if mainChar.room:
-                    for char in mainChar.room.characters:
-                        if char == mainChar:
-                            continue
-                        if not (mainChar.xPosition == char.xPosition and mainChar.yPosition == char.yPosition):
-                            continue
-                        char.die()
+                if not "NaiveMurderQuest" in mainChar.solvers:
+                    messages.append("you do not have the nessecary solver yet")
+                else:
+                    if mainChar.room:
+                        for char in mainChar.room.characters:
+                            if char == mainChar:
+                                continue
+                            if not (mainChar.xPosition == char.xPosition and mainChar.yPosition == char.yPosition):
+                                continue
+                            char.die()
                 # bad code: no else, so characters can only be killed within rooms -_-
 
             # activate an item 
             if key in (commandChars.activate):
-                if itemMarkedLast:
-                    # active marked item
-                    itemMarkedLast.apply(mainChar)
-                    mainChar.changed("activate",itemMarkedLast) # should happen in apply
-                    itemMarkedLast.changed("activated",mainChar) # should happen in apply
+                if not "NaiveActivateQuest" in mainChar.solvers:
+                    messages.append("you do not have the nessecary solver yet")
                 else:
-                    # active an item on floor
-                    # bad code: room and terrain should be a abstracted container
-                    if mainChar.room:
-                        itemList = mainChar.room.itemsOnFloor
+                    if itemMarkedLast:
+                        # active marked item
+                        itemMarkedLast.apply(mainChar)
+                        mainChar.changed("activate",itemMarkedLast) # should happen in apply
+                        itemMarkedLast.changed("activated",mainChar) # should happen in apply
                     else:
-                        itemList = terrain.itemsOnFloor
-                    for item in itemList:
-                        if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
-                            item.apply(mainChar)
-                            mainChar.changed("activate",item)
-                            item.changed("activated",mainChar) # should happen in apply
+                        # active an item on floor
+                        # bad code: room and terrain should be a abstracted container
+                        if mainChar.room:
+                            itemList = mainChar.room.itemsOnFloor
+                        else:
+                            itemList = terrain.itemsOnFloor
+                        for item in itemList:
+                            if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
+                                item.apply(mainChar)
+                                mainChar.changed("activate",item)
+                                item.changed("activated",mainChar) # should happen in apply
 
             # examine an item 
             if key in (commandChars.examine):
-                if itemMarkedLast:
-                    # examine marked item
-                    # should happen in character
-                    messages.append(itemMarkedLast.description)
-                    if itemMarkedLast.description != itemMarkedLast.getDetailedInfo():
-                        messages.append(itemMarkedLast.getDetailedInfo())
-                    mainChar.changed("examine",itemMarkedLast)
+                if not "ExamineQuest" in mainChar.solvers:
+                    messages.append("you do not have the nessecary solver yet")
                 else:
-                    # examine an item on floor
-                    # bad code: room and terrain should be a abstracted container
-                    if mainChar.room:
-                        itemList = mainChar.room.itemsOnFloor
+                    if itemMarkedLast:
+                        # examine marked item
+                        # should happen in character
+                        messages.append(itemMarkedLast.description)
+                        if itemMarkedLast.description != itemMarkedLast.getDetailedInfo():
+                            messages.append(itemMarkedLast.getDetailedInfo())
+                        mainChar.changed("examine",itemMarkedLast)
                     else:
-                        itemList = terrain.itemsOnFloor
-                    for item in itemList:
-                        if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
-                            messages.append(item.id)
-                            messages.append(item.description)
-                            if item.description != item.getDetailedInfo():
-                                messages.append(item.getDetailedInfo())
-                            mainChar.changed("examine",itemMarkedLast)
+                        # examine an item on floor
+                        # bad code: room and terrain should be a abstracted container
+                        if mainChar.room:
+                            itemList = mainChar.room.itemsOnFloor
+                        else:
+                            itemList = terrain.itemsOnFloor
+                        for item in itemList:
+                            if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
+                                messages.append(item.id)
+                                messages.append(item.description)
+                                if item.description != item.getDetailedInfo():
+                                    messages.append(item.getDetailedInfo())
+                                mainChar.changed("examine",itemMarkedLast)
 
             # drop first item from inventory
             # bad pattern: the user has to have the choice for what item to drop
             # bad code: no drop event sent
             # bad code: dropping should happen within character
             if key in (commandChars.drop):
-                if len(mainChar.inventory):
-                    item = mainChar.inventory.pop()    
-                    item.xPosition = mainChar.xPosition        
-                    item.yPosition = mainChar.yPosition        
-                    if mainChar.room:
-                        mainChar.room.addItems([item])
-                    else:
-                        mainChar.terrain.addItems([item])
-                    item.changed()
-                    mainChar.changed()
+                if not "NaiveDropQuest" in mainChar.solvers:
+                    messages.append("you do not have the nessecary solver yet")
+                else:
+                    if len(mainChar.inventory):
+                        item = mainChar.inventory.pop()    
+                        item.xPosition = mainChar.xPosition        
+                        item.yPosition = mainChar.yPosition        
+                        if mainChar.room:
+                            mainChar.room.addItems([item])
+                        else:
+                            mainChar.terrain.addItems([item])
+                        item.changed()
+                        mainChar.changed()
 
             # drink from the first available item in inventory
             # bad pattern: the user has to have the choice for what item to drop
@@ -712,30 +724,32 @@ def processInput(key):
 
             # pick up items
             if key in (commandChars.pickUp):
-                
-                # check inventory space
-                if len(mainChar.inventory) > 10:
-                    messages.append("you cannot carry more items")
+                if not "NaivePickupQuest" in mainChar.solvers:
+                    messages.append("you do not have the nessecary solver yet")
                 else:
-                    # get the list of items from room or terrain
-                    # bad code: getting abtracted lists is a start but there should be a container class
-                    if mainChar.room:
-                        itemByCoordinates = mainChar.room.itemByCoordinates
-                        itemList = mainChar.room.itemsOnFloor
+                    # check inventory space
+                    if len(mainChar.inventory) > 10:
+                        messages.append("you cannot carry more items")
                     else:
-                        itemByCoordinates = terrain.itemByCoordinates
-                        itemList = terrain.itemsOnFloor
+                        # get the list of items from room or terrain
+                        # bad code: getting abtracted lists is a start but there should be a container class
+                        if mainChar.room:
+                            itemByCoordinates = mainChar.room.itemByCoordinates
+                            itemList = mainChar.room.itemsOnFloor
+                        else:
+                            itemByCoordinates = terrain.itemByCoordinates
+                            itemList = terrain.itemsOnFloor
 
-                    # get the position to pickup from
-                    if itemMarkedLast:
-                        pos = (itemMarkedLast.xPosition,itemMarkedLast.yPosition)
-                    else:
-                        pos = (mainChar.xPosition,mainChar.yPosition)
+                        # get the position to pickup from
+                        if itemMarkedLast:
+                            pos = (itemMarkedLast.xPosition,itemMarkedLast.yPosition)
+                        else:
+                            pos = (mainChar.xPosition,mainChar.yPosition)
 
-                    # pickup all items from this coordinate
-                    if pos in itemByCoordinates:
-                        for item in itemByCoordinates[pos]:
-                            item.pickUp(mainChar)
+                        # pickup all items from this coordinate
+                        if pos in itemByCoordinates:
+                            for item in itemByCoordinates[pos]:
+                                item.pickUp(mainChar)
 
             # open chat menu
             if key in (commandChars.hail):

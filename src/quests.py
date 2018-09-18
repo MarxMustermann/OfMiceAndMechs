@@ -260,6 +260,9 @@ class Quest(saveing.Saveable):
     bad code: this would be a contructor param, but this may be used for reassigning quests
     '''
     def assignToCharacter(self,character):
+        if not self.type in character.solvers:
+            character.solvers.append(self.type)
+
         self.character = character
         self.recalculate()
         if self.active:

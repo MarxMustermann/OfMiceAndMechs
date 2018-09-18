@@ -347,8 +347,6 @@ class Character(saving.Saveable):
     bad code: this is kind of incompatible with the meta quests
     '''
     def assignQuest(self,quest,active=False):
-            if not quest.type in self.solvers:
-                self.solvers.append(quest.type)
             if active:
                 self.quests.insert(0,quest)
             else:

@@ -232,7 +232,7 @@ class Item(saving.Saveable):
         if listenFunction in self.listeners[tag]:
             self.listeners[tag].remove(listenFunction)
 
-        if not self.listeners[tag]:
+        if not self.listeners[tag] and not tag == "default":
             del self.listeners[tag]
 
     '''

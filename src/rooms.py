@@ -1810,6 +1810,8 @@ XXXXXXXX
 
             cinematics.cinematicQueue = []
 
+            character.hasFloorPermit = True
+
             phase = story.VatPhase()
             phase.start()
 '''

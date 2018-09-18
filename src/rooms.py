@@ -1781,10 +1781,30 @@ XXXXXXXX
         # actually add items
         self.addItems([self.lever1,self.gooDispenser,self.objectDispenser,self.furnace,self.pile])
 
+        for item in self.itemsOnFloor:
+            if isinstance(item,items.GrowthTank):
+                item.addListener(self.handleUnexpectedGrowthTankActivation,"activated")
+
         # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
+    
+    def handleUnexpectedGrowthTankActivation(self,character):
+        messages.append("handler called")
+        if not character == mainChar:
+            return
+        if self.firstOfficer:
+            messages.append(self.firstOfficer.name+": Now i'll have to take care of this body.")
+            messages.append(self.firstOfficer.name+": Please move on to your next assignment immediatly.")
 
+            for quest in mainChar.quests:
+                quest.deactivate()
+            mainChar.quests = []
+
+            cinematics.cinematicQueue = []
+
+            phase = story.VatPhase()
+            phase.start()
 '''
 the room where hoppers wait for jobs
 '''

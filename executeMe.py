@@ -96,6 +96,9 @@ cinematics.void = void
 events.void = void
 
 # HACK: common variables with modules
+rooms.story = story
+
+# HACK: common variables with modules
 story.chats = chats
 characters.chats = chats
 
@@ -144,6 +147,7 @@ chats.displayChars = displayChars
 story.cinematics = cinematics
 interaction.cinematics = cinematics
 events.cinematics = cinematics
+rooms.cinematics = cinematics
 gamestate.cinematics = cinematics
 
 # HACK: common variables with modules

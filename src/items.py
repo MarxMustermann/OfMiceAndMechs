@@ -32,7 +32,7 @@ class Item(saving.Saveable):
         self.xPosition = xPosition
         self.yPosition = yPosition
         self.room = None
-        self.listeners = []
+        self.listeners = {"default":[]}
         self.walkable = False
         self.lastMovementToken = None
         self.chainedTo = []
@@ -126,14 +126,6 @@ class Item(saving.Saveable):
         messages.append("i can't do anything useful with this")
 
     '''
-    call callbacks for all listeners
-    bad code: this should be specific for certain changes
-    '''
-    def changed(self):
-        for listener in self.listeners:
-            listener()
-
-    '''
     get picked up by the supplied character
     '''
     def pickUp(self,character):
@@ -224,18 +216,39 @@ class Item(saving.Saveable):
         self.changed()
 
     '''
-    register a callback to be called when the item changes
+    registering for notifications
     '''
-    def addListener(self,listenFunction):
-        if not listenFunction in self.listeners:
-            self.listeners.append(listenFunction)
+    def addListener(self,listenFunction,tag="default"):
+        if not tag in self.listeners:
+            self.listeners[tag] = []
+
+        if not listenFunction in self.listeners[tag]:
+            self.listeners[tag].append(listenFunction)
 
     '''
-    delete a callback to be called when the item changes
+    deregistering for notifications
     '''
-    def delListener(self,listenFunction):
-        if listenFunction in self.listeners:
-            self.listeners.remove(listenFunction)
+    def delListener(self,listenFunction,tag="default"):
+        if listenFunction in self.listeners[tag]:
+            self.listeners[tag].remove(listenFunction)
+
+        if not self.listeners[tag]:
+            del self.listeners[tag]
+
+    '''
+    sending notifications
+    bad code: probably misnamed
+    '''
+    def changed(self,tag="default",info=None):
+        if not tag == "default":
+            if not tag in self.listeners:
+                return
+
+            for listenFunction in self.listeners[tag]:
+                listenFunction(info)
+        for listenFunction in self.listeners["default"]:
+            listenFunction()
+
 
     '''
     get a list of items that is affected if the item would move north

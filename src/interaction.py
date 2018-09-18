@@ -645,6 +645,7 @@ def processInput(key):
                     # active marked item
                     itemMarkedLast.apply(mainChar)
                     mainChar.changed("activate",itemMarkedLast) # should happen in apply
+                    itemMarkedLast.changed("activated",mainChar) # should happen in apply
                 else:
                     # active an item on floor
                     # bad code: room and terrain should be a abstracted container
@@ -656,6 +657,7 @@ def processInput(key):
                         if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
                             item.apply(mainChar)
                             mainChar.changed("activate",item)
+                            item.changed("activated",mainChar) # should happen in apply
 
             # examine an item 
             if key in (commandChars.examine):

@@ -194,6 +194,7 @@ do things the most efficent way. It will even try to handle conversion, wich doe
                         break
             # bad code: crashes
             self.firstOfficer.basicChatOptions.remove(toRemove)
+            terrain.waitingRoom.firstOfficer.basicChatOptions.remove(toRemove)
 
             # finish
             self.done = True
@@ -258,6 +259,7 @@ for a brain.\n\n"""
 
             # finish
             self.firstOfficer.basicChatOptions.append({"dialogName":"What did Stern modify on the implant?","chat":SternChat,"params":{"firstOfficer":self.firstOfficer}})
+            terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"What did Stern modify on the implant?","chat":SternChat,"params":{"firstOfficer":self.firstOfficer}})
             self.done = True
             return True
 

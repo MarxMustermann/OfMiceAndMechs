@@ -305,6 +305,7 @@ interaction.terrain = terrain
 gamestate.terrain = terrain
 terrains.terrain = terrain
 quests.terrain = terrain
+chats.terrain = terrain
 
 # HACK: common variables with modules
 cinematics.interaction = interaction

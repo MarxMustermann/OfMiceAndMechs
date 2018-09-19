@@ -340,6 +340,7 @@ interaction.gamestate = gameStateObj
 quests.gamestate = gameStateObj
 characters.gamestate = gameStateObj
 items.gamestate = gameStateObj
+terrains.gamestate = gameStateObj
 
 # HACK: common variables with modules
 rooms.mainChar = gameStateObj.mainChar

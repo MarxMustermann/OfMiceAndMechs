@@ -1204,6 +1204,8 @@ XXXXXXXXXXX
 
             quest = quests.MurderQuest(character,creator=self)
             self.secondOfficer.assignQuest(quest,active=True)
+            quest = quests.MurderQuest(character,creator=self)
+            character.assignQuest(quest,active=True)
             self.addListener(abort,"left room")
         self.addListener(enforceMilitaryRestriction,"entered room")
     
@@ -1216,6 +1218,8 @@ XXXXXXXXXXX
         self.secondOfficer.assignQuest(quest,active=True)
         quest = quests.MurderQuest(character,creator=self)
         self.secondOfficer.assignQuest(quest,active=True)
+        quest = quests.MurderQuest(character,creator=self)
+        character.assignQuest(quest,active=True)
         self.onMission = True
 
 '''

@@ -190,6 +190,7 @@ items.events = events
 rooms.events = events
 quests.events = events
 characters.events = events
+terrains.events = events
 
 # HACK: common variables with modules
 cinematics.callShow_or_exit = interaction.callShow_or_exit

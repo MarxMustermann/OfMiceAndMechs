@@ -1506,7 +1506,7 @@ XXXCCCCCXXX """
                #X          XXXX###### ########XXXX8  O                                                                                              X               
                #X             XXXXXXX XXXXXXXXX   8                                                                                                  X               
                #XXXXXXXXXX  X                     8                                                                                                  X              
-               ############ #X                    8                                                                                   XXXXXXXXXXXXXXXX              
+               ############ #X                    8                                                                                   XXXXXXXX  XXXXXX              
                XXXXXXXXXXX  #X                    8                                                                                    X#X          #X               
                             #X                                                                                                         X#X          #X               
                             #X                                                                                                         X#X          #X               
@@ -1618,6 +1618,7 @@ XXXCCCCCXXX """
         self.toTransport = []
         
         roomsIndices = [0,1,2,3,5,6]
+        roadBlocks = []
         for index in reversed(roomsIndices):
             room = self.tutorialCargoRooms[index]
             for item in room.storedItems:
@@ -1649,6 +1650,8 @@ XXXCCCCCXXX """
                           items.Scrap(18,51,3,creator=self)]
         self.addItems(self.testItems)
 
+        self.waitingRoom.addEvent(events.EndQuestEvent(4000,{"container":self,"method":"addRoadblock"},creator=self))
+
         self.initialState = self.getState()
 
     '''
@@ -1673,3 +1676,18 @@ XXXCCCCCXXX """
         quest.reputationReward = 1
         quest.endTrigger = {"container":self,"method":"addStorageQuest"}
         self.waitingRoom.quests.append(quest)
+
+    '''
+
+    '''
+    def addRoadblock(self):
+        room = self.tutorialCargoRooms[8]
+        item = room.storedItems[-1]
+        quest = quests.MetaQuestSequence([],creator=self)
+        quest2 = quests.TransportQuest(item,(None,127,81),creator=self)
+        def tmp():
+            quest.character.yPosition -= 1
+        quest2.endTrigger = tmp
+        quest.addQuest(quest2)
+        self.waitingRoom.quests.append(quest)
+

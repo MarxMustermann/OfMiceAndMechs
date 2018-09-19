@@ -1690,4 +1690,37 @@ XXXCCCCCXXX """
         quest2.endTrigger = tmp
         quest.addQuest(quest2)
         self.waitingRoom.quests.append(quest)
+        self.waitingRoom.addEvent(events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToLeft"},creator=self))
+
+    '''
+
+    '''
+    def moveRoadblockToLeft(self):
+        if not (127,81) in self.itemByCoordinates:
+            return
+        item = self.itemByCoordinates[(127,81)][0]
+        quest = quests.MetaQuestSequence([],creator=self)
+        quest2 = quests.TransportQuest(item,(None,37,81),creator=self)
+        def tmp():
+            quest.character.yPosition -= 1
+        quest2.endTrigger = tmp
+        quest.addQuest(quest2)
+        self.waitingRoom.quests.append(quest)
+        self.waitingRoom.addEvent(events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToRight"},creator=self))
+
+    '''
+
+    '''
+    def moveRoadblockToRight(self):
+        if not (37,81) in self.itemByCoordinates:
+            return
+        item = self.itemByCoordinates[(37,81)][0]
+        quest = quests.MetaQuestSequence([],creator=self)
+        quest2 = quests.TransportQuest(item,(None,127,81),creator=self)
+        def tmp():
+            quest.character.yPosition -= 1
+        quest2.endTrigger = tmp
+        quest.addQuest(quest2)
+        self.waitingRoom.quests.append(quest)
+        self.waitingRoom.addEvent(events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToLeft"},creator=self))
 

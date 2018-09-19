@@ -1089,6 +1089,8 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
             text += "you better speed up and stop wasting time.\n\n"
             showText(text)
             self.trainingCompleted()
+            mainChar.reputation -= 2
+            messages.append("you were rewarded -2 reputation")
         else:
             # make the player wait till norm completion time
             text += "We are "+str(normTime-timeTaken)+" ticks ahead of plan. This means your floor permit is not valid yet. Please wait for "+str(normTime-timeTaken)+" ticks.\n\nNoncompliance will result in a kill order to the military. Military zones and movement restrictions are security and therefore high priority.\n\nIn order to not waste time, feel free to ask questions in the meantime.\n"
@@ -1096,6 +1098,8 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
             showText(text)
             quest.endTrigger = {"container":self,"method":"trainingCompleted"}
             mainChar.serveQuest.addQuest(quest)
+            mainChar.reputation += 1
+            messages.append("you were rewarded 1 reputation")
 
     '''
     wrap up

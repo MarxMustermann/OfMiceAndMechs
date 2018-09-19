@@ -1733,7 +1733,6 @@ class FindWork(BasicPhase):
         mainChar.addListener(terrain.waitingRoom.addRescueQuest,"fallen unconcious")
         mainChar.addListener(terrain.waitingRoom.disposeOfCorpse,"died")
 
-
         self.didStoreCargo = False
 
         '''

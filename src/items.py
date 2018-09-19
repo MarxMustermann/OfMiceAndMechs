@@ -662,6 +662,8 @@ class GrowthTank(Item):
         character.hasFloorPermit = False
         self.room.addCharacter(character,self.xPosition+1,self.yPosition)
 
+        return character
+
     '''
     get state difference since creation
     '''

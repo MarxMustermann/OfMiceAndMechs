@@ -1787,6 +1787,8 @@ XXXXXXXX
             if isinstance(item,items.Door):
                 item.addListener(self.handleDoorOpening,"activated")
 
+        self.addEvent(events.EndQuestEvent(8000,{"container":self,"method":"spawnNewHopper"},creator=self))
+
         # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
@@ -1814,6 +1816,30 @@ XXXXXXXX
 
             phase = story.VatPhase()
             phase.start()
+
+    def spawnNewHopper(self):
+        if not self.firstOfficer:
+            return
+
+        character = None
+        for item in self.itemsOnFloor:
+            if isinstance(item,items.GrowthTank):
+                if item.filled:
+                    character = item.eject()
+                    break
+
+        if not character:
+            return
+
+        character.wakeUp()
+        character.hasFloorPermit = True
+        hopperDutyQuest = quests.HopperDuty(self.terrain.waitingRoom,creator=void)
+        character.assignQuest(hopperDutyQuest,active=True)
+        character.addListener(self.terrain.waitingRoom.addRescueQuest,"fallen unconcious")
+        character.addListener(self.terrain.waitingRoom.disposeOfCorpse,"died")
+
+        self.addEvent(events.EndQuestEvent(gamestate.tick+10000,{"container":self,"method":"spawnNewHopper"},creator=self))
+
 '''
 the room where hoppers wait for jobs
 '''

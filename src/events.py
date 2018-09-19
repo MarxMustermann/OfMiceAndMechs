@@ -28,6 +28,8 @@ class Event(saveing.Saveable):
 
         self.tick = tick
 
+        self.initialState = self.getState()
+
     '''
     do nothing
     '''
@@ -114,10 +116,10 @@ class FurnaceBurnoutEvent(Event):
     straightforward state initialization
     '''
     def __init__(self,tick,creator=None):
+        self.furnace = None
         super().__init__(tick,creator=creator)
         self.id = "FurnaceBurnoutEvent"
         self.type = "FurnaceBurnoutEvent"
-        self.furnace = None
 
         self.tick = tick
 

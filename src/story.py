@@ -1778,7 +1778,7 @@ class FindWork(BasicPhase):
             def meeting(subself):
                 if mainChar.reputation < 15 or self.didStoreCargo:
                     lowestReputation = True
-                    for hopper in terrain.hoopers:
+                    for hopper in terrain.waitingRoom.hoopers:
                        if hopper.reputation < mainChar.reputation:
                            lowestReputation = False
 

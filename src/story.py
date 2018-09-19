@@ -1783,7 +1783,7 @@ class FindWork(BasicPhase):
             def meeting(subself):
                 if mainChar.reputation < 15 or self.didStoreCargo:
                     lowestReputation = True
-                    for hopper in terrain.waitingRoom.hoopers:
+                    for hopper in terrain.waitingRoom.hoppers:
                        if hopper.reputation < mainChar.reputation:
                            lowestReputation = False
 
@@ -1791,7 +1791,7 @@ class FindWork(BasicPhase):
                     if mainChar.reputation <= 0:
                         # punish player for low performance near to killing player
                         showText("You currently have no recieps on you. Please report to vat duty.",trigger={"container":subself,"method":"startVatPhase"})
-                    elif lowestReputation and len(terrain.waitingRoom.hoopers) > 3:
+                    elif lowestReputation and len(terrain.waitingRoom.hoppers) > 3:
                         showText("I have too many hoppers working here and you do the least work. Please report to vat duty.",trigger={"container":subself,"method":"startVatPhase"})
                     elif mainChar.reputation > 5:
                         # do nothing on ok performance

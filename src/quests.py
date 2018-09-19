@@ -583,7 +583,8 @@ class MetaQuestSequence(Quest):
                 self.subQuests[0].assignToCharacter(self.character)
             if not self.subQuests[0].active:
                 self.subQuests[0].activate()
-                self.character.recalculatePath()
+                if not self.character.dead:
+                    self.character.recalculatePath()
         super().recalculate()
 
         # check for completeion

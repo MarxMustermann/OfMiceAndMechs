@@ -994,6 +994,9 @@ now, go and pull the lever
         firstOfficer = terrain.wakeUpRoom.firstOfficer
         furnace = terrain.wakeUpRoom.furnace
 
+        mainChar.reputation += 2
+        messages.append("you were rewarded 2 reputation")
+
         # show fluff
         showText("you are in luck. The furnace is for training and you are free to use it.\n\nYou need something to burn in the furnace first, so fetch some coal from the pile and then you can light the furnace.\nIt will stop burning after some ticks so keeping a fire burning can get quite tricky sometimes")
 
@@ -1026,6 +1029,8 @@ you have on piece of coal less than before."""])
     def noFurnaceFirering(self):
         # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
+        mainChar.reputation -= 1
+        messages.append("you were rewarded -1 reputation")
 
         # place trigger
         showText("i understand. The burns are somewhat unpleasant",trigger={"container":self,"method":"iamready"})

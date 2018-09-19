@@ -1837,10 +1837,7 @@ XXXXXXXX
 
         character.wakeUp()
         character.hasFloorPermit = True
-        hopperDutyQuest = quests.HopperDuty(self.terrain.waitingRoom,creator=void)
-        character.assignQuest(hopperDutyQuest,active=True)
-        character.addListener(self.terrain.waitingRoom.addRescueQuest,"fallen unconcious")
-        character.addListener(self.terrain.waitingRoom.disposeOfCorpse,"died")
+        self.terrain.waitingRoom.addAsHopper(character)
 
         self.addEvent(events.EndQuestEvent(gamestate.tick+10000,{"container":self,"method":"spawnNewHopper"},creator=self))
 
@@ -1879,18 +1876,17 @@ XXXXXXXXXXX
 
         # assign hopper duty to hoppers
         for hopper in self.hoppers:
-            quest = quests.HopperDuty(self,creator=self)
-            hopper.assignQuest(quest,active=True)
+            self.addAsHopper(hopper)
 
         # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
-        for hopper in self.hoppers:
-            hopper.addListener(self.addRescueQuest,"fallen unconcious")
-
-        for hopper in self.hoppers:
-            hopper.addListener(self.disposeOfCorpse,"died")
+    def addAsHopper(self,hopper):
+        quest = quests.HopperDuty(self,creator=self)
+        hopper.assignQuest(quest,active=True)
+        hopper.addListener(self.addRescueQuest,"fallen unconcious")
+        hopper.addListener(self.disposeOfCorpse,"died")
 
     def addRescueQuest(self,character):
         quest = quests.WakeUpQuest(character,creator=self)

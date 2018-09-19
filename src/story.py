@@ -1728,10 +1728,7 @@ class FindWork(BasicPhase):
     bad code: very chaotic. probably needs to be split up and partially rewritten
     '''
     def end(self):
-        hopperDutyQuest = quests.HopperDuty(terrain.waitingRoom,creator=void)
-        mainChar.assignQuest(hopperDutyQuest,active=True)
-        mainChar.addListener(terrain.waitingRoom.addRescueQuest,"fallen unconcious")
-        mainChar.addListener(terrain.waitingRoom.disposeOfCorpse,"died")
+        terrain.waitingRoom.addAsHopper(mainChar)
 
         self.didStoreCargo = False
 
@@ -1957,10 +1954,10 @@ class FindWork(BasicPhase):
         addQuest1()
 
         # add the dialog for getting a job
-        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChat,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":hopperDutyQuest}})
-        terrain.waitingRoom.secondOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChat2,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":hopperDutyQuest}})
-        terrain.wakeUpRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChat,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":hopperDutyQuest}})
-        terrain.tutorialMachineRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChat,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":hopperDutyQuest}})
+        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChat,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":mainChar.quests[0]}})
+        terrain.waitingRoom.secondOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChat2,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":mainChar.quests[0]}})
+        terrain.wakeUpRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChat,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":mainChar.quests[0]}})
+        terrain.tutorialMachineRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChat,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":mainChar.quests[0]}})
 
 '''
 dummmy for the lab phase

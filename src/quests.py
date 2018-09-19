@@ -1554,6 +1554,9 @@ class NaiveDelegateQuest(Quest):
     '''
     def solver(self,character):
         character.subordinates[0].assignQuest(self.quest,active=True)
+		if self.quest.reputationReward:
+            character.subordinates[0].reputation += self.quest.reputationReward
+            character.reputation -= self.quest.reputationReward
         return True
 
 ############################################################
@@ -3013,6 +3016,7 @@ class HandleDelivery(MetaQuestSequence):
         # add quest to delegate moving the cargo to somebody
         room = self.cargoRooms[0]
         self.quest = StoreCargo(room,self.storageRooms.pop(),creator=self)
+        self.quest.reputationReward = 5
         quest = NaiveDelegateQuest(self.quest,creator=self)
         quest.endTrigger = self.waitForQuestCompletion
         self.addQuest(quest)

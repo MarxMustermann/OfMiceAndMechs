@@ -2023,6 +2023,10 @@ class VatPhase(BasicPhase):
 
         super().start()
 
+        for quest in mainChar.quests:
+            quest.deactivate()
+        mainChar.quests = []
+
         quest = quests.MoveQuestMeta(terrain.tutorialVat,3,3,creator=void,lifetime=500)
         def fail():
             messages.append("*alarm* refusal to honour vat assignemnt detected. likely artisan. Dispatch kill squads *alarm*")

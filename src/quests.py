@@ -1554,7 +1554,7 @@ class NaiveDelegateQuest(Quest):
     '''
     def solver(self,character):
         character.subordinates[0].assignQuest(self.quest,active=True)
-		if self.quest.reputationReward:
+        if self.quest.reputationReward:
             character.subordinates[0].reputation += self.quest.reputationReward
             character.reputation -= self.quest.reputationReward
         return True

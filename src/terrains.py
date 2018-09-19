@@ -1704,7 +1704,7 @@ XXXCCCCCXXX """
         if not room:
             return
 
-        quest = quests.MoveToStorage([task[0].itemByCoordinates[task[1]][0]],room,creator=self,lifetime=300)
+        quest = quests.MoveToStorage([task[0].itemByCoordinates[task[1]][0]],room,creator=self,lifetime=400)
         quest.reputationReward = 1
         quest.endTrigger = {"container":self,"method":"addStorageQuest"}
         self.waitingRoom.quests.append(quest)

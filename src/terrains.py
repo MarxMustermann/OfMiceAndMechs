@@ -1064,6 +1064,14 @@ class Terrain(saveing.Saveable):
                 self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
             else:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
+
+        for char in self.characters:
+            if (char.xPosition > room.xPosition*15+room.offsetX and 
+               char.xPosition < room.xPosition*15+room.offsetX+room.sizeX and
+               char.yPosition > room.yPosition*15+room.offsetY and
+               char.yPosition < room.yPosition*15+room.offsetY+room.sizeY):
+                    char.die()
+
         if hasattr(self,"watershedStart"):
             self.calculatePathMap()
 
@@ -1089,6 +1097,14 @@ class Terrain(saveing.Saveable):
                 self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
             else:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
+
+        for char in self.characters:
+            if (char.xPosition > room.xPosition*15+room.offsetX and 
+               char.xPosition < room.xPosition*15+room.offsetX+room.sizeX and
+               char.yPosition > room.yPosition*15+room.offsetY and
+               char.yPosition < room.yPosition*15+room.offsetY+room.sizeY):
+                    char.die()
+
         if hasattr(self,"watershedStart"):
             self.calculatePathMap()
 
@@ -1114,6 +1130,14 @@ class Terrain(saveing.Saveable):
                 self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
             else:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
+
+        for char in self.characters:
+            if (char.xPosition > room.xPosition*15+room.offsetX and 
+               char.xPosition < room.xPosition*15+room.offsetX+room.sizeX and
+               char.yPosition > room.yPosition*15+room.offsetY and
+               char.yPosition < room.yPosition*15+room.offsetY+room.sizeY):
+                    char.die()
+
         if hasattr(self,"watershedStart"):
             self.calculatePathMap()
 
@@ -1139,6 +1163,14 @@ class Terrain(saveing.Saveable):
                 self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
             else:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
+
+        for char in self.characters:
+            if (char.xPosition > room.xPosition*15+room.offsetX and 
+               char.xPosition < room.xPosition*15+room.offsetX+room.sizeX and
+               char.yPosition > room.yPosition*15+room.offsetY and
+               char.yPosition < room.yPosition*15+room.offsetY+room.sizeY):
+                    char.die()
+
         if hasattr(self,"watershedStart"):
             self.calculatePathMap()
 

@@ -1,5 +1,45 @@
 # news
 
+### commit 902-999
+
+These commits were focused on adding more challenge to the game. I think i did pretty well. I still can beat the game, but i really have to try. Changes for adding challenge were:
+
+* adding reputation cost for delegation quest to an subordinate
+* added reputation cost for beeing impolite
+* made many quest dispense no reward
+* added reward/punishment for completing the tutorial in time
+* added reward/punishment for dooing the optional furnace intro
+* added poisoned reward for asking people about things
+* added time contraints to quests
+* added punishment if time constraint for a quest is not honoured
+* added ability to run people over with a mech
+* added spawning more hoppers to steal the players job
+* made player loose if there are more than 4 hoppers and player is the worst performer
+* added military room that kills player when entered
+* added reputation punishment for breaching military zones etc
+* added kill squads to remove players not accepting the rules
+* added prequesites for chat options
+* restricted actions and creatable quests to things the character was ordered in the past
+* added quest for the player to kill himself, which actually happens if the player is in auto mode (intentional loophole to learn to kill somebody)
+* removed life preservation quest if player is assigned vat duty
+* added a moving roadblock to make learning paths harder
+* made the collect scrap quest harder to solve
+* added mice that appear under picked up items and knock characters unconcious
+* added mice squatting rooms and killing anybody entering
+* added punishment if subordinate dies
+* moved the source of the cargo hauling quests including
+* made the player aquire a floor permit before adventureing
+* made most items bolted to the ground
+
+other changes were:
+
+* bugfixes
+* military rooms
+* more lister structures
+* disabled skipping round on invisible rooms
+* added ability to talk on terrain
+* added ability to wake unconcious players
+
 ### commit 801-901
 
 These commit were another cleanup round. It feals like the codebase got better, but there is still a lot of work to do. For example the save system still doesn't work reliably and lots of code is still marked as bad code.

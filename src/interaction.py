@@ -1262,6 +1262,7 @@ class ChatMenu(SubMenu):
                     self.subMenu.handleKey(key)
                 elif self.selection == "showQuests":
                     # spawn quest submenu for partner
+                    global submenue
                     submenue = QuestMenu(char=self.partner)
                     submenue.handleKey(key)
                     return False

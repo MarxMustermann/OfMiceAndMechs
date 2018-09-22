@@ -1385,7 +1385,10 @@ class QuestMenu(SubMenu):
                 self.questIndex = 0
 
         # render the quests
-        header.set_text((urwid.AttrSpec("default","default"),"\nquest overview\n(press "+commandChars.show_quests_detailed+" for the extended quest menu)\n\n"))
+        addition = ""
+        if self.char == mainChar:
+            addition = " (you)"
+        header.set_text((urwid.AttrSpec("default","default"),"\nquest overview for "+self.char.name+""+addition+"\n(press "+commandChars.show_quests_detailed+" for the extended quest menu)\n\n"))
         self.persistentText = []
         self.persistentText.append(renderQuests(char=self.char,asList=True,questIndex = self.questIndex))
 
@@ -1401,7 +1404,7 @@ class QuestMenu(SubMenu):
         # bad code: commented out code
         #self.persistentText = "\n".join(self.persistentText.split("\n")[self.offsetX:])
 
-        self.persistentText.extend(["\n","* press q for advanced quests "+str(self.char),"\n","* press W to scroll up","\n","* press S to scroll down","\n","\n"])
+        self.persistentText.extend(["\n","* press q for advanced quests\n","* press W to scroll up","\n","* press S to scroll down","\n","\n"])
 
         # flatten the mix of strings and urwid format so that it is less recursive to workaround an urwid bug
         # bad code: should be elsewhere

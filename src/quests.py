@@ -1555,17 +1555,25 @@ class NaiveDropQuest(Quest):
     '''
     check whether item was dropped
     '''
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,ingoreParam=None):
         if self.active:
-            if self.dropped:
+            if (self.toDrop.xPosition == self.dstX and
+			    self.toDrop.xPosition == self.dstX and
+			    self.toDrop.room == self.room):
+
                 self.postHandler()
 
     '''
+    watch for the character to drop something
+    '''
+    def activate(self):
+        super().activate()
+        self.character.addListener(self.triggerCompletionCheck,"drop")
+
+    '''
     drop item
-    bad code: success attribute instead of checking world state
     '''
     def solver(self,character):
-        self.dropped = True
         character.drop(self.toDrop)
         return True
 
@@ -1587,7 +1595,7 @@ class NaiveDelegateQuest(Quest):
         self.type = "NaiveDelegateQuest"
         self.initialState = self.getState()
         loadingRegistry.register(self)
-    
+
     '''
     check if the quest has a character assigned
     '''

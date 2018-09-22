@@ -2343,6 +2343,7 @@ class GetReward(MetaQuestSequence):
         self.getQuest = NaiveGetReward(quest,creator=self)
         self.questList = [self.moveQuest,self.getQuest]
         self.actualQuest = quest
+        self.addedRewardChat = False
 
         for quest in reversed(self.questList):
             self.addQuest(quest)
@@ -2385,8 +2386,8 @@ class GetReward(MetaQuestSequence):
                  return True
 
         # add chat option
-        if character == mainChar:
-            messages.append("adding reward chat")
+        if character == mainChar and not self.addedRewardChat:
+            self.addedRewardChat = True
             self.rewardChat = RewardChat
             self.questDispenser.basicChatOptions.append(self.rewardChat)
         super().assignToCharacter(character)
@@ -2396,8 +2397,7 @@ class GetReward(MetaQuestSequence):
     '''
     def postHandler(self):
         if self.character == mainChar:
-            while self.rewardChat in self.questDispenser.basicChatOptions:
-                self.questDispenser.basicChatOptions.remove(self.rewardChat)
+            self.questDispenser.basicChatOptions.remove(self.rewardChat)
         super().postHandler()
 
 '''

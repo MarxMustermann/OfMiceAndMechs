@@ -385,7 +385,7 @@ class JobChat(interaction.SubMenu):
                 if subSelf.mainChar.reputation < 10:
                     # deny the request
                     subSelf.persistentText = "I have some work thats needs to be done, but you will have to proof your worth some more untill you can be trusted with this work.\n\nMaybe "+subSelf.terrain.waitingRoom.secondOfficer.name+" has some work you can do"
-                elif "FireFurnaceMeta" in subSelf.mainChar.questsDone: # bade code: is bugged
+                elif not "FireFurnaceMeta" in subSelf.mainChar.questsDone: # bade code: is bugged
                     subSelf.persistentText = "Several Officers requested new assistants. The boiler room would be the first target, but you need to have fired a furnace or you cannot take the job"
                 else:
                     # show fluff

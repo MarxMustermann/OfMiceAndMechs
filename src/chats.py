@@ -1,6 +1,13 @@
-import src.interaction as interaction
+####################################################################################################################
+###
+##    chats and chat realated code belongs here
+#     bad pattern: chats should have a parent class
+#
+####################################################################################################################
 
-# bad pattern: chats should have a parent class
+# import the other internal libs
+# bad code: should not use shorthand
+import src.interaction as interaction
 
 '''
 the chat to proof the player is able to chat
@@ -121,6 +128,7 @@ class FurnaceChat(interaction.SubMenu):
                 return True
 
         # do first part of the dialog
+        # bad code: the first part of the chat should be on top
         if self.firstRun:
             # show information
             self.persistentText = ["There are some growth tanks (",displayChars.indexedMapping[displayChars.growthTank_filled],"/",displayChars.indexedMapping[displayChars.growthTank_unfilled],"), walls (",displayChars.indexedMapping[displayChars.wall],"), a pile of coal (",displayChars.indexedMapping[displayChars.pile],") and a furnace (",displayChars.indexedMapping[displayChars.furnace_inactive],"/",displayChars.indexedMapping[displayChars.furnace_active],")."]
@@ -137,13 +145,14 @@ class FurnaceChat(interaction.SubMenu):
 
 '''
 a monologe explaining automovement
+bad code: should be abstracted
 '''
 class SternChat(interaction.SubMenu):
     id = "SternChat"
     type = "SternChat"
 
     '''
-    straight forwar state setting
+    straight forward state setting
     '''
     def __init__(self,partner):
         self.submenue = None
@@ -176,6 +185,8 @@ do things the most efficent way. It will even try to handle conversion, wich doe
             messages.append("press "+commandChars.autoAdvance+" to let the implant take control ")
             self.set_text(self.persistentText)
             self.firstRun = False
+
+            # punish / reward player
             if mainChar.reputation:
                 mainChar.reputation = mainChar.reputation//2+2
             else:
@@ -192,6 +203,7 @@ do things the most efficent way. It will even try to handle conversion, wich doe
                     if item["chat"] == SternChat:
                         toRemove = item
                         break
+
             # bad code: crashes
             self.firstOfficer.basicChatOptions.remove(toRemove)
             terrain.waitingRoom.firstOfficer.basicChatOptions.remove(toRemove)
@@ -202,13 +214,14 @@ do things the most efficent way. It will even try to handle conversion, wich doe
 
 '''
 a instruction to ask questions and hinting at the auto mode
+bad code: should be abstracted
 '''
 class InfoChat(interaction.SubMenu):
     id = "InfoChat"
     type = "InfoChat"
 
     '''
-    straight forwar state setting
+    straight forward state setting
     '''
     def __init__(self,partner):
         self.submenue = None
@@ -238,6 +251,8 @@ Sterns modifications are doing a good job for repetitive tasks but are no replac
 for a brain.\n\n"""
             self.set_text(self.persistentText)
             self.firstRun = False
+
+            # punish / reward player
             if mainChar.reputation:
                 mainChar.reputation = mainChar.reputation//2+2
             else:
@@ -254,12 +269,14 @@ for a brain.\n\n"""
                     if item["chat"] == InfoChat:
                         toRemove = item
                         break
+
             # bad code: crashes
             self.firstOfficer.basicChatOptions.remove(toRemove)
 
-            # finish
+            # add follow up chat
             self.firstOfficer.basicChatOptions.append({"dialogName":"What did Stern modify on the implant?","chat":SternChat,"params":{"firstOfficer":self.firstOfficer}})
             terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"What did Stern modify on the implant?","chat":SternChat,"params":{"firstOfficer":self.firstOfficer}})
+
             self.done = True
             return True
 
@@ -284,7 +301,7 @@ class ReReport(interaction.SubMenu):
     def handleKey(self, key):
         if self.firstRun:
             # show message
-            self.persistentText = "It seems you did not report for duty imediatly. Try to not repeat that"
+            self.persistentText = "It seems you did not report for duty imediatly. Try to not repeat that" # bad code: spelling
             self.set_text(self.persistentText)
             self.done = True
             self.firstRun = False
@@ -303,6 +320,7 @@ class ReReport(interaction.SubMenu):
                     if item["chat"] == ReReport:
                         toRemove = item
                         break
+
             # bad code: crashes
             terrain.waitingRoom.firstOfficer.basicChatOptions.remove(toRemove)
 
@@ -321,7 +339,7 @@ class JobChat(interaction.SubMenu):
     id = "JobChat"
     type = "JobChat"
 
-    dialogName = "Can you use some help?"
+    dialogName = "Can you use some help?" # bad code: deprecated
 
     '''
     add internal state
@@ -351,8 +369,10 @@ class JobChat(interaction.SubMenu):
     def handleKey(subSelf, key):
         if key == "esc":
            if self.partner.reputation < 2*mainChar.reputation:
+               # quit dialog
                return True
            else:
+               # refuse to quit dialog
                self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
                mainChar.reputation -= 2
                messages.append("you were rewarded -2 reputation")
@@ -365,7 +385,7 @@ class JobChat(interaction.SubMenu):
                 if subSelf.mainChar.reputation < 10:
                     # deny the request
                     subSelf.persistentText = "I have some work thats needs to be done, but you will have to proof your worth some more untill you can be trusted with this work.\n\nMaybe "+subSelf.terrain.waitingRoom.secondOfficer.name+" has some work you can do"
-                elif "FireFurnaceMeta" in subSelf.mainChar.questsDone:
+                elif "FireFurnaceMeta" in subSelf.mainChar.questsDone: # bade code: is bugged
                     subSelf.persistentText = "Several Officers requested new assistants. The boiler room would be the first target, but you need to have fired a furnace or you cannot take the job"
                 else:
                     # show fluff
@@ -393,7 +413,6 @@ class JobChat(interaction.SubMenu):
 
 '''
 the dialog for asking somebody for a job
-bad code:
 bad code: xxx2
 '''
 class JobChat2(interaction.SubMenu):
@@ -429,8 +448,10 @@ class JobChat2(interaction.SubMenu):
     def handleKey(self, key):
         if key == "esc":
            if self.partner.reputation < 2*mainChar.reputation:
+               # quit dialog
                return True
            else:
+               # refuse to quit dialog
                self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
                mainChar.reputation -= 2
                messages.append("you were rewarded -2 reputation")
@@ -448,6 +469,8 @@ class JobChat2(interaction.SubMenu):
 
             self.firstRun = False
 
+        # refuse to issue new quest if the old one is not done yet
+        # bad code: this is because the hopperquest cannot hanlde multiple sub quests
         if not self.hopperDutyQuest.getQuest:
             self.persistentText = "please collect your reward first"
             self.set_text(self.persistentText)
@@ -458,6 +481,7 @@ class JobChat2(interaction.SubMenu):
         if not self.selectedQuest:
             if self.hopperDutyQuest.actualQuest:
                 # refuse to give two quests
+                # bad pattern: should be proportional to current reputation
                 self.persistentText = "you already have a quest. Complete it and you can get a new one."
                 self.set_text(self.persistentText)
                 self.done = True
@@ -495,7 +519,7 @@ class JobChat2(interaction.SubMenu):
             self.done = True
             return True
 
-
+# a map alowing to get classes from strings
 chatMap = {
              "FirstChat":FirstChat,
              "FurnaceChat":FurnaceChat,

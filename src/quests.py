@@ -1,6 +1,15 @@
+##################################################################################
+###
+##     quests and quest related code
+#
+##################################################################################
+
+# import basic libs
+import json
+
+# import basic internal libs
 import src.items as items
 import src.saveing as saveing
-import json
 
 # HACK: common variables with modules
 showCinematic = None
@@ -39,6 +48,7 @@ class Quest(saveing.Saveable):
         self.reputationReward = 0
         self.watched = []
 
+        # set up saving
         self.attributesToStore.append("type")
         self.attributesToStore.append("active")
         self.attributesToStore.append("completed")
@@ -79,6 +89,7 @@ class Quest(saveing.Saveable):
     def getState(self):
         state = super().getState()
         
+        # bad code: repeated store none or id scheme
         if self.character:
             state["character"] = self.character.id
         else:
@@ -91,6 +102,7 @@ class Quest(saveing.Saveable):
     def setState(self,state):
        super().setState(state)
 
+        # bad code: repeated store none or id scheme
        if "character" in state and state["character"]:
            '''
            set value
@@ -130,7 +142,7 @@ class Quest(saveing.Saveable):
 
     '''
     do one action to solve the quest, is intended to be overwritten heavily. returns None if there can't be done anything
-    should be rewritten so it returns an actual list of steps
+    bad code: should be rewritten so it returns an actual list of steps
     '''
     def solver(self,character):
         if self.paused:
@@ -181,16 +193,16 @@ class Quest(saveing.Saveable):
 
     '''
     tear the quest down
-    bad code: self.character should be checked at the beginning
     '''
     def postHandler(self):
         # stop listening
         self.stopWatchingAll()
 
-        # smooth over impossible states
+        # smooth over impossible state
         if not self.active:
             debugMessages.append("this should not happen (posthandler called on inactive quest ("+str(self)+")) "+str(self.character))
             return
+        # smooth over impossible state
         if not self.character:
             debugMessages.append("this should not happen (posthandler called on quest without character ("+str(self)+")) "+str(self.character))
             # trigger follow up functions
@@ -204,6 +216,7 @@ class Quest(saveing.Saveable):
             self.deactivate()
 
             return
+        # smooth over impossible state
         if self.completed:
             debugMessages.append("this should not happen (posthandler called on completed quest ("+str(self)+")) "+str(self.character))
             if self in self.character.quests:
@@ -223,6 +236,8 @@ class Quest(saveing.Saveable):
 
         # flag self as completed
         self.completed = True
+
+        # add quest type to quests done
         if not self.type in self.character.questsDone:
             self.character.questsDone.append(self.type)
 
@@ -257,7 +272,7 @@ class Quest(saveing.Saveable):
 
     '''
     assign the quest to a character
-    bad code: this would be a contructor param, but this may be used for reassigning quests
+    bad code: this would be a constructor param, but this may be used for reassigning quests
     '''
     def assignToCharacter(self,character):
         if not self.type in character.solvers:
@@ -281,6 +296,7 @@ class Quest(saveing.Saveable):
 
     '''
     notify listeners that something changed
+    bad code: should be extra class
     '''
     def changed(self):
         # call the listener functions
@@ -290,6 +306,7 @@ class Quest(saveing.Saveable):
 
     '''
     add a callback to be called if the quest changes
+    bad code: should be extra class
     '''
     def addListener(self,listenFunction):
         if not listenFunction in self.listener:
@@ -297,11 +314,15 @@ class Quest(saveing.Saveable):
 
     '''
     remove a callback to be called if the quest changes
+    bad code: should be extra class
     '''
     def delListener(self,listenFunction):
         if listenFunction in self.listener:
             self.listener.remove(listenFunction)
 
+    '''
+    fail on timeout
+    '''
     def timeOut(self):
         self.fail()
 
@@ -368,6 +389,7 @@ class MetaQuestSequence(Quest):
     '''
     def getDiffState(self):
         state = super().getDiffState()
+        # bad code: should use new structure
         if not self.metaDescription == state["metaDescription"]:
             state["metaDescription"] = self.metaDescription
 
@@ -394,6 +416,7 @@ class MetaQuestSequence(Quest):
         state = super().getState()
 
         # store attributes
+        # bad code: should use new structure
         state["metaDescription"] = self.metaDescription
 
         # store sub quests
@@ -412,6 +435,7 @@ class MetaQuestSequence(Quest):
     def setState(self,state):
         super().setState(state)
         # load attributes
+        # bad code: should use new structure
         if "metaDescription" in state:
             self.metaDescription = state["metaDescription"]
                     
@@ -476,6 +500,7 @@ class MetaQuestSequence(Quest):
 
     '''
     render description as simple string
+    bad code: missing timout information
     '''
     @property
     def description(self):
@@ -551,7 +576,7 @@ class MetaQuestSequence(Quest):
     '''
     def triggerCompletionCheck(self):
 
-        # do nothing on inactive quest
+        # smooth over impossible state
         if not self.active:
             debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
             return
@@ -568,7 +593,7 @@ class MetaQuestSequence(Quest):
     ensure first quest is active
     '''
     def recalculate(self):
-        # do nothing on inactive quest
+        # smooth over impossible state
         if not self.active:
             debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
             return 
@@ -600,6 +625,7 @@ class MetaQuestSequence(Quest):
         else:
             self.subQuests.append(quest)
 
+        # reset characters path
         if self.character:
             self.subQuests[0].assignToCharacter(self.character)
             self.character.recalculatePath()
@@ -667,6 +693,7 @@ class MetaQuestParralel(Quest):
         state = super().getDiffState()
 
         # store attributes
+        # bad code: should use new structure
         if not self.metaDescription == self.initialState["metaDescription"]:
             state["metaDescription"] = self.metaDescription
         # bad code: repeated store none or id scheme
@@ -697,6 +724,7 @@ class MetaQuestParralel(Quest):
     '''
     def getState(self):
         state = super().getState()
+        # bad code: should use new structure
         state["metaDescription"] = self.metaDescription
         state["subQuests"] = {}
         state["subQuests"]["ids"] = []
@@ -754,6 +782,7 @@ class MetaQuestParralel(Quest):
                     self.subQuests.append(thing)
 
         # load attributes
+        # bad code: should use new structure
         if "metaDescription" in state:
             self.metaDescription = state["metaDescription"]
         # bad code: repetetive load from id or none pattern
@@ -789,6 +818,7 @@ class MetaQuestParralel(Quest):
         try:
             return self.lastActive.dstY
         except Exception as e:
+            # bad code: exceptions should be at least logged
             #messages.append(e)
             return None
 
@@ -823,13 +853,13 @@ class MetaQuestParralel(Quest):
                     if quest.active:
                         deko = " -> "
                     else:
-                        deko = "YYYY"
+                        deko = "YYYY" # bad code: impossible state
                 elif quest.paused:
                     deko = "  - "
                 elif quest.active:
                     deko = "  * "
                 else:
-                    deko = "XXXX"
+                    deko = "XXXX" # bad code: impossible state
 
                 # set colors
                 if colored:
@@ -840,7 +870,7 @@ class MetaQuestParralel(Quest):
                         color = "#090"
                     deko = (urwid.AttrSpec(color,"default"),deko)
 
-                # add subquest desription
+                # add subquest description
                 first = True
                 if quest == self.lastActive:
                     descriptions = quest.getDescription(asList=asList,colored=colored,active=active)
@@ -852,7 +882,7 @@ class MetaQuestParralel(Quest):
                     out.append([deko,item])
                     first = False
             else:
-                # add subquest desription
+                # add subquest description
                 questDescription = "\n    ".join(quest.getDescription().split("\n"))+"\n"
 
                 # indicate state by arrow type
@@ -860,13 +890,13 @@ class MetaQuestParralel(Quest):
                     if quest.active:
                         out += "  ->"+questDescription
                     else:
-                        out += "YYYY"+questDescription
+                        out += "YYYY"+questDescription # bad code: impossible state
                 elif quest.paused:
                     out += "  - "+questDescription
                 elif quest.active:
                     out += "  * "+questDescription
                 else:
-                    out += "XXXX"+questDescription
+                    out += "XXXX"+questDescription # bad code: impossible state
             counter += 1
         return out
 
@@ -906,7 +936,7 @@ class MetaQuestParralel(Quest):
         super().assignToCharacter(character)
 
         for quest in self.subQuests:
-                quest.assignToCharacter(self.character)
+            quest.assignToCharacter(self.character)
 
         self.recalculate()
 
@@ -1004,7 +1034,7 @@ class NaiveMoveQuest(Quest):
     check if character is in the right place
     '''
     def triggerCompletionCheck(self):
-        # a inactive quest cannot complete
+        # smooth over impossible state
         if not self.active:
             debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
             return 
@@ -1036,6 +1066,7 @@ class NaiveMoveQuest(Quest):
             room = None # bad code: should be the room id
         if not room == self.initialState["room"]:
             state["room"] = room.id
+        # bad code: should use new structure
         if not self.dstX == self.initialState["dstX"]:
             state["dstX"] = self.dstX
         if not self.dstY == self.initialState["dstY"]:
@@ -1056,6 +1087,7 @@ class NaiveMoveQuest(Quest):
             state["room"] = self.room.id
         else:
             state["room"] = None
+        # bad code: should use new structure
         state["dstX"] = self.dstX
         state["dstY"] = self.dstY
         state["description"] = self.description
@@ -1081,6 +1113,7 @@ class NaiveMoveQuest(Quest):
                 self.room = None
 
         # load attributes
+        # bad code: should use new structure
         if "dstX" in state:
             self.dstX = state["dstX"]
         if "dstY" in state:
@@ -1130,6 +1163,7 @@ class NaiveEnterRoomQuest(Quest):
     close door and call superclass
     '''
     def postHandler(self):
+        # bad code: is broken
         if self.character.yPosition in (self.character.room.walkingAccess):
             for item in self.character.room.itemByCoordinates[self.character.room.walkingAccess[0]]:
                 item.close()
@@ -1140,7 +1174,7 @@ class NaiveEnterRoomQuest(Quest):
     check if the character is in the correct roon
     '''
     def triggerCompletionCheck(self):
-        # bad code: 
+        # bad code: should log
         if not self.active:
             return 
 
@@ -1206,7 +1240,7 @@ class NaiveGetQuest(Quest):
         loadingRegistry.register(self)
 
     '''
-    check whether the chracter has gotten a quest
+    check whether the character has gotten a quest
     '''
     def triggerCompletionCheck(self):
         if self.active:
@@ -1336,7 +1370,6 @@ class NaiveKnockOutQuest(Quest):
 
     '''
     knock the target out
-    bad code: murdering should happen within a character
     '''
     def solver(self,character):
         self.target.fallUnconcious()
@@ -1344,7 +1377,7 @@ class NaiveKnockOutQuest(Quest):
         return True
 
 '''
-The naive quest to wape up someone. It assumes nothing goes wrong. 
+The naive quest to wake up someone. It assumes nothing goes wrong. 
 You probably want to use WakeUpQuest instead
 '''
 class NaiveWakeUpQuest(Quest):
@@ -1371,6 +1404,9 @@ class NaiveWakeUpQuest(Quest):
             elif self.target.dead:
                 self.fail()
 
+    '''
+    start listening to target
+    '''
     def activate(self):
         super().activate()
         self.target.addListener(self.triggerCompletionCheck,"fallen unconcious")
@@ -1421,7 +1457,7 @@ class NaiveActivateQuest(Quest):
 
     '''
     check whether target was activated
-    uses internal state
+    bad code: uses internal state
     '''
     def triggerCompletionCheck(self):
         if self.active:
@@ -1433,6 +1469,7 @@ class NaiveActivateQuest(Quest):
     '''
     def getDiffState(self):
         state = super().getDiffState()
+        # bad code: repeated store id or none pattern
         toActivate = None
         if hasattr(self,"toActivate") and self.toActivate:
             toActivate = self.toActivate.id
@@ -1445,6 +1482,7 @@ class NaiveActivateQuest(Quest):
     '''
     def getState(self):
         state = super().getState()
+        # bad code: repeated store id or none pattern
         if hasattr(self,"toActivate") and self.toActivate:
             state["toActivate"] = self.toActivate.id
         else:
@@ -1456,8 +1494,8 @@ class NaiveActivateQuest(Quest):
     '''
     def setState(self,state):
         super().setState(state)
+        # bad code: repeated store id or none pattern
         if "toActivate" in state:
-            # bad code: repetetive load from id or none pattern
             if state["toActivate"]:
                 '''
                 set value
@@ -1484,6 +1522,7 @@ class NaiveActivateQuest(Quest):
 '''
 The naive quest to drop something. It assumes nothing goes wrong. 
 You probably want to use DropQuest instead
+bad code: does not register a manual drop
 '''
 class NaiveDropQuest(Quest):
     '''
@@ -1704,7 +1743,7 @@ class DrinkQuest(Quest):
         super().triggerCompletionCheck()
 
     '''
-    set state from dict
+    start watching
     '''
     def setState(self,state):
         super().setState(state)
@@ -1741,6 +1780,7 @@ class SurviveQuest(Quest):
     spawn quests to take care of basic needs
     '''
     def recalculate(self):
+        # bad code: should log
         if not self.active:
             return
         if not self.character:
@@ -1864,7 +1904,7 @@ class MoveQuestMeta(MetaQuestSequence):
     '''
     def getDiffState(self):
         state = super().getDiffState()
-        #bad code: repeated pattern
+        # bad code: repeated id or none pattern
         room = None
         if hasattr(self,"room") and self.room:
             room = None
@@ -1876,7 +1916,7 @@ class MoveQuestMeta(MetaQuestSequence):
     get state as dict
     '''
     def getState(self):
-        #bad code: repeated pattern
+        # bad code: repeated id or none pattern
         state = super().getState()
         if hasattr(self,"room") and self.room:
             state["room"] = self.room.id
@@ -2076,19 +2116,19 @@ class ActivateQuestMeta(MetaQuestSequence):
     '''
     def getDiffState(self):
         state = super().getDiffState()
-        #bad code: repeated pattern
+        # bad code: should use new structure
         sloppy = None
         if hasattr(self,"sloppy") and self.sloppy:
             sloppy = self.sloppy
         if not sloppy == self.initialState["sloppy"]:
             state["sloppy"] = sloppy
-        #bad code: repeated pattern
+        # bad code: repeated id or none pattern
         moveQuest = None
         if hasattr(self,"moveQuest") and self.moveQuest:
             moveQuest = self.moveQuest.id
         if not moveQuest == self.initialState["moveQuest"]:
             state["moveQuest"] = moveQuest
-        #bad code: repeated pattern
+        # bad code: repeated id or none pattern
         toActivate = None
         if hasattr(self,"toActivate") and self.toActivate:
             toActivate = self.toActivate.id
@@ -2101,17 +2141,17 @@ class ActivateQuestMeta(MetaQuestSequence):
     '''
     def getState(self):
         state = super().getState()
-        #bad code: repeated pattern
+        # bad code: should use new structure
         if hasattr(self,"sloppy") and self.sloppy:
             state["sloppy"] = self.sloppy
         else:
             self.sloppy = None
-        #bad code: repeated pattern
+        # bad code: repeated id or none pattern
         if hasattr(self,"moveQuest") and self.moveQuest:
             state["moveQuest"] = self.moveQuest.id
         else:
             state["moveQuest"] = None
-        #bad code: repeated pattern
+        # bad code: repeated id or none pattern
         if hasattr(self,"toActivate") and self.toActivate:
             state["toActivate"] = self.toActivate.id
         else:
@@ -2123,6 +2163,7 @@ class ActivateQuestMeta(MetaQuestSequence):
     '''
     def setState(self,state):
         super().setState(state)
+        # bad code: should use new structure
         if "sloppy" in state:
             self.sloppy = state["sloppy"]
         if "moveQuest" in state:
@@ -2148,6 +2189,9 @@ class ActivateQuestMeta(MetaQuestSequence):
             else:
                 self.toActivate = None
 
+    '''
+    start to watch the charcater
+    '''
     def activate(self):
         self.startWatching(self.character,self.recalculate)
         super().activate()
@@ -2216,7 +2260,8 @@ class CollectQuestMeta(MetaQuestSequence):
                         
                 if hasProperty:
                     foundItem = item
-                    # This line ist good but looks bad in current setting. reactivate later
+                    # bad code: commented out code
+                    # This line is good but looks bad in current setting. reactivate later
                     #break
 
             # activate the pile
@@ -2338,7 +2383,7 @@ class GetReward(MetaQuestSequence):
         super().postHandler()
 
 '''
-the quest for murering somebody
+the quest for murdering somebody
 '''
 class MurderQuest(MetaQuestSequence):
     '''
@@ -2376,11 +2421,11 @@ class MurderQuest(MetaQuestSequence):
         super().recalculate()
 
 '''
-the quest for murering somebody
+the quest for knocking out somebody
 '''
 class KnockOutQuest(MetaQuestSequence):
     '''
-    generate quests for moving to and murdering the target
+    generate quests for moving to and kocking out the target
     '''
     def __init__(self,target,followUp=None,startCinematics=None,creator=None,lifetime=None):
         super().__init__([],creator=creator,lifetime=lifetime)
@@ -2394,7 +2439,7 @@ class KnockOutQuest(MetaQuestSequence):
         self.startWatching(self.target,self.recalculate)
 
         # save initial state and register
-        self.type = "MurderQuest"
+        self.type = "KnockOutQuest"
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
@@ -2418,7 +2463,7 @@ the quest for waking somebody
 '''
 class WakeUpQuest(MetaQuestSequence):
     '''
-    generate quests for moving to and the tking up the target
+    generate quests for moving to and waking up the target
     '''
     def __init__(self,target,followUp=None,startCinematics=None,creator=None,lifetime=None):
         super().__init__([],creator=creator,lifetime=lifetime)
@@ -2475,7 +2520,7 @@ class FillPocketsQuest(MetaQuestSequence):
     add collect quest till inventory is full
     '''
     def recalculate(self):
-        # do nothing on not really active quests
+        # smooth over impossible state
         if not self.active:
             debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
             return 
@@ -2553,7 +2598,7 @@ class LeaveRoomQuest(Quest):
     check if the character left the room
     '''
     def triggerCompletionCheck(self):
-        # do nothing on invalid quest
+        # smooth over impossible state
         if not self.active:
             debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
             return 
@@ -2566,7 +2611,7 @@ class LeaveRoomQuest(Quest):
             self.postHandler()
 
 '''
-patrol along a cirqular path
+patrol along a circular path
 bad code: this quest is not used and may be broken
 '''
 class PatrolQuest(MetaQuestSequence):
@@ -2643,7 +2688,7 @@ class ExamineQuest(Quest):
             self.postHandler()
 
     '''
-    activate and prepare termination after lifespan
+    activate and start watching character
     '''
     def activate(self):
         self.character.addListener(self.registerExaminination,"examine")
@@ -2659,6 +2704,9 @@ class ExamineQuest(Quest):
             self.examinedItems.append(itemType)
         self.triggerCompletionCheck()
 
+    '''
+    set up listener
+    '''
     def setState(self,state):
         super().setState(state)
         if self.active and self.character:
@@ -2764,7 +2812,7 @@ place furniture within a contruction site
 class PlaceFurniture(MetaQuestParralel):
     '''
     generates quests picking up the furniture and dropping it at the right place
-    bad code: generating transport quests would me better
+    bad code: generating transport quests would be better
     '''
     def __init__(self,constructionSite,itemsInStore,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
         super().__init__([],creator=creator)
@@ -2801,6 +2849,7 @@ class PlaceFurniture(MetaQuestParralel):
           
 '''
 construct a room
+bad code: is broken
 '''
 class ConstructRoom(MetaQuestParralel):
     '''
@@ -2980,12 +3029,18 @@ class HandleDelivery(MetaQuestSequence):
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
+    '''
+    listen to subordinates
+    '''
     def activate(self):
         super().activate()
         if self.character:
             for sub in self.character.subordinates:
                 sub.addListener(self.rescueSub,"fallen unconcious")
 
+    '''
+    wake up subordinate
+    '''
     def rescueSub(self,character):
         self.addQuest(WakeUpQuest(character,creator=self),addFront=True)
        
@@ -3136,7 +3191,7 @@ class FireFurnaceMeta(MetaQuestSequence):
             debugMessages.append("triggerCompletionCheck called without character on "+str(self))
             return
 
-        # add wuest th collect fuel if needed
+        # add quest to collect fuel if needed
         if self.collectQuest and self.collectQuest.completed:
             self.collectQuest = None
         if not self.collectQuest:
@@ -3263,11 +3318,11 @@ class HopperDuty(MetaQuestSequence):
     
 '''
 clear the rubble from the mech
-bad pattern: there is no way to determine
+bad pattern: there is no way to determine what is to be picked up
 '''
 class ClearRubble(MetaQuestParralel):
     '''
-    create subquest to move each piece of scrap to the metalworkshop
+    create subquest to move each piece of scrap to the metal workshop
     '''
     def __init__(self,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
         super().__init__([],creator=creator)

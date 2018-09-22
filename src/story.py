@@ -1,3 +1,10 @@
+##############################################################################
+###
+##      story code and story related code belongs here
+#       most thing should be abstracted and converted to a game mechanism later
+#
+##############################################################################
+
 phasesByName = None
 gamestate = None
 names = None
@@ -6,7 +13,7 @@ events = None
 
 #####################################
 ###
-##   convinience functions
+##   convenience functions
 #
 #####################################
 
@@ -44,6 +51,7 @@ add message cinematic mimicing speech
 def say(text,speaker=None,trigger=None):
     prefix = ""
     if speaker:
+        # add speakers icon as prefix
         display = speaker.display
         if isinstance(display,str):
             prefix = display
@@ -56,6 +64,8 @@ def say(text,speaker=None,trigger=None):
         else:
             prefix = display[1]
         prefix += ": "
+
+    # add message
     showMessage(prefix+'"'+text+'"',trigger=trigger)
 
 #########################################################################
@@ -110,6 +120,7 @@ class BasicPhase(object):
         # create first officer
         if self.requiresMainCharRoomFirstOfficer:
             if not self.mainCharRoom.firstOfficer:
+                # bad code: name generation should probably happen in one place
                 name = names.characterFirstNames[(gamestate.tick+2)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)]
                 self.mainCharRoom.firstOfficer = characters.Character(displayChars.staffCharactersByLetter[names.characterLastNames[(gamestate.tick+2)%len(names.characterLastNames)].split(" ")[-1][0].lower()],4,3,name=name,creator=void)
                 self.mainCharRoom.addCharacter(self.mainCharRoom.firstOfficer,self.firstOfficerXPosition,self.firstOfficerYPosition)
@@ -118,6 +129,7 @@ class BasicPhase(object):
         # create second officer
         if self.requiresMainCharRoomSecondOfficer:
             if not self.mainCharRoom.secondOfficer:
+                # bad code: name generation should probably happen in one place
                 name = names.characterFirstNames[(gamestate.tick+4)%len(names.characterFirstNames)]+" "+names.characterLastNames[(gamestate.tick+4)%len(names.characterLastNames)]
                 self.mainCharRoom.secondOfficer = characters.Character(displayChars.staffCharactersByLetter[names.characterLastNames[(gamestate.tick+4)%len(names.characterLastNames)].split(" ")[-1][0].lower()],4,3,name=name,creator=void)
                 self.mainCharRoom.addCharacter(self.mainCharRoom.secondOfficer,self.secondOfficerXPosition,self.secondOfficerYPosition)
@@ -153,12 +165,18 @@ class BasicPhase(object):
     def end(self):
         pass
 
+    '''
+    returns very simple state as dict
+    '''
     def getState(self):
         return {
                  "id":self.id,
                  "name":self.name,
                }
 
+    '''
+    does nothing
+    '''
     def setState(self,state):
         pass
 
@@ -169,11 +187,9 @@ class BasicPhase(object):
 #########################################################################
 
 """
-
 the phase is intended to give the player access to the true gameworld without manipulations
 
 this phase should be left as blank as possible
-
 """
 class OpenWorld(BasicPhase):
     def __init__(self):
@@ -194,11 +210,9 @@ class OpenWorld(BasicPhase):
             terrain.addCharacter(mainChar)
 
 """
-
 this phase is intended to be nice to watch and to be running as demo piece or something to stare at
 
-right now experiments are done here, but that should be shifted somwhere else later
-
+right now experiments are done here, but that should be shifted somewhere else later
 """
 class ScreenSaver(BasicPhase):
     '''
@@ -222,7 +236,7 @@ class ScreenSaver(BasicPhase):
         self.mainCharRoom.addCharacter(cleaner,6,6)
         cleaner.terrain = terrain
 
-        # add npc to pick stuff up
+        # add quests for npc
         lastQuest = questlist[0]
         for item in questlist[1:]:
             lastQuest.followUp = item
@@ -239,7 +253,7 @@ class ScreenSaver(BasicPhase):
     add npcs moving furniture around
     '''
     def addFurnitureMovingNpcs(self):
-        # create some npc
+        # create some npcs
         npcs = []
         for i in range(0,2):
             npc = characters.Character(displayChars.staffCharactersByLetter["e"],5,3,name="Eduart Knoblauch")
@@ -251,7 +265,7 @@ class ScreenSaver(BasicPhase):
         self.assignFurnitureMoving(npcs+[mainChar])
 
     '''
-    assign quests to make npc 
+    assign quests to make npc move furniture around
     '''
     def assignFurnitureMoving(self,chars):
         counter = 0
@@ -310,13 +324,11 @@ class ScreenSaver(BasicPhase):
             counter += 1
 
             # hold questlists for each npc
-            # bad code: should be outside of loop
             questlists = {}
             for index in range(0,counter):
                 questlists[index] = []
 
             # generate quest lists with a pseudorandom split (shuffle)
-            # bad code: should be outside of loop
             roomCounter = 0
             for room in terrain.rooms:
                 roomCounter += 1
@@ -721,12 +733,13 @@ class WakeUpPhase(BasicPhase):
         # make main char hungry and naked
         mainChar.satiation = 400
         mainChar.inventory = []
+        # bad code: purging a characters quests should be a method
         for quest in mainChar.quests:
             quest.deactivate()
         mainChar.quests = []
 
         # set the wake up room as play area
-        # bad code should be set elsewhere
+        # bad code: should be set elsewhere
         self.mainCharRoom = terrain.wakeUpRoom
 
         super().start()
@@ -772,9 +785,13 @@ class WakeUpPhase(BasicPhase):
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,3,4,creator=void)
         showQuest(quest,firstOfficer)
         say("I AM "+firstOfficer.name.upper()+" AND I DEMAND YOUR SERVICE.",firstOfficer)
+
+        # add serve quest
         quest = quests.Serve(firstOfficer,creator=void)
         mainChar.serveQuest = quest
         mainChar.assignQuest(quest,active=True)
+
+        # show fluff
         showGame(1)
         showMessage("implant imprinted - setup complete")
         showGame(4)
@@ -842,9 +859,13 @@ class BasicMovementTraining(BasicPhase):
         # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
 
+        # smooth over missing info
+        # bad code: should not be nessecarry
         if not hasattr(mainChar,"tutorialStart"):
             mainChar.tutorialStart = gamestate.tick - 100
 
+        # smooth over missing info
+        # bad code: should not be nessecarry
         if not hasattr(mainChar,"serveQuest"):
             quest = quests.Serve(firstOfficer,creator=void)
             mainChar.serveQuest = quest
@@ -852,7 +873,6 @@ class BasicMovementTraining(BasicPhase):
 
         super().start()
 
-        
         # show fluff
         showText("""
 welcome to the trainingsenvironment.
@@ -994,6 +1014,7 @@ now, go and pull the lever
         firstOfficer = terrain.wakeUpRoom.firstOfficer
         furnace = terrain.wakeUpRoom.furnace
 
+        # reward player
         mainChar.reputation += 2
         messages.append("you were rewarded 2 reputation")
 
@@ -1073,7 +1094,9 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
     wait till expected completion time has passed
     '''
     def iamready(self):
+        # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
+
         # show evaluation
         text = "you completed the tests and it is time to take on your duty. You will no longer server under my command, but under "+terrain.wakeUpRoom.firstOfficer.name+" as a hopper.\n\nSo please go to the waiting room and report for room duty.\n\nThe waiting room is the next room to the north. Simply go there speak to "+terrain.wakeUpRoom.firstOfficer.name+" and confirm that you are reporting for duty.\nYou will get instruction on how to proceed afterwards.\n\n"
         if (self.didFurnaces):
@@ -1103,6 +1126,8 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
             showText(text)
             quest.endTrigger = {"container":self,"method":"trainingCompleted"}
             mainChar.serveQuest.addQuest(quest)
+
+            # reward player
             mainChar.reputation += 1
             messages.append("you were rewarded 1 reputation")
 
@@ -1110,6 +1135,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
     wrap up
     '''
     def trainingCompleted(self):
+        # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
 
         # make player mode to the next room
@@ -1154,6 +1180,7 @@ class FirstTutorialPhase(BasicPhase):
     bad code: many inline functions
     '''
     def start(self):
+        # alias attributes
         self.mainCharRoom = terrain.tutorialMachineRoom
 
         super().start()
@@ -1173,6 +1200,9 @@ class FirstTutorialPhase(BasicPhase):
                 # show greeting one time
                 cinematics.showCinematic("welcome to the boiler room\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats",creator=void)
                 cinematic = cinematics.ShowGameCinematic(1,creator=void)
+                '''
+                start next sub phase
+                '''
                 def wrapUp():
                     mainChar.gotBasicSchooling = True
                     doSteamengineExplaination()
@@ -1194,6 +1224,9 @@ class FirstTutorialPhase(BasicPhase):
             
             # start next step
             cinematic = cinematics.ShowGameCinematic(0,creator=void) # bad code: this cinamatic is a hack
+            '''
+            start next sub phase
+            '''
             def wrapUp():
                 doCoalDelivery()
                 gamestate.save()
@@ -1266,7 +1299,7 @@ class FirstTutorialPhase(BasicPhase):
             cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("Coaldelivery now",creator=void))
             cinematic = cinematics.ShowGameCinematic(2,creator=void)
             '''
-            start next phase
+            start next sub phase
             '''
             def wrapUp():
                 doFurnaceFirering()
@@ -1296,7 +1329,7 @@ class FirstTutorialPhase(BasicPhase):
 
                 '''
                 add quests for firering a furnace
-                bad code: should use the meta quest for this
+                bad code: should use the proper quest for this
                 '''
                 def handleEvent(subself):
                     quest0 = quests.CollectQuestMeta(creator=void)
@@ -1424,17 +1457,20 @@ class SecondTutorialPhase(BasicPhase):
         # explain interaction
         if not mainChar.gotInteractionSchooling:
             quest = quests.CollectQuestMeta(startCinematics="next on my Checklist is to explain the Interaction with your Environment.\n\nthe basic Interationcommands are:\n\n "+commandChars.activate+"=activate/apply\n "+commandChars.examine+"=examine\n "+commandChars.pickUp+"=pick up\n "+commandChars.drop+"=drop\n\nsee this Piles of Coal marked with ӫ on the right Side and left Side of the Room.\n\nwhenever you bump into an Item that is to big to be walked on, you will promted for giving an extra Interactioncommand. i'll give you an Example:\n\n ΩΩ＠ӫӫ\n\n pressing "+commandChars.move_west+" and "+commandChars.activate+" would result in Activation of the Furnace\n pressing "+commandChars.move_east+" and "+commandChars.activate+" would result in Activation of the Pile\n pressing "+commandChars.move_west+" and "+commandChars.examine+" would result make you examine the Furnace\n pressing "+commandChars.move_east+" and "+commandChars.examine+" would result make you examine the Pile\n\nplease grab yourself some Coal from a pile by bumping into it and pressing j afterwards.",creator=void)
+            '''
+            start new sub phase
+            '''
             def setPlayerState():
                 mainChar.gotInteractionSchooling = True
                 gamestate.save()
             quest.endTrigger = setPlayerState
             questList.append(quest)
         else:
-            #bad code: assumtion of the player having failed the test is not always true
+            # bad code: assumtion of the player having failed the test is not always true
             quest = quests.CollectQuestMeta(startCinematics="Since you failed the Test last time i will quickly reiterate the interaction commands.\n\nthe basic Interationcommands are:\n\n "+commandChars.activate+"=activate/apply\n "+commandChars.examine+"=examine\n "+commandChars.pickUp+"=pick up\n "+commandChars.drop+"=drop\n\nmove over or walk into items and then press the interaction button to be able to interact with it.",creator=void)
             questList.append(quest)
             
-        # make the character
+        # make the character fire the furnace
         questList.append(quests.ActivateQuestMeta(self.mainCharRoom.furnaces[0],startCinematics="now go and fire the top most Furnace."),creator=void)
         questList.append(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="please pick up the Coal on the Floor. \n\nyou won't see a whole Year of Service leaving burnable Material next to a Furnace"),creator=void)
         questList.append(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="please move back to the waiting position"),creator=void)
@@ -1470,6 +1506,7 @@ class ThirdTutorialPhase(BasicPhase):
         super().__init__("ThirdTutorialPhase")
 
     '''
+    run the competition
     '''
     def start(self):
         self.mainCharRoom = terrain.tutorialMachineRoom
@@ -1484,7 +1521,7 @@ class ThirdTutorialPhase(BasicPhase):
 
         '''
         make the main char stop their turn
-        bad code: basically the same structe within the function as around it
+        bad code: basically the same structure within the function as around it
         '''
         def endMainChar():
             # stop current quests
@@ -1634,6 +1671,7 @@ class ThirdTutorialPhase(BasicPhase):
 
         '''
         kickstart the npcs part of the competition
+        bad code: nameing
         '''
         def tmp():
             cinematics.showCinematic("wait for the furnaces to burn out.",creator=void)
@@ -1649,7 +1687,7 @@ class ThirdTutorialPhase(BasicPhase):
         messages.append("your Score: "+str(self.mainCharFurnaceIndex))
         messages.append("Liebweg Score: "+str(self.npcFurnaceIndex))
 
-        # show score
+        # disable npcs quest
         for quest in self.mainCharRoom.secondOfficer.quests:
             quest.deactivate()
         self.mainCharRoom.secondOfficer.quests = []
@@ -1699,7 +1737,6 @@ class FindWork(BasicPhase):
         super().start()
 
         # create selection
-        # bad code: bad datastructure leads to bad code
         options = [("yes","Yes"),("no","No")]
         text = "you look like a fresh one. Were you sent to report for duty?"
         cinematic = cinematics.SelectionCinematic(text,options,creator=void)
@@ -1733,8 +1770,9 @@ class FindWork(BasicPhase):
         terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I want to report for duty","chat":chats.ReReport})
 
     '''
-    make the player to some task until allowing advancement elsewhere
+    make the player do some tasks until allowing advancement elsewhere
     bad code: very chaotic. probably needs to be split up and partially rewritten
+    bad pattern: mostly player only code
     '''
     def end(self):
         terrain.waitingRoom.addAsHopper(mainChar)
@@ -1767,8 +1805,13 @@ class FindWork(BasicPhase):
                 # call the player for the speech
                 quest = quests.MoveQuestMeta(self.mainCharRoom,6,5,creator=void,lifetime=300)
                 quest.endTrigger = {"container":subself,"method":"meeting"}
+                '''
+                kill player failing to apear for performance evaluation
+                '''
                 def fail():
                     messages.append("*alarm* non rensponsive personal detected. possible artisan. dispatch kill squads *alarm*")
+
+                    # send out death squads
                     for room in terrain.militaryRooms:
                         quest = quests.MurderQuest(mainChar,creator=void)
                         mainChar.reputation -= 1000
@@ -1782,6 +1825,7 @@ class FindWork(BasicPhase):
             '''
             def meeting(subself):
                 if mainChar.reputation < 15 or self.didStoreCargo:
+                    # check if player has the lowest reputation
                     lowestReputation = True
                     for hopper in terrain.waitingRoom.hoppers:
                        if hopper.reputation < mainChar.reputation:
@@ -1813,12 +1857,15 @@ class FindWork(BasicPhase):
 
                     # add subordinates
                     for hopper in terrain.waitingRoom.hoppers:
+                        # ignore bad candidates
                         if hopper == subself.char:
                             continue
                         if hopper in mainChar.subordinates:
                             continue
                         if hopper.dead:
                             continue
+
+                        # add subordinate
                         mainChar.subordinates.append(hopper)
 
             '''
@@ -1828,10 +1875,14 @@ class FindWork(BasicPhase):
                 phase = VatPhase()
                 phase.start()
 
+        '''
+        return subordinates to waiting room
+        '''
         def subordinateHandover(self):
             for hopper in terrain.waitingRoom.hoppers:
                 if hopper in mainChar.subordinates:
                     if hopper.dead:
+                        # punish player if subordinate is returned dead
                         messages.append(hopper.name+" died. that is unfortunate")
                         messages.append("you were rewarded -100 reputation")
                         mainChar.reputation -= 100
@@ -1987,7 +2038,7 @@ class LabPhase(BasicPhase):
         super().__init__("LabPhase")
 
     '''
-    make the dummy movemnt and switch phase
+    make a dummy movement and switch phase
     '''
     def start(self):
         self.mainCharRoom = terrain.tutorialLab
@@ -2019,6 +2070,7 @@ class LabPhase(BasicPhase):
 '''
 dummy for the vat phase
 should serve as punishment for player with option to escape
+bad pattern: has no known way of escaping
 '''
 class VatPhase(BasicPhase):
     '''
@@ -2035,11 +2087,16 @@ class VatPhase(BasicPhase):
 
         super().start()
 
+        # remove all player quests
         for quest in mainChar.quests:
             quest.deactivate()
         mainChar.quests = []
 
         quest = quests.MoveQuestMeta(terrain.tutorialVat,3,3,creator=void,lifetime=500)
+
+        '''
+        kill characters not moving into the vat
+        '''
         def fail():
             messages.append("*alarm* refusal to honour vat assignemnt detected. likely artisan. Dispatch kill squads *alarm*")
             for room in terrain.militaryRooms:
@@ -2053,6 +2110,9 @@ class VatPhase(BasicPhase):
         # assign player quest
         mainChar.assignQuest(quest,active=True)
 
+    '''
+    take away floor permit to make escape harder
+    '''
     def revokeFloorPermit(self):
         mainChar.hasFloorPermit = False
 
@@ -2075,7 +2135,7 @@ class MachineRoomPhase(BasicPhase):
         super().__init__("MachineRoomPhase")
 
     '''
-    switch completely the free play
+    switch completely to free play
     '''
     def start(self):
         self.mainCharRoom = terrain.tutorialMachineRoom

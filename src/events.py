@@ -1,5 +1,16 @@
-import src.saveing as saveing
+#########################################################################################################################
+###
+##      Events and event related code belong here
+#       bad code: not all events are here yet
+#
+#########################################################################################################################
+
+# import basic libs
 import json
+
+# import basic internal libs
+# bad code: should not use shorthand
+import src.saveing as saveing
 
 #bad code: global state
 cinematics = None
@@ -28,6 +39,7 @@ class Event(saveing.Saveable):
 
         self.tick = tick
 
+        # self initial state
         self.initialState = self.getState()
 
     '''

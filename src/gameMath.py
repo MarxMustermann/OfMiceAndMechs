@@ -1,3 +1,12 @@
+#########################################################################################
+###
+##      special non standard mathbelongs here
+#       bad code: pathfindind doesn't really belong here
+#       bad code: the whole file is obsolete probably
+#
+#########################################################################################
+
+
 '''
 remove loops from a path
 bad pattern: path should be generated in such a way this is not needed
@@ -58,11 +67,12 @@ def calculatePath(startX,startY,endX,endY,walkingPath):
 
 '''
 recusively calcualate a unoptimized path
+bad code: xxxReal
 '''
 def calculatePathReal(startX,startY,endX,endY,walkingPath):
     path = []
 
-    # bad code: return empty path on broken input
+    # bad code: should raise exception
     if None in (startX,startY,endX,endY):
         return []
 
@@ -186,7 +196,7 @@ def calculatePathReal(startX,startY,endX,endY,walkingPath):
     else:
         path = []
         startPoint = None
-        lowestDistance = 1234567890
+        lowestDistance = 1234567890 # bad code: silly constant
         for waypoint in walkingPath:
             distance = abs(waypoint[0]-startX)+abs(waypoint[1]-startY)
             if lowestDistance > distance:
@@ -194,7 +204,7 @@ def calculatePathReal(startX,startY,endX,endY,walkingPath):
                 startPoint = waypoint
 
         endPoint = None
-        lowestDistance = 1234567890
+        lowestDistance = 1234567890 # bad code: silly constant
         for waypoint in walkingPath:
             distance = abs(waypoint[0]-endX)+abs(waypoint[1]-endY)
             if lowestDistance > distance:

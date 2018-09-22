@@ -1,9 +1,18 @@
+############################################################################################
+###
+##    terrains and terrain related code belongs here
+#
+############################################################################################
+
+# import basic libs
+import json
+
+# import basic internal libs
 import src.items as items
 import src.rooms as rooms
 import src.overlays as overlays
 import src.gameMath as gameMath
 import src.saveing as saveing
-import json
 
 # bad code: global varaibles
 mainChar = None
@@ -52,6 +61,7 @@ class Terrain(saveing.Saveable):
         self.alarm = False
 
         # add items 
+        # bad code: repetetive code
         mapItems = []
         self.detailedLayout = detailedLayout
         lineCounter = 0
@@ -95,6 +105,7 @@ class Terrain(saveing.Saveable):
         self.wakeUpRoom = None
         self.militaryRooms = []
 
+        # nodes for pathfinding
         self.watershedStart = []
         self.superNodes = {}
 
@@ -130,9 +141,12 @@ class Terrain(saveing.Saveable):
                         self.tutorialVatProcessing = room
                     roomsOnMap.append(room)
                 elif char == "Q":
+                    # add room and add to room list
                     room = rooms.InfanteryQuarters(rowCounter,lineCounter,1,2,creator=self)
                     roomsOnMap.append(room)
                     self.militaryRooms.append(room)
+
+                    # add terrain wide listener
                     self.addListener(room.enforceFloorPermit,"entered terrain")
                 elif char == "w":
                     # add room and add to room list
@@ -240,6 +254,7 @@ class Terrain(saveing.Saveable):
 
     '''
     registering for notifications
+    bad code: should be an extra class
     '''
     def addListener(self,listenFunction,tag="default"):
         if not tag in self.listeners:
@@ -250,6 +265,7 @@ class Terrain(saveing.Saveable):
 
     '''
     deregistering for notifications
+    bad code: should be an extra class
     '''
     def delListener(self,listenFunction,tag="default"):
         if listenFunction in self.listeners[tag]:
@@ -261,6 +277,7 @@ class Terrain(saveing.Saveable):
     '''
     sending notifications
     bad code: probably misnamed
+    bad code: should be an extra class
     '''
     def changed(self,tag="default",info=None):
         if not tag == "default":
@@ -318,7 +335,6 @@ class Terrain(saveing.Saveable):
                 xCoord -= 1
             elif room.walkingAccess[0][0] == room.sizeX-1:
                 xCoord += 1
-
             if room.walkingAccess[0][1] == 0:
                 yCoord -= 1
             elif room.walkingAccess[0][1] == room.sizeY-1:
@@ -660,6 +676,7 @@ class Terrain(saveing.Saveable):
 
         # get end node
         if not end in self.watershedCoordinates:
+            # bad code: should log
             return
         endPair = self.watershedCoordinates[end][0]
 
@@ -676,6 +693,7 @@ class Terrain(saveing.Saveable):
         # find path to any point an a path leading to the end node
         exitPoint = self.mark([end])
         if not exitPoint:
+            # bad code: should log
             return
 
         # get path from end position to end node
@@ -718,9 +736,8 @@ class Terrain(saveing.Saveable):
         # add current coordinate
         pathToEntry.append((coordinate[0],coordinate[1]))
 
-        
         found = None
-        foundValue = 10000
+        foundValue = 10000 # bad code: silly constant
 
         # go back to position with lowest moves to start position
         for newCoordinate in [(coordinate[0]-1,coordinate[1]),(coordinate[0],coordinate[1]-1),(coordinate[0]+1,coordinate[1]),(coordinate[0],coordinate[1]+1)]:
@@ -841,7 +858,7 @@ class Terrain(saveing.Saveable):
     def removeItem(self,item):
         self.itemsOnFloor.remove(item)
         self.itemByCoordinates[(item.xPosition,item.yPosition)].remove(item)
-        if hasattr(self,"watershedStart"):
+        if hasattr(self,"watershedStart"): # nontrivial: prevents crashes in constructor
             self.calculatePathMap()
 
     '''
@@ -855,11 +872,12 @@ class Terrain(saveing.Saveable):
                 self.itemByCoordinates[(item.xPosition,item.yPosition)].append(item)
             else:
                 self.itemByCoordinates[(item.xPosition,item.yPosition)] = [item]
-        if hasattr(self,"watershedStart"):
+        if hasattr(self,"watershedStart"): # nontrivial: prevents crashes in constructor
             self.calculatePathMap()
 
     '''
     draw the floor
+
     '''
     def paintFloor(self):
         chars = []
@@ -911,6 +929,7 @@ class Terrain(saveing.Saveable):
                 pos = (mainChar.room.xPosition,mainChar.yPosition)
 
             # get rooms near the player
+            # bad code: should be a method
             roomCandidates = []
             possiblePositions = set()
             for i in range(-1,2):
@@ -1005,7 +1024,7 @@ class Terrain(saveing.Saveable):
             else:
                 debugMessages.append("invalid movement direction: "+str(direction))
 
-        # get collusions from the pushed rooms recursively
+        # get collisions from the pushed rooms recursively
         for roomCollision in roomCollisions:
             movementBlock.add(roomCollision)
             self.getAffectedByRoomMovementDirection(roomCollision,direction,force=force,movementBlock=movementBlock)
@@ -1065,6 +1084,7 @@ class Terrain(saveing.Saveable):
             else:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
+        # kill characters under mech
         for char in self.characters:
             if (char.xPosition > room.xPosition*15+room.offsetX and 
                char.xPosition < room.xPosition*15+room.offsetX+room.sizeX and
@@ -1072,6 +1092,7 @@ class Terrain(saveing.Saveable):
                char.yPosition < room.yPosition*15+room.offsetY+room.sizeY):
                     char.die()
 
+        # reset paths
         if hasattr(self,"watershedStart"):
             self.calculatePathMap()
 
@@ -1098,6 +1119,7 @@ class Terrain(saveing.Saveable):
             else:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
+        # kill characters under mech
         for char in self.characters:
             if (char.xPosition > room.xPosition*15+room.offsetX and 
                char.xPosition < room.xPosition*15+room.offsetX+room.sizeX and
@@ -1105,6 +1127,7 @@ class Terrain(saveing.Saveable):
                char.yPosition < room.yPosition*15+room.offsetY+room.sizeY):
                     char.die()
 
+        # reset paths
         if hasattr(self,"watershedStart"):
             self.calculatePathMap()
 
@@ -1131,6 +1154,7 @@ class Terrain(saveing.Saveable):
             else:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
+        # kill characters under mech
         for char in self.characters:
             if (char.xPosition > room.xPosition*15+room.offsetX and 
                char.xPosition < room.xPosition*15+room.offsetX+room.sizeX and
@@ -1138,6 +1162,7 @@ class Terrain(saveing.Saveable):
                char.yPosition < room.yPosition*15+room.offsetY+room.sizeY):
                     char.die()
 
+        # reset paths
         if hasattr(self,"watershedStart"):
             self.calculatePathMap()
 
@@ -1164,6 +1189,7 @@ class Terrain(saveing.Saveable):
             else:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
+        # kill characters under mech
         for char in self.characters:
             if (char.xPosition > room.xPosition*15+room.offsetX and 
                char.xPosition < room.xPosition*15+room.offsetX+room.sizeX and
@@ -1171,6 +1197,7 @@ class Terrain(saveing.Saveable):
                char.yPosition < room.yPosition*15+room.offsetY+room.sizeY):
                     char.die()
 
+        # reset paths
         if hasattr(self,"watershedStart"):
             self.calculatePathMap()
 
@@ -1192,11 +1219,14 @@ class Terrain(saveing.Saveable):
             self.roomByCoordinates[newPosition] = [room]
         room.xPosition = newPosition[0]
         room.yPosition = newPosition[1]
+
+        # reset paths
         if hasattr(self,"watershedStart"):
             self.calculatePathMap()
 
     '''
     set state from dict
+    bad code: should be in saveable
     '''
     def setState(self,state,tick):
         # update rooms
@@ -1237,6 +1267,7 @@ class Terrain(saveing.Saveable):
 
     '''
     get difference between initial and current state
+    bad code: should be in saveable
     '''
     def getDiffState(self):
         # serialize list
@@ -1265,6 +1296,7 @@ class Terrain(saveing.Saveable):
 
     '''
     get state as dict
+    bad code: should be in saveable
     '''
     def getState(self):
         # get states for lists
@@ -1290,7 +1322,7 @@ a almost empty terrain
 '''
 class Nothingness(Terrain):
     '''
-    paint floor with minimal variation to easy perception of movement
+    paint floor with minimal variation to ease perception of movement
     '''
     def paintFloor(self):
         chars = []
@@ -1365,7 +1397,7 @@ U  U
         self.floordisplay = displayChars.dirt
 
         # add scrap
-        # bade code: repetetive code
+        # bad code: repetetive code
         self.testItems = []
         counter = 3
         for x in range(20,30):
@@ -1384,7 +1416,7 @@ U  U
                     counter = 1
 
         # add scrap
-        # bade code: repetetive code
+        # bad code: repetetive code
         for x in range(20,120):
             for y in range(20,30):
                 if not x%2 and not y%3:
@@ -1401,7 +1433,7 @@ U  U
                     counter = 1
 
         # add scrap
-        # bade code: repetetive code
+        # bad code: repetetive code
         for x in range(110,120):
             for y in range(30,110):
                 if not x%2 and not y%3:
@@ -1418,7 +1450,7 @@ U  U
                     counter = 1
 
         # add scrap
-        # bade code: repetetive code
+        # bad code: repetetive code
         for x in range(20,120):
             for y in range(110,120):
                 if not x%2 and not y%3:
@@ -1435,7 +1467,7 @@ U  U
                     counter = 1
 
         # add scrap
-        # bade code: repetetive code
+        # bad code: repetetive code
         for x in range(30,110):
             for y in range(30,110):
                 if not x%2 and not y%7:
@@ -1454,7 +1486,7 @@ U  U
                     counter = 1
 
         # add walls
-        # bade code: repetetive code
+        # bad code: repetetive code
         for x in range(30,110):
             for y in range(30,110):
                 if x%23 and y%7 or (not x%2 and not x%3) or x%2 or not y%4:
@@ -1462,7 +1494,7 @@ U  U
                 self.testItems.append(items.Wall(x,y))
 
         # add pipes
-        # bade code: repetetive code
+        # bad code: repetetive code
         for x in range(30,110):
             for y in range(30,110):
                 if x%13 and y%15 or (not x%3 and not x%5) or x%3 or not y%2:
@@ -1648,7 +1680,6 @@ XXXCCCCCXXX """
 
         # add some tasks to keep npc busy
         self.toTransport = []
-        
         roomsIndices = [0,1,2,3,5,6]
         roadBlocks = []
         for index in reversed(roomsIndices):
@@ -1656,6 +1687,7 @@ XXXCCCCCXXX """
             for item in room.storedItems:
                 self.toTransport.append((room,(item.xPosition,item.yPosition)))
 
+        # add more transport tasks to keep npcs busy
         x = 12
         while x > 8:
             y = 1
@@ -1682,8 +1714,10 @@ XXXCCCCCXXX """
                           items.Scrap(18,51,3,creator=self)]
         self.addItems(self.testItems)
 
+        # move roadblock periodically
         self.waitingRoom.addEvent(events.EndQuestEvent(4000,{"container":self,"method":"addRoadblock"},creator=self))
 
+        # save internal state
         self.initialState = self.getState()
 
     '''
@@ -1694,29 +1728,35 @@ XXXCCCCCXXX """
             return
         task = self.toTransport.pop()
 
+        # select target room
         roomIndices = [1,0,2,5,4]
         room = None
         for index in roomIndices:
             if self.tutorialStorageRooms[index].storageSpace:
                room = self.tutorialStorageRooms[index]
                break
-
         if not room:
             return
 
+        # add quest to waiting room
         quest = quests.MoveToStorage([task[0].itemByCoordinates[task[1]][0]],room,creator=self,lifetime=400)
         quest.reputationReward = 1
         quest.endTrigger = {"container":self,"method":"addStorageQuest"}
         self.waitingRoom.quests.append(quest)
 
     '''
-
+    add roadblock
     '''
     def addRoadblock(self):
         room = self.tutorialCargoRooms[8]
         item = room.storedItems[-1]
         quest = quests.MetaQuestSequence([],creator=self)
         quest2 = quests.TransportQuest(item,(None,127,81),creator=self)
+        '''
+        move character off the placed item
+        bad code: should happen somewhere else
+        bad code: nameing 
+        '''
         def tmp():
             quest.character.yPosition -= 1
         quest2.endTrigger = tmp
@@ -1725,7 +1765,8 @@ XXXCCCCCXXX """
         self.waitingRoom.addEvent(events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToLeft"},creator=self))
 
     '''
-
+    move roadblock
+    bad code: should be more abstracted
     '''
     def moveRoadblockToLeft(self):
         if not (127,81) in self.itemByCoordinates:
@@ -1733,6 +1774,11 @@ XXXCCCCCXXX """
         item = self.itemByCoordinates[(127,81)][0]
         quest = quests.MetaQuestSequence([],creator=self)
         quest2 = quests.TransportQuest(item,(None,37,81),creator=self)
+        '''
+        move character off the placed item
+        bad code: should happen somewhere else
+        bad code: nameing 
+        '''
         def tmp():
             quest.character.yPosition -= 1
         quest2.endTrigger = tmp
@@ -1741,7 +1787,8 @@ XXXCCCCCXXX """
         self.waitingRoom.addEvent(events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToRight"},creator=self))
 
     '''
-
+    move roadblock
+    bad code: should be more abstracted
     '''
     def moveRoadblockToRight(self):
         if not (37,81) in self.itemByCoordinates:
@@ -1749,6 +1796,11 @@ XXXCCCCCXXX """
         item = self.itemByCoordinates[(37,81)][0]
         quest = quests.MetaQuestSequence([],creator=self)
         quest2 = quests.TransportQuest(item,(None,127,81),creator=self)
+        '''
+        move character off the placed item
+        bad code: should happen somewhere else
+        bad code: nameing 
+        '''
         def tmp():
             quest.character.yPosition -= 1
         quest2.endTrigger = tmp

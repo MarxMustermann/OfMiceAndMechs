@@ -1,6 +1,15 @@
+####################################################################################
+###
+##     items and item related code belongs here 
+#
+####################################################################################
+
+# load basic libs
 import urwid
 import json
-import gamestate
+
+# load basic internal libs
+import gamestate # bad code: wtf is this?
 import src.saveing as saving
 import src.events as events
 
@@ -41,6 +50,7 @@ class Item(saving.Saveable):
         self.mayContainMice = False
         self.bolted = not self.walkable
 
+        # set up saveing
         self.attributesToStore.extend([
                "mayContainMice"])
 
@@ -66,6 +76,7 @@ class Item(saving.Saveable):
         currentState = self.getState()
         
         # only carry changed attributes
+        # bad code: should use Saveing class
         for attribute in ("id","name","type","walkable","xPosition","yPosition"):
             if not currentState[attribute] == self.initialState[attribute]:
                 result[attribute] = currentState[attribute]
@@ -76,6 +87,7 @@ class Item(saving.Saveable):
     get state as dict
     '''
     def getState(self):
+        # bad code: should use Saveing class
         state = super().getState()
         state.update({
                  "name":self.name,
@@ -94,6 +106,7 @@ class Item(saving.Saveable):
 
         # set attribute
         # bad code: very repetetive code
+        # bad code: should use Saveing class
         if "id" in state:
             self.id = state["id"]
         if "name" in state:
@@ -132,6 +145,7 @@ class Item(saving.Saveable):
         if self.bolted:
             messages.append("you cannot pick up bolted items")
             return
+
         # bad code: should be a simple self.container.removeItem(self)
         if self.room:
             # remove item from room
@@ -146,26 +160,42 @@ class Item(saving.Saveable):
             if not container.itemByCoordinates[(self.xPosition,self.yPosition)]:
                 del container.itemByCoordinates[(self.xPosition,self.yPosition)]
 
+        # spawn mice with pseudorandom chance
         if ((self.mayContainMice and (gamestate.tick+self.xPosition+self.yPosition)%10 == 0 and not self.walkable) or
            (not self.mayContainMice and (gamestate.tick+self.xPosition-self.yPosition)%100 == 0 and not self.walkable)):
+
+            # create mouse
+            # bad code: variable name lies
             rat = characters.Mouse(creator=self)
+        
+            # make mouse attack the player
             quest = quests.MetaQuestSequence([],creator=self)
             quest.addQuest(quests.MoveQuestMeta(room=self.room,x=self.xPosition,y=self.yPosition,creator=self))
             quest.addQuest(quests.KnockOutQuest(character,lifetime=30,creator=self))
             quest.addQuest(quests.WaitQuest(lifetime=5,creator=self))
-            quest.endTrigger = {"container":rat,"method":"vanish"}
             rat.assignQuest(quest,active=True)
+
+            # make mouse vanish after successful attack
+            quest.endTrigger = {"container":rat,"method":"vanish"}
+
             if self.room:
                 room = self.room
                 xPosition = self.xPosition
                 yPosition = self.yPosition
 
+                # add mouse
                 room.addCharacter(rat,xPosition,yPosition)
 
+                '''
+                set up an ambush if target left the room
+                bad code: nameing
+                '''
                 def test(character2):
+                    # only trigger for target
                     if not character == character2:
                        return
 
+                    # get ambush position next to door
                     ambushXPosition = None
                     ambushYPosition = None
                     for item in room.itemsOnFloor:
@@ -182,28 +212,46 @@ class Item(saving.Saveable):
                         if ambushYPosition == room.sizeY-1:
                           ambushYPosition -= 1
 
+                    # remove old attack quests
                     while len(quest.subQuests) > 1:
                         subQuest = quest.subQuests.pop()
                         subQuest.deactivate()
 
+                    # make mouse wait on ambush position
                     if (not yPosition == None) and (not xPosition == None):
                         quest.addQuest(quests.WaitQuest(creator=self))
                         quest.addQuest(quests.MoveQuestMeta(room=room,x=ambushXPosition,y=ambushYPosition,creator=self))
 
+                    # remove self from listeners
                     room.delListener(test,"left room")
+
+                    '''
+                    trigger ambush
+                    '''
                     def test2(character3):
+                        # make mouse atack anybody entering the room
                         quest.addQuest(quests.MoveQuestMeta(room=room,x=xPosition,y=yPosition,creator=self))
                         quest.addQuest(quests.KnockOutQuest(character3,lifetime=10,creator=self))
+
+                        # bad code: debug output on gui
                         messages.append(str(quest.subQuests))
+
+                        # remove old quests
                         while len(quest.subQuests) > 2:
                             subQuest = quest.subQuests[-1]
                             subQuest.deactivate()
                             quest.subQuests.remove(subQuest)
+
+                        # remove self from wath list
                         room.delListener(test2,"entered room")
                         
+                    # start watching for somebody entering the room
                     room.addListener(test2,"entered room")
+
+                # start watching for character leaving the room
                 room.addListener(test,"left room")
             else:
+                # add mouse
                 self.terrain.addCharacter(rat,self.xPosition,self.yPosition)
 
 
@@ -217,8 +265,10 @@ class Item(saving.Saveable):
 
     '''
     registering for notifications
+    bad code: should be extra class
     '''
     def addListener(self,listenFunction,tag="default"):
+        # create bucket if it does not exist yet
         if not tag in self.listeners:
             self.listeners[tag] = []
 
@@ -227,31 +277,39 @@ class Item(saving.Saveable):
 
     '''
     deregistering for notifications
+    bad code: should be extra class
     '''
     def delListener(self,listenFunction,tag="default"):
+        # remove listener
         if listenFunction in self.listeners[tag]:
             self.listeners[tag].remove(listenFunction)
 
+        # clean up empty buckets
+        # bad performance: probably better to not clear and recreate buckets
         if not self.listeners[tag] and not tag == "default":
             del self.listeners[tag]
 
     '''
     sending notifications
     bad code: probably misnamed
+    bad code: should be extra class
     '''
     def changed(self,tag="default",info=None):
         if not tag == "default":
             if not tag in self.listeners:
                 return
 
+            # bad code: almost redundant code
             for listenFunction in self.listeners[tag]:
                 listenFunction(info)
+
+        # bad code: almost redundant code
         for listenFunction in self.listeners["default"]:
             listenFunction()
 
 
     '''
-    get a list of items that is affected if the item would move north
+    get a list of items that is affected if the item would move into some direction
     '''
     def getAffectedByMovementDirection(self,direction,force=1,movementBlock=set()):
         # add self
@@ -565,6 +623,7 @@ class Scrap(Item):
     '''
     def getDiffState(self):
         state = super().getState()
+        # bad code: use saveable for this
         if not self.initialState["amount"] == self.amount:
             state["amount"] = self.amount
         return state
@@ -574,6 +633,7 @@ class Scrap(Item):
     '''
     def getState(self):
         state = super().getState()
+        # bad code: use saveable for this
         state["amount"] = self.amount
         return state
 
@@ -582,6 +642,7 @@ class Scrap(Item):
     '''
     def setState(self,state):
         super().setState(state)
+        # bad code: use saveable for this
         self.amount = state["amount"]
 
         # recalculate the display char
@@ -628,7 +689,7 @@ class GrowthTank(Item):
         else:
             super().__init__(displayChars.growthTank_unfilled,xPosition,yPosition,name=name,creator=creator)
 
-        # bad code: repetetive and easy to forgett
+        # bad code: repetetive and easy to forget
         self.initialState = self.getState()
 
     '''
@@ -646,9 +707,11 @@ class GrowthTank(Item):
         self.filled = False
         self.display = displayChars.growthTank_unfilled
 
-        # generate a name
-        # bad code: should be somewhere else
-        # bad code: redundant code
+        '''
+        generate a name
+        bad code: should be somewhere else
+        bad code: redundant code
+        '''
         def getRandomName(seed1=0,seed2=None):
             if seed2 == None:
                 seed2 = seed1+(seed1//5)
@@ -658,6 +721,8 @@ class GrowthTank(Item):
         if not character:
             name = getRandomName(self.xPosition+self.room.timeIndex,self.yPosition+self.room.timeIndex)
             character = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],self.xPosition+1,self.yPosition,name=name,creator=self)
+
+        # inhabit character
         character.fallUnconcious()
         character.hasFloorPermit = False
         self.room.addCharacter(character,self.xPosition+1,self.yPosition)
@@ -669,6 +734,7 @@ class GrowthTank(Item):
     '''
     def getDiffState(self):
         state = super().getState()
+        # bad code: use new structure
         if not self.initialState["filled"] == self.filled:
             state["filled"] = self.filled
         return state
@@ -678,6 +744,7 @@ class GrowthTank(Item):
     '''
     def getState(self):
         state = super().getState()
+        # bad code: use new structure
         state["filled"] = self.filled
         return state
 
@@ -686,8 +753,10 @@ class GrowthTank(Item):
     '''
     def setState(self,state):
         super().setState(state)
+        # bad code: use new structure
         if "filled" in state:
             self.filled = state["filled"]
+
         if self.filled:
             self.display = displayChars.growthTank_filled
         else:
@@ -700,6 +769,7 @@ class Hutch(Item):
     def __init__(self,xPosition=0,yPosition=0,name="Hutch",activated=False,creator=None):
         self.type = "Hutch"
         self.activated = activated
+        # bad code: redundant code
         if self.activated:
             super().__init__(displayChars.hutch_free,xPosition,yPosition,creator=creator)
         else:
@@ -713,9 +783,11 @@ class Hutch(Item):
     def apply(self,character):
         if not self.activated:
             self.activated = True
+            # bad code: should have a render function
             self.display = displayChars.hutch_occupied
         else:
             self.activated = False
+            # bad code: should have a render function
             self.display = displayChars.hutch_free
 
     '''
@@ -723,6 +795,7 @@ class Hutch(Item):
     '''
     def getDiffState(self):
         state = super().getState()
+        # bad code: use new structure
         if not self.initialState["activated"] == self.activated:
             state["activated"] = self.activated
         return state
@@ -732,6 +805,7 @@ class Hutch(Item):
     '''
     def getState(self):
         state = super().getState()
+        # bad code: use new structure
         state["activated"] = self.activated
         return state
 
@@ -740,10 +814,13 @@ class Hutch(Item):
     '''
     def setState(self,state):
         super().setState(state)
+        # bad code: use new structure
         self.activated = state["activated"]
         if self.activated:
+            # bad code: should have a render function
             self.display = displayChars.hutch_occupied
         else:
+            # bad code: should have a render function
             self.display = displayChars.hutch_free
 
 '''
@@ -774,6 +851,7 @@ class Lever(Item):
             self.activated = True
             self.display = displayChars.lever_pulled
 
+            # run the action
             if self.activateAction:
                 self.activateAction(self)
         else:
@@ -781,6 +859,7 @@ class Lever(Item):
             self.activated = False
             self.display = displayChars.lever_notPulled
 
+            # run the action
             if self.deactivateAction:
                 self.activateAction(self)
 
@@ -792,6 +871,7 @@ class Lever(Item):
     '''
     def getDiffState(self):
         state = super().getState()
+        #bad code: should use new structure
         if not self.initialState["activated"] == self.activated:
             state["activated"] = self.activated
         return state
@@ -801,6 +881,7 @@ class Lever(Item):
     '''
     def getState(self):
         state = super().getState()
+        #bad code: should use new structure
         state["activated"] = self.activated
         return state
 
@@ -809,10 +890,14 @@ class Lever(Item):
     '''
     def setState(self,state):
         super().setState(state)
+        #bad code: should use new structure
         self.activated = state["activated"]
+
         if self.activated:
+            # bad code: should have a render function
             self.display = displayChars.lever_pulled
         else:
+            # bad code: should have a render function
             self.display = displayChars.lever_notPulled
 
 '''
@@ -837,6 +922,7 @@ class Furnace(Item):
         # select fuel
         # bad pattern: the player should be able to select fuel
         # bad pattern: coal should be preferred
+        # bad code: try except clusterfuck
         foundItem = None
         for item in character.inventory:
             try:
@@ -862,6 +948,7 @@ class Furnace(Item):
                 self.activated = True
                 self.display = displayChars.furnace_active
                 character.inventory.remove(foundItem)
+
                 if character.watched:
                     messages.append("*wush*")
 
@@ -871,9 +958,11 @@ class Furnace(Item):
                     if ((boiler.xPosition in [self.xPosition,self.xPosition-1,self.xPosition+1] and boiler.yPosition == self.yPosition) or boiler.yPosition in [self.yPosition-1,self.yPosition+1] and boiler.xPosition == self.xPosition):
                         self.boilers.append(boiler)
 
+                # heat up boilers
                 for boiler in self.boilers:
                     boiler.startHeatingUp()
                 
+                # make the furnace stop burning after some time
                 event = events.FurnaceBurnoutEvent(self.room.timeIndex+30,creator=self)
                 event.furnace = self
 
@@ -888,9 +977,11 @@ class Furnace(Item):
     '''
     def setState(self,state):
         super().setState(state)
+        #bad code: should use new structure
         if "activated" in state:
             self.activated = state["activated"]
             if self.activated:
+                # bad code: should have a render function
                 self.display = displayChars.furnace_active
     
     '''
@@ -898,6 +989,7 @@ class Furnace(Item):
     '''
     def getDiffState(self):
         state = super().getDiffState()
+        #bad code: should use new structure
         if not self.activated == self.initialState["activated"]:
             state["activated"] = self.activated
         return state
@@ -907,6 +999,7 @@ class Furnace(Item):
     '''
     def getState(self):
         state = super().getState()
+        #bad code: should use new structure
         state["activated"] = self.activated
         return state
 
@@ -927,12 +1020,13 @@ class Commlink(Item):
     '''
     def apply(self,character):
         # add messages requesting coal
+        # bad pattern: requesting coal in random room is not smart
         messages.append("Sigmund Bärenstein@Logisticcentre: we need more coal")
         messages.append("Logisticcentre@Sigmund Bärenstein: on its way")
     
         '''
         the event for stopping to burn after a while
-        bad code: should be an abstact event calling a method
+        bad code: should be an abstract event calling a method
         '''
         class CoalRefillEvent(events.Event):
             '''
@@ -972,16 +1066,30 @@ class Display(Item):
     '''
     def apply(self,character):
         # handle movement keystrokes
+        '''
+        move room to north
+        '''
         def moveNorth():
             self.room.moveNorth(force=self.room.engineStrength)
+        '''
+        move room to south
+        '''
         def moveSouth():
             self.room.moveSouth(force=self.room.engineStrength)
+        '''
+        move room to west
+        '''
         def moveWest():
             self.room.moveWest(force=self.room.engineStrength)
+        '''
+        move room to east
+        '''
         def moveEast():
             self.room.moveEast(force=self.room.engineStrength)
 
-        # reset key mapping
+        '''
+        reset key mapping
+        '''
         def disapply():
             del stealKey[commandChars.move_north]
             del stealKey[commandChars.move_south]
@@ -1048,6 +1156,7 @@ class Door(Item):
 
     '''
     set state from dict
+    bad code: should have a open attribute
     '''
     def setState(self,state):
         super().setState(state)
@@ -1056,6 +1165,7 @@ class Door(Item):
 
     '''
     open or close door depending on state
+    bad code: should have a open attribute
     '''
     def apply(self,character):
         if self.walkable:
@@ -1094,12 +1204,14 @@ class Door(Item):
                     close the door
                     '''
                     def handleEvent(subself):
+                        # bad pattern: should only generate sound for nearby characters
                         messages.append("*TSCHUNK*")
                         self.close()
 
                 self.room.addEvent(AutoCloseDoor(self.room.timeIndex+5))
         else:
             # refuse to open the door
+            # bad code: should only apply tho watched characters
             messages.append("you cannot open the door from the inside")
 
     '''
@@ -1131,7 +1243,7 @@ class Pile(Item):
     take from the pile
     '''
     def apply(self,character):
-        # check chracters inventory
+        # check characters inventory
         if len(character.inventory) > 10:
             messages.append("you cannot carry more items")
             return
@@ -1168,6 +1280,7 @@ class Pile(Item):
     '''
     def getDiffState(self):
         state = super().getState()
+        # bad code: should use new structure
         if not self.initialState["numContained"] == self.numContained:
             state["numContained"] = self.numContained
         return state
@@ -1177,6 +1290,7 @@ class Pile(Item):
     '''
     def getState(self):
         state = super().getState()
+        # bad code: should use new structure
         state["numContained"] = self.numContained
         return state
 
@@ -1185,6 +1299,7 @@ class Pile(Item):
     '''
     def setState(self,state):
         super().setState(state)
+        # bad code: should use new structure
         self.numContained = state["numContained"]
 
 '''
@@ -1228,6 +1343,7 @@ class Chain(Item):
         # bad pattern: the user needs to be able to select to what to chain to
         if not self.fixed:
             if self.room:
+                # bad code: NIY
                 messages.append("TODO")
             else:
                 # flag self as chained onto something
@@ -1348,6 +1464,7 @@ class Boiler(Item):
                     '''
                     def handleEvent(subself):
                         # add noises
+                        # bad pattern: should only make noise for nearby things
                         messages.append("*boil*")
 
                         # set own state
@@ -1382,8 +1499,8 @@ class Boiler(Item):
                 self.startBoilingEvent = None
             if not self.stopBoilingEvent and self.isBoiling:
                 '''
-                the event for starting to boil
-                bad code: should be an abstact event calling a method
+                the event for stopping to boil
+                bad code: should be an abstract event calling a method
                 '''
                 class StopBoilingEvent(object):
                     id = "StopBoilingEvent"
@@ -1412,6 +1529,7 @@ class Boiler(Item):
                         self.room.steamGeneration -= 1
                         self.room.changed()
 
+                # stop boiling after some time
                 self.stopBoilingEvent = StopBoilingEvent(self.room.timeIndex+5)
                 self.room.addEvent(self.stopBoilingEvent)
 
@@ -1430,6 +1548,8 @@ class Spray(Item):
         if direction == None:
             direction = "left"
 
+        # set up rendering information
+        # should be a renderer
         if direction == "left":
             self.display_inactive = displayChars.spray_left_inactive
             self.display_stage1 = displayChars.spray_left_stage1
@@ -1450,6 +1570,7 @@ class Spray(Item):
     bad code: energy supply is directly taken from the machine room
     '''
     def recalculate(self):
+        # should be a renderer
         if terrain.tutorialMachineRoom.steamGeneration == 0:
             self.display = self.display_inactive
         if terrain.tutorialMachineRoom.steamGeneration == 1:
@@ -1486,6 +1607,7 @@ class MarkerBean(Item):
     '''
     def getDiffState(self):
         state = super().getState()
+        # bad code: should use new structure
         if not self.initialState["activated"] == self.activated:
             state["activated"] = self.activated
         return state
@@ -1495,6 +1617,7 @@ class MarkerBean(Item):
     '''
     def getState(self):
         state = super().getState()
+        # bad code: should use new structure
         state["activated"] = self.activated
         return state
 
@@ -1503,7 +1626,10 @@ class MarkerBean(Item):
     '''
     def setState(self,state):
         super().setState(state)
+        # bad code: should use new structure
         self.activated = state["activated"]
+
+        # should be a renderer
         if self.activated:
             self.display = "x-"
 
@@ -1534,6 +1660,7 @@ class GooDispenser(Item):
     '''
     def getDiffState(self):
         state = super().getState()
+        #bad code: should use new structure
         if not self.initialState["activated"] == self.activated:
             state["activated"] = self.activated
         return state
@@ -1543,6 +1670,7 @@ class GooDispenser(Item):
     '''
     def getState(self):
         state = super().getState()
+        #bad code: should use new structure
         state["activated"] = self.activated
         return state
 
@@ -1551,6 +1679,7 @@ class GooDispenser(Item):
     '''
     def setState(self,state):
         super().setState(state)
+        #bad code: should use new structure
         self.activated = state["activated"]
 
 '''
@@ -1587,6 +1716,7 @@ class GooFlask(Item):
     '''
     def getDiffState(self):
         state = super().getState()
+        # bad code: should use new structure
         if not self.initialState["uses"] == self.uses:
             state["uses"] = self.uses
         return state
@@ -1596,6 +1726,7 @@ class GooFlask(Item):
     '''
     def getState(self):
         state = super().getState()
+        # bad code: should use new structure
         state["uses"] = self.uses
         return state
 
@@ -1604,7 +1735,9 @@ class GooFlask(Item):
     '''
     def setState(self,state):
         super().setState(state)
+        # bad code: should use new structure
         self.uses = state["uses"]
+        # bad code: should be a renderer
         self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses//20])
 
     '''
@@ -1637,7 +1770,6 @@ class OjectDispenser(Item):
 
 '''
 token object ment to produce anything from metal bars
-bad code: doesn't actually allow to produce a few items
 bad pattern: serves as dummy for actual production lines
 '''
 class ProductionArtwork(Item):
@@ -1655,7 +1787,7 @@ class ProductionArtwork(Item):
         options = []
         for key,value in itemMap.items():
             options.append((value,key))
-        self.submenue = interaction.SelectionMenu("test",options)
+        self.submenue = interaction.SelectionMenu("test",options) # bad code: "test"
         interaction.submenue = self.submenue
         interaction.submenue.followUp = self.produceSelection
 
@@ -1705,6 +1837,7 @@ class ScrapCompactor(Item):
     produce a metal bar
     '''
     def apply(self,character,resultType=None):
+        # fetch input scrap
         scrap = None
         for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
             if isinstance(item,Scrap):

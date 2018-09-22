@@ -1,5 +1,15 @@
+##############################################################################################################
+###
+##     cinematics and related code belong here
+#
+##############################################################################################################
+
+# import basic libs
 import urwid
 import json
+
+# import basic internal libs
+# bad code: shouldn't use shorthand
 import src.saveing as saveing
 
 """
@@ -32,6 +42,7 @@ class BasicCinematic(saveing.Saveable):
         self.endTrigger = None
         self.type = "BasicCinematic"
 
+        # add save information
         self.attributesToStore.extend([
                "background","overwriteFooter","footerText","type","skipable"])
         self.callbacksToStore.append("endTrigger")
@@ -232,7 +243,7 @@ class TextCinematic(BasicCinematic):
         self.type = "TextCinematic"
 
         """
-        split a mix of strings and uwid formating into a list where each element contains exactly
+        split a mix of strings and urwid formating into a list where each element contains exactly
         one character and its formating
         bad code: this should not be an inline function but accessible as a helper
         """
@@ -343,6 +354,7 @@ class TextCinematic(BasicCinematic):
         state = super().getState()
 
         # store text related attributes
+        # bad code: should use new mechanism
         state["text"] = self.text
         state["endPosition"] = self.endPosition
 
@@ -355,6 +367,7 @@ class TextCinematic(BasicCinematic):
         super().setState(state)
 
         # set text related attributes
+        # bad code: should use new mechanism
         if "text" in state:
             self.text = state["text"]
         if "endPosition" in state:
@@ -408,6 +421,8 @@ class ShowQuestExecution(BasicCinematic):
         else:
             self.quest = None
 
+        # set reference for character
+        # bad code: repeated set obj or none pattern
         if "assignTo" in state:
             if state["assignTo"]:
                 '''
@@ -419,6 +434,8 @@ class ShowQuestExecution(BasicCinematic):
             else:
                 self.assignTo = None
 
+        # set reference for container
+        # bad code: repeated set obj or none pattern
         if "container" in state:
             if state["container"]:
                 '''

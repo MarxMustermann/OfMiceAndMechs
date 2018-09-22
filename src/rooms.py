@@ -1,7 +1,16 @@
+#############################################################################
+###
+##    rooms and room related code belong here
+#
+#############################################################################
+
+# import basic libs
+import json
+
+# import basic internal libs
 import src.items as items
 import src.quests as quests
 import src.saveing as saveing
-import json
 
 # bad code: global state
 Character = None
@@ -87,12 +96,15 @@ class Room(saveing.Saveable):
                     pass
                 elif char in ("@",):
                     # bad code: name generation should happen somewhere else
+                    '''
+                    generate a pseudo random character name
+                    '''
                     def getRandomName(seed1=0,seed2=None):
                         if seed2 == None:
                             seed2 = seed1+(seed1//5)
                         return names.characterFirstNames[seed1%len(names.characterFirstNames)]+" "+names.characterLastNames[seed2%len(names.characterLastNames)]
                         
-                    # add default npc
+                    # add default npcs
                     if (not self.firstOfficer) or (not self.secondOfficer):
                         if not self.firstOfficer:
                             # add first officer
@@ -140,19 +152,20 @@ class Room(saveing.Saveable):
                     # add display
                     itemsOnFloor.append(items.Display(rowCounter,lineCounter,creator=self))
                 elif char == "v":
-                    #to be bin
+                    # to be bin
                     itemsOnFloor.append(items.Item(displayChars.binStorage,rowCounter,lineCounter,creator=self))
                 elif char == "O":
-                    #to be pressure Tank
+                    # to be pressure Tank
                     item = items.Boiler(rowCounter,lineCounter,creator=self)
                     itemsOnFloor.append(item)
                     self.boilers.append(item)
-                    #itemsOnFloor.append(items.Item(displayChars.boiler_active,rowCounter,lineCounter))
+                    # bad code: commented out code
+                    # itemsOnFloor.append(items.Item(displayChars.boiler_active,rowCounter,lineCounter))
                 elif char == "8":
-                    #to be chains
+                    # to be chains
                     itemsOnFloor.append(items.Item(displayChars.chains,rowCounter,lineCounter,creator=self))
                 elif char == "I":
-                    #to be commlink
+                     #to be commlink
                     itemsOnFloor.append(items.Commlink(rowCounter,lineCounter,creator=self))
                 elif char == "H":
                     # add hutch
@@ -320,6 +333,7 @@ class Room(saveing.Saveable):
 
     '''
     registering for notifications
+    bad code: should be in extra class
     '''
     def addListener(self,listenFunction,tag="default"):
         if not tag in self.listeners:
@@ -330,6 +344,7 @@ class Room(saveing.Saveable):
 
     '''
     deregistering for notifications
+    bad code: should be in extra class
     '''
     def delListener(self,listenFunction,tag="default"):
         if listenFunction in self.listeners[tag]:
@@ -341,6 +356,7 @@ class Room(saveing.Saveable):
     '''
     sending notifications
     bad code: probably misnamed
+    bad code: should be in extra class
     '''
     def changed(self,tag="default",info=None):
         self.requestRedraw()
@@ -362,6 +378,7 @@ class Room(saveing.Saveable):
         result = {}
 
         # diff attributes
+        # bad code: new structure should be used
         for attribute in ("yPosition","xPosition","offsetX","offsetY"):
             if not self.initialState[attribute] == currentState[attribute]:
                 result[attribute] = currentState[attribute]
@@ -416,6 +433,7 @@ class Room(saveing.Saveable):
         (charIds,charStates) = self.storeStateList(self.characters)
 
         # generate state
+        # bad code: new structure should be used
         return { 
                  "eventIds": eventIds,
                  "eventStates":eventStates,
@@ -439,6 +457,7 @@ class Room(saveing.Saveable):
             self.creationCounter = state["creationCounter"]
 
         # move room to correct position
+        # bad code: new structure should be used
         if "offsetX" in state:
             self.offsetX = state["offsetX"]
         if "offsetY" in state:
@@ -454,6 +473,8 @@ class Room(saveing.Saveable):
         if "xPosition" in state and "yPosition" in state:
             xPosition = state["xPosition"]
             yPosition = state["yPosition"]
+
+
         if not xPosition == None and not yPosition == None:
             self.terrain.teleportRoom(self,(xPosition,yPosition))
 
@@ -628,6 +649,7 @@ class Room(saveing.Saveable):
                     chars[mainChar.yPosition][mainChar.xPosition] = mainChar.display
                 else:
                     debugMessages.append("chracter is rendered outside of room")
+
         # show dummy of the room
         else:
             # fill the rooms inside with invisibility char
@@ -847,7 +869,7 @@ class Room(saveing.Saveable):
         elif direction == "east" and character.xPosition == self.sizeX-1:
             innerRoomMovement = False
 
-        # move instide the room
+        # move inside the room
         if innerRoomMovement:
             # move character
             newPosition = [character.xPosition,character.yPosition]
@@ -907,6 +929,7 @@ class Room(saveing.Saveable):
 
     '''
     add an event to internal structure
+    bad code: should be in extra class
     '''
     def addEvent(self,event):
         index = 0
@@ -918,12 +941,15 @@ class Room(saveing.Saveable):
 
     '''
     remove an event from internal structure
+    bad code: should be in extra class
     '''
     def removeEvent(self,event):
         self.events.remove(event)
 
     '''
     remove items of a certain type from internal structure
+    bad code: should be in extra class
+    bad code: this is no real good use case
     '''
     def removeEventsByType(self,eventType):
         for event in self.events:
@@ -1062,6 +1088,7 @@ XXXXXXXXXX
                     self.furnaceQuest = quests.KeepFurnacesFiredMeta(self.furnaces[:self.desiredSteamGeneration])
                     self.secondOfficer.assignQuest(self.furnaceQuest,active=True)
             else:
+                # bad pattern: tone is way too happy
                 messages.append("we did it! "+str(self.desiredSteamGeneration)+" instead of "+str(self.steamGeneration))
 
 '''
@@ -1092,7 +1119,7 @@ XXXXXXXXXX
         '''
         def addNPC(x,y):
             # generate quests
-            #TODO: replace with patrol quest since it's actually bugging
+            # bad code: replace with patrol quest since it's actually bugging
             quest1 = quests.MoveQuestMeta(self,2,2,creator=self)
             quest2 = quests.MoveQuestMeta(self,2,7,creator=self)
             quest3 = quests.MoveQuestMeta(self,7,7,creator=self)
@@ -1145,38 +1172,57 @@ XXXXXXXXXXX
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.name = "Infanteryquarters"
 
+        # make personal military personal
         self.firstOfficer.isMilitary = True
         self.secondOfficer.isMilitary = True
         self.onMission = False
 
+        # set up monitoring for doors
         for item in self.itemsOnFloor:
+            # ignore non doors
             if not isinstance(item,items.Door):
                 continue
 
-            thisRoundsItem = item
+            thisRoundsItem = item # nontrivial: this forces a different namespace each run of the loop
 
+            '''
+            scold non military personal opening the door and close it again
+            '''
             def handleDoorOpened():
+                # ensure the rooms personal doesn't scold itself
+                # bad code: doesn't actually check who opens the door
                 if self.onMission:
                     return
 
+                # only to something if door is open
                 if not thisRoundsItem.walkable:
                     return
 
+                # scold/punish the player
+                # bad code: assumes the player opened the door
                 messages.append(self.firstOfficer.name+"@"+self.secondOfficer.name+": close the door")
                 mainChar.reputation -= 5
                 messages.append("you were rewarded -5 reputation")
                 messages.append(self.firstOfficer.name+": military area. Do not enter.")
 
+                # make second officer close the door and return to start position
                 quest = quests.MoveQuestMeta(self,5,3,creator=self)
                 self.secondOfficer.assignQuest(quest,active=True)
                 quest = quests.ActivateQuestMeta(thisRoundsItem,creator=self)
                 self.secondOfficer.assignQuest(quest,active=True)
 
+            # start watching door
             item.addListener(handleDoorOpened)
 
+        '''
+        kill non miltary personal entering the room
+        '''
         def enforceMilitaryRestriction(character):
+            # do nothing if character is military
             if character.isMilitary:
                 return
+
+            # make senćond officer kill the intruder
             quest = quests.MurderQuest(character,creator=self)
             self.secondOfficer.assignQuest(quest,active=True)
 
@@ -1187,6 +1233,9 @@ XXXXXXXXXXX
             character.reputation -= 100
             messages.append("you were rewarded -100 reputation")
 
+            '''
+            stop running after character left the room
+            '''
             def abort(character2):
                 if not character2 == character:
                     return
@@ -1194,30 +1243,54 @@ XXXXXXXXXXX
                 # show fluff
                 messages.append(self.firstOfficer.name+"@"+self.secondOfficer.name+": stop persuit. return to position.")
 
+                # remove self from listeners
                 self.delListener(abort,"left room")
 
+                # remove kill quest
+                # bad code: actually just removes the first quest
                 quest = self.secondOfficer.quests[0]
                 quest.deactivate()
                 self.secondOfficer.quests.remove(quest)
+
+                # make officer move back to position
                 quest = quests.MoveQuestMeta(self,5,3,creator=self)
                 self.secondOfficer.assignQuest(quest,active=True)
 
+            # make second officer kill character
             quest = quests.MurderQuest(character,creator=self)
             self.secondOfficer.assignQuest(quest,active=True)
+
+            # try make character kill self
             quest = quests.MurderQuest(character,creator=self)
             character.assignQuest(quest,active=True)
+
+            # watch for character leaving the room
             self.addListener(abort,"left room")
+
+        # watch for character entering the room
         self.addListener(enforceMilitaryRestriction,"entered room")
     
+    '''
+    kill characters wandering the terrain without floor permit
+    '''
     def enforceFloorPermit(self,character):
+        # do nothing if character has floor permit
         if character.hasFloorPermit:
             return
 
+        # show fluff
+        # bad code: produces an anouncment for each room
         messages.append("O2 military please enforce floor permit")
+
+        # make second officer move back to position after kill
         quest = quests.MoveQuestMeta(self,5,3,creator=self)
         self.secondOfficer.assignQuest(quest,active=True)
+
+        # make second officer kill character
         quest = quests.MurderQuest(character,creator=self)
         self.secondOfficer.assignQuest(quest,active=True)
+
+        # try to make second kill self
         quest = quests.MurderQuest(character,creator=self)
         character.assignQuest(quest,active=True)
         self.onMission = True
@@ -1349,6 +1422,7 @@ XXXXXX
         quest = None
         '''
         the chat for making the npc stop firering the furnace
+        bad code: should be in chats.py
         '''
         class StopChat(interaction.SubMenu):
             id = "StopChat"
@@ -1391,6 +1465,7 @@ XXXXXX
 
         '''
         the chat for making the npc start firering the furnace
+        bad code: should be in chats.py
         '''
         class StartChat(interaction.SubMenu):
             id = "StartChat"
@@ -1438,6 +1513,7 @@ XXXXXX
 
     '''
     recalculate engine strength
+    bad code: should be recalculate
     '''
     def changed(self,tag="default",info=None):
         super().changed(tag,info)
@@ -1503,6 +1579,7 @@ XXXXXXXXXX
         self.addItems([bean,beanPile])
         self.name = "Lab"
 
+        # unbolt all items in the room
         for item in self.itemsOnFloor:
             if item.xPosition == 0 or item.yPosition == 0:
                continue
@@ -1542,7 +1619,7 @@ XXXXXXXXXX
         self.floorDisplay = [displayChars.nonWalkableUnkown]
         self.name = "CargoRoom"
 
-        # determine item types the room should be filled with
+        # generate items with the supplied item types
         self.storedItems = []
         counter = 0
         length = len(itemTypes)
@@ -1579,34 +1656,54 @@ XXXXXXXXXX
             item.bolted = False
             counter += 1
 
+        # add mice inhabiting the room on about every fifth room
         if (self.xPosition + yPosition*2 - offsetX - offsetY)%5 == 0:
+            # place mice
             mice = []
             mousePositions = [(2,2),(2,4),(4,2),(4,4),(8,3)]
             for mousePosition in mousePositions:
                 mouse = characters.Mouse(creator=self)
                 self.addCharacter(mouse,mousePosition[0],mousePosition[1])
                 mice.append(mouse)
+
+            '''
+            kill characters entering the room
+            bad code: should be a quest
+            '''
             def killInvader(character):
                 for mouse in mice:
                     quest = quests.MurderQuest(character,creator=self)
                     mouse.assignQuest(quest,active=True)
+                '''
+                stop hunting characters that left the room
+                '''
                 def vanish(character2):
+                    # check whether the correct character left the room
                     if not character == character2:
                         return
 
                     counter = 0
                     for mouse in mice:
+                        # stop hunting the character
+                        # bad code: assumes first quest is kill quest
                         mouse.quests[0].deactivate()
                         mouse.quests.remove(mouse.quests[0])
+                        
+                        # move back to position
                         quest = quests.MoveQuestMeta(self,mousePositions[counter][0],mousePositions[counter][1],creator=self)
                         mouse.assignQuest(quest,active=True)
                         counter += 1
+
+                # watch for characters leaving the room
                 self.addListener(vanish,"left room")
 
+            # watch for characters entering the room
             self.addListener(killInvader,"entered room")
 
         # actually add the items
         self.addItems(self.storedItems)
+
+        # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
@@ -1777,54 +1874,81 @@ XXXXXXXX
         self.furnace = items.Furnace(4,9,creator=self)
         self.pile = items.Pile(6,9,creator=self)
 
-        # connect lever
+        '''
+        create goo flask
+        '''
         def activateDispenser(dispenser):
             self.objectDispenser.dispenseObject()
+
+        # connect lever
         self.lever1.activateAction = activateDispenser
 
         # actually add items
         self.addItems([self.lever1,self.gooDispenser,self.objectDispenser,self.furnace,self.pile])
 
+        # watch growth tanks and door
+        # bad code: should be a quest
         for item in self.itemsOnFloor:
             if isinstance(item,items.GrowthTank):
                 item.addListener(self.handleUnexpectedGrowthTankActivation,"activated")
             if isinstance(item,items.Door):
                 item.addListener(self.handleDoorOpening,"activated")
 
+        # start spawning hoppers periodically
         self.addEvent(events.EndQuestEvent(8000,{"container":self,"method":"spawnNewHopper"},creator=self))
 
         # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
+    '''
+    warn character about leaving the room
+    '''
     def handleDoorOpening(self,character):
         if self.firstOfficer and not character.hasFloorPermit:
             messages.append(self.firstOfficer.name+": moving through this door will be your death.")
             character.reputation -= 1
     
+    '''
+    move player to vat
+    '''
     def handleUnexpectedGrowthTankActivation(self,character):
+        # bad code: debug output on gui
         messages.append("handler called")
+
+        # bad pattern; player only function
         if not character == mainChar:
             return
+
+        # only act if there is somebody to act
+        # bad code: should be guard
         if self.firstOfficer:
+            # scold player
             messages.append(self.firstOfficer.name+": Now i'll have to take care of this body.")
             messages.append(self.firstOfficer.name+": Please move on to your next assignment immediatly.")
 
+            # remove all quests
             for quest in mainChar.quests:
                 quest.deactivate()
             mainChar.quests = []
 
             cinematics.cinematicQueue = []
 
+            # give floor permit
             character.hasFloorPermit = True
 
+            # start vat phase
             phase = story.VatPhase()
             phase.start()
 
+    '''
+    periodically spawn new hoppers
+    '''
     def spawnNewHopper(self):
         if not self.firstOfficer:
             return
 
+        # eject player from growth tank
         character = None
         for item in self.itemsOnFloor:
             if isinstance(item,items.GrowthTank):
@@ -1832,13 +1956,17 @@ XXXXXXXX
                     character = item.eject()
                     break
 
+        # abort if no player was generated
         if not character:
             return
 
+        # add character as hopper
+        # bad pattern: should be a story or quest
         character.wakeUp()
         character.hasFloorPermit = True
         self.terrain.waitingRoom.addAsHopper(character)
 
+        # shedule next spawn
         self.addEvent(events.EndQuestEvent(gamestate.tick+10000,{"container":self,"method":"spawnNewHopper"},creator=self))
 
 '''
@@ -1882,17 +2010,27 @@ XXXXXXXXXXX
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
+    '''
+    add a character as hopper
+    '''
     def addAsHopper(self,hopper):
         quest = quests.HopperDuty(self,creator=self)
         hopper.assignQuest(quest,active=True)
         hopper.addListener(self.addRescueQuest,"fallen unconcious")
         hopper.addListener(self.disposeOfCorpse,"died")
 
+    '''
+    rescue an unconcious hopper
+    '''
     def addRescueQuest(self,character):
         quest = quests.WakeUpQuest(character,creator=self)
         quest.reputationReward = 2
         self.quests.append(quest)
 
+    '''
+    dispose of a dead hoppers corpse
+    # bad pattern: picking the corpse up and pretending nothing happend is not enough
+    '''
     def disposeOfCorpse(self,info):
         quest = quests.PickupQuestMeta(info["corpse"],creator=self)
         quest.reputationReward = 1
@@ -2027,7 +2165,7 @@ XXXXX$XXXXX
                 y += 1
             x += 1
 
-        # add marker for items
+        # add markers for items
         itemstoAdd = []
         for (position,itemType) in itemsToPlace.items():
             item = items.MarkerBean(position[1],position[0],creator=self)
@@ -2071,6 +2209,8 @@ XXXXX$XXXXX
                 buildorder.append((x,y))
                 y -= 1
             x += 1
+
+        # bad code: buiding in the middle of the room is NIY
 
         # sort items in build order
         self.itemsInBuildOrder = []

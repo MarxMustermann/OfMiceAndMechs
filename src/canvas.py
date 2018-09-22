@@ -1,3 +1,12 @@
+##########################################################################
+###
+##    drawing and related code should be here
+#     bad code: drawstuff is everywhere
+#
+##########################################################################
+
+# import basic libs
+# bad code: should not be imported when tile based display only
 import urwid
 
 """
@@ -15,9 +24,11 @@ class TileMapping(object):
 
     """
     set the rendering mode AND recalculate the tile map
+    bad code: should be splitted in 2 methods
     """
     def setRenderingMode(self,mode):
         # sanatize input
+        # bad code: should raise error
         if mode not in self.modes:
             mode = "testTiles"
 
@@ -26,7 +37,7 @@ class TileMapping(object):
             # bad code: reimport the config as library, i don't think this is a good thing to do
             import config.tileMap as rawTileMap
 
-        # set mode flag
+        # set mode
         self.mode = mode
 
         # (re)build the tile mapping
@@ -38,6 +49,7 @@ class TileMapping(object):
         counter = 0
         for item in raw:
             if item[0].startswith("__"):
+                # ignore internal state
                 continue
 
             if isinstance(item[1], list):
@@ -59,7 +71,7 @@ class TileMapping(object):
                 setattr(self, item[0], subDict)
 
             else:
-                # convert non special entries
+                # add non special entries
                 self.indexedMapping.append(item[1])
                 setattr(self, item[0], counter)
                 counter += 1
@@ -85,17 +97,23 @@ class DisplayMapping(object):
 
     """
     set the rendering mode AND recalculate the char map
+    bad code: should be split into 2 methods
     """
     def setRenderingMode(self,mode):
         # sanatize input
+        # bad code: should raise exception
         if mode not in self.modes:
             mode = "pureASCII"
 
         # import the appropriate config
+        # bad code: does not load arbitrary files
+        # bad code: direct import seems like a bad idea
         if mode == "unicode":
             import config.displayChars as rawDisplayChars
         elif mode == "pureASCII":
             import config.displayChars_fallback as rawDisplayChars
+
+        # set mode
         self.mode = mode
 
         # rebuild the tile mapping
@@ -107,6 +125,7 @@ class DisplayMapping(object):
         counter = 0
         for item in raw:
             if item[0].startswith("__"):
+                # ignore internal state
                 continue
 
             if isinstance(item[1], list):
@@ -142,7 +161,8 @@ bad code: actual rendering beyond the abstracted form (urwid formatting, tiles) 
 """
 class Canvas(object):
     """
-    save basic information AND fill the canvas with the (default) chars
+    set up state AND fill the canvas with the (default) chars
+    bad code: should be split into 2 methods
     """
     def __init__(self,size=(41,41),chars=None,defaultChar="::",coordinateOffset=(0,0),shift=(0,0),displayChars=None):
         # set basic information
@@ -151,6 +171,7 @@ class Canvas(object):
         self.shift = shift # this should be temporary only and be solved by overlaying canvas
         self.defaultChar = defaultChar
         self.displayChars = displayChars
+
         # bad code: i don't think try should be used like that
         # bad code: this should be somewhere else
         try:
@@ -235,7 +256,7 @@ class Canvas(object):
         for line in self.chars:
             counterX = 0
             for char in line:
-                # bad code: only tiles are rendered. special chars are not rendered
+                # bad code: only tiles are rendered. special chars and text is not rendered
                 # bad code: colour information is lost
                 if isinstance(char, int):
                     # scale the tile

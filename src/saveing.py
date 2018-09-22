@@ -25,8 +25,12 @@ class LoadingRegistry(object):
                 self.delayedCalls[thingId] = []
             self.delayedCalls[thingId].append(callback)
 
+'''
+abstract class for saving something. It is intended to keep most saving related stuff away from the game code
+'''
 class Saveable(object):
     creationCounter = 0
+
     '''
     basic state setting
     '''
@@ -40,26 +44,35 @@ class Saveable(object):
     '''
     def getState(self):
         state = {}
+
+        # store attributes
         for attribute in self.attributesToStore:
             if hasattr(self,attribute):
                 state[attribute] = getattr(self,attribute)
             else:
                 state[attribute] = None
 
+        # store callbacks
         for callbackName in self.callbacksToStore:
+            # get callback
             if hasattr(self,attribute):
                 callback = getattr(self,callbackName)
             else:
                 callback = None
+
             if callback:
                 if isinstance(callback,dict):
+                    # serialize and store callback
                     serializedCallback = {}
                     serializedCallback["container"] = callback["container"].id
                     serializedCallback["method"] = callback["method"]
                     state[callbackName] = serializedCallback
                 else:
+                    # save callback info in unusable format
+                    # bad code: cannot be loaded, intended for debugging
                     state[callbackName] = str(callback)
             else:
+                # save None as callback
                 state[callbackName] = None
 
         return state
@@ -68,14 +81,19 @@ class Saveable(object):
     load list of instances from list
     '''
     def loadFromList(self,info,target,creationFunction):
+        # unpdate changed things
         if "changed" in info:
             for item in target:
                 if item.id in info["states"]:
                     item.setState(info["states"][item.id])
+
+        # remove removed things
         if "removed" in info:
             for item in target:
                 if item.id in info["removed"]:
                     target.remove(item)
+
+        # create missing things
         if "new" in info:
             for itemId in info["new"]:
                 itemState = info["states"][itemId]
@@ -85,9 +103,12 @@ class Saveable(object):
             
     '''
     get difference in state since creation
+    bad code: callbacks are not handled
     '''
     def getDiffState(self):
         result = {}
+
+        # diff attributes
         for attribute in self.attributesToStore:
             if hasattr(self,attribute):
                 currentValue = getattr(self,attribute)
@@ -103,17 +124,21 @@ class Saveable(object):
     set state as dict
     '''
     def setState(self,state):
+        # set attributes
         for attribute in self.attributesToStore:
             if attribute in state:
                 setattr(self,attribute,state[attribute])
 
+        # set callbacks
         for callbackName in self.callbacksToStore:
             if callbackName in state:
                 if state[callbackName]:
+                    # get basic callback dict
                     callback = getattr(self,callbackName)
                     if not callback:
                         callback = {}
 
+                    # update callback attributes
                     if "method" in state[callbackName]:
                         callback["method"] = state[callbackName]["method"]
                     if "container" in state[callbackName]:
@@ -123,17 +148,21 @@ class Saveable(object):
                         def setContainer(thing):
                             callback["container"] = thing
                         loadingRegistry.callWhenAvailable(state[callbackName]["container"],setContainer)
+
+                    # set callback
                     setattr(self,callbackName,callback)
                 else:
+                    # set callback to None
                     setattr(self,callbackName,None)
 
     '''
-    get a list of ids an a dict of their states from a list of objects
+    get a list of ids and a dict of their states from a list of objects
     '''
     def storeStateList(self,sourceList,exclude=[]):
         ids = []
         states = {}
 
+        # fill result
         for thing in sourceList:
             if thing.id in exclude:
                 continue
@@ -190,8 +219,8 @@ class Saveable(object):
     call a callback in savable format
     '''
     def callIndirect(self,callback):
-        # bad code: direct function calls are deprecated, but not completely removed
         if not isinstance(callback,dict):
+            # bad code: direct function calls are deprecated, but not completely removed
             callback()
         else:
             container = callback["container"]

@@ -1,7 +1,17 @@
+#####################################################################################################################
+###
+##      load environment and start the games main loop
+#       basically nothing to see here
+#       if you are a first time visitor, interaction.py, story.py and gamestate.py are probably better files to start with
+#
+#####################################################################################################################
+
+# import basic libs
 import sys
 import json
 import time
 
+# import basic internal libs
 import src.items as items
 import src.quests as quests
 import src.rooms as rooms
@@ -15,6 +25,8 @@ import src.gamestate as gamestate
 import src.events as events
 import src.chats as chats
 import src.saveing as saveing
+
+# import configs
 import config.commandChars as commandChars
 import config.names as names
 
@@ -54,7 +66,7 @@ if args.music :
 
         # download music
         # bad pattern: I didn't ask the people at freemusicarchive about the position on traffic leeching. If you know they don't like it please create an issue
-        # bad code: it obviously is an issue, since the knowingly broke this mechanism
+        # bad code: it obviously is an issue, since they knowingly broke this mechanism
         if not os.path.isfile("music/Diezel_Tea_-_01_-_Arzni_Part_1_ft_Sam_Khachatourian.mp3"):
             subprocess.call(["wget","-q","https://freemusicarchive.org/music/download/ece1b96c8f23874bda6ffdda2dd6cf9cd2fcb582","-O","music/Diezel_Tea_-_01_-_Arzni_Part_1_ft_Sam_Khachatourian.mp3"],stdout=subprocess.PIPE,stderr=subprocess.PIPE,stdin=subprocess.PIPE)
         if not os.path.isfile("music/Diezel_Tea_-_01_-_Kilikia_Original_Mix.mp3"):
@@ -82,7 +94,7 @@ else:
 #
 #################################################################################################################################
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 void = saveing.Void()
 characters.void = void
 rooms.void = void
@@ -95,14 +107,14 @@ quests.void = void
 cinematics.void = void
 events.void = void
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 rooms.story = story
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 story.chats = chats
 characters.chats = chats
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 loadingRegistry = saveing.LoadingRegistry()
 characters.loadingRegistry = loadingRegistry
 quests.loadingRegistry = loadingRegistry
@@ -114,13 +126,13 @@ events.loadingRegistry = loadingRegistry
 terrains.loadingRegistry = loadingRegistry
 saveing.loadingRegistry = loadingRegistry
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 phasesByName = {}
 story.phasesByName = phasesByName
 story.registerPhases()
 gamestate.phasesByName = phasesByName
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 cinematics.quests = quests
 story.quests = quests
 terrains.quests = quests
@@ -128,10 +140,10 @@ characters.quests = quests
 items.quests = quests
 chats.quests = quests
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 story.rooms = rooms
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 items.displayChars = displayChars
 rooms.displayChars = displayChars
 terrains.displayChars = displayChars
@@ -143,14 +155,14 @@ characters.displayChars = displayChars
 events.displayChars = displayChars
 chats.displayChars = displayChars
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 story.cinematics = cinematics
 interaction.cinematics = cinematics
 events.cinematics = cinematics
 rooms.cinematics = cinematics
 gamestate.cinematics = cinematics
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 items.commandChars = commandChars
 story.commandChars = commandChars
 characters.commandChars = commandChars
@@ -159,32 +171,32 @@ chats.commandChars = commandChars
 
 interaction.setFooter()
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 story.names = names
 gamestate.names = names
 items.names = names
 rooms.names = names
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 story.items = items
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 items.characters = characters
 rooms.characters = characters
 story.characters = characters
 terrains.characters = characters
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 cinematics.main = interaction.main
 cinematics.header = interaction.header
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 cinematics.loop = interaction.loop
 quests.loop = interaction.loop
 story.loop = interaction.loop
 events.loop = interaction.loop
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 story.events = events
 items.events = events
 rooms.events = events
@@ -192,23 +204,23 @@ quests.events = events
 characters.events = events
 terrains.events = events
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 cinematics.callShow_or_exit = interaction.callShow_or_exit
 quests.callShow_or_exit = interaction.callShow_or_exit
 story.callShow_or_exit = interaction.callShow_or_exit
 events.callShow_or_exit = interaction.callShow_or_exit
 chats.callShow_or_exit = interaction.callShow_or_exit
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 rooms.calculatePath        = gameMath.calculatePath
 quests.calculatePath        = gameMath.calculatePath
 characters.calculatePath    = gameMath.calculatePath
 terrains.calculatePath         = gameMath.calculatePath
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 rooms.Character = characters.Character
         
-# HACK: common variables with modules
+# bad code: common variables with modules
 messages = []
 items.messages = messages
 quests.messages = messages
@@ -270,7 +282,7 @@ else:
     characters.debug = False
     quests.debug = False
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 items.debugMessages = debugMessages
 quests.debugMessages = debugMessages
 rooms.debugMessages = debugMessages
@@ -281,12 +293,12 @@ story.debugMessages = debugMessages
 interaction.debugMessages = debugMessages
 events.debugMessages = debugMessages
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 quests.showCinematic = cinematics.showCinematic
 
 ##########################################
 ###
-## set up the trainingsterrain. A container will be made later
+## set up the terrain
 #
 ##########################################
 
@@ -298,7 +310,7 @@ elif args.terrain and args.terrain == "nothingness":
 else:
     terrain = terrains.TutorialTerrain(creator=void)
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 items.terrain = terrain
 story.terrain = terrain
 interaction.terrain = terrain
@@ -307,10 +319,10 @@ terrains.terrain = terrain
 quests.terrain = terrain
 chats.terrain = terrain
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 cinematics.interaction = interaction
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 characters.roomsOnMap = terrain.rooms
 
 # state that should be contained in the gamestate
@@ -335,7 +347,7 @@ phasesByName["ScreenSaver"] = story.ScreenSaver
 # create and load the gamestate
 gameStateObj = gamestate.GameState(phase=args.phase)
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 story.gamestate = gameStateObj
 interaction.gamestate = gameStateObj
 quests.gamestate = gameStateObj
@@ -344,7 +356,7 @@ items.gamestate = gameStateObj
 terrains.gamestate = gameStateObj
 rooms.gamestate = gameStateObj
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 rooms.mainChar = gameStateObj.mainChar
 terrains.mainChar = gameStateObj.mainChar
 story.mainChar = gameStateObj.mainChar
@@ -382,6 +394,7 @@ if not args.debug:
 #################################################################################################################################
 
 # the game loop
+# bad code: either unused or should be contained in terrain
 def advanceGame():
     for character in terrain.characters:
         character.advance()
@@ -391,7 +404,7 @@ def advanceGame():
 
     gameStateObj.tick += 1
 
-# HACK: common variables with modules
+# bad code: common variables with modules
 cinematics.advanceGame = advanceGame
 interaction.advanceGame = advanceGame
 
@@ -426,7 +439,13 @@ if args.tiles:
 else:
     interaction.useTiles = False
 
-# start the interactio loop of the underlying library
+######################################################################################################
+###
+##    main loop is started here
+#
+######################################################################################################
+
+# start the interaction loop of the underlying library
 try:
     interaction.loop.run()
 except:

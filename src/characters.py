@@ -1,7 +1,16 @@
+########################################################################################################
+###
+##     the code for the characters belongs here
+#
+########################################################################################################
+
+# import basic libs
+import json
+
+# import the other internal libs
 import src.items as items
 import src.saveing as saving
 import src.quests
-import json
 
 # bad code: containers for global state
 characters = None
@@ -16,7 +25,6 @@ make them to things on their own
 class Character(saving.Saveable):
     '''
     sets basic info AND adds default behaviour/items
-    bad code: adding the default behaviour/items here makes it harder to create instances with fixed state
     '''
     def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person",creator=None):
         super().__init__()
@@ -66,16 +74,18 @@ class Character(saving.Saveable):
         self.gotInteractionSchooling = False
         self.gotExamineSchooling = False
 
-        #TODO: this approach is fail, but works for now. There has to be a better way
+        # bad code: this approach is fail, but works for now. There has to be a better way
         self.basicChatOptions = []
 
         self.questsDone = []
         self.solvers = []
 
-        # default items
+        # default quests
         self.assignQuest(src.quests.SurviveQuest(creator=self))
         for quest in quests:
             self.assignQuest(quest)
+
+        # default items
         self.inventory.append(items.GooFlask(creator=self))
 
         # save state and register
@@ -94,6 +104,10 @@ class Character(saving.Saveable):
             index += 1
         self.events.insert(index,event)
 
+    '''
+    reset the path to the current quest
+    bad code: is only needed because path is contained in character instead of quest
+    '''
     def recalculatePath(self):
         self.setPathToQuest(self.quests[0])
 
@@ -121,6 +135,7 @@ class Character(saving.Saveable):
         # the to be result
         result = super().getDiffState()
 
+        # save path
         if not self.path == self.initialState["path"]:
             result["path"] = self.path
 
@@ -225,6 +240,7 @@ class Character(saving.Saveable):
         else:
             state["serveQuest"] = None
 
+        # store events
         (eventIds,eventStates) = self.storeStateList(self.events)
         state["eventIds"] = eventIds
 
@@ -253,14 +269,17 @@ class Character(saving.Saveable):
     def setState(self,state):
         super().setState(state)
 
+        # set uncoincious state
         if "unconcious" in state:
             if self.unconcious:
                 self.fallUnconcious()
                 self.display = displayChars.unconciousBody
 
+        # set path
         if "path" in state:
             self.path = state["path"]
 
+        # bad code: story specific code
         if "serveQuest" in state:
             if state["serveQuest"]:
                 '''
@@ -315,7 +334,7 @@ class Character(saving.Saveable):
 
     '''
     bad code: this should be handled with a get quest quest
-    TODO: delete this
+    bad code: not used. delete this
     '''
     def getQuest(self):
         if self.room and self.room.quests:
@@ -337,7 +356,7 @@ class Character(saving.Saveable):
                 pass
 
     '''
-    straightforward getting a string with a detailed info about the character
+    straightforward getting a string with detailed info about the character
     '''
     def getDetailedInfo(self):
         return "\nname: "+str(self.name)+"\nroom: "+str(self.room)+"\ncoordinate: "+str(self.xPosition)+" "+str(self.yPosition)+"\nsubordinates: "+str(self.subordinates)+"\nsat: "+str(self.satiation)+"\nreputation: "+str(self.reputation)
@@ -387,6 +406,7 @@ class Character(saving.Saveable):
 
     '''
     this wrapper converts a character centred call to a solver centered call
+    bad code: should be handled in quest
     '''
     def applysolver(self,solver):
         if not self.unconcious and not self.dead:
@@ -397,8 +417,8 @@ class Character(saving.Saveable):
     '''
     def fallUnconcious(self):
         self.unconcious = True
-        self.display = displayChars.unconciousBody
-        messages.append("*thump,snort*")
+        self.display = displayChars.unconciousBody # bad code: should be a render method
+        messages.append("*thump,snort*") # bad code: should ony be shown for main character or characters near player
         self.changed("fallen unconcious",self)
 
     '''
@@ -406,15 +426,16 @@ class Character(saving.Saveable):
     '''
     def wakeUp(self):
         self.unconcious = False
-        self.display = self.displayOriginal
-        messages.append("*grown*")
+        self.display = self.displayOriginal # bad code: should be a render method
+        messages.append("*grown*") # bad code: should ony be shown for main character or characters near player
 
     '''
     kill the character and do a bit of extra stuff like placing corpses
     '''
     def die(self,reason=None):
-        # replace charcter with corpse
-        # terain and room should be unified in container object
+        # replace character with corpse
+        # bad code: terain and room should be unified in container object
+        # bad code: redundant code
         if self.room:
             room = self.room
             room.removeCharacter(self)
@@ -426,6 +447,8 @@ class Character(saving.Saveable):
             corpse = items.Corpse(self.xPosition,self.yPosition,creator=self)
             terrain.addItems([corpse])
         else:
+            # bad code: debug output on gui
+            # bad code: spelling mistake
             messages.append("this chould not happen, charcter died without beeing somewhere")
 
         # set attributes
@@ -448,7 +471,7 @@ class Character(saving.Saveable):
     '''
     def walkPath(self):
         # bad code: a dead charactor should not try to walk
-        # bad pattern: this should be a logging assertion
+        # bad pattern: this should log
         if self.dead:
             return
 
@@ -500,12 +523,12 @@ class Character(saving.Saveable):
 
                 for room in self.terrain.rooms:
                     # check north
-                    # bad code repetetive code
+                    # bad code: repetetive code
 
                     # handle the character moving into the rooms boundaries
                     if room.yPosition*15+room.offsetY+room.sizeY == nextPosition[1]+1:
                         if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+room.sizeX > self.xPosition:
-                            # get the characters entry point in localizes coordinates
+                            # get the characters entry point in localized coordinates
                             localisedEntry = (self.xPosition%15-room.offsetX,nextPosition[1]%15-room.offsetY)
                             if localisedEntry in room.walkingAccess:
                                 # check whether the chracter walked into something
@@ -528,13 +551,14 @@ class Character(saving.Saveable):
                                 # bad pattern: why restrict the player to standard entry points?
                                 messages.append("you cannot move there (N)")
                                 break
+
                     # check south
-                    # bad code repetetive code
+                    # bad code: repetetive code
 
                     # handle the character moving into the rooms boundaries
                     if room.yPosition*15+room.offsetY == nextPosition[1]:
                         if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+room.sizeX > self.xPosition:
-                            # get the characters entry point in localizes coordinates
+                            # get the characters entry point in localized coordinates
                             localisedEntry = ((self.xPosition-room.offsetX)%15,((nextPosition[1]-room.offsetY)%15))
                             if localisedEntry in room.walkingAccess:
                                 # check whether the chracter walked into something
@@ -557,8 +581,9 @@ class Character(saving.Saveable):
                                 # bad pattern: why restrict the player to standard entry points?
                                 messages.append("you cannot move there (S)")
                                 break
+
                     # check east
-                    # bad code repetetive code
+                    # bad code: repetetive code
 
                     # handle the character moving into the rooms boundaries
                     if room.xPosition*15+room.offsetX+room.sizeX == nextPosition[0]+1:
@@ -566,7 +591,7 @@ class Character(saving.Saveable):
                             # get the characters entry point in localizes coordinates
                             localisedEntry = ((nextPosition[0]-room.offsetX)%15,(self.yPosition-room.offsetY)%15)
                             if localisedEntry in room.walkingAccess:
-                                # check whether the chracter walked into something
+                                # check whether the character walked into something
                                 if localisedEntry in room.itemByCoordinates:
                                     for listItem in room.itemByCoordinates[localisedEntry]:
                                         if not listItem.walkable:
@@ -585,8 +610,9 @@ class Character(saving.Saveable):
                                 # show message the character bumped into a wall
                                 # bad pattern: why restrict the player to standard entry points?
                                 messages.append("you cannot move there (E)")
+
                     # check west
-                    # bad code repetetive code
+                    # bad code: repetetive code
 
                     # handle the character moving into the rooms boundaries
                     if room.xPosition*15+room.offsetX == nextPosition[0]:
@@ -625,7 +651,7 @@ class Character(saving.Saveable):
                     item.apply(self)
                 return False
             else:
-                # smooth ovor impossible state
+                # smooth over impossible state
                 if not debug:
                     if not self.path or not nextPosition == self.path[0]:
                         return False
@@ -635,6 +661,7 @@ class Character(saving.Saveable):
                     self.path = self.path[1:]
             return False
         else:
+            # bad code: should be a guard
             return True
 
     """
@@ -656,11 +683,13 @@ class Character(saving.Saveable):
     advance the character one tick
     """
     def advance(self):
-        # handle events
+        # smooth over impossible state
         while self.events and gamestate.tick > self.events[0].tick:
             event = self.events[0]
             debugMessages.append("something went wrong and event"+str(event)+"was skipped")
             self.events.remove(event)
+
+        # handle events
         while self.events and gamestate.tick == self.events[0].tick:
             event = self.events[0]
             event.handleEvent()
@@ -683,9 +712,12 @@ class Character(saving.Saveable):
     registering for notifications
     '''
     def addListener(self,listenFunction,tag="default"):
+        # create container if container doesn't exist
+        # bad performace: string comparison, should use enums
         if not tag in self.listeners:
             self.listeners[tag] = []
 
+        # added listener function
         if not listenFunction in self.listeners[tag]:
             self.listeners[tag].append(listenFunction)
 
@@ -693,9 +725,12 @@ class Character(saving.Saveable):
     deregistering for notifications
     '''
     def delListener(self,listenFunction,tag="default"):
+        # remove listener
         if listenFunction in self.listeners[tag]:
             self.listeners[tag].remove(listenFunction)
 
+        # clear up dict
+        # bad performance: probably better to not clean up and recreate
         if not self.listeners[tag]:
             del self.listeners[tag]
 
@@ -704,23 +739,30 @@ class Character(saving.Saveable):
     bad code: probably misnamed
     '''
     def changed(self,tag="default",info=None):
+        # bad code: listenFunction call is almost redundant
         if not tag == "default":
             if not tag in self.listeners:
                 return
-
             for listenFunction in self.listeners[tag]:
                 listenFunction(info)
         for listenFunction in self.listeners["default"]:
             listenFunction()
 
 """
+the class for mice. Intended to be used for manipulating the gamestate used for example to attack the player
 bad code: animals should not be characters. This means it is possible to chat with a mouse 
 """
 class Mouse(Character):
+    '''
+    basic state setting
+    '''
     def __init__(self,display="🝆 ",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None):
         super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator)
         self.vanished = False
 
+    '''
+    disapear
+    '''
     def vanish(self):
         if self.room:
             self.room.removeCharacter(self)

@@ -7,6 +7,7 @@ class PathsOverlay(object):
     '''
     def apply(self,chars,terrain):
         if not terrain.hidden:
+            # bad code: urwid specific code
             import urwid
             grey = urwid.AttrSpec("#777","black")
             ltgrey = urwid.AttrSpec("#999","black")
@@ -42,6 +43,7 @@ class QuestMarkerOverlay(object):
             for item in mainChar.path:
                 # highlight chars on the path 
                 if not chars[item[1]][item[0]] in (displayChars.pathMarker,"!!","??"):
+                    # bad code: urwid specific code
                     import urwid
                     display = chars[item[1]][item[0]]
                     if isinstance(display, int):
@@ -69,7 +71,7 @@ class MainCharOverlay(object):
     add overlayed information
     '''
     def apply(self,chars,mainChar):
-        if not mainChar.dead:
+        if not mainChar.dead: 
             chars[mainChar.yPosition][mainChar.xPosition] =  mainChar.display
 
 

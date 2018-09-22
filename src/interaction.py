@@ -148,6 +148,7 @@ bad code: there are way too much lines of code in this function
 '''
 def processInput(key):
     # ignore mouse interaction
+    # bad pattern mouse input should be used
     if type(key) == tuple:
         return
 
@@ -180,6 +181,7 @@ def processInput(key):
                else:
                    footerPosition += 1
             footerSkipCounter += 1
+
         # set the cinematic specific footer
         else:
             footerSkipCounter = 20
@@ -196,11 +198,11 @@ def processInput(key):
         lastLagDetection = time.time()
 
         # ring alarm if appropriate
+        # bad code: old experiment, delete
         if terrain.alarm:
             print('\007')
 
         # advance the game if the character stays idle
-        # bad code: commented out code
         if len(cinematics.cinematicQueue) or pauseGame:
             return
         idleCounter += 1
@@ -229,7 +231,7 @@ def processInput(key):
 
     pauseGame = False
 
-    # repeat auoadvance keystrokes
+    # repeat autoadvance keystrokes
     # bad code: keystrokes are abused here, a timer would be more appropriate
     if key in (commandChars.autoAdvance):
         if not ignoreNextAutomated:
@@ -251,12 +253,14 @@ def processInput(key):
             if key in (commandChars.quit_normal, commandChars.quit_instant):
                 gamestate.save()
                 raise urwid.ExitMainLoop()
+
             # skip the cinematic if requested
             elif key in (commandChars.pause,commandChars.advance,commandChars.autoAdvance) and cinematic.skipable:
                 cinematic.abort()
                 cinematics.cinematicQueue = cinematics.cinematicQueue[1:]
                 loop.set_alarm_in(0.0, callShow_or_exit, commandChars.ignore)
                 return
+
             # advance the cutscene
             else:
                 if not cinematic.advance():
@@ -281,6 +285,7 @@ def processInput(key):
             key = commandChars.wait
             if gamestate.tick > ticksSinceDeath+5:
                 # destroy the gamestate
+                # bad pattern should not allways destroy gamestate
                 saveFile = open("gamestate/gamestate.json","w")
                 saveFile.write("you lost")
                 saveFile.close()
@@ -289,6 +294,7 @@ def processInput(key):
         # call callback if key was overwritten
         if key in stealKey:
             stealKey[key]()
+
         # handle the keystroke for a char on the map
         else:
             if key in ("´",):
@@ -297,20 +303,25 @@ def processInput(key):
                     submenue = DebugMenu()
                 else:
                     messages.append("debug not enabled")
+
             if key in (commandChars.quit_delete,):
                 # destroy save and quit
                 saveFile = open("gamestate/gamestate.json","w")
                 saveFile.write("reset")
                 saveFile.close()
                 raise urwid.ExitMainLoop()
+
             if key in (commandChars.quit_normal, commandChars.quit_instant):
                 # save and quit
                 gamestate.save()
                 raise urwid.ExitMainLoop()
+
             if key in (commandChars.pause):
                 # kill one of the autoadvance keystrokes
+                # bad pattern: doesn't actually pause
                 ignoreNextAutomated = True
                 doAdvanceGame = False
+
             # bad code: code repetition for each direction
             if key in (commandChars.move_north):
                 # do inner room movement
@@ -335,7 +346,7 @@ def processInput(key):
                         if coordinate in terrain.roomByCoordinates:
                             roomCandidates.extend(terrain.roomByCoordinates[coordinate])
 
-                    # gather the rooms the character might have entered
+                    # check if character has entered a room
                     hadRoomInteraction = False
                     for room in roomCandidates:
                         # check if the character crossed the edge of the room
@@ -415,7 +426,7 @@ def processInput(key):
                         if coordinate in terrain.roomByCoordinates:
                             roomCandidates.extend(terrain.roomByCoordinates[coordinate])
 
-                    # gather the rooms the character might have entered
+                    # check if character has entered a room
                     hadRoomInteraction = False
                     for room in roomCandidates:
                         # check if the character crossed the edge of the room
@@ -494,7 +505,7 @@ def processInput(key):
                         if coordinate in terrain.roomByCoordinates:
                             roomCandidates.extend(terrain.roomByCoordinates[coordinate])
 
-                    # gather the rooms the character might have entered
+                    # check if character has entered a room
                     hadRoomInteraction = False
                     for room in roomCandidates:
                         # check if the character crossed the edge of the room
@@ -573,7 +584,7 @@ def processInput(key):
                         if coordinate in terrain.roomByCoordinates:
                             roomCandidates.extend(terrain.roomByCoordinates[coordinate])
 
-                    # gather the rooms the character might have entered
+                    # check if character has entered a room
                     hadRoomInteraction = False
                     for room in roomCandidates:
                         # check if the character crossed the edge of the room
@@ -629,6 +640,7 @@ def processInput(key):
                             mainChar.changed()
 
             # murder the next available character
+            # bad pattern: enemies kill on 1 distance so the player should be able to do so too
             if key in (commandChars.attack):
                 if not "NaiveMurderQuest" in mainChar.solvers:
                     messages.append("you do not have the nessecary solver yet")
@@ -650,8 +662,8 @@ def processInput(key):
                     if itemMarkedLast:
                         # active marked item
                         itemMarkedLast.apply(mainChar)
-                        mainChar.changed("activate",itemMarkedLast) # should happen in apply
-                        itemMarkedLast.changed("activated",mainChar) # should happen in apply
+                        mainChar.changed("activate",itemMarkedLast) # bad code: should happen in apply
+                        itemMarkedLast.changed("activated",mainChar) # bad code: should happen in apply
                     else:
                         # active an item on floor
                         # bad code: room and terrain should be a abstracted container
@@ -662,8 +674,8 @@ def processInput(key):
                         for item in itemList:
                             if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
                                 item.apply(mainChar)
-                                mainChar.changed("activate",item)
-                                item.changed("activated",mainChar) # should happen in apply
+                                mainChar.changed("activate",item) # bad code: should happen in apply
+                                item.changed("activated",mainChar) # bad code: should happen in apply
 
             # examine an item 
             if key in (commandChars.examine):
@@ -672,7 +684,7 @@ def processInput(key):
                 else:
                     if itemMarkedLast:
                         # examine marked item
-                        # should happen in character
+                        # bad code: should happen in character
                         messages.append(itemMarkedLast.description)
                         if itemMarkedLast.description != itemMarkedLast.getDetailedInfo():
                             messages.append(itemMarkedLast.getDetailedInfo())
@@ -686,6 +698,8 @@ def processInput(key):
                             itemList = terrain.itemsOnFloor
                         for item in itemList:
                             if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
+                                # bad code: debug code on GUI
+                                # bad code: should happen in character
                                 messages.append(item.id)
                                 messages.append(item.description)
                                 if item.description != item.getDetailedInfo():
@@ -727,7 +741,6 @@ def processInput(key):
                 if not "NaivePickupQuest" in mainChar.solvers:
                     messages.append("you do not have the nessecary solver yet")
                 else:
-                    # check inventory space
                     if len(mainChar.inventory) > 10:
                         messages.append("you cannot carry more items")
                     else:
@@ -751,7 +764,7 @@ def processInput(key):
                             for item in itemByCoordinates[pos]:
                                 item.pickUp(mainChar)
 
-            # open chat menu
+            # open chat partner selection
             if key in (commandChars.hail):
                 submenue = ChatPartnerselection()
 
@@ -771,6 +784,7 @@ def processInput(key):
                     mainChar.setPathToQuest(mainChar.quests[0])
 
         # drop the marker for interacting with an item after bumping into it 
+        # bad code: should ignore autoadvance, too
         if not key in ("lagdetection",commandChars.wait,):
             itemMarkedLast = None
 
@@ -783,7 +797,7 @@ def processInput(key):
 
         specialRender = False
 
-        # doesn't open the dev menu and toggles 
+        # doesn't open the dev menu and toggles rendering mode instead
         # bad code: code should act as advertised
         if key in (commandChars.devMenu):
             if displayChars.mode == "unicode":
@@ -856,6 +870,7 @@ def processInput(key):
         header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
 
         # render map
+        # bad code: display mode specific code
         canvas = render()
         main.set_text((urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible()));
         if (useTiles):
@@ -883,6 +898,7 @@ class SubMenu(object):
     sets the options to select from
     '''
     def setOptions(self, query, options):
+        # convert options to ordered dict
         import collections
         self.options = collections.OrderedDict()
         self.niceOptions = collections.OrderedDict()
@@ -891,6 +907,8 @@ class SubMenu(object):
             self.options[str(counter)] = option[0]
             self.niceOptions[str(counter)] = option[1]
             counter += 1
+
+        # set related state
         self.query = query
         self.selectionIndex = 1
         self.lockOptions = True
@@ -955,6 +973,7 @@ class SubMenu(object):
     '''
     set text in urwid
     bad code: should either be used everywhere or be removed
+    bad code: urwid specific code
     '''
     def set_text(self,text):
         main.set_text((urwid.AttrSpec("default","default"),text))
@@ -976,12 +995,15 @@ class SelectionMenu(SubMenu):
     '''
     def handleKey(self, key):
         if key == "esc":
+            # abort
             return True
         header.set_text("")
 
+        # let superclass handle the actual selection
         if not self.getSelection():
              super().handleKey(key)
 
+        # stop when done
         if self.getSelection():
             return True
         else:
@@ -1010,6 +1032,7 @@ class ChatPartnerselection(SubMenu):
             return self.subMenu.handleKey(key)
 
         if key == "esc":
+            # abort
             return True
 
         header.set_text((urwid.AttrSpec("default","default"),"\nConversation menu\n"))
@@ -1020,16 +1043,19 @@ class ChatPartnerselection(SubMenu):
         if not self.options and not self.getSelection():
             options = []
             if mainChar.room:
+                # get characters in room
                 for char in mainChar.room.characters:
                     if char == mainChar:
                         continue
                     options.append((char,char.name))
             else:
+                # get character on terrain
                 for char in mainChar.terrain.characters:
                     if char == mainChar:
                         continue
                     options.append((char,char.name))
 
+                # get nearby rooms
                 bigX = mainChar.xPosition//15
                 bigY = mainChar.yPosition//15
                 rooms = []
@@ -1038,6 +1064,8 @@ class ChatPartnerselection(SubMenu):
                     if not coordinate in terrain.roomByCoordinates:
                         continue
                     rooms.extend(terrain.roomByCoordinates[coordinate])
+
+                # add character from nearby open rooms
                 for room in rooms:
                     if not room.open:
                         continue 
@@ -1083,7 +1111,9 @@ class RecruitChat(SubMenu):
     '''
     def handleKey(self, key):
         if key == "esc":
+            # abort
             return True
+
         if self.firstRun:
             # add player text
             self.persistentText += mainChar.name+": \"come and help me.\"\n"
@@ -1091,7 +1121,7 @@ class RecruitChat(SubMenu):
             if self.partner.reputation > mainChar.reputation:
                 # reject player
                 if mainChar.reputation <= 0:
-                    # reject player harshly
+                    # reject player very harshly
                     self.persistentText += self.partner.name+": \"No.\""
                     mainChar.reputation -= 5
                     messages.append("You were rewarded -5 reputation")
@@ -1149,14 +1179,17 @@ class ChatMenu(SubMenu):
     '''
     def handleKey(self, key):
         if self.partner.unconcious:
+            # wake up character instead of speaking
             messages.append("wake up!")
             self.partner.wakeUp()
             return True
 
         if key == "esc":
+           # abort
            if self.partner.reputation < 2*mainChar.reputation:
                return True
            else:
+               # refuse to abort the chat
                self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
                mainChar.reputation -= 1
                messages.append("you were rewarded -1 reputation")
@@ -1250,6 +1283,7 @@ class ChatMenu(SubMenu):
                 return True
 
         # show redered text via urwid
+        # bad code: urwid code should be somewere else
         if not self.subMenu:
             main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
 
@@ -1271,9 +1305,11 @@ class DebugMenu(SubMenu):
     '''
     def handleKey(self, key):
         if key == "esc":
+            # abort
             return True
+
         if self.firstRun:
-            # bad code: unstructred chaos
+            # bad code: unstructured chaos
             import objgraph
             #objgraph.show_backrefs(mainChar, max_depth=4)
             """
@@ -1316,8 +1352,10 @@ class QuestMenu(SubMenu):
     '''
     def handleKey(self, key):
         if key == "esc":
+            # abort
             return True
-        # scroll
+
+        # scrolling
         # bad code: doesn't actually work
         if key == "W":
             self.offsetX -= 1
@@ -1396,11 +1434,15 @@ class InventoryMenu(SubMenu):
     '''
     def handleKey(self, key):
         if key == "esc":
+            # abort
             return True
+
         global submenue
 
+        # bad pattern: detailed inventory does not exist
         header.set_text((urwid.AttrSpec("default","default"),"\ninventory overview\n(press "+commandChars.show_inventory_detailed+" for the extended inventory menu)\n\n"))
 
+        # bad code: uses global function
         self.persistentText = (urwid.AttrSpec("default","default"),renderInventory())
 
         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
@@ -1410,6 +1452,7 @@ class InventoryMenu(SubMenu):
 '''
 show the players attributes
 bad code: should be abstracted
+bad code: uses global function to render
 '''
 class CharacterInfoMenu(SubMenu):
     '''
@@ -1417,7 +1460,9 @@ class CharacterInfoMenu(SubMenu):
     '''
     def handleKey(self, key):
         if key == "esc":
+            # abort
             return True
+
         global submenue
 
         header.set_text((urwid.AttrSpec("default","default"),"\ncharacter overview"))
@@ -1442,7 +1487,9 @@ class AdvancedQuestMenu(SubMenu):
     '''
     def handleKey(self, key):
         if key == "esc":
+            # abort
             return True
+
         # start rendering
         header.set_text((urwid.AttrSpec("default","default"),"\nadvanced Quest management\n"))
         out = "\n"
@@ -1452,7 +1499,7 @@ class AdvancedQuestMenu(SubMenu):
             out += "quest: "+str(self.quest)+"\n"
         out += "\n"
 
-        # let the player select the charater to assign the quest to 
+        # let the player select the character to assign the quest to 
         if self.state == None:
             self.state = "participantSelection"
         if self.state == "participantSelection":
@@ -1482,15 +1529,19 @@ class AdvancedQuestMenu(SubMenu):
 
         # let the player select the type of quest to create
         if self.state == "questSelection":
-            # add a list of hardcoded quests
-            # bad pattern: should be generated from mapping
+            # add a list of quests
             if not self.options and not self.getSelection():
                 options = []
                 for key,value in quests.questMap.items():
+
+                    # show only quests the chractre has done
                     if not key in mainChar.questsDone:
                         continue
+
+                    # do not show naive quests
                     if key.startswith("Naive"):
                         continue
+
                     options.append((value,key))
                 self.setOptions("what type of quest:",options)
 
@@ -1516,6 +1567,7 @@ class AdvancedQuestMenu(SubMenu):
                     # add a list of of rooms
                     options = []
                     for room in terrain.rooms:
+                        # do not show unimportant rooms
                         if isinstance(room,rooms.MechArmor) or isinstance(room,rooms.CpuWasterRoom):
                             continue
                         options.append((room,room.name))
@@ -1541,6 +1593,7 @@ class AdvancedQuestMenu(SubMenu):
                         # add a list of of rooms
                         options = []
                         for room in terrain.rooms:
+                            # show only cargo rooms
                             if not isinstance(room,rooms.CargoRoom):
                                 continue
                             options.append((room,room.name))
@@ -1563,6 +1616,7 @@ class AdvancedQuestMenu(SubMenu):
                         # add a list of of rooms
                         options = []
                         for room in terrain.rooms:
+                            # show only storage rooms
                             if not isinstance(room,rooms.StorageRoom):
                                 continue
                             options.append((room,room.name))
@@ -1601,7 +1655,7 @@ class AdvancedQuestMenu(SubMenu):
             if self.getSelection():
                 if self.selection == "yes":
                     # instanciate quest
-                    # bad code: repetive code, should use create from state
+                    # bad code: repetive code
                     if self.quest == quests.MoveQuestMeta:
                        questInstance = self.quest(mainChar.room,2,2,creator=void)
                     elif self.quest == quests.ActivateQuestMeta:
@@ -1807,6 +1861,7 @@ def renderInventory():
 
 '''
 the help submenue
+bad code: uses global function to render
 '''
 class HelpMenu(SubMenu):
     '''
@@ -1814,6 +1869,7 @@ class HelpMenu(SubMenu):
     '''
     def handleKey(self, key):
         if key == "esc":
+            # abort
             return True
         global submenue
 

@@ -1,8 +1,18 @@
+############################################################################################################
+###
+##     the state of the game should 
+#
+############################################################################################################
+
+# include basic libs
 import json
+
+# include basic internal libs
 import src.characters as characters
 
 '''
-the container for the gamestate that is not contained elsewhere
+the container for the gamestate
+bad code: all game state should be reachable from here
 '''
 class GameState():
     '''

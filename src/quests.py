@@ -1558,8 +1558,8 @@ class NaiveDropQuest(Quest):
     def triggerCompletionCheck(self,ingoreParam=None):
         if self.active:
             if (self.toDrop.xPosition == self.dstX and
-			    self.toDrop.xPosition == self.dstX and
-			    self.toDrop.room == self.room):
+                self.toDrop.xPosition == self.dstX and
+                self.toDrop.room == self.room):
 
                 self.postHandler()
 
@@ -2386,6 +2386,7 @@ class GetReward(MetaQuestSequence):
 
         # add chat option
         if character == mainChar:
+            messages.append("adding reward chat")
             self.rewardChat = RewardChat
             self.questDispenser.basicChatOptions.append(self.rewardChat)
         super().assignToCharacter(character)
@@ -2395,7 +2396,8 @@ class GetReward(MetaQuestSequence):
     '''
     def postHandler(self):
         if self.character == mainChar:
-            self.questDispenser.basicChatOptions.remove(self.rewardChat)
+            while self.rewardChat in self.questDispenser.basicChatOptions:
+                self.questDispenser.basicChatOptions.remove(self.rewardChat)
         super().postHandler()
 
 '''

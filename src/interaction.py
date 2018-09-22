@@ -784,8 +784,8 @@ def processInput(key):
                     mainChar.setPathToQuest(mainChar.quests[0])
 
         # drop the marker for interacting with an item after bumping into it 
-        # bad code: should ignore autoadvance, too
-        if not key in ("lagdetection",commandChars.wait,):
+        # bad code: ignore autoadvance opens up an unintended exploit
+        if not key in ("lagdetection",commandChars.wait,commandChars.autoAdvance):
             itemMarkedLast = None
 
         # enforce 60fps

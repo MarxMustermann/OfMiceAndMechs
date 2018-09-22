@@ -106,9 +106,11 @@ interaction.void = void
 quests.void = void
 cinematics.void = void
 events.void = void
+chats.void = void
 
 # bad code: common variables with modules
 rooms.story = story
+chats.story = story
 
 # bad code: common variables with modules
 story.chats = chats

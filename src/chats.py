@@ -395,8 +395,9 @@ class JobChat(interaction.SubMenu):
                     quest = quests.MoveQuestMeta(subSelf.terrain.tutorialMachineRoom,3,3,creator=void)
                     phase = story.FirstTutorialPhase()
                     quest.endTrigger = {"container":phase,"method":"start"}
-                    subSelf.hopperDutyQuest.getQuest.quest = subSelf.selectedQuest
-                    subSelf.hopperDutyQuest.getQuest.recalculate()
+                    subSelf.hopperDutyQuest.deactivate()
+                    subSelf.mainChar.quests.remove(subSelf.hopperDutyQuest)
+                    subSelf.mainChar.assignQuest(quest,active=True)
                     subSelf.dispatchedPhase = True
             else:
                 # deny the request

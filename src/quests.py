@@ -1574,10 +1574,10 @@ class NaiveDropQuest(Quest):
     drop item
     '''
     def solver(self,character):
-	    if not self.toDrop in character.inventory:
-		    self.fail()
-			debugMessages.append("NaiveDropQuest tried to drop item not in characters inventory")
-			return True
+        if not self.toDrop in character.inventory:
+            self.fail()
+            debugMessages.append("NaiveDropQuest tried to drop item not in characters inventory")
+            return True
 
         character.drop(self.toDrop)
         return True

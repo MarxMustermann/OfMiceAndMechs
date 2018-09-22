@@ -506,6 +506,8 @@ class MetaQuestSequence(Quest):
     def description(self):
         # add name of the actual quest
         out =  self.metaDescription+":\n"
+        if self.lifetimeEvent:
+            out += " ("+str(self.lifetimeEvent.tick-gamestate.tick)+" / "+str(self.lifetime)+")"
         for quest in self.subQuests:
             # add quests
             if quest.active:
@@ -533,6 +535,8 @@ class MetaQuestSequence(Quest):
                 out = [[self.metaDescription+":","\n"]]
         else:
             out =  self.metaDescription+":\n"
+        if self.lifetimeEvent:
+            out += " ("+str(self.lifetimeEvent.tick-gamestate.tick)+" / "+str(self.lifetime)+")"
         for quest in self.subQuests:
             # add quests
             if asList:
@@ -841,6 +845,8 @@ class MetaQuestParralel(Quest):
                 out = [[self.metaDescription+":\n"]]
         else:
             out = ""+self.metaDescription+":\n"
+        if self.lifetimeEvent:
+            out += " ("+str(self.lifetimeEvent.tick-gamestate.tick)+" / "+str(self.lifetime)+")"
 
         # add subquest
         counter = 0
@@ -907,6 +913,8 @@ class MetaQuestParralel(Quest):
     def description(self):
         # add the name of the main quest
         out = ""+self.metaDescription+":\n"
+        if self.lifetimeEvent:
+            out += " ("+str(self.lifetimeEvent.tick-gamestate.tick)+" / "+str(self.lifetime)+")"
         for quest in self.subQuests:
             # show subquest description
             questDescription = "\n    ".join(quest.description.split("\n"))+"\n"

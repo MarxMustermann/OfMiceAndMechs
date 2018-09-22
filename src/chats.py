@@ -470,7 +470,7 @@ class JobChat2(interaction.SubMenu):
             self.firstRun = False
 
         # refuse to issue new quest if the old one is not done yet
-        # bad code: this is because the hopperquest cannot hanlde multiple sub quests
+        # bad code: this is because the hopperquest cannot handle multiple sub quests
         if not self.hopperDutyQuest.getQuest:
             self.persistentText = "please collect your reward first"
             self.set_text(self.persistentText)

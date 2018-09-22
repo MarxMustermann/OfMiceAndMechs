@@ -1198,7 +1198,7 @@ class FirstTutorialPhase(BasicPhase):
         def doBasicSchooling():
             if not mainChar.gotBasicSchooling:
                 # show greeting one time
-                cinematics.showCinematic("welcome to the boiler room\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats",creator=void)
+                cinematics.showCinematic("welcome to the boiler room\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
                 cinematic = cinematics.ShowGameCinematic(1,creator=void)
                 '''
                 start next sub phase
@@ -1208,7 +1208,7 @@ class FirstTutorialPhase(BasicPhase):
                     doSteamengineExplaination()
                     gamestate.save()
                 cinematic.endTrigger = wrapUp
-                cinematics.cinematicQueue.append(cinematic,creator=void)
+                cinematics.cinematicQueue.append(cinematic)
             else:
                 # start next step
                 doSteamengineExplaination()

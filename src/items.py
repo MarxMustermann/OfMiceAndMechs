@@ -689,6 +689,9 @@ class GrowthTank(Item):
         else:
             super().__init__(displayChars.growthTank_unfilled,xPosition,yPosition,name=name,creator=creator)
 
+        self.attributesToStore.extend([
+               "filled"])
+
         # bad code: repetetive and easy to forget
         self.initialState = self.getState()
 
@@ -731,32 +734,10 @@ class GrowthTank(Item):
         return character
 
     '''
-    get state difference since creation
-    '''
-    def getDiffState(self):
-        state = super().getState()
-        # bad code: use new structure
-        if not self.initialState["filled"] == self.filled:
-            state["filled"] = self.filled
-        return state
-
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        state = super().getState()
-        # bad code: use new structure
-        state["filled"] = self.filled
-        return state
-
-    '''
     set state from dict
     '''
     def setState(self,state):
         super().setState(state)
-        # bad code: use new structure
-        if "filled" in state:
-            self.filled = state["filled"]
 
         if self.filled:
             self.display = displayChars.growthTank_filled
@@ -775,6 +756,10 @@ class Hutch(Item):
             super().__init__(displayChars.hutch_free,xPosition,yPosition,creator=creator)
         else:
             super().__init__(displayChars.hutch_occupied,xPosition,yPosition,creator=creator)
+
+        self.attributesToStore.extend([
+               "activated"])
+
         self.initialState = self.getState()
 
     '''
@@ -792,31 +777,10 @@ class Hutch(Item):
             self.display = displayChars.hutch_free
 
     '''
-    get state difference since creation
-    '''
-    def getDiffState(self):
-        state = super().getState()
-        # bad code: use new structure
-        if not self.initialState["activated"] == self.activated:
-            state["activated"] = self.activated
-        return state
-
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        state = super().getState()
-        # bad code: use new structure
-        state["activated"] = self.activated
-        return state
-
-    '''
     set state from dict
     '''
     def setState(self,state):
         super().setState(state)
-        # bad code: use new structure
-        self.activated = state["activated"]
         if self.activated:
             # bad code: should have a render function
             self.display = displayChars.hutch_occupied
@@ -840,6 +804,10 @@ class Lever(Item):
         self.deactivateAction = None
         self.walkable = True
         self.bolted = True
+
+        self.attributesToStore.extend([
+               "activated"])
+
         self.initialState = self.getState()
 
     '''
@@ -868,32 +836,10 @@ class Lever(Item):
         self.changed()
 
     '''
-    get state difference since creation
-    '''
-    def getDiffState(self):
-        state = super().getState()
-        #bad code: should use new structure
-        if not self.initialState["activated"] == self.activated:
-            state["activated"] = self.activated
-        return state
-
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        state = super().getState()
-        #bad code: should use new structure
-        state["activated"] = self.activated
-        return state
-
-    '''
     set state from dict
     '''
     def setState(self,state):
         super().setState(state)
-        #bad code: should use new structure
-        self.activated = state["activated"]
-
         if self.activated:
             # bad code: should have a render function
             self.display = displayChars.lever_pulled
@@ -914,6 +860,10 @@ class Furnace(Item):
         self.stopBoilingEvent = None
         self.type = "Furnace"
         super().__init__(displayChars.furnace_inactive,xPosition,yPosition,name=name,creator=creator)
+
+        self.attributesToStore.extend([
+               "activated"])
+
         self.initialState = self.getState()
 
     '''
@@ -978,32 +928,11 @@ class Furnace(Item):
     '''
     def setState(self,state):
         super().setState(state)
-        #bad code: should use new structure
-        if "activated" in state:
-            self.activated = state["activated"]
-            if self.activated:
-                # bad code: should have a render function
-                self.display = displayChars.furnace_active
-    
-    '''
-    get state difference since creation
-    '''
-    def getDiffState(self):
-        state = super().getDiffState()
-        #bad code: should use new structure
-        if not self.activated == self.initialState["activated"]:
-            state["activated"] = self.activated
-        return state
-    
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        state = super().getState()
-        #bad code: should use new structure
-        state["activated"] = self.activated
-        return state
 
+        if self.activated:
+            # bad code: should have a render function
+            self.display = displayChars.furnace_active
+    
 '''
 a dummy for an interface with the mech communication network
 bad code: this class is dummy only and basically is to be implemented
@@ -1238,6 +1167,10 @@ class Pile(Item):
         self.numContained = 100
         self.type = "Pile"
         super().__init__(displayChars.pile,xPosition,yPosition,name=name,creator=creator)
+
+        self.attributesToStore.extend([
+               "numContained"])
+
         self.initialState = self.getState()
 
     '''
@@ -1275,33 +1208,6 @@ class Pile(Item):
     '''
     def getDetailedInfo(self):
         return super().getDetailedInfo()+" of "+str(self.type)+" containing "+str(self.numContained)
-
-    '''
-    get state difference since creation
-    '''
-    def getDiffState(self):
-        state = super().getState()
-        # bad code: should use new structure
-        if not self.initialState["numContained"] == self.numContained:
-            state["numContained"] = self.numContained
-        return state
-
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        state = super().getState()
-        # bad code: should use new structure
-        state["numContained"] = self.numContained
-        return state
-
-    '''
-    set state from dict
-    '''
-    def setState(self,state):
-        super().setState(state)
-        # bad code: should use new structure
-        self.numContained = state["numContained"]
 
 '''
 basic item with different appearance
@@ -1594,6 +1500,10 @@ class MarkerBean(Item):
         super().__init__(" -",xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
         self.bolted = False
+
+        self.attributesToStore.extend([
+               "activated"])
+
         self.initialState = self.getState()
 
     '''
@@ -1604,31 +1514,10 @@ class MarkerBean(Item):
         self.activated = True
 
     '''
-    get state difference since creation
-    '''
-    def getDiffState(self):
-        state = super().getState()
-        # bad code: should use new structure
-        if not self.initialState["activated"] == self.activated:
-            state["activated"] = self.activated
-        return state
-
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        state = super().getState()
-        # bad code: should use new structure
-        state["activated"] = self.activated
-        return state
-
-    '''
     set state from dict
     '''
     def setState(self,state):
         super().setState(state)
-        # bad code: should use new structure
-        self.activated = state["activated"]
 
         # should be a renderer
         if self.activated:
@@ -1645,6 +1534,10 @@ class GooDispenser(Item):
         self.type = "GooDispenser"
         self.activated = False
         super().__init__("g%",xPosition,yPosition,name=name,creator=creator)
+
+        self.attributesToStore.extend([
+               "activated"])
+
         self.initialState = self.getState()
     
     '''
@@ -1655,33 +1548,6 @@ class GooDispenser(Item):
             if isinstance(item,GooFlask):
                 item.uses = 100
         self.activated = True
-
-    '''
-    get state difference since creation
-    '''
-    def getDiffState(self):
-        state = super().getState()
-        #bad code: should use new structure
-        if not self.initialState["activated"] == self.activated:
-            state["activated"] = self.activated
-        return state
-
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        state = super().getState()
-        #bad code: should use new structure
-        state["activated"] = self.activated
-        return state
-
-    '''
-    set state from dict
-    '''
-    def setState(self,state):
-        super().setState(state)
-        #bad code: should use new structure
-        self.activated = state["activated"]
 
 '''
 flask with food to carry around and drink from
@@ -1699,6 +1565,10 @@ class GooFlask(Item):
         self.displayByUses = ["ò ","ò.","ò,","ò-","ò~","ò="]
         self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses//20])
         self.description = "a flask conatining goo"
+
+        self.attributesToStore.extend([
+               "uses"])
+
         self.initialState = self.getState()
 
     '''
@@ -1713,31 +1583,10 @@ class GooFlask(Item):
             character.changed()
 
     '''
-    get state difference since creation
-    '''
-    def getDiffState(self):
-        state = super().getState()
-        # bad code: should use new structure
-        if not self.initialState["uses"] == self.uses:
-            state["uses"] = self.uses
-        return state
-
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        state = super().getState()
-        # bad code: should use new structure
-        state["uses"] = self.uses
-        return state
-
-    '''
     set state from dict
     '''
     def setState(self,state):
         super().setState(state)
-        # bad code: should use new structure
-        self.uses = state["uses"]
         # bad code: should be a renderer
         self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses//20])
 

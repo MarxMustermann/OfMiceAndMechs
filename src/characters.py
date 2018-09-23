@@ -333,16 +333,6 @@ class Character(saving.Saveable):
         return state
 
     '''
-    bad code: this should be handled with a get quest quest
-    bad code: not used. delete this
-    '''
-    def getQuest(self):
-        if self.room and self.room.quests:
-            return self.room.quests.pop()
-        else:
-            return None
-
-    '''
     starts the next quest in the quest list
     bad code: this is kind of incompatible with the meta quests
     '''

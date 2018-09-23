@@ -272,6 +272,10 @@ class TextCinematic(BasicCinematic):
         self.endPosition = len(self.text)
         if not scrolling:
             self.position = self.endPosition
+
+        self.attributesToStore.extend([
+               "text","endPosition"])
+
             
     '''
     render and advance the state
@@ -344,32 +348,6 @@ class TextCinematic(BasicCinematic):
         # trigger follow up actions
         if self.endTrigger:
             self.callIndirect(self.endTrigger)
-
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        state = super().getState()
-
-        # store text related attributes
-        # bad code: should use new mechanism
-        state["text"] = self.text
-        state["endPosition"] = self.endPosition
-
-        return state
-
-    '''
-    set state from dict
-    '''
-    def setState(self,state):
-        super().setState(state)
-
-        # set text related attributes
-        # bad code: should use new mechanism
-        if "text" in state:
-            self.text = state["text"]
-        if "endPosition" in state:
-            self.endPosition = state["endPosition"]
 
 '''
 a cinematic that shows the execution of a quest

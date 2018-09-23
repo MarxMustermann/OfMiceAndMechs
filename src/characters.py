@@ -437,9 +437,7 @@ class Character(saving.Saveable):
             corpse = items.Corpse(self.xPosition,self.yPosition,creator=self)
             terrain.addItems([corpse])
         else:
-            # bad code: debug output on gui
-            # bad code: spelling mistake
-            messages.append("this chould not happen, charcter died without beeing somewhere")
+            debugMessages.append("this should not happen, character died without beeing somewhere ("+str(self)+")")
 
         # set attributes
         self.dead = True

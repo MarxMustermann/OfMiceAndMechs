@@ -30,7 +30,7 @@ class Quest(saveing.Saveable):
     '''
     straightforward state initialization
     '''
-    def __init__(self,followUp=None,startCinematics=None,lifetime=None,creator=None):
+    def __init__(self,followUp=None,startCinematics=None,lifetime=None,creator=None,failTrigger=None):
         super().__init__()
 
         # set basic attributes
@@ -44,6 +44,7 @@ class Quest(saveing.Saveable):
         self.endCinematics = None # deprecate?
         self.startTrigger = None # deprecate?
         self.endTrigger = None # deprecate?
+        self.failTrigger = failTrigger # deprecate?
         self.paused = False
         self.reputationReward = 0
         self.watched = []
@@ -166,6 +167,8 @@ class Quest(saveing.Saveable):
     handle a failure to resolve te quest
     '''
     def fail(self):
+        if self.failTrigger:
+            self.failTrigger()
         if self.reputationReward:
             self.reputationReward *= -2
         self.postHandler()
@@ -368,12 +371,12 @@ class MetaQuestSequence(Quest):
     state initialization
     bad code: quest param does not work anymore and should be removed
     '''
-    def __init__(self,quests,startCinematics=None,lifetime=None,creator=None):
+    def __init__(self,quests,followUp=None,failTrigger=None,startCinematics=None,lifetime=None,creator=None):
         # set state
         self.metaDescription = "meta"
         self.subQuestsOrig = quests.copy()
         self.subQuests = quests
-        super().__init__(startCinematics=startCinematics,lifetime=lifetime,creator=creator)
+        super().__init__(startCinematics=startCinematics,lifetime=lifetime,creator=creator,followUp=followUp,failTrigger=failTrigger)
         
         # listen to subquests
         if len(self.subQuests):
@@ -3136,7 +3139,7 @@ class KeepFurnaceFiredMeta(MetaQuestSequence):
         self.fireFurnaceQuest = None
         self.waitQuest = None
         self.furnace = furnace
-        super().__init__(self.questList,lifetime=lifetime,creator=creator)
+        super().__init__(self.questList,lifetime=lifetime,creator=creator,followUp=followUp,startCinematics=startCinematics,failTrigger=failTrigger)
         self.metaDescription = "KeepFurnaceFiredMeta"
 
         # listen to furnace

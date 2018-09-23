@@ -195,10 +195,6 @@ class Room(saveing.Saveable):
                 elif char == "i":
                     # add ramp
                     itemsOnFloor.append(items.Item(displayChars.ramp,rowCounter,lineCounter,creator=self))
-                elif char == "p":
-                    # add something
-                    # bad code: either find out what this does or delete the code
-                    itemsOnFloor.append(items.Item(displayChars.noClue,rowCounter,lineCounter,creator=self))
                 elif char == "q":
                     # add special pipe
                     # bad code: pipe connection should be done some other way

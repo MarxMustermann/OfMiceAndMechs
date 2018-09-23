@@ -1937,45 +1937,6 @@ def render():
     # place rendering in screen
     canvas = canvaslib.Canvas(size=(viewsize,viewsize),chars=chars,coordinateOffset=(centerY-halfviewsite,centerX-halfviewsite),shift=shift,displayChars=displayChars)
 
-    # bad code: commented out code
-    """
-
-
-    result = []
-
-    if offsetY > 0:
-        result += "\n"*offsetY
-
-    if offsetY < 0:
-        topOffset = ((screensize[1]-viewsize)//2)+1
-        result += "\n"*topOffset
-        chars = chars[-offsetY+topOffset:-offsetY+topOffset+viewsize]
-
-
-    for line in chars:
-        lineRender = []
-        rowCounter = 0
-
-        visibilityOffsetX = ((screensize[0]-viewsize*2)//4)+1
-        
-        lineRender += "  "*visibilityOffsetX
-
-        totalOffset = -centeringOffsetX+visibilityOffsetX
-        offsetfix = 0
-        if totalOffset<0:
-            lineRender += "  "*-totalOffset
-            offsetfix = -totalOffset
-            totalOffset = 0
-            
-        line = line[totalOffset:totalOffset+viewsize-offsetfix]
-
-        for char in line:
-            lineRender.append(char)
-            rowCounter += 1
-        lineRender.append("\n")
-        result.extend(lineRender)
-    """
-
     return canvas
 
 # get the interaction loop from the library

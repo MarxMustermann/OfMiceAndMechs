@@ -197,11 +197,6 @@ def processInput(key):
         loop.set_alarm_in(0.1, callShow_or_exit, "lagdetection")
         lastLagDetection = time.time()
 
-        # ring alarm if appropriate
-        # bad code: old experiment, delete
-        if terrain.alarm:
-            print('\007')
-
         # advance the game if the character stays idle
         if len(cinematics.cinematicQueue) or pauseGame:
             return

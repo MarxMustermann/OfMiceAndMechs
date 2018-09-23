@@ -206,13 +206,6 @@ def processInput(key):
         else:
             if idleCounter%5 == 0:
                 key = commandChars.wait
-                # bad code: commented out code
-                """
-                if idleCounter < 4:
-                    key = commandChars.wait
-                if idleCounter > 40:
-                    key = commandChars.advance
-                """
             else:
                 return
     else:

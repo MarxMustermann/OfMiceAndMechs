@@ -37,7 +37,10 @@ class Item(saving.Saveable):
         if not display:
             self.display = displayChars.notImplentedYet
         else:
-            self.display = display
+            try:
+                self.display = display
+            except:
+                pass
         self.xPosition = xPosition
         self.yPosition = yPosition
         self.room = None
@@ -498,18 +501,6 @@ class Scrap(Item):
         super().__init__(displayChars.scrap_light,xPosition,yPosition,creator=creator)
         self.bolted = False
 
-        # set display char
-        # bad code: redundant
-        if self.amount < 5:
-            self.walkable = True
-            self.display = displayChars.scrap_light
-        elif self.amount < 15:
-            self.walkable = False
-            self.display = displayChars.scrap_medium
-        else:
-            self.walkable = False
-            self.display = displayChars.scrap_heavy
-
         # set up saveing
         self.attributesToStore.extend([
                "amount"])
@@ -572,17 +563,17 @@ class Scrap(Item):
             self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(newItem)
             self.terrain.itemsOnFloor.append(newItem)
 
-        # recalculate the display char
-        # bad code: redundant
+    @property
+    def display(self):
         if self.amount < 5:
             self.walkable = True
-            self.display = displayChars.scrap_light
+            return displayChars.scrap_light
         elif self.amount < 15:
             self.walkable = False
-            self.display = displayChars.scrap_medium
+            return displayChars.scrap_medium
         else:
             self.walkable = False
-            self.display = displayChars.scrap_heavy
+            return displayChars.scrap_heavy
                 
     '''
     get resistance to beeing moved depending on size
@@ -610,37 +601,6 @@ class Scrap(Item):
                 # bad code: direct manipulation of terrain state
                 self.terrain.itemsOnFloor.remove(item)
                 self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(item)
-
-        # recalculate the display char
-        # bad code: redundant
-        if self.amount < 5:
-            self.walkable = True
-            self.display = displayChars.scrap_light
-        elif self.amount < 15:
-            self.walkable = False
-            self.display = displayChars.scrap_medium
-        else:
-            self.walkable = False
-            self.display = displayChars.scrap_heavy
-
-    '''
-    set state from dict
-    '''
-    def setState(self,state):
-        super().setState(state)
-
-        # recalculate the display char
-        # bad code: redundant
-        if self.amount < 5:
-            self.walkable = True
-            self.display = displayChars.scrap_light
-        elif self.amount < 15:
-            self.walkable = False
-            self.display = displayChars.scrap_medium
-        else:
-            self.walkable = False
-            self.display = displayChars.scrap_heavy
-                
 
 '''
 dummy class for a corpse
@@ -686,13 +646,20 @@ class GrowthTank(Item):
         if self.filled:
             self.eject()
 
+
+    @property
+    def display(self):
+        if self.filled:
+            return displayChars.growthTank_filled
+        else:
+            return displayChars.growthTank_unfilled
+
     '''
     ejecting a character
     '''
     def eject(self,character=None):
         # emtpy growth tank
         self.filled = False
-        self.display = displayChars.growthTank_unfilled
 
         '''
         generate a name
@@ -735,16 +702,19 @@ class Hutch(Item):
     def __init__(self,xPosition=0,yPosition=0,name="Hutch",activated=False,creator=None):
         self.type = "Hutch"
         self.activated = activated
-        # bad code: redundant code
-        if self.activated:
-            super().__init__(displayChars.hutch_free,xPosition,yPosition,creator=creator)
-        else:
-            super().__init__(displayChars.hutch_occupied,xPosition,yPosition,creator=creator)
+        super().__init__(displayChars.hutch_free,xPosition,yPosition,creator=creator)
 
         self.attributesToStore.extend([
                "activated"])
 
         self.initialState = self.getState()
+
+    @property
+    def display(self):
+        if self.activated:
+            return displayChars.hutch_occupied
+        else:
+            return displayChars.hutch_free
 
     '''
     open/close cover
@@ -753,24 +723,14 @@ class Hutch(Item):
     def apply(self,character):
         if not self.activated:
             self.activated = True
-            # bad code: should have a render function
-            self.display = displayChars.hutch_occupied
         else:
             self.activated = False
-            # bad code: should have a render function
-            self.display = displayChars.hutch_free
 
     '''
     set state from dict
     '''
     def setState(self,state):
         super().setState(state)
-        if self.activated:
-            # bad code: should have a render function
-            self.display = displayChars.hutch_occupied
-        else:
-            # bad code: should have a render function
-            self.display = displayChars.hutch_free
 
 '''
 item for letting characters trigger somesthing
@@ -782,7 +742,6 @@ class Lever(Item):
     def __init__(self,xPosition=0,yPosition=0,name="lever",activated=False,creator=None):
         self.type = "Lever"
         self.activated = activated
-        self.display = {True:displayChars.lever_pulled,False:displayChars.lever_notPulled}
         super().__init__(displayChars.lever_notPulled,xPosition,yPosition,name=name,creator=creator)
         self.activateAction = None
         self.deactivateAction = None
@@ -802,7 +761,6 @@ class Lever(Item):
         if not self.activated:
             # activate the lever
             self.activated = True
-            self.display = displayChars.lever_pulled
 
             # run the action
             if self.activateAction:
@@ -810,7 +768,6 @@ class Lever(Item):
         else:
             # deactivate the lever
             self.activated = False
-            self.display = displayChars.lever_notPulled
 
             # run the action
             if self.deactivateAction:
@@ -819,17 +776,12 @@ class Lever(Item):
         # notify listeners
         self.changed()
 
-    '''
-    set state from dict
-    '''
-    def setState(self,state):
-        super().setState(state)
+    @property
+    def display(self):
         if self.activated:
-            # bad code: should have a render function
-            self.display = displayChars.lever_pulled
+            return displayChars.lever_pulled
         else:
-            # bad code: should have a render function
-            self.display = displayChars.lever_notPulled
+            return displayChars.lever_notPulled
 
 '''
 heat source for generating steam and similar
@@ -881,7 +833,6 @@ class Furnace(Item):
                     messages.append("already burning")
             else:
                 self.activated = True
-                self.display = displayChars.furnace_active
                 character.inventory.remove(foundItem)
 
                 if character.watched:
@@ -907,16 +858,13 @@ class Furnace(Item):
                 # notify listeners
                 self.changed()
 
-    '''
-    set state from dict
-    '''
-    def setState(self,state):
-        super().setState(state)
-
+    @property
+    def display(self):
         if self.activated:
-            # bad code: should have a render function
-            self.display = displayChars.furnace_active
-    
+            return displayChars.furnace_active
+        else:
+            return displayChars.furnace_inactive
+
 '''
 a dummy for an interface with the mech communication network
 bad code: this class is dummy only and basically is to be implemented
@@ -1439,37 +1387,41 @@ class Spray(Item):
         if direction == None:
             direction = "left"
 
-        # set up rendering information
-        # should be a renderer
-        if direction == "left":
-            self.display_inactive = displayChars.spray_left_inactive
-            self.display_stage1 = displayChars.spray_left_stage1
-            self.display_stage2 = displayChars.spray_left_stage2
-            self.display_stage3 = displayChars.spray_left_stage3
-        else:
-            self.display_inactive = displayChars.spray_right_inactive
-            self.display_stage1 = displayChars.spray_right_stage1
-            self.display_stage2 = displayChars.spray_right_stage2
-            self.display_stage3 = displayChars.spray_right_stage3
+        self.direction = direction
 
         self.type = "Spray"
-        super().__init__(self.display_inactive,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.spray_left_inactive,xPosition,yPosition,name=name,creator=creator)
+
+        # set up saveing
+        self.attributesToStore.extend([
+               "direction"])
+
         self.initialState = self.getState()
 
     '''
     set appearance depending on energy supply
     bad code: energy supply is directly taken from the machine room
     '''
-    def recalculate(self):
-        # should be a renderer
-        if terrain.tutorialMachineRoom.steamGeneration == 0:
-            self.display = self.display_inactive
-        if terrain.tutorialMachineRoom.steamGeneration == 1:
-            self.display = self.display_stage1
-        if terrain.tutorialMachineRoom.steamGeneration == 2:
-            self.display = self.display_stage2
-        if terrain.tutorialMachineRoom.steamGeneration == 3:
-            self.display = self.display_stage3
+    @property
+    def display(self):
+        if direction == "left":
+            if terrain.tutorialMachineRoom.steamGeneration == 0:
+                return displayChars.spray_left_inactive
+            elif terrain.tutorialMachineRoom.steamGeneration == 1:
+                return displayChars.spray_left_stage1
+            elif terrain.tutorialMachineRoom.steamGeneration == 2:
+                return displayChars.spray_left_stage2
+            elif terrain.tutorialMachineRoom.steamGeneration == 3:
+                return displayChars.spray_left_stage3
+        else:
+            if terrain.tutorialMachineRoom.steamGeneration == 0:
+                return displayChars.spray_right_inactive
+            elif terrain.tutorialMachineRoom.steamGeneration == 1:
+                return displayChars.spray_right_stage1
+            elif terrain.tutorialMachineRoom.steamGeneration == 2:
+                return displayChars.spray_right_stage2
+            elif terrain.tutorialMachineRoom.steamGeneration == 3:
+                return displayChars.spray_right_stage3
             
 '''
 marker ment to be placed by characters and to control actions with
@@ -1490,22 +1442,18 @@ class MarkerBean(Item):
 
         self.initialState = self.getState()
 
+    @property
+    def display(self):
+        if self.activated:
+            return "x-"
+        else:
+            return " -"
+
     '''
     avtivate marker
     '''
     def apply(self,character):
-        self.display = "x-"
         self.activated = True
-
-    '''
-    set state from dict
-    '''
-    def setState(self,state):
-        super().setState(state)
-
-        # should be a renderer
-        if self.activated:
-            self.display = "x-"
 
 '''
 machine for filling up goo flasks
@@ -1546,8 +1494,6 @@ class GooFlask(Item):
         super().__init__(" -",xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
         self.bolted = False
-        self.displayByUses = ["ò ","ò.","ò,","ò-","ò~","ò="]
-        self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses//20])
         self.description = "a flask conatining goo"
 
         self.attributesToStore.extend([
@@ -1561,18 +1507,14 @@ class GooFlask(Item):
     def apply(self,character):
         if self.uses > 0:
             self.uses -= 1
-            self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses//20])
             self.changed()
             character.satiation = 1000
             character.changed()
 
-    '''
-    set state from dict
-    '''
-    def setState(self,state):
-        super().setState(state)
-        # bad code: should be a renderer
-        self.display = (urwid.AttrSpec("#3f3","black"),self.displayByUses[self.uses//20])
+    @property
+    def display(self):
+        displayByUses = ["ò ","ò.","ò,","ò-","ò~","ò="]
+        return (urwid.AttrSpec("#3f3","black"),displayByUses[self.uses//20])
 
     '''
     get info including the charges on the flask

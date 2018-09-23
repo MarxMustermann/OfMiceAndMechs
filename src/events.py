@@ -141,7 +141,6 @@ class FurnaceBurnoutEvent(Event):
     def handleEvent(self):
         # stop burning
         self.furnace.activated = False
-        self.furnace.display = displayChars.furnace_inactive
 
         # stop heating the boilers
         for boiler in self.furnace.boilers:

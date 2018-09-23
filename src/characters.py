@@ -93,6 +93,15 @@ class Character(saving.Saveable):
         loadingRegistry.register(self)
 
     '''
+    proxy room quest when asked for a job
+    '''
+    def getQuest(self):
+        if self.room and self.room.quests:
+            return self.room.quests.pop()
+        else:
+            return None
+
+    '''
     almost straightforward adding of events to the characters event queue
     ensures that the events are added in proper order
     '''

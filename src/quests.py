@@ -1445,7 +1445,7 @@ class NaiveActivateQuest(Quest):
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
-        self.description = "naive activate "+str(self.toActivate)
+        self.description = "naive activate "+str(self.toActivate.name)
 
     '''
     callback for activation
@@ -3195,7 +3195,7 @@ class FireFurnaceMeta(MetaQuestSequence):
         self.questList = []
         self.furnace = furnace
         super().__init__(self.questList,creator=creator)
-        self.metaDescription = "FireFurnaceMeta"+str(self)
+        self.metaDescription = "FireFurnaceMeta"
 
         # save initial state and register
         self.type = "FireFurnaceMeta"

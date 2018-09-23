@@ -629,25 +629,40 @@ entering interactive mode .................................
         definitions = {}
         definitions["pipe"] = "A Pipe is used to transfer fluids"
         definitions["wall"] = "A Wall is a non passable building element"
-        definitions["lorem2"] = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
-        definitions["lorem3"] = "felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi."
-        definitions["lorem4"] = """Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.
-
-In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus.
-
-Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum.
-
-Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum.
-
-Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc, """
-        definitions["lorem5"] = """Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim.
-
-Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus.
-
-Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi.
-
-Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc, """
+        definitions["door"] = "A Door is a moveable facility used to close a Opening"
+        definitions["door"] = "A Lever is a tangent Device used to operate Something"
+        definitions["Flask"] = "A Flask, better known as Flachman is a Container used to store Fluids"
+        definitions["Coal"] = "Coal is a dark sedimentary Rock used to generate Engergy"
+        definitions["Furnace"] = "A Furnace is a Device used to produce Heat"
+        definitions["Boiler"] = "A Boiler is a Device used to heat Fluids"
+        definitions["GrowthTank"] = "A GrowthTank is a Container used to grow new operation Units"
+        definitions["Hutch"] = "A Hutch is a hollowed closable Container used to sleep in"
+        definitions["Wrench "] = "A Wrench is a Tool used to tighten or loosen a Screw"
+        definitions["Screw"] = "A Screw is a cylindric Element with a Thread used to connect Components"
+        definitions["Goo"] = "Goo is the common Food"
+        definitions["GooFlask"] = "A GooFlask is a Container used to transport Goo"
+        definitions["Goo Dispenser"] = "A GooDispenser is a Machine which does dispose Goo"
+        definitions["Grate"] = "A Grate is a horizontal flat Facility which is permeable and used to close an Opening"
+        definitions["Corpse"] = "A Corpse is the Remain of a human Body"
+        definitions["UnconciousBody"] = "A UnconciousBody is a Person which is not able to move and does not react"
+        definitions["Pile"] = "A Container used to store Items like Coal"
+        definitions["Acid"] = "Acid is used to produce Goo"
+        definitions["Floor"] = "A Floor is a horizontal Construction at the Bottom of a Room or Building"
+        definitions["BinStorage"] = "A Bin is a Container used to store Items"
+        definitions["Chain"] = "A Chain is made of consecutive linked MetalRings"
+        definitions["Grid"] = "A Grid is a vertical flat Facility which is mermeable and used to close an Opening"
+        definitions["FoodStuffs"] = "FoodStuffs can be used as an alternative for Goo"
+        definitions["Machine"] = "A Machine is a Mechanism used to execute Work automatically"
+        definitions["Hub"] = "A Hub is a Facility to distribute Media like Steam"
+        definitions["Steam"] = "Steam is a Medium made of Water and Heat"
+        definitions["Ramp"] = "A Ramp is a horizontal Construction with a Gradient which is used to move between different Levels"
+        definitions["VatSnake"] = "A VatSnake is an Animal that lives between the Remains in the Vat"
+        definitions["Outlet"] = "An Outlet is used to distribute or dispense Media"
+        definitions["Barricade"] = "A Barricade prohibits movement"
+        definitions["Clamp"] = "A Clamp is a Facility used to pick up or grasp something"
+        definitions["Winch"] = "A Winch is a Facility to support Movement of Items by using a Chain"
+        definitions["Scrap"] = "A Scrap is a Piece of Metal"
+        definitions["MetalBar"] = "A Metal Bar is a standatized Piece of Metal"
 
         # show fluff
         showText([""" 

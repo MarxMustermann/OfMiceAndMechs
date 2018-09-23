@@ -1389,9 +1389,6 @@ class QuestMenu(SubMenu):
                 return False
         self.lockOptions = False
 
-        # bad code: commented out code
-        #self.persistentText = "\n".join(self.persistentText.split("\n")[self.offsetX:])
-
         self.persistentText.extend(["\n","* press q for advanced quests\n","* press W to scroll up","\n","* press S to scroll down","\n","\n"])
 
         # flatten the mix of strings and urwid format so that it is less recursive to workaround an urwid bug

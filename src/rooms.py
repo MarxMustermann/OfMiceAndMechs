@@ -159,8 +159,6 @@ class Room(saveing.Saveable):
                     item = items.Boiler(rowCounter,lineCounter,creator=self)
                     itemsOnFloor.append(item)
                     self.boilers.append(item)
-                    # bad code: commented out code
-                    # itemsOnFloor.append(items.Item(displayChars.boiler_active,rowCounter,lineCounter))
                 elif char == "8":
                     # to be chains
                     itemsOnFloor.append(items.Item(displayChars.chains,rowCounter,lineCounter,creator=self))

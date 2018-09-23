@@ -501,6 +501,8 @@ class Scrap(Item):
         super().__init__(displayChars.scrap_light,xPosition,yPosition,creator=creator)
         self.bolted = False
 
+        self.setWalkable()
+
         # set up saveing
         self.attributesToStore.extend([
                "amount"])
@@ -562,17 +564,23 @@ class Scrap(Item):
             # bad code: should be handled by terrain
             self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(newItem)
             self.terrain.itemsOnFloor.append(newItem)
+        self.setWalkable()
+
+
+    def setWalkable(self):
+        if self.amount < 5:
+            self.walkable = True
+        else:
+            self.walkable = False
+      
 
     @property
     def display(self):
         if self.amount < 5:
-            self.walkable = True
             return displayChars.scrap_light
         elif self.amount < 15:
-            self.walkable = False
             return displayChars.scrap_medium
         else:
-            self.walkable = False
             return displayChars.scrap_heavy
                 
     '''

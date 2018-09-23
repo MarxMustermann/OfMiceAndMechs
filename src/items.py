@@ -509,6 +509,11 @@ class Scrap(Item):
         else:
             self.walkable = False
             self.display = displayChars.scrap_heavy
+
+        # set up saveing
+        self.attributesToStore.extend([
+               "amount"])
+
         self.initialState = self.getState()
 
     '''
@@ -619,31 +624,10 @@ class Scrap(Item):
             self.display = displayChars.scrap_heavy
 
     '''
-    get state difference since creation
-    '''
-    def getDiffState(self):
-        state = super().getState()
-        # bad code: use saveable for this
-        if not self.initialState["amount"] == self.amount:
-            state["amount"] = self.amount
-        return state
-
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        state = super().getState()
-        # bad code: use saveable for this
-        state["amount"] = self.amount
-        return state
-
-    '''
     set state from dict
     '''
     def setState(self,state):
         super().setState(state)
-        # bad code: use saveable for this
-        self.amount = state["amount"]
 
         # recalculate the display char
         # bad code: redundant

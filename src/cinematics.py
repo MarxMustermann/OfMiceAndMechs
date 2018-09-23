@@ -100,13 +100,11 @@ class InformationTransfer(BasicCinematic):
             return False
         elif not self.triggered:
             # show final message and wait for input
+            self.footerText = "press space to proceed"
             header.set_text("")
-            main.set_text("done")
+            main.set_text("InformationTransfer done")
             self.triggered = True
             self.skipable = True
-
-            # trigger the end of the cinematic
-            self.alarm = loop.set_alarm_in(0, callShow_or_exit, ' ')
             return False
         else:
             return False

@@ -1631,7 +1631,6 @@ class ThirdTutorialPhase(BasicPhase):
             add another furnace for the player to fire
             '''
             def handleEvent(subself):
-                messages.append("another one")
                 mainChar.assignQuest(quests.KeepFurnaceFiredMeta(self.mainCharRoom.furnaces[subself.furnaceIndex],failTrigger=endMainChar,creator=void))
                 newIndex = subself.furnaceIndex+1
                 self.mainCharFurnaceIndex = subself.furnaceIndex

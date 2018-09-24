@@ -719,16 +719,12 @@ class Room(saveing.Saveable):
             del self.itemByCoordinates[(item.xPosition,item.yPosition)]
         self.itemsOnFloor.remove(item)
 
-    '''
-    move the room to the north
-    bad code: nearly identical code for each direction
-    '''
-    def moveNorth(self,force=1,initialMovement=True,movementBlock=set()):
+    def moveDirection(self,direction,force=1,initialMovement=True,movementBlock=set()):
         if initialMovement:
             # collect the things that would be affected by the movement
             movementBlock = set()
             movementBlock.add(self)
-            self.getAffectedByMovementDirection("north",force=force,movementBlock=movementBlock)
+            self.getAffectedByMovementDirection(direction,force=force,movementBlock=movementBlock)
 
             # calculate total resistance against beeing moved
             totalResistance = 0
@@ -743,101 +739,42 @@ class Room(saveing.Saveable):
             # move affected items
             for thing in movementBlock:
                 if not thing == self:
-                    thing.moveNorth(initialMovement=False)
+				    if direction == "north":
+                        thing.moveNorth(initialMovement=False)
+				    elif direction == "south":
+                        thing.moveSouth(initialMovement=False)
+				    elif direction == "west":
+                        thing.moveWest(initialMovement=False)
+				    elif direction == "east":
+                        thing.moveEast(initialMovement=False)
         
         # actually move the room
-        self.terrain.moveRoomDirection("north",self)
+        self.terrain.moveRoomDirection(direction,self)
         messages.append("*RUMBLE*")
+
+    '''
+    move the room to the north
+    '''
+    def moveNorth(self,force=1,initialMovement=True,movementBlock=set()):
+	    self.moveDirection("north",force,initialMovement,movementBlock)
 
     '''
     move the room to the south
-    bad code: nearly identical code for each direction
     '''
     def moveSouth(self,force=1,initialMovement=True,movementBlock=set()):
-        if initialMovement:
-            # collect the things that would be affected by the movement
-            movementBlock = set()
-            movementBlock.add(self)
-            self.getAffectedByMovementDirection("south",force=force,movementBlock=movementBlock)
-
-            # calculate total resistance against beeing moved
-            totalResistance = 0
-            for thing in movementBlock:
-                totalResistance += thing.getResistance()
-
-            # refuse to move 
-            if totalResistance > force:
-                messages.append("*CLUNK*")
-                return
-
-            # move affected items
-            for thing in movementBlock:
-                if not thing == self:
-                    thing.moveSouth(initialMovement=False)
-        
-        # actually move the room
-        self.terrain.moveRoomDirection("south",self)
-        messages.append("*RUMBLE*")
+	    self.moveDirection("south",force,initialMovement,movementBlock)
 
     '''
     move the room to the west
-    bad code: nearly identical code for each direction
     '''
     def moveWest(self,initialMovement=True,force=1,movementBlock=set()):
-        if initialMovement:
-            # collect the things that would be affected by the movement
-            movementBlock = set()
-            movementBlock.add(self)
-            self.getAffectedByMovementDirection("west",force=force,movementBlock=movementBlock)
-
-            # calculate total resistance against beeing moved
-            totalResistance = 0
-            for thing in movementBlock:
-                totalResistance += thing.getResistance()
-
-            # refuse to move 
-            if totalResistance > force:
-                messages.append("*CLUNK*")
-                return
-
-            # move affected items
-            for thing in movementBlock:
-                if not thing == self:
-                    thing.moveWest(initialMovement=False)
-        
-        # actually move the room
-        self.terrain.moveRoomDirection("west",self)
-        messages.append("*RUMBLE*")
+	    self.moveDirection("west",force,initialMovement,movementBlock)
 
     '''
     move the room to the east
-    bad code: nearly identical code for each direction
     '''
     def moveEast(self,initialMovement=True, movementToken=None,force=1):
-        if initialMovement:
-            # collect the things that would be affected by the movement
-            movementBlock = set()
-            movementBlock.add(self)
-            self.getAffectedByMovementDirection("east",force=force,movementBlock=movementBlock)
-
-            # calculate total resistance against beeing moved
-            totalResistance = 0
-            for thing in movementBlock:
-                totalResistance += thing.getResistance()
-
-            # refuse to move 
-            if totalResistance > force:
-                messages.append("*CLUNK*")
-                return
-
-            # move affected items
-            for thing in movementBlock:
-                if not thing == self:
-                    thing.moveEast(initialMovement=False)
-        
-        # actually move the room
-        self.terrain.moveRoomDirection("east",self)
-        messages.append("*RUMBLE*")
+	    self.moveDirection("east",force,initialMovement,movementBlock)
     
     def getAffectedByMovementDirection(self,direction,force=1,movementBlock=set()):
         # gather things that would be affected on terrain level

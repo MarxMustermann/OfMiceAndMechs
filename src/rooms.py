@@ -1763,9 +1763,6 @@ XXXXXXXX
     move player to vat
     '''
     def handleUnexpectedGrowthTankActivation(self,character):
-        # bad code: debug output on gui
-        messages.append("handler called")
-
         # bad pattern; player only function
         if not character == mainChar:
             return

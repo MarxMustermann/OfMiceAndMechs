@@ -186,9 +186,6 @@ class Item(saving.Saveable):
                         quest.addQuest(quests.MoveQuestMeta(room=room,x=xPosition,y=yPosition,creator=self))
                         quest.addQuest(quests.KnockOutQuest(character3,lifetime=10,creator=self))
 
-                        # bad code: debug output on gui
-                        messages.append(str(quest.subQuests))
-
                         # remove old quests
                         while len(quest.subQuests) > 2:
                             subQuest = quest.subQuests[-1]
@@ -970,7 +967,7 @@ class Pile(Item):
             messages.append("you cannot carry more items")
             return
 
-        # print debug code on impossible state
+        # write log on impossible state
         if self.numContained < 1:
             debugMessages.append("something went seriously wrong. I should have morphed by now")
             return

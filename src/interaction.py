@@ -530,9 +530,7 @@ def processInput(key):
                             itemList = terrain.itemsOnFloor
                         for item in itemList:
                             if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
-                                # bad code: debug code on GUI
                                 # bad code: should happen in character
-                                messages.append(item.id)
                                 messages.append(item.description)
                                 if item.description != item.getDetailedInfo():
                                     messages.append(item.getDetailedInfo())

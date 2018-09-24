@@ -1284,9 +1284,8 @@ class ThirdTutorialPhase(BasicPhase):
 
             '''
             event to make the npc fire another furnace
-            bad code: xxx2
             '''
-            class AnotherOne2(events.Event):
+            class AnotherOneNpc(events.Event):
                 '''
                 straightforward state initialization
                 '''
@@ -1304,16 +1303,15 @@ class ThirdTutorialPhase(BasicPhase):
                     self.npcFurnaceIndex = subself.furnaceIndex
                     if newIndex < 8:
                         self.mainCharRoom.secondOfficer.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[newIndex],creator=void),active=True)
-                        self.mainCharRoom.addEvent(AnotherOne2(gamestate.tick+gamestate.tick%20+10,newIndex,creator=self))
+                        self.mainCharRoom.addEvent(AnotherOneNpc(gamestate.tick+gamestate.tick%20+10,newIndex,creator=self))
 
             # remember event type to be able to remove it later
-            self.anotherOne2 = AnotherOne2
+            self.anotherOne2 = AnotherOneNpc
 
             '''
             the event for waiting for a clean start and making the npc start
-            bad code: xxx2
             '''
-            class WaitForClearStart2(events.Event):
+            class WaitForClearStartNpc(events.Event):
                 '''
                 straightforward state initialization
                 '''
@@ -1333,21 +1331,20 @@ class ThirdTutorialPhase(BasicPhase):
 
                     if boilerStillBoiling:
                         # wait some more
-                        self.mainCharRoom.addEvent(WaitForClearStart2(gamestate.tick+2,0,creator=self))
+                        self.mainCharRoom.addEvent(WaitForClearStartNpc(gamestate.tick+2,0,creator=self))
                     else:
                         # make the npc start
                         cinematics.showCinematic("Liebweg start now.")
                         self.mainCharRoom.secondOfficer.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[0],creator=void),active=True)
-                        self.mainCharRoom.addEvent(AnotherOne2(gamestate.tick+10,0,creator=self))
+                        self.mainCharRoom.addEvent(AnotherOneNpc(gamestate.tick+10,0,creator=self))
 
             '''
             kickstart the npcs part of the competition
-            bad code: xxx2
             '''
-            def tmp2():
-                self.mainCharRoom.addEvent(WaitForClearStart2(gamestate.tick+2,0,creator=self))
+            def tmpNpc():
+                self.mainCharRoom.addEvent(WaitForClearStartNpc(gamestate.tick+2,0,creator=self))
 
-            questList[-1].endTrigger = tmp2
+            questList[-1].endTrigger = tmpNpc
             self.mainCharRoom.secondOfficer.assignQuest(questList[0],active=True)
 
         '''

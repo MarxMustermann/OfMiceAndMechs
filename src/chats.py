@@ -204,7 +204,6 @@ do things the most efficent way. It will even try to handle conversion, wich doe
                         toRemove = item
                         break
 
-            # bad code: crashes
             self.firstOfficer.basicChatOptions.remove(toRemove)
             terrain.waitingRoom.firstOfficer.basicChatOptions.remove(toRemove)
 
@@ -270,7 +269,6 @@ for a brain.\n\n"""
                         toRemove = item
                         break
 
-            # bad code: crashes
             self.firstOfficer.basicChatOptions.remove(toRemove)
 
             # add follow up chat
@@ -294,6 +292,13 @@ class ReReport(interaction.SubMenu):
         self.persistentText = ""
         self.firstRun = True
         super().__init__()
+
+    '''
+    add internal state
+    bad pattern: chat option stored as references to class complicates this
+    '''
+    def setUp(self,state):
+        self.phase = state["phase"]
 
     '''
     scold the player and start intro
@@ -321,12 +326,10 @@ class ReReport(interaction.SubMenu):
                         toRemove = item
                         break
 
-            # bad code: crashes
             terrain.waitingRoom.firstOfficer.basicChatOptions.remove(toRemove)
 
             # start intro
-            # bad code: crashes
-            self.getIntro()
+            self.phase.getIntro()
             return True
         else:
             return False

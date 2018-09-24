@@ -1498,7 +1498,7 @@ class FindWork(BasicPhase):
         showText("go on then.")
 
         # add option to reenter the command chain
-        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I want to report for duty","chat":chats.ReReport})
+        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I want to report for duty","chat":chats.ReReport,"params":{"phase":self}})
 
     '''
     make the player do some tasks until allowing advancement elsewhere

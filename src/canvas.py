@@ -11,6 +11,9 @@ import urwid
 
 class Mapping(object):
 
+    mappedThings = {}
+    globalCounter = [0] # non intuitive: list to make counter same object for all instances
+
     def buildMap(self):
 
         rawConfig = self.loadMapping()
@@ -20,7 +23,6 @@ class Mapping(object):
         import inspect
         self.indexedMapping = []
         raw = inspect.getmembers(rawConfig, lambda a:not(inspect.isroutine(a)))
-        counter = 0
         for item in raw:
             if item[0].startswith("__"):
                 # ignore internal state
@@ -29,9 +31,19 @@ class Mapping(object):
             if isinstance(item[1], list):
                 # convert lists to lists
                 subList = []
+                counter = 0
                 for subItem in item[1]:
-                    self.indexedMapping.append(subItem)
-                    subList.append(counter)
+                    if not item[0] in self.mappedThings:
+                        self.mappedThings[item[0]] = []
+                    if len(self.mappedThings[item[0]])-1 < counter: 
+                        while len(self.mappedThings[item[0]])-1 < counter: 
+                            self.mappedThings[item[0]].append(None)
+                        self.mappedThings[item[0]][counter] = self.globalCounter[0]
+                        self.globalCounter[0] += 1
+
+                    index = self.mappedThings[item[0]][counter]
+                    self.mapToIndex(index,subItem)
+                    subList.append(index)
                     counter += 1
                 setattr(self, item[0], subList)
 
@@ -39,16 +51,33 @@ class Mapping(object):
                 # convert dicts to dicts
                 subDict = {}
                 for k,v in item[1].items():
-                    subDict[k] = counter
-                    self.indexedMapping.append(v)
-                    counter += 1
+                    if not item[0] in self.mappedThings: 
+                        self.mappedThings[item[0]] = {}
+                
+                    if not k in self.mappedThings:
+                        self.mappedThings[item[0]][k] = self.globalCounter[0]
+                        self.globalCounter[0] += 1
+
+                    index = self.mappedThings[item[0]][k]
+                    subDict[k] = index
+                    self.mapToIndex(index,v)
+
                 setattr(self, item[0], subDict)
 
             else:
                 # add non special entries
-                self.indexedMapping.append(item[1])
-                setattr(self, item[0], counter)
-                counter += 1
+                if not item[0] in self.mappedThings: 
+                    self.mappedThings[item[0]] = self.globalCounter[0]
+                    self.globalCounter[0] += 1
+
+                index = self.mappedThings[item[0]]
+                self.mapToIndex(index,item[1])
+                setattr(self, item[0], index)
+
+    def mapToIndex(self,index,value):
+        while len(self.indexedMapping)-1 < index:
+            self.indexedMapping.append(None)
+        self.indexedMapping[index] = value
 
 """
 this maps an abstract representation to tiles.
@@ -208,7 +237,10 @@ class Canvas(object):
             # add this lines content
             for char in line:
                 if isinstance(char, int):
-                    out.append(self.displayChars.indexedMapping[char])
+                    if self.displayChars.indexedMapping[char] == None:
+                        debugMessages.append("failed render"+str(char)+" "+str(self.displayChars.indexedMapping[char-10])+" "+str(self.displayChars.indexedMapping[char+10]))
+                    else:
+                        out.append(self.displayChars.indexedMapping[char])
                 else:
                     out.append(char)
 

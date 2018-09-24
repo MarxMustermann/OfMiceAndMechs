@@ -519,6 +519,96 @@ class JobChat2(interaction.SubMenu):
             self.done = True
             return True
 
+'''
+the chat for making the npc stop firering the furnace
+'''
+class StopChat(interaction.SubMenu):
+    id = "StopChat"
+    type = "StopChat"
+
+    '''
+    basic state initialization
+    '''
+    def __init__(self,partner):
+        self.state = None
+        self.partner = partner
+        self.firstRun = True
+        self.done = False
+        self.persistentText = ""
+        super().__init__()
+
+    '''
+    stop furnace quest and correct dialog
+    '''
+    def handleKey(self, key):
+        if self.firstRun:
+            # stop fireing the furnace
+            self.persistentText = "OK, stopping now"
+            self.set_text(self.persistentText)
+            self.done = True
+            global quest
+            quest.deactivate()
+
+            # replace dialog option
+            for option in self.partner.basicChatOptions:
+                 if not option["chat"] == StopChat:
+                     continue
+                 self.partner.basicChatOptions.remove(option)
+                 break
+            self.partner.basicChatOptions.append({"dialogName":"fire the furnaces","chat":StartChat})
+
+            self.firstRun = False
+
+            return True
+        else:
+            # show dialog till keystroke
+            return False
+
+'''
+the chat for making the npc start firering the furnace
+'''
+class StartChat(interaction.SubMenu):
+    id = "StartChat"
+    type = "StartChat"
+
+    '''
+    basic state initialization
+    '''
+    def __init__(self,partner):
+        self.state = None
+        self.partner = partner
+        self.firstRun = True
+        self.done = False
+        self.persistentText = ""
+        super().__init__()
+
+    '''
+    start furnace quest and correct dialog
+    '''
+    def handleKey(self, key):
+        if self.firstRun:
+            # start fireing the furnace
+            self.persistentText = "Starting now. The engines should be running in a few ticks"
+            self.set_text(self.persistentText)
+            self.done = True
+            global quest
+            quest = quests.KeepFurnaceFiredMeta(self.partner.room.furnaces[0],creator=void)
+            self.partner.assignQuest(quest,active=True)
+
+            # replace dialog option
+            for option in self.partner.basicChatOptions:
+                 if not option["chat"] == StartChat:
+                     continue
+                 self.partner.basicChatOptions.remove(option)
+                 break
+            self.partner.basicChatOptions.append({"dialogName":"stop fireing the furnaces","chat":StopChat})
+
+            self.firstRun = False
+
+            return True
+        else:
+            return False
+
 # a map alowing to get classes from strings
 chatMap = {
              "FirstChat":FirstChat,

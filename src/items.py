@@ -55,7 +55,7 @@ class Item(saving.Saveable):
 
         # set up saveing
         self.attributesToStore.extend([
-               "mayContainMice"])
+               "mayContainMice","name","type","walkable","xPosition","yPosition"])
 
         # set id
         self.id = {
@@ -70,56 +70,6 @@ class Item(saving.Saveable):
         # store state and register self
         self.initialState = self.getState()
         loadingRegistry.register(self)
-
-    '''
-    get difference in state since creation as dict
-    '''
-    def getDiffState(self):
-        result = super().getDiffState()
-        currentState = self.getState()
-        
-        # only carry changed attributes
-        # bad code: should use Saveing class
-        for attribute in ("id","name","type","walkable","xPosition","yPosition"):
-            if not currentState[attribute] == self.initialState[attribute]:
-                result[attribute] = currentState[attribute]
-
-        return result
-
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        # bad code: should use Saveing class
-        state = super().getState()
-        state.update({
-                 "name":self.name,
-                 "type":self.type,
-                 "walkable":self.walkable,
-                 "xPosition":self.xPosition,
-                 "yPosition":self.yPosition,
-               })
-        return state
-
-    '''
-    set state from dict
-    '''
-    def setState(self,state):
-        super().setState(state)
-
-        # set attribute
-        # bad code: very repetetive code
-        # bad code: should use Saveing class
-        if "id" in state:
-            self.id = state["id"]
-        if "name" in state:
-            self.name = state["name"]
-        if "walkable" in state:
-            self.walkable = state["walkable"]
-        if "xPosition" in state:
-            self.xPosition = state["xPosition"]
-        if "yPosition" in state:
-            self.yPosition = state["yPosition"]
 
     '''
     generate a text with a detailed description of the items state

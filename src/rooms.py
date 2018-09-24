@@ -1272,7 +1272,6 @@ XXXXXX
             id = "StopChat"
             type = "StopChat"
 
-            dialogName = "stop fireing the furnaces."
             '''
             basic state initialization
             '''
@@ -1297,8 +1296,12 @@ XXXXXX
                     quest.deactivate()
 
                     # replace dialog option
-                    self.partner.basicChatOptions.remove(StopChat)
-                    self.partner.basicChatOptions.append(StartChat)
+                    for option in self.partner.basicChatOptions:
+                         if not option["chat"] == StopChat:
+                             continue
+                         self.partner.basicChatOptions.remove(option)
+                         break
+                    self.partner.basicChatOptions.append({"dialogName":"fire the furnaces","chat":StartChat})
 
                     self.firstRun = False
 
@@ -1315,7 +1318,6 @@ XXXXXX
             id = "StartChat"
             type = "StartChat"
 
-            dialogName = "fire the furnaces."
             '''
             basic state initialization
             '''
@@ -1341,8 +1343,12 @@ XXXXXX
                     self.partner.assignQuest(quest,active=True)
 
                     # replace dialog option
-                    self.partner.basicChatOptions.remove(StartChat)
-                    self.partner.basicChatOptions.append(StopChat)
+                    for option in self.partner.basicChatOptions:
+                         if not option["chat"] == StartChat:
+                             continue
+                         self.partner.basicChatOptions.remove(option)
+                         break
+                    self.partner.basicChatOptions.append({"dialogName":"stop fireing the furnaces","chat":StopChat})
 
                     self.firstRun = False
 
@@ -1351,7 +1357,7 @@ XXXXXX
                     return False
 
         # add dialog options
-        self.npc.basicChatOptions.append(StartChat)
+        self.npc.basicChatOptions.append({"dialogName":"fire the furnaces","chat":StartChat})
         self.initialState = self.getState()
         loadingRegistry.register(self)
 

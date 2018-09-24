@@ -188,13 +188,12 @@ class Canvas(object):
         # carry the supplied canvas
         for x in range(self.coordinateOffset[0],self.coordinateOffset[0]+self.size[0]):
             for y in range(self.coordinateOffset[1],self.coordinateOffset[1]+self.size[1]):
-                self.setPixel(x,y,chars[x][y])
+                self.setPseudoPixel(x,y,chars[x][y])
 
     """
-    plain and simple pixel setting
-    bad code: this says pixel but sets one ore more chars
+    plain and simple pseudo pixel setting
     """
-    def setPixel(self,x,y,char):
+    def setPseudoPixel(self,x,y,char):
         # shift coordinates
         x -= self.coordinateOffset[0]
         y -= self.coordinateOffset[1]

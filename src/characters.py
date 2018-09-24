@@ -485,7 +485,6 @@ class Character(saving.Saveable):
             item = None
             if self.room:
                 # move naively within a room
-                # bad code: repetitive code
                 if nextPosition[0] == currentPosition[0]:
                     if nextPosition[1] < currentPosition[1]:
                         item = self.room.moveCharacterDirection(self,"north")
@@ -517,126 +516,53 @@ class Character(saving.Saveable):
                 # check if a room was entered
                 # basically checks if a walkable space/door within a room on the coordinate the chracter walks on. If there is
                 # an item it will be saved for interaction
-                # bad code: repetition of the movement code is bad
                 # bad pattern: collision detection and room teleportation should be done in terrain
 
                 for room in self.terrain.rooms:
-                    # check north
-                    # bad code: repetetive code
+                    def moveCharacter(localisedEntry,direction):
+                        if localisedEntry in room.walkingAccess:
+                            # check whether the chracter walked into something
+                            if localisedEntry in room.itemByCoordinates:
+                                for listItem in room.itemByCoordinates[localisedEntry]:
+                                    if not listItem.walkable:
+                                        return listItem
+                            # move the chracter into the room
+                            room.addCharacter(self,localisedEntry[0],localisedEntry[1])
+                            self.terrain.characters.remove(self)
+                            self.terrain = None
+                            self.changed()
+                            return
+                        else:
+                            # show message the character bumped into a wall
+                            # bad pattern: why restrict the player to standard entry points?
+                            messages.append("you cannot move there ("+direction+")")
+                            return
 
                     # handle the character moving into the rooms boundaries
+                    # check north
                     if room.yPosition*15+room.offsetY+room.sizeY == nextPosition[1]+1:
                         if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+room.sizeX > self.xPosition:
-                            # get the characters entry point in localized coordinates
                             localisedEntry = (self.xPosition%15-room.offsetX,nextPosition[1]%15-room.offsetY)
-                            if localisedEntry in room.walkingAccess:
-                                # check whether the chracter walked into something
-                                if localisedEntry in room.itemByCoordinates:
-                                    for listItem in room.itemByCoordinates[localisedEntry]:
-                                        if not listItem.walkable:
-                                            item = listItem
-                                            break
-                                if item:
-                                    break
-                                else:
-                                    # move the chracter into the room
-                                    room.addCharacter(self,localisedEntry[0],localisedEntry[1])
-                                    self.terrain.characters.remove(self)
-                                    self.terrain = None
-                                    self.changed()
-                                    break
-                            else:
-                                # show message the character bumped into a wall
-                                # bad pattern: why restrict the player to standard entry points?
-                                messages.append("you cannot move there (N)")
-                                break
-
+                            item = moveCharacter(localisedEntry,"north")
+                            break
                     # check south
-                    # bad code: repetetive code
-
-                    # handle the character moving into the rooms boundaries
                     if room.yPosition*15+room.offsetY == nextPosition[1]:
                         if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+room.sizeX > self.xPosition:
-                            # get the characters entry point in localized coordinates
                             localisedEntry = ((self.xPosition-room.offsetX)%15,((nextPosition[1]-room.offsetY)%15))
-                            if localisedEntry in room.walkingAccess:
-                                # check whether the chracter walked into something
-                                if localisedEntry in room.itemByCoordinates:
-                                    for listItem in room.itemByCoordinates[localisedEntry]:
-                                        if not listItem.walkable:
-                                            item = listItem
-                                            break
-                                if item:
-                                    break
-                                else:
-                                    # move the chracter into the room
-                                    room.addCharacter(self,localisedEntry[0],localisedEntry[1])
-                                    self.terrain.characters.remove(self)
-                                    self.terrain = None
-                                    self.changed()
-                                    break
-                            else:
-                                # show message the character bumped into a wall
-                                # bad pattern: why restrict the player to standard entry points?
-                                messages.append("you cannot move there (S)")
-                                break
-
+                            item = moveCharacter(localisedEntry,"south")
+                            break
                     # check east
-                    # bad code: repetetive code
-
-                    # handle the character moving into the rooms boundaries
                     if room.xPosition*15+room.offsetX+room.sizeX == nextPosition[0]+1:
                         if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+room.sizeY > self.yPosition:
-                            # get the characters entry point in localizes coordinates
                             localisedEntry = ((nextPosition[0]-room.offsetX)%15,(self.yPosition-room.offsetY)%15)
-                            if localisedEntry in room.walkingAccess:
-                                # check whether the character walked into something
-                                if localisedEntry in room.itemByCoordinates:
-                                    for listItem in room.itemByCoordinates[localisedEntry]:
-                                        if not listItem.walkable:
-                                            item = listItem
-                                            break
-                                if item:
-                                    break
-                                else:
-                                    # move the chracter into the room
-                                    room.addCharacter(self,localisedEntry[0],localisedEntry[1])
-                                    self.terrain.characters.remove(self)
-                                    self.terrain = None
-                                    self.changed()
-                                    break
-                            else:
-                                # show message the character bumped into a wall
-                                # bad pattern: why restrict the player to standard entry points?
-                                messages.append("you cannot move there (E)")
-
+                            item = moveCharacter(localisedEntry,"east")
+                            break
                     # check west
-                    # bad code: repetetive code
-
-                    # handle the character moving into the rooms boundaries
                     if room.xPosition*15+room.offsetX == nextPosition[0]:
                         if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+room.sizeY > self.yPosition:
-                            # get the characters entry point in localizes coordinates
                             localisedEntry = ((nextPosition[0]-room.offsetX)%15,(self.yPosition-room.offsetY)%15)
-                            if localisedEntry in room.walkingAccess:
-                                # check whether the chracter walked into something
-                                if localisedEntry in room.itemByCoordinates:
-                                    for listItem in room.itemByCoordinates[localisedEntry]:
-                                        if not listItem.walkable:
-                                            item = listItem
-                                            break
-                                if item:
-                                    break
-                                else:
-                                    # move the chracter into the room
-                                    room.addCharacter(self,localisedEntry[0],localisedEntry[1])
-                                    self.terrain.characters.remove(self)
-                                    self.terrain = None
-                                    self.changed()
-                                    break
-                            else:
-                                messages.append("you cannot move there (W)")
-                                break
+                            item = moveCharacter(localisedEntry,"west")
+                            break
                 else:
                     # move the char to the next position on path
                     self.xPosition = nextPosition[0]

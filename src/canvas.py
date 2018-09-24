@@ -11,20 +11,12 @@ import urwid
 
 class Mapping(object):
 
-	def buildMap(self):
-        # bad pattern: no way to load arbitrary files
-        if self.mode == "testTiles":
-            # bad code: reimport the config as library, i don't think this is a good thing to do
-            import config.tileMap as rawConfig
+    def buildMap(self):
 
-        if self.mode == "unicode":
-            import config.displayChars as rawConfig
-        elif self.mode == "pureASCII":
-            import config.displayChars_fallback as rawConfig
+        rawConfig = self.loadMapping()
 
         # (re)build the tile mapping
         # bad code: the indexing relies on order in the config file instead of names in the config file
-        # bad code: redundant code
         import inspect
         self.indexedMapping = []
         raw = inspect.getmembers(rawConfig, lambda a:not(inspect.isroutine(a)))
@@ -68,7 +60,7 @@ class TileMapping(Mapping):
     bad code: hardcoded modes for now
     """
     def __init__(self,mode):
-	    super().__init__()
+        super().__init__()
         self.modes = {"testTiles":"","pseudeUnicode":""}
         self.setRenderingMode(mode)
 
@@ -84,7 +76,14 @@ class TileMapping(Mapping):
         # set mode
         self.mode = mode
 
-		self.buildMap()
+        self.buildMap()
+
+    def loadMapping(self):
+        # bad pattern: no way to load arbitrary files
+        if self.mode == "testTiles":
+            # bad code: reimport the config as library, i don't think this is a good thing to do
+            import config.tileMap as rawConfig
+        return rawConfig
 
 """
 this maps an abstract representation to actual chars.
@@ -102,7 +101,7 @@ class DisplayMapping(Mapping):
     bad code: hardcoded modes for now
     """
     def __init__(self,mode):
-	    super().__init__()
+        super().__init__()
         self.modes = {"unicode":"","pureASCII":""}
         self.setRenderingMode(mode)
 
@@ -118,7 +117,15 @@ class DisplayMapping(Mapping):
         # set mode
         self.mode = mode
 
-		self.buildMap()
+        self.buildMap()
+
+    def loadMapping(self):
+        if self.mode == "unicode":
+            import config.displayChars as rawConfig
+        elif self.mode == "pureASCII":
+            import config.displayChars_fallback as rawConfig
+        return rawConfig
+
 
 """
 The canvas is supposed to hold the content of a piece screen.

@@ -1187,53 +1187,53 @@ class Boiler(Item):
     stop producing steam after a delay
     '''
     def stopHeatingUp(self):
-        # bad code: guard with return would be preferrable to shifting the whole methods
-        if self.isHeated:
-            # flag self as heated
-            self.isHeated = False
+        if not self.isHeated:
+            return
+        # flag self as heated
+        self.isHeated = False
 
-            # abort any heating up
-            if self.startBoilingEvent:
-                self.room.removeEvent(self.startBoilingEvent)
-                self.startBoilingEvent = None
-            if not self.stopBoilingEvent and self.isBoiling:
-                '''
-                the event for stopping to boil
-                bad code: should be an abstract event calling a method
-                '''
-                class StopBoilingEvent(object):
-                    id = "StopBoilingEvent"
-                    type = "StopBoilingEvent"
+        # abort any heating up
+        if self.startBoilingEvent:
+            self.room.removeEvent(self.startBoilingEvent)
+            self.startBoilingEvent = None
+        if not self.stopBoilingEvent and self.isBoiling:
+            '''
+            the event for stopping to boil
+            bad code: should be an abstract event calling a method
+            '''
+            class StopBoilingEvent(object):
+                id = "StopBoilingEvent"
+                type = "StopBoilingEvent"
 
-                    '''
-                    straightforward state initialization
-                    '''
-                    def __init__(subself,tick):
-                        subself.tick = tick
+                '''
+                straightforward state initialization
+                '''
+                def __init__(subself,tick):
+                    subself.tick = tick
             
-                    '''
-                    start producing steam
-                    '''
-                    def handleEvent(subself):
-                        # add noises
-                        messages.append("*unboil*")
+                '''
+                start producing steam
+                '''
+                def handleEvent(subself):
+                    # add noises
+                    messages.append("*unboil*")
 
-                        # set own state
-                        self.display = displayChars.boiler_inactive
-                        self.isBoiling = False
-                        self.stopBoilingEvent = None
-                        self.changed()
+                    # set own state
+                    self.display = displayChars.boiler_inactive
+                    self.isBoiling = False
+                    self.stopBoilingEvent = None
+                    self.changed()
 
-                        # change rooms steam production
-                        self.room.steamGeneration -= 1
-                        self.room.changed()
+                    # change rooms steam production
+                    self.room.steamGeneration -= 1
+                    self.room.changed()
 
-                # stop boiling after some time
-                self.stopBoilingEvent = StopBoilingEvent(self.room.timeIndex+5)
-                self.room.addEvent(self.stopBoilingEvent)
+            # stop boiling after some time
+            self.stopBoilingEvent = StopBoilingEvent(self.room.timeIndex+5)
+            self.room.addEvent(self.stopBoilingEvent)
 
-            # notify listeners
-            self.changed()
+        # notify listeners
+        self.changed()
             
 '''
 steam sprayer used as a prop in the vat

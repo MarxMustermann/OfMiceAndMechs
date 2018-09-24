@@ -739,13 +739,13 @@ class Room(saveing.Saveable):
             # move affected items
             for thing in movementBlock:
                 if not thing == self:
-				    if direction == "north":
+                    if direction == "north":
                         thing.moveNorth(initialMovement=False)
-				    elif direction == "south":
+                    elif direction == "south":
                         thing.moveSouth(initialMovement=False)
-				    elif direction == "west":
+                    elif direction == "west":
                         thing.moveWest(initialMovement=False)
-				    elif direction == "east":
+                    elif direction == "east":
                         thing.moveEast(initialMovement=False)
         
         # actually move the room
@@ -756,25 +756,25 @@ class Room(saveing.Saveable):
     move the room to the north
     '''
     def moveNorth(self,force=1,initialMovement=True,movementBlock=set()):
-	    self.moveDirection("north",force,initialMovement,movementBlock)
+        self.moveDirection("north",force,initialMovement,movementBlock)
 
     '''
     move the room to the south
     '''
     def moveSouth(self,force=1,initialMovement=True,movementBlock=set()):
-	    self.moveDirection("south",force,initialMovement,movementBlock)
+        self.moveDirection("south",force,initialMovement,movementBlock)
 
     '''
     move the room to the west
     '''
     def moveWest(self,initialMovement=True,force=1,movementBlock=set()):
-	    self.moveDirection("west",force,initialMovement,movementBlock)
+        self.moveDirection("west",force,initialMovement,movementBlock)
 
     '''
     move the room to the east
     '''
     def moveEast(self,initialMovement=True, movementToken=None,force=1):
-	    self.moveDirection("east",force,initialMovement,movementBlock)
+        self.moveDirection("east",force,initialMovement,movementBlock)
     
     def getAffectedByMovementDirection(self,direction,force=1,movementBlock=set()):
         # gather things that would be affected on terrain level

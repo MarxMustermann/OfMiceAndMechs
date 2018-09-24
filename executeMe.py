@@ -267,6 +267,7 @@ if args.debug:
     interaction.debug = True
     characters.debug = True
     quests.debug = True
+    canvas.debug = True
 else:
     '''
     dummy logger
@@ -283,6 +284,7 @@ else:
     interaction.debug = False
     characters.debug = False
     quests.debug = False
+    canvas.debug = False
 
 # bad code: common variables with modules
 items.debugMessages = debugMessages

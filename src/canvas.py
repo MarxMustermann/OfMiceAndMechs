@@ -95,10 +95,9 @@ class TileMapping(Mapping):
     set the rendering mode AND recalculate the tile map
     """
     def setRenderingMode(self,mode):
-        # sanatize input
-        # bad code: should raise error
+        # input validation
         if mode not in self.modes:
-            mode = "testTiles"
+            raise Exception("tired to switch to unkown mode: "+mode)
 
         # set mode
         self.mode = mode
@@ -132,10 +131,9 @@ class DisplayMapping(Mapping):
     set the rendering mode AND recalculate the char map
     """
     def setRenderingMode(self,mode):
-        # sanatize input
-        # bad code: should raise exception
-        if mode not in self.modes:
-            mode = "pureASCII"
+        # validate input
+        if not mode in self.modes:
+            raise Exception("tired to switch to unkown mode: "+mode)
 
         # set mode
         self.mode = mode
@@ -200,8 +198,7 @@ class Canvas(object):
 
         # validate input
         if x < 0 or y < 0 or x > self.size[0] or y > self.size[1]:
-            # bad code: should raise an out of bounds error
-            return 
+            raise Exception("painted out of bounds")
 
         # set pixel
         self.chars[x][y] = char
@@ -261,14 +258,14 @@ class Canvas(object):
                 if isinstance(char, int):
                     # scale the tile
                     # bad code: rescales each tile individually and on each render
-                    # bad code: exceptions should be prevented/handled not hidden
                     try:
                         image = self.tileMapping.indexedMapping[char]
                         if not tileSize == 10:
                             image = pygame.transform.scale(image,(int(tileSize*(image.get_width()/10)),int(tileSize*(image.get_height()/10))))
                         pydisplay.blit(image,(counterX*(tileSize+1), counterY*(tileSize+1)))
                     except:
-                        pass
+                        if debug:
+                            raise Exception("unable to scale image")
                 counterX += 1
             counterY += 1
 

@@ -1060,28 +1060,58 @@ class Terrain(saveing.Saveable):
         else:
             debugMessages.append("invalid movement direction: "+str(direction))
 
-    '''
-    move a room to the north
-    bad code: nearly identical code for each direction
-    '''
-    def moveRoomNorth(self,room,force=1,movementBlock=[]):
-        if room.offsetY > -5:
-            # naively move the room
-            room.offsetY -= 1
-        else:
-            # remove room from current tile
-            room.offsetY = 9
+    def moveRoomDirection(self,direction,room,force=1,movementBlock=[]):
+        def removeRoom(room):
             if (room.xPosition,room.yPosition) in self.roomByCoordinates:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)].remove(room)
                 if not len(self.roomByCoordinates[(room.xPosition,room.yPosition)]):
                     del self.roomByCoordinates[(room.xPosition,room.yPosition)]
-
-            # add room to tile in the north
-            room.yPosition -= 1
+        def addRoom(room):
             if (room.xPosition,room.yPosition) in self.roomByCoordinates:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
             else:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
+
+        if direction == "north":
+            if room.offsetY > -5:
+                # naively move the room
+                room.offsetY -= 1
+            else:
+                # remove room from current tile
+                room.offsetY = 9
+                removeRoom(room)
+                room.yPosition -= 1
+                addRoom(room)
+        elif direction == "south":
+            if room.offsetY < 9:
+                # naively move the room
+                room.offsetY += 1
+            else:
+                # remove room from current tile
+                room.offsetY = -5
+                removeRoom(room)
+                room.yPosition += 1
+                addRoom(room)
+        elif direction == "east":
+            if room.offsetX < 9:
+                # naively move the room
+                room.offsetX += 1
+            else:
+                # remove room from current tile
+                room.offsetX = -5
+                removeRoom(room)
+                room.xPosition += 1
+                addRoom(room)
+        elif direction == "west":
+            if room.offsetX > -5:
+                # naively move the room
+                room.offsetX -= 1
+            else:
+                # remove room from current tile
+                room.offsetX = 9
+                removeRoom(room)
+                room.xPosition -= 1
+                addRoom(room)
 
         # kill characters under mech
         for char in self.characters:
@@ -1094,112 +1124,7 @@ class Terrain(saveing.Saveable):
         # reset paths
         if hasattr(self,"watershedStart"):
             self.calculatePathMap()
-
-    '''
-    move a room to the south
-    bad code: nearly identical code for each direction
-    '''
-    def moveRoomSouth(self,room,force=1,movementBlock=[]):
-        if room.offsetY < 9:
-            # naively move the room
-            room.offsetY += 1
-        else:
-            # remove room from current tile
-            room.offsetY = -5
-            if (room.xPosition,room.yPosition) in self.roomByCoordinates:
-                self.roomByCoordinates[(room.xPosition,room.yPosition)].remove(room)
-                if not len(self.roomByCoordinates[(room.xPosition,room.yPosition)]):
-                    del self.roomByCoordinates[(room.xPosition,room.yPosition)]
-
-            # add room to tile in the south
-            room.yPosition += 1
-            if (room.xPosition,room.yPosition) in self.roomByCoordinates:
-                self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
-            else:
-                self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
-
-        # kill characters under mech
-        for char in self.characters:
-            if (char.xPosition > room.xPosition*15+room.offsetX and 
-               char.xPosition < room.xPosition*15+room.offsetX+room.sizeX and
-               char.yPosition > room.yPosition*15+room.offsetY and
-               char.yPosition < room.yPosition*15+room.offsetY+room.sizeY):
-                    char.die()
-
-        # reset paths
-        if hasattr(self,"watershedStart"):
-            self.calculatePathMap()
-
-    '''
-    move a room to the west
-    bad code: nearly identical code for each direction
-    '''
-    def moveRoomWest(self,room):
-        if room.offsetX > -5:
-            # naively move the room
-            room.offsetX -= 1
-        else:
-            # remove room from current tile
-            room.offsetX = 9
-            if (room.xPosition,room.yPosition) in self.roomByCoordinates:
-                self.roomByCoordinates[(room.xPosition,room.yPosition)].remove(room)
-                if not len(self.roomByCoordinates[(room.xPosition,room.yPosition)]):
-                    del self.roomByCoordinates[(room.xPosition,room.yPosition)]
-
-            # add room to tile in the west
-            room.xPosition -= 1
-            if (room.xPosition,room.yPosition) in self.roomByCoordinates:
-                self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
-            else:
-                self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
-
-        # kill characters under mech
-        for char in self.characters:
-            if (char.xPosition > room.xPosition*15+room.offsetX and 
-               char.xPosition < room.xPosition*15+room.offsetX+room.sizeX and
-               char.yPosition > room.yPosition*15+room.offsetY and
-               char.yPosition < room.yPosition*15+room.offsetY+room.sizeY):
-                    char.die()
-
-        # reset paths
-        if hasattr(self,"watershedStart"):
-            self.calculatePathMap()
-
-    '''
-    move a room to the east
-    bad code: nearly identical code for each direction
-    '''
-    def moveRoomEast(self,room):
-        if room.offsetX < 9:
-            # naively move the room
-            room.offsetX += 1
-        else:
-            # remove room from current tile
-            room.offsetX = -5
-            if (room.xPosition,room.yPosition) in self.roomByCoordinates:
-                self.roomByCoordinates[(room.xPosition,room.yPosition)].remove(room)
-                if not len(self.roomByCoordinates[(room.xPosition,room.yPosition)]):
-                    del self.roomByCoordinates[(room.xPosition,room.yPosition)]
-
-            # add room to tile in the east
-            room.xPosition += 1
-            if (room.xPosition,room.yPosition) in self.roomByCoordinates:
-                self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
-            else:
-                self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
-
-        # kill characters under mech
-        for char in self.characters:
-            if (char.xPosition > room.xPosition*15+room.offsetX and 
-               char.xPosition < room.xPosition*15+room.offsetX+room.sizeX and
-               char.yPosition > room.yPosition*15+room.offsetY and
-               char.yPosition < room.yPosition*15+room.offsetY+room.sizeY):
-                    char.die()
-
-        # reset paths
-        if hasattr(self,"watershedStart"):
-            self.calculatePathMap()
-
+            
     '''
     teleport a room to another position
     '''

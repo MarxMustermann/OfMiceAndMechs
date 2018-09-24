@@ -746,7 +746,7 @@ class Room(saveing.Saveable):
                     thing.moveNorth(initialMovement=False)
         
         # actually move the room
-        self.terrain.moveRoomNorth(self)
+        self.terrain.moveRoomDirection("north",self)
         messages.append("*RUMBLE*")
 
     '''
@@ -776,7 +776,7 @@ class Room(saveing.Saveable):
                     thing.moveSouth(initialMovement=False)
         
         # actually move the room
-        self.terrain.moveRoomSouth(self)
+        self.terrain.moveRoomDirection("south",self)
         messages.append("*RUMBLE*")
 
     '''
@@ -806,7 +806,7 @@ class Room(saveing.Saveable):
                     thing.moveWest(initialMovement=False)
         
         # actually move the room
-        self.terrain.moveRoomWest(self)
+        self.terrain.moveRoomDirection("west",self)
         messages.append("*RUMBLE*")
 
     '''
@@ -836,7 +836,7 @@ class Room(saveing.Saveable):
                     thing.moveEast(initialMovement=False)
         
         # actually move the room
-        self.terrain.moveRoomEast(self)
+        self.terrain.moveRoomDirection("east",self)
         messages.append("*RUMBLE*")
     
     def getAffectedByMovementDirection(self,direction,force=1,movementBlock=set()):

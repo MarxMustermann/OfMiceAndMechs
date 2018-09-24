@@ -165,14 +165,11 @@ class Room(saveing.Saveable):
                 elif char == "I":
                      #to be commlink
                     itemsOnFloor.append(items.Commlink(rowCounter,lineCounter,creator=self))
-                elif char == "H":
+                elif char in ["H","'"]:
                     # add hutch
-                    # bad code: handle state some other way
-                    itemsOnFloor.append(items.Hutch(rowCounter,lineCounter,creator=self))
-                elif char == "'":
-                    # add hutch
-                    # bad code: handle state some other way
-                    itemsOnFloor.append(items.Hutch(rowCounter,lineCounter,creator=self,activated=True))
+					# bad code: handle state some other way
+                    mapping = {"H":False,"'":True}
+                    itemsOnFloor.append(items.Hutch(rowCounter,lineCounter,creator=self,activated=mapping[char]))
                 elif char == "o":
                     #to be grid
                     itemsOnFloor.append(items.Item(displayChars.grid,rowCounter,lineCounter,creator=self))

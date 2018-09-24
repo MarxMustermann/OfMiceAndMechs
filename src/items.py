@@ -1093,7 +1093,7 @@ class Pile(Item):
         # spawn item to inventory
         character.inventory.append(self.itemType(creator=self))
         character.changed()
-        messages.append("you take a piece of "+str(self.itemType))
+        messages.append("you take a piece of "+str(self.itemType.type))
 
         # reduce item count
         self.numContained -= 1

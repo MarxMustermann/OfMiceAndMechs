@@ -450,30 +450,19 @@ class Character(saving.Saveable):
 
         # move along the predetermined path
         currentPosition = (self.xPosition,self.yPosition)
-        if self.path and not self.path == [currentPosition]:
-            nextPosition = self.path[0]
+        if not (self.path and not self.path == [currentPosition]):
+            return True
 
-            item = None
-            if self.room:
-                # move naively within a room
-                if nextPosition[0] == currentPosition[0]:
-                    if nextPosition[1] < currentPosition[1]:
-                        item = self.room.moveCharacterDirection(self,"north")
-                    elif nextPosition[1] > currentPosition[1]:
-                        item = self.room.moveCharacterDirection(self,"south")
-                    else:
-                        # smooth over impossible state
-                        if not debug:
-                            # resorting to teleport
-                            self.xPosition = nextPosition[0]
-                            self.yPosition = nextPosition[1]
-                            self.changed()
-                        else:
-                            debugMessages.append("character moved on non continious path")
-                elif nextPosition[0] == currentPosition[0]-1 and nextPosition[1] == currentPosition[1]:
-                    item = self.room.moveCharacterDirection(self,"west")
-                elif nextPosition[0] == currentPosition[0]+1 and nextPosition[1] == currentPosition[1]:
-                    item = self.room.moveCharacterDirection(self,"east")
+        nextPosition = self.path[0]
+
+        item = None
+        if self.room:
+            # move naively within a room
+            if nextPosition[0] == currentPosition[0]:
+                if nextPosition[1] < currentPosition[1]:
+                    item = self.room.moveCharacterDirection(self,"north")
+                elif nextPosition[1] > currentPosition[1]:
+                    item = self.room.moveCharacterDirection(self,"south")
                 else:
                     # smooth over impossible state
                     if not debug:
@@ -483,82 +472,92 @@ class Character(saving.Saveable):
                         self.changed()
                     else:
                         debugMessages.append("character moved on non continious path")
-            else:
-                # check if a room was entered
-                # basically checks if a walkable space/door within a room on the coordinate the chracter walks on. If there is
-                # an item it will be saved for interaction
-                # bad pattern: collision detection and room teleportation should be done in terrain
-
-                for room in self.terrain.rooms:
-                    def moveCharacter(localisedEntry,direction):
-                        if localisedEntry in room.walkingAccess:
-                            # check whether the chracter walked into something
-                            if localisedEntry in room.itemByCoordinates:
-                                for listItem in room.itemByCoordinates[localisedEntry]:
-                                    if not listItem.walkable:
-                                        return listItem
-                            # move the chracter into the room
-                            room.addCharacter(self,localisedEntry[0],localisedEntry[1])
-                            self.terrain.characters.remove(self)
-                            self.terrain = None
-                            self.changed()
-                            return
-                        else:
-                            # show message the character bumped into a wall
-                            # bad pattern: why restrict the player to standard entry points?
-                            messages.append("you cannot move there ("+direction+")")
-                            return
-
-                    # handle the character moving into the rooms boundaries
-                    # check north
-                    if room.yPosition*15+room.offsetY+room.sizeY == nextPosition[1]+1:
-                        if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+room.sizeX > self.xPosition:
-                            localisedEntry = (self.xPosition%15-room.offsetX,nextPosition[1]%15-room.offsetY)
-                            item = moveCharacter(localisedEntry,"north")
-                            break
-                    # check south
-                    if room.yPosition*15+room.offsetY == nextPosition[1]:
-                        if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+room.sizeX > self.xPosition:
-                            localisedEntry = ((self.xPosition-room.offsetX)%15,((nextPosition[1]-room.offsetY)%15))
-                            item = moveCharacter(localisedEntry,"south")
-                            break
-                    # check east
-                    if room.xPosition*15+room.offsetX+room.sizeX == nextPosition[0]+1:
-                        if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+room.sizeY > self.yPosition:
-                            localisedEntry = ((nextPosition[0]-room.offsetX)%15,(self.yPosition-room.offsetY)%15)
-                            item = moveCharacter(localisedEntry,"east")
-                            break
-                    # check west
-                    if room.xPosition*15+room.offsetX == nextPosition[0]:
-                        if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+room.sizeY > self.yPosition:
-                            localisedEntry = ((nextPosition[0]-room.offsetX)%15,(self.yPosition-room.offsetY)%15)
-                            item = moveCharacter(localisedEntry,"west")
-                            break
-                else:
-                    # move the char to the next position on path
-                    self.xPosition = nextPosition[0]
-                    self.yPosition = nextPosition[1]
-                    self.changed()
-            
-            if item:
-                # open doors
-                # bad pattern: this should not happen here
-                if isinstance(item,items.Door):
-                    item.apply(self)
-                return False
+            elif nextPosition[0] == currentPosition[0]-1 and nextPosition[1] == currentPosition[1]:
+                item = self.room.moveCharacterDirection(self,"west")
+            elif nextPosition[0] == currentPosition[0]+1 and nextPosition[1] == currentPosition[1]:
+                item = self.room.moveCharacterDirection(self,"east")
             else:
                 # smooth over impossible state
                 if not debug:
-                    if not self.path or not nextPosition == self.path[0]:
-                        return False
+                    # resorting to teleport
+                    self.xPosition = nextPosition[0]
+                    self.yPosition = nextPosition[1]
+                    self.changed()
+                else:
+                    debugMessages.append("character moved on non continious path")
+        else:
+            # check if a room was entered
+            # basically checks if a walkable space/door within a room on the coordinate the chracter walks on. If there is
+            # an item it will be saved for interaction
+            # bad pattern: collision detection and room teleportation should be done in terrain
 
-                # remove last step from path
-                if (self.xPosition == nextPosition[0] and self.yPosition == nextPosition[1]):
-                    self.path = self.path[1:]
+            for room in self.terrain.rooms:
+                def moveCharacter(localisedEntry,direction):
+                    if localisedEntry in room.walkingAccess:
+                        # check whether the chracter walked into something
+                        if localisedEntry in room.itemByCoordinates:
+                            for listItem in room.itemByCoordinates[localisedEntry]:
+                                if not listItem.walkable:
+                                    return listItem
+                        # move the chracter into the room
+                        room.addCharacter(self,localisedEntry[0],localisedEntry[1])
+                        self.terrain.characters.remove(self)
+                        self.terrain = None
+                        self.changed()
+                        return
+                    else:
+                        # show message the character bumped into a wall
+                        # bad pattern: why restrict the player to standard entry points?
+                        messages.append("you cannot move there ("+direction+")")
+                        return
+
+                # handle the character moving into the rooms boundaries
+                # check north
+                if room.yPosition*15+room.offsetY+room.sizeY == nextPosition[1]+1:
+                    if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+room.sizeX > self.xPosition:
+                        localisedEntry = (self.xPosition%15-room.offsetX,nextPosition[1]%15-room.offsetY)
+                        item = moveCharacter(localisedEntry,"north")
+                        break
+                # check south
+                if room.yPosition*15+room.offsetY == nextPosition[1]:
+                    if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+room.sizeX > self.xPosition:
+                        localisedEntry = ((self.xPosition-room.offsetX)%15,((nextPosition[1]-room.offsetY)%15))
+                        item = moveCharacter(localisedEntry,"south")
+                        break
+                # check east
+                if room.xPosition*15+room.offsetX+room.sizeX == nextPosition[0]+1:
+                    if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+room.sizeY > self.yPosition:
+                        localisedEntry = ((nextPosition[0]-room.offsetX)%15,(self.yPosition-room.offsetY)%15)
+                        item = moveCharacter(localisedEntry,"east")
+                        break
+                # check west
+                if room.xPosition*15+room.offsetX == nextPosition[0]:
+                    if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+room.sizeY > self.yPosition:
+                        localisedEntry = ((nextPosition[0]-room.offsetX)%15,(self.yPosition-room.offsetY)%15)
+                        item = moveCharacter(localisedEntry,"west")
+                        break
+            else:
+                # move the char to the next position on path
+                self.xPosition = nextPosition[0]
+                self.yPosition = nextPosition[1]
+                self.changed()
+            
+        if item:
+            # open doors
+            # bad pattern: this should not happen here
+            if isinstance(item,items.Door):
+                item.apply(self)
             return False
         else:
-            # bad code: should be a guard
-            return True
+            # smooth over impossible state
+            if not debug:
+                if not self.path or not nextPosition == self.path[0]:
+                    return False
+
+            # remove last step from path
+            if (self.xPosition == nextPosition[0] and self.yPosition == nextPosition[1]):
+                self.path = self.path[1:]
+        return False
 
     """
     almost straightforward dropping of items

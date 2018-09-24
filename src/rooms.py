@@ -739,43 +739,12 @@ class Room(saveing.Saveable):
             # move affected items
             for thing in movementBlock:
                 if not thing == self:
-                    if direction == "north":
-                        thing.moveNorth(initialMovement=False)
-                    elif direction == "south":
-                        thing.moveSouth(initialMovement=False)
-                    elif direction == "west":
-                        thing.moveWest(initialMovement=False)
-                    elif direction == "east":
-                        thing.moveEast(initialMovement=False)
+                    thing.moveDirection(direction,initialMovement=False)
         
         # actually move the room
         self.terrain.moveRoomDirection(direction,self)
         messages.append("*RUMBLE*")
 
-    '''
-    move the room to the north
-    '''
-    def moveNorth(self,force=1,initialMovement=True,movementBlock=set()):
-        self.moveDirection("north",force,initialMovement,movementBlock)
-
-    '''
-    move the room to the south
-    '''
-    def moveSouth(self,force=1,initialMovement=True,movementBlock=set()):
-        self.moveDirection("south",force,initialMovement,movementBlock)
-
-    '''
-    move the room to the west
-    '''
-    def moveWest(self,initialMovement=True,force=1,movementBlock=set()):
-        self.moveDirection("west",force,initialMovement,movementBlock)
-
-    '''
-    move the room to the east
-    '''
-    def moveEast(self,initialMovement=True, movementBlock=set(),force=1):
-        self.moveDirection("east",force,initialMovement,movementBlock)
-    
     def getAffectedByMovementDirection(self,direction,force=1,movementBlock=set()):
         # gather things that would be affected on terrain level
         self.terrain.getAffectedByRoomMovementDirection(self,direction,force=force,movementBlock=movementBlock)

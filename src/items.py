@@ -315,30 +315,6 @@ class Item(saving.Saveable):
                 self.destroy()
 
     '''
-    move the item to the north
-    '''
-    def moveNorth(self,force=1,initialMovement=True):
-        self.moveDirection("north",force,initialMovement)
-
-    '''
-    move the item to the south
-    '''
-    def moveSouth(self,force=1,initialMovement=True):
-        self.moveDirection("south",force,initialMovement)
-
-    '''
-    move the item to the west
-    '''
-    def moveWest(self,force=1,initialMovement=True):
-        self.moveDirection("west",force,initialMovement)
-
-    '''
-    move the item to the east
-    '''
-    def moveEast(self,force=1,initialMovement=True):
-        self.moveDirection("east",force,initialMovement)
-    
-    '''
     get the physical resistance to beeing moved
     '''
     def getResistance(self):
@@ -399,7 +375,7 @@ class Scrap(Item):
 
     def moveDirection(self,direction,force=1,initialMovement=True):
         self.dropStuff()
-	    super().moveDirection(direction,force,initialMovement)
+        super().moveDirection(direction,force,initialMovement)
 
     '''
     leave a trail of pieces
@@ -807,22 +783,22 @@ class Display(Item):
         move room to north
         '''
         def moveNorth():
-            self.room.moveNorth(force=self.room.engineStrength)
+            self.room.moveDirection("north",force=self.room.engineStrength)
         '''
         move room to south
         '''
         def moveSouth():
-            self.room.moveSouth(force=self.room.engineStrength)
+            self.room.moveDirection("south",force=self.room.engineStrength)
         '''
         move room to west
         '''
         def moveWest():
-            self.room.moveWest(force=self.room.engineStrength)
+            self.room.moveDirection("west",force=self.room.engineStrength)
         '''
         move room to east
         '''
         def moveEast():
-            self.room.moveEast(force=self.room.engineStrength)
+            self.room.moveDirection("east",force=self.room.engineStrength)
 
         '''
         reset key mapping

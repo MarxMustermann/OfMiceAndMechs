@@ -382,6 +382,8 @@ class MetaQuestSequence(Quest):
         if len(self.subQuests):
             self.startWatching(self.subQuests[0],self.recalculate)
 
+        self.attributesToStore.append("metaDescription")
+
         # save state and register
         self.type = "MetaQuestSequence"
         self.initialState = self.getState()
@@ -392,9 +394,6 @@ class MetaQuestSequence(Quest):
     '''
     def getDiffState(self):
         state = super().getDiffState()
-        # bad code: should use new structure
-        if not self.metaDescription == state["metaDescription"]:
-            state["metaDescription"] = self.metaDescription
 
         # store quests
         (questStates,changedQuests,newQuests,removedQuests) = self.getDiffList(self.subQuests,self.initialState["subQuests"]["ids"])
@@ -418,10 +417,6 @@ class MetaQuestSequence(Quest):
     def getState(self):
         state = super().getState()
 
-        # store attributes
-        # bad code: should use new structure
-        state["metaDescription"] = self.metaDescription
-
         # store sub quests
         state["subQuests"] = {}
         state["subQuests"]["ids"] = []
@@ -437,10 +432,6 @@ class MetaQuestSequence(Quest):
     '''
     def setState(self,state):
         super().setState(state)
-        # load attributes
-        # bad code: should use new structure
-        if "metaDescription" in state:
-            self.metaDescription = state["metaDescription"]
                     
         # load sub quests
         if "subQuests" in state:
@@ -688,6 +679,8 @@ class MetaQuestParralel(Quest):
         for quest in self.subQuests:
             self.startWatching(quest,self.recalculate)
 
+        self.attributesToStore.append("metaDescription")
+
         # store initial state and register
         self.type = "MetaQuestParralel"
         self.initialState = self.getState()
@@ -699,10 +692,6 @@ class MetaQuestParralel(Quest):
     def getDiffState(self):
         state = super().getDiffState()
 
-        # store attributes
-        # bad code: should use new structure
-        if not self.metaDescription == self.initialState["metaDescription"]:
-            state["metaDescription"] = self.metaDescription
         # bad code: repeated store none or id scheme
         lastActive = None
         if self.lastActive:
@@ -731,8 +720,6 @@ class MetaQuestParralel(Quest):
     '''
     def getState(self):
         state = super().getState()
-        # bad code: should use new structure
-        state["metaDescription"] = self.metaDescription
         state["subQuests"] = {}
         state["subQuests"]["ids"] = []
         state["subQuests"]["states"] = {}
@@ -789,9 +776,6 @@ class MetaQuestParralel(Quest):
                     self.subQuests.append(thing)
 
         # load attributes
-        # bad code: should use new structure
-        if "metaDescription" in state:
-            self.metaDescription = state["metaDescription"]
         # bad code: repetetive load from id or none pattern
         if "lastActive" in state:
             if state["lastActive"]:
@@ -1036,6 +1020,9 @@ class NaiveMoveQuest(Quest):
         self.description = "please go to coordinate "+str(self.dstX)+"/"+str(self.dstY)    
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
 
+        self.attributesToStore.extend([
+		      "dstX","dstY","description","sloppy" ])
+
         # save initial state and register
         self.type = "NaiveMoveQuest"
         self.initialState = self.getState()
@@ -1077,15 +1064,6 @@ class NaiveMoveQuest(Quest):
             room = None # bad code: should be the room id
         if not room == self.initialState["room"]:
             state["room"] = room.id
-        # bad code: should use new structure
-        if not self.dstX == self.initialState["dstX"]:
-            state["dstX"] = self.dstX
-        if not self.dstY == self.initialState["dstY"]:
-            state["dstY"] = self.dstY
-        if not self.description == self.initialState["description"]:
-            state["description"] = self.description
-        if not self.sloppy == self.initialState["sloppy"]:
-            state["sloppy"] = self.sloppy
         return state
 
     '''
@@ -1098,11 +1076,6 @@ class NaiveMoveQuest(Quest):
             state["room"] = self.room.id
         else:
             state["room"] = None
-        # bad code: should use new structure
-        state["dstX"] = self.dstX
-        state["dstY"] = self.dstY
-        state["description"] = self.description
-        state["sloppy"] = self.sloppy
         return state
 
     '''
@@ -1122,17 +1095,6 @@ class NaiveMoveQuest(Quest):
                 pass
             else:
                 self.room = None
-
-        # load attributes
-        # bad code: should use new structure
-        if "dstX" in state:
-            self.dstX = state["dstX"]
-        if "dstY" in state:
-            self.dstY = state["dstY"]
-        if "description" in state:
-            self.description = state["description"]
-        if "sloppy" in state:
-            self.sloppy = state["sloppy"]
 
         if "character" in state and state["character"]:
            '''
@@ -2099,6 +2061,8 @@ class ActivateQuestMeta(MetaQuestSequence):
             self.addQuest(quest)
         self.metaDescription = "activate Quest"
 
+        self.attributesToStore.append("sloppy")
+
         # save initial state and register
         self.type = "ActivateQuestMeta"
         self.initialState = self.getState()
@@ -2140,12 +2104,6 @@ class ActivateQuestMeta(MetaQuestSequence):
     '''
     def getDiffState(self):
         state = super().getDiffState()
-        # bad code: should use new structure
-        sloppy = None
-        if hasattr(self,"sloppy") and self.sloppy:
-            sloppy = self.sloppy
-        if not sloppy == self.initialState["sloppy"]:
-            state["sloppy"] = sloppy
         # bad code: repeated id or none pattern
         moveQuest = None
         if hasattr(self,"moveQuest") and self.moveQuest:
@@ -2165,11 +2123,6 @@ class ActivateQuestMeta(MetaQuestSequence):
     '''
     def getState(self):
         state = super().getState()
-        # bad code: should use new structure
-        if hasattr(self,"sloppy") and self.sloppy:
-            state["sloppy"] = self.sloppy
-        else:
-            self.sloppy = None
         # bad code: repeated id or none pattern
         if hasattr(self,"moveQuest") and self.moveQuest:
             state["moveQuest"] = self.moveQuest.id
@@ -2187,9 +2140,6 @@ class ActivateQuestMeta(MetaQuestSequence):
     '''
     def setState(self,state):
         super().setState(state)
-        # bad code: should use new structure
-        if "sloppy" in state:
-            self.sloppy = state["sloppy"]
         if "moveQuest" in state:
             # bad code: repetetive load from id or none pattern
             if state["moveQuest"]:

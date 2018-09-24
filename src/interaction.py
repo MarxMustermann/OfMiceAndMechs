@@ -310,322 +310,166 @@ def processInput(key):
                 ignoreNextAutomated = True
                 doAdvanceGame = False
 
-            # bad code: code repetition for each direction
+            def moveCharacter(direction):
+                # do inner room movement
+                if mainChar.room:
+                    item = mainChar.room.moveCharacterDirection(mainChar,direction)
+
+                    # remeber items bumped into for possible interaction
+                    if item:
+                        messages.append("You cannot walk there "+str(direction))
+                        messages.append("press "+commandChars.activate+" to apply")
+                        header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
+                        return item
+                # do movement on terrain
+                # bad code: these calculation should be done elsewhere
+                else:
+                    # gather the rooms the character might have entered
+                    if direction == "north":
+                        bigX = (mainChar.xPosition)//15
+                        bigY = (mainChar.yPosition-1)//15
+                    elif direction == "south":
+                        bigX = (mainChar.xPosition)//15
+                        bigY = (mainChar.yPosition+1)//15
+                    elif direction == "east":
+                        bigX = (mainChar.xPosition+1)//15
+                        bigY = (mainChar.yPosition)//15
+                    elif direction == "west":
+                        bigX = (mainChar.xPosition)//15
+                        bigY = (mainChar.yPosition-1)//15
+
+                    roomCandidates = []
+                    for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
+                        if coordinate in terrain.roomByCoordinates:
+                            roomCandidates.extend(terrain.roomByCoordinates[coordinate])
+
+                    def enterLocalised(room,localisedEntry):
+                        # get the entry point in room coordinates
+                        if localisedEntry in room.walkingAccess:
+                            # check if the entry point is blocked (by a door)
+                            for item in room.itemByCoordinates[localisedEntry]:
+                                if not item.walkable:
+                                    # print some info
+                                    messages.append("you need to open the door first")
+                                    messages.append("press "+commandChars.activate+" to apply")
+                                    header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
+
+                                    # remember the item for interaction and abort
+                                    return item
+                                # teleport the character into the room
+                                room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
+                                terrain.characters.remove(mainChar)
+                        else:
+                            messages.append("you cannot move there")
+
+                    # check if character has entered a room
+                    hadRoomInteraction = False
+                    for room in roomCandidates:
+                        # check north
+                        if direction == "north":
+                            # check if the character crossed the edge of the room
+                            if room.yPosition*15+room.offsetY+room.sizeY == mainChar.yPosition:
+                                if room.xPosition*15+room.offsetX-1 < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
+                                    # get the entry point in room coordinates
+                                    hadRoomInteraction = True
+                                    localisedEntry = (mainChar.xPosition%15-room.offsetX,mainChar.yPosition%15-room.offsetY-1)
+                                    if localisedEntry[1] == -1:
+                                        localisedEntry = (localisedEntry[0],room.sizeY-1)
+
+                        # check south
+                        elif direction == "south":
+                            # check if the character crossed the edge of the room
+                            if room.yPosition*15+room.offsetY == mainChar.yPosition+1:
+                                if room.xPosition*15+room.offsetX-1 < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
+                                    # get the entry point in room coordinates
+                                    hadRoomInteraction = True
+                                    localisedEntry = ((mainChar.xPosition-room.offsetX)%15,(mainChar.yPosition-room.offsetY+1)%15)
+
+                        # check east
+                        elif direction == "east":
+                            # check if the character crossed the edge of the room
+                            if room.xPosition*15+room.offsetX == mainChar.xPosition+1:
+                                if room.yPosition*15+room.offsetY < mainChar.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > mainChar.yPosition:
+                                    # get the entry point in room coordinates
+                                    hadRoomInteraction = True
+                                    localisedEntry = ((mainChar.xPosition-room.offsetX+1)%15,(mainChar.yPosition-room.offsetY)%15)
+
+                        # check west
+                        elif direction == "west":
+                            # check if the character crossed the edge of the room
+                            if room.xPosition*15+room.offsetX+room.sizeX == mainChar.xPosition:
+                                if room.yPosition*15+room.offsetY < mainChar.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > mainChar.yPosition:
+                                    # get the entry point in room coordinates
+                                    hadRoomInteraction = True
+                                    localisedEntry = ((mainChar.xPosition-room.offsetX-1)%15,(mainChar.yPosition-room.offsetY)%15)
+
+                        else:
+                            debugMessages.append("moved into invalid direction: "+str(direction))
+
+                        if hadRoomInteraction:
+                            item = enterLocalised(room,localisedEntry)
+                            if item:
+                                return item
+
+                    # handle walking without room interaction
+                    if not hadRoomInteraction:
+                        # get the items on the destination coordinate 
+                        try:
+                            if direction == "north":
+                                foundItems = terrain.itemByCoordinates[mainChar.xPosition,mainChar.yPosition-1]
+                            elif direction == "south":
+                                foundItems = terrain.itemByCoordinates[mainChar.xPosition,mainChar.yPosition+1]
+                            elif direction == "east":
+                                foundItems = terrain.itemByCoordinates[mainChar.xPosition+1,mainChar.yPosition]
+                            elif direction == "west":
+                                foundItems = terrain.itemByCoordinates[mainChar.xPosition-1,mainChar.yPosition]
+                        except Exception as e:
+                            foundItems = []
+
+                        # check for items blocking the move to the destination coordinate
+                        foundItem = False
+                        item = None
+                        for item in foundItems:
+                            if item and not item.walkable:
+                                # print some info
+                                messages.append("You cannot walk there")
+                                messages.append("press "+commandChars.activate+" to apply")
+                                header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
+
+                                # remember the item for interaction and abort
+                                foundItem = True
+                                break
+
+                        # move the character
+                        if not foundItem:
+                            if direction == "north":
+                                mainChar.yPosition -= 1
+                            elif direction == "south":
+                                mainChar.yPosition += 1
+                            elif direction == "east":
+                                mainChar.xPosition += 1
+                            elif direction == "west":
+                                mainChar.xPosition -= 1
+                            mainChar.changed()
+
+                        return item
+
             if key in (commandChars.move_north):
-                # do inner room movement
-                if mainChar.room:
-                    item = mainChar.room.moveCharacterDirection(mainChar,"north")
-
-                    # remeber items bumped into for possible interaction
-                    if item:
-                        messages.append("You cannot walk there")
-                        messages.append("press "+commandChars.activate+" to apply")
-                        itemMarkedLast = item
-                        header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
-                        return
-                # do movement on terrain
-                # bad code: these calculation should be done elsewhere
-                else:
-                    # gather the rooms the character might have entered
-                    roomCandidates = []
-                    bigX = (mainChar.xPosition)//15
-                    bigY = (mainChar.yPosition-1)//15
-                    for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
-                        if coordinate in terrain.roomByCoordinates:
-                            roomCandidates.extend(terrain.roomByCoordinates[coordinate])
-
-                    # check if character has entered a room
-                    hadRoomInteraction = False
-                    for room in roomCandidates:
-                        # check if the character crossed the edge of the room
-                        if room.yPosition*15+room.offsetY+room.sizeY == mainChar.yPosition:
-                            if room.xPosition*15+room.offsetX-1 < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
-                                # get the entry point in room coordinates
-                                hadRoomInteraction = True
-                                localisedEntry = (mainChar.xPosition%15-room.offsetX,mainChar.yPosition%15-room.offsetY-1)
-                                if localisedEntry[1] == -1:
-                                    localisedEntry = (localisedEntry[0],room.sizeY-1)
-
-                                if localisedEntry in room.walkingAccess:
-                                    # check if the entry point is blocked (by a door)
-                                    for item in room.itemByCoordinates[localisedEntry]:
-                                        if not item.walkable:
-                                            # print some info
-                                            messages.append("you need to open the door first")
-                                            messages.append("press "+commandChars.activate+" to apply")
-                                            header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
-
-                                            # remember the item for interaction and abort
-                                            itemMarkedLast = item
-                                            return
-                                    # teleport the character into the room
-                                    room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
-                                    terrain.characters.remove(mainChar)
-                                else:
-                                    messages.append("you cannot move there")
-
-                    # handle walking without room interaction
-                    if not hadRoomInteraction:
-                        # get the items on the destination coordinate 
-                        try:
-                            foundItems = terrain.itemByCoordinates[mainChar.xPosition,mainChar.yPosition-1]
-                        except Exception as e:
-                            foundItems = []
-
-                        # check for items blocking the move to the destination coordinate
-                        foundItem = False
-                        for item in foundItems:
-                            if item and not item.walkable:
-                                # print some info
-                                messages.append("You cannot walk there")
-                                messages.append("press "+commandChars.activate+" to apply")
-                                header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
-
-                                # remember the item for interaction and abort
-                                itemMarkedLast = item
-                                foundItem = True
-
-                        # move the character
-                        if not foundItem:
-                            mainChar.yPosition -= 1
-                            mainChar.changed()
-
-            # bad code: code repetition for each direction
+                itemMarkedLast = moveCharacter("north")
+                if itemMarkedLast:
+                    return
             if key in (commandChars.move_south):
-                # do inner room movement
-                if mainChar.room:
-                    item = mainChar.room.moveCharacterDirection(mainChar,"south")
-
-                    # remeber items bumped into for possible interaction
-                    if item:
-                        messages.append("You cannot walk there")
-                        messages.append("press "+commandChars.activate+" to apply")
-                        itemMarkedLast = item
-                        header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
-                        return
-                # do movement on terrain
-                # bad code: these calculation should be done elsewhere
-                else:
-                    # gather the rooms the character might have entered
-                    roomCandidates = []
-                    bigX = (mainChar.xPosition)//15
-                    bigY = (mainChar.yPosition+1)//15
-                    for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
-                        if coordinate in terrain.roomByCoordinates:
-                            roomCandidates.extend(terrain.roomByCoordinates[coordinate])
-
-                    # check if character has entered a room
-                    hadRoomInteraction = False
-                    for room in roomCandidates:
-                        # check if the character crossed the edge of the room
-                        if room.yPosition*15+room.offsetY == mainChar.yPosition+1:
-                            if room.xPosition*15+room.offsetX-1 < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
-                                # get the entry point in room coordinates
-                                hadRoomInteraction = True
-                                localisedEntry = ((mainChar.xPosition-room.offsetX)%15,(mainChar.yPosition-room.offsetY+1)%15)
-
-                                if localisedEntry in room.walkingAccess:
-                                    # check if the entry point is blocked (by a door)
-                                    for item in room.itemByCoordinates[localisedEntry]:
-                                        if not item.walkable:
-                                            # print some info
-                                            messages.append("you need to open the door first")
-                                            messages.append("press "+commandChars.activate+" to apply")
-                                            header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
-
-                                            # remember the item for interaction and abort
-                                            itemMarkedLast = item
-                                            return
-                                    
-                                    # teleport the character into the room
-                                    room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
-                                    terrain.characters.remove(mainChar)
-                                else:
-                                    messages.append("you cannot move there")
-
-                    # handle walking without room interaction
-                    if not hadRoomInteraction:
-                        # get the items on the destination coordinate 
-                        try:
-                            foundItems = terrain.itemByCoordinates[mainChar.xPosition,mainChar.yPosition+1]
-                        except Exception as e:
-                            foundItems = []
-
-                        # check for items blocking the move to the destination coordinate
-                        foundItem = False
-                        for item in foundItems:
-                            if item and not item.walkable:
-                                # print some info
-                                messages.append("You cannot walk there")
-                                messages.append("press "+commandChars.activate+" to apply")
-                                header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
-
-                                # remember the item for interaction and abort
-                                itemMarkedLast = item
-                                foundItem = True
-
-                        # move the character
-                        if not foundItem:
-                            mainChar.yPosition += 1
-                            mainChar.changed()
-
-            # bad code: code repetition for each direction
+                itemMarkedLast = moveCharacter("south")
+                if itemMarkedLast:
+                    return
             if key in (commandChars.move_east):
-                # do inner room movement
-                if mainChar.room:
-                    item = mainChar.room.moveCharacterDirection(mainChar,"east")
-
-                    # remeber items bumped into for possible interaction
-                    if item:
-                        messages.append("You cannot walk there")
-                        messages.append("press "+commandChars.activate+" to apply")
-                        itemMarkedLast = item
-                        header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
-                        return
-                # do movement on terrain
-                # bad code: these calculation should be done elsewhere
-                else:
-                    # gather the rooms the character might have entered
-                    roomCandidates = []
-                    bigX = (mainChar.xPosition+1)//15
-                    bigY = (mainChar.yPosition)//15
-                    for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
-                        if coordinate in terrain.roomByCoordinates:
-                            roomCandidates.extend(terrain.roomByCoordinates[coordinate])
-
-                    # check if character has entered a room
-                    hadRoomInteraction = False
-                    for room in roomCandidates:
-                        # check if the character crossed the edge of the room
-                        if room.xPosition*15+room.offsetX == mainChar.xPosition+1:
-                            if room.yPosition*15+room.offsetY < mainChar.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > mainChar.yPosition:
-                                # get the entry point in room coordinates
-                                hadRoomInteraction = True
-                                localisedEntry = ((mainChar.xPosition-room.offsetX+1)%15,(mainChar.yPosition-room.offsetY)%15)
-
-                                if localisedEntry in room.walkingAccess:
-                                    # check if the entry point is blocked (by a door)
-                                    for item in room.itemByCoordinates[localisedEntry]:
-                                        if not item.walkable:
-                                            # print some info
-                                            messages.append("you need to open the door first")
-                                            messages.append("press "+commandChars.activate+" to apply")
-                                            header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
-
-                                            # remember the item for interaction and abort
-                                            itemMarkedLast = item
-                                            return
-                                    
-                                    # teleport the character into the room
-                                    room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
-                                    terrain.characters.remove(mainChar)
-                                else:
-                                    messages.append("you cannot move there")
-
-                    # handle walking without room interaction
-                    if not hadRoomInteraction:
-                        # get the items on the destination coordinate 
-                        try:
-                            foundItems = terrain.itemByCoordinates[mainChar.xPosition+1,mainChar.yPosition]
-                        except Exception as e:
-                            foundItems = []
-
-                        # check for items blocking the move to the destination coordinate
-                        foundItem = False
-                        for item in foundItems:
-                            if item and not item.walkable:
-                                # print some info
-                                messages.append("You cannot walk there")
-                                messages.append("press "+commandChars.activate+" to apply")
-                                header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
-
-                                # remember the item for interaction and abort
-                                itemMarkedLast = item
-                                foundItem = True
-
-                        # move the character
-                        if not foundItem:
-                            mainChar.xPosition += 1
-                            mainChar.changed()
-
-            # bad code: code repetition for each direction
+                itemMarkedLast = moveCharacter("east")
+                if itemMarkedLast:
+                    return
             if key in (commandChars.move_west):
-                # do inner room movement
-                if mainChar.room:
-                    item = mainChar.room.moveCharacterDirection(mainChar,"west")
-
-                    # remeber items bumped into for possible interaction
-                    if item:
-                        messages.append("You cannot walk there")
-                        messages.append("press "+commandChars.activate+" to apply")
-                        itemMarkedLast = item
-                        header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
-                        return
-                # do movement on terrain
-                # bad code: these calculation should be done elsewhere
-                else:
-                    # gather the rooms the character might have entered
-                    roomCandidates = []
-                    bigX = (mainChar.xPosition)//15
-                    bigY = (mainChar.yPosition-1)//15
-                    for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
-                        if coordinate in terrain.roomByCoordinates:
-                            roomCandidates.extend(terrain.roomByCoordinates[coordinate])
-
-                    # check if character has entered a room
-                    hadRoomInteraction = False
-                    for room in roomCandidates:
-                        # check if the character crossed the edge of the room
-                        if room.xPosition*15+room.offsetX+room.sizeX == mainChar.xPosition:
-                            if room.yPosition*15+room.offsetY < mainChar.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > mainChar.yPosition:
-                                # get the entry point in room coordinates
-                                hadRoomInteraction = True
-                                localisedEntry = ((mainChar.xPosition-room.offsetX-1)%15,(mainChar.yPosition-room.offsetY)%15)
-
-                                if localisedEntry in room.walkingAccess:
-                                    # check if the entry point is blocked (by a door)
-                                    for item in room.itemByCoordinates[localisedEntry]:
-                                        if not item.walkable:
-                                            # print some info
-                                            messages.append("you need to open the door first")
-                                            messages.append("press "+commandChars.activate+" to apply")
-                                            header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
-
-                                            # remember the item for interaction and abort
-                                            itemMarkedLast = item
-                                            return
-                                    
-                                    # teleport the character into the room
-                                    room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
-                                    terrain.characters.remove(mainChar)
-                                else:
-                                    messages.append("you cannot move there")
-
-                    # handle walking without room interaction
-                    if not hadRoomInteraction:
-                        # get the items on the destination coordinate 
-                        try:
-                            foundItems = terrain.itemByCoordinates[mainChar.xPosition-1,mainChar.yPosition]
-                        except Exception as e:
-                            foundItems = []
-
-                        # check for items blocking the move to the destination coordinate
-                        foundItem = False
-                        for item in foundItems:
-                            if item and not item.walkable:
-                                # print some info
-                                messages.append("You cannot walk there")
-                                messages.append("press "+commandChars.activate+" to apply")
-                                header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
-
-                                # remember the item for interaction and abort
-                                itemMarkedLast = item
-                                foundItem = True
-
-                        # move the character
-                        if not foundItem:
-                            mainChar.xPosition -= 1
-                            mainChar.changed()
+                itemMarkedLast = moveCharacter("west")
+                if itemMarkedLast:
+                    return
 
             # murder the next available character
             # bad pattern: enemies kill on 1 distance so the player should be able to do so too

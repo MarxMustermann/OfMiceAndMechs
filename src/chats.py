@@ -301,7 +301,7 @@ class ReReport(interaction.SubMenu):
     def handleKey(self, key):
         if self.firstRun:
             # show message
-            self.persistentText = "It seems you did not report for duty imediatly. Try to not repeat that" # bad code: spelling
+            self.persistentText = "It seems you did not report for duty immediately. Try to not repeat that"
             self.set_text(self.persistentText)
             self.done = True
             self.firstRun = False

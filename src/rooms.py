@@ -324,7 +324,7 @@ class Room(saveing.Saveable):
 
         self.attributesToStore.extend([
               "yPosition","xPosition","offsetX","offsetY"
-		        ])
+                ])
 
         self.initialState = self.getState()
         loadingRegistry.register(self)
@@ -452,7 +452,7 @@ class Room(saveing.Saveable):
         if not xPosition == None and not yPosition == None:
             self.terrain.teleportRoom(self,(xPosition,yPosition))
 
-	    super().setState(state)
+        super().setState(state)
 
         # update changed items
         if "changedItems" in state:

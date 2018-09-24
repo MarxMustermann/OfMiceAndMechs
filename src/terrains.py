@@ -1323,42 +1323,42 @@ U  U
         # add scrap
         # bad code: repetetive code
         self.testItems = []
-		def addPseudoRandomScrap(counter,xRange,yRange,skips):
+        def addPseudoRandomScrap(counter,xRange,yRange,skips):
             for x in range(xRange[0],xRange[1]):
                 for y in range(yRange[0],yRange[1]):
-				    toSkip = False
-				    for skip in skips:
+                    toSkip = False
+                    for skip in skips:
                         if not x%skip[0] and not y%skip[1]:
-				            toSkip = True
-						    break
+                            toSkip = True
+                            break
                     
-					if toSkip:
-						continue
+                    if toSkip:
+                        continue
 
                     self.testItems.append(items.Scrap(x,y,counter))
                     counter += 1
                     if counter == 16:
                         counter = 1
-			return counter
-		def addPseudoRandomThin(xRange,yRange,modulos,itemType):
+            return counter
+        def addPseudoRandomThin(xRange,yRange,modulos,itemType):
             for x in range(xRange[0],xRange[1]):
                 for y in range(yRange[0],yRange[1]):
                     if x%modulos[0] and y%modulos[1] or (not x%modulos[2] and not x%modulos[3]) or x%modulos[4] or not y%modulos[5]:
                         continue
                     self.testItems.append(itemType(x,y))
 
-		counter = 3
-		counter = addPseudoRandomScrap(counter,(20,30),(30,110),((2,3),(3,2),(4,5),(5,4)))
+        counter = 3
+        counter = addPseudoRandomScrap(counter,(20,30),(30,110),((2,3),(3,2),(4,5),(5,4)))
 
-		counter = 3
-		counter = addPseudoRandomScrap(counter,(20,30),(30,110),((2,3),(3,2),(4,5),(5,4)))
-		counter = addPseudoRandomScrap(counter,(20,120),(20,30),((2,3),(3,2),(4,5),(5,4)))
-		counter = addPseudoRandomScrap(counter,(110,120),(30,110),((2,3),(3,2),(4,5),(5,4)))
-		counter = addPseudoRandomScrap(counter,(20,120),(110,120),((2,3),(3,2),(4,5),(5,4)))
-		counter = addPseudoRandomScrap(counter,(30,110),(30,110),((2,7),(5,3),(23,2),(13,9),(5,17)))
+        counter = 3
+        counter = addPseudoRandomScrap(counter,(20,30),(30,110),((2,3),(3,2),(4,5),(5,4)))
+        counter = addPseudoRandomScrap(counter,(20,120),(20,30),((2,3),(3,2),(4,5),(5,4)))
+        counter = addPseudoRandomScrap(counter,(110,120),(30,110),((2,3),(3,2),(4,5),(5,4)))
+        counter = addPseudoRandomScrap(counter,(20,120),(110,120),((2,3),(3,2),(4,5),(5,4)))
+        counter = addPseudoRandomScrap(counter,(30,110),(30,110),((2,7),(5,3),(23,2),(13,9),(5,17)))
 
-		addPseudoRandomThin((30,110),(30,110),(23,7,2,3,2,4),items.Wall)
-		addPseudoRandomThin((30,110),(30,110),(13,15,3,5,3,2),items.Pipe)
+        addPseudoRandomThin((30,110),(30,110),(23,7,2,3,2,4),items.Wall)
+        addPseudoRandomThin((30,110),(30,110),(13,15,3,5,3,2),items.Pipe)
 
         self.addItems(self.testItems)
 

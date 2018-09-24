@@ -56,6 +56,7 @@ class Quest(saveing.Saveable):
         self.attributesToStore.append("reputationReward")
         self.attributesToStore.append("lifetime")
         self.callbacksToStore.append("endTrigger")
+        self.objectsToStore.append("character")
 
         self.lifetime = lifetime
         self.lifetimeEvent = None
@@ -70,47 +71,6 @@ class Quest(saveing.Saveable):
         # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
-
-    '''
-    get difference in state since creation
-    '''
-    def getDiffState(self):
-        result = super().getDiffState()
-        # bad code: repeated store none or id scheme
-        character = None
-        if self.character:
-            character = self.character.id
-        if not character == self.initialState["character"]:
-            result["character"] = character
-        return result
-
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        state = super().getState()
-        
-        # bad code: repeated store none or id scheme
-        if self.character:
-            state["character"] = self.character.id
-        else:
-            state["character"] = None
-        return state
-
-    '''
-    set state as dict
-    '''
-    def setState(self,state):
-       super().setState(state)
-
-        # bad code: repeated store none or id scheme
-       if "character" in state and state["character"]:
-           '''
-           set value
-           '''
-           def setCharacter(character):
-               self.character = character
-           loadingRegistry.callWhenAvailable(state["character"],setCharacter)
 
     '''
     register callback
@@ -680,6 +640,7 @@ class MetaQuestParralel(Quest):
             self.startWatching(quest,self.recalculate)
 
         self.attributesToStore.append("metaDescription")
+        self.objectsToStore.append("lastActive")
 
         # store initial state and register
         self.type = "MetaQuestParralel"
@@ -691,13 +652,6 @@ class MetaQuestParralel(Quest):
     '''
     def getDiffState(self):
         state = super().getDiffState()
-
-        # bad code: repeated store none or id scheme
-        lastActive = None
-        if self.lastActive:
-            lastActive = lastActive.id
-        if not lastActive == self.initialState["lastActive"]:
-            state["lastActive"] = lastActive
 
         # store quests
         (questStates,changedQuests,newQuests,removedQuests) = self.getDiffList(self.subQuests,self.initialState["subQuests"]["ids"])
@@ -726,10 +680,6 @@ class MetaQuestParralel(Quest):
         for quest in self.subQuests:
             state["subQuests"]["ids"].append(quest.id)
             state["subQuests"]["states"][quest.id] = quest.getState()
-        if self.lastActive:
-            state["lastActive"] = self.lastActive.id
-        else:
-            state["lastActive"] = None
         return state
     
     '''
@@ -775,18 +725,6 @@ class MetaQuestParralel(Quest):
                     thing.setState(thingState)
                     self.subQuests.append(thing)
 
-        # load attributes
-        # bad code: repetetive load from id or none pattern
-        if "lastActive" in state:
-            if state["lastActive"]:
-                '''
-                set value
-                '''
-                def setState(thing):
-                    self.lastActive = thing
-                loadingRegistry.callWhenAvailable(state["lastActive"],setState)
-            else:
-                state["lastActive"] = None
     '''
     forward position from last active quest
     '''
@@ -1021,7 +959,8 @@ class NaiveMoveQuest(Quest):
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
 
         self.attributesToStore.extend([
-		      "dstX","dstY","description","sloppy" ])
+              "dstX","dstY","description","sloppy" ])
+        self.objectsToStore.append("room")
 
         # save initial state and register
         self.type = "NaiveMoveQuest"
@@ -1055,46 +994,10 @@ class NaiveMoveQuest(Quest):
         self.startWatching(character,self.recalculate)
 
     '''
-    get difference in state since creation
-    '''
-    def getDiffState(self):
-        state = super().getDiffState()
-        room = None
-        if hasattr(self,"room") and self.room:
-            room = None # bad code: should be the room id
-        if not room == self.initialState["room"]:
-            state["room"] = room.id
-        return state
-
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        # bad code: repeated store id or none pattern
-        state = super().getState()
-        if hasattr(self,"room") and self.room:
-            state["room"] = self.room.id
-        else:
-            state["room"] = None
-        return state
-
-    '''
     set state as dict
     '''
     def setState(self,state):
         super().setState(state)
-        # bad code: repetetive load from id or none pattern
-        if "room" in state:
-            if state["room"]:
-                '''
-                set value
-                '''
-                def setRoom(room):
-                    self.room = room
-                loadingRegistry.callWhenAvailable(state["room"],setRoom)
-                pass
-            else:
-                self.room = None
 
         if "character" in state and state["character"]:
            '''
@@ -1405,6 +1308,8 @@ class NaiveActivateQuest(Quest):
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
         self.activated = False
 
+        self.objectsToStore.append("toActivate")
+
         # save initial state and register
         self.type = "NaiveActivateQuest"
         self.initialState = self.getState()
@@ -1438,46 +1343,10 @@ class NaiveActivateQuest(Quest):
                 self.postHandler()
 
     '''
-    get difference in state since creation
-    '''
-    def getDiffState(self):
-        state = super().getDiffState()
-        # bad code: repeated store id or none pattern
-        toActivate = None
-        if hasattr(self,"toActivate") and self.toActivate:
-            toActivate = self.toActivate.id
-        if not toActivate == self.initialState["toActivate"]:
-            state["toActivate"] = toActivate
-        return state
-
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        state = super().getState()
-        # bad code: repeated store id or none pattern
-        if hasattr(self,"toActivate") and self.toActivate:
-            state["toActivate"] = self.toActivate.id
-        else:
-            state["toActivate"] = None
-        return state
-    
-    '''
     set state as dict
     '''
     def setState(self,state):
         super().setState(state)
-        # bad code: repeated store id or none pattern
-        if "toActivate" in state:
-            if state["toActivate"]:
-                '''
-                set value
-                '''
-                def setState(thing):
-                    self.toActivate = thing
-                loadingRegistry.callWhenAvailable(state["toActivate"],setState)
-            else:
-                self.toActivate = None
 
         # add listener
         if self.active and self.character:
@@ -1853,6 +1722,8 @@ class MoveQuestMeta(MetaQuestSequence):
             self.addQuest(quest)
         self.metaDescription = "move meta"
 
+        self.objectsToStore.append("room")
+
         # save initial state and register
         self.type = "MoveQuestMeta"
         self.initialState = self.getState()
@@ -1886,47 +1757,10 @@ class MoveQuestMeta(MetaQuestSequence):
         super().assignToCharacter(character)
 
     '''
-    get difference in state since creation
-    '''
-    def getDiffState(self):
-        state = super().getDiffState()
-        # bad code: repeated id or none pattern
-        room = None
-        if hasattr(self,"room") and self.room:
-            room = None
-        if not room == self.initialState["room"]:
-            state["room"] = room.id
-        return state
-
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        # bad code: repeated id or none pattern
-        state = super().getState()
-        if hasattr(self,"room") and self.room:
-            state["room"] = self.room.id
-        else:
-            state["room"] = None
-        return state
-
-    '''
     set state as dict
     '''
     def setState(self,state):
         super().setState(state)
-        if "room" in state:
-            # bad code: repetetive load from id or none pattern
-            if state["room"]:
-                '''
-                set value
-                '''
-                def setRoom(room):
-                    self.room = room
-                loadingRegistry.callWhenAvailable(state["room"],setRoom)
-                pass
-            else:
-                self.room = None
 
         if "character" in state and state["character"]:
            '''
@@ -2062,6 +1896,8 @@ class ActivateQuestMeta(MetaQuestSequence):
         self.metaDescription = "activate Quest"
 
         self.attributesToStore.append("sloppy")
+        self.objectsToStore.append("moveQuest")
+        self.objectsToStore.append("toActivate")
 
         # save initial state and register
         self.type = "ActivateQuestMeta"
@@ -2099,70 +1935,6 @@ class ActivateQuestMeta(MetaQuestSequence):
                     self.addQuest(self.moveQuest)
         super().recalculate()
         
-    '''
-    get difference in state since creation
-    '''
-    def getDiffState(self):
-        state = super().getDiffState()
-        # bad code: repeated id or none pattern
-        moveQuest = None
-        if hasattr(self,"moveQuest") and self.moveQuest:
-            moveQuest = self.moveQuest.id
-        if not moveQuest == self.initialState["moveQuest"]:
-            state["moveQuest"] = moveQuest
-        # bad code: repeated id or none pattern
-        toActivate = None
-        if hasattr(self,"toActivate") and self.toActivate:
-            toActivate = self.toActivate.id
-        if not toActivate == self.initialState["toActivate"]:
-            state["toActivate"] = toActivate
-        return state
-
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        state = super().getState()
-        # bad code: repeated id or none pattern
-        if hasattr(self,"moveQuest") and self.moveQuest:
-            state["moveQuest"] = self.moveQuest.id
-        else:
-            state["moveQuest"] = None
-        # bad code: repeated id or none pattern
-        if hasattr(self,"toActivate") and self.toActivate:
-            state["toActivate"] = self.toActivate.id
-        else:
-            state["toActivate"] = None
-        return state
-    
-    '''
-    set state as dict
-    '''
-    def setState(self,state):
-        super().setState(state)
-        if "moveQuest" in state:
-            # bad code: repetetive load from id or none pattern
-            if state["moveQuest"]:
-                '''
-                set value
-                '''
-                def setState(quest):
-                    self.moveQuest = quest
-                loadingRegistry.callWhenAvailable(state["moveQuest"],setState)
-            else:
-                self.moveQuest = None
-        if "toActivate" in state:
-            # bad code: repetetive load from id or none pattern
-            if state["toActivate"]:
-                '''
-                set value
-                '''
-                def setState(thing):
-                    self.toActivate = thing
-                loadingRegistry.callWhenAvailable(state["toActivate"],setState)
-            else:
-                self.toActivate = None
-
     '''
     start to watch the charcater
     '''
@@ -3349,6 +3121,8 @@ class Serve(MetaQuestParralel):
         super().__init__(self.questList,creator=creator)
         self.metaDescription = "serve"
 
+        self.objectsToStore.append("superior")
+
         # save initial state and register
         self.type = "Serve"
         self.initialState = self.getState()
@@ -3356,44 +3130,6 @@ class Serve(MetaQuestParralel):
 
         if superior:
             self.metaDescription += " "+superior.name
-
-    '''
-    get difference in state since creation
-    '''
-    def getDiffState(self):
-        state = super().getDiffState()
-        if not self.metaDescription == state["superior"]:
-            state["superior"] = self.metaDescription
-        return state
-
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        state = super().getState()
-        if self.superior:
-            state["superior"] = self.superior.id
-        else:
-            state["superior"] = None
-        return state
-    
-    '''
-    set state as dict
-    '''
-    def setState(self,state):
-        super().setState(state)
-        if "superior" in state:
-            # bad code: repetetive load from id or none pattern
-            if state["superior"]:
-                '''
-                set value
-                '''
-                def setSuperior(superior):
-                    self.superior = superior
-                loadingRegistry.callWhenAvailable(state["superior"],setSuperior)
-                pass
-            else:
-                self.superior = None
 
     '''
     never complete

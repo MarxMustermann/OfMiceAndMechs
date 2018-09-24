@@ -359,7 +359,13 @@ class ShowQuestExecution(BasicCinematic):
     it run in the background. A second setup happens when the cinematic actually starts
     '''
     def __init__(self,quest=None,tickSpan = None, assignTo = None, background = False, container=None,creator=None):
+
         super().__init__(creator=creator)
+
+        self.objectsToStore.append("assignTo")
+        self.objectsToStore.append("container")
+        self.attributesToStore.append("wasSetup")
+
 
         self.quest = quest
         self.endTrigger = None
@@ -397,57 +403,17 @@ class ShowQuestExecution(BasicCinematic):
         else:
             self.quest = None
 
-        # set reference for character
-        # bad code: repeated set obj or none pattern
-        if "assignTo" in state:
-            if state["assignTo"]:
-                '''
-                set value
-                '''
-                def setAssignee(character):
-                    self.assignTo = character
-                loadingRegistry.callWhenAvailable(state["assignTo"],setAssignee)
-            else:
-                self.assignTo = None
-
-        # set reference for container
-        # bad code: repeated set obj or none pattern
-        if "container" in state:
-            if state["container"]:
-                '''
-                set value
-                '''
-                def setContainer(container):
-                    self.container = container
-                loadingRegistry.callWhenAvailable(state["container"],setContainer)
-            else:
-                self.container = None
-
-        # set setup information
-        self.wasSetup = state["wasSetup"]
-
     '''
     get state from dict
     '''
     def getState(self):
         state = super().getState()
 
-        # get setup information
-        state["wasSetup"] = self.wasSetup
-
         # get quest related attributes
         if self.quest.character:
             state["quest"] = self.quest.id
         else:
             state["quest"] = self.quest.getState()
-        if self.assignTo:
-            state["assignTo"] = self.assignTo.id
-        else:
-            state["assignTo"] = None
-        if self.container:
-            state["container"] = self.container.id
-        else:
-            state["container"] = None
         return state
 
     '''

@@ -65,6 +65,8 @@ class Character(saving.Saveable):
         self.attributesToStore.extend([
                "gotBasicSchooling","gotMovementSchooling","gotInteractionSchooling","gotExamineSchooling",
                "xPosition","yPosition","name","satiation","unconcious","reputation","tutorialStart"])
+        self.objectsToStore.append("serveQuest")
+        self.objectsToStore.append("room")
 
         # bad code: story specific state
         self.serveQuest = None
@@ -148,13 +150,6 @@ class Character(saving.Saveable):
         if not self.path == self.initialState["path"]:
             result["path"] = self.path
 
-        # bad code: repetetive handling of non-or-id serialization
-        serveQuest = None
-        if self.serveQuest:
-            serveQuest = self.serveQuest.id
-        if not serveQuest == self.initialState["serveQuest"]:
-            result["serveQuest"] = serveQuest
-
         # save inventory
         (itemStates,changedItems,newItems,removedItems) = self.getDiffList(self.inventory,self.initialState["inventory"]["inventoryIds"])
         inventory = {}
@@ -237,18 +232,6 @@ class Character(saving.Saveable):
             quests.append(quest.id)
         state["quests"]["questIds"] = quests
 
-        # store room
-        # bad code: else case not handled
-        if self.room:
-            state["room"] = self.room.id
-
-        # store serve quest
-        # bad code: story specific code
-        if self.serveQuest:
-            state["serveQuest"] = self.serveQuest.id
-        else:
-            state["serveQuest"] = None
-
         # store events
         (eventIds,eventStates) = self.storeStateList(self.events)
         state["eventIds"] = eventIds
@@ -287,18 +270,6 @@ class Character(saving.Saveable):
         # set path
         if "path" in state:
             self.path = state["path"]
-
-        # bad code: story specific code
-        if "serveQuest" in state:
-            if state["serveQuest"]:
-                '''
-                set value
-                '''
-                def setServeQuest(quest):
-                    self.serveQuest = quest
-                loadingRegistry.callWhenAvailable(state["serveQuest"],setServeQuest)
-            else:
-                self.serveQuest = None
 
         # set inventory
         if "inventory" in state:

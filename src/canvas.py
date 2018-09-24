@@ -24,7 +24,6 @@ class TileMapping(object):
 
     """
     set the rendering mode AND recalculate the tile map
-    bad code: should be splitted in 2 methods
     """
     def setRenderingMode(self,mode):
         # sanatize input
@@ -32,13 +31,16 @@ class TileMapping(object):
         if mode not in self.modes:
             mode = "testTiles"
 
-        # bad pattern: no way to load arbitrary files
-        if mode == "testTiles":
-            # bad code: reimport the config as library, i don't think this is a good thing to do
-            import config.tileMap as rawTileMap
-
         # set mode
         self.mode = mode
+
+		self.buildTileMap()
+
+	def buildTileMap(self):
+        # bad pattern: no way to load arbitrary files
+        if self.mode == "testTiles":
+            # bad code: reimport the config as library, i don't think this is a good thing to do
+            import config.tileMap as rawTileMap
 
         # (re)build the tile mapping
         # bad code: the indexing relies on order in the config file instead of names in the config file
@@ -97,7 +99,6 @@ class DisplayMapping(object):
 
     """
     set the rendering mode AND recalculate the char map
-    bad code: should be split into 2 methods
     """
     def setRenderingMode(self,mode):
         # sanatize input
@@ -105,16 +106,19 @@ class DisplayMapping(object):
         if mode not in self.modes:
             mode = "pureASCII"
 
+        # set mode
+        self.mode = mode
+
+		self.buildCharMap()
+
+	def buildCharMap(self):
         # import the appropriate config
         # bad code: does not load arbitrary files
         # bad code: direct import seems like a bad idea
-        if mode == "unicode":
+        if self.mode == "unicode":
             import config.displayChars as rawDisplayChars
-        elif mode == "pureASCII":
+        elif self.mode == "pureASCII":
             import config.displayChars_fallback as rawDisplayChars
-
-        # set mode
-        self.mode = mode
 
         # rebuild the tile mapping
         # bad code: the indexing relies on order in the config file instead of names in the config file

@@ -495,10 +495,11 @@ class Character(saving.Saveable):
                         # smooth over impossible state
                         if not debug:
                             # resorting to teleport
-                            debugMessages.append("character moved on non continious path")
                             self.xPosition = nextPosition[0]
                             self.yPosition = nextPosition[1]
                             self.changed()
+                        else:
+                            debugMessages.append("character moved on non continious path")
                 elif nextPosition[0] == currentPosition[0]-1 and nextPosition[1] == currentPosition[1]:
                     item = self.room.moveCharacterDirection(self,"west")
                 elif nextPosition[0] == currentPosition[0]+1 and nextPosition[1] == currentPosition[1]:
@@ -507,10 +508,11 @@ class Character(saving.Saveable):
                     # smooth over impossible state
                     if not debug:
                         # resorting to teleport
-                        debugMessages.append("character moved on non continious path")
                         self.xPosition = nextPosition[0]
                         self.yPosition = nextPosition[1]
                         self.changed()
+                    else:
+                        debugMessages.append("character moved on non continious path")
             else:
                 # check if a room was entered
                 # basically checks if a walkable space/door within a room on the coordinate the chracter walks on. If there is

@@ -19,7 +19,6 @@ class Mapping(object):
         rawConfig = self.loadMapping()
 
         # (re)build the tile mapping
-        # bad code: the indexing relies on order in the config file instead of names in the config file
         import inspect
         self.indexedMapping = []
         raw = inspect.getmembers(rawConfig, lambda a:not(inspect.isroutine(a)))
@@ -81,7 +80,6 @@ class Mapping(object):
 
 """
 this maps an abstract representation to tiles.
-bad code: indices have to be the same as for DisplayMapping
 """
 class TileMapping(Mapping):
     """
@@ -119,10 +117,6 @@ this maps an abstract representation to actual chars.
 This allows to switch representation during runtime and
 is intended to allow for expansions like the tile based 
 renderer
-
-bad code: The index used is calculated based on line position
-in the config file. This is a bad idea and casuses bugs at the 
-time of writing.
 """
 class DisplayMapping(Mapping):
     """

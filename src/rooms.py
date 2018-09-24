@@ -322,6 +322,10 @@ class Room(saveing.Saveable):
         # actually add the items
         self.addItems(itemsOnFloor)
 
+        self.attributesToStore.extend([
+              "yPosition","xPosition","offsetX","offsetY"
+		        ])
+
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
@@ -367,17 +371,7 @@ class Room(saveing.Saveable):
     get the difference in state since creation
     '''
     def getDiffState(self):
-        currentState = self.getState()
-
-        result = {}
-
-        # diff attributes
-        # bad code: new structure should be used
-        for attribute in ("yPosition","xPosition","offsetX","offsetY"):
-            if not self.initialState[attribute] == currentState[attribute]:
-                result[attribute] = currentState[attribute]
-        if not self.creationCounter == self.initialState["creationCounter"]:
-            result["creationCounter"] = self.creationCounter
+        result = super().getDiffState()
 
         # store item diff
         (itemStates,changedItems,newItems,removedItems) = self.getDiffList(self.itemsOnFloor,self.initialState["itemIds"])
@@ -421,41 +415,28 @@ class Room(saveing.Saveable):
     get semi serialised room state
     '''
     def getState(self):
+        state = super().getState()
+
         # get states from lists
         (eventIds,eventStates) = self.storeStateList(self.events)
         (itemIds,itemStates) = self.storeStateList(self.itemsOnFloor)
         (charIds,charStates) = self.storeStateList(self.characters)
 
-        # generate state
-        # bad code: new structure should be used
-        return { 
-                 "eventIds": eventIds,
-                 "eventStates":eventStates,
-                 "itemIds":itemIds,
-                 "itemStates":itemStates,
-                 "characterIds":charIds,
-                 "characterStates":charStates,
-                 "offsetX":self.offsetX,
-                 "offsetY":self.offsetY,
-                 "xPosition":self.xPosition,
-                 "yPosition":self.yPosition,
-                 "creationCounter":self.creationCounter,
-        }
+        state["eventIds"] = eventIds
+        state["eventStates"] = eventStates
+        state["itemIds"] = itemIds
+        state["itemStates"] = itemStates
+        state["characterIds"] = charIds
+        state["characterStates"] = charStates
+
+        return state
 
     '''
     construct state from semi serialised form
     bad code: incomplete
     '''
     def setState(self,state):
-        if "creationCounter" in state:
-            self.creationCounter = state["creationCounter"]
-
         # move room to correct position
-        # bad code: new structure should be used
-        if "offsetX" in state:
-            self.offsetX = state["offsetX"]
-        if "offsetY" in state:
-            self.offsetY = state["offsetY"]
         xPosition = None
         yPosition = None
         if "xPosition" in state and not "yPosition" in state:
@@ -468,9 +449,10 @@ class Room(saveing.Saveable):
             xPosition = state["xPosition"]
             yPosition = state["yPosition"]
 
-
         if not xPosition == None and not yPosition == None:
             self.terrain.teleportRoom(self,(xPosition,yPosition))
+
+	    super().setState(state)
 
         # update changed items
         if "changedItems" in state:

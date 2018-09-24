@@ -196,18 +196,18 @@ def calculatePathReal(startX,startY,endX,endY,walkingPath):
     else:
         path = []
         startPoint = None
-        lowestDistance = 1234567890 # bad code: silly constant
+        lowestDistance = None
         for waypoint in walkingPath:
             distance = abs(waypoint[0]-startX)+abs(waypoint[1]-startY)
-            if lowestDistance > distance:
+            if lowestDistance == None or lowestDistance > distance:
                 lowestDistance = distance
                 startPoint = waypoint
 
         endPoint = None
-        lowestDistance = 1234567890 # bad code: silly constant
+        lowestDistance = None
         for waypoint in walkingPath:
             distance = abs(waypoint[0]-endX)+abs(waypoint[1]-endY)
-            if lowestDistance > distance:
+            if lowestDistance == None or lowestDistance > distance:
                 lowestDistance = distance
                 endPoint = waypoint
 

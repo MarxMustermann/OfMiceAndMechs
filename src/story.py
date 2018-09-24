@@ -1642,117 +1642,35 @@ class FindWork(BasicPhase):
         quest.reputationReward = 3
         terrain.waitingRoom.quests.append(quest)
 
+        self.cicleQuestIndex = 0
         '''
         quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
         '''
-        def addQuest12():
-            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(2,1)][0],(terrain.metalWorkshop,9,5),creator=void)
-            quest.endTrigger = addQuest1
-            quest.reputationReward = 0
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest11():
-            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(3,1)][0],(terrain.metalWorkshop,9,4),creator=void)
-            quest.endTrigger = addQuest12
-            quest.reputationReward = 0
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest10():
-            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(4,1)][0],(terrain.metalWorkshop,9,6),creator=void)
-            quest.endTrigger = addQuest11
-            quest.reputationReward = 0
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest9():
-            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(5,1)][0],(terrain.metalWorkshop,9,3),creator=void)
-            quest.endTrigger = addQuest10
-            quest.reputationReward = 0
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest8():
-            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(6,1)][0],(terrain.metalWorkshop,9,7),creator=void)
-            quest.endTrigger = addQuest9
-            quest.reputationReward = 0
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest7():
-            quest = quests.TransportQuest(terrain.tutorialLab.itemByCoordinates[(7,1)][0],(terrain.metalWorkshop,9,2),creator=void)
-            quest.endTrigger = addQuest8
-            quest.reputationReward = 0
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest6():
-            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[5],(terrain.tutorialLab,7,1),creator=void)
-            quest.endTrigger = addQuest7
-            quest.reputationReward = 0
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest5():
-            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[4],(terrain.tutorialLab,6,1),creator=void)
-            quest.endTrigger = addQuest6
-            quest.reputationReward = 0
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest4():
-            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[3],(terrain.tutorialLab,5,1),creator=void)
-            quest.endTrigger = addQuest5
-            quest.reputationReward = 0
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest3():
-            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[2],(terrain.tutorialLab,4,1),creator=void)
-            quest.endTrigger = addQuest4
-            quest.reputationReward = 0
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest2():
-            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[1],(terrain.tutorialLab,3,1),creator=void)
-            quest.endTrigger = addQuest3
-            quest.reputationReward = 0
-            terrain.waitingRoom.quests.append(quest)
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        bad code: very repetetive code
-        '''
-        def addQuest1():
-            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[0],(terrain.tutorialLab,2,1),creator=void)
-            quest.endTrigger = addQuest2
+        def addNewCircleQuest():
+            labCoordinateList = [(2,1),(3,1),(4,1),(5,1),(6,1),(7,1)]
+            shopCoordinateList = [(9,2),(9,7),(9,3),(9,6),(9,4),(9,5)]
+
+            if self.cicleQuestIndex > 2*len(terrain.metalWorkshop.producedItems)-2:
+                self.cicleQuestIndex = 0
+
+            if self.cicleQuestIndex < len(terrain.metalWorkshop.producedItems):
+                pos = labCoordinateList[self.cicleQuestIndex]
+                room = terrain.tutorialLab
+                index = self.cicleQuestIndex
+            else:
+                pos = shopCoordinateList[self.cicleQuestIndex-len(terrain.metalWorkshop.producedItems)]
+                room = terrain.metalWorkshop
+                index = self.cicleQuestIndex-len(terrain.metalWorkshop.producedItems)
+            
+            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[index],(room,pos[0],pos[1]),creator=void)
+            quest.endTrigger = addNewCircleQuest
             quest.reputationReward = 0
             terrain.waitingRoom.quests.append(quest)
 
+            self.cicleQuestIndex += 1
+
         # start series of quests that were looped to keep the system active
-        addQuest1()
+        addNewCircleQuest()
 
         # add the dialog for getting a job
         terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChat,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":mainChar.quests[0]}})

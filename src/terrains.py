@@ -1323,107 +1323,43 @@ U  U
         # add scrap
         # bad code: repetetive code
         self.testItems = []
-        counter = 3
-        for x in range(20,30):
-            for y in range(30,110):
-                if not x%2 and not y%3:
-                    continue
-                if not x%3 and not y%2:
-                    continue
-                if not x%4 and not y%5:
-                    continue
-                if not x%5 and not y%4:
-                    continue
-                self.testItems.append(items.Scrap(x,y,counter))
-                counter += 1
-                if counter == 16:
-                    counter = 1
+		def addPseudoRandomScrap(counter,xRange,yRange,skips):
+            for x in range(xRange[0],xRange[1]):
+                for y in range(yRange[0],yRange[1]):
+				    toSkip = False
+				    for skip in skips:
+                        if not x%skip[0] and not y%skip[1]:
+				            toSkip = True
+						    break
+                    
+					if toSkip:
+						continue
 
-        # add scrap
-        # bad code: repetetive code
-        for x in range(20,120):
-            for y in range(20,30):
-                if not x%2 and not y%3:
-                    continue
-                if not x%3 and not y%2:
-                    continue
-                if not x%4 and not y%5:
-                    continue
-                if not x%5 and not y%4:
-                    continue
-                self.testItems.append(items.Scrap(x,y,counter))
-                counter += 1
-                if counter == 16:
-                    counter = 1
+                    self.testItems.append(items.Scrap(x,y,counter))
+                    counter += 1
+                    if counter == 16:
+                        counter = 1
+			return counter
+		def addPseudoRandomThin(xRange,yRange,modulos,itemType):
+            for x in range(xRange[0],xRange[1]):
+                for y in range(yRange[0],yRange[1]):
+                    if x%modulos[0] and y%modulos[1] or (not x%modulos[2] and not x%modulos[3]) or x%modulos[4] or not y%modulos[5]:
+                        continue
+                    self.testItems.append(itemType(x,y))
 
-        # add scrap
-        # bad code: repetetive code
-        for x in range(110,120):
-            for y in range(30,110):
-                if not x%2 and not y%3:
-                    continue
-                if not x%3 and not y%2:
-                    continue
-                if not x%4 and not y%5:
-                    continue
-                if not x%5 and not y%4:
-                    continue
-                self.testItems.append(items.Scrap(x,y,counter))
-                counter += 1
-                if counter == 16:
-                    counter = 1
+		counter = 3
+		counter = addPseudoRandomScrap(counter,(20,30),(30,110),((2,3),(3,2),(4,5),(5,4)))
 
-        # add scrap
-        # bad code: repetetive code
-        for x in range(20,120):
-            for y in range(110,120):
-                if not x%2 and not y%3:
-                    continue
-                if not x%3 and not y%2:
-                    continue
-                if not x%4 and not y%5:
-                    continue
-                if not x%5 and not y%4:
-                    continue
-                self.testItems.append(items.Scrap(x,y,counter))
-                counter += 1
-                if counter == 16:
-                    counter = 1
+		counter = 3
+		counter = addPseudoRandomScrap(counter,(20,30),(30,110),((2,3),(3,2),(4,5),(5,4)))
+		counter = addPseudoRandomScrap(counter,(20,120),(20,30),((2,3),(3,2),(4,5),(5,4)))
+		counter = addPseudoRandomScrap(counter,(110,120),(30,110),((2,3),(3,2),(4,5),(5,4)))
+		counter = addPseudoRandomScrap(counter,(20,120),(110,120),((2,3),(3,2),(4,5),(5,4)))
+		counter = addPseudoRandomScrap(counter,(30,110),(30,110),((2,7),(5,3),(23,2),(13,9),(5,17)))
 
-        # add scrap
-        # bad code: repetetive code
-        for x in range(30,110):
-            for y in range(30,110):
-                if not x%2 and not y%7:
-                    continue
-                if not x%5 and not y%3:
-                    continue
-                if not x%23 and not y%2:
-                    continue
-                if not x%13 and not y%9:
-                    continue
-                if not x%5 and not y%17:
-                    continue
-                self.testItems.append(items.Scrap(x,y,counter))
-                counter += 1
-                if counter == 30:
-                    counter = 1
+		addPseudoRandomThin((30,110),(30,110),(23,7,2,3,2,4),items.Wall)
+		addPseudoRandomThin((30,110),(30,110),(13,15,3,5,3,2),items.Pipe)
 
-        # add walls
-        # bad code: repetetive code
-        for x in range(30,110):
-            for y in range(30,110):
-                if x%23 and y%7 or (not x%2 and not x%3) or x%2 or not y%4:
-                    continue
-                self.testItems.append(items.Wall(x,y))
-
-        # add pipes
-        # bad code: repetetive code
-        for x in range(30,110):
-            for y in range(30,110):
-                if x%13 and y%15 or (not x%3 and not x%5) or x%3 or not y%2:
-                    continue
-                self.testItems.append(items.Pipe(x,y))
         self.addItems(self.testItems)
 
         # add base of operations

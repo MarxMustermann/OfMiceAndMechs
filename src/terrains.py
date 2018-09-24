@@ -676,7 +676,7 @@ class Terrain(saveing.Saveable):
 
         # get end node
         if not end in self.watershedCoordinates:
-            # bad code: should log
+            debugMessages.append("did not find end in watershedCoordinates")
             return
         endPair = self.watershedCoordinates[end][0]
 
@@ -693,7 +693,7 @@ class Terrain(saveing.Saveable):
         # find path to any point an a path leading to the end node
         exitPoint = self.mark([end])
         if not exitPoint:
-            # bad code: should log
+            debugMessages.append("did not find exit point")
             return
 
         # get path from end position to end node

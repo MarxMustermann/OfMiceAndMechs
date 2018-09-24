@@ -773,7 +773,7 @@ class Room(saveing.Saveable):
     '''
     move the room to the east
     '''
-    def moveEast(self,initialMovement=True, movementToken=None,force=1):
+    def moveEast(self,initialMovement=True, movementBlock=set(),force=1):
         self.moveDirection("east",force,initialMovement,movementBlock)
     
     def getAffectedByMovementDirection(self,direction,force=1,movementBlock=set()):

@@ -1134,53 +1134,54 @@ class Boiler(Item):
     start producing steam after a delay
     '''
     def startHeatingUp(self):
-        # bad code: guard with return would be preferrable to shifting the whole methods
-        if not self.isHeated:
-            # flag self as heated
-            self.isHeated = True
+        if self.isHeated:
+            return
 
-            # abort any cooling down
-            if self.stopBoilingEvent:
-                self.room.removeEvent(self.stopBoilingEvent)
-                self.stopBoilingEvent = None
+        # flag self as heated
+        self.isHeated = True
 
-            # shedule the steam generation
-            if not self.startBoilingEvent and not self.isBoiling:
+        # abort any cooling down
+        if self.stopBoilingEvent:
+            self.room.removeEvent(self.stopBoilingEvent)
+            self.stopBoilingEvent = None
+
+        # shedule the steam generation
+        if not self.startBoilingEvent and not self.isBoiling:
+            '''
+            the event for starting to boil
+            bad code: should be an abstact event calling a method
+            '''
+            class StartBoilingEvent(object):
                 '''
-                the event for starting to boil
-                bad code: should be an abstact event calling a method
+                straightforward state initialization
                 '''
-                class StartBoilingEvent(object):
-                    '''
-                    straightforward state initialization
-                    '''
-                    def __init__(subself,tick):
-                        subself.tick = tick
+                def __init__(subself,tick):
+                    subself.tick = tick
             
-                    '''
-                    start producing steam
-                    '''
-                    def handleEvent(subself):
-                        # add noises
-                        # bad pattern: should only make noise for nearby things
-                        messages.append("*boil*")
+                '''
+                start producing steam
+                '''
+                def handleEvent(subself):
+                    # add noises
+                    # bad pattern: should only make noise for nearby things
+                    messages.append("*boil*")
 
-                        # set own state
-                        self.display = displayChars.boiler_active
-                        self.isBoiling = True
-                        self.startBoilingEvent = None
-                        self.changed()
+                    # set own state
+                    self.display = displayChars.boiler_active
+                    self.isBoiling = True
+                    self.startBoilingEvent = None
+                    self.changed()
 
-                        # change rooms steam production
-                        self.room.steamGeneration += 1
-                        self.room.changed()
+                    # change rooms steam production
+                    self.room.steamGeneration += 1
+                    self.room.changed()
 
-                # shedule the event
-                self.startBoilingEvent = StartBoilingEvent(self.room.timeIndex+5)
-                self.room.addEvent(self.startBoilingEvent)
+            # shedule the event
+            self.startBoilingEvent = StartBoilingEvent(self.room.timeIndex+5)
+            self.room.addEvent(self.startBoilingEvent)
 
-            # notify listeners
-            self.changed()
+        # notify listeners
+        self.changed()
         
     '''
     stop producing steam after a delay

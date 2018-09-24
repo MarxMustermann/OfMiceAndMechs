@@ -1429,7 +1429,7 @@ class ProductionArtwork(Item):
         options = []
         for key,value in itemMap.items():
             options.append((value,key))
-        self.submenue = interaction.SelectionMenu("test",options) # bad code: "test"
+        self.submenue = interaction.SelectionMenu("select the item to produce",options)
         interaction.submenue = self.submenue
         interaction.submenue.followUp = self.produceSelection
 

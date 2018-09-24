@@ -9,45 +9,25 @@
 # bad code: should not be imported when tile based display only
 import urwid
 
-"""
-this maps an abstract representation to tiles.
-bad code: indices have to be the same as for DisplayMapping
-"""
-class TileMapping(object):
-    """
-    basic state setting
-    bad code: hardcoded modes for now
-    """
-    def __init__(self,mode):
-        self.modes = {"testTiles":"","pseudeUnicode":""}
-        self.setRenderingMode(mode)
+class Mapping(object):
 
-    """
-    set the rendering mode AND recalculate the tile map
-    """
-    def setRenderingMode(self,mode):
-        # sanatize input
-        # bad code: should raise error
-        if mode not in self.modes:
-            mode = "testTiles"
-
-        # set mode
-        self.mode = mode
-
-		self.buildTileMap()
-
-	def buildTileMap(self):
+	def buildMap(self):
         # bad pattern: no way to load arbitrary files
         if self.mode == "testTiles":
             # bad code: reimport the config as library, i don't think this is a good thing to do
-            import config.tileMap as rawTileMap
+            import config.tileMap as rawConfig
+
+        if self.mode == "unicode":
+            import config.displayChars as rawConfig
+        elif self.mode == "pureASCII":
+            import config.displayChars_fallback as rawConfig
 
         # (re)build the tile mapping
         # bad code: the indexing relies on order in the config file instead of names in the config file
         # bad code: redundant code
         import inspect
         self.indexedMapping = []
-        raw = inspect.getmembers(rawTileMap, lambda a:not(inspect.isroutine(a)))
+        raw = inspect.getmembers(rawConfig, lambda a:not(inspect.isroutine(a)))
         counter = 0
         for item in raw:
             if item[0].startswith("__"):
@@ -79,6 +59,34 @@ class TileMapping(object):
                 counter += 1
 
 """
+this maps an abstract representation to tiles.
+bad code: indices have to be the same as for DisplayMapping
+"""
+class TileMapping(Mapping):
+    """
+    basic state setting
+    bad code: hardcoded modes for now
+    """
+    def __init__(self,mode):
+	    super().__init__()
+        self.modes = {"testTiles":"","pseudeUnicode":""}
+        self.setRenderingMode(mode)
+
+    """
+    set the rendering mode AND recalculate the tile map
+    """
+    def setRenderingMode(self,mode):
+        # sanatize input
+        # bad code: should raise error
+        if mode not in self.modes:
+            mode = "testTiles"
+
+        # set mode
+        self.mode = mode
+
+		self.buildMap()
+
+"""
 this maps an abstract representation to actual chars.
 This allows to switch representation during runtime and
 is intended to allow for expansions like the tile based 
@@ -88,12 +96,13 @@ bad code: The index used is calculated based on line position
 in the config file. This is a bad idea and casuses bugs at the 
 time of writing.
 """
-class DisplayMapping(object):
+class DisplayMapping(Mapping):
     """
     basic state setting
     bad code: hardcoded modes for now
     """
     def __init__(self,mode):
+	    super().__init__()
         self.modes = {"unicode":"","pureASCII":""}
         self.setRenderingMode(mode)
 
@@ -109,52 +118,7 @@ class DisplayMapping(object):
         # set mode
         self.mode = mode
 
-		self.buildCharMap()
-
-	def buildCharMap(self):
-        # import the appropriate config
-        # bad code: does not load arbitrary files
-        # bad code: direct import seems like a bad idea
-        if self.mode == "unicode":
-            import config.displayChars as rawDisplayChars
-        elif self.mode == "pureASCII":
-            import config.displayChars_fallback as rawDisplayChars
-
-        # rebuild the tile mapping
-        # bad code: the indexing relies on order in the config file instead of names in the config file
-        # bad code: redundant code
-        import inspect
-        self.indexedMapping = []
-        raw = inspect.getmembers(rawDisplayChars, lambda a:not(inspect.isroutine(a)))
-        counter = 0
-        for item in raw:
-            if item[0].startswith("__"):
-                # ignore internal state
-                continue
-
-            if isinstance(item[1], list):
-                # convert lists to lists
-                subList = []
-                for subItem in item[1]:
-                    self.indexedMapping.append(subItem)
-                    subList.append(counter)
-                    counter += 1
-                setattr(self, item[0], subList)
-
-            elif isinstance(item[1], dict):
-                # convert dicts to dicts
-                subDict = {}
-                for k,v in item[1].items():
-                    subDict[k] = counter
-                    self.indexedMapping.append(v)
-                    counter += 1
-                setattr(self, item[0], subDict)
-
-            else:
-                # convert non special entries
-                self.indexedMapping.append(item[1])
-                setattr(self, item[0], counter)
-                counter += 1
+		self.buildMap()
 
 """
 The canvas is supposed to hold the content of a piece screen.

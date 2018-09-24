@@ -276,130 +276,67 @@ class Item(saving.Saveable):
 
         return movementBlock
 
-    '''
-    move the item to the north
-    bad code: a method for each direction
-    '''
-    def moveNorth(self,force=1,initialMovement=True):
+    def moveDirection(self,direction,force=1,initialMovement=True):
         if self.walkable:
             # destroy small items instead of moving it
             self.destroy()
         else:
+            oldPosition = (self.xPosition,self.yPosition)
+            if direction == "north":
+                newPosition = (self.xPosition,self.yPosition-1)
+            elif direction == "south":
+                newPosition = (self.xPosition,self.yPosition+1)
+            elif direction == "west":
+                newPosition = (self.xPosition-1,self.yPosition)
+            elif direction == "east":
+                newPosition = (self.xPosition+1,self.yPosition)
+
             # remove self from current position
-            self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
+            self.terrain.itemByCoordinates[oldPosition].remove(self)
             if len(self.terrain.itemByCoordinates) == 0:
-                del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
+                del self.terrain.itemByCoordinates[oldPosition]
 
             # destroy everything on target position
-            if (self.xPosition,self.yPosition-1) in self.terrain.itemByCoordinates:
-                for item in self.terrain.itemByCoordinates[(self.xPosition,self.yPosition-1)]:
+            if newPosition in self.terrain.itemByCoordinates:
+                for item in self.terrain.itemByCoordinates[newPosition]:
                     item.destroy()
 
             # place self on new position
-            self.yPosition -= 1
-            if (self.xPosition,self.yPosition) in self.terrain.itemByCoordinates:
-                self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(self)
+            self.xPosition = newPosition[0]
+            self.yPosition = newPosition[1]
+            if newPosition in self.terrain.itemByCoordinates:
+                self.terrain.itemByCoordinates[newPosition].append(self)
             else:
-                self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = [self]
+                self.terrain.itemByCoordinates[newPosition] = [self]
 
             # destroy yourself if anything is left on target position
             # bad code: this cannot happen since everything on the target position was destroyed already
             if len(self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]) > 1:
                 self.destroy()
+
+    '''
+    move the item to the north
+    '''
+    def moveNorth(self,force=1,initialMovement=True):
+        self.moveDirection("north",force,initialMovement)
 
     '''
     move the item to the south
-    bad code: a method for each direction
     '''
     def moveSouth(self,force=1,initialMovement=True):
-        if self.walkable:
-            # destroy small items instead of moving it
-            self.destroy()
-        else:
-            # remove self from current position
-            self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
-            if len(self.terrain.itemByCoordinates) == 0:
-                del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
-
-            # destroy everything on target position
-            if (self.xPosition,self.yPosition+1) in self.terrain.itemByCoordinates:
-                for item in self.terrain.itemByCoordinates[(self.xPosition,self.yPosition+1)]:
-                    item.destroy()
-
-            # place self on new position
-            self.yPosition += 1
-            if (self.xPosition,self.yPosition) in self.terrain.itemByCoordinates:
-                self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(self)
-            else:
-                self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = [self]
-
-            # destroy yourself if anything is left on target position
-            # bad code: this cannot happen since everything on the target position was destroyed already
-            if len(self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]) > 1:
-                self.destroy()
+        self.moveDirection("south",force,initialMovement)
 
     '''
     move the item to the west
-    bad code: a method for each direction
     '''
     def moveWest(self,force=1,initialMovement=True):
-        if self.walkable:
-            # destroy small items instead of moving it
-            self.destroy()
-        else:
-            # remove self from current position
-            self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
-            if len(self.terrain.itemByCoordinates) == 0:
-                del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
-
-            # destroy everything on target position
-            if (self.xPosition-1,self.yPosition) in self.terrain.itemByCoordinates:
-                for item in self.terrain.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
-                    item.destroy()
-
-            # place self on new position
-            self.xPosition -= 1
-            if (self.xPosition,self.yPosition) in self.terrain.itemByCoordinates:
-                self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(self)
-            else:
-                self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = [self]
-
-            # destroy yourself if anything is left on target position
-            # bad code: this cannot happen since everything on the target position was destroyed already
-            if len(self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]) > 1:
-                self.destroy()
+        self.moveDirection("west",force,initialMovement)
 
     '''
     move the item to the east
-    bad code: a method for each direction
     '''
     def moveEast(self,force=1,initialMovement=True):
-
-        if self.walkable:
-            # destroy small items instead of moving it
-            self.destroy()
-        else:
-            # remove self from current position
-            self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
-            if len(self.terrain.itemByCoordinates) == 0:
-                del self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]
-
-            # destroy everything on target position
-            if (self.xPosition+1,self.yPosition) in self.terrain.itemByCoordinates:
-                for item in self.terrain.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
-                    item.destroy()
-
-            # place self on new position
-            self.xPosition += 1
-            if (self.xPosition,self.yPosition) in self.terrain.itemByCoordinates:
-                self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(self)
-            else:
-                self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)] = [self]
-
-            # destroy yourself if anything is left on target position
-            # bad code: this cannot happen since everything on the target position was destroyed already
-            if len(self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]) > 1:
-                self.destroy()
+        self.moveDirection("east",force,initialMovement)
     
     '''
     get the physical resistance to beeing moved

@@ -986,8 +986,7 @@ class Terrain(saveing.Saveable):
         return chars
 
     '''
-    get things that would be affected if a rom would move north
-    bad code: nearly identical code for each direction
+    get things that would be affected if a room would move
     '''
     def getAffectedByRoomMovementDirection(self,room,direction,force=1,movementBlock=set()):
         # determine rooms that the room could collide with

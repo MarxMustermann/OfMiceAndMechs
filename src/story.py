@@ -1660,7 +1660,7 @@ class FindWork(BasicPhase):
             else:
                 pos = shopCoordinateList[self.cicleQuestIndex-len(terrain.metalWorkshop.producedItems)]
                 room = terrain.metalWorkshop
-                index = self.cicleQuestIndex-len(terrain.metalWorkshop.producedItems)
+                index = -(self.cicleQuestIndex-len(terrain.metalWorkshop.producedItems))-1
             
             quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[index],(room,pos[0],pos[1]),creator=void)
             quest.endTrigger = addNewCircleQuest

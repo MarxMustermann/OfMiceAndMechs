@@ -38,6 +38,7 @@ class Saveable(object):
         super().__init__()
         self.attributesToStore = ["id","creationCounter"]
         self.callbacksToStore = []
+        self.objectsToStore = []
 
     '''
     get state as dict
@@ -74,6 +75,13 @@ class Saveable(object):
             else:
                 # save None as callback
                 state[callbackName] = None
+
+        # store objects
+        for objectName in self.objectsToStore:
+            if hasattr(self,objectName) and getattr(self,objectName):
+                state[objectName] = getattr(self,objectName).id
+            else:
+                state[objectName] = None
 
         return state
 
@@ -117,6 +125,14 @@ class Saveable(object):
 
             if not currentValue == self.initialState[attribute]:
                 result[attribute] = currentValue
+
+        # diff objects
+        for objectName in self.objectsToStore:
+            value = None
+            if hasattr(self,objectName) and getattr(self,objectName):
+                value = None
+            if not value == self.initialState[objectName]:
+                result[objectName] = value.id
                
         return result
 
@@ -154,6 +170,19 @@ class Saveable(object):
                 else:
                     # set callback to None
                     setattr(self,callbackName,None)
+
+        # set objects
+        for objectName in self.objectsToStore:
+            if objectName in state:
+                if state[objectName]:
+                    '''
+                    set value
+                    '''
+                    def setValue(value):
+                        setattr(self,objectName,value)
+                    loadingRegistry.callWhenAvailable(state[objectName],setValue)
+                else:
+                    setattr(self,objectName,None)
 
     '''
     get a list of ids and a dict of their states from a list of objects

@@ -221,7 +221,7 @@ class Room(saveing.Saveable):
                     # add growth tank
                     # bad code: specal chars should not be used in code
                     # bad code: handle state some other way
-                    mapping = {"Ö":True,"x":False}
+                    mapping = {"Ö":True,"ö":False}
                     item = items.GrowthTank(rowCounter,lineCounter,filled=mapping[char],creator=self)
                     itemsOnFloor.append(item)
                 elif char == "B":

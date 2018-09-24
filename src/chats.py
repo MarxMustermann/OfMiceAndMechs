@@ -339,8 +339,6 @@ class JobChat(interaction.SubMenu):
     id = "JobChat"
     type = "JobChat"
 
-    dialogName = "Can you use some help?" # bad code: deprecated
-
     '''
     add internal state
     bad pattern: chat option stored as references to class complicates this
@@ -421,7 +419,6 @@ bad code: xxx2
 class JobChat2(interaction.SubMenu):
     id = "JobChat2"
     type = "JobChat2"
-    dialogName = "Can you use some help?" # bad code: deprecated
 
     '''
     basic state initialization

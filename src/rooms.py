@@ -193,46 +193,18 @@ class Room(saveing.Saveable):
                 elif char == "i":
                     # add ramp
                     itemsOnFloor.append(items.Item(displayChars.ramp,rowCounter,lineCounter,creator=self))
-                elif char == "q":
+                elif char in ["q","r","s","t","u","z"]:
                     # add special pipe
                     # bad code: pipe connection should be done some other way
-                    item = items.Item(displayChars.pipe_lr,rowCounter,lineCounter,creator=self)
+                    mapping = {"q":displayChars.pipe_lr,"r":displayChars.pipe_lrd,"s":displayChars.pipe_ld,"t":displayChars.pipe_lu,"u":displayChars.pipe_ru,"z":displayChars.pipe_ud}
+                    item = items.Item(mapping[char],rowCounter,lineCounter,creator=self)
                     item.walkable = True
                     itemsOnFloor.append(item)
-                elif char == "r":
-                    # add special pipe
-                    # bad code: pipe connection should be done some other way
-                    item = items.Item(displayChars.pipe_lrd,rowCounter,lineCounter,creator=self)
-                    item.walkable = True
-                    itemsOnFloor.append(item)
-                elif char == "s":
-                    # add special pipe
-                    # bad code: pipe connection should be done some other way
-                    item = items.Item(displayChars.pipe_ld,rowCounter,lineCounter,creator=self)
-                    item.walkable = True
-                    itemsOnFloor.append(item)
-                elif char == "t":
-                    # add special pipe
-                    # bad code: pipe connection should be done some other way
-                    item = items.Item(displayChars.pipe_lu,rowCounter,lineCounter,creator=self)
-                    item.walkable = True
-                    itemsOnFloor.append(item)
-                elif char == "u":
-                    # add special pipe
-                    # bad code: pipe connection should be done some other way
-                    item = items.Item(displayChars.pipe_ru,rowCounter,lineCounter,creator=self)
-                    item.walkable = True
-                    itemsOnFloor.append(item)
-                elif char == "w":
+                elif char in ["w","x"]:
                     # add spray
                     # bad code: handle orientation some other way
-                    item = items.Spray(rowCounter,lineCounter,direction="right",creator=self)
-                    itemsOnFloor.append(item)
-                    self.sprays.append(item)
-                elif char == "x":
-                    # add spray
-                    # bad code: handle orientation some other way
-                    item = items.Spray(rowCounter,lineCounter,direction="left",creator=self)
+                    mapping = {"w":"right","x":"left"}
+                    item = items.Spray(rowCounter,lineCounter,direction=mapping[char],creator=self)
                     itemsOnFloor.append(item)
                     self.sprays.append(item)
                 elif char == "y":
@@ -245,23 +217,12 @@ class Room(saveing.Saveable):
                     # add corpse
                     item = items.Corpse(rowCounter,lineCounter,creator=self)
                     itemsOnFloor.append(item)
-                elif char == "z":
-                    # add special pipe
-                    # bad code: pipe connection should be done some other way
-                    item = items.Item(displayChars.pipe_ud,rowCounter,lineCounter,creator=self)
-                    item.walkable = True
-                    itemsOnFloor.append(item)
-                elif char == "Ö":
+                elif char in ["Ö","ö"]:
                     # add growth tank
                     # bad code: specal chars should not be used in code
                     # bad code: handle state some other way
-                    item = items.GrowthTank(rowCounter,lineCounter,filled=True,creator=self)
-                    itemsOnFloor.append(item)
-                elif char == "ö":
-                    # add growth tank
-                    # bad code: specal chars should not be used in code
-                    # bad code: handle state some other way
-                    item = items.GrowthTank(rowCounter,lineCounter,filled=False,creator=self)
+                    mapping = {"Ö":True,"x":False}
+                    item = items.GrowthTank(rowCounter,lineCounter,filled=mapping[char],creator=self)
                     itemsOnFloor.append(item)
                 elif char == "B":
                     # add to be barricade

@@ -397,37 +397,9 @@ class Scrap(Item):
 
         self.initialState = self.getState()
 
-    '''
-    move and leave a trail of pieces
-    bad code: same code for every direction
-    '''
-    def moveNorth(self,force=1,initialMovement=True):
+    def moveDirection(self,direction,force=1,initialMovement=True):
         self.dropStuff()
-        super().moveNorth(force=force,initialMovement=initialMovement)
-
-    '''
-    move and leave a trail of pieces
-    bad code: same code for every direction
-    '''
-    def moveSouth(self,force=1,initialMovement=True):
-        self.dropStuff()
-        super().moveSouth(force=force,initialMovement=initialMovement)
-
-    '''
-    move and leave a trail of pieces
-    bad code: same code for every direction
-    '''
-    def moveWest(self,force=1,initialMovement=True):
-        self.dropStuff()
-        super().moveWest(force=force,initialMovement=initialMovement)
-
-    '''
-    move and leave a trail of pieces
-    bad code: same code for every direction
-    '''
-    def moveEast(self,force=1,initialMovement=True):
-        self.dropStuff()
-        super().moveEast(force=force,initialMovement=initialMovement)
+	    super().moveDirection(direction,force,initialMovement)
 
     '''
     leave a trail of pieces

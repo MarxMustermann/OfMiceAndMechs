@@ -737,7 +737,6 @@ class Terrain(saveing.Saveable):
         pathToEntry.append((coordinate[0],coordinate[1]))
 
         found = None
-        foundValue = 10000 # bad code: silly constant
 
         # go back to position with lowest moves to start position
         for newCoordinate in [(coordinate[0]-1,coordinate[1]),(coordinate[0],coordinate[1]-1),(coordinate[0]+1,coordinate[1]),(coordinate[0],coordinate[1]+1)]:

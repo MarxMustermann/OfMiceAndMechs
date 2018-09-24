@@ -167,7 +167,7 @@ class Room(saveing.Saveable):
                     itemsOnFloor.append(items.Commlink(rowCounter,lineCounter,creator=self))
                 elif char in ["H","'"]:
                     # add hutch
-					# bad code: handle state some other way
+                    # bad code: handle state some other way
                     mapping = {"H":False,"'":True}
                     itemsOnFloor.append(items.Hutch(rowCounter,lineCounter,creator=self,activated=mapping[char]))
                 elif char == "o":
@@ -1674,25 +1674,26 @@ XXXXXXXX
             return
 
         # only act if there is somebody to act
-        # bad code: should be guard
-        if self.firstOfficer:
-            # scold player
-            messages.append(self.firstOfficer.name+": Now i'll have to take care of this body.")
-            messages.append(self.firstOfficer.name+": Please move on to your next assignment immediatly.")
+        if not self.firstOfficer:
+            return
 
-            # remove all quests
-            for quest in mainChar.quests:
-                quest.deactivate()
-            mainChar.quests = []
+        # scold player
+        messages.append(self.firstOfficer.name+": Now i'll have to take care of this body.")
+        messages.append(self.firstOfficer.name+": Please move on to your next assignment immediatly.")
 
-            cinematics.cinematicQueue = []
+        # remove all quests
+        for quest in mainChar.quests:
+            quest.deactivate()
+        mainChar.quests = []
 
-            # give floor permit
-            character.hasFloorPermit = True
+        cinematics.cinematicQueue = []
 
-            # start vat phase
-            phase = story.VatPhase()
-            phase.start()
+        # give floor permit
+        character.hasFloorPermit = True
+
+        # start vat phase
+        phase = story.VatPhase()
+        phase.start()
 
     '''
     periodically spawn new hoppers

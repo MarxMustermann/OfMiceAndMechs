@@ -94,6 +94,13 @@ class Character(saving.Saveable):
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
+    @property
+    def container(self):
+        if self.room:
+            return self.room
+        else:
+            return self.terrain
+
     '''
     proxy room quest when asked for a job
     '''

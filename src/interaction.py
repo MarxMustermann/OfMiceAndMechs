@@ -496,12 +496,7 @@ def processInput(key):
                         itemMarkedLast.apply(mainChar)
                     else:
                         # active an item on floor
-                        # bad code: room and terrain should be a abstracted container
-                        if mainChar.room:
-                            itemList = mainChar.room.itemsOnFloor
-                        else:
-                            itemList = terrain.itemsOnFloor
-                        for item in itemList:
+                        for item in mainChar.container.itemsOnFloor:
                             if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
                                 item.apply(mainChar)
 
@@ -519,12 +514,7 @@ def processInput(key):
                         mainChar.changed("examine",itemMarkedLast)
                     else:
                         # examine an item on floor
-                        # bad code: room and terrain should be a abstracted container
-                        if mainChar.room:
-                            itemList = mainChar.room.itemsOnFloor
-                        else:
-                            itemList = terrain.itemsOnFloor
-                        for item in itemList:
+                        for item in mainChar.container.itemsOnFloor:
                             if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
                                 # bad code: should happen in character
                                 messages.append(item.description)
@@ -570,15 +560,6 @@ def processInput(key):
                     if len(mainChar.inventory) > 10:
                         messages.append("you cannot carry more items")
                     else:
-                        # get the list of items from room or terrain
-                        # bad code: getting abtracted lists is a start but there should be a container class
-                        if mainChar.room:
-                            itemByCoordinates = mainChar.room.itemByCoordinates
-                            itemList = mainChar.room.itemsOnFloor
-                        else:
-                            itemByCoordinates = terrain.itemByCoordinates
-                            itemList = terrain.itemsOnFloor
-
                         # get the position to pickup from
                         if itemMarkedLast:
                             pos = (itemMarkedLast.xPosition,itemMarkedLast.yPosition)
@@ -586,6 +567,7 @@ def processInput(key):
                             pos = (mainChar.xPosition,mainChar.yPosition)
 
                         # pickup all items from this coordinate
+                        itemByCoordinates = mainChar.container.itemByCoordinates
                         if pos in itemByCoordinates:
                             for item in itemByCoordinates[pos]:
                                 item.pickUp(mainChar)

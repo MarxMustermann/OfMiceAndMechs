@@ -2006,9 +2006,7 @@ class CollectQuestMeta(MetaQuestSequence):
                         
                 if hasProperty:
                     foundItem = item
-                    # bad code: commented out code
-                    # This line is good but looks bad in current setting. reactivate later
-                    #break
+                    break
 
             # activate the pile
             if foundItem:

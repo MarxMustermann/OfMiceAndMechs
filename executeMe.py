@@ -269,6 +269,7 @@ if args.debug:
     characters.debug = True
     quests.debug = True
     canvas.debug = True
+    gameMath.debug = True
 else:
     '''
     dummy logger
@@ -286,6 +287,7 @@ else:
     characters.debug = False
     quests.debug = False
     canvas.debug = False
+    gameMath.debug = False
 
 # bad code: common variables with modules
 items.debugMessages = debugMessages

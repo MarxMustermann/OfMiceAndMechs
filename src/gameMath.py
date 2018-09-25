@@ -72,8 +72,9 @@ bad code: xxxReal
 def calculatePathReal(startX,startY,endX,endY,walkingPath):
     path = []
 
-    # bad code: should raise exception
     if None in (startX,startY,endX,endY):
+        if debug:
+            raise Exception("calculating path with broken start or endpoints")
         return []
 
     # stop recursion at exit condition

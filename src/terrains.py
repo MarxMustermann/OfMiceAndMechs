@@ -1615,11 +1615,10 @@ XXXCCCCCXXX """
         '''
         move character off the placed item
         bad code: should happen somewhere else
-        bad code: nameing 
         '''
-        def tmp():
+        def moveAway():
             quest.character.yPosition -= 1
-        quest2.endTrigger = tmp
+        quest2.endTrigger = moveAway
         quest.addQuest(quest2)
         self.waitingRoom.quests.append(quest)
         self.waitingRoom.addEvent(events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToLeft"},creator=self))
@@ -1637,11 +1636,10 @@ XXXCCCCCXXX """
         '''
         move character off the placed item
         bad code: should happen somewhere else
-        bad code: nameing 
         '''
-        def tmp():
+        def moveAway():
             quest.character.yPosition -= 1
-        quest2.endTrigger = tmp
+        quest2.endTrigger = moveAway
         quest.addQuest(quest2)
         self.waitingRoom.quests.append(quest)
         self.waitingRoom.addEvent(events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToRight"},creator=self))
@@ -1659,11 +1657,10 @@ XXXCCCCCXXX """
         '''
         move character off the placed item
         bad code: should happen somewhere else
-        bad code: nameing 
         '''
-        def tmp():
+        def moveAway():
             quest.character.yPosition -= 1
-        quest2.endTrigger = tmp
+        quest2.endTrigger = moveAway
         quest.addQuest(quest2)
         self.waitingRoom.quests.append(quest)
         self.waitingRoom.addEvent(events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToLeft"},creator=self))

@@ -2516,32 +2516,6 @@ class FetchFurniture(MetaQuestParralel):
 
             counter += 1
 
-        # bad code: commented out code
-        """
-        SMART WAY (cheating)
-        counter = 0
-        maxNum = len(toFetch)
-        if maxNum > len(dropoffs):
-            maxNum = len(dropoffs)
-        toFetch = []
-        while counter < maxNum:
-            if not storageRoom.storedItems:
-                break
-
-            item = storageRoom.storedItems.pop()
-            toFetch.append(item)
-            counter += 1
-    
-        for item in toFetch:
-            questList.append(PickupQuestMeta(item,creator=self))
-        counter = 0
-        for item in toFetch:
-            questList.append(DropQuestMeta(item,constructionSite,dropoffs[counter][1],dropoffs[counter][0],creator=self))
-            counter += 1
-        for item in toFetch:
-            self.itemsInStore.append(item)
-        """
-
         for quest in reversed(questList):
             self.addQuest(quest)
 

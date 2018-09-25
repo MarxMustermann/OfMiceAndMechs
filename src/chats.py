@@ -336,11 +336,10 @@ class ReReport(interaction.SubMenu):
 
 '''
 the dialog for asking somebody somewhat important for a job
-bad code: nameing
 '''
-class JobChat(interaction.SubMenu):
-    id = "JobChat"
-    type = "JobChat"
+class JobChatFirst(interaction.SubMenu):
+    id = "JobChatFirst"
+    type = "JobChatFirst"
 
     '''
     add internal state
@@ -417,11 +416,10 @@ class JobChat(interaction.SubMenu):
 
 '''
 the dialog for asking somebody for a job
-bad code: xxx2
 '''
-class JobChat2(interaction.SubMenu):
-    id = "JobChat2"
-    type = "JobChat2"
+class JobChatSecond(interaction.SubMenu):
+    id = "JobChatSecond"
+    type = "JobChatSecond"
 
     '''
     basic state initialization
@@ -619,6 +617,6 @@ chatMap = {
              "SternChat":SternChat,
              "InfoChat":InfoChat,
              "ReReport":ReReport,
-             "JobChat":JobChat,
-             "JobChat2":JobChat2,
+             "JobChatFirst":JobChatFirst,
+             "JobChatSecond":JobChatSecond,
           }

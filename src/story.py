@@ -1063,16 +1063,10 @@ class BoilerRoomWelcome(BasicPhase):
 
                 '''
                 add quests for firering a furnace
-                bad code: should use the proper quest for this
                 '''
                 def handleEvent(subself):
-                    quest0 = quests.CollectQuestMeta(creator=void)
-                    quest1 = quests.ActivateQuestMeta(self.mainCharRoom.furnaces[2],creator=void)
-                    quest2 = quests.MoveQuestMeta(self.mainCharRoom,4,3,creator=void)
-                    quest0.followUp = quest1
-                    quest1.followUp = quest2
-                    quest2.followUp = None
-                    self.mainCharRoom.secondOfficer.assignQuest(quest0,active=True)
+                    quest = quests.FireFurnaceMeta(self.mainCharRoom.furnaces[2],creator=void)
+                    self.mainCharRoom.secondOfficer.assignQuest(quest,active=True)
 
             '''
             event for showing a message

@@ -362,6 +362,7 @@ characters.gamestate = gameStateObj
 items.gamestate = gameStateObj
 terrains.gamestate = gameStateObj
 rooms.gamestate = gameStateObj
+chats.gamestate = gameStateObj
 
 # bad code: common variables with modules
 rooms.mainChar = gameStateObj.mainChar

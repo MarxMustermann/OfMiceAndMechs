@@ -919,6 +919,8 @@ class BoilerRoomWelcome(BasicPhase):
 
         super().start()
 
+        gamestate.gameWon = True
+
         # move player to machine room if it doesn't exist yet
         if not (mainChar.room and mainChar.room == terrain.tutorialMachineRoom):
             self.mainCharQuestList.append(quests.EnterRoomQuestMeta(terrain.tutorialMachineRoom,startCinematics="please goto the Machineroom",creator=void))

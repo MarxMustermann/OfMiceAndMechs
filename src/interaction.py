@@ -620,12 +620,6 @@ def processInput(key):
             specialRender = True        
             pauseGame = True
 
-        # show the game won screen
-        if gamestate.gameWon:
-            main.set_text((urwid.AttrSpec("default","default"),""))
-            main.set_text((urwid.AttrSpec("default","default"),"credits"))
-            header.set_text((urwid.AttrSpec("default","default"),"good job"))
-
     # render submenues
     if submenue:
         # set flag to not render the game
@@ -665,6 +659,12 @@ def processInput(key):
         main.set_text((urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible()));
         if (useTiles):
             canvas.setPygameDisplay(pydisplay,pygame,tileSize)
+
+    # show the game won screen
+    if gamestate.gameWon:
+        main.set_text((urwid.AttrSpec("default","default"),""))
+        main.set_text((urwid.AttrSpec("default","default"),"credits"))
+        header.set_text((urwid.AttrSpec("default","default"),"good job"))
 
 '''
 The base class for submenues offer selections

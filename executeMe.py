@@ -336,9 +336,9 @@ mapHidden = True
 mainChar = None
 
 # the available Phases
-phasesByName["FirstTutorialPhase"] = story.FirstTutorialPhase
-phasesByName["SecondTutorialPhase"] = story.SecondTutorialPhase
-phasesByName["ThirdTutorialPhase"] = story.ThirdTutorialPhase
+phasesByName["BoilerRoomWelcome"] = story.BoilerRoomWelcome
+phasesByName["BoilerRoomInteractionTraining"] = story.BoilerRoomInteractionTraining
+phasesByName["FurnaceCompetition"] = story.FurnaceCompetition
 phasesByName["VatPhase"] = story.VatPhase
 phasesByName["MachineRoomPhase"] = story.MachineRoomPhase
 phasesByName["OpenWorld"] = story.OpenWorld

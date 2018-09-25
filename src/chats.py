@@ -396,7 +396,7 @@ class JobChat(interaction.SubMenu):
 
                     # start next story phase
                     quest = quests.MoveQuestMeta(subSelf.terrain.tutorialMachineRoom,3,3,creator=void)
-                    phase = story.FirstTutorialPhase()
+                    phase = story.BoilerRoomWelcome()
                     quest.endTrigger = {"container":phase,"method":"start"}
                     subSelf.hopperDutyQuest.deactivate()
                     subSelf.mainChar.quests.remove(subSelf.hopperDutyQuest)

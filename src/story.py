@@ -901,14 +901,13 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
 
 '''
 explain how to steam generation works and give a demonstration
-bad code: nameing
 '''
-class FirstTutorialPhase(BasicPhase):
+class BoilerRoomWelcome(BasicPhase):
     '''
     straightforward state initialization
     '''
     def __init__(self):
-        super().__init__("FirstTutorialPhase")
+        super().__init__("BoilerRoomWelcome")
 
     '''
 
@@ -1145,19 +1144,18 @@ class FirstTutorialPhase(BasicPhase):
     '''
     def end(self):
         cinematics.showCinematic("please try to remember the Information. The lesson will now continue with Movement.")
-        phase2 = SecondTutorialPhase()
+        phase2 = BoilerRoomInteractionTraining()
         phase2.start()
 
 '''
 teach basic interaction
-bad code: nameing
 '''
-class SecondTutorialPhase(BasicPhase):
+class BoilerRoomInteractionTraining(BasicPhase):
     '''
     straightforward state initialization
     '''
     def __init__(self):
-        super().__init__("SecondTutorialPhase")
+        super().__init__("BoilerRoomInteractionTraining")
 
     '''
     explain interaction and make the player apply lessons
@@ -1226,19 +1224,18 @@ class SecondTutorialPhase(BasicPhase):
     '''
     def end(self):
         cinematics.showCinematic("you recieved your Preparatorytraining. Time for the Test.")
-        phase = ThirdTutorialPhase()
+        phase = FurnaceCompetition()
         phase.start()
 
 '''
 do a furnace firering competition 
-bad code: nameing
 '''
-class ThirdTutorialPhase(BasicPhase):
+class FurnaceCompetition(BasicPhase):
     '''
     straightforward state initialization
     '''
     def __init__(self):
-        super().__init__("ThirdTutorialPhase")
+        super().__init__("FurnaceCompetition")
 
     '''
     run the competition
@@ -1714,7 +1711,7 @@ class LabPhase(BasicPhase):
     '''
     def end(self):
         cinematics.showCinematic("we are done with the tests. return to work")
-        SecondTutorialPhase().start()
+        BoilerRoomInteractionTraining().start()
 
 '''
 dummy for the vat phase
@@ -1770,7 +1767,7 @@ class VatPhase(BasicPhase):
     '''
     def end(self):
         cinematics.showCinematic("you seem to be able to follow orders after all. you may go back to your training.")
-        SecondTutorialPhase().start()
+        BoilerRoomInteractionTraining().start()
 
 '''
 dummy for the machine room phase
@@ -1837,9 +1834,9 @@ def registerPhases():
     phasesByName["VatPhase"] = VatPhase
     phasesByName["MachineRoomPhase"] = MachineRoomPhase
     phasesByName["LabPhase"] = LabPhase
-    phasesByName["FirstTutorialPhase"] = FirstTutorialPhase
-    phasesByName["SecondTutorialPhase"] = SecondTutorialPhase
-    phasesByName["ThirdTutorialPhase"] = ThirdTutorialPhase
+    phasesByName["BoilerRoomWelcome"] = BoilerRoomWelcome
+    phasesByName["BoilerRoomInteractionTraining"] = BoilerRoomInteractionTraining
+    phasesByName["FurnaceCompetition"] = FurnaceCompetition
     phasesByName["WakeUpPhase"] = WakeUpPhase
     phasesByName["BrainTesting"] = BrainTestingPhase
     phasesByName["BasicMovementTraining"] = BasicMovementTraining

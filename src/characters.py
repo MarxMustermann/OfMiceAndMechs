@@ -634,15 +634,14 @@ class Character(saving.Saveable):
     bad code: probably misnamed
     '''
     def changed(self,tag="default",info=None):
-        # bad code: listenFunction call is almost redundant
-        if not tag == "default":
-            if not tag in self.listeners:
-                return
-            for listenFunction in self.listeners[tag]:
-                listenFunction(info)
-        else:
-            for listenFunction in self.listeners["default"]:
+        if not tag in self.listeners:
+            return
+
+        for listenFunction in self.listeners[tag]:
+            if info == None:
                 listenFunction()
+            else:
+                listenFunction(info)
 
 """
 the class for mice. Intended to be used for manipulating the gamestate used for example to attack the player

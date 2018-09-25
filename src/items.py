@@ -248,18 +248,14 @@ class Item(saving.Saveable):
     bad code: should be extra class
     '''
     def changed(self,tag="default",info=None):
-        if not tag == "default":
-            if not tag in self.listeners:
-                return
+        if not tag in self.listeners:
+            return
 
-            # bad code: almost redundant code
-            for listenFunction in self.listeners[tag]:
-                listenFunction(info)
-        else:
-            # bad code: almost redundant code
-            for listenFunction in self.listeners["default"]:
+        for listenFunction in self.listeners[tag]:
+            if info == None:
                 listenFunction()
-
+            else:
+                listenFunction(info)
 
     '''
     get a list of items that is affected if the item would move into some direction

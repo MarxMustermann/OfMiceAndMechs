@@ -640,8 +640,9 @@ class Character(saving.Saveable):
                 return
             for listenFunction in self.listeners[tag]:
                 listenFunction(info)
-        for listenFunction in self.listeners["default"]:
-            listenFunction()
+        else:
+            for listenFunction in self.listeners["default"]:
+                listenFunction()
 
 """
 the class for mice. Intended to be used for manipulating the gamestate used for example to attack the player

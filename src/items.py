@@ -88,8 +88,11 @@ class Item(saving.Saveable):
     '''
     no operation when applying a base item
     '''
-    def apply(self,character):
-        messages.append("i can't do anything useful with this")
+    def apply(self,character,silent=False):
+        character.changed("activate",self)
+        self.changed("activated",character)
+        if not silent:
+            messages.append("i can't do anything useful with this")
 
     '''
     get picked up by the supplied character
@@ -252,10 +255,10 @@ class Item(saving.Saveable):
             # bad code: almost redundant code
             for listenFunction in self.listeners[tag]:
                 listenFunction(info)
-
-        # bad code: almost redundant code
-        for listenFunction in self.listeners["default"]:
-            listenFunction()
+        else:
+            # bad code: almost redundant code
+            for listenFunction in self.listeners["default"]:
+                listenFunction()
 
 
     '''
@@ -486,6 +489,7 @@ class GrowthTank(Item):
     manually eject character
     '''
     def apply(self,character):
+        super().apply(character,silent=True)
         if self.filled:
             self.eject()
 
@@ -565,6 +569,7 @@ class Hutch(Item):
     bad code: open close methods would be nice
     '''
     def apply(self,character):
+        super().apply(character,silent=True)
         if not self.activated:
             self.activated = True
         else:
@@ -603,6 +608,7 @@ class Lever(Item):
     bad code: activate/deactive methods would be nice
     '''
     def apply(self,character):
+        super().apply(character,silent=True)
         if not self.activated:
             # activate the lever
             self.activated = True
@@ -652,6 +658,7 @@ class Furnace(Item):
     fire the furnace
     '''
     def apply(self,character):
+        super().apply(character,silent=True)
         # select fuel
         # bad pattern: the player should be able to select fuel
         # bad pattern: coal should be preferred
@@ -728,6 +735,7 @@ class Commlink(Item):
     fake requesting and getting a coal refill
     '''
     def apply(self,character):
+        super().apply(character,silent=True)
         # add messages requesting coal
         # bad pattern: requesting coal in random room is not smart
         messages.append("Sigmund Bärenstein@Logisticcentre: we need more coal")
@@ -775,6 +783,7 @@ class Display(Item):
     map player controls to room movement 
     '''
     def apply(self,character):
+        super().apply(character,silent=True)
         # handle movement keystrokes
         '''
         move room to north
@@ -882,6 +891,7 @@ class Door(Item):
     bad code: should have a open attribute
     '''
     def apply(self,character):
+        super().apply(character,silent=True)
         if self.walkable:
             self.close()
         else:
@@ -988,6 +998,8 @@ class Pile(Item):
             new.yPosition = self.yPosition
             self.room.addItems([new])
 
+        super().apply(character,silent=True)
+
     '''
     print info with item counter
     '''
@@ -1034,6 +1046,7 @@ class Chain(Item):
     bad code: only works on terrains
     '''
     def apply(self,character):
+        super().apply(character,silent=True)
         # chain to surrounding items/rooms
         # bad pattern: the user needs to be able to select to what to chain to
         if not self.fixed:
@@ -1315,6 +1328,7 @@ class MarkerBean(Item):
     avtivate marker
     '''
     def apply(self,character):
+        super().apply(character,silent=True)
         self.activated = True
 
 '''
@@ -1339,6 +1353,7 @@ class GooDispenser(Item):
     fill goo flask
     '''
     def apply(self,character):
+        super().apply(character,silent=True)
         for item in character.inventory:
             if isinstance(item,GooFlask):
                 item.uses = 100
@@ -1369,6 +1384,7 @@ class GooFlask(Item):
     drink from flask
     '''
     def apply(self,character):
+        super().apply(character,silent=True)
         if self.uses > 0:
             self.uses -= 1
             self.changed()
@@ -1426,6 +1442,7 @@ class ProductionArtwork(Item):
     trigger production of a player selected item
     '''
     def apply(self,character,resultType=None):
+        super().apply(character,silent=True)
         options = []
         for key,value in itemMap.items():
             options.append((value,key))
@@ -1480,6 +1497,7 @@ class ScrapCompactor(Item):
     produce a metal bar
     '''
     def apply(self,character,resultType=None):
+        super().apply(character,silent=True)
         # fetch input scrap
         scrap = None
         for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:

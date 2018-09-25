@@ -8,11 +8,11 @@
 import json
 
 # import basic internal libs
-import src.items as items
-import src.rooms as rooms
-import src.overlays as overlays
-import src.gameMath as gameMath
-import src.saveing as saveing
+import src.items
+import src.rooms
+import src.overlays
+import src.gameMath
+import src.saveing
 
 # bad code: global varaibles
 mainChar = None
@@ -34,7 +34,7 @@ class Coordinate(object):
 '''
 the base class for terrains
 '''
-class Terrain(saveing.Saveable):
+class Terrain(src.saveing.Saveable):
     '''
     straightforward state initialization
     '''
@@ -71,23 +71,23 @@ class Terrain(saveing.Saveable):
                 if char in (" ",".",",","@"):
                     pass
                 elif char == "X":
-                    mapItems.append(items.Wall(rowCounter,lineCounter,creator=self))
+                    mapItems.append(src.items.Wall(rowCounter,lineCounter,creator=self))
                 elif char == "#":
-                    mapItems.append(items.Pipe(rowCounter,lineCounter,creator=self))
+                    mapItems.append(src.items.Pipe(rowCounter,lineCounter,creator=self))
                 elif char == "R":
                     pass
                 elif char == "O":
-                    mapItems.append(items.Item(displayChars.clamp_active,rowCounter,lineCounter,creator=self))
+                    mapItems.append(src.items.Item(displayChars.clamp_active,rowCounter,lineCounter,creator=self))
                 elif char == "0":
-                    mapItems.append(items.Item(displayChars.clamp_inactive,rowCounter,lineCounter,creator=self))
+                    mapItems.append(src.items.Item(displayChars.clamp_inactive,rowCounter,lineCounter,creator=self))
                 elif char == "8":
-                    mapItems.append(items.Chain(rowCounter,lineCounter,creator=self))
+                    mapItems.append(src.items.Chain(rowCounter,lineCounter,creator=self))
                 elif char == "C":
-                    mapItems.append(items.Winch(rowCounter,lineCounter,creator=self))
+                    mapItems.append(src.items.Winch(rowCounter,lineCounter,creator=self))
                 elif char == "P":
-                    mapItems.append(items.Pile(rowCounter,lineCounter,creator=self))
+                    mapItems.append(src.items.Pile(rowCounter,lineCounter,creator=self))
                 else:
-                    mapItems.append(items.Item(displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter,creator=self))
+                    mapItems.append(src.items.Item(displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter,creator=self))
                 rowCounter += 1
             lineCounter += 1
         self.addItems(mapItems)
@@ -127,22 +127,22 @@ class Terrain(saveing.Saveable):
                 if char in (".",","," "):
                     pass
                 elif char == "X":
-                    roomsOnMap.append(rooms.MechArmor(rowCounter,lineCounter,0,0,creator=self))
+                    roomsOnMap.append(src.rooms.MechArmor(rowCounter,lineCounter,0,0,creator=self))
                 elif char == "V":
                     # add room and save first reference
-                    room = rooms.Vat2(rowCounter,lineCounter,2,2,creator=self)
+                    room = src.rooms.Vat2(rowCounter,lineCounter,2,2,creator=self)
                     if not self.tutorialVat:
                         self.tutorialVat = room
                     roomsOnMap.append(room)
                 elif char == "v":
                     # add room and save first reference
-                    room = rooms.Vat1(rowCounter,lineCounter,2,2,creator=self)
+                    room = src.rooms.Vat1(rowCounter,lineCounter,2,2,creator=self)
                     if not self.tutorialVatProcessing:
                         self.tutorialVatProcessing = room
                     roomsOnMap.append(room)
                 elif char == "Q":
                     # add room and add to room list
-                    room = rooms.InfanteryQuarters(rowCounter,lineCounter,1,2,creator=self)
+                    room = src.rooms.InfanteryQuarters(rowCounter,lineCounter,1,2,creator=self)
                     roomsOnMap.append(room)
                     self.militaryRooms.append(room)
 
@@ -150,90 +150,90 @@ class Terrain(saveing.Saveable):
                     self.addListener(room.enforceFloorPermit,"entered terrain")
                 elif char == "w":
                     # add room and add to room list
-                    room = rooms.WaitingRoom(rowCounter,lineCounter,1,2,creator=self)
+                    room = src.rooms.WaitingRoom(rowCounter,lineCounter,1,2,creator=self)
                     self.waitingRoom = room
                     roomsOnMap.append(room)
                 elif char == "M":
                     # add room and add to room list
-                    room = rooms.TutorialMachineRoom(rowCounter,lineCounter,4,1,creator=self)
+                    room = src.rooms.TutorialMachineRoom(rowCounter,lineCounter,4,1,creator=self)
                     if not self.tutorialMachineRoom:
                         self.tutorialMachineRoom = room
                     roomsOnMap.append(room)
                 elif char == "L":
                     # add room and add to room list
-                    room = rooms.LabRoom(rowCounter,lineCounter,1,1,creator=self)
+                    room = src.rooms.LabRoom(rowCounter,lineCounter,1,1,creator=self)
                     if not self.tutorialLab:
                         self.tutorialLab = room
                     roomsOnMap.append(room)
                 elif char == "C":
                     # generate pseudo random content type
-                    itemTypes = [items.Wall,items.Pipe]
+                    itemTypes = [src.items.Wall,src.items.Pipe]
                     amount = 40
                     if not rowCounter%2:
-                        itemTypes.append(items.Lever)
+                        itemTypes.append(src.items.Lever)
                         amount += 10
                     if not rowCounter%3:
-                        itemTypes.append(items.Furnace)
+                        itemTypes.append(src.items.Furnace)
                         amount += 15
                     if not rowCounter%4:
-                        itemTypes.append(items.Chain)
+                        itemTypes.append(src.items.Chain)
                         amount += 20
                     if not rowCounter%5:
-                        itemTypes.append(items.Hutch)
+                        itemTypes.append(src.items.Hutch)
                         amount += 7
                     if not rowCounter%6:
-                        itemTypes.append(items.GrowthTank)
+                        itemTypes.append(src.items.GrowthTank)
                         amount += 8
                     if not lineCounter%2:
-                        itemTypes.append(items.Door)
+                        itemTypes.append(src.items.Door)
                         amount += 15
                     if not lineCounter%3:
-                        itemTypes.append(items.Boiler)
+                        itemTypes.append(src.items.Boiler)
                         amount += 10
                     if not lineCounter%4:
-                        itemTypes.append(items.Winch)
+                        itemTypes.append(src.items.Winch)
                         amount += 7
                     if not lineCounter%5:
-                        itemTypes.append(items.Display)
+                        itemTypes.append(src.items.Display)
                         amount += 7
                     if not lineCounter%6:
-                        itemTypes.append(items.Commlink)
+                        itemTypes.append(src.items.Commlink)
                         amount += 7
                     if not itemTypes:
-                        itemTypes = [items.Pipe,items.Wall,items.Furnace,items.Boiler]
+                        itemTypes = [src.items.Pipe,src.items.Wall,src.items.Furnace,src.items.Boiler]
                         amount += 30
 
                     # add room and add to room list
-                    room = rooms.CargoRoom(rowCounter,lineCounter,3,0,itemTypes=itemTypes,amount=amount,creator=self)
+                    room = src.rooms.CargoRoom(rowCounter,lineCounter,3,0,itemTypes=itemTypes,amount=amount,creator=self)
                     self.tutorialCargoRooms.append(room)
                     roomsOnMap.append(room)
                 elif char == "U":
                     # add room and add to room list
-                    room = rooms.StorageRoom(rowCounter,lineCounter,3,0,creator=self)
+                    room = src.rooms.StorageRoom(rowCounter,lineCounter,3,0,creator=self)
                     self.tutorialStorageRooms.append(room)
                     roomsOnMap.append(room)
                 elif char == "?":
-                    roomsOnMap.append(rooms.CpuWasterRoom(rowCounter,lineCounter,2,2,creator=self))
+                    roomsOnMap.append(src.rooms.CpuWasterRoom(rowCounter,lineCounter,2,2,creator=self))
                 elif char == "t":
                     # add room and add to room list
-                    miniMech = rooms.MiniMech(rowCounter,lineCounter,2,2,creator=self)
+                    miniMech = src.rooms.MiniMech(rowCounter,lineCounter,2,2,creator=self)
                     self.miniMechs.append(miniMech)
                     roomsOnMap.append(miniMech)
                 elif char == "W":
                     # add room and add to room list
-                    wakeUpRoom = rooms.WakeUpRoom(rowCounter,lineCounter,1,1,creator=self)
+                    wakeUpRoom = src.rooms.WakeUpRoom(rowCounter,lineCounter,1,1,creator=self)
                     self.wakeUpRoom = wakeUpRoom
                     roomsOnMap.append(wakeUpRoom)
                 elif char == "m":
                     # add room and add to room list
-                    room = rooms.MetalWorkshop(rowCounter,lineCounter,1,1,creator=self)
+                    room = src.rooms.MetalWorkshop(rowCounter,lineCounter,1,1,creator=self)
                     self.metalWorkshop = room
                     roomsOnMap.append(room)
                 elif char == "b":
-                    room = rooms.ConstructionSite(rowCounter,lineCounter,1,1,creator=self)
+                    room = src.rooms.ConstructionSite(rowCounter,lineCounter,1,1,creator=self)
                     roomsOnMap.append(room)
                 elif char == "K":
-                    room = rooms.MechCommand(rowCounter,lineCounter,1,1,creator=self)
+                    room = src.rooms.MechCommand(rowCounter,lineCounter,1,1,creator=self)
                     roomsOnMap.append(room)
                 else:
                     # add starting points for pathfinding
@@ -726,7 +726,7 @@ class Terrain(saveing.Saveable):
         path = entryPoint[2]+path+exitPoint[2][1:]
 
         # return cleaned up path
-        return gameMath.removeLoops(path)
+        return src.gameMath.removeLoops(path)
 
     '''
     construct the path to a coordinate by walking backwards from this coordinate back to the starting point
@@ -972,9 +972,9 @@ class Terrain(saveing.Saveable):
 
         # add overlays
         if not mapHidden:
-            overlays.QuestMarkerOverlay().apply(chars,mainChar,displayChars)
-            overlays.NPCsOverlay().apply(chars,self)
-            overlays.MainCharOverlay().apply(chars,mainChar)
+            src.overlays.QuestMarkerOverlay().apply(chars,mainChar,displayChars)
+            src.overlays.NPCsOverlay().apply(chars,self)
+            src.overlays.MainCharOverlay().apply(chars,mainChar)
 
         # cache rendering
         self.lastRender = chars
@@ -1172,7 +1172,7 @@ class Terrain(saveing.Saveable):
                 self.removeItem(item)
         # add items
         for itemId in state["newItemList"]:
-            item = items.getItemFromState(state["itemStates"][itemId])
+            item = src.items.getItemFromState(state["itemStates"][itemId])
             self.addItems([item])
 
         for char in self.characters:
@@ -1282,12 +1282,12 @@ class Nothingness(Terrain):
             for y in range(0,120):
                 item = None
                 if not x%23 and not y%35 and not (x+y)%5:
-                    item = items.Scrap(x,y,1)
+                    item = src.items.Scrap(x,y,1)
                 if not x%57 and not y%22 and not (x+y)%3:
-                    item = items.Item(displayChars.foodStuffs[((2*x)+y)%6],x,y)
+                    item = src.items.Item(displayChars.foodStuffs[((2*x)+y)%6],x,y)
                     item.walkable = True
                 if not x%19 and not y%27 and not (x+y)%4:
-                    item = items.Item(displayChars.foodStuffs[((2*x)+y)%6],x,y)
+                    item = src.items.Item(displayChars.foodStuffs[((2*x)+y)%6],x,y)
                     item.walkable = True
                 if item:
                     self.testItems.append(item)
@@ -1335,7 +1335,7 @@ U  U
                     if toSkip:
                         continue
 
-                    self.testItems.append(items.Scrap(x,y,counter))
+                    self.testItems.append(src.items.Scrap(x,y,counter))
                     counter += 1
                     if counter == 16:
                         counter = 1
@@ -1357,13 +1357,13 @@ U  U
         counter = addPseudoRandomScrap(counter,(20,120),(110,120),((2,3),(3,2),(4,5),(5,4)))
         counter = addPseudoRandomScrap(counter,(30,110),(30,110),((2,7),(5,3),(23,2),(13,9),(5,17)))
 
-        addPseudoRandomThin((30,110),(30,110),(23,7,2,3,2,4),items.Wall)
-        addPseudoRandomThin((30,110),(30,110),(13,15,3,5,3,2),items.Pipe)
+        addPseudoRandomThin((30,110),(30,110),(23,7,2,3,2,4),src.items.Wall)
+        addPseudoRandomThin((30,110),(30,110),(13,15,3,5,3,2),src.items.Pipe)
 
         self.addItems(self.testItems)
 
         # add base of operations
-        self.wakeUpRoom = rooms.MiniBase(0,4,0,0)
+        self.wakeUpRoom = src.rooms.MiniBase(0,4,0,0)
         self.addRooms([self.wakeUpRoom])
 
 '''
@@ -1561,17 +1561,17 @@ XXXCCCCCXXX """
         self.addStorageQuest()
 
         # add scrap to be cleaned up
-        self.testItems = [items.Scrap(20,52,3,creator=self),
-                          items.Scrap(19,53,3,creator=self),
-                          items.Scrap(20,51,3,creator=self),
-                          items.Scrap(18,49,3,creator=self),
-                          items.Scrap(21,53,3,creator=self),
-                          items.Scrap(19,48,3,creator=self),
-                          items.Scrap(20,52,3,creator=self),
-                          items.Scrap(19,49,3,creator=self),
-                          items.Scrap(20,48,3,creator=self),
-                          items.Scrap(18,50,3,creator=self),
-                          items.Scrap(18,51,3,creator=self)]
+        self.testItems = [src.items.Scrap(20,52,3,creator=self),
+                          src.items.Scrap(19,53,3,creator=self),
+                          src.items.Scrap(20,51,3,creator=self),
+                          src.items.Scrap(18,49,3,creator=self),
+                          src.items.Scrap(21,53,3,creator=self),
+                          src.items.Scrap(19,48,3,creator=self),
+                          src.items.Scrap(20,52,3,creator=self),
+                          src.items.Scrap(19,49,3,creator=self),
+                          src.items.Scrap(20,48,3,creator=self),
+                          src.items.Scrap(18,50,3,creator=self),
+                          src.items.Scrap(18,51,3,creator=self)]
         self.addItems(self.testItems)
 
         # move roadblock periodically

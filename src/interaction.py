@@ -1,7 +1,7 @@
-import src.rooms as rooms
-import src.items as items
-import src.quests as quests
-import src.canvas as canvaslib
+import src.rooms
+import src.items
+import src.quests
+import src.canvas
 import time
 import urwid
 
@@ -29,7 +29,7 @@ frame = urwid.Frame(urwid.Filler(main,"top"),header=header,footer=footer)
 # the keys that should not be handled like usual but are overwritten by other places
 stealKey = {}
 # bad code: common variables with modules
-items.stealKey = stealKey
+src.items.stealKey = stealKey
 
 # timestamps for detecting periods in inactivity etc
 lastLagDetection = time.time()
@@ -516,22 +516,12 @@ def processInput(key):
 
             # drop first item from inventory
             # bad pattern: the user has to have the choice for what item to drop
-            # bad code: no drop event sent
-            # bad code: dropping should happen within character
             if key in (commandChars.drop):
                 if not "NaiveDropQuest" in mainChar.solvers:
                     messages.append("you do not have the nessecary solver yet")
                 else:
                     if len(mainChar.inventory):
-                        item = mainChar.inventory.pop()    
-                        item.xPosition = mainChar.xPosition        
-                        item.yPosition = mainChar.yPosition        
-                        if mainChar.room:
-                            mainChar.room.addItems([item])
-                        else:
-                            mainChar.terrain.addItems([item])
-                        item.changed()
-                        mainChar.changed()
+                        mainChar.drop(mainChar.inventory[0])
 
             # drink from the first available item in inventory
             # bad pattern: the user has to have the choice for what item to drop
@@ -539,7 +529,7 @@ def processInput(key):
             if key in (commandChars.drink):
                 character = mainChar
                 for item in character.inventory:
-                    if isinstance(item,items.GooFlask):
+                    if isinstance(item,src.items.GooFlask):
                         if item.uses > 0:
                             item.apply(character)
                             break
@@ -1333,7 +1323,7 @@ class AdvancedQuestMenu(SubMenu):
             # add a list of quests
             if not self.options and not self.getSelection():
                 options = []
-                for key,value in quests.questMap.items():
+                for key,value in src.quests.questMap.items():
 
                     # show only quests the chractre has done
                     if not key in mainChar.questsDone:
@@ -1362,14 +1352,14 @@ class AdvancedQuestMenu(SubMenu):
 
         # let the player select the parameters for the quest
         if self.state == "parameter selection":
-            if self.quest == quests.EnterRoomQuestMeta:
+            if self.quest == src.quests.EnterRoomQuestMeta:
                 # set up the options
                 if not self.options and not self.getSelection():
                     # add a list of of rooms
                     options = []
                     for room in terrain.rooms:
                         # do not show unimportant rooms
-                        if isinstance(room,rooms.MechArmor) or isinstance(room,rooms.CpuWasterRoom):
+                        if isinstance(room,src.rooms.MechArmor) or isinstance(room,src.rooms.CpuWasterRoom):
                             continue
                         options.append((room,room.name))
                     self.setOptions("select the room:",options)
@@ -1387,7 +1377,7 @@ class AdvancedQuestMenu(SubMenu):
                 else:
                     return False
 
-            elif self.quest == quests.StoreCargo:
+            elif self.quest == src.quests.StoreCargo:
                 # set up the options for selecting the cargo room
                 if "cargoRoom" not in self.questParams:
                     if not self.options and not self.getSelection():
@@ -1395,7 +1385,7 @@ class AdvancedQuestMenu(SubMenu):
                         options = []
                         for room in terrain.rooms:
                             # show only cargo rooms
-                            if not isinstance(room,rooms.CargoRoom):
+                            if not isinstance(room,src.rooms.CargoRoom):
                                 continue
                             options.append((room,room.name))
                         self.setOptions("select the room:",options)
@@ -1418,7 +1408,7 @@ class AdvancedQuestMenu(SubMenu):
                         options = []
                         for room in terrain.rooms:
                             # show only storage rooms
-                            if not isinstance(room,rooms.StorageRoom):
+                            if not isinstance(room,src.rooms.StorageRoom):
                                 continue
                             options.append((room,room.name))
                         self.setOptions("select the room:",options)
@@ -1444,7 +1434,7 @@ class AdvancedQuestMenu(SubMenu):
             # set the options for confirming the selection
             if not self.options and not self.getSelection():
                 options = [("yes","yes"),("no","no")]
-                if self.quest == quests.EnterRoomQuestMeta:
+                if self.quest == src.quests.EnterRoomQuestMeta:
                     self.setOptions("you chose the following parameters:\nroom: "+str(self.questParams)+"\n\nDo you confirm?",options)
                 else:
                     self.setOptions("Do you confirm?",options)
@@ -1457,37 +1447,37 @@ class AdvancedQuestMenu(SubMenu):
                 if self.selection == "yes":
                     # instanciate quest
                     # bad code: repetive code
-                    if self.quest == quests.MoveQuestMeta:
+                    if self.quest == src.quests.MoveQuestMeta:
                        questInstance = self.quest(mainChar.room,2,2,creator=void)
-                    elif self.quest == quests.ActivateQuestMeta:
+                    elif self.quest == src.quests.ActivateQuestMeta:
                        questInstance = self.quest(terrain.tutorialMachineRoom.furnaces[0],creator=void)
-                    elif self.quest == quests.EnterRoomQuestMeta:
+                    elif self.quest == src.quests.EnterRoomQuestMeta:
                        questInstance = self.quest(self.questParams["room"],creator=void)
-                    elif self.quest == quests.FireFurnaceMeta:
+                    elif self.quest == src.quests.FireFurnaceMeta:
                        questInstance = self.quest(terrain.tutorialMachineRoom.furnaces[0],creator=void)
-                    elif self.quest == quests.WaitQuest:
+                    elif self.quest == src.quests.WaitQuest:
                        questInstance = self.quest(creator=void)
-                    elif self.quest == quests.LeaveRoomQuest:
+                    elif self.quest == src.quests.LeaveRoomQuest:
                        try:
                            questInstance = self.quest(self.character.room,creator=void)
                        except:
                            pass
-                    elif self.quest == quests.ClearRubble:
+                    elif self.quest == src.quests.ClearRubble:
                        questInstance = self.quest(creator=void)
-                    elif self.quest == quests.RoomDuty:
+                    elif self.quest == src.quests.RoomDuty:
                        questInstance = self.quest(creator=void)
-                    elif self.quest == quests.ConstructRoom:
+                    elif self.quest == src.quests.ConstructRoom:
                        for room in terrain.rooms:
-                           if isinstance(room,rooms.ConstructionSite):
+                           if isinstance(room,src.rooms.ConstructionSite):
                                constructionSite = room
                                break
                        questInstance = self.quest(constructionSite,terrain.tutorialStorageRooms,creator=void)
-                    elif self.quest == quests.StoreCargo:
+                    elif self.quest == src.quests.StoreCargo:
                        for room in terrain.rooms:
-                           if isinstance(room,rooms.StorageRoom):
+                           if isinstance(room,src.rooms.StorageRoom):
                                storageRoom = room
                        questInstance = self.quest(self.questParams["cargoRoom"],self.questParams["storageRoom"],creator=void)
-                    elif self.quest == quests.MoveToStorage:
+                    elif self.quest == src.quests.MoveToStorage:
                        questInstance = self.quest([terrain.tutorialLab.itemByCoordinates[(1,9)][0],terrain.tutorialLab.itemByCoordinates[(2,9)][0]],terrain.tutorialStorageRooms[1],creator=void)
                     else:
                        questInstance = self.quest(creator=void)
@@ -1747,7 +1737,7 @@ def render():
     shift = (screensize[1]//2-20,screensize[0]//4-20)
 
     # place rendering in screen
-    canvas = canvaslib.Canvas(size=(viewsize,viewsize),chars=chars,coordinateOffset=(centerY-halfviewsite,centerX-halfviewsite),shift=shift,displayChars=displayChars)
+    canvas = src.canvas.Canvas(size=(viewsize,viewsize),chars=chars,coordinateOffset=(centerY-halfviewsite,centerX-halfviewsite),shift=shift,displayChars=displayChars)
 
     return canvas
 

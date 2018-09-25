@@ -8,8 +8,8 @@
 import json
 
 # import the other internal libs
-import src.items as items
-import src.saveing as saving
+import src.items
+import src.saveing
 import src.quests
 
 # bad code: containers for global state
@@ -22,7 +22,7 @@ this is the class for characters meaning both npc and pcs.
 all characters except the pcs always have automated = True to
 make them to things on their own
 """
-class Character(saving.Saveable):
+class Character(src.saveing.Saveable):
     '''
     sets basic info AND adds default behaviour/items
     '''
@@ -88,7 +88,7 @@ class Character(saving.Saveable):
             self.assignQuest(quest)
 
         # default items
-        self.inventory.append(items.GooFlask(creator=self))
+        self.inventory.append(src.items.GooFlask(creator=self))
 
         # save state and register
         self.initialState = self.getState()
@@ -280,7 +280,7 @@ class Character(saving.Saveable):
 
         # set inventory
         if "inventory" in state:
-            self.loadFromList(state["inventory"],self.inventory,items.getItemFromState)
+            self.loadFromList(state["inventory"],self.inventory,src.items.getItemFromState)
 
         # set quests
         if "quests" in state:
@@ -416,12 +416,12 @@ class Character(saving.Saveable):
         if self.room:
             room = self.room
             room.removeCharacter(self)
-            corpse = items.Corpse(self.xPosition,self.yPosition,creator=self)
+            corpse = src.items.Corpse(self.xPosition,self.yPosition,creator=self)
             room.addItems([corpse])
         elif self.terrain:
             terrain = self.terrain
             terrain.removeCharacter(self)
-            corpse = items.Corpse(self.xPosition,self.yPosition,creator=self)
+            corpse = src.items.Corpse(self.xPosition,self.yPosition,creator=self)
             terrain.addItems([corpse])
         else:
             debugMessages.append("this should not happen, character died without beeing somewhere ("+str(self)+")")
@@ -552,7 +552,7 @@ class Character(saving.Saveable):
         if item:
             # open doors
             # bad pattern: this should not happen here
-            if isinstance(item,items.Door):
+            if isinstance(item,src.items.Door):
                 item.apply(self)
             return False
         else:

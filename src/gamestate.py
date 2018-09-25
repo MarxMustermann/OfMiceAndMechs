@@ -8,7 +8,7 @@
 import json
 
 # include basic internal libs
-import src.characters as characters
+import src.characters
 
 '''
 the container for the gamestate
@@ -30,7 +30,7 @@ class GameState():
             self.currentPhase = phasesByName["BrainTesting"]()
 
         # add the main char
-        self.mainChar = characters.Character(displayChars.main_char,3,3,automated=False,name=names.characterFirstNames[self.tick%len(names.characterFirstNames)]+" "+names.characterLastNames[self.tick%len(names.characterLastNames)],creator=void)
+        self.mainChar = src.characters.Character(displayChars.main_char,3,3,automated=False,name=names.characterFirstNames[self.tick%len(names.characterFirstNames)]+" "+names.characterLastNames[self.tick%len(names.characterLastNames)],creator=void)
         self.mainChar.watched = True
         mainChar = self.mainChar
 

@@ -8,8 +8,8 @@
 import json
 
 # import basic internal libs
-import src.items as items
-import src.saveing as saveing
+import src.items
+import src.saveing
 
 # HACK: common variables with modules
 showCinematic = None
@@ -26,7 +26,7 @@ callShow_or_exit = None
 '''
 the base class for all quests
 '''
-class Quest(saveing.Saveable):
+class Quest(src.saveing.Saveable):
     '''
     straightforward state initialization
     '''
@@ -1582,7 +1582,7 @@ class DrinkQuest(Quest):
     '''
     def solver(self,character):
         for item in character.inventory:
-            if isinstance(item,items.GooFlask):
+            if isinstance(item,src.items.GooFlask):
                 if item.uses > 0:
                     item.apply(character)
                     self.postHandler()
@@ -1649,7 +1649,7 @@ class SurviveQuest(Quest):
 
         # refill flask
         for item in self.character.inventory:
-            if isinstance(item,items.GooFlask):
+            if isinstance(item,src.items.GooFlask):
                 if item.uses < 10 and not self.refillQuest:
                     self.refillQuest = RefillDrinkQuest(creator=self)
                     self.character.assignQuest(self.refillQuest,active=True)
@@ -1962,7 +1962,7 @@ class RefillDrinkQuest(ActivateQuestMeta):
     '''
     def triggerCompletionCheck(self):
         for item in self.character.inventory:
-            if isinstance(item,items.GooFlask):
+            if isinstance(item,src.items.GooFlask):
                 if item.uses > 90:
                     self.postHandler()
 
@@ -2314,7 +2314,7 @@ class LeaveRoomQuest(Quest):
             if character.room:
                 # close door
                 for item in character.room.itemByCoordinates[(character.xPosition,character.yPosition)]:
-                    if isinstance(item,items.Door):
+                    if isinstance(item,src.items.Door):
                         item.close()
 
                 # add step out of the room
@@ -3048,7 +3048,7 @@ class ClearRubble(MetaQuestParralel):
         super().__init__([],creator=creator)
         questList = []
         for item in terrain.itemsOnFloor:
-            if isinstance(item,items.Scrap):
+            if isinstance(item,src.items.Scrap):
                 self.addQuest(TransportQuest(item,(terrain.metalWorkshop,7,1),creator=self))
         self.metaDescription = "clear rubble"
 

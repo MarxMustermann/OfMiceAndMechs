@@ -9,8 +9,7 @@ import urwid
 import json
 
 # import basic internal libs
-# bad code: shouldn't use shorthand
-import src.saveing as saveing
+import src.saveing
 
 """
 bad code: containers for global state
@@ -26,7 +25,7 @@ advanceGame = None
 """
 the base class for all Cinamatics
 """
-class BasicCinematic(saveing.Saveable):
+class BasicCinematic(src.saveing.Saveable):
     '''
     basic state setting and id generation
     '''

@@ -10,8 +10,8 @@ import json
 
 # load basic internal libs
 import gamestate # bad code: wtf is this?
-import src.saveing as saving
-import src.events as events
+import src.saveing
+import src.events
 
 # bad code: global state
 messages = None
@@ -24,7 +24,7 @@ terrain = None
 '''
 the base class for all items.
 '''
-class Item(saving.Saveable):
+class Item(src.saveing.Saveable):
     '''
     state initialization and id generation
     '''
@@ -698,7 +698,7 @@ class Furnace(Item):
                     boiler.startHeatingUp()
                 
                 # make the furnace stop burning after some time
-                event = events.FurnaceBurnoutEvent(self.room.timeIndex+30,creator=self)
+                event = src.events.FurnaceBurnoutEvent(self.room.timeIndex+30,creator=self)
                 event.furnace = self
 
                 # add burnout event 
@@ -741,7 +741,7 @@ class Commlink(Item):
         the event for stopping to burn after a while
         bad code: should be an abstract event calling a method
         '''
-        class CoalRefillEvent(events.Event):
+        class CoalRefillEvent(src.events.Event):
             '''
             straightforward state initialization
             '''

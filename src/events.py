@@ -9,8 +9,7 @@
 import json
 
 # import basic internal libs
-# bad code: should not use shorthand
-import src.saveing as saveing
+import src.saveing
 
 #bad code: global state
 cinematics = None
@@ -21,7 +20,7 @@ loop = None
 '''
 base class for events
 '''
-class Event(saveing.Saveable):
+class Event(src.saveing.Saveable):
     '''
     basic state setting
     '''

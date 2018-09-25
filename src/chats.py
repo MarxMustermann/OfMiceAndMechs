@@ -6,14 +6,13 @@
 ####################################################################################################################
 
 # import the other internal libs
-# bad code: should not use shorthand
-import src.interaction as interaction
+import src.interaction
 
 '''
 the chat to proof the player is able to chat
 bad code: story specific
 '''
-class FirstChat(interaction.SubMenu):
+class FirstChat(src.interaction.SubMenu):
     id = "FirstChat"
     type = "FirstChat"
 
@@ -42,7 +41,7 @@ class FirstChat(interaction.SubMenu):
             # show fluffed up information
             self.persistentText = "indeed.\n\nI am "+self.firstOfficer.name+" and do the acceptance tests. This means i order you to do some things and you will comply.\n\nYour implant will store the orders given. When you press q you will get a list of your current orders. Try to get familiar with the implant,\nit is an important tool for keeping things in order.\n\nDo not mind that the tests seem somewhat without purpose, protocol demands them and after you complete the test you will serve as an hooper on the Falkenbaum."
             messages.append("press q to see your questlist")
-            interaction.submenue = None
+            src.interaction.submenue = None
             self.set_text(self.persistentText)
 
             # remove chat option
@@ -70,7 +69,7 @@ class FirstChat(interaction.SubMenu):
 '''
 dialog to unlock a furnace firering option
 '''
-class FurnaceChat(interaction.SubMenu):
+class FurnaceChat(src.interaction.SubMenu):
     id = "FurnaceChat"
     type = "FurnaceChat"
 
@@ -120,8 +119,8 @@ class FurnaceChat(interaction.SubMenu):
              
                 # clear submenue
                 # bad code: direct state setting
-                interaction.submenue = None
-                interaction.loop.set_alarm_in(0.0, callShow_or_exit, '~')
+                src.interaction.submenue = None
+                src.interaction.loop.set_alarm_in(0.0, callShow_or_exit, '~')
 
                 # do the selected action
                 self.submenue.selection()
@@ -139,7 +138,7 @@ class FurnaceChat(interaction.SubMenu):
                         
             # offer a selection of different story phasses
             options = [(self.phase.fireFurnaces,"yes"),(self.phase.noFurnaceFirering,"no")]
-            self.submenue = interaction.SelectionMenu("Say, do you like furnaces?",options)
+            self.submenue = src.interaction.SelectionMenu("Say, do you like furnaces?",options)
 
         return False
 
@@ -147,7 +146,7 @@ class FurnaceChat(interaction.SubMenu):
 a monologe explaining automovement
 bad code: should be abstracted
 '''
-class SternChat(interaction.SubMenu):
+class SternChat(src.interaction.SubMenu):
     id = "SternChat"
     type = "SternChat"
 
@@ -215,7 +214,7 @@ do things the most efficent way. It will even try to handle conversion, wich doe
 a instruction to ask questions and hinting at the auto mode
 bad code: should be abstracted
 '''
-class InfoChat(interaction.SubMenu):
+class InfoChat(src.interaction.SubMenu):
     id = "InfoChat"
     type = "InfoChat"
 
@@ -281,7 +280,7 @@ for a brain.\n\n"""
 '''
 a dialog for reentering the command chain
 '''
-class ReReport(interaction.SubMenu):
+class ReReport(src.interaction.SubMenu):
     id = "ReReport"
     type = "ReReport"
 
@@ -337,7 +336,7 @@ class ReReport(interaction.SubMenu):
 '''
 the dialog for asking somebody somewhat important for a job
 '''
-class JobChatFirst(interaction.SubMenu):
+class JobChatFirst(src.interaction.SubMenu):
     id = "JobChatFirst"
     type = "JobChatFirst"
 
@@ -417,7 +416,7 @@ class JobChatFirst(interaction.SubMenu):
 '''
 the dialog for asking somebody for a job
 '''
-class JobChatSecond(interaction.SubMenu):
+class JobChatSecond(src.interaction.SubMenu):
     id = "JobChatSecond"
     type = "JobChatSecond"
 
@@ -500,7 +499,7 @@ class JobChatSecond(interaction.SubMenu):
                     if self.mainChar.reputation < 6:
                         addition += " ("+str(quest.reputationReward)+")"
                     options.append((quest,quest.description.split("\n")[0]+addition))
-                self.submenue = interaction.SelectionMenu("select the quest",options)
+                self.submenue = src.interaction.SelectionMenu("select the quest",options)
 
                 return False
             else:
@@ -523,7 +522,7 @@ class JobChatSecond(interaction.SubMenu):
 '''
 the chat for making the npc stop firering the furnace
 '''
-class StopChat(interaction.SubMenu):
+class StopChat(src.interaction.SubMenu):
     id = "StopChat"
     type = "StopChat"
 
@@ -568,7 +567,7 @@ class StopChat(interaction.SubMenu):
 '''
 the chat for making the npc start firering the furnace
 '''
-class StartChat(interaction.SubMenu):
+class StartChat(src.interaction.SubMenu):
     id = "StartChat"
     type = "StartChat"
 

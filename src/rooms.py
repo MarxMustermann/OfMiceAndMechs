@@ -8,9 +8,9 @@
 import json
 
 # import basic internal libs
-import src.items as items
-import src.quests as quests
-import src.saveing as saveing
+import src.items
+import src.quests
+import src.saveing
 
 # bad code: global state
 Character = None
@@ -24,7 +24,7 @@ displayChars = None
 '''
 the base class for all rooms
 '''
-class Room(saveing.Saveable):
+class Room(src.saveing.Saveable):
     '''
     state initialization
     bad code: too many attributes
@@ -113,7 +113,7 @@ class Room(saveing.Saveable):
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.firstOfficer = npc
-                            quest = quests.RoomDuty(creator=self)
+                            quest = src.quests.RoomDuty(creator=self)
                             npc.assignQuest(quest,active=True)
                         else:
                             # add second officer
@@ -122,113 +122,113 @@ class Room(saveing.Saveable):
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.secondOfficer = npc
-                            quest = quests.RoomDuty(creator=self)
+                            quest = src.quests.RoomDuty(creator=self)
                             npc.assignQuest(quest,active=True)
                 elif char in ("X","&"):
                     # add wall
-                    itemsOnFloor.append(items.Wall(rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Wall(rowCounter,lineCounter,creator=self))
                 elif char == "$":
                     # add door and mark position as entry point
-                    door = items.Door(rowCounter,lineCounter,creator=self)
+                    door = src.items.Door(rowCounter,lineCounter,creator=self)
                     itemsOnFloor.append(door)
                     self.walkingAccess.append((rowCounter,lineCounter))
                     self.doors.append(door)
                 elif char == "P":
                     # add pile and save to list
-                    item = items.Pile(rowCounter,lineCounter,creator=self)
+                    item = src.items.Pile(rowCounter,lineCounter,creator=self)
                     itemsOnFloor.append(item)
                     self.piles.append(item)
                 elif char == "F":
                     # add furnace and save to list
-                    item = items.Furnace(rowCounter,lineCounter,creator=self)
+                    item = src.items.Furnace(rowCounter,lineCounter,creator=self)
                     itemsOnFloor.append(item)
                     self.furnaces.append(item)
                 elif char == "#":
                     # add pipe and save to list
-                    item = items.Pipe(rowCounter,lineCounter,creator=self)
+                    item = src.items.Pipe(rowCounter,lineCounter,creator=self)
                     itemsOnFloor.append(item)
                     self.pipes.append(item)
                 elif char == "D":
                     # add display
-                    itemsOnFloor.append(items.Display(rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Display(rowCounter,lineCounter,creator=self))
                 elif char == "v":
                     # to be bin
-                    itemsOnFloor.append(items.Item(displayChars.binStorage,rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(displayChars.binStorage,rowCounter,lineCounter,creator=self))
                 elif char == "O":
                     # to be pressure Tank
-                    item = items.Boiler(rowCounter,lineCounter,creator=self)
+                    item = src.items.Boiler(rowCounter,lineCounter,creator=self)
                     itemsOnFloor.append(item)
                     self.boilers.append(item)
                 elif char == "8":
                     # to be chains
-                    itemsOnFloor.append(items.Item(displayChars.chains,rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(displayChars.chains,rowCounter,lineCounter,creator=self))
                 elif char == "I":
                      #to be commlink
-                    itemsOnFloor.append(items.Commlink(rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Commlink(rowCounter,lineCounter,creator=self))
                 elif char in ["H","'"]:
                     # add hutch
                     # bad code: handle state some other way
                     mapping = {"H":False,"'":True}
-                    itemsOnFloor.append(items.Hutch(rowCounter,lineCounter,creator=self,activated=mapping[char]))
+                    itemsOnFloor.append(src.items.Hutch(rowCounter,lineCounter,creator=self,activated=mapping[char]))
                 elif char == "o":
                     #to be grid
-                    itemsOnFloor.append(items.Item(displayChars.grid,rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(displayChars.grid,rowCounter,lineCounter,creator=self))
                 elif char == "a":
                     #to be acid
-                    item = items.Item(displayChars.acids[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter,creator=self)
+                    item = src.items.Item(displayChars.acids[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter,creator=self)
                     item.walkable = True
                     itemsOnFloor.append(item)
                 elif char == "b":
                     # to be foodstuffs
-                    itemsOnFloor.append(items.Item(displayChars.foodStuffs[((2*rowCounter)+lineCounter)%6],rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(displayChars.foodStuffs[((2*rowCounter)+lineCounter)%6],rowCounter,lineCounter,creator=self))
                 elif char == "m":
                     # to be machinery
-                    itemsOnFloor.append(items.Item(displayChars.machineries[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(displayChars.machineries[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter,creator=self))
                 elif char == "h":
                     # add steam hub
-                    itemsOnFloor.append(items.Item(displayChars.hub,rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(displayChars.hub,rowCounter,lineCounter,creator=self))
                 elif char == "i":
                     # add ramp
-                    itemsOnFloor.append(items.Item(displayChars.ramp,rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(displayChars.ramp,rowCounter,lineCounter,creator=self))
                 elif char in ["q","r","s","t","u","z"]:
                     # add special pipe
                     # bad code: pipe connection should be done some other way
                     mapping = {"q":displayChars.pipe_lr,"r":displayChars.pipe_lrd,"s":displayChars.pipe_ld,"t":displayChars.pipe_lu,"u":displayChars.pipe_ru,"z":displayChars.pipe_ud}
-                    item = items.Item(mapping[char],rowCounter,lineCounter,creator=self)
+                    item = src.items.Item(mapping[char],rowCounter,lineCounter,creator=self)
                     item.walkable = True
                     itemsOnFloor.append(item)
                 elif char in ["w","x"]:
                     # add spray
                     # bad code: handle orientation some other way
                     mapping = {"w":"right","x":"left"}
-                    item = items.Spray(rowCounter,lineCounter,direction=mapping[char],creator=self)
+                    item = src.items.Spray(rowCounter,lineCounter,direction=mapping[char],creator=self)
                     itemsOnFloor.append(item)
                     self.sprays.append(item)
                 elif char == "y":
                     # to be outlet
-                    itemsOnFloor.append(items.Item(displayChars.outlet,rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(displayChars.outlet,rowCounter,lineCounter,creator=self))
                 elif char == "j":
                     # to be vat snake
-                    itemsOnFloor.append(items.Item(displayChars.vatSnake,rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(displayChars.vatSnake,rowCounter,lineCounter,creator=self))
                 elif char == "c":
                     # add corpse
-                    item = items.Corpse(rowCounter,lineCounter,creator=self)
+                    item = src.items.Corpse(rowCounter,lineCounter,creator=self)
                     itemsOnFloor.append(item)
                 elif char in ["Ö","ö"]:
                     # add growth tank
                     # bad code: specal chars should not be used in code
                     # bad code: handle state some other way
                     mapping = {"Ö":True,"ö":False}
-                    item = items.GrowthTank(rowCounter,lineCounter,filled=mapping[char],creator=self)
+                    item = src.items.GrowthTank(rowCounter,lineCounter,filled=mapping[char],creator=self)
                     itemsOnFloor.append(item)
                 elif char == "B":
                     # add to be barricade
-                    item = items.Item(displayChars.barricade,rowCounter,lineCounter,creator=self)
+                    item = src.items.Item(displayChars.barricade,rowCounter,lineCounter,creator=self)
                     item.walkable = True
                     itemsOnFloor.append(item)
                 else:
                     # add undefined stuff
-                    itemsOnFloor.append(items.Item(displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter,creator=self))
                 rowCounter += 1
                 self.sizeX = rowCounter
             lineCounter += 1
@@ -430,7 +430,7 @@ class Room(saveing.Saveable):
         if "newItems" in state:
             for itemId in state["newItems"]:
                 itemState = state["itemStates"][itemId]
-                item = items.getItemFromState(itemState)
+                item = src.items.getItemFromState(itemState)
                 self.addItems([item])
 
         # update changed chars
@@ -855,12 +855,12 @@ XXXXXXXXXX
         self.name = "Boilerroom"
 
         # generate special items
-        self.lever1 = items.Lever(1,5,"engine control",creator=self)
-        self.lever2 = items.Lever(8,5,"boarding alarm",creator=self)
-        coalPile1 = items.Pile(8,3,"coal Pile1",items.Coal,creator=self)
-        coalPile2 = items.Pile(8,4,"coal Pile2",items.Coal,creator=self)
-        coalPile3 = items.Pile(1,3,"coal Pile1",items.Coal,creator=self)
-        coalPile4 = items.Pile(1,4,"coal Pile2",items.Coal,creator=self)
+        self.lever1 = src.items.Lever(1,5,"engine control",creator=self)
+        self.lever2 = src.items.Lever(8,5,"boarding alarm",creator=self)
+        coalPile1 = src.items.Pile(8,3,"coal Pile1",src.items.Coal,creator=self)
+        coalPile2 = src.items.Pile(8,4,"coal Pile2",src.items.Coal,creator=self)
+        coalPile3 = src.items.Pile(1,3,"coal Pile1",src.items.Coal,creator=self)
+        coalPile4 = src.items.Pile(1,4,"coal Pile2",src.items.Coal,creator=self)
 
         # actually add items
         self.addItems([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4])
@@ -926,7 +926,7 @@ XXXXXXXXXX
                     if self.furnaceQuest:
                         self.furnaceQuest.deactivate()
                         self.furnaceQuest.postHandler()
-                    self.furnaceQuest = quests.KeepFurnacesFiredMeta(self.furnaces[:self.desiredSteamGeneration])
+                    self.furnaceQuest = src.quests.KeepFurnacesFiredMeta(self.furnaces[:self.desiredSteamGeneration])
                     self.secondOfficer.assignQuest(self.furnaceQuest,active=True)
             else:
                 # bad pattern: tone is way too happy
@@ -961,10 +961,10 @@ XXXXXXXXXX
         def addNPC(x,y):
             # generate quests
             # bad code: replace with patrol quest since it's actually bugging
-            quest1 = quests.MoveQuestMeta(self,2,2,creator=self)
-            quest2 = quests.MoveQuestMeta(self,2,7,creator=self)
-            quest3 = quests.MoveQuestMeta(self,7,7,creator=self)
-            quest4 = quests.MoveQuestMeta(self,7,2,creator=self)
+            quest1 = src.quests.MoveQuestMeta(self,2,2,creator=self)
+            quest2 = src.quests.MoveQuestMeta(self,2,7,creator=self)
+            quest3 = src.quests.MoveQuestMeta(self,7,7,creator=self)
+            quest4 = src.quests.MoveQuestMeta(self,7,2,creator=self)
             quest1.followUp = quest2
             quest2.followUp = quest3
             quest3.followUp = quest4
@@ -1021,7 +1021,7 @@ XXXXXXXXXXX
         # set up monitoring for doors
         for item in self.itemsOnFloor:
             # ignore non doors
-            if not isinstance(item,items.Door):
+            if not isinstance(item,src.items.Door):
                 continue
 
             thisRoundsItem = item # nontrivial: this forces a different namespace each run of the loop
@@ -1047,9 +1047,9 @@ XXXXXXXXXXX
                 messages.append(self.firstOfficer.name+": military area. Do not enter.")
 
                 # make second officer close the door and return to start position
-                quest = quests.MoveQuestMeta(self,5,3,creator=self)
+                quest = src.quests.MoveQuestMeta(self,5,3,creator=self)
                 self.secondOfficer.assignQuest(quest,active=True)
-                quest = quests.ActivateQuestMeta(thisRoundsItem,creator=self)
+                quest = src.quests.ActivateQuestMeta(thisRoundsItem,creator=self)
                 self.secondOfficer.assignQuest(quest,active=True)
 
             # start watching door
@@ -1064,7 +1064,7 @@ XXXXXXXXXXX
                 return
 
             # make senćond officer kill the intruder
-            quest = quests.MurderQuest(character,creator=self)
+            quest = src.quests.MurderQuest(character,creator=self)
             self.secondOfficer.assignQuest(quest,active=True)
 
             # show fluff
@@ -1094,15 +1094,15 @@ XXXXXXXXXXX
                 self.secondOfficer.quests.remove(quest)
 
                 # make officer move back to position
-                quest = quests.MoveQuestMeta(self,5,3,creator=self)
+                quest = src.quests.MoveQuestMeta(self,5,3,creator=self)
                 self.secondOfficer.assignQuest(quest,active=True)
 
             # make second officer kill character
-            quest = quests.MurderQuest(character,creator=self)
+            quest = src.quests.MurderQuest(character,creator=self)
             self.secondOfficer.assignQuest(quest,active=True)
 
             # try make character kill self
-            quest = quests.MurderQuest(character,creator=self)
+            quest = src.quests.MurderQuest(character,creator=self)
             character.assignQuest(quest,active=True)
 
             # watch for character leaving the room
@@ -1124,15 +1124,15 @@ XXXXXXXXXXX
         messages.append("O2 military please enforce floor permit")
 
         # make second officer move back to position after kill
-        quest = quests.MoveQuestMeta(self,5,3,creator=self)
+        quest = src.quests.MoveQuestMeta(self,5,3,creator=self)
         self.secondOfficer.assignQuest(quest,active=True)
 
         # make second officer kill character
-        quest = quests.MurderQuest(character,creator=self)
+        quest = src.quests.MurderQuest(character,creator=self)
         self.secondOfficer.assignQuest(quest,active=True)
 
         # try to make second kill self
-        quest = quests.MurderQuest(character,creator=self)
+        quest = src.quests.MurderQuest(character,creator=self)
         character.assignQuest(quest,active=True)
         self.onMission = True
 
@@ -1159,7 +1159,7 @@ XXXXX$XXXX
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
 
         # add special items
-        self.gooDispenser = items.GooDispenser(6,7,creator=self)
+        self.gooDispenser = src.items.GooDispenser(6,7,creator=self)
         self.addItems([self.gooDispenser])
         self.name = "Vat1"
 
@@ -1299,8 +1299,8 @@ X           X
 XXXXXXXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
-        self.artwork = items.ProductionArtwork(4,1)
-        self.compactor = items.ScrapCompactor(6,1)
+        self.artwork = src.items.ProductionArtwork(4,1)
+        self.compactor = src.items.ScrapCompactor(6,1)
         self.addItems([self.artwork,self.compactor])
         self.initialState = self.getState()
         loadingRegistry.register(self)
@@ -1330,8 +1330,8 @@ XFFFFFFFFX
 XXXXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
-        bean = items.MarkerBean(1,2,creator=self)
-        beanPile = items.Pile(1,1,"markerPile",items.MarkerBean,creator=self)
+        bean = src.items.MarkerBean(1,2,creator=self)
+        beanPile = src.items.Pile(1,1,"markerPile",src.items.MarkerBean,creator=self)
         self.addItems([bean,beanPile])
         self.name = "Lab"
 
@@ -1354,7 +1354,7 @@ class CargoRoom(Room):
     '''
     create room, set storage order and fill with items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,itemTypes=[items.Pipe,items.Wall,items.Furnace,items.Boiler],amount=80,creator=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,itemTypes=[src.items.Pipe,src.items.Wall,src.items.Furnace,src.items.Boiler],amount=80,creator=None):
         self.roomLayout = """
 XXXXXXXXXX
 X        X
@@ -1428,7 +1428,7 @@ XXXXXXXXXX
             '''
             def killInvader(character):
                 for mouse in mice:
-                    quest = quests.MurderQuest(character,creator=self)
+                    quest = src.quests.MurderQuest(character,creator=self)
                     mouse.assignQuest(quest,active=True)
                 '''
                 stop hunting characters that left the room
@@ -1446,7 +1446,7 @@ XXXXXXXXXX
                         mouse.quests.remove(mouse.quests[0])
                         
                         # move back to position
-                        quest = quests.MoveQuestMeta(self,mousePositions[counter][0],mousePositions[counter][1],creator=self)
+                        quest = src.quests.MoveQuestMeta(self,mousePositions[counter][0],mousePositions[counter][1],creator=self)
                         mouse.assignQuest(quest,active=True)
                         counter += 1
 
@@ -1624,11 +1624,11 @@ XXXXXXXX
         self.name = "WakeUpRoom"
 
         # generate special items
-        self.lever1 = items.Lever(3,1,"training lever",creator=self)
-        self.objectDispenser = items.OjectDispenser(4,1,creator=self)
-        self.gooDispenser = items.GooDispenser(5,9,creator=self)
-        self.furnace = items.Furnace(4,9,creator=self)
-        self.pile = items.Pile(6,9,creator=self)
+        self.lever1 = src.items.Lever(3,1,"training lever",creator=self)
+        self.objectDispenser = src.items.OjectDispenser(4,1,creator=self)
+        self.gooDispenser = src.items.GooDispenser(5,9,creator=self)
+        self.furnace = src.items.Furnace(4,9,creator=self)
+        self.pile = src.items.Pile(6,9,creator=self)
 
         '''
         create goo flask
@@ -1645,9 +1645,9 @@ XXXXXXXX
         # watch growth tanks and door
         # bad code: should be a quest
         for item in self.itemsOnFloor:
-            if isinstance(item,items.GrowthTank):
+            if isinstance(item,src.items.GrowthTank):
                 item.addListener(self.handleUnexpectedGrowthTankActivation,"activated")
-            if isinstance(item,items.Door):
+            if isinstance(item,src.items.Door):
                 item.addListener(self.handleDoorOpening,"activated")
 
         # start spawning hoppers periodically
@@ -1705,7 +1705,7 @@ XXXXXXXX
         # eject player from growth tank
         character = None
         for item in self.itemsOnFloor:
-            if isinstance(item,items.GrowthTank):
+            if isinstance(item,src.items.GrowthTank):
                 if item.filled:
                     character = item.eject()
                     break
@@ -1768,7 +1768,7 @@ XXXXXXXXXXX
     add a character as hopper
     '''
     def addAsHopper(self,hopper):
-        quest = quests.HopperDuty(self,creator=self)
+        quest = src.quests.HopperDuty(self,creator=self)
         hopper.assignQuest(quest,active=True)
         hopper.addListener(self.addRescueQuest,"fallen unconcious")
         hopper.addListener(self.disposeOfCorpse,"died")
@@ -1777,7 +1777,7 @@ XXXXXXXXXXX
     rescue an unconcious hopper
     '''
     def addRescueQuest(self,character):
-        quest = quests.WakeUpQuest(character,creator=self)
+        quest = src.quests.WakeUpQuest(character,creator=self)
         quest.reputationReward = 2
         self.quests.append(quest)
 
@@ -1786,7 +1786,7 @@ XXXXXXXXXXX
     # bad pattern: picking the corpse up and pretending nothing happend is not enough
     '''
     def disposeOfCorpse(self,info):
-        quest = quests.PickupQuestMeta(info["corpse"],creator=self)
+        quest = src.quests.PickupQuestMeta(info["corpse"],creator=self)
         quest.reputationReward = 1
         self.quests.append(quest)
 
@@ -1835,28 +1835,28 @@ XXXXX$XXXXX
         self.name = "MetalWorkshop"
 
         # add production machines
-        self.artwork = items.ProductionArtwork(4,1,creator=self)
-        self.compactor = items.ScrapCompactor(6,1,creator=self)
+        self.artwork = src.items.ProductionArtwork(4,1,creator=self)
+        self.compactor = src.items.ScrapCompactor(6,1,creator=self)
         self.addItems([self.artwork,self.compactor])
 
         # add some produced items
         self.producedItems = []
-        item = items.Wall(9,4,creator=self)
+        item = src.items.Wall(9,4,creator=self)
         item.bolted = False
         self.producedItems.append(item)
-        item = items.Wall(9,6,creator=self)
+        item = src.items.Wall(9,6,creator=self)
         item.bolted = False
         self.producedItems.append(item)
-        item = items.Wall(9,3,creator=self)
+        item = src.items.Wall(9,3,creator=self)
         item.bolted = False
         self.producedItems.append(item)
-        item = items.Wall(9,7,creator=self)
+        item = src.items.Wall(9,7,creator=self)
         item.bolted = False
         self.producedItems.append(item)
-        item = items.Wall(9,2,creator=self)
+        item = src.items.Wall(9,2,creator=self)
         item.bolted = False
         self.producedItems.append(item)
-        item = items.Wall(9,8,creator=self)
+        item = src.items.Wall(9,8,creator=self)
         item.bolted = False
         self.producedItems.append(item)
         self.addItems(self.producedItems)
@@ -1913,16 +1913,16 @@ XXXXX$XXXXX
                     y += 1
                     continue
                 if char == "#":
-                    itemsToPlace[(x,y)] = items.Pipe
+                    itemsToPlace[(x,y)] = src.items.Pipe
                 if char == "X":
-                    itemsToPlace[(x,y)] = items.Wall
+                    itemsToPlace[(x,y)] = src.items.Wall
                 y += 1
             x += 1
 
         # add markers for items
         itemstoAdd = []
         for (position,itemType) in itemsToPlace.items():
-            item = items.MarkerBean(position[1],position[0],creator=self)
+            item = src.items.MarkerBean(position[1],position[0],creator=self)
             item.apply(self.firstOfficer)
             itemstoAdd.append(item)
         self.addItems(itemstoAdd)

@@ -456,19 +456,19 @@ def processInput(key):
 
             if key in (commandChars.move_north):
                 itemMarkedLast = moveCharacter("north")
-                if itemMarkedLast:
+                if itemMarkedLast and not itemMarkedLast.walkable:
                     return
             if key in (commandChars.move_south):
                 itemMarkedLast = moveCharacter("south")
-                if itemMarkedLast:
+                if itemMarkedLast and not itemMarkedLast.walkable:
                     return
             if key in (commandChars.move_east):
                 itemMarkedLast = moveCharacter("east")
-                if itemMarkedLast:
+                if itemMarkedLast and not itemMarkedLast.walkable:
                     return
             if key in (commandChars.move_west):
                 itemMarkedLast = moveCharacter("west")
-                if itemMarkedLast:
+                if itemMarkedLast and not itemMarkedLast.walkable:
                     return
 
             # murder the next available character

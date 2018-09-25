@@ -506,21 +506,13 @@ def processInput(key):
                     messages.append("you do not have the nessecary solver yet")
                 else:
                     if itemMarkedLast:
-                        # examine marked item
-                        # bad code: should happen in character
-                        messages.append(itemMarkedLast.description)
-                        if itemMarkedLast.description != itemMarkedLast.getDetailedInfo():
-                            messages.append(itemMarkedLast.getDetailedInfo())
-                        mainChar.changed("examine",itemMarkedLast)
+                        mainChar.examine(itemMarkedLast)
                     else:
                         # examine an item on floor
                         for item in mainChar.container.itemsOnFloor:
                             if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
-                                # bad code: should happen in character
-                                messages.append(item.description)
-                                if item.description != item.getDetailedInfo():
-                                    messages.append(item.getDetailedInfo())
-                                mainChar.changed("examine",itemMarkedLast)
+                                mainChar.examine(itemMarkedLast)
+                                break
 
             # drop first item from inventory
             # bad pattern: the user has to have the choice for what item to drop

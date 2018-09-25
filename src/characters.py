@@ -582,6 +582,15 @@ class Character(saving.Saveable):
         self.changed()
 
     """
+    examine an item
+    """
+    def examine(self,item):
+        messages.append(item.description)
+        if item.description != item.getDetailedInfo():
+            messages.append(item.getDetailedInfo())
+        self.changed("examine",item)
+
+    """
     advance the character one tick
     """
     def advance(self):

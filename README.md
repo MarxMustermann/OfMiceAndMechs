@@ -2,7 +2,7 @@
 a to be prototype for a game
 
 * [install and run](INSTALL.md)
-* [news (latest: "commit 801-901")](NEWS.md)
+* [news (latest: "commit 1000-1099")](NEWS.md)
 * [credits](CREDITS.md)
 
 ## state of the game
@@ -24,7 +24,7 @@ The detailed state of the game follows:
 * a save/load system exists, but saving crashes the game.
 * The game offers a challenge, but still is somewhat uneventfull
 
-Crashes and memory adresses in the gui are common. Also the save system is broken. So time for another cleanup round.
+Saving still crashes, the save system work and is in place but a lot of details are missing. I'll try to tackle this next.
 
 I think the biggest issue is that the main game mechanic is not working or is not clearly visible. This is gaining control (over npcs), controlling npcs and exercising power to gain power. The negation of this is also missing. This is loosing power by inefficent use of power or by not defending your position.
 

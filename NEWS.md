@@ -1,5 +1,27 @@
 # news
 
+### commit 1000-1099
+
+These commits were a bugfix/code enhancement round. 
+
+* placed game won screen at end of the working story line
+* added Exceptions
+* removed code redundancy primarily in movement code
+* renamed things
+* moved code to propper files
+* removed commented out code
+* reduced debug output and memory adresses in GUI
+* converted some if/else to guards
+* moved saving logic to saveing class
+* fixed some crashes
+* removed silly constants
+* deleted old code
+* fixed player beeing unable to exit quest menu when spawned from
+* fixed dropping flask and picking it up again crash
+* fixed drop quest not working in manual mode
+
+The most annoying bugs are fixed and the game runs through most of the time. Crashes and memory adresses in GUI still happen though.
+
 ### commit 902-999
 
 These commits were focused on adding more challenge to the game. I think i did pretty well. I still can beat the game, but i really have to try. Changes for adding challenge were:

@@ -57,6 +57,7 @@ class Quest(src.saveing.Saveable):
         self.attributesToStore.append("lifetime")
         self.callbacksToStore.append("endTrigger")
         self.objectsToStore.append("character")
+        self.objectsToStore.append("target")
 
         self.lifetime = lifetime
         self.lifetimeEvent = None
@@ -382,8 +383,9 @@ class MetaQuestSequence(Quest):
         state["subQuests"]["ids"] = []
         state["subQuests"]["states"] = {}
         for quest in self.subQuests:
-            state["subQuests"]["ids"].append(quest.id)
-            state["subQuests"]["states"][quest.id] = quest.getState()
+            if quest:
+                state["subQuests"]["ids"].append(quest.id)
+                state["subQuests"]["states"][quest.id] = quest.getState()
 
         return state
     
@@ -589,7 +591,8 @@ class MetaQuestSequence(Quest):
             self.character.recalculatePath()
 
         # listen to quest
-        self.startWatching(self.subQuests[0],self.recalculate)
+        if self.subQuests[0]:
+            self.startWatching(self.subQuests[0],self.recalculate)
 
         # deactivate last active quest
         if addFront:
@@ -1109,6 +1112,9 @@ class NaiveGetQuest(Quest):
         self.assign = assign
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
         self.description = "naive get quest"
+
+        self.objectsToStore.append("questDispenser")
+        self.attributesToStore.append("assign")
 
         # save initial state and register
         self.type = "NaiveGetQuest"
@@ -2032,12 +2038,17 @@ class GetQuest(MetaQuestSequence):
     def __init__(self,questDispenser=None,assign=False,followUp=None,startCinematics=None,creator=None):
         super().__init__([],creator=creator)
         self.questDispenser = questDispenser
-        self.moveQuest = MoveQuestMeta(self.questDispenser.room,self.questDispenser.xPosition,self.questDispenser.yPosition,sloppy=True,creator=self)
+        if questDispenser:
+            self.moveQuest = MoveQuestMeta(self.questDispenser.room,self.questDispenser.xPosition,self.questDispenser.yPosition,sloppy=True,creator=self)
+        else:
+            self.moveQuest = MoveQuestMeta(creator=self)
         self.getQuest = NaiveGetQuest(questDispenser,assign=assign,creator=self)
         self.questList = [self.moveQuest,self.getQuest]
         for quest in reversed(self.questList):
             self.addQuest(quest)
         self.metaDescription = "get Quest"
+
+        self.objectsToStore.append("questDispenser")
 
         # save initial state and register
         self.type = "GetQuest"
@@ -2077,6 +2088,9 @@ class GetReward(MetaQuestSequence):
             self.addQuest(quest)
 
         self.metaDescription = "get Reward"
+
+        self.objectsToStore.append("questDispenser")
+        self.attributesToStore.append("addedRewardChat")
 
         # save initial state and register
         self.type = "GetReward"
@@ -2986,7 +3000,7 @@ class HopperDuty(MetaQuestSequence):
     def __init__(self,waitingRoom,startCinematics=None,looped=True,lifetime=None,creator=None):
         super().__init__([],startCinematics=startCinematics,creator=creator)
         self.getQuest = GetQuest(waitingRoom.secondOfficer,assign=False,creator=self)
-        self.getQuest.endTrigger = self.setQuest
+        self.getQuest.endTrigger = {"container":self,"method":"setQuest"}
         self.addQuest(self.getQuest)
         self.metaDescription = "hopper duty"
         self.recalculate()
@@ -3021,7 +3035,7 @@ class HopperDuty(MetaQuestSequence):
             # add quest to get a new quest
             if not self.getQuest and not self.actualQuest and not self.rewardQuest:
                 self.getQuest = GetQuest(self.waitingRoom.secondOfficer,assign=False,creator=self)
-                self.getQuest.endTrigger = self.setQuest # call handling directly though the trigger mechanism
+                self.getQuest.endTrigger = {"container":self,"method":"setQuest"}
                 self.addQuest(self.getQuest,addFront=False)
 
             super().recalculate()

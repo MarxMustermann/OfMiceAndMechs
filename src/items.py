@@ -527,17 +527,6 @@ class GrowthTank(Item):
 
         return character
 
-    '''
-    set state from dict
-    '''
-    def setState(self,state):
-        super().setState(state)
-
-        if self.filled:
-            self.display = displayChars.growthTank_filled
-        else:
-            self.display = displayChars.growthTank_unfilled
-
 '''
 basically a bed with a activatable cover
 '''

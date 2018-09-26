@@ -1315,6 +1315,7 @@ class NaiveActivateQuest(Quest):
         self.activated = False
 
         self.objectsToStore.append("toActivate")
+        self.attributesToStore.append("description")
 
         # save initial state and register
         self.type = "NaiveActivateQuest"
@@ -2853,6 +2854,8 @@ class KeepFurnaceFiredMeta(MetaQuestSequence):
         super().__init__(self.questList,lifetime=lifetime,creator=creator,followUp=followUp,startCinematics=startCinematics,failTrigger=failTrigger)
         self.metaDescription = "KeepFurnaceFiredMeta"
 
+        self.objectsToStore.append("furnace")
+
         # listen to furnace
         self.startWatching(self.furnace,self.recalculate)
 
@@ -2910,6 +2913,8 @@ class FireFurnaceMeta(MetaQuestSequence):
         self.furnace = furnace
         super().__init__(self.questList,creator=creator)
         self.metaDescription = "FireFurnaceMeta"
+
+        self.objectsToStore.append("furnace")
 
         # save initial state and register
         self.type = "FireFurnaceMeta"

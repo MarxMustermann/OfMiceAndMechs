@@ -449,7 +449,7 @@ class Room(src.saveing.Saveable):
         if "newChars" in state:
             for charId in state["newChars"]:
                 charState = state["charStates"][charId]
-                char = characters.Character()
+                char = characters.Character(creator=void)
                 char.setState(charState)
                 self.addCharacter(char,charState["xPosition"],charState["yPosition"])
 

@@ -2997,9 +2997,12 @@ class HopperDuty(MetaQuestSequence):
     '''
     straightforward state initialization
     '''
-    def __init__(self,waitingRoom,startCinematics=None,looped=True,lifetime=None,creator=None):
+    def __init__(self,waitingRoom=None,startCinematics=None,looped=True,lifetime=None,creator=None):
         super().__init__([],startCinematics=startCinematics,creator=creator)
-        self.getQuest = GetQuest(waitingRoom.secondOfficer,assign=False,creator=self)
+        if waitingRoom:
+            self.getQuest = GetQuest(waitingRoom.secondOfficer,assign=False,creator=self)
+        else:
+            self.getQuest = GetQuest(creator=self)
         self.getQuest.endTrigger = {"container":self,"method":"setQuest"}
         self.addQuest(self.getQuest)
         self.metaDescription = "hopper duty"

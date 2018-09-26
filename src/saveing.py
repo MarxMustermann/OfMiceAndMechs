@@ -130,9 +130,9 @@ class Saveable(object):
         for objectName in self.objectsToStore:
             value = None
             if hasattr(self,objectName) and getattr(self,objectName):
-                value = None
+                value = getattr(self,objectName).id
             if not value == self.initialState[objectName]:
-                result[objectName] = value.id
+                result[objectName] = value
                
         return result
 

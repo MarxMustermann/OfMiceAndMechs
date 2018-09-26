@@ -614,6 +614,8 @@ chatMap = {
              "FirstChat":FirstChat,
              "FurnaceChat":FurnaceChat,
              "SternChat":SternChat,
+             "StartChat":StartChat,
+             "StopChat":StopChat,
              "InfoChat":InfoChat,
              "ReReport":ReReport,
              "JobChatFirst":JobChatFirst,

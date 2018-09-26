@@ -1728,6 +1728,7 @@ class MoveQuestMeta(MetaQuestSequence):
             self.addQuest(quest)
         self.metaDescription = "move meta"
 
+        self.attributesToStore.append("sloppy")
         self.objectsToStore.append("room")
 
         # save initial state and register

@@ -399,16 +399,8 @@ class MetaQuestSequence(Quest):
         if "subQuests" in state:
             if "ids" in state["subQuests"]:
                 # load static quest list
+                self.subQuests = []
                 for thingId in state["subQuests"]["ids"]:
-                    # bad code: current list should be emptied instead of skipping
-                    skip = False
-                    for thing in self.subQuests:
-                       if thingId == thing.id:
-                           skip = True
-                           continue
-                    if skip:
-                        continue
-                    
                     # create and add quest
                     thingState = state["subQuests"]["states"][thingId]
                     thing = getQuestFromState(thingState)

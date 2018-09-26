@@ -1321,7 +1321,10 @@ class NaiveActivateQuest(Quest):
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
-        self.description = "naive activate "+str(self.toActivate.name)
+        if self.toActivate:
+            self.description = "naive activate "+str(self.toActivate.name)
+        else:
+            self.description = "naive activate"
 
     '''
     callback for activation
@@ -2823,7 +2826,7 @@ class KeepFurnacesFiredMeta(MetaQuestParralel):
     '''
     add a quest to keep each furnace fired
     '''
-    def __init__(self,furnaces,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
+    def __init__(self,furnaces=None,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
         questList = []
         for furnace in furnaces:
             questList.append(KeepFurnaceFiredMeta(furnace))
@@ -2842,7 +2845,7 @@ class KeepFurnaceFiredMeta(MetaQuestSequence):
     '''
     basic state initialization
     '''
-    def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
+    def __init__(self,furnace=None,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
         self.questList = []
         self.fireFurnaceQuest = None
         self.waitQuest = None
@@ -2900,7 +2903,7 @@ class FireFurnaceMeta(MetaQuestSequence):
     '''
     state initialization
     '''
-    def __init__(self,furnace,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
+    def __init__(self,furnace=None,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
         self.activateQuest = None
         self.collectQuest = None
         self.questList = []

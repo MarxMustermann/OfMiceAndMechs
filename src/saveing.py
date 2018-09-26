@@ -4,6 +4,7 @@ a registry to allow resoving references during loading
 class LoadingRegistry(object):
     registered = {}
     delayedCalls = {}
+    params = {}
 
     '''
     register a new id and call backlog
@@ -12,15 +13,22 @@ class LoadingRegistry(object):
         self.registered[thing.id] = thing
         if thing.id in self.delayedCalls:
             for callback in self.delayedCalls[thing.id]:
-                callback(thing)
+                if self.params[thing.id]:
+                    callback(thing,self.params[thing.id])
+                else:
+                    callback(thing)
 
     '''
     trigger a call or register as backlog
     '''
-    def callWhenAvailable(self,thingId,callback):
+    def callWhenAvailable(self,thingId,callback,param=None):
         if thingId in self.registered:
-            callback(self.registered[thingId])
+            if param:
+                callback(self.registered[thingId],param)
+            else:
+                callback(self.registered[thingId])
         else:
+            self.params[thingId] = param
             if not thingId in self.delayedCalls:
                 self.delayedCalls[thingId] = []
             self.delayedCalls[thingId].append(callback)
@@ -178,9 +186,9 @@ class Saveable(object):
                     '''
                     set value
                     '''
-                    def setValue(value):
-                        setattr(self,objectName,value)
-                    loadingRegistry.callWhenAvailable(state[objectName],setValue)
+                    def setValue(value,name):
+                        setattr(self,name,value)
+                    loadingRegistry.callWhenAvailable(state[objectName],setValue,(objectName))
                 else:
                     setattr(self,objectName,None)
 

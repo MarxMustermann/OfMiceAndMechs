@@ -424,6 +424,10 @@ class MetaQuestSequence(Quest):
                     thing.setState(thingState)
                     self.subQuests.append(thing)
 
+        # listen to subquests
+        if len(self.subQuests):
+            self.startWatching(self.subQuests[0],self.recalculate)
+
     '''
     get target position from first subquest
     bad code: should use a position object

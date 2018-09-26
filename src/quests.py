@@ -1103,7 +1103,7 @@ class NaiveGetQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,questDispenser,assign=True,followUp=None,startCinematics=None,creator=None):
+    def __init__(self,questDispenser=None,assign=True,followUp=None,startCinematics=None,creator=None):
         self.questDispenser = questDispenser
         self.quest = None
         self.assign = assign
@@ -2029,7 +2029,7 @@ class GetQuest(MetaQuestSequence):
     '''
     generate quests to move to the quest dispenser and get the quest
     '''
-    def __init__(self,questDispenser,assign=False,followUp=None,startCinematics=None,creator=None):
+    def __init__(self,questDispenser=None,assign=False,followUp=None,startCinematics=None,creator=None):
         super().__init__([],creator=creator)
         self.questDispenser = questDispenser
         self.moveQuest = MoveQuestMeta(self.questDispenser.room,self.questDispenser.xPosition,self.questDispenser.yPosition,sloppy=True,creator=self)
@@ -2064,7 +2064,7 @@ class GetQuest(MetaQuestSequence):
 get the reward for a completed quest
 '''
 class GetReward(MetaQuestSequence):
-    def __init__(self,questDispenser,quest,assign=False,followUp=None,startCinematics=None,creator=None):
+    def __init__(self,questDispenser=None,quest=None,assign=False,followUp=None,startCinematics=None,creator=None):
         super().__init__([],creator=creator)
         self.questDispenser = questDispenser
         self.moveQuest = MoveQuestMeta(self.questDispenser.room,self.questDispenser.xPosition,self.questDispenser.yPosition,sloppy=True,creator=self)

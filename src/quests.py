@@ -990,6 +990,9 @@ class NaiveMoveQuest(Quest):
    
         found = checkRecursive(self.character.quests)
         if not found:
+            debugMessages.append("impossible state")
+            debugMessages.append(self.id)
+            debugMessages.append(self.character)
             return
 
         if not self.sloppy:
@@ -2934,9 +2937,8 @@ class FireFurnaceMeta(MetaQuestSequence):
     def __init__(self,furnace=None,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
         self.activateQuest = None
         self.collectQuest = None
-        self.questList = []
         self.furnace = furnace
-        super().__init__(self.questList,creator=creator)
+        super().__init__([],creator=creator)
         self.metaDescription = "FireFurnaceMeta"
 
         self.objectsToStore.append("furnace")
@@ -2978,7 +2980,7 @@ class FireFurnaceMeta(MetaQuestSequence):
                 self.collectQuest = CollectQuestMeta(creator=self)
                 self.collectQuest.assignToCharacter(self.character)
                 self.startWatching(self.collectQuest,self.recalculate)
-                self.questList.insert(0,self.collectQuest)
+                self.subQuests.insert(0,self.collectQuest)
                 self.collectQuest.activate()
                 self.changed()
 
@@ -2994,12 +2996,27 @@ class FireFurnaceMeta(MetaQuestSequence):
         if not self.activateQuest and not self.collectQuest and not self.furnace.activated:
             self.activateQuest = ActivateQuestMeta(self.furnace,creator=self)
             self.activateQuest.assignToCharacter(self.character)
-            self.questList.append(self.activateQuest)
             self.activateQuest.activate()
+            self.subQuests.append(self.activateQuest)
             self.startWatching(self.activateQuest,self.recalculate)
             self.changed()
 
         super().recalculate()
+
+    '''
+    set state as dict
+    '''
+    def setState(self,state):
+        super().setState(state)
+
+        if "furnace" in state and state["furnace"]:
+           '''
+           set value
+           '''
+           def watch(thing):
+               self.startWatching(thing,self.triggerCompletionCheck)
+           loadingRegistry.callWhenAvailable(state["furnace"],watch)
+
 
     '''
     assign to character and listen to character
@@ -3014,7 +3031,7 @@ class FireFurnaceMeta(MetaQuestSequence):
     def triggerCompletionCheck(self):
         if self.furnace.activated:
             self.postHandler()
-            
+
         super().triggerCompletionCheck()
 
 ##############################################################################

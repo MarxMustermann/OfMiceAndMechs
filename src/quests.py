@@ -1949,6 +1949,12 @@ class ActivateQuestMeta(MetaQuestSequence):
         self.startWatching(self.character,self.recalculate)
         super().activate()
 
+    def setState(self,state):
+        super().setState(state)
+        if self.active:
+            self.startWatching(self.character,self.recalculate)
+
+
 '''
 quest to refill the goo flask
 '''

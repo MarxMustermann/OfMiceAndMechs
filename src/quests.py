@@ -15,6 +15,7 @@ import src.saveing
 showCinematic = None
 loop = None
 callShow_or_exit = None
+mainChar = None
 
 ############################################################
 ###
@@ -406,6 +407,7 @@ class MetaQuestSequence(Quest):
                     thing = getQuestFromState(thingState)
                     thing.setState(thingState)
                     self.subQuests.append(thing)
+                    self.startWatching(self.subQuests[-1],self.recalculate)
             if "changed" in state["subQuests"]:
                 # update changed quests
                 for thing in self.quests:
@@ -974,6 +976,21 @@ class NaiveMoveQuest(Quest):
         if not self.active:
             debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
             return 
+
+        def checkRecursive(questList):
+            for quest in questList:
+                if quest == self:
+                    return True
+                try:
+                    if checkRecursive(quest.subQuests):
+                        return True
+                except:
+                    pass
+            return False
+   
+        found = checkRecursive(self.character.quests)
+        if not found:
+            return
 
         if not self.sloppy:
             # check for exact position
@@ -1919,6 +1936,11 @@ class ActivateQuestMeta(MetaQuestSequence):
             # remove completed quests
             if self.moveQuest and self.moveQuest.completed:
                 self.moveQuest = None
+
+            if self.moveQuest and not self.moveQuest in self.subQuests:
+                tmp = self.moveQuest
+                self.moveQuest = None
+                tmp.deactivate()
 
             if not self.moveQuest:
                 # check whether it is neccessary to re add the movement

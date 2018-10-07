@@ -157,6 +157,8 @@ class Character(src.saveing.Saveable):
         # save path
         if not self.path == self.initialState["path"]:
             result["path"] = self.path
+        result["questsDone"] = self.questsDone
+        result["solvers"] = self.solvers
 
         # save inventory
         (itemStates,changedItems,newItems,removedItems) = self.getDiffList(self.inventory,self.initialState["inventory"]["inventoryIds"])
@@ -226,6 +228,8 @@ class Character(src.saveing.Saveable):
                  "inventory": {},
                  "quests": {},
                  "path":self.path,
+                 "questsDone":self.questsDone,
+                 "solvers":self.solvers,
                })
                  
         # store inventory
@@ -278,6 +282,10 @@ class Character(src.saveing.Saveable):
         # set path
         if "path" in state:
             self.path = state["path"]
+        if "questsDone" in state:
+            self.questsDone = state["questsDone"]
+        if "solvers" in state:
+            self.solvers = state["solvers"]
 
         # set inventory
         if "inventory" in state:

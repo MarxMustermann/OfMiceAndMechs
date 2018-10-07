@@ -59,6 +59,7 @@ class Quest(src.saveing.Saveable):
         self.callbacksToStore.append("endTrigger")
         self.objectsToStore.append("character")
         self.objectsToStore.append("target")
+        self.objectsToStore.append("lifetimeEvent")
 
         self.lifetime = lifetime
         self.lifetimeEvent = None

@@ -1174,7 +1174,7 @@ class NaiveGetReward(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,quest,followUp=None,startCinematics=None,creator=None):
+    def __init__(self,quest=None,followUp=None,startCinematics=None,creator=None):
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
         self.quest = quest
         self.description = "naive get reward"
@@ -2111,7 +2111,10 @@ class GetReward(MetaQuestSequence):
     def __init__(self,questDispenser=None,quest=None,assign=False,followUp=None,startCinematics=None,creator=None):
         super().__init__([],creator=creator)
         self.questDispenser = questDispenser
-        self.moveQuest = MoveQuestMeta(self.questDispenser.room,self.questDispenser.xPosition,self.questDispenser.yPosition,sloppy=True,creator=self)
+        if questDispenser:
+            self.moveQuest = MoveQuestMeta(self.questDispenser.room,self.questDispenser.xPosition,self.questDispenser.yPosition,sloppy=True,creator=self)
+        else:
+            self.moveQuest = None
         self.getQuest = NaiveGetReward(quest,creator=self)
         self.questList = [self.moveQuest,self.getQuest]
         self.actualQuest = quest

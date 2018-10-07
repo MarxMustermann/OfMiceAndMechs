@@ -215,5 +215,6 @@ create an event from a dict
 def getEventFromState(state):
     event = eventMap[state["type"]](state["tick"],creator=void)
     event.setState(state)
+    loadingRegistry.register(event)
     return event
 

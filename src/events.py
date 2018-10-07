@@ -36,6 +36,8 @@ class Event(src.saveing.Saveable):
         self.id["creator"] = creator.id
         self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
 
+        self.attributesToStore.extend(["tick","type"])
+
         self.tick = tick
 
         # self initial state
@@ -46,36 +48,6 @@ class Event(src.saveing.Saveable):
     '''
     def handleEvent(self):
         pass
-
-    '''
-    get state difference since creation
-    bad code: returns state without creating a diff
-    '''
-    def getDiffState(self):
-        return self.getState()
-       
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        return {
-                 "id":self.id,
-                 "tick":self.tick,
-                 "type":self.type,
-               }
-
-    '''
-    set state from dict
-    '''
-    def setState(self, state):
-        # set attribute
-        # bad code: repetetive code
-        if "id" in state:
-            self.id = state["id"]
-        if "tick" in state:
-            self.tick = state["tick"]
-        if "type" in state:
-            self.type = state["type"]
 
 '''
 straigthforward adding a message

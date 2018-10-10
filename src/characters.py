@@ -65,7 +65,7 @@ class Character(src.saveing.Saveable):
         self.attributesToStore.extend([
                "gotBasicSchooling","gotMovementSchooling","gotInteractionSchooling","gotExamineSchooling",
                "xPosition","yPosition","name","satiation","unconcious","reputation","tutorialStart",
-			   "isMilitary","hasFloorPermit","dead","deathReason","automated","watched"])
+               "isMilitary","hasFloorPermit","dead","deathReason","automated","watched"])
         self.objectsToStore.append("serveQuest")
         self.objectsToStore.append("room")
 

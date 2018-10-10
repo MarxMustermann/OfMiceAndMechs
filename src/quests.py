@@ -16,6 +16,7 @@ showCinematic = None
 loop = None
 callShow_or_exit = None
 mainChar = None
+chats = None
 
 ############################################################
 ###
@@ -1180,6 +1181,8 @@ class NaiveGetReward(Quest):
         self.description = "naive get reward"
         self.done = False
 
+        self.objectsToStore.append("quest")
+
         # save initial state and register
         self.type = "NaiveGetReward"
         self.initialState = self.getState()
@@ -1199,9 +1202,10 @@ class NaiveGetReward(Quest):
     bad code: rewarding should be handled within the quest
     '''
     def solver(self,character):
-        character.reputation += self.quest.reputationReward
-        if character == mainChar:
-            messages.append("you were awarded "+str(self.quest.reputationReward)+" reputation")
+        if self.quest:
+            self.character.reputation += self.quest.reputationReward
+            if character == mainChar:
+                messages.append("you were awarded "+str(self.quest.reputationReward)+" reputation")
         self.done = True
         self.triggerCompletionCheck()
         return True
@@ -2138,36 +2142,15 @@ class GetReward(MetaQuestSequence):
     bad code: spawning the chat should happen in activate
     '''
     def assignToCharacter(self,character):
-        '''
-        the chat for collecting the reward
-        '''
-        class RewardChat(interaction.SubMenu):
-             id = "RewardChat"
-             dialogName = "i did the task: "+self.actualQuest.description.split("\n")[0]
-             '''
-             call superclass with less params
-             '''
-             def __init__(subSelf,partner):
-                 super().__init__()
-             
-             '''
-             call the solver to assign reward
-             bad code: calling the solver seems like bad idea
-             '''
-             def handleKey(subSelf, key):
-                 subSelf.persistentText = "here is your reward"
-                 subSelf.set_text(subSelf.persistentText)
-                 self.getQuest.solver(self.character)
-                 if self.moveQuest:
-                     self.moveQuest.postHandler()
-                 subSelf.done = True
-                 return True
+        if not self.actualQuest:
+            debugMessages.append("this should not happen (rewardchat without quest")
 
         # add chat option
         if character == mainChar and not self.addedRewardChat:
             self.addedRewardChat = True
-            self.rewardChat = RewardChat
-            self.questDispenser.basicChatOptions.append(self.rewardChat)
+            self.rewardChat = chats.RewardChat
+            self.questDispenser.basicChatOptions.append({"dialogName":"i did the task: "+self.actualQuest.description.split("\n")[0],"chat":chats.RewardChat,"params":{"quest":self,"character":self.character}})
+
         super().assignToCharacter(character)
 
     '''
@@ -2175,7 +2158,15 @@ class GetReward(MetaQuestSequence):
     '''
     def postHandler(self):
         if self.character == mainChar:
-            self.questDispenser.basicChatOptions.remove(self.rewardChat)
+            toRemove = None
+            for chat in self.questDispenser.basicChatOptions:
+                if isinstance(chat,dict):
+                    if chats:
+                        if chat["chat"] == chats.RewardChat and chat["params"]["quest"] == self:
+                            toRemove = chat
+                        
+            if toRemove:
+                self.questDispenser.basicChatOptions.remove(toRemove)
         super().postHandler()
 
 '''

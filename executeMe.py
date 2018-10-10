@@ -116,6 +116,7 @@ chats.story = story
 story.chats = chats
 characters.chats = chats
 rooms.chats = chats
+quests.chats = chats
 
 # bad code: common variables with modules
 loadingRegistry = saveing.LoadingRegistry()

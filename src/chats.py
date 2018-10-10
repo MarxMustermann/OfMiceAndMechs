@@ -9,6 +9,38 @@
 import src.interaction
 
 '''
+the chat for collecting the reward
+'''
+class RewardChat(src.interaction.SubMenu):
+    id = "RewardChat"
+
+    '''
+    call superclass with less params
+    '''
+    def __init__(subSelf,partner):
+        super().__init__()
+             
+    '''
+    call the solver to assign reward
+    '''
+    def handleKey(self, key):
+        self.persistentText = "here is your reward"
+        self.set_text(self.persistentText)
+        self.quest.getQuest.solver(self.character)
+        if self.quest.moveQuest:
+            self.quest.moveQuest.postHandler()
+        self.done = True
+        return True
+
+    '''
+    add internal state
+    bad pattern: chat option stored as references to class complicates this
+    '''
+    def setUp(self,state):
+        self.quest = state["quest"]
+        self.character = state["character"]
+
+'''
 the chat to proof the player is able to chat
 bad code: story specific
 '''
@@ -620,4 +652,5 @@ chatMap = {
              "ReReport":ReReport,
              "JobChatFirst":JobChatFirst,
              "JobChatSecond":JobChatSecond,
+             "RewardChat":RewardChat,
           }

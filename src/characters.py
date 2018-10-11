@@ -212,7 +212,10 @@ class Character(src.saveing.Saveable):
                 option["params"] = {}
                 if "params" in chat:
                     for key, value in chat["params"].items():
-                        option["params"][key] = value.id
+                        if value:
+                            option["params"][key] = value.id
+                        else:
+                            option["params"][key] = None
                 chatOptions.append(option)
         result["chatOptions"] = chatOptions
 

@@ -412,14 +412,14 @@ class MetaQuestSequence(Quest):
                     self.startWatching(self.subQuests[-1],self.recalculate)
             if "changed" in state["subQuests"]:
                 # update changed quests
-                for thing in self.quests:
+                for thing in self.subQuests:
                     if thing.id in state["subQuests"]["states"]:
                         thing.setState(state["subQuests"]["states"][thing.id])
             if "removed" in state["subQuests"]:
                 # remove quests
-                for thing in self.quests:
+                for thing in self.subQuests:
                     if thing.id in state["subQuests"]["removed"]:
-                        self.quests.remove(thing)
+                        self.subQuests.remove(thing)
             if "new" in state["subQuests"]:
                 # add new quests
                 for thingId in state["subQuests"]["new"]:

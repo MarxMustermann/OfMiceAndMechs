@@ -1759,6 +1759,7 @@ XXXXXXXXXXX
         # assign hopper duty to hoppers
         for hopper in self.hoppers:
             self.addAsHopper(hopper)
+            hopper.initialState = hopper.getState()
 
         # save initial state and register
         self.initialState = self.getState()

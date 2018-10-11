@@ -193,7 +193,6 @@ class Saveable(object):
                     '''
                     def setValue(value,name):
                         setattr(self,name,value)
-                    print(str((objectName)))
                     loadingRegistry.callWhenAvailable(state[objectName],setValue,(objectName))
                 else:
                     setattr(self,objectName,None)

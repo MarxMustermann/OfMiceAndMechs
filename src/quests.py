@@ -2687,7 +2687,7 @@ class TransportQuest(MetaQuestSequence):
         self.dropOff = dropOff
         self.questList = []
         quest = PickupQuestMeta(self.toTransport,creator=self)
-        quest.endTrigger = self.addDrop # add drop quest in follow up
+        quest.endTrigger = {"container":self,"method":"addDrop"}
         self.questList.append(quest)
         for quest in reversed(self.questList):
             self.addQuest(quest)

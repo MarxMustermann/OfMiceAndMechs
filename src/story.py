@@ -1633,40 +1633,41 @@ class FindWork(BasicPhase):
         terrain.waitingRoom.quests.append(quest)
 
         self.cicleQuestIndex = 0
-        '''
-        quest to carry stuff and trigger adding a new quest afterwards
-        '''
-        def addNewCircleQuest():
-            labCoordinateList = [(2,1),(3,1),(4,1),(5,1),(6,1),(7,1)]
-            shopCoordinateList = [(9,2),(9,7),(9,3),(9,6),(9,4),(9,5)]
-
-            if self.cicleQuestIndex > 2*len(terrain.metalWorkshop.producedItems)-2:
-                self.cicleQuestIndex = 0
-
-            if self.cicleQuestIndex < len(terrain.metalWorkshop.producedItems):
-                pos = labCoordinateList[self.cicleQuestIndex]
-                room = terrain.tutorialLab
-                index = self.cicleQuestIndex
-            else:
-                pos = shopCoordinateList[self.cicleQuestIndex-len(terrain.metalWorkshop.producedItems)]
-                room = terrain.metalWorkshop
-                index = -(self.cicleQuestIndex-len(terrain.metalWorkshop.producedItems))-1
-            
-            quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[index],(room,pos[0],pos[1]),creator=void)
-            quest.endTrigger = addNewCircleQuest
-            quest.reputationReward = 0
-            terrain.waitingRoom.quests.append(quest)
-
-            self.cicleQuestIndex += 1
 
         # start series of quests that were looped to keep the system active
-        addNewCircleQuest()
+        self.addNewCircleQuest()
 
         # add the dialog for getting a job
         terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChatFirst,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":mainChar.quests[0]}})
         terrain.waitingRoom.secondOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChatSecond,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":mainChar.quests[0]}})
         terrain.wakeUpRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChatFirst,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":mainChar.quests[0]}})
         terrain.tutorialMachineRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChatFirst,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":mainChar.quests[0]}})
+
+    '''
+    quest to carry stuff and trigger adding a new quest afterwards
+    '''
+    def addNewCircleQuest(self):
+        labCoordinateList = [(2,1),(3,1),(4,1),(5,1),(6,1),(7,1)]
+        shopCoordinateList = [(9,2),(9,7),(9,3),(9,6),(9,4),(9,5)]
+
+        if self.cicleQuestIndex > 2*len(terrain.metalWorkshop.producedItems)-2:
+            self.cicleQuestIndex = 0
+
+        if self.cicleQuestIndex < len(terrain.metalWorkshop.producedItems):
+            pos = labCoordinateList[self.cicleQuestIndex]
+            room = terrain.tutorialLab
+            index = self.cicleQuestIndex
+        else:
+            pos = shopCoordinateList[self.cicleQuestIndex-len(terrain.metalWorkshop.producedItems)]
+            room = terrain.metalWorkshop
+            index = -(self.cicleQuestIndex-len(terrain.metalWorkshop.producedItems))-1
+            
+        quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[index],(room,pos[0],pos[1]),creator=void)
+        quest.endTrigger = {"container":self,"method":"addNewCircleQuest"}
+        quest.reputationReward = 0
+        terrain.waitingRoom.quests.append(quest)
+
+        self.cicleQuestIndex += 1
 
 '''
 dummmy for the lab phase

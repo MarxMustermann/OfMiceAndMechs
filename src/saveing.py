@@ -20,6 +20,7 @@ class LoadingRegistry(object):
                     callback(thing,self.params[thing.id][counter])
                 else:
                     callback(thing)
+                counter += 1
 
     '''
     trigger a call or register as backlog

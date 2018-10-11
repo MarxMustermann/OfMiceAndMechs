@@ -12,9 +12,12 @@ class LoadingRegistry(object):
     def register(self,thing):
         self.registered[thing.id] = thing
         if thing.id in self.delayedCalls:
-            for callback in self.delayedCalls[thing.id]:
-                if self.params[thing.id]:
-                    callback(thing,self.params[thing.id])
+            length = len(self.delayedCalls[thing.id])
+            counter = 0
+            while counter < length:
+                callback = self.delayedCalls[thing.id][counter]
+                if self.params[thing.id][counter]:
+                    callback(thing,self.params[thing.id][counter])
                 else:
                     callback(thing)
 
@@ -28,10 +31,12 @@ class LoadingRegistry(object):
             else:
                 callback(self.registered[thingId])
         else:
-            self.params[thingId] = param
             if not thingId in self.delayedCalls:
                 self.delayedCalls[thingId] = []
+            if not thingId in self.params:
+                self.params[thingId] = {}
             self.delayedCalls[thingId].append(callback)
+            self.params[thingId].append(param)
 
 '''
 abstract class for saving something. It is intended to keep most saving related stuff away from the game code
@@ -188,6 +193,7 @@ class Saveable(object):
                     '''
                     def setValue(value,name):
                         setattr(self,name,value)
+                    print(str((objectName)))
                     loadingRegistry.callWhenAvailable(state[objectName],setValue,(objectName))
                 else:
                     setattr(self,objectName,None)

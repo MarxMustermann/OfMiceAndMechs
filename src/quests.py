@@ -1087,7 +1087,7 @@ class NaivePickupQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,toPickup,followUp=None,startCinematics=None,creator=None):
+    def __init__(self,toPickup=None,followUp=None,startCinematics=None,creator=None):
         self.toPickup = toPickup
         self.dstX = self.toPickup.xPosition
         self.dstY = self.toPickup.yPosition
@@ -1852,12 +1852,16 @@ class PickupQuestMeta(MetaQuestSequence):
     '''
     generate quests to move and pick up 
     '''
-    def __init__(self,toPickup,followUp=None,startCinematics=None,creator=None):
+    def __init__(self,toPickup=None,followUp=None,startCinematics=None,creator=None):
         super().__init__([],creator=creator)
         self.toPickup = toPickup
-        self.sloppy = not self.toPickup.walkable
-        self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition,sloppy=self.sloppy,creator=self)
-        self.questList = [self.moveQuest,NaivePickupQuest(self.toPickup,creator=self)]
+        if toPickup:
+            self.sloppy = not self.toPickup.walkable
+            self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition,sloppy=self.sloppy,creator=self)
+            self.questList = [self.moveQuest,NaivePickupQuest(self.toPickup,creator=self)]
+        else:
+            self.sloppy = False
+            self.questList = []
         for quest in reversed(self.questList):
             self.addQuest(quest)
         self.metaDescription = "pickup Meta"
@@ -2677,7 +2681,7 @@ class TransportQuest(MetaQuestSequence):
     '''
     generate quest for picking up the item
     '''
-    def __init__(self,toTransport,dropOff,followUp=None,startCinematics=None,lifetime=None,creator=None):
+    def __init__(self,toTransport=None,dropOff=None,followUp=None,startCinematics=None,lifetime=None,creator=None):
         super().__init__([],creator=creator)
         self.toTransport = toTransport
         self.dropOff = dropOff

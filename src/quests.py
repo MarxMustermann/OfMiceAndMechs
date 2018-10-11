@@ -1049,6 +1049,8 @@ class NaiveEnterRoomQuest(Quest):
         # set door as target
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
 
+        self.objectsToStore.append("room")
+
         # save initial state and register
         self.type = "NaiveEnterRoomQuest"
         self.initialState = self.getState()
@@ -1422,6 +1424,8 @@ class NaiveDropQuest(Quest):
         self.description = "naive drop"
         self.dropped = False
 
+        self.objectsToStore.append("room")
+
         # save initial state and register
         self.type = "NaiveDropQuest"
         self.initialState = self.getState()
@@ -1716,6 +1720,8 @@ class EnterRoomQuestMeta(MetaQuestSequence):
         self.metaDescription = "enterroom Meta"
         self.leaveRoomQuest = None
 
+        self.objectsToStore.append("room")
+
         # save initial state and register
         self.type = "EnterRoomQuestMeta"
         self.initialState = self.getState()
@@ -1833,6 +1839,8 @@ class DropQuestMeta(MetaQuestSequence):
         for quest in reversed(self.questList):
             self.addQuest(quest)
         self.metaDescription = "drop Meta"
+
+        self.objectsToStore.append("room")
 
         # save initial state and register
         self.type = "DropQuestMeta"
@@ -2362,6 +2370,8 @@ class LeaveRoomQuest(Quest):
             self.dstX = 0
             self.dstY = 0
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
+
+        self.objectsToStore.append("room")
 
         # save initial state and register
         self.type = "LeaveRoomQuest"

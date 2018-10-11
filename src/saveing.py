@@ -34,7 +34,7 @@ class LoadingRegistry(object):
             if not thingId in self.delayedCalls:
                 self.delayedCalls[thingId] = []
             if not thingId in self.params:
-                self.params[thingId] = {}
+                self.params[thingId] = []
             self.delayedCalls[thingId].append(callback)
             self.params[thingId].append(param)
 

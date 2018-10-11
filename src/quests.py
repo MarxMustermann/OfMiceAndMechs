@@ -1037,6 +1037,7 @@ class NaiveEnterRoomQuest(Quest):
     straightforward state initialization
     '''
     def __init__(self,room=None,followUp=None,startCinematics=None,creator=None):
+        self.room = room
         if room:
             self.description = "please enter the room: "+room.name+" "+str(room.xPosition)+" "+str(room.yPosition)
             self.dstX = self.room.walkingAccess[0][0]+room.xPosition*15+room.offsetX
@@ -1044,7 +1045,6 @@ class NaiveEnterRoomQuest(Quest):
         else:
             self.dstX = 0
             self.dstY = 0
-        self.room = room
         # set door as target
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
 

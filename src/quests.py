@@ -335,7 +335,7 @@ class MetaQuestSequence(Quest):
     state initialization
     bad code: quest param does not work anymore and should be removed
     '''
-    def __init__(self,quests,followUp=None,failTrigger=None,startCinematics=None,lifetime=None,creator=None):
+    def __init__(self,quests=[],followUp=None,failTrigger=None,startCinematics=None,lifetime=None,creator=None):
         # set state
         self.metaDescription = "meta"
         self.subQuestsOrig = quests.copy()
@@ -1036,8 +1036,9 @@ class NaiveEnterRoomQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,room,followUp=None,startCinematics=None,creator=None):
-        self.description = "please enter the room: "+room.name+" "+str(room.xPosition)+" "+str(room.yPosition)
+    def __init__(self,room=None,followUp=None,startCinematics=None,creator=None):
+        if room:
+            self.description = "please enter the room: "+room.name+" "+str(room.xPosition)+" "+str(room.yPosition)
         self.room = room
         # set door as target
         self.dstX = self.room.walkingAccess[0][0]+room.xPosition*15+room.offsetX
@@ -1218,7 +1219,7 @@ class NaiveMurderQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,toKill,followUp=None,startCinematics=None,creator=None):
+    def __init__(self,toKill=None,followUp=None,startCinematics=None,creator=None):
         self.toKill = toKill
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
         self.description = "naive murder"
@@ -1253,7 +1254,7 @@ class NaiveKnockOutQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,target,followUp=None,startCinematics=None,creator=None):
+    def __init__(self,target=None,followUp=None,startCinematics=None,creator=None):
         self.target = target
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
         self.description = "naive knock out"
@@ -1287,7 +1288,7 @@ class NaiveWakeUpQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,target,followUp=None,startCinematics=None,creator=None):
+    def __init__(self,target=None,followUp=None,startCinematics=None,creator=None):
         self.target = target
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
         self.description = "naive wake up"
@@ -1401,7 +1402,7 @@ class NaiveDropQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None,creator=None):
+    def __init__(self,toDrop=None,room=None,xPosition=None,yPosition=None,followUp=None,startCinematics=None,creator=None):
         self.dstX = xPosition
         self.dstY = yPosition
         self.room = room
@@ -1455,7 +1456,7 @@ class NaiveDelegateQuest(Quest):
     '''
     straightforward state initialization
     '''
-    def __init__(self,quest,creator=None):
+    def __init__(self,quest=None,creator=None):
         super().__init__(creator=creator)
         self.quest = quest
         self.description = "naive delegate quest"
@@ -1519,7 +1520,7 @@ class WaitForDeactivationQuest(Quest):
     '''
     state initialization
     '''
-    def __init__(self,item,followUp=None,startCinematics=None,lifetime=None,creator=None):
+    def __init__(self,item=None,followUp=None,startCinematics=None,lifetime=None,creator=None):
         self.item = item
         self.description = "please wait for deactivation of "+self.item.description
 
@@ -1554,7 +1555,7 @@ class WaitForQuestCompletion(Quest):
     '''
     state initialization
     '''
-    def __init__(self,quest,creator=None):
+    def __init__(self,quest=None,creator=None):
         self.quest = quest
         self.description = "please wait for the quest to completed"
         super().__init__(creator=creator)
@@ -1698,7 +1699,7 @@ class EnterRoomQuestMeta(MetaQuestSequence):
     '''
     basic state initialization
     '''
-    def __init__(self,room,followUp=None,startCinematics=None,creator=None):
+    def __init__(self,room=None,followUp=None,startCinematics=None,creator=None):
         super().__init__([],creator=creator)
         self.room = room
         self.addQuest(NaiveEnterRoomQuest(room,creator=self))
@@ -1809,7 +1810,7 @@ class DropQuestMeta(MetaQuestSequence):
     '''
     generate quests to move and drop item
     '''
-    def __init__(self,toDrop,room,xPosition,yPosition,followUp=None,startCinematics=None,creator=None):
+    def __init__(self,toDrop=None,room=None,xPosition=None,yPosition=None,followUp=None,startCinematics=None,creator=None):
         super().__init__([],creator=creator)
         self.toDrop = toDrop
         self.moveQuest = MoveQuestMeta(room,xPosition,yPosition,creator=self)
@@ -2180,7 +2181,7 @@ class MurderQuest(MetaQuestSequence):
     '''
     generate quests for moving to and murdering the target
     '''
-    def __init__(self,toKill,followUp=None,startCinematics=None,creator=None,lifetime=None):
+    def __init__(self,toKill=None,followUp=None,startCinematics=None,creator=None,lifetime=None):
         super().__init__([],creator=creator,lifetime=lifetime)
         self.toKill = toKill
         self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=False,creator=self)
@@ -2218,7 +2219,7 @@ class KnockOutQuest(MetaQuestSequence):
     '''
     generate quests for moving to and kocking out the target
     '''
-    def __init__(self,target,followUp=None,startCinematics=None,creator=None,lifetime=None):
+    def __init__(self,target=None,followUp=None,startCinematics=None,creator=None,lifetime=None):
         super().__init__([],creator=creator,lifetime=lifetime)
         self.target = target
         self.moveQuest = MoveQuestMeta(self.target.room,self.target.xPosition,self.target.yPosition,sloppy=True,creator=self)
@@ -2256,7 +2257,7 @@ class WakeUpQuest(MetaQuestSequence):
     '''
     generate quests for moving to and waking up the target
     '''
-    def __init__(self,target,followUp=None,startCinematics=None,creator=None,lifetime=None):
+    def __init__(self,target=None,followUp=None,startCinematics=None,creator=None,lifetime=None):
         super().__init__([],creator=creator,lifetime=lifetime)
         self.target = target
         self.moveQuest = MoveQuestMeta(self.target.room,self.target.xPosition,self.target.yPosition,sloppy=True,creator=self)
@@ -2339,7 +2340,7 @@ class FillPocketsQuest(MetaQuestSequence):
 quest to leave the room
 '''
 class LeaveRoomQuest(Quest):
-    def __init__(self,room,followUp=None,startCinematics=None,creator=None):
+    def __init__(self,room=None,followUp=None,startCinematics=None,creator=None):
         self.room = room
         self.description = "please leave the room."
         self.dstX = self.room.walkingAccess[0][0]
@@ -2517,7 +2518,7 @@ class FetchFurniture(MetaQuestParralel):
     '''
     create subquest to move each piece of scrap to the metalworkshop
     '''
-    def __init__(self,constructionSite,storageRooms,toFetch,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
+    def __init__(self,constructionSite=None,storageRooms=None,toFetch=None,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
         super().__init__([],creator=creator)
         questList = []
         dropoffs = [(4,4),(5,4),(5,5),(5,6),(4,6),(3,6),(3,5),(3,4)]
@@ -2579,7 +2580,7 @@ class PlaceFurniture(MetaQuestParralel):
     generates quests picking up the furniture and dropping it at the right place
     bad code: generating transport quests would be better
     '''
-    def __init__(self,constructionSite,itemsInStore,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
+    def __init__(self,constructionSite=None,itemsInStore=None,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
         super().__init__([],creator=creator)
         self.questList = []
 
@@ -2620,7 +2621,7 @@ class ConstructRoom(MetaQuestParralel):
     '''
     straightforward state initialization
     '''
-    def __init__(self,constructionSite,storageRooms,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
+    def __init__(self,constructionSite=None,storageRooms=None,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
 
         self.questList = []
 
@@ -2711,7 +2712,7 @@ class StoreCargo(MetaQuestSequence):
     '''
     generate quests for transporting each item
     '''
-    def __init__(self,cargoRoom,storageRoom,followUp=None,startCinematics=None,lifetime=None,creator=None):
+    def __init__(self,cargoRoom=None,storageRoom=None,followUp=None,startCinematics=None,lifetime=None,creator=None):
         super().__init__([],creator=creator)
         self.questList = []
 
@@ -2747,7 +2748,7 @@ class MoveToStorage(MetaQuestSequence):
     '''
     generate the quests to transport each item
     '''
-    def __init__(self, items, storageRoom, creator=None, lifetime=None):
+    def __init__(self, items=None, storageRoom=None, creator=None, lifetime=None):
         super().__init__([],creator=creator,lifetime=lifetime)
         self.questList = []
             

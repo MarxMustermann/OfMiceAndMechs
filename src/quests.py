@@ -1039,10 +1039,13 @@ class NaiveEnterRoomQuest(Quest):
     def __init__(self,room=None,followUp=None,startCinematics=None,creator=None):
         if room:
             self.description = "please enter the room: "+room.name+" "+str(room.xPosition)+" "+str(room.yPosition)
+            self.dstX = self.room.walkingAccess[0][0]+room.xPosition*15+room.offsetX
+            self.dstY = self.room.walkingAccess[0][1]+room.yPosition*15+room.offsetY
+        else:
+            self.dstX = 0
+            self.dstY = 0
         self.room = room
         # set door as target
-        self.dstX = self.room.walkingAccess[0][0]+room.xPosition*15+room.offsetX
-        self.dstY = self.room.walkingAccess[0][1]+room.yPosition*15+room.offsetY
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
 
         # save initial state and register
@@ -1089,12 +1092,16 @@ class NaivePickupQuest(Quest):
     straightforward state initialization
     '''
     def __init__(self,toPickup=None,followUp=None,startCinematics=None,creator=None):
-        self.toPickup = toPickup
-        self.dstX = self.toPickup.xPosition
-        self.dstY = self.toPickup.yPosition
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
-        self.startWatching(self.toPickup,self.recalculate)
-        self.startWatching(self.toPickup,self.triggerCompletionCheck)
+        self.toPickup = toPickup
+        if toPickup:
+            self.dstX = self.toPickup.xPosition
+            self.dstY = self.toPickup.yPosition
+            self.startWatching(self.toPickup,self.recalculate)
+            self.startWatching(self.toPickup,self.triggerCompletionCheck)
+        else:
+            self.dstX = 0
+            self.dstY = 0
         self.description = "naive pickup"
 
         # save initial state and register
@@ -2343,8 +2350,12 @@ class LeaveRoomQuest(Quest):
     def __init__(self,room=None,followUp=None,startCinematics=None,creator=None):
         self.room = room
         self.description = "please leave the room."
-        self.dstX = self.room.walkingAccess[0][0]
-        self.dstY = self.room.walkingAccess[0][1]
+        if room:
+            self.dstX = self.room.walkingAccess[0][0]
+            self.dstY = self.room.walkingAccess[0][1]
+        else:
+            self.dstX = 0
+            self.dstY = 0
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
 
         # save initial state and register

@@ -1043,6 +1043,7 @@ class NaiveEnterRoomQuest(Quest):
             self.dstX = self.room.walkingAccess[0][0]+room.xPosition*15+room.offsetX
             self.dstY = self.room.walkingAccess[0][1]+room.yPosition*15+room.offsetY
         else:
+            self.description = "please enter the room: "
             self.dstX = 0
             self.dstY = 0
         # set door as target
@@ -1415,8 +1416,9 @@ class NaiveDropQuest(Quest):
         self.room = room
         self.toDrop = toDrop
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
-        self.startWatching(self.toDrop,self.recalculate)
-        self.startWatching(self.toDrop,self.triggerCompletionCheck)
+        if toDrop:
+            self.startWatching(self.toDrop,self.recalculate)
+            self.startWatching(self.toDrop,self.triggerCompletionCheck)
         self.description = "naive drop"
         self.dropped = False
 
@@ -1820,8 +1822,11 @@ class DropQuestMeta(MetaQuestSequence):
     def __init__(self,toDrop=None,room=None,xPosition=None,yPosition=None,followUp=None,startCinematics=None,creator=None):
         super().__init__([],creator=creator)
         self.toDrop = toDrop
-        self.moveQuest = MoveQuestMeta(room,xPosition,yPosition,creator=self)
-        self.questList = [self.moveQuest,NaiveDropQuest(toDrop,room,xPosition,yPosition,creator=self)]
+        if toDrop:
+            self.moveQuest = MoveQuestMeta(room,xPosition,yPosition,creator=self)
+            self.questList = [self.moveQuest,NaiveDropQuest(toDrop,room,xPosition,yPosition,creator=self)]
+        else:
+            self.questList = []
         self.room = room
         self.xPosition = xPosition
         self.yPosition = yPosition

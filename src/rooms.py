@@ -654,7 +654,7 @@ class Room(src.saveing.Saveable):
     bad pattern: should be removeItems
     '''
     def removeItem(self,item):
-        if item in self.itemByCoordinates:
+        if (item.xPosition,item.yPosition) in self.itemByCoordinates and item in self.itemByCoordinates[(item.xPosition,item.yPosition)]:
             self.itemByCoordinates[(item.xPosition,item.yPosition)].remove(item)
             if not self.itemByCoordinates[(item.xPosition,item.yPosition)]:
                 del self.itemByCoordinates[(item.xPosition,item.yPosition)]

@@ -427,6 +427,7 @@ class MetaQuestSequence(Quest):
                     thing = getQuestFromState(thingState)
                     thing.setState(thingState)
                     self.subQuests.append(thing)
+                    self.startWatching(self.subQuests[-1],self.recalculate)
 
         # listen to subquests
         if len(self.subQuests):
@@ -1107,6 +1108,8 @@ class NaivePickupQuest(Quest):
             self.dstY = 0
         self.description = "naive pickup"
 
+        self.objectsToStore.append("toPickup")
+
         # save initial state and register
         self.type = "NaivePickupQuest"
         self.initialState = self.getState()
@@ -1424,6 +1427,7 @@ class NaiveDropQuest(Quest):
         self.description = "naive drop"
         self.dropped = False
 
+        self.objectsToStore.append("toDrop")
         self.objectsToStore.append("room")
 
         # save initial state and register
@@ -1840,7 +1844,10 @@ class DropQuestMeta(MetaQuestSequence):
             self.addQuest(quest)
         self.metaDescription = "drop Meta"
 
+        self.objectsToStore.append("toDrop")
+        self.objectsToStore.append("moveQuest")
         self.objectsToStore.append("room")
+        self.attributesToStore.extend(["xPosition","yPosition"])
 
         # save initial state and register
         self.type = "DropQuestMeta"
@@ -1881,11 +1888,16 @@ class PickupQuestMeta(MetaQuestSequence):
             self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition,sloppy=self.sloppy,creator=self)
             self.questList = [self.moveQuest,NaivePickupQuest(self.toPickup,creator=self)]
         else:
-            self.sloppy = False
+            self.sloppy = True
+            self.moveQuest = None
             self.questList = []
         for quest in reversed(self.questList):
             self.addQuest(quest)
         self.metaDescription = "pickup Meta"
+
+        self.attributesToStore.append("sloppy")
+        self.objectsToStore.append("toPickup")
+        self.objectsToStore.append("moveQuest")
 
         # save initial state and register
         self.type = "PickupQuestMeta"
@@ -1896,6 +1908,9 @@ class PickupQuestMeta(MetaQuestSequence):
     re-add the movement quest if neccessary
     '''
     def recalculate(self):
+        if not self.toPickup:
+            debugMessages.append("Pickup quest with nothing to pick up")
+            return
         if self.active:
             # remove completed quests
             if self.moveQuest and self.moveQuest.completed:
@@ -1929,6 +1944,20 @@ class PickupQuestMeta(MetaQuestSequence):
     def assignToCharacter(self,character):
         self.startWatching(character,self.recalculate)
         super().assignToCharacter(character)
+
+    '''
+    set state as dict
+    '''
+    def setState(self,state):
+        super().setState(state)
+
+        if "character" in state and state["character"]:
+           '''
+           set value
+           '''
+           def watchCharacter(character):
+               self.startWatching(character,self.recalculate)
+           loadingRegistry.callWhenAvailable(state["character"],watchCharacter)
 
 '''
 activate an item

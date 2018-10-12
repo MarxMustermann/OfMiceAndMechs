@@ -1793,6 +1793,33 @@ XXXXXXXXXXX
         quest.reputationReward = 1
         self.quests.append(quest)
 
+    def setState(self,state):
+        super().setState(state)
+        
+        self.quests = []
+        for questId in state["quests"]["ids"]:
+             self.quests.append(src.quests.getQuestFromState(state["quests"]["states"][questId]))
+
+    def getState(self):
+        state = super().getState()
+
+        state["quests"] = {"ids":[],"states":{}}
+        for quest in self.quests:
+            state["quests"]["ids"].append(quest.id) 
+            state["quests"]["states"][quest.id] = quest.getState()
+
+        return state
+
+    def getDiffState(self):
+        state = super().getDiffState()
+
+        state["quests"] = {"ids":[],"states":{}}
+        for quest in self.quests:
+            state["quests"]["ids"].append(quest.id) 
+            state["quests"]["states"][quest.id] = quest.getState()
+
+        return state
+
 '''
 a dummy for the mechs command centre
 '''

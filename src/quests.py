@@ -1131,6 +1131,21 @@ class NaivePickupQuest(Quest):
             return True
         self.toPickup.pickUp(character)
         return True
+    
+    '''
+    set state as dict
+    '''
+    def setState(self,state):
+        super().setState(state)
+
+        if "toPickup" in state and state["toPickup"]:
+           '''
+           set value
+           '''
+           def watchThing(thing):
+               self.startWatching(thing,self.recalculate)
+               self.startWatching(thing,self.triggerCompletionCheck)
+           loadingRegistry.callWhenAvailable(state["toPickup"],watchThing)
 
 '''
 The naive quest to get a quest from somebody. It assumes nothing goes wrong. 
@@ -2740,9 +2755,9 @@ class TransportQuest(MetaQuestSequence):
     generate quest for picking up the item
     '''
     def __init__(self,toTransport=None,dropOff=None,followUp=None,startCinematics=None,lifetime=None,creator=None):
+        self.dropOff = dropOff
         super().__init__([],creator=creator)
         self.toTransport = toTransport
-        self.dropOff = dropOff
         self.questList = []
         quest = PickupQuestMeta(self.toTransport,creator=self)
         quest.endTrigger = {"container":self,"method":"addDrop"}
@@ -2750,6 +2765,8 @@ class TransportQuest(MetaQuestSequence):
         for quest in reversed(self.questList):
             self.addQuest(quest)
         self.metaDescription = "transport"
+
+        self.objectsToStore.append("toTransport")
 
         # save initial state and register
         self.type = "TransportQuest"
@@ -2760,7 +2777,51 @@ class TransportQuest(MetaQuestSequence):
     drop the item after picking it up
     '''
     def addDrop(self):
-        self.addQuest(DropQuestMeta(self.toTransport,self.dropOff[0],self.dropOff[1],self.dropOff[2],creator=self))
+        if self.dropOff:
+            self.addQuest(DropQuestMeta(self.toTransport,self.dropOff[0],self.dropOff[1],self.dropOff[2],creator=self))
+
+    
+    def setState(self,state):
+        super().setState(state)
+
+        self.dropOff = []
+        self.dropOff.append(None)
+        self.dropOff.append(state["dropOff"][1])
+        self.dropOff.append(state["dropOff"][2])
+
+        '''
+        set value
+        '''
+        def addRoom(room):
+            self.dropOff[0] = room
+        loadingRegistry.callWhenAvailable(state["dropOff"][0],addRoom)
+
+    '''
+    get state as dict
+    '''
+    def getState(self):
+        state = super().getState()
+
+        if self.dropOff:
+            state["dropOff"] = []
+            state["dropOff"].append(self.dropOff[0].id)
+            state["dropOff"].append(self.dropOff[1])
+            state["dropOff"].append(self.dropOff[2])
+
+        return state
+    
+
+    '''
+    get difference in state since creation
+    '''
+    def getDiffState(self):
+        state = super().getDiffState()
+
+        if self.dropOff:
+            state["dropOff"] = []
+            state["dropOff"].append(self.dropOff[0].id)
+            state["dropOff"].append(self.dropOff[1])
+            state["dropOff"].append(self.dropOff[2])
 
 '''
 move items from permanent storage to accesible storage
@@ -3119,6 +3180,11 @@ class HopperDuty(MetaQuestSequence):
         self.actualQuest = None
         self.rewardQuest = None
         self.waitingRoom = waitingRoom
+
+        self.objectsToStore.append("actualQuest")
+        self.objectsToStore.append("rewardQuest")
+        self.objectsToStore.append("getQuest")
+        self.objectsToStore.append("waitingRoom")
 
         # save initial state and register
         self.type = "HopperDuty"

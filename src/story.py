@@ -1450,6 +1450,7 @@ class FindWork(BasicPhase):
     basic state initialization
     '''
     def __init__(self):
+        self.cicleQuestIndex = 0
         super().__init__("FindWork")
 
     '''

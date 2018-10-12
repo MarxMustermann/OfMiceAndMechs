@@ -2251,13 +2251,18 @@ class MurderQuest(MetaQuestSequence):
     def __init__(self,toKill=None,followUp=None,startCinematics=None,creator=None,lifetime=None):
         super().__init__([],creator=creator,lifetime=lifetime)
         self.toKill = toKill
-        self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=False,creator=self)
-        self.questList = [self.moveQuest,NaiveMurderQuest(toKill,creator=self)]
-        self.lastPos = (self.toKill.room,self.toKill.xPosition,self.toKill.yPosition)
+        if toKill:
+           self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=False,creator=self)
+           self.questList = [self.moveQuest,NaiveMurderQuest(toKill,creator=self)]
+           self.lastPos = (self.toKill.room,self.toKill.xPosition,self.toKill.yPosition)
+           self.startWatching(self.toKill,self.recalculate)
+        else:
+           self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=False,creator=self)
+           self.questList = [self.moveQuest,NaiveMurderQuest(toKill,creator=self)]
+           self.lastPos = (self.toKill.room,self.toKill.xPosition,self.toKill.yPosition)
         self.metaDescription = "murder"
         for quest in reversed(self.questList):
             self.addQuest(quest)
-        self.startWatching(self.toKill,self.recalculate)
 
         # save initial state and register
         self.type = "MurderQuest"
@@ -2803,7 +2808,7 @@ class TransportQuest(MetaQuestSequence):
     def getState(self):
         state = super().getState()
 
-        if self.dropOff:
+        if self.dropOff and self.dropOff[0]:
             state["dropOff"] = []
             state["dropOff"].append(self.dropOff[0].id)
             state["dropOff"].append(self.dropOff[1])

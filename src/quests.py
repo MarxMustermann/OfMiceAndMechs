@@ -2806,20 +2806,22 @@ class MoveToStorage(MetaQuestSequence):
     def __init__(self, items=None, storageRoom=None, creator=None, lifetime=None):
         super().__init__([],creator=creator,lifetime=lifetime)
         self.questList = []
-            
-        # determine how many items should be moved
-        amount = len(items)
-        freeSpace = len(storageRoom.storageSpace)
-        if freeSpace < amount:
-            amount = freeSpace
 
-        # add transport quest for each item
-        startIndex = len(storageRoom.storedItems)
-        counter = 0
-        while counter < amount:
-            location = storageRoom.storageSpace[counter]
-            self.addQuest(TransportQuest(items.pop(),(storageRoom,location[0],location[1]),creator=self))
-            counter += 1
+        if items:
+
+            # determine how many items should be moved
+            amount = len(items)
+            freeSpace = len(storageRoom.storageSpace)
+            if freeSpace < amount:
+                amount = freeSpace
+
+            # add transport quest for each item
+            startIndex = len(storageRoom.storedItems)
+            counter = 0
+            while counter < amount:
+                location = storageRoom.storageSpace[counter]
+                self.addQuest(TransportQuest(items.pop(),(storageRoom,location[0],location[1]),creator=self))
+                counter += 1
 
         self.metaDescription = "move to storage"
 

@@ -101,6 +101,8 @@ class Item(src.saveing.Saveable):
         if self.bolted:
             messages.append("you cannot pick up bolted items")
             return
+        if self.xPosition == None or self.yPosition == None:
+            return
 
         # bad code: should be a simple self.container.removeItem(self)
         if self.room:

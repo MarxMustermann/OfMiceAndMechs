@@ -1127,6 +1127,8 @@ class NaivePickupQuest(Quest):
     pick up the item
     '''
     def solver(self,character):
+        if not self.toPickup.room and not self.toPickup.terrain:
+            return True
         self.toPickup.pickUp(character)
         return True
 

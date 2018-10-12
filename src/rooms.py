@@ -654,10 +654,12 @@ class Room(src.saveing.Saveable):
     bad pattern: should be removeItems
     '''
     def removeItem(self,item):
-        self.itemByCoordinates[(item.xPosition,item.yPosition)].remove(item)
-        if not self.itemByCoordinates[(item.xPosition,item.yPosition)]:
-            del self.itemByCoordinates[(item.xPosition,item.yPosition)]
-        self.itemsOnFloor.remove(item)
+        if item in self.itemByCoordinates:
+            self.itemByCoordinates[(item.xPosition,item.yPosition)].remove(item)
+            if not self.itemByCoordinates[(item.xPosition,item.yPosition)]:
+                del self.itemByCoordinates[(item.xPosition,item.yPosition)]
+        if item in self.itemsOnFloor:
+            self.itemsOnFloor.remove(item)
 
     def moveDirection(self,direction,force=1,initialMovement=True,movementBlock=set()):
         if initialMovement:

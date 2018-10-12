@@ -1189,6 +1189,20 @@ class Terrain(src.saveing.Saveable):
             char = characters.Character(creator=self)
             self.addCharacter(char,charState["xPosition"],charState["yPosition"])
 
+        self.toTransport = []
+        for item in state["toTransport"]:
+            newItem = []
+            newItem.append(None)
+            newItem.append((item[1][0],item[1][1]))
+            self.toTransport.append(newItem)
+
+            '''
+            set value
+            '''
+            def setThing(thing):
+                newItem[0] = thing
+            loadingRegistry.callWhenAvailable(item[0],setThing)
+
     '''
     get difference between initial and current state
     bad code: should be in saveable
@@ -1201,6 +1215,11 @@ class Terrain(src.saveing.Saveable):
         if mainChar:
             exclude.append(mainChar.id)
         (charStates,changedCharList,newCharList,removedCharList) = self.getDiffList(self.characters,self.initialState["characterIds"],exclude=exclude)
+
+        toTransport = []
+        for item in self.toTransport:
+            toTransport.append((item[0].id,(item[1][0],item[1][1])))
+
 
         # generate state dict
         return {
@@ -1216,6 +1235,7 @@ class Terrain(src.saveing.Saveable):
                   "changedCharList":changedCharList,
                   "removedCharList":removedCharList,
                   "charStates":charStates,
+                  "toTransport":toTransport,
                }
 
     '''
@@ -1231,6 +1251,10 @@ class Terrain(src.saveing.Saveable):
             exclude.append(mainChar.id)
         (characterIds,chracterStates) = self.storeStateList(self.characters,exclude=exclude)
 
+        toTransport = []
+        for item in self.toTransport:
+            toTransport.append((item[0].id,(item[1][0],item[1][1])))
+
         # generate state
         return {
                   "roomIds":roomIds,
@@ -1239,6 +1263,7 @@ class Terrain(src.saveing.Saveable):
                   "itemStates":itemStates,
                   "characterIds":characterIds,
                   "chracterStates":chracterStates,
+                  "toTransport":toTransport,
                }
 
 '''
@@ -1371,6 +1396,7 @@ the tutorial mech
 '''
 class TutorialTerrain(Terrain):
     def __init__(self,creator=None):
+        self.toTransport = []
 
         # the layout for the mech
         layout = """

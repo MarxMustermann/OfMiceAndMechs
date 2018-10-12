@@ -5,6 +5,8 @@
 #
 ##############################################################################
 
+import src.saveing
+
 phasesByName = None
 gamestate = None
 names = None
@@ -77,12 +79,13 @@ def say(text,speaker=None,trigger=None):
 """
 the base class for the all phases here
 """
-class BasicPhase(object):
+class BasicPhase(src.saveing.Saveable):
     '''
     state initialization
     bad code: creating default attributes in init and set them externally later
     '''
     def __init__(self,name):
+        super().__init__()
         self.mainCharXPosition = None
         self.mainCharYPosition = None
         self.mainCharRoom = None
@@ -97,8 +100,9 @@ class BasicPhase(object):
         self.name = name
 
         # register with dummy id
-        self.id = "currentPhase"
+        self.id = name
         loadingRegistry.register(self)
+        self.initialState = self.getState()
 
     '''
     start the game phase
@@ -1452,6 +1456,9 @@ class FindWork(BasicPhase):
     def __init__(self):
         self.cicleQuestIndex = 0
         super().__init__("FindWork")
+        self.attributesToStore.extend(["cicleQuestIndex"])
+        loadingRegistry.register(self)
+        self.initialState = self.getState()
 
     '''
     create selection and place triggrers

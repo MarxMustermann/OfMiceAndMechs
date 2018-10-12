@@ -1109,6 +1109,7 @@ class NaivePickupQuest(Quest):
         self.description = "naive pickup"
 
         self.objectsToStore.append("toPickup")
+        self.attributesToStore.extend(["dstX","dstY"])
 
         # save initial state and register
         self.type = "NaivePickupQuest"

@@ -55,7 +55,7 @@ class Item(src.saveing.Saveable):
 
         # set up saveing
         self.attributesToStore.extend([
-               "mayContainMice","name","type","walkable","xPosition","yPosition"])
+               "mayContainMice","name","type","walkable","xPosition","yPosition","bolted"])
 
         # set id
         self.id = {

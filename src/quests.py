@@ -1040,22 +1040,25 @@ class NaiveEnterRoomQuest(Quest):
     def __init__(self,room=None,followUp=None,startCinematics=None,creator=None):
         self.room = room
         if room:
-            self.description = "please enter the room: "+room.name+" "+str(room.xPosition)+" "+str(room.yPosition)
             self.dstX = self.room.walkingAccess[0][0]+room.xPosition*15+room.offsetX
             self.dstY = self.room.walkingAccess[0][1]+room.yPosition*15+room.offsetY
         else:
-            self.description = "please enter the room: "
             self.dstX = 0
             self.dstY = 0
+        self.description = "please enter the room: "
         # set door as target
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
 
         self.objectsToStore.append("room")
+        self.attributesToStore.extend(["dstX","dstY","description"])
 
         # save initial state and register
         self.type = "NaiveEnterRoomQuest"
         self.initialState = self.getState()
         loadingRegistry.register(self)
+
+        if room:
+            self.description = "please enter the room: "+room.name+" "+str(room.xPosition)+" "+str(room.yPosition)
 
     '''
     assign character and 
@@ -1086,6 +1089,15 @@ class NaiveEnterRoomQuest(Quest):
         # start teardown when done
         if self.character.room == self.room:
             self.postHandler()
+
+    def setState(self,state):
+        if "character" in state and state["character"]:
+           '''
+           set value
+           '''
+           def watchCharacter(character):
+               self.startWatching(character,self.recalculate)
+           loadingRegistry.callWhenAvailable(state["character"],watchCharacter)
 
 '''
 The naive pickup quest. It assumes nothing goes wrong. 
@@ -1769,6 +1781,15 @@ class EnterRoomQuestMeta(MetaQuestSequence):
     def assignToCharacter(self,character):
         self.startWatching(character,self.recalculate)
         super().assignToCharacter(character)
+
+    def setState(self,state):
+        if "character" in state and state["character"]:
+           '''
+           set value
+           '''
+           def watchCharacter(character):
+               self.startWatching(character,self.recalculate)
+           loadingRegistry.callWhenAvailable(state["character"],watchCharacter)
 
 '''
 move to a position

@@ -1187,6 +1187,7 @@ class Terrain(src.saveing.Saveable):
         for charId in state["newCharList"]:
             charState = state["charStates"][charId]
             char = characters.Character(creator=self)
+            char.setState(charState)
             self.addCharacter(char,charState["xPosition"],charState["yPosition"])
 
         self.toTransport = []

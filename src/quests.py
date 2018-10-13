@@ -1103,6 +1103,7 @@ class NaiveEnterRoomQuest(Quest):
             self.postHandler()
 
     def setState(self,state):
+        super().setState(state)
         if "character" in state and state["character"]:
            '''
            set value
@@ -1794,6 +1795,7 @@ class EnterRoomQuestMeta(MetaQuestSequence):
         super().assignToCharacter(character)
 
     def setState(self,state):
+        super().setState(state)
         if "character" in state and state["character"]:
            '''
            set value

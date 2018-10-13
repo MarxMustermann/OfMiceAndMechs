@@ -1188,6 +1188,8 @@ class Terrain(src.saveing.Saveable):
             charState = state["charStates"][charId]
             char = characters.Character(creator=self)
             char.setState(charState)
+            char.terrain = self
+            char.room = None
             self.addCharacter(char,charState["xPosition"],charState["yPosition"])
 
         self.toTransport = []

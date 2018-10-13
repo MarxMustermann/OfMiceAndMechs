@@ -1067,7 +1067,7 @@ class NaiveEnterRoomQuest(Quest):
 
         if room:
             self.description = "please enter the room: "+room.name+" "+str(room.xPosition)+" "+str(room.yPosition)
-
+    
     '''
     assign character and 
     '''
@@ -1096,6 +1096,7 @@ class NaiveEnterRoomQuest(Quest):
     def triggerCompletionCheck(self):
         # bad code: should log
         if not self.active:
+            debugMessages.append("triggerCompletionCheck called on inactive quest")
             return 
 
         # start teardown when done

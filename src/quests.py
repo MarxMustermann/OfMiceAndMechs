@@ -1762,7 +1762,8 @@ class EnterRoomQuestMeta(MetaQuestSequence):
     def __init__(self,room=None,followUp=None,startCinematics=None,creator=None):
         super().__init__([],creator=creator)
         self.room = room
-        self.addQuest(NaiveEnterRoomQuest(room,creator=self))
+        if room:
+            self.addQuest(NaiveEnterRoomQuest(room,creator=self))
         self.recalculate()
         self.metaDescription = "enterroom Meta"
         self.leaveRoomQuest = None

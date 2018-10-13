@@ -173,16 +173,9 @@ class BasicPhase(src.saveing.Saveable):
     returns very simple state as dict
     '''
     def getState(self):
-        return {
-                 "id":self.id,
-                 "name":self.name,
-               }
-
-    '''
-    does nothing
-    '''
-    def setState(self,state):
-        pass
+        state = super().getState()
+        state["name"] = self.name
+        return state
 
 #########################################################################
 ###
@@ -1454,9 +1447,9 @@ class FindWork(BasicPhase):
     basic state initialization
     '''
     def __init__(self):
-        self.cicleQuestIndex = 0
+        self.cycleQuestIndex = 0
         super().__init__("FindWork")
-        self.attributesToStore.extend(["cicleQuestIndex"])
+        self.attributesToStore.extend(["cycleQuestIndex"])
         loadingRegistry.register(self)
         self.initialState = self.getState()
 
@@ -1640,7 +1633,7 @@ class FindWork(BasicPhase):
         quest.reputationReward = 3
         terrain.waitingRoom.quests.append(quest)
 
-        self.cicleQuestIndex = 0
+        self.cycleQuestIndex = 0
 
         # start series of quests that were looped to keep the system active
         self.addNewCircleQuest()
@@ -1658,24 +1651,24 @@ class FindWork(BasicPhase):
         labCoordinateList = [(2,1),(3,1),(4,1),(5,1),(6,1),(7,1)]
         shopCoordinateList = [(9,2),(9,7),(9,3),(9,6),(9,4),(9,5)]
 
-        if self.cicleQuestIndex > 2*len(terrain.metalWorkshop.producedItems)-2:
-            self.cicleQuestIndex = 0
+        if self.cycleQuestIndex > 2*len(terrain.metalWorkshop.producedItems)-2:
+            self.cycleQuestIndex = 0
 
-        if self.cicleQuestIndex < len(terrain.metalWorkshop.producedItems):
-            pos = labCoordinateList[self.cicleQuestIndex]
+        if self.cycleQuestIndex < len(terrain.metalWorkshop.producedItems):
+            pos = labCoordinateList[self.cycleQuestIndex]
             room = terrain.tutorialLab
-            index = self.cicleQuestIndex
+            index = self.cycleQuestIndex
         else:
-            pos = shopCoordinateList[self.cicleQuestIndex-len(terrain.metalWorkshop.producedItems)]
+            pos = shopCoordinateList[self.cycleQuestIndex-len(terrain.metalWorkshop.producedItems)]
             room = terrain.metalWorkshop
-            index = -(self.cicleQuestIndex-len(terrain.metalWorkshop.producedItems))-1
+            index = -(self.cycleQuestIndex-len(terrain.metalWorkshop.producedItems))-1
             
         quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[index],(room,pos[0],pos[1]),creator=void)
         quest.endTrigger = {"container":self,"method":"addNewCircleQuest"}
         quest.reputationReward = 0
         terrain.waitingRoom.quests.append(quest)
 
-        self.cicleQuestIndex += 1
+        self.cycleQuestIndex += 1
 
 '''
 dummmy for the lab phase

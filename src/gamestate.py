@@ -69,6 +69,7 @@ class GameState():
         # the object itself
         self.gameWon = state["gameWon"]
         self.currentPhase = phasesByName[state["currentPhase"]["name"]]()
+        self.currentPhase.setState(state["currentPhase"])
         self.tick = state["tick"]
 
         # update void

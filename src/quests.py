@@ -414,7 +414,6 @@ class MetaQuestSequence(Quest):
                     # create and add quest
                     thingState = state["subQuests"]["states"][thingId]
                     thing = getQuestFromState(thingState)
-                    thing.setState(thingState)
                     self.subQuests.append(thing)
                     self.startWatching(self.subQuests[-1],self.recalculate)
             if "changed" in state["subQuests"]:

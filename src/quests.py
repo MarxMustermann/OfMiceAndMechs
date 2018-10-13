@@ -1825,6 +1825,7 @@ class MoveQuestMeta(MetaQuestSequence):
 
         self.attributesToStore.append("sloppy")
         self.objectsToStore.append("room")
+        self.objectsToStore.extend(["enterRoomQuest","leaveRoomQuest"])
 
         # save initial state and register
         self.type = "MoveQuestMeta"

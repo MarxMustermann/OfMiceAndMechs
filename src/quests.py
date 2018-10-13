@@ -1767,6 +1767,7 @@ class EnterRoomQuestMeta(MetaQuestSequence):
         self.leaveRoomQuest = None
 
         self.objectsToStore.append("room")
+        self.objectsToStore.append("leaveRoomQuest")
 
         # save initial state and register
         self.type = "EnterRoomQuestMeta"

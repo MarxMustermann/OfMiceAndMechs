@@ -707,21 +707,17 @@ class MetaQuestParralel(Quest):
         if "subQuests" in state:
             if "ids" in state["subQuests"]:
                 # load static quest list
+                for quest in self.subQuests[:]:
+                     quest.deactivate()
+                     quest.completed = False
+                     self.subQuests.remove(quest)
+
                 for thingId in state["subQuests"]["ids"]:
-                    # bad code: current list should be emptied instead of skipping
-                    skip = False
-                    for thing in self.subQuests:
-                       if thingId == thing.id:
-                           skip = True
-                           continue
-                    if skip:
-                        continue
-                    
                     # create and add quest
                     thingState = state["subQuests"]["states"][thingId]
                     thing = getQuestFromState(thingState)
-                    thing.setState(thingState)
                     self.subQuests.append(thing)
+                    self.startWatching(self.subQuests[-1],self.recalculate)
             if "changed" in state["subQuests"]:
                 # update changed quests
                 for thing in self.quests:
@@ -739,6 +735,7 @@ class MetaQuestParralel(Quest):
                     thing = getQuestFromState(thingState)
                     thing.setState(thingState)
                     self.subQuests.append(thing)
+                    self.startWatching(self.subQuests[-1],self.recalculate)
 
     '''
     forward position from last active quest

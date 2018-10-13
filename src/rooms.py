@@ -1752,10 +1752,10 @@ XXXXXXXXXXX
         self.hoppers = []
 
         # add hoppers
-        npc = characters.Character(displayChars.staffCharactersByLetter["s"],4,4,name="Simon Kantbrett",creator=self)
+        npc = self.fetchThroughRegistry(characters.Character(displayChars.staffCharactersByLetter["s"],4,4,name="Simon Kantbrett",creator=self))
         self.hoppers.append(npc)
         self.addCharacter(npc,2,2)
-        npc = characters.Character(displayChars.staffCharactersByLetter["r"],4,5,name="Rudolf Krautbart",creator=self)
+        npc = self.fetchThroughRegistry(characters.Character(displayChars.staffCharactersByLetter["r"],4,5,name="Rudolf Krautbart",creator=self))
         self.hoppers.append(npc)
         self.addCharacter(npc,2,3)
 

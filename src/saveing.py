@@ -1,3 +1,4 @@
+
 '''
 a registry to allow resoving references during loading
 '''
@@ -39,6 +40,14 @@ class LoadingRegistry(object):
             self.delayedCalls[thingId].append(callback)
             self.params[thingId].append(param)
 
+    def fetchThroughRegistry(self,thing):
+        if thing.id in self.registered:
+            return self.registered[thing.id]
+        else:
+            return thing
+
+loadingRegistry = LoadingRegistry()
+
 '''
 abstract class for saving something. It is intended to keep most saving related stuff away from the game code
 '''
@@ -53,6 +62,9 @@ class Saveable(object):
         self.attributesToStore = ["id","creationCounter"]
         self.callbacksToStore = []
         self.objectsToStore = []
+
+    def fetchThroughRegistry(self,thing):
+        return loadingRegistry.fetchThroughRegistry(thing)
 
     '''
     get state as dict

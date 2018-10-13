@@ -1186,7 +1186,7 @@ class Terrain(src.saveing.Saveable):
         # add new characters
         for charId in state["newCharList"]:
             charState = state["charStates"][charId]
-            char = characters.Character(creator=self)
+            char = self.fetchThroughRegistry(characters.Character(creator=self,characterId=charId))
             char.setState(charState)
             loadingRegistry.register(char)
             char.terrain = self

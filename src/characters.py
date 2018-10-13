@@ -26,7 +26,7 @@ class Character(src.saveing.Saveable):
     '''
     sets basic info AND adds default behaviour/items
     '''
-    def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person",creator=None):
+    def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person",creator=None,characterId=None):
         super().__init__()
 
         # set basic state
@@ -53,14 +53,17 @@ class Character(src.saveing.Saveable):
         self.displayOriginal = display
         self.isMilitary = False
         self.hasFloorPermit = True
-        self.id = {
+        if characterId:
+            self.id = characterId
+        else:
+            self.id = {
                    "other":"character",
                    "xPosition":xPosition,
                    "yPosition":yPosition,
                    "counter":creator.getCreationCounter()
                   }
-        self.id["creator"] = creator.id
-        self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
+            self.id["creator"] = creator.id
+            self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
 
         self.attributesToStore.extend([
                "gotBasicSchooling","gotMovementSchooling","gotInteractionSchooling","gotExamineSchooling",

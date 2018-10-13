@@ -1079,6 +1079,10 @@ class NaiveEnterRoomQuest(Quest):
     close door and call superclass
     '''
     def postHandler(self):
+        if not self.character.room:
+            debugMessages.append("posthandler called without beeing in a room")
+            return
+
         # bad code: is broken
         if self.character.yPosition in (self.character.room.walkingAccess):
             for item in self.character.room.itemByCoordinates[self.character.room.walkingAccess[0]]:

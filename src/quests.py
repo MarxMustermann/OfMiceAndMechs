@@ -57,6 +57,8 @@ class Quest(src.saveing.Saveable):
         self.attributesToStore.append("completed")
         self.attributesToStore.append("reputationReward")
         self.attributesToStore.append("lifetime")
+        self.attributesToStore.extend([
+              "dstX","dstY"])
         self.callbacksToStore.append("endTrigger")
         self.objectsToStore.append("character")
         self.objectsToStore.append("target")
@@ -352,6 +354,11 @@ class MetaQuestSequence(Quest):
         self.type = "MetaQuestSequence"
         self.initialState = self.getState()
         loadingRegistry.register(self)
+
+        while "dstX" in self.attributesToStore:
+            self.attributesToStore.remove("dstX")
+        while "dstY" in self.attributesToStore:
+            self.attributesToStore.remove("dstY")
 
     '''
     get difference in state since creation
@@ -650,6 +657,11 @@ class MetaQuestParralel(Quest):
         self.type = "MetaQuestParralel"
         self.initialState = self.getState()
         loadingRegistry.register(self)
+
+        while "dstX" in self.attributesToStore:
+            self.attributesToStore.remove("dstX")
+        while "dstY" in self.attributesToStore:
+            self.attributesToStore.remove("dstY")
 
     '''
     get difference in state since creation
@@ -963,7 +975,7 @@ class NaiveMoveQuest(Quest):
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
 
         self.attributesToStore.extend([
-              "dstX","dstY","description","sloppy" ])
+              "description","sloppy" ])
         self.objectsToStore.append("room")
 
         # save initial state and register
@@ -1121,7 +1133,6 @@ class NaivePickupQuest(Quest):
         self.description = "naive pickup"
 
         self.objectsToStore.append("toPickup")
-        self.attributesToStore.extend(["dstX","dstY"])
 
         # save initial state and register
         self.type = "NaivePickupQuest"

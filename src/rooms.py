@@ -625,6 +625,7 @@ class Room(src.saveing.Saveable):
         character.room = self
         character.xPosition = x
         character.yPosition = y
+        character.path = []
         self.changed("entered room",character)
 
     '''

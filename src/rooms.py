@@ -1531,6 +1531,9 @@ XXXXXXXXXX
     use specialised pathfinding
     '''
     def calculatePath(self,x,y,dstX,dstY,walkingPath):
+        if dstY == None or dstX == None:
+            debugMessages.append("pathfinding without target")
+            return []
         path = []
 
         # go to secondary path

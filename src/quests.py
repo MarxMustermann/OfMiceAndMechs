@@ -329,6 +329,24 @@ class Quest(src.saveing.Saveable):
             self.lifetimeEvent = None
         self.changed()
 
+    def getDiffState(self):
+        state = super().getDiffState()
+        if self.endTrigger:
+            if not isinstance(self.endTrigger,dict):
+                state["endTrigger"] = str(self.endTrigger)
+            else:
+                state["endTrigger"] = {"container":self.endTrigger["container"].id,"method":self.endTrigger["method"]}
+        return state
+
+    def getState(self):
+        state = super().getState()
+        if self.endTrigger:
+            if not isinstance(self.endTrigger,dict):
+                state["endTrigger"] = str(self.endTrigger)
+            else:
+                state["endTrigger"] = {"container":self.endTrigger["container"].id,"method":self.endTrigger["method"]}
+        return state
+
 '''
 a container quest containing a list of quests that have to be handled in sequence
 '''

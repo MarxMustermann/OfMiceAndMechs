@@ -552,8 +552,8 @@ class MetaQuestSequence(Quest):
     assign self and first subquest to character
     '''
     def assignToCharacter(self,character):
-        if self.subQuests:
-            self.subQuests[0].assignToCharacter(character)
+        for quest in self.subQuests:
+            quest.assignToCharacter(character)
         super().assignToCharacter(character)
 
     '''
@@ -3266,6 +3266,7 @@ class HopperDuty(MetaQuestSequence):
             # add quest to fetch reward
             if self.actualQuest and self.actualQuest.completed and not self.rewardQuest:
                 self.rewardQuest = GetReward(self.waitingRoom.secondOfficer,self.actualQuest,creator=self)
+                self.rewardQuest.assignToCharacter(self.character)
                 self.actualQuest = None
                 self.addQuest(self.rewardQuest,addFront=False)
 
@@ -3276,6 +3277,7 @@ class HopperDuty(MetaQuestSequence):
             # add quest to get a new quest
             if not self.getQuest and not self.actualQuest and not self.rewardQuest:
                 self.getQuest = GetQuest(self.waitingRoom.secondOfficer,assign=False,creator=self)
+                self.getQuest.assignToCharacter(self.character)
                 self.getQuest.endTrigger = {"container":self,"method":"setQuest"}
                 self.addQuest(self.getQuest,addFront=False)
 

@@ -417,15 +417,17 @@ def advanceGame():
 cinematics.advanceGame = advanceGame
 interaction.advanceGame = advanceGame
 
+loaded = False
 try:
     # load the game
-    gameStateObj.load()
+    loaded = gameStateObj.load()
 except Exception as e:
     ignore = input("could not load gamestate. abort (y/n)?")
     if ignore == "y":
         raise e
 
-    # set up the current phase
+# set up the current phase
+if not loaded:
     gameStateObj.currentPhase.start()
 
 # bad code: loading registry should be cleared

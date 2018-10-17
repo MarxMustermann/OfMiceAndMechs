@@ -53,14 +53,27 @@ class GameState():
     bad pattern: loading and saving one massive json will break on the long run. load function should be delegated down to be able to scale json size
     '''
     def load(self):
+        import os
+        if not os.path.isfile("gamestate/gamestate.json"):
+            return False
+
         # load state from disc
-        saveFile = open("gamestate/gamestate.json")
+        try:
+            saveFile = open("gamestate/gamestate.json")
+        except:
+            return False
+
         rawstate = saveFile.read()
+
+        if rawstate in ["you lost","reset","Winning is no fun at all"]:
+            return False
+
         state = json.loads(rawstate)
         saveFile.close()
 
         # set state
         self.setState(state)
+        return True
 
     '''
     rebuild gamestate from half serialized form

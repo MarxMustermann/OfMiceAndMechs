@@ -511,7 +511,7 @@ def processInput(key):
                         # examine an item on floor
                         for item in mainChar.container.itemsOnFloor:
                             if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
-                                mainChar.examine(itemMarkedLast)
+                                mainChar.examine(item)
                                 break
 
             # drop first item from inventory

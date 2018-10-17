@@ -1341,9 +1341,13 @@ class GooDispenser(Item):
     '''
     def apply(self,character):
         super().apply(character,silent=True)
+        filled = False
         for item in character.inventory:
             if isinstance(item,GooFlask):
                 item.uses = 100
+                filled = True
+        if filled:
+            messages.append("you fill the goo flask")
         self.activated = True
 
 '''

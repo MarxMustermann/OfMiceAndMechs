@@ -477,7 +477,8 @@ class WakeUpPhase(BasicPhase):
         super().start()
 
         # hide main char from map
-        self.mainCharRoom.characters.remove(mainChar)
+        if mainChar in self.mainCharRoom.characters:
+            self.mainCharRoom.characters.remove(mainChar)
 
         # select npc
         self.npc = self.mainCharRoom.firstOfficer

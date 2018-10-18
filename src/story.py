@@ -294,7 +294,7 @@ entering interactive mode .................................
                   ]
         text = "\nplease answer the question:\n\nwhat is your name?"
         cinematic = cinematics.SelectionCinematic(text,options,creator=void)
-        cinematic.followUps = {"ok":self.askSecondQuestion,"nok":self.infoFail}
+        cinematic.followUps = {"ok":{"container":self,"method":"askSecondQuestion"},"nok":{"container":self,"method":"infoFail"}}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
 
@@ -317,7 +317,7 @@ entering interactive mode .................................
                   ]
         text = "\nplease select the true statement:\n\n"
         cinematic = cinematics.SelectionCinematic(text,options,creator=void)
-        cinematic.followUps = {"ok":self.askThirdQuestion,"nok":self.infoFail}
+        cinematic.followUps = {"ok":{"container":self,"method":"askThirdQuestion"},"nok":{"container":self,"method":"infoFail"}}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
 
@@ -332,7 +332,7 @@ entering interactive mode .................................
                   ]
         text = "\nplease repeat the definition of rust\n\n"
         cinematic = cinematics.SelectionCinematic(text,options,creator=void)
-        cinematic.followUps = {"ok":self.flashInformation,"nok":self.infoFail}
+        cinematic.followUps = {"ok":{"container":self,"method":"flashInformation"},"nok":{"container":self,"method":"infoFail"}}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
 
@@ -1465,7 +1465,7 @@ class FindWork(BasicPhase):
         options = [("yes","Yes"),("no","No")]
         text = "you look like a fresh one. Were you sent to report for duty?"
         cinematic = cinematics.SelectionCinematic(text,options,creator=void)
-        cinematic.followUps = {"yes":self.getIntroInstant,"no":self.tmpFail}
+        cinematic.followUps = {"yes":{"container":self,"method":"getIntroInstant"},"no":{"container":self,"method":"tmpFail"}}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
 

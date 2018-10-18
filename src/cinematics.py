@@ -651,7 +651,7 @@ class SelectionCinematic(BasicCinematic):
         self.selected = self.submenue.selection
         if self.followUps:
             if self.selected:
-                self.followUps[self.selected]()
+                self.callIndirect(self.followUps[self.selected])
             else:
                 self.followUps[list(self.options.values())[0]]
         else:

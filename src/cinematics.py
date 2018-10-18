@@ -584,6 +584,8 @@ class SelectionCinematic(BasicCinematic):
         self.submenue= None
         self.type = "SelectionCinematic"
 
+        self.attributesToStore.append("text")
+
     '''
     set up and do nothing
     bad code: this is the core function. It should do something
@@ -593,6 +595,35 @@ class SelectionCinematic(BasicCinematic):
 
         self.setUp()
         return True
+
+    '''
+    set state from dict
+    '''
+    def setState(self,state):
+        super().setState(state)
+
+        # set quest related attributes
+        if "options" in state and state["options"]:
+            self.options = state["options"]
+        if "followUps" in state and state["followUps"]:
+            self.followUps = state["followUps"]
+            for (key,value) in state["followUps"].items():
+                state["followUps"][key] = self.deserializeCallback(value)
+
+    '''
+    get state from dict
+    '''
+    def getState(self):
+        state = super().getState()
+
+        # get quest related attributes
+        followUps = {}
+        for (key,value) in self.followUps.items():
+            followUps[key] = self.serializeCallback(value)
+
+        state["followUps"] = followUps
+        state["options"] = self.options
+        return state
 
     '''
     show the selection menue

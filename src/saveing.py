@@ -66,6 +66,23 @@ class Saveable(object):
     def fetchThroughRegistry(self,thing):
         return loadingRegistry.fetchThroughRegistry(thing)
 
+    def serializeCallback(self,callback):
+        if callback:
+            if isinstance(callback,dict):
+                # serialize and store callback
+                serializedCallback = {}
+                serializedCallback["container"] = callback["container"].id
+                serializedCallback["method"] = callback["method"]
+            else:
+                # save callback info in unusable format
+                # bad code: cannot be loaded, intended for debugging
+                serializedCallback = str(callback)
+        else:
+            # save None as callback
+            serializedCallback = None
+
+        return serializedCallback
+
     '''
     get state as dict
     '''
@@ -87,20 +104,7 @@ class Saveable(object):
             else:
                 callback = None
 
-            if callback:
-                if isinstance(callback,dict):
-                    # serialize and store callback
-                    serializedCallback = {}
-                    serializedCallback["container"] = callback["container"].id
-                    serializedCallback["method"] = callback["method"]
-                    state[callbackName] = serializedCallback
-                else:
-                    # save callback info in unusable format
-                    # bad code: cannot be loaded, intended for debugging
-                    state[callbackName] = str(callback)
-            else:
-                # save None as callback
-                state[callbackName] = None
+            state[callbackName] = self.serializeCallback(callback)
 
         # store objects
         for objectName in self.objectsToStore:
@@ -177,19 +181,7 @@ class Saveable(object):
                 if state[callbackName]:
                     # get basic callback dict
                     callback = getattr(self,callbackName)
-                    if not callback:
-                        callback = {}
-
-                    # update callback attributes
-                    if "method" in state[callbackName]:
-                        callback["method"] = state[callbackName]["method"]
-                    if "container" in state[callbackName]:
-                        '''
-                        set value
-                        '''
-                        def setContainer(thing):
-                            callback["container"] = thing
-                        loadingRegistry.callWhenAvailable(state[callbackName]["container"],setContainer)
+                    callback = self.deserializeCallback(state[callbackName],callback)
 
                     # set callback
                     setattr(self,callbackName,callback)
@@ -209,6 +201,22 @@ class Saveable(object):
                     loadingRegistry.callWhenAvailable(state[objectName],setValue,(objectName))
                 else:
                     setattr(self,objectName,None)
+
+    def deserializeCallback(self,state,callback=None):
+        if not callback:
+            callback = {}
+
+        # update callback attributes
+        if "method" in state:
+            callback["method"] = state["method"]
+        if "container" in state:
+            '''
+            set value
+            '''
+            def setContainer(thing):
+                callback["container"] = thing
+            loadingRegistry.callWhenAvailable(state["container"],setContainer)
+        return callback
 
     '''
     get a list of ids and a dict of their states from a list of objects

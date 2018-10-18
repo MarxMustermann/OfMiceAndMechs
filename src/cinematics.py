@@ -73,7 +73,7 @@ class InformationTransfer(BasicCinematic):
     """
     almost straightforward state initilisation with the information as parameter
     """
-    def __init__(self,information,creator=None):
+    def __init__(self,information=[],creator=None):
         super().__init__(creator=creator)
 
         self.position = 0
@@ -574,7 +574,7 @@ class SelectionCinematic(BasicCinematic):
     '''
     straightforward state initialization
     '''
-    def __init__(self,text, options, followUps=None,creator=None):
+    def __init__(self,text=None, options=None, followUps=None,creator=None):
         super().__init__(creator=creator)
 
         self.options = options

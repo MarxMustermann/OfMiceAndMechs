@@ -152,6 +152,11 @@ def processInput(key):
     if type(key) == tuple:
         return
 
+    if key in (commandChars.quit_normal, commandChars.quit_instant):
+        # save and quit
+        gamestate.save()
+        raise urwid.ExitMainLoop()
+
     # bad code: global variables
     global lastLagDetection
     global idleCounter
@@ -297,11 +302,6 @@ def processInput(key):
                 saveFile = open("gamestate/gamestate.json","w")
                 saveFile.write("reset")
                 saveFile.close()
-                raise urwid.ExitMainLoop()
-
-            if key in (commandChars.quit_normal, commandChars.quit_instant):
-                # save and quit
-                gamestate.save()
                 raise urwid.ExitMainLoop()
 
             if key in (commandChars.pause):

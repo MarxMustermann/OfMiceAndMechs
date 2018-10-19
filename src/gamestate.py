@@ -107,7 +107,8 @@ class GameState():
             else:
                 terrain.addCharacter(self.mainChar,xPosition,yPosition)
         else:
-            terrain.addCharacter(self.mainChar,xPosition,yPosition)
+            if state["terrain"]:
+                terrain.addCharacter(self.mainChar,xPosition,yPosition)
         self.mainChar.setState(state["mainChar"])
 
         # load cinematics
@@ -125,6 +126,10 @@ class GameState():
             mainCharState["room"] = self.mainChar.room.id
         else:
             mainCharState["room"] = None
+        if terrain:
+            mainCharState["terrain"] = terrain.id
+        else:
+            mainCharState["terrain"] = None
         mainCharState["xPosition"] = self.mainChar.xPosition
         mainCharState["yPosition"] = self.mainChar.yPosition
 

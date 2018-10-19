@@ -82,6 +82,8 @@ class InformationTransfer(BasicCinematic):
         self.triggered = False
         self.type = "InformationTransfer"
 
+        self.attributesToStore.extend(["information"])
+
     """
     blink a piece of information
     """
@@ -119,7 +121,7 @@ class InformationTransfer(BasicCinematic):
             loop.remove_alarm(self.alarm)
         except:
             pass
-
+    
 """
 this is a single use cinematic that collapses a full screen message display into the in game message window
 bad code: this should be abstracted to have a zoom in/out for various things like the quest menu

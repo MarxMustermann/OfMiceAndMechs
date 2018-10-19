@@ -73,7 +73,7 @@ class InformationTransfer(BasicCinematic):
     """
     almost straightforward state initilisation with the information as parameter
     """
-    def __init__(self,information=[],creator=None):
+    def __init__(self,information={},creator=None):
         super().__init__(creator=creator)
 
         self.position = 0

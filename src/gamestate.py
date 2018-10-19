@@ -133,6 +133,8 @@ class GameState():
         cinematicStorage["ids"] = []
         cinematicStorage["states"] = {}
         for cinematic in cinematics.cinematicQueue:
+            if cinematic == self.openingCinematic:
+                continue
             cinematicStorage["ids"].append(cinematic.id)
             cinematicStorage["states"][cinematic.id] = cinematic.getState()
 

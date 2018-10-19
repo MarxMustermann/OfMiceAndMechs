@@ -376,7 +376,7 @@ chats.mainChar = gameStateObj.mainChar
 
 # set up the splash screen
 if not args.debug:
-    cinematics.showCinematic("""
+    text = """
 
      OOO FFF          AAA N N DD
      O O FF   mice    AAA NNN D D
@@ -394,7 +394,12 @@ if not args.debug:
 
         - a pipedream 
 
-""",rusty=True,scrolling=True)
+"""
+    openingCinematic = cinematics.TextCinematic(text,rusty=True,scrolling=True,creator=void)
+    cinematics.cinematicQueue.append(openingCinematic)
+    gameStateObj.openingCinematic = openingCinematic
+else:
+    gameStateObj.openingCinematic = None
 
 ##################################################################################################################################
 ###

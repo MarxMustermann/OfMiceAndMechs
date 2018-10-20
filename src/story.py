@@ -205,6 +205,7 @@ class OpenWorld(BasicPhase):
             mainChar.yPosition = 4
             mainChar.terrain = terrain
             terrain.addCharacter(mainChar)
+        gamestate.save()
 
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 #XX
@@ -297,6 +298,7 @@ entering interactive mode .................................
         cinematic.followUps = {"ok":{"container":self,"method":"askSecondQuestion"},"nok":{"container":self,"method":"infoFail"}}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
+        gamestate.save()
 
     '''
     show fluff and fail phase
@@ -500,6 +502,8 @@ class WakeUpPhase(BasicPhase):
 
         # add trigger
         showGame(1,trigger={"container":self,"method":"playerEject"})
+
+        gamestate.save()
 
     '''
     spawn players body and place trigger
@@ -708,6 +712,8 @@ now, go and pull the lever
         say("activate the lever",firstOfficer)
         quest = quests.ActivateQuestMeta(terrain.wakeUpRoom.lever1,creator=void)
         showQuest(quest,mainChar,trigger={"container":self,"method":"fetchDrink"},container=mainChar.serveQuest)
+
+        gamestate.save()
 
     '''
     make the main char drink and have a chat
@@ -980,6 +986,7 @@ class BoilerRoomWelcome(BasicPhase):
                 gamestate.save()
             cinematic.endTrigger = wrapUp
             cinematics.cinematicQueue.append(cinematic)
+        gamestate.save()
 
         '''
         fake a coal delivery
@@ -1226,6 +1233,7 @@ class BoilerRoomInteractionTraining(BasicPhase):
 
         # assign first quest
         mainChar.assignQuest(questList[0],active=True)
+        gamestate.save()
 
     '''
     start next phase
@@ -1414,6 +1422,7 @@ class FurnaceCompetition(BasicPhase):
             self.mainCharRoom.addEvent(WaitForClearStart(gamestate.tick+2,0,creator=void))
 
         tmp()
+        gamestate.save()
 
     '''
     evaluate results and branch phases
@@ -1483,6 +1492,7 @@ class FindWork(BasicPhase):
         cinematic.followUps = {"yes":{"container":self,"method":"getIntroInstant"},"no":{"container":self,"method":"tmpFail"}}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
+        gamestate.save()
 
     '''
     show fluff and show intro
@@ -1718,6 +1728,7 @@ class LabPhase(BasicPhase):
 
         # assign player quest
         mainChar.assignQuest(questList[0])
+        gamestate.save()
 
     '''
     move on to next phase
@@ -1768,6 +1779,7 @@ class VatPhase(BasicPhase):
 
         # assign player quest
         mainChar.assignQuest(quest,active=True)
+        gamestate.save()
 
     '''
     take away floor permit to make escape harder
@@ -1822,6 +1834,7 @@ class MachineRoomPhase(BasicPhase):
         mainChar.assignQuest(questList[0])
 
         self.end()
+        gamestate.save()
 
     '''
     win the game

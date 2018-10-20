@@ -40,6 +40,7 @@ class BasicCinematic(src.saveing.Saveable):
         self.footerText = ""
         self.endTrigger = None
         self.type = "BasicCinematic"
+        self.aborted = False
 
         # add save information
         self.attributesToStore.extend([
@@ -63,6 +64,7 @@ class BasicCinematic(src.saveing.Saveable):
     do nothing
     '''
     def abort(self):
+        self.aborted = True
         pass
 
 """

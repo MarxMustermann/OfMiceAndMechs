@@ -142,6 +142,8 @@ class GameState():
         for cinematic in cinematics.cinematicQueue:
             if cinematic == self.openingCinematic:
                 continue
+            if cinematic.aborted:
+                continue
             cinematicStorage["ids"].append(cinematic.id)
             cinematicStorage["states"][cinematic.id] = cinematic.getState()
 

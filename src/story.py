@@ -479,6 +479,7 @@ class WakeUpPhase(BasicPhase):
         # hide main char from map
         if mainChar in self.mainCharRoom.characters:
             self.mainCharRoom.characters.remove(mainChar)
+        mainChar.terrain = None
 
         # select npc
         self.npc = self.mainCharRoom.firstOfficer
@@ -556,6 +557,21 @@ class WakeUpPhase(BasicPhase):
     def end(self):
         phase = BasicMovementTraining()
         phase.start()
+
+    '''
+    '''
+    def setState(self,state):
+        super().setState(state)
+
+        print("setState")
+        #bad code: knowingly breaking state instead of setting a camera focus
+        if not mainChar.room and not mainChar.terrain:
+            print("inSetState")
+            terrain.wakeUpRoom.addCharacter(mainChar,3,3)
+
+            if mainChar in terrain.wakeUpRoom.characters:
+                terrain.wakeUpRoom.characters.remove(mainChar)
+            mainChar.terrain = None
 
 #######################################################################################
 ###

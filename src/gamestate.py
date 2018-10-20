@@ -32,6 +32,7 @@ class GameState():
         # add the main char
         self.mainChar = src.characters.Character(displayChars.main_char,3,3,automated=False,name=names.characterFirstNames[self.tick%len(names.characterFirstNames)]+" "+names.characterLastNames[self.tick%len(names.characterLastNames)],creator=void)
         self.mainChar.watched = True
+        self.mainChar.terrain = None
         mainChar = self.mainChar
 
     '''
@@ -105,7 +106,8 @@ class GameState():
                         room.addCharacter(self.mainChar,xPosition,yPosition)
                         break
             else:
-                terrain.addCharacter(self.mainChar,xPosition,yPosition)
+                if state["terrain"]:
+                    terrain.addCharacter(self.mainChar,xPosition,yPosition)
         else:
             if state["terrain"]:
                 terrain.addCharacter(self.mainChar,xPosition,yPosition)
@@ -126,8 +128,8 @@ class GameState():
             mainCharState["room"] = self.mainChar.room.id
         else:
             mainCharState["room"] = None
-        if terrain:
-            mainCharState["terrain"] = terrain.id
+        if self.mainChar.terrain:
+            mainCharState["terrain"] = self.mainChar.terrain.id
         else:
             mainCharState["terrain"] = None
         mainCharState["xPosition"] = self.mainChar.xPosition

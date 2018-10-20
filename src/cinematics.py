@@ -150,6 +150,7 @@ class MessageZoomCinematic(BasicCinematic):
     """
     def advance(self):
         super().advance()
+        mainChar.terrain = None
 
         # get the text of the message window if it wasn't retrieved yet
         if not self.text:

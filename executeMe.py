@@ -428,7 +428,7 @@ if args.load:
     shouldLoad = True
 else:
     load = input("load game? (Y/n)")
-    if load == "n":
+    if load.lower() == "n":
         shouldLoad = False
     else:
         shouldLoad = True

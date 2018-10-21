@@ -243,6 +243,7 @@ class TextCinematic(BasicCinematic):
         else:
            self.footerText = ""
         self.type = "TextCinematic"
+        self.firstRun = True
 
         """
         split a mix of strings and urwid formating into a list where each element contains exactly
@@ -288,8 +289,9 @@ class TextCinematic(BasicCinematic):
         super().advance()
 
         # do nothing if done
-        if self.position > self.endPosition:
+        if self.position > self.endPosition and not self.firstRun:
             return
+        self.firstRun = False
 
         '''
         add rusty colors to a string

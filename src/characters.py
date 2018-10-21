@@ -131,6 +131,10 @@ class Character(src.saveing.Saveable):
     bad code: is only needed because path is contained in character instead of quest
     '''
     def recalculatePath(self):
+        if not self.quests:
+            debugMessages.append("reacalucalte path without quest called")
+            self.path = []
+            return
         self.setPathToQuest(self.quests[0])
 
     '''

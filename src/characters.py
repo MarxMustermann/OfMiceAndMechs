@@ -306,6 +306,12 @@ class Character(src.saveing.Saveable):
 
         # set quests
         if "quests" in state:
+            if "removed" in state["quests"]:
+                for quest in self.quests[:]:
+                    if quest.id in state["quests"]["removed"]:
+                        quest.deactivate()
+                        quest.completed = True
+                
             self.loadFromList(state["quests"],self.quests,src.quests.getQuestFromState)
             if "questIds" in state["quests"]:
                 for quest in self.quests[:]:
@@ -315,7 +321,6 @@ class Character(src.saveing.Saveable):
                 for questId in state["quests"]["questIds"]:
                     quest = src.quests.getQuestFromState(state["quests"]["states"][questId])
                     self.quests.append(quest)
-
 
         # set chat options
         # bad code: storing the Chat options as class instead of object complicates things

@@ -437,8 +437,8 @@ if shouldLoad:
         # load the game
         loaded = gameStateObj.load()
     except Exception as e:
-        ignore = input("could not load gamestate. abort (y/n)?")
-        if ignore == "y":
+        ignore = input("error in gamestate, could not load gamestate completely. Abort and show error message? (Y/n)")
+        if not ignore.lower() == "n":
             raise e
 
 # set up the current phase

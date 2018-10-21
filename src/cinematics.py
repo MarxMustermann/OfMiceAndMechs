@@ -278,7 +278,7 @@ class TextCinematic(BasicCinematic):
             self.position = self.endPosition
 
         self.attributesToStore.extend([
-               "text","endPosition"])
+               "text","endPosition","position","rusty","autocontinue"])
 
             
     '''

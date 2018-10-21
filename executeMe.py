@@ -40,6 +40,7 @@ parser.add_argument("-m", "--music", action="store_true", help="enable music (do
 parser.add_argument("-t", "--tiles", action="store_true", help="spawn a tile based view of the map (requires pygame)")
 parser.add_argument("-ts", "--tileSize", type=int, help="the base size of tiles")
 parser.add_argument("-T", "--terrain", type=str, help="select the terrain")
+parser.add_argument("--load", action="store_true", help="load")
 args = parser.parse_args()
 
 import src.canvas as canvas
@@ -423,13 +424,22 @@ cinematics.advanceGame = advanceGame
 interaction.advanceGame = advanceGame
 
 loaded = False
-try:
-    # load the game
-    loaded = gameStateObj.load()
-except Exception as e:
-    ignore = input("could not load gamestate. abort (y/n)?")
-    if ignore == "y":
-        raise e
+if args.load:
+    shouldLoad = True
+else:
+    load = input("load game? (Y/n)")
+    if load == "n":
+        shouldLoad = False
+    else:
+        shouldLoad = True
+if shouldLoad:
+    try:
+        # load the game
+        loaded = gameStateObj.load()
+    except Exception as e:
+        ignore = input("could not load gamestate. abort (y/n)?")
+        if ignore == "y":
+            raise e
 
 # set up the current phase
 if not loaded:

@@ -118,6 +118,14 @@ class GameState():
             cinematic = cinematics.getCinematicFromState(state["cinematics"]["states"][cinematicId])
             cinematics.cinematicQueue.append(cinematic)
 
+        # generate state dict
+        import src.interaction
+        if "submenu" in state:
+            if state["submenu"]:
+                src.interaction.submenue = src.interaction.getSubmenuFromState(state["submenu"])
+            else:
+                src.interaction.submenue = None
+
     '''
     get gamestate in half serialized form
     '''
@@ -148,6 +156,11 @@ class GameState():
             cinematicStorage["states"][cinematic.id] = cinematic.getState()
 
         # generate state dict
+        import src.interaction
+        submenueState = None
+        if src.interaction.submenue:
+            submenueState = src.interaction.submenue.getState()
+
         return {  
               "currentPhase":self.currentPhase.getState(),
               "mainChar":mainCharState,
@@ -156,4 +169,5 @@ class GameState():
               "gameWon":self.gameWon,
               "cinematics":cinematicStorage,
               "void":void.getState(),
+              "submenu":submenueState
                }

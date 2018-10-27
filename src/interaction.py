@@ -2,6 +2,7 @@ import src.rooms
 import src.items
 import src.quests
 import src.canvas
+import src.saveing
 import time
 import urwid
 
@@ -670,7 +671,7 @@ def processInput(key):
 The base class for submenues offer selections
 bad code: there is redundant code from the specific submenus that should be put here
 '''
-class SubMenu(object):
+class SubMenu(src.saveing.Saveable):
     '''
     straightforward state initialization
     '''
@@ -683,6 +684,9 @@ class SubMenu(object):
         self.footerText = "press w / s to move selection up / down, press enter / j / k to select"
         self.followUp = None
         super().__init__()
+        #self.attributesToStore.extend(["state","options","selection","selectionIndex","persistentText","footerText","followUp"])
+        self.attributesToStore.extend(["state","selectionIndex","persistentText","footerText","type"])
+        self.initialState = self.getState()
 
     '''
     sets the options to select from
@@ -777,6 +781,7 @@ class SelectionMenu(SubMenu):
     set up the selection
     '''
     def __init__(self, text, options):
+        self.type = "SelectionMenu"
         super().__init__()
         self.setOptions(text, options)
 
@@ -810,6 +815,7 @@ class ChatPartnerselection(SubMenu):
     straightforward state initialization
     '''
     def __init__(self):
+        self.type = "ChatPartnerselection"
         super().__init__()
         self.subMenu = None
 
@@ -887,6 +893,7 @@ class RecruitChat(SubMenu):
     straightforward state initialization
     '''
     def __init__(self,partner):
+        self.type = "RecruitChat"
         self.state = None
         self.partner = partner
         self.firstRun = True
@@ -956,6 +963,7 @@ class ChatMenu(SubMenu):
     straightforward state initialization
     '''
     def __init__(self,partner):
+        self.type = "ChatMenu"
         self.state = None
         self.partner = partner
         self.subMenu = None
@@ -1088,6 +1096,7 @@ class DebugMenu(SubMenu):
     straightforward state initialization
     '''
     def __init__(self,char=None):
+        self.type = "DebugMenu"
         super().__init__()
         self.firstRun = True
 
@@ -1129,6 +1138,7 @@ class QuestMenu(SubMenu):
     straightforward state initialization
     '''
     def __init__(self,char=None):
+        self.type = "QuestMenu"
         self.lockOptions = True
         if not char:
             char = mainChar
@@ -1219,6 +1229,8 @@ bad code: should be abstracted
 bad code: uses global functions to render
 '''
 class InventoryMenu(SubMenu):
+    type = "InventoryMenu"
+
     '''
     show the inventory
     bad pattern: no player interaction
@@ -1246,6 +1258,7 @@ bad code: should be abstracted
 bad code: uses global function to render
 '''
 class CharacterInfoMenu(SubMenu):
+    type = "CharacterInfoMenu"
     '''
     show the attributes
     '''
@@ -1264,6 +1277,7 @@ class CharacterInfoMenu(SubMenu):
 player interaction for delegating a quest
 '''
 class AdvancedQuestMenu(SubMenu):
+    type = "AdvancedQuestMenu"
     '''
     straighforwad state initalisation
     '''
@@ -1655,6 +1669,7 @@ the help submenue
 bad code: uses global function to render
 '''
 class HelpMenu(SubMenu):
+    type = "AdvancedQuestMenu"
     '''
     show the help text
     '''
@@ -1747,4 +1762,26 @@ loop = urwid.MainLoop(frame, unhandled_input=show_or_exit)
 # kick of the interaction loop
 loop.set_alarm_in(0.2, callShow_or_exit, "lagdetection")
 loop.set_alarm_in(0.0, callShow_or_exit, "~")
+
+subMenuMap = {
+               "SelectionMenu":SelectionMenu,
+               "ChatPartnerselection":ChatPartnerselection,
+               "RecruitChat":RecruitChat,
+               "ChatMenu":ChatMenu,
+               "DebugMenu":DebugMenu,
+               "QuestMenu":QuestMenu,
+               "InventoryMenu":InventoryMenu,
+               "CharacterInfoMenu":CharacterInfoMenu,
+               "AdvancedQuestMenu":AdvancedQuestMenu,
+               "HelpMenu":HelpMenu,
+             }
+
+'''
+get item instances from dict state
+'''
+def getSubmenuFromState(state):
+    subMenu = subMenuMap[state["type"]]()
+    subMenu.setState(state)
+    loadingRegistry.register(subMenu)
+    return subMenu
 

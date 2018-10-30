@@ -816,8 +816,26 @@ class ChatPartnerselection(SubMenu):
     '''
     def __init__(self):
         self.type = "ChatPartnerselection"
-        super().__init__()
         self.subMenu = None
+        super().__init__()
+
+    def getState(self):
+        state = super().getState()
+        if self.subMenu:
+            state["subMenu"] = self.subMenu.getState()
+        else:
+            state["subMenu"] = None
+
+        return state
+    
+    def setState(self,state):
+        super().setState(state)
+
+        if "subMenu" in state:
+            if state["subMenu"]:
+                self.subMenu = getSubmenuFromState(state["subMenu"])
+            else:
+                self.subMenu = None
 
     '''
     set up the selection and spawn the chat 
@@ -962,13 +980,14 @@ class ChatMenu(SubMenu):
     '''
     straightforward state initialization
     '''
-    def __init__(self,partner):
+    def __init__(self,partner=None):
         self.type = "ChatMenu"
         self.state = None
         self.partner = partner
         self.subMenu = None
         self.skipTurn = False
         super().__init__()
+        self.objectsToStore.append("partner")
 
     '''
     show the dialog options and wrap the corresponding submenus
@@ -976,6 +995,8 @@ class ChatMenu(SubMenu):
     bad code: the dialog should be generated within the characters
     '''
     def handleKey(self, key):
+        if self.partner == None:
+           return False
         if self.partner.unconcious:
             # wake up character instead of speaking
             messages.append("wake up!")

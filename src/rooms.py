@@ -451,6 +451,7 @@ class Room(src.saveing.Saveable):
                 charState = state["charStates"][charId]
                 char = characters.Character(creator=void)
                 char.setState(charState)
+                loadingRegistry.register(char)
                 self.addCharacter(char,charState["xPosition"],charState["yPosition"])
 
         # add new events

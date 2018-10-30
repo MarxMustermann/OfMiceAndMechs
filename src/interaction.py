@@ -683,10 +683,58 @@ class SubMenu(src.saveing.Saveable):
         self.persistentText = ""
         self.footerText = "press w / s to move selection up / down, press enter / j / k to select"
         self.followUp = None
+        import collections
+        self.options = collections.OrderedDict()
+        self.niceOptions = collections.OrderedDict()
         super().__init__()
         #self.attributesToStore.extend(["state","options","selection","selectionIndex","persistentText","footerText","followUp"])
-        self.attributesToStore.extend(["state","selectionIndex","persistentText","footerText","type"])
+        self.attributesToStore.extend(["state","selectionIndex","persistentText","footerText","type","query","lockOptions"])
         self.initialState = self.getState()
+
+    def setState(self,state):
+        super().setState(state)
+
+        if "options" in state:
+            if state["options"] == None:
+                self.options = None
+            else:
+                import collections
+                newOptions = collections.OrderedDict()
+                for option in state["options"]:
+                    newOptions[option[0]] = option[1]
+                self.options = newOptions
+
+        if "niceOptions" in state:
+            if state["niceOptions"] == None:
+                self.niceOptions = None
+            else:
+                import collections
+                newNiceOptions = collections.OrderedDict()
+                for option in state["niceOptions"]:
+                    newNiceOptions[option[0]] = option[1]
+                self.niceOptions = newNiceOptions
+        
+    def getState(self):
+        state = super().getState()
+
+        if self.options == None:
+            serialisedOptions = None
+        else:
+            serialisedOptions = []
+            for k,v in self.options.items():
+                serialisedOptions.append((k,str(v)))
+        state["options"] = serialisedOptions
+           
+        if self.niceOptions == None:
+            serialisedOptions = None
+        else:
+            serialisedOptions = []
+            for k,v in self.niceOptions.items():
+                serialisedOptions.append((k,str(v)))
+        state["niceOptions"] = serialisedOptions
+           
+        return state
+
 
     '''
     sets the options to select from
@@ -1036,7 +1084,7 @@ class ChatMenu(SubMenu):
             self.state = "mainOptions"
             self.selection = None
             self.lockOptions = True
-            self.options = []
+            self.chatOptions = []
 
         # display greetings
         if self.state == None:

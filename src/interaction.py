@@ -1037,6 +1037,24 @@ class ChatMenu(SubMenu):
         super().__init__()
         self.objectsToStore.append("partner")
 
+    def getState(self):
+        state = super().getState()
+        if self.subMenu:
+            state["subMenu"] = self.subMenu.getState()
+        else:
+            state["subMenu"] = None
+
+        return state
+    
+    def setState(self,state):
+        super().setState(state)
+
+        if "subMenu" in state:
+            if state["subMenu"]:
+                self.subMenu = getSubmenuFromState(state["subMenu"])
+            else:
+                self.subMenu = None
+
     '''
     show the dialog options and wrap the corresponding submenus
     bad code: showing the messages should be handled in __init__ or a setup method

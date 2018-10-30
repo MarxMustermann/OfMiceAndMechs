@@ -376,33 +376,6 @@ cinematics.mainChar = gameStateObj.mainChar
 quests.mainChar = gameStateObj.mainChar
 chats.mainChar = gameStateObj.mainChar
 
-# set up the splash screen
-if not args.debug:
-    text = """
-
-     OOO FFF          AAA N N DD
-     O O FF   mice    AAA NNN D D
-     OOO F            A A N N DD
-
-
-
-     MMM   MMM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
-     MMMM MMMM  EE      CC      HH   HH  SS
-     MM MMM MM  EEEE    CC      HHHHHHH  SSSSSSS
-     MM  M  MM  EEEE    CC      HHHHHHH  SSSSSSS
-     MM     MM  EE      CC      HH   HH        S
-     MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
-
-
-        - a pipedream 
-
-"""
-    openingCinematic = cinematics.TextCinematic(text,rusty=True,scrolling=True,creator=void)
-    cinematics.cinematicQueue.append(openingCinematic)
-    gameStateObj.openingCinematic = openingCinematic
-else:
-    gameStateObj.openingCinematic = None
-
 ##################################################################################################################################
 ###
 ##        the main loop
@@ -442,9 +415,37 @@ if shouldLoad:
         if not ignore.lower() == "n":
             raise e
 
+# set up the splash screen
+if not args.debug and not interaction.submenue:
+    text = """
+
+     OOO FFF          AAA N N DD
+     O O FF   mice    AAA NNN D D
+     OOO F            A A N N DD
+
+
+
+     MMM   MMM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
+     MMMM MMMM  EE      CC      HH   HH  SS
+     MM MMM MM  EEEE    CC      HHHHHHH  SSSSSSS
+     MM  M  MM  EEEE    CC      HHHHHHH  SSSSSSS
+     MM     MM  EE      CC      HH   HH        S
+     MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
+
+
+        - a pipedream
+
+"""
+    openingCinematic = cinematics.TextCinematic(text,rusty=True,scrolling=True,creator=void)
+    cinematics.cinematicQueue.insert(0,openingCinematic)
+    gameStateObj.openingCinematic = openingCinematic
+else:
+    gameStateObj.openingCinematic = None
+
 # set up the current phase
 if not loaded:
     gameStateObj.currentPhase.start()
+
 
 # bad code: loading registry should be cleared
 

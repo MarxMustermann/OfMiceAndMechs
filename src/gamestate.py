@@ -34,6 +34,7 @@ class GameState():
         self.mainChar.watched = True
         self.mainChar.terrain = None
         mainChar = self.mainChar
+        self.openingCinematic = None
 
     '''
     save the gamestate to disc

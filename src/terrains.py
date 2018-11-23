@@ -1256,8 +1256,11 @@ class Terrain(src.saveing.Saveable):
         (characterIds,chracterStates) = self.storeStateList(self.characters,exclude=exclude)
 
         toTransport = []
-        for item in self.toTransport:
-            toTransport.append((item[0].id,(item[1][0],item[1][1])))
+        try:
+            for item in self.toTransport:
+                toTransport.append((item[0].id,(item[1][0],item[1][1])))
+        except:
+            pass
 
         # generate state
         return {

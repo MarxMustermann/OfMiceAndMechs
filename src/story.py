@@ -216,7 +216,9 @@ class OpenWorld(BasicPhase):
                   "DrinkQuest",
                   "CollectQuestMeta",
                   "FireFurnaceMeta",
-                  "ExamineQuest"
+                  "ExamineQuest",
+                  "NaiveDropQuest",
+                  "DropQuestMeta",
               ]
 
         mainChar.solvers = [
@@ -233,6 +235,9 @@ class OpenWorld(BasicPhase):
                   "FireFurnaceMeta",
                   "CollectQuestMeta",
                   "WaitQuest"
+                  "NaiveDropQuest",
+                  "NaiveDropQuest",
+                  "DropQuestMeta",
                 ]
 
         gamestate.save()

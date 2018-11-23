@@ -204,7 +204,7 @@ class OpenWorld(BasicPhase):
             mainChar.xPosition = 2
             mainChar.yPosition = 4
             mainChar.terrain = terrain
-            terrain.addCharacter(mainChar)
+            terrain.addCharacter(mainChar,2,4)
         gamestate.save()
 
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

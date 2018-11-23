@@ -1370,7 +1370,7 @@ U  U
                     if toSkip:
                         continue
 
-                    self.testItems.append(src.items.Scrap(x,y,counter))
+                    self.testItems.append(src.items.Scrap(x,y,counter,creator=creator))
                     counter += 1
                     if counter == 16:
                         counter = 1
@@ -1380,7 +1380,7 @@ U  U
                 for y in range(yRange[0],yRange[1]):
                     if x%modulos[0] and y%modulos[1] or (not x%modulos[2] and not x%modulos[3]) or x%modulos[4] or not y%modulos[5]:
                         continue
-                    self.testItems.append(itemType(x,y))
+                    self.testItems.append(itemType(x,y,creator=creator))
 
         counter = 3
         counter = addPseudoRandomScrap(counter,(20,30),(30,110),((2,3),(3,2),(4,5),(5,4)))
@@ -1398,7 +1398,7 @@ U  U
         self.addItems(self.testItems)
 
         # add base of operations
-        self.wakeUpRoom = src.rooms.MiniBase(0,4,0,0)
+        self.wakeUpRoom = src.rooms.MiniBase(0,4,0,0,creator=creator)
         self.addRooms([self.wakeUpRoom])
 
 '''

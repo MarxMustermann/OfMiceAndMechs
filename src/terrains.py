@@ -1221,8 +1221,11 @@ class Terrain(src.saveing.Saveable):
         (charStates,changedCharList,newCharList,removedCharList) = self.getDiffList(self.characters,self.initialState["characterIds"],exclude=exclude)
 
         toTransport = []
-        for item in self.toTransport:
-            toTransport.append((item[0].id,(item[1][0],item[1][1])))
+        try:
+            for item in self.toTransport:
+                toTransport.append((item[0].id,(item[1][0],item[1][1])))
+        except:
+            pass
 
 
         # generate state dict
@@ -1314,12 +1317,12 @@ class Nothingness(Terrain):
             for y in range(0,120):
                 item = None
                 if not x%23 and not y%35 and not (x+y)%5:
-                    item = src.items.Scrap(x,y,1)
+                    item = src.items.Scrap(x,y,1,creator=creator)
                 if not x%57 and not y%22 and not (x+y)%3:
-                    item = src.items.Item(displayChars.foodStuffs[((2*x)+y)%6],x,y)
+                    item = src.items.Item(displayChars.foodStuffs[((2*x)+y)%6],x,y,creator=creator)
                     item.walkable = True
                 if not x%19 and not y%27 and not (x+y)%4:
-                    item = src.items.Item(displayChars.foodStuffs[((2*x)+y)%6],x,y)
+                    item = src.items.Item(displayChars.foodStuffs[((2*x)+y)%6],x,y,creator=creator)
                     item.walkable = True
                 if item:
                     self.testItems.append(item)

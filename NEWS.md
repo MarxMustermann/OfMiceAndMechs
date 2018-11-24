@@ -1,5 +1,21 @@
 # news
 
+### commit 1100-1202
+
+The commits were focused on making th save/load system work. 
+
+* some fixes for user-reported bugfixes (thanks for reporting the bugs)
+* added submenues tho save system
+* changed registry so no double instantiation happens
+* handled splashscreen when saving
+* added interaction for loading when starting the game 
+* fixed bugs resulting from the save system
+* changed internal code structures to allow for serialization/saving
+* extended use of the Saveable object
+* saved more attributes for many things
+* made story saveable
+* added saving for characters and events
+
 ### commit 1000-1099
 
 These commits were a bugfix/code enhancement round. 

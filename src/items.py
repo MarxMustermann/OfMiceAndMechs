@@ -1452,10 +1452,11 @@ class ProductionArtwork(Item):
     '''
     def produce(self,itemType,resultType=None):
         metalBar = None
-        for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
-            if isinstance(item,MetalBars):
-                metalBar = item
-                break
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                if isinstance(item,MetalBars):
+                   metalBar = item
+                   break
         
         if not metalBar:
             # refuse production without ressources

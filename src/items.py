@@ -1495,6 +1495,7 @@ class ScrapCompactor(Item):
         for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
             if isinstance(item,Scrap):
                 scrap = item
+                break
 
         if not scrap:
             # refuse to produce without ressources

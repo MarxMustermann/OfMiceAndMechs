@@ -30,7 +30,7 @@ class Character(src.saveing.Saveable):
         super().__init__()
 
         # set basic state
-        self.display = display # bad code: the character should have a rendering+chaching caching method instead of attrbute
+        self.display = display # bad code: the character should have a rendering+caching method instead of attribute
         self.automated = automated
         self.quests = []
         self.name = name
@@ -53,6 +53,12 @@ class Character(src.saveing.Saveable):
         self.displayOriginal = display
         self.isMilitary = False
         self.hasFloorPermit = True
+        # bad code: this approach is fail, but works for now. There has to be a better way
+        self.basicChatOptions = []
+        self.questsDone = []
+        self.solvers = []
+
+        # generate the id for this object
         if characterId:
             self.id = characterId
         else:
@@ -65,6 +71,7 @@ class Character(src.saveing.Saveable):
             self.id["creator"] = creator.id
             self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
 
+        # mark attributes for saving
         self.attributesToStore.extend([
                "gotBasicSchooling","gotMovementSchooling","gotInteractionSchooling","gotExamineSchooling",
                "xPosition","yPosition","name","satiation","unconcious","reputation","tutorialStart",
@@ -80,24 +87,21 @@ class Character(src.saveing.Saveable):
         self.gotInteractionSchooling = False
         self.gotExamineSchooling = False
 
-        # bad code: this approach is fail, but works for now. There has to be a better way
-        self.basicChatOptions = []
-
-        self.questsDone = []
-        self.solvers = []
-
-        # default quests
+        # add default quests
         self.assignQuest(src.quests.SurviveQuest(creator=self))
         for quest in quests:
             self.assignQuest(quest)
 
-        # default items
+        # add default items
         self.inventory.append(src.items.GooFlask(creator=self))
 
         # save state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
+    """
+    the object the character is in. Either room or terrain
+    """
     @property
     def container(self):
         if self.room:
@@ -106,7 +110,7 @@ class Character(src.saveing.Saveable):
             return self.terrain
 
     '''
-    proxy room quest when asked for a job
+    get a quest from the character (proxies room quest queue)
     '''
     def getQuest(self):
         if self.room and self.room.quests:
@@ -119,11 +123,14 @@ class Character(src.saveing.Saveable):
     ensures that the events are added in proper order
     '''
     def addEvent(self,event):
+        # get the position for this event
         index = 0
         for existingEvent in self.events:
             if event.tick < existingEvent.tick:
                 break
             index += 1
+
+        # add event at proper position
         self.events.insert(index,event)
 
     '''
@@ -131,14 +138,17 @@ class Character(src.saveing.Saveable):
     bad code: is only needed because path is contained in character instead of quest
     '''
     def recalculatePath(self):
+        # log impossible state
         if not self.quests:
-            debugMessages.append("reacalucalte path without quest called")
+            debugMessages.append("reacalculate path called without quests")
             self.path = []
             return
+
+        # reset path
         self.setPathToQuest(self.quests[0])
 
     '''
-    straightforward removeing of events from the characters event queue
+    straightforward removing of events from the characters event queue
     '''
     def removeEvent(self,event):
         self.events.remove(event)
@@ -148,26 +158,34 @@ class Character(src.saveing.Saveable):
     # bad code: adds default chat options
     '''
     def getChatOptions(self,partner):
+        # get the usual chat options
         chatOptions = self.basicChatOptions[:]
+
+        # add chat for recruitment
         if not self in partner.subordinates:
             chatOptions.append(interaction.RecruitChat)
             pass
+
         return chatOptions
 
     '''
     get the changes in state since creation
     '''
     def getDiffState(self):
-        # the to be result
+        # fetch the basic result
         result = super().getDiffState()
 
         # save path
         if not self.path == self.initialState["path"]:
             result["path"] = self.path
+
+        # save solvers
+        # bad code: should be saveable as attribute
         result["questsDone"] = self.questsDone
         result["solvers"] = self.solvers
 
         # save inventory
+        # bad code: should be abstracted
         (itemStates,changedItems,newItems,removedItems) = self.getDiffList(self.inventory,self.initialState["inventory"]["inventoryIds"])
         inventory = {}
         if changedItems:
@@ -182,6 +200,7 @@ class Character(src.saveing.Saveable):
             result["inventory"] = inventory
 
         # save quests
+        # bad code: should be abstracted
         (questStates,changedQuests,newQuests,removedQuests) = self.getDiffList(self.quests,self.initialState["quests"]["questIds"])
         quests = {}
         if changedQuests:
@@ -196,6 +215,7 @@ class Character(src.saveing.Saveable):
             result["quests"] = quests
 
         # store events diff
+        # bad code: should be abstracted
         (eventStates,changedEvents,newEvents,removedEvents) = self.getDiffList(self.events,self.initialState["eventIds"])
         if changedEvents:
             result["changedEvents"] = changedEvents
@@ -208,6 +228,7 @@ class Character(src.saveing.Saveable):
 
         # save chat options
         # bad code: storing the Chat options as class instead of object complicates things
+        # bad code: probably broken
         chatOptions = []
         for chat in self.basicChatOptions:
             if not isinstance(chat,dict):
@@ -232,8 +253,10 @@ class Character(src.saveing.Saveable):
     getter for the players state
     '''
     def getState(self):
+        # fetch base state
         state = super().getState()
 
+        # add simple structures
         state.update({ 
                  "inventory": {},
                  "quests": {},
@@ -251,7 +274,6 @@ class Character(src.saveing.Saveable):
         # store quests
         questIds = []
         questStates = {}
-
         for quest in self.quests:
             questIds.append(quest.id)
             questStates[quest.id] = quest.getState()
@@ -264,6 +286,7 @@ class Character(src.saveing.Saveable):
 
         # store serve quest
         # bad code: storing the Chat options as class instead of object complicates things
+        # bad code: probably broken
         chatOptions = []
         for chat in self.basicChatOptions:
             if not isinstance(chat,dict):
@@ -288,9 +311,10 @@ class Character(src.saveing.Saveable):
     setter for the players state
     '''
     def setState(self,state):
+        # set basic state
         super().setState(state)
 
-        # set uncoincious state
+        # set unconcious state
         if "unconcious" in state:
             if self.unconcious:
                 self.fallUnconcious()
@@ -299,6 +323,9 @@ class Character(src.saveing.Saveable):
         # set path
         if "path" in state:
             self.path = state["path"]
+        
+        # set quest related meta information
+        # bad code: should be possible set attribute
         if "questsDone" in state:
             self.questsDone = state["questsDone"]
         if "solvers" in state:
@@ -310,24 +337,34 @@ class Character(src.saveing.Saveable):
 
         # set quests
         if "quests" in state:
+
+            # deactivate the quest that will be removed later
             if "removed" in state["quests"]:
                 for quest in self.quests[:]:
                     if quest.id in state["quests"]["removed"]:
                         quest.deactivate()
                         quest.completed = True
                 
+            # load quests using the saving class
             self.loadFromList(state["quests"],self.quests,src.quests.getQuestFromState)
+
+            # load a fixed set of quests
             if "questIds" in state["quests"]:
+
+                # tear down current quests
                 for quest in self.quests[:]:
                     quest.deactivate()
                     quest.completed = True
                     self.quests.remove(quest)
+
+                # add new quests
                 for questId in state["quests"]["questIds"]:
                     quest = src.quests.getQuestFromState(state["quests"]["states"][questId])
                     self.quests.append(quest)
 
         # set chat options
         # bad code: storing the Chat options as class instead of object complicates things
+        # bad code: probably broken
         if "chatOptions" in state:
             chatOptions = []
             for chatType in state["chatOptions"]:
@@ -399,7 +436,7 @@ class Character(src.saveing.Saveable):
 
     '''
     set the path to a quest
-    bad pattern: this should be determined by a quests solver
+    bad pattern: path should be determined by a quests solver
     bad pattern: the walking should be done in a quest solver so this method should removed on the long run
     '''
     def setPathToQuest(self,quest):
@@ -422,7 +459,7 @@ class Character(src.saveing.Saveable):
         self.inventory.append(item)
 
     '''
-    this wrapper converts a character centred call to a solver centered call
+    this wrapper converts a character centered call to a solver centered call
     bad code: should be handled in quest
     '''
     def applysolver(self,solver):
@@ -468,10 +505,12 @@ class Character(src.saveing.Saveable):
 
         # set attributes
         self.dead = True
-        self.changed("died",{"character":self,"corpse":corpse,"reason":reason})
         if reason:
             self.deathReason = reason
         self.path = []
+
+        # notify listeners
+        self.changed("died",{"character":self,"corpse":corpse,"reason":reason})
 
         # notify listeners
         self.changed()
@@ -485,7 +524,7 @@ class Character(src.saveing.Saveable):
     bad pattern: should be contained in quest solver
     '''
     def walkPath(self):
-        # bad code: a dead charactor should not try to walk
+        # bad code: a dead character should not try to walk
         # bad pattern: this should log
         if self.dead:
             return
@@ -500,11 +539,14 @@ class Character(src.saveing.Saveable):
         if not (self.path and not self.path == [currentPosition]):
             return True
 
+        # get next step
         nextPosition = self.path[0]
 
         item = None
+        # try to move within a room
         if self.room:
             # move naively within a room
+            # bad code: confusing logic for simple task
             if nextPosition[0] == currentPosition[0]:
                 if nextPosition[1] < currentPosition[1]:
                     item = self.room.moveCharacterDirection(self,"north")
@@ -532,21 +574,26 @@ class Character(src.saveing.Saveable):
                     self.changed()
                 else:
                     debugMessages.append("character moved on non continious path")
+        # try to move within a terrain
         else:
             # check if a room was entered
-            # basically checks if a walkable space/door within a room on the coordinate the chracter walks on. If there is
-            # an item it will be saved for interaction
+            # basically checks if a walkable space/door is within a room on the coordinate the character walks on. If there is something in the way, an item it will be saved for interaction.
             # bad pattern: collision detection and room teleportation should be done in terrain
 
             for room in self.terrain.rooms:
+                """
+                helper function to move a character into a direction
+                """
                 def moveCharacter(localisedEntry,direction):
                     if localisedEntry in room.walkingAccess:
-                        # check whether the chracter walked into something
+
+                        # check whether the character walked into something
                         if localisedEntry in room.itemByCoordinates:
                             for listItem in room.itemByCoordinates[localisedEntry]:
                                 if not listItem.walkable:
                                     return listItem
-                        # move the chracter into the room
+
+                        # teleport the chracter into the room
                         room.addCharacter(self,localisedEntry[0],localisedEntry[1])
                         self.terrain.characters.remove(self)
                         self.terrain = None
@@ -559,27 +606,32 @@ class Character(src.saveing.Saveable):
                         return
 
                 # handle the character moving into the rooms boundaries
+                # bad code: repetitive, confusing code
                 # check north
                 if room.yPosition*15+room.offsetY+room.sizeY == nextPosition[1]+1:
                     if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+room.sizeX > self.xPosition:
+                        # try to move character
                         localisedEntry = (self.xPosition%15-room.offsetX,nextPosition[1]%15-room.offsetY)
                         item = moveCharacter(localisedEntry,"north")
                         break
                 # check south
                 if room.yPosition*15+room.offsetY == nextPosition[1]:
                     if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+room.sizeX > self.xPosition:
+                        # try to move character
                         localisedEntry = ((self.xPosition-room.offsetX)%15,((nextPosition[1]-room.offsetY)%15))
                         item = moveCharacter(localisedEntry,"south")
                         break
                 # check east
                 if room.xPosition*15+room.offsetX+room.sizeX == nextPosition[0]+1:
                     if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+room.sizeY > self.yPosition:
+                        # try to move character
                         localisedEntry = ((nextPosition[0]-room.offsetX)%15,(self.yPosition-room.offsetY)%15)
                         item = moveCharacter(localisedEntry,"east")
                         break
                 # check west
                 if room.xPosition*15+room.offsetX == nextPosition[0]:
                     if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+room.sizeY > self.yPosition:
+                        # try to move character
                         localisedEntry = ((nextPosition[0]-room.offsetX)%15,(self.yPosition-room.offsetY)%15)
                         item = moveCharacter(localisedEntry,"west")
                         break
@@ -589,14 +641,16 @@ class Character(src.saveing.Saveable):
                 self.yPosition = nextPosition[1]
                 self.changed()
             
+        # handle bumping into an item
         if item:
             # open doors
             # bad pattern: this should not happen here
             if isinstance(item,src.items.Door):
                 item.apply(self)
             return False
+
+        # smooth over impossible state
         else:
-            # smooth over impossible state
             if not debug:
                 if not self.path or not nextPosition == self.path[0]:
                     return False
@@ -610,7 +664,10 @@ class Character(src.saveing.Saveable):
     almost straightforward dropping of items
     """
     def drop(self,item):
+        # remove item from inventory
         self.inventory.remove(item)
+
+        # add item to floor
         item.xPosition = self.xPosition
         item.yPosition = self.yPosition
         # bad pattern: room and terrain should be combined into a container object
@@ -618,6 +675,8 @@ class Character(src.saveing.Saveable):
             self.room.addItems([item])
         else:
             self.terrain.addItems([item])
+
+        # notify listener
         item.changed()
         self.changed()
 
@@ -625,9 +684,12 @@ class Character(src.saveing.Saveable):
     examine an item
     """
     def examine(self,item):
+        # print info
         messages.append(item.description)
         if item.description != item.getDetailedInfo():
             messages.append(item.getDetailedInfo())
+
+        # notify listeners
         self.changed("examine",item)
 
     """
@@ -644,7 +706,7 @@ class Character(src.saveing.Saveable):
         while self.events and gamestate.tick == self.events[0].tick:
             event = self.events[0]
             event.handleEvent()
-            if event in self.events:
+            if event in self.events: # bad code: this check should be unneccessary
                 self.events.remove(event)
 
         # handle satiation
@@ -660,11 +722,11 @@ class Character(src.saveing.Saveable):
                 self.changed()
 
     '''
-    registering for notifications
+    register for notifications
     '''
     def addListener(self,listenFunction,tag="default"):
         # create container if container doesn't exist
-        # bad performace: string comparison, should use enums
+        # bad performace: string comparison, should use enums. Is this slow in python?
         if not tag in self.listeners:
             self.listeners[tag] = []
 
@@ -673,7 +735,7 @@ class Character(src.saveing.Saveable):
             self.listeners[tag].append(listenFunction)
 
     '''
-    deregistering for notifications
+    deregister for notifications
     '''
     def delListener(self,listenFunction,tag="default"):
         # remove listener
@@ -690,9 +752,11 @@ class Character(src.saveing.Saveable):
     bad code: probably misnamed
     '''
     def changed(self,tag="default",info=None):
+        # do nothing if nobody listens
         if not tag in self.listeners:
             return
 
+        # call each listener
         for listenFunction in self.listeners[tag]:
             if info == None:
                 listenFunction()
@@ -715,6 +779,8 @@ class Mouse(Character):
     disapear
     '''
     def vanish(self):
+        # remove self from map
+        # bad code: should be abstracted
         if self.room:
             self.room.removeCharacter(self)
         else:

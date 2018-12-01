@@ -488,18 +488,11 @@ class Character(src.saveing.Saveable):
     '''
     def die(self,reason=None):
         # replace character with corpse
-        # bad code: terain and room should be unified in container object
-        # bad code: redundant code
-        if self.room:
-            room = self.room
-            room.removeCharacter(self)
+        if self.container:
+            self.container.removeCharacter(self)
             corpse = src.items.Corpse(self.xPosition,self.yPosition,creator=self)
-            room.addItems([corpse])
-        elif self.terrain:
-            terrain = self.terrain
-            terrain.removeCharacter(self)
-            corpse = src.items.Corpse(self.xPosition,self.yPosition,creator=self)
-            terrain.addItems([corpse])
+            self.container.addItems([corpse])
+        # log impossible state
         else:
             debugMessages.append("this should not happen, character died without beeing somewhere ("+str(self)+")")
 
@@ -670,11 +663,7 @@ class Character(src.saveing.Saveable):
         # add item to floor
         item.xPosition = self.xPosition
         item.yPosition = self.yPosition
-        # bad pattern: room and terrain should be combined into a container object
-        if self.room:
-            self.room.addItems([item])
-        else:
-            self.terrain.addItems([item])
+        self.container.addItems([item])
 
         # notify listener
         item.changed()
@@ -780,9 +769,5 @@ class Mouse(Character):
     '''
     def vanish(self):
         # remove self from map
-        # bad code: should be abstracted
-        if self.room:
-            self.room.removeCharacter(self)
-        else:
-            self.terrain.removeCharacter(self)
+        self.container.removeCharacter(self)
         self.vanished = True

@@ -61,14 +61,14 @@ class BasicCinematic(src.saveing.Saveable):
         return False
 
     '''
-    do nothing
+    set aborted flag
     '''
     def abort(self):
         self.aborted = True
         pass
 
 """
-this is a single use cinematic basically. It flashes some info too fast to read to sybolise information transfer to the implant
+this is a single use cinematic basically. It flashes some info too fast to read in order to symbolise information transfer to the implant
 bad code: should be abstracted and called with a parameter instead of single use special class
 """
 class InformationTransfer(BasicCinematic):
@@ -92,8 +92,11 @@ class InformationTransfer(BasicCinematic):
     def advance(self):
         super().advance()
 
+        # bad code: if/else structure is not needed
+
+        # show the information
         if self.position < len(self.information):
-            # show the current information
+            # show the current piece of information
             header.set_text(self.information[self.position][0])
             main.set_text(self.information[self.position][1]) 
 
@@ -101,6 +104,8 @@ class InformationTransfer(BasicCinematic):
             self.position += 1
             self.alarm = loop.set_alarm_in(0.2, callShow_or_exit, '~')
             return False
+
+        # show the information
         elif not self.triggered:
             # show final message and wait for input
             self.footerText = "press space to proceed"
@@ -122,10 +127,11 @@ class InformationTransfer(BasicCinematic):
         try: 
             loop.remove_alarm(self.alarm)
         except:
+            # bad code: should log
             pass
     
 """
-this is a single use cinematic that collapses a full screen message display into the in game message window
+this is a single use cinematic that collapses a full screen message display into the in-game message window
 bad code: this should be abstracted to have a zoom in/out for various things like the quest menu
 """
 class MessageZoomCinematic(BasicCinematic):
@@ -167,6 +173,7 @@ class MessageZoomCinematic(BasicCinematic):
             return False
 
         # add borders to the text
+        # bad code: design elements should be in config
         textWithDeco = ""
         for line in self.text:
             textWithDeco += " "*self.left+"┃ "+line+"\n"
@@ -175,28 +182,31 @@ class MessageZoomCinematic(BasicCinematic):
         textWithDeco += " "*self.left+"┗"+"━"*(self.right-1)
 
         # reduce the size till the border fits the message boxes borders
-        # bad code: the dimension of the message box is calculated based on assumtions. Size should be asked from the message box
+        # bad code: the dimension of the message box is calculated based on assumptions. Size should be asked from the message box
         header.set_text(textWithDeco)
         main.set_text("")
         questWidth = (self.screensize[0]//3)*2+4
+        # shrink X axis
         if self.right > questWidth:
+            # fast shrinking
             if self.right > questWidth+5:
-                # fast shrinking
                 self.left += 2
                 self.right -= 2
+            # slow shrinking
             else:
-                # slow shrinking
                 self.left += 1
                 self.right -= 1
+        # shrink Y axis
         if self.top > 7:
             self.top -= 1
             self.bottom += 1
 
         # stop when done
         if not self.right > questWidth and not self.top > 8:
-            # wait for some time and stop the cinematic
+            # wait for some time
             if self.turnOffCounter:
                 self.turnOffCounter -= 1
+            # stop the cinematic
             else:
                 self.alarm = loop.set_alarm_in(0.2, callShow_or_exit, ' ')
                 self.skipable = True
@@ -215,6 +225,7 @@ class MessageZoomCinematic(BasicCinematic):
         try: 
             loop.remove_alarm(self.alarm)
         except:
+            # bad code: should log
             pass
         
         # trigger follow up functions
@@ -238,12 +249,14 @@ class TextCinematic(BasicCinematic):
         self.endTrigger = None
         self.rusty = rusty
         self.autocontinue = autocontinue
+        self.type = "TextCinematic"
+        self.firstRun = True
+
+        # add interaction instructions
         if not rusty:
            self.footerText = "press any key to speed up cutscene (not space)"
         else:
            self.footerText = ""
-        self.type = "TextCinematic"
-        self.firstRun = True
 
         """
         split a mix of strings and urwid formating into a list where each element contains exactly
@@ -251,24 +264,28 @@ class TextCinematic(BasicCinematic):
         bad code: this should not be an inline function but accessible as a helper
         """
         def flattenToPeseudoString(urwidText):
+
+            # split strings
             if isinstance(urwidText,str):
-                # split strings
                 return list(urwidText)
+
+            # recursively handle list items
             elif isinstance(urwidText,list):
-                # recursively handle list items
                 result = []
                 for item in urwidText:
                     result.extend(flattenToPeseudoString(item))
                 return result
+
+            # resolve references
             elif isinstance(urwidText,int):
-                # resolve references
                 result = flattenToPeseudoString(displayChars.indexedMapping[urwidText][1])
                 return result
+            
+            # handle formatters
             else:
-                # handle formatters
                 result = []
                 for item in flattenToPeseudoString(urwidText[1]):
-                    #result.append((urwidText[0],item)) 
+                    #result.append((urwidText[0],item)) # bad code: commented out code
                     result.append(item) # bad code: nukes all the pretty colors
                 return result
 
@@ -278,9 +295,9 @@ class TextCinematic(BasicCinematic):
         if not scrolling:
             self.position = self.endPosition
 
+        # add meta information for saving
         self.attributesToStore.extend([
                "text","endPosition","position","rusty","autocontinue"])
-
             
     '''
     render and advance the state
@@ -307,16 +324,17 @@ class TextCinematic(BasicCinematic):
                     converted.append((urwid.AttrSpec(colours[counter*7%5],'default'),char))
             return converted
 
+        # scroll the text in char by char
         if self.position < self.endPosition:
-            # scroll the text in char by char
             baseText = self.text[0:self.position]
             if isinstance(self.text[self.position],str) and self.text[self.position] in ("\n"):
                 self.alarm = loop.set_alarm_in(0.5, callShow_or_exit, '~')
             else:
                 self.alarm = loop.set_alarm_in(0.05, callShow_or_exit, '~')
             addition = ""
+
+        # show the complete text
         else:
-            # show the complete text
             baseText = self.text
             self.skipable = True
             if not self.autocontinue:
@@ -349,6 +367,7 @@ class TextCinematic(BasicCinematic):
         try: 
             loop.remove_alarm(self.alarm)
         except:
+            # bad code: should log
             pass
 
         # trigger follow up actions
@@ -368,10 +387,10 @@ class ShowQuestExecution(BasicCinematic):
 
         super().__init__(creator=creator)
 
+        # set meta information for saving
         self.objectsToStore.append("assignTo")
         self.objectsToStore.append("container")
         self.attributesToStore.append("wasSetup")
-
 
         self.quest = quest
         self.endTrigger = None
@@ -417,8 +436,10 @@ class ShowQuestExecution(BasicCinematic):
 
         # get quest related attributes
         if self.quest.character:
+            # store reference
             state["quest"] = self.quest.id
         else:
+            # store state
             state["quest"] = self.quest.getState()
         return state
 
@@ -450,7 +471,7 @@ class ShowQuestExecution(BasicCinematic):
             self.skipable = True
             return True
 
-        # do the quest
+        # do one step
         advanceGame()
 
         # trigger next state
@@ -520,7 +541,7 @@ class ShowGameCinematic(BasicCinematic):
         # advance the game
         advanceGame()
 
-        #trigger next step
+        # trigger next step
         self.turns -= 1
         if self.tickSpan:
             loop.set_alarm_in(self.tickSpan, callShow_or_exit, '.')
@@ -547,6 +568,9 @@ class ShowGameCinematic(BasicCinematic):
 triggers a chat
 '''
 class ChatCinematic(BasicCinematic):
+    '''
+    create submenue
+    '''
     def __init__(self,creator=None):
         super().__init__(creator=creator)
 
@@ -591,6 +615,7 @@ class SelectionCinematic(BasicCinematic):
         self.submenue= None
         self.type = "SelectionCinematic"
 
+        # add meta information for saving
         self.attributesToStore.append("text")
 
     '''

@@ -26,9 +26,14 @@ class RewardChat(src.interaction.SubMenu):
     def handleKey(self, key):
         self.persistentText = "here is your reward"
         self.set_text(self.persistentText)
+		
+		# bad code: calling solver directly seems like a bad idea
         self.quest.getQuest.solver(self.character)
+
+        # bad code: this is propably needed but this comes out of nowhere
         if self.quest.moveQuest:
             self.quest.moveQuest.postHandler()
+
         self.done = True
         return True
 
@@ -43,6 +48,7 @@ class RewardChat(src.interaction.SubMenu):
 '''
 the chat to proof the player is able to chat
 bad code: story specific
+bad code: naming
 '''
 class FirstChat(src.interaction.SubMenu):
     id = "FirstChat"
@@ -69,6 +75,7 @@ class FirstChat(src.interaction.SubMenu):
     show the dialog for one keystroke
     '''
     def handleKey(self, key):
+        # do all activity on the first run
         if self.firstRun:
             # show fluffed up information
             self.persistentText = "indeed.\n\nI am "+self.firstOfficer.name+" and do the acceptance tests. This means i order you to do some things and you will comply.\n\nYour implant will store the orders given. When you press q you will get a list of your current orders. Try to get familiar with the implant,\nit is an important tool for keeping things in order.\n\nDo not mind that the tests seem somewhat without purpose, protocol demands them and after you complete the test you will serve as an hooper on the Falkenbaum."
@@ -77,24 +84,31 @@ class FirstChat(src.interaction.SubMenu):
             self.set_text(self.persistentText)
 
             # remove chat option
-            # bad code: this removal results in bugs if to chats of the same type exist
+            # bad code: this removal results in bugs if chats of the same type exist
             # bad pattern: chat option stored as references to class complicates this
             for item in self.firstOfficer.basicChatOptions:
+
+			    # check class notation
                 if not isinstance(item,dict):
                     if item == FirstChat:
                         toRemove = item
                         break
+
+			    # check dictionary notation
                 else:
                     if item["chat"] == FirstChat:
                         toRemove = item
                         break
+			# remove item
             self.firstOfficer.basicChatOptions.remove(toRemove)
 
             # trigger further action
             self.phase.examineStuff()
+
             return False
+
+        # finish Chat
         else:
-            # finish
             self.done = True
             return True
 
@@ -131,22 +145,31 @@ class FurnaceChat(src.interaction.SubMenu):
     '''
     def handleKey(self, key):
         if self.submenue:
+            # try to let the selection option handle the keystroke
             if not self.submenue.handleKey(key):
-                # let the selection option hande the keystroke
                 return False
+
+            # tear down the submenue
             else:
                 self.done = True
 
-                # remove self from the characters chat options
+                # find self in the characters chat options
+				# bad code: repetetive code
                 for item in self.firstOfficer.basicChatOptions:
+
+				    # handle class notation
                     if not isinstance(item,dict):
                         if item == FurnaceChat:
                             toRemove = item
                             break
+
+				    # handle dictionary notation
                     else:
                         if item["chat"] == FurnaceChat:
                             toRemove = item
                             break
+
+				# actually remove the chat
                 self.firstOfficer.basicChatOptions.remove(toRemove)
              
                 # clear submenue
@@ -158,7 +181,7 @@ class FurnaceChat(src.interaction.SubMenu):
                 self.submenue.selection()
                 return True
 
-        # do first part of the dialog
+        # do all action in the first part of the dialog
         # bad code: the first part of the chat should be on top
         if self.firstRun:
             # show information
@@ -202,6 +225,7 @@ class SternChat(src.interaction.SubMenu):
     show the dialog for one keystroke
     '''
     def handleKey(self, key):
+	    # show information on first run
         if self.firstRun:
             # show fluffed up information
             self.persistentText = """Stern did not actually modify the implant. The modification was done elsewhere.
@@ -223,18 +247,24 @@ do things the most efficent way. It will even try to handle conversion, wich doe
             else:
                 mainChar.reputation += 2
             return False
+		
+	    # tear down on second run
         else:
-            # remove self from the characters chat options
+            # find self in the characters chat options
+			# bad code: repetetive code
             for item in self.firstOfficer.basicChatOptions:
+			    # handle class notation
                 if not isinstance(item,dict):
                     if item == SternChat:
                         toRemove = item
                         break
+			    # handle dictionary notation
                 else:
                     if item["chat"] == SternChat:
                         toRemove = item
                         break
 
+            # remove the chat
             self.firstOfficer.basicChatOptions.remove(toRemove)
             terrain.waitingRoom.firstOfficer.basicChatOptions.remove(toRemove)
 
@@ -243,7 +273,7 @@ do things the most efficent way. It will even try to handle conversion, wich doe
             return True
 
 '''
-a instruction to ask questions and hinting at the auto mode
+an instruction to ask questions and hinting at the auto mode
 bad code: should be abstracted
 '''
 class InfoChat(src.interaction.SubMenu):
@@ -270,6 +300,7 @@ class InfoChat(src.interaction.SubMenu):
     show the dialog for one keystroke
     '''
     def handleKey(self, key):
+	    # do all activity on first run
         if self.firstRun:
             # show fluffed up information
             self.persistentText = """yes and a lot of it. I will give you two of these things on your way:\n
@@ -288,18 +319,24 @@ for a brain.\n\n"""
             else:
                 mainChar.reputation += 2
             return False
+
+		# tear down on second run
         else:
-            # remove chat option
+            # find chat option
+			# bad code: repetetive code
             for item in self.firstOfficer.basicChatOptions:
+			    # handle class notation
                 if not isinstance(item,dict):
                     if item == InfoChat:
                         toRemove = item
                         break
+			    # handle dictionary notation
                 else:
                     if item["chat"] == InfoChat:
                         toRemove = item
                         break
 
+            # actually remove chat
             self.firstOfficer.basicChatOptions.remove(toRemove)
 
             # add follow up chat
@@ -311,6 +348,7 @@ for a brain.\n\n"""
 
 '''
 a dialog for reentering the command chain
+bad code: story specific
 '''
 class ReReport(src.interaction.SubMenu):
     id = "ReReport"
@@ -346,17 +384,23 @@ class ReReport(src.interaction.SubMenu):
             mainChar.reputation -= 1
             messages.append("rewarded -1 reputation")
 
-            # remove chat option
+            # find chat option
+			# bad code: repetetive code
             for item in terrain.waitingRoom.firstOfficer.basicChatOptions:
+
+			    # handle class notation
                 if not isinstance(item,dict):
                     if item == ReReport:
                         toRemove = item
                         break
+
+			    # handle dictionary notation
                 else:
                     if item["chat"] == ReReport:
                         toRemove = item
                         break
 
+            # actually renove the chat
             terrain.waitingRoom.firstOfficer.basicChatOptions.remove(toRemove)
 
             # start intro
@@ -398,12 +442,15 @@ class JobChatFirst(src.interaction.SubMenu):
     show dialog and assign quest 
     '''
     def handleKey(subSelf, key):
+	    # handle chat termination
         if key == "esc":
+
+           # quit dialog
            if self.partner.reputation < 2*mainChar.reputation:
-               # quit dialog
                return True
+
+           # refuse to quit dialog
            else:
-               # refuse to quit dialog
                self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
                mainChar.reputation -= 2
                messages.append("you were rewarded -2 reputation")
@@ -411,15 +458,24 @@ class JobChatFirst(src.interaction.SubMenu):
                self.skipTurn = True
                return False
                              
+	    # handle chat termination
         if subSelf.firstRun:
+	        # job
             if not subSelf.dispatchedPhase:
+
+	            # do not assign job
                 if subSelf.mainChar.reputation < 10:
-                    # deny the request
                     subSelf.persistentText = "I have some work thats needs to be done, but you will have to proof your worth some more untill you can be trusted with this work.\n\nMaybe "+subSelf.terrain.waitingRoom.secondOfficer.name+" has some work you can do"
+
+	            # do not assign job
                 elif not subSelf.hopperDutyQuest.active:
                     subSelf.persistentText = "your sesponsibilities are elsewhere"
-                elif not "FireFurnaceMeta" in subSelf.mainChar.questsDone: # bade code: is bugged
+
+	            # do not assign job
+                elif not "FireFurnaceMeta" in subSelf.mainChar.questsDone: # bad code: is bugged
                     subSelf.persistentText = "Several Officers requested new assistants. The boiler room would be the first target, but you need to have fired a furnace or you cannot take the job"
+
+	            # assign job
                 else:
                     # show fluff
                     subSelf.persistentText = "Several Officers requested new assistants. First go to to the boiler room and apply for the position"
@@ -432,8 +488,9 @@ class JobChatFirst(src.interaction.SubMenu):
                     subSelf.mainChar.quests.remove(subSelf.hopperDutyQuest)
                     subSelf.mainChar.assignQuest(quest,active=True)
                     subSelf.dispatchedPhase = True
+
+	        # do not assign job
             else:
-                # deny the request
                 subSelf.persistentText = "Not right now"
 
             # show text
@@ -478,12 +535,13 @@ class JobChatSecond(src.interaction.SubMenu):
     show dialog and assign quest 
     '''
     def handleKey(self, key):
+	    # handle termination of this chat
         if key == "esc":
+           # quit dialog
            if self.partner.reputation < 2*mainChar.reputation:
-               # quit dialog
                return True
+           # refuse to quit dialog
            else:
-               # refuse to quit dialog
                self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
                mainChar.reputation -= 2
                messages.append("you were rewarded -2 reputation")
@@ -491,7 +549,7 @@ class JobChatSecond(src.interaction.SubMenu):
                self.skipTurn = True
                return False
                              
-        # let the superclass do the selections
+        # let the superclass do the selection
         if self.submenue:
             if not self.submenue.handleKey(key):
                 return False
@@ -503,6 +561,7 @@ class JobChatSecond(src.interaction.SubMenu):
 
         # refuse to issue new quest if the old one is not done yet
         # bad code: this is because the hopperquest cannot handle multiple sub quests
+		# bad code: message does not always fit description
         if not self.hopperDutyQuest.getQuest:
             self.persistentText = "please collect your reward first"
             self.set_text(self.persistentText)
@@ -510,6 +569,8 @@ class JobChatSecond(src.interaction.SubMenu):
 
             return True
 
+        # show quest selection
+		# bad code: if/else structure is not needed
         if not self.selectedQuest:
             if self.hopperDutyQuest.actualQuest:
                 # refuse to give two quests
@@ -541,8 +602,8 @@ class JobChatSecond(src.interaction.SubMenu):
                 self.done = True
 
                 return True
+        # assign the selected quest
         else:
-            # assign the selected quest
             self.hopperDutyQuest.getQuest.getQuest.quest = self.selectedQuest
             self.hopperDutyQuest.getQuest.getQuest.recalculate()
             if self.hopperDutyQuest.getQuest:
@@ -552,7 +613,7 @@ class JobChatSecond(src.interaction.SubMenu):
             return True
 
 '''
-the chat for making the npc stop firering the furnace
+the chat for making the npc stop firing the furnace
 '''
 class StopChat(src.interaction.SubMenu):
     id = "StopChat"
@@ -573,8 +634,9 @@ class StopChat(src.interaction.SubMenu):
     stop furnace quest and correct dialog
     '''
     def handleKey(self, key):
+	    # show information on first run
         if self.firstRun:
-            # stop fireing the furnace
+            # stop firing the furnace
             self.persistentText = "OK, stopping now"
             self.set_text(self.persistentText)
             self.done = True
@@ -592,8 +654,8 @@ class StopChat(src.interaction.SubMenu):
             self.firstRun = False
 
             return True
+	    # do nothing on later runs
         else:
-            # show dialog till keystroke
             return False
 
 '''
@@ -618,8 +680,10 @@ class StartChat(src.interaction.SubMenu):
     start furnace quest and correct dialog
     '''
     def handleKey(self, key):
+	    # show information on first run
         if self.firstRun:
-            # start fireing the furnace
+
+            # start firing the furnace
             self.persistentText = "Starting now. The engines should be running in a few ticks"
             self.set_text(self.persistentText)
             self.done = True
@@ -638,6 +702,7 @@ class StartChat(src.interaction.SubMenu):
             self.firstRun = False
 
             return True
+	    # do nothing on later runs
         else:
             return False
 

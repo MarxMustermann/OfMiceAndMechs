@@ -537,41 +537,8 @@ class JobChatSecond(Chat):
 
             return True
 
-        # show quest selection
-        # bad code: if/else structure is not needed
-        if not self.selectedQuest:
-            if self.hopperDutyQuest.actualQuest:
-                # refuse to give two quests
-                # bad pattern: should be proportional to current reputation
-                self.persistentText = "you already have a quest. Complete it and you can get a new one."
-                self.set_text(self.persistentText)
-                self.done = True
-
-                return True
-            elif self.terrain.waitingRoom.quests:
-                # show fluff
-                self.persistentText = "Well, yes."
-                self.set_text(self.persistentText)
-                        
-                # let the player select the quest to do
-                options = []
-                for quest in self.terrain.waitingRoom.quests:
-                    addition = ""
-                    if self.mainChar.reputation < 6:
-                        addition += " ("+str(quest.reputationReward)+")"
-                    options.append((quest,quest.description.split("\n")[0]+addition))
-                self.submenue = src.interaction.SelectionMenu("select the quest",options)
-
-                return False
-            else:
-                # refuse to give quests
-                self.persistentText = "Not right now. Ask again later"
-                self.set_text(self.persistentText)
-                self.done = True
-
-                return True
         # assign the selected quest
-        else:
+        if self.selectedQuest:
             self.hopperDutyQuest.getQuest.getQuest.quest = self.selectedQuest
             self.hopperDutyQuest.getQuest.getQuest.recalculate()
             if self.hopperDutyQuest.getQuest:
@@ -579,6 +546,39 @@ class JobChatSecond(Chat):
             self.terrain.waitingRoom.quests.remove(self.selectedQuest)
             self.done = True
             return True
+
+        # refuse to give two quests
+        if self.hopperDutyQuest.actualQuest:
+            # bad pattern: should be proportional to current reputation
+            self.persistentText = "you already have a quest. Complete it and you can get a new one."
+            self.set_text(self.persistentText)
+            self.done = True
+
+            return True
+
+        # offer list of quests to the player
+        if self.terrain.waitingRoom.quests:
+            # show fluff
+            self.persistentText = "Well, yes."
+            self.set_text(self.persistentText)
+                        
+            # let the player select the quest to do
+            options = []
+            for quest in self.terrain.waitingRoom.quests:
+                addition = ""
+                if self.mainChar.reputation < 6:
+                    addition += " ("+str(quest.reputationReward)+")"
+                options.append((quest,quest.description.split("\n")[0]+addition))
+            self.submenue = src.interaction.SelectionMenu("select the quest",options)
+
+            return False
+        
+        # refuse to give quests
+        self.persistentText = "Not right now. Ask again later"
+        self.set_text(self.persistentText)
+        self.done = True
+
+        return True
 
 '''
 the chat for making the npc stop firing the furnace

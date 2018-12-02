@@ -507,15 +507,13 @@ class Character(src.saveing.Saveable):
     bad pattern: should be contained in quest solver
     '''
     def walkPath(self):
-        # bad code: a dead character should not try to walk
-        # bad pattern: this should log
+        # smooth over impossible state
         if self.dead:
+            debugMessages.append("dead men walking")
             return
-
-        # bad code: a charactor should not try to walk if it has no path
-        # bad pattern: this should be a logging assertion
         if not self.path:
             self.setPathToQuest(self.quests[0])
+            debugMessages.append("walking without path")
 
         # move along the predetermined path
         currentPosition = (self.xPosition,self.yPosition)

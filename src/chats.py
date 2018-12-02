@@ -9,9 +9,15 @@
 import src.interaction
 
 '''
+the main class for chats
+'''
+class Chat(src.interaction.SubMenu):
+	pass
+
+'''
 the chat for collecting the reward
 '''
-class RewardChat(src.interaction.SubMenu):
+class RewardChat(Chat):
     id = "RewardChat"
 
     '''
@@ -50,7 +56,7 @@ the chat to proof the player is able to chat
 bad code: story specific
 bad code: naming
 '''
-class FirstChat(src.interaction.SubMenu):
+class FirstChat(Chat):
     id = "FirstChat"
     type = "FirstChat"
 
@@ -115,7 +121,7 @@ class FirstChat(src.interaction.SubMenu):
 '''
 dialog to unlock a furnace firering option
 '''
-class FurnaceChat(src.interaction.SubMenu):
+class FurnaceChat(Chat):
     id = "FurnaceChat"
     type = "FurnaceChat"
 
@@ -201,7 +207,7 @@ class FurnaceChat(src.interaction.SubMenu):
 a monologe explaining automovement
 bad code: should be abstracted
 '''
-class SternChat(src.interaction.SubMenu):
+class SternChat(Chat):
     id = "SternChat"
     type = "SternChat"
 
@@ -276,7 +282,7 @@ do things the most efficent way. It will even try to handle conversion, wich doe
 an instruction to ask questions and hinting at the auto mode
 bad code: should be abstracted
 '''
-class InfoChat(src.interaction.SubMenu):
+class InfoChat(Chat):
     id = "InfoChat"
     type = "InfoChat"
 
@@ -412,7 +418,7 @@ class ReReport(src.interaction.SubMenu):
 '''
 the dialog for asking somebody somewhat important for a job
 '''
-class JobChatFirst(src.interaction.SubMenu):
+class JobChatFirst(Chat):
     id = "JobChatFirst"
     type = "JobChatFirst"
 
@@ -505,7 +511,7 @@ class JobChatFirst(src.interaction.SubMenu):
 '''
 the dialog for asking somebody for a job
 '''
-class JobChatSecond(src.interaction.SubMenu):
+class JobChatSecond(Chat):
     id = "JobChatSecond"
     type = "JobChatSecond"
 
@@ -615,7 +621,7 @@ class JobChatSecond(src.interaction.SubMenu):
 '''
 the chat for making the npc stop firing the furnace
 '''
-class StopChat(src.interaction.SubMenu):
+class StopChat(Chat):
     id = "StopChat"
     type = "StopChat"
 
@@ -661,7 +667,7 @@ class StopChat(src.interaction.SubMenu):
 '''
 the chat for making the npc start firering the furnace
 '''
-class StartChat(src.interaction.SubMenu):
+class StartChat(Chat):
     id = "StartChat"
     type = "StartChat"
 

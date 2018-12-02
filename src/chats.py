@@ -12,7 +12,29 @@ import src.interaction
 the main class for chats
 '''
 class Chat(src.interaction.SubMenu):
-	pass
+
+   def removeFromChatOptions(self,character):
+        # find self in the characters chat options
+        toRemove = None
+        for item in character.basicChatOptions:
+
+            # handle class notation
+            if not isinstance(item,dict):
+                if item == type(self):
+                    toRemove = item
+                    break
+
+            # handle dictionary notation
+            else:
+                if item["chat"] == type(self):
+                    toRemove = item
+                    break
+
+        # actually remove the chat
+        if toRemove:
+            character.basicChatOptions.remove(toRemove)
+        else:
+            debugMessages.append("removed chat option that wasn't there")
 
 '''
 the chat for collecting the reward
@@ -32,8 +54,8 @@ class RewardChat(Chat):
     def handleKey(self, key):
         self.persistentText = "here is your reward"
         self.set_text(self.persistentText)
-		
-		# bad code: calling solver directly seems like a bad idea
+        
+        # bad code: calling solver directly seems like a bad idea
         self.quest.getQuest.solver(self.character)
 
         # bad code: this is propably needed but this comes out of nowhere
@@ -94,18 +116,18 @@ class FirstChat(Chat):
             # bad pattern: chat option stored as references to class complicates this
             for item in self.firstOfficer.basicChatOptions:
 
-			    # check class notation
+                # check class notation
                 if not isinstance(item,dict):
                     if item == FirstChat:
                         toRemove = item
                         break
 
-			    # check dictionary notation
+                # check dictionary notation
                 else:
                     if item["chat"] == FirstChat:
                         toRemove = item
                         break
-			# remove item
+            # remove item
             self.firstOfficer.basicChatOptions.remove(toRemove)
 
             # trigger further action
@@ -159,24 +181,8 @@ class FurnaceChat(Chat):
             else:
                 self.done = True
 
-                # find self in the characters chat options
-				# bad code: repetetive code
-                for item in self.firstOfficer.basicChatOptions:
-
-				    # handle class notation
-                    if not isinstance(item,dict):
-                        if item == FurnaceChat:
-                            toRemove = item
-                            break
-
-				    # handle dictionary notation
-                    else:
-                        if item["chat"] == FurnaceChat:
-                            toRemove = item
-                            break
-
-				# actually remove the chat
-                self.firstOfficer.basicChatOptions.remove(toRemove)
+                # remove chat option
+                self.removeFromChatOptions(self.firstOfficer)
              
                 # clear submenue
                 # bad code: direct state setting
@@ -231,7 +237,7 @@ class SternChat(Chat):
     show the dialog for one keystroke
     '''
     def handleKey(self, key):
-	    # show information on first run
+        # show information on first run
         if self.firstRun:
             # show fluffed up information
             self.persistentText = """Stern did not actually modify the implant. The modification was done elsewhere.
@@ -253,26 +259,12 @@ do things the most efficent way. It will even try to handle conversion, wich doe
             else:
                 mainChar.reputation += 2
             return False
-		
-	    # tear down on second run
+        
+        # tear down on second run
         else:
-            # find self in the characters chat options
-			# bad code: repetetive code
-            for item in self.firstOfficer.basicChatOptions:
-			    # handle class notation
-                if not isinstance(item,dict):
-                    if item == SternChat:
-                        toRemove = item
-                        break
-			    # handle dictionary notation
-                else:
-                    if item["chat"] == SternChat:
-                        toRemove = item
-                        break
-
-            # remove the chat
-            self.firstOfficer.basicChatOptions.remove(toRemove)
-            terrain.waitingRoom.firstOfficer.basicChatOptions.remove(toRemove)
+            # remove chat option
+            self.removeFromChatOptions(self.firstOfficer)
+            self.removeFromChatOptions(terrain.waitingRoom.firstOfficer)
 
             # finish
             self.done = True
@@ -306,7 +298,7 @@ class InfoChat(Chat):
     show the dialog for one keystroke
     '''
     def handleKey(self, key):
-	    # do all activity on first run
+        # do all activity on first run
         if self.firstRun:
             # show fluffed up information
             self.persistentText = """yes and a lot of it. I will give you two of these things on your way:\n
@@ -326,24 +318,10 @@ for a brain.\n\n"""
                 mainChar.reputation += 2
             return False
 
-		# tear down on second run
+        # tear down on second run
         else:
-            # find chat option
-			# bad code: repetetive code
-            for item in self.firstOfficer.basicChatOptions:
-			    # handle class notation
-                if not isinstance(item,dict):
-                    if item == InfoChat:
-                        toRemove = item
-                        break
-			    # handle dictionary notation
-                else:
-                    if item["chat"] == InfoChat:
-                        toRemove = item
-                        break
-
-            # actually remove chat
-            self.firstOfficer.basicChatOptions.remove(toRemove)
+            # remove chat option
+            self.removeFromChatOptions(self.firstOfficer)
 
             # add follow up chat
             self.firstOfficer.basicChatOptions.append({"dialogName":"What did Stern modify on the implant?","chat":SternChat,"params":{"firstOfficer":self.firstOfficer}})
@@ -390,24 +368,8 @@ class ReReport(src.interaction.SubMenu):
             mainChar.reputation -= 1
             messages.append("rewarded -1 reputation")
 
-            # find chat option
-			# bad code: repetetive code
-            for item in terrain.waitingRoom.firstOfficer.basicChatOptions:
-
-			    # handle class notation
-                if not isinstance(item,dict):
-                    if item == ReReport:
-                        toRemove = item
-                        break
-
-			    # handle dictionary notation
-                else:
-                    if item["chat"] == ReReport:
-                        toRemove = item
-                        break
-
-            # actually renove the chat
-            terrain.waitingRoom.firstOfficer.basicChatOptions.remove(toRemove)
+            # remove chat option
+            self.removeFromChatOptions(terrain.waitingRoom.firstOfficer)
 
             # start intro
             self.phase.getIntro()
@@ -448,7 +410,7 @@ class JobChatFirst(Chat):
     show dialog and assign quest 
     '''
     def handleKey(subSelf, key):
-	    # handle chat termination
+        # handle chat termination
         if key == "esc":
 
            # quit dialog
@@ -464,24 +426,24 @@ class JobChatFirst(Chat):
                self.skipTurn = True
                return False
                              
-	    # handle chat termination
+        # handle chat termination
         if subSelf.firstRun:
-	        # job
+            # job
             if not subSelf.dispatchedPhase:
 
-	            # do not assign job
+                # do not assign job
                 if subSelf.mainChar.reputation < 10:
                     subSelf.persistentText = "I have some work thats needs to be done, but you will have to proof your worth some more untill you can be trusted with this work.\n\nMaybe "+subSelf.terrain.waitingRoom.secondOfficer.name+" has some work you can do"
 
-	            # do not assign job
+                # do not assign job
                 elif not subSelf.hopperDutyQuest.active:
                     subSelf.persistentText = "your sesponsibilities are elsewhere"
 
-	            # do not assign job
+                # do not assign job
                 elif not "FireFurnaceMeta" in subSelf.mainChar.questsDone: # bad code: is bugged
                     subSelf.persistentText = "Several Officers requested new assistants. The boiler room would be the first target, but you need to have fired a furnace or you cannot take the job"
 
-	            # assign job
+                # assign job
                 else:
                     # show fluff
                     subSelf.persistentText = "Several Officers requested new assistants. First go to to the boiler room and apply for the position"
@@ -495,7 +457,7 @@ class JobChatFirst(Chat):
                     subSelf.mainChar.assignQuest(quest,active=True)
                     subSelf.dispatchedPhase = True
 
-	        # do not assign job
+            # do not assign job
             else:
                 subSelf.persistentText = "Not right now"
 
@@ -541,7 +503,7 @@ class JobChatSecond(Chat):
     show dialog and assign quest 
     '''
     def handleKey(self, key):
-	    # handle termination of this chat
+        # handle termination of this chat
         if key == "esc":
            # quit dialog
            if self.partner.reputation < 2*mainChar.reputation:
@@ -567,7 +529,7 @@ class JobChatSecond(Chat):
 
         # refuse to issue new quest if the old one is not done yet
         # bad code: this is because the hopperquest cannot handle multiple sub quests
-		# bad code: message does not always fit description
+        # bad code: message does not always fit description
         if not self.hopperDutyQuest.getQuest:
             self.persistentText = "please collect your reward first"
             self.set_text(self.persistentText)
@@ -576,7 +538,7 @@ class JobChatSecond(Chat):
             return True
 
         # show quest selection
-		# bad code: if/else structure is not needed
+        # bad code: if/else structure is not needed
         if not self.selectedQuest:
             if self.hopperDutyQuest.actualQuest:
                 # refuse to give two quests
@@ -640,7 +602,7 @@ class StopChat(Chat):
     stop furnace quest and correct dialog
     '''
     def handleKey(self, key):
-	    # show information on first run
+        # show information on first run
         if self.firstRun:
             # stop firing the furnace
             self.persistentText = "OK, stopping now"
@@ -660,7 +622,7 @@ class StopChat(Chat):
             self.firstRun = False
 
             return True
-	    # do nothing on later runs
+        # do nothing on later runs
         else:
             return False
 
@@ -686,7 +648,7 @@ class StartChat(Chat):
     start furnace quest and correct dialog
     '''
     def handleKey(self, key):
-	    # show information on first run
+        # show information on first run
         if self.firstRun:
 
             # start firing the furnace
@@ -708,7 +670,7 @@ class StartChat(Chat):
             self.firstRun = False
 
             return True
-	    # do nothing on later runs
+        # do nothing on later runs
         else:
             return False
 

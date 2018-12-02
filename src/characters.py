@@ -395,7 +395,7 @@ class Character(src.saveing.Saveable):
             try:
                 self.setPathToQuest(self.quests[0])
             except:
-                # bad pattern: exceptions should be logged
+                debugMessages.append("setting path to quest failed")
                 pass
 
     '''

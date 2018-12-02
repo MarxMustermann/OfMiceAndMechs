@@ -75,7 +75,7 @@ class Character(src.saveing.Saveable):
         self.attributesToStore.extend([
                "gotBasicSchooling","gotMovementSchooling","gotInteractionSchooling","gotExamineSchooling",
                "xPosition","yPosition","name","satiation","unconcious","reputation","tutorialStart",
-               "isMilitary","hasFloorPermit","dead","deathReason","automated","watched"])
+               "isMilitary","hasFloorPermit","dead","deathReason","automated","watched","solvers","questsDone"])
         self.objectsToStore.append("serveQuest")
         self.objectsToStore.append("room")
 
@@ -179,8 +179,6 @@ class Character(src.saveing.Saveable):
         if not self.path == self.initialState["path"]:
             result["path"] = self.path
 
-        # save solvers
-        # bad code: should be saveable as attribute
         result["questsDone"] = self.questsDone
         result["solvers"] = self.solvers
 
@@ -261,8 +259,6 @@ class Character(src.saveing.Saveable):
                  "inventory": {},
                  "quests": {},
                  "path":self.path,
-                 "questsDone":self.questsDone,
-                 "solvers":self.solvers,
                })
                  
         # store inventory
@@ -324,13 +320,6 @@ class Character(src.saveing.Saveable):
         if "path" in state:
             self.path = state["path"]
         
-        # set quest related meta information
-        # bad code: should be possible set attribute
-        if "questsDone" in state:
-            self.questsDone = state["questsDone"]
-        if "solvers" in state:
-            self.solvers = state["solvers"]
-
         # set inventory
         if "inventory" in state:
             self.loadFromList(state["inventory"],self.inventory,src.items.getItemFromState)

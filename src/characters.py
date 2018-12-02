@@ -478,9 +478,10 @@ class Character(src.saveing.Saveable):
     def die(self,reason=None):
         # replace character with corpse
         if self.container:
-            self.container.removeCharacter(self)
+            container = self.container
+            container.removeCharacter(self)
             corpse = src.items.Corpse(self.xPosition,self.yPosition,creator=self)
-            self.container.addItems([corpse])
+            container.addItems([corpse])
         # log impossible state
         else:
             debugMessages.append("this should not happen, character died without beeing somewhere ("+str(self)+")")

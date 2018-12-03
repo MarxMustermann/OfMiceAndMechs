@@ -36,6 +36,7 @@ class Event(src.saveing.Saveable):
         self.id["creator"] = creator.id
         self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
 
+        # set meta information for saving
         self.attributesToStore.extend(["tick","type"])
 
         self.tick = tick
@@ -50,7 +51,7 @@ class Event(src.saveing.Saveable):
         pass
 
 '''
-straigthforward adding a message
+straightforward adding a message
 '''
 class ShowMessageEvent(Event):
     '''
@@ -125,6 +126,7 @@ class FurnaceBurnoutEvent(Event):
     '''
     def setState(self,state):
         # load target furnace
+        # bad code: should be handled by the savable class
         if "furnace" in state:
            if state["furnace"]:
                '''
@@ -141,6 +143,7 @@ class FurnaceBurnoutEvent(Event):
     '''
     def getState(self):
         # store target furnace
+        # bad code: should be handled by the savable class
         state = super().getState()
         if self.furnace:
             state["furnace"] = self.furnace.id
@@ -160,6 +163,7 @@ class EndQuestEvent(Event):
         subself.type = "EndQuestEvent"
         subself.callback = callback
 
+        # set meta information for saving
         subself.callbacksToStore.append("callback")
 
     '''
@@ -182,7 +186,7 @@ eventMap = {
            }
 
 '''
-create an event from a dict
+create an event from a state dict
 '''
 def getEventFromState(state):
     event = eventMap[state["type"]](state["tick"],creator=void)

@@ -150,6 +150,14 @@ class GameState():
     get gamestate in half serialized form
     '''
     def getState(self):
+        # generate simple state
+        state = {}
+        state["currentPhase"] = self.currentPhase.getState()
+        state["terrain"] = terrain.getDiffState()
+        state["tick"] = self.tick
+        state["gameWon"] = self.gameWon
+        state["void"] = void.getState()
+
         # generate the main characters state
         mainCharState = self.mainChar.getDiffState()
         if self.mainChar.room:
@@ -162,6 +170,7 @@ class GameState():
             mainCharState["terrain"] = None
         mainCharState["xPosition"] = self.mainChar.xPosition
         mainCharState["yPosition"] = self.mainChar.yPosition
+        state["mainChar"] = mainCharState
 
         # generate the cinematics
         cinematicStorage = {}
@@ -174,22 +183,13 @@ class GameState():
                 continue
             cinematicStorage["ids"].append(cinematic.id)
             cinematicStorage["states"][cinematic.id] = cinematic.getState()
+        state["cinematics"] = cinematicStorage
 
         # generate state dict
         import src.interaction
         submenueState = None
         if src.interaction.submenue:
             submenueState = src.interaction.submenue.getState()
+        state["submenu"] = submenueState
 
-        # generate the state
-        # bad code: result should be generated earlier
-        return {  
-              "currentPhase":self.currentPhase.getState(),
-              "mainChar":mainCharState,
-              "terrain":terrain.getDiffState(),
-              "tick":self.tick,
-              "gameWon":self.gameWon,
-              "cinematics":cinematicStorage,
-              "void":void.getState(),
-              "submenu":submenueState
-               }
+        return state

@@ -44,19 +44,15 @@ class GameState():
         # get state as dictionary
         state = self.getState()
 
-        # prepare the savefile
-        saveFile = open("gamestate/gamestate.json","w")
+        # write the savefile
+        with open("gamestate/gamestate.json","w") as saveFile:
 
-        # write the gamestate
-        if not state["gameWon"]:
-            saveFile.write(json.dumps(state,indent=4, sort_keys=True))
-        # destroy the savefile
-        else:
-            saveFile.write(json.dumps("Winning is no fun at all"))
-
-        # close the savefile
-        # bad code: should use with 
-        saveFile.close()
+            # write the gamestate
+            if not state["gameWon"]:
+                saveFile.write(json.dumps(state,indent=4, sort_keys=True))
+            # destroy the savefile
+            else:
+                saveFile.write(json.dumps("Winning is no fun at all"))
 
     '''
     load the gamestate from disc
@@ -70,26 +66,16 @@ class GameState():
             return False
 
         # load state from disc
-        # bad code: exception should not be hidden
-        try:
-            saveFile = open("gamestate/gamestate.json")
-        except:
-            # bad code: should log
-            return False
+        with open("gamestate/gamestate.json") as saveFile:
+            rawstate = saveFile.read()
 
-        rawstate = saveFile.read()
+            # handle special gamestates
+            if rawstate in ["you lost","reset","Winning is no fun at all"]:
+                # bad code: should log
+                return False
 
-        # handle special gamestates
-        if rawstate in ["you lost","reset","Winning is no fun at all"]:
-            # bad code: should log
-            return False
-
-        # get state
-        state = json.loads(rawstate)
-
-        # close filehandle
-        # bad code: should use with 
-        saveFile.close()
+            # get state
+            state = json.loads(rawstate)
 
         # set state
         self.setState(state)

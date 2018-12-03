@@ -41,13 +41,21 @@ class GameState():
     bad pattern: loading and saving one massive json will break on the long run. save function should be delegated down to be able to scale json size
     '''
     def save(self):
-        saveFile = open("gamestate/gamestate.json","w")
+        # get state as dictionary
         state = self.getState()
+
+        # prepare the savefile
+        saveFile = open("gamestate/gamestate.json","w")
+
+        # write the gamestate
         if not state["gameWon"]:
             saveFile.write(json.dumps(state,indent=4, sort_keys=True))
+        # destroy the savefile
         else:
-            # destroy the savefile
             saveFile.write(json.dumps("Winning is no fun at all"))
+
+        # close the savefile
+        # bad code: should use with 
         saveFile.close()
 
     '''
@@ -55,22 +63,32 @@ class GameState():
     bad pattern: loading and saving one massive json will break on the long run. load function should be delegated down to be able to scale json size
     '''
     def load(self):
+        # handle missing savefile
         import os
         if not os.path.isfile("gamestate/gamestate.json"):
+            # bad code: should log
             return False
 
         # load state from disc
+        # bad code: exception should not be hidden
         try:
             saveFile = open("gamestate/gamestate.json")
         except:
+            # bad code: should log
             return False
 
         rawstate = saveFile.read()
 
+        # handle special gamestates
         if rawstate in ["you lost","reset","Winning is no fun at all"]:
+            # bad code: should log
             return False
 
+        # get state
         state = json.loads(rawstate)
+
+        # close filehandle
+        # bad code: should use with 
         saveFile.close()
 
         # set state
@@ -94,6 +112,7 @@ class GameState():
         terrain.setState(state["terrain"],self.tick)
 
         # load the main character
+        # bad code: should be simplified
         xPosition = self.mainChar.xPosition
         if "xPosition" in state["mainChar"]:
             xPosition = state["mainChar"]["xPosition"]
@@ -119,7 +138,7 @@ class GameState():
             cinematic = cinematics.getCinematicFromState(state["cinematics"]["states"][cinematicId])
             cinematics.cinematicQueue.append(cinematic)
 
-        # generate state dict
+        # load submenu
         import src.interaction
         if "submenu" in state:
             if state["submenu"]:
@@ -131,7 +150,7 @@ class GameState():
     get gamestate in half serialized form
     '''
     def getState(self):
-        # load the main characters state
+        # generate the main characters state
         mainCharState = self.mainChar.getDiffState()
         if self.mainChar.room:
             mainCharState["room"] = self.mainChar.room.id
@@ -144,7 +163,7 @@ class GameState():
         mainCharState["xPosition"] = self.mainChar.xPosition
         mainCharState["yPosition"] = self.mainChar.yPosition
 
-        # load the cinematics
+        # generate the cinematics
         cinematicStorage = {}
         cinematicStorage["ids"] = []
         cinematicStorage["states"] = {}
@@ -162,6 +181,8 @@ class GameState():
         if src.interaction.submenue:
             submenueState = src.interaction.submenue.getState()
 
+        # generate the state
+        # bad code: result should be generated earlier
         return {  
               "currentPhase":self.currentPhase.getState(),
               "mainChar":mainCharState,

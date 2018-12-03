@@ -1,10 +1,20 @@
+##################################################################################################################################
+###
+##        code for interacation with the user belongs here
+#         bad pattern: logic should be moved somewhere else
+#
+#################################################################################################################################
+
+# load libraries
+import time
+import urwid
+
+# load internal libraries
 import src.rooms
 import src.items
 import src.quests
 import src.canvas
 import src.saveing
-import time
-import urwid
 
 ##################################################################################################################################
 ###
@@ -96,6 +106,8 @@ def setFooter():
     "press "+commandChars.drop+" to drop",
     ]
     footerText = ", ".join(footerInfo)+", "
+
+    # calculate meta information for footer
     doubleFooterText = footerText+footerText
     footerPosition = 0
     footerLength = len(footerText)
@@ -118,6 +130,7 @@ def show_or_exit(key):
     commandKeyQueue.append(key)
 
     # transform and store the keystrokes that accumulated in pygame
+    # bad code: dirty try/except handling
     try:
         import pygame
         for item in pygame.event.get():
@@ -149,12 +162,12 @@ bad code: there are way too much lines of code in this function
 '''
 def processInput(key):
     # ignore mouse interaction
-    # bad pattern mouse input should be used
+    # bad pattern: mouse input should be used
     if type(key) == tuple:
         return
 
+    # save and quit
     if key in (commandChars.quit_normal, commandChars.quit_instant):
-        # save and quit
         gamestate.save()
         raise urwid.ExitMainLoop()
 
@@ -204,6 +217,7 @@ def processInput(key):
         lastLagDetection = time.time()
 
         # advance the game if the character stays idle
+        # bad code: amount of if/returns should be reduced
         if len(cinematics.cinematicQueue) or pauseGame:
             return
         idleCounter += 1
@@ -214,11 +228,13 @@ def processInput(key):
                 key = commandChars.wait
             else:
                 return
+
+    # reset activity counter
     else:
-        # reset activity counter
         idleCounter = 0
 
-    # discard keysstrokes if they were not processed for too long
+    # discard keysstrokes, if they were not processed for too long
+    # bad code: long list
     if not key in (commandChars.autoAdvance, commandChars.quit_instant, commandChars.ignore,commandChars.quit_delete, commandChars.pause, commandChars.show_quests, commandChars.show_quests_detailed, commandChars.show_inventory, commandChars.show_inventory_detailed, commandChars.show_characterInfo):
         if lastLagDetection < time.time()-0.4:
             return
@@ -241,11 +257,14 @@ def processInput(key):
 
         # handle cinematics
         if len(cinematics.cinematicQueue):
+            
+            # get current cinematic
             cinematic = cinematics.cinematicQueue[0]
 
-            # allow to quit even in a cutscene
+            # allow to quit even within a cutscene
             if key in (commandChars.quit_normal, commandChars.quit_instant):
                 gamestate.save()
+                # bad code: directly calls urwid
                 raise urwid.ExitMainLoop()
 
             # skip the cinematic if requested
@@ -279,7 +298,7 @@ def processInput(key):
             key = commandChars.wait
             if gamestate.tick > ticksSinceDeath+5:
                 # destroy the gamestate
-                # bad pattern should not allways destroy gamestate
+                # bad pattern: should not always destroy gamestate
                 saveFile = open("gamestate/gamestate.json","w")
                 saveFile.write("you lost")
                 saveFile.close()
@@ -291,32 +310,36 @@ def processInput(key):
 
         # handle the keystroke for a char on the map
         else:
+            # open the debug menue
             if key in ("´",):
-                # open the debug menue
                 if debug:
                     submenue = DebugMenu()
                 else:
                     messages.append("debug not enabled")
 
+            # destroy save and quit
             if key in (commandChars.quit_delete,):
-                # destroy save and quit
                 saveFile = open("gamestate/gamestate.json","w")
                 saveFile.write("reset")
                 saveFile.close()
                 raise urwid.ExitMainLoop()
 
+            # kill one of the autoadvance keystrokes
+            # bad pattern: doesn't actually pause
             if key in (commandChars.pause):
-                # kill one of the autoadvance keystrokes
-                # bad pattern: doesn't actually pause
                 ignoreNextAutomated = True
                 doAdvanceGame = False
 
+            '''
+            move the player into a direction
+            bad code: huge inline function + player vs. npc movement should use same code
+            '''
             def moveCharacter(direction):
                 # do inner room movement
                 if mainChar.room:
                     item = mainChar.room.moveCharacterDirection(mainChar,direction)
 
-                    # remeber items bumped into for possible interaction
+                    # remember items bumped into for possible interaction
                     if item:
                         messages.append("You cannot walk there "+str(direction))
                         messages.append("press "+commandChars.activate+" to apply")
@@ -339,16 +362,24 @@ def processInput(key):
                         bigX = (mainChar.xPosition)//15
                         bigY = (mainChar.yPosition-1)//15
 
+                    # gather the rooms the player might step into
                     roomCandidates = []
                     for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
                         if coordinate in terrain.roomByCoordinates:
                             roomCandidates.extend(terrain.roomByCoordinates[coordinate])
 
+                    '''
+                    move a player into a room
+                    bad code: inline function within inline function
+                    '''
                     def enterLocalised(room,localisedEntry):
+
                         # get the entry point in room coordinates
                         if localisedEntry in room.walkingAccess:
                             # check if the entry point is blocked (by a door)
                             for item in room.itemByCoordinates[localisedEntry]:
+
+                                # handle collisions
                                 if not item.walkable:
                                     # print some info
                                     messages.append("you need to open the door first")
@@ -357,9 +388,12 @@ def processInput(key):
 
                                     # remember the item for interaction and abort
                                     return item
+
                                 # teleport the character into the room
                                 room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
                                 terrain.characters.remove(mainChar)
+
+                        # do not move player into the room
                         else:
                             messages.append("you cannot move there")
 
@@ -407,6 +441,7 @@ def processInput(key):
                         else:
                             debugMessages.append("moved into invalid direction: "+str(direction))
 
+                        # move player into the room
                         if hadRoomInteraction:
                             item = enterLocalised(room,localisedEntry)
                             if item:
@@ -425,6 +460,7 @@ def processInput(key):
                             elif direction == "west":
                                 foundItems = terrain.itemByCoordinates[mainChar.xPosition-1,mainChar.yPosition]
                         except Exception as e:
+                            # bad code: should log
                             foundItems = []
 
                         # check for items blocking the move to the destination coordinate
@@ -455,6 +491,7 @@ def processInput(key):
 
                         return item
 
+            # move the player
             if key in (commandChars.move_north):
                 itemMarkedLast = moveCharacter("north")
                 if itemMarkedLast and not itemMarkedLast.walkable:
@@ -485,18 +522,19 @@ def processInput(key):
                             if not (mainChar.xPosition == char.xPosition and mainChar.yPosition == char.yPosition):
                                 continue
                             char.die()
-                # bad code: no else, so characters can only be killed within rooms -_-
+                    # bad code: no else, so characters can only be killed within rooms -_-
 
             # activate an item 
             if key in (commandChars.activate):
                 if not "NaiveActivateQuest" in mainChar.solvers:
                     messages.append("you do not have the nessecary solver yet")
                 else:
+                    # activate the marked item
                     if itemMarkedLast:
-                        # active marked item
                         itemMarkedLast.apply(mainChar)
+
+                    # activate an item on floor
                     else:
-                        # active an item on floor
                         for item in mainChar.container.itemsOnFloor:
                             if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
                                 item.apply(mainChar)
@@ -506,10 +544,12 @@ def processInput(key):
                 if not "ExamineQuest" in mainChar.solvers:
                     messages.append("you do not have the nessecary solver yet")
                 else:
+                    # examine the marked item
                     if itemMarkedLast:
                         mainChar.examine(itemMarkedLast)
+
+                    # examine an item on floor
                     else:
-                        # examine an item on floor
                         for item in mainChar.container.itemsOnFloor:
                             if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
                                 mainChar.examine(item)
@@ -536,6 +576,7 @@ def processInput(key):
                             break
 
             # pick up items
+            # bad code: picking up should happen in character
             if key in (commandChars.pickUp):
                 if not "NaivePickupQuest" in mainChar.solvers:
                     messages.append("you do not have the nessecary solver yet")
@@ -560,16 +601,16 @@ def processInput(key):
                 submenue = ChatPartnerselection()
 
             mainChar.automated = False
+            # do automated movement for the main character
             if key in (commandChars.advance,commandChars.autoAdvance):
-                # do the next step for the main character
                 if len(mainChar.quests):
                     lastMoveAutomated = True
-
                     mainChar.automated = True
                 else:
                     pass
+
+            # recalculate the questmarker since it could be tainted
             elif not key in (commandChars.pause):
-                # recalculate the questmarker since it could be tainted
                 lastMoveAutomated = False
                 if mainChar.quests:
                     mainChar.setPathToQuest(mainChar.quests[0])
@@ -623,6 +664,7 @@ def processInput(key):
 
     # render submenues
     if submenue:
+
         # set flag to not render the game
         specialRender = True        
         pauseGame = True
@@ -633,6 +675,7 @@ def processInput(key):
         else:
             done = False
 
+        # reset rendering flags
         if done:
             submenue = None
             pauseGame = False
@@ -668,7 +711,7 @@ def processInput(key):
         header.set_text((urwid.AttrSpec("default","default"),"good job"))
 
 '''
-The base class for submenues offer selections
+The base class for submenues offering selections
 bad code: there is redundant code from the specific submenus that should be put here
 '''
 class SubMenu(src.saveing.Saveable):
@@ -687,13 +730,17 @@ class SubMenu(src.saveing.Saveable):
         self.options = collections.OrderedDict()
         self.niceOptions = collections.OrderedDict()
         super().__init__()
-        #self.attributesToStore.extend(["state","options","selection","selectionIndex","persistentText","footerText","followUp"])
+        #self.attributesToStore.extend(["state","options","selection","selectionIndex","persistentText","footerText","followUp"]) # bad code: commented out code
         self.attributesToStore.extend(["state","selectionIndex","persistentText","footerText","type","query","lockOptions"])
         self.initialState = self.getState()
 
+    '''
+    set internal state from state dictionary
+    '''
     def setState(self,state):
         super().setState(state)
 
+        # load options
         if "options" in state:
             if state["options"] == None:
                 self.options = None
@@ -703,7 +750,6 @@ class SubMenu(src.saveing.Saveable):
                 for option in state["options"]:
                     newOptions[option[0]] = option[1]
                 self.options = newOptions
-
         if "niceOptions" in state:
             if state["niceOptions"] == None:
                 self.niceOptions = None
@@ -714,9 +760,13 @@ class SubMenu(src.saveing.Saveable):
                     newNiceOptions[option[0]] = option[1]
                 self.niceOptions = newNiceOptions
         
+    '''
+    get state as dictionary
+    '''
     def getState(self):
         state = super().getState()
 
+        # store options
         if self.options == None:
             serialisedOptions = None
         else:
@@ -724,7 +774,6 @@ class SubMenu(src.saveing.Saveable):
             for k,v in self.options.items():
                 serialisedOptions.append((k,str(v)))
         state["options"] = serialisedOptions
-           
         if self.niceOptions == None:
             serialisedOptions = None
         else:
@@ -766,25 +815,28 @@ class SubMenu(src.saveing.Saveable):
     show the options and allow the user to select one
     '''
     def handleKey(self, key):
+        # exit submenue
         if key == "esc":
             return True
 
+        # show question
         out = "\n"
         out += self.query+"\n"
 
+        # handle the selection of options
         if not self.lockOptions:
+            # change the marked option
             if key == "w":
-                # change the marked option
                 self.selectionIndex -= 1
                 if self.selectionIndex == 0:
                     self.selectionIndex = len(self.options)
+            # change the marked option
             if key == "s":
-                # change the marked option
                 self.selectionIndex += 1
                 if self.selectionIndex > len(self.options):
                     self.selectionIndex = 1
+            # select the marked option
             if key in ["enter","j","k"]:
-                # select the marked option
                 # bad code: transforming the key to the shortcut is needlessly complicated
                 key = list(self.options.items())[self.selectionIndex-1][0]
 
@@ -837,8 +889,8 @@ class SelectionMenu(SubMenu):
     handles the key
     '''
     def handleKey(self, key):
+        # exit submenue
         if key == "esc":
-            # abort
             return True
         header.set_text("")
 
@@ -854,7 +906,6 @@ class SelectionMenu(SubMenu):
 
 '''
 Spawns a Chat submenu with a player selected character
-bad code: only works within rooms right now
 bad code: since there is no need to wait for some return this submenue should not wrap around the Chat menu
 bad code: sub menues should be implemented in the base class
 '''
@@ -867,6 +918,9 @@ class ChatPartnerselection(SubMenu):
         self.subMenu = None
         super().__init__()
 
+    '''
+    get state as dictionary
+    '''
     def getState(self):
         state = super().getState()
         if self.subMenu:
@@ -876,6 +930,9 @@ class ChatPartnerselection(SubMenu):
 
         return state
     
+    '''
+    set internal state from state as dictionary
+    '''
     def setState(self,state):
         super().setState(state)
 
@@ -893,26 +950,28 @@ class ChatPartnerselection(SubMenu):
         if self.subMenu:
             return self.subMenu.handleKey(key)
 
+        # exit the submenu
         if key == "esc":
-            # abort
             return True
 
+        # set title
         header.set_text((urwid.AttrSpec("default","default"),"\nConversation menu\n"))
         out = "\n"
 
-        # offer the player to select from characters in room
+        # offer the player the option to select from characters to talk to
         # bad code: should be done in __init__
         if not self.options and not self.getSelection():
             options = []
+            # get characters in room
             if mainChar.room:
-                # get characters in room
                 for char in mainChar.room.characters:
                     if char == mainChar:
                         continue
                     options.append((char,char.name))
+            # get character on terrain
             else:
-                # get character on terrain
                 for char in mainChar.terrain.characters:
+                    # bad pattern: should only list nearby characters
                     if char == mainChar:
                         continue
                     options.append((char,char.name))
@@ -941,10 +1000,12 @@ class ChatPartnerselection(SubMenu):
         if not self.getSelection():
              super().handleKey(key)
 
+        # spawn the chat submenu
         if self.getSelection():
-            # spawn the chat submenu
             self.subMenu = ChatMenu(self.selection)
             self.subMenu.handleKey(key)
+
+        # wait for input
         else:
             return False
 
@@ -973,49 +1034,56 @@ class RecruitChat(SubMenu):
     bad code: the dialog and reactions should be generated within the characters
     '''
     def handleKey(self, key):
+        # exit submenu
         if key == "esc":
-            # abort
             return True
 
+        # show dialog
         if self.firstRun:
+
             # add player text
             self.persistentText += mainChar.name+": \"come and help me.\"\n"
 
+            # reject player request
             if self.partner.reputation > mainChar.reputation:
-                # reject player
                 if mainChar.reputation <= 0:
                     # reject player very harshly
                     self.persistentText += self.partner.name+": \"No.\""
                     mainChar.reputation -= 5
                     messages.append("You were rewarded -5 reputation")
                 else:
+                    # reject player harshly
                     if self.partner.reputation//mainChar.reputation:
-                        # reject player harshly
                         self.persistentText += self.partner.name+": \"you will need at least have to have "+str(self.partner.reputation//mainChar.reputation)+" times as much reputation to have me consider that\"\n"
                         messages.append("You were rewarded -"+str(2*(self.partner.reputation//mainChar.reputation))+" reputation")
                         mainChar.reputation -= 2*(self.partner.reputation//mainChar.reputation)
+                    # reject player somewhat nicely
                     else:
-                        # reject player somewhat nicely
                         self.persistentText += self.partner.name+": \"maybe if you come back later\""
                         mainChar.reputation -= 2
                         messages.append("You were rewarded -2 reputation")
+            # consider player request
             else:
+
+                # reject player
                 if gamestate.tick%2:
-                    # reject player
                     self.persistentText += self.partner.name+": \"sorry, too busy.\"\n"
                     mainChar.reputation -= 1
                     messages.append("You were rewarded -1 reputation")
+
+                # allow the recruitment
                 else:
-                    # allow the recruitment
                     self.persistentText += self.partner.name+": \"on it!\"\n"
                     mainChar.subordinates.append(self.partner)
+
+            # show dialog
             text = self.persistentText+"\n\n-- press any key --"
             main.set_text((urwid.AttrSpec("default","default"),text))
             self.firstRun = False
             return True
+        # continue after the first keypress
+        # bad code: the first keystroke is the second keystroke that is handled
         else:
-            # continue after the first keypress
-            # bad code: the first keystroke is the second keystroke that is handled
             self.done = True
             return False
 
@@ -1037,6 +1105,9 @@ class ChatMenu(SubMenu):
         super().__init__()
         self.objectsToStore.append("partner")
 
+    '''
+    get state as dictionary
+    '''
     def getState(self):
         state = super().getState()
         if self.subMenu:
@@ -1046,6 +1117,9 @@ class ChatMenu(SubMenu):
 
         return state
     
+    '''
+    set internal state from state as dictionary
+    '''
     def setState(self,state):
         super().setState(state)
 
@@ -1056,25 +1130,29 @@ class ChatMenu(SubMenu):
                 self.subMenu = None
 
     '''
-    show the dialog options and wrap the corresponding submenus
+    show the dialog options and wrap around the corresponding submenus
     bad code: showing the messages should be handled in __init__ or a setup method
     bad code: the dialog should be generated within the characters
     '''
     def handleKey(self, key):
+        # smooth over impossible state
         if self.partner == None:
+           # bad code: should log
            return False
+
+        # wake up character instead of speaking
         if self.partner.unconcious:
-            # wake up character instead of speaking
             messages.append("wake up!")
             self.partner.wakeUp()
             return True
 
+        # maybe exit the submenu
         if key == "esc":
-           # abort
+           # abort the chat
            if self.partner.reputation < 2*mainChar.reputation:
                return True
+           # refuse to abort the chat
            else:
-               # refuse to abort the chat
                self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
                mainChar.reputation -= 1
                messages.append("you were rewarded -1 reputation")
@@ -1082,10 +1160,12 @@ class ChatMenu(SubMenu):
                self.skipTurn = True
                return False
                              
+        # skip a turn
         if self.skipTurn:
            self.skipTurn = False
            key = "."
 
+        # show interaction
         header.set_text((urwid.AttrSpec("default","default"),"\nConversation menu\n"))
         out = "\n"
 
@@ -1191,8 +1271,8 @@ class DebugMenu(SubMenu):
     show some debug output
     '''
     def handleKey(self, key):
+        # exit submenu
         if key == "esc":
-            # abort
             return True
 
         if self.firstRun:
@@ -1239,8 +1319,8 @@ class QuestMenu(SubMenu):
     overrides the superclasses method completely
     '''
     def handleKey(self, key):
+        # exit submenu
         if key == "esc":
-            # abort
             return True
 
         # scrolling
@@ -1279,15 +1359,16 @@ class QuestMenu(SubMenu):
         self.persistentText = []
         self.persistentText.append(renderQuests(char=self.char,asList=True,questIndex = self.questIndex))
 
+        # spawn the quest menu for adding quests
         if not self.lockOptions:
             if key in ["q"]:
-                # spawn the quest menu for adding quests
                 global submenue
                 submenue = AdvancedQuestMenu()
                 submenue.handleKey(key)
                 return False
         self.lockOptions = False
 
+        # add interaction instructions
         self.persistentText.extend(["\n","* press q for advanced quests\n","* press W to scroll up","\n","* press S to scroll down","\n","\n"])
 
         # flatten the mix of strings and urwid format so that it is less recursive to workaround an urwid bug
@@ -1323,8 +1404,8 @@ class InventoryMenu(SubMenu):
     bad pattern: no player interaction
     '''
     def handleKey(self, key):
+        # exit the submenu
         if key == "esc":
-            # abort
             return True
 
         global submenue
@@ -1335,6 +1416,7 @@ class InventoryMenu(SubMenu):
         # bad code: uses global function
         self.persistentText = (urwid.AttrSpec("default","default"),renderInventory())
 
+        # show the render
         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
 
         return False
@@ -1346,16 +1428,18 @@ bad code: uses global function to render
 '''
 class CharacterInfoMenu(SubMenu):
     type = "CharacterInfoMenu"
+
     '''
     show the attributes
     '''
     def handleKey(self, key):
+        # exit the submenu
         if key == "esc":
-            # abort
             return True
 
-        global submenue
+        global submenue # bad code: global variable is not even used
 
+        # show info
         header.set_text((urwid.AttrSpec("default","default"),"\ncharacter overview"))
         main.set_text((urwid.AttrSpec("default","default"),[mainChar.getDetailedInfo()]))
         header.set_text((urwid.AttrSpec("default","default"),""))
@@ -1365,6 +1449,7 @@ player interaction for delegating a quest
 '''
 class AdvancedQuestMenu(SubMenu):
     type = "AdvancedQuestMenu"
+
     '''
     straighforwad state initalisation
     '''
@@ -1378,8 +1463,8 @@ class AdvancedQuestMenu(SubMenu):
     gather the quests parameters and assign the quest
     '''
     def handleKey(self, key):
+        # exit submenu
         if key == "esc":
-            # abort
             return True
 
         # start rendering
@@ -1395,8 +1480,10 @@ class AdvancedQuestMenu(SubMenu):
         if self.state == None:
             self.state = "participantSelection"
         if self.state == "participantSelection":
+
             # set up the options
             if not self.options and not self.getSelection():
+
                 # add the main player as target
                 options = []
                 options.append((mainChar,mainChar.name+" (you)"))
@@ -1454,8 +1541,10 @@ class AdvancedQuestMenu(SubMenu):
         # let the player select the parameters for the quest
         if self.state == "parameter selection":
             if self.quest == src.quests.EnterRoomQuestMeta:
+
                 # set up the options
                 if not self.options and not self.getSelection():
+
                     # add a list of of rooms
                     options = []
                     for room in terrain.rooms:
@@ -1545,9 +1634,9 @@ class AdvancedQuestMenu(SubMenu):
                 super().handleKey(key)
 
             if self.getSelection():
+                # instanciate quest
+                # bad code: repetetive code
                 if self.selection == "yes":
-                    # instanciate quest
-                    # bad code: repetive code
                     if self.quest == src.quests.MoveQuestMeta:
                        questInstance = self.quest(mainChar.room,2,2,creator=void)
                     elif self.quest == src.quests.ActivateQuestMeta:
@@ -1592,8 +1681,9 @@ class AdvancedQuestMenu(SubMenu):
                     self.character.assignQuest(questInstance, active=True)
 
                     self.state = "done"
+
+                # reset progress
                 else:
-                    # reset progress
                     self.state = "questSelection"
                     
                 self.selection = None
@@ -1634,11 +1724,12 @@ def renderHeader():
     splitedMessages = messagesSection.split("\n")
     rowCounter = 0
 
-    # add header lines
+    # add lines for the header
     continueLooping = True
     questLine = ""
     messagesLine = ""
     while True:
+
         # get the next line for each element
         if questLine == "" and len(splitedQuests):
             questLine = splitedQuests.pop(0)
@@ -1650,12 +1741,12 @@ def renderHeader():
         if (rowCounter > 5):
             break
 
+        # cut off left line
         if len(questLine) > questWidth:
-            # cut off left line
             txt += questLine[:questWidth]+"┃ "
             questLine = questLine[questWidth:]
+        # padd left line
         else:
-            # padd left line
             txt += questLine+" "*(questWidth-len(questLine))+"┃ "
             # bug?: doen't this pop twice?
             if splitedQuests:
@@ -1683,6 +1774,7 @@ def renderHeader():
 
 '''
 render the last x messages into a string
+bad code: global function
 '''
 def renderMessages(maxMessages=5):
     txt = ""
@@ -1709,8 +1801,8 @@ def renderQuests(maxQuests=0,char=None, asList=False, questIndex=0):
     else:
         txt = ""
 
+    # render the quests
     if len(char.quests):
-        # render the quests
         counter = 0
         for quest in char.quests:
             # render quest
@@ -1726,8 +1818,8 @@ def renderQuests(maxQuests=0,char=None, asList=False, questIndex=0):
             counter += 1
             if counter == maxQuests:
                 break
+    # return placeholder for no quests
     else:
-        # return placeholder for no quests
         if asList:
             txt.append("No Quest")
         else:
@@ -1737,6 +1829,8 @@ def renderQuests(maxQuests=0,char=None, asList=False, questIndex=0):
 
 '''
 render the inventory of the player into a string
+bad code: global function
+bad code: should be abstracted
 '''
 def renderInventory():
     char = mainChar
@@ -1761,17 +1855,15 @@ class HelpMenu(SubMenu):
     show the help text
     '''
     def handleKey(self, key):
+        # exit the submenu
         if key == "esc":
-            # abort
             return True
-        global submenue
+        global submenue #bad code: global variable is not even used
 
+        # show info
         header.set_text((urwid.AttrSpec("default","default"),"\nquest overview\n\n"))
-
         self.persistentText = ""
-
         self.persistentText += renderHelp()
-
         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
 
         return False
@@ -1815,12 +1907,14 @@ def renderHelp():
     
 '''
 render the map
+bad code: should be contained somewhere
 '''
 def render():
     # render the map
     chars = terrain.render()
 
     # center on player
+    # bad code: should focus on arbitrary positions
     if mainChar.room:
         centerX = mainChar.room.xPosition*15+mainChar.room.offsetX+mainChar.xPosition
         centerY = mainChar.room.yPosition*15+mainChar.room.offsetY+mainChar.yPosition
@@ -1846,10 +1940,11 @@ def render():
 # get the interaction loop from the library
 loop = urwid.MainLoop(frame, unhandled_input=show_or_exit)
 
-# kick of the interaction loop
+# kick off the interaction loop
 loop.set_alarm_in(0.2, callShow_or_exit, "lagdetection")
 loop.set_alarm_in(0.0, callShow_or_exit, "~")
 
+# the directory for the submenues
 subMenuMap = {
                "SelectionMenu":SelectionMenu,
                "ChatPartnerselection":ChatPartnerselection,

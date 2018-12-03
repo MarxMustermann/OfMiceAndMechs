@@ -67,6 +67,13 @@ class BasicCinematic(src.saveing.Saveable):
         self.aborted = True
         pass
 
+    '''
+    adds self to the list of cinematics
+    '''
+    def addSubmenuToCinematicQueue(self)
+        # bad code: hooks the submenue directly into the interaction
+        interaction.submenue = self.submenue
+        interaction.submenue.followUp = self.abort
 """
 this is a single use cinematic basically. It flashes some info too fast to read in order to symbolise information transfer to the implant
 bad code: should be abstracted and called with a parameter instead of single use special class
@@ -578,9 +585,7 @@ class ChatCinematic(BasicCinematic):
     def advance(self):
         super().abort()
 
-        # bad code: hooks the submenue directly into the interaction
-        interaction.submenue = self.submenue
-        interaction.submenue.followUp = self.abort
+        self.addSubmenuToCinematicQueue()
 
         # bad code: removes itself directly from the cinematics queue without using a abstracted function
         global cinematicQueue
@@ -657,8 +662,7 @@ class SelectionCinematic(BasicCinematic):
     '''
     def setUp(self):
         self.submenue = interaction.SelectionMenu(self.text, self.options)
-        interaction.submenue = self.submenue
-        interaction.submenue.followUp = self.abort
+        self.addSubmenuToCinematicQueue()
 
     '''
     get the selection and trigger the corresponding callback

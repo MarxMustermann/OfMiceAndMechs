@@ -92,8 +92,6 @@ class InformationTransfer(BasicCinematic):
     def advance(self):
         super().advance()
 
-        # bad code: if/else structure is not needed
-
         # show the information
         if self.position < len(self.information):
             # show the current piece of information
@@ -106,7 +104,7 @@ class InformationTransfer(BasicCinematic):
             return False
 
         # show the information
-        elif not self.triggered:
+        if not self.triggered:
             # show final message and wait for input
             self.footerText = "press space to proceed"
             header.set_text("")
@@ -114,8 +112,8 @@ class InformationTransfer(BasicCinematic):
             self.triggered = True
             self.skipable = True
             return False
-        else:
-            return False
+        
+        return False
 
     """
     stop rendering

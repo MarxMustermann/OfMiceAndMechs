@@ -125,8 +125,7 @@ class InformationTransfer(BasicCinematic):
         try: 
             loop.remove_alarm(self.alarm)
         except:
-            # bad code: should log
-            pass
+            debugMessages.append("removed non existant alarm")
     
 """
 this is a single use cinematic that collapses a full screen message display into the in-game message window
@@ -223,8 +222,7 @@ class MessageZoomCinematic(BasicCinematic):
         try: 
             loop.remove_alarm(self.alarm)
         except:
-            # bad code: should log
-            pass
+            debugMessages.append("removed non existant alarm")
         
         # trigger follow up functions
         if self.endTrigger:
@@ -365,8 +363,7 @@ class TextCinematic(BasicCinematic):
         try: 
             loop.remove_alarm(self.alarm)
         except:
-            # bad code: should log
-            pass
+            debugMessages.append("removed non existant alarm")
 
         # trigger follow up actions
         if self.endTrigger:

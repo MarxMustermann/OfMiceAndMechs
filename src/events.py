@@ -107,6 +107,12 @@ class FurnaceBurnoutEvent(Event):
 
         self.tick = tick
 
+        # set meta information for saving
+        self.objectsToStore.append("furnace")
+
+        # self initial state
+        self.initialState = self.getState()
+
     '''
     stop burning
     '''
@@ -120,36 +126,6 @@ class FurnaceBurnoutEvent(Event):
 
         # notify listeners
         self.furnace.changed()
-
-    '''
-    set state from dict
-    '''
-    def setState(self,state):
-        # load target furnace
-        # bad code: should be handled by the savable class
-        if "furnace" in state:
-           if state["furnace"]:
-               '''
-               set value
-               '''
-               def setFurnace(furnace):
-                   self.furnace = furnace
-               loadingRegistry.callWhenAvailable(state["furnace"],setFurnace)
-           else:
-               self.furnace = None
-
-    '''
-    get state as dict
-    '''
-    def getState(self):
-        # store target furnace
-        # bad code: should be handled by the savable class
-        state = super().getState()
-        if self.furnace:
-            state["furnace"] = self.furnace.id
-        else:
-            state["furnace"] = None
-        return state
 
 '''
 the event for automatically terminating the quest

@@ -8,7 +8,7 @@
 import urwid
 import json
 
-import urwidSpecials
+import src.urwidSpecials
 
 # import basic internal libs
 import src.saveing
@@ -72,7 +72,7 @@ class BasicCinematic(src.saveing.Saveable):
     '''
     adds self to the list of cinematics
     '''
-    def addSubmenuToCinematicQueue(self)
+    def addSubmenuToCinematicQueue(self):
         # bad code: hooks the submenue directly into the interaction
         interaction.submenue = self.submenue
         interaction.submenue.followUp = self.abort
@@ -264,7 +264,7 @@ class TextCinematic(BasicCinematic):
            self.footerText = ""
 
         # flatten text and text information
-        self.text = urwidSpecials.flattenToPeseudoString(self.text)
+        self.text = src.urwidSpecials.flattenToPeseudoString(self.text)
         self.endPosition = len(self.text)
         if not scrolling:
             self.position = self.endPosition
@@ -305,7 +305,7 @@ class TextCinematic(BasicCinematic):
 
         # set or not set rusty colors
         if self.rusty:
-            base = urwidSpecials.makeRust(baseText)
+            base = src.urwidSpecials.makeRusty(baseText)
         else:
             base = [baseText]
 

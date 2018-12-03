@@ -1,3 +1,4 @@
+import urwid
 
 """
 split a mix of strings and urwid formating into a list where each element contains exactly
@@ -41,4 +42,4 @@ def makeRusty(payload):
         counter += 1
         if len(char):
             converted.append((urwid.AttrSpec(colours[counter*7%5],'default'),char))
-     return converted
+    return converted

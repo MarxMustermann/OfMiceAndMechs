@@ -62,7 +62,8 @@ class GameState():
         # handle missing savefile
         import os
         if not os.path.isfile("gamestate/gamestate.json"):
-            # bad code: should log
+            debugMessages.append("no gamestate found - NOT LOADING")
+            print("no gamestate found")
             return False
 
         # load state from disc
@@ -71,7 +72,8 @@ class GameState():
 
             # handle special gamestates
             if rawstate in ["you lost","reset","Winning is no fun at all"]:
-                # bad code: should log
+                debugMessages.append("special gamestate "+str(rawstate)+" found - NOT LOADING")
+                print("final gamestate found - resetting")
                 return False
 
             # get state

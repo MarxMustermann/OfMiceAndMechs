@@ -303,6 +303,7 @@ story.debugMessages = debugMessages
 interaction.debugMessages = debugMessages
 events.debugMessages = debugMessages
 canvas.debugMessages = debugMessages
+gamestate.debugMessages = debugMessages
 
 # bad code: common variables with modules
 quests.showCinematic = cinematics.showCinematic

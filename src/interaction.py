@@ -235,8 +235,8 @@ def processInput(key):
         idleCounter = 0
 
     # discard keysstrokes, if they were not processed for too long
-    # bad code: long list
-    if not key in (commandChars.autoAdvance, commandChars.quit_instant, commandChars.ignore,commandChars.quit_delete, commandChars.pause, commandChars.show_quests, commandChars.show_quests_detailed, commandChars.show_inventory, commandChars.show_inventory_detailed, commandChars.show_characterInfo):
+    ignoreList = (commandChars.autoAdvance, commandChars.quit_instant, commandChars.ignore,commandChars.quit_delete, commandChars.pause, commandChars.show_quests, commandChars.show_quests_detailed, commandChars.show_inventory, commandChars.show_inventory_detailed, commandChars.show_characterInfo)
+    if not key in ignoreList:
         if lastLagDetection < time.time()-0.4:
             return
 

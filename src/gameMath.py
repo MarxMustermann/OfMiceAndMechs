@@ -1,6 +1,6 @@
 #########################################################################################
 ###
-##      special non standard mathbelongs here
+##      special non standard math belongs here
 #       bad code: pathfindind doesn't really belong here
 #       bad code: the whole file is obsolete probably
 #
@@ -54,9 +54,9 @@ def removeLoops(path):
     return newPath
 
 '''
-naively calculate a path uses a pracalcated standard path to speed up 
+naively calculate a path uses a precalcated standard path to speed up 
 bad code: this assumes no obstacles resulting in bugs and odd workarounds. So this should not be used really.
-bad code: Alternative implementations exist but not everywhere yet
+bad code: alternative implementations exist but not everywhere yet
 '''
 def calculatePath(startX,startY,endX,endY,walkingPath):
     # get path with loops
@@ -193,6 +193,7 @@ def calculatePathReal(startX,startY,endX,endY,walkingPath):
             result.extend(calculatePathReal(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
             result.extend(calculatePathReal(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
             return result
+
     # split calcualtion into to - within - from default path
     else:
         path = []

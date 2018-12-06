@@ -212,6 +212,7 @@ def processInput(key):
     # handle lag detection
     # bad code: lagdetection is abused as a timer
     if key in ("lagdetection",):
+
         # trigger the next lagdetection keystroke
         loop.set_alarm_in(0.1, callShow_or_exit, "lagdetection")
         lastLagDetection = time.time()
@@ -1568,6 +1569,7 @@ class AdvancedQuestMenu(SubMenu):
                     return False
 
             elif self.quest == src.quests.StoreCargo:
+
                 # set up the options for selecting the cargo room
                 if "cargoRoom" not in self.questParams:
                     if not self.options and not self.getSelection():
@@ -1621,6 +1623,7 @@ class AdvancedQuestMenu(SubMenu):
 
         # get confirmation and assign quest
         if self.state == "confirm":
+
             # set the options for confirming the selection
             if not self.options and not self.getSelection():
                 options = [("yes","yes"),("no","no")]
@@ -1745,7 +1748,8 @@ def renderHeader():
         if len(questLine) > questWidth:
             txt += questLine[:questWidth]+"┃ "
             questLine = questLine[questWidth:]
-        # padd left line
+
+        # pad left line
         else:
             txt += questLine+" "*(questWidth-len(questLine))+"┃ "
             # bug?: doen't this pop twice?
@@ -1818,6 +1822,7 @@ def renderQuests(maxQuests=0,char=None, asList=False, questIndex=0):
             counter += 1
             if counter == maxQuests:
                 break
+
     # return placeholder for no quests
     else:
         if asList:

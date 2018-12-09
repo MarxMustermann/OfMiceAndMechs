@@ -835,7 +835,6 @@ class SubMenu(src.saveing.Saveable):
                 self.selectionIndex -= 1
                 if self.selectionIndex == 0:
                     self.selectionIndex = len(self.options)
-            # change the marked option
             if key == "s":
                 self.selectionIndex += 1
                 if self.selectionIndex > len(self.options):
@@ -865,6 +864,7 @@ class SubMenu(src.saveing.Saveable):
                 out += str(k)+" - "+str(v)+"\n"
 
         # show the rendered options 
+        # bad code: uwrid specific code
         main.set_text((urwid.AttrSpec("default","default"),self.persistentText+"\n\n"+out))
 
         return False
@@ -1095,6 +1095,7 @@ class RecruitChat(SubMenu):
 '''
 a chat with a character, partially hardcoded partially dynamically generated 
 bad code: sub menues should be implemented in the base class
+bad code: should be in chats.py
 '''
 class ChatMenu(SubMenu):
 
@@ -1364,7 +1365,7 @@ class QuestMenu(SubMenu):
         self.persistentText = []
         self.persistentText.append(renderQuests(char=self.char,asList=True,questIndex = self.questIndex))
 
-        # spawn the quest menu for adding quests
+        # spawn the quest menu for complex quest handling
         if not self.lockOptions:
             if key in ["q"]:
                 global submenue
@@ -1513,12 +1514,13 @@ class AdvancedQuestMenu(SubMenu):
 
         # let the player select the type of quest to create
         if self.state == "questSelection":
-            # add a list of quests
+
+            # add quests to select from
             if not self.options and not self.getSelection():
                 options = []
                 for key,value in src.quests.questMap.items():
 
-                    # show only quests the chractre has done
+                    # show only quests the character has done
                     if not key in mainChar.questsDone:
                         continue
 

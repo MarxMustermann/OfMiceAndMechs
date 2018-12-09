@@ -53,7 +53,7 @@ class Item(src.saveing.Saveable):
         self.mayContainMice = False
         self.bolted = not self.walkable
 
-        # set up saveing
+        # set up metadata for saving
         self.attributesToStore.extend([
                "mayContainMice","name","type","walkable","xPosition","yPosition","bolted"])
 

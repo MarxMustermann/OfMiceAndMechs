@@ -507,17 +507,25 @@ def processInput(key):
                     return
 
             # murder the next available character
-            # bad pattern: enemies kill on 1 distance so the player should be able to do so too
+            # bad pattern: player should be able to select whom to kill if there are multiple targets
             if key in (commandChars.attack):
                 if not "NaiveMurderQuest" in mainChar.solvers:
                     messages.append("you do not have the nessecary solver yet")
                 else:
+                    # bad code: should be part of a position object
+                    adjascentFields = [(mainChar.xPosition,mainChar.yPosition),
+                                       (mainChar.xPosition-1,mainChar.yPosition),
+                                       (mainChar.xPosition+1,mainChar.yPosition),
+                                       (mainChar.xPosition,mainChar.yPosition-1),
+                                       (mainChar.xPosition,mainChar.yPosition+1),
+                                      ]
                     for char in mainChar.container.characters:
                         if char == mainChar:
                             continue
-                        if not (mainChar.xPosition == char.xPosition and mainChar.yPosition == char.yPosition):
+                        if not (char.xPosition,char.yPosition) in adjascentFields:
                             continue
                         char.die()
+                        break
 
             # activate an item 
             if key in (commandChars.activate):

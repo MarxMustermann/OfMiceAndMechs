@@ -541,6 +541,7 @@ def processInput(key):
                         for item in mainChar.container.itemsOnFloor:
                             if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
                                 item.apply(mainChar)
+                                break
 
             # examine an item 
             if key in (commandChars.examine):

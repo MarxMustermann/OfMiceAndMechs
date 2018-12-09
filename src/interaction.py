@@ -218,17 +218,12 @@ def processInput(key):
         lastLagDetection = time.time()
 
         # advance the game if the character stays idle
-        # bad code: amount of if/returns should be reduced
         if len(cinematics.cinematicQueue) or pauseGame:
             return
         idleCounter += 1
-        if idleCounter < 4:
+        if idleCounter < 4 or idleCounter%5 == 0:
             return
-        else:
-            if idleCounter%5 == 0:
-                key = commandChars.wait
-            else:
-                return
+        key = commandChars.wait
 
     # reset activity counter
     else:

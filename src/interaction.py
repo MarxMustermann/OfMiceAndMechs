@@ -455,7 +455,7 @@ def processInput(key):
                         elif direction == "west":
                             destCoord = (mainChar.xPosition-1,mainChar.yPosition)
 
-                        if foundItems in terrain.itemByCoordinates[destCoord]:
+                        if destCoord in terrain.itemByCoordinates:
                             foundItems = terrain.itemByCoordinates[destCoord]
                         else:
                             foundItems = []

@@ -569,7 +569,7 @@ def processInput(key):
                         mainChar.drop(mainChar.inventory[0])
 
             # drink from the first available item in inventory
-            # bad pattern: the user has to have the choice for what item to drop
+            # bad pattern: the user has to have the choice from what item to drink from
             # bad code: drinking should happen in character
             if key in (commandChars.drink):
                 character = mainChar
@@ -709,6 +709,7 @@ def processInput(key):
             canvas.setPygameDisplay(pydisplay,pygame,tileSize)
 
     # show the game won screen
+    # bad code: display mode specific code
     if gamestate.gameWon:
         main.set_text((urwid.AttrSpec("default","default"),""))
         main.set_text((urwid.AttrSpec("default","default"),"credits"))

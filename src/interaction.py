@@ -451,17 +451,18 @@ def processInput(key):
                     # handle walking without room interaction
                     if not hadRoomInteraction:
                         # get the items on the destination coordinate 
-                        try:
-                            if direction == "north":
-                                foundItems = terrain.itemByCoordinates[mainChar.xPosition,mainChar.yPosition-1]
-                            elif direction == "south":
-                                foundItems = terrain.itemByCoordinates[mainChar.xPosition,mainChar.yPosition+1]
-                            elif direction == "east":
-                                foundItems = terrain.itemByCoordinates[mainChar.xPosition+1,mainChar.yPosition]
-                            elif direction == "west":
-                                foundItems = terrain.itemByCoordinates[mainChar.xPosition-1,mainChar.yPosition]
-                        except Exception as e:
-                            # bad code: should log
+                        if direction == "north":
+                            destCoord = (mainChar.xPosition,mainChar.yPosition-1)
+                        elif direction == "south":
+                            destCoord = (mainChar.xPosition,mainChar.yPosition+1)
+                        elif direction == "east":
+                            destCoord = (mainChar.xPosition+1,mainChar.yPosition)
+                        elif direction == "west":
+                            destCoord = (mainChar.xPosition-1,mainChar.yPosition)
+
+                        if foundItems in terrain.itemByCoordinates[destCoord]:
+                            foundItems = terrain.itemByCoordinates[destCoord]
+                        else:
                             foundItems = []
 
                         # check for items blocking the move to the destination coordinate

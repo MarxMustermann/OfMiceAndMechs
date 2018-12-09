@@ -512,14 +512,12 @@ def processInput(key):
                 if not "NaiveMurderQuest" in mainChar.solvers:
                     messages.append("you do not have the nessecary solver yet")
                 else:
-                    if mainChar.room:
-                        for char in mainChar.room.characters:
-                            if char == mainChar:
-                                continue
-                            if not (mainChar.xPosition == char.xPosition and mainChar.yPosition == char.yPosition):
-                                continue
-                            char.die()
-                    # bad code: no else, so characters can only be killed within rooms -_-
+                    for char in mainChar.container.characters:
+                        if char == mainChar:
+                            continue
+                        if not (mainChar.xPosition == char.xPosition and mainChar.yPosition == char.yPosition):
+                            continue
+                        char.die()
 
             # activate an item 
             if key in (commandChars.activate):

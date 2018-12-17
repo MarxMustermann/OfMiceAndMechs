@@ -13,9 +13,9 @@ class PathsOverlay(object):
     '''
     def apply(self,chars,terrain):
 
-	    # do not draw when hidden
+        # do not draw when hidden
         if terrain.hidden:
-		    return
+            return
 
         # bad code: urwid specific code
         import urwid
@@ -51,9 +51,9 @@ class QuestMarkerOverlay(object):
     '''
     def apply(self,chars,mainChar,displayChars):
 
-	    # handle edge case
+        # handle edge case
         if mainChar.room or not mainChar.path:
-		    return
+            return
 
         # draw path
         for item in mainChar.path:

@@ -1210,12 +1210,12 @@ class NaivePickupQuest(Quest):
     check whether item is in characters inventory
     '''
     def triggerCompletionCheck(self):
-	   
-	    # handle edge case
-	    if not self.active:
-		    return
-		if not self.toPickup in self.character.inventory:
-		    return
+       
+        # handle edge case
+        if not self.active:
+            return
+        if not self.toPickup in self.character.inventory:
+            return
 
         # do follow up
         self.postHandler()
@@ -1924,10 +1924,10 @@ class MoveQuestMeta(MetaQuestSequence):
     move to correct room if nesseccary
     '''
     def recalculate(self):
-	    # handle impossible state
+        # handle impossible state
         if not self.active:
-		    debugMessages.append("recalculate called on non active quest: "+str(self))
-		    return
+            debugMessages.append("recalculate called on non active quest: "+str(self))
+            return
 
         # leave wrong room
         if self.leaveRoomQuest and self.leaveRoomQuest.completed:
@@ -2003,10 +2003,10 @@ class DropQuestMeta(MetaQuestSequence):
     re-add the movement quest if neccessary
     '''
     def recalculate(self):
-	    # handle impossible state
+        # handle impossible state
         if not self.active:
-		    debugMessages.append("recalculate called on non active quest: "+str(self))
-		    return
+            debugMessages.append("recalculate called on non active quest: "+str(self))
+            return
        
         # add quest to move to dropoff
         if self.moveQuest and self.moveQuest.completed:
@@ -2065,10 +2065,10 @@ class PickupQuestMeta(MetaQuestSequence):
             debugMessages.append("Pickup quest with nothing to pick up")
             return
 
-	    # handle impossible state
+        # handle impossible state
         if not self.active:
-		    debugMessages.append("recalculate called on non active quest: "+str(self))
-		    return
+            debugMessages.append("recalculate called on non active quest: "+str(self))
+            return
 
         # add quest to move to target
         if self.moveQuest and self.moveQuest.completed:
@@ -2256,11 +2256,11 @@ class CollectQuestMeta(MetaQuestSequence):
     bad code: only works within room and with piles
     '''
     def assignToCharacter(self,character):
-		# handle edge case
-	    if not character.room:
-		    debugMessages.append("encountered NIY on collect quest")
+        # handle edge case
+        if not character.room:
+            debugMessages.append("encountered NIY on collect quest")
             self.postHandler()
-			return
+            return
 
         # search for an item 
         # bad code: should prefer coal
@@ -2326,11 +2326,11 @@ class GetQuest(MetaQuestSequence):
     '''
     def triggerCompletionCheck(self):
         if not self.active:
-		    return
+            return
         if not self.quest:
             return
-		
-		self.postHandler()
+        
+        self.postHandler()
 
     '''
     forward quest from subquest
@@ -2443,8 +2443,8 @@ class MurderQuest(MetaQuestSequence):
     adjust movement to follow target
     '''
     def recalculate(self):
-	    if not self.active:
-		    return
+        if not self.active:
+            return
 
         # reset target
         # bad code: freezed npc while reorienting
@@ -2487,7 +2487,7 @@ class KnockOutQuest(MetaQuestSequence):
     '''
     def recalculate(self):
         if not self.active:
-		    return
+            return
 
         # reset target if it moved
         pos = (self.target.room,self.target.xPosition,self.target.yPosition)
@@ -2530,7 +2530,7 @@ class WakeUpQuest(MetaQuestSequence):
     '''
     def recalculate(self):
         if not self.active:
-		    return
+            return
 
         pos = (self.target.room,self.target.xPosition,self.target.yPosition)
         if not (pos == self.lastPos):
@@ -2620,8 +2620,8 @@ class LeaveRoomQuest(Quest):
     def solver(self,character):
         # bad code: solver excecution should be splited from the rest of the logic
         if super().solver(character):
-		    if not character.room:
-			    return True
+            if not character.room:
+                return True
 
             # close door
             for item in character.room.itemByCoordinates[(character.xPosition,character.yPosition)]:
@@ -2759,8 +2759,8 @@ class ExamineQuest(Quest):
     '''
     def registerExaminination(self,item):
         itemType = type(item)
-		if itemType in self.examinedItems:
-		    return
+        if itemType in self.examinedItems:
+            return
 
         self.examinedItems.append(itemType)
         self.triggerCompletionCheck()
@@ -2771,10 +2771,10 @@ class ExamineQuest(Quest):
     def setState(self,state):
         super().setState(state)
 
-		if not self.active:
-		    return
+        if not self.active:
+            return
         if not self.character:
-		    return
+            return
 
         self.character.addListener(self.registerExaminination,"examine")
 
@@ -2986,10 +2986,10 @@ class TransportQuest(MetaQuestSequence):
     drop the item after picking it up
     '''
     def addDrop(self):
-		if not self.dropOff:
-		    return
+        if not self.dropOff:
+            return
         
-		self.addQuest(DropQuestMeta(self.toTransport,self.dropOff[0],self.dropOff[1],self.dropOff[2],creator=self))
+        self.addQuest(DropQuestMeta(self.toTransport,self.dropOff[0],self.dropOff[1],self.dropOff[2],creator=self))
     
     '''
     set internal state from dictionary
@@ -3416,7 +3416,7 @@ class HopperDuty(MetaQuestSequence):
     '''
     def recalculate(self):
         if not self.active:
-		    return
+            return
 
         # remove completed quest
         if self.getQuest and self.getQuest.completed:

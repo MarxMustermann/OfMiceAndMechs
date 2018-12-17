@@ -1282,20 +1282,6 @@ class DebugMenu(SubMenu):
             return True
 
         if self.firstRun:
-            # bad code: unstructured chaos
-            import objgraph
-            #objgraph.show_backrefs(mainChar, max_depth=4)
-            """
-            msg = ""
-            for item in objgraph.most_common_types(limit=50):
-                msg += ("\n"+str(item))
-            main.set_text(msg)
-
-            constructionSite = terrain.roomByCoordinates[(4,2)][0]
-            quest = quests.ConstructRoom(constructionSite,terrain.tutorialStorageRooms)
-            mainChar.assignQuest(quest,active=True)
-            """
-
             # show debug output
             main.set_text(str(terrain.tutorialStorageRooms[3].storageSpace)+"\n"+str(list(reversed(terrain.tutorialStorageRooms[3].storageSpace)))+"\n\n"+str(terrain.tutorialStorageRooms[3].storedItems))
             self.firstRun = False

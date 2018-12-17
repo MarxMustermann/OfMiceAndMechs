@@ -9,7 +9,6 @@ import urwid
 import json
 
 # load basic internal libs
-import gamestate # bad code: wtf is this?
 import src.saveing
 import src.events
 
@@ -126,18 +125,17 @@ class Item(src.saveing.Saveable):
            (not self.mayContainMice and (gamestate.tick+self.xPosition-self.yPosition)%100 == 0 and not self.walkable)):
 
             # create mouse
-            # bad code: variable name lies
-            rat = characters.Mouse(creator=self)
+            mouse = characters.Mouse(creator=self)
         
             # make mouse attack the player
             quest = quests.MetaQuestSequence([],creator=self)
             quest.addQuest(quests.MoveQuestMeta(room=self.room,x=self.xPosition,y=self.yPosition,creator=self))
             quest.addQuest(quests.KnockOutQuest(character,lifetime=30,creator=self))
             quest.addQuest(quests.WaitQuest(lifetime=5,creator=self))
-            rat.assignQuest(quest,active=True)
+            mouse.assignQuest(quest,active=True)
 
             # make mouse vanish after successful attack
-            quest.endTrigger = {"container":rat,"method":"vanish"}
+            quest.endTrigger = {"container":mouse,"method":"vanish"}
 
             if self.room:
                 room = self.room
@@ -145,7 +143,7 @@ class Item(src.saveing.Saveable):
                 yPosition = self.yPosition
 
                 # add mouse
-                room.addCharacter(rat,xPosition,yPosition)
+                room.addCharacter(mouse,xPosition,yPosition)
 
                 '''
                 set up an ambush if target left the room
@@ -210,7 +208,7 @@ class Item(src.saveing.Saveable):
                 room.addListener(test,"left room")
             else:
                 # add mouse
-                self.terrain.addCharacter(rat,self.xPosition,self.yPosition)
+                self.terrain.addCharacter(mouse,self.xPosition,self.yPosition)
 
 
         # remove position information to place item in the void
@@ -395,7 +393,7 @@ class Scrap(Item):
 
         # only drop something if there is something left to drop
         if self.amount <= 1:
-		    return
+            return
 
         # determine how much should fall off
         fallOffAmount = 1
@@ -936,7 +934,7 @@ class Door(Item):
         if (self.room.isContainment and character.room):
             # bad code: should only apply tho watched characters
             messages.append("you cannot open the door from the inside")
-			return
+            return
 
         # open the door
         self.walkable = True
@@ -1446,15 +1444,15 @@ class GooFlask(Item):
         super().apply(character,silent=True)
 
         # handle edge case
-		if self.uses <= 0:
-		    messages.append("you drink from your flask, but it is empty")
-			return
+        if self.uses <= 0:
+            messages.append("you drink from your flask, but it is empty")
+            return
 
         # print feedback
-		if not self.uses == 1:
-		    messages.append("you drink from your flask")
-		else:
-		    messages.append("you drink from your flask and empty it")
+        if not self.uses == 1:
+            messages.append("you drink from your flask")
+        else:
+            messages.append("you drink from your flask and empty it")
 
         # change state
         self.uses -= 1

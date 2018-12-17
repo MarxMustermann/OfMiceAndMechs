@@ -1210,10 +1210,15 @@ class NaivePickupQuest(Quest):
     check whether item is in characters inventory
     '''
     def triggerCompletionCheck(self):
-        # bad code: should be a guard
-        if self.active:
-            if self.toPickup in self.character.inventory:
-                self.postHandler()
+	   
+	    # handle edge case
+	    if not self.active:
+		    return
+		if not self.toPickup in self.character.inventory:
+		    return
+
+        # do follow up
+        self.postHandler()
 
     '''
     pick up the item
@@ -1919,22 +1924,24 @@ class MoveQuestMeta(MetaQuestSequence):
     move to correct room if nesseccary
     '''
     def recalculate(self):
-        # bad code: should ne a guard
-        if self.active:
+	    # handle impossible state
+        if not self.active:
+		    debugMessages.append("recalculate called on non active quest: "+str(self))
+		    return
 
-            # leave wrong room
-            if self.leaveRoomQuest and self.leaveRoomQuest.completed:
-                self.leaveRoomQuest = None
-            if not self.leaveRoomQuest and (not self.room and self.character.room):
-                self.leaveRoomQuest = LeaveRoomQuest(self.character.room,creator=self)
-                self.addQuest(self.leaveRoomQuest)
+        # leave wrong room
+        if self.leaveRoomQuest and self.leaveRoomQuest.completed:
+            self.leaveRoomQuest = None
+        if not self.leaveRoomQuest and (not self.room and self.character.room):
+            self.leaveRoomQuest = LeaveRoomQuest(self.character.room,creator=self)
+            self.addQuest(self.leaveRoomQuest)
 
-            # enter correct room
-            if self.enterRoomQuest and self.enterRoomQuest.completed:
-                self.enterRoomQuest = None
-            if (not self.enterRoomQuest and (self.room and ((not self.character.room) or (not self.character.room == self.room)))):
-                self.enterRoomQuest = EnterRoomQuestMeta(self.room,creator=self)
-                self.addQuest(self.enterRoomQuest)
+        # enter correct room
+        if self.enterRoomQuest and self.enterRoomQuest.completed:
+            self.enterRoomQuest = None
+        if (not self.enterRoomQuest and (self.room and ((not self.character.room) or (not self.character.room == self.room)))):
+            self.enterRoomQuest = EnterRoomQuestMeta(self.room,creator=self)
+            self.addQuest(self.enterRoomQuest)
 
         super().recalculate()
     
@@ -1996,14 +2003,18 @@ class DropQuestMeta(MetaQuestSequence):
     re-add the movement quest if neccessary
     '''
     def recalculate(self):
-        # bad code: should be a guard
-        if self.active:
-            # add quest to move to dropoff
-            if self.moveQuest and self.moveQuest.completed:
-                self.moveQuest = None
-            if not self.moveQuest and not (self.room == self.character.room and self.xPosition == self.character.xPosition and self.yPosition == self.character.yPosition):
-                self.moveQuest = MoveQuestMeta(self.room,self.xPosition,self.yPosition,creator=self)
-                self.addQuest(self.moveQuest)
+	    # handle impossible state
+        if not self.active:
+		    debugMessages.append("recalculate called on non active quest: "+str(self))
+		    return
+       
+        # add quest to move to dropoff
+        if self.moveQuest and self.moveQuest.completed:
+            self.moveQuest = None
+        if not self.moveQuest and not (self.room == self.character.room and self.xPosition == self.character.xPosition and self.yPosition == self.character.yPosition):
+            self.moveQuest = MoveQuestMeta(self.room,self.xPosition,self.yPosition,creator=self)
+            self.addQuest(self.moveQuest)
+
         super().recalculate()
 
     '''
@@ -2054,31 +2065,35 @@ class PickupQuestMeta(MetaQuestSequence):
             debugMessages.append("Pickup quest with nothing to pick up")
             return
 
-        # bad code: should be a guard
-        if self.active:
-            # add quest to move to target
-            if self.moveQuest and self.moveQuest.completed:
-                self.moveQuest = None
-            if not self.moveQuest:
-                # check whether it is neccessary to re add the movement
-                reAddMove = False
-                if not self.sloppy:
-                    if self.toPickup.xPosition == None or self.toPickup.yPosition == None:
-                        reAddMove = False
-                    elif not (self.toPickup.room == self.character.room and self.toPickup.xPosition == self.character.xPosition and self.toPickup.yPosition == self.character.yPosition):
-                        reAddMove = True
-                else:
-                    if self.toPickup.xPosition == None or self.toPickup.yPosition == None:
-                        reAddMove = False
-                    elif not (self.toPickup.room == self.character.room and (
-                                                             (self.toPickup.xPosition-self.character.xPosition in (-1,0,1) and self.toPickup.yPosition == self.character.yPosition) or 
-                                                             (self.toPickup.yPosition-self.character.yPosition in (-1,0,1) and self.toPickup.xPosition == self.character.xPosition))):
-                        reAddMove = True
+	    # handle impossible state
+        if not self.active:
+		    debugMessages.append("recalculate called on non active quest: "+str(self))
+		    return
 
-                # re add the movement
-                if reAddMove:
-                    self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition,sloppy=self.sloppy,creator=self)
-                    self.addQuest(self.moveQuest)
+        # add quest to move to target
+        if self.moveQuest and self.moveQuest.completed:
+            self.moveQuest = None
+        if not self.moveQuest:
+            # check whether it is neccessary to re add the movement
+            reAddMove = False
+            if not self.sloppy:
+                if self.toPickup.xPosition == None or self.toPickup.yPosition == None:
+                    reAddMove = False
+                elif not (self.toPickup.room == self.character.room and self.toPickup.xPosition == self.character.xPosition and self.toPickup.yPosition == self.character.yPosition):
+                    reAddMove = True
+            else:
+                if self.toPickup.xPosition == None or self.toPickup.yPosition == None:
+                    reAddMove = False
+                elif not (self.toPickup.room == self.character.room and (
+                         (self.toPickup.xPosition-self.character.xPosition in (-1,0,1) and self.toPickup.yPosition == self.character.yPosition) or 
+                         (self.toPickup.yPosition-self.character.yPosition in (-1,0,1) and self.toPickup.xPosition == self.character.xPosition))):
+                    reAddMove = True
+
+            # re add the movement
+            if reAddMove:
+                self.moveQuest = MoveQuestMeta(self.toPickup.room,self.toPickup.xPosition,self.toPickup.yPosition,sloppy=self.sloppy,creator=self)
+                self.addQuest(self.moveQuest)
+
         super().recalculate()
 
     '''
@@ -2138,35 +2153,39 @@ class ActivateQuestMeta(MetaQuestSequence):
     re-add the movement quest if neccessary
     '''
     def recalculate(self):
-        # should be a guard
-        if self.active:
-            # add quest to move to target
-            if self.moveQuest and self.moveQuest.completed:
-                self.moveQuest = None
-            if self.moveQuest and not self.moveQuest in self.subQuests:
-                tmp = self.moveQuest
-                self.moveQuest = None
-                tmp.deactivate()
-            if not self.moveQuest:
-                # check whether it is neccessary to re add the movement
-                reAddMove = False
-                if not self.sloppy:
-                    if not hasattr(self.toActivate,"xPosition") or not hasattr(self.toActivate,"yPosition"):
-                        reAddMove = False
-                    elif not (self.toActivate.room == self.character.room and self.toActivate.xPosition == self.character.xPosition and self.toActivate.yPosition == self.character.yPosition):
-                        reAddMove = True
-                else:
-                    if not hasattr(self.toActivate,"xPosition") or not hasattr(self.toActivate,"yPosition"):
-                        reAddMove = False
-                    elif not (self.toActivate.room == self.character.room and (
-                                                             (self.toActivate.xPosition-self.character.xPosition in (-1,0,1) and self.toActivate.yPosition == self.character.yPosition) or 
-                                                             (self.toActivate.yPosition-self.character.yPosition in (-1,0,1) and self.toActivate.xPosition == self.character.xPosition))):
-                        reAddMove = True
+        # smooth over impossible state
+        if not self.toPickup:
+            debugMessages.append("Pickup quest with nothing to pick up")
+            return
 
-                # re add the movement
-                if reAddMove:
-                    self.moveQuest = MoveQuestMeta(self.toActivate.room,self.toActivate.xPosition,self.toActivate.yPosition,sloppy=self.sloppy,creator=self)
-                    self.addQuest(self.moveQuest)
+        # add quest to move to target
+        if self.moveQuest and self.moveQuest.completed:
+            self.moveQuest = None
+        if self.moveQuest and not self.moveQuest in self.subQuests:
+            tmp = self.moveQuest
+            self.moveQuest = None
+            tmp.deactivate()
+        if not self.moveQuest:
+            # check whether it is neccessary to re add the movement
+            reAddMove = False
+            if not self.sloppy:
+                if not hasattr(self.toActivate,"xPosition") or not hasattr(self.toActivate,"yPosition"):
+                    reAddMove = False
+                elif not (self.toActivate.room == self.character.room and self.toActivate.xPosition == self.character.xPosition and self.toActivate.yPosition == self.character.yPosition):
+                    reAddMove = True
+            else:
+                if not hasattr(self.toActivate,"xPosition") or not hasattr(self.toActivate,"yPosition"):
+                    reAddMove = False
+                elif not (self.toActivate.room == self.character.room and (
+                         (self.toActivate.xPosition-self.character.xPosition in (-1,0,1) and self.toActivate.yPosition == self.character.yPosition) or 
+                         (self.toActivate.yPosition-self.character.yPosition in (-1,0,1) and self.toActivate.xPosition == self.character.xPosition))):
+                    reAddMove = True
+
+            # re add the movement
+            if reAddMove:
+                self.moveQuest = MoveQuestMeta(self.toActivate.room,self.toActivate.xPosition,self.toActivate.yPosition,sloppy=self.sloppy,creator=self)
+                self.addQuest(self.moveQuest)
+
         super().recalculate()
         
     '''
@@ -2237,34 +2256,38 @@ class CollectQuestMeta(MetaQuestSequence):
     bad code: only works within room and with piles
     '''
     def assignToCharacter(self,character):
-        # bad code: should be a guard
-        if character.room:
-            # search for an item 
-            # bad code: should prefer coal
-            foundItem = None
-            for item in character.room.itemsOnFloor:
-                hasProperty = False
-                # bad code: unneeded try/except
-                try:
-                    hasProperty = getattr(item,"contains_"+self.toFind)
-                except:
-                    continue
+		# handle edge case
+	    if not character.room:
+		    debugMessages.append("encountered NIY on collect quest")
+            self.postHandler()
+			return
+
+        # search for an item 
+        # bad code: should prefer coal
+        foundItem = None
+        for item in character.room.itemsOnFloor:
+            hasProperty = False
+            # bad code: unneeded try/except
+            try:
+                hasProperty = getattr(item,"contains_"+self.toFind)
+            except:
+                continue
                         
-                if hasProperty:
-                    foundItem = item
-                    break
+            if hasProperty:
+                foundItem = item
+                break
 
-            # add quest to activate the pile
-            if foundItem:
-                self.activeQuest = ActivateQuestMeta(foundItem,creator=self)
-                self.addQuest(self.activeQuest)
+        # add quest to activate the pile
+        if foundItem:
+            self.activeQuest = ActivateQuestMeta(foundItem,creator=self)
+            self.addQuest(self.activeQuest)
 
-            # terminate when done
-            if self.waitQuest and foundItem:
-                quest = self.waitQuest
-                self.subQuests.remove(quest)
-                quest.postHandler()
-                self.waitQuest = None
+        # terminate when done
+        if self.waitQuest and foundItem:
+            quest = self.waitQuest
+            self.subQuests.remove(quest)
+            quest.postHandler()
+            self.waitQuest = None
 
         super().assignToCharacter(character)
 
@@ -2302,11 +2325,12 @@ class GetQuest(MetaQuestSequence):
     check if a quest was aquired
     '''
     def triggerCompletionCheck(self):
-        # bad code: should be a guard
-        if self.active:
-            if self.quest:
-                self.postHandler()
-        super().triggerCompletionCheck()
+        if not self.active:
+		    return
+        if not self.quest:
+            return
+		
+		self.postHandler()
 
     '''
     forward quest from subquest
@@ -2419,18 +2443,19 @@ class MurderQuest(MetaQuestSequence):
     adjust movement to follow target
     '''
     def recalculate(self):
+	    if not self.active:
+		    return
+
         # reset target
-        # bad code: should be a guard
-        if self.active:
-            # bad code: freezed npc while reorienting
-            pos = (self.toKill.room,self.toKill.xPosition,self.toKill.yPosition)
-            if not (pos == self.lastPos) and not self.toKill.dead:
-                self.lastPos = pos
-                self.moveQuest.deactivate()
-                if self.moveQuest in self.subQuests:
-                        self.subQuests.remove(self.moveQuest)
-                self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=True,creator=self)
-                self.addQuest(self.moveQuest)
+        # bad code: freezed npc while reorienting
+        pos = (self.toKill.room,self.toKill.xPosition,self.toKill.yPosition)
+        if not (pos == self.lastPos) and not self.toKill.dead:
+            self.lastPos = pos
+            self.moveQuest.deactivate()
+            if self.moveQuest in self.subQuests:
+                self.subQuests.remove(self.moveQuest)
+            self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=True,creator=self)
+            self.addQuest(self.moveQuest)
         super().recalculate()
 
 '''
@@ -2461,17 +2486,18 @@ class KnockOutQuest(MetaQuestSequence):
     adjust movement to follow target
     '''
     def recalculate(self):
+        if not self.active:
+		    return
+
         # reset target if it moved
-        # bad code: should be a guard
-        if self.active:
-            pos = (self.target.room,self.target.xPosition,self.target.yPosition)
-            if not (pos == self.lastPos) and not self.target.dead:
-                self.lastPos = pos
-                self.moveQuest.deactivate()
-                if self.moveQuest in self.subQuests:
-                        self.subQuests.remove(self.moveQuest)
-                self.moveQuest = MoveQuestMeta(self.target.room,self.target.xPosition,self.target.yPosition,sloppy=True,creator=self)
-                self.addQuest(self.moveQuest)
+        pos = (self.target.room,self.target.xPosition,self.target.yPosition)
+        if not (pos == self.lastPos) and not self.target.dead:
+            self.lastPos = pos
+            self.moveQuest.deactivate()
+            if self.moveQuest in self.subQuests:
+                self.subQuests.remove(self.moveQuest)
+            self.moveQuest = MoveQuestMeta(self.target.room,self.target.xPosition,self.target.yPosition,sloppy=True,creator=self)
+            self.addQuest(self.moveQuest)
         super().recalculate()
 
 '''
@@ -2503,16 +2529,17 @@ class WakeUpQuest(MetaQuestSequence):
     adjust movement to follow target
     '''
     def recalculate(self):
-        # bad code: should be a guard
-        if self.active:
-            pos = (self.target.room,self.target.xPosition,self.target.yPosition)
-            if not (pos == self.lastPos):
-                self.lastPos = pos
-                self.moveQuest.deactivate()
-                if self.moveQuest in self.subQuests:
-                        self.subQuests.remove(self.moveQuest)
-                self.moveQuest = MoveQuestMeta(self.target.room,self.target.xPosition,self.target.yPosition,sloppy=True,creator=self)
-                self.addQuest(self.moveQuest)
+        if not self.active:
+		    return
+
+        pos = (self.target.room,self.target.xPosition,self.target.yPosition)
+        if not (pos == self.lastPos):
+            self.lastPos = pos
+            self.moveQuest.deactivate()
+            if self.moveQuest in self.subQuests:
+                self.subQuests.remove(self.moveQuest)
+            self.moveQuest = MoveQuestMeta(self.target.room,self.target.xPosition,self.target.yPosition,sloppy=True,creator=self)
+            self.addQuest(self.moveQuest)
 
         super().recalculate()
 
@@ -2593,25 +2620,25 @@ class LeaveRoomQuest(Quest):
     def solver(self,character):
         # bad code: solver excecution should be splited from the rest of the logic
         if super().solver(character):
-            # bad code: should be a guard
-            if character.room:
-                # close door
-                for item in character.room.itemByCoordinates[(character.xPosition,character.yPosition)]:
-                    if isinstance(item,src.items.Door):
-                        item.close()
+		    if not character.room:
+			    return True
 
-                # add step out of the room
-                if character.yPosition == 0:
-                    character.path.append((character.xPosition,character.yPosition-1))
-                elif character.yPosition == character.room.sizeY-1:
-                    character.path.append((character.xPosition,character.yPosition+1))
-                elif character.xPosition == 0:
-                    character.path.append((character.xPosition-1,character.yPosition))
-                elif character.xPosition == character.room.sizeX-1:
-                    character.path.append((character.xPosition+1,character.yPosition))
-                character.walkPath()
-                return False
-            return True
+            # close door
+            for item in character.room.itemByCoordinates[(character.xPosition,character.yPosition)]:
+                if isinstance(item,src.items.Door):
+                    item.close()
+
+            # add step out of the room
+            if character.yPosition == 0:
+                character.path.append((character.xPosition,character.yPosition-1))
+            elif character.yPosition == character.room.sizeY-1:
+                character.path.append((character.xPosition,character.yPosition+1))
+            elif character.xPosition == 0:
+                character.path.append((character.xPosition-1,character.yPosition))
+            elif character.xPosition == character.room.sizeX-1:
+                character.path.append((character.xPosition+1,character.yPosition))
+            character.walkPath()
+            return False
 
     '''
     assign to and listen to character
@@ -2731,10 +2758,11 @@ class ExamineQuest(Quest):
     increases the counter of observed items
     '''
     def registerExaminination(self,item):
-        # bad code: should be a guard
         itemType = type(item)
-        if not itemType in self.examinedItems:
-            self.examinedItems.append(itemType)
+		if itemType in self.examinedItems:
+		    return
+
+        self.examinedItems.append(itemType)
         self.triggerCompletionCheck()
 
     '''
@@ -2743,9 +2771,12 @@ class ExamineQuest(Quest):
     def setState(self,state):
         super().setState(state)
 
-        # bad code: should be a guard
-        if self.active and self.character:
-            self.character.addListener(self.registerExaminination,"examine")
+		if not self.active:
+		    return
+        if not self.character:
+		    return
+
+        self.character.addListener(self.registerExaminination,"examine")
 
 ##############################################################################
 ###
@@ -2955,9 +2986,10 @@ class TransportQuest(MetaQuestSequence):
     drop the item after picking it up
     '''
     def addDrop(self):
-        # bad code: should be a guard
-        if self.dropOff:
-            self.addQuest(DropQuestMeta(self.toTransport,self.dropOff[0],self.dropOff[1],self.dropOff[2],creator=self))
+		if not self.dropOff:
+		    return
+        
+		self.addQuest(DropQuestMeta(self.toTransport,self.dropOff[0],self.dropOff[1],self.dropOff[2],creator=self))
     
     '''
     set internal state from dictionary
@@ -3383,31 +3415,32 @@ class HopperDuty(MetaQuestSequence):
     get quest, do it, collect reward - repeat
     '''
     def recalculate(self):
-        # bad code: should be a guard
-        if self.active:
-            # remove completed quest
-            if self.getQuest and self.getQuest.completed:
-                self.getQuest = None
+        if not self.active:
+		    return
 
-            # add quest to fetch reward
-            if self.actualQuest and self.actualQuest.completed and not self.rewardQuest:
-                self.rewardQuest = GetReward(self.waitingRoom.secondOfficer,self.actualQuest,creator=self)
-                self.rewardQuest.assignToCharacter(self.character)
-                self.actualQuest = None
-                self.addQuest(self.rewardQuest,addFront=False)
+        # remove completed quest
+        if self.getQuest and self.getQuest.completed:
+            self.getQuest = None
 
-            # remove completed quest
-            if self.rewardQuest and self.rewardQuest.completed:
-                self.rewardQuest = None
+        # add quest to fetch reward
+        if self.actualQuest and self.actualQuest.completed and not self.rewardQuest:
+            self.rewardQuest = GetReward(self.waitingRoom.secondOfficer,self.actualQuest,creator=self)
+            self.rewardQuest.assignToCharacter(self.character)
+            self.actualQuest = None
+            self.addQuest(self.rewardQuest,addFront=False)
 
-            # add quest to get a new quest
-            if not self.getQuest and not self.actualQuest and not self.rewardQuest:
-                self.getQuest = GetQuest(self.waitingRoom.secondOfficer,assign=False,creator=self)
-                self.getQuest.assignToCharacter(self.character)
-                self.getQuest.endTrigger = {"container":self,"method":"setQuest"}
-                self.addQuest(self.getQuest,addFront=False)
+        # remove completed quest
+        if self.rewardQuest and self.rewardQuest.completed:
+            self.rewardQuest = None
 
-            super().recalculate()
+        # add quest to get a new quest
+        if not self.getQuest and not self.actualQuest and not self.rewardQuest:
+            self.getQuest = GetQuest(self.waitingRoom.secondOfficer,assign=False,creator=self)
+            self.getQuest.assignToCharacter(self.character)
+            self.getQuest.endTrigger = {"container":self,"method":"setQuest"}
+            self.addQuest(self.getQuest,addFront=False)
+
+        super().recalculate()
 
     '''
     add the actual quest as subquest

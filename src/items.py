@@ -391,28 +391,29 @@ class Scrap(Item):
     bad code: only works on terrain
     '''
     def dropStuff(self):
-        # only drop something if there is something left to drop
-        # bad code: should be a guard
-        if self.amount > 1:
-            # determine how much should fall off
-            fallOffAmount = 1
-            if self.amount > 2:
-                fallOffAmount = 2
-
-            # remove scrap from self
-            self.amount -= fallOffAmount
-
-            # generate the fallen off scrap
-            newItem = Scrap(self.xPosition,self.yPosition,fallOffAmount,creator=self)
-            newItem.room = self.room
-            newItem.terrain = self.terrain
-
-            # place the fallen off parts on map
-            # bad code: should be handled by terrain
-            self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(newItem)
-            self.terrain.itemsOnFloor.append(newItem)
         self.setWalkable()
 
+        # only drop something if there is something left to drop
+        if self.amount <= 1:
+		    return
+
+        # determine how much should fall off
+        fallOffAmount = 1
+        if self.amount > 2:
+            fallOffAmount = 2
+
+        # remove scrap from self
+        self.amount -= fallOffAmount
+
+        # generate the fallen off scrap
+        newItem = Scrap(self.xPosition,self.yPosition,fallOffAmount,creator=self)
+        newItem.room = self.room
+        newItem.terrain = self.terrain
+
+        # place the fallen off parts on map
+        # bad code: should be handled by terrain
+        self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(newItem)
+        self.terrain.itemsOnFloor.append(newItem)
 
     '''
     recalculate the walkabe attribute
@@ -932,42 +933,43 @@ class Door(Item):
     '''
     def open(self,character):
         # check if the door can be opened
-        # bad code: should be guard
-        if not (self.room.isContainment and character.room):
-            # open the door
-            self.walkable = True
-            self.display = displayChars.door_opened
-            self.room.open = True
-
-            # redraw room
-            self.room.forceRedraw()
-
-            # auto close door in containment
-            if self.room.isContainment:
-                '''
-                the event for closing the door
-                bad code: should be an abstact event calling a method
-                '''
-                class AutoCloseDoor(object):
-                    '''
-                    straightforward state initialization
-                    '''
-                    def __init__(subself,tick):
-                        subself.tick = tick
-            
-                    '''
-                    close the door
-                    '''
-                    def handleEvent(subself):
-                        # bad pattern: should only generate sound for nearby characters
-                        messages.append("*TSCHUNK*")
-                        self.close()
-
-                self.room.addEvent(AutoCloseDoor(self.room.timeIndex+5))
-        else:
-            # refuse to open the door
+        if (self.room.isContainment and character.room):
             # bad code: should only apply tho watched characters
             messages.append("you cannot open the door from the inside")
+			return
+
+        # open the door
+        self.walkable = True
+        self.display = displayChars.door_opened
+        self.room.open = True
+
+        # redraw room
+        self.room.forceRedraw()
+
+        # auto close door in containment
+        if self.room.isContainment:
+
+            '''
+            the event for closing the door
+            bad code: should be an abstact event calling a method
+            '''
+            class AutoCloseDoor(object):
+
+                '''
+                straightforward state initialization
+                '''
+                def __init__(subself,tick):
+                    subself.tick = tick
+            
+                '''
+                close the door
+                '''
+                def handleEvent(subself):
+                    # bad pattern: should only generate sound for nearby characters
+                    messages.append("*TSCHUNK*")
+                    self.close()
+
+            self.room.addEvent(AutoCloseDoor(self.room.timeIndex+5))
 
     '''
     close the door
@@ -1442,12 +1444,23 @@ class GooFlask(Item):
     '''
     def apply(self,character):
         super().apply(character,silent=True)
-        # bad code: should be guard
-        if self.uses > 0:
-            self.uses -= 1
-            self.changed()
-            character.satiation = 1000
-            character.changed()
+
+        # handle edge case
+		if self.uses <= 0:
+		    messages.append("you drink from your flask, but it is empty")
+			return
+
+        # print feedback
+		if not self.uses == 1:
+		    messages.append("you drink from your flask")
+		else:
+		    messages.append("you drink from your flask and empty it")
+
+        # change state
+        self.uses -= 1
+        self.changed()
+        character.satiation = 1000
+        character.changed()
 
     '''
     render based on fill amount

@@ -1377,8 +1377,7 @@ class FurnaceCompetition(BasicPhase):
                         self.mainCharRoom.addEvent(AnotherOneNpc(gamestate.tick+gamestate.tick%20+10,newIndex,creator=self))
 
             # remember event type to be able to remove it later
-            # bad code: xxx2
-            self.anotherOne2 = AnotherOneNpc
+            self.anotherOneNpc = AnotherOneNpc
 
             '''
             the event for waiting for a clean start and making the npc start
@@ -1496,24 +1495,23 @@ class FurnaceCompetition(BasicPhase):
         for quest in self.mainCharRoom.secondOfficer.quests:
             quest.deactivate()
         self.mainCharRoom.secondOfficer.quests = []
-        self.mainCharRoom.removeEventsByType(self.anotherOne2)
+        self.mainCharRoom.removeEventsByType(self.anotherOneNpc)
         mainChar.assignQuest(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="please move back to the waiting position",creator=void))
 
         # start appropriate phase
-        # bad code: xxx3
         # bad code: start should be outside if
         if self.npcFurnaceIndex >= self.mainCharFurnaceIndex:
             cinematics.showCinematic("considering your Score until now moving you directly to your proper assignment is the most efficent Way for you to proceed.")
-            phase3 = VatPhase()
-            phase3.start()
+            nextPhase = VatPhase()
+            nextPhase.start()
         elif self.mainCharFurnaceIndex == 7:
             cinematics.showCinematic("you passed the Test. in fact you passed the Test with a perfect Score. you will be valuable")
-            phase3 = LabPhase()
-            phase3.start()
+            nextPhase = LabPhase()
+            nextPhase.start()
         else:
             cinematics.showCinematic("you passed the Test. \n\nyour Score: "+str(self.mainCharFurnaceIndex)+"\nLiebwegs Score: "+str(self.npcFurnaceIndex))
-            phase3 = MachineRoomPhase()
-            phase3.start()
+            nextPhase = MachineRoomPhase()
+            nextPhase.start()
 
 
 ################################################################################################################

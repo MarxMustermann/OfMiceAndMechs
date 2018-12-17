@@ -1118,11 +1118,10 @@ XXXXXXXXXXX
 
             '''
             stop running after character left the room
-            bad code: xxx2
             '''
-            def abort(character2):
+            def abort(characterLeaving):
                 # check it the target left the room
-                if not character2 == character:
+                if not characterLeaving == character:
                     return
 
                 # show fluff
@@ -1183,9 +1182,8 @@ XXXXXXXXXXX
 '''
 the room where raw goo is processed into eatable form
 bad code: has no actual function yet
-bad code: xxx1
 '''
-class Vat1(Room):
+class VatProcessing(Room):
     '''
     create room and add special item
     '''
@@ -1207,7 +1205,7 @@ XXXXX$XXXX
         # add special items
         self.gooDispenser = src.items.GooDispenser(6,7,creator=self)
         self.addItems([self.gooDispenser])
-        self.name = "Vat1"
+        self.name = "vat processing"
 
         # save initial state and register
         self.initialState = self.getState()
@@ -1224,9 +1222,8 @@ XXXXX$XXXX
 '''
 the room where organic material is fermented to raw goo
 bad code: has no actual function yet
-bad code: xxx1
 '''
-class Vat2(Room):
+class VatFermenting(Room):
     '''
     create room and set some state
     '''
@@ -1246,7 +1243,7 @@ XXXXX$XXXX
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.isContainment = True
         self.floorDisplay = displayChars.acids
-        self.name = "Vat2"
+        self.name = "Vat fermenting"
 
         # save initial state and register
         self.initialState = self.getState()
@@ -1488,9 +1485,9 @@ XXXXXXXXXX
                 '''
                 stop hunting characters that left the room
                 '''
-                def vanish(character2):
+                def vanish(characterLeaving):
                     # check whether the correct character left the room
-                    if not character == character2:
+                    if not character == characterLeaving:
                         return
 
                     counter = 0

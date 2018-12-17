@@ -134,13 +134,13 @@ class Terrain(src.saveing.Saveable):
                     roomsOnMap.append(src.rooms.MechArmor(rowCounter,lineCounter,0,0,creator=self))
                 elif char == "V":
                     # add vat and save first reference
-                    room = src.rooms.Vat2(rowCounter,lineCounter,2,2,creator=self)
+                    room = src.rooms.VatFermenting(rowCounter,lineCounter,2,2,creator=self)
                     if not self.tutorialVat:
                         self.tutorialVat = room
                     roomsOnMap.append(room)
                 elif char == "v":
                     # add vat and save first reference
-                    room = src.rooms.Vat1(rowCounter,lineCounter,2,2,creator=self)
+                    room = src.rooms.VatProcessing(rowCounter,lineCounter,2,2,creator=self)
                     if not self.tutorialVatProcessing:
                         self.tutorialVatProcessing = room
                     roomsOnMap.append(room)
@@ -460,14 +460,13 @@ class Terrain(src.saveing.Saveable):
                         path.append(newCoordinate)
 
                         # add path from intersection to partner node
-                        # bad code: xxx2
                         self.walkBack(newCoordinate,partnerNode,path)
                         self.foundPaths[(start,partnerNode)] = path
-                        path2 = path[:]
-                        path2.reverse()
+                        path = path[:]
+                        path.reverse()
 
                         # save path
-                        self.foundPaths[(partnerNode,start)] = path2
+                        self.foundPaths[(partnerNode,start)] = path
                         continue
 
                     # add coordinates to section
@@ -845,17 +844,16 @@ class Terrain(src.saveing.Saveable):
                 doLoop = False
 
         # mode to neighbour nodes till end node is reached
-        # bad code: xxx2
         lastNode = None
         counter = 1
         while doLoop:
-            for node in neighbourNodes[:]:
-                for node2 in self.watershedNodeMap[node]:
-                    if not node2 in neighbourNodes:
-                        neighbourNodes.append(node2)
-                        nodeMap[node2] = (node,counter)
-                    if node2 == (end.x,end.y):
-                        lastNode = node2
+            for neighbourNode in neighbourNodes[:]:
+                for watershedNode in self.watershedNodeMap[neighbourNode]:
+                    if not watershedNode in neighbourNodes:
+                        neighbourNodes.append(watershedNode)
+                        nodeMap[watershedNode] = (neighbourNode,counter)
+                    if watershedNode == (end.x,end.y):
+                        lastNode = watershedNode
                         doLoop = False
             counter += 1
 
@@ -1719,30 +1717,28 @@ XXXCCCCCXXX """
 
     '''
     add roadblock
-    bad code: xxx2
     '''
     def addRoadblock(self):
         room = self.tutorialCargoRooms[8]
         item = room.storedItems[-1]
-        quest = quests.MetaQuestSequence([],creator=self)
-        quest2 = quests.TransportQuest(item,(None,127,81),creator=self)
+        outerQuest = quests.MetaQuestSequence([],creator=self)
+        innerQuest = quests.TransportQuest(item,(None,127,81),creator=self)
 
         '''
         move character off the placed item
         bad code: should happen somewhere else
         '''
         def moveAway():
-            quest.character.yPosition -= 1
+            outerQuest.character.yPosition -= 1
 
-        quest2.endTrigger = moveAway
-        quest.addQuest(quest2)
-        self.waitingRoom.quests.append(quest)
+        innreQuest.endTrigger = moveAway
+        outerQuest.addQuest(innerQuest)
+        self.waitingRoom.quests.append(outerQuest)
         self.waitingRoom.addEvent(events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToLeft"},creator=self))
 
     '''
     move roadblock
     bad code: should be more abstracted
-    bad code: xxx2
     '''
     def moveRoadblockToLeft(self):
         # abort if roadblock is missing
@@ -1750,25 +1746,24 @@ XXXCCCCCXXX """
             return
 
         item = self.itemByCoordinates[(127,81)][0]
-        quest = quests.MetaQuestSequence([],creator=self)
-        quest2 = quests.TransportQuest(item,(None,37,81),creator=self)
+        outerQuest = quests.MetaQuestSequence([],creator=self)
+        innerQuest = quests.TransportQuest(item,(None,37,81),creator=self)
 
         '''
         move character off the placed item
         bad code: should happen somewhere else
         '''
         def moveAway():
-            quest.character.yPosition -= 1
+            outerQuest.character.yPosition -= 1
 
-        quest2.endTrigger = moveAway
-        quest.addQuest(quest2)
-        self.waitingRoom.quests.append(quest)
+        innerQuest.endTrigger = moveAway
+        outerQuest.addQuest(innerQuest)
+        self.waitingRoom.quests.append(outerQuest)
         self.waitingRoom.addEvent(events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToRight"},creator=self))
 
     '''
     move roadblock
     bad code: should be more abstracted
-    bad code: xxx2
     '''
     def moveRoadblockToRight(self):
         # abort if roadblock is missing
@@ -1776,18 +1771,18 @@ XXXCCCCCXXX """
             return
 
         item = self.itemByCoordinates[(37,81)][0]
-        quest = quests.MetaQuestSequence([],creator=self)
-        quest2 = quests.TransportQuest(item,(None,127,81),creator=self)
+        outerQuest = quests.MetaQuestSequence([],creator=self)
+        innerQuest = quests.TransportQuest(item,(None,127,81),creator=self)
 
         '''
         move character off the placed item
         bad code: should happen somewhere else
         '''
         def moveAway():
-            quest.character.yPosition -= 1
+            outerQuest.character.yPosition -= 1
 
-        quest2.endTrigger = moveAway
-        quest.addQuest(quest2)
-        self.waitingRoom.quests.append(quest)
+        innerQuest.endTrigger = moveAway
+        outerQuest.addQuest(innerQuest)
+        self.waitingRoom.quests.append(outerQuest)
         self.waitingRoom.addEvent(events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToLeft"},creator=self))
 

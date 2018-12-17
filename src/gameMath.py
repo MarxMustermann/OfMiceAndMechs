@@ -60,16 +60,15 @@ bad code: alternative implementations exist but not everywhere yet
 '''
 def calculatePath(startX,startY,endX,endY,walkingPath):
     # get path with loops
-    path = calculatePathReal(startX,startY,endX,endY,walkingPath)
+    path = calculatePathRaw(startX,startY,endX,endY,walkingPath)
 
     # remove loops
     return removeLoops(path)
 
 '''
 recusively calcualate a unoptimized path
-bad code: xxxReal
 '''
-def calculatePathReal(startX,startY,endX,endY,walkingPath):
+def calculatePathRaw(startX,startY,endX,endY,walkingPath):
     path = []
 
     if None in (startX,startY,endX,endY):
@@ -169,8 +168,8 @@ def calculatePathReal(startX,startY,endX,endY,walkingPath):
         else:
             # stitch path together from recursive calculation
             result = []
-            result.extend(calculatePathReal(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
-            result.extend(calculatePathReal(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
+            result.extend(calculatePathRaw(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
+            result.extend(calculatePathRaw(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
             return result
 
     # calculate movement from the default path 
@@ -190,8 +189,8 @@ def calculatePathReal(startX,startY,endX,endY,walkingPath):
         else:
             # stitch path together from recursive calculation
             result = []
-            result.extend(calculatePathReal(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
-            result.extend(calculatePathReal(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
+            result.extend(calculatePathRaw(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
+            result.extend(calculatePathRaw(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
             return result
 
     # split calcualtion into to - within - from default path
@@ -214,9 +213,9 @@ def calculatePathReal(startX,startY,endX,endY,walkingPath):
                 endPoint = waypoint
 
         # stitch path together from recursive calculation
-        path.extend(calculatePathReal(startX,startY,startPoint[0],startPoint[1],walkingPath))
-        path.extend(calculatePathReal(startPoint[0],startPoint[1],endPoint[0],endPoint[1],walkingPath))
-        path.extend(calculatePathReal(endPoint[0],endPoint[1],endX,endY,walkingPath))
+        path.extend(calculatePathRaw(startX,startY,startPoint[0],startPoint[1],walkingPath))
+        path.extend(calculatePathRaw(startPoint[0],startPoint[1],endPoint[0],endPoint[1],walkingPath))
+        path.extend(calculatePathRaw(endPoint[0],endPoint[1],endX,endY,walkingPath))
         
         return path            
 

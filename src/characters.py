@@ -539,21 +539,10 @@ class Character(src.saveing.Saveable):
         # try to move within a room
         if self.room:
             # move naively within a room
-            # bad code: confusing logic for simple task
-            if nextPosition[0] == currentPosition[0]:
-                if nextPosition[1] < currentPosition[1]:
-                    item = self.room.moveCharacterDirection(self,"north")
-                elif nextPosition[1] > currentPosition[1]:
-                    item = self.room.moveCharacterDirection(self,"south")
-                else:
-                    # smooth over impossible state
-                    if not debug:
-                        # resorting to teleport
-                        self.xPosition = nextPosition[0]
-                        self.yPosition = nextPosition[1]
-                        self.changed()
-                    else:
-                        debugMessages.append("character moved on non continious path")
+            if (nextPosition[0] == currentPosition[0] and nextPosition[1] == currentPosition[1]-1):
+                item = self.room.moveCharacterDirection(self,"north")
+            if (nextPosition[0] == currentPosition[0] and nextPosition[1] == currentPosition[1]+1):
+                item = self.room.moveCharacterDirection(self,"south")
             elif nextPosition[0] == currentPosition[0]-1 and nextPosition[1] == currentPosition[1]:
                 item = self.room.moveCharacterDirection(self,"west")
             elif nextPosition[0] == currentPosition[0]+1 and nextPosition[1] == currentPosition[1]:

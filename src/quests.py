@@ -2154,7 +2154,7 @@ class ActivateQuestMeta(MetaQuestSequence):
     '''
     def recalculate(self):
         # smooth over impossible state
-        if not self.toPickup:
+        if not self.toActivate:
             debugMessages.append("Pickup quest with nothing to pick up")
             return
 

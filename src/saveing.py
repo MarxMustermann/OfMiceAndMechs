@@ -12,17 +12,21 @@ class LoadingRegistry(object):
     '''
     def register(self,thing):
         self.registered[thing.id] = thing
-        if thing.id in self.delayedCalls:
-            # bad code: should be splited
-            length = len(self.delayedCalls[thing.id])
-            counter = 0
-            while counter < length:
-                callback = self.delayedCalls[thing.id][counter]
-                if self.params[thing.id][counter]:
-                    callback(thing,self.params[thing.id][counter])
-                else:
-                    callback(thing)
-                counter += 1
+
+        if not thing.id in self.delayedCalls:
+            return
+
+        length = len(self.delayedCalls[thing.id])
+        counter = 0
+        while counter < length:
+            callback = self.delayedCalls[thing.id][counter]
+            param = self.params[thing.id][counter]
+
+            if param:
+                callback(thing,param)
+            else:
+                callback(thing)
+            counter += 1
 
     '''
     trigger a call or register as backlog

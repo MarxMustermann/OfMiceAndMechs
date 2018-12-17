@@ -1,3 +1,10 @@
+################################################################################
+###
+## urwid specific code belongs here
+#  bad code: most of the urwind code is scattered around
+#
+################################################################################
+
 import urwid
 
 """
@@ -6,6 +13,7 @@ one character and its formating
 bad code: this should not be an inline function but accessible as a helper
 """
 def flattenToPeseudoString(urwidText):
+
     # split strings
     if isinstance(urwidText,str):
         return list(urwidText)

@@ -35,10 +35,12 @@ class Coordinate(object):
 the base class for terrains
 '''
 class Terrain(src.saveing.Saveable):
+
     '''
     straightforward state initialization
     '''
     def __init__(self,layout,detailedLayout,creator=None):
+
         # store terrain content
         self.itemsOnFloor = []
         self.characters = []
@@ -125,17 +127,19 @@ class Terrain(src.saveing.Saveable):
                         self.superNodes[(rowCounter,lineCounter)] = (rowCounter*15+1,lineCounter*15+1)
 
                 if char in (".",","," "):
+                    # ignore paths
                     pass
                 elif char == "X":
+                    # add armor plating
                     roomsOnMap.append(src.rooms.MechArmor(rowCounter,lineCounter,0,0,creator=self))
                 elif char == "V":
-                    # add room and save first reference
+                    # add vat and save first reference
                     room = src.rooms.Vat2(rowCounter,lineCounter,2,2,creator=self)
                     if not self.tutorialVat:
                         self.tutorialVat = room
                     roomsOnMap.append(room)
                 elif char == "v":
-                    # add room and save first reference
+                    # add vat and save first reference
                     room = src.rooms.Vat1(rowCounter,lineCounter,2,2,creator=self)
                     if not self.tutorialVatProcessing:
                         self.tutorialVatProcessing = room
@@ -213,6 +217,7 @@ class Terrain(src.saveing.Saveable):
                     self.tutorialStorageRooms.append(room)
                     roomsOnMap.append(room)
                 elif char == "?":
+                    # add room and add to room list
                     roomsOnMap.append(src.rooms.CpuWasterRoom(rowCounter,lineCounter,2,2,creator=self))
                 elif char == "t":
                     # add room and add to room list
@@ -230,9 +235,11 @@ class Terrain(src.saveing.Saveable):
                     self.metalWorkshop = room
                     roomsOnMap.append(room)
                 elif char == "b":
+                    # add room and add to room list
                     room = src.rooms.ConstructionSite(rowCounter,lineCounter,1,1,creator=self)
                     roomsOnMap.append(room)
                 elif char == "K":
+                    # add room and add to room list
                     room = src.rooms.MechCommand(rowCounter,lineCounter,1,1,creator=self)
                     roomsOnMap.append(room)
                 else:
@@ -294,10 +301,14 @@ class Terrain(src.saveing.Saveable):
     '''
     def setNonMovableMap(self):
         self.nonMovablecoordinates = {}
+
+        # add non movable items
         for coordinate,itemList in self.itemByCoordinates.items():
             for item in itemList:
                 if not item.walkable:
                     self.nonMovablecoordinates[coordinate] = True
+
+        # add rooms
         for room in self.rooms:
             for x in range(room.xPosition*15+room.offsetX,room.xPosition*15+room.offsetX+room.sizeX):
                 for y in range(room.yPosition*15+room.offsetY,room.yPosition*15+room.offsetY+room.sizeY):
@@ -307,6 +318,7 @@ class Terrain(src.saveing.Saveable):
     precalculate pathfinding data
     '''
     def calculatePathMap(self):
+
         # container for pathfinding information
         self.watershedNodeMap = {}
         self.foundPaths = {}
@@ -320,17 +332,21 @@ class Terrain(src.saveing.Saveable):
 
         self.setNonMovableMap()
 
-        # place starting points for pathfinding at 
+        # place starting points for pathfinding next to doors
         for room in self.rooms:
+            # ignore rooms intended to be moved
             if room in self.miniMechs:
                 continue
 
+            # get the coordiate of the door
             xCoord = room.xPosition*15+room.offsetX+room.walkingAccess[0][0]
             yCoord = room.yPosition*15+room.offsetY+room.walkingAccess[0][1]
 
+            # mark door as movable
             if (xCoord,yCoord) in self.nonMovablecoordinates:
                 del self.nonMovablecoordinates[(xCoord,yCoord)]
 
+            # get coordinate in front of the door
             if room.walkingAccess[0][0] == 0:
                 xCoord -= 1
             elif room.walkingAccess[0][0] == room.sizeX-1:
@@ -339,6 +355,8 @@ class Terrain(src.saveing.Saveable):
                 yCoord -= 1
             elif room.walkingAccess[0][1] == room.sizeY-1:
                 yCoord += 1
+
+            # add the starting point
             self.watershedStart.append((xCoord,yCoord))
 
         # container for pathfinding information
@@ -369,15 +387,18 @@ class Terrain(src.saveing.Saveable):
 
     '''
     get a path to node from within the nodes section
-    result is not returned but a modifcation of a argument
+    result is not returned instead an argument is modified to store the result
     '''
     def walkBack(self,coordinate,bucket,path,last=1000):
+
         # get neighbouring coordinates
         testCoordinates = [(coordinate[0]-1,coordinate[1]),(coordinate[0]+1,coordinate[1]),(coordinate[0],coordinate[1]-1),(coordinate[0],coordinate[1]+1)]
         nextStep = (None,(None,last))
 
-        # select step back to node
+        # select step leading back to node
         for testCoordinate in testCoordinates:
+
+            # skip coordinates that were not mapped
             if not testCoordinate in self.watershedCoordinates:
                 continue
 
@@ -401,18 +422,21 @@ class Terrain(src.saveing.Saveable):
     expand the section around a node in a circular pattern until it reaches the section of another node and connect them
     '''
     def watershed(self,counter,lastCoordinates):
+
         # limit size to not destroy performace/get endless loops
         counter += 1
         if counter > 60:
             return
 
-        # grow the section for each starting point
+        # extend the size of each bucket/starting point
         newLast = {}
         for start,coordinates in lastCoordinates.items():
             newLastList = []
 
+            # expand each coordinate
             for coordinate in coordinates:
-                # expand the section
+
+                # add applicable neighbour coordinates
                 newCoordinates = [(coordinate[0]-1,coordinate[1]),(coordinate[0]+1,coordinate[1]),(coordinate[0],coordinate[1]-1),(coordinate[0],coordinate[1]+1)]
                 for newCoordinate in newCoordinates:
                      
@@ -436,6 +460,7 @@ class Terrain(src.saveing.Saveable):
                         path.append(newCoordinate)
 
                         # add path from intersection to partner node
+                        # bad code: xxx2
                         self.walkBack(newCoordinate,partnerNode,path)
                         self.foundPaths[(start,partnerNode)] = path
                         path2 = path[:]
@@ -468,11 +493,15 @@ class Terrain(src.saveing.Saveable):
     bad code: similar to pathfinding for nodes
     '''
     def walkBackSuper(self,coordinate,bucket,path,last=1000):
+
         # get neighbouring nodes
         testCoordinates = self.watershedNodeMap[coordinate]
         nextStep = (None,(None,last))
 
+        # select step leading back to super node
         for testCoordinate in testCoordinates:
+
+            # skip coordinates that were not mapped
             if not testCoordinate in self.watershedSuperCoordinates:
                 continue
 
@@ -502,14 +531,15 @@ class Terrain(src.saveing.Saveable):
         if counter > 60:
             return
 
-        # grow the section for each starting point
+        # extend the size of each bucket/starting point
         newLast = {}
         for start,coordinates in lastCoordinates.items():
             newLastList = []
 
+            # expand each coordinate
             for coordinate in coordinates:
 
-                # expand the section
+                # add applicable neighbour coordinates
                 newCoordinates = self.watershedNodeMap[coordinate]
                 for newCoordinate in newCoordinates:
 
@@ -586,6 +616,7 @@ class Terrain(src.saveing.Saveable):
     '''
     paint the information for the pathfinding
     bad code: is part visual debugging and partially looking nice, it still has to be integrated properly
+    bad code: urwid specific code
     '''
     def addWatershedOverlay(self,chars):
         import urwid
@@ -641,6 +672,7 @@ class Terrain(src.saveing.Saveable):
     find path between start and end coordinates
     '''
     def findPath(self,start,end):
+
         # clear pathfinding state
         self.applicablePaths = {}
         self.obseveredCoordinates = {}
@@ -702,8 +734,10 @@ class Terrain(src.saveing.Saveable):
         pathToEndNode = self.foundPaths[exitPoint[1]][1:self.foundPaths[exitPoint[1]].index((endCoordinate.x,endCoordinate.y))+1]
 
         # find path from start node to end node
+        # bad code: ugly try except
         path = []
         try:
+            # find path from node to node using the supernodes
             if not startSuper[0] == endSuper[0]:
                 if endSuper[0] in self.watershedSuperNodeMap[startSuper[0]]:
                     path = self.foundSuperPathsComplete[(startSuper[0],endSuper[0])]
@@ -711,6 +745,7 @@ class Terrain(src.saveing.Saveable):
                     path = self.foundSuperPathsComplete[(startSuper[0],self.watershedSuperNodeMap[startSuper[0]][0])]+self.foundSuperPathsComplete[(self.watershedSuperNodeMap[startSuper[0]][0],endSuper[0])]
                 path = pathToStartNode + self.findWayNodeBased(Coordinate(entryPoint[1][1][0],entryPoint[1][1][1]),Coordinate(startSuper[0][0],startSuper[0][1]))+path
                 path = path + self.findWayNodeBased(Coordinate(endSuper[0][0],endSuper[0][1]),Coordinate(endNode[0],endNode[1]))+pathToEndNode
+            # find path directly from node to node
             else:
                 path = pathToStartNode + self.findWayNodeBased(Coordinate(startNode[0],startNode[1]),Coordinate(endNode[0],endNode[1]))+pathToEndNode
         except Exception as e:
@@ -733,6 +768,7 @@ class Terrain(src.saveing.Saveable):
     bad code: simliar to the other pathfinding
     '''
     def markWalkBack(self,coordinate,obseveredCoordinates,pathToEntry,counter=0,limit=1000):
+
         # add current coordinate
         pathToEntry.append((coordinate[0],coordinate[1]))
 
@@ -755,13 +791,14 @@ class Terrain(src.saveing.Saveable):
     find path to the nearest entry point to a path
     '''
     def mark(self,coordinates,counter=0,obseveredCoordinates={}):
+
         # limit recursion depth
         if counter > 30:
             return
 
         newCoordinates = []
+        # increse radius around current position
         if not counter == 0:
-            # increse radius around current position
             for coordinate in coordinates:
                 for newCoordinate in [(coordinate[0]-1,coordinate[1]),(coordinate[0],coordinate[1]-1),(coordinate[0]+1,coordinate[1]),(coordinate[0],coordinate[1]+1)]:
                     if newCoordinate in self.nonMovablecoordinates:
@@ -769,8 +806,8 @@ class Terrain(src.saveing.Saveable):
                     if newCoordinate in self.obseveredCoordinates:
                         continue
                     newCoordinates.append(newCoordinate)
+        # start from current position
         else:
-            # start from current position
             newCoordinates.append(coordinates[0])
 
         # check for intersections with a path
@@ -783,7 +820,7 @@ class Terrain(src.saveing.Saveable):
                     self.markWalkBack(newCoordinate,self.obseveredCoordinates,pathToEntry)
                     return (newCoordinate,dualPair,pathToEntry)
 
-        # increase radius until path was intersected
+        # continue increasing the radius until path was intersected
         if newCoordinates:
             return self.mark(newCoordinates,counter+1,obseveredCoordinates)
 
@@ -808,6 +845,7 @@ class Terrain(src.saveing.Saveable):
                 doLoop = False
 
         # mode to neighbour nodes till end node is reached
+        # bad code: xxx2
         lastNode = None
         counter = 1
         while doLoop:
@@ -877,7 +915,6 @@ class Terrain(src.saveing.Saveable):
 
     '''
     draw the floor
-
     '''
     def paintFloor(self):
         chars = []
@@ -920,6 +957,7 @@ class Terrain(src.saveing.Saveable):
                 else:
                     room.hidden = True
                 
+        # calculate room visibility
         if not mapHidden:
             # get players position in tiles (15*15 segments)
             pos = None
@@ -952,6 +990,7 @@ class Terrain(src.saveing.Saveable):
 
         # render each room
         for room in self.rooms:
+
             # skip hidden rooms
             if mapHidden and room.hidden :
                 continue
@@ -979,7 +1018,7 @@ class Terrain(src.saveing.Saveable):
         # cache rendering
         self.lastRender = chars
 
-        # add special overlac 
+        # add special overlay
         if self.overlay:
             self.overlay(chars)
 
@@ -989,6 +1028,7 @@ class Terrain(src.saveing.Saveable):
     get things that would be affected if a room would move
     '''
     def getAffectedByRoomMovementDirection(self,room,direction,force=1,movementBlock=set()):
+
         # determine rooms that the room could collide with
         roomCandidates = []
         bigX = room.xPosition
@@ -1060,60 +1100,73 @@ class Terrain(src.saveing.Saveable):
         else:
             debugMessages.append("invalid movement direction: "+str(direction))
 
+    '''
+    actually move a room trough the terrain
+    '''
     def moveRoomDirection(self,direction,room,force=1,movementBlock=[]):
+        '''
+        remove a room from terrain
+        bad code: inline function
+        '''
         def removeRoom(room):
             if (room.xPosition,room.yPosition) in self.roomByCoordinates:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)].remove(room)
                 if not len(self.roomByCoordinates[(room.xPosition,room.yPosition)]):
                     del self.roomByCoordinates[(room.xPosition,room.yPosition)]
+
+        '''
+        add a room to the terrain
+        bad code: inline function
+        '''
         def addRoom(room):
             if (room.xPosition,room.yPosition) in self.roomByCoordinates:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
             else:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
+        # move the room
         if direction == "north":
+            # naively move the room withion current tile
             if room.offsetY > -5:
-                # naively move the room
                 room.offsetY -= 1
+            # remove room from current tile
             else:
-                # remove room from current tile
                 room.offsetY = 9
                 removeRoom(room)
                 room.yPosition -= 1
                 addRoom(room)
         elif direction == "south":
+            # naively move the room withion current tile
             if room.offsetY < 9:
-                # naively move the room
                 room.offsetY += 1
+            # remove room from current tile
             else:
-                # remove room from current tile
                 room.offsetY = -5
                 removeRoom(room)
                 room.yPosition += 1
                 addRoom(room)
         elif direction == "east":
+            # naively move the room withion current tile
             if room.offsetX < 9:
-                # naively move the room
                 room.offsetX += 1
+            # remove room from current tile
             else:
-                # remove room from current tile
                 room.offsetX = -5
                 removeRoom(room)
                 room.xPosition += 1
                 addRoom(room)
         elif direction == "west":
+            # naively move the room withion current tile
             if room.offsetX > -5:
-                # naively move the room
                 room.offsetX -= 1
+            # remove room from current tile
             else:
-                # remove room from current tile
                 room.offsetX = 9
                 removeRoom(room)
                 room.xPosition -= 1
                 addRoom(room)
 
-        # kill characters under mech
+        # kill characters driven over by the room
         for char in self.characters:
             if (char.xPosition > room.xPosition*15+room.offsetX and 
                char.xPosition < room.xPosition*15+room.offsetX+room.sizeX and
@@ -1129,6 +1182,7 @@ class Terrain(src.saveing.Saveable):
     teleport a room to another position
     '''
     def teleportRoom(self,room,newPosition):
+
         # remove room from old position
         oldPosition = (room.xPosition,room.yPosition)
         if oldPosition in self.roomByCoordinates:
@@ -1193,6 +1247,8 @@ class Terrain(src.saveing.Saveable):
             char.room = None
             self.addCharacter(char,charState["xPosition"],charState["yPosition"])
 
+        # store the list of items to transport
+        # bad code: too specific. should be in story or something
         self.toTransport = []
         for item in state["toTransport"]:
             newItem = []
@@ -1212,7 +1268,8 @@ class Terrain(src.saveing.Saveable):
     bad code: should be in saveable
     '''
     def getDiffState(self):
-        # serialize list
+
+        # serialize lists
         (roomStates,changedRoomList,newRoomList,removedRoomList) = self.getDiffList(self.rooms,self.initialState["roomIds"])
         (itemStates,changedItemList,newItemList,removedItemList) = self.getDiffList(self.itemsOnFloor,self.initialState["itemIds"])
         exclude = []
@@ -1220,6 +1277,10 @@ class Terrain(src.saveing.Saveable):
             exclude.append(mainChar.id)
         (charStates,changedCharList,newCharList,removedCharList) = self.getDiffList(self.characters,self.initialState["characterIds"],exclude=exclude)
 
+        # get the list of items to transport
+        # bad code: too specific. should be in story or something
+        # bad code: except: pass
+        # bad code: does not actually diff
         toTransport = []
         try:
             for item in self.toTransport:
@@ -1258,6 +1319,9 @@ class Terrain(src.saveing.Saveable):
             exclude.append(mainChar.id)
         (characterIds,chracterStates) = self.storeStateList(self.characters,exclude=exclude)
 
+        # get the list of items to transport
+        # bad code: too specific. should be in story or something
+        # bad code: except: pass
         toTransport = []
         try:
             for item in self.toTransport:
@@ -1357,29 +1421,42 @@ U  U
 
         # add scrap
         # bad code: repetetive code
+        # bad code: naming
         self.testItems = []
+
+        '''
+        add field of thick scrap
+        '''
         def addPseudoRandomScrap(counter,xRange,yRange,skips):
             for x in range(xRange[0],xRange[1]):
                 for y in range(yRange[0],yRange[1]):
+                    # skip pseudorandomly
                     toSkip = False
                     for skip in skips:
                         if not x%skip[0] and not y%skip[1]:
                             toSkip = True
                             break
-                    
                     if toSkip:
                         continue
 
+                    # add scrap
                     self.testItems.append(src.items.Scrap(x,y,counter,creator=creator))
                     counter += 1
                     if counter == 16:
                         counter = 1
             return counter
+
+        '''
+        add field of items
+        '''
         def addPseudoRandomThin(xRange,yRange,modulos,itemType):
             for x in range(xRange[0],xRange[1]):
                 for y in range(yRange[0],yRange[1]):
+                    # skip pseudorandomly
                     if x%modulos[0] and y%modulos[1] or (not x%modulos[2] and not x%modulos[3]) or x%modulos[4] or not y%modulos[5]:
                         continue
+
+                    # add scrap
                     self.testItems.append(itemType(x,y,creator=creator))
 
         counter = 3
@@ -1642,18 +1719,21 @@ XXXCCCCCXXX """
 
     '''
     add roadblock
+    bad code: xxx2
     '''
     def addRoadblock(self):
         room = self.tutorialCargoRooms[8]
         item = room.storedItems[-1]
         quest = quests.MetaQuestSequence([],creator=self)
         quest2 = quests.TransportQuest(item,(None,127,81),creator=self)
+
         '''
         move character off the placed item
         bad code: should happen somewhere else
         '''
         def moveAway():
             quest.character.yPosition -= 1
+
         quest2.endTrigger = moveAway
         quest.addQuest(quest2)
         self.waitingRoom.quests.append(quest)
@@ -1662,19 +1742,24 @@ XXXCCCCCXXX """
     '''
     move roadblock
     bad code: should be more abstracted
+    bad code: xxx2
     '''
     def moveRoadblockToLeft(self):
+        # abort if roadblock is missing
         if not (127,81) in self.itemByCoordinates:
             return
+
         item = self.itemByCoordinates[(127,81)][0]
         quest = quests.MetaQuestSequence([],creator=self)
         quest2 = quests.TransportQuest(item,(None,37,81),creator=self)
+
         '''
         move character off the placed item
         bad code: should happen somewhere else
         '''
         def moveAway():
             quest.character.yPosition -= 1
+
         quest2.endTrigger = moveAway
         quest.addQuest(quest2)
         self.waitingRoom.quests.append(quest)
@@ -1683,19 +1768,24 @@ XXXCCCCCXXX """
     '''
     move roadblock
     bad code: should be more abstracted
+    bad code: xxx2
     '''
     def moveRoadblockToRight(self):
+        # abort if roadblock is missing
         if not (37,81) in self.itemByCoordinates:
             return
+
         item = self.itemByCoordinates[(37,81)][0]
         quest = quests.MetaQuestSequence([],creator=self)
         quest2 = quests.TransportQuest(item,(None,127,81),creator=self)
+
         '''
         move character off the placed item
         bad code: should happen somewhere else
         '''
         def moveAway():
             quest.character.yPosition -= 1
+
         quest2.endTrigger = moveAway
         quest.addQuest(quest2)
         self.waitingRoom.quests.append(quest)

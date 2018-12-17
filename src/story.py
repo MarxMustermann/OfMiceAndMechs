@@ -20,33 +20,37 @@ events = None
 #####################################
 
 '''
-add message cinematic
+helper to add message cinematic
 '''
 def showMessage(message,trigger=None):
     cinematic = cinematics.ShowMessageCinematic(message,creator=void)
     cinematics.cinematicQueue.append(cinematic)
     cinematic.endTrigger = trigger
+
 '''
-add show game cinematic
+helper to add show game cinematic
 '''
 def showGame(duration,trigger=None):
     cinematic = cinematics.ShowGameCinematic(duration,tickSpan=1,creator=void)
     cinematics.cinematicQueue.append(cinematic)
     cinematic.endTrigger = trigger
+
 '''
-add show quest cinematic
+helper to add show quest cinematic
 '''
 def showQuest(quest,assignTo=None,trigger=None,container=None):
     cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=assignTo,container=container,creator=void)
     cinematics.cinematicQueue.append(cinematic)
     cinematic.endTrigger = trigger
+
 '''
-add text cinematic
+helper to add text cinematic
 '''
 def showText(text,rusty=False,autocontinue=False,trigger=None,scrolling=False):
     cinematic = cinematics.TextCinematic(text,rusty=rusty,autocontinue=autocontinue,scrolling=scrolling,creator=void)
     cinematics.cinematicQueue.append(cinematic)
     cinematic.endTrigger = trigger
+
 '''
 add message cinematic mimicing speech
 '''
@@ -146,7 +150,7 @@ class BasicPhase(src.saveing.Saveable):
     helper function to properly hook player quests
     '''
     def assignPlayerQuests(self):
-        # do nothing
+        # do nothing without quests
         if not self.mainCharQuestList:
             return
 
@@ -197,15 +201,19 @@ class OpenWorld(BasicPhase):
     '''
     def start(self):
         cinematics.showCinematic("staring open world Scenario.")
+
+        # place character in wakeup room
         if terrain.wakeUpRoom:
             self.mainCharRoom = terrain.wakeUpRoom
             self.mainCharRoom.addCharacter(mainChar,2,4)
+        # place character on terrain
         else:
             mainChar.xPosition = 2
             mainChar.yPosition = 4
             mainChar.terrain = terrain
             terrain.addCharacter(mainChar,2,4)
 
+        # add basic set of abilities in openworld phase
         mainChar.questsDone = [
                   "NaiveMoveQuest",
                   "MoveQuestMeta",
@@ -299,7 +307,7 @@ checking subjects brain patterns .......................... """,(urwid.AttrSpec(
 testing subjects responsivity
 """],scrolling=True)
 
-        # show info referenced later
+        # show info that will be referenced later
         showText(["""
 got response
 responsivity .............................................. """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
@@ -322,7 +330,7 @@ checking stored information
 entering interactive mode .................................
         """,autocontinue=True,scrolling=True)
 
-        # add trigger for false and true answers
+        # add trigger for correct and wrong answers
         options = [
                      ("nok","Karl Weinberg"),
                      ("ok",mainChar.name),
@@ -380,6 +388,7 @@ entering interactive mode .................................
         import urwid
         
         # set bogus information
+        # bad code: this information should be a config
         definitions = {}
         definitions["pipe"] = "A Pipe is used to transfer fluids"
         definitions["wall"] = "A Wall is a non passable building element"
@@ -428,7 +437,7 @@ setting up knowledge base
         cinematic = cinematics.InformationTransfer(definitions,creator=void)
         cinematics.cinematicQueue.append(cinematic)
         
-        # show fluff (write copy to messages to have this show up during zoom
+        # show fluff (write copy to messages to have this show up during zoom)
         messages.append("initializing metabolism ..................................... done")
         messages.append("initializing motion control ................................. done")
         messages.append("initializing sensory organs ................................. done")
@@ -468,7 +477,7 @@ resetting neural network ....................................""",autocontinue=Tr
 
     '''
     exit game
-    bad code: pretty direct call, should be indirect probably
+    bad code: urwid specific code
     '''
     def forceExit(self):
         import urwid
@@ -598,11 +607,12 @@ class WakeUpPhase(BasicPhase):
         phase.start()
 
     '''
+    set internal state from dictionary
     '''
     def setState(self,state):
         super().setState(state)
 
-        #bad code: knowingly breaking state instead of setting a camera focus
+        # bad code: knowingly breaking state instead of setting a camera focus
         if not mainChar.room and not mainChar.terrain:
             terrain.wakeUpRoom.addCharacter(mainChar,3,3)
 
@@ -614,8 +624,9 @@ class WakeUpPhase(BasicPhase):
 ###
 ##   The testing/tutorial phases
 #
-#    ideally these phases should force the player how rudementary use of the controls. This should be done by 
-#    explaining first and then preventing progress until the player proves capability.
+#    ideally these phases should force the player how rudementary use of the controls.
+#    This should be done by explaining first and then preventing progress until the
+#    player proves capability.
 #
 #######################################################################################
 
@@ -751,7 +762,7 @@ now, go and pull the lever
         gamestate.save()
 
     '''
-    make the main char drink and have a chat
+    make the main char fetch the bottle
     '''
     def fetchDrink(self):
         # alias attributes
@@ -770,7 +781,12 @@ now, go and pull the lever
         quest = quests.PickupQuestMeta(drink,creator=void)
         showQuest(quest,mainChar,trigger={"container":self,"method":"drinkStuff"},container=mainChar.serveQuest)
     
+    '''
+    make the main char drink and direct the player to a chat
+    '''
     def drinkStuff(self):
+
+        # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
         mainChar.assignQuest(quests.SurviveQuest(creator=void))
 
@@ -798,6 +814,7 @@ now, go and pull the lever
     make the player fire a furnace. no triggers placed
     '''
     def fireFurnaces(self):
+
         # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
         furnace = terrain.wakeUpRoom.furnace
@@ -836,6 +853,7 @@ you have on piece of coal less than before."""])
     abort the optional furnace fireing and place trigger
     '''
     def noFurnaceFirering(self):
+
         # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
         mainChar.reputation -= 1
@@ -848,6 +866,7 @@ you have on piece of coal less than before."""])
     make the player examine things
     '''
     def examineStuff(self):
+
         # show fluff
         showText("""examine the room and learn to find your way around, please""")
 
@@ -882,6 +901,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
     wait till expected completion time has passed
     '''
     def iamready(self):
+
         # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
 
@@ -900,15 +920,16 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
         normTime = 500
         text = "it took you "+str(timeTaken)+" ticks to complete the tests. The norm completion time is 500 ticks.\n\n"
             
+        # scold the player for taking to long
         if timeTaken > normTime:
-            # scold the player for taking to long
             text += "you better speed up and stop wasting time.\n\n"
             showText(text)
             self.trainingCompleted()
             mainChar.reputation -= 2
             messages.append("you were rewarded -2 reputation")
+
+        # make the player wait till norm completion time
         else:
-            # make the player wait till norm completion time
             text += "We are "+str(normTime-timeTaken)+" ticks ahead of plan. This means your floor permit is not valid yet. Please wait for "+str(normTime-timeTaken)+" ticks.\n\nNoncompliance will result in a kill order to the military. Military zones and movement restrictions are security and therefore high priority.\n\nIn order to not waste time, feel free to ask questions in the meantime.\n"
             quest = quests.WaitQuest(lifetime=normTime-timeTaken,creator=void)
             showText(text)
@@ -923,6 +944,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
     wrap up
     '''
     def trainingCompleted(self):
+
         # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
 
@@ -963,7 +985,7 @@ class BoilerRoomWelcome(BasicPhase):
         super().__init__("BoilerRoomWelcome")
 
     '''
-
+    set up a basic intro
     bad code: many inline functions
     '''
     def start(self):
@@ -972,9 +994,10 @@ class BoilerRoomWelcome(BasicPhase):
 
         super().start()
 
+        # bad code: dirty termination of story at this point
         gamestate.gameWon = True
 
-        # move player to machine room if it doesn't exist yet
+        # move player to machine room if the player isn't there yet
         if not (mainChar.room and mainChar.room == terrain.tutorialMachineRoom):
             self.mainCharQuestList.append(quests.EnterRoomQuestMeta(terrain.tutorialMachineRoom,startCinematics="please goto the Machineroom",creator=void))
 
@@ -1118,7 +1141,7 @@ class BoilerRoomWelcome(BasicPhase):
                     subself.tick = tick
 
                 '''
-                add quests for firering a furnace
+                add quests for firing a furnace
                 '''
                 def handleEvent(subself):
                     quest = quests.FireFurnaceMeta(self.mainCharRoom.furnaces[2],creator=void)
@@ -1354,6 +1377,7 @@ class FurnaceCompetition(BasicPhase):
                         self.mainCharRoom.addEvent(AnotherOneNpc(gamestate.tick+gamestate.tick%20+10,newIndex,creator=self))
 
             # remember event type to be able to remove it later
+            # bad code: xxx2
             self.anotherOne2 = AnotherOneNpc
 
             '''
@@ -1388,6 +1412,7 @@ class FurnaceCompetition(BasicPhase):
 
             '''
             kickstart the npcs part of the competition
+            bad code: tmp
             '''
             def tmpNpc():
                 self.mainCharRoom.addEvent(WaitForClearStartNpc(gamestate.tick+2,0,creator=self))
@@ -1450,7 +1475,7 @@ class FurnaceCompetition(BasicPhase):
 
         '''
         kickstart the npcs part of the competition
-        bad code: nameing
+        bad code: naming
         '''
         def tmp():
             cinematics.showCinematic("wait for the furnaces to burn out.")
@@ -1475,6 +1500,8 @@ class FurnaceCompetition(BasicPhase):
         mainChar.assignQuest(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="please move back to the waiting position",creator=void))
 
         # start appropriate phase
+        # bad code: xxx3
+        # bad code: start should be outside if
         if self.npcFurnaceIndex >= self.mainCharFurnaceIndex:
             cinematics.showCinematic("considering your Score until now moving you directly to your proper assignment is the most efficent Way for you to proceed.")
             phase3 = VatPhase()
@@ -1513,7 +1540,7 @@ class FindWork(BasicPhase):
         self.initialState = self.getState()
 
     '''
-    create selection and place triggrers
+    create selection and place triggers
     '''
     def start(self):
         self.mainCharRoom = terrain.waitingRoom
@@ -1547,7 +1574,7 @@ class FindWork(BasicPhase):
     drop the player out of the command chain and place trigger for return
     '''
     def tmpFail(self):
-        # show 
+        # show fluff
         say("go on then.")
         showText("go on then.")
 
@@ -1609,6 +1636,7 @@ class FindWork(BasicPhase):
             fake a meeting with the player superordinate
             '''
             def meeting(subself):
+                # do a normal meeting
                 if mainChar.reputation < 15 or self.didStoreCargo:
                     # check if player has the lowest reputation
                     lowestReputation = True
@@ -1632,6 +1660,8 @@ class FindWork(BasicPhase):
                     # decrease reputation so the player will be forced to work continiously or to save up reputation
                     mainChar.reputation -= 3+(2*len(mainChar.subordinates))
                     self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),subself.char,creator=void))
+
+                # assign a special quest
                 else:
                     mainChar.reputation += 5
                     # add the quest
@@ -1708,26 +1738,34 @@ class FindWork(BasicPhase):
     quest to carry stuff and trigger adding a new quest afterwards
     '''
     def addNewCircleQuest(self):
+
+        # set up the list of items to transport
         labCoordinateList = [(2,1),(3,1),(4,1),(5,1),(6,1),(7,1)]
         shopCoordinateList = [(9,2),(9,7),(9,3),(9,6),(9,4),(9,5)]
 
+        # reset counter when at the end
         if self.cycleQuestIndex > 2*len(terrain.metalWorkshop.producedItems)-2:
             self.cycleQuestIndex = 0
 
+        # move items to the lab
         if self.cycleQuestIndex < len(terrain.metalWorkshop.producedItems):
             pos = labCoordinateList[self.cycleQuestIndex]
             room = terrain.tutorialLab
             index = self.cycleQuestIndex
+
+        # move items to the metal workshop
         else:
             pos = shopCoordinateList[self.cycleQuestIndex-len(terrain.metalWorkshop.producedItems)]
             room = terrain.metalWorkshop
             index = -(self.cycleQuestIndex-len(terrain.metalWorkshop.producedItems))-1
             
+        # add the quest to queue
         quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[index],(room,pos[0],pos[1]),creator=void)
         quest.endTrigger = {"container":self,"method":"addNewCircleQuest"}
         quest.reputationReward = 0
         terrain.waitingRoom.quests.append(quest)
 
+        # increase the quest counter
         self.cycleQuestIndex += 1
 
 '''

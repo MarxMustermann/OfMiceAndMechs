@@ -1143,7 +1143,7 @@ class ChatMenu(SubMenu):
     def handleKey(self, key):
         # smooth over impossible state
         if self.partner == None:
-           # bad code: should log
+           debugMessages.append("chatmenu spawned without partner")
            return False
 
         # wake up character instead of speaking

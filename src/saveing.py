@@ -1,6 +1,6 @@
 
 '''
-a registry to allow resoving references during loading
+a registry to allow resolving references during loading
 '''
 class LoadingRegistry(object):
     registered = {}
@@ -8,11 +8,12 @@ class LoadingRegistry(object):
     params = {}
 
     '''
-    register a new id and call backlog
+    register a new id and call callback accumulated for this thing
     '''
     def register(self,thing):
         self.registered[thing.id] = thing
         if thing.id in self.delayedCalls:
+            # bad code: should be splited
             length = len(self.delayedCalls[thing.id])
             counter = 0
             while counter < length:
@@ -40,12 +41,16 @@ class LoadingRegistry(object):
             self.delayedCalls[thingId].append(callback)
             self.params[thingId].append(param)
 
+    '''
+    getter that ensures only one object for an id is used
+    '''
     def fetchThroughRegistry(self,thing):
         if thing.id in self.registered:
             return self.registered[thing.id]
         else:
             return thing
 
+# instanziate the registry
 loadingRegistry = LoadingRegistry()
 
 '''
@@ -63,9 +68,16 @@ class Saveable(object):
         self.callbacksToStore = []
         self.objectsToStore = []
 
+    '''
+    exposes a fetcher from th loading registry
+    bad code: this doesn't belong here
+    '''
     def fetchThroughRegistry(self,thing):
         return loadingRegistry.fetchThroughRegistry(thing)
 
+    '''
+    helper function to serialize callbacks
+    '''
     def serializeCallback(self,callback):
         if callback:
             if isinstance(callback,dict):
@@ -84,6 +96,25 @@ class Saveable(object):
         return serializedCallback
 
     '''
+    helper function to deserialize callbacks
+    '''
+    def deserializeCallback(self,state,callback=None):
+        if not callback:
+            callback = {}
+
+        # update callback attributes
+        if "method" in state:
+            callback["method"] = state["method"]
+        if "container" in state:
+            '''
+            set value
+            '''
+            def setContainer(thing):
+                callback["container"] = thing
+            loadingRegistry.callWhenAvailable(state["container"],setContainer)
+        return callback
+
+    '''
     get state as dict
     '''
     def getState(self):
@@ -98,12 +129,13 @@ class Saveable(object):
 
         # store callbacks
         for callbackName in self.callbacksToStore:
-            # get callback
+            # get raw callback
             if hasattr(self,attribute):
                 callback = getattr(self,callbackName)
             else:
                 callback = None
 
+            # store serialized callback
             state[callbackName] = self.serializeCallback(callback)
 
         # store objects
@@ -119,7 +151,7 @@ class Saveable(object):
     load list of instances from list
     '''
     def loadFromList(self,info,target,creationFunction):
-        # unpdate changed things
+        # update changed things
         if "changed" in info:
             for item in target:
                 if item.id in info["states"]:
@@ -201,22 +233,6 @@ class Saveable(object):
                     loadingRegistry.callWhenAvailable(state[objectName],setValue,(objectName))
                 else:
                     setattr(self,objectName,None)
-
-    def deserializeCallback(self,state,callback=None):
-        if not callback:
-            callback = {}
-
-        # update callback attributes
-        if "method" in state:
-            callback["method"] = state["method"]
-        if "container" in state:
-            '''
-            set value
-            '''
-            def setContainer(thing):
-                callback["container"] = thing
-            loadingRegistry.callWhenAvailable(state["container"],setContainer)
-        return callback
 
     '''
     get a list of ids and a dict of their states from a list of objects

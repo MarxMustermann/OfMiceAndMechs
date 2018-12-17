@@ -218,10 +218,10 @@ events.callShow_or_exit = interaction.callShow_or_exit
 chats.callShow_or_exit = interaction.callShow_or_exit
 
 # bad code: common variables with modules
-rooms.calculatePath        = gameMath.calculatePath
-quests.calculatePath        = gameMath.calculatePath
-characters.calculatePath    = gameMath.calculatePath
-terrains.calculatePath         = gameMath.calculatePath
+rooms.calculatePath = gameMath.calculatePath
+quests.calculatePath = gameMath.calculatePath
+characters.calculatePath = gameMath.calculatePath
+terrains.calculatePath = gameMath.calculatePath
 
 # bad code: common variables with modules
 rooms.Character = characters.Character
@@ -239,6 +239,7 @@ interaction.messages = messages
 events.messages = messages
 chats.messages = messages
 
+# bad code: common variables with modules
 cinematics.interaction = interaction
 characters.interaction = interaction
 story.interaction = interaction
@@ -247,6 +248,7 @@ items.interaction = interaction
 quests.interaction = interaction
 chats.interaction = interaction
 
+# set up debugging
 if args.debug:
     '''
     logger object for logging to file
@@ -273,6 +275,8 @@ if args.debug:
     quests.debug = True
     canvas.debug = True
     gameMath.debug = True
+
+# set dummies to replace dummy objects
 else:
     '''
     dummy logger
@@ -385,6 +389,9 @@ chats.mainChar = gameStateObj.mainChar
 
 # the game loop
 # bad code: either unused or should be contained in terrain
+'''
+advance the game
+'''
 def advanceGame():
     for character in terrain.characters:
         character.advance()
@@ -398,6 +405,7 @@ def advanceGame():
 cinematics.advanceGame = advanceGame
 interaction.advanceGame = advanceGame
 
+# load the gamestate
 loaded = False
 if args.load:
     shouldLoad = True
@@ -447,9 +455,9 @@ else:
 if not loaded:
     gameStateObj.currentPhase.start()
 
-
 # bad code: loading registry should be cleared
 
+# set up tile based mode
 if args.tiles:
     # spawn tile based rendered window
     import pygame

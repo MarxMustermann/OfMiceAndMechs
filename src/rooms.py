@@ -155,7 +155,7 @@ class Room(src.saveing.Saveable):
                     # to be bin
                     itemsOnFloor.append(src.items.Item(displayChars.binStorage,rowCounter,lineCounter,creator=self))
                 elif char == "O":
-                    # to be pressure Tank
+                    # add pressure Tank
                     item = src.items.Boiler(rowCounter,lineCounter,creator=self)
                     itemsOnFloor.append(item)
                     self.boilers.append(item)
@@ -255,6 +255,7 @@ class Room(src.saveing.Saveable):
         # add remaining waypoints to path
         while (1==1):
             # get neighbour positions
+            # bad code: should be in position object
             endWayPoint = self.walkingPath[-1]
             east = (endWayPoint[0]+1,endWayPoint[1])
             west = (endWayPoint[0]-1,endWayPoint[1])
@@ -277,9 +278,10 @@ class Room(src.saveing.Saveable):
             else:
                 break
 
-        # actually add the items
+        # add the items generated earlier
         self.addItems(itemsOnFloor)
 
+        # set meta information for saving
         self.attributesToStore.extend([
               "yPosition","xPosition","offsetX","offsetY"
                 ])
@@ -380,6 +382,7 @@ class Room(src.saveing.Saveable):
         (itemIds,itemStates) = self.storeStateList(self.itemsOnFloor)
         (charIds,charStates) = self.storeStateList(self.characters)
 
+        # store the substates
         state["eventIds"] = eventIds
         state["eventStates"] = eventStates
         state["itemIds"] = itemIds
@@ -471,6 +474,7 @@ class Room(src.saveing.Saveable):
 
     '''
     open all doors
+    bad code: this method seems to be very specialised/kind of useless
     '''
     def openDoors(self):
         for door in self.doors:
@@ -479,6 +483,7 @@ class Room(src.saveing.Saveable):
 
     '''
     close all doors
+    bad code: this method seems to be very specialised/kind of useless
     '''
     def closeDoors(self):
         for door in self.doors:
@@ -532,8 +537,8 @@ class Room(src.saveing.Saveable):
             # bad code: should be an overlay
             if mainChar.room == self:
                 if len(mainChar.quests):
+                        # show the questmarker every second turn for blinking effect
                         if not self.shownQuestmarkerLastRender:
-                            # only show the questmarker every second turn
                             self.shownQuestmarkerLastRender = True
 
                             # mark the target of each quest
@@ -574,8 +579,8 @@ class Room(src.saveing.Saveable):
                                     chars[item[1]][item[0]] = (urwid.AttrSpec(display[0].foreground,"#333"),display[1])
                             except:
                                 pass
+                        #  don't show the questmarker every second turn for blinking effect
                         else:
-                            # only show the questmarker every second turn
                             self.shownQuestmarkerLastRender = False
 
             # draw main char
@@ -642,7 +647,10 @@ class Room(src.saveing.Saveable):
     add items to internal structure
     '''
     def addItems(self,items):
+        # add the items to the item list
         self.itemsOnFloor.extend(items)
+
+        # add the items to the easy access map
         for item in items:
             item.room = self
             item.terrain = None
@@ -656,14 +664,22 @@ class Room(src.saveing.Saveable):
     bad pattern: should be removeItems
     '''
     def removeItem(self,item):
+        # remove items from easy access map
         if (item.xPosition,item.yPosition) in self.itemByCoordinates and item in self.itemByCoordinates[(item.xPosition,item.yPosition)]:
             self.itemByCoordinates[(item.xPosition,item.yPosition)].remove(item)
             if not self.itemByCoordinates[(item.xPosition,item.yPosition)]:
                 del self.itemByCoordinates[(item.xPosition,item.yPosition)]
+
+        # remove item from the list of items
         if item in self.itemsOnFloor:
             self.itemsOnFloor.remove(item)
 
+    '''
+    move the room a step into some direction
+    '''
     def moveDirection(self,direction,force=1,initialMovement=True,movementBlock=set()):
+        # move items the room collided with
+        # bad code: crashes when moved items were destroyed already 
         if initialMovement:
             # collect the things that would be affected by the movement
             movementBlock = set()
@@ -689,7 +705,11 @@ class Room(src.saveing.Saveable):
         self.terrain.moveRoomDirection(direction,self)
         messages.append("*RUMBLE*")
 
+    '''
+    get the things that would be afftected by a room movement
+    '''
     def getAffectedByMovementDirection(self,direction,force=1,movementBlock=set()):
+
         # gather things that would be affected on terrain level
         self.terrain.getAffectedByRoomMovementDirection(self,direction,force=force,movementBlock=movementBlock)
 
@@ -701,8 +721,11 @@ class Room(src.saveing.Saveable):
 
         return movementBlock
 
-
+    '''
+    move a character into some direction within or out of a room
+    '''
     def moveCharacterDirection(self,character,direction):
+
         # check whether movement is contained in the room
         innerRoomMovement = True
         if direction == "south" and character.yPosition == self.sizeY-1:
@@ -751,6 +774,7 @@ class Room(src.saveing.Saveable):
     move a character to a new position within room
     '''
     def moveCharacter(self,character,newPosition):
+
         # check if target position can be walked on
         if newPosition in self.itemByCoordinates:
             for item in self.itemByCoordinates[newPosition]:
@@ -760,6 +784,7 @@ class Room(src.saveing.Saveable):
         # teleport character to new position
         character.xPosition = newPosition[0]
         character.yPosition = newPosition[1]
+
         character.changed()
         return None
 
@@ -805,6 +830,7 @@ class Room(src.saveing.Saveable):
     advance the room one step
     '''
     def advance(self):
+
         # change own state
         self.timeIndex += 1
         self.requestRedraw()
@@ -821,6 +847,8 @@ class Room(src.saveing.Saveable):
             event.handleEvent()
             self.events.remove(event)
 
+        # do next step new
+        # bad code: sneakily diabled the mechanism for delaying calculations
         if not self.hidden or 1 == 1:
             # redo delayed calculation
             if self.delayedTicks > 0:
@@ -829,8 +857,8 @@ class Room(src.saveing.Saveable):
             # advance each character
             for character in self.characters:
                 character.advance()
+        # do next step later
         else:
-            # do calculation later
             self.delayedTicks += 1
     
 '''
@@ -880,10 +908,12 @@ XXXXXXXXXX
     bad code: this should happen in story
     '''
     def endTraining(self):
+
         '''
         event for changing the requirements regulary
         '''
         class ChangeRequirements(object):
+            
             '''
             state initialization
             '''
@@ -918,12 +948,15 @@ XXXXXXXXXX
     '''
     def changed(self,tag="default",info=None):
         super().changed(tag,info)
+
         # notify vat
         # bad code: vat should listen
         if self.terrain:
             self.terrain.tutorialVatProcessing.recalculate()
 
+        # bad code: should hav an else branch
         if self.desiredSteamGeneration:
+            # reset quest for firing the furnaces
             if not self.desiredSteamGeneration == self.steamGeneration:
                 # reset order for firering the furnaces
                 if self.secondOfficer:
@@ -932,12 +965,14 @@ XXXXXXXXXX
                         self.furnaceQuest.postHandler()
                     self.furnaceQuest = src.quests.KeepFurnacesFiredMeta(self.furnaces[:self.desiredSteamGeneration])
                     self.secondOfficer.assignQuest(self.furnaceQuest,active=True)
+            # acknowledge success
             else:
                 # bad pattern: tone is way too happy
                 messages.append("we did it! "+str(self.desiredSteamGeneration)+" instead of "+str(self.steamGeneration))
 
 '''
 a room to waste cpu power. used for performance testing
+bad code: does not actually work
 '''
 class CpuWasterRoom(Room):
     '''
@@ -960,7 +995,7 @@ XXXXXXXXXX
         self.name = "CpuWasterRoom"
 
         '''
-        add a patroling npc
+        add a patrolling npc
         '''
         def addNPC(x,y):
             # generate quests
@@ -974,6 +1009,7 @@ XXXXXXXXXX
             quest3.followUp = quest4
 
             # add npc
+            # bad code: hardcoded character name
             npc = Character(displayChars.staffCharactersByLetter["l"],x,y,name="Erwin von Liebweg",creator=self)
             self.addCharacter(npc,x,y)
             npc.room = self
@@ -1024,6 +1060,7 @@ XXXXXXXXXXX
 
         # set up monitoring for doors
         for item in self.itemsOnFloor:
+
             # ignore non doors
             if not isinstance(item,src.items.Door):
                 continue
@@ -1034,6 +1071,7 @@ XXXXXXXXXXX
             scold non military personal opening the door and close it again
             '''
             def handleDoorOpened():
+
                 # ensure the rooms personal doesn't scold itself
                 # bad code: doesn't actually check who opens the door
                 if self.onMission:
@@ -1080,8 +1118,10 @@ XXXXXXXXXXX
 
             '''
             stop running after character left the room
+            bad code: xxx2
             '''
             def abort(character2):
+                # check it the target left the room
                 if not character2 == character:
                     return
 
@@ -1142,6 +1182,8 @@ XXXXXXXXXXX
 
 '''
 the room where raw goo is processed into eatable form
+bad code: has no actual function yet
+bad code: xxx1
 '''
 class Vat1(Room):
     '''
@@ -1181,6 +1223,8 @@ XXXXX$XXXX
 
 '''
 the room where organic material is fermented to raw goo
+bad code: has no actual function yet
+bad code: xxx1
 '''
 class Vat2(Room):
     '''
@@ -1255,11 +1299,12 @@ XXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.floorDisplay = [displayChars.nonWalkableUnkown]
-        self.gogogo = False
+        self.gogogo = False # bad code: silly name + has no real function anymore
         self.engineStrength = 0
         self.name = "MiniMech"
 
         # add npc
+        # bad code: hardcoded name
         self.npc = Character(displayChars.staffCharacters[12],3,3,name="Friedrich Engelbart",creator=self)
         self.addCharacter(self.npc,3,3)
         self.npc.room = self
@@ -1281,6 +1326,7 @@ XXXXXX
 
 '''
 a room sized base for small off mech missions
+bad code: serves no real function yet
 '''
 class MiniBase(Room):
     '''
@@ -1311,6 +1357,8 @@ XXXXXXXXXXXXX
 
 '''
 a lab for behaviour testing
+bad code: is basically not implemented yet
+bad code: is misused as a target/source for transportation jobs
 '''
 class LabRoom(Room):
     '''
@@ -1334,9 +1382,12 @@ XFFFFFFFFX
 XXXXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+
+        # bad code: the markers are not used anywhere
         bean = src.items.MarkerBean(1,2,creator=self)
         beanPile = src.items.Pile(1,1,"markerPile",src.items.MarkerBean,creator=self)
         self.addItems([bean,beanPile])
+
         self.name = "Lab"
 
         # unbolt all items in the room
@@ -1352,7 +1403,7 @@ XXXXXXXXXX
         loadingRegistry.register(self)
 
 '''
-cargo storage for tighty packing items
+cargo storage for tightly packing items
 '''
 class CargoRoom(Room):
     '''
@@ -1407,7 +1458,7 @@ XXXXXXXXXX
                 self.storageSpace.append((i,j))
             j -= 1
 
-        # map items on storage space
+        # map items to storage spaces
         counter = 0
         for item in self.storedItems:
             item.xPosition = self.storageSpace[counter][0]
@@ -1530,11 +1581,14 @@ XXXXXXXXXX
 
     '''
     use specialised pathfinding
+    bad code: doesn't work properly
     '''
     def calculatePath(self,x,y,dstX,dstY,walkingPath):
+        # handle impossible state
         if dstY == None or dstX == None:
             debugMessages.append("pathfinding without target")
             return []
+
         path = []
 
         # go to secondary path
@@ -1668,6 +1722,7 @@ XXXXXXXX
     warn character about leaving the room
     '''
     def handleDoorOpening(self,character):
+        # should be a guard
         if self.firstOfficer and not character.hasFloorPermit:
             messages.append(self.firstOfficer.name+": moving through this door will be your death.")
             character.reputation -= 1
@@ -1693,6 +1748,8 @@ XXXXXXXX
             quest.deactivate()
         mainChar.quests = []
 
+        # cancel cinematics
+        # bad code: should happen in a more structured way
         cinematics.cinematicQueue = []
 
         # give floor permit
@@ -1706,6 +1763,7 @@ XXXXXXXX
     periodically spawn new hoppers
     '''
     def spawnNewHopper(self):
+        # do nothing if there is nobody to do anything
         if not self.firstOfficer:
             return
 
@@ -1756,9 +1814,11 @@ XXXXXXXXXXX
         self.hoppers = []
 
         # add hoppers
+        # bad code: hardcoded names
         npc = self.fetchThroughRegistry(characters.Character(displayChars.staffCharactersByLetter["s"],4,4,name="Simon Kantbrett",creator=self))
         self.hoppers.append(npc)
         self.addCharacter(npc,2,2)
+        # bad code: hardcoded names
         npc = self.fetchThroughRegistry(characters.Character(displayChars.staffCharactersByLetter["r"],4,5,name="Rudolf Krautbart",creator=self))
         self.hoppers.append(npc)
         self.addCharacter(npc,2,3)
@@ -1791,13 +1851,16 @@ XXXXXXXXXXX
 
     '''
     dispose of a dead hoppers corpse
-    # bad pattern: picking the corpse up and pretending nothing happend is not enough
+    bad pattern: picking the corpse up and pretending nothing happend is not enough
     '''
     def disposeOfCorpse(self,info):
         quest = src.quests.PickupQuestMeta(info["corpse"],creator=self)
         quest.reputationReward = 1
         self.quests.append(quest)
 
+    '''
+    set internal state from dictionary
+    '''
     def setState(self,state):
         super().setState(state)
         
@@ -1805,6 +1868,9 @@ XXXXXXXXXXX
         for questId in state["quests"]["ids"]:
              self.quests.append(src.quests.getQuestFromState(state["quests"]["states"][questId]))
 
+    '''
+    get state as dictionary
+    '''
     def getState(self):
         state = super().getState()
 
@@ -1815,6 +1881,9 @@ XXXXXXXXXXX
 
         return state
 
+    '''
+    get difference between initial and current state as dictionary
+    '''
     def getDiffState(self):
         state = super().getDiffState()
 
@@ -1827,8 +1896,13 @@ XXXXXXXXXXX
 
 '''
 a dummy for the mechs command centre
+bad code: dummy only
 '''
 class MechCommand(Room):
+
+    '''
+    set basic attributes
+    '''
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXX$XXXXX

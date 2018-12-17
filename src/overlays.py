@@ -1,3 +1,9 @@
+######################################################################################################################
+###
+##    graphical overlays for decoration on top of renderings
+#
+######################################################################################################################
+
 '''
 Overlay showing the precalculated paths
 '''
@@ -6,6 +12,7 @@ class PathsOverlay(object):
     add overlayed information
     '''
     def apply(self,chars,terrain):
+        # bad code: should be guard
         if not terrain.hidden:
             # bad code: urwid specific code
             import urwid
@@ -39,6 +46,7 @@ class QuestMarkerOverlay(object):
     add overlayed information
     '''
     def apply(self,chars,mainChar,displayChars):
+        # bad code: should be guard
         if not mainChar.room and mainChar.path:
             for item in mainChar.path:
                 # highlight chars on the path 

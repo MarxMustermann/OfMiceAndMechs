@@ -80,7 +80,7 @@ class Item(src.saveing.Saveable):
 
     '''
     get a short description
-    bad code: name and function say diffrent things
+    bad code: name and function say different things
     '''
     def getDetailedState(self):
         return self.description
@@ -98,10 +98,12 @@ class Item(src.saveing.Saveable):
     get picked up by the supplied character
     '''
     def pickUp(self,character):
+        if self.xPosition == None or self.yPosition == None:
+            return
+
+        # apply restrictions
         if self.bolted:
             messages.append("you cannot pick up bolted items")
-            return
-        if self.xPosition == None or self.yPosition == None:
             return
 
         # bad code: should be a simple self.container.removeItem(self)
@@ -119,6 +121,7 @@ class Item(src.saveing.Saveable):
                 del container.itemByCoordinates[(self.xPosition,self.yPosition)]
 
         # spawn mice with pseudorandom chance
+        # bad code: this code should be somewhere else
         if ((self.mayContainMice and (gamestate.tick+self.xPosition+self.yPosition)%10 == 0 and not self.walkable) or
            (not self.mayContainMice and (gamestate.tick+self.xPosition-self.yPosition)%100 == 0 and not self.walkable)):
 
@@ -274,6 +277,9 @@ class Item(src.saveing.Saveable):
 
         return movementBlock
 
+    '''
+    move the item
+    '''
     def moveDirection(self,direction,force=1,initialMovement=True):
         if self.walkable:
             # destroy small items instead of moving it
@@ -332,6 +338,7 @@ class Item(src.saveing.Saveable):
     bad code: only works on terrain
     '''
     def destroy(self):
+
         # remove item from terrain
         self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
         self.terrain.itemsOnFloor.remove(self)
@@ -365,12 +372,16 @@ class Scrap(Item):
 
         self.setWalkable()
 
-        # set up saveing
+        # set up metadata for saveing
         self.attributesToStore.extend([
                "amount"])
 
+        # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
 
+    '''
+    move the item and leave residue
+    '''
     def moveDirection(self,direction,force=1,initialMovement=True):
         self.dropStuff()
         super().moveDirection(direction,force,initialMovement)
@@ -380,6 +391,8 @@ class Scrap(Item):
     bad code: only works on terrain
     '''
     def dropStuff(self):
+        # only drop something if there is something left to drop
+        # bad code: should be a guard
         if self.amount > 1:
             # determine how much should fall off
             fallOffAmount = 1
@@ -401,13 +414,18 @@ class Scrap(Item):
         self.setWalkable()
 
 
+    '''
+    recalculate the walkabe attribute
+    '''
     def setWalkable(self):
         if self.amount < 5:
             self.walkable = True
         else:
             self.walkable = False
       
-
+    '''
+    recalculate the display char
+    '''
     @property
     def display(self):
         if self.amount < 5:
@@ -424,7 +442,7 @@ class Scrap(Item):
         return self.amount*2
 
     '''
-    create bigger ball of scrap
+    destroying scrap means to merge the scrap 
     '''
     def destroy(self):
         # get list of scrap on same location
@@ -491,7 +509,9 @@ class GrowthTank(Item):
         if self.filled:
             self.eject()
 
-
+    '''
+    render the growth tank
+    '''
     @property
     def display(self):
         if self.filled:
@@ -539,11 +559,16 @@ class Hutch(Item):
         self.activated = activated
         super().__init__(displayChars.hutch_free,xPosition,yPosition,creator=creator)
 
+        # bad code: set metadata for saving
         self.attributesToStore.extend([
                "activated"])
 
+        # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
 
+    '''
+    render the hutch
+    '''
     @property
     def display(self):
         if self.activated:
@@ -569,7 +594,7 @@ class Hutch(Item):
         super().setState(state)
 
 '''
-item for letting characters trigger somesthing
+item for letting characters trigger something
 '''
 class Lever(Item):
     type = "Lever"
@@ -585,9 +610,11 @@ class Lever(Item):
         self.walkable = True
         self.bolted = True
 
+        # set metadata for saving
         self.attributesToStore.extend([
                "activated"])
 
+        # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
 
     '''
@@ -614,6 +641,9 @@ class Lever(Item):
         # notify listeners
         self.changed()
 
+    '''
+    render the lever
+    '''
     @property
     def display(self):
         if self.activated:
@@ -636,9 +666,11 @@ class Furnace(Item):
         self.stopBoilingEvent = None
         super().__init__(displayChars.furnace_inactive,xPosition,yPosition,name=name,creator=creator)
 
+        # set metadata for saving
         self.attributesToStore.extend([
                "activated"])
 
+        # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
 
     '''
@@ -660,21 +692,25 @@ class Furnace(Item):
                 continue
             foundItem = item
 
+        # refuse to fire the furnace without fuel
         if not foundItem:
-            # refuse to fire the furnace without fuel
             # bad code: return would be preferable to if/else
             if character.watched:
                 messages.append("you need coal to fire the furnace and you have none")
         else:
+            # refuse to fire burning furnace
             if self.activated:
-                # refuse to fire burning furnace
                 # bad code: return would be preferable to if/else
                 if character.watched:
                     messages.append("already burning")
+            # fire the furnace
             else:
                 self.activated = True
+
+                # destroy fuel
                 character.inventory.remove(foundItem)
 
+                # add fluff
                 if character.watched:
                     messages.append("*wush*")
 
@@ -691,13 +727,14 @@ class Furnace(Item):
                 # make the furnace stop burning after some time
                 event = src.events.FurnaceBurnoutEvent(self.room.timeIndex+30,creator=self)
                 event.furnace = self
-
-                # add burnout event 
                 self.room.addEvent(event)
 
                 # notify listeners
                 self.changed()
 
+    '''
+    render the furnace
+    '''
     @property
     def display(self):
         if self.activated:
@@ -848,10 +885,13 @@ class Coal(Item):
         super().__init__(displayChars.coal,xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
         self.bolted = False
+
+        # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
 
 '''
-a door for opening/closing and looking people in/out
+a door for opening/closing and locking people in/out
+# bad code: should use a rendering method
 '''
 class Door(Item):
     type = "Door"
@@ -862,6 +902,8 @@ class Door(Item):
     def __init__(self,xPosition=0,yPosition=0,name="Door",creator=None):
         super().__init__(displayChars.door_closed,xPosition,yPosition,name=name,creator=creator)
         self.walkable = False
+
+        # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
 
     '''
@@ -889,6 +931,8 @@ class Door(Item):
     open door
     '''
     def open(self,character):
+        # check if the door can be opened
+        # bad code: should be guard
         if not (self.room.isContainment and character.room):
             # open the door
             self.walkable = True
@@ -950,23 +994,25 @@ class Pile(Item):
         self.numContained = 100
         super().__init__(displayChars.pile,xPosition,yPosition,name=name,creator=creator)
 
+        # set metadata for saving
         self.attributesToStore.extend([
                "numContained"])
 
+        # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
 
     '''
     take from the pile
     '''
     def apply(self,character):
-        # check characters inventory
-        if len(character.inventory) > 10:
-            messages.append("you cannot carry more items")
-            return
-
         # write log on impossible state
         if self.numContained < 1:
             debugMessages.append("something went seriously wrong. I should have morphed by now")
+            return
+
+        # check characters inventory
+        if len(character.inventory) > 10:
+            messages.append("you cannot carry more items")
             return
 
         # spawn item to inventory
@@ -977,8 +1023,8 @@ class Pile(Item):
         # reduce item count
         self.numContained -= 1
 
+        # morph into a single item
         if self.numContained == 1:
-            # morph into a single item
             self.room.removeItem(self)
             new = self.itemType(creator=self)
             new.xPosition = self.xPosition
@@ -1007,6 +1053,8 @@ class Acid(Item):
         self.type = itemType
         self.type = "Acid"
         super().__init__(displayChars.acid,xPosition,yPosition,name=name,creator=creator)
+
+        # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
 
 '''
@@ -1022,6 +1070,8 @@ class Chain(Item):
         super().__init__(displayChars.chains,xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
         self.bolted = False
+
+        # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
 
         self.chainedTo = []
@@ -1070,12 +1120,12 @@ class Chain(Item):
                     if (room.yPosition*15+room.offsetY+room.sizeY == self.yPosition) and (self.xPosition > room.xPosition*15+room.offsetX-1 and self.xPosition < room.xPosition*15+room.offsetX+room.sizeX):
                         rooms.append(room)
 
-                # set chaing for self
+                # set chaining for self
                 self.chainedTo = []
                 self.chainedTo.extend(items)
                 self.chainedTo.extend(rooms)
 
-                # set chaing for chained objects
+                # set chaining for chained objects
                 for thing in self.chainedTo:
                     thing.chainedTo.append(self)
                     messages.append(thing.chainedTo)
@@ -1128,19 +1178,23 @@ class Boiler(Item):
         self.isHeated = False
         self.startBoilingEvent = None
         self.stopBoilingEvent = None
+
+        # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
 
     '''
     start producing steam after a delay
     '''
     def startHeatingUp(self):
+
+        # do not heat up heated items
         if self.isHeated:
             return
 
         # flag self as heated
         self.isHeated = True
 
-        # abort any cooling down
+        # abort cooling down
         if self.stopBoilingEvent:
             self.room.removeEvent(self.stopBoilingEvent)
             self.stopBoilingEvent = None
@@ -1187,8 +1241,10 @@ class Boiler(Item):
     stop producing steam after a delay
     '''
     def stopHeatingUp(self):
+        # don't do cooldown on cold boilers
         if not self.isHeated:
             return
+
         # flag self as heated
         self.isHeated = False
 
@@ -1242,7 +1298,7 @@ class Spray(Item):
     type = "Spray"
 
     '''
-    call superclass constructor with modified paramters and set some state
+    call superclass constructor with modified parameters and set some state
     '''
     def __init__(self,xPosition=0,yPosition=0,name="spray",direction=None,creator=None):
         # skin acording to spray direction
@@ -1253,10 +1309,11 @@ class Spray(Item):
 
         super().__init__(displayChars.spray_left_inactive,xPosition,yPosition,name=name,creator=creator)
 
-        # set up saveing
+        # set up meta information for saveing
         self.attributesToStore.extend([
                "direction"])
 
+        # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
 
     '''
@@ -1299,11 +1356,16 @@ class MarkerBean(Item):
         self.walkable = True
         self.bolted = False
 
+        # set up meta information for saveing
         self.attributesToStore.extend([
                "activated"])
 
+        # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
 
+    '''
+    render the marker
+    '''
     @property
     def display(self):
         if self.activated:
@@ -1312,7 +1374,7 @@ class MarkerBean(Item):
             return " -"
 
     '''
-    avtivate marker
+    activate marker
     '''
     def apply(self,character):
         super().apply(character,silent=True)
@@ -1331,9 +1393,11 @@ class GooDispenser(Item):
         self.activated = False
         super().__init__("g%",xPosition,yPosition,name=name,creator=creator)
 
+        # set up meta information for saveing
         self.attributesToStore.extend([
                "activated"])
 
+        # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
     
     '''
@@ -1366,9 +1430,11 @@ class GooFlask(Item):
         self.bolted = False
         self.description = "a flask conatining goo"
 
+        # set up meta information for saveing
         self.attributesToStore.extend([
                "uses"])
 
+        # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
 
     '''
@@ -1376,12 +1442,16 @@ class GooFlask(Item):
     '''
     def apply(self,character):
         super().apply(character,silent=True)
+        # bad code: should be guard
         if self.uses > 0:
             self.uses -= 1
             self.changed()
             character.satiation = 1000
             character.changed()
 
+    '''
+    render based on fill amount
+    '''
     @property
     def display(self):
         displayByUses = ["ò ","ò.","ò,","ò-","ò~","ò="]
@@ -1405,6 +1475,8 @@ class OjectDispenser(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None, name="object dispenser",creator=None):
         super().__init__("U\\",xPosition,yPosition,name=name,creator=creator)
+
+        # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
 
     '''
@@ -1451,6 +1523,7 @@ class ProductionArtwork(Item):
     produce an item
     '''
     def produce(self,itemType,resultType=None):
+        # gather a metal bar
         metalBar = None
         if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
             for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
@@ -1458,8 +1531,8 @@ class ProductionArtwork(Item):
                    metalBar = item
                    break
         
+        # refuse production without ressources
         if not metalBar:
-            # refuse production without ressources
             messages.append("no metal bars available")
             return
 
@@ -1490,6 +1563,7 @@ class ScrapCompactor(Item):
     '''
     def apply(self,character,resultType=None):
         super().apply(character,silent=True)
+
         # fetch input scrap
         scrap = None
         for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
@@ -1497,8 +1571,8 @@ class ScrapCompactor(Item):
                 scrap = item
                 break
 
+        # refuse to produce without ressources
         if not scrap:
-            # refuse to produce without ressources
             messages.append("no scraps available")
             return
        

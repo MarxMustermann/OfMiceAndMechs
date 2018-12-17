@@ -52,6 +52,7 @@ class Quest(src.saveing.Saveable):
         self.watched = []
 
         # set up saving
+        # bad code: extend would be better
         self.attributesToStore.append("type")
         self.attributesToStore.append("active")
         self.attributesToStore.append("completed")
@@ -171,6 +172,7 @@ class Quest(src.saveing.Saveable):
         if not self.active:
             debugMessages.append("this should not happen (posthandler called on inactive quest ("+str(self)+")) "+str(self.character))
             return
+
         # smooth over impossible state
         if not self.character:
             debugMessages.append("this should not happen (posthandler called on quest without character ("+str(self)+")) "+str(self.character))
@@ -185,6 +187,7 @@ class Quest(src.saveing.Saveable):
             self.deactivate()
 
             return
+
         # smooth over impossible state
         if self.completed:
             debugMessages.append("this should not happen (posthandler called on completed quest ("+str(self)+")) "+str(self.character))
@@ -244,18 +247,22 @@ class Quest(src.saveing.Saveable):
     bad code: this would be a constructor param, but this may be used for reassigning quests
     '''
     def assignToCharacter(self,character):
+        # extend characters solvers with this quest
         if not self.type in character.solvers:
             character.solvers.append(self.type)
 
+        # set character
         self.character = character
         self.recalculate()
+
+        # set path
         if self.active:
             self.character.setPathToQuest(self)
 
     '''
     recalculate the internal state of the quest
     this is usually called as a listener function
-    also used when the player moves leaves the path
+    also used when the player moves leave the path
     '''
     def recalculate(self):
         if not self.active:
@@ -282,7 +289,7 @@ class Quest(src.saveing.Saveable):
             self.listener.append(listenFunction)
 
     '''
-    remove a callback to be called if the quest changes
+    remove a callback 
     bad code: should be extra class
     '''
     def delListener(self,listenFunction):
@@ -329,6 +336,10 @@ class Quest(src.saveing.Saveable):
             self.lifetimeEvent = None
         self.changed()
 
+    '''
+    get the difference between original state and current state as dict
+    bad code: doesn't actually calculate a difference
+    '''
     def getDiffState(self):
         state = super().getDiffState()
         if self.endTrigger:
@@ -338,6 +349,9 @@ class Quest(src.saveing.Saveable):
                 state["endTrigger"] = {"container":self.endTrigger["container"].id,"method":self.endTrigger["method"]}
         return state
 
+    '''
+    get the current state
+    '''
     def getState(self):
         state = super().getState()
         if self.endTrigger:
@@ -353,7 +367,7 @@ a container quest containing a list of quests that have to be handled in sequenc
 class MetaQuestSequence(Quest):
     '''
     state initialization
-    bad code: quest param does not work anymore and should be removed
+    bad code: quest parameter does not work anymore and should be removed
     '''
     def __init__(self,quests=[],followUp=None,failTrigger=None,startCinematics=None,lifetime=None,creator=None):
         # set state
@@ -366,17 +380,17 @@ class MetaQuestSequence(Quest):
         if len(self.subQuests):
             self.startWatching(self.subQuests[0],self.recalculate)
 
+        # set meta information for saving
         self.attributesToStore.append("metaDescription")
+        while "dstX" in self.attributesToStore:
+            self.attributesToStore.remove("dstX")
+        while "dstY" in self.attributesToStore:
+            self.attributesToStore.remove("dstY")
 
         # save state and register
         self.type = "MetaQuestSequence"
         self.initialState = self.getState()
         loadingRegistry.register(self)
-
-        while "dstX" in self.attributesToStore:
-            self.attributesToStore.remove("dstX")
-        while "dstY" in self.attributesToStore:
-            self.attributesToStore.remove("dstY")
 
     '''
     get difference in state since creation
@@ -425,8 +439,8 @@ class MetaQuestSequence(Quest):
                     
         # load sub quests
         if "subQuests" in state:
+            # load static quest list
             if "ids" in state["subQuests"]:
-                # load static quest list
                 self.subQuests = []
                 for thingId in state["subQuests"]["ids"]:
                     # create and add quest
@@ -434,18 +448,21 @@ class MetaQuestSequence(Quest):
                     thing = getQuestFromState(thingState)
                     self.subQuests.append(thing)
                     self.startWatching(self.subQuests[-1],self.recalculate)
+
+            # update changed quests
             if "changed" in state["subQuests"]:
-                # update changed quests
                 for thing in self.subQuests:
                     if thing.id in state["subQuests"]["states"]:
                         thing.setState(state["subQuests"]["states"][thing.id])
+
+            # remove quests
             if "removed" in state["subQuests"]:
-                # remove quests
                 for thing in self.subQuests:
                     if thing.id in state["subQuests"]["removed"]:
                         self.subQuests.remove(thing)
+
+            # add new quests
             if "new" in state["subQuests"]:
-                # add new quests
                 for thingId in state["subQuests"]["new"]:
                     thingState = state["subQuests"]["states"][thingId]
                     thing = getQuestFromState(thingState)
@@ -516,10 +533,13 @@ class MetaQuestSequence(Quest):
                 out = [[self.metaDescription+":","\n"]]
         else:
             out =  self.metaDescription+":\n"
+
+        # add remaining time
         if self.lifetimeEvent:
             out += " ("+str(self.lifetimeEvent.tick-gamestate.tick)+" / "+str(self.lifetime)+")"
+
+        # add quests
         for quest in self.subQuests:
-            # add quests
             if asList:
                 first = True
                 colored = colored
@@ -578,6 +598,7 @@ class MetaQuestSequence(Quest):
     ensure first quest is active
     '''
     def recalculate(self):
+
         # smooth over impossible state
         if not self.active:
             debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
@@ -615,7 +636,7 @@ class MetaQuestSequence(Quest):
             self.subQuests[0].assignToCharacter(self.character)
             self.character.recalculatePath()
 
-        # listen to quest
+        # listen to subquest
         if self.subQuests[0]:
             self.startWatching(self.subQuests[0],self.recalculate)
 
@@ -667,18 +688,18 @@ class MetaQuestParralel(Quest):
         for quest in self.subQuests:
             self.startWatching(quest,self.recalculate)
 
+        # set metadata for saving
         self.attributesToStore.append("metaDescription")
         self.objectsToStore.append("lastActive")
+        while "dstX" in self.attributesToStore:
+            self.attributesToStore.remove("dstX")
+        while "dstY" in self.attributesToStore:
+            self.attributesToStore.remove("dstY")
 
         # store initial state and register
         self.type = "MetaQuestParralel"
         self.initialState = self.getState()
         loadingRegistry.register(self)
-
-        while "dstX" in self.attributesToStore:
-            self.attributesToStore.remove("dstX")
-        while "dstY" in self.attributesToStore:
-            self.attributesToStore.remove("dstY")
 
     '''
     get difference in state since creation
@@ -707,12 +728,15 @@ class MetaQuestParralel(Quest):
     '''
     def getState(self):
         state = super().getState()
+        
+        # store subquests
         state["subQuests"] = {}
         state["subQuests"]["ids"] = []
         state["subQuests"]["states"] = {}
         for quest in self.subQuests:
             state["subQuests"]["ids"].append(quest.id)
             state["subQuests"]["states"][quest.id] = quest.getState()
+
         return state
     
     '''
@@ -723,31 +747,37 @@ class MetaQuestParralel(Quest):
                     
         # load quests
         if "subQuests" in state:
+
+            # load static quest list
             if "ids" in state["subQuests"]:
-                # load static quest list
+                # remove old quests
                 for quest in self.subQuests[:]:
                      quest.deactivate()
                      quest.completed = False
                      self.subQuests.remove(quest)
 
+                # load quest
                 for thingId in state["subQuests"]["ids"]:
                     # create and add quest
                     thingState = state["subQuests"]["states"][thingId]
                     thing = getQuestFromState(thingState)
                     self.subQuests.append(thing)
                     self.startWatching(self.subQuests[-1],self.recalculate)
+
+            # update changed quests
             if "changed" in state["subQuests"]:
-                # update changed quests
                 for thing in self.quests:
                     if thing.id in state["subQuests"]["states"]:
                         thing.setState(state["subQuests"]["states"][thing.id])
+
+            # remove quests
             if "removed" in state["subQuests"]:
-                # remove quests
                 for thing in self.quests:
                     if thing.id in state["subQuests"]["removed"]:
                         self.quests.remove(thing)
+
+            # add new quests
             if "new" in state["subQuests"]:
-                # add new quests
                 for thingId in state["subQuests"]["new"]:
                     thingState = state["subQuests"]["states"][thingId]
                     thing = getQuestFromState(thingState)
@@ -765,6 +795,7 @@ class MetaQuestParralel(Quest):
         try:
             return self.lastActive.dstX
         except Exception as e:
+            # bad code: exceptions should be at least logged
             return None
 
     '''
@@ -868,8 +899,12 @@ class MetaQuestParralel(Quest):
     def description(self):
         # add the name of the main quest
         out = ""+self.metaDescription+":\n"
+        
+        # add the reaining lifetime
         if self.lifetimeEvent:
             out += " ("+str(self.lifetimeEvent.tick-gamestate.tick)+" / "+str(self.lifetime)+")"
+
+        # add subquests
         for quest in self.subQuests:
             # show subquest description
             questDescription = "\n    ".join(quest.description.split("\n"))+"\n"
@@ -898,6 +933,7 @@ class MetaQuestParralel(Quest):
     def assignToCharacter(self,character):
         super().assignToCharacter(character)
 
+        # assign subquests
         for quest in self.subQuests:
             quest.assignToCharacter(self.character)
 
@@ -988,6 +1024,7 @@ class NaiveMoveQuest(Quest):
         self.description = "please go to coordinate "+str(self.dstX)+"/"+str(self.dstY)    
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
 
+        # set metadata for saving
         self.attributesToStore.extend([
               "description","sloppy" ])
         self.objectsToStore.append("room")
@@ -1006,6 +1043,9 @@ class NaiveMoveQuest(Quest):
             debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
             return 
 
+        '''
+        check if questlist is cyclic
+        '''
         def checkRecursive(questList):
             for quest in questList:
                 if quest == self:
@@ -1017,6 +1057,7 @@ class NaiveMoveQuest(Quest):
                     pass
             return False
    
+        # smooth over impossible state
         found = checkRecursive(self.character.quests)
         if not found:
             debugMessages.append("impossible state")
@@ -1024,12 +1065,12 @@ class NaiveMoveQuest(Quest):
             debugMessages.append(self.character)
             return
 
+        # check for exact position
         if not self.sloppy:
-            # check for exact position
             if self.character.xPosition == self.dstX and self.character.yPosition == self.dstY and self.character.room == self.room:
                 self.postHandler()
+        # check for neighbouring position
         else:
-            # check for neighbouring position
             if self.character.room == self.room and((self.character.xPosition-self.dstX in (1,0,-1) and self.character.yPosition == self.dstY) or (self.character.yPosition-self.dstY in (1,0,-1) and self.character.xPosition == self.dstX)):
                 self.postHandler()
 
@@ -1047,6 +1088,7 @@ class NaiveMoveQuest(Quest):
     def setState(self,state):
         super().setState(state)
 
+        # set character
         if "character" in state and state["character"]:
            '''
            set value
@@ -1072,6 +1114,7 @@ class NaiveEnterRoomQuest(Quest):
             self.dstX = 0
             self.dstY = 0
         self.description = "please enter the room: "
+
         # set door as target
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
 
@@ -1097,6 +1140,7 @@ class NaiveEnterRoomQuest(Quest):
     close door and call superclass
     '''
     def postHandler(self):
+        # smooth over impossible state
         if not self.character.room:
             debugMessages.append("posthandler called without beeing in a room")
             return
@@ -1112,7 +1156,7 @@ class NaiveEnterRoomQuest(Quest):
     check if the character is in the correct roon
     '''
     def triggerCompletionCheck(self):
-        # bad code: should log
+        # smooth over impossible state
         if not self.active:
             debugMessages.append("triggerCompletionCheck called on inactive quest")
             return 
@@ -1123,6 +1167,8 @@ class NaiveEnterRoomQuest(Quest):
 
     def setState(self,state):
         super().setState(state)
+
+        # set character
         if "character" in state and state["character"]:
            '''
            set value
@@ -1152,6 +1198,7 @@ class NaivePickupQuest(Quest):
             self.dstY = 0
         self.description = "naive pickup"
 
+        # set metadata for saving
         self.objectsToStore.append("toPickup")
 
         # save initial state and register
@@ -1163,6 +1210,7 @@ class NaivePickupQuest(Quest):
     check whether item is in characters inventory
     '''
     def triggerCompletionCheck(self):
+        # bad code: should be a guard
         if self.active:
             if self.toPickup in self.character.inventory:
                 self.postHandler()
@@ -1171,8 +1219,10 @@ class NaivePickupQuest(Quest):
     pick up the item
     '''
     def solver(self,character):
+        # wait if the item is inaccessible
         if not self.toPickup.room and not self.toPickup.terrain:
             return True
+
         self.toPickup.pickUp(character)
         return True
     
@@ -1206,6 +1256,7 @@ class NaiveGetQuest(Quest):
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
         self.description = "naive get quest"
 
+        # set metadata for saving
         self.objectsToStore.append("questDispenser")
         self.attributesToStore.append("assign")
 
@@ -1256,6 +1307,7 @@ class NaiveGetReward(Quest):
         self.description = "naive get reward"
         self.done = False
 
+        # set metadata for saving
         self.objectsToStore.append("quest")
 
         # save initial state and register
@@ -1387,6 +1439,7 @@ class NaiveWakeUpQuest(Quest):
     '''
     def activate(self):
         super().activate()
+        # bad code: this listener is useless
         self.target.addListener(self.triggerCompletionCheck,"fallen unconcious")
 
     '''
@@ -1410,6 +1463,7 @@ class NaiveActivateQuest(Quest):
         super().__init__(followUp,startCinematics=startCinematics,creator=creator)
         self.activated = False
 
+        # set metadata for saving
         self.objectsToStore.append("toActivate")
         self.attributesToStore.append("description")
 
@@ -1488,6 +1542,7 @@ class NaiveDropQuest(Quest):
         self.description = "naive drop"
         self.dropped = False
 
+        # set metadata for saving
         self.objectsToStore.append("toDrop")
         self.objectsToStore.append("room")
 
@@ -1501,10 +1556,9 @@ class NaiveDropQuest(Quest):
     '''
     def triggerCompletionCheck(self,ingoreParam=None):
         if self.active:
-            if (self.toDrop.xPosition == self.dstX and
-                self.toDrop.xPosition == self.dstX and
-                self.toDrop.room == self.room):
-
+            if     (self.toDrop.xPosition == self.dstX and
+                    self.toDrop.xPosition == self.dstX and
+                    self.toDrop.room == self.room):
                 self.postHandler()
 
     '''
@@ -1757,14 +1811,14 @@ class SurviveQuest(Quest):
         if self.refillQuest and self.refillQuest.completed:
             self.refillQuest = None
 
-        # refill flask
+        # add quest to refill flask
         for item in self.character.inventory:
             if isinstance(item,src.items.GooFlask):
                 if item.uses < 10 and not self.refillQuest:
                     self.refillQuest = RefillDrinkQuest(creator=self)
                     self.character.assignQuest(self.refillQuest,active=True)
 
-        # drink
+        # add quest to drink
         if self.character.satiation < 301:
             if not self.drinkQuest:
                 self.drinkQuest = DrinkQuest(creator=self)
@@ -1786,6 +1840,7 @@ class EnterRoomQuestMeta(MetaQuestSequence):
         self.metaDescription = "enterroom Meta"
         self.leaveRoomQuest = None
 
+        # set metadata for saving
         self.objectsToStore.append("room")
         self.objectsToStore.append("leaveRoomQuest")
 
@@ -1800,6 +1855,8 @@ class EnterRoomQuestMeta(MetaQuestSequence):
     def recalculate(self):
         if not self.active:
             return 
+
+        # add quest to leave room
         if self.leaveRoomQuest and self.leaveRoomQuest.completed:
             self.leaveRoomQuest = None
         if not self.leaveRoomQuest and self.character.room and not self.character.room == self.room:
@@ -1815,6 +1872,8 @@ class EnterRoomQuestMeta(MetaQuestSequence):
         self.startWatching(character,self.recalculate)
         super().assignToCharacter(character)
 
+    '''
+    '''
     def setState(self,state):
         super().setState(state)
         if "character" in state and state["character"]:
@@ -1846,8 +1905,8 @@ class MoveQuestMeta(MetaQuestSequence):
             self.addQuest(quest)
         self.metaDescription = "move meta"
 
+        # set metadata for saving
         self.attributesToStore.append("sloppy")
-
         self.objectsToStore.append("room")
         self.objectsToStore.extend(["enterRoomQuest","leaveRoomQuest"])
 
@@ -1860,7 +1919,9 @@ class MoveQuestMeta(MetaQuestSequence):
     move to correct room if nesseccary
     '''
     def recalculate(self):
+        # bad code: should ne a guard
         if self.active:
+
             # leave wrong room
             if self.leaveRoomQuest and self.leaveRoomQuest.completed:
                 self.leaveRoomQuest = None
@@ -1874,6 +1935,7 @@ class MoveQuestMeta(MetaQuestSequence):
             if (not self.enterRoomQuest and (self.room and ((not self.character.room) or (not self.character.room == self.room)))):
                 self.enterRoomQuest = EnterRoomQuestMeta(self.room,creator=self)
                 self.addQuest(self.enterRoomQuest)
+
         super().recalculate()
     
     '''
@@ -1919,6 +1981,7 @@ class DropQuestMeta(MetaQuestSequence):
             self.addQuest(quest)
         self.metaDescription = "drop Meta"
 
+        # set metadata for saving
         self.objectsToStore.append("toDrop")
         self.objectsToStore.append("moveQuest")
         self.objectsToStore.append("room")
@@ -1933,7 +1996,9 @@ class DropQuestMeta(MetaQuestSequence):
     re-add the movement quest if neccessary
     '''
     def recalculate(self):
+        # bad code: should be a guard
         if self.active:
+            # add quest to move to dropoff
             if self.moveQuest and self.moveQuest.completed:
                 self.moveQuest = None
             if not self.moveQuest and not (self.room == self.character.room and self.xPosition == self.character.xPosition and self.yPosition == self.character.yPosition):
@@ -1970,6 +2035,7 @@ class PickupQuestMeta(MetaQuestSequence):
             self.addQuest(quest)
         self.metaDescription = "pickup Meta"
 
+        # set metadata for saving
         self.attributesToStore.append("sloppy")
         self.objectsToStore.append("toPickup")
         self.objectsToStore.append("moveQuest")
@@ -1983,14 +2049,16 @@ class PickupQuestMeta(MetaQuestSequence):
     re-add the movement quest if neccessary
     '''
     def recalculate(self):
+        # smooth over impossible state
         if not self.toPickup:
             debugMessages.append("Pickup quest with nothing to pick up")
             return
+
+        # bad code: should be a guard
         if self.active:
-            # remove completed quests
+            # add quest to move to target
             if self.moveQuest and self.moveQuest.completed:
                 self.moveQuest = None
-
             if not self.moveQuest:
                 # check whether it is neccessary to re add the movement
                 reAddMove = False
@@ -2056,6 +2124,7 @@ class ActivateQuestMeta(MetaQuestSequence):
             self.addQuest(quest)
         self.metaDescription = "activate Quest"
 
+        # set metadata for saving
         self.attributesToStore.append("sloppy")
         self.objectsToStore.append("moveQuest")
         self.objectsToStore.append("toActivate")
@@ -2069,16 +2138,15 @@ class ActivateQuestMeta(MetaQuestSequence):
     re-add the movement quest if neccessary
     '''
     def recalculate(self):
+        # should be a guard
         if self.active:
-            # remove completed quests
+            # add quest to move to target
             if self.moveQuest and self.moveQuest.completed:
                 self.moveQuest = None
-
             if self.moveQuest and not self.moveQuest in self.subQuests:
                 tmp = self.moveQuest
                 self.moveQuest = None
                 tmp.deactivate()
-
             if not self.moveQuest:
                 # check whether it is neccessary to re add the movement
                 reAddMove = False
@@ -2102,12 +2170,15 @@ class ActivateQuestMeta(MetaQuestSequence):
         super().recalculate()
         
     '''
-    start to watch the charcater
+    start to watch the character
     '''
     def activate(self):
         self.startWatching(self.character,self.recalculate)
         super().activate()
 
+    '''
+    set state from dictionary
+    '''
     def setState(self,state):
         super().setState(state)
         if self.active:
@@ -2151,6 +2222,7 @@ class CollectQuestMeta(MetaQuestSequence):
         self.activateQuest = None
         self.waitQuest = WaitQuest(creator=self)
         questList = [self.waitQuest]
+        # bad code: looping over one entry
         for quest in reversed(questList):
             self.addQuest(quest)
         self.metaDescription = "fetch Quest Meta"
@@ -2165,12 +2237,14 @@ class CollectQuestMeta(MetaQuestSequence):
     bad code: only works within room and with piles
     '''
     def assignToCharacter(self,character):
+        # bad code: should be a guard
         if character.room:
             # search for an item 
             # bad code: should prefer coal
             foundItem = None
             for item in character.room.itemsOnFloor:
                 hasProperty = False
+                # bad code: unneeded try/except
                 try:
                     hasProperty = getattr(item,"contains_"+self.toFind)
                 except:
@@ -2180,7 +2254,7 @@ class CollectQuestMeta(MetaQuestSequence):
                     foundItem = item
                     break
 
-            # activate the pile
+            # add quest to activate the pile
             if foundItem:
                 self.activeQuest = ActivateQuestMeta(foundItem,creator=self)
                 self.addQuest(self.activeQuest)
@@ -2204,16 +2278,19 @@ class GetQuest(MetaQuestSequence):
     def __init__(self,questDispenser=None,assign=False,followUp=None,startCinematics=None,creator=None):
         super().__init__([],creator=creator)
         self.questDispenser = questDispenser
+        # bad code: semi optional argument
         if questDispenser:
             self.moveQuest = MoveQuestMeta(self.questDispenser.room,self.questDispenser.xPosition,self.questDispenser.yPosition,sloppy=True,creator=self)
         else:
             self.moveQuest = MoveQuestMeta(creator=self)
         self.getQuest = NaiveGetQuest(questDispenser,assign=assign,creator=self)
         questList = [self.moveQuest,self.getQuest]
+        # bad code: repetetive code
         for quest in reversed(questList):
             self.addQuest(quest)
         self.metaDescription = "get Quest"
 
+        # set metainformation for saving
         self.objectsToStore.append("questDispenser")
 
         # save initial state and register
@@ -2225,6 +2302,7 @@ class GetQuest(MetaQuestSequence):
     check if a quest was aquired
     '''
     def triggerCompletionCheck(self):
+        # bad code: should be a guard
         if self.active:
             if self.quest:
                 self.postHandler()
@@ -2244,6 +2322,7 @@ class GetReward(MetaQuestSequence):
     def __init__(self,questDispenser=None,quest=None,assign=False,followUp=None,startCinematics=None,creator=None):
         super().__init__([],creator=creator)
         self.questDispenser = questDispenser
+        # bad code: semi optional argument
         if questDispenser:
             self.moveQuest = MoveQuestMeta(self.questDispenser.room,self.questDispenser.xPosition,self.questDispenser.yPosition,sloppy=True,creator=self)
         else:
@@ -2253,11 +2332,13 @@ class GetReward(MetaQuestSequence):
         self.actualQuest = quest
         self.addedRewardChat = False
 
+        # bad code: repetetive code
         for quest in reversed(questList):
             self.addQuest(quest)
 
         self.metaDescription = "get Reward"
 
+        # set metainformation for saving
         self.objectsToStore.append("questDispenser")
         self.attributesToStore.append("addedRewardChat")
 
@@ -2271,6 +2352,7 @@ class GetReward(MetaQuestSequence):
     bad code: spawning the chat should happen in activate
     '''
     def assignToCharacter(self,character):
+        # handle impossible states
         if not self.actualQuest:
             debugMessages.append("this should not happen (rewardchat without quest")
 
@@ -2286,7 +2368,10 @@ class GetReward(MetaQuestSequence):
     remove the reward chat option and do the usual wrap up
     '''
     def postHandler(self):
+
+        # remove the quests chat option
         if self.character == mainChar:
+            # bad code: repetetive code
             toRemove = None
             for chat in self.questDispenser.basicChatOptions:
                 if isinstance(chat,dict):
@@ -2296,6 +2381,7 @@ class GetReward(MetaQuestSequence):
                         
             if toRemove:
                 self.questDispenser.basicChatOptions.remove(toRemove)
+
         super().postHandler()
 
 '''
@@ -2308,6 +2394,7 @@ class MurderQuest(MetaQuestSequence):
     def __init__(self,toKill=None,followUp=None,startCinematics=None,creator=None,lifetime=None):
         super().__init__([],creator=creator,lifetime=lifetime)
         self.toKill = toKill
+        # bad code: semi optional parameter
         if toKill:
            self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=False,creator=self)
            questList = [self.moveQuest,NaiveMurderQuest(toKill,creator=self)]
@@ -2318,6 +2405,8 @@ class MurderQuest(MetaQuestSequence):
            questList = [self.moveQuest,NaiveMurderQuest(toKill,creator=self)]
            self.lastPos = (self.toKill.room,self.toKill.xPosition,self.toKill.yPosition)
         self.metaDescription = "murder"
+
+        # bad code: repetetive code
         for quest in reversed(questList):
             self.addQuest(quest)
 
@@ -2330,7 +2419,10 @@ class MurderQuest(MetaQuestSequence):
     adjust movement to follow target
     '''
     def recalculate(self):
+        # reset target
+        # bad code: should be a guard
         if self.active:
+            # bad code: freezed npc while reorienting
             pos = (self.toKill.room,self.toKill.xPosition,self.toKill.yPosition)
             if not (pos == self.lastPos) and not self.toKill.dead:
                 self.lastPos = pos
@@ -2355,6 +2447,7 @@ class KnockOutQuest(MetaQuestSequence):
         questList = [self.moveQuest,NaiveKnockOutQuest(target,creator=self)]
         self.lastPos = (self.target.room,self.target.xPosition,self.target.yPosition)
         self.metaDescription = "knock out"
+        # bad code: repetetive code
         for quest in reversed(questList):
             self.addQuest(quest)
         self.startWatching(self.target,self.recalculate)
@@ -2368,6 +2461,8 @@ class KnockOutQuest(MetaQuestSequence):
     adjust movement to follow target
     '''
     def recalculate(self):
+        # reset target if it moved
+        # bad code: should be a guard
         if self.active:
             pos = (self.target.room,self.target.xPosition,self.target.yPosition)
             if not (pos == self.lastPos) and not self.target.dead:
@@ -2381,6 +2476,7 @@ class KnockOutQuest(MetaQuestSequence):
 
 '''
 the quest for waking somebody
+bad code: bricks npc when pc wakes a npc unplanned
 '''
 class WakeUpQuest(MetaQuestSequence):
     '''
@@ -2393,6 +2489,7 @@ class WakeUpQuest(MetaQuestSequence):
         questList = [self.moveQuest,NaiveWakeUpQuest(target,creator=self)]
         self.lastPos = (self.target.room,self.target.xPosition,self.target.yPosition)
         self.metaDescription = "wake up somebody"
+        # bad code: repetetive code
         for quest in reversed(questList):
             self.addQuest(quest)
         self.startWatching(self.target,self.recalculate)
@@ -2406,6 +2503,7 @@ class WakeUpQuest(MetaQuestSequence):
     adjust movement to follow target
     '''
     def recalculate(self):
+        # bad code: should be a guard
         if self.active:
             pos = (self.target.room,self.target.xPosition,self.target.yPosition)
             if not (pos == self.lastPos):
@@ -2415,6 +2513,7 @@ class WakeUpQuest(MetaQuestSequence):
                         self.subQuests.remove(self.moveQuest)
                 self.moveQuest = MoveQuestMeta(self.target.room,self.target.xPosition,self.target.yPosition,sloppy=True,creator=self)
                 self.addQuest(self.moveQuest)
+
         super().recalculate()
 
 '''
@@ -2472,6 +2571,7 @@ class LeaveRoomQuest(Quest):
     def __init__(self,room=None,followUp=None,startCinematics=None,creator=None):
         self.room = room
         self.description = "please leave the room."
+        # bad code: semi optional parameter
         if room:
             self.dstX = self.room.walkingAccess[0][0]
             self.dstY = self.room.walkingAccess[0][1]
@@ -2491,7 +2591,9 @@ class LeaveRoomQuest(Quest):
     move to door and step out of the room
     '''
     def solver(self,character):
+        # bad code: solver excecution should be splited from the rest of the logic
         if super().solver(character):
+            # bad code: should be a guard
             if character.room:
                 # close door
                 for item in character.room.itemByCoordinates[(character.xPosition,character.yPosition)]:
@@ -2555,6 +2657,7 @@ class PatrolQuest(MetaQuestSequence):
             quest = MoveQuestMeta(waypoint[0],waypoint[1],waypoint[2],creator=self)
             self.addQuest(quest)
 
+        # bad code: lifetime is handled by base class
         self.lifetime = lifetime
 
         # save initial state and register
@@ -2566,6 +2669,7 @@ class PatrolQuest(MetaQuestSequence):
     activate and prepare termination after lifespan
     '''
     def activate(self):
+        # bad code: lifetime is handled in base class
         if self.lifetime:
             '''
             event for wrapping up the quest
@@ -2611,6 +2715,7 @@ class ExamineQuest(Quest):
     check if some items were observed
     '''
     def triggerCompletionCheck(self):
+        # bad code: fixed threashold
         if len(self.examinedItems) >= 5:
             self.postHandler()
 
@@ -2626,6 +2731,7 @@ class ExamineQuest(Quest):
     increases the counter of observed items
     '''
     def registerExaminination(self,item):
+        # bad code: should be a guard
         itemType = type(item)
         if not itemType in self.examinedItems:
             self.examinedItems.append(itemType)
@@ -2636,6 +2742,8 @@ class ExamineQuest(Quest):
     '''
     def setState(self,state):
         super().setState(state)
+
+        # bad code: should be a guard
         if self.active and self.character:
             self.character.addListener(self.registerExaminination,"examine")
 
@@ -2656,6 +2764,7 @@ class FetchFurniture(MetaQuestParralel):
     def __init__(self,constructionSite=None,storageRooms=None,toFetch=None,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
         super().__init__([],creator=creator)
         questList = []
+        # bad code: hardcoded dropoffs
         dropoffs = [(4,4),(5,4),(5,5),(5,6),(4,6),(3,6),(3,5),(3,4)]
         self.itemsInStore = []
         thisToFetch = toFetch[:]
@@ -2666,6 +2775,7 @@ class FetchFurniture(MetaQuestParralel):
         if maxNum > len(dropoffs):
             maxNum = len(dropoffs)
 
+        # generate quests for fetching furniture
         fetchType = None
         while counter < maxNum:
             # set item to search for
@@ -2697,6 +2807,7 @@ class FetchFurniture(MetaQuestParralel):
 
             counter += 1
 
+        # bad code: repetive code
         for quest in reversed(questList):
             self.addQuest(quest)
 
@@ -2720,6 +2831,7 @@ class PlaceFurniture(MetaQuestParralel):
         questList = []
 
         # handle each item
+        # bad code: should use transport quest
         counter = 0
         while counter < len(itemsInStore):
             # get item to place
@@ -2738,6 +2850,7 @@ class PlaceFurniture(MetaQuestParralel):
             self.startWatching(quest,self.recalculate)
             counter += 1 
 
+        # bad code: repetive code
         for quest in reversed(questList):
             self.addQuest(quest)
 
@@ -2779,6 +2892,7 @@ class ConstructRoom(MetaQuestParralel):
     add quests to fetch and place furniture
     '''
     def recalculate(self):
+        # bad code: questlist isn't even defined here
         if not questList or questList[0].completed:
             if not self.didFetchQuest:
                 # fetch some furniture from storage
@@ -2829,6 +2943,7 @@ class TransportQuest(MetaQuestSequence):
             self.addQuest(quest)
         self.metaDescription = "transport"
 
+        # set meta information for saving
         self.objectsToStore.append("toTransport")
 
         # save initial state and register
@@ -2840,10 +2955,13 @@ class TransportQuest(MetaQuestSequence):
     drop the item after picking it up
     '''
     def addDrop(self):
+        # bad code: should be a guard
         if self.dropOff:
             self.addQuest(DropQuestMeta(self.toTransport,self.dropOff[0],self.dropOff[1],self.dropOff[2],creator=self))
-
     
+    '''
+    set internal state from dictionary
+    '''
     def setState(self,state):
         super().setState(state)
 
@@ -2860,7 +2978,7 @@ class TransportQuest(MetaQuestSequence):
         loadingRegistry.callWhenAvailable(state["dropOff"][0],addRoom)
 
     '''
-    get state as dict
+    get state as dictionary
     '''
     def getState(self):
         state = super().getState()
@@ -2912,6 +3030,7 @@ class StoreCargo(MetaQuestSequence):
             questList.append(TransportQuest(cargoRoom.storedItems.pop(),(storageRoom,location[0],location[1]),creator=self))
             counter += 1
 
+        # bad code: repetetive code
         for quest in reversed(questList):
             self.addQuest(quest)
 
@@ -2933,6 +3052,7 @@ class MoveToStorage(MetaQuestSequence):
         super().__init__([],creator=creator,lifetime=lifetime)
         questList = []
 
+        # bad code: semi optional parameter
         if items:
 
             # determine how many items should be moved
@@ -3042,6 +3162,7 @@ class KeepFurnacesFiredMeta(MetaQuestParralel):
         questList = []
         for furnace in furnaces:
             questList.append(KeepFurnaceFiredMeta(furnace))
+        # bad code: the questlist parameter is deprecated
         super().__init__(questList,creator=creator)
         self.metaDescription = "KeepFurnacesFiredMeta"
 
@@ -3079,10 +3200,12 @@ class KeepFurnaceFiredMeta(MetaQuestSequence):
     add sub quests
     '''
     def recalculate(self):
+        # handle impossible state
         if not self.character:
+            # bad code: should log
             return
 
-        # add fireing the furnace if needed
+        # add firing the furnace if needed
         if self.fireFurnaceQuest and self.fireFurnaceQuest.completed:
             self.fireFurnaceQuest = None
         if not self.fireFurnaceQuest and not self.furnace.activated:
@@ -3090,7 +3213,7 @@ class KeepFurnaceFiredMeta(MetaQuestSequence):
             self.addQuest(self.fireFurnaceQuest)
             self.unpause()
 
-        # add waitquest if needed
+        # wait for the furnace to burn out if needed
         if self.waitQuest and self.waitQuest.completed:
             self.waitQuest = None
         if not self.waitQuest and not self.fireFurnaceQuest:
@@ -3124,6 +3247,7 @@ class FireFurnaceMeta(MetaQuestSequence):
         super().__init__([],creator=creator)
         self.metaDescription = "FireFurnaceMeta"
 
+        # set meta information for saving
         self.objectsToStore.append("furnace")
 
         # save initial state and register
@@ -3187,7 +3311,7 @@ class FireFurnaceMeta(MetaQuestSequence):
         super().recalculate()
 
     '''
-    set state as dict
+    set internal state from dictionary
     '''
     def setState(self,state):
         super().setState(state)
@@ -3244,6 +3368,7 @@ class HopperDuty(MetaQuestSequence):
         self.rewardQuest = None
         self.waitingRoom = waitingRoom
 
+        # set meta information for saving
         self.objectsToStore.append("actualQuest")
         self.objectsToStore.append("rewardQuest")
         self.objectsToStore.append("getQuest")
@@ -3258,6 +3383,7 @@ class HopperDuty(MetaQuestSequence):
     get quest, do it, collect reward - repeat
     '''
     def recalculate(self):
+        # bad code: should be a guard
         if self.active:
             # remove completed quest
             if self.getQuest and self.getQuest.completed:
@@ -3350,6 +3476,7 @@ class Serve(MetaQuestParralel):
         super().__init__(questList,creator=creator)
         self.metaDescription = "serve"
 
+        # set meta information for saving
         self.objectsToStore.append("superior")
 
         # save initial state and register

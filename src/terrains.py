@@ -1277,14 +1277,10 @@ class Terrain(src.saveing.Saveable):
 
         # get the list of items to transport
         # bad code: too specific. should be in story or something
-        # bad code: except: pass
         # bad code: does not actually diff
         toTransport = []
-        try:
-            for item in self.toTransport:
-                toTransport.append((item[0].id,(item[1][0],item[1][1])))
-        except:
-            pass
+        for item in self.toTransport:
+            toTransport.append((item[0].id,(item[1][0],item[1][1])))
 
 
         # generate state dict
@@ -1319,13 +1315,9 @@ class Terrain(src.saveing.Saveable):
 
         # get the list of items to transport
         # bad code: too specific. should be in story or something
-        # bad code: except: pass
         toTransport = []
-        try:
-            for item in self.toTransport:
-                toTransport.append((item[0].id,(item[1][0],item[1][1])))
-        except:
-            pass
+        for item in self.toTransport:
+            toTransport.append((item[0].id,(item[1][0],item[1][1])))
 
         # generate state
         return {
@@ -1697,6 +1689,7 @@ XXXCCCCCXXX """
     def addStorageQuest(self):
         if not self.toTransport:
             return
+
         task = self.toTransport.pop()
 
         # select target room

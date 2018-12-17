@@ -175,6 +175,7 @@ class FurnaceChat(Chat):
 
         # set up the chat
         if self.firstRun:
+
             # show information
             self.persistentText = ["There are some growth tanks (",displayChars.indexedMapping[displayChars.growthTank_filled],"/",displayChars.indexedMapping[displayChars.growthTank_unfilled],"), walls (",displayChars.indexedMapping[displayChars.wall],"), a pile of coal (",displayChars.indexedMapping[displayChars.pile],") and a furnace (",displayChars.indexedMapping[displayChars.furnace_inactive],"/",displayChars.indexedMapping[displayChars.furnace_active],")."]
             self.set_text(self.persistentText)
@@ -185,6 +186,7 @@ class FurnaceChat(Chat):
             # offer a selection of different story phasses
             options = [(self.phase.fireFurnaces,"yes"),(self.phase.noFurnaceFirering,"no")]
             self.submenue = src.interaction.SelectionMenu("Say, do you like furnaces?",options)
+            self.firstRun = False
             return False
 
         if self.submenue:

@@ -172,6 +172,21 @@ class FurnaceChat(Chat):
     offer the player a option to go deeper
     '''
     def handleKey(self, key):
+
+        # set up the chat
+        if self.firstRun:
+            # show information
+            self.persistentText = ["There are some growth tanks (",displayChars.indexedMapping[displayChars.growthTank_filled],"/",displayChars.indexedMapping[displayChars.growthTank_unfilled],"), walls (",displayChars.indexedMapping[displayChars.wall],"), a pile of coal (",displayChars.indexedMapping[displayChars.pile],") and a furnace (",displayChars.indexedMapping[displayChars.furnace_inactive],"/",displayChars.indexedMapping[displayChars.furnace_active],")."]
+            self.set_text(self.persistentText)
+
+            # add new chat option
+            self.firstOfficer.basicChatOptions.append({"dialogName":"Is there more i should know?","chat":InfoChat,"params":{"firstOfficer":self.firstOfficer}})
+                        
+            # offer a selection of different story phasses
+            options = [(self.phase.fireFurnaces,"yes"),(self.phase.noFurnaceFirering,"no")]
+            self.submenue = src.interaction.SelectionMenu("Say, do you like furnaces?",options)
+            return False
+
         if self.submenue:
             # try to let the selection option handle the keystroke
             if not self.submenue.handleKey(key):
@@ -192,20 +207,6 @@ class FurnaceChat(Chat):
                 # do the selected action
                 self.submenue.selection()
                 return True
-
-        # do all action in the first part of the dialog
-        # bad code: the first part of the chat should be on top
-        if self.firstRun:
-            # show information
-            self.persistentText = ["There are some growth tanks (",displayChars.indexedMapping[displayChars.growthTank_filled],"/",displayChars.indexedMapping[displayChars.growthTank_unfilled],"), walls (",displayChars.indexedMapping[displayChars.wall],"), a pile of coal (",displayChars.indexedMapping[displayChars.pile],") and a furnace (",displayChars.indexedMapping[displayChars.furnace_inactive],"/",displayChars.indexedMapping[displayChars.furnace_active],")."]
-            self.set_text(self.persistentText)
-
-            # add new chat option
-            self.firstOfficer.basicChatOptions.append({"dialogName":"Is there more i should know?","chat":InfoChat,"params":{"firstOfficer":self.firstOfficer}})
-                        
-            # offer a selection of different story phasses
-            options = [(self.phase.fireFurnaces,"yes"),(self.phase.noFurnaceFirering,"no")]
-            self.submenue = src.interaction.SelectionMenu("Say, do you like furnaces?",options)
 
         return False
 

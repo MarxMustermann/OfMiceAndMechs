@@ -30,7 +30,6 @@ class Character(src.saveing.Saveable):
         super().__init__()
 
         # set basic state
-        self.display = display # bad code: the character should have a rendering+caching method instead of attribute
         self.automated = automated
         self.quests = []
         self.name = name
@@ -98,6 +97,22 @@ class Character(src.saveing.Saveable):
         # save state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
+
+    """
+    proxy render method to display attribute
+    """
+    @property
+    def display(self):
+        return self.render()
+
+    """
+    render the character
+    """
+    def render(self):
+        if self.unconcious:
+            return displayChars.unconciousBody
+        else:
+            return self.displayOriginal
 
     """
     the object the character is in. Either room or terrain
@@ -314,7 +329,6 @@ class Character(src.saveing.Saveable):
         if "unconcious" in state:
             if self.unconcious:
                 self.fallUnconcious()
-                self.display = displayChars.unconciousBody
 
         # set path
         if "path" in state:
@@ -460,7 +474,6 @@ class Character(src.saveing.Saveable):
     '''
     def fallUnconcious(self):
         self.unconcious = True
-        self.display = displayChars.unconciousBody # bad code: should be a render method
         messages.append("*thump,snort*") # bad code: should ony be shown for main character or characters near player
         self.changed("fallen unconcious",self)
 
@@ -469,7 +482,6 @@ class Character(src.saveing.Saveable):
     '''
     def wakeUp(self):
         self.unconcious = False
-        self.display = self.displayOriginal # bad code: should be a render method
         messages.append("*grown*") # bad code: should ony be shown for main character or characters near player
 
     '''

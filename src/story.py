@@ -1495,19 +1495,16 @@ class FurnaceCompetition(BasicPhase):
         mainChar.assignQuest(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="please move back to the waiting position",creator=void))
 
         # start appropriate phase
-        # bad code: start should be outside if
         if self.npcFurnaceIndex >= self.mainCharFurnaceIndex:
             cinematics.showCinematic("considering your Score until now moving you directly to your proper assignment is the most efficent Way for you to proceed.")
             nextPhase = VatPhase()
-            nextPhase.start()
         elif self.mainCharFurnaceIndex == 7:
             cinematics.showCinematic("you passed the Test. in fact you passed the Test with a perfect Score. you will be valuable")
             nextPhase = LabPhase()
-            nextPhase.start()
         else:
             cinematics.showCinematic("you passed the Test. \n\nyour Score: "+str(self.mainCharFurnaceIndex)+"\nLiebwegs Score: "+str(self.npcFurnaceIndex))
             nextPhase = MachineRoomPhase()
-            nextPhase.start()
+        nextPhase.start()
 
 
 ################################################################################################################

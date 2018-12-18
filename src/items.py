@@ -147,11 +147,11 @@ class Item(src.saveing.Saveable):
 
                 '''
                 set up an ambush if target left the room
-                bad code: nameing
                 '''
-                def test(character2):
+                def setUpAmbush(characterLeaving):
+
                     # only trigger for target
-                    if not character == character2:
+                    if not character == characterLeaving:
                        return
 
                     # get ambush position next to door
@@ -182,15 +182,15 @@ class Item(src.saveing.Saveable):
                         quest.addQuest(quests.MoveQuestMeta(room=room,x=ambushXPosition,y=ambushYPosition,creator=self))
 
                     # remove self from listeners
-                    room.delListener(test,"left room")
+                    room.delListener(setUpAmbush,"left room")
 
                     '''
                     trigger ambush
                     '''
-                    def test2(character3):
+                    def triggerAmbush(characterEntering):
                         # make mouse atack anybody entering the room
                         quest.addQuest(quests.MoveQuestMeta(room=room,x=xPosition,y=yPosition,creator=self))
-                        quest.addQuest(quests.KnockOutQuest(character3,lifetime=10,creator=self))
+                        quest.addQuest(quests.KnockOutQuest(characterEntering,lifetime=10,creator=self))
 
                         # remove old quests
                         while len(quest.subQuests) > 2:
@@ -199,13 +199,13 @@ class Item(src.saveing.Saveable):
                             quest.subQuests.remove(subQuest)
 
                         # remove self from wath list
-                        room.delListener(test2,"entered room")
+                        room.delListener(triggerAmbush,"entered room")
                         
                     # start watching for somebody entering the room
-                    room.addListener(test2,"entered room")
+                    room.addListener(triggerAmbush,"entered room")
 
                 # start watching for character leaving the room
-                room.addListener(test,"left room")
+                room.addListener(setUpAmbush,"left room")
             else:
                 # add mouse
                 self.terrain.addCharacter(mouse,self.xPosition,self.yPosition)

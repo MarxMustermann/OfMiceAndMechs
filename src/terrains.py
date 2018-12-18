@@ -735,24 +735,18 @@ class Terrain(src.saveing.Saveable):
         # find path from start node to end node
         # bad code: ugly try except
         path = []
-        try:
-            # find path from node to node using the supernodes
-            if not startSuper[0] == endSuper[0]:
-                if endSuper[0] in self.watershedSuperNodeMap[startSuper[0]]:
-                    path = self.foundSuperPathsComplete[(startSuper[0],endSuper[0])]
-                else:
-                    path = self.foundSuperPathsComplete[(startSuper[0],self.watershedSuperNodeMap[startSuper[0]][0])]+self.foundSuperPathsComplete[(self.watershedSuperNodeMap[startSuper[0]][0],endSuper[0])]
-                path = pathToStartNode + self.findWayNodeBased(Coordinate(entryPoint[1][1][0],entryPoint[1][1][1]),Coordinate(startSuper[0][0],startSuper[0][1]))+path
-                path = path + self.findWayNodeBased(Coordinate(endSuper[0][0],endSuper[0][1]),Coordinate(endNode[0],endNode[1]))+pathToEndNode
-            # find path directly from node to node
+        
+		# find path from node to node using the supernodes
+        if not startSuper[0] == endSuper[0]:
+            if endSuper[0] in self.watershedSuperNodeMap[startSuper[0]]:
+                path = self.foundSuperPathsComplete[(startSuper[0],endSuper[0])]
             else:
-                path = pathToStartNode + self.findWayNodeBased(Coordinate(startNode[0],startNode[1]),Coordinate(endNode[0],endNode[1]))+pathToEndNode
-        except Exception as e:
-            import traceback
-            debugMessages.append("Error: "+str(e))
-            debugMessages.append(traceback.format_exc().splitlines()[-3])
-            debugMessages.append(traceback.format_exc().splitlines()[-2])
-            debugMessages.append(traceback.format_exc().splitlines()[-1])
+                path = self.foundSuperPathsComplete[(startSuper[0],self.watershedSuperNodeMap[startSuper[0]][0])]+self.foundSuperPathsComplete[(self.watershedSuperNodeMap[startSuper[0]][0],endSuper[0])]
+            path = pathToStartNode + self.findWayNodeBased(Coordinate(entryPoint[1][1][0],entryPoint[1][1][1]),Coordinate(startSuper[0][0],startSuper[0][1]))+path
+            path = path + self.findWayNodeBased(Coordinate(endSuper[0][0],endSuper[0][1]),Coordinate(endNode[0],endNode[1]))+pathToEndNode
+        # find path directly from node to node
+        else:
+            path = pathToStartNode + self.findWayNodeBased(Coordinate(startNode[0],startNode[1]),Coordinate(endNode[0],endNode[1]))+pathToEndNode
 
         # stitch together the path
         if not entryPoint[2][0] == start:

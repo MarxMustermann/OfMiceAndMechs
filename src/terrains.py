@@ -735,7 +735,7 @@ class Terrain(src.saveing.Saveable):
         # find path from start node to end node
         path = []
         
-		# find path from node to node using the supernodes
+        # find path from node to node using the supernodes
         if not startSuper[0] == endSuper[0]:
             if endSuper[0] in self.watershedSuperNodeMap[startSuper[0]]:
                 path = self.foundSuperPathsComplete[(startSuper[0],endSuper[0])]
@@ -823,23 +823,20 @@ class Terrain(src.saveing.Saveable):
         index = 0
         nodeMap = {}
         neighbourNodes = []
-        doLoop = True
 
         # start with start node 
         for node in ((start.x,start.y),):
             neighbourNodes.append(node)
             nodeMap[node] = (None,0)
 
-            # abort because start node is end node
-            # should be a guard with return
+            # abort if start node is end node
             if node == (end.x,end.y):
-                lastNode = node
-                doLoop = False
+                return []
 
         # mode to neighbour nodes till end node is reached
         lastNode = None
         counter = 1
-        while doLoop:
+        while 1:
             for neighbourNode in neighbourNodes[:]:
                 for watershedNode in self.watershedNodeMap[neighbourNode]:
                     if not watershedNode in neighbourNodes:
@@ -847,7 +844,7 @@ class Terrain(src.saveing.Saveable):
                         nodeMap[watershedNode] = (neighbourNode,counter)
                     if watershedNode == (end.x,end.y):
                         lastNode = watershedNode
-                        doLoop = False
+                        break
             counter += 1
 
             if counter == 20:

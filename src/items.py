@@ -1444,14 +1444,16 @@ class GooFlask(Item):
 
         # handle edge case
         if self.uses <= 0:
-            messages.append("you drink from your flask, but it is empty")
+            if self.watched:
+                messages.append("you drink from your flask, but it is empty")
             return
 
         # print feedback
-        if not self.uses == 1:
-            messages.append("you drink from your flask")
-        else:
-            messages.append("you drink from your flask and empty it")
+        if self.watched:
+            if not self.uses == 1:
+                messages.append("you drink from your flask")
+            else:
+                messages.append("you drink from your flask and empty it")
 
         # change state
         self.uses -= 1

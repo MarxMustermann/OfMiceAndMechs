@@ -381,6 +381,7 @@ interaction.mainChar = gameStateObj.mainChar
 cinematics.mainChar = gameStateObj.mainChar
 quests.mainChar = gameStateObj.mainChar
 chats.mainChar = gameStateObj.mainChar
+characters.mainChar = gameStateObj.mainChar
 
 ##################################################################################################################################
 ###

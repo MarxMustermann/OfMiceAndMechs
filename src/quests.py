@@ -2353,6 +2353,7 @@ class GetQuest(MetaQuestSequence):
         # check completion condition
         if not self.quest:
             debugMessages.append("triggerCompletionCheck called on quest without quest: "+str(self))
+            super().triggerCompletionCheck()
             return
         
         self.postHandler()

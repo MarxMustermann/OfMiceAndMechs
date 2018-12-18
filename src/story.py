@@ -1536,6 +1536,7 @@ class FindWork(BasicPhase):
         self.attributesToStore.extend(["cycleQuestIndex"])
         loadingRegistry.register(self)
         self.initialState = self.getState()
+        self.mainCharRoom = terrain.waitingRoom
 
     '''
     create selection and place triggers

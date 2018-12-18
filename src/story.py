@@ -1453,17 +1453,19 @@ class FurnaceCompetition(BasicPhase):
             wait for a clean start and make the player start their part of the competition
             '''
             def handleEvent(subself):
+
                 # check whether the boilers cooled down
                 boilerStillBoiling = False
                 for boiler in self.mainCharRoom.boilers:
                     if boiler.isBoiling:
                         boilerStillBoiling = True    
 
+                # wait some more
                 if boilerStillBoiling:
-                    # wait some more
                     self.mainCharRoom.addEvent(WaitForClearStart(gamestate.tick+2,0,creator=void))
+
+                # make the player start
                 else:
-                    # make the player start
                     cinematics.showCinematic("start now.")
                     mainChar.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[0],creator=void))
                     self.mainCharRoom.addEvent(AnotherOne(gamestate.tick+10,0,creator=void))

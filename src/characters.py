@@ -11,6 +11,7 @@ import json
 import src.items
 import src.saveing
 import src.quests
+import src.chats
 
 # bad code: containers for global state
 characters = None
@@ -189,7 +190,7 @@ class Character(src.saveing.Saveable):
 
         # add chat for recruitment
         if not self in partner.subordinates:
-            chatOptions.append(interaction.RecruitChat)
+            chatOptions.append(src.chats.RecruitChat)
             pass
 
         return chatOptions

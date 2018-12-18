@@ -8,9 +8,9 @@
 import urwid
 import json
 
-import src.urwidSpecials
-
 # import basic internal libs
+import src.urwidSpecials
+import src.chats
 import src.saveing
 
 """
@@ -533,7 +533,7 @@ class ChatCinematic(BasicCinematic):
     def __init__(self,creator=None):
         super().__init__(creator=creator)
 
-        self.submenue = interaction.ChatMenu()
+        self.submenue = src.chats.ChatMenu()
         self.type = "ChatCinematic"
 
     '''

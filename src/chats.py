@@ -676,6 +676,250 @@ class StartChat(Chat):
         else:
             return False
 
+'''
+the chat option for recruiting a character
+'''
+class RecruitChat(Chat):
+    dialogName = "follow my orders." # the name for this chat when presented as dialog option
+
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,partner):
+        self.type = "RecruitChat"
+        self.state = None
+        self.partner = partner
+        self.firstRun = True
+        self.done = False
+        self.persistentText = ""
+        super().__init__()
+
+    '''
+    show dialog and recruit character depending on success
+    bad code: showing the messages should be handled in __init__ or a setup method
+    bad code: the dialog and reactions should be generated within the characters
+    '''
+    def handleKey(self, key):
+        # exit submenu
+        if key == "esc":
+            return True
+
+        # show dialog
+        if self.firstRun:
+
+            # add player text
+            self.persistentText += mainChar.name+": \"come and help me.\"\n"
+
+            # reject player request
+            if self.partner.reputation > mainChar.reputation:
+                if mainChar.reputation <= 0:
+                    # reject player very harshly
+                    self.persistentText += self.partner.name+": \"No.\""
+                    mainChar.reputation -= 5
+                    messages.append("You were rewarded -5 reputation")
+                else:
+                    # reject player harshly
+                    if self.partner.reputation//mainChar.reputation:
+                        self.persistentText += self.partner.name+": \"you will need at least have to have "+str(self.partner.reputation//mainChar.reputation)+" times as much reputation to have me consider that\"\n"
+                        messages.append("You were rewarded -"+str(2*(self.partner.reputation//mainChar.reputation))+" reputation")
+                        mainChar.reputation -= 2*(self.partner.reputation//mainChar.reputation)
+                    # reject player somewhat nicely
+                    else:
+                        self.persistentText += self.partner.name+": \"maybe if you come back later\""
+                        mainChar.reputation -= 2
+                        messages.append("You were rewarded -2 reputation")
+            # consider player request
+            else:
+
+                # reject player
+                if gamestate.tick%2:
+                    self.persistentText += self.partner.name+": \"sorry, too busy.\"\n"
+                    mainChar.reputation -= 1
+                    messages.append("You were rewarded -1 reputation")
+
+                # allow the recruitment
+                else:
+                    self.persistentText += self.partner.name+": \"on it!\"\n"
+                    mainChar.subordinates.append(self.partner)
+
+            # show dialog
+            text = self.persistentText+"\n\n-- press any key --"
+            main.set_text((urwid.AttrSpec("default","default"),text))
+            self.firstRun = False
+            return True
+        # continue after the first keypress
+        # bad code: the first keystroke is the second keystroke that is handled
+        else:
+            self.done = True
+            return False
+
+'''
+a chat with a character, partially hardcoded partially dynamically generated 
+'''
+class ChatMenu(Chat):
+
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,partner=None):
+        self.type = "ChatMenu"
+        self.state = None
+        self.partner = partner
+        self.subMenu = None
+        self.skipTurn = False
+        super().__init__()
+        self.objectsToStore.append("partner")
+
+    '''
+    get state as dictionary
+    '''
+    def getState(self):
+        state = super().getState()
+        if self.subMenu:
+            state["subMenu"] = self.subMenu.getState()
+        else:
+            state["subMenu"] = None
+
+        return state
+    
+    '''
+    set internal state from state as dictionary
+    '''
+    def setState(self,state):
+        super().setState(state)
+
+        if "subMenu" in state:
+            if state["subMenu"]:
+                self.subMenu = getSubmenuFromState(state["subMenu"])
+            else:
+                self.subMenu = None
+
+    '''
+    show the dialog options and wrap around the corresponding submenus
+    bad code: showing the messages should be handled in __init__ or a setup method
+    bad code: the dialog should be generated within the characters
+    '''
+    def handleKey(self, key):
+        # smooth over impossible state
+        if self.partner == None:
+           debugMessages.append("chatmenu spawned without partner")
+           return False
+
+        # wake up character instead of speaking
+        if self.partner.unconcious:
+            messages.append("wake up!")
+            self.partner.wakeUp()
+            return True
+
+        # maybe exit the submenu
+        if key == "esc":
+           # abort the chat
+           if self.partner.reputation < 2*mainChar.reputation:
+               return True
+           # refuse to abort the chat
+           else:
+               self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
+               mainChar.reputation -= 1
+               messages.append("you were rewarded -1 reputation")
+               main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+               self.skipTurn = True
+               return False
+                             
+        # skip a turn
+        if self.skipTurn:
+           self.skipTurn = False
+           key = "."
+
+        # show interaction
+        header.set_text((urwid.AttrSpec("default","default"),"\nConversation menu\n"))
+        out = "\n"
+
+        # wrap around chat submenue
+        if self.subMenu:
+            # let the submenue handle the key
+            if not self.subMenu.done:
+                self.subMenu.handleKey(key)
+                if not self.subMenu.done:
+                    return False
+
+            # return to main dialog menu
+            self.subMenu = None
+            self.state = "mainOptions"
+            self.selection = None
+            self.lockOptions = True
+            self.chatOptions = []
+
+        # display greetings
+        if self.state == None:
+            self.state = "mainOptions"
+            self.persistentText += self.partner.name+": \"Everything in Order, "+mainChar.name+"?\"\n"
+            self.persistentText += mainChar.name+": \"All sorted, "+self.partner.name+"!\"\n"
+
+        # show selection of sub chats
+        if self.state == "mainOptions":
+            # set up selection for the main dialog options 
+            if not self.options and not self.getSelection():
+                # add the chat partners special dialog options
+                options = []
+                for option in self.partner.getChatOptions(mainChar):
+                    if not isinstance(option,dict):
+                        options.append((option,option.dialogName))
+                    else:
+                        options.append((option,option["dialogName"]))
+
+                # add default dialog options
+                options.append(("showQuests","what are you dooing?"))
+                options.append(("exit","let us proceed, "+self.partner.name))
+
+                # set the options
+                self.setOptions("answer:",options)
+
+            # let the superclass handle the actual selection
+            if not self.getSelection():
+                super().handleKey(key)
+
+            # spawn the dialog options submenu
+            if self.getSelection():
+                if not isinstance(self.selection,str):
+                    # spawn the selected dialog option
+                    if not isinstance(self.selection,dict):
+                        self.subMenu = self.selection(self.partner)
+                    else:
+                        self.subMenu = self.selection["chat"](self.partner)
+                        if "params" in self.selection:
+                            self.subMenu.setUp(self.selection["params"])
+
+                    self.subMenu.handleKey(key)
+                elif self.selection == "showQuests":
+                    # spawn quest submenu for partner
+                    global submenue
+                    submenue = QuestMenu(char=self.partner)
+                    submenue.handleKey(key)
+                    return False
+                elif self.selection == "exit":
+                    # end the conversation
+                    self.state = "done"
+                self.selection = None
+                self.lockOptions = True
+            else:
+                return False
+
+        # say goodbye
+        if self.state == "done":
+            if self.lockOptions:
+                self.persistentText += self.partner.name+": \"let us proceed, "+mainChar.name+".\"\n"
+                self.persistentText += mainChar.name+": \"let us proceed, "+self.partner.name+".\"\n"
+                self.lockOptions = False
+            else:
+                return True
+
+        # show redered text via urwid
+        # bad code: urwid code should be somewere else
+        if not self.subMenu:
+            main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+
+        return False
+
 # a map alowing to get classes from strings
 chatMap = {
              "FirstChat":FirstChat,
@@ -688,4 +932,6 @@ chatMap = {
              "JobChatFirst":JobChatFirst,
              "JobChatSecond":JobChatSecond,
              "RewardChat":RewardChat,
+			 "RecruitChat":RecruitChat,
+			 "ChatMenu":ChatMenu,
           }

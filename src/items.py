@@ -680,13 +680,12 @@ class Furnace(Item):
         # select fuel
         # bad pattern: the player should be able to select fuel
         # bad pattern: coal should be preferred
-        # bad code: try except clusterfuck
         foundItem = None
         for item in character.inventory:
-            try:
+            canBurn = False
+            if hasattr("canBurn",item):
                 canBurn = item.canBurn
-            except:
-                continue
+
             if not canBurn:
                 continue
             foundItem = item

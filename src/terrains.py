@@ -1095,25 +1095,6 @@ class Terrain(src.saveing.Saveable):
     actually move a room trough the terrain
     '''
     def moveRoomDirection(self,direction,room,force=1,movementBlock=[]):
-        '''
-        remove a room from terrain
-        bad code: inline function
-        '''
-        def removeRoom(room):
-            if (room.xPosition,room.yPosition) in self.roomByCoordinates:
-                self.roomByCoordinates[(room.xPosition,room.yPosition)].remove(room)
-                if not len(self.roomByCoordinates[(room.xPosition,room.yPosition)]):
-                    del self.roomByCoordinates[(room.xPosition,room.yPosition)]
-
-        '''
-        add a room to the terrain
-        bad code: inline function
-        '''
-        def addRoom(room):
-            if (room.xPosition,room.yPosition) in self.roomByCoordinates:
-                self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
-            else:
-                self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
 
         # move the room
         if direction == "north":
@@ -1123,9 +1104,9 @@ class Terrain(src.saveing.Saveable):
             # remove room from current tile
             else:
                 room.offsetY = 9
-                removeRoom(room)
+                self.removeRoom(room)
                 room.yPosition -= 1
-                addRoom(room)
+                self.addRoom(room)
         elif direction == "south":
             # naively move the room withion current tile
             if room.offsetY < 9:
@@ -1133,9 +1114,9 @@ class Terrain(src.saveing.Saveable):
             # remove room from current tile
             else:
                 room.offsetY = -5
-                removeRoom(room)
+                self.removeRoom(room)
                 room.yPosition += 1
-                addRoom(room)
+                self.addRoom(room)
         elif direction == "east":
             # naively move the room withion current tile
             if room.offsetX < 9:
@@ -1143,9 +1124,9 @@ class Terrain(src.saveing.Saveable):
             # remove room from current tile
             else:
                 room.offsetX = -5
-                removeRoom(room)
+                self.removeRoom(room)
                 room.xPosition += 1
-                addRoom(room)
+                self.addRoom(room)
         elif direction == "west":
             # naively move the room withion current tile
             if room.offsetX > -5:
@@ -1153,9 +1134,9 @@ class Terrain(src.saveing.Saveable):
             # remove room from current tile
             else:
                 room.offsetX = 9
-                removeRoom(room)
+                self.removeRoom(room)
                 room.xPosition -= 1
-                addRoom(room)
+                self.addRoom(room)
 
         # kill characters driven over by the room
         for char in self.characters:
@@ -1168,6 +1149,24 @@ class Terrain(src.saveing.Saveable):
         # reset paths
         if hasattr(self,"watershedStart"):
             self.calculatePathMap()
+
+    '''
+    remove a room from terrain
+    '''
+    def removeRoom(room):
+        if (room.xPosition,room.yPosition) in self.roomByCoordinates:
+            self.roomByCoordinates[(room.xPosition,room.yPosition)].remove(room)
+            if not len(self.roomByCoordinates[(room.xPosition,room.yPosition)]):
+                del self.roomByCoordinates[(room.xPosition,room.yPosition)]
+
+    '''
+    add a room to the terrain
+    '''
+    def addRoom(room):
+        if (room.xPosition,room.yPosition) in self.roomByCoordinates:
+            self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
+        else:
+            self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
             
     '''
     teleport a room to another position

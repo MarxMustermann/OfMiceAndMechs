@@ -825,31 +825,31 @@ class Terrain(src.saveing.Saveable):
         neighbourNodes = []
 
         # start with start node 
-        for node in ((start.x,start.y),):
-            neighbourNodes.append(node)
-            nodeMap[node] = (None,0)
+        startNode = (start.x,start.y)
+        neighbourNodes.append(startNode)
+        nodeMap[startNode] = (None,0)
 
-            # abort if start node is end node
-            if node == (end.x,end.y):
-                return []
+        # abort because start node is end node
+        if startNode == (end.x,end.y):
+            lastNode = startNode
 
         # mode to neighbour nodes till end node is reached
-        lastNode = None
-        counter = 1
-        while 1:
-            for neighbourNode in neighbourNodes[:]:
-                for watershedNode in self.watershedNodeMap[neighbourNode]:
-                    if not watershedNode in neighbourNodes:
-                        neighbourNodes.append(watershedNode)
-                        nodeMap[watershedNode] = (neighbourNode,counter)
-                    if watershedNode == (end.x,end.y):
-                        lastNode = watershedNode
-                        break
-            counter += 1
+        else:
+            lastNode = None
+            counter = 1
+            while not lastNode:
+                for neighbourNode in neighbourNodes[:]:
+                    for watershedNode in self.watershedNodeMap[neighbourNode]:
+                        if not watershedNode in neighbourNodes:
+                            neighbourNodes.append(watershedNode)
+                            nodeMap[watershedNode] = (neighbourNode,counter)
+                        if watershedNode == (end.x,end.y):
+                            lastNode = watershedNode
+                            break
+                counter += 1
 
-            if counter == 20:
-                debugMessages.append("unable to find end node from "+str(start.x)+" / "+str(start.y)+" to "+str(end.x)+" / "+str(end.y))
-                return []
+                if counter == 20:
+                    raise Exception("unable to find end node from "+str(start.x)+" / "+str(start.y)+" to "+str(end.x)+" / "+str(end.y))
 
         # walk back to start node and stitch together path
         outPath = []

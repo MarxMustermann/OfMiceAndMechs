@@ -730,7 +730,6 @@ class SubMenu(src.saveing.Saveable):
         self.options = collections.OrderedDict()
         self.niceOptions = collections.OrderedDict()
         super().__init__()
-        #self.attributesToStore.extend(["state","options","selection","selectionIndex","persistentText","footerText","followUp"]) # bad code: commented out code
         self.attributesToStore.extend(["state","selectionIndex","persistentText","footerText","type","query","lockOptions"])
         self.initialState = self.getState()
 

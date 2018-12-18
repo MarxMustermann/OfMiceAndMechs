@@ -733,7 +733,6 @@ class Terrain(src.saveing.Saveable):
         pathToEndNode = self.foundPaths[exitPoint[1]][1:self.foundPaths[exitPoint[1]].index((endCoordinate.x,endCoordinate.y))+1]
 
         # find path from start node to end node
-        # bad code: ugly try except
         path = []
         
 		# find path from node to node using the supernodes

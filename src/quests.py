@@ -803,7 +803,7 @@ class MetaQuestParralel(Quest):
         try:
             return self.lastActive.dstX
         except Exception as e:
-            # bad code: exceptions should be at least logged
+            debugMessages.append("exception during fetching dstX ("+str(e)+")")
             return None
 
     '''
@@ -816,8 +816,7 @@ class MetaQuestParralel(Quest):
         try:
             return self.lastActive.dstY
         except Exception as e:
-            # bad code: exceptions should be at least logged
-            #messages.append(e)
+            debugMessages.append("exception during fetching dstY ("+str(e)+")")
             return None
 
     '''

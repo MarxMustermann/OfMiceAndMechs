@@ -10,7 +10,6 @@ import urwid
 """
 split a mix of strings and urwid formating into a list where each element contains exactly
 one character and its formating
-bad code: this should not be an inline function but accessible as a helper
 """
 def flattenToPeseudoString(urwidText):
 
@@ -40,7 +39,6 @@ def flattenToPeseudoString(urwidText):
 
 '''
 add rusty colors to a string
-bad code: this should be a generally available function not an inline function
 '''
 def makeRusty(payload):
     converted = []

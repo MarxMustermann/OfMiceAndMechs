@@ -1724,7 +1724,7 @@ XXXCCCCCXXX """
         def moveAway():
             outerQuest.character.yPosition -= 1
 
-        innreQuest.endTrigger = moveAway
+        innerQuest.endTrigger = moveAway
         outerQuest.addQuest(innerQuest)
         self.waitingRoom.quests.append(outerQuest)
         self.waitingRoom.addEvent(events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToLeft"},creator=self))

@@ -95,21 +95,11 @@ class Room(src.saveing.Saveable):
                     # skip non items
                     pass
                 elif char in ("@",):
-                    # bad code: name generation should happen somewhere else
-                    '''
-                    generate a pseudo random character name
-                    '''
-                    def getRandomName(seed1=0,seed2=None):
-                        if seed2 == None:
-                            seed2 = seed1+(seed1//5)
-                        return names.characterFirstNames[seed1%len(names.characterFirstNames)]+" "+names.characterLastNames[seed2%len(names.characterLastNames)]
-                        
                     # add default npcs
                     if (not self.firstOfficer) or (not self.secondOfficer):
                         if not self.firstOfficer:
                             # add first officer
-                            name = getRandomName(self.xPosition+2*self.offsetY,self.offsetX+2*self.yPosition)
-                            npc = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],5,3,name=name,creator=self)
+                            npc = characters.Character(xPosition=5,yPosition=3,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.firstOfficer = npc
@@ -117,8 +107,7 @@ class Room(src.saveing.Saveable):
                             npc.assignQuest(quest,active=True)
                         else:
                             # add second officer
-                            name = getRandomName(self.yPosition+2*self.offsetX,self.offsetY+2*self.xPosition)
-                            npc = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],6,4,name=name,creator=self)
+                            npc = characters.Character(xPosition=6,yPosition=4,creator=self,seed=self.yPosition+2*self.offsetX+self.offsetY+2*self.xPosition)
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.secondOfficer = npc
@@ -1009,8 +998,7 @@ XXXXXXXXXX
             quest3.followUp = quest4
 
             # add npc
-            # bad code: hardcoded character name
-            npc = Character(displayChars.staffCharactersByLetter["l"],x,y,name="Erwin von Liebweg",creator=self)
+            npc = characters.Character(xPosition=x,yPosition=y,creator=self,seed=self.yPosition+3*x+self.offsetY+4*y)
             self.addCharacter(npc,x,y)
             npc.room = self
             npc.assignQuest(quest1)
@@ -1301,8 +1289,7 @@ XXXXXX
         self.name = "MiniMech"
 
         # add npc
-        # bad code: hardcoded name
-        self.npc = Character(displayChars.staffCharacters[12],3,3,name="Friedrich Engelbart",creator=self)
+        self.npc = characters.Character(xPosition=3,yPosition=3,creator=self,seed=self.yPosition+3*3+self.offsetY+4*y)
         self.addCharacter(self.npc,3,3)
         self.npc.room = self
 
@@ -1811,12 +1798,10 @@ XXXXXXXXXXX
         self.hoppers = []
 
         # add hoppers
-        # bad code: hardcoded names
-        npc = self.fetchThroughRegistry(characters.Character(displayChars.staffCharactersByLetter["s"],4,4,name="Simon Kantbrett",creator=self))
+        npc = self.fetchThroughRegistry(characters.Character(xPosition=4,yPosition=4,creator=self,seed=self.yPosition+self.offsetY+4*y))
         self.hoppers.append(npc)
         self.addCharacter(npc,2,2)
-        # bad code: hardcoded names
-        npc = self.fetchThroughRegistry(characters.Character(displayChars.staffCharactersByLetter["r"],4,5,name="Rudolf Krautbart",creator=self))
+        npc = self.fetchThroughRegistry(characters.Character(xPosition=4,yPosition=5,creator=self,seed=self.yPosition+self.offsetY+4*y+30))
         self.hoppers.append(npc)
         self.addCharacter(npc,2,3)
 

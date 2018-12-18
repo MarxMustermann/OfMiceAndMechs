@@ -179,6 +179,7 @@ interaction.setFooter()
 
 # bad code: common variables with modules
 story.names = names
+characters.names = names
 gamestate.names = names
 items.names = names
 rooms.names = names

@@ -26,8 +26,19 @@ class Character(src.saveing.Saveable):
     '''
     sets basic info AND adds default behaviour/items
     '''
-    def __init__(self,display="＠",xPosition=0,yPosition=0,quests=[],automated=True,name="Person",creator=None,characterId=None):
+    def __init__(self,display=None,xPosition=0,yPosition=0,quests=[],automated=True,name=None,creator=None,characterId=None,seed=None):
         super().__init__()
+
+        if name == None and seed:
+            name = names.characterFirstNames[(seed)%len(names.characterFirstNames)]+" "+names.characterLastNames[(seed*10)%len(names.characterLastNames)]
+
+        if display == None and not name == None:
+            display = displayChars.staffCharactersByLetter[name[0].lower()]
+
+        if name == None:
+            name = "Person"
+        if display == None:
+            display = "＠"
 
         # set basic state
         self.automated = automated

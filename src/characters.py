@@ -486,7 +486,8 @@ class Character(src.saveing.Saveable):
     '''
     def fallUnconcious(self):
         self.unconcious = True
-        messages.append("*thump,snort*") # bad code: should ony be shown for main character or characters near player
+        if self.watched:
+            messages.append("*thump,snort*")
         self.changed("fallen unconcious",self)
 
     '''
@@ -494,7 +495,8 @@ class Character(src.saveing.Saveable):
     '''
     def wakeUp(self):
         self.unconcious = False
-        messages.append("*grown*") # bad code: should ony be shown for main character or characters near player
+        if self.watched:
+            messages.append("*grown*") # bad code: should ony be shown for main character or characters near player
 
     '''
     kill the character and do a bit of extra stuff like placing corpses

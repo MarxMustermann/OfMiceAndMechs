@@ -104,8 +104,12 @@ class Quest(src.saveing.Saveable):
     check whether the quest is solved or not (and trigger teardown if quest is solved)
     '''
     def triggerCompletionCheck(self):
+
+        # smooth over impossible state
         if not self.active:
+            debugMessages.append("triggerCompletionCheck called on inactive quest: "+str(quest))
             return 
+
         pass
 
     '''
@@ -176,6 +180,7 @@ class Quest(src.saveing.Saveable):
         # smooth over impossible state
         if not self.character:
             debugMessages.append("this should not happen (posthandler called on quest without character ("+str(self)+")) "+str(self.character))
+
             # trigger follow up functions
             if self.endTrigger:
                 self.callIndirect(self.endTrigger)
@@ -265,7 +270,10 @@ class Quest(src.saveing.Saveable):
     also used when the player moves leave the path
     '''
     def recalculate(self):
+
+        # smooth over impossible state
         if not self.active:
+            debugMessages.append("recalculate called on inactive quest: "+str(quest))
             return 
 
         self.triggerCompletionCheck()
@@ -601,7 +609,7 @@ class MetaQuestSequence(Quest):
 
         # smooth over impossible state
         if not self.active:
-            debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
+            debugMessages.append("recalculate called on inactive "+str(self))
             return 
 
         # remove completed quests
@@ -1038,6 +1046,7 @@ class NaiveMoveQuest(Quest):
     check if character is in the right place
     '''
     def triggerCompletionCheck(self):
+
         # smooth over impossible state
         if not self.active:
             debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
@@ -1156,6 +1165,7 @@ class NaiveEnterRoomQuest(Quest):
     check if the character is in the correct roon
     '''
     def triggerCompletionCheck(self):
+
         # smooth over impossible state
         if not self.active:
             debugMessages.append("triggerCompletionCheck called on inactive quest")
@@ -1211,9 +1221,12 @@ class NaivePickupQuest(Quest):
     '''
     def triggerCompletionCheck(self):
        
-        # handle edge case
+        # smooth over impossible state
         if not self.active:
+            debugMessages.append("triggerCompletionCheck called on inactive quest")
             return
+
+        # check completion condition
         if not self.toPickup in self.character.inventory:
             return
 
@@ -1804,10 +1817,15 @@ class SurviveQuest(Quest):
     spawn quests to take care of basic needs
     '''
     def recalculate(self):
-        # bad code: should log
+
+        # smooth over impossible state
         if not self.active:
+            debugMessages.append("recalculate called on inactive quest: "+str(quest))
             return
+
+        # handle edge case
         if not self.character:
+            debugMessages.append("recalculate called on quest without character: "+str(quest))
             return
 
         # remove completed quests
@@ -1858,7 +1876,10 @@ class EnterRoomQuestMeta(MetaQuestSequence):
     add quest to leave room if needed
     '''
     def recalculate(self):
+
+        # smooth over impossible state
         if not self.active:
+            debugMessages.append("recalculate called on inactive quest: "+str(quest))
             return 
 
         # add quest to leave room
@@ -1924,6 +1945,7 @@ class MoveQuestMeta(MetaQuestSequence):
     move to correct room if nesseccary
     '''
     def recalculate(self):
+
         # handle impossible state
         if not self.active:
             debugMessages.append("recalculate called on non active quest: "+str(self))
@@ -2003,6 +2025,7 @@ class DropQuestMeta(MetaQuestSequence):
     re-add the movement quest if neccessary
     '''
     def recalculate(self):
+
         # handle impossible state
         if not self.active:
             debugMessages.append("recalculate called on non active quest: "+str(self))
@@ -2060,14 +2083,15 @@ class PickupQuestMeta(MetaQuestSequence):
     re-add the movement quest if neccessary
     '''
     def recalculate(self):
-        # smooth over impossible state
-        if not self.toPickup:
-            debugMessages.append("Pickup quest with nothing to pick up")
-            return
 
-        # handle impossible state
+        # smooth over impossible state
         if not self.active:
             debugMessages.append("recalculate called on non active quest: "+str(self))
+            return
+
+        # handle edge case
+        if not self.toPickup:
+            debugMessages.append("Pickup quest with nothing to pick up")
             return
 
         # add quest to move to target
@@ -2325,9 +2349,15 @@ class GetQuest(MetaQuestSequence):
     check if a quest was aquired
     '''
     def triggerCompletionCheck(self):
+
+        # smooth over impossible state
         if not self.active:
+            debugMessages.append("triggerCompletionCheck called on inactive quest: "+str(quest))
             return
+
+        # check completion condition
         if not self.quest:
+            debugMessages.append("triggerCompletionCheck called on quest without quest: "+str(quest))
             return
         
         self.postHandler()
@@ -2443,7 +2473,10 @@ class MurderQuest(MetaQuestSequence):
     adjust movement to follow target
     '''
     def recalculate(self):
+
+        # smooth over impossible state
         if not self.active:
+            debugMessages.append("recalculate called on inactive quest: "+str(quest))
             return
 
         # reset target
@@ -2486,7 +2519,10 @@ class KnockOutQuest(MetaQuestSequence):
     adjust movement to follow target
     '''
     def recalculate(self):
+
+        # smooth over impossible state
         if not self.active:
+            debugMessages.append("recalculate called on inactive quest: "+str(quest))
             return
 
         # reset target if it moved
@@ -2529,7 +2565,10 @@ class WakeUpQuest(MetaQuestSequence):
     adjust movement to follow target
     '''
     def recalculate(self):
+
+        # smooth over impossible state
         if not self.active:
+            debugMessages.append("recalculate called on inactive quest: "+str(quest))
             return
 
         pos = (self.target.room,self.target.xPosition,self.target.yPosition)
@@ -2567,12 +2606,15 @@ class FillPocketsQuest(MetaQuestSequence):
     add collect quest till inventory is full
     '''
     def recalculate(self):
+
         # smooth over impossible state
         if not self.active:
-            debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
+            debugMessages.append("recalculate called on inactive "+str(self))
             return 
+
+        # handle edge case
         if not self.character:
-            debugMessages.append("triggerCompletionCheck called without character on "+str(self))
+            debugMessages.append("recalculate called without character on "+str(self))
             return
 
         # remove completed quests
@@ -2654,10 +2696,13 @@ class LeaveRoomQuest(Quest):
     check if the character left the room
     '''
     def triggerCompletionCheck(self):
+
         # smooth over impossible state
         if not self.active:
             debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
             return 
+
+        # handle edge case
         if not self.character:
             debugMessages.append("triggerCompletionCheck called without character on "+str(self))
             return
@@ -2771,6 +2816,7 @@ class ExamineQuest(Quest):
     def setState(self,state):
         super().setState(state)
 
+        # smooth over impossible state
         if not self.active:
             return
         if not self.character:
@@ -3291,12 +3337,15 @@ class FireFurnaceMeta(MetaQuestSequence):
     collect coal and fire furnace
     '''
     def recalculate(self):
+
         # smooth over impossible state
         if not self.active:
-            debugMessages.append("triggerCompletionCheck called on inactive "+str(self))
+            debugMessages.append("recalculate called on inactive "+str(self))
             return
+
+        # handle edge case
         if not self.character:
-            debugMessages.append("triggerCompletionCheck called without character on "+str(self))
+            debugMessages.append("recalculate called without character on "+str(self))
             return
 
         # add quest to collect fuel if needed
@@ -3415,7 +3464,10 @@ class HopperDuty(MetaQuestSequence):
     get quest, do it, collect reward - repeat
     '''
     def recalculate(self):
+
+        # smooth over impossible state
         if not self.active:
+            debugMessages.append("recalculate called on inactive quest: "+str(quest))
             return
 
         # remove completed quest

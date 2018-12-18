@@ -1378,9 +1378,8 @@ class Nothingness(Terrain):
 
 '''
 a wrecked mech
-bad code: naming
 '''
-class TutorialTerrain2(Terrain):
+class ScrapField(Terrain):
     '''
     state initialization
     '''

@@ -321,7 +321,7 @@ quests.showCinematic = cinematics.showCinematic
 
 # spawn selected terrain
 if args.terrain and args.terrain == "scrapField":
-    terrain = terrains.TutorialTerrain2(creator=void)
+    terrain = terrains.ScrapField(creator=void)
 elif args.terrain and args.terrain == "nothingness":
     terrain = terrains.Nothingness(creator=void)
 else:

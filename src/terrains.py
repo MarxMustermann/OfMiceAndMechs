@@ -1358,7 +1358,7 @@ class Nothingness(Terrain):
         super().__init__(layout,detailedLayout,creator=creator)
 
         # add a few items scattered around
-        self.testItems = []
+        self.dekoItems = []
         for x in range(0,120):
             for y in range(0,120):
                 item = None
@@ -1371,8 +1371,8 @@ class Nothingness(Terrain):
                     item = src.items.Item(displayChars.foodStuffs[((2*x)+y)%6],x,y,creator=creator)
                     item.walkable = True
                 if item:
-                    self.testItems.append(item)
-        self.addItems(self.testItems)
+                    self.dekoItems.append(item)
+        self.addItems(self.dekoItems)
 
         self.floordisplay = displayChars.dirt
 
@@ -1400,11 +1400,6 @@ U  U
 
         self.floordisplay = displayChars.dirt
 
-        # add scrap
-        # bad code: repetetive code
-        # bad code: naming
-        self.testItems = []
-
         '''
         add field of thick scrap
         '''
@@ -1421,7 +1416,7 @@ U  U
                         continue
 
                     # add scrap
-                    self.testItems.append(src.items.Scrap(x,y,counter,creator=creator))
+                    self.scrapItems.append(src.items.Scrap(x,y,counter,creator=creator))
                     counter += 1
                     if counter == 16:
                         counter = 1
@@ -1438,8 +1433,11 @@ U  U
                         continue
 
                     # add scrap
-                    self.testItems.append(itemType(x,y,creator=creator))
+                    self.scrapItems.append(itemType(x,y,creator=creator))
 
+        self.scrapItems = []
+
+        # add scrap
         counter = 3
         counter = addPseudoRandomScrap(counter,(20,30),(30,110),((2,3),(3,2),(4,5),(5,4)))
 
@@ -1450,10 +1448,11 @@ U  U
         counter = addPseudoRandomScrap(counter,(20,120),(110,120),((2,3),(3,2),(4,5),(5,4)))
         counter = addPseudoRandomScrap(counter,(30,110),(30,110),((2,7),(5,3),(23,2),(13,9),(5,17)))
 
+        # add other objects
         addPseudoRandomThin((30,110),(30,110),(23,7,2,3,2,4),src.items.Wall)
         addPseudoRandomThin((30,110),(30,110),(13,15,3,5,3,2),src.items.Pipe)
 
-        self.addItems(self.testItems)
+        self.addItems(self.scrapItems)
 
         # add base of operations
         self.wakeUpRoom = src.rooms.MiniBase(0,4,0,0,creator=creator)
@@ -1655,7 +1654,7 @@ XXXCCCCCXXX """
         self.addStorageQuest()
 
         # add scrap to be cleaned up
-        self.testItems = [src.items.Scrap(20,52,3,creator=self),
+        self.scrapItems = [src.items.Scrap(20,52,3,creator=self),
                           src.items.Scrap(19,53,3,creator=self),
                           src.items.Scrap(20,51,3,creator=self),
                           src.items.Scrap(18,49,3,creator=self),
@@ -1666,7 +1665,7 @@ XXXCCCCCXXX """
                           src.items.Scrap(20,48,3,creator=self),
                           src.items.Scrap(18,50,3,creator=self),
                           src.items.Scrap(18,51,3,creator=self)]
-        self.addItems(self.testItems)
+        self.addItems(self.scrapItems)
 
         # move roadblock periodically
         self.waitingRoom.addEvent(events.EndQuestEvent(4000,{"container":self,"method":"addRoadblock"},creator=self))

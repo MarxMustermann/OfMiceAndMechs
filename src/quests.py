@@ -2286,15 +2286,11 @@ class CollectQuestMeta(MetaQuestSequence):
             return
 
         # search for an item 
-        # bad code: should prefer coal
         foundItem = None
         for item in character.room.itemsOnFloor:
             hasProperty = False
-            # bad code: unneeded try/except
-            try:
+            if hasattr(item,"contains_"+self.toFind):
                 hasProperty = getattr(item,"contains_"+self.toFind)
-            except:
-                continue
                         
             if hasProperty:
                 foundItem = item

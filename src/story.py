@@ -803,7 +803,7 @@ now, go and pull the lever
         showText(msg)
                    
         # add chat options
-        firstOfficer.basicChatOptions.append({"dialogName":"You wanted to have a chat","chat":chats.FirstChat,"params":{"firstOfficer":firstOfficer,"phase":self}})
+        firstOfficer.basicChatOptions.append({"dialogName":"You wanted to have a chat","chat":chats.TutorialSpeechTest,"params":{"firstOfficer":firstOfficer,"phase":self}})
         firstOfficer.basicChatOptions.append({"dialogName":"What are these machines in this room?","chat":chats.FurnaceChat,"params":{"firstOfficer":firstOfficer,"phase":self,"terrain":terrain}})
 
     '''

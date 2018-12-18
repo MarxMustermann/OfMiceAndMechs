@@ -76,11 +76,10 @@ class RewardChat(Chat):
 '''
 the chat to proof the player is able to chat
 bad code: story specific
-bad code: naming
 '''
-class FirstChat(Chat):
-    id = "FirstChat"
-    type = "FirstChat"
+class TutorialSpeechTest(Chat):
+    id = "TutorialSpeechTest"
+    type = "TutorialSpeechTest"
 
     '''
     straightforward state setting
@@ -118,13 +117,13 @@ class FirstChat(Chat):
 
                 # check class notation
                 if not isinstance(item,dict):
-                    if item == FirstChat:
+                    if item == TutorialSpeechTest:
                         toRemove = item
                         break
 
                 # check dictionary notation
                 else:
-                    if item["chat"] == FirstChat:
+                    if item["chat"] == TutorialSpeechTest:
                         toRemove = item
                         break
             # remove item
@@ -922,7 +921,7 @@ class ChatMenu(Chat):
 
 # a map alowing to get classes from strings
 chatMap = {
-             "FirstChat":FirstChat,
+             "TutorialSpeechTest":TutorialSpeechTest,
              "FurnaceChat":FurnaceChat,
              "SternChat":SternChat,
              "StartChat":StartChat,

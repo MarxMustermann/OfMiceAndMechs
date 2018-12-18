@@ -1284,7 +1284,6 @@ XXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.floorDisplay = [displayChars.nonWalkableUnkown]
-        self.gogogo = False # bad code: silly name + has no real function anymore
         self.engineStrength = 0
         self.name = "MiniMech"
 

@@ -1006,7 +1006,7 @@ class BoilerRoomWelcome(BasicPhase):
     '''
     start next sub phase
     '''
-    def wrapUpBasicSchooling():
+    def wrapUpBasicSchooling(self):
         mainChar.gotBasicSchooling = True
         self.doSteamengineExplaination()
         gamestate.save()
@@ -1014,7 +1014,7 @@ class BoilerRoomWelcome(BasicPhase):
     '''
     greet player and trigger next function
     '''
-    def doBasicSchooling():
+    def doBasicSchooling(self):
         if not mainChar.gotBasicSchooling:
             # show greeting one time
             cinematics.showCinematic("welcome to the boiler room\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
@@ -1028,14 +1028,14 @@ class BoilerRoomWelcome(BasicPhase):
     '''
     start next sub phase
     '''
-    def wrapUpSteamengineExplaination():
+    def wrapUpSteamengineExplaination(self):
         doCoalDelivery()
         gamestate.save()
 
     '''
     explain how the steam engine work and continue
     '''
-    def doSteamengineExplaination():
+    def doSteamengineExplaination(self):
         # explain how the room works
         cinematics.showCinematic("on the southern Side of the Room you see the Steamgenerators. A Steamgenerator might look like this:\n\n"+displayChars.indexedMapping[displayChars.void][1]+displayChars.indexedMapping[displayChars.pipe][1]+displayChars.indexedMapping[displayChars.boiler_inactive][1]+displayChars.indexedMapping[displayChars.furnace_inactive][1]+"\n"+displayChars.indexedMapping[displayChars.pipe][1]+displayChars.indexedMapping[displayChars.pipe][1]+displayChars.indexedMapping[displayChars.boiler_inactive][1]+displayChars.indexedMapping[displayChars.furnace_inactive][1]+"\n"+displayChars.indexedMapping[displayChars.void][1]+displayChars.indexedMapping[displayChars.pipe][1]+displayChars.indexedMapping[displayChars.boiler_active][1]+displayChars.indexedMapping[displayChars.furnace_active][1]+"\n\nit consist of Furnaces marked by "+displayChars.indexedMapping[displayChars.furnace_inactive][1]+" or "+displayChars.indexedMapping[displayChars.furnace_active][1]+" that heat the Water in the Boilers "+displayChars.indexedMapping[displayChars.boiler_inactive][1]+" till it boils. a Boiler with boiling Water will be shown as "+displayChars.indexedMapping[displayChars.boiler_active][1]+".\n\nthe Steam is transfered to the Pipes marked with "+displayChars.indexedMapping[displayChars.pipe][1]+" and used to power the Ships Mechanics and Weapons\n\nDesign of Generators are often quite unique. try to recognize the Genrators in this Room and press "+commandChars.wait+"")
         cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,creator=void))
@@ -1050,20 +1050,20 @@ class BoilerRoomWelcome(BasicPhase):
     '''
     advance the game
     '''
-    def advance():
+    def advance(self):
         loop.set_alarm_in(0.1, callShow_or_exit, '.')
 
     '''
     start next sub phase
     '''
-    def wrapUpCoalDelivery():
+    def wrapUpCoalDelivery(self):
         self.doFurnaceFirering()
         gamestate.save()
 
     '''
     fake a coal delivery
     '''
-    def doCoalDelivery():
+    def doCoalDelivery(self):
 
         # show fluff
         cinematics.showCinematic("Since a Coaldelivery is incoming anyway. please wait and pay Attention.\n\ni will count down the Ticks in the Messagebox now")
@@ -1128,14 +1128,14 @@ class BoilerRoomWelcome(BasicPhase):
     '''
     start next step
     '''
-    def wrapUpFurnaceFirering():
+    def wrapUpFurnaceFirering(self):
         self.doWrapUp()
         gamestate.save()
 
     '''
     make a npc fire a furnace 
     '''
-    def doFurnaceFirering():
+    def doFurnaceFirering(self):
         # show fluff
         cinematics.showCinematic("your cohabitants in this Room are:\n '"+self.mainCharRoom.firstOfficer.name+"' ("+displayChars.indexedMapping[self.mainCharRoom.firstOfficer.display][1]+") is this Rooms 'Raumleiter' and therefore responsible for proper Steamgeneration in this Room\n '"+self.mainCharRoom.secondOfficer.name+"' ("+displayChars.indexedMapping[self.mainCharRoom.secondOfficer.display][1]+") was dispatched to support '"+self.mainCharRoom.firstOfficer.name+"' and is his Subordinate\n\nyou will likely report to '"+self.mainCharRoom.firstOfficer.name+"' later. please try to find them on the display and press "+commandChars.wait)
         cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,creator=void))
@@ -1188,7 +1188,8 @@ class BoilerRoomWelcome(BasicPhase):
     '''
     show some info and start next phase
     '''
-    def doWrapUp():
+    def doWrapUp(self):
+
         # show some information
         cinematics.showCinematic("there are other Items in the Room that may or may not be important for you. Here is the full List for you to review:\n\n Bin ("+displayChars.indexedMapping[displayChars.binStorage][1]+"): Used for storing Things intended to be transported further\n Pile ("+displayChars.indexedMapping[displayChars.pile][1]+"): a Pile of Things\n Door ("+displayChars.indexedMapping[displayChars.door_opened][1]+" or "+displayChars.indexedMapping[displayChars.door_closed][1]+"): you can move through it when open\n Lever ("+displayChars.indexedMapping[displayChars.lever_notPulled][1]+" or "+displayChars.indexedMapping[displayChars.lever_pulled][1]+"): a simple Man-Machineinterface\n Furnace ("+displayChars.indexedMapping[displayChars.furnace_inactive][1]+"): used to generate heat burning Things\n Display ("+displayChars.indexedMapping[displayChars.display][1]+"): a complicated Machine-Maninterface\n Wall ("+displayChars.indexedMapping[displayChars.wall][1]+"): ensures the structural Integrity of basically any Structure\n Pipe ("+displayChars.indexedMapping[displayChars.pipe][1]+"): transports Liquids, Pseudoliquids and Gasses\n Coal ("+displayChars.indexedMapping[displayChars.coal][1]+"): a piece of Coal, quite usefull actually\n Boiler ("+displayChars.indexedMapping[displayChars.boiler_inactive][1]+" or "+displayChars.indexedMapping[displayChars.boiler_active][1]+"): generates Steam using Water and and Heat\n Chains ("+displayChars.indexedMapping[displayChars.chains][1]+"): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing\n Comlink ("+displayChars.indexedMapping[displayChars.commLink][1]+"): a Pipe based Voicetransportationsystem that allows Communication with other Rooms\n Hutch ("+displayChars.indexedMapping[displayChars.hutch_free][1]+"): a comfy and safe Place to sleep and eat")
 

@@ -1407,12 +1407,11 @@ class FurnaceCompetition(BasicPhase):
 
             '''
             kickstart the npcs part of the competition
-            bad code: tmp
             '''
-            def tmpNpc():
+            def startCompetitionNpc():
                 self.mainCharRoom.addEvent(WaitForClearStartNpc(gamestate.tick+2,0,creator=self))
 
-            questList[-1].endTrigger = tmpNpc
+            questList[-1].endTrigger = startCompetitionNpc
             self.mainCharRoom.secondOfficer.assignQuest(questList[0],active=True)
 
         '''
@@ -1471,14 +1470,13 @@ class FurnaceCompetition(BasicPhase):
                     self.mainCharRoom.addEvent(AnotherOne(gamestate.tick+10,0,creator=void))
 
         '''
-        kickstart the npcs part of the competition
-        bad code: naming
+        kickstart the players part of the competition
         '''
-        def tmp():
+        def startCompetitionPlayer():
             cinematics.showCinematic("wait for the furnaces to burn out.")
             self.mainCharRoom.addEvent(WaitForClearStart(gamestate.tick+2,0,creator=void))
 
-        tmp()
+        startCompetitionPlayer()
         gamestate.save()
 
     '''

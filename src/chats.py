@@ -893,7 +893,7 @@ class ChatMenu(Chat):
                 elif self.selection == "showQuests":
                     # spawn quest submenu for partner
                     global submenue
-                    submenue = QuestMenu(char=self.partner)
+                    submenue = src.interaction.QuestMenu(char=self.partner)
                     submenue.handleKey(key)
                     return False
                 elif self.selection == "exit":

@@ -33,7 +33,6 @@ def flattenToPeseudoString(urwidText):
     else:
         result = []
         for item in flattenToPeseudoString(urwidText[1]):
-            #result.append((urwidText[0],item)) # bad code: commented out code
             result.append(item) # bad code: nukes all the pretty colors
         return result
 

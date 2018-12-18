@@ -131,15 +131,16 @@ def show_or_exit(key):
     commandKeyQueue.append(key)
 
     # transform and store the keystrokes that accumulated in pygame
-    import pygame
-    for item in pygame.event.get():
-        if not hasattr(key,"unicode"):
-            continue
-        key = item.unicode
-        if key == "\x1b":
-            key = "esc"
-        commandKeyQueue.append(key)
-        debugMessages.append("pressed "+key+" ")
+    if useTiles:
+        import pygame
+        for item in pygame.event.get():
+            if not hasattr(key,"unicode"):
+                continue
+            key = item.unicode
+            if key == "\x1b":
+                key = "esc"
+            commandKeyQueue.append(key)
+            debugMessages.append("pressed "+key+" ")
 
     # handle the keystrokes
     processAllInput(commandKeyQueue)

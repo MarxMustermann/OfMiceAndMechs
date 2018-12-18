@@ -5,6 +5,8 @@
 #
 ####################################################################################################################
 
+import urwid
+
 # import the other internal libs
 import src.interaction
 
@@ -424,7 +426,7 @@ class JobChatFirst(Chat):
                self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
                mainChar.reputation -= 2
                messages.append("you were rewarded -2 reputation")
-               main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+               self.set_text((urwid.AttrSpec("default","default"),self.persistentText))
                self.skipTurn = True
                return False
                              
@@ -515,7 +517,7 @@ class JobChatSecond(Chat):
                self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
                mainChar.reputation -= 2
                messages.append("you were rewarded -2 reputation")
-               main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+               self.set_text((urwid.AttrSpec("default","default"),self.persistentText))
                self.skipTurn = True
                return False
                              
@@ -743,7 +745,7 @@ class RecruitChat(Chat):
 
             # show dialog
             text = self.persistentText+"\n\n-- press any key --"
-            main.set_text((urwid.AttrSpec("default","default"),text))
+            self.set_text((urwid.AttrSpec("default","default"),text))
             self.firstRun = False
             return True
         # continue after the first keypress
@@ -820,7 +822,7 @@ class ChatMenu(Chat):
                self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
                mainChar.reputation -= 1
                messages.append("you were rewarded -1 reputation")
-               main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+               self.set_text((urwid.AttrSpec("default","default"),self.persistentText))
                self.skipTurn = True
                return False
                              
@@ -830,7 +832,6 @@ class ChatMenu(Chat):
            key = "."
 
         # show interaction
-        header.set_text((urwid.AttrSpec("default","default"),"\nConversation menu\n"))
         out = "\n"
 
         # wrap around chat submenue
@@ -915,7 +916,7 @@ class ChatMenu(Chat):
         # show redered text via urwid
         # bad code: urwid code should be somewere else
         if not self.subMenu:
-            main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+            self.set_text((urwid.AttrSpec("default","default"),self.persistentText))
 
         return False
 

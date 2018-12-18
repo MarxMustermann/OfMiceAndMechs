@@ -848,7 +848,8 @@ class Terrain(src.saveing.Saveable):
             counter += 1
 
             if counter == 20:
-                raise Exception("unable to find end node to "+str(end.x)+" / "+str(end.y))
+                debugMessages.append("unable to find end node from "+str(start.x)+" / "+str(start.y)+" to "+str(end.x)+" / "+str(end.y))
+                return []
 
         # walk back to start node and stitch together path
         outPath = []

@@ -683,7 +683,7 @@ class Furnace(Item):
         foundItem = None
         for item in character.inventory:
             canBurn = False
-            if hasattr("canBurn",item):
+            if hasattr(item,"canBurn"):
                 canBurn = item.canBurn
 
             if not canBurn:

@@ -1288,7 +1288,7 @@ XXXXXX
         self.name = "MiniMech"
 
         # add npc
-        self.npc = characters.Character(xPosition=3,yPosition=3,creator=self,seed=self.yPosition+3*3+self.offsetY+4*y)
+        self.npc = characters.Character(xPosition=3,yPosition=3,creator=self,seed=self.yPosition+3*3+self.offsetY+4*12)
         self.addCharacter(self.npc,3,3)
         self.npc.room = self
 
@@ -1797,10 +1797,10 @@ XXXXXXXXXXX
         self.hoppers = []
 
         # add hoppers
-        npc = self.fetchThroughRegistry(characters.Character(xPosition=4,yPosition=4,creator=self,seed=self.yPosition+self.offsetY+4*y))
+        npc = self.fetchThroughRegistry(characters.Character(xPosition=4,yPosition=4,creator=self,seed=self.yPosition+self.offsetY+4*12))
         self.hoppers.append(npc)
         self.addCharacter(npc,2,2)
-        npc = self.fetchThroughRegistry(characters.Character(xPosition=4,yPosition=5,creator=self,seed=self.yPosition+self.offsetY+4*y+30))
+        npc = self.fetchThroughRegistry(characters.Character(xPosition=4,yPosition=5,creator=self,seed=self.yPosition+self.offsetY+4*23+30))
         self.hoppers.append(npc)
         self.addCharacter(npc,2,3)
 

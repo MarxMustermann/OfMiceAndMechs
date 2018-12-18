@@ -474,7 +474,7 @@ if args.tiles:
     interaction.pydisplay = pydisplay
     interaction.useTiles = True
     interaction.useTiles = True
-    interaction.tileMapping = src.canvas.TileMapping("testTiles")
+    interaction.tileMapping = canvas.TileMapping("testTiles")
 else:
     interaction.useTiles = False
     interaction.tileMapping = None

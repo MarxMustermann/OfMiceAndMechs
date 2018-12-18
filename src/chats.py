@@ -532,9 +532,8 @@ class JobChatSecond(Chat):
 
         # refuse to issue new quest if the old one is not done yet
         # bad code: this is because the hopperquest cannot handle multiple sub quests
-        # bad code: message does not always fit description
         if not self.hopperDutyQuest.getQuest:
-            self.persistentText = "please collect your reward first"
+            self.persistentText = "please finish what you are dooing first"
             self.set_text(self.persistentText)
             self.done = True
 

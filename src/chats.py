@@ -376,7 +376,7 @@ class ReReport(src.interaction.SubMenu):
             self.removeFromChatOptions(terrain.waitingRoom.firstOfficer)
 
             # start intro
-            self.phase.getIntro()
+            self.phase.acknowledgeTransfer()
             return True
         else:
             return False

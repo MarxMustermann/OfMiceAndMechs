@@ -1561,12 +1561,12 @@ class FindWork(BasicPhase):
     '''
     def getIntroInstant(self):
         showText("great, I needed to replace a hopper that was eaten by mice")
-        self.getIntro()
+        self.acknowledgeTransfer()
 
     '''
     show intro and trigger teardown
     '''
-    def getIntro(self):
+    def acknowledgeTransfer(self):
         showText("I hereby confirm the transfer and welcome you as crew on the Falkenbaum.\n\nYou will serve as an hopper under my command nominally. This means you will make yourself useful and prove your worth.\n\nI often have tasks to relay, but try not to stay idle even when i do not have tasks for you. Just ask around and see if somebody needs help")
         showText("Remeber to report back, your worth will be counted in a mtick.",trigger={"container":self,"method":"end"})
 

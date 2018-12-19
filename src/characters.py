@@ -489,7 +489,7 @@ class Character(src.saveing.Saveable):
     def wakeUp(self):
         self.unconcious = False
         if self.watched:
-            messages.append("*grown*") # bad code: should ony be shown for main character or characters near player
+            messages.append("*grown*")
         self.changed("woke up",self)
 
     '''

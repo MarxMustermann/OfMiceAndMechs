@@ -456,14 +456,7 @@ class Character(src.saveing.Saveable):
     '''
     def setPathToQuest(self,quest):
         if hasattr(quest,"dstX") and hasattr(quest,"dstY"):
-            # bad code: room and terrain should be unified into a container object
-            if self.room:
-                self.path = self.room.calculatePath(self.xPosition,self.yPosition,quest.dstX,quest.dstY,self.room.walkingPath)
-            elif self.terrain:
-                self.path = self.terrain.findPath((self.xPosition,self.yPosition),(quest.dstX,quest.dstY))
-            else:
-                debugMessages.append("this should not happen, character tried to go sowhere but is nowhere")
-                self.path = []
+            self.path = self.container.findPath((self.xPosition,self.yPosition),(quest.dstX,quest.dstY))
         else:
             self.path = []
 

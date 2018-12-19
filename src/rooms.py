@@ -479,6 +479,9 @@ class Room(src.saveing.Saveable):
             door.close()
             self.open = False
 
+    def findPath(self, start, end):
+        return self.calculatePath(start[0],start[1],end[0],end[1],self.walkingPath)
+
     '''
     forward naive path calculation
     bad code: should have proper pathfinding

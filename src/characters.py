@@ -134,7 +134,7 @@ class Character(src.saveing.Saveable):
         if self.room:
             return self.room
         else:
-            return self.terrain
+            return terrain
 
     '''
     get a quest from the character (proxies room quest queue)

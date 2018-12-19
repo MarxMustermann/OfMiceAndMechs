@@ -335,6 +335,7 @@ gamestate.terrain = terrain
 terrains.terrain = terrain
 quests.terrain = terrain
 chats.terrain = terrain
+characters.terrain = terrain
 
 # bad code: common variables with modules
 cinematics.interaction = interaction

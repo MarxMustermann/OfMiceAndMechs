@@ -1456,8 +1456,8 @@ class NaiveWakeUpQuest(Quest):
     '''
     def activate(self):
         super().activate()
-        # bad code: this listener is useless
-        self.target.addListener(self.triggerCompletionCheck,"fallen unconcious")
+        self.target.addListener(self.triggerCompletionCheck,"woke up")
+        self.target.addListener(self.triggerCompletionCheck,"died")
 
     '''
     knock the target out

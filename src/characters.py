@@ -497,6 +497,7 @@ class Character(src.saveing.Saveable):
         self.unconcious = False
         if self.watched:
             messages.append("*grown*") # bad code: should ony be shown for main character or characters near player
+        self.changed("woke up",self)
 
     '''
     kill the character and do a bit of extra stuff like placing corpses

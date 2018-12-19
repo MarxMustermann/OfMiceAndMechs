@@ -71,7 +71,7 @@ class GameState():
             rawstate = saveFile.read()
 
             # handle special gamestates
-            if rawstate in ["you lost","reset","Winning is no fun at all"]:
+            if rawstate in ["you lost","reset","Winning is no fun at all","\"Winning is no fun at all\""]:
                 debugMessages.append("special gamestate "+str(rawstate)+" found - NOT LOADING")
                 print("final gamestate found - resetting")
                 return False

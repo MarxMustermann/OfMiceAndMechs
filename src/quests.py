@@ -2717,7 +2717,7 @@ class PatrolQuest(MetaQuestSequence):
     '''
     def __init__(self,waypoints=[],startCinematics=None,looped=True,lifetime=None,creator=None):
         # bad code: superconstructor doesn't actually process the looped parameter
-        super().__init__(quests,startCinematics=startCinematics,looped=looped,creator=creator)
+        super().__init__(quests,startCinematics=startCinematics,looped=looped,creator=creator,lifetime=lifetime)
 
         # add movement between waypoints
         quests = []
@@ -2725,39 +2725,10 @@ class PatrolQuest(MetaQuestSequence):
             quest = MoveQuestMeta(waypoint[0],waypoint[1],waypoint[2],creator=self)
             self.addQuest(quest)
 
-        # bad code: lifetime is handled by base class
-        self.lifetime = lifetime
-
         # save initial state and register
         self.type = "PatrolQuest"
         self.initialState = self.getState()
         loadingRegistry.register(self)
-
-    '''
-    activate and prepare termination after lifespan
-    '''
-    def activate(self):
-        # bad code: lifetime is handled in base class
-        if self.lifetime:
-            '''
-            event for wrapping up the quest
-            '''
-            class endQuestEvent(events.Event):
-                '''
-                state initialization
-                '''
-                def __init__(subself,tick,creator=None):
-                    super().__init__(tick,creator=creator)
-                    subself.tick = tick
-
-                '''
-                wrap up the quest
-                '''
-                def handleEvent(subself):
-                    self.postHandler()
-            self.character.room.addEvent(endQuestEvent(self.character.room.timeIndex+self.lifetime,creator=self))
-
-        super().activate()
 
 '''
 quest to examine the environment

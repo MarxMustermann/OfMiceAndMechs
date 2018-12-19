@@ -2534,7 +2534,6 @@ class KnockOutQuest(MetaQuestSequence):
 
 '''
 the quest for waking somebody
-bad code: bricks npc when pc wakes a npc unplanned
 '''
 class WakeUpQuest(MetaQuestSequence):
     '''

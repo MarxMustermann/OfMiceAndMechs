@@ -1,5 +1,23 @@
 # news
 
+### commit 1203-1302
+
+These commits were a bugfix code enhancement round.
+
+* a code review was done
+* reduced inline code
+* splited methods
+* removed old comments and commented out code
+* fixed bugs
+* moved more logic to the proper file
+* simplified code and removed code redundancies
+* reduced try excepts
+* added more logging
+* renamed variables/methods
+* converted if to guarding ifs
+
+I feel like the code quality gets better with these cleanup rounds, but new bugs get introduced while dooing the cleanup and the amount of code that is marked as bad code do not get less. I take this as a sign that the code improves but there is still a lot to do while i judge the code harsher.
+
 ### commit 1100-1202
 
 The commits were focused on making th save/load system work. 

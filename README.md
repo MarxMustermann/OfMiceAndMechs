@@ -2,12 +2,12 @@
 a to-be prototype for a game
 
 * [install and run](INSTALL.md)
-* [news (latest: "commit 1100-1202")](NEWS.md)
+* [news (latest: "commit 1203-1302")](NEWS.md)
 * [credits](CREDITS.md)
 
 ## state of the game
 
-Quite some work was done on the game so far. It has a playtime of 11 minutes for a near optimal run at the time of writing ([how to beat the game](HOWTO.md)), actual playtime should be magnitudes longer. You beat the game when you see "good job. credits". I try to get playtesters to play the game and meanwhile fix the bugs und broken features. This sadly means now real playtime extension for quite some time and no significant progress with the story board.
+Quite some work was done on the game so far. It has a playtime of 11 minutes for a near optimal run at the time of writing ([how to beat the game](HOWTO.md)), actual playtime should be magnitudes longer. You have beaten the game when you see "good job. credits". I try to get playtesters to play the game and meanwhile fix the bugs und broken features. This sadly means now real playtime extension for quite some time and no significant progress with the story board.
 
 If everything goes well there will be a public demo at 35c3 ( Leipzig, Lebkuch.is assembly, 27-30.12.2018 )
 
@@ -29,7 +29,7 @@ The detailed state of the game follows:
 * a save/load system exists and loading works most of the time
 * The game offers a challenge, but still is somewhat uneventfull
 
-There are some crashes and a lot of ugly code due to getting the save system up and running. So another cleanup round is needed.
+Another round of general cleanup was done, so a more targeted cleanup follows. Since i got an actionable idea on how to better introduce the player to the games logic, i will focus on this for now.
 
 I think the biggest issue is that the main game mechanic is not working or is not clearly visible. This is gaining control (over npcs), controlling npcs and exercising power to gain power. The negation of this is also missing. This is loosing power by inefficent use of power or by not defending your position. The puzzles are not clearly visible, too. This is kind of intended, but everything has to be more obvious.
 

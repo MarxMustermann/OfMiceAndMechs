@@ -2875,7 +2875,6 @@ class PlaceFurniture(MetaQuestParralel):
         questList = []
 
         # handle each item
-        # bad code: should use transport quest
         counter = 0
         while counter < len(itemsInStore):
             # get item to place
@@ -2883,13 +2882,8 @@ class PlaceFurniture(MetaQuestParralel):
                 break
             toBuild = constructionSite.itemsInBuildOrder.pop()
 
-            # pick up item
-            quest = PickupQuestMeta(itemsInStore[counter],creator=self)
-            questList.append(quest)
-            self.startWatching(quest,self.recalculate)
-
-            # drop item
-            quest = DropQuestMeta(itemsInStore[counter],constructionSite,toBuild[0][1],toBuild[0][0],creator=self)
+            # move item
+            quest = TransportQuestMeta(itemsInStore[counter],(constructionSite,toBuild[0][1],toBuild[0][0]),creator=self)
             questList.append(quest)
             self.startWatching(quest,self.recalculate)
             counter += 1 

@@ -1568,6 +1568,20 @@ class FindWork(BasicPhase):
     '''
     def acknowledgeTransfer(self):
         showText("I hereby confirm the transfer and welcome you as crew on the Falkenbaum.\n\nYou will serve as an hopper under my command nominally. This means you will make yourself useful and prove your worth.\n\nI often have tasks to relay, but try not to stay idle even when i do not have tasks for you. Just ask around and see if somebody needs help")
+        options = [
+                     ("yes","yes"),
+                     ("no","no"),
+                  ]
+        cinematic = cinematics.SelectionCinematic("Do you unterstand these instructions?",options,creator=void)
+        cinematic.followUps = {"yes":{"container":self,"method":"skipInto"},"no":{"container":self,"method":"getIntro"}}
+        cinematics.cinematicQueue.append(cinematic)
+
+    def skipInto(self):
+        showText("Remeber to report back, your worth will be counted in a mtick.",trigger={"container":self,"method":"end"})
+
+    def getIntro(self):
+        showText("Admiting fault is no fault in itself. Here is a quick rundown of you duties:\n\n\n*) talk to my subordinate "+terrain.waitingRoom.secondOfficer.name+" and ask if you can do something. Usually you will be tasked with carrying things from one place to another.\n\n*) carry out the task given to you. The task are mundane, but you need to proof yourself before you can be trusted with more valuable tasks.\n\n*) report back to my subordinate "+terrain.waitingRoom.secondOfficer.name+" and collect your reward. Your reward consists of reputation.\n\n*) repeat untill you will be called to proof your worth. If you proven yourself worthwhile you may continue or recieve special tasks. If you loose all your reputation you will be disposed of")
+        mainChar.reputation += 1
         showText("Remeber to report back, your worth will be counted in a mtick.",trigger={"container":self,"method":"end"})
 
     '''

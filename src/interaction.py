@@ -1178,8 +1178,6 @@ class CharacterInfoMenu(SubMenu):
         if key == "esc":
             return True
 
-        global submenue # bad code: global variable is not even used
-
         # show info
         header.set_text((urwid.AttrSpec("default","default"),"\ncharacter overview"))
         main.set_text((urwid.AttrSpec("default","default"),[mainChar.getDetailedInfo()]))

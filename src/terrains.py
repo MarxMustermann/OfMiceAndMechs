@@ -918,6 +918,21 @@ class Terrain(src.saveing.Saveable):
         return chars
 
     '''
+    get nearby rooms
+    '''
+    def getNearbyRooms(self, pos):
+        roomCandidates = []
+        possiblePositions = set()
+        for i in range(-1,2):
+            for j in range(-1,2):
+                possiblePositions.add((pos[0]-i,pos[1]-j))
+        for coordinate in possiblePositions:
+            if coordinate in self.roomByCoordinates:
+                roomCandidates.extend(self.roomByCoordinates[coordinate])
+
+        return roomCandidates
+
+    '''
     render the terrain and its contents
     '''
     def render(self):
@@ -956,15 +971,7 @@ class Terrain(src.saveing.Saveable):
                 pos = (mainChar.room.xPosition,mainChar.yPosition)
 
             # get rooms near the player
-            # bad code: should be a method
-            roomCandidates = []
-            possiblePositions = set()
-            for i in range(-1,2):
-                for j in range(-1,2):
-                    possiblePositions.add((pos[0]-i,pos[1]-j))
-            for coordinate in possiblePositions:
-                if coordinate in self.roomByCoordinates:
-                    roomCandidates.extend(self.roomByCoordinates[coordinate])
+            roomCandidates = self.getNearbyRooms(pos)
 
             # show rooms near the player
             for room in roomCandidates:

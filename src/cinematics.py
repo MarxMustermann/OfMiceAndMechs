@@ -646,9 +646,6 @@ class SelectionCinematic(BasicCinematic):
             if self.followUp:
                 self.followUp()
 
-        # bad code: trigger next cinematic and redraw
-        if cinematicQueue:
-            cinematicQueue[0].advance()
         loop.set_alarm_in(0.0, callShow_or_exit, '~')
 
 '''

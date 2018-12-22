@@ -2,6 +2,7 @@
 a to-be prototype for a game
 
 * [install and run](INSTALL.md)
+* [screenshots](VISUALS.md)
 * [news (latest: "commit 1203-1302")](NEWS.md)
 * [credits](CREDITS.md)
 

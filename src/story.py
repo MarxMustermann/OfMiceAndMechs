@@ -1586,20 +1586,20 @@ class FindWork(BasicPhase):
         terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I need more information about the hopper duty","chat":chats.ConfigurableChat,"params":{
 		        "text":"what do you need to know more about?",
 				"info":[
-				         {"type":"text","text":"fhv h hg hg hg hgh g hg hg h hg  hggg","name":"foo","delete":True},
-                         {"type":"text","text":"kkkkkkkkk unuuuuuuuuuu uuuu hhhhhh hh hhh fhv h hg hg hg hgh g hg hg h hg  hggg","name":"bar"},
-                         {"type":"sub","text":"next list","sub":[
-                                  {"type":"text","text":"asdasd das","name":"aa","delete":True},
-                                  {"type":"text","text":"bsdasd das","name":"bb"},
-                                  {"type":"text","text":"csdasd das","name":"cc","delete":True},
-                                  {"type":"text","text":"dsdasd das","name":"dd","delete":True},
-                         ],"name":"baz"},
-                         {"type":"text","text":"expand text","follow":[
-                                  {"type":"text","text":"a aaaa aaaaaa testas asd asd asd asd asd asd asd asd das","name":"a","delete":True},
-                                  {"type":"text","text":"bb bbbbbb bbbbb bbb testas asd asd asd asd asd asd asd asd das","name":"b","delete":True},
-                                  {"type":"text","text":"cccc cccccc c ccc c testas asd asd asd asd asd asd asd asd das","name":"c"},
-                                  {"type":"text","text":"d dddddd dddddd ddd dd testas asd asd asd asd asd asd asd asd das","name":"d","delete":True},
-                         ],"name":"book","delete":True}]}
+				         {"type":"text","text":"My duty is ensure this mech is running smoothly. Task that are not done in the specialised facilities are relayed to me and my hoppers complete these tasks.","name":"what are your duties?"},
+				         {"type":"text","text":"This is nothing you need to know","name":"what is an artisan?","delete":True},
+                         {"type":"text","text":"Work hard and you will get other tasks.\n\nCome back and ask me for a job when you have more than 10 reputation","name":"I want to do more than carrying furniture around"},
+                         {"type":"sub","text":"what do want to know about","sub":[
+                                  {"type":"text","text":"You loose reputation over time, this is because dooing your part is expected and you have to exceed the expectations to gain repuation","name":"why is my reputation falling sometimes?"},
+                                  {"type":"text","text":"If you fail, your task may not be completed. This mech depends on us dooing our part. Nobody knows what may happen, if you fail to do your part\n\nIf you fail to meet the expectations, will loose reputation. The more important the task is the more reputation you will loose. Failure does happen, but repeated failure will earn you vat duty fast","name":"what does happen, if i do not complete a task in time?"},
+                                  {"type":"text","text":"This is not their failure, but yours","name":"The other hopper leaving no jobs for me to do"},
+                                  {"type":"text","text":"The Falkenbaum is a training mech after all. Completing tasks for training does not gain you reputation, so it is preferable to complete actual work","name":"Why transport furniture back and forth?","delete":True},
+                         ],"name":"Please explain how the hopper job works in detail."},
+                         {"type":"text","text":"I will teach you some things. I won't repeat lessons. I can teach you:\n\n* how to gather scrap more effective\n* how to complete your work easier\n* how to be more usefull","follow":[
+                                  {"type":"text","text":"Usually you have to pick up more than piece of scrap. Your task is to collect all these pieces of scrap so do not walk back and forth for each item, but take more than one piece of scrap each time.","name":"teach me how to gather scrap more effective","delete":True},
+                                  {"type":"text","text":"You can use your implant to take control and complete your task by pressing + or *.\nThe implants solutions for your tasks are often below expectation so do not let the implant take control completely and think when needed","name":"teach me how to complete my work easier","delete":True},
+                                  {"type":"text","text":"Do not do the task ment only to keep you busy. Select the tasks that are valued most and you will be the most useful","name":"teach me how to be more useful","delete":True},
+                         ],"name":"Please train me","delete":True}]}
 			})
  
     '''

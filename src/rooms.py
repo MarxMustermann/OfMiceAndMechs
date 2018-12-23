@@ -1805,6 +1805,15 @@ XXXXXXXXXXX
         self.hoppers.append(npc)
         self.addCharacter(npc,2,3)
 
+        items = []
+        item = src.items.Wall(1,1,creator=self)
+        item.bolted = False
+        items.append(item)
+        item = src.items.Wall(1,2,creator=self)
+        item.bolted = False
+        items.append(item)
+        self.addItems(items)
+
         # assign hopper duty to hoppers
         for hopper in self.hoppers:
             self.addAsHopper(hopper)

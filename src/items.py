@@ -1321,7 +1321,7 @@ class Spray(Item):
     '''
     @property
     def display(self):
-        if direction == "left":
+        if self.direction == "left":
             if terrain.tutorialMachineRoom.steamGeneration == 0:
                 return displayChars.spray_left_inactive
             elif terrain.tutorialMachineRoom.steamGeneration == 1:

@@ -39,7 +39,31 @@ class Chat(src.interaction.SubMenu):
             debugMessages.append("removed chat option that wasn't there")
 
 '''
+the chat for getting a hopper duty intro
+'''
+class HopperIntro(Chat):
+    id = "HopperIntro"
+
+    '''
+    call superclass with less params
+    '''
+    def __init__(self,discardParam = None):
+        super().__init__()
+        self.firstRun = True
+
+    '''
+    call the solver to assign reward
+    '''
+    def handleKey(self, key):
+        self.persistentText = "dummytext"
+        self.set_text(self.persistentText)
+
+        self.done = False
+        return False
+             
+'''
 the chat for collecting the reward
+bad code: subSelf
 '''
 class RewardChat(Chat):
     id = "RewardChat"
@@ -932,6 +956,7 @@ chatMap = {
              "JobChatFirst":JobChatFirst,
              "JobChatSecond":JobChatSecond,
              "RewardChat":RewardChat,
-			 "RecruitChat":RecruitChat,
-			 "ChatMenu":ChatMenu,
+             "RecruitChat":RecruitChat,
+             "ChatMenu":ChatMenu,
+             "HopperIntro":HopperIntro,
           }

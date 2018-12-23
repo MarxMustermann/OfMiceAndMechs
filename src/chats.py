@@ -69,13 +69,11 @@ class ConfigurableChat(Chat):
     '''
     def __init__(self,discardParam = None):
         super().__init__()
-        self.firstRun = True
         self.subMenu = None
 
     '''
     '''
     def handleKey(self, key):
-
         if self.subMenu:
              if not self.subMenu.handleKey(key):
                  return False
@@ -113,6 +111,8 @@ class ConfigurableChat(Chat):
             else:
                 self.set_text("NIY")
 
+            if "trigger" in self.selection and self.selection["trigger"]:
+                self.callIndirect(self.selection["trigger"])
             if "follow" in self.selection:
                 self.info.extend(self.selection["follow"])
             if "delete" in self.selection and self.selection["delete"]:

@@ -1583,11 +1583,9 @@ class FindWork(BasicPhase):
         showText("Admiting fault is no fault in itself. Here is a quick rundown of you duties:\n\n\n*) talk to my subordinate "+terrain.waitingRoom.secondOfficer.name+" and ask if you can do something. Usually you will be tasked with carrying things from one place to another.\n\n*) carry out the task given to you. The task are mundane, but you need to proof yourself before you can be trusted with more valuable tasks.\n\n*) report back to my subordinate "+terrain.waitingRoom.secondOfficer.name+" and collect your reward. Your reward consists of reputation.\n\n*) repeat until you will be called to proof your worth. If you proven yourself worthwhile you may continue or recieve special tasks. If you loose all your reputation you will be disposed of")
         mainChar.reputation += 1
         showText("You are invited to ask me if you need more instructions. I usually coordinate the hoppers from here.\n\nRemeber to report back, your worth will be counted in a mtick.",trigger={"container":self,"method":"end"})
-        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I need more information about the hopper duty","chat":chats.ConfigurableChat,"params":{
-		        "text":"what do you need to know more about?",
-				"info":[
-				         {"type":"text","text":"My duty is ensure this mech is running smoothly. Task that are not done in the specialised facilities are relayed to me and my hoppers complete these tasks.","name":"what are your duties?"},
-				         {"type":"text","text":"This is nothing you need to know","name":"what is an artisan?","delete":True},
+        self.firstOfficersDialog = [
+                         {"type":"text","text":"My duty is ensure this mech is running smoothly. Task that are not done in the specialised facilities are relayed to me and my hoppers complete these tasks.","name":"what are your duties?"},
+                         {"type":"text","text":"This is nothing you need to know","name":"what is an artisan?","delete":True},
                          {"type":"text","text":"Work hard and you will get other tasks.\n\nCome back and ask me for a job when you have more than 10 reputation","name":"I want to do more than carrying furniture around"},
                          {"type":"sub","text":"what do want to know about","sub":[
                                   {"type":"text","text":"You loose reputation over time, this is because dooing your part is expected and you have to exceed the expectations to gain repuation","name":"why is my reputation falling sometimes?"},
@@ -1595,13 +1593,36 @@ class FindWork(BasicPhase):
                                   {"type":"text","text":"This is not their failure, but yours","name":"The other hopper leaving no jobs for me to do"},
                                   {"type":"text","text":"The Falkenbaum is a training mech after all. Completing tasks for training does not gain you reputation, so it is preferable to complete actual work","name":"Why transport furniture back and forth?","delete":True},
                          ],"name":"Please explain how the hopper job works in detail."},
-                         {"type":"text","text":"I will teach you some things. I won't repeat lessons. I can teach you:\n\n* how to gather scrap more effective\n* how to complete your work easier\n* how to be more usefull","follow":[
-                                  {"type":"text","text":"Usually you have to pick up more than piece of scrap. Your task is to collect all these pieces of scrap so do not walk back and forth for each item, but take more than one piece of scrap each time.","name":"teach me how to gather scrap more effective","delete":True},
-                                  {"type":"text","text":"You can use your implant to take control and complete your task by pressing + or *.\nThe implants solutions for your tasks are often below expectation so do not let the implant take control completely and think when needed","name":"teach me how to complete my work easier","delete":True},
-                                  {"type":"text","text":"Do not do the task ment only to keep you busy. Select the tasks that are valued most and you will be the most useful","name":"teach me how to be more useful","delete":True},
-                         ],"name":"Please train me","delete":True}]}
-			})
+                         {"type":"text","text":"I will assign simple training missions to you. Complete enough of these to reach 4 reputation","name":"Please train me","delete":True,"trigger":{"container":self,"method":"doSimpeReputationGathering"}}]
+        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I need more information about the hopper duty","chat":chats.ConfigurableChat,"params":{
+                "text":"what do you need to know more about?",
+                "info":self.firstOfficersDialog,
+            }})
+    
+    def doSimpeReputationGathering(self):
+        quest = quests.WaitQuest(lifetime=20,creator=void)
+        quest.endTrigger = {"container":self,"method":"completeSimpeReputationGathering"}
+        mainChar.serveQuest.addQuest(quest)
+
+    def completeSimpeReputationGathering(self):
+        self.firstOfficersDialog.append(
+                         {"type":"text","text":"I will assign simple training missions to you. Complete enough of these to reach 6 reputation","name":"Please train me","delete":True,"trigger":{"container":self,"method":"doSimpeReputationGathering"},"trigger":{"container":self,"method":"doSelectiveReputationGathering"}})
+
+    def doSelectiveReputationGathering(self):
+        quest = quests.WaitQuest(lifetime=20,creator=void)
+        quest.endTrigger = {"container":self,"method":"completeSelectiveReputationGathering"}
+        mainChar.serveQuest.addQuest(quest)
  
+    def completeSelectiveReputationGathering(self):
+        self.firstOfficersDialog.append(
+                         {"type":"text",
+                          "text":"I offer to teach you some things. I won't repeat lessons. I can teach you:\n\n* how to gather scrap more effective\n* how to complete your work easier\n* how to be more usefull",
+                          "follow":[
+                                  {"type":"text","text":"Usually you have to pick up more than one piece of scrap. Your task is to collect all these pieces of scrap so do not walk back and forth for each item, but take more than one piece of scrap each time.","name":"teach me how to gather scrap more effective","delete":True},
+                                  {"type":"text","text":"You can use your implant to take control and complete your task by pressing + or *.\nThe implants solutions for your tasks are often below expectation so do not let the implant take control completely and think when needed","name":"teach me how to complete my work easier","delete":True},
+                                  {"type":"text","text":"Do not do the task ment only to keep you busy. Select the tasks that are valued most and you will be the most useful","name":"teach me how to be more useful","delete":True}],
+                          "name":"Please teach me more","delete":True})
+
     '''
     drop the player out of the command chain and place trigger for return
     '''

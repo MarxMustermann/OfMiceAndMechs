@@ -1075,8 +1075,7 @@ XXXXXXXXXXX
                 # scold/punish the player
                 # bad code: assumes the player opened the door
                 messages.append(self.firstOfficer.name+"@"+self.secondOfficer.name+": close the door")
-                mainChar.reputation -= 5
-                messages.append("you were rewarded -5 reputation")
+                mainChar.revokeReputation(amount=5,reason="disturbing a military area")
                 messages.append(self.firstOfficer.name+": military area. Do not enter.")
 
                 # make second officer close the door and return to start position
@@ -1104,8 +1103,7 @@ XXXXXXXXXXX
             messages.append(self.firstOfficer.name+"@"+self.secondOfficer.name+": perimeter breached. neutralize threat.")
 
             # punish player
-            character.reputation -= 100
-            messages.append("you were rewarded -100 reputation")
+            character.revokeReputation(amount=100,reason="breaching a military area")
 
             '''
             stop running after character left the room
@@ -1711,7 +1709,7 @@ XXXXXXXX
         # should be a guard
         if self.firstOfficer and not character.hasFloorPermit:
             messages.append(self.firstOfficer.name+": moving through this door will be your death.")
-            character.reputation -= 1
+            character.revokeReputation(amount=1,reason="beeing impatient")
     
     '''
     move player to vat

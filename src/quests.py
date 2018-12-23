@@ -1347,9 +1347,10 @@ class NaiveGetReward(Quest):
     '''
     def solver(self,character):
         if self.quest:
-            self.character.reputation += self.quest.reputationReward
-            if character == mainChar:
-                messages.append("you were awarded "+str(self.quest.reputationReward)+" reputation")
+            if self.quest.reputationReward < 0:
+                self.character.revokeReputation(-self.quest.reputationReward,reason="failing to complete a quest")
+            else:
+                self.character.awardReputation(self.quest.reputationReward,reason="completing a quest")
         self.done = True
         self.triggerCompletionCheck()
         return True
@@ -1630,8 +1631,8 @@ class NaiveDelegateQuest(Quest):
     def solver(self,character):
         character.subordinates[0].assignQuest(self.quest,active=True)
         if self.quest.reputationReward:
-            character.subordinates[0].reputation += self.quest.reputationReward
-            character.reputation -= self.quest.reputationReward
+            character.subordinates[0].rewardReputation(self.quest.reputationReward,"completing a quest for somebody")
+            character.revokeReputation(self.quest.reputationReward,"having somebody complete a quest for you")
         return True
 
 ############################################################

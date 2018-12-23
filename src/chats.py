@@ -351,10 +351,8 @@ do things the most efficent way. It will even try to handle conversion, wich doe
             self.firstRun = False
 
             # punish / reward player
-            if mainChar.reputation:
-                mainChar.reputation = mainChar.reputation//2+2
-            else:
-                mainChar.reputation += 2
+            mainChar.revokeReputation(fraction=2,reason="asking a question")
+            mainChar.awardReputation(amount=2,reason="gaining knowledge")
             return False
         
         # tear down on second run
@@ -409,10 +407,8 @@ for a brain.\n\n"""
             self.firstRun = False
 
             # punish / reward player
-            if mainChar.reputation:
-                mainChar.reputation = mainChar.reputation//2+2
-            else:
-                mainChar.reputation += 2
+            mainChar.revokeReputation(fraction=2,reason="asking a question")
+            mainChar.awardReputation(amount=2,reason="gaining knowledge")
             return False
 
         # tear down on second run
@@ -462,8 +458,7 @@ class ReReport(src.interaction.SubMenu):
             self.firstRun = False
 
             # punish player
-            mainChar.reputation -= 1
-            messages.append("rewarded -1 reputation")
+            mainChar.revokeReputation(amount=1,reason="not reporting for duty in timely manner")
 
             # remove chat option
             self.removeFromChatOptions(terrain.waitingRoom.firstOfficer)
@@ -517,8 +512,7 @@ class JobChatFirst(Chat):
            # refuse to quit dialog
            else:
                self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
-               mainChar.reputation -= 2
-               messages.append("you were rewarded -2 reputation")
+               mainChar.revokeReputation(amount=2,reason="beeing impolite")
                self.set_text((urwid.AttrSpec("default","default"),self.persistentText))
                self.skipTurn = True
                return False
@@ -608,8 +602,7 @@ class JobChatSecond(Chat):
            # refuse to quit dialog
            else:
                self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
-               mainChar.reputation -= 2
-               messages.append("you were rewarded -2 reputation")
+               mainChar.revokeReputation(amount=2,reason="beeing impolite")
                self.set_text((urwid.AttrSpec("default","default"),self.persistentText))
                self.skipTurn = True
                return False
@@ -809,27 +802,23 @@ class RecruitChat(Chat):
                 if mainChar.reputation <= 0:
                     # reject player very harshly
                     self.persistentText += self.partner.name+": \"No.\""
-                    mainChar.reputation -= 5
-                    messages.append("You were rewarded -5 reputation")
+                    mainChar.revokeReputation(amount=5,reason="asking a superior for service")
                 else:
                     # reject player harshly
                     if self.partner.reputation//mainChar.reputation:
                         self.persistentText += self.partner.name+": \"you will need at least have to have "+str(self.partner.reputation//mainChar.reputation)+" times as much reputation to have me consider that\"\n"
-                        messages.append("You were rewarded -"+str(2*(self.partner.reputation//mainChar.reputation))+" reputation")
-                        mainChar.reputation -= 2*(self.partner.reputation//mainChar.reputation)
+                        mainChar.revokeReputation(amount=2*(self.partner.reputation//mainChar.reputation),reason="asking a superior for service")
                     # reject player somewhat nicely
                     else:
                         self.persistentText += self.partner.name+": \"maybe if you come back later\""
-                        mainChar.reputation -= 2
-                        messages.append("You were rewarded -2 reputation")
+                        mainChar.revokeReputation(amount=2,reason="asking a superior for service")
             # consider player request
             else:
 
                 # reject player
                 if gamestate.tick%2:
                     self.persistentText += self.partner.name+": \"sorry, too busy.\"\n"
-                    mainChar.reputation -= 1
-                    messages.append("You were rewarded -1 reputation")
+                    mainChar.revokeReputation(amount=1,reason="getting service refused")
 
                 # allow the recruitment
                 else:
@@ -913,8 +902,7 @@ class ChatMenu(Chat):
            # refuse to abort the chat
            else:
                self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
-               mainChar.reputation -= 1
-               messages.append("you were rewarded -1 reputation")
+               mainChar.revokeReputation(amount=1,reason="beeind impolite")
                self.set_text((urwid.AttrSpec("default","default"),self.persistentText))
                self.skipTurn = True
                return False

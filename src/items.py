@@ -544,7 +544,7 @@ class GrowthTank(Item):
         character.fallUnconcious()
         character.hasFloorPermit = False
         self.room.addCharacter(character,self.xPosition+1,self.yPosition)
-        character.reputation -= 1
+        character.revokeReputation(amount=4,reason="beeing helpless")
 
         return character
 

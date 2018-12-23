@@ -816,8 +816,7 @@ now, go and pull the lever
         furnace = terrain.wakeUpRoom.furnace
 
         # reward player
-        mainChar.reputation += 2
-        messages.append("you were rewarded 2 reputation")
+        mainChar.awardReputation(amount=2,reason="getting extra training")
 
         # show fluff
         showText("you are in luck. The furnace is for training and you are free to use it.\n\nYou need something to burn in the furnace first, so fetch some coal from the pile and then you can light the furnace.\nIt will stop burning after some ticks so keeping a fire burning can get quite tricky sometimes")
@@ -852,8 +851,7 @@ you have on piece of coal less than before."""])
 
         # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
-        mainChar.reputation -= 1
-        messages.append("you were rewarded -1 reputation")
+        mainChar.revokeReputation(amount=1,reason="not getting extra training")
 
         # place trigger
         showText("i understand. The burns are somewhat unpleasant",trigger={"container":self,"method":"iamready"})
@@ -921,8 +919,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
             text += "you better speed up and stop wasting time.\n\n"
             showText(text)
             self.trainingCompleted()
-            mainChar.reputation -= 2
-            messages.append("you were rewarded -2 reputation")
+            mainChar.revokeReputation(amount=2,reason="not completing test in time")
 
         # make the player wait till norm completion time
         else:
@@ -933,8 +930,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
             mainChar.serveQuest.addQuest(quest)
 
             # reward player
-            mainChar.reputation += 1
-            messages.append("you were rewarded 1 reputation")
+            mainChar.awardReputation(amount=1,reason="completing test in time")
 
     '''
     wrap up
@@ -1581,7 +1577,7 @@ class FindWork(BasicPhase):
 
     def getIntro(self):
         showText("Admiting fault is no fault in itself. Here is a quick rundown of you duties:\n\n\n*) talk to my subordinate "+terrain.waitingRoom.secondOfficer.name+" and ask if you can do something. Usually you will be tasked with carrying things from one place to another.\n\n*) carry out the task given to you. The task are mundane, but you need to proof yourself before you can be trusted with more valuable tasks.\n\n*) report back to my subordinate "+terrain.waitingRoom.secondOfficer.name+" and collect your reward. Your reward consists of reputation.\n\n*) repeat until you will be called to proof your worth. If you proven yourself worthwhile you may continue or recieve special tasks. If you loose all your reputation you will be disposed of")
-        mainChar.reputation += 1
+        mainChar.awardReputation(amount=1,reason="admitting fault")
         showText("You are invited to ask me if you need more instructions. I usually coordinate the hoppers from here.\n\nRemeber to report back, your worth will be counted in a mtick.",trigger={"container":self,"method":"end"})
         self.firstOfficersDialog = [
                          {"type":"text","text":"My duty is ensure this mech is running smoothly. Task that are not done in the specialised facilities are relayed to me and my hoppers complete these tasks.","name":"what are your duties?"},
@@ -1679,7 +1675,7 @@ class FindWork(BasicPhase):
                     # send out death squads
                     for room in terrain.militaryRooms:
                         quest = quests.MurderQuest(mainChar,creator=void)
-                        mainChar.reputation -= 1000
+                        mainChar.revokeReputation(amount=1000,reason="failing to show up for evaluation")
                         room.secondOfficer.assignQuest(quest,active=True)
                         room.onMission = True
                 quest.fail = fail
@@ -1711,12 +1707,12 @@ class FindWork(BasicPhase):
                         showText("I see you did some work. Carry on")
 
                     # decrease reputation so the player will be forced to work continiously or to save up reputation
-                    mainChar.reputation -= 3+(2*len(mainChar.subordinates))
+                    mainChar.revokeReputation(amount=3+(2*len(mainChar.subordinates)),reason="failing to show up for evaluation")
                     self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),subself.char,creator=void))
 
                 # assign a special quest
                 else:
-                    mainChar.reputation += 5
+                    mainChar.awardReputation(amount=5,reason="getting a special order")
                     # add the quest
                     showText("logistics command orders us to move some of the cargo in the long term store to accesible storage.\n3 rooms are to be cleared. One room needs to be cleared within 150 ticks\nThis requires the coordinated effort of the hoppers here. Since "+subself.char.name+" did well to far, "+subself.char.name+" will be given the lead.\nThis will be extra to the current workload")
                     quest = quests.HandleDelivery([terrain.tutorialCargoRooms[4]],[terrain.tutorialStorageRooms[1],terrain.tutorialStorageRooms[3],terrain.tutorialStorageRooms[5]],creator=void)
@@ -1752,8 +1748,7 @@ class FindWork(BasicPhase):
                     if hopper.dead:
                         # punish player if subordinate is returned dead
                         messages.append(hopper.name+" died. that is unfortunate")
-                        messages.append("you were rewarded -100 reputation")
-                        mainChar.reputation -= 100
+                        mainChar.revokeReputation(amount=100,reason="not returning a subordinate")
                     mainChar.subordinates.remove(hopper)
             self.addRoomConstruction()
 
@@ -1897,7 +1892,7 @@ class VatPhase(BasicPhase):
             messages.append("*alarm* refusal to honour vat assignemnt detected. likely artisan. Dispatch kill squads *alarm*")
             for room in terrain.militaryRooms:
                 quest = quests.MurderQuest(mainChar,creator=void)
-                mainChar.reputation -= 1000
+                mainChar.revokeReputation(amount=1000,reason="not starting vat duty")
                 room.secondOfficer.assignQuest(quest,active=True)
                 room.onMission = True
         quest.fail = fail

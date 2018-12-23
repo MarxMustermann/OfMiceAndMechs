@@ -411,6 +411,28 @@ class Character(src.saveing.Saveable):
 
         return state
 
+    def awardReputation(self,amount=0,fraction=0, reason=None):
+        totalAmount = amount
+        if fraction and self.reputation:
+            totalAmount += self.reputation//fraction
+        self.reputation += totalAmount
+        if self.watched:
+            text = "you were rewarded %i reputation"%totalAmount
+            if reason:
+                text += " for "+reason
+            messages.append(text)
+
+    def revokeReputation(self,amount=0,fraction=0, reason=None):
+        totalAmount = amount
+        if fraction and self.reputation:
+            totalAmount += self.reputation//fraction
+        self.reputation -= totalAmount
+        if self.watched:
+            text = "you lost %i reputation"%totalAmount
+            if reason:
+                text += " for "+reason
+            messages.append(text)
+
     '''
     starts the next quest in the quest list
     bad code: this is kind of incompatible with the meta quests

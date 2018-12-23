@@ -38,34 +38,48 @@ class Chat(src.interaction.SubMenu):
         else:
             debugMessages.append("removed chat option that wasn't there")
 
+class OneTimeMessage(Chat):
+    id = "OneTimeMessage"
+
+    '''
+    '''
+    def __init__(self,text=""):
+        super().__init__()
+        self.firstRun = True
+        self.persistentText = text
+
+    '''
+    '''
+    def handleKey(self, key):
+        if self.firstRun:
+            self.set_text(self.persistentText)
+            self.done = False
+            self.firstRun = False
+            return False
+        self.done = True
+        return True
+
 '''
 the chat for getting a hopper duty intro
 '''
-class HopperIntro(Chat):
-    id = "HopperIntro"
+class ConfigurableChat(Chat):
+    id = "ConfigurableChat"
 
     '''
-    call superclass with less params
     '''
     def __init__(self,discardParam = None):
         super().__init__()
         self.firstRun = True
-        self.persistentText = "what do you need to know more about?"
-        self.info = []
-        self.info.append({"type":"text","text":"fhv h hg hg hg hgh g hg hg h hg  hggg","name":"foo"})
-        self.info.append({"type":"text","text":"kkkkkkkkk unuuuuuuuuuu uuuu hhhhhh hh hhh fhv h hg hg hg hgh g hg hg h hg  hggg","name":"bar"})
-        self.info.append({"type":"sub","text":"next list","sub":{"a":"asd das","b":"bbkjbjkbbbb","c":"cccccccccc"},"name":"baz"})
-        self.info.append({"type":"follow","text":"expand text","sub":[
-                                             {"type":"text","text":"a aaaa aaaaaa testas asd asd asd asd asd asd asd asd das","name":"a"},
-                                             {"type":"text","text":"bb bbbbbb bbbbb bbb testas asd asd asd asd asd asd asd asd das","name":"b"},
-                                             {"type":"text","text":"cccc cccccc c ccc c testas asd asd asd asd asd asd asd asd das","name":"c"},
-                                             {"type":"text","text":"d dddddd dddddd ddd dd testas asd asd asd asd asd asd asd asd das","name":"d"},
-                                       ],"name":"book"})
+        self.subMenu = None
 
     '''
-    call the solver to assign reward
     '''
     def handleKey(self, key):
+
+        if self.subMenu:
+             if not self.subMenu.handleKey(key):
+                 return False
+             self.subMenu = None
 
         if not self.options and not self.getSelection():
             # add the chat partners special dialog options
@@ -90,15 +104,31 @@ class HopperIntro(Chat):
                 return True
 
             if self.selection["type"] == "text":
-                self.set_text(self.selection["text"])
-                self.info.remove(self.selection)
-                self.selection = None
+                self.subMenu = OneTimeMessage(self.selection["text"])
+                self.subMenu.handleKey("~")
+            elif self.selection["type"] == "sub":
+                self.subMenu = ConfigurableChat()
+                self.subMenu.setUp({"text":self.selection["text"],"info":self.selection["sub"]})
+                self.subMenu.handleKey("~")
             else:
                 self.set_text("NIY")
-                self.selection = None
+
+            if "follow" in self.selection:
+                self.info.extend(self.selection["follow"])
+            if "delete" in self.selection and self.selection["delete"]:
+                self.info.remove(self.selection)
+            self.selection = None
 
         self.done = False
         return False
+
+    '''
+    add internal state
+    bad pattern: chat option stored as references to class complicates this
+    '''
+    def setUp(self,state):
+        self.text = state["text"]
+        self.info = state["info"]
              
 '''
 the chat for collecting the reward
@@ -997,5 +1027,5 @@ chatMap = {
              "RewardChat":RewardChat,
              "RecruitChat":RecruitChat,
              "ChatMenu":ChatMenu,
-             "HopperIntro":HopperIntro,
+             "ConfigurableChat":ConfigurableChat,
           }

@@ -1583,7 +1583,24 @@ class FindWork(BasicPhase):
         showText("Admiting fault is no fault in itself. Here is a quick rundown of you duties:\n\n\n*) talk to my subordinate "+terrain.waitingRoom.secondOfficer.name+" and ask if you can do something. Usually you will be tasked with carrying things from one place to another.\n\n*) carry out the task given to you. The task are mundane, but you need to proof yourself before you can be trusted with more valuable tasks.\n\n*) report back to my subordinate "+terrain.waitingRoom.secondOfficer.name+" and collect your reward. Your reward consists of reputation.\n\n*) repeat until you will be called to proof your worth. If you proven yourself worthwhile you may continue or recieve special tasks. If you loose all your reputation you will be disposed of")
         mainChar.reputation += 1
         showText("You are invited to ask me if you need more instructions. I usually coordinate the hoppers from here.\n\nRemeber to report back, your worth will be counted in a mtick.",trigger={"container":self,"method":"end"})
-        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I need more information about the hopper duty","chat":chats.HopperIntro})
+        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I need more information about the hopper duty","chat":chats.ConfigurableChat,"params":{
+		        "text":"what do you need to know more about?",
+				"info":[
+				         {"type":"text","text":"fhv h hg hg hg hgh g hg hg h hg  hggg","name":"foo","delete":True},
+                         {"type":"text","text":"kkkkkkkkk unuuuuuuuuuu uuuu hhhhhh hh hhh fhv h hg hg hg hgh g hg hg h hg  hggg","name":"bar"},
+                         {"type":"sub","text":"next list","sub":[
+                                  {"type":"text","text":"asdasd das","name":"aa","delete":True},
+                                  {"type":"text","text":"bsdasd das","name":"bb"},
+                                  {"type":"text","text":"csdasd das","name":"cc","delete":True},
+                                  {"type":"text","text":"dsdasd das","name":"dd","delete":True},
+                         ],"name":"baz"},
+                         {"type":"text","text":"expand text","follow":[
+                                  {"type":"text","text":"a aaaa aaaaaa testas asd asd asd asd asd asd asd asd das","name":"a","delete":True},
+                                  {"type":"text","text":"bb bbbbbb bbbbb bbb testas asd asd asd asd asd asd asd asd das","name":"b","delete":True},
+                                  {"type":"text","text":"cccc cccccc c ccc c testas asd asd asd asd asd asd asd asd das","name":"c"},
+                                  {"type":"text","text":"d dddddd dddddd ddd dd testas asd asd asd asd asd asd asd asd das","name":"d","delete":True},
+                         ],"name":"book","delete":True}]}
+			})
  
     '''
     drop the player out of the command chain and place trigger for return

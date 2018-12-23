@@ -239,6 +239,7 @@ story.messages = messages
 interaction.messages = messages
 events.messages = messages
 chats.messages = messages
+canvas.messages = messages
 
 # bad code: common variables with modules
 cinematics.interaction = interaction

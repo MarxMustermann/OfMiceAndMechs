@@ -64,7 +64,7 @@ class Mapping(object):
                     # get abstract id
                     if not item[0] in self.mappedThings: 
                         self.mappedThings[item[0]] = {}
-                    if not k in self.mappedThings:
+                    if not k in self.mappedThings[item[0]]:
                         self.mappedThings[item[0]][k] = self.globalCounter[0]
                         self.globalCounter[0] += 1
 

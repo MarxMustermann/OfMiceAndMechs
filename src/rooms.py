@@ -1809,7 +1809,7 @@ XXXXXXXXXXX
         item = src.items.Wall(1,1,creator=self)
         item.bolted = False
         self.trainingItems.append(item)
-        item = src.items.Wall(1,2,creator=self)
+        item = src.items.Wall(9,1,creator=self)
         item.bolted = False
         self.trainingItems.append(item)
         self.addItems(self.trainingItems)

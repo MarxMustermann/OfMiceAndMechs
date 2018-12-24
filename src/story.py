@@ -1568,7 +1568,7 @@ class FindWork(BasicPhase):
                      ("yes","yes"),
                      ("no","no"),
                   ]
-        cinematic = cinematics.SelectionCinematic("Do you unterstand these instructions?",options,creator=void)
+        cinematic = cinematics.SelectionCinematic("Do you understand these instructions?",options,creator=void)
         cinematic.followUps = {"yes":{"container":self,"method":"skipInto"},"no":{"container":self,"method":"getIntro"}}
         cinematics.cinematicQueue.append(cinematic)
 
@@ -1589,27 +1589,67 @@ class FindWork(BasicPhase):
                                   {"type":"text","text":"This is not their failure, but yours","name":"The other hopper leaving no jobs for me to do"},
                                   {"type":"text","text":"The Falkenbaum is a training mech after all. Completing tasks for training does not gain you reputation, so it is preferable to complete actual work","name":"Why transport furniture back and forth?","delete":True},
                          ],"name":"Please explain how the hopper job works in detail."},
-                         {"type":"text","text":"I will assign simple training missions to you. Complete enough of these to reach 4 reputation","name":"Please train me","delete":True,"trigger":{"container":self,"method":"doSimpeReputationGathering"}}]
+                         {"type":"text","text":"I will assign simple training missions to you. Each time you complete a training mission you will recieve one token representing reputation.\n\nCollect 4 tokens by completing 4 tasks.","name":"Please train me","delete":True,"trigger":{"container":self,"method":"doSimpleReputationGathering"}}]
         terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I need more information about the hopper duty","chat":chats.ConfigurableChat,"params":{
                 "text":"what do you need to know more about?",
                 "info":self.firstOfficersDialog,
             }})
-    
-    def doSimpeReputationGathering(self):
-        quest = quests.WaitQuest(lifetime=20,creator=void)
+
+    def doSimpleReputationGathering(self):
+        item = terrain.waitingRoom.trainingItems[0]
+        newPosition = (terrain.waitingRoom,1,8)
+        if item.xPosition == 1 and item.yPosition == 8:
+            newPosition = (terrain.waitingRoom,1,1)
+        quest = quests.TransportQuest(item,newPosition,creator=self)
         quest.endTrigger = {"container":self,"method":"completeSimpeReputationGathering"}
-        mainChar.serveQuest.addQuest(quest)
+        mainChar.assignQuest(quest,active=True)
 
     def completeSimpeReputationGathering(self):
+        mainChar.inventory.append(src.items.Token(creator=self))
+        numTokens = 0
+        for item in mainChar.inventory:
+            if item.type == "Token":
+                numTokens += 1
+
+        if numTokens < 4:
+            quest = quests.MoveQuestMeta(terrain.waitingRoom,6,6,creator=self)
+            quest.endTrigger = {"container":self,"method":"doSimpleReputationGathering"}
+            mainChar.assignQuest(quest,active=True)
+            return
+
+        for item in mainChar.inventory[:]:
+            if item.type == "Token":
+                mainChar.inventory.remove(item)
+
         self.firstOfficersDialog.append(
                          {"type":"text","text":"I will assign simple training missions to you. Complete enough of these to reach 6 reputation","name":"Please train me","delete":True,"trigger":{"container":self,"method":"doSimpeReputationGathering"},"trigger":{"container":self,"method":"doSelectiveReputationGathering"}})
 
     def doSelectiveReputationGathering(self):
-        quest = quests.WaitQuest(lifetime=20,creator=void)
+        item = terrain.waitingRoom.trainingItems[1]
+        newPosition = (terrain.waitingRoom,7,8)
+        if item.xPosition == 7 and item.yPosition == 8:
+            newPosition = (terrain.waitingRoom,8,1)
+        quest = quests.TransportQuest(item,newPosition,creator=self)
         quest.endTrigger = {"container":self,"method":"completeSelectiveReputationGathering"}
-        mainChar.serveQuest.addQuest(quest)
+        mainChar.assignQuest(quest,active=True)
  
     def completeSelectiveReputationGathering(self):
+        mainChar.inventory.append(src.items.Token(creator=self))
+        numTokens = 0
+        for item in mainChar.inventory:
+            if item.type == "Token":
+                numTokens += 1
+
+        if numTokens < 6:
+            quest = quests.MoveQuestMeta(terrain.waitingRoom,6,6,creator=self)
+            quest.endTrigger = {"container":self,"method":"doSelectiveReputationGathering"}
+            mainChar.assignQuest(quest,active=True)
+            return
+
+        for item in mainChar.inventory[:]:
+            if item.type == "Token":
+                mainChar.inventory.remove(item)
+
         self.firstOfficersDialog.append(
                          {"type":"text",
                           "text":"I offer to teach you some things. I won't repeat lessons. I can teach you:\n\n* how to gather scrap more effective\n* how to complete your work easier\n* how to be more usefull",

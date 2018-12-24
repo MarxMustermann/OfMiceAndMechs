@@ -563,7 +563,7 @@ def processInput(key):
                     messages.append("you do not have the nessecary solver yet")
                 else:
                     if len(mainChar.inventory):
-                        mainChar.drop(mainChar.inventory[0])
+                        mainChar.drop(mainChar.inventory[-1])
 
             # drink from the first available item in inventory
             # bad pattern: the user has to have the choice from what item to drink from

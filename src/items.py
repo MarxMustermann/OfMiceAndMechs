@@ -1597,6 +1597,20 @@ class ScrapCompactor(Item):
         new.yPosition = self.yPosition
         self.room.addItems([new])
 
+'''
+'''
+class Token(Item):
+    type = "Token"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="token",creator=None):
+        super().__init__(". ",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+
 # maping from strings to all items
 # should be extendable
 itemMap = {
@@ -1625,7 +1639,8 @@ itemMap = {
             "GooFlask":GooFlask,
             "ProductionArtwork":ProductionArtwork,
             "ScrapCompactor":ScrapCompactor,
-            "ObjectDispenser":OjectDispenser
+            "ObjectDispenser":OjectDispenser,
+            "Token":Token,
 }
 
 '''

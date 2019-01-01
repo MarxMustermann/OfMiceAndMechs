@@ -671,10 +671,7 @@ def processInput(key):
         pauseGame = True
 
         # let the submenu handle the keystroke
-        if not key in (commandChars.autoAdvance):
-            done = submenue.handleKey(key)
-        else:
-            done = False
+        done = submenue.handleKey(key)
 
         # reset rendering flags
         if done:
@@ -818,6 +815,13 @@ class SubMenu(src.saveing.Saveable):
     def handleKey(self, key):
         # exit submenue
         if key == "esc":
+            return True
+
+        if key == "*":
+            self.selection = list(self.options.values())[0]
+            self.options = None
+            if self.followUp:
+                self.followUp()
             return True
 
         # show question

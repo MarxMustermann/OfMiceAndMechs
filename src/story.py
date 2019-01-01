@@ -333,7 +333,7 @@ entering interactive mode .................................
                      ("nok","Susanne Kreismann")
                   ]
         text = "\nplease answer the question:\n\nwhat is your name?"
-        cinematic = cinematics.SelectionCinematic(text,options,creator=void)
+        cinematic = cinematics.SelectionCinematic(text,options,default="ok",creator=void)
         cinematic.followUps = {"ok":{"container":self,"method":"askSecondQuestion"},"nok":{"container":self,"method":"infoFail"}}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)

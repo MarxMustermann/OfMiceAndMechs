@@ -562,10 +562,11 @@ class SelectionCinematic(BasicCinematic):
     '''
     straightforward state initialization
     '''
-    def __init__(self,text=None, options=None, followUps=None,creator=None):
+    def __init__(self, text=None, options=None, followUps=None,creator=None, default=None):
         super().__init__(creator=creator)
 
         self.options = options
+        self.default = default
         self.followUps = followUps
         self.text = text
         self.selected = None
@@ -618,7 +619,7 @@ class SelectionCinematic(BasicCinematic):
     show the selection menue
     '''
     def setUp(self):
-        self.submenue = interaction.SelectionMenu(self.text, self.options)
+        self.submenue = interaction.SelectionMenu(self.text, self.options, default=self.default)
         self.addSubmenuToCinematicQueue()
 
     '''

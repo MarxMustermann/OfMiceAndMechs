@@ -717,7 +717,7 @@ class SubMenu(src.saveing.Saveable):
     '''
     straightforward state initialization
     '''
-    def __init__(self):
+    def __init__(self, default=None):
         self.state = None
         self.options = {}
         self.selection = None
@@ -728,6 +728,7 @@ class SubMenu(src.saveing.Saveable):
         import collections
         self.options = collections.OrderedDict()
         self.niceOptions = collections.OrderedDict()
+        self.default = default
         super().__init__()
         self.attributesToStore.extend(["state","selectionIndex","persistentText","footerText","type","query","lockOptions"])
         self.initialState = self.getState()
@@ -818,7 +819,10 @@ class SubMenu(src.saveing.Saveable):
             return True
 
         if key == "*":
-            self.selection = list(self.options.values())[0]
+            if not self.default == None:
+                self.selection = self.default
+            else:
+                self.selection = list(self.options.values())[0]
             self.options = None
             if self.followUp:
                 self.followUp()
@@ -885,9 +889,9 @@ class SelectionMenu(SubMenu):
     '''
     set up the selection
     '''
-    def __init__(self, text, options):
+    def __init__(self, text, options, default=None):
         self.type = "SelectionMenu"
-        super().__init__()
+        super().__init__(default=default)
         self.setOptions(text, options)
 
     '''

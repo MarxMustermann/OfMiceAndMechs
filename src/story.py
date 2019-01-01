@@ -1578,7 +1578,7 @@ class FindWork(BasicPhase):
     def getIntro(self):
         showText("Admiting fault is no fault in itself. Here is a quick rundown of you duties:\n\n\n*) talk to my subordinate "+terrain.waitingRoom.secondOfficer.name+" and ask if you can do something. Usually you will be tasked with carrying things from one place to another.\n\n*) carry out the task given to you. The task are mundane, but you need to proof yourself before you can be trusted with more valuable tasks.\n\n*) report back to my subordinate "+terrain.waitingRoom.secondOfficer.name+" and collect your reward. Your reward consists of reputation.\n\n*) repeat until you will be called to proof your worth. If you proven yourself worthwhile you may continue or recieve special tasks. If you loose all your reputation you will be disposed of")
         mainChar.awardReputation(amount=1,reason="admitting fault")
-        showText("You are invited to ask me if you need more instructions. I usually coordinate the hoppers from here.\n\nRemeber to report back, your worth will be counted in a mtick.",trigger={"container":self,"method":"end"})
+        showText("You are invited to ask me for more information, if you need more instructions. I usually coordinate the hoppers from here.\n\nRemeber to report back, your worth will be counted in a mtick.",trigger={"container":self,"method":"end"})
         self.firstOfficersDialog = [
                          {"type":"text","text":"My duty is ensure this mech is running smoothly. Task that are not done in the specialised facilities are relayed to me and my hoppers complete these tasks.","name":"what are your duties?"},
                          {"type":"text","text":"This is nothing you need to know","name":"what is an artisan?","delete":True},
@@ -1589,11 +1589,15 @@ class FindWork(BasicPhase):
                                   {"type":"text","text":"This is not their failure, but yours","name":"The other hopper leaving no jobs for me to do"},
                                   {"type":"text","text":"The Falkenbaum is a training mech after all. Completing tasks for training does not gain you reputation, so it is preferable to complete actual work","name":"Why transport furniture back and forth?","delete":True},
                          ],"name":"Please explain how the hopper job works in detail."},
-                         {"type":"text","text":"I will assign simple training missions to you. Each time you complete a training mission you will recieve one token representing reputation.\n\nCollect 4 tokens by completing 4 tasks.","name":"Please train me","delete":True,"trigger":{"container":self,"method":"doSimpleReputationGathering"}}]
+                         {"type":"text","text":"I will assign simple training tasks to you. You will recieve a token each time you complete a training task.\n\nCollect 4 tokens by completing 4 tasks\n\nTalk to me when you are ready to start a trainings task","name":"Please train me","delete":True,"trigger":{"container":self,"method":"getSimpleReputationGathering"}}]
         terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I need more information about the hopper duty","chat":chats.ConfigurableChat,"params":{
                 "text":"what do you need to know more about?",
                 "info":self.firstOfficersDialog,
             }})
+
+    def getSimpleReputationGathering(self):
+        self.firstOfficersDialog.append(
+                         {"type":"text","text":"please move the wall section in the west of the room and return to me\n\nYou will be rewarded one token for completing the task\n\nThe implant will show you the path to the wall section and where to place it\n\ntalk to me again after completing your task to get another task","name":"give me the task to train me","delete":True,"trigger":{"container":self,"method":"doSimpleReputationGathering"}})
 
     def doSimpleReputationGathering(self):
         item = terrain.waitingRoom.trainingItems[0]
@@ -1606,49 +1610,92 @@ class FindWork(BasicPhase):
 
     def completeSimpeReputationGathering(self):
         mainChar.inventory.append(src.items.Token(creator=self))
+        messages.append("you recieved 1 token for completing a trainings task")
         numTokens = 0
         for item in mainChar.inventory:
             if item.type == "Token":
                 numTokens += 1
 
         if numTokens < 4:
-            quest = quests.MoveQuestMeta(terrain.waitingRoom,6,6,creator=self)
-            quest.endTrigger = {"container":self,"method":"doSimpleReputationGathering"}
+            quest = quests.MoveQuestMeta(terrain.waitingRoom,6,4,creator=self)
+            quest.endTrigger = {"container":self,"method":"getSimpleReputationGathering"}
             mainChar.assignQuest(quest,active=True)
             return
 
+        skippedTokens = 0
+        removedTokens = 0
         for item in mainChar.inventory[:]:
             if item.type == "Token":
+                if skippedTokens < 2:
+                    continue
+                    skippedTokens += 1
+                removedTokens += 1
                 mainChar.inventory.remove(item)
+        messages.append("%i tokens were removed from you since you compled the first training")
+        mainChar.revokeReputation(fraction=3,reason="needing to be trained")
+        mainChar.awardReputation(amount=2,reason="completing the first training")
+
 
         self.firstOfficersDialog.append(
-                         {"type":"text","text":"I will assign simple training missions to you. Complete enough of these to reach 6 reputation","name":"Please train me","delete":True,"trigger":{"container":self,"method":"doSimpeReputationGathering"},"trigger":{"container":self,"method":"doSelectiveReputationGathering"}})
+                         {"type":"text","text":"I will assign simple training tasks to you, like i did in the training.\n\nThis time you have can choose between 2 tasks and i will take a token from you each time you ask for a task.\n\nComplete enough tasks to gather 6 tokens","name":"Please train me further","delete":True,"trigger":{"container":self,"method":"setupSelectiveReputationGathering"}})
 
-    def doSelectiveReputationGathering(self):
+    def setupSelectiveReputationGathering(self):
+        self.getSelectiveReputationGatheringUsefull()
+        self.getSelectiveReputationGatheringUseless()
+
+    def getSelectiveReputationGatheringUsefull(self):
+        self.firstOfficersDialog.append(
+                         {"type":"text","text":"please move the wall section in the west of the room to the south-west of the room.\n\nYou will be rewarded with 1 token for completing the task","name":"give me the task to move the wall","delete":True,"trigger":{"container":self,"method":"doSelectiveReputationGatheringUsefull"}})
+
+    def getSelectiveReputationGatheringUseless(self):
+        self.firstOfficersDialog.append(
+                         {"type":"text","text":"please move the pipe section in the east of the room to the south-east of the room.\n\nYou will not be rewarded for completing the task","name":"give me the task to move the pipe","delete":True,"trigger":{"container":self,"method":"doSelectiveReputationGatheringUseless"}})
+
+    def doSelectiveReputationGatheringUsefull(self):
         item = terrain.waitingRoom.trainingItems[1]
         newPosition = (terrain.waitingRoom,7,8)
         if item.xPosition == 7 and item.yPosition == 8:
             newPosition = (terrain.waitingRoom,8,1)
         quest = quests.TransportQuest(item,newPosition,creator=self)
-        quest.endTrigger = {"container":self,"method":"completeSelectiveReputationGathering"}
+        quest.endTrigger = {"container":self,"method":"completeSelectiveReputationGatheringUsefull"}
         mainChar.assignQuest(quest,active=True)
  
-    def completeSelectiveReputationGathering(self):
+    def doSelectiveReputationGatheringUseless(self):
+        item = terrain.waitingRoom.trainingItems[0]
+        newPosition = (terrain.waitingRoom,1,8)
+        if item.xPosition == 1 and item.yPosition == 8:
+            newPosition = (terrain.waitingRoom,1,1)
+        quest = quests.TransportQuest(item,newPosition,creator=self)
+        quest.endTrigger = {"container":self,"method":"completeSelectiveReputationGatheringUseless"}
+        mainChar.assignQuest(quest,active=True)
+
+    def completeSelectiveReputationGatheringUseless(self):
+        messages.append("you recieved no tokens for completing a task")
+        quest = quests.MoveQuestMeta(terrain.waitingRoom,6,4,creator=self)
+        quest.endTrigger = {"container":self,"method":"getSelectiveReputationGatheringUseless"}
+        mainChar.assignQuest(quest,active=True)
+ 
+    def completeSelectiveReputationGatheringUsefull(self):
         mainChar.inventory.append(src.items.Token(creator=self))
+        messages.append("you recieved 1 token for completing a task")
         numTokens = 0
         for item in mainChar.inventory:
             if item.type == "Token":
                 numTokens += 1
 
         if numTokens < 6:
-            quest = quests.MoveQuestMeta(terrain.waitingRoom,6,6,creator=self)
-            quest.endTrigger = {"container":self,"method":"doSelectiveReputationGathering"}
+            quest = quests.MoveQuestMeta(terrain.waitingRoom,6,4,creator=self)
+            quest.endTrigger = {"container":self,"method":"getSelectiveReputationGatheringUsefull"}
             mainChar.assignQuest(quest,active=True)
             return
 
         for item in mainChar.inventory[:]:
             if item.type == "Token":
                 mainChar.inventory.remove(item)
+        messages.append("your tokens were removed from you since you compled the second training")
+
+        mainChar.revokeReputation(fraction=3,reason="needing to be trained")
+        mainChar.rewardReputation(amount=2,reason="completing the first training")
 
         self.firstOfficersDialog.append(
                          {"type":"text",

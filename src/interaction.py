@@ -818,7 +818,7 @@ class SubMenu(src.saveing.Saveable):
         if key == "esc":
             return True
 
-        if key == "*":
+        if key in (commandChars.autoAdvance, commandChars.advance):
             if not self.default == None:
                 self.selection = self.default
             else:

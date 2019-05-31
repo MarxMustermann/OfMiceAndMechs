@@ -529,7 +529,11 @@ class WakeUpPhase(BasicPhase):
         # show fluff
         showGame(2)
         showMessage("implant has taken control")
-        showGame(2)
+        showMessage("please press %s"%commandChars.wait)
+        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=None,creator=void))
+        showMessage("""you will be represented by the """+displayChars.indexedMapping[displayChars.main_char]+" Character,  "+self.npc.name+" is represented by the "+displayChars.indexedMapping[self.npc.display]+""" Character.""")
+        showMessage("please press %s"%commandChars.wait)
+        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=None,creator=void))
         showMessage("please prepare to be ejected")
         showGame(2)
         showMessage("note that you will be unable to move until implant imprinting")

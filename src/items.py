@@ -836,6 +836,10 @@ class Display(Item):
             del stealKey[commandChars.move_south]
             del stealKey[commandChars.move_west]
             del stealKey[commandChars.move_east]
+            del stealKey["up"]
+            del stealKey["down"]
+            del stealKey["right"]
+            del stealKey["left"]
             del stealKey[commandChars.activate]
 
         # map the keystrokes
@@ -843,6 +847,10 @@ class Display(Item):
         stealKey[commandChars.move_south] = moveSouth
         stealKey[commandChars.move_west] = moveWest
         stealKey[commandChars.move_east] = moveEast
+        stealKey["up"] = moveNorth
+        stealKey["down"] = moveSouth
+        stealKey["left"] = moveWest
+        stealKey["right"] = moveEast
         stealKey[commandChars.activate] = disapply
 
 '''

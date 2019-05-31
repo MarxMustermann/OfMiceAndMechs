@@ -486,19 +486,19 @@ def processInput(key):
                         return item
 
             # move the player
-            if key in (commandChars.move_north):
+            if key in (commandChars.move_north,"up"):
                 itemMarkedLast = moveCharacter("north")
                 if itemMarkedLast and not itemMarkedLast.walkable:
                     return
-            if key in (commandChars.move_south):
+            if key in (commandChars.move_south,"down"):
                 itemMarkedLast = moveCharacter("south")
                 if itemMarkedLast and not itemMarkedLast.walkable:
                     return
-            if key in (commandChars.move_east):
+            if key in (commandChars.move_east,"right"):
                 itemMarkedLast = moveCharacter("east")
                 if itemMarkedLast and not itemMarkedLast.walkable:
                     return
-            if key in (commandChars.move_west):
+            if key in (commandChars.move_west,"left"):
                 itemMarkedLast = moveCharacter("west")
                 if itemMarkedLast and not itemMarkedLast.walkable:
                     return
@@ -835,16 +835,16 @@ class SubMenu(src.saveing.Saveable):
         # handle the selection of options
         if not self.lockOptions:
             # change the marked option
-            if key == "w":
+            if key in ("w","up",):
                 self.selectionIndex -= 1
                 if self.selectionIndex == 0:
                     self.selectionIndex = len(self.options)
-            if key == "s":
+            if key in ("s","down",):
                 self.selectionIndex += 1
                 if self.selectionIndex > len(self.options):
                     self.selectionIndex = 1
             # select the marked option
-            if key in ["enter","j","k"]:
+            if key in ["enter","j","k","right"]:
                 # bad code: transforming the key to the shortcut is needlessly complicated
                 key = list(self.options.items())[self.selectionIndex-1][0]
 

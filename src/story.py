@@ -283,47 +283,47 @@ class BrainTestingPhase(BasicPhase):
 
         # show fluff
         showText(["""
-initializing subject ...................................... """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
+     initializing subject ...................................... """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
 
-testing subject with random input 
+     testing subject with random input 
 
-NyGUf8fDJO
-g215e4Za8U
-EpiSdpeNuV
-7vqnf7ASAO
-azZ1tESXGR
-sR6jzKMBv3
-eGAxLZCXXi
-DW9H6uAW8R
-dk8R9BXMfa
-Ttbt9kp2wZ
+     NyGUf8fDJO
+     g215e4Za8U
+     EpiSdpeNuV
+     7vqnf7ASAO
+     azZ1tESXGR
+     sR6jzKMBv3
+     eGAxLZCXXi
+     DW9H6uAW8R
+     dk8R9BXMfa
+     Ttbt9kp2wZ
 
-checking subjects brain patterns .......................... """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
+     checking subjects brain patterns .......................... """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
 
-testing subjects responsivity
+     testing subjects responsivity
 """],scrolling=True)
 
         # show info that will be referenced later
         showText(["""
-got response
-responsivity .............................................. """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
+     got response
+     responsivity .............................................. """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
 
-inititializing implant .................................... """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
+     inititializing implant .................................... """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
 
-checking implant .......................................... """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
+     checking implant .......................................... """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
 
-send test information
+     send test information
 
-1.) Your name is """+mainChar.name+"""
-2.) A Pipe is used to transfer fluids
-3.) rust - Rust is the oxide of iron. Rust is the most common form of corrosion
+     1.) Your name is """+mainChar.name+"""
+     2.) A Pipe is used to transfer fluids
+     3.) rust - Rust is the oxide of iron. Rust is the most common form of corrosion
 """],scrolling=True)
 
         # show fluff
         showText("""
-checking stored information
+     checking stored information
 
-entering interactive mode .................................
+     entering interactive mode .................................
         """,autocontinue=True,scrolling=True)
 
         # add trigger for correct and wrong answers
@@ -425,8 +425,8 @@ entering interactive mode .................................
 
         # show fluff
         showText([""" 
-information storage ....................................... """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
-setting up knowledge base
+     information storage ....................................... """,(urwid.AttrSpec("#2f2",'default'),"OK"),"""
+     setting up knowledge base
 
 """] ,autocontinue=True,scrolling=True)
 
@@ -441,10 +441,10 @@ setting up knowledge base
 
         # show fluff
         showText(["""
-initializing metabolism ..................................... """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
-initializing motion control ................................. """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
-initializing sensory organs ................................. """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
-transfer control to implant"""],autocontinue=True,scrolling=True)
+     initializing metabolism ..................................... """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
+     initializing motion control ................................. """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
+     initializing sensory organs ................................. """,(urwid.AttrSpec("#2f2",'default'),"done"),"""
+     transfer control to implant"""],autocontinue=True,scrolling=True)
 
         # zooom out and end phase
         cinematic = cinematics.MessageZoomCinematic(creator=void)
@@ -468,8 +468,8 @@ transfer control to implant"""],autocontinue=True,scrolling=True)
 
         # show fluff
         showText("""
-aborting initialization
-resetting neural network ....................................""",autocontinue=True,trigger={"container":self,"method":"forceExit"},scrolling=True)
+     aborting initialization
+     resetting neural network ....................................""",autocontinue=True,trigger={"container":self,"method":"forceExit"},scrolling=True)
 
     '''
     exit game

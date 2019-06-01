@@ -677,23 +677,31 @@ welcome to the trainingsenvironment.
 please follow the orders """+firstOfficer.name+" gives you.",rusty=True,scrolling=True)
 
         # show instructions
+        say("you are not missing no big parts and passed the first checks",firstOfficer)
+        say("next you need to prove you are able to follow orders",firstOfficer)
+        say("follow me, please",firstOfficer)
         showText(["""
-you are represented by the """,displayChars.indexedMapping[displayChars.main_char]," Character,  ",firstOfficer.name," is represented by the ",displayChars.indexedMapping[firstOfficer.display],""" Character. 
+ dialog and other information are shown in the infobox on the top right like this:
 
-you can move using the keyboard. 
+     """+displayChars.indexedMapping[firstOfficer.display]+""": you are not missing no big parts and passed the first checks
+     """+displayChars.indexedMapping[firstOfficer.display]+""": next you need to prove you are able to follow orders
+     """+displayChars.indexedMapping[firstOfficer.display]+""": follow me, please
+     
+ you are represented by the """,displayChars.indexedMapping[displayChars.main_char]," Character,  ",firstOfficer.name," is represented by the ",displayChars.indexedMapping[firstOfficer.display],""" Character. 
 
-* press """,commandChars.move_north,""" to move up/north
-* press """,commandChars.move_west,""" to move left/west
-* press """,commandChars.move_south,""" to move down/south
-* press """,commandChars.move_east,""" to move right/east
+ you can move using the keyboard. 
 
-Your target is marked by """+displayChars.indexedMapping[displayChars.questTargetMarker][1]+""" and a path to your target is highlighted. You may follow this path or find your own way"""])
+ * press """,commandChars.move_north,""" to move up/north
+ * press """,commandChars.move_west,""" to move left/west
+ * press """,commandChars.move_south,""" to move down/south
+ * press """,commandChars.move_east,""" to move right/east
+
+ Your target is marked by """+displayChars.indexedMapping[displayChars.questTargetMarker][1]+""" and a path to your target is highlighted. You may follow this path or find your own way"""])
         showGame(1)
 
         # ask the player to follow npc
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,4,4,creator=void)
         showQuest(quest,firstOfficer)
-        say("follow me, please",firstOfficer)
         showMessage("the current quest destination is shown as: "+displayChars.indexedMapping[displayChars.questTargetMarker][1])
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,3,4,creator=void)
         showQuest(quest,mainChar,container=mainChar.serveQuest)
@@ -709,6 +717,7 @@ Your target is marked by """+displayChars.indexedMapping[displayChars.questTarge
         showQuest(quest,mainChar,container=mainChar.serveQuest)
 
         # ask player to move around
+        say("now prove that you are able to walk on your own",firstOfficer)
         say("move to the designated target, please",firstOfficer)
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,2,7,creator=void)
         showQuest(quest,mainChar,container=mainChar.serveQuest)

@@ -729,7 +729,7 @@ please follow the orders """+firstOfficer.name+" gives you.",rusty=True,scrollin
         showQuest(quest,mainChar,container=mainChar.serveQuest)
         say("great. You seemed be able to coordinate yourself",firstOfficer)
         showGame(1)
-        say("you look thirsty, one more task and you get something to drink",firstOfficer)
+        say("you look thirsty, go and get some goo to drink",firstOfficer)
 
         # ask player to move to the lever
         showGame(2)
@@ -739,21 +739,22 @@ please follow the orders """+firstOfficer.name+" gives you.",rusty=True,scrollin
         
         import urwid
         # show instructions
-        showText(["you can activate levers by moving onto the lever and then pressing "+commandChars.activate+"""\n
-Here is how to do this:\n\nImagine you are standing next to a lever
+        showText(["""
+    you can activate levers by moving onto the lever and then pressing """+commandChars.activate+"""\n
+    Here is how to do this:\n\nImagine you are standing next to a lever
 
-""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],"""
-""",displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.lever_notPulled],"U\\",displayChars.indexedMapping[displayChars.floor],"""
-""",displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.main_char],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],"""
+    """,displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],"""
+    """,displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.lever_notPulled],"U\\",displayChars.indexedMapping[displayChars.floor],"""
+    """,displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.main_char],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],"""
 
-press """+commandChars.move_north+""" to move onto the lever and press """+commandChars.activate+""" to activate the lever.
-After pulling the lever a flask should apear like this.
+   press """+commandChars.move_north+""" to move onto the lever and press """+commandChars.activate+""" to activate the lever.
+   After pulling the lever a flask should apear like this:
 
-""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],"""
-""",displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.main_char],"U\\",displayChars.indexedMapping[displayChars.floor],"""
-""",displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],(urwid.AttrSpec("#3f3","black"),"ò="),displayChars.indexedMapping[displayChars.floor],"""
+   """,displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],"""
+   """,displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.main_char],"U\\",displayChars.indexedMapping[displayChars.floor],"""
+   """,displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],(urwid.AttrSpec("#3f3","black"),"ò="),displayChars.indexedMapping[displayChars.floor],"""
 
-now, go and pull the lever
+   now, go and pull the lever
 """])
         showMessage("you can activate levers by moving onto the lever and then pressing "+commandChars.activate)
 
@@ -775,9 +776,17 @@ now, go and pull the lever
         # show instructions
         firstOfficer = terrain.wakeUpRoom.firstOfficer
         showGame(3)
-        msg = "you can pick up items by moving onto them and using "+commandChars.pickUp
+        msg = """
+        
+    you can pick up items by moving onto them and pressing """+commandChars.pickUp+""". 
+
+    your inventory can hold 10 items and can be accessed by pressing """+commandChars.show_inventory+""".
+
+    usually everyone carries at least a bottle of goo. You need to drink at least every 1000 ticks by pressing """+commandChars.drink+""" 
+
+    """
         showText(msg)
-        showMessage(msg)
+        showMessage("""you can pick up items by moving onto them and pressing """+commandChars.pickUp+""".""")
         say("well done, go and fetch your drink",firstOfficer)
 
         # ask the player to pick up the flask
@@ -794,8 +803,8 @@ now, go and pull the lever
         mainChar.assignQuest(quests.SurviveQuest(creator=void))
 
         # show instructions
-        msg = "you can drink using "+commandChars.drink+". If you do not drink for a longer time you will starve"
         say("great. Drink from the flask you just fetched and come over for a quick talk.",firstOfficer)
+        msg = "you can drink using "+commandChars.drink+". If you do not drink for 1000 ticks you will starve"
         showMessage(msg)
 
         # ask the player to pick up the flask

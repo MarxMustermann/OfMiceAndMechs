@@ -807,13 +807,42 @@ please follow the orders """+firstOfficer.name+" gives you.",rusty=True,scrollin
         msg = "you can drink using "+commandChars.drink+". If you do not drink for 1000 ticks you will starve"
         showMessage(msg)
 
-        # ask the player to pick up the flask
+        # ask the player to drink and return
         quest = quests.DrinkQuest(creator=void)
         showQuest(quest,mainChar,container=mainChar.serveQuest)
-
-        # make the player talk to the npc
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,6,6,creator=void)
         showQuest(quest,mainChar,container=mainChar.serveQuest)
+
+        say(msg,firstOfficer)
+        text = "I see you are in working order. Do you have any injuries?"
+        options = [("yes","Yes"),("no","No")]
+        cinematic = cinematics.SelectionCinematic(text,options,creator=void)
+        cinematic.followUps = {"yes":{"container":self,"method":"injuredToVat"},"no":{"container":self,"method":"notinjured"}}
+        cinematics.cinematicQueue.append(cinematic)
+
+    def injuredToVat(self):
+        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        msg = "Then it is best to dispose of you sooner than later. Thanks for the honesty, please start vat duty now"
+        say(msg,firstOfficer)
+        showText("     "+msg)
+        mainChar.hasFloorPermit = True
+        VatPhase().start()
+
+    def notinjured(self):
+        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        msg = "great. You passed the basic tests. You are a candidate for the hopper duty."
+        msg2 = "Until the selection process is completed, your duty is to assist me."
+        msg3 = "Reset the lever first and then talk to me for more jobs"
+        say(msg,firstOfficer)
+        say(msg2,firstOfficer)
+        say(msg3,firstOfficer)
+        showText("     "+msg+"\n\n     "+msg2+"\n\n     "+msg3)
+        quest = quests.ActivateQuestMeta(terrain.wakeUpRoom.lever1,creator=void)
+        showQuest(quest,mainChar,trigger={"container":self,"method":"chatter"},container=mainChar.serveQuest)
+
+    def chatter(self):
+        firstOfficer = terrain.wakeUpRoom.firstOfficer
+
         msg = "you can talk to people by pressing "+commandChars.hail+" and selecting the person to talk to."
         showMessage(msg)
         showText(msg)

@@ -220,7 +220,7 @@ def processInput(key):
         if len(cinematics.cinematicQueue) or pauseGame:
             return
         idleCounter += 1
-        if idleCounter < 4 or idleCounter%5 == 0:
+        if idleCounter < 15 or not idleCounter%10 == 0:
             return
         key = commandChars.wait
 

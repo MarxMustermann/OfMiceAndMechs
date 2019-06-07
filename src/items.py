@@ -1044,7 +1044,7 @@ class Pile(Item):
     print info with item counter
     '''
     def getDetailedInfo(self):
-        return super().getDetailedInfo()+" of "+str(self.type)+" containing "+str(self.numContained)
+        return super().getDetailedInfo()+" of "+str(self.itemType.type)+" containing "+str(self.numContained)
 
 '''
 basic item with different appearance

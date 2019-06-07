@@ -813,9 +813,9 @@ class BasicMovementTraining(BasicPhase):
 
         say(msg,firstOfficer)
         text = "I see you are in working order. Do you have any injuries?"
-        options = [("yes","Yes"),("no","No")]
+        options = [("no","No"),("yes","Yes")]
         cinematic = cinematics.SelectionCinematic(text,options,creator=void)
-        cinematic.followUps = {"yes":{"container":self,"method":"injuredToVat"},"no":{"container":self,"method":"notinjured"}}
+        cinematic.followUps = {"no":{"container":self,"method":"notinjured"},"yes":{"container":self,"method":"injuredToVat"}}
         cinematics.cinematicQueue.append(cinematic)
 
     def injuredToVat(self):

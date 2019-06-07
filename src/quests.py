@@ -1844,6 +1844,8 @@ class SurviveQuest(Quest):
         # add quest to drink
         if self.character.satiation < 301:
             if not self.drinkQuest:
+                if self.character == mainChar:
+                    messages.append("you need to drink")
                 self.drinkQuest = DrinkQuest(creator=self)
                 self.character.assignQuest(self.drinkQuest,active=True)
 

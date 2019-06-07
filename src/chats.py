@@ -902,7 +902,7 @@ class ChatMenu(Chat):
            # refuse to abort the chat
            else:
                self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
-               mainChar.revokeReputation(amount=1,reason="beeind impolite")
+               mainChar.revokeReputation(amount=1,reason="beeing impolite")
                self.set_text((urwid.AttrSpec("default","default"),self.persistentText))
                self.skipTurn = True
                return False

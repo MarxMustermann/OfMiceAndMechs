@@ -895,7 +895,7 @@ class ChatMenu(Chat):
             return True
 
         # maybe exit the submenu
-        if key == "esc":
+        if key == "esc" and not self.subMenu:
            # abort the chat
            if self.partner.reputation < 2*mainChar.reputation:
                return True
@@ -922,6 +922,7 @@ class ChatMenu(Chat):
                 self.subMenu.handleKey(key)
                 if not self.subMenu.done:
                     return False
+                self.handleKey(commandChars.wait)
 
             # return to main dialog menu
             self.subMenu = None
@@ -973,8 +974,8 @@ class ChatMenu(Chat):
                     self.subMenu.handleKey(key)
                 elif self.selection == "showQuests":
                     # spawn quest submenu for partner
-                    global submenue
                     submenue = src.interaction.QuestMenu(char=self.partner)
+                    self.subMenu = submenue
                     submenue.handleKey(key)
                     return False
                 elif self.selection == "exit":

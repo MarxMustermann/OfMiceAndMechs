@@ -1061,6 +1061,7 @@ class QuestMenu(SubMenu):
         self.char = char
         self.offsetX = 0
         self.questIndex = 0
+        self.done = False
         super().__init__()
 
     '''
@@ -1070,6 +1071,7 @@ class QuestMenu(SubMenu):
     def handleKey(self, key):
         # exit submenu
         if key == "esc":
+            self.done = True
             return True
 
         # scrolling

@@ -263,7 +263,7 @@ def processInput(key):
                 raise urwid.ExitMainLoop()
 
             # skip the cinematic if requested
-            elif key in (commandChars.pause,commandChars.advance,commandChars.autoAdvance) and cinematic.skipable:
+            elif key in (commandChars.pause,commandChars.advance,commandChars.autoAdvance,commandChars.redraw) and cinematic.skipable:
                 cinematic.abort()
                 cinematics.cinematicQueue = cinematics.cinematicQueue[1:]
                 loop.set_alarm_in(0.0, callShow_or_exit, commandChars.ignore)

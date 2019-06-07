@@ -725,6 +725,9 @@ class Character(src.saveing.Saveable):
             self.die(reason="you starved. This happens when your satiation falls below 0\nPrevent this by drinking using the "+commandChars.drink+" key")
             return
 
+        if self == mainChar and self.satiation < 30 and self.satiation > -1:
+            messages.append("you'll starve in "+str(mainChar.satiation)+" ticks!")
+
         # call the autosolver
         if self.automated:
             if len(self.quests):

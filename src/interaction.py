@@ -110,6 +110,8 @@ def setFooter():
 
     # calculate meta information for footer
     doubleFooterText = footerText+footerText
+    doubleFooterText = "- press "+commandChars.show_help+" for an help text -"
+    doubleFooterText = doubleFooterText*20
     footerPosition = 0
     footerLength = len(footerText)
     footerSkipCounter = 20

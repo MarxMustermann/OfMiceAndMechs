@@ -721,6 +721,7 @@ class Character(src.saveing.Saveable):
 
         # handle satiation
         self.satiation -= 1
+        self.changed()
         if self.satiation < 0:
             self.die(reason="you starved. This happens when your satiation falls below 0\nPrevent this by drinking using the "+commandChars.drink+" key")
             return

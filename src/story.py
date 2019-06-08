@@ -852,7 +852,12 @@ class BasicMovementTraining(BasicPhase):
 
         msg = "you can talk to people by pressing "+commandChars.hail+" and selecting the person to talk to."
         showMessage(msg)
-        showText(msg)
+        showText("""
+
+    after dooing a task talk to your superior and check back for new tasks.
+
+    """+msg+"""
+    """)
                    
         # add chat options
         firstOfficer.basicChatOptions.append({"dialogName":"I did the task. Are there more things to do?","chat":chats.TutorialSpeechTest,"params":{"firstOfficer":firstOfficer,"phase":self}})
@@ -914,7 +919,7 @@ you have on piece of coal less than before."""])
     def examineStuff(self):
 
         # show fluff
-        showText("""
+        showText(["""
     examine the room and learn to find your way around, please
 
     Here is an example on how to do this:\n\nWalk onto or against the items you want to examine and press e directly afterwards to examine something.\nImagine you are standing next to a lever:

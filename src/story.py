@@ -855,7 +855,7 @@ class BasicMovementTraining(BasicPhase):
         showText(msg)
                    
         # add chat options
-        firstOfficer.basicChatOptions.append({"dialogName":"You wanted to have a chat","chat":chats.TutorialSpeechTest,"params":{"firstOfficer":firstOfficer,"phase":self}})
+        firstOfficer.basicChatOptions.append({"dialogName":"I did the task. Are there more things to do?","chat":chats.TutorialSpeechTest,"params":{"firstOfficer":firstOfficer,"phase":self}})
         firstOfficer.basicChatOptions.append({"dialogName":"What are these machines in this room?","chat":chats.FurnaceChat,"params":{"firstOfficer":firstOfficer,"phase":self,"terrain":terrain}})
 
     '''
@@ -914,10 +914,10 @@ you have on piece of coal less than before."""])
     def examineStuff(self):
 
         # show fluff
-        showText("""examine the room and learn to find your way around, please""")
+        showText("""
+    examine the room and learn to find your way around, please
 
-        # show instructions
-        showText(["""Here is an example on how to do this:\n\nWalk onto or against the items you want to examine and press e directly afterwards to examine something.\nImagine you are standing next to a lever:
+    Here is an example on how to do this:\n\nWalk onto or against the items you want to examine and press e directly afterwards to examine something.\nImagine you are standing next to a lever:
 
 """,displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],"""
 """,displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.lever_notPulled],displayChars.indexedMapping[displayChars.main_char],displayChars.indexedMapping[displayChars.floor],"""

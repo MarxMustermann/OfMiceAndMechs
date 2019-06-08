@@ -200,7 +200,7 @@ class TutorialSpeechTest(Chat):
         # do all activity on the first run
         if self.firstRun:
             # show fluffed up information
-            self.persistentText = "indeed.\n\nI am "+self.firstOfficer.name+" and do the acceptance tests. This means i order you to do some things and you will comply.\n\nYour implant will store the orders given. When you press q you will get a list of your current orders. Try to get familiar with the implant,\nit is an important tool for keeping things in order.\n\nDo not mind that the tests seem somewhat without purpose, protocol demands them and after you complete the test you will serve as an hooper on the Falkenbaum."
+            self.persistentText = "indeed. There are some things that need to be done.\n\nFirst exmaine the room a bit and find your way around, but try not activate anything important.\n\nYour implant will store the orders given. When you press q you will get a list of your current orders.\nTry to get familiar with the implant, it is an important tool for keeping things in order.\n\n"
             messages.append("press q to see your questlist")
             src.interaction.submenue = None
             self.set_text(self.persistentText)

@@ -795,7 +795,6 @@ class BasicMovementTraining(BasicPhase):
     make the main char drink and direct the player to a chat
     '''
     def drinkStuff(self):
-
         # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
         mainChar.assignQuest(quests.SurviveQuest(creator=void))
@@ -815,7 +814,17 @@ class BasicMovementTraining(BasicPhase):
         text = "I see you are in working order. Do you have any injuries?"
         options = [("no","No"),("yes","Yes")]
         cinematic = cinematics.SelectionCinematic(text,options,creator=void)
-        cinematic.followUps = {"no":{"container":self,"method":"notinjured"},"yes":{"container":self,"method":"injuredToVat"}}
+        cinematic.followUps = {"no":{"container":self,"method":"notinjured"},"yes":{"container":self,"method":"injured2Question"}}
+        cinematics.cinematicQueue.append(cinematic)
+
+    def injured2Question(self):
+        # alias attributes
+        firstOfficer = terrain.wakeUpRoom.firstOfficer
+
+        text = "I will issue a complaint to have the growth tank fixed.\n\nDo you think you will be able to work?"
+        options = [("yes","Yes"),("no","No")]
+        cinematic = cinematics.SelectionCinematic(text,options,creator=void)
+        cinematic.followUps = {"yes":{"container":self,"method":"notinjured"},"no":{"container":self,"method":"injuredToVat"}}
         cinematics.cinematicQueue.append(cinematic)
 
     def injuredToVat(self):

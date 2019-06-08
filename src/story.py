@@ -773,14 +773,14 @@ class BasicMovementTraining(BasicPhase):
 
         # show instructions
         firstOfficer = terrain.wakeUpRoom.firstOfficer
-        showGame(3)
         msg = """
+    you produced yourself a goo flask. It looks like this: ò= when full and like this: ò- when half empty. You may pick up your flask now. The machine should have dumped it on the floor near you.
         
     you can pick up items by moving onto them and pressing """+commandChars.pickUp+""". 
 
     your inventory can hold 10 items and can be accessed by pressing """+commandChars.show_inventory+""".
 
-    usually everyone carries at least a bottle of goo. You need to drink at least every 1000 ticks by pressing """+commandChars.drink+""" 
+    usually everyone carries at least a flask of goo. You need to drink at least every 1000 ticks by pressing """+commandChars.drink+""" 
 
     """
         showText(msg)

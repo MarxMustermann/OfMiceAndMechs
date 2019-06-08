@@ -15,7 +15,7 @@ the main class for chats
 '''
 class Chat(src.interaction.SubMenu):
 
-   def removeFromChatOptions(self,character):
+    def removeFromChatOptions(self,character):
         # find self in the characters chat options
         toRemove = None
         for item in character.basicChatOptions:
@@ -37,6 +37,9 @@ class Chat(src.interaction.SubMenu):
             character.basicChatOptions.remove(toRemove)
         else:
             debugMessages.append("removed chat option that wasn't there")
+
+    def setUp(self,state):
+        pass
 
 class OneTimeMessage(Chat):
     id = "OneTimeMessage"

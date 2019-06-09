@@ -1691,7 +1691,11 @@ XXXXXXXX
         # bad code: should be a quest
         for item in self.itemsOnFloor:
             if isinstance(item,src.items.GrowthTank):
-                item.addListener(self.handleUnexpectedGrowthTankActivation,"activated")
+                def forceNewnamespace(var): # HACK: brute force approach to get a new namespace
+                    def callHandler(char):
+                        self.handleUnexpectedGrowthTankActivation(char,var)
+                    return callHandler
+                item.addListener(forceNewnamespace(item),"activated")
             if isinstance(item,src.items.Door):
                 item.addListener(self.handleDoorOpening,"activated")
 
@@ -1714,7 +1718,7 @@ XXXXXXXX
     '''
     move player to vat
     '''
-    def handleUnexpectedGrowthTankActivation(self,character):
+    def handleUnexpectedGrowthTankActivation(self,character,item):
         # bad pattern; player only function
         if not character == mainChar:
             return
@@ -1723,8 +1727,11 @@ XXXXXXXX
         if not self.firstOfficer:
             return
 
+        if not item.filled:
+            return
+
         # scold player
-        messages.append(self.firstOfficer.name+": Now i'll have to take care of this body.")
+        messages.append(self.firstOfficer.name+": Now will have to take care of this body.")
         messages.append(self.firstOfficer.name+": Please move on to your next assignment immediatly.")
 
         # remove all quests

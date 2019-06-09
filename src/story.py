@@ -917,6 +917,8 @@ you have on piece of coal less than before."""])
     make the player examine things
     '''
     def examineStuff(self):
+        # alias attributes
+        firstOfficer = terrain.wakeUpRoom.firstOfficer
 
         # show fluff
         showText(["""
@@ -940,11 +942,30 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
 """])
         showMessage("walk onto or into something and press e directly afterwards to examine something")
 
+        # add examine quest
+        quest = quests.ExamineQuest(creator=void)
+        quest.endTrigger = {"container":self,"method":"addGrowthTankRefill"}
+        mainChar.serveQuest.addQuest(quest)
+
+    def addGrowthTankRefill(self):
         # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
 
-        # add examine quest
-        quest = quests.ExamineQuest(creator=void)
+        firstOfficer.basicChatOptions.append({"dialogName":"I did the task. Are there more things to do?","chat":chats.GrowthTankRefillChat,"params":{"firstOfficer":firstOfficer,"phase":self}})
+        
+    def doTask1(self):
+        # alias attributes
+        firstOfficer = terrain.wakeUpRoom.firstOfficer
+
+        quest = quests.FillGrowthTankMeta(growthTank=terrain.wakeUpRoom.growthTanks[0], creator=void)
+        quest.endTrigger = {"container":self,"method":"doTask2"}
+        mainChar.serveQuest.addQuest(quest)
+        
+    def doTask2(self):
+        # alias attributes
+        firstOfficer = terrain.wakeUpRoom.firstOfficer
+
+        quest = quests.FillGrowthTankMeta(growthTank=terrain.wakeUpRoom.growthTanks[3], creator=void)
         quest.endTrigger = {"container":self,"method":"iamready"}
         mainChar.serveQuest.addQuest(quest)
 

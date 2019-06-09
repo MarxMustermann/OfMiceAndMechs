@@ -56,6 +56,7 @@ class Room(src.saveing.Saveable):
         self.chainedTo = []
         self.engineStrength = 0
         self.boilers = []
+        self.growthTanks = []
         self.furnaces = []
         self.pipes = []
         self.sprays = []
@@ -209,6 +210,7 @@ class Room(src.saveing.Saveable):
                     # bad code: handle state some other way
                     mapping = {"Ö":True,"ö":False}
                     item = src.items.GrowthTank(rowCounter,lineCounter,filled=mapping[char],creator=self)
+                    self.growthTanks.append(item)
                     itemsOnFloor.append(item)
                 elif char == "B":
                     # add to be barricade

@@ -172,6 +172,75 @@ class RewardChat(Chat):
         self.character = state["character"]
 
 '''
+bad code: story specific
+'''
+class GrowthTankRefillChat(Chat):
+    id = "GrowthTankRefillChat"
+    type = "GrowthTankRefillChat"
+
+    '''
+    straightforward state setting
+    '''
+    def __init__(self,partner):
+        self.done = False
+        self.persistentText = ""
+        self.firstRun = True
+        super().__init__()
+
+    '''
+    add internal state
+    bad pattern: chat option stored as references to class complicates this
+    '''
+    def setUp(self,state):
+        self.firstOfficer = state["firstOfficer"]
+        self.phase = state["phase"]
+
+    '''
+    show the dialog for one keystroke
+    '''
+    def handleKey(self, key):
+        # do all activity on the first run
+        if self.firstRun:
+            # show fluffed up information
+            self.persistentText = ["""
+    please refill your flask and use it to refill the growthtanks. 
+
+    Empty growthtanks look like this: """,displayChars.indexedMapping[displayChars.growthTank_unfilled],""" full ones look like this: """,displayChars.indexedMapping[displayChars.growthTank_filled],"""
+    
+Activate these, while having a full bottle in your inventory, but leave the full ones alone"""]
+            messages.append("please refill your flask and use it to refill the growthtanks")
+            src.interaction.submenue = None
+            self.set_text(self.persistentText)
+            # remove chat option
+            # bad code: this removal results in bugs if chats of the same type exist
+            # bad pattern: chat option stored as references to class complicates this
+            for item in self.firstOfficer.basicChatOptions:
+
+                # check class notation
+                if not isinstance(item,dict):
+                    if item == GrowthTankRefillChat:
+                        toRemove = item
+                        break
+
+                # check dictionary notation
+                else:
+                    if item["chat"] == GrowthTankRefillChat:
+                        toRemove = item
+                        break
+            # remove item
+            self.firstOfficer.basicChatOptions.remove(toRemove)
+
+            # trigger further action
+            self.phase.doTask1()
+
+            return False
+
+        # finish Chat
+        else:
+            self.done = True
+            return True
+
+'''
 the chat to proof the player is able to chat
 bad code: story specific
 '''
@@ -1008,6 +1077,7 @@ class ChatMenu(Chat):
 # a map alowing to get classes from strings
 chatMap = {
              "TutorialSpeechTest":TutorialSpeechTest,
+             "GrowthTankRefillChat":GrowthTankRefillChat,
              "FurnaceChat":FurnaceChat,
              "SternChat":SternChat,
              "StartChat":StartChat,

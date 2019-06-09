@@ -1428,9 +1428,10 @@ class GooDispenser(Item):
         super().apply(character,silent=True)
         filled = False
         for item in character.inventory:
-            if isinstance(item,GooFlask):
+            if isinstance(item,GooFlask) and not item.uses == 100:
                 item.uses = 100
                 filled = True
+                break
         if filled:
             messages.append("you fill the goo flask")
         self.activated = True

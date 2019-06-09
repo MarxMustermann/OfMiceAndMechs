@@ -2238,7 +2238,7 @@ class RefillDrinkQuest(ActivateQuestMeta):
     call superconstructor with modified parameters
     '''
     def __init__(self,startCinematics=None,creator=None):
-        super().__init__(toActivate=terrain.tutorialVatProcessing.gooDispenser,desiredActive=True,startCinematics=startCinematics,creator=creator)
+        super().__init__(toActivate=terrain.wakeUpRoom.gooDispenser,desiredActive=True,startCinematics=startCinematics,creator=creator) # bad code: it should select a dispenser that is nearby or something
 
         # save initial state and register
         self.type = "RefillDrinkQuest"

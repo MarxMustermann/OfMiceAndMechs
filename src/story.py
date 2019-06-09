@@ -977,6 +977,25 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
         # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
 
+        timeTaken = gamestate.tick-mainChar.tutorialStart
+        normTime = 500
+
+        # make the player wait till norm completion time
+        if timeTaken < normTime/2:
+            msg1 = "You work fast. You did the tasks in less then half of the norm completion time."
+            msg2 = "You will not work as a hopper, you will continue to serve under me."
+            msg3 = "The order for a hopper still has to be fulfilled."
+            msg4 = "please activate one of the growth tanks"
+            text = "\n"+msg1+"\n"+msg2+"\n\n"+msg3+"\n"+msg4+"\n"
+
+            showText(text)
+            say(msg1,firstOfficer)
+            say(msg2,firstOfficer)
+            say(msg3,firstOfficer)
+            say(msg4,firstOfficer)
+
+            return
+
         # show evaluation
         text = "you completed the tests and it is time to take on your duty. You will no longer server under my command, but under "+terrain.wakeUpRoom.firstOfficer.name+" as a hopper.\n\nSo please go to the waiting room and report for room duty.\n\nThe waiting room is the next room to the north. Simply go there speak to "+terrain.wakeUpRoom.firstOfficer.name+" and confirm that you are reporting for duty.\nYou will get instruction on how to proceed afterwards.\n\n"
         if (self.didFurnaces):
@@ -988,8 +1007,6 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
             say(line,firstOfficer)
 
         # get time needed
-        timeTaken = gamestate.tick-mainChar.tutorialStart
-        normTime = 500
         text = "it took you "+str(timeTaken)+" ticks to complete the tests. The norm completion time is 500 ticks.\n\n"
             
         # scold the player for taking to long
@@ -998,8 +1015,6 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
             showText(text)
             self.trainingCompleted()
             mainChar.revokeReputation(amount=2,reason="not completing test in time")
-
-        # make the player wait till norm completion time
         else:
             text += "We are "+str(normTime-timeTaken)+" ticks ahead of plan. This means your floor permit is not valid yet. Please wait for "+str(normTime-timeTaken)+" ticks.\n\nNoncompliance will result in a kill order to the military. Military zones and movement restrictions are security and therefore high priority.\n\nIn order to not waste time, feel free to ask questions in the meantime.\n"
             quest = quests.WaitQuest(lifetime=normTime-timeTaken,creator=void)

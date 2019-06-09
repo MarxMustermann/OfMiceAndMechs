@@ -2251,7 +2251,7 @@ class RefillDrinkQuest(ActivateQuestMeta):
     def triggerCompletionCheck(self):
         for item in self.character.inventory:
             if isinstance(item,src.items.GooFlask):
-                if item.uses > 90:
+                if item.uses > 99:
                     self.postHandler()
 
 '''
@@ -3390,6 +3390,93 @@ class FireFurnaceMeta(MetaQuestSequence):
 
         super().triggerCompletionCheck()
 
+'''
+Fill a growth tank
+'''
+class FillGrowthTankMeta(MetaQuestSequence):
+    '''
+    state initialization
+    '''
+    def __init__(self,growthTank=None,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
+        self.activateQuest = None
+        self.refillQuest = None
+        self.growthTank = growthTank
+        super().__init__([],creator=creator)
+        self.metaDescription = "FillGrowthTankMeta"
+
+        # set meta information for saving
+        self.objectsToStore.append("growthTank")
+
+        # save initial state and register
+        self.type = "FillGrowthTankMeta"
+        self.initialState = self.getState()
+        loadingRegistry.register(self)
+
+    '''
+    fetch goo and refill the machine
+    '''
+    def recalculate(self):
+
+        # smooth over impossible state
+        if not self.active:
+            debugMessages.append("recalculate called on inactive "+str(self))
+            return
+
+        # handle edge case
+        if not self.character:
+            debugMessages.append("recalculate called without character on "+str(self))
+            return
+
+        if not self.activateQuest:
+            self.activateQuest = ActivateQuestMeta(self.growthTank,creator=self)
+            self.addQuest(self.activateQuest)
+
+        hasFullFlask = False
+        for item in self.character.inventory:
+            if isinstance(item,src.items.GooFlask):
+                if item.uses < 100:
+                    continue
+                hasFullFlask = True
+
+        if self.refillQuest and self.refillQuest.completed:
+            self.refillQuest = None
+        if not hasFullFlask and not self.refillQuest:
+            self.refillQuest = RefillDrinkQuest(creator=self)
+            self.addQuest(self.refillQuest)
+
+        super().recalculate()
+
+    '''
+    set internal state from dictionary
+    '''
+    def setState(self,state):
+        super().setState(state)
+
+        if "growthTank" in state and state["growthTank"]:
+           '''
+           set value
+           '''
+           def watch(thing):
+               self.startWatching(thing,self.triggerCompletionCheck)
+           loadingRegistry.callWhenAvailable(state["growthTank"],watch)
+
+
+    '''
+    assign to character and listen to character
+    '''
+    def assignToCharacter(self,character):
+        character.addListener(self.recalculate)
+        super().assignToCharacter(character)
+
+    '''
+    check if furnace is burning
+    '''
+    def triggerCompletionCheck(self):
+        if not self.growthTank.filled:
+            return
+
+        super().triggerCompletionCheck()
+
 ##############################################################################
 ###
 ## actual tasks
@@ -3589,6 +3676,7 @@ questMap = {
               "KeepFurnacesFiredMeta":KeepFurnacesFiredMeta,
               "KeepFurnaceFiredMeta":KeepFurnaceFiredMeta,
               "FireFurnaceMeta":FireFurnaceMeta,
+              "FillGrowthTankMeta":FillGrowthTankMeta,
               "HopperDuty":HopperDuty,
               "ClearRubble":ClearRubble,
               "RoomDuty":RoomDuty,

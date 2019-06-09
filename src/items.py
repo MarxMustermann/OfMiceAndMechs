@@ -507,6 +507,19 @@ class GrowthTank(Item):
         super().apply(character,silent=True)
         if self.filled:
             self.eject()
+        else:
+            flask = None
+            for item in character.inventory:
+                if isinstance(item,GooFlask):
+                    if item.uses == 100:
+                        flask = item
+            if flask:
+                flask.uses = 0
+                flask.changed()
+                self.filled = True
+                self.changed()
+            else:
+                messages.append("you need to have a full goo flask to refill the growth tank")
 
     '''
     render the growth tank
@@ -707,6 +720,7 @@ class Furnace(Item):
 
                 # destroy fuel
                 character.inventory.remove(foundItem)
+                character.changed()
 
                 # add fluff
                 if character.watched:

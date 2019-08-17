@@ -1399,6 +1399,7 @@ class MarkerBean(Item):
     '''
     def apply(self,character):
         super().apply(character,silent=True)
+        messages.append(character.name+" activates a marker bean")
         self.activated = True
 
 '''

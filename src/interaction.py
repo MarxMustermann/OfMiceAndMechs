@@ -1152,16 +1152,42 @@ bad code: uses global functions to render
 class InventoryMenu(SubMenu):
     type = "InventoryMenu"
 
+    def __init__(self,char=None):
+        self.subMenu = None
+        super().__init__()
+
     '''
     show the inventory
     bad pattern: no player interaction
     '''
     def handleKey(self, key):
+        if self.subMenu:
+            if not self.subMenu.getSelection() == None:
+                if not "NaiveActivateQuest" in mainChar.solvers:
+                    self.persistentText = (urwid.AttrSpec("default","default"),"you do not have the nessecary solver yet")
+                    main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+                else:
+                    self.persistentText = (urwid.AttrSpec("default","default"),"you activate the "+mainChar.inventory[self.subMenu.getSelection()].name)
+                    main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+                    mainChar.inventory[self.subMenu.getSelection()].apply(mainChar)
+                self.subMenu = None
+                return True
+            else:
+                return self.subMenu.handleKey(key)
+
         # exit the submenu
         if key == "esc":
             return True
 
-        global submenue
+        if key == "j":
+            options = []
+            counter = 0
+            for item in mainChar.inventory:
+                options.append([counter,item.name])
+                counter += 1
+            self.subMenu = SelectionMenu("activate what?",options)
+            self.subMenu.handleKey(".")
+            return False
 
         # bad pattern: detailed inventory does not exist
         header.set_text((urwid.AttrSpec("default","default"),"\ninventory overview\n(press "+commandChars.show_inventory_detailed+" for the extended inventory menu)\n\n"))

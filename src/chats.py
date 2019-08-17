@@ -82,6 +82,8 @@ class ConfigurableChat(Chat):
                  return False
              self.subMenu = None
 
+        self.persistentText = self.text
+
         if not self.options and not self.getSelection():
             # add the chat partners special dialog options
             options = []
@@ -600,7 +602,7 @@ class JobChatFirst(Chat):
 
                 # do not assign job
                 elif not subSelf.hopperDutyQuest.active:
-                    subSelf.persistentText = "your sesponsibilities are elsewhere"
+                    subSelf.persistentText = "your responsibilities are elsewhere"
 
                 # do not assign job
                 elif not "FireFurnaceMeta" in subSelf.mainChar.questsDone: # bad code: is bugged
@@ -740,6 +742,168 @@ class JobChatSecond(Chat):
         self.done = True
 
         return True
+
+class RoomDutyChat(Chat):
+    id = "RoomDutyChat"
+    type = "RoomDutyChat"
+
+    def __init__(self,partner):
+        self.partner = partner
+        super().__init__()
+
+    def setUp(self,state):
+        self.superior = state["superior"]
+        
+    def handleKey(self, key):
+
+        if gamestate.tick%2:
+            self.persistentText = "yes, you may."
+            quest = quests.Serve(superior=self.superior,creator=self)
+            mainChar.assignQuest(quest,active=True)
+            self.superior.subordinates.append(mainChar)
+            self.set_text(self.persistentText)
+            self.done = True
+
+            return True
+
+        else:
+            self.persistentText = "Not right now. Ask again later"
+            self.set_text(self.persistentText)
+            self.done = True
+
+            return True
+
+class RoomDutyChat2(Chat):
+    id = "RoomDutyChat2"
+    type = "RoomDutyChat2"
+
+    def __init__(self,partner):
+        self.partner = partner
+        super().__init__()
+
+    def setUp(self,state):
+        pass
+        
+    def handleKey(self, key):
+        self.persistentText = "Drink something"
+
+        quest = quests.PickupQuestMeta(terrain.tutorialLab2.bean,creator=void)
+        mainChar.assignQuest(quest,active=True)
+        quest = quests.ActivateQuestMeta(terrain.tutorialLab2.bean,creator=void)
+        mainChar.assignQuest(quest,active=True)
+
+        self.set_text(self.persistentText)
+        self.done = True
+        return True
+
+'''
+the dialog for asking somebody for a job
+'''
+class JobChatThird(Chat):
+    id = "JobChatThird"
+    type = "JobChatThird"
+
+    '''
+    basic state initialization
+    '''
+    def __init__(self,partner):
+        self.state = None
+        self.partner = partner
+        self.firstRun = True
+        self.done = False
+        self.persistentText = ""
+        self.submenue = None
+        self.selectedQuest = None
+        super().__init__()
+
+    '''
+    add internal state
+    bad pattern: chat option stored as references to class complicates this
+    '''
+    def setUp(self,state):
+        self.mainChar = state["mainChar"]
+        self.terrain = state["terrain"]
+        self.containerQuest = state["hopperDutyQuest"]
+
+    '''
+    show dialog and assign quest 
+    '''
+    def handleKey(self, key):
+        # handle termination of this chat
+        if key == "esc":
+           # quit dialog
+           if self.partner.reputation < 2*mainChar.reputation:
+               return True
+           # refuse to quit dialog
+           else:
+               self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
+               mainChar.revokeReputation(amount=2,reason="beeing impolite")
+               self.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+               self.skipTurn = True
+               return False
+                             
+        # let the superclass do the selection
+        if self.submenue:
+            if not self.submenue.handleKey(key):
+                return False
+            else:
+                self.selectedQuest = self.submenue.selection
+                self.submenue = None
+
+            self.firstRun = False
+
+        # refuse to issue new quest if the old one is not done yet
+        # bad code: this is because the hopperquest cannot handle multiple sub quests
+        if not self.hopperDutyQuest.getQuest:
+            self.persistentText = "please finish what you are dooing first"
+            self.set_text(self.persistentText)
+            self.done = True
+
+            return True
+
+        # assign the selected quest
+        if self.selectedQuest:
+            self.hopperDutyQuest.getQuest.getQuest.quest = self.selectedQuest
+            self.hopperDutyQuest.getQuest.getQuest.recalculate()
+            if self.hopperDutyQuest.getQuest:
+                self.hopperDutyQuest.getQuest.recalculate()
+            self.terrain.waitingRoom.quests.remove(self.selectedQuest)
+            self.done = True
+            return True
+
+        # refuse to give two quests
+        if self.hopperDutyQuest.actualQuest:
+            # bad pattern: should be proportional to current reputation
+            self.persistentText = "you already have a quest. Complete it and you can get a new one."
+            self.set_text(self.persistentText)
+            self.done = True
+
+            return True
+
+        # offer list of quests to the player
+        if self.terrain.waitingRoom.quests:
+            # show fluff
+            self.persistentText = "Well, yes."
+            self.set_text(self.persistentText)
+                        
+            # let the player select the quest to do
+            options = []
+            for quest in self.terrain.waitingRoom.quests:
+                addition = ""
+                if self.mainChar.reputation < 6:
+                    addition += " ("+str(quest.reputationReward)+")"
+                options.append((quest,quest.description.split("\n")[0]+addition))
+            self.submenue = src.interaction.SelectionMenu("select the quest",options)
+
+            return False
+        
+        # refuse to give quests
+        self.persistentText = "Not right now. Ask again later"
+        self.set_text(self.persistentText)
+        self.done = True
+
+        return True
+
 
 '''
 the chat for making the npc stop firing the furnace

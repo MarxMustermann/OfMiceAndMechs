@@ -184,6 +184,32 @@ class BasicPhase(src.saveing.Saveable):
 #########################################################################
 
 """
+"""
+class Challenge(BasicPhase):
+    def __init__(self):
+        super().__init__("challenge")
+
+    '''
+    place main char
+    bad code: superclass call should not be prevented
+    '''
+    def start(self):
+        cinematics.showCinematic("escape the room.")
+
+        # place character in wakeup room
+        if terrain.wakeUpRoom:
+            self.mainCharRoom = terrain.tutorialLab2
+            self.mainCharRoom.addCharacter(mainChar,2,4)
+        # place character on terrain
+        else:
+            mainChar.xPosition = 2
+            mainChar.yPosition = 4
+            mainChar.terrain = terrain
+            terrain.addCharacter(mainChar,2,4)
+
+        gamestate.save()
+
+"""
 the phase is intended to give the player access to the true gameworld without manipulations
 
 this phase should be left as blank as possible
@@ -2168,3 +2194,4 @@ def registerPhases():
     phasesByName["BrainTesting"] = BrainTestingPhase
     phasesByName["BasicMovementTraining"] = BasicMovementTraining
     phasesByName["FindWork"] = FindWork
+    phasesByName["Challenge"] = Challenge

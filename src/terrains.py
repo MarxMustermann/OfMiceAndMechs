@@ -101,6 +101,7 @@ class Terrain(src.saveing.Saveable):
         self.tutorialVatProcessing = None
         self.tutorialMachineRoom = None
         self.tutorialLab = None
+        self.tutorialLab2 = None
         self.tutorialCargoRooms = []
         self.tutorialStorageRooms = []
         self.miniMechs = []
@@ -168,6 +169,12 @@ class Terrain(src.saveing.Saveable):
                     room = src.rooms.LabRoom(rowCounter,lineCounter,1,1,creator=self)
                     if not self.tutorialLab:
                         self.tutorialLab = room
+                    roomsOnMap.append(room)
+                elif char == "l":
+                    # add room and add to room list
+                    room = src.rooms.LabRoom2(rowCounter,lineCounter,3,1,creator=self)
+                    if not self.tutorialLab2:
+                        self.tutorialLab2 = room
                     roomsOnMap.append(room)
                 elif char == "C":
                     # generate pseudo random content type
@@ -1476,7 +1483,7 @@ XXXXXXXXXXX
 XXXXXXXXXXX
 XVv?b?Q?vVX
 XO.t    .OX
-Xw MQK?? LX
+Xw MQK?l LX
 XW Q???Q mX
 XU.     .UX
 XU CCCCC UX

@@ -192,6 +192,14 @@ class Character(src.saveing.Saveable):
         if not self in partner.subordinates:
             chatOptions.append(src.chats.RecruitChat)
             pass
+        if not partner in self.subordinates:
+            chatOptions.append({"dialogName":"may i serve you?","chat":chats.RoomDutyChat,"params":{
+            "superior":self
+            }})
+        else:
+            chatOptions.append({"dialogName":"can i do something for you?","chat":chats.RoomDutyChat2,"params":{
+            "superior":self
+            }})
 
         return chatOptions
 
@@ -263,12 +271,6 @@ class Character(src.saveing.Saveable):
                 option["chat"] = chat["chat"].id
                 option["dialogName"] = chat["dialogName"]
                 option["params"] = {}
-                if "params" in chat:
-                    for key, value in chat["params"].items():
-                        if value:
-                            option["params"][key] = value.id
-                        else:
-                            option["params"][key] = None
                 chatOptions.append(option)
         result["chatOptions"] = chatOptions
 
@@ -320,11 +322,6 @@ class Character(src.saveing.Saveable):
                 option["dialogName"] = chat["dialogName"]
                 option["params"] = {}
                 if "params" in chat:
-                    for key, value in chat["params"].items():
-                        if value:
-                            option["params"][key] = value.id
-                        else:
-                            option["params"][key] = None
                     chatOptions.append(option)
         state["chatOptions"] = chatOptions
 

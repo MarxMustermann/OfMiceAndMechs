@@ -1154,6 +1154,7 @@ class InventoryMenu(SubMenu):
 
     def __init__(self,char=None):
         self.subMenu = None
+        self.skipKeypress = False
         super().__init__()
 
     '''
@@ -1162,6 +1163,7 @@ class InventoryMenu(SubMenu):
     '''
     def handleKey(self, key):
         if self.subMenu:
+            self.subMenu.handleKey(key)
             if not self.subMenu.getSelection() == None:
                 if not "NaiveActivateQuest" in mainChar.solvers:
                     self.persistentText = (urwid.AttrSpec("default","default"),"you do not have the nessecary solver yet")
@@ -1171,23 +1173,27 @@ class InventoryMenu(SubMenu):
                     main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
                     mainChar.inventory[self.subMenu.getSelection()].apply(mainChar)
                 self.subMenu = None
-                return True
+                self.skipKeypress = True
+                return False
             else:
-                return self.subMenu.handleKey(key)
+                return False
 
-        # exit the submenu
-        if key == "esc":
-            return True
+        if self.skipKeypress:
+            self.skipKeypress = False
+        else:
+            # exit the submenu
+            if key == "esc":
+                return True
 
-        if key == "j":
-            options = []
-            counter = 0
-            for item in mainChar.inventory:
-                options.append([counter,item.name])
-                counter += 1
-            self.subMenu = SelectionMenu("activate what?",options)
-            self.subMenu.handleKey(".")
-            return False
+            if key == "j":
+                options = []
+                counter = 0
+                for item in mainChar.inventory:
+                    options.append([counter,item.name])
+                    counter += 1
+                self.subMenu = SelectionMenu("activate what?",options)
+                self.subMenu.handleKey(".")
+                return False
 
         # bad pattern: detailed inventory does not exist
         header.set_text((urwid.AttrSpec("default","default"),"\ninventory overview\n(press "+commandChars.show_inventory_detailed+" for the extended inventory menu)\n\n"))

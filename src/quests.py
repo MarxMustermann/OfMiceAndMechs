@@ -2194,18 +2194,15 @@ class ActivateQuestMeta(MetaQuestSequence):
         if not self.moveQuest:
             # check whether it is neccessary to re add the movement
             reAddMove = False
-            if not self.sloppy:
-                if not hasattr(self.toActivate,"xPosition") or not hasattr(self.toActivate,"yPosition"):
-                    reAddMove = False
-                elif not (self.toActivate.room == self.character.room and self.toActivate.xPosition == self.character.xPosition and self.toActivate.yPosition == self.character.yPosition):
-                    reAddMove = True
-            else:
-                if not hasattr(self.toActivate,"xPosition") or not hasattr(self.toActivate,"yPosition"):
-                    reAddMove = False
-                elif not (self.toActivate.room == self.character.room and (
+            if hasattr(self.toActivate,"xPosition") and hasattr(self.toActivate,"yPosition") and not self.toActivate.xPosition == None and not self.toActivate.yPosition == None:
+                if not self.sloppy:
+                    if not (self.toActivate.room == self.character.room and self.toActivate.xPosition == self.character.xPosition and self.toActivate.yPosition == self.character.yPosition):
+                        reAddMove = True
+                else:
+                    if not (self.toActivate.room == self.character.room and (
                          (self.toActivate.xPosition-self.character.xPosition in (-1,0,1) and self.toActivate.yPosition == self.character.yPosition) or 
                          (self.toActivate.yPosition-self.character.yPosition in (-1,0,1) and self.toActivate.xPosition == self.character.xPosition))):
-                    reAddMove = True
+                        reAddMove = True
 
             # re add the movement
             if reAddMove:

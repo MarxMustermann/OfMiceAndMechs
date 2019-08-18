@@ -584,7 +584,7 @@ def processInput(key):
                 if not "NaivePickupQuest" in mainChar.solvers:
                     messages.append("you do not have the nessecary solver yet")
                 else:
-                    if len(mainChar.inventory) > 10:
+                    if len(mainChar.inventory) >= 10:
                         messages.append("you cannot carry more items")
                     else:
                         # get the position to pickup from

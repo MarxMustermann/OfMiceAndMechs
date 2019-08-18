@@ -199,9 +199,36 @@ class Challenge(BasicPhase):
         self.mainCharRoom = terrain.tutorialLab2
         self.mainCharRoom.addCharacter(mainChar,4,4)
 
+        import random
+        seed = random.randint(1,10000)
         mainChar.inventory = []
-        mainChar.satiation = 20+gamestate.tick%80
-        mainChar.reputation= (gamestate.tick+12)%200
+        counter = 0
+        while counter < 10:
+            if (seed+counter)%2 == 0:
+                item = src.items.Coal(None,None,creator=self)
+                mainChar.inventory.append(item)
+                counter += 1
+                continue
+            if (seed+counter)%5 == 0:
+                item = src.items.Wall(None,None,creator=self)
+                mainChar.inventory.append(item)
+                counter += 1
+                continue
+            if (seed+counter)%7 == 0:
+                item = src.items.Pipe(None,None,creator=self)
+                mainChar.inventory.append(item)
+                counter += 1
+                continue
+            if (seed+counter)%13 == 0:
+                item = src.items.GooFlask(None,None,creator=self)
+                mainChar.inventory.append(item)
+                counter += 1
+                continue
+            counter += 1
+
+
+        mainChar.satiation = 20+seed%80
+        mainChar.reputation= (seed+12)%200
 
         gamestate.save()
 

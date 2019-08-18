@@ -1353,7 +1353,7 @@ class LabRoom2(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXX
-X XX  @  X
+XFXX  @  X
 XXXX.... X
 X XX.  . X
 XXXX.  . X

@@ -1384,33 +1384,12 @@ XXXXXXXXXX
                continue
             item.bolted = False
 
-            self.firstOfficersDialog = [
-                         {"type":"text","text":"My duty is ensure this mech is running smoothly. Task that are not done in the specialised facilities are relayed to me and my hoppers complete these tasks.","name":"what are your duties?"},
-                         {"type":"text","text":"This is nothing you need to know","name":"what is an artisan?","delete":True},
-                         {"type":"text","text":"Work hard and you will get other tasks.\n\nCome back and ask me for a job when you have more than 10 reputation","name":"I want to do more than carrying furniture around"},
-                         {"type":"sub","text":"what do want to know about","sub":[
-                                  {"type":"text","text":"You loose reputation over time, this is because dooing your part is expected and you have to exceed the expectations to gain repuation","name":"why is my reputation falling sometimes?"},
-                                  {"type":"text","text":"If you fail, your task may not be completed. This mech depends on us dooing our part. Nobody knows what may happen, if you fail to do your part\n\nIf you fail to meet the expectations, will loose reputation. The more important the task is the more reputation you will loose. Failure does happen, but repeated failure will earn you vat duty fast","name":"what does happen, if i do not complete a task in time?"},
-                                  {"type":"text","text":"This is not their failure, but yours","name":"The other hopper leaving no jobs for me to do"},
-                                  {"type":"text","text":"The Falkenbaum is a training mech after all. Completing tasks for training does not gain you reputation, so it is preferable to complete actual work","name":"Why transport furniture back and forth?","delete":True},
-                         ],"name":"Please explain how the hopper job works in detail."},
-                         {"type":"text","text":"I will assign simple training tasks to you. You will recieve a token each time you complete a training task.\n\nCollect 4 tokens by completing 4 tasks\n\nTalk to me when you are ready to start a trainings task","name":"Please train me","delete":True,"trigger":{"container":self,"method":"getSimpleReputationGathering"}}]
-
-            self.firstOfficersDialog = [
-                         {"type":"text","text":"wolololo","name":"?"},
-                         ]
-
-
         self.firstOfficer.basicChatOptions.append({"dialogName":"I need to leave this room, can you help?","chat":chats.ConfigurableChat,"params":{
                 "text":"yes",
                 "info":[]}})
-        self.firstOfficer.basicChatOptions.append({"dialogName":"Can i help you?","chat":chats.ConfigurableChat,"params":{
-                "text":"yes, i have some tasks for you",
-                "info":[
-                       ]}})
         self.secondOfficer.basicChatOptions.append({"dialogName":"I need to leave this room, can you help?","chat":chats.ConfigurableChat,"params":{
                 "text":"I cannot help you with this",
-                "info":self.firstOfficersDialog,
+                "info":[]
             }})
 
         positions = []

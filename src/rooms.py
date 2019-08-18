@@ -1355,9 +1355,9 @@ class ChallengeRoom(Room):
 XXXXXXXXXX
 XFXX  @  X
 XXXX.... X
-X XX.  . X
+XFXX.  . X
 XXXX.  . X
-X XX.  . X
+XFXX.  . X
 XXXX.... X
 X XX     X
 XXXX   @ X
@@ -1400,8 +1400,8 @@ XXXXXXXXXX
         counter = 0
         xPosition = 5
         yPosition = 3
-        numWalls = 10+seed%22
-        while counter < numWalls:
+        numItems = 10+seed%22
+        while counter < numItems:
             xPosition = 1+(counter*2+seed+yPosition)%20%8
             yPosition = 9+(counter+seed+xPosition)%17%4
             if (xPosition,yPosition) in positions:
@@ -1411,6 +1411,8 @@ XXXXXXXXXX
                 positions.append((xPosition,yPosition))
             if counter == 1:
                 item = src.items.GooFlask(xPosition,yPosition,creator=self)
+            elif counter%5 == 1:
+                item = src.items.Pipe(xPosition,yPosition,creator=self)
             else:
                 item = src.items.Wall(xPosition,yPosition,creator=self)
             item.bolted = False

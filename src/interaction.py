@@ -1624,11 +1624,13 @@ def renderInventory():
     char = mainChar
     txt = []
     if len(char.inventory):
+        counter = 0
         for item in char.inventory:
+            counter += 1
             if isinstance(item.display,int):
-                txt.extend([displayChars.indexedMapping[item.display]," - ",item.name,"\n     ",item.getDetailedInfo(),"\n"])
+                txt.extend([str(counter)," - ",displayChars.indexedMapping[item.display]," - ",item.name,"\n     ",item.getDetailedInfo(),"\n"])
             else:
-                txt.extend([item.display," - ",item.name,"\n     ",item.getDetailedInfo(),"\n"])
+                txt.extend([str(counter)," - ",item.display," - ",item.name,"\n     ",item.getDetailedInfo(),"\n"])
     else:
         txt = "empty Inventory"
     return txt

@@ -240,7 +240,7 @@ class Challenge(BasicPhase):
                 continue
             counter += 1
 
-        mainChar.satiation = 20+seed%980
+        mainChar.satiation = 100+seed%900
         mainChar.reputation= (seed+12)%200
 
         mainChar.questsDone = []

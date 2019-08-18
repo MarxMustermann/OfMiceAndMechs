@@ -1353,11 +1353,11 @@ class ChallengeRoom(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXX
-XFXX  @  X
+X XX  @  X
 XXXX.... X
-XFXX.  . X
+X XX.  . X
 XXXX.  . X
-XFXX.  . X
+X XX.  . X
 XXXX.... X
 X XX     X
 XXXX   @ X
@@ -1368,6 +1368,9 @@ $        X
 XXXXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+
+        import random
+        seed = random.randint(0,10000)
 
         # bad code: the markers are not used anywhere
         self.bean = src.items.MarkerBean(4,2,creator=self)
@@ -1388,19 +1391,44 @@ XXXXXXXXXX
                 "text":"yes",
                 "info":[]}})
         self.secondOfficer.basicChatOptions.append({"dialogName":"I need to leave this room, can you help?","chat":chats.ConfigurableChat,"params":{
-                "text":"I cannot help you with this",
+                "text":"I dont know how to help you with this",
                 "info":[]
             }})
 
+        self.secondOfficer.basicChatOptions.append({"dialogName":"Do you need more equipment?","chat":chats.ConfigurableChat,"params":{
+                "text":"yes",
+                "info":[
+                    {"name":"Please take my pipes","text":"Offer accepted","type":"text","trigger":{"container":self,"method":"removePipes"}},
+                    {"name":"Please take my goo flasks","text":"Offer accepted","type":"text","trigger":{"container":self,"method":"removeGooFlask"}},
+                    {"name":"Take anything you like","text":"Offer accepted","type":"text","trigger":{"container":self,"method":"removeEverything"}}
+                    ]
+            }})
+
+        items = []
+        yPosition = 1
+        item = src.items.Furnace(1,yPosition,creator=self)
+        items.append(item)
+        yPosition += 2
+        if seed%5 == 3:
+            item = src.items.Furnace(1,yPosition,creator=self)
+            items.append(item)
+            yPosition += 2
+        if seed%3 == 1:
+            item = src.items.Furnace(1,yPosition,creator=self)
+            items.append(item)
+            yPosition += 2
+        if seed%2 == 1:
+            item = src.items.Furnace(1,yPosition,creator=self)
+            items.append(item)
+            yPosition += 2
+        self.addItems(items)
+
         positions = []
         self.labyrinthWalls = []
-        seed = 539
-        import random
-        seed = random.randint(0,10000)
         counter = 0
         xPosition = 5
         yPosition = 3
-        numItems = 10+seed%22
+        numItems = 15+seed%17
         while counter < numItems:
             xPosition = 1+(counter*2+seed+yPosition)%20%8
             yPosition = 9+(counter+seed+xPosition)%17%4
@@ -1409,8 +1437,9 @@ XXXXXXXXXX
                 continue
             else:
                 positions.append((xPosition,yPosition))
-            if counter == 1:
+            if counter in [1,2]:
                 item = src.items.GooFlask(xPosition,yPosition,creator=self)
+                item.charges = 1
             elif counter%5 == 1:
                 item = src.items.Pipe(xPosition,yPosition,creator=self)
             else:
@@ -1424,6 +1453,29 @@ XXXXXXXXXX
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
+    def removePipes(self):
+        toRemove = []
+        for item in mainChar.inventory:
+            if isinstance(item,src.items.Pipe):
+                toRemove.append(item)
+        for item in toRemove:
+            mainChar.inventory.remove(item)
+
+    def removeGooFlask(self):
+        toRemove = []
+        for item in mainChar.inventory:
+            if isinstance(item,src.items.GooFlask):
+                toRemove.append(item)
+        for item in toRemove:
+            mainChar.inventory.remove(item)
+
+    def removeEverything(self):
+        toRemove = []
+        for item in mainChar.inventory:
+            if isinstance(item,src.items.GooFlask) or isinstance(item,src.items.Pipe):
+                toRemove.append(item)
+        for item in toRemove:
+            mainChar.inventory.remove(item)
 
 '''
 a lab for behaviour testing

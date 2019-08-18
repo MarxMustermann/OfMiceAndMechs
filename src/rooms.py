@@ -1346,7 +1346,7 @@ a lab for behaviour testing
 bad code: is basically not implemented yet
 bad code: is misused as a target/source for transportation jobs
 '''
-class LabRoom2(Room):
+class ChallengeRoom(Room):
     '''
     create room and add special items
     '''
@@ -1374,7 +1374,7 @@ XXXXXXXXXX
         beanPile = src.items.Pile(4,1,"markerPile",src.items.MarkerBean,creator=self)
         self.addItems([self.bean,beanPile])
 
-        self.name = "Lab2"
+        self.name = "Challenge"
 
         # unbolt all items in the room
         for item in self.itemsOnFloor:

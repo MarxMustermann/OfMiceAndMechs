@@ -194,10 +194,19 @@ class Challenge(BasicPhase):
     bad code: superclass call should not be prevented
     '''
     def start(self):
-        cinematics.showCinematic("escape the room.")
+        showText("escape the room.")
+        self.roomCounter = 0
+        self.restart()
 
-        self.mainCharRoom = terrain.tutorialLab2
+    def restart(self):
+        challengeRoom = terrain.challengeRooms[self.roomCounter]
+        self.mainCharRoom = challengeRoom
         self.mainCharRoom.addCharacter(mainChar,4,4)
+
+        if self.roomCounter == 1:
+            showText("resetting. escape the room. again")
+        if self.roomCounter > 1:
+            showText("roomrun count: "+str(self.roomCounter))
 
         import random
         seed = random.randint(1,10000)
@@ -214,6 +223,11 @@ class Challenge(BasicPhase):
                 mainChar.inventory.append(item)
                 counter += 1
                 continue
+            if (seed+counter)%3 == 0:
+                item = src.items.Coal(None,None,creator=self)
+                mainChar.inventory.append(item)
+                counter += 1
+                continue
             if (seed+counter)%7 == 0:
                 item = src.items.Pipe(None,None,creator=self)
                 mainChar.inventory.append(item)
@@ -226,11 +240,25 @@ class Challenge(BasicPhase):
                 continue
             counter += 1
 
-
-        mainChar.satiation = 20+seed%80
+        mainChar.satiation = 20+seed%980
         mainChar.reputation= (seed+12)%200
 
-        gamestate.save()
+        mainChar.questsDone = []
+        mainChar.solvers = []
+
+        quest = quests.LeaveRoomQuest(challengeRoom,creator=void)
+        quest.endTrigger = {"container":self,"method":"restart"}
+        quest.failTrigger = {"container":self,"method":"fail"}
+        mainChar.serveQuest = quest
+        mainChar.assignQuest(quest,active=True)
+
+        self.roomCounter += 1
+
+    def win(self):
+        showText("you won the challenge")
+
+    def fail(self):
+        print("you lost the challenge (winning is not always possible)")
 
 """
 the phase is intended to give the player access to the true gameworld without manipulations

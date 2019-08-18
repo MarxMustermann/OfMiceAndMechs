@@ -787,9 +787,9 @@ class RoomDutyChat2(Chat):
     def handleKey(self, key):
         self.persistentText = "Drink something"
 
-        quest = quests.PickupQuestMeta(terrain.tutorialLab2.bean,creator=void)
+        quest = quests.PickupQuestMeta(self.partner.room.bean,creator=void)
         mainChar.assignQuest(quest,active=True)
-        quest = quests.ActivateQuestMeta(terrain.tutorialLab2.bean,creator=void)
+        quest = quests.ActivateQuestMeta(self.partner.room.bean,creator=void)
         mainChar.assignQuest(quest,active=True)
 
         self.set_text(self.persistentText)

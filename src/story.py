@@ -245,6 +245,10 @@ class Challenge(BasicPhase):
 
         mainChar.questsDone = []
         mainChar.solvers = []
+        for quest in mainChar.quests:
+            quest.done = True
+            quest.completed = True
+        mainChar.quests = []
 
         quest = quests.LeaveRoomQuest(challengeRoom,creator=void)
         quest.endTrigger = {"container":self,"method":"restart"}

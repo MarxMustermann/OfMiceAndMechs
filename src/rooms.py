@@ -1353,25 +1353,25 @@ class LabRoom2(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXX
-X     @  X
-X ...... X
-X .    . X
-XX.    . X
-$X.    . X
-XX.    . X
-X########X
-X      @ X
-X### ####X
+X XX  @  X
+XXXX.... X
+X XX.  . X
+XXXX.  . X
+X XX.  . X
+XXXX.... X
+X XX     X
+XXXX   @ X
 X        X
 X        X
 X        X
+$        X
 XXXXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
 
         # bad code: the markers are not used anywhere
-        self.bean = src.items.MarkerBean(1,2,creator=self)
-        beanPile = src.items.Pile(1,1,"markerPile",src.items.MarkerBean,creator=self)
+        self.bean = src.items.MarkerBean(4,2,creator=self)
+        beanPile = src.items.Pile(4,1,"markerPile",src.items.MarkerBean,creator=self)
         self.addItems([self.bean,beanPile])
 
         self.name = "Lab2"
@@ -1412,6 +1412,32 @@ XXXXXXXXXX
                 "text":"I cannot help you with this",
                 "info":self.firstOfficersDialog,
             }})
+
+        positions = []
+        self.labyrinthWalls = []
+        seed = 539
+        import random
+        seed = random.randint(0,10000)
+        counter = 0
+        xPosition = 5
+        yPosition = 3
+        numWalls = 10+seed%22
+        while counter < numWalls:
+            xPosition = 1+(counter*2+seed+yPosition)%20%8
+            yPosition = 9+(counter+seed+xPosition)%17%4
+            if (xPosition,yPosition) in positions:
+                seed = seed+1
+                continue
+            else:
+                positions.append((xPosition,yPosition))
+            if counter == 1:
+                item = src.items.GooFlask(xPosition,yPosition,creator=self)
+            else:
+                item = src.items.Wall(xPosition,yPosition,creator=self)
+            item.bolted = False
+            self.labyrinthWalls.append(item)
+            counter += 1
+        self.addItems(self.labyrinthWalls)
 
         # save initial state and register
         self.initialState = self.getState()

@@ -196,16 +196,12 @@ class Challenge(BasicPhase):
     def start(self):
         cinematics.showCinematic("escape the room.")
 
-        # place character in wakeup room
-        if terrain.wakeUpRoom:
-            self.mainCharRoom = terrain.tutorialLab2
-            self.mainCharRoom.addCharacter(mainChar,2,4)
-        # place character on terrain
-        else:
-            mainChar.xPosition = 2
-            mainChar.yPosition = 4
-            mainChar.terrain = terrain
-            terrain.addCharacter(mainChar,2,4)
+        self.mainCharRoom = terrain.tutorialLab2
+        self.mainCharRoom.addCharacter(mainChar,4,4)
+
+        mainChar.inventory = []
+        mainChar.satiation = 20+gamestate.tick%80
+        mainChar.reputation= (gamestate.tick+12)%200
 
         gamestate.save()
 

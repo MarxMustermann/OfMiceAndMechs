@@ -1451,7 +1451,7 @@ class GooFlask(Item):
         super().__init__(" -",xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
         self.bolted = False
-        self.description = "a flask conatining goo"
+        self.description = "a flask containing goo"
 
         # set up meta information for saveing
         self.attributesToStore.extend([

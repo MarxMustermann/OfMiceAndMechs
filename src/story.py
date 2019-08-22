@@ -200,6 +200,10 @@ class Challenge(BasicPhase):
 
     def restart(self):
         challengeRoom = terrain.challengeRooms[self.roomCounter]
+        if mainChar.room:
+             mainChar.room.removeCharacter(mainChar)
+        if mainChar.terrain:
+             mainChar.terrain.removeCharacter(mainChar)
         self.mainCharRoom = challengeRoom
         self.mainCharRoom.addCharacter(mainChar,4,4)
 
@@ -235,12 +239,13 @@ class Challenge(BasicPhase):
                 continue
             if (seed+counter)%13 == 0:
                 item = src.items.GooFlask(None,None,creator=self)
+                item.charges = 1
                 mainChar.inventory.append(item)
                 counter += 1
                 continue
             counter += 1
 
-        mainChar.satiation = 100+seed%900
+        mainChar.satiation = 30+seed%900
         mainChar.reputation= (seed+12)%200
 
         mainChar.questsDone = []

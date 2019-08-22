@@ -155,6 +155,8 @@ def processAllInput(commandKeyQueue):
     for key in commandKeyQueue:
         processInput(key)
 
+shownStarvationWarning = False
+
 '''
 handle a keystroke
 bad code: there are way too much lines of code in this function
@@ -687,11 +689,15 @@ def processInput(key):
         
         # advance the game
         if doAdvanceGame:
+            global shownStarvationWarning
             if mainChar.satiation < 30 and mainChar.satiation > -1:
+                if not shownStarvationWarning:
+                    cinematics.showCinematic("you will starve in %s ticks. drink something"%(mainChar.satiation))
+                    shownStarvationWarning = True
                 if mainChar.satiation == 0:
                     messages.append("you starved")
-                else:
-                    messages.append("you'll starve in "+str(mainChar.satiation)+" ticks!")
+            else:
+                shownStarvationWarning = False
             advanceGame()
 
         # render information on top

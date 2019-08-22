@@ -1395,14 +1395,38 @@ XXXXXXXXXX
                 "info":[]
             }})
 
-        self.secondOfficer.basicChatOptions.append({"dialogName":"Do you need more equipment?","chat":chats.ConfigurableChat,"params":{
+        firstOfficerDialog = {"dialogName":"Do you need more equipment?","chat":chats.ConfigurableChat,"params":{
                 "text":"yes",
                 "info":[
-                    {"name":"Please take my pipes","text":"Offer accepted","type":"text","trigger":{"container":self,"method":"removePipes"}},
-                    {"name":"Please take my goo flasks","text":"Offer accepted","type":"text","trigger":{"container":self,"method":"removeGooFlask"}},
-                    {"name":"Take anything you like","text":"Offer accepted","type":"text","trigger":{"container":self,"method":"removeEverything"}}
                     ]
-            }})
+            }}
+        firstOfficerDialog["params"]["info"].append({"name":"I want to use my tokens","text":"Done","type":"text","trigger":{"container":self,"method":"removeTokensFirstOfficer"}})
+        self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
+
+        secondOfficerDialog = {"dialogName":"Do you need more equipment?","chat":chats.ConfigurableChat,"params":{
+                "text":"yes",
+                "info":[
+                    ]
+            }}
+
+        self.secondOfficerRemovesPipes = False
+        self.secondOfficerRemovesGooFlasks = False
+        self.secondOfficerRemovesTokens = False
+
+        self.secondOfficerRemovesPipes = True
+        if seed%3 == 2 or seed%7 == 0:
+            self.secondOfficerRemovesGooFlasks = True
+        if seed%2 == 0 or seed%5 == 2:
+            self.secondOfficerRemovesTokens = True
+
+        if self.secondOfficerRemovesPipes:
+            secondOfficerDialog["params"]["info"].append({"name":"Please take my pipes","text":"Offer accepted","type":"text","trigger":{"container":self,"method":"removePipesSecondOfficer"}})
+        if self.secondOfficerRemovesGooFlasks:
+            secondOfficerDialog["params"]["info"].append({"name":"Please take my goo flasks","text":"Offer accepted","type":"text","trigger":{"container":self,"method":"removeGooFlaskSecondOfficer"}})
+        if self.secondOfficerRemovesTokens:
+            secondOfficerDialog["params"]["info"].append({"name":"I want to use my tokens","text":"Done","type":"text","trigger":{"container":self,"method":"removeTokensSecondOfficer"}})
+        secondOfficerDialog["params"]["info"].append({"name":"Take anything you like","text":"Offer accepted","type":"text","trigger":{"container":self,"method":"removeEverythingSecondOfficer"}})
+        self.secondOfficer.basicChatOptions.append(secondOfficerDialog)
 
         items = []
         yPosition = 1
@@ -1432,50 +1456,101 @@ XXXXXXXXXX
         while counter < numItems:
             xPosition = 1+(counter*2+seed+yPosition)%20%8
             yPosition = 9+(counter+seed+xPosition)%17%4
+
+            if counter in [2,5]:
+                item = src.items.GooFlask(xPosition,yPosition,creator=self)
+                item.charges = 1
             if (xPosition,yPosition) in positions:
                 seed = seed+1
                 continue
             else:
                 positions.append((xPosition,yPosition))
-            if counter in [1,2]:
+            if counter in [1]:
                 item = src.items.GooFlask(xPosition,yPosition,creator=self)
                 item.charges = 1
             elif counter%5 == 1:
+                if counter%3 == 0:
+                    token = src.items.Token(xPosition,yPosition,creator=self)
+                    self.addItems([token])
                 item = src.items.Pipe(xPosition,yPosition,creator=self)
             else:
+                if counter%7 == 5:
+                    token = src.items.Token(xPosition,yPosition,creator=self)
+                    self.addItems([token])
                 item = src.items.Wall(xPosition,yPosition,creator=self)
             item.bolted = False
             self.labyrinthWalls.append(item)
             counter += 1
         self.addItems(self.labyrinthWalls)
 
+        numItems = seed%9
+        counter = 0
+        while (counter < numItems):
+            item = src.items.GooFlask(None,None,creator=self)
+            self.secondOfficer.inventory.append(item)
+            counter += 1
+
         # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
-    def removePipes(self):
+    def removePipesSecondOfficer(self):
         toRemove = []
         for item in mainChar.inventory:
             if isinstance(item,src.items.Pipe):
                 toRemove.append(item)
         for item in toRemove:
-            mainChar.inventory.remove(item)
+            if len(self.secondOfficer.inventory) < 10:
+                mainChar.inventory.remove(item)
+                self.secondOfficer.inventory.append(item)
 
-    def removeGooFlask(self):
+    def removeGooFlaskSecondOfficer(self):
         toRemove = []
         for item in mainChar.inventory:
             if isinstance(item,src.items.GooFlask):
                 toRemove.append(item)
         for item in toRemove:
-            mainChar.inventory.remove(item)
+            if len(self.secondOfficer.inventory) < 10:
+                mainChar.inventory.remove(item)
+                self.secondOfficer.inventory.append(item)
 
-    def removeEverything(self):
+    def removeTokensFirstOfficer(self):
         toRemove = []
+        numTokens = 0
         for item in mainChar.inventory:
-            if isinstance(item,src.items.GooFlask) or isinstance(item,src.items.Pipe):
+            if isinstance(item,src.items.Token):
                 toRemove.append(item)
+                numTokens += 1
         for item in toRemove:
-            mainChar.inventory.remove(item)
+            if len(self.firstOfficer.inventory) < 10:
+                mainChar.inventory.remove(item)
+                self.firstOfficer.inventory.append(item)
+
+    def removeTokensSecondOfficer(self):
+        toRemove = []
+        numTokens = 0
+        for item in mainChar.inventory:
+            if isinstance(item,src.items.Token):
+                toRemove.append(item)
+                numTokens += 1
+        for item in mainChar.inventory:
+            if numTokens == 0:
+                break
+            if isinstance(item,src.items.Wall):
+                toRemove.append(item)
+                numTokens -= 1
+        for item in toRemove:
+            if len(self.secondOfficer.inventory) < 10:
+                mainChar.inventory.remove(item)
+                self.secondOfficer.inventory.append(item)
+
+    def removeEverythingSecondOfficer(self):
+        if self.secondOfficerRemovesPipes:
+            self.removePipesSecondOfficer()
+        if self.secondOfficerRemovesGooFlasks:
+            self.removeGooFlaskSecondOfficer()
+        if self.secondOfficerRemovesTokens:
+            self.removeTokensSecondOfficer()
 
 '''
 a lab for behaviour testing

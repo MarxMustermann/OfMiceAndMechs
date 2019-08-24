@@ -155,7 +155,12 @@ def processAllInput(commandKeyQueue):
     for key in commandKeyQueue:
         processInput(key)
 
+
 shownStarvationWarning = False
+macros = {None:[]}
+recording = False
+recordingTo = None
+replay = False
 
 '''
 handle a keystroke
@@ -166,6 +171,39 @@ def processInput(key):
     # bad pattern: mouse input should be used
     if type(key) == tuple:
         return
+
+    global recording
+    global recordingTo
+    global macros
+    global replay
+    if recording:
+        if not key in ("lagdetection","-"):
+            if recordingTo == None:
+                recordingTo = key
+                macros[recordingTo] = []
+                messages.append("start recording to: %s"%(recordingTo))
+                key = commandChars.ignore
+            else:
+                macros[recordingTo].append(key)
+
+    if key in ("-",):
+        if not recording:
+            messages.append("press key to record to")
+            recording = True
+        else:
+            recording = False
+            messages.append("recorded: %s"%(macros[recordingTo]))
+            recordingTo = None
+
+    if replay and not key in ("lagdetection",):
+        replay = False
+        if key in macros:
+            messages.append("replaying: %s"%(macros[key]))
+            processAllInput(macros[key])
+        key = commandChars.ignore
+    if key in ("_",):
+        replay = True
+        key = commandChars.ignore
 
     # save and quit
     if key in (commandChars.quit_normal, commandChars.quit_instant):

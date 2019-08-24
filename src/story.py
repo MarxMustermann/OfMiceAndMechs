@@ -111,10 +111,11 @@ class BasicPhase(src.saveing.Saveable):
     '''
     start the game phase
     '''
-    def start(self):
+    def start(self,seed=0):
         # set state
         gamestate.currentPhase = self
         self.tick = gamestate.tick
+        self.seed = seed
 
         # place main character
         if self.mainCharRoom:
@@ -193,12 +194,14 @@ class Challenge(BasicPhase):
     place main char
     bad code: superclass call should not be prevented
     '''
-    def start(self):
-        showText("escape the room.")
+    def start(self,seed=0):
+        showText("escape the room. Your seed is: %s"%(seed))
         self.roomCounter = 0
+        self.seed = seed
         self.restart()
 
     def restart(self):
+        self.seed = ((self.seed % 317)+(self.seed // 317))*321+self.seed % 300
         challengeRoom = terrain.challengeRooms[self.roomCounter]
         if mainChar.room:
              mainChar.room.removeCharacter(mainChar)
@@ -212,32 +215,30 @@ class Challenge(BasicPhase):
         if self.roomCounter > 1:
             showText("roomrun count: "+str(self.roomCounter))
 
-        import random
-        seed = random.randint(1,10000)
         mainChar.inventory = []
         counter = 0
         while counter < 10:
-            if (seed+counter)%2 == 0:
+            if (self.seed+counter)%2 == 0:
                 item = src.items.Coal(None,None,creator=self)
                 mainChar.inventory.append(item)
                 counter += 1
                 continue
-            if (seed+counter)%5 == 0:
+            if (self.seed+counter)%5 == 0:
                 item = src.items.Wall(None,None,creator=self)
                 mainChar.inventory.append(item)
                 counter += 1
                 continue
-            if (seed+counter)%3 == 0:
+            if (self.seed+counter)%3 == 0:
                 item = src.items.Coal(None,None,creator=self)
                 mainChar.inventory.append(item)
                 counter += 1
                 continue
-            if (seed+counter)%7 == 0:
+            if (self.seed+counter)%7 == 0:
                 item = src.items.Pipe(None,None,creator=self)
                 mainChar.inventory.append(item)
                 counter += 1
                 continue
-            if (seed+counter)%13 == 0:
+            if (self.seed+counter)%13 == 0:
                 item = src.items.GooFlask(None,None,creator=self)
                 item.charges = 1
                 mainChar.inventory.append(item)
@@ -245,8 +246,8 @@ class Challenge(BasicPhase):
                 continue
             counter += 1
 
-        mainChar.satiation = 30+seed%900
-        mainChar.reputation= (seed+12)%200
+        mainChar.satiation = 30+self.seed%900
+        mainChar.reputation= (self.seed+12)%200
 
         mainChar.questsDone = []
         mainChar.solvers = []
@@ -281,7 +282,7 @@ class OpenWorld(BasicPhase):
     place main char
     bad code: superclass call should not be prevented
     '''
-    def start(self):
+    def start(self,seed=0):
         cinematics.showCinematic("staring open world Scenario.")
 
         # place character in wakeup room
@@ -364,7 +365,7 @@ class BrainTestingPhase(BasicPhase):
     show some messages and place trigger
     bad code: closely married to urwid
     '''
-    def start(self):
+    def start(self,seed=0):
         import urwid
 
         # show fluff
@@ -578,7 +579,7 @@ class WakeUpPhase(BasicPhase):
     '''
     show some fluff and place trigger
     '''
-    def start(self):
+    def start(self,seed=0):
         # place characters
         self.mainCharXPosition = 1
         self.mainCharYPosition = 4
@@ -602,7 +603,7 @@ class WakeUpPhase(BasicPhase):
         # bad code: should be set elsewhere
         self.mainCharRoom = terrain.wakeUpRoom
 
-        super().start()
+        super().start(seed=seed)
 
         # hide main char from map
         if mainChar in self.mainCharRoom.characters:
@@ -690,7 +691,7 @@ class WakeUpPhase(BasicPhase):
     '''
     def end(self):
         phase = BasicMovementTraining()
-        phase.start()
+        phase.start(seed=seed)
 
     '''
     set internal state from dictionary
@@ -731,7 +732,7 @@ class BasicMovementTraining(BasicPhase):
     '''
     make the player move around and place triggers
     '''
-    def start(self):
+    def start(self,seed=0):
         # minimal setup
         self.mainCharXPosition = 2
         self.mainCharYPosition = 4
@@ -754,7 +755,7 @@ class BasicMovementTraining(BasicPhase):
             mainChar.serveQuest = quest
             mainChar.assignQuest(quest,active=True)
 
-        super().start()
+        super().start(seed=seed)
 
         # show instructions
         say("you are not missing no big parts and passed the first checks",firstOfficer)
@@ -919,7 +920,7 @@ class BasicMovementTraining(BasicPhase):
         say(msg,firstOfficer)
         showText("     "+msg)
         mainChar.hasFloorPermit = True
-        VatPhase().start()
+        VatPhase().start(seed=self.seed)
 
     def notinjured(self):
         firstOfficer = terrain.wakeUpRoom.firstOfficer
@@ -1137,7 +1138,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
     '''
     def end(self):
         phase = FindWork()
-        phase.start()
+        phase.start(seed=self.seed)
 
 #######################################################
 ###
@@ -1159,11 +1160,11 @@ class BoilerRoomWelcome(BasicPhase):
     set up a basic intro
     bad code: many inline functions
     '''
-    def start(self):
+    def start(self,seed=0):
         # alias attributes
         self.mainCharRoom = terrain.tutorialMachineRoom
 
-        super().start()
+        super().start(seed=seed)
 
         # bad code: dirty termination of story at this point
         gamestate.gameWon = True
@@ -1397,7 +1398,7 @@ class BoilerRoomWelcome(BasicPhase):
     def end(self):
         cinematics.showCinematic("please try to remember the Information. The lesson will now continue with Movement.")
         phase2 = BoilerRoomInteractionTraining()
-        phase2.start()
+        phase2.start(self.seed)
 
 '''
 teach basic interaction
@@ -1412,10 +1413,10 @@ class BoilerRoomInteractionTraining(BasicPhase):
     '''
     explain interaction and make the player apply lessons
     '''
-    def start(self):
+    def start(self,seed=0):
         self.mainCharRoom = terrain.tutorialMachineRoom
 
-        super().start()
+        super().start(seed=seed)
 
         # make the player make a simple move
         questList = []
@@ -1478,7 +1479,7 @@ class BoilerRoomInteractionTraining(BasicPhase):
     def end(self):
         cinematics.showCinematic("you recieved your Preparatorytraining. Time for the Test.")
         phase = FurnaceCompetition()
-        phase.start()
+        phase.start(seed=self.seed)
 
 '''
 do a furnace firering competition 
@@ -1493,10 +1494,10 @@ class FurnaceCompetition(BasicPhase):
     '''
     run the competition
     '''
-    def start(self):
+    def start(self,seed=0):
         self.mainCharRoom = terrain.tutorialMachineRoom
 
-        super().start()
+        super().start(seed=seed)
 
         cinematics.showCinematic("during the Test Messages and new Task will be shown on the Buttom of the Screen. start now.")
 
@@ -1687,7 +1688,7 @@ class FurnaceCompetition(BasicPhase):
         else:
             cinematics.showCinematic("you passed the Test. \n\nyour Score: "+str(self.mainCharFurnaceIndex)+"\nLiebwegs Score: "+str(self.npcFurnaceIndex))
             nextPhase = MachineRoomPhase()
-        nextPhase.start()
+        nextPhase.start(self.seed)
 
 
 ################################################################################################################
@@ -1717,10 +1718,10 @@ class FindWork(BasicPhase):
     '''
     create selection and place triggers
     '''
-    def start(self):
+    def start(self,seed=0):
         self.mainCharRoom = terrain.waitingRoom
 
-        super().start()
+        super().start(seed=seed)
 
         # create selection
         options = [("yes","Yes"),("no","No")]
@@ -2003,7 +2004,7 @@ class FindWork(BasicPhase):
             '''
             def startVatPhase(subself):
                 phase = VatPhase()
-                phase.start()
+                phase.start(self.seed)
 
         '''
         return subordinates to waiting room
@@ -2096,10 +2097,10 @@ class LabPhase(BasicPhase):
     '''
     make a dummy movement and switch phase
     '''
-    def start(self):
+    def start(self,seed=0):
         self.mainCharRoom = terrain.tutorialLab
 
-        super().start()
+        super().start(seed=seed)
 
         # do a dummy action
         questList = []
@@ -2122,7 +2123,7 @@ class LabPhase(BasicPhase):
     '''
     def end(self):
         cinematics.showCinematic("we are done with the tests. return to work")
-        BoilerRoomInteractionTraining().start()
+        BoilerRoomInteractionTraining().start(self.seed)
 
 '''
 dummy for the vat phase
@@ -2139,10 +2140,10 @@ class VatPhase(BasicPhase):
     '''
     do a dummy action and switch phase
     '''
-    def start(self):
+    def start(self,seed=0):
         self.mainCharRoom = terrain.tutorialVat
 
-        super().start()
+        super().start(seed=seed)
 
         # remove all player quests
         for quest in mainChar.quests:
@@ -2179,7 +2180,7 @@ class VatPhase(BasicPhase):
     '''
     def end(self):
         cinematics.showCinematic("you seem to be able to follow orders after all. you may go back to your training.")
-        BoilerRoomInteractionTraining().start()
+        BoilerRoomInteractionTraining().start(seed=self.seed)
 
 '''
 dummy for the machine room phase
@@ -2195,11 +2196,11 @@ class MachineRoomPhase(BasicPhase):
     '''
     switch completely to free play
     '''
-    def start(self):
+    def start(self,seed=0):
         self.mainCharRoom = terrain.tutorialMachineRoom
         self.requiresMainCharRoomSecondOfficer = False
 
-        super().start()
+        super().start(seed=seed)
 
         terrain.tutorialMachineRoom.secondOfficer = mainChar
 

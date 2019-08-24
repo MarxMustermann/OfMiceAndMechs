@@ -1350,7 +1350,7 @@ class ChallengeRoom(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None,seed=0):
         self.roomLayout = """
 XXXXXXXXXX
 X XX  @  X
@@ -1368,9 +1368,6 @@ $        X
 XXXXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
-
-        import random
-        seed = random.randint(0,10000)
 
         # bad code: the markers are not used anywhere
         self.bean = src.items.MarkerBean(4,2,creator=self)

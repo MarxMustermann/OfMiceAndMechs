@@ -42,6 +42,7 @@ parser.add_argument("-m", "--music", action="store_true", help="enable music (do
 parser.add_argument("-t", "--tiles", action="store_true", help="spawn a tile based view of the map (requires pygame)")
 parser.add_argument("-ts", "--tileSize", type=int, help="the base size of tiles")
 parser.add_argument("-T", "--terrain", type=str, help="select the terrain")
+parser.add_argument("-s", "--seed", type=str, help="select the seed of a new game")
 parser.add_argument("--load", action="store_true", help="load")
 args = parser.parse_args()
 
@@ -52,6 +53,12 @@ if args.unicode:
     displayChars = canvas.DisplayMapping("unicode")
 else:
     displayChars = canvas.DisplayMapping("pureASCII")
+
+if args.seed:
+    seed = int(args.seed)
+else:
+    import random
+    seed = random.randint(1,100000)
 
 ##################################################################################################################################
 ###
@@ -324,11 +331,11 @@ quests.showCinematic = cinematics.showCinematic
 
 # spawn selected terrain
 if args.terrain and args.terrain == "scrapField":
-    terrain = terrains.ScrapField(creator=void)
+    terrain = terrains.ScrapField(creator=void,seed=seed)
 elif args.terrain and args.terrain == "nothingness":
-    terrain = terrains.Nothingness(creator=void)
+    terrain = terrains.Nothingness(creator=void,seed=seed)
 else:
-    terrain = terrains.TutorialTerrain(creator=void)
+    terrain = terrains.TutorialTerrain(creator=void,seed=seed)
 
 # bad code: common variables with modules
 items.terrain = terrain
@@ -459,7 +466,7 @@ else:
 
 # set up the current phase
 if not loaded:
-    gameStateObj.currentPhase.start()
+    gameStateObj.currentPhase.start(seed=seed)
 
 # bad code: loading registry should be cleared
 

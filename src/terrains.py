@@ -39,7 +39,7 @@ class Terrain(src.saveing.Saveable):
     '''
     straightforward state initialization
     '''
-    def __init__(self,layout,detailedLayout,creator=None):
+    def __init__(self,layout,detailedLayout,creator=None,seed=None):
 
         # store terrain content
         self.itemsOnFloor = []
@@ -49,6 +49,7 @@ class Terrain(src.saveing.Saveable):
         self.itemByCoordinates = {}
         self.roomByCoordinates = {}
         self.listeners = {"default":[]}
+        self.seed = seed
 
         # set id
         self.id = {
@@ -172,7 +173,7 @@ class Terrain(src.saveing.Saveable):
                     roomsOnMap.append(room)
                 elif char == "l":
                     # add room and add to room list
-                    room = src.rooms.ChallengeRoom(rowCounter,lineCounter,3,1,creator=self)
+                    room = src.rooms.ChallengeRoom(rowCounter,lineCounter,3,1,creator=self,seed=seed+rowCounter-3*lineCounter)
                     self.challengeRooms.append(room)
                     roomsOnMap.append(room)
                 elif char == "C":
@@ -1359,14 +1360,14 @@ class Nothingness(Terrain):
     '''
     state initialization
     '''
-    def __init__(self,creator=None):
+    def __init__(self,creator=None,seed=None):
         # leave layout empty
         layout = """
         """
         detailedLayout = """
         """
 
-        super().__init__(layout,detailedLayout,creator=creator)
+        super().__init__(layout,detailedLayout,creator=creator,seed=seed)
 
         # add a few items scattered around
         self.dekoItems = []
@@ -1394,7 +1395,7 @@ class ScrapField(Terrain):
     '''
     state initialization
     '''
-    def __init__(self,creator=None):
+    def __init__(self,creator=None,seed=None):
         # add only a few scattered intact rooms
         layout = """
 
@@ -1407,7 +1408,7 @@ U  U
         """
         detailedLayout = """
         """
-        super().__init__(layout,detailedLayout,creator=creator)
+        super().__init__(layout,detailedLayout,creator=creator,seed=seed)
 
         self.floordisplay = displayChars.dirt
 
@@ -1473,7 +1474,7 @@ U  U
 the tutorial mech
 '''
 class TutorialTerrain(Terrain):
-    def __init__(self,creator=None):
+    def __init__(self,creator=None,seed=None):
         self.toTransport = []
 
         # the layout for the mech
@@ -1640,7 +1641,7 @@ XXXCCCCCXXX """
                                              X#X           XX#X           XX#X           XX#X           XX#X           X                                             
                                              X#XXXXXXXXXXXXXX#XXXXXXXXXXXXXX#XXXXXXXXXXXXXX#XXXXXXXXXXXXXX#XXXXXXXXXXXXX                                             
 """
-        super().__init__(layout,detailedLayout,creator=creator)
+        super().__init__(layout,detailedLayout,creator=creator,seed=seed)
 
         # add some tasks to keep npc busy
         self.toTransport = []

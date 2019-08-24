@@ -177,7 +177,7 @@ def processInput(key):
     global macros
     global replay
     if recording:
-        if not key in ("lagdetection","-"):
+        if not key in ("lagdetection","lagdetection_","-"):
             if recordingTo == None:
                 recordingTo = key
                 macros[recordingTo] = []
@@ -192,14 +192,18 @@ def processInput(key):
             recording = True
         else:
             recording = False
-            messages.append("recorded: %s"%(macros[recordingTo]))
+            messages.append("recorded: %s"%(''.join(macros[recordingTo])))
             recordingTo = None
 
-    if replay and not key in ("lagdetection",):
+    if replay and not key in ("lagdetection","lagdetection_"):
         replay = False
         if key in macros:
-            messages.append("replaying: %s"%(macros[key]))
-            processAllInput(macros[key])
+            messages.append("replaying: %s"%(''.join(macros[key])))
+            commands = []
+            for keyPress in macros[key]:
+                commands.append("lagdetection_")
+                commands.append(keyPress)
+            processAllInput(commands)
         key = commandChars.ignore
     if key in ("_",):
         replay = True
@@ -220,7 +224,7 @@ def processInput(key):
 
     # show the scrolling footer
     # bad code: this should be contained in an object
-    if key in ("lagdetection",):
+    if key in ("lagdetection","lagdetection_"):
         # show the scrolling footer
         if (not submenue) and (not len(cinematics.cinematicQueue) or not cinematics.cinematicQueue[0].overwriteFooter):
             # bad code: global variables
@@ -250,10 +254,11 @@ def processInput(key):
 
     # handle lag detection
     # bad code: lagdetection is abused as a timer
-    if key in ("lagdetection",):
+    if key in ("lagdetection","lagdetection_"):
 
         # trigger the next lagdetection keystroke
-        loop.set_alarm_in(0.1, callShow_or_exit, "lagdetection")
+        if key in ("lagdetection",):
+            loop.set_alarm_in(0.1, callShow_or_exit, "lagdetection")
         lastLagDetection = time.time()
 
         # advance the game if the character stays idle
@@ -660,7 +665,7 @@ def processInput(key):
 
         # drop the marker for interacting with an item after bumping into it 
         # bad code: ignore autoadvance opens up an unintended exploit
-        if not key in ("lagdetection",commandChars.wait,commandChars.autoAdvance):
+        if not key in ("lagdetection","lagdetection_",commandChars.wait,commandChars.autoAdvance):
             itemMarkedLast = None
 
         # enforce 60fps

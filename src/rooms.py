@@ -2118,14 +2118,28 @@ XI        X
 XI .....  X
 XD .   .  X
 XD .@@ .  X
-XD .   .  X
-XD .....  X
-XI        X
+XD .III.  X
+XD .DDD.  X
+XI .....  X
 XI        X
 XXXXXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.name = "Mech Command Centre"
+
+        self.firstOfficer.name = "Cpt. "+self.firstOfficer.name
+
+        firstOfficerDialog = {"dialogName":"Tell me more about the Commandchain","chat":chats.ConfigurableChat,"params":{
+                "text":"I am the Captain and control everything that happens on this mech.\n%s is my second in command\n%s is handling logistics\n%s is coordinating the hopper\n%s is head of the military"%("","","",""),
+                "info":[
+                    ]
+            }}
+        firstOfficerDialog["params"]["info"].append({"name":"I want to be the captain","text":"Okay","type":"text","trigger":{"container":self,"method":"beCaptain"}})
+        self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
+
+    def beCaptain(self):
+        messages.append("you won")
+        gamestate.gameWon = True
 
 '''
 the place for production of tools and items

@@ -611,15 +611,10 @@ class JobChatFirst(Chat):
                 # assign job
                 else:
                     # show fluff
-                    subSelf.persistentText = "Several Officers requested new assistants. First go to to the boiler room and apply for the position"
+                    subSelf.persistentText = "Several Officers requested new assistants. Find them and offer them your service"
 
-                    # start next story phase
-                    quest = quests.MoveQuestMeta(subSelf.terrain.tutorialMachineRoom,3,3,creator=void)
-                    phase = story.BoilerRoomWelcome()
-                    quest.endTrigger = {"container":phase,"method":"start"}
                     subSelf.hopperDutyQuest.deactivate()
                     subSelf.mainChar.quests.remove(subSelf.hopperDutyQuest)
-                    subSelf.mainChar.assignQuest(quest,active=True)
                     subSelf.dispatchedPhase = True
 
             # do not assign job

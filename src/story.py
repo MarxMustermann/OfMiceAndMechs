@@ -691,7 +691,7 @@ class WakeUpPhase(BasicPhase):
     '''
     def end(self):
         phase = BasicMovementTraining()
-        phase.start(seed=seed)
+        phase.start(seed=self.seed)
 
     '''
     set internal state from dictionary
@@ -1068,20 +1068,21 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
         normTime = 500
 
         # make the player wait till norm completion time
-        if timeTaken < normTime/2:
-            msg1 = "You work fast. You did the tasks in less then half of the norm completion time."
-            msg2 = "You will not work as a hopper, you will continue to serve under me."
-            msg3 = "The order for a hopper still has to be fulfilled."
-            msg4 = "please activate one of the growth tanks"
-            text = "\n"+msg1+"\n"+msg2+"\n\n"+msg3+"\n"+msg4+"\n"
+        #
+        #if timeTaken < normTime/2:
+        #    msg1 = "You work fast. You did the tasks in less then half of the norm completion time."
+        #    msg2 = "You will not work as a hopper, you will continue to serve under me."
+        #    msg3 = "The order for a hopper still has to be fulfilled."
+        #    msg4 = "please activate one of the growth tanks"
+        #    text = "\n"+msg1+"\n"+msg2+"\n\n"+msg3+"\n"+msg4+"\n"
 
-            showText(text)
-            say(msg1,firstOfficer)
-            say(msg2,firstOfficer)
-            say(msg3,firstOfficer)
-            say(msg4,firstOfficer)
+        #    showText(text)
+        #    say(msg1,firstOfficer)
+        #    say(msg2,firstOfficer)
+        #    say(msg3,firstOfficer)
+        #    say(msg4,firstOfficer)
 
-            return
+        #    return
 
         # show evaluation
         text = "you completed the tests and it is time to take on your duty. You will no longer server under my command, but under "+terrain.wakeUpRoom.firstOfficer.name+" as a hopper.\n\nSo please go to the waiting room and report for room duty.\n\nThe waiting room is the next room to the north. Simply go there speak to "+terrain.wakeUpRoom.firstOfficer.name+" and confirm that you are reporting for duty.\nYou will get instruction on how to proceed afterwards.\n\n"
@@ -1165,9 +1166,6 @@ class BoilerRoomWelcome(BasicPhase):
         self.mainCharRoom = terrain.tutorialMachineRoom
 
         super().start(seed=seed)
-
-        # bad code: dirty termination of story at this point
-        gamestate.gameWon = True
 
         # move player to machine room if the player isn't there yet
         if not (mainChar.room and mainChar.room == terrain.tutorialMachineRoom):
@@ -2221,7 +2219,6 @@ class MachineRoomPhase(BasicPhase):
         # assign player quest
         mainChar.assignQuest(questList[0])
 
-        self.end()
         gamestate.save()
 
     '''

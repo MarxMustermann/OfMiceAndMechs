@@ -1166,8 +1166,8 @@ class CaptainChat(Chat):
             self.persistentText += mainChar.name+": \"i want to be captain.\"\n"
 
             # reject player request
-            if mainChar.reputation < 100:
-                self.persistentText += self.partner.name+": \"No.\""
+            if not mainChar == self.partner.room.secondOfficer:
+                self.persistentText += self.partner.name+": \"Only my second in command could possibly succeed me\""
             # consider player request
             else:
                 self.persistentText += self.partner.name+": \"Ok.\""
@@ -1214,7 +1214,7 @@ class CaptainChat2(Chat):
         
         if self.wait:
             self.wait = False
-            gamestate.gameWon = True
+            self.partner.room.secondOfficer = mainChar
             return False
 
         # show dialog
@@ -1223,13 +1223,15 @@ class CaptainChat2(Chat):
             # add player text
             self.persistentText += mainChar.name+": \"i want to be your second in command.\"\n"
 
-            # reject player request
-            if mainChar.reputation < 100:
-                self.persistentText += self.partner.name+": \"No.\""
-            # consider player request
+            if not self.partner.room.secondOfficer.dead:
+                self.persistentText += self.partner.name+": \"No. i have a second in command\""
             else:
-                self.persistentText += self.partner.name+": \"Ok.\""
-                self.wait = True
+                if mainChar.reputation < 100:
+                    self.persistentText += self.partner.name+": \"No. I do not trust you\""
+                # consider player request
+                else:
+                    self.persistentText += self.partner.name+": \"Ok.\""
+                    self.wait = True
 
             # show dialog
             text = self.persistentText+"\n\n-- press any key --"

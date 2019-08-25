@@ -2136,6 +2136,7 @@ XXXXXXXXXXX
             }}
         self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
         self.firstOfficer.basicChatOptions.append({"dialogName":"I want to be captain","chat":chats.CaptainChat})
+        self.firstOfficer.basicChatOptions.append({"dialogName":"I want to be your second in command","chat":chats.CaptainChat2})
 
 '''
 the place for production of tools and items

@@ -29,7 +29,7 @@ class Room(src.saveing.Saveable):
     state initialization
     bad code: too many attributes
     '''
-    def __init__(self,layout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+    def __init__(self,layout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None,seed=0):
         super().__init__()
 
         # initialize attributes
@@ -71,6 +71,7 @@ class Room(src.saveing.Saveable):
         self.lastRender = None
         self.isContainment = False
         self.listeners = {"default":[]}
+        self.seed = seed
 
         # set id
         self.id = {
@@ -1367,7 +1368,7 @@ X        X
 $        X
 XXXXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator,seed=seed)
 
         # bad code: the markers are not used anywhere
         self.bean = src.items.MarkerBean(4,2,creator=self)
@@ -1603,7 +1604,7 @@ class CargoRoom(Room):
     '''
     create room, set storage order and fill with items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,itemTypes=[src.items.Pipe,src.items.Wall,src.items.Furnace,src.items.Boiler],amount=80,creator=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,itemTypes=[src.items.Pipe,src.items.Wall,src.items.Furnace,src.items.Boiler],amount=80,creator=None,seed=0):
         self.roomLayout = """
 XXXXXXXXXX
 X        X
@@ -1629,7 +1630,7 @@ XXXXXXXXXX
         counter = 0
         length = len(itemTypes)
         for i in range(1,amount):
-            i = i+i%3+i%10*2
+            i = i+i%3+i%10*2+seed
             if i%2:
                 counter += 1
             elif i%4:
@@ -1662,7 +1663,7 @@ XXXXXXXXXX
             counter += 1
 
         # add mice inhabiting the room on about every fifth room
-        if (self.xPosition + yPosition*2 - offsetX - offsetY)%5 == 0:
+        if amount < 70 and (self.xPosition + yPosition*2 - offsetX - offsetY + seed)%5 == 0:
             # place mice
             mice = []
             mousePositions = [(2,2),(2,4),(4,2),(4,4),(8,3)]
@@ -2145,7 +2146,7 @@ class MetalWorkshop(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None,seed=0):
         self.roomLayout = """
 XXXXXXXXXXX
 XP        X
@@ -2159,7 +2160,7 @@ XP        X
 XXXXX$XXXXX
 """
         self.quests = []
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator,seed=seed)
         self.name = "MetalWorkshop"
 
         # add production machines
@@ -2194,7 +2195,10 @@ XXXXX$XXXXX
                 "info":[
                     ]
             }}
-        firstOfficerDialog["params"]["info"].append({"name":"Please give me reputation anyway.","text":"Ok","type":"text","trigger":{"container":self,"method":"dispenseFreeReputation"}})
+        if seed%5==0:
+            firstOfficerDialog["params"]["info"].append({"name":"Please give me reputation anyway.","text":"Ok","type":"text","trigger":{"container":self,"method":"dispenseFreeReputation"}})
+        else:
+            firstOfficerDialog["params"]["info"].append({"name":"Please give me reputation anyway.","text":"no","type":"text"})
         self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
 
         # save initial state and register

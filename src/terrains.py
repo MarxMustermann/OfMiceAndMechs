@@ -180,42 +180,44 @@ class Terrain(src.saveing.Saveable):
                     # generate pseudo random content type
                     itemTypes = [src.items.Wall,src.items.Pipe]
                     amount = 40
-                    if not rowCounter%2:
+                    if not (rowCounter+seed)%2:
                         itemTypes.append(src.items.Lever)
                         amount += 10
-                    if not rowCounter%3:
+                    if not (rowCounter+seed)%3:
                         itemTypes.append(src.items.Furnace)
                         amount += 15
-                    if not rowCounter%4:
+                    if not (rowCounter+seed)%4:
                         itemTypes.append(src.items.Chain)
                         amount += 20
-                    if not rowCounter%5:
+                    if not (rowCounter+seed)%5:
                         itemTypes.append(src.items.Hutch)
                         amount += 7
-                    if not rowCounter%6:
+                    if not (rowCounter+seed)%6:
                         itemTypes.append(src.items.GrowthTank)
                         amount += 8
-                    if not lineCounter%2:
+                    if not (lineCounter+seed)%2:
                         itemTypes.append(src.items.Door)
                         amount += 15
-                    if not lineCounter%3:
+                    if not (lineCounter+seed)%3:
                         itemTypes.append(src.items.Boiler)
                         amount += 10
-                    if not lineCounter%4:
+                    if not (lineCounter+seed)%4:
                         itemTypes.append(src.items.Winch)
                         amount += 7
-                    if not lineCounter%5:
+                    if not (lineCounter+seed)%5:
                         itemTypes.append(src.items.Display)
                         amount += 7
-                    if not lineCounter%6:
+                    if not (lineCounter+seed)%6:
                         itemTypes.append(src.items.Commlink)
                         amount += 7
                     if not itemTypes:
                         itemTypes = [src.items.Pipe,src.items.Wall,src.items.Furnace,src.items.Boiler]
                         amount += 30
+                    while amount > 80:
+                        amount -= seed%40
 
                     # add room and add to room list
-                    room = src.rooms.CargoRoom(rowCounter,lineCounter,3,0,itemTypes=itemTypes,amount=amount,creator=self)
+                    room = src.rooms.CargoRoom(rowCounter,lineCounter,3,0,itemTypes=itemTypes,amount=amount,creator=self,seed=seed+2*rowCounter+5*lineCounter//7)
                     self.tutorialCargoRooms.append(room)
                     roomsOnMap.append(room)
                 elif char == "U":
@@ -238,7 +240,7 @@ class Terrain(src.saveing.Saveable):
                     roomsOnMap.append(wakeUpRoom)
                 elif char == "m":
                     # add room and add to room list
-                    room = src.rooms.MetalWorkshop(rowCounter,lineCounter,1,1,creator=self)
+                    room = src.rooms.MetalWorkshop(rowCounter,lineCounter,1,1,creator=self,seed=seed+3*rowCounter+2*lineCounter//8)
                     self.metalWorkshop = room
                     roomsOnMap.append(room)
                 elif char == "b":

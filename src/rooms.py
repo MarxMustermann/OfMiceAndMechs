@@ -2134,11 +2134,11 @@ XXXXXXXXXXX
                 "info":[
                     ]
             }}
-        firstOfficerDialog["params"]["info"].append({"name":"I want to be the captain","text":"Okay","type":"text","trigger":{"container":self,"method":"beCaptain"}})
+        firstOfficerDialog["params"]["info"].append({"name":"I want to be the captain","text":"Okay","type":"text"})
         self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
+        self.firstOfficer.basicChatOptions.append({"dialogName":"I want to captain","chat":chats.CaptainChat})
 
     def beCaptain(self):
-        messages.append("you won")
         gamestate.gameWon = True
 
 '''
@@ -2192,9 +2192,20 @@ XXXXX$XXXXX
         self.producedItems.append(item)
         self.addItems(self.producedItems)
 
+        firstOfficerDialog = {"dialogName":"Do you need some help?","chat":chats.ConfigurableChat,"params":{
+                "text":"no",
+                "info":[
+                    ]
+            }}
+        firstOfficerDialog["params"]["info"].append({"name":"Please give me reputation anyway.","text":"Ok","type":"text","trigger":{"container":self,"method":"dispenseFreeReputation"}})
+        self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
+
         # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
+
+    def dispenseFreeReputation(self):
+        mainChar.reputation += 100
 
 '''
 a room in the process of beeing constructed. The room itself exists but no items within

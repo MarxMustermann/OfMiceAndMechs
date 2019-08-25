@@ -1074,6 +1074,60 @@ class RecruitChat(Chat):
 
 '''
 '''
+class JoinMilitaryChat(Chat):
+    id = "CaptainChat"
+
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,partner):
+        self.type = "CaptainChat"
+        self.state = None
+        self.partner = partner
+        self.firstRun = True
+        self.done = False
+        self.persistentText = ""
+        self.wait = False
+        super().__init__()
+
+    '''
+    show dialog and recruit character depending on success
+    bad code: showing the messages should be handled in __init__ or a setup method
+    bad code: the dialog and reactions should be generated within the characters
+    '''
+    def handleKey(self, key):
+        # exit submenu
+        if key == "esc":
+            return True
+        
+        # show dialog
+        if self.firstRun:
+
+            # add player text
+            self.persistentText += mainChar.name+": \"i want to join the military.\"\n"
+
+            # reject player request
+            if mainChar.reputation < 10:
+                self.persistentText += self.partner.name+": \"No. Go kill yourself\""
+
+                quest = quests.MurderQuest(toKill=mainChar,creator=self)
+                mainChar.assignQuest(quest,active=True)
+            else:
+                self.persistentText += self.partner.name+": \"No.\""
+
+            # show dialog
+            text = self.persistentText+"\n\n-- press any key --"
+            self.set_text((urwid.AttrSpec("default","default"),text))
+            self.firstRun = False
+            return True
+        # continue after the first keypress
+        # bad code: the first keystroke is the second keystroke that is handled
+        else:
+            self.done = True
+            return False
+
+'''
+'''
 class CaptainChat(Chat):
     id = "CaptainChat"
 
@@ -1130,6 +1184,63 @@ class CaptainChat(Chat):
             self.done = True
             return False
 
+'''
+'''
+class CaptainChat2(Chat):
+    id = "CaptainChat2"
+
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,partner):
+        self.type = "CaptainChat"
+        self.state = None
+        self.partner = partner
+        self.firstRun = True
+        self.done = False
+        self.persistentText = ""
+        self.wait = False
+        super().__init__()
+
+    '''
+    show dialog and recruit character depending on success
+    bad code: showing the messages should be handled in __init__ or a setup method
+    bad code: the dialog and reactions should be generated within the characters
+    '''
+    def handleKey(self, key):
+        # exit submenu
+        if key == "esc":
+            return True
+        
+        if self.wait:
+            self.wait = False
+            gamestate.gameWon = True
+            return False
+
+        # show dialog
+        if self.firstRun:
+
+            # add player text
+            self.persistentText += mainChar.name+": \"i want to be your second in command.\"\n"
+
+            # reject player request
+            if mainChar.reputation < 100:
+                self.persistentText += self.partner.name+": \"No.\""
+            # consider player request
+            else:
+                self.persistentText += self.partner.name+": \"Ok.\""
+                self.wait = True
+
+            # show dialog
+            text = self.persistentText+"\n\n-- press any key --"
+            self.set_text((urwid.AttrSpec("default","default"),text))
+            self.firstRun = False
+            return True
+        # continue after the first keypress
+        # bad code: the first keystroke is the second keystroke that is handled
+        else:
+            self.done = True
+            return False
 
 '''
 a chat with a character, partially hardcoded partially dynamically generated 

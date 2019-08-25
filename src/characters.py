@@ -200,6 +200,10 @@ class Character(src.saveing.Saveable):
             chatOptions.append({"dialogName":"can i do something for you?","chat":chats.RoomDutyChat2,"params":{
             "superior":self
             }})
+        if self.isMilitary:
+            chatOptions.append({"dialogName":"I want to join the military","chat":chats.JoinMilitaryChat,"params":{
+            "superior":self
+            }})
 
         return chatOptions
 

@@ -2134,12 +2134,8 @@ XXXXXXXXXXX
                 "info":[
                     ]
             }}
-        firstOfficerDialog["params"]["info"].append({"name":"I want to be the captain","text":"Okay","type":"text"})
         self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
-        self.firstOfficer.basicChatOptions.append({"dialogName":"I want to captain","chat":chats.CaptainChat})
-
-    def beCaptain(self):
-        gamestate.gameWon = True
+        self.firstOfficer.basicChatOptions.append({"dialogName":"I want to be captain","chat":chats.CaptainChat})
 
 '''
 the place for production of tools and items

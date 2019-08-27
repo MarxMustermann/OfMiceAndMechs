@@ -205,8 +205,10 @@ class Challenge(BasicPhase):
         challengeRoom = terrain.challengeRooms[self.roomCounter]
         if mainChar.room:
              mainChar.room.removeCharacter(mainChar)
+             mainChar.room = None
         if mainChar.terrain:
              mainChar.terrain.removeCharacter(mainChar)
+             mainChar.terrain = None
         self.mainCharRoom = challengeRoom
         self.mainCharRoom.addCharacter(mainChar,4,4)
 

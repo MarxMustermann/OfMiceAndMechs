@@ -1624,6 +1624,7 @@ XXXXXXXXXX
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.floorDisplay = [displayChars.nonWalkableUnkown]
         self.name = "CargoRoom"
+        self.discovered = False
 
         # generate items with the supplied item types
         self.storedItems = []
@@ -1663,10 +1664,10 @@ XXXXXXXXXX
             counter += 1
 
         # add mice inhabiting the room on about every fifth room
-        if amount < 70 and (self.xPosition + yPosition*2 - offsetX - offsetY + seed)%5 == 0:
+        if amount < 70 and (self.xPosition + yPosition*2 - offsetX - offsetY + seed)%2 == 0:
             # place mice
             mice = []
-            mousePositions = [(2,2),(2,4),(4,2),(4,4),(8,3)]
+            mousePositions = [(2,2),(2,4),(4,2),(4,4),(7,3)]
             for mousePosition in mousePositions:
                 mouse = characters.Mouse(creator=self)
                 self.addCharacter(mouse,mousePosition[0],mousePosition[1])
@@ -1705,6 +1706,21 @@ XXXXXXXXXX
 
             # watch for characters entering the room
             self.addListener(killInvader,"entered room")
+
+            def foundNest(character):
+                if not character == mainChar:
+                    return
+                if not self.discovered:
+                    self.terrain.huntersLodge.firstOfficer.basicChatOptions[-1]["params"]["info"].append({"name":"i discovered a nest in a cargo room.","text":"thanks for the report","type":"text","trigger":{"container":self.terrain.huntersLodge,"method":"rewardNestFind"}})
+                    self.discovered = True
+
+            self.addListener(foundNest,"entered room")
+            for item in self.itemsOnFloor:
+                # ignore non doors
+                if not isinstance(item,src.items.Door):
+                    continue
+
+                item.addListener(foundNest,"activated")
 
         # actually add the items
         self.addItems(self.storedItems)
@@ -2207,6 +2223,44 @@ XXXXX$XXXXX
 
     def dispenseFreeReputation(self):
         mainChar.reputation += 100
+
+'''
+'''
+class HuntersLodge(Room):
+    '''
+    create room and add special items
+    '''
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None,seed=0):
+        self.roomLayout = """
+XXXXXXXXXXX
+X         X
+X  .....  X
+X  .   .  X
+X  . @ .  X
+X  .   .  X
+X  .....  X
+X         X
+X         X
+XXXXX$XXXXX
+"""
+        self.quests = []
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator,seed=seed)
+        self.name = "HuntersLodge"
+
+        firstOfficerDialog = {"dialogName":"Do you need some help?","chat":chats.ConfigurableChat,"params":{
+                "text":"indeed. Anybody reporting mice nests will be rewarded",
+                "info":[
+                    ]
+            }}
+        self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
+
+        # save initial state and register
+        self.initialState = self.getState()
+        loadingRegistry.register(self)
+
+    def rewardNestFind(self):
+        mainChar.awardReputation(amount=10,reason="reporting a nest")
+        self.firstOfficer.basicChatOptions[-1]["params"]["info"].pop()
 
 '''
 a room in the process of beeing constructed. The room itself exists but no items within

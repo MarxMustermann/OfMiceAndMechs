@@ -214,17 +214,21 @@ class Terrain(src.saveing.Saveable):
                         itemTypes = [src.items.Pipe,src.items.Wall,src.items.Furnace,src.items.Boiler]
                         amount += 30
                     while amount > 80:
-                        amount -= seed%40
+                        amount -= seed%40+1
 
                     # add room and add to room list
                     room = src.rooms.CargoRoom(rowCounter,lineCounter,3,0,itemTypes=itemTypes,amount=amount,creator=self,seed=seed+2*rowCounter+5*lineCounter//7)
                     self.tutorialCargoRooms.append(room)
                     roomsOnMap.append(room)
+                elif char == "h":
+                    # add room and add to room list
+                    room = src.rooms.HuntersLodge(rowCounter,lineCounter,3,0,creator=self)
+                    self.huntersLodge = room
+                    roomsOnMap.append(room)
                 elif char == "U":
                     # add room and add to room list
                     room = src.rooms.StorageRoom(rowCounter,lineCounter,3,0,creator=self)
                     self.tutorialStorageRooms.append(room)
-                    roomsOnMap.append(room)
                 elif char == "?":
                     # add room and add to room list
                     roomsOnMap.append(src.rooms.CpuWasterRoom(rowCounter,lineCounter,2,2,creator=self))
@@ -1485,7 +1489,7 @@ XlllllllllX
 XXXXXXXXXXX
 XVv?b?Q?vVX
 XO.t    .OX
-Xw MQK?l LX
+Xw MQKhl LX
 XW Q???Q mX
 XU.     .UX
 XU CCCCC UX

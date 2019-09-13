@@ -23,6 +23,13 @@ class GameState():
         self.gameWon = False
         self.tick = 0
 
+        try:
+            with open("gamestate/successSeed.json","r") as successSeedFile:
+                rawState = json.loads(successSeedFile.read())
+                self.successSeed = int(rawState["successSeed"])
+        except:
+            self.successSeed = 0
+
         # set the phase
         if phase:
             self.currentPhase = phasesByName[phase]()
@@ -43,6 +50,9 @@ class GameState():
     def save(self):
         # get state as dictionary
         state = self.getState()
+
+        with open("gamestate/successSeed.json","w") as successSeedFile:
+            successSeedFile.write(json.dumps({"successSeed":self.successSeed}))
 
         # write the savefile
         with open("gamestate/gamestate.json","w") as saveFile:

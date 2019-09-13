@@ -368,6 +368,9 @@ class BrainTestingPhase(BasicPhase):
     bad code: closely married to urwid
     '''
     def start(self,seed=0):
+        if gamestate.successSeed > 0:
+            self.end()
+            return
         import urwid
 
         # show fluff
@@ -545,6 +548,8 @@ class BrainTestingPhase(BasicPhase):
     '''
     def end(self):
         nextPhase = WakeUpPhase()
+        if gamestate.successSeed < 1:
+            gamestate.successSeed += 1
         nextPhase.start()
 
     '''
@@ -554,6 +559,7 @@ class BrainTestingPhase(BasicPhase):
         # kill player
         mainChar.dead = True
         mainChar.deathReason = "reset of neural network due to inability to store information\nPrevent this by answering the questions correctly"
+        gamestate.successSeed = 0
 
         # show fluff
         showText("""
@@ -694,6 +700,7 @@ class WakeUpPhase(BasicPhase):
     def end(self):
         phase = BasicMovementTraining()
         phase.start(seed=self.seed)
+        gamestate.successSeed += 1
 
     '''
     set internal state from dictionary

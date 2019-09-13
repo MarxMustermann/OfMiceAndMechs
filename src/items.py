@@ -1508,10 +1508,15 @@ class OjectDispenser(Item):
     type = "ObjectDispenser"
 
     '''
-    call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="object dispenser",creator=None):
         super().__init__("U\\",xPosition,yPosition,name=name,creator=creator)
+
+        self.storage = []
+        counter = 0
+        while counter < 5:
+            self.storage.append(GooFlask(creator=self))
+            counter += 1
 
         # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
@@ -1520,10 +1525,13 @@ class OjectDispenser(Item):
     drop goo flask
     '''
     def dispenseObject(self):
-        new = GooFlask(creator=self)
-        new.xPosition = self.xPosition
-        new.yPosition = self.yPosition+1
-        self.room.addItems([new])
+        if len(self.storage):
+            new = self.storage.pop()
+            new.xPosition = self.xPosition
+            new.yPosition = self.yPosition+1
+            self.room.addItems([new])
+        else:
+            messages.append("the object dispenser is empty")
 
 '''
 token object ment to produce anything from metal bars

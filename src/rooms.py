@@ -1188,7 +1188,7 @@ XazayzayzX
 XauwauwxtX
 XaaayaayaX
 #psBBBBBBX
-Xmhm ...DX
+Xmhm@...DX
 Xmmmv.v.IX
 XXXXX$XXXX
 """
@@ -1199,9 +1199,26 @@ XXXXX$XXXX
         self.addItems([self.gooDispenser])
         self.name = "vat processing"
 
+        firstOfficerDialog = {"dialogName":"Do you need some help?","chat":chats.ConfigurableChat,"params":{
+                "text":"yes. I regulary have to request new goo Flasks, since the workers sometimes drop them. Collect them for me.",
+                "info":[
+                    ]
+            }}
+        firstOfficerDialog["params"]["info"].append({"name":"I have a goo flask for you","text":"gret. Give it to me","type":"text","trigger":{"container":self,"method":"removeGooFlask"}})
+        self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
+
         # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
+
+    def removeGooFlask(self):
+        toRemove = None
+        for item in mainChar.inventory:
+            if isinstance(item,src.items.GooFlask):
+                toRemove = item
+        if toRemove:
+            mainChar.inventory.remove(toRemove)
+            mainChar.awardReputation(amount=1,reason="supplying a Goo Flask")
 
     '''
     recalculate sprayer state
@@ -1641,6 +1658,30 @@ XXXXXXXXXX
             else:
                 counter += 4
             self.storedItems.append(itemTypes[counter%length](creator=self))
+
+        if seed%5 == 3:
+            xPosition = 1+seed//3%(self.sizeX-2)
+            yPosition = 1+seed//3%(self.sizeY-2)
+            item = src.items.GooFlask(creator=self)
+            item.xPosition = xPosition
+            item.yPosition = yPosition
+            self.addItems([item])
+        if seed%5 == 3:
+            xPosition = 1+seed//6%(self.sizeX-2)
+            yPosition = 1+seed//6%(self.sizeY-2)
+            item = src.items.GooFlask(creator=self)
+            item.xPosition = xPosition
+            item.yPosition = yPosition
+            self.addItems([item])
+        if seed%2 == 1:
+            xPosition = 1+seed//1%(self.sizeX-2)
+            yPosition = 1+seed//1%(self.sizeY-2)
+            item = src.items.GooFlask(creator=self)
+            item.xPosition = xPosition
+            item.yPosition = yPosition
+            self.addItems([item])
+
+        npc = self.fetchThroughRegistry(characters.Character(xPosition=4,yPosition=4,creator=self,seed=self.yPosition+self.offsetY+4*12))
 
         # determine in what order storage space should be used
         counter = 0

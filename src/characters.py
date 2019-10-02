@@ -68,6 +68,7 @@ class Character(src.saveing.Saveable):
         self.basicChatOptions = []
         self.questsDone = []
         self.solvers = []
+        self.aliances = []
 
         # generate the id for this object
         if characterId:

@@ -175,6 +175,8 @@ class Room(src.saveing.Saveable):
                 elif char == "m":
                     # to be machinery
                     itemsOnFloor.append(src.items.Item(displayChars.machineries[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter,creator=self))
+                elif char == "M":
+                    itemsOnFloor.append(src.items.VatMaggot(rowCounter,lineCounter,creator=self))
                 elif char == "h":
                     # add steam hub
                     itemsOnFloor.append(src.items.Item(displayChars.hub,rowCounter,lineCounter,creator=self))
@@ -1239,14 +1241,14 @@ class VatFermenting(Room):
     def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXX
-X   b jjjX
-X  ......X
+X  Mb jjjX
+XM ......X
 X b.b bb.X
-X .. c b.X
-X .b  j .X
-X .. b b.X
-X@b. ....X
-## ...v ##
+X ..Mc b.X
+XM.b  jM.X
+X ..Mb b.X
+X@b......X
+## ..Mv ##
 XXXXX$XXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
@@ -2195,6 +2197,35 @@ XXXXXXXXXXX
         self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
         self.firstOfficer.basicChatOptions.append({"dialogName":"I want to be captain","chat":chats.CaptainChat})
         self.firstOfficer.basicChatOptions.append({"dialogName":"I want to be your second in command","chat":chats.CaptainChat2})
+                            
+        npcA = characters.Character(name="A",xPosition=3,yPosition=9,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
+        self.addCharacter(npcA,2,8)
+        npcB = characters.Character(name="B",xPosition=4,yPosition=9,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
+        self.addCharacter(npcB,3,8)
+        npcC = characters.Character(name="C",xPosition=5,yPosition=3,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
+        self.addCharacter(npcC,4,8)
+        npcD = characters.Character(name="D",xPosition=5,yPosition=3,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
+        self.addCharacter(npcD,5,8)
+        npcE = characters.Character(name="E",xPosition=5,yPosition=3,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
+        self.addCharacter(npcE,6,8)
+
+        import random
+        factions = [npcA,npcB,npcC,npcD,npcE]
+        for faction in factions:
+            faction.minRep = random.randint(1,60)
+            faction.maxAliance = random.randint(1,4)
+            faction.repGain = random.randint(1,40)
+            numExcludes = random.randint(1,4)
+            factionCopy = factions[:]
+            factionCopy.remove(faction)
+            faction.excludes = []
+            for i in range(0,numExcludes):
+                chosen = random.choice(factionCopy)
+                factionCopy.remove(chosen)
+                faction.excludes.append(chosen)
+
+            faction.basicChatOptions.append({"dialogName":"what are the requirements for an aliance?","chat":chats.FactionChat1})
+            faction.basicChatOptions.append({"dialogName":"Let us form an aliance","chat":chats.FactionChat2})
 
 '''
 the place for production of tools and items

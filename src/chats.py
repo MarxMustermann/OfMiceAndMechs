@@ -1181,6 +1181,119 @@ class CaptainChat(Chat):
 
 '''
 '''
+class FactionChat1(Chat):
+    id = "FactionChat1"
+
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,partner):
+        self.type = "CaptainChat"
+        self.state = None
+        self.partner = partner
+        self.firstRun = True
+        self.done = False
+        self.persistentText = ""
+        self.wait = False
+        super().__init__()
+
+    '''
+    '''
+    def handleKey(self, key):
+        # exit submenu
+        if key == "esc":
+            return True
+        
+        # show dialog
+        if self.firstRun:
+
+            # add player text
+            self.persistentText += mainChar.name+": \"the requirements for an alliance are:.\"\n"
+            self.persistentText += "\n\n"
+            self.persistentText += "minRep: %s\n"%(self.partner.minRep,)
+            self.persistentText += "maxAliance: %s\n"%(self.partner.maxAliance,)
+            self.persistentText += "repGain: %s\n"%(self.partner.repGain,)
+            self.persistentText += "excludes: \n"
+            for exclude in self.partner.excludes:
+                self.persistentText += "%s "%(exclude.name,)
+            self.persistentText += "\n\n"
+
+            # show dialog
+            text = self.persistentText+"\n\n-- press any key --"
+            self.set_text((urwid.AttrSpec("default","default"),text))
+            self.firstRun = False
+            return True
+        # continue after the first keypress
+        # bad code: the first keystroke is the second keystroke that is handled
+        else:
+            self.done = True
+            return False
+
+'''
+'''
+class FactionChat2(Chat):
+    id = "FactionChat2"
+
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,partner):
+        self.type = "CaptainChat"
+        self.state = None
+        self.partner = partner
+        self.firstRun = True
+        self.done = False
+        self.persistentText = ""
+        self.wait = False
+        super().__init__()
+
+    '''
+    '''
+    def handleKey(self, key):
+        # exit submenu
+        if key == "esc":
+            return True
+        
+        # show dialog
+        if self.firstRun:
+
+            if not self.partner in mainChar.aliances:
+                if mainChar.reputation < self.partner.minRep:
+                    self.persistentText += mainChar.name+": \"not enough rep.\"\n"
+                elif len(mainChar.aliances) > self.partner.maxAliance:
+                    self.persistentText += mainChar.name+": \"too many aliances.\"\n"
+                else:
+                    found = False
+                    for exclude in self.partner.excludes:
+                        if exclude in mainChar.aliances:
+                            found = True
+
+                    if found:
+                        self.persistentText += mainChar.name+": \"bad aliance.\"\n"
+                    else:
+                        self.persistentText += mainChar.name+": \"OK\"\n"
+                        mainChar.awardReputation(amount=self.partner.repGain,reason="forging an aliance")
+                        mainChar.aliances.append(self.partner)
+
+            else:
+                # add player text
+                self.persistentText += mainChar.name+": \"we are already alianced.\"\n"
+
+            # show dialog
+            text = self.persistentText+"\n\n-- press any key --"
+            self.set_text((urwid.AttrSpec("default","default"),text))
+            self.firstRun = False
+            return True
+        # continue after the first keypress
+        # bad code: the first keystroke is the second keystroke that is handled
+        else:
+            self.done = True
+            return False
+
+
+
+'''
+'''
 class CaptainChat2(Chat):
     id = "CaptainChat2"
 

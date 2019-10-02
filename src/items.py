@@ -1644,6 +1644,38 @@ class Token(Item):
         self.bolted = False
         self.walkable = True
 
+'''
+'''
+class VatMaggot(Item):
+    type = "VatMaggot"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="vat maggot",creator=None):
+        super().__init__("~-",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+
+    '''
+    '''
+    def apply(self,character,resultType=None):
+
+        # remove ressources
+        messages.append("you consume the vat maggot")
+        character.inventory.remove(self)
+        character.awardReputation(amount=5,reason="eating a vat magot")
+        if (gamestate.tick%2 == 0):
+            if (gamestate.tick%8 == 0):
+                character.fallUnconcious()
+                character.revokeReputation(amount=15,reason="passing out from eating a vat magot")
+            else:
+                messages.append("you wretch")
+                character.revokeReputation(amount=5,reason="wretching from eating a vat magot")
+
+        super().apply(character,silent=True)
+
 # maping from strings to all items
 # should be extendable
 itemMap = {

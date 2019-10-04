@@ -1754,7 +1754,7 @@ XXXXXXXXXX
                 if not character == mainChar:
                     return
                 if not self.discovered:
-                    self.terrain.huntersLodge.firstOfficer.basicChatOptions[-1]["params"]["info"].append({"name":"i discovered a nest in a cargo room.","text":"thanks for the report","type":"text","trigger":{"container":self.terrain.huntersLodge,"method":"rewardNestFind"}})
+                    self.terrain.huntersLodge.firstOfficer.basicChatOptions[-1]["params"]["info"].append({"name":"i discovered a nest in a cargo room.","text":"thanks for the report","type":"text","trigger":{"container":self.terrain.huntersLodge,"method":"rewardNestFind","params":{"room":self}}})
                     self.discovered = True
 
             self.addListener(foundNest,"entered room")
@@ -2330,9 +2330,24 @@ XXXXX$XXXXX
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
-    def rewardNestFind(self):
+    def rewardNestFind(self,params):
         mainChar.awardReputation(amount=10,reason="reporting a nest")
-        self.firstOfficer.basicChatOptions[-1]["params"]["info"].pop()
+        toRemove = None
+        for option in self.firstOfficer.basicChatOptions[-1]["params"]["info"]:
+            if "trigger" in option and option["trigger"]["method"] == "rewardNestFind" and  option["trigger"]["params"] == params:
+                toRemove = option
+                break
+        if toRemove:
+            self.firstOfficer.basicChatOptions[-1]["params"]["info"].remove(toRemove)
+
+        self.firstOfficer.basicChatOptions[-1]["params"]["info"].append({"name":"i want to exterminate a mice nest","text":"do so","type":"text","trigger":{"container":self.terrain.huntersLodge,"method":"killMiceNest","params":{"room":params["room"]}}})
+    
+    def killMiceNest(self,params):
+        for mouse in params["room"].characters:
+            quest = src.quests.MurderQuest(toKill=mouse,creator=self)
+            mainChar.assignQuest(quest,active=True)
+        mainChar.revokeReputation(amount=20,reason=" for balancing")
+
 
 '''
 a room in the process of beeing constructed. The room itself exists but no items within

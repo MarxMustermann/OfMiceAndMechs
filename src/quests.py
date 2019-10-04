@@ -1373,10 +1373,12 @@ class NaiveMurderQuest(Quest):
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
+        self.toKill.addListener(self.triggerCompletionCheck,"died")
+
     '''
     check whether target is dead
     '''
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,extra=None):
         if self.active:
             if self.toKill.dead:
                 self.postHandler()

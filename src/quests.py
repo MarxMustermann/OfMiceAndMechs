@@ -2454,7 +2454,7 @@ class MurderQuest(MetaQuestSequence):
            self.moveQuest = MoveQuestMeta(self.toKill.room,self.toKill.xPosition,self.toKill.yPosition,sloppy=False,creator=self)
            questList = [self.moveQuest,NaiveMurderQuest(toKill,creator=self)]
            self.lastPos = (self.toKill.room,self.toKill.xPosition,self.toKill.yPosition)
-        self.metaDescription = "murder"
+        self.metaDescription = "murder "+toKill.name
 
         # bad code: repetetive code
         for quest in reversed(questList):

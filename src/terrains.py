@@ -272,6 +272,28 @@ class Terrain(src.saveing.Saveable):
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
+        npc = characters.Character(21,50,creator=self,seed=seed,name="test")
+        self.addCharacter(npc,21,50)
+        self.runner = npc
+        self.runner1()
+
+
+    def runner1(self):
+        for room in self.rooms:
+            if isinstance(room,src.rooms.VatFermenting):
+                break
+        quest = src.quests.MoveQuestMeta(room,5,8,creator=self)
+        quest.endTrigger = {"container":self,"method":"runner2"}
+        self.runner.assignQuest(quest,active=True)
+
+    def runner2(self):
+        for room in reversed(self.rooms):
+            if isinstance(room,src.rooms.VatFermenting):
+                break
+        quest = src.quests.MoveQuestMeta(room,5,8,creator=self)
+        quest.endTrigger = {"container":self,"method":"runner1"}
+        self.runner.assignQuest(quest,active=True)
+
     '''
     registering for notifications
     bad code: should be an extra class

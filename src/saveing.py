@@ -308,7 +308,10 @@ class Saveable(object):
         else:
             container = callback["container"]
             function = getattr(container,callback["method"])
-            function()
+            if "params" in callback:
+                function(callback["params"])
+            else:
+                function()
 
     '''
     get a new creation counter

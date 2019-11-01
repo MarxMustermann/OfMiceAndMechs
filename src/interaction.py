@@ -1244,8 +1244,7 @@ class InventoryMenu(SubMenu):
                 self.subMenu.handleKey(".")
                 return False
 
-        # bad pattern: detailed inventory does not exist
-        header.set_text((urwid.AttrSpec("default","default"),"\ninventory overview\n(press "+commandChars.show_inventory_detailed+" for the extended inventory menu)\n\n"))
+        header.set_text((urwid.AttrSpec("default","default"),"\ninventory overview\n\n"))
 
         # bad code: uses global function
         self.persistentText = (urwid.AttrSpec("default","default"),renderInventory())

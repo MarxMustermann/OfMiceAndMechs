@@ -365,7 +365,7 @@ class Scrap(Item):
     def __init__(self,xPosition=0,yPosition=0,amount=1,name="scrap",creator=None):
         self.amount = amount
 
-        super().__init__(displayChars.scrap_light,xPosition,yPosition,creator=creator)
+        super().__init__(displayChars.scrap_light,xPosition,yPosition,creator=creator,name=name)
         self.bolted = False
 
         self.setWalkable()

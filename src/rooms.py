@@ -1362,6 +1362,37 @@ XXXXXXXXXXXXX
         loadingRegistry.register(self)
 
 '''
+a room to test gameplay concepts
+bad code: serves no real function yet
+'''
+class GameTestingRoom(Room):
+    '''
+    create room and add special items
+    '''
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+        self.roomLayout = """
+XXXXXXXXXXXXX
+X           X
+X           X
+X           X
+X           X
+X          vX
+X  .........$
+X          vX
+X           X
+X           X
+X           X
+X           X
+XXXXXXXXXXXXX
+"""
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        self.artwork = src.items.ProductionArtwork(4,1,creator=creator)
+        self.compactor = src.items.ScrapCompactor(6,1,creator=creator)
+        self.addItems([self.artwork,self.compactor])
+        self.initialState = self.getState()
+        loadingRegistry.register(self)
+
+'''
 a lab for behaviour testing
 bad code: is basically not implemented yet
 bad code: is misused as a target/source for transportation jobs

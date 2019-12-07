@@ -334,6 +334,8 @@ if args.terrain and args.terrain == "scrapField":
     terrain = terrains.ScrapField(creator=void,seed=seed)
 elif args.terrain and args.terrain == "nothingness":
     terrain = terrains.Nothingness(creator=void,seed=seed)
+elif args.terrain and args.terrain == "test":
+    terrain = terrains.GameplayTest(creator=void,seed=seed)
 else:
     terrain = terrains.TutorialTerrain(creator=void,seed=seed)
 

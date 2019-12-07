@@ -272,19 +272,21 @@ class Terrain(src.saveing.Saveable):
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
-        npc = characters.Character(21,50,creator=self,seed=seed,name="test")
+        npc = characters.Character(21,50,creator=self,seed=seed,name="atest")
         self.addCharacter(npc,21,50)
         self.runner = npc
         self.runner1()
 
 
     def runner1(self):
+        room = None
         for room in self.rooms:
             if isinstance(room,src.rooms.VatFermenting):
                 break
-        quest = src.quests.MoveQuestMeta(room,5,8,creator=self)
-        quest.endTrigger = {"container":self,"method":"runner2"}
-        self.runner.assignQuest(quest,active=True)
+        if room:
+            quest = src.quests.MoveQuestMeta(room,5,8,creator=self)
+            quest.endTrigger = {"container":self,"method":"runner2"}
+            self.runner.assignQuest(quest,active=True)
 
     def runner2(self):
         for room in reversed(self.rooms):
@@ -1307,14 +1309,6 @@ class Terrain(src.saveing.Saveable):
             exclude.append(mainChar.id)
         (charStates,changedCharList,newCharList,removedCharList) = self.getDiffList(self.characters,self.initialState["characterIds"],exclude=exclude)
 
-        # get the list of items to transport
-        # bad code: too specific. should be in story or something
-        # bad code: does not actually diff
-        toTransport = []
-        for item in self.toTransport:
-            toTransport.append((item[0].id,(item[1][0],item[1][1])))
-
-
         # generate state dict
         return {
                   "changedRoomList":changedRoomList,
@@ -1329,7 +1323,6 @@ class Terrain(src.saveing.Saveable):
                   "changedCharList":changedCharList,
                   "removedCharList":removedCharList,
                   "charStates":charStates,
-                  "toTransport":toTransport,
                }
 
     '''
@@ -1345,12 +1338,6 @@ class Terrain(src.saveing.Saveable):
             exclude.append(mainChar.id)
         (characterIds,chracterStates) = self.storeStateList(self.characters,exclude=exclude)
 
-        # get the list of items to transport
-        # bad code: too specific. should be in story or something
-        toTransport = []
-        for item in self.toTransport:
-            toTransport.append((item[0].id,(item[1][0],item[1][1])))
-
         # generate state
         return {
                   "roomIds":roomIds,
@@ -1359,7 +1346,6 @@ class Terrain(src.saveing.Saveable):
                   "itemStates":itemStates,
                   "characterIds":characterIds,
                   "chracterStates":chracterStates,
-                  "toTransport":toTransport,
                }
 
 '''
@@ -1415,6 +1401,89 @@ class Nothingness(Terrain):
         self.addItems(self.dekoItems)
 
         self.floordisplay = displayChars.dirt
+
+'''
+a gameplay test
+'''
+class GameplayTest(Terrain):
+    '''
+    state initialization
+    '''
+    def __init__(self,creator=None,seed=None):
+        # add only a few scattered intact rooms
+        layout = """
+
+
+  U  U 
+U  U 
+     U
+  U  U
+
+        """
+        detailedLayout = """
+        """
+        super().__init__(layout,detailedLayout,creator=creator,seed=seed)
+
+        self.floordisplay = displayChars.dirt
+
+        '''
+        add field of thick scrap
+        '''
+        def addPseudoRandomScrap(counter,xRange,yRange,skips):
+            for x in range(xRange[0],xRange[1]):
+                for y in range(yRange[0],yRange[1]):
+                    # skip pseudorandomly
+                    toSkip = False
+                    for skip in skips:
+                        if not x%skip[0] and not y%skip[1]:
+                            toSkip = True
+                            break
+                    if toSkip:
+                        continue
+
+                    # add scrap
+                    self.scrapItems.append(src.items.Scrap(x,y,counter,creator=creator))
+                    counter += 1
+                    if counter == 16:
+                        counter = 1
+            return counter
+
+        '''
+        add field of items
+        '''
+        def addPseudoRandomThin(xRange,yRange,modulos,itemType):
+            for x in range(xRange[0],xRange[1]):
+                for y in range(yRange[0],yRange[1]):
+                    # skip pseudorandomly
+                    if x%modulos[0] and y%modulos[1] or (not x%modulos[2] and not x%modulos[3]) or x%modulos[4] or not y%modulos[5]:
+                        continue
+
+                    # add scrap
+                    self.scrapItems.append(itemType(x,y,creator=creator))
+
+        self.scrapItems = []
+
+        # add scrap
+        counter = 3
+        counter = addPseudoRandomScrap(counter,(20,30),(30,110),((2,3),(3,2),(4,5),(5,4)))
+
+        counter = 3
+        counter = addPseudoRandomScrap(counter,(20,30),(30,110),((2,3),(3,2),(4,5),(5,4)))
+        counter = addPseudoRandomScrap(counter,(20,120),(20,30),((2,3),(3,2),(4,5),(5,4)))
+        counter = addPseudoRandomScrap(counter,(110,120),(30,110),((2,3),(3,2),(4,5),(5,4)))
+        counter = addPseudoRandomScrap(counter,(20,120),(110,120),((2,3),(3,2),(4,5),(5,4)))
+        counter = addPseudoRandomScrap(counter,(30,110),(30,110),((2,7),(5,3),(23,2),(13,9),(5,17)))
+
+        # add other objects
+        addPseudoRandomThin((30,110),(30,110),(23,7,2,3,2,4),src.items.Wall)
+        addPseudoRandomThin((30,110),(30,110),(13,15,3,5,3,2),src.items.Pipe)
+
+        self.addItems(self.scrapItems)
+
+        # add base of operations
+        self.wakeUpRoom = src.rooms.MiniBase(0,4,0,0,creator=creator)
+        self.addRooms([self.wakeUpRoom])
+
 
 '''
 a wrecked mech

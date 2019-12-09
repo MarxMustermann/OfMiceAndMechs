@@ -2236,6 +2236,55 @@ class MachineRoomPhase(BasicPhase):
     def end(self):
         gamestate.gameWon = True
 
+"""
+the phase is intended to give the player access to the true gameworld without manipulations
+
+this phase should be left as blank as possible
+"""
+class Testing_1(BasicPhase):
+    def __init__(self):
+        super().__init__("OpenWorld")
+    '''
+    place main char
+    bad code: superclass call should not be prevented
+    '''
+    def start(self,seed=0):
+        say("move to your assigned workplace.")
+        showText("move to your assigned workplace.")
+
+        mainChar.xPosition = 2
+        mainChar.yPosition = 4
+        mainChar.terrain = terrain
+        terrain.addCharacter(mainChar,2,4)
+
+        # add basic set of abilities in openworld phase
+        mainChar.questsDone = [
+              ]
+
+        mainChar.solvers = [
+                  "SurviveQuest",
+                  "Serve",
+                  "NaiveMoveQuest",
+                  "MoveQuestMeta",
+                  "NaiveActivateQuest",
+                  "ActivateQuestMeta",
+                  "NaivePickupQuest",
+                  "PickupQuestMeta",
+                  "DrinkQuest",
+                  "ExamineQuest",
+                  "FireFurnaceMeta",
+                  "CollectQuestMeta",
+                  "WaitQuest"
+                  "NaiveDropQuest",
+                  "NaiveDropQuest",
+                  "DropQuestMeta",
+                ]
+
+        quest = quests.EnterRoomQuestMeta(terrain.rooms[0],3,3,creator=void)
+        mainChar.assignQuest(quest)
+
+        gamestate.save()
+
 ###############################################################
 ###
 ##   the glue to be able to call the phases from configs etc

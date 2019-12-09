@@ -1676,6 +1676,65 @@ class VatMaggot(Item):
 
         super().apply(character,silent=True)
 
+'''
+'''
+class GameTestingProducer(Item):
+    type = "GameTestingProducer"
+
+    def __init__(self,xPosition=None,yPosition=None, name="testing producer",creator=None, seed=0, exclude1=[], exclude2=[]):
+        possibleResults = [Scrap,Corpse,GrowthTank,Hutch,Furnace,Lever,Door,Wall,MetalBars,Token]
+        possibleSource = [Scrap,Corpse,GrowthTank,Hutch,Furnace,Lever,Door,Wall,MetalBars,Token]
+        self.ressource = None
+        while not self.ressource:
+            self.product = possibleResults[seed%6]
+            self.ressource = possibleSource[seed%23%6]
+            seed += 3+(seed%7)
+            if self.product == self.ressource:
+                self.ressource = None
+            if self.ressource == Corpse:
+                self.ressource = None
+            if self.product == Scrap:
+                self.ressource = None
+            if self.ressource == Scrap:
+                if self.product in exclude2:
+                    seed += 7
+                    self.ressource = None
+            if self.product == Corpse:
+                if self.ressource in exclude1:
+                    seed += 5
+                    self.ressource = None
+
+                    
+        name = name + " | " + str(self.ressource.type) + " | " + str(self.product.type) 
+        super().__init__("/\\",xPosition,yPosition,name=name,creator=creator)
+
+    def apply(self,character,resultType=None):
+
+        # gather the ressource
+        itemFound = None
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                if isinstance(item,self.ressource):
+                   itemFound = item
+                   break
+        
+        # refuse production without ressources
+        if not itemFound:
+            messages.append("no "+self.ressource.type+" available")
+            return
+
+        # remove ressources
+        self.room.removeItem(item)
+
+        # spawn new item
+        new = self.product(creator=self)
+        new.xPosition = self.xPosition-1
+        new.yPosition = self.yPosition
+        new.bolted = False
+        self.room.addItems([new])
+
+        super().apply(character,silent=True)
+
 # maping from strings to all items
 # should be extendable
 itemMap = {

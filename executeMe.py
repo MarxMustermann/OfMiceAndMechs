@@ -366,6 +366,7 @@ phasesByName["FurnaceCompetition"] = story.FurnaceCompetition
 phasesByName["VatPhase"] = story.VatPhase
 phasesByName["MachineRoomPhase"] = story.MachineRoomPhase
 phasesByName["OpenWorld"] = story.OpenWorld
+phasesByName["Test"] = story.Testing_1
 
 ##################################################################################################################################
 ###

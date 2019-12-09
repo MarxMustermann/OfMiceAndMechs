@@ -1678,6 +1678,167 @@ class VatMaggot(Item):
 
 '''
 '''
+class Sheet(Item):
+    type = "Sheet"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="sheet",creator=None):
+        super().__init__("+#",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+
+'''
+'''
+class Rod(Item):
+    type = "Rod"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="rod",creator=None):
+        super().__init__("+|",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+
+
+'''
+'''
+class Nook(Item):
+    type = "Nook"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="nook",creator=None):
+        super().__init__("+L",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+
+
+'''
+'''
+class Stripe(Item):
+    type = "Stripe"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="stripe",creator=None):
+        super().__init__("+-",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+
+
+'''
+'''
+class Bolt(Item):
+    type = "Bolt"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="bolt",creator=None):
+        super().__init__("+i",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+
+'''
+'''
+class Coil(Item):
+    type = "Coil"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="coil",creator=None):
+        super().__init__("+g",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+
+'''
+'''
+class Tank(Item):
+    type = "Tank"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="tank",creator=None):
+        super().__init__("#o",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+
+'''
+'''
+class Heater(Item):
+    type = "Heater"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="heater",creator=None):
+        super().__init__("#%",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+
+
+'''
+'''
+class Connector(Item):
+    type = "Connector"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="connector",creator=None):
+        super().__init__("#H",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+
+
+'''
+'''
+class Puller(Item):
+    type = "puller"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="puller",creator=None):
+        super().__init__("#>",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+
+
+'''
+'''
+class Pusher(Item):
+    type = "pusher"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="pusher",creator=None):
+        super().__init__("#<",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+
+
+'''
+'''
 class GameTestingProducer(Item):
     type = "GameTestingProducer"
 

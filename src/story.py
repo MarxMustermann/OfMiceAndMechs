@@ -2297,7 +2297,7 @@ class Testing_1(BasicPhase):
         gamestate.save()
 
     def checkNearTarget(self):
-        if (self.mainChar.xPosition//15 == 1 and self.mainChar.yPosition//15 == 4):
+        if (self.mainChar.xPosition//15 in (0,1,) and self.mainChar.yPosition//15 in (4,5,)):
             self.mainChar.delListener(self.checkNearTarget)
             showText("the minibase you are assigned to work in is to the west.\nenter the room through its door. The door is shown as [].\nopen the door and enter the room. Activate the door to open it.\n\nYou activate items by walking into them and pressing j afterwards");
             say("walk into items and press j to activate them")
@@ -2314,6 +2314,12 @@ class Testing_1(BasicPhase):
         self.reportQuest.postHandler()
         self.scrapQuest = src.quests.DummyQuest(description="gather scrap", creator=self)
         self.mainChar.assignQuest(self.scrapQuest, active=True)
+        self.mainChar.addListener(self.checkOutside)
+
+    def checkOutside(self):
+        if self.mainChar.room == None:
+            messages.append("start next phase now")
+            self.mainChar.delListener(self.checkOutside)
 
     def test(self):
         messages.append("test")

@@ -88,7 +88,7 @@ class BasicPhase(src.saveing.Saveable):
     state initialization
     bad code: creating default attributes in init and set them externally later
     '''
-    def __init__(self,name):
+    def __init__(self,name,seed=0):
         super().__init__()
         self.mainCharXPosition = None
         self.mainCharYPosition = None
@@ -102,6 +102,7 @@ class BasicPhase(src.saveing.Saveable):
         self.secondOfficerXPosition = 5
         self.secondOfficerYPosition = 3
         self.name = name
+        self.seed = seed
 
         # register with dummy id
         self.id = name
@@ -187,8 +188,8 @@ class BasicPhase(src.saveing.Saveable):
 """
 """
 class Challenge(BasicPhase):
-    def __init__(self):
-        super().__init__("challenge")
+    def __init__(self,seed=0):
+        super().__init__("challenge",seed=seed)
 
     '''
     place main char
@@ -278,8 +279,8 @@ the phase is intended to give the player access to the true gameworld without ma
 this phase should be left as blank as possible
 """
 class OpenWorld(BasicPhase):
-    def __init__(self):
-        super().__init__("OpenWorld")
+    def __init__(self,seed=0):
+        super().__init__("OpenWorld",seed=seed)
     '''
     place main char
     bad code: superclass call should not be prevented
@@ -360,8 +361,8 @@ class BrainTestingPhase(BasicPhase):
     '''
     straightforward state initialization
     '''
-    def __init__(self):
-        super().__init__("BrainTesting")
+    def __init__(self,seed=0):
+        super().__init__("BrainTesting",seed=seed)
 
     '''
     show some messages and place trigger
@@ -581,8 +582,8 @@ class WakeUpPhase(BasicPhase):
     '''
     basic state initialization
     '''
-    def __init__(self):
-        super().__init__("WakeUpPhase")
+    def __init__(self,seed=0):
+        super().__init__("WakeUpPhase",seed=seed)
 
     '''
     show some fluff and place trigger
@@ -734,8 +735,8 @@ class BasicMovementTraining(BasicPhase):
     '''
     basic state initialization
     '''
-    def __init__(self):
-        super().__init__("BasicMovementTraining")
+    def __init__(self,seed=0):
+        super().__init__("BasicMovementTraining",seed=seed)
         self.didFurnaces = False
     
     '''
@@ -1163,8 +1164,8 @@ class BoilerRoomWelcome(BasicPhase):
     '''
     straightforward state initialization
     '''
-    def __init__(self):
-        super().__init__("BoilerRoomWelcome")
+    def __init__(self,seed=0):
+        super().__init__("BoilerRoomWelcome",seed=seed)
 
     '''
     set up a basic intro
@@ -1259,8 +1260,8 @@ class BoilerRoomWelcome(BasicPhase):
             '''
             basic state initialization
             '''
-            def __init__(subself,tick,creator=None):
-                super().__init__(tick,creator=creator)
+            def __init__(subself,tick,creator=None,seed=0):
+                super().__init__(tick,creator=creator,seed=seed)
                 subself.tick = tick
 
             '''
@@ -1414,8 +1415,8 @@ class BoilerRoomInteractionTraining(BasicPhase):
     '''
     straightforward state initialization
     '''
-    def __init__(self):
-        super().__init__("BoilerRoomInteractionTraining")
+    def __init__(self,seed=0):
+        super().__init__("BoilerRoomInteractionTraining",seed=seed)
 
     '''
     explain interaction and make the player apply lessons
@@ -1495,8 +1496,8 @@ class FurnaceCompetition(BasicPhase):
     '''
     straightforward state initialization
     '''
-    def __init__(self):
-        super().__init__("FurnaceCompetition")
+    def __init__(self,seed=0):
+        super().__init__("FurnaceCompetition",seed=seed)
 
     '''
     run the competition
@@ -1714,9 +1715,9 @@ class FindWork(BasicPhase):
     '''
     basic state initialization
     '''
-    def __init__(self):
+    def __init__(self,seed=0):
         self.cycleQuestIndex = 0
-        super().__init__("FindWork")
+        super().__init__("FindWork",seed=seed)
         self.attributesToStore.extend(["cycleQuestIndex"])
         loadingRegistry.register(self)
         self.initialState = self.getState()
@@ -2098,8 +2099,8 @@ class LabPhase(BasicPhase):
     '''
     straightforward state initialization
     '''
-    def __init__(self):
-        super().__init__("LabPhase")
+    def __init__(self,seed=0):
+        super().__init__("LabPhase",seed=seed)
 
     '''
     make a dummy movement and switch phase
@@ -2141,8 +2142,8 @@ class VatPhase(BasicPhase):
     '''
     straightforward state initialization
     '''
-    def __init__(self):
-        super().__init__("VatPhase")
+    def __init__(self,seed=0):
+        super().__init__("VatPhase",seed=seed)
 
     '''
     do a dummy action and switch phase
@@ -2197,8 +2198,8 @@ class MachineRoomPhase(BasicPhase):
     '''
     straightforward state initialization
     '''
-    def __init__(self):
-        super().__init__("MachineRoomPhase")
+    def __init__(self,seed=0):
+        super().__init__("MachineRoomPhase",seed=seed)
 
     '''
     switch completely to free play
@@ -2242,8 +2243,8 @@ the phase is intended to give the player access to the true gameworld without ma
 this phase should be left as blank as possible
 """
 class Testing_1(BasicPhase):
-    def __init__(self):
-        super().__init__("OpenWorld")
+    def __init__(self,seed=0):
+        super().__init__("Testing_1",seed=seed)
     '''
     place main char
     bad code: superclass call should not be prevented

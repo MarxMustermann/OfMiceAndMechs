@@ -375,7 +375,7 @@ phasesByName["Test"] = story.Testing_1
 #################################################################################################################################
 
 # create and load the gamestate
-gameStateObj = gamestate.GameState(phase=args.phase)
+gameStateObj = gamestate.GameState(phase=args.phase, seed=seed)
 
 # bad code: common variables with modules
 story.gamestate = gameStateObj

@@ -1481,7 +1481,7 @@ U  U
         self.addItems(self.scrapItems)
 
         # add base of operations
-        self.wakeUpRoom = src.rooms.GameTestingRoom(0,4,0,0,creator=creator)
+        self.wakeUpRoom = src.rooms.GameTestingRoom(0,4,0,0,creator=creator,seed=seed)
         self.addRooms([self.wakeUpRoom])
 
 

@@ -19,7 +19,7 @@ class GameState():
     basic state setting with some initialization
     bad code: initialization should happen in story or from loading
     '''
-    def __init__(self,phase=None):
+    def __init__(self,phase=None, seed=0):
         self.gameWon = False
         self.tick = 0
 
@@ -32,9 +32,9 @@ class GameState():
 
         # set the phase
         if phase:
-            self.currentPhase = phasesByName[phase]()
+            self.currentPhase = phasesByName[phase](seed=seed)
         else:
-            self.currentPhase = phasesByName["BrainTesting"]()
+            self.currentPhase = phasesByName["BrainTesting"](seed=seed)
 
         # add the main char
         self.mainChar = src.characters.Character(displayChars.main_char,3,3,automated=False,name=names.characterFirstNames[self.tick%len(names.characterFirstNames)]+" "+names.characterLastNames[self.tick%len(names.characterLastNames)],creator=void)

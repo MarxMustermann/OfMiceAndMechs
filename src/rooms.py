@@ -1369,7 +1369,7 @@ class GameTestingRoom(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None, seed=0):
         self.roomLayout = """
 XXXXXXXXXXXXX
 X           X
@@ -1386,10 +1386,10 @@ X           X
 XXXXXXXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        print(seed)
         itemList = []
         exclude1 = [src.items.Scrap]
         exclude2 = [src.items.Corpse]
-        seed = 0
         itemList.append(src.items.ScrapCompactor(10,1,creator=creator))
 
         l1Items = [src.items.Sheet,src.items.Rod,src.items.Sheet,src.items.Nook,src.items.Stripe,src.items.Bolt,src.items.Coil]

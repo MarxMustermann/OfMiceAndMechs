@@ -2250,20 +2250,24 @@ class Testing_1(BasicPhase):
     bad code: superclass call should not be prevented
     '''
     def start(self,seed=0):
-        showText("Your current sitiuation is:\n\n\nYour memory has been resetted and you have been dumped here for manual work.\n\nIf you keep getting caught violationg order XXI you will be killed.\nIf it were not for your heritage you would be dead a long time ago.\n\nAs your Implant i can only strictly advise against getting caught again.")
+        showText("Your current sitiuation is:\n\n\nYour memory has been resetted and you have been dumped here for manual work.\n\nIf you keep getting caught violating order XXI you will be killed.\nIf it were not for your heritage you would be dead a long time ago.\n\nAs your Implant i can only strictly advise against getting caught again.")
         say("now move to your assigned workplace.")
         showText("Since you lost your memory again i will feed you the most important data.\n\nYou are represented by the @ character and you are in the wastelands.\n\nTo the east there is a scrap field. You may ignore it for now.\n\nTo your south is a minibase. You are assigned to work there\n\nYou can move by using the w a s d keys or the arrow keys.\n\nnow move to your assigned workplace.")
 
-        mainChar.xPosition = 10
-        mainChar.yPosition = 14
-        mainChar.terrain = terrain
-        terrain.addCharacter(mainChar,mainChar.xPosition,mainChar.yPosition)
+        self.mainChar = mainChar
+
+        self.mainChar.xPosition = 10
+        self.mainChar.yPosition = 14
+        self.mainChar.terrain = terrain
+        terrain.addCharacter(self.mainChar,self.mainChar.xPosition,self.mainChar.yPosition)
+
+        self.mainChar.addListener(self.checkNearTarget)
 
         # add basic set of abilities in openworld phase
-        mainChar.questsDone = [
+        self.mainChar.questsDone = [
               ]
 
-        mainChar.solvers = [
+        self.mainChar.solvers = [
                   "SurviveQuest",
                   "Serve",
                   "NaiveMoveQuest",
@@ -2282,12 +2286,22 @@ class Testing_1(BasicPhase):
                   "DropQuestMeta",
                 ]
 
-        miniBase = terrain.rooms[0]
+        self.miniBase = terrain.rooms[0]
 
-        quest = quests.EnterRoomQuestMeta(miniBase,3,3,creator=void)
-        mainChar.assignQuest(quest)
+        quest = quests.EnterRoomQuestMeta(self.miniBase,3,3,creator=void)
+        quest.endTrigger = {"container":self,"method":"reportForDuty"}
+        self.mainChar.assignQuest(quest)
 
         gamestate.save()
+
+    def checkNearTarget(self):
+        if (self.mainChar.xPosition//15 == 1 and self.mainChar.yPosition//15 == 4):
+            self.mainChar.delListener(self.checkNearTarget)
+            showText("the minibase you are assigned to work in is to the west.\nenter the room through its door. The door is shown as [].\nopen the door and enter the room. Activate the door to open it.\n\nYou activate items by walking into them and pressing j afterwards");
+            say("walk into items and press j to activate them")
+
+    def reportForDuty(self):
+        showText("I did not expect that you will start following orders after your memory wipe.\nYou might make it, if continue to do so.\n\nNow report for duty and work your way out of here.\n\nyou can talk to people by pressing the h key.\nNavigate the chat options by using the w s keys or the arrow keys.\nUse the j or enter key to select dialog options")
 
 ###############################################################
 ###

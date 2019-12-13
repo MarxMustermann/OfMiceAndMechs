@@ -2250,13 +2250,14 @@ class Testing_1(BasicPhase):
     bad code: superclass call should not be prevented
     '''
     def start(self,seed=0):
-        say("move to your assigned workplace.")
-        showText("move to your assigned workplace.")
+        showText("Your current sitiuation is:\n\n\nYour memory has been resetted and you have been dumped here for manual work.\n\nIf you keep getting caught violationg order XXI you will be killed.\nIf it were not for your heritage you would be dead a long time ago.\n\nAs your Implant i can only strictly advise against getting caught again.")
+        say("now move to your assigned workplace.")
+        showText("Since you lost your memory again i will feed you the most important data.\n\nYou are represented by the @ character and you are in the wastelands.\n\nTo the east there is a scrap field. You may ignore it for now.\n\nTo your south is a minibase. You are assigned to work there\n\nYou can move by using the w a s d keys or the arrow keys.\n\nnow move to your assigned workplace.")
 
-        mainChar.xPosition = 2
-        mainChar.yPosition = 4
+        mainChar.xPosition = 10
+        mainChar.yPosition = 14
         mainChar.terrain = terrain
-        terrain.addCharacter(mainChar,2,4)
+        terrain.addCharacter(mainChar,mainChar.xPosition,mainChar.yPosition)
 
         # add basic set of abilities in openworld phase
         mainChar.questsDone = [

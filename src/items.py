@@ -1611,10 +1611,11 @@ class ScrapCompactor(Item):
 
         # fetch input scrap
         scrap = None
-        for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
-            if isinstance(item,Scrap):
-                scrap = item
-                break
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                if isinstance(item,Scrap):
+                    scrap = item
+                    break
 
         # refuse to produce without ressources
         if not scrap:

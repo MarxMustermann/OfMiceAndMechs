@@ -1849,7 +1849,7 @@ class GameTestingProducer_l1(Item):
         self.product = None
         while not self.product:
             self.product = possibleResults[seed%len(possibleResults)]
-            seed += 3+(seed%7)
+            seed += 3+(seed%7)+(seed%53)
             if self.product == self.ressource:
                 self.product = None
                     

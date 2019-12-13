@@ -1386,7 +1386,6 @@ X           X
 XXXXXXXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
-        print(seed)
         itemList = []
         exclude1 = [src.items.Scrap]
         exclude2 = [src.items.Corpse]

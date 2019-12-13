@@ -73,6 +73,7 @@ class ConfigurableChat(Chat):
     def __init__(self,discardParam = None):
         super().__init__()
         self.subMenu = None
+        self.allowExit = True
 
     '''
     '''
@@ -91,7 +92,8 @@ class ConfigurableChat(Chat):
                 options.append((option,option["name"]))
 
             # add default dialog options
-            options.append(("exit","let us proceed"))
+            if self.allowExit:
+                options.append(("exit","let us proceed"))
 
             # set the options
             self.setOptions("answer:",options)
@@ -122,6 +124,9 @@ class ConfigurableChat(Chat):
                 self.info.extend(self.selection["follow"])
             if "delete" in self.selection and self.selection["delete"]:
                 self.info.remove(self.selection)
+            if "quitAfter" in self.selection and self.selection["quitAfter"]:
+                self.done = True
+                return True
             self.selection = None
 
         self.done = False
@@ -134,6 +139,8 @@ class ConfigurableChat(Chat):
     def setUp(self,state):
         self.text = state["text"]
         self.info = state["info"]
+        if "allowExit" in state:
+            self.allowExit = state["allowExit"]
              
 '''
 the chat for collecting the reward

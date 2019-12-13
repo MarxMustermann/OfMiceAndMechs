@@ -3632,6 +3632,30 @@ class Serve(MetaQuestParralel):
     def triggerCompletionCheck(self):
         return 
 
+'''
+dummy quest
+'''
+class DummyQuest(Quest):
+    '''
+    state initialization
+    '''
+    def __init__(self, description="dummy quest",creator=None):
+        questList = []
+        super().__init__(questList,creator=creator)
+        self.description = description
+
+        # save initial state and register
+        self.type = "DummyQuest"
+        self.initialState = self.getState()
+        loadingRegistry.register(self)
+
+    '''
+    never complete
+    '''
+    def triggerCompletionCheck(self):
+        return 
+
+
 # map strings to Classes
 questMap = {
               "Quest":Quest,

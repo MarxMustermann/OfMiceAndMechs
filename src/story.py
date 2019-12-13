@@ -2292,6 +2292,8 @@ class Testing_1(BasicPhase):
         quest.endTrigger = {"container":self,"method":"reportForDuty"}
         self.mainChar.assignQuest(quest)
 
+        self.reportQuest = None
+
         gamestate.save()
 
     def checkNearTarget(self):
@@ -2302,6 +2304,19 @@ class Testing_1(BasicPhase):
 
     def reportForDuty(self):
         showText("I did not expect that you will start following orders after your memory wipe.\nYou might make it, if continue to do so.\n\nNow report for duty and work your way out of here.\n\nyou can talk to people by pressing the h key.\nNavigate the chat options by using the w s keys or the arrow keys.\nUse the j or enter key to select dialog options")
+        self.reportQuest = src.quests.DummyQuest(description="report for duty", creator=self)
+        self.mainChar.assignQuest(self.reportQuest, active=True)
+
+        self.miniBase.firstOfficer.basicChatOptions.append({"dialogName":"I hereby report for duty.","chat":src.chats.ConfigurableChat,"params":{"text":"You may serve.\n\nThey did not send someone for some mTicks after my latest subordinate died. I question how they did expect any work getting done here.\n\nStart by gathering some scrap form the scrap field in the east.","info":[{"type":"text","text":"Return the scrap to me","name":"Starting now","delete":True,"trigger":{"container":self,"method":"startDuty"},"quitAfter":True}],"allowExit":False}})
+
+    def startDuty(self):
+        self.miniBase.firstOfficer.basicChatOptions.pop()
+        self.reportQuest.postHandler()
+        self.scrapQuest = src.quests.DummyQuest(description="gather scrap", creator=self)
+        self.mainChar.assignQuest(self.scrapQuest, active=True)
+
+    def test(self):
+        messages.append("test")
 
 ###############################################################
 ###

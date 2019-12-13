@@ -1836,11 +1836,101 @@ class Pusher(Item):
         self.bolted = False
         self.walkable = True
 
+'''
+'''
+class GameTestingProducer_l1(Item):
+    type = "GameTestingProducer_l1"
+
+    def __init__(self,xPosition=None,yPosition=None, name="testing producer",creator=None, seed=0, mainRessource=None, possibleResults=[]):
+        if (seed%3) == 0:
+            self.ressource = mainRessource
+        else:
+            self.ressource = possibleResults[seed%len(possibleResults)]
+        self.product = None
+        while not self.product:
+            self.product = possibleResults[seed%len(possibleResults)]
+            seed += 3+(seed%7)
+            if self.product == self.ressource:
+                self.product = None
+                    
+        name = name + " | " + str(self.ressource.type) + " -> " + str(self.product.type) 
+        super().__init__("/\\",xPosition,yPosition,name=name,creator=creator)
+
+    def apply(self,character,resultType=None):
+
+        # gather the ressource
+        itemFound = None
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+                if isinstance(item,self.ressource):
+                   itemFound = item
+                   break
+        
+        # refuse production without ressources
+        if not itemFound:
+            messages.append("no "+self.ressource.type+" available")
+            return
+
+        # remove ressources
+        self.room.removeItem(item)
+
+        # spawn new item
+        new = self.product(creator=self)
+        new.xPosition = self.xPosition+1
+        new.yPosition = self.yPosition
+        new.bolted = False
+        self.room.addItems([new])
+
+        super().apply(character,silent=True)
 
 '''
 '''
-class GameTestingProducer(Item):
-    type = "GameTestingProducer"
+class GameTestingProducer_l2(Item):
+    type = "GameTestingProducer_l2"
+
+    def __init__(self,xPosition=None,yPosition=None, name="testing producer",creator=None, seed=0, possibleSources=[], possibleResults=[]):
+        self.ressource = None
+        while not self.ressource:
+            self.product = possibleResults[seed%23%len(possibleResults)]
+            self.ressource = possibleSources[seed%len(possibleSources)]
+            seed += 3+(seed%7)
+            if self.product == self.ressource:
+                self.ressource = None
+                    
+        name = name + " | " + str(self.ressource.type) + " -> " + str(self.product.type) 
+        super().__init__("/\\",xPosition,yPosition,name=name,creator=creator)
+
+    def apply(self,character,resultType=None):
+
+        # gather the ressource
+        itemFound = None
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+                if isinstance(item,self.ressource):
+                   itemFound = item
+                   break
+        
+        # refuse production without ressources
+        if not itemFound:
+            messages.append("no "+self.ressource.type+" available")
+            return
+
+        # remove ressources
+        self.room.removeItem(item)
+
+        # spawn new item
+        new = self.product(creator=self)
+        new.xPosition = self.xPosition+1
+        new.yPosition = self.yPosition
+        new.bolted = False
+        self.room.addItems([new])
+
+        super().apply(character,silent=True)
+
+'''
+'''
+class GameTestingProducer_l3(Item):
+    type = "GameTestingProducer_l3"
 
     def __init__(self,xPosition=None,yPosition=None, name="testing producer",creator=None, seed=0, exclude1=[], exclude2=[]):
         possibleResults = [Scrap,Corpse,GrowthTank,Hutch,Furnace,Lever,Door,Wall,MetalBars,Token]
@@ -1866,15 +1956,15 @@ class GameTestingProducer(Item):
                     self.ressource = None
 
                     
-        name = name + " | " + str(self.ressource.type) + " | " + str(self.product.type) 
+        name = name + " | " + str(self.ressource.type) + " -> " + str(self.product.type) 
         super().__init__("/\\",xPosition,yPosition,name=name,creator=creator)
 
     def apply(self,character,resultType=None):
 
         # gather the ressource
         itemFound = None
-        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
                 if isinstance(item,self.ressource):
                    itemFound = item
                    break
@@ -1889,7 +1979,7 @@ class GameTestingProducer(Item):
 
         # spawn new item
         new = self.product(creator=self)
-        new.xPosition = self.xPosition-1
+        new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
         new.bolted = False
         self.room.addItems([new])

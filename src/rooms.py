@@ -1390,93 +1390,41 @@ XXXXXXXXXXXXX
         exclude1 = [src.items.Scrap]
         exclude2 = [src.items.Corpse]
         seed = 0
-        seed += 13
         itemList.append(src.items.ScrapCompactor(10,1,creator=creator))
-        itemList.append(src.items.GameTestingProducer(2,2,creator=creator,seed=seed, exclude1=exclude1, exclude2=exclude2))
-        if itemList[-1].ressource == src.items.Scrap:
-            exclude1.append(itemList[-1].product)
-        if itemList[-1].product == src.items.Corpse:
-            exclude2.append(itemList[-1].ressource)
-        seed += 139
-        itemList.append(src.items.GameTestingProducer(2,4,creator=creator,seed=seed, exclude1=exclude1, exclude2=exclude2))
-        if itemList[-1].ressource == src.items.Scrap:
-            exclude1.append(itemList[-1].product)
-        if itemList[-1].product == src.items.Corpse:
-            exclude2.append(itemList[-1].ressource)
-        seed += 9
-        itemList.append(src.items.GameTestingProducer(2,6,creator=creator,seed=seed, exclude1=exclude1, exclude2=exclude2))
-        if itemList[-1].ressource == src.items.Scrap:
-            exclude1.append(itemList[-1].product)
-        if itemList[-1].product == src.items.Corpse:
-            exclude2.append(itemList[-1].ressource)
-        seed += 39
-        itemList.append(src.items.GameTestingProducer(2,8,creator=creator,seed=seed, exclude1=exclude1, exclude2=exclude2))
-        if itemList[-1].ressource == src.items.Scrap:
-            exclude1.append(itemList[-1].product)
-        if itemList[-1].product == src.items.Corpse:
-            exclude2.append(itemList[-1].ressource)
-        seed += 9
-        itemList.append(src.items.GameTestingProducer(2,10,creator=creator,seed=seed, exclude1=exclude1, exclude2=exclude2))
-        if itemList[-1].ressource == src.items.Scrap:
-            exclude1.append(itemList[-1].product)
-        if itemList[-1].product == src.items.Corpse:
-            exclude2.append(itemList[-1].ressource)
-        seed += 20
-        itemList.append(src.items.GameTestingProducer(5,2,creator=creator,seed=seed, exclude1=exclude1, exclude2=exclude2))
-        if itemList[-1].ressource == src.items.Scrap:
-            exclude1.append(itemList[-1].product)
-        if itemList[-1].product == src.items.Corpse:
-            exclude2.append(itemList[-1].ressource)
-        seed += 23
-        itemList.append(src.items.GameTestingProducer(5,4,creator=creator,seed=seed, exclude1=exclude1, exclude2=exclude2))
-        if itemList[-1].ressource == src.items.Scrap:
-            exclude1.append(itemList[-1].product)
-        if itemList[-1].product == src.items.Corpse:
-            exclude2.append(itemList[-1].ressource)
-        seed += 34
-        itemList.append(src.items.GameTestingProducer(5,6,creator=creator,seed=seed, exclude1=exclude1, exclude2=exclude2))
-        if itemList[-1].ressource == src.items.Scrap:
-            exclude1.append(itemList[-1].product)
-        if itemList[-1].product == src.items.Corpse:
-            exclude2.append(itemList[-1].ressource)
-        seed += 30
-        itemList.append(src.items.GameTestingProducer(5,8,creator=creator,seed=seed, exclude1=exclude1, exclude2=exclude2))
-        if itemList[-1].ressource == src.items.Scrap:
-            exclude1.append(itemList[-1].product)
-        if itemList[-1].product == src.items.Corpse:
-            exclude2.append(itemList[-1].ressource)
-        seed += 12
-        itemList.append(src.items.GameTestingProducer(5,10,creator=creator,seed=seed, exclude1=exclude1, exclude2=exclude2))
-        if itemList[-1].ressource == src.items.Scrap:
-            exclude1.append(itemList[-1].product)
-        if itemList[-1].product == src.items.Corpse:
-            exclude2.append(itemList[-1].ressource)
-        seed += 34
-        itemList.append(src.items.GameTestingProducer(8,2,creator=creator,seed=seed, exclude1=exclude1, exclude2=exclude2))
-        if itemList[-1].ressource == src.items.Scrap:
-            exclude1.append(itemList[-1].product)
-        if itemList[-1].product == src.items.Corpse:
-            exclude2.append(itemList[-1].ressource)
-        seed += 50
-        itemList.append(src.items.GameTestingProducer(8,4,creator=creator,seed=seed, exclude1=exclude1, exclude2=exclude2))
-        if itemList[-1].ressource == src.items.Scrap:
-            exclude1.append(itemList[-1].product)
-        if itemList[-1].product == src.items.Corpse:
-            exclude2.append(itemList[-1].ressource)
-        seed += 53
-        itemList.append(src.items.GameTestingProducer(8,6,creator=creator,seed=seed, exclude1=exclude1, exclude2=exclude2))
-        if itemList[-1].ressource == src.items.Scrap:
-            exclude1.append(itemList[-1].product)
-        if itemList[-1].product == src.items.Corpse:
-            exclude2.append(itemList[-1].ressource)
-        seed += 10
-        itemList.append(src.items.GameTestingProducer(8,8,creator=creator,seed=seed, exclude1=exclude1, exclude2=exclude2))
-        if itemList[-1].ressource == src.items.Scrap:
-            exclude1.append(itemList[-1].product)
-        if itemList[-1].product == src.items.Corpse:
-            exclude2.append(itemList[-1].ressource)
-        seed += 13
-        itemList.append(src.items.GameTestingProducer(8,10,creator=creator,seed=seed, exclude1=exclude1, exclude2=exclude2))
+
+        l1Items = [src.items.Sheet,src.items.Rod,src.items.Sheet,src.items.Nook,src.items.Stripe,src.items.Bolt,src.items.Coil]
+        y = 0
+        while y < 2:
+            x = 0
+            while x < 3:
+                itemList.append(src.items.GameTestingProducer_l1(3+x*3,2+y,creator=creator,seed=seed, mainRessource=src.items.MetalBars,possibleResults=l1Items))
+                x += 1
+                seed += 13
+            y += 1
+            seed += seed%7
+
+        l2Items = [src.items.Tank,src.items.Heater,src.items.Connector,src.items.Pusher,src.items.Pusher]
+        y = 0
+        while y < 3:
+            x = 0
+            while x < 3:
+                itemList.append(src.items.GameTestingProducer_l2(3+x*3,5+y,creator=creator,seed=seed, possibleSources=l1Items+l2Items, possibleResults=l2Items))
+                x += 1
+                seed += 13
+            y += 1
+            seed += seed%7
+
+        l3Items = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
+        y = 0
+        while y < 2:
+            x = 0
+            while x < 3:
+                itemList.append(src.items.GameTestingProducer_l2(3+x*3,9+y,creator=creator,seed=seed, possibleSources=l2Items, possibleResults=l3Items))
+                x += 1
+                seed += 13
+            y += 1
+            seed += seed%7
+
         self.addItems(itemList)
         self.initialState = self.getState()
         loadingRegistry.register(self)

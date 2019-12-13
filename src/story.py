@@ -2280,7 +2280,9 @@ class Testing_1(BasicPhase):
                   "DropQuestMeta",
                 ]
 
-        quest = quests.EnterRoomQuestMeta(terrain.rooms[0],3,3,creator=void)
+        miniBase = terrain.rooms[0]
+
+        quest = quests.EnterRoomQuestMeta(miniBase,3,3,creator=void)
         mainChar.assignQuest(quest)
 
         gamestate.save()

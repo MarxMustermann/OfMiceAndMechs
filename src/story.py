@@ -2262,6 +2262,7 @@ class Testing_1(BasicPhase):
         terrain.addCharacter(self.mainChar,self.mainChar.xPosition,self.mainChar.yPosition)
 
         self.mainChar.addListener(self.checkNearTarget)
+        self.mainChar.addListener(self.checkGameWon)
 
         # add basic set of abilities in openworld phase
         self.mainChar.questsDone = [
@@ -2320,6 +2321,11 @@ class Testing_1(BasicPhase):
         if self.mainChar.room == None:
             messages.append("start next phase now")
             self.mainChar.delListener(self.checkOutside)
+
+    def checkGameWon(self):
+        for item in self.mainChar.inventory:
+            if isinstance(item,src.items.Furnace):
+                gamestate.gameWon = True
 
     def test(self):
         messages.append("test")

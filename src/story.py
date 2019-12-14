@@ -2262,7 +2262,6 @@ class Testing_1(BasicPhase):
         terrain.addCharacter(self.mainChar,self.mainChar.xPosition,self.mainChar.yPosition)
 
         self.mainChar.addListener(self.checkNearTarget)
-        self.mainChar.addListener(self.checkGameWon)
 
         # add basic set of abilities in openworld phase
         self.mainChar.questsDone = [
@@ -2319,16 +2318,84 @@ class Testing_1(BasicPhase):
 
     def checkOutside(self):
         if self.mainChar.room == None:
-            messages.append("start next phase now")
             self.mainChar.delListener(self.checkOutside)
+            showText("well that is not the most of productive task, but scrap metal is needed to produce other things.\nGo and grab some scrap.\n\nscrap is shown as *, or .; or %# . Almost the whole area in the east is composed of scrap.\n\nTo pick up items walk onto them or into them and press k. This works like activating items.")
+            self.mainChar.addListener(self.checkScrapCollected)
+
+    def checkScrapCollected(self):
+        numScrapCollected = 0
+        for item in self.mainChar.inventory:
+            if isinstance(item,src.items.Scrap):
+                numScrapCollected += 1
+
+        if numScrapCollected >= 5:
+            showText("you collected some scrap. return to your superviser and you may see what to do now")
+            self.mainChar.delListener(self.checkScrapCollected)
+
+            self.miniBase.firstOfficer.basicChatOptions.append({"dialogName":"I collected some scrap.","chat":src.chats.ConfigurableChat,"params":{"text":"now go and produce some metal bars","info":[{"type":"text","text":"Return the scrap to me","name":"Starting now","delete":True,"trigger":{"container":self,"method":"startMetalBarChecking"},"quitAfter":True}],"allowExit":False}})
+
+    def startMetalBarChecking(self):
+
+        showText("I seems like this is a simple ressource gathering job. Metal bars are used to produce most of the materials needed in a mech.\n\nThe scrap is compacted to metal bars in a machine called scrap compactor\nThe machine is represented by the U\\ character. It processes scrap on the tile to its east and outputs the bars on the tile to its right.\n\nstart by dropping the scrap on the tile east of the machine.\nMove onto the tile and press l to drop items.")
+
+        self.scrapQuest.postHandler()
+        self.scrapQuest.completed = True
+
+        self.mainChar.addListener(self.checkScrapDropped)
+
+        self.mainChar.addListener(self.checkMetalBars)
+
+        self.miniBase.firstOfficer.basicChatOptions.pop()
+
+        self.barQuest = src.quests.DummyQuest(description="create metal bars", creator=self)
+        self.mainChar.assignQuest(self.barQuest, active=True)
+
+    def checkScrapDropped(self):
+        coordinate = (11,1)
+        if coordinate in self.miniBase.itemByCoordinates:
+            for item in self.miniBase.itemByCoordinates[coordinate]:
+                if isinstance(item,src.items.Scrap):
+                    showText("That should work. Now activate the scrap compactor to produce a metal bar")
+                    self.mainChar.delListener(self.checkScrapDropped)
+                    self.mainChar.addListener(self.checkFirstMetalBar)
+                    break
+
+    def checkFirstMetalBar(self):
+        coordinate = (9,1)
+        if coordinate in self.miniBase.itemByCoordinates:
+            for item in self.miniBase.itemByCoordinates[coordinate]:
+                if isinstance(item,src.items.MetalBars):
+                    showText("now go and grab the metal bar you produced")
+                    self.mainChar.delListener(self.checkFirstMetalBar)
+                    self.mainChar.addListener(self.checkFirstMetalBarFirstPickedUp)
+
+    def checkFirstMetalBarFirstPickedUp(self):
+        for item in self.mainChar.inventory:
+            if isinstance(item,src.items.MetalBars):
+                showText("You got that figgured out. Now produce more of it and pick it up")
+                self.mainChar.delListener(self.checkFirstMetalBarFirstPickedUp)
+                break
+
+    def checkMetalBars(self):
+        numMetalBars = 0
+        for item in self.mainChar.inventory:
+            if isinstance(item,src.items.MetalBars):
+                numMetalBars += 1
+
+        if numMetalBars >= 5:
+            self.mainChar.delListener(self.checkMetalBars)
+            self.lastSection()
+
+    def lastSection(self):
+        self.barQuest.postHandler()
+
+        showText("produce a furnace")
+        self.mainChar.addListener(self.checkGameWon)
 
     def checkGameWon(self):
         for item in self.mainChar.inventory:
             if isinstance(item,src.items.Furnace):
                 gamestate.gameWon = True
-
-    def test(self):
-        messages.append("test")
 
 ###############################################################
 ###

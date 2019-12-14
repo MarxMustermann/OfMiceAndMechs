@@ -1409,7 +1409,7 @@ class GameplayTest(Terrain):
     '''
     state initialization
     '''
-    def __init__(self,creator=None,seed=None):
+    def __init__(self,creator=None,seed=0):
         # add only a few scattered intact rooms
         layout = """
 
@@ -1479,6 +1479,11 @@ U  U
         addPseudoRandomThin((30,110),(30,110),(13,15,3,5,3,2),src.items.Pipe)
 
         self.addItems(self.scrapItems)
+
+        furnace = src.items.Furnace(30+seed%78,30+(seed*5)%78,creator=self)
+        furnace.bolted = False
+        extraItems = [furnace]
+        self.addItems(extraItems)
 
         # add base of operations
         self.wakeUpRoom = src.rooms.GameTestingRoom(0,4,0,0,creator=creator,seed=seed)

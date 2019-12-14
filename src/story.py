@@ -2389,6 +2389,8 @@ class Testing_1(BasicPhase):
     def lastSection(self):
         self.barQuest.postHandler()
 
+        self.barQuest = src.quests.DummyQuest(description="produce a furnace", creator=self)
+        self.mainChar.assignQuest(self.barQuest, active=True)
         showText("produce a furnace")
         self.mainChar.addListener(self.checkGameWon)
 

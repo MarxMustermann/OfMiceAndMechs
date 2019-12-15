@@ -2386,27 +2386,27 @@ class Testing_1(BasicPhase):
 
         if numMetalBars >= 5:
             self.mainChar.delListener(self.checkMetalBars)
-            self.productionSection()
+            self.barQuest.postHandler()
             self.producedCount = 0
+            self.productionSection()
 
     def productionSection(self):
-        self.barQuest.postHandler()
+
+        if self.producedCount >= 5:
+            gamestate.gameWon = True
+            return
 
         self.seed += self.seed%43
         
         possibleProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
         self.product = possibleProducts[self.seed%len(possibleProducts)]
 
-        self.barQuest = src.quests.DummyQuest(description="produce a "+self.product.type, creator=self)
-        self.mainChar.assignQuest(self.barQuest, active=True)
+        self.produceQuest = src.quests.DummyQuest(description="produce a "+self.product.type, creator=self)
+        self.mainChar.assignQuest(self.produceQuest, active=True)
         showText("produce a "+self.product.type)
         self.mainChar.addListener(self.checkProduction)
 
     def checkProduction(self):
-        self.mainChar.delListener(self.checkProduction)
-        if self.producedCount >= 5:
-            gamestate.gameWon = True
-            return
 
         toRemove = None
         for item in self.mainChar.inventory:
@@ -2415,7 +2415,9 @@ class Testing_1(BasicPhase):
                 toRemove = item
                 break
         if toRemove:
+            self.mainChar.delListener(self.checkProduction)
             self.mainChar.inventory.remove(toRemove)
+            self.produceQuest.postHandler()
             self.productionSection()
 
 ###############################################################

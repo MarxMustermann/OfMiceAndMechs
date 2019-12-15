@@ -2330,7 +2330,7 @@ class Testing_1(BasicPhase):
             if isinstance(item,src.items.Scrap):
                 numScrapCollected += 1
 
-        if numScrapCollected >= 5:
+        if numScrapCollected >= 1:
             showText("you collected some scrap. return to your superviser and you may see what to do now")
             self.mainChar.delListener(self.checkScrapCollected)
 
@@ -2374,7 +2374,7 @@ class Testing_1(BasicPhase):
     def checkFirstMetalBarFirstPickedUp(self):
         for item in self.mainChar.inventory:
             if isinstance(item,src.items.MetalBars):
-                showText("You got that figgured out. Now produce more of it and pick it up")
+                showText("You got that figgured out. Now produce 4 more metal bars and pick them up")
                 self.mainChar.delListener(self.checkFirstMetalBarFirstPickedUp)
                 break
 
@@ -2403,6 +2403,7 @@ class Testing_1(BasicPhase):
         self.mainChar.addListener(self.checkProduction)
 
     def checkProduction(self):
+        self.mainChar.delListener(self.checkProduction)
         if self.producedCount >= 5:
             gamestate.gameWon = True
             return

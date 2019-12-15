@@ -2261,6 +2261,8 @@ class Testing_1(BasicPhase):
         self.mainChar.terrain = terrain
         terrain.addCharacter(self.mainChar,self.mainChar.xPosition,self.mainChar.yPosition)
 
+        self.seed = seed
+
         self.mainChar.addListener(self.checkNearTarget)
 
         # add basic set of abilities in openworld phase
@@ -2384,20 +2386,36 @@ class Testing_1(BasicPhase):
 
         if numMetalBars >= 5:
             self.mainChar.delListener(self.checkMetalBars)
-            self.lastSection()
+            self.productionSection()
+            self.producedCount = 0
 
-    def lastSection(self):
+    def productionSection(self):
         self.barQuest.postHandler()
 
-        self.barQuest = src.quests.DummyQuest(description="produce a furnace", creator=self)
-        self.mainChar.assignQuest(self.barQuest, active=True)
-        showText("produce a furnace")
-        self.mainChar.addListener(self.checkGameWon)
+        self.seed += self.seed%43
+        
+        possibleProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
+        self.product = possibleProducts[self.seed%len(possibleProducts)]
 
-    def checkGameWon(self):
+        self.barQuest = src.quests.DummyQuest(description="produce a "+self.product.type, creator=self)
+        self.mainChar.assignQuest(self.barQuest, active=True)
+        showText("produce a "+self.product.type)
+        self.mainChar.addListener(self.checkProduction)
+
+    def checkProduction(self):
+        if self.producedCount >= 5:
+            gamestate.gameWon = True
+            return
+
+        toRemove = None
         for item in self.mainChar.inventory:
-            if isinstance(item,src.items.Furnace):
-                gamestate.gameWon = True
+            if isinstance(item,self.product):
+                self.producedCount += 1
+                toRemove = item
+                break
+        if toRemove:
+            self.mainChar.inventory.remove(toRemove)
+            self.productionSection()
 
 ###############################################################
 ###

@@ -1490,9 +1490,16 @@ U  U
 
         self.addItems(self.scrapItems)
 
+        seed += seed%23
         furnace = src.items.Furnace(30+seed%78,30+(seed*5)%78,creator=self)
         furnace.bolted = False
-        extraItems = [furnace]
+        seed += seed%42
+        hutch = src.items.Hutch(30+seed%78,30+(seed*5)%78,creator=self)
+        hutch.bolted = False
+        seed += seed%65
+        growthTank = src.items.GrowthTank(30+seed%78,30+(seed*5)%78,creator=self)
+        growthTank .bolted = False
+        extraItems = [furnace,hutch,growthTank]
         self.addItems(extraItems)
 
         # add base of operations

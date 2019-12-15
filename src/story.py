@@ -2388,6 +2388,8 @@ class Testing_1(BasicPhase):
             self.mainChar.delListener(self.checkMetalBars)
             self.barQuest.postHandler()
             self.producedCount = 0
+            self.firstTimeImpossibleCraft = True
+            self.firstRegularCraft = True
             self.productionSection()
 
     def productionSection(self):
@@ -2401,9 +2403,24 @@ class Testing_1(BasicPhase):
         possibleProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
         self.product = possibleProducts[self.seed%len(possibleProducts)]
 
+        producableStuff = [src.items.MetalBars]
+        lastLength = 0
+        while lastLength < len(producableStuff):
+            lastLength = len(producableStuff)
+            for item in self.miniBase.itemsOnFloor:
+                if isinstance(item,src.items.GameTestingProducer_l1) or isinstance(item,src.items.GameTestingProducer_l2):
+                    if item.ressource in producableStuff and not item.product in producableStuff:
+                        producableStuff.append(item.product)
+
         self.produceQuest = src.quests.DummyQuest(description="produce a "+self.product.type, creator=self)
         self.mainChar.assignQuest(self.produceQuest, active=True)
-        showText("produce a "+self.product.type)
+        if not self.firstTimeImpossibleCraft or self.product in producableStuff:
+            if self.firstRegularCraft: 
+                showText("produce a "+self.product.type+". use the machines below to produce it.")
+                self.firstRegularCraft = False
+        else:
+            showText("you should produce a "+self.product.type+" now, but you can not do this directly.\n\nThe machines here are not actually able to produce a "+self.product.type+" from metal bars. You need to get creative here.\n\nUsually you tried to bend the rules a bit. Try searching the scrap field for a working "+self.product.type)
+            self.firstTimeImpossibleCraft = False
         self.mainChar.addListener(self.checkProduction)
 
     def checkProduction(self):

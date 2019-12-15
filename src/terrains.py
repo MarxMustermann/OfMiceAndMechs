@@ -1429,29 +1429,31 @@ U  U
         '''
         add field of thick scrap
         '''
-        def addPseudoRandomScrap(counter,xRange,yRange,skips):
-            for x in range(xRange[0],xRange[1]):
-                for y in range(yRange[0],yRange[1]):
-                    # skip pseudorandomly
-                    toSkip = False
-                    for skip in skips:
-                        if not x%skip[0] and not y%skip[1]:
-                            toSkip = True
-                            break
-                    if toSkip:
-                        continue
+        def addPseudoRandomScrap(maxItems,xRange,yRange,seed=0):
+            excludes = {}
 
-                    # add scrap
-                    self.scrapItems.append(src.items.Scrap(x,y,counter,creator=creator))
-                    counter += 1
-                    if counter == 16:
-                        counter = 1
-            return counter
+            counter = 0
+            maxOffsetX = xRange[1]-xRange[0]
+            maxOffsetY = yRange[1]-yRange[0]
+            while counter < maxItems:
+
+                position = None
+                while position == None or position in excludes.keys():
+                    position = (xRange[0]+seed%maxOffsetX,yRange[0]+seed//(maxItems*2)%maxOffsetY)
+                    seed += 1
+
+                excludes[position] = seed%20
+
+                seed += seed%105
+                counter += 1
+
+            for (key,thickness) in excludes.items():
+                self.scrapItems.append(src.items.Scrap(key[0],key[1],thickness,creator=self))
 
         '''
         add field of items
         '''
-        def addPseudoRandomThin(xRange,yRange,modulos,itemType):
+        def addPseudoRandomThing(xRange,yRange,modulos,itemType):
             for x in range(xRange[0],xRange[1]):
                 for y in range(yRange[0],yRange[1]):
                     # skip pseudorandomly
@@ -1464,19 +1466,27 @@ U  U
         self.scrapItems = []
 
         # add scrap
-        counter = 3
-        counter = addPseudoRandomScrap(counter,(20,30),(30,110),((2,3),(3,2),(4,5),(5,4)))
+        fieldThickness = seed//3%20
+        x = 15
+        while x < 120:
+            y = 15
+            while y < 120:
+                seed += seed%35
+                if x in (15,105) or y in (15,105):
+                    maxItems = (8*8)-seed%10-fieldThickness
+                elif x in (30,90) or y in (30,90):
+                    maxItems = (11*11)-seed%20-fieldThickness
+                else:
+                    maxItems = (15*15)-seed%30-fieldThickness
+                addPseudoRandomScrap(maxItems,(x,x+15),(y,y+15),seed)
 
-        counter = 3
-        counter = addPseudoRandomScrap(counter,(20,30),(30,110),((2,3),(3,2),(4,5),(5,4)))
-        counter = addPseudoRandomScrap(counter,(20,120),(20,30),((2,3),(3,2),(4,5),(5,4)))
-        counter = addPseudoRandomScrap(counter,(110,120),(30,110),((2,3),(3,2),(4,5),(5,4)))
-        counter = addPseudoRandomScrap(counter,(20,120),(110,120),((2,3),(3,2),(4,5),(5,4)))
-        counter = addPseudoRandomScrap(counter,(30,110),(30,110),((2,7),(5,3),(23,2),(13,9),(5,17)))
+                y += 15
+            x += 15
 
         # add other objects
-        addPseudoRandomThin((30,110),(30,110),(23,7,2,3,2,4),src.items.Wall)
-        addPseudoRandomThin((30,110),(30,110),(13,15,3,5,3,2),src.items.Pipe)
+        addPseudoRandomThing((30,110),(30,110),(23,7,2,3,2,4),src.items.Wall)
+        seed += seed%35
+        addPseudoRandomThing((30,110),(30,110),(13,15,3,5,3,2),src.items.Pipe)
 
         self.addItems(self.scrapItems)
 

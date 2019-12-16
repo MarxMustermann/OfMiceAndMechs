@@ -1447,8 +1447,29 @@ U  U
                 seed += seed%105
                 counter += 1
 
+            counter = 0
             for (key,thickness) in excludes.items():
-                self.scrapItems.append(src.items.Scrap(key[0],key[1],thickness,creator=self))
+                noScrap = False
+                if counter%5 == 0:
+                    if not counter%(5*3) == 0:
+                        l1types = [src.items.Sheet,src.items.Rod,src.items.Sheet,src.items.Nook,src.items.Stripe,src.items.Bolt,src.items.Coil]
+                        self.scrapItems.append(l1types[seed%len(l1types)](key[0],key[1],creator=self))
+                    else:
+                        l2types = [src.items.Tank,src.items.Heater,src.items.Connector,src.items.Pusher,src.items.Puller,src.items.GooFlask]
+                        self.scrapItems.append(l2types[seed%len(l2types)](key[0],key[1],creator=self))
+
+                    if seed%15:
+                        noScrap = False
+                    else:
+                        noScrap = True
+
+                    seed += seed%37
+
+                if not noScrap:
+                    self.scrapItems.append(src.items.Scrap(key[0],key[1],thickness,creator=self))
+
+                seed += seed%13
+                counter += 1
 
         '''
         add field of items
@@ -1503,8 +1524,8 @@ U  U
         self.addItems(extraItems)
 
         # add base of operations
-        self.wakeUpRoom = src.rooms.GameTestingRoom(0,4,0,0,creator=creator,seed=seed)
-        self.addRooms([self.wakeUpRoom])
+        self.miniBase = src.rooms.GameTestingRoom(0,4,0,0,creator=creator,seed=seed)
+        self.addRooms([self.miniBase])
 
 
 '''

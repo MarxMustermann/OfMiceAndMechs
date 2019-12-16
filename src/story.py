@@ -2288,13 +2288,21 @@ class Testing_1(BasicPhase):
                   "DropQuestMeta",
                 ]
 
-        self.miniBase = terrain.rooms[0]
+        self.miniBase = terrain.miniBase
 
         quest = quests.EnterRoomQuestMeta(self.miniBase,3,3,creator=void)
         quest.endTrigger = {"container":self,"method":"reportForDuty"}
         self.mainChar.assignQuest(quest)
 
         self.reportQuest = None
+
+        messages.append(self.helper_getFilteredProducables())
+        while not len(self.helper_getFilteredProducables()) in (1,2):
+            seed += seed%42
+            terrain.removeRoom(self.miniBase)
+            
+            self.miniBase = src.rooms.GameTestingRoom(0,4,0,0,creator=void,seed=seed)
+            terrain.addRoom(self.miniBase)
 
         gamestate.save()
 
@@ -2393,6 +2401,25 @@ class Testing_1(BasicPhase):
             self.firstProduced = True
             self.productionSection()
 
+    def helper_getFilteredProducables(self):
+        desiredProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
+        filteredProducables = []
+        for item in self.helper_getProducables():
+            if item in desiredProducts:
+                filteredProducables.append(item)
+        return filteredProducables
+
+    def helper_getProducables(self):
+        producableStuff = [src.items.MetalBars]
+        lastLength = 0
+        while lastLength < len(producableStuff):
+            lastLength = len(producableStuff)
+            for item in self.miniBase.itemsOnFloor:
+                if isinstance(item,src.items.GameTestingProducer_l1) or isinstance(item,src.items.GameTestingProducer_l2):
+                    if item.ressource in producableStuff and not item.product in producableStuff:
+                        producableStuff.append(item.product)
+        return producableStuff
+
     def productionSection(self):
 
         if self.producedCount >= 5:
@@ -2404,14 +2431,7 @@ class Testing_1(BasicPhase):
         possibleProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
         self.product = possibleProducts[self.seed%len(possibleProducts)]
 
-        producableStuff = [src.items.MetalBars]
-        lastLength = 0
-        while lastLength < len(producableStuff):
-            lastLength = len(producableStuff)
-            for item in self.miniBase.itemsOnFloor:
-                if isinstance(item,src.items.GameTestingProducer_l1) or isinstance(item,src.items.GameTestingProducer_l2):
-                    if item.ressource in producableStuff and not item.product in producableStuff:
-                        producableStuff.append(item.product)
+        producableStuff = self.helper_getProducables()
 
         self.produceQuest = src.quests.DummyQuest(description="produce a "+self.product.type, creator=self)
         self.mainChar.assignQuest(self.produceQuest, active=True)

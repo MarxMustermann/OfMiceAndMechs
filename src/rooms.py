@@ -1402,7 +1402,7 @@ XXXXXXXXXXXXX
             y += 1
             seed += seed%7
 
-        l2Items = [src.items.Tank,src.items.Heater,src.items.Connector,src.items.Pusher,src.items.Pusher,src.items.GooFlask,src.items.GooFlask,src.items.GooFlask,src.items.GooFlask,src.items.GooFlask,src.items.GooFlask]
+        l2Items = [src.items.Tank,src.items.Heater,src.items.Connector,src.items.Pusher,src.items.Puller,src.items.GooFlask]
         y = 0
         while y < 3:
             x = 0
@@ -1413,7 +1413,7 @@ XXXXXXXXXXXXX
             y += 1
             seed += seed%7
 
-        l3Items = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace,src.items.GooDispenser,src.items.Wall]
+        l3Items = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
         y = 0
         while y < 2:
             x = 0

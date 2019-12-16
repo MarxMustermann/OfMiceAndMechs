@@ -2290,10 +2290,6 @@ class Testing_1(BasicPhase):
 
         self.miniBase = terrain.miniBase
 
-        quest = quests.EnterRoomQuestMeta(self.miniBase,3,3,creator=void)
-        quest.endTrigger = {"container":self,"method":"reportForDuty"}
-        self.mainChar.assignQuest(quest)
-
         self.reportQuest = None
 
         while not len(self.helper_getFilteredProducables()) in (1,):
@@ -2302,6 +2298,11 @@ class Testing_1(BasicPhase):
 
             self.miniBase = src.rooms.GameTestingRoom(0,4,0,0,creator=void,seed=seed)
             terrain.addRoom(self.miniBase)
+
+
+        quest = quests.EnterRoomQuestMeta(self.miniBase,3,3,creator=void)
+        quest.endTrigger = {"container":self,"method":"reportForDuty"}
+        self.mainChar.assignQuest(quest)
 
         desiredProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
 

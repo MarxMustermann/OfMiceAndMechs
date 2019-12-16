@@ -1196,6 +1196,8 @@ class Terrain(src.saveing.Saveable):
     remove a room from terrain
     '''
     def removeRoom(self,room):
+        self.rooms.remove(room)
+
         if (room.xPosition,room.yPosition) in self.roomByCoordinates:
             self.roomByCoordinates[(room.xPosition,room.yPosition)].remove(room)
             if not len(self.roomByCoordinates[(room.xPosition,room.yPosition)]):
@@ -1205,6 +1207,8 @@ class Terrain(src.saveing.Saveable):
     add a room to the terrain
     '''
     def addRoom(self,room):
+        self.rooms.append(room)
+
         if (room.xPosition,room.yPosition) in self.roomByCoordinates:
             self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
         else:

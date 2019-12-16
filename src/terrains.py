@@ -1207,6 +1207,7 @@ class Terrain(src.saveing.Saveable):
     add a room to the terrain
     '''
     def addRoom(self,room):
+        room.terrain = self
         self.rooms.append(room)
 
         if (room.xPosition,room.yPosition) in self.roomByCoordinates:

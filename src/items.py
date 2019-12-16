@@ -1843,21 +1843,44 @@ class GameTestingProducer_l1(Item):
     type = "GameTestingProducer_l1"
 
     def __init__(self,xPosition=None,yPosition=None, name="testing producer",creator=None, seed=0, mainRessource=None, possibleResults=[]):
-        if (seed%3) == 0:
-            self.ressource = mainRessource
+        super().__init__("/\\",xPosition,yPosition,name=name,creator=creator)
+        self.seed = seed
+        self.baseName = name
+        self.possibleResults = possibleResults
+        self.mainRessource = mainRessource
+        self.change_apply()
+
+    def apply(self,character,resultType=None):
+        token = None
+        for item in character.inventory:
+            if isinstance(item,src.items.Token):
+                token = item
+
+        if token:
+            character.inventory.remove(item)
+            self.change_apply()
         else:
-            self.ressource = possibleResults[seed%len(possibleResults)]
+            self.produce_apply(character)
+
+    def change_apply(self):
+        seed = self.seed
+
+        if (seed%3) == 0:
+            self.ressource = self.mainRessource
+        else:
+            self.ressource = self.possibleResults[seed%len(self.possibleResults)]
         self.product = None
         while not self.product:
-            self.product = possibleResults[seed%len(possibleResults)]
+            self.product = self.possibleResults[seed%len(self.possibleResults)]
             seed += 3+(seed%7)+(seed%53)
             if self.product == self.ressource:
                 self.product = None
-                    
-        name = name + " | " + str(self.ressource.type) + " -> " + str(self.product.type) 
-        super().__init__("/\\",xPosition,yPosition,name=name,creator=creator)
 
-    def apply(self,character,resultType=None):
+        self.seed += self.seed%107
+                    
+        self.description = "a "+self.baseName + " | " + str(self.ressource.type) + " -> " + str(self.product.type) 
+
+    def produce_apply(self,character):
 
         # gather the ressource
         itemFound = None
@@ -1890,18 +1913,42 @@ class GameTestingProducer_l2(Item):
     type = "GameTestingProducer_l2"
 
     def __init__(self,xPosition=None,yPosition=None, name="testing producer",creator=None, seed=0, possibleSources=[], possibleResults=[]):
+        super().__init__("/\\",xPosition,yPosition,name=name,creator=creator)
+        self.seed = seed
+        self.baseName = name
+        self.possibleResults = possibleResults
+        self.possibleSources = possibleSources
+        self.change_apply()
+
+    def apply(self,character,resultType=None):
+
+        token = None
+        for item in character.inventory:
+            if isinstance(item,src.items.Token):
+                token = item
+
+        if token:
+            character.inventory.remove(item)
+            self.change_apply()
+        else:
+            self.produce_apply(character)
+
+    def change_apply(self):
+        seed = self.seed
+
         self.ressource = None
         while not self.ressource:
-            self.product = possibleResults[seed%23%len(possibleResults)]
-            self.ressource = possibleSources[seed%len(possibleSources)]
+            self.product = self.possibleResults[seed%23%len(self.possibleResults)]
+            self.ressource = self.possibleSources[seed%len(self.possibleSources)]
             seed += 3+(seed%7)
             if self.product == self.ressource:
                 self.ressource = None
-                    
-        name = name + " | " + str(self.ressource.type) + " -> " + str(self.product.type) 
-        super().__init__("/\\",xPosition,yPosition,name=name,creator=creator)
 
-    def apply(self,character,resultType=None):
+        self.seed += self.seed%107
+                    
+        self.description = self.baseName + " | " + str(self.ressource.type) + " -> " + str(self.product.type) 
+
+    def produce_apply(self,character):
 
         # gather the ressource
         itemFound = None

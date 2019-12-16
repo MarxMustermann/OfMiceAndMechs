@@ -2390,6 +2390,7 @@ class Testing_1(BasicPhase):
             self.producedCount = 0
             self.firstTimeImpossibleCraft = True
             self.firstRegularCraft = True
+            self.firstProduced = True
             self.productionSection()
 
     def productionSection(self):
@@ -2414,11 +2415,11 @@ class Testing_1(BasicPhase):
 
         self.produceQuest = src.quests.DummyQuest(description="produce a "+self.product.type, creator=self)
         self.mainChar.assignQuest(self.produceQuest, active=True)
-        if not self.firstTimeImpossibleCraft or self.product in producableStuff:
+        if self.product in producableStuff:
             if self.firstRegularCraft: 
-                showText("produce a "+self.product.type+". use the machines below to produce it.")
+                showText("produce a "+self.product.type+". use the machines below to produce it.\n\nexamine the machines by walking into it and pressing the e key.\nIt will show what the machine produces and what ressource is needed to produce.\n\nstart from a metal bar and create interstage products until you produce a "+self.product.type)
                 self.firstRegularCraft = False
-        else:
+        elif self.firstTimeImpossibleCraft:
             showText("you should produce a "+self.product.type+" now, but you can not do this directly.\n\nThe machines here are not actually able to produce a "+self.product.type+" from metal bars. You need to get creative here.\n\nUsually you tried to bend the rules a bit. Try searching the scrap field for a working "+self.product.type)
             self.firstTimeImpossibleCraft = False
         self.mainChar.addListener(self.checkProduction)
@@ -2432,9 +2433,16 @@ class Testing_1(BasicPhase):
                 toRemove = item
                 break
         if toRemove:
+            if self.firstProduced:
+                showText("you produced your first item. congratulations. Produce some more and you will win the game.\n\nThe produced item is removed from your inventory directly and replaced by a token\n\nthis token can be used to reconfigure machines. Try to replace machines that do not help you.\nThis base is in need of some restructuring to be somewhat efficent. It is almost disfunctional.\n\nuse a machine with the token in your inventory to reconfigure the machine.")
+                self.firstProduced = False
             self.mainChar.delListener(self.checkProduction)
             self.mainChar.inventory.remove(toRemove)
             self.produceQuest.postHandler()
+
+            token = src.items.Token(creator=self)
+            self.mainChar.inventory.append(token)
+
             self.productionSection()
 
 ###############################################################

@@ -2300,8 +2300,6 @@ class Testing_1(BasicPhase):
             seed += seed%42
             terrain.removeRoom(self.miniBase)
 
-            print("regenerate")
-
             self.miniBase = src.rooms.GameTestingRoom(0,4,0,0,creator=void,seed=seed)
             terrain.addRoom(self.miniBase)
 

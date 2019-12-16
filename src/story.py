@@ -2296,13 +2296,30 @@ class Testing_1(BasicPhase):
 
         self.reportQuest = None
 
-        messages.append(self.helper_getFilteredProducables())
-        while not len(self.helper_getFilteredProducables()) in (1,2):
+        while not len(self.helper_getFilteredProducables()) in (1,):
             seed += seed%42
             terrain.removeRoom(self.miniBase)
-            
+
             self.miniBase = src.rooms.GameTestingRoom(0,4,0,0,creator=void,seed=seed)
             terrain.addRoom(self.miniBase)
+
+        desiredProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
+
+        productionQueue = []
+        productionQueue.append(self.helper_getFilteredProducables()[0])
+
+        counter = 0
+        while counter < 3:
+            productionQueue.append(desiredProducts[seed%len(desiredProducts)])
+            seed += seed%12
+            counter += 1
+
+        for item in desiredProducts:
+            if not item in self.helper_getFilteredProducables():
+                productionQueue.append(item)
+                break
+
+        self.productionQueue = productionQueue
 
         gamestate.save()
 
@@ -2422,14 +2439,15 @@ class Testing_1(BasicPhase):
 
     def productionSection(self):
 
-        if self.producedCount >= 5:
+        if not len(self.productionQueue):
             gamestate.gameWon = True
             return
 
         self.seed += self.seed%43
         
         possibleProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
-        self.product = possibleProducts[self.seed%len(possibleProducts)]
+        self.product = self.productionQueue[0]
+        self.productionQueue.remove(self.product)
 
         producableStuff = self.helper_getProducables()
 
@@ -2454,7 +2472,7 @@ class Testing_1(BasicPhase):
                 break
         if toRemove:
             if self.firstProduced:
-                showText("you produced your first item. congratulations. Produce some more and you will win the game.\n\nThe produced item is removed from your inventory directly and replaced by a token\n\nthis token can be used to reconfigure machines. Try to replace machines that do not help you.\nThis base is in need of some restructuring to be somewhat efficent. It is almost disfunctional.\n\nuse a machine with the token in your inventory to reconfigure the machine.")
+                showText("you produced your first item. congratulations. Produce some more and you will have a chance of getting out of here.\n\nThe produced item is removed from your inventory directly and replaced by a token\n\nthis token can be used to reconfigure machines. Try to replace machines that do not help you.\nThis base is in need of some restructuring to be somewhat efficent. It is almost disfunctional.\n\nuse a machine with the token in your inventory to reconfigure the machine.")
                 self.firstProduced = False
             self.mainChar.delListener(self.checkProduction)
             self.mainChar.inventory.remove(toRemove)

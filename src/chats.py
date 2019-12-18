@@ -1473,7 +1473,8 @@ class ChatMenu(Chat):
                         options.append((option,option["dialogName"]))
 
                 # add default dialog options
-                options.append(("showQuests","what are you dooing?"))
+                if not self.partner.silent:
+                    options.append(("showQuests","what are you dooing?"))
                 options.append(("exit","let us proceed, "+self.partner.name))
 
                 # set the options

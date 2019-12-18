@@ -2329,6 +2329,8 @@ class Testing_1(BasicPhase):
 
         self.productionQueue = productionQueue
 
+        self.miniBase.firstOfficer.silent = True
+
         gamestate.save()
 
     def checkNearTarget(self):

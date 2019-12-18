@@ -248,7 +248,7 @@ def processInput(key):
         else:
             footerSkipCounter = 20
             if not submenue:
-                footer.set_text(" "+cinematics.cinematicQueue[0].footerText+" test")
+                footer.set_text(" "+cinematics.cinematicQueue[0].footerText)
                 if isinstance(cinematics.cinematicQueue[0], src.cinematics.TextCinematic) and cinematics.cinematicQueue[0].firstRun:
                     cinematics.cinematicQueue[0].advance()
             else:

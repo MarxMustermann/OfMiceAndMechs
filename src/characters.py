@@ -107,6 +107,8 @@ class Character(src.saveing.Saveable):
         # add default items
         self.inventory.append(src.items.GooFlask(creator=self))
 
+        self.silent = False
+
         # save state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
@@ -189,22 +191,23 @@ class Character(src.saveing.Saveable):
         # get the usual chat options
         chatOptions = self.basicChatOptions[:]
 
-        # add chat for recruitment
-        if not self in partner.subordinates:
-            chatOptions.append(src.chats.RecruitChat)
-            pass
-        if not partner in self.subordinates:
-            chatOptions.append({"dialogName":"may i serve you?","chat":chats.RoomDutyChat,"params":{
-            "superior":self
-            }})
-        else:
-            chatOptions.append({"dialogName":"can i do something for you?","chat":chats.RoomDutyChat2,"params":{
-            "superior":self
-            }})
-        if self.isMilitary:
-            chatOptions.append({"dialogName":"I want to join the military","chat":chats.JoinMilitaryChat,"params":{
-            "superior":self
-            }})
+        if not self.silent:
+            # add chat for recruitment
+            if not self in partner.subordinates:
+                chatOptions.append(src.chats.RecruitChat)
+                pass
+            if not partner in self.subordinates:
+                chatOptions.append({"dialogName":"may i serve you?","chat":chats.RoomDutyChat,"params":{
+                "superior":self
+                }})
+            else:
+                chatOptions.append({"dialogName":"can i do something for you?","chat":chats.RoomDutyChat2,"params":{
+                "superior":self
+                }})
+            if self.isMilitary:
+                chatOptions.append({"dialogName":"I want to join the military","chat":chats.JoinMilitaryChat,"params":{
+                "superior":self
+                }})
 
         return chatOptions
 

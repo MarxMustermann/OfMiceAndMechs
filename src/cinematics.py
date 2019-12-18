@@ -279,6 +279,10 @@ class TextCinematic(BasicCinematic):
     def advance(self):
         super().advance()
 
+        repeat = False
+        if self.firstRun:
+            repeat = True
+
         # do nothing if done
         if self.position > self.endPosition and not self.firstRun:
             return

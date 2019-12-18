@@ -2306,19 +2306,26 @@ class Testing_1(BasicPhase):
 
         desiredProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
 
-        productionQueue = []
-        productionQueue.append(self.helper_getFilteredProducables()[0])
+        queueOk = False
+        while not queueOk:
+            productionQueue = []
+            productionQueue.append(self.helper_getFilteredProducables()[0])
 
-        counter = 0
-        while counter < 3:
-            productionQueue.append(desiredProducts[seed%len(desiredProducts)])
-            seed += seed%12
-            counter += 1
+            counter = 0
+            while counter < 3:
+                productionQueue.append(desiredProducts[seed%len(desiredProducts)])
+                seed += seed%12 + counter
+                counter += 1
 
-        for item in desiredProducts:
-            if not item in self.helper_getFilteredProducables():
-                productionQueue.append(item)
-                break
+            for item in desiredProducts:
+                if not item in self.helper_getFilteredProducables():
+                    productionQueue.append(item)
+                    break
+
+            queueOk = True
+            for item in desiredProducts:
+                if not item in productionQueue:
+                    queueOk = False
 
         self.productionQueue = productionQueue
 
@@ -2417,6 +2424,11 @@ class Testing_1(BasicPhase):
             self.firstTimeImpossibleCraft = True
             self.firstRegularCraft = True
             self.firstProduced = True
+            self.queueProduction = True
+            self.producedFurnaces = 0
+            self.producedGrowthTanks = 0
+            self.producedHutches = 0
+            self.batchProducing = False
             self.productionSection()
 
     def helper_getFilteredProducables(self):
@@ -2440,18 +2452,33 @@ class Testing_1(BasicPhase):
 
     def productionSection(self):
 
-        if not len(self.productionQueue):
+        if not len(self.productionQueue) and self.queueProduction:
+            showText("that is enough to satisfy the minimal stock requirements. Exceding the minimal requirements will gain you a small reward.\n\nIn this case you will be rewarded with tokens. These tokens allow you to reconfigure the machines you use for production.\nThe production lines are hardly working at all and reconfiguring these machines should resolve that\n\nYour supervisor was not ambitious enough to do this, but i know you are. As you implant i will reward you, when you are done\n\nYou can reconfigure a machine by using it with a token in your inventory. It will reset to a new rando state.\nReplace the useless machines until the machines are abel to produce\nFurnaces, Growthtanks, Hutches\nstarting from metal bars.")
+            self.queueProduction = False
+            self.mainChar.addListener(self.checkProductionLine)
+
+        if not len(self.productionQueue) and self.batchProducing:
             gamestate.gameWon = True
             return
 
         self.seed += self.seed%43
         
         possibleProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
-        self.product = self.productionQueue[0]
-        self.productionQueue.remove(self.product)
+        if self.queueProduction or self.batchProducing:
+            self.product = self.productionQueue[0]
+            self.productionQueue.remove(self.product)
+        else:
+            filteredProducts = self.helper_getFilteredProducables()
+            self.product = possibleProducts[self.seed%len(possibleProducts)]
+            self.seed += self.seed%37
+
+            mainChar.inventory.append(src.items.Token(creator=self))
 
         producableStuff = self.helper_getProducables()
 
+        description = "produce a "+self.product.type
+        if self.batchProducing:
+            description += " (use macros)"
         self.produceQuest = src.quests.DummyQuest(description="produce a "+self.product.type, creator=self)
         self.mainChar.assignQuest(self.produceQuest, active=True)
         if self.product in producableStuff:
@@ -2463,6 +2490,19 @@ class Testing_1(BasicPhase):
             self.firstTimeImpossibleCraft = False
         self.mainChar.addListener(self.checkProduction)
 
+    def checkProductionLine(self):
+        if len(filteredProducts) == 3:
+            showText("The machines are reconfigured now. I promised you are reward. Here it is:\n\nI can help you with the repetive tasks. You need to do something and i make you repeat the movements.\n\nYou can use this to produce items on these machines without thinking about it.\nWe will use this to produce enough items to get noticed by somebody up the command chain.\n\nYour superior will gain the most from this at first, but you need to trust me and do not break any rules again.\n\nYou can start recording the movement by pressing the - key and pressing some other key afterwards. Your movements will be recorded to the second key.\nAn Example: If you press - f for example your movements will be recoded to the f buffer\nTo stop recording press - again.\nTo replay the movement press _ and the key for the buffer you want to replay. Press _ f to replay the movement from the last example.\n\nget familiar with recording macros and then record macros for producing each item. We will need at least 20 furnaces, 20 hutches and 20 growth tanks to fill the whole order.\n\nIt is important for you to use macros and not get bogged down in mundane tasks. We need your creativity for greater things." )
+
+            self.batchProducing = True
+            for x in range(0,10):
+                self.productionQueue.append(src.items.Furnace)
+            for x in range(0,10):
+                self.productionQueue.append(src.items.Hutch)
+            for x in range(0,10):
+                self.productionQueue.append(src.items.GrowthTank)
+            self.delListener(self.checkProductionLine)
+
     def checkProduction(self):
 
         toRemove = None
@@ -2473,14 +2513,11 @@ class Testing_1(BasicPhase):
                 break
         if toRemove:
             if self.firstProduced:
-                showText("you produced your first item. congratulations. Produce some more and you will have a chance of getting out of here.\n\nThe produced item is removed from your inventory directly and replaced by a token\n\nthis token can be used to reconfigure machines. Try to replace machines that do not help you.\nThis base is in need of some restructuring to be somewhat efficent. It is almost disfunctional.\n\nuse a machine with the token in your inventory to reconfigure the machine.")
+                showText("you produced your first item. congratulations. Produce some more and you will have a chance of getting out of here.\n\nThe produced item is removed from your inventory directly. Do not think about this.")
                 self.firstProduced = False
             self.mainChar.delListener(self.checkProduction)
             self.mainChar.inventory.remove(toRemove)
             self.produceQuest.postHandler()
-
-            token = src.items.Token(creator=self)
-            self.mainChar.inventory.append(token)
 
             self.productionSection()
 

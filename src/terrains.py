@@ -1493,14 +1493,14 @@ U  U
 
         # add scrap
         fieldThickness = seed//3%20
-        x = 15
-        while x < 120:
-            y = 15
-            while y < 120:
+        x = 75
+        while x < 180:
+            y = 75
+            while y < 180:
                 seed += seed%35
-                if x in (15,105) or y in (15,105):
+                if x in (75,165) or y in (75,165):
                     maxItems = (8*8)-seed%10-fieldThickness
-                elif x in (30,90) or y in (30,90):
+                elif x in (90,180) or y in (90,180):
                     maxItems = (11*11)-seed%20-fieldThickness
                 else:
                     maxItems = (15*15)-seed%30-fieldThickness
@@ -1510,26 +1510,26 @@ U  U
             x += 15
 
         # add other objects
-        addPseudoRandomThing((30,110),(30,110),(23,7,2,3,2,4),src.items.Wall)
+        addPseudoRandomThing((90,170),(90,170),(23,7,2,3,2,4),src.items.Wall)
         seed += seed%35
-        addPseudoRandomThing((30,110),(30,110),(13,15,3,5,3,2),src.items.Pipe)
+        addPseudoRandomThing((90,170),(90,170),(13,15,3,5,3,2),src.items.Pipe)
 
         self.addItems(self.scrapItems)
 
         seed += seed%23
-        furnace = src.items.Furnace(30+seed%78,30+(seed*5)%78,creator=self)
+        furnace = src.items.Furnace(90+seed%78,90+(seed*5)%78,creator=self)
         furnace.bolted = False
         seed += seed%42
-        hutch = src.items.Hutch(30+seed%78,30+(seed*5)%78,creator=self)
+        hutch = src.items.Hutch(90+seed%78,90+(seed*5)%78,creator=self)
         hutch.bolted = False
         seed += seed%65
-        growthTank = src.items.GrowthTank(30+seed%78,30+(seed*5)%78,creator=self)
+        growthTank = src.items.GrowthTank(90+seed%78,90+(seed*5)%78,creator=self)
         growthTank .bolted = False
         extraItems = [furnace,hutch,growthTank]
         self.addItems(extraItems)
 
         # add base of operations
-        self.miniBase = src.rooms.GameTestingRoom(0,4,0,0,creator=creator,seed=seed)
+        self.miniBase = src.rooms.GameTestingRoom(0,8,0,0,creator=creator,seed=seed)
         self.addRooms([self.miniBase])
 
 

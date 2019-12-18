@@ -2256,8 +2256,8 @@ class Testing_1(BasicPhase):
 
         self.mainChar = mainChar
 
-        self.mainChar.xPosition = 10
-        self.mainChar.yPosition = 14
+        self.mainChar.xPosition = 70
+        self.mainChar.yPosition = 74
         self.mainChar.terrain = terrain
         terrain.addCharacter(self.mainChar,self.mainChar.xPosition,self.mainChar.yPosition)
 
@@ -2296,7 +2296,7 @@ class Testing_1(BasicPhase):
             seed += seed%42
             terrain.removeRoom(self.miniBase)
 
-            self.miniBase = src.rooms.GameTestingRoom(0,4,0,0,creator=void,seed=seed)
+            self.miniBase = src.rooms.GameTestingRoom(4,8,0,0,creator=void,seed=seed)
             terrain.addRoom(self.miniBase)
 
 
@@ -2334,7 +2334,7 @@ class Testing_1(BasicPhase):
         gamestate.save()
 
     def checkNearTarget(self):
-        if (self.mainChar.xPosition//15 in (0,1,) and self.mainChar.yPosition//15 in (4,5,)):
+        if (self.mainChar.xPosition//15 in (4,5,) and self.mainChar.yPosition//15 in (8,9,)):
             self.mainChar.delListener(self.checkNearTarget)
             showText("the minibase you are assigned to work in is to the west.\nenter the room through its door. The door is shown as [].\nopen the door and enter the room. Activate the door to open it.\n\nYou activate items by walking into them and pressing j afterwards");
             say("walk into items and press j to activate them")

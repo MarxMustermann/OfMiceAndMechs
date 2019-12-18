@@ -1025,7 +1025,7 @@ class Terrain(src.saveing.Saveable):
         for room in self.rooms:
 
             # skip hidden rooms
-            if mapHidden and room.hidden :
+            if mapHidden and room.hidden:
                 continue
 
             # get the render for the room

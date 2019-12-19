@@ -857,6 +857,9 @@ class Room(src.saveing.Saveable):
         # do next step later
         else:
             self.delayedTicks += 1
+
+    def calculatePathMap(self):
+        pass
     
 '''
 the machine room used in the tutorial

@@ -645,6 +645,7 @@ def processInput(key):
                         if pos in itemByCoordinates:
                             for item in itemByCoordinates[pos]:
                                 item.pickUp(mainChar)
+                                mainChar.container.calculatePathMap()
                                 break
 
             # open chat partner selection

@@ -272,10 +272,10 @@ class Terrain(src.saveing.Saveable):
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
-        npc = characters.Character(21,50,creator=self,seed=seed,name="atest")
-        self.addCharacter(npc,21,50)
-        self.runner = npc
-        self.runner1()
+        #npc = characters.Character(21,50,creator=self,seed=seed,name="atest")
+        #self.addCharacter(npc,21,50)
+        #self.runner = npc
+        #self.runner1()
 
 
     def runner1(self):
@@ -914,6 +914,8 @@ class Terrain(src.saveing.Saveable):
                 self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
             else:
                 self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
+        if hasattr(self,"watershedStart"): # nontrivial: prevents crashes in constructor
+            self.calculatePathMap()
 
     '''
     remove item from terrain
@@ -1203,6 +1205,9 @@ class Terrain(src.saveing.Saveable):
             if not len(self.roomByCoordinates[(room.xPosition,room.yPosition)]):
                 del self.roomByCoordinates[(room.xPosition,room.yPosition)]
 
+        if hasattr(self,"watershedStart"): # nontrivial: prevents crashes in constructor
+            self.calculatePathMap()
+
     '''
     add a room to the terrain
     '''
@@ -1214,6 +1219,9 @@ class Terrain(src.saveing.Saveable):
             self.roomByCoordinates[(room.xPosition,room.yPosition)].append(room)
         else:
             self.roomByCoordinates[(room.xPosition,room.yPosition)] = [room]
+
+        if hasattr(self,"watershedStart"): # nontrivial: prevents crashes in constructor
+            self.calculatePathMap()
             
     '''
     teleport a room to another position
@@ -1419,11 +1427,14 @@ class GameplayTest(Terrain):
         layout = """
 
 
-  U  U 
-U  U 
-     U
-  U  U
+       
+     
+      
 
+     
+
+     .
+    C.
         """
         detailedLayout = """
         """

@@ -2302,7 +2302,7 @@ class Testing_1(BasicPhase):
 
         quest = quests.EnterRoomQuestMeta(self.miniBase,3,3,creator=void)
         quest.endTrigger = {"container":self,"method":"reportForDuty"}
-        self.mainChar.assignQuest(quest)
+        self.mainChar.assignQuest(quest,active=True)
 
         desiredProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
 

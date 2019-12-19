@@ -645,6 +645,7 @@ def processInput(key):
                         if pos in itemByCoordinates:
                             for item in itemByCoordinates[pos]:
                                 item.pickUp(mainChar)
+                                break
 
             # open chat partner selection
             if key in (commandChars.hail):

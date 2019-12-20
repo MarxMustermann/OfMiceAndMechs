@@ -2302,6 +2302,7 @@ class Testing_1(BasicPhase):
 
         quest = quests.EnterRoomQuestMeta(self.miniBase,3,3,creator=void)
         quest.endTrigger = {"container":self,"method":"reportForDuty"}
+        #quest.endTrigger = {"container":self,"method":"scrapTest1"}
         self.mainChar.assignQuest(quest,active=True)
 
         desiredProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
@@ -2331,7 +2332,41 @@ class Testing_1(BasicPhase):
 
         self.miniBase.firstOfficer.silent = True
 
+        self.dupPrevention = False
+
         gamestate.save()
+
+    def scrapTest1(self):
+        if self.dupPrevention:
+            return
+        self.dupPrevention = True
+
+        toRemove = []
+        for item in mainChar.inventory:
+            if isinstance(item,src.items.Scrap):
+                toRemove.append(item)
+        for item in toRemove:
+             mainChar.inventory.remove(item)
+
+        itemCount = 0
+        for item in terrain.itemsOnFloor:
+            if isinstance(item,src.items.Scrap):
+                if (item.xPosition-1,item.yPosition) in terrain.watershedCoordinates or (item.xPosition+1,item.yPosition) in terrain.watershedCoordinates or (item.xPosition,item.yPosition-1) in terrain.watershedCoordinates or (item.xPosition,item.yPosition+1) in terrain.watershedCoordinates:
+                    quest = quests.PickupQuestMeta(toPickup=item,creator=void)
+                    if len(mainChar.inventory) < 9:
+                        method = "scrapTest1"
+                    else:
+                        method = "scrapTest2"
+                    quest.endTrigger = {"container":self,"method":method}
+                    self.mainChar.assignQuest(quest,active=True)
+                    break
+
+        self.dupPrevention = False
+
+    def scrapTest2(self):
+        quest = quests.EnterRoomQuestMeta(self.miniBase,3,3,creator=void)
+        quest.endTrigger = {"container":self,"method":"scrapTest1"}
+        self.mainChar.assignQuest(quest,active=True)
 
     def checkNearTarget(self):
         if (self.mainChar.xPosition//15 in (4,5,) and self.mainChar.yPosition//15 in (8,9,)):

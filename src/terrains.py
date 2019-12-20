@@ -743,7 +743,14 @@ class Terrain(src.saveing.Saveable):
         self.obseveredCoordinates = {}
 
         # get end node
-        if not end in self.watershedCoordinates:
+        ends = (end,(end[0]-1,end[1]),(end[0]+1,end[1]),(end[0],end[1]-1),(end[0],end[1]+1))
+        found = False
+        for end in ends:
+            if end in self.watershedCoordinates:
+                found = True
+                break
+
+        if not found:
             debugMessages.append("did not find end in watershedCoordinates")
             return
         endPair = self.watershedCoordinates[end][0]
@@ -920,10 +927,10 @@ class Terrain(src.saveing.Saveable):
     '''
     remove item from terrain
     '''
-    def removeItem(self,item):
+    def removeItem(self,item,recalculate=True):
         self.itemsOnFloor.remove(item)
         self.itemByCoordinates[(item.xPosition,item.yPosition)].remove(item)
-        if hasattr(self,"watershedStart"): # nontrivial: prevents crashes in constructor
+        if hasattr(self,"watershedStart") and recalculate: # nontrivial: prevents crashes in constructor
             self.calculatePathMap()
 
     '''
@@ -1425,16 +1432,21 @@ class GameplayTest(Terrain):
     def __init__(self,creator=None,seed=0):
         # add only a few scattered intact rooms
         layout = """
-
-
-       
-     
-      
-
-     
-
-     .
-    C.
+             
+             
+             
+             
+             
+             
+             
+             
+     .       
+    C.       
+             
+             
+             
+             
+             
         """
         detailedLayout = """
         """
@@ -1482,7 +1494,9 @@ class GameplayTest(Terrain):
                     seed += seed%37
 
                 if not noScrap:
-                    self.scrapItems.append(src.items.Scrap(key[0],key[1],thickness,creator=self))
+                    item = src.items.Scrap(key[0],key[1],thickness,creator=self)
+                    item.mayContainMice = False
+                    self.scrapItems.append(item)
 
                 seed += seed%13
                 counter += 1
@@ -1519,13 +1533,24 @@ class GameplayTest(Terrain):
 
                 y += 15
             x += 15
+        self.addItems(self.scrapItems)
+
+        self.scrapItems = []
 
         # add other objects
         addPseudoRandomThing((90,170),(90,170),(23,7,2,3,2,4),src.items.Wall)
         seed += seed%35
         addPseudoRandomThing((90,170),(90,170),(13,15,3,5,3,2),src.items.Pipe)
 
+        toRemove = []
+        for item in self.scrapItems:
+            if (item.xPosition,item.yPosition) in self.itemByCoordinates:
+                for subItem in self.itemByCoordinates[(item.xPosition,item.yPosition)]:
+                    toRemove.append(subItem)
         self.addItems(self.scrapItems)
+        
+        for item in toRemove:
+            self.removeItem(item, recalculate=False)
 
         seed += seed%23
         furnace = src.items.Furnace(90+seed%78,90+(seed*5)%78,creator=self)
@@ -1535,7 +1560,7 @@ class GameplayTest(Terrain):
         hutch.bolted = False
         seed += seed%65
         growthTank = src.items.GrowthTank(90+seed%78,90+(seed*5)%78,creator=self)
-        growthTank .bolted = False
+        growthTank.bolted = False
         extraItems = [furnace,hutch,growthTank]
         self.addItems(extraItems)
 

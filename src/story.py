@@ -2385,7 +2385,7 @@ class Testing_1(BasicPhase):
             say("walk into items and press j to activate them")
 
     def reportForDuty(self):
-        showText("I did not expect that you will start following orders after your memory wipe.\nYou might make it, if continue to do so.\n\nNow report for duty and work your way out of here.\n\nyou can talk to people by pressing the h key.\nNavigate the chat options by using the w s keys or the arrow keys.\nUse the j or enter key to select dialog options")
+        showText("I did not expect that you will start following orders after your memory wipe.\nYou might make it, if you continue to do so.\n\nNow report for duty and work your way out of here.\n\nyou can talk to people by pressing the h key.\nNavigate the chat options by using the w s keys or the arrow keys.\nUse the j or enter key to select dialog options")
         self.reportQuest = src.quests.DummyQuest(description="report for duty", creator=self)
         self.mainChar.assignQuest(self.reportQuest, active=True)
 

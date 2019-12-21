@@ -1053,7 +1053,7 @@ class Terrain(src.saveing.Saveable):
 
         # add overlays
         if not mapHidden:
-            src.overlays.QuestMarkerOverlay().apply(chars,mainChar,displayChars)
+            #src.overlays.QuestMarkerOverlay().apply(chars,mainChar,displayChars)
             src.overlays.NPCsOverlay().apply(chars,self)
             src.overlays.MainCharOverlay().apply(chars,mainChar)
 
@@ -1448,6 +1448,8 @@ class GameplayTest(Terrain):
              
              
         """
+        layout = """
+        """
         detailedLayout = """
         """
         super().__init__(layout,detailedLayout,creator=creator,seed=seed)
@@ -1565,9 +1567,8 @@ class GameplayTest(Terrain):
         self.addItems(extraItems)
 
         # add base of operations
-        self.miniBase = src.rooms.GameTestingRoom(0,8,0,0,creator=creator,seed=seed)
+        self.miniBase = src.rooms.GameTestingRoom(4,8,0,0,creator=creator,seed=seed)
         self.addRooms([self.miniBase])
-
 
 '''
 a wrecked mech

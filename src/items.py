@@ -1849,12 +1849,19 @@ class GameTestingProducer_l1(Item):
         self.possibleResults = possibleResults
         self.mainRessource = mainRessource
         self.change_apply()
+        self.coolDown = 0
 
     def apply(self,character,resultType=None):
+        
         token = None
         for item in character.inventory:
             if isinstance(item,src.items.Token):
                 token = item
+
+        if gamestate.tick < self.coolDown+20:
+            messages.append("cooldown not reached")
+            return
+        self.coolDown = gamestate.tick
 
         if token:
             character.inventory.remove(item)
@@ -1919,6 +1926,7 @@ class GameTestingProducer_l2(Item):
         self.possibleResults = possibleResults
         self.possibleSources = possibleSources
         self.change_apply()
+        self.coolDown = 0
 
     def apply(self,character,resultType=None):
 
@@ -1926,6 +1934,11 @@ class GameTestingProducer_l2(Item):
         for item in character.inventory:
             if isinstance(item,src.items.Token):
                 token = item
+
+        if gamestate.tick < self.coolDown+20:
+            messages.append("cooldown not reached")
+            return
+        self.coolDown = gamestate.tick
 
         if token:
             character.inventory.remove(item)

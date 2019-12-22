@@ -2389,7 +2389,7 @@ class Testing_1(BasicPhase):
         self.reportQuest = src.quests.DummyQuest(description="report for duty", creator=self)
         self.mainChar.assignQuest(self.reportQuest, active=True)
 
-        self.miniBase.firstOfficer.basicChatOptions.append({"dialogName":"I hereby report for duty.","chat":src.chats.ConfigurableChat,"params":{"text":"You may serve.\n\nThey did not send someone for some mTicks after my latest subordinate died. I question how they did expect any work getting done here.\n\nStart by gathering some scrap form the scrap field in the east.","info":[{"type":"text","text":"Return the scrap to me","name":"Starting now","delete":True,"trigger":{"container":self,"method":"startDuty"},"quitAfter":True}],"allowExit":False}})
+        self.miniBase.firstOfficer.basicChatOptions.append({"dialogName":"I hereby report for duty.","chat":src.chats.ConfigurableChat,"params":{"text":"You may serve.\n\nThey did not send someone for some time after my latest subordinate died. I question how they did expect any work getting done here.\n\nStart by gathering some scrap form the scrap field in the east.","info":[{"type":"text","text":"Return the scrap to me","name":"Starting now","delete":True,"trigger":{"container":self,"method":"startDuty"},"quitAfter":True}],"allowExit":False}})
 
     def startDuty(self):
         self.miniBase.firstOfficer.basicChatOptions.pop()
@@ -2418,7 +2418,7 @@ class Testing_1(BasicPhase):
 
     def startMetalBarChecking(self):
 
-        showText("I seems like this is a simple ressource gathering job. Metal bars are used to produce most of the materials needed in a mech.\n\nThe scrap is compacted to metal bars in a machine called scrap compactor\nThe machine is represented by the U\\ character. It processes scrap on the tile to its east and outputs the bars on the tile to its right.\n\nstart by dropping the scrap on the tile east of the machine.\nMove onto the tile and press l to drop items.")
+        showText("I seems like this is a simple ressource gathering job. Metal bars are used to produce most of the materials needed in a mech.\n\nThe scrap is compacted to metal bars in a machine called scrap compactor\nThe machine is represented by the U\\ character. It processes scrap on the tile to its east and outputs the bars on the tile to its west.\n\nstart by dropping the scrap on the tile east of the machine.\nMove onto the tile and press l to drop items.")
 
         self.scrapQuest.postHandler()
         self.scrapQuest.completed = True

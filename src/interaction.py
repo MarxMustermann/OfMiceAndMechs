@@ -640,12 +640,13 @@ def processInput(key):
                         else:
                             pos = (mainChar.xPosition,mainChar.yPosition)
 
-                        # pickup all items from this coordinate
+                        # pickup an item from this coordinate
                         itemByCoordinates = mainChar.container.itemByCoordinates
                         if pos in itemByCoordinates:
                             for item in itemByCoordinates[pos]:
                                 item.pickUp(mainChar)
                                 mainChar.container.calculatePathMap()
+                                messages.append("you pick up a "+item.type)
                                 break
 
             # open chat partner selection

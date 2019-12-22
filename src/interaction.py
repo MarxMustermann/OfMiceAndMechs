@@ -162,6 +162,7 @@ recording = False
 recordingTo = None
 replay = []
 number = None
+doNumber = False
 
 '''
 handle a keystroke
@@ -177,6 +178,9 @@ def processInput(key):
     global recordingTo
     global macros
     global replay
+    global number
+    global doNumber
+
     if recording:
         if not key in ("lagdetection","lagdetection_","-"):
             if recordingTo == None:
@@ -185,8 +189,14 @@ def processInput(key):
                 messages.append("start recording to: %s"%(recordingTo))
                 key = commandChars.ignore
             else:
-                if not replay:
+                if not replay and not doNumber:
                     macros[recordingTo].append(key)
+
+    if key in "0123456789":
+        if number == None:
+            number = ""
+        number += key
+        key = commandChars.ignore
 
     if key in ("-",):
         if not recording:
@@ -199,22 +209,61 @@ def processInput(key):
 
     if replay and not key in ("lagdetection","lagdetection_"):
         if replay and replay[-1] == 2:
-            if key in macros:
-                replay[-1] = 1
+            if not number:
+                if key in macros:
+                    replay[-1] = 1
+                    if recording and not doNumber:
+                        macros[recordingTo].append(key)
+
+                    messages.append("replaying %s: %s"%(key,''.join(macros[key])))
+                    commands = []
+                    for keyPress in macros[key]:
+                        commands.append("lagdetection_")
+                        commands.append(keyPress)
+                    processAllInput(commands)
+                    replay.pop()
+            else:
+                num = int(number)
+                number = None
+
+                doNumber = True
+
                 if recording:
                     macros[recordingTo].append(key)
 
-                messages.append("replaying: %s"%(''.join(macros[key])))
                 commands = []
-                for keyPress in macros[key]:
+                counter = 0
+                while counter < num:
                     commands.append("lagdetection_")
-                    commands.append(keyPress)
+                    commands.append("_")
+                    commands.append(key)
+                    counter += 1
                 processAllInput(commands)
-            replay.pop()
+
+                doNumber = False
+
             key = commandChars.ignore
     if key in ("_",):
         replay.append(2)
         key = commandChars.ignore
+
+    if number and not key in (commandChars.ignore,"lagdetection","lagdetection_"):
+            num = int(number)
+            number = None
+
+            doNumber = True
+
+            commands = []
+            counter = 0
+            while counter < num:
+                commands.append("lagdetection_")
+                commands.append(key)
+                counter += 1
+            processAllInput(commands)
+
+            doNumber = False
+
+            key = commandChars.ignore
 
     # save and quit
     if key in (commandChars.quit_normal, commandChars.quit_instant):

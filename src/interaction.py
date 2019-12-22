@@ -1216,7 +1216,10 @@ class InventoryMenu(SubMenu):
     def __init__(self,char=None):
         self.subMenu = None
         self.skipKeypress = False
+        self.activate = False
+        self.drop = False
         super().__init__()
+        self.footerText = "press j to activate, press l to drop, press esc to exit"
 
     '''
     show the inventory
@@ -1226,13 +1229,28 @@ class InventoryMenu(SubMenu):
         if self.subMenu:
             self.subMenu.handleKey(key)
             if not self.subMenu.getSelection() == None:
-                if not "NaiveActivateQuest" in mainChar.solvers:
-                    self.persistentText = (urwid.AttrSpec("default","default"),"you do not have the nessecary solver yet")
-                    main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
-                else:
-                    self.persistentText = (urwid.AttrSpec("default","default"),"you activate the "+mainChar.inventory[self.subMenu.getSelection()].name)
-                    main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
-                    mainChar.inventory[self.subMenu.getSelection()].apply(mainChar)
+                if self.activate:
+                    if not "NaiveActivateQuest" in mainChar.solvers:
+                        self.persistentText = (urwid.AttrSpec("default","default"),"you do not have the nessecary solver yet")
+                        main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+                    else:
+                        text = "you activate the "+mainChar.inventory[self.subMenu.getSelection()].name
+                        self.persistentText = (urwid.AttrSpec("default","default"),text)
+                        main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+                        messages.append(text)
+                        mainChar.inventory[self.subMenu.getSelection()].apply(mainChar)
+                    self.activate = False
+                if self.drop:
+                    if not "NaiveDropQuest" in mainChar.solvers:
+                        self.persistentText = (urwid.AttrSpec("default","default"),"you do not have the nessecary solver yet")
+                        main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+                    else:
+                        text = "you drop the "+mainChar.inventory[self.subMenu.getSelection()].name
+                        self.persistentText = (urwid.AttrSpec("default","default"), text)
+                        main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+                        messages.append(text)
+                        mainChar.drop(mainChar.inventory[self.subMenu.getSelection()])
+                    self.drop = False
                 self.subMenu = None
                 self.skipKeypress = True
                 return False
@@ -1254,6 +1272,18 @@ class InventoryMenu(SubMenu):
                     counter += 1
                 self.subMenu = SelectionMenu("activate what?",options)
                 self.subMenu.handleKey(".")
+                self.activate = True
+                return False
+
+            if key == "l":
+                options = []
+                counter = 0
+                for item in mainChar.inventory:
+                    options.append([counter,item.name])
+                    counter += 1
+                self.subMenu = SelectionMenu("drop what?",options)
+                self.subMenu.handleKey(".")
+                self.drop = True
                 return False
 
         header.set_text((urwid.AttrSpec("default","default"),"\ninventory overview\n\n"))

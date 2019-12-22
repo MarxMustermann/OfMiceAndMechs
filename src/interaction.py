@@ -160,7 +160,7 @@ shownStarvationWarning = False
 macros = {None:[]}
 recording = False
 recordingTo = None
-replay = 0
+replay = []
 number = None
 
 '''
@@ -198,9 +198,9 @@ def processInput(key):
             recordingTo = None
 
     if replay and not key in ("lagdetection","lagdetection_"):
-        if replay == 2:
+        if replay and replay[-1] == 2:
             if key in macros:
-                replay = 1
+                replay[-1] = 1
                 if recording:
                     macros[recordingTo].append(key)
 
@@ -210,10 +210,10 @@ def processInput(key):
                     commands.append("lagdetection_")
                     commands.append(keyPress)
                 processAllInput(commands)
-            replay = 0
+            replay.pop()
             key = commandChars.ignore
     if key in ("_",):
-        replay = 2
+        replay.append(2)
         key = commandChars.ignore
 
     # save and quit

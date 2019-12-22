@@ -786,7 +786,7 @@ class SubMenu(src.saveing.Saveable):
         self.selection = None
         self.selectionIndex = 1
         self.persistentText = ""
-        self.footerText = "press w / s to move selection up / down, press enter / j / k to select"
+        self.footerText = "press w / s to move selection up / down, press enter / j / k to select, press esc to exit"
         self.followUp = None
         import collections
         self.options = collections.OrderedDict()

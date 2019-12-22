@@ -160,7 +160,8 @@ shownStarvationWarning = False
 macros = {None:[]}
 recording = False
 recordingTo = None
-replay = False
+replay = 0
+number = None
 
 '''
 handle a keystroke
@@ -184,7 +185,8 @@ def processInput(key):
                 messages.append("start recording to: %s"%(recordingTo))
                 key = commandChars.ignore
             else:
-                macros[recordingTo].append(key)
+                if not replay:
+                    macros[recordingTo].append(key)
 
     if key in ("-",):
         if not recording:
@@ -192,21 +194,26 @@ def processInput(key):
             recording = True
         else:
             recording = False
-            messages.append("recorded: %s"%(''.join(macros[recordingTo])))
+            messages.append("recorded: %s to %s"%(''.join(macros[recordingTo]),recordingTo))
             recordingTo = None
 
     if replay and not key in ("lagdetection","lagdetection_"):
-        replay = False
-        if key in macros:
-            messages.append("replaying: %s"%(''.join(macros[key])))
-            commands = []
-            for keyPress in macros[key]:
-                commands.append("lagdetection_")
-                commands.append(keyPress)
-            processAllInput(commands)
-        key = commandChars.ignore
+        if replay == 2:
+            if key in macros:
+                replay = 1
+                if recording:
+                    macros[recordingTo].append(key)
+
+                messages.append("replaying: %s"%(''.join(macros[key])))
+                commands = []
+                for keyPress in macros[key]:
+                    commands.append("lagdetection_")
+                    commands.append(keyPress)
+                processAllInput(commands)
+            replay = 0
+            key = commandChars.ignore
     if key in ("_",):
-        replay = True
+        replay = 2
         key = commandChars.ignore
 
     # save and quit

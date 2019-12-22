@@ -1570,6 +1570,25 @@ class GameplayTest(Terrain):
         self.miniBase = src.rooms.GameTestingRoom(4,8,0,0,creator=creator,seed=seed)
         self.addRooms([self.miniBase])
 
+    '''
+    paint floor with minimal variation to ease perception of movement
+    '''
+    def paintFloor(self):
+        chars = []
+        for i in range(0,250):
+            line = []
+            for j in range(0,250):
+                if not self.hidden:
+                    if not i%5 and not j%7 and not (i+j)%2:
+                        # paint grass at pseudo random location
+                        line.append(displayChars.grass)
+                    else:
+                        line.append(self.floordisplay)
+                else:
+                    line.append(displayChars.void)
+            chars.append(line)
+        return chars
+
 '''
 a wrecked mech
 '''

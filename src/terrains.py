@@ -39,7 +39,8 @@ class Terrain(src.saveing.Saveable):
     '''
     straightforward state initialization
     '''
-    def __init__(self,layout,detailedLayout,creator=None,seed=None):
+    def __init__(self,layout,detailedLayout,creator=None,seed=None, noPaths = False):
+        self.noPaths = noPaths
 
         # store terrain content
         self.itemsOnFloor = []
@@ -368,6 +369,10 @@ class Terrain(src.saveing.Saveable):
         self.foundSuperPathsComplete = {}
 
         self.setNonMovableMap()
+        self.watershedCoordinates = {}
+
+        if self.noPaths:
+            return
 
         # place starting points for pathfinding next to doors
         for room in self.rooms:
@@ -1395,13 +1400,15 @@ class Nothingness(Terrain):
     state initialization
     '''
     def __init__(self,creator=None,seed=None):
+
         # leave layout empty
         layout = """
         """
         detailedLayout = """
         """
 
-        super().__init__(layout,detailedLayout,creator=creator,seed=seed)
+        super().__init__(layout,detailedLayout,creator=creator,seed=seed, noPaths = True)
+        self.noPaths = True
 
         # add a few items scattered around
         self.dekoItems = []

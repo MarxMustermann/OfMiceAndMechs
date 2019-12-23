@@ -9,6 +9,7 @@ import json
 
 # include basic internal libs
 import src.characters
+import src.terrains
 
 '''
 the container for the gamestate
@@ -42,6 +43,19 @@ class GameState():
         self.mainChar.terrain = None
         mainChar = self.mainChar
         self.openingCinematic = None
+
+        self.terrainMap = []
+        for y in range(0,30):
+            line = []
+            for x in range(0,30):
+                if x == 15 and y == 15: 
+                    thisTerrain = terrain
+                else:
+                    thisTerrain = src.terrains.Nothingness(creator=terrain)
+                thisTerrain.xPosition = x
+                thisTerrain.yPosition = y
+                line.append(thisTerrain)
+            self.terrainMap.append(line)
 
     '''
     save the gamestate to disc

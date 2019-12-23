@@ -16,6 +16,7 @@ import src.quests
 import src.canvas
 import src.saveing
 import src.chats
+import src.terrains
 
 ##################################################################################################################################
 ###
@@ -433,6 +434,36 @@ def processInput(key):
             bad code: huge inline function + player vs. npc movement should use same code
             '''
             def moveCharacter(direction):
+                global terrain
+                if direction == "west":
+                    if mainChar.xPosition == 0:
+                        messages.append("switch to")
+                        messages.append((terrain.xPosition-1,terrain.yPosition))
+                        terrain = gamestate.terrainMap[terrain.yPosition][terrain.xPosition-1]
+                        mainChar.xPosition = 15*15
+                        mainChar.terrain = terrain
+                        return
+                if direction == "east":
+                    if mainChar.xPosition == 15*15:
+                        messages.append("switch to")
+                        messages.append((terrain.xPosition+1,terrain.yPosition))
+                        terrain = gamestate.terrainMap[terrain.yPosition][terrain.xPosition+1]
+                        mainChar.xPosition = 0
+                        mainChar.terrain = terrain
+                        return
+                if direction == "north":
+                    if mainChar.yPosition == 0:
+                        terrain = gamestate.terrainMap[terrain.xPosition][terrain.yPosition-1]
+                        mainChar.yPosition = 15*15
+                        mainChar.terrain = terrain
+                        return
+                if direction == "south":
+                    if mainChar.yPosition == 15*15:
+                        terrain = gamestate.terrainMap[terrain.xPosition][terrain.yPosition+1]
+                        mainChar.yPosition = 0
+                        mainChar.terrain = terrain
+                        return
+
                 # do inner room movement
                 if mainChar.room:
                     item = mainChar.room.moveCharacterDirection(mainChar,direction)
@@ -443,6 +474,7 @@ def processInput(key):
                         messages.append("press "+commandChars.activate+" to apply")
                         header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
                         return item
+
                 # do movement on terrain
                 # bad code: these calculation should be done elsewhere
                 else:

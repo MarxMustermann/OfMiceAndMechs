@@ -2477,6 +2477,9 @@ class Testing_1(BasicPhase):
             self.producedHutches = 0
             self.batchProducing = False
             self.productionSection()
+            self.batchFurnaceProducing = False
+            self.batchHutchProducing = False
+            self.batchGrowthTankProcing = False
 
     def helper_getFilteredProducables(self):
         desiredProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
@@ -2505,8 +2508,19 @@ class Testing_1(BasicPhase):
             self.mainChar.addListener(self.checkProductionLine)
 
         if not len(self.productionQueue) and self.batchProducing:
-            gamestate.gameWon = True
-            return
+            if self.batchFurnaceProducing and not self.batchHutchProducing and not self.batchGrowthTankProcing:
+                showText("The first batch is ready. You can optimise your macros in many ways.\nYou can record your macros to buffers from a-z. This way you can store marcos for different actions.\n\nI recommend recording the macro for producing furnaces to f, the macro for producing hutches to h and the macro for producing the growthtanks to g\n\nproduce 10 hutches now.")
+                for x in range(0,10):
+                    self.productionQueue.append(src.items.Hutch)
+
+            if not self.batchFurnaceProducing and self.batchHutchProducing and not self.batchGrowthTankProcing:
+                showText("The second batch is ready. There is another way the optimise your macros.\nYou can replay macros while recording macros.\n\nThis allows you to extend existing macros. Let us assume you recorded a movement to the buffer b and want to extend it.\nPress -n to start recording to the n buffer, replay the macro b by pressing _b. Afterwards do the movement you want to extend the movement with.\nPress - to stop recording to the n macro and you will be able to replay the extended macro using the _n keys\n\nYou are able to replay multiple macros while recording new macros and nest marcos deeply. But keep in mind that referenced macros can be overwritten later.\n\nFor example recording aaa to the buffer b and recoding _bddd to buffer n will reult in the movement aaaddd when replaying the buffer n.\nIf you overwrite the buffer b with sss, replaying the macro n will result in the movement sssddd without directly changing the buffer n.\n\nproduce 10 growth tanks now.")
+                for x in range(0,10):
+                    self.productionQueue.append(src.items.GrowthTank)
+
+            if not self.batchFurnaceProducing and not self.batchHutchProducing and self.batchGrowthTankProcing:
+                gamestate.gameWon = True
+                return
 
         self.seed += self.seed%43
         
@@ -2540,15 +2554,11 @@ class Testing_1(BasicPhase):
     def checkProductionLine(self):
         filteredProducts = self.helper_getFilteredProducables()
         if len(filteredProducts) == 3:
-            showText("The machines are reconfigured now. I promised you are reward. Here it is:\n\nI can help you with the repetive tasks. You need to do something and i make you repeat the movements.\n\nYou can use this to produce items on these machines without thinking about it.\nWe will use this to produce enough items to get noticed by somebody up the command chain.\n\nYour superior will gain the most from this at first, but you need to trust me and do not break any rules again.\n\nYou can start recording the movement by pressing the - key and pressing some other key afterwards. Your movements will be recorded to the second key.\nAn Example: If you press - f for example your movements will be recoded to the f buffer\nTo stop recording press - again.\nTo replay the movement press _ and the key for the buffer you want to replay. Press _ f to replay the movement from the last example.\n\nget familiar with recording macros and then record macros for producing each item. We will need at least 20 furnaces, 20 hutches and 20 growth tanks to fill the whole order.\n\nIt is important for you to use macros and not get bogged down in mundane tasks. We need your creativity for greater things." )
+            showText("The machines are reconfigured now. I promised you are reward. Here it is:\n\nI can help you with the repetive tasks. You need to do something and i make you repeat the movements.\n\nYou can use this to produce items on these machines without thinking about it.\nWe will use this to produce enough items to get noticed by somebody up the command chain.\n\nYour superior will gain the most from this at first, but you need to trust me and do not break any rules again.\n\nYou can start recording the movement by pressing the - key and pressing some other key afterwards. Your movements will be recorded to the second key.\nAn Example: If you press - f for example your movements will be recoded to the f buffer\nTo stop recording press - again.\nTo replay the movement press _ and the key for the buffer you want to replay. Press _ f to replay the movement from the last example.\n\nget familiar with recording macros and then record macros for producing each item. We will need at least 10 furnaces, 10 hutches and 10 growth tanks to fill the whole order.\n\nIt is important for you to use macros and not get bogged down in mundane tasks. We need your creativity for greater things." )
 
             self.batchProducing = True
             for x in range(0,10):
                 self.productionQueue.append(src.items.Furnace)
-            for x in range(0,10):
-                self.productionQueue.append(src.items.Hutch)
-            for x in range(0,10):
-                self.productionQueue.append(src.items.GrowthTank)
             self.mainChar.delListener(self.checkProductionLine)
 
     def checkProduction(self):

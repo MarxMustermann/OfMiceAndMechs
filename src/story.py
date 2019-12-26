@@ -2504,22 +2504,30 @@ class Testing_1(BasicPhase):
 
         if not len(self.productionQueue) and self.queueProduction:
             showText("that is enough to satisfy the minimal stock requirements. Exceding the minimal requirements will gain you a small reward.\n\nIn this case you will be rewarded with tokens. These tokens allow you to reconfigure the machines you use for production.\nThe production lines are hardly working at all and reconfiguring these machines should resolve that\n\nYour supervisor was not ambitious enough to do this, but i know you are. As you implant i will reward you, when you are done\n\nYou can reconfigure a machine by using it with a token in your inventory. It will reset to a new random state.\nReplace the useless machines until the machines are able to produce\nFurnaces, Growthtanks, Hutches\nstarting from metal bars.")
-            self.queueProduction = False
             self.mainChar.addListener(self.checkProductionLine)
+            self.queueProduction = False
 
         if not len(self.productionQueue) and self.batchProducing:
             if self.batchFurnaceProducing and not self.batchHutchProducing and not self.batchGrowthTankProcing:
                 showText("The first batch is ready. You can optimise your macros in many ways.\nYou can record your macros to buffers from a-z. This way you can store marcos for different actions.\n\nI recommend recording the macro for producing furnaces to f, the macro for producing hutches to h and the macro for producing the growthtanks to g\n\nproduce 10 hutches now.")
                 for x in range(0,10):
                     self.productionQueue.append(src.items.Hutch)
+                self.batchFurnaceProducing = False
+                self.batchHutchProducing = True
 
-            if not self.batchFurnaceProducing and self.batchHutchProducing and not self.batchGrowthTankProcing:
+            elif not self.batchFurnaceProducing and self.batchHutchProducing and not self.batchGrowthTankProcing:
                 showText("The second batch is ready. There is another way the optimise your macros.\nYou can replay macros while recording macros.\n\nThis allows you to extend existing macros. Let us assume you recorded a movement to the buffer b and want to extend it.\nPress -n to start recording to the n buffer, replay the macro b by pressing _b. Afterwards do the movement you want to extend the movement with.\nPress - to stop recording to the n macro and you will be able to replay the extended macro using the _n keys\n\nYou are able to replay multiple macros while recording new macros and nest marcos deeply. But keep in mind that referenced macros can be overwritten later.\n\nFor example recording aaa to the buffer b and recoding _bddd to buffer n will reult in the movement aaaddd when replaying the buffer n.\nIf you overwrite the buffer b with sss, replaying the macro n will result in the movement sssddd without directly changing the buffer n.\n\nproduce 10 growth tanks now.")
                 for x in range(0,10):
                     self.productionQueue.append(src.items.GrowthTank)
+                self.batchHutchProducing = False
+                self.batchGrowthTankProcing = True
 
-            if not self.batchFurnaceProducing and not self.batchHutchProducing and self.batchGrowthTankProcing:
+            elif not self.batchFurnaceProducing and not self.batchHutchProducing and self.batchGrowthTankProcing:
+                self.batchGrowthTankProcing = False
                 gamestate.gameWon = True
+                return
+            else:
+                raise Exception("should not happen")
                 return
 
         self.seed += self.seed%43
@@ -2559,6 +2567,7 @@ class Testing_1(BasicPhase):
             self.batchProducing = True
             for x in range(0,10):
                 self.productionQueue.append(src.items.Furnace)
+            self.batchFurnaceProducing = True
             self.mainChar.delListener(self.checkProductionLine)
 
     def checkProduction(self):

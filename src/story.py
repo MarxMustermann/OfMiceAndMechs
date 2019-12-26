@@ -2304,7 +2304,7 @@ class Testing_1(BasicPhase):
 
             itemsFound = []
             for item in self.miniBase.itemsOnFloor:
-                if isinstance(item,src.items.GameTestingProducer_l2):
+                if isinstance(item,src.items.GameTestingProducer):
                     if item.product in desiredProducts and not item.product in itemsFound:
                         itemsFound.append(item.product)                        
 
@@ -2495,7 +2495,7 @@ class Testing_1(BasicPhase):
         while lastLength < len(producableStuff):
             lastLength = len(producableStuff)
             for item in self.miniBase.itemsOnFloor:
-                if isinstance(item,src.items.GameTestingProducer_l1) or isinstance(item,src.items.GameTestingProducer_l2):
+                if isinstance(item,src.items.GameTestingProducer):
                     if item.ressource in producableStuff and not item.product in producableStuff:
                         producableStuff.append(item.product)
         return producableStuff

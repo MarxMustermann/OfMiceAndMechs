@@ -1399,7 +1399,7 @@ XXXXXXXXXXXXX
         while y < 2:
             x = 0
             while x < 3:
-                itemList.append(src.items.GameTestingProducer_l1(3+x*3,2+y,creator=creator,seed=seed, mainRessource=src.items.MetalBars,possibleResults=l1Items))
+                itemList.append(src.items.GameTestingProducer(3+x*3,2+y,creator=creator,seed=seed, possibleSources=[src.items.MetalBars]*5+l1Items,possibleResults=l1Items))
                 x += 1
                 seed += 13
             y += 1
@@ -1410,7 +1410,7 @@ XXXXXXXXXXXXX
         while y < 3:
             x = 0
             while x < 3:
-                itemList.append(src.items.GameTestingProducer_l2(3+x*3,5+y,creator=creator,seed=seed, possibleSources=l1Items+l2Items, possibleResults=l2Items))
+                itemList.append(src.items.GameTestingProducer(3+x*3,5+y,creator=creator,seed=seed, possibleSources=l1Items+l2Items, possibleResults=l2Items))
                 x += 1
                 seed += 13
             y += 1
@@ -1421,7 +1421,7 @@ XXXXXXXXXXXXX
         while y < 2:
             x = 0
             while x < 3:
-                itemList.append(src.items.GameTestingProducer_l2(3+x*3,9+y,creator=creator,seed=seed, possibleSources=l2Items, possibleResults=l3Items))
+                itemList.append(src.items.GameTestingProducer(3+x*3,9+y,creator=creator,seed=seed, possibleSources=l2Items, possibleResults=l3Items))
                 x += 1
                 seed += 13
             y += 1

@@ -424,6 +424,7 @@ interaction.advanceGame = advanceGame
 
 # load the gamestate
 loaded = False
+"""
 if args.load:
     shouldLoad = True
 else:
@@ -432,6 +433,8 @@ else:
         shouldLoad = False
     else:
         shouldLoad = True
+"""
+shouldLoad = False
 if shouldLoad:
     try:
         # load the game

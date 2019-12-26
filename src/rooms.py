@@ -1378,11 +1378,11 @@ XXXXXXXXXXXXX
 X           X
 X           X
 X           X
-X          @X
-X          vX
-X  .........$
-X          vX
-X           X
+X .........@X
+X .       .vX
+X .       ..$
+X .        vX
+X ......... X
 X           X
 X           X
 X           X

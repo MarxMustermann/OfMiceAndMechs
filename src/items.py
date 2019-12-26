@@ -1848,7 +1848,7 @@ class GameTestingProducer_l1(Item):
         self.baseName = name
         self.possibleResults = possibleResults
         self.mainRessource = mainRessource
-        self.change_apply()
+        self.change_apply_2(force=True)
         self.coolDown = 0
 
     def apply(self,character,resultType=None):
@@ -1864,12 +1864,24 @@ class GameTestingProducer_l1(Item):
         self.coolDown = gamestate.tick
 
         if token:
-            character.inventory.remove(item)
-            self.change_apply()
+            self.change_apply_1(character,token)
         else:
             self.produce_apply(character)
 
-    def change_apply(self):
+    def change_apply_1(self,character,token):
+        options = [(("yes",character,token),"yes"),(("no",character,token),"no")]
+        self.submenue = interaction.SelectionMenu("Do you want to reconfigure the machine?",options)
+        interaction.submenue = self.submenue
+        interaction.submenue.followUp = self.change_apply_2
+
+    def change_apply_2(self,force=False):
+        if not force:
+            if interaction.submenue.selection[0] == "no":
+                return
+            character = interaction.submenue.selection[1]
+            token = interaction.submenue.selection[2]
+            character.inventory.remove(token)
+
         seed = self.seed
 
         if (seed%3) == 0:
@@ -1925,7 +1937,7 @@ class GameTestingProducer_l2(Item):
         self.baseName = name
         self.possibleResults = possibleResults
         self.possibleSources = possibleSources
-        self.change_apply()
+        self.change_apply_2(force=True)
         self.coolDown = 0
 
     def apply(self,character,resultType=None):
@@ -1941,12 +1953,24 @@ class GameTestingProducer_l2(Item):
         self.coolDown = gamestate.tick
 
         if token:
-            character.inventory.remove(item)
-            self.change_apply()
+            self.change_apply_1(character,token)
         else:
             self.produce_apply(character)
 
-    def change_apply(self):
+    def change_apply_1(self,character,token):
+        options = [(("yes",character,token),"yes"),(("no",character,token),"no")]
+        self.submenue = interaction.SelectionMenu("Do you want to reconfigure the machine?",options)
+        interaction.submenue = self.submenue
+        interaction.submenue.followUp = self.change_apply_2
+
+    def change_apply_2(self,force=False):
+        if not force:
+            if interaction.submenue.selection[0] == "no":
+                return
+            character = interaction.submenue.selection[1]
+            token = interaction.submenue.selection[2]
+            character.inventory.remove(token)
+
         seed = self.seed
 
         self.ressource = None

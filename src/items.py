@@ -120,6 +120,7 @@ class Item(src.saveing.Saveable):
                 del container.itemByCoordinates[(self.xPosition,self.yPosition)]
             terrain.calculatePathMap()
 
+        """
         # spawn mice with pseudorandom chance
         # bad code: this code should be somewhere else
         if ((self.mayContainMice and (gamestate.tick+self.xPosition+self.yPosition)%10 == 0 and not self.walkable) or
@@ -210,6 +211,7 @@ class Item(src.saveing.Saveable):
             else:
                 # add mouse
                 self.terrain.addCharacter(mouse,self.xPosition,self.yPosition)
+        """
 
         # remove position information to place item in the void
         self.xPosition = None

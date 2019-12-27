@@ -211,18 +211,22 @@ def processInput(key):
     if replay and not key in ("lagdetection","lagdetection_"):
         if replay and replay[-1] == 2:
             if not number:
-                if key in macros:
-                    replay[-1] = 1
-                    if recording and not doNumber:
-                        macros[recordingTo].append(key)
 
+                replay[-1] = 1
+                if recording and not doNumber:
+                    macros[recordingTo].append(key)
+
+                if key in macros:
                     messages.append("replaying %s: %s"%(key,''.join(macros[key])))
                     commands = []
                     for keyPress in macros[key]:
                         commands.append("lagdetection_")
                         commands.append(keyPress)
                     processAllInput(commands)
-                    replay.pop()
+                else:
+                    messages.append("no macro recorded to %s"%(key))
+
+                replay.pop()
             else:
                 num = int(number)
                 number = None

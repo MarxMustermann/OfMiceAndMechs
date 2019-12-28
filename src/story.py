@@ -2480,6 +2480,7 @@ class Testing_1(BasicPhase):
             self.batchFurnaceProducing = False
             self.batchHutchProducing = False
             self.batchGrowthTankProcing = False
+            self.fastProduction = False
 
     def helper_getFilteredProducables(self):
         desiredProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
@@ -2516,24 +2517,43 @@ class Testing_1(BasicPhase):
                 self.batchHutchProducing = True
 
             elif not self.batchFurnaceProducing and self.batchHutchProducing and not self.batchGrowthTankProcing:
-                showText("The second batch is ready. There is another way the optimise your macros.\nYou can replay macros while recording macros.\n\nThis allows you to extend existing macros. Let us assume you recorded a movement to the buffer b and want to extend it.\nPress -n to start recording to the n buffer, replay the macro b by pressing _b. Afterwards do the movement you want to extend the movement with.\nPress - to stop recording to the n macro and you will be able to replay the extended macro using the _n keys\n\nYou are able to replay multiple macros while recording new macros and nest marcos deeply. But keep in mind that referenced macros can be overwritten later.\n\nFor example recording aaa to the buffer b and recoding _bddd to buffer n will result in the movement aaaddd when replaying the buffer n.\nIf you overwrite the buffer b with sss, replaying the macro n will result in the movement sssddd without directly changing the buffer n.\n\nproduce 10 growth tanks now.")
+                showText("The second batch is ready. Another trick that may be useful for you is the multiplier. It allows to repeat commmands\n\nYou can use this for example to drop 7 items by pressing 7l . This will be translated to lllllll .\nYou can use this within macros and when calling macros. Press 5_f to run the macro f 5 times.\n\nUse this the produce 10 growth tanks with one macro.")
                 for x in range(0,10):
                     self.productionQueue.append(src.items.GrowthTank)
                 self.batchHutchProducing = False
                 self.batchGrowthTankProcing = True
 
             elif not self.batchFurnaceProducing and not self.batchHutchProducing and self.batchGrowthTankProcing:
+                showText("The first order is completed and will be shipped out to the main base. Your supervisor did not get praised for this.\nYou did get a small supply drop. A goo dispenser is supplied for easier survival.\n\nIt seemes the delivery was overdue. There are only few ressources spent on this outpost, but productivity is a must.\nRegular deliveries will ensure this output will stay supplied, but nothing more.\n\nSince your supervisor has no ambition to overachieve, this will only ensure your survival.\nIgnore your supervisor and pace up production. As soon this outpost achives noticeable output, we will have more options.\n\nProduce 3 successive deliveries with a production time under 100 ticks each.") 
                 self.batchGrowthTankProcing = False
-                gamestate.gameWon = True
-                return
+                self.fastProduction = True
+                self.fastProductionStart = 0
             else:
                 raise Exception("should not happen")
                 return
 
+        if not len(self.productionQueue) and self.fastProduction:
+            """
+            for x in range(0,10):
+                self.productionQueue.append(src.items.GrowthTank)
+            for x in range(0,10):
+                self.productionQueue.append(src.items.Furnace)
+            """
+            if not self.fastProductionStart == 0:
+                if gamestate.tick-self.fastProductionStart > 100:
+                    showText("it took you %s ticks to complete the order.")
+                else:
+                    gamestate.gameWon = True
+                    return
+
+            self.fastProductionStart = gamestate.tick
+            for x in range(0,10):
+                self.productionQueue.append(src.items.Hutch)
+
         self.seed += self.seed%43
         
         possibleProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
-        if self.queueProduction or self.batchProducing:
+        if self.queueProduction or self.batchProducing or self.fastProduction:
             self.product = self.productionQueue[0]
             self.productionQueue.remove(self.product)
         else:

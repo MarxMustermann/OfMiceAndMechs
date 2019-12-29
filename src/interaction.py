@@ -1481,6 +1481,7 @@ class AdvancedQuestMenu(SubMenu):
                         continue
 
                     options.append((value,key))
+                options.append(("special_furnace","vehicle fueling"))
                 self.setOptions("what type of quest:",options)
 
             # let the superclass handle the actual selection
@@ -1630,6 +1631,8 @@ class AdvancedQuestMenu(SubMenu):
                        questInstance = self.quest(self.questParams["cargoRoom"],self.questParams["storageRoom"],creator=void)
                     elif self.quest == src.quests.MoveToStorage:
                        questInstance = self.quest([terrain.tutorialLab.itemByCoordinates[(1,9)][0],terrain.tutorialLab.itemByCoordinates[(2,9)][0]],terrain.tutorialStorageRooms[1],creator=void)
+                    elif self.quest == "special_furnace":
+                        questInstance = src.quests.KeepFurnaceFiredMeta(self.character.room.furnaces[0],creator=void)
                     else:
                        questInstance = self.quest(creator=void)
 

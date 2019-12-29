@@ -654,6 +654,8 @@ class Room(src.saveing.Saveable):
 
             if isinstance(item,src.items.Boiler):
                 self.boilers.append(item)
+            if isinstance(item,src.items.Furnace):
+                self.furnaces.append(item)
 
             item.room = self
             item.terrain = None

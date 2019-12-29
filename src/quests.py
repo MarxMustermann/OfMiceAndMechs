@@ -3704,6 +3704,7 @@ questMap = {
               "ClearRubble":ClearRubble,
               "RoomDuty":RoomDuty,
               "Serve":Serve,
+              "DummyQuest":DummyQuest,
 }
 
 '''

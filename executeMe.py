@@ -185,6 +185,13 @@ events.debugMessages = debugMessages
 canvas.debugMessages = debugMessages
 gamestate.debugMessages = debugMessages
 
+# bad code: common variables with modules
+story.cinematics = cinematics
+interaction.cinematics = cinematics
+events.cinematics = cinematics
+rooms.cinematics = cinematics
+gamestate.cinematics = cinematics
+
 # load the gamestate
 loaded = False
 if args.load:
@@ -274,13 +281,6 @@ chats.quests = quests
 story.rooms = rooms
 
 # bad code: common variables with modules
-story.cinematics = cinematics
-interaction.cinematics = cinematics
-events.cinematics = cinematics
-rooms.cinematics = cinematics
-gamestate.cinematics = cinematics
-
-# bad code: common variables with modules
 items.commandChars = commandChars
 story.commandChars = commandChars
 characters.commandChars = commandChars
@@ -362,30 +362,18 @@ if not loaded:
     print("generate terrain")
     # spawn selected terrain
     if args.terrain and args.terrain == "scrapField":
-        terrain = terrains.ScrapField(creator=void,seed=seed)
+        gameStateObj.terrainType = terrains.ScrapField
     elif args.terrain and args.terrain == "nothingness":
-        terrain = terrains.Nothingness(creator=void,seed=seed)
+        gameStateObj.terrainType = terrains.Nothingness
     elif args.terrain and args.terrain == "test":
-        terrain = terrains.GameplayTest(creator=void,seed=seed)
+        gameStateObj.terrainType = terrains.GameplayTest
     else:
-        terrain = terrains.TutorialTerrain(creator=void,seed=seed)
+        gameStateObj.terrainType = terrains.TutorialTerrain
 else:
     terrain = gameStateObj.terrain
 
 # bad code: common variables with modules
-items.terrain = terrain
-story.terrain = terrain
-interaction.terrain = terrain
-terrains.terrain = terrain
-quests.terrain = terrain
-chats.terrain = terrain
-characters.terrain = terrain
-
-# bad code: common variables with modules
 cinematics.interaction = interaction
-
-# bad code: common variables with modules
-characters.roomsOnMap = terrain.rooms
 
 # state that should be contained in the gamestate
 mapHidden = True
@@ -393,6 +381,20 @@ mainChar = None
 
 if not loaded:
     gameStateObj.setup(phase=args.phase, seed=seed)
+    terrain = gameStateObj.terrain
+
+# bad code: common variables with modules
+characters.roomsOnMap = terrain.rooms
+
+# bad code: common variables with modules
+items.terrain = terrain
+story.terrain = terrain
+interaction.terrain = terrain
+terrains.terrain = terrain
+gamestate.terrain = terrain
+quests.terrain = terrain
+chats.terrain = terrain
+characters.terrain = terrain
 
 ##################################################################################################################################
 ###

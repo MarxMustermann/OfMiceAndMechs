@@ -1270,14 +1270,21 @@ class Terrain(src.saveing.Saveable):
             if room.id in state["changedRoomList"]:
                 room.setState(state["roomStates"][room.id])
         for room in self.rooms:
+            if room.id in state["removedRoomList"]:
+                self.removeRoom(room)
+        for roomId in state["newRoomList"]:
+            room = src.rooms.getRoomFromState(state["roomStates"][roomId],terrain=self)
+            self.addRoom(room)
+
+        for room in self.rooms:
             room.timeIndex = tick
 
         for item in self.itemsOnFloor[:]:
             # update items
             if item.id in state["changedItemList"]:
-                self.removeItem(item)
+                self.removeItem(item,recalculate=False)
                 item.setState(state["itemStates"][item.id])
-                self.addItems([item])
+                self.addItems([item],recalculate=False)
 
             # remove items
             if item.id in state["removedItemList"]:
@@ -1437,6 +1444,9 @@ class Nothingness(Terrain):
 
         self.floordisplay = displayChars.dirt
 
+        # save internal state
+        self.initialState = self.getState()
+
 '''
 a gameplay test
 '''
@@ -1584,8 +1594,11 @@ class GameplayTest(Terrain):
         self.addItems(extraItems)
 
         # add base of operations
-        self.miniBase = src.rooms.GameTestingRoom(4,8,0,0,creator=creator,seed=seed)
+        self.miniBase = src.rooms.GameTestingRoom(4,8,0,0,creator=self,seed=seed)
         self.addRooms([self.miniBase])
+
+        # save internal state
+        self.initialState = self.getState()
 
     '''
     paint floor with minimal variation to ease perception of movement
@@ -2015,8 +2028,8 @@ terrainMap = {
 '''
 get item instances from dict state
 '''
-def getTerrainFromState(state):
-    terrain = terrainMap[state["objType"]](creator=void,seed=state["initialSeed"])
+def getTerrainFromState(state, creator=None):
+    terrain = terrainMap[state["objType"]](creator=creator,seed=state["initialSeed"])
     terrain.setState(state)
     loadingRegistry.register(terrain)
     return terrain

@@ -10,18 +10,22 @@ import json
 # include basic internal libs
 import src.characters
 import src.terrains
+import src.saveing
 
 '''
 the container for the gamestate
 bad code: all game state should be reachable from here
 '''
-class GameState():
+class GameState(src.saveing.Saveable):
     '''
     basic state setting with some initialization
     bad code: initialization should happen in story or from loading
     '''
     def __init__(self,phase=None, seed=0):
+        super().__init__()
+        self.id = "gamestate"
         self.mainChar = None
+        self.successSeed = 0
         pass
 
     def setup(self,phase=None, seed=0):
@@ -55,9 +59,10 @@ class GameState():
             line = []
             for x in range(0,30):
                 if x == 15 and y == 15: 
-                    thisTerrain = terrain
+                    thisTerrain = self.terrainType(creator=self,seed=seed)
+                    self.terrain = thisTerrain
                 else:
-                    thisTerrain = src.terrains.Nothingness(creator=terrain)
+                    thisTerrain = src.terrains.Nothingness(creator=self)
                 thisTerrain.xPosition = x
                 thisTerrain.yPosition = y
                 line.append(thisTerrain)
@@ -127,13 +132,19 @@ class GameState():
         # update void
         void.setState(state["void"])
 
+        import src.terrains
+        self.terrainMap = []
+        for line in state["terrainMap"]:
+            newLine = []
+            for item in line:
+                thisTerrain = src.terrains.getTerrainFromState(item,creator=self)
+                newLine.append(thisTerrain)
+            self.terrainMap.append(newLine)
+
         # load the terrain
         global terrain
-        print("load terrain")
-        import src.terrains
-        terrain = src.terrains.getTerrainFromState(state["terrain"])
-        terrain.setState(state["terrain"],self.tick)
-        self.terrain = terrain
+        self.terrain = self.terrainMap[15][15]
+        terrain = self.terrain
 
         # load the main character
         # bad code: should be simplified
@@ -184,6 +195,13 @@ class GameState():
         state["gameWon"] = self.gameWon
         state["void"] = void.getState()
         state["initialSeed"] = self.initialSeed
+
+        state["terrainMap"] = []
+        for line in self.terrainMap:
+            newLine = []
+            for item in line:
+                newLine.append(item.getDiffState())
+            state["terrainMap"].append(newLine)
 
         # generate the main characters state
         mainCharState = self.mainChar.getDiffState()

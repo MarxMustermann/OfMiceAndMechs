@@ -277,7 +277,7 @@ class Room(src.saveing.Saveable):
 
         # set meta information for saving
         self.attributesToStore.extend([
-              "yPosition","xPosition","offsetX","offsetY"
+              "yPosition","xPosition","offsetX","offsetY","objType"
                 ])
 
         self.initialState = self.getState()
@@ -875,6 +875,8 @@ bad pattern: should be abstracted
 bad code: name and classname do not agree
 '''
 class TutorialMachineRoom(Room):
+    objType = "TutorialMachineRoom"
+
     '''
     create room and add special items
     '''
@@ -983,6 +985,8 @@ a room to waste cpu power. used for performance testing
 bad code: does not actually work
 '''
 class CpuWasterRoom(Room):
+    objType = "CpuWasterRoom"
+    
     '''
     create room and add patroling npcs
     '''
@@ -1042,6 +1046,8 @@ XXXXXXXXXX
 the living space for soldiers
 '''
 class InfanteryQuarters(Room):
+    objType = "InfanteryQuarters"
+
     '''
     create room
     '''
@@ -1189,6 +1195,8 @@ the room where raw goo is processed into eatable form
 bad code: has no actual function yet
 '''
 class VatProcessing(Room):
+    objType = "VatProcessing"
+
     '''
     create room and add special item
     '''
@@ -1246,6 +1254,8 @@ the room where organic material is fermented to raw goo
 bad code: has no actual function yet
 '''
 class VatFermenting(Room):
+    objType = "VatFermenting"
+
     '''
     create room and set some state
     '''
@@ -1275,6 +1285,8 @@ XXXXX$XXXX
 the armor plates of a mech
 '''
 class MechArmor(Room):
+    objType = "MechArmor"
+
     '''
     create room
     '''
@@ -1304,6 +1316,8 @@ XXXXXXX$XXXXXXX
 a mini mech to drive around with. including boiler and coal storage and furnace fireing npc
 '''
 class MiniMech(Room):
+    objType = "MiniMech"
+
     '''
     create the room and add the npc
     '''
@@ -1346,6 +1360,8 @@ a room sized base for small off mech missions
 bad code: serves no real function yet
 '''
 class MiniBase(Room):
+    objType = "MiniBase"
+
     '''
     create room and add special items
     '''
@@ -1377,6 +1393,8 @@ a room to test gameplay concepts
 bad code: serves no real function yet
 '''
 class GameTestingRoom(Room):
+    objType = "GameTestingRoom"
+
     '''
     create room and add special items
     '''
@@ -1456,6 +1474,8 @@ bad code: is basically not implemented yet
 bad code: is misused as a target/source for transportation jobs
 '''
 class ChallengeRoom(Room):
+    objType = "ChallengeRoom"
+
     '''
     create room and add special items
     '''
@@ -1664,6 +1684,8 @@ bad code: is basically not implemented yet
 bad code: is misused as a target/source for transportation jobs
 '''
 class LabRoom(Room):
+    objType = "LabRoom"
+
     '''
     create room and add special items
     '''
@@ -1709,6 +1731,8 @@ XXXXXXXXXX
 cargo storage for tightly packing items
 '''
 class CargoRoom(Room):
+    objType = "CargoRoom"
+
     '''
     create room, set storage order and fill with items
     '''
@@ -1865,6 +1889,8 @@ XXXXXXXXXX
 storage for storing items in an accessible way
 '''
 class StorageRoom(Room):
+    objType = "StorageRoom"
+
     '''
     create room, set storage order 
     '''
@@ -2007,6 +2033,8 @@ XXXXXXXXXX
 the room where characters are grown and born
 '''
 class WakeUpRoom(Room):
+    objType = "WakeUpRoom"
+
     '''
     create room and add special items
     '''
@@ -2142,6 +2170,8 @@ XXXXXXXX
 the room where hoppers wait for jobs
 '''
 class WaitingRoom(Room):
+    objType = "WaitingRoom"
+
     '''
     create room and add hoppers
     '''
@@ -2256,6 +2286,7 @@ a dummy for the mechs command centre
 bad code: dummy only
 '''
 class MechCommand(Room):
+    objType = "MechCommand"
 
     '''
     set basic attributes
@@ -2320,6 +2351,8 @@ XXXXXXXXXXX
 the place for production of tools and items
 '''
 class MetalWorkshop(Room):
+    objType = "MetalWorkshop"
+
     '''
     create room and add special items
     '''
@@ -2388,6 +2421,8 @@ XXXXX$XXXXX
 '''
 '''
 class HuntersLodge(Room):
+    objType = "HuntersLodge"
+
     '''
     create room and add special items
     '''
@@ -2441,6 +2476,8 @@ XXXXX$XXXXX
 a empty room
 '''
 class EmptyRoom(Room):
+    objType = "EmptyRoom"
+
     def __init__(self,xPosition,yPosition,offsetX,offsetY,sizeX,sizeY,doorPos,desiredPosition=None,creator=None):
         self.roomLayout = """
 """
@@ -2459,6 +2496,8 @@ class EmptyRoom(Room):
 a room in the process of beeing constructed. The room itself exists but no items within
 '''
 class ConstructionSite(Room):
+    objType = "ConstructionSite"
+
     '''
     create room and plan construction
     '''
@@ -2566,3 +2605,39 @@ XXXXX$XXXXX
         # save initial state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
+
+# maping from strings to all rooms
+# should be extendable
+roomMap = {
+            "TutorialMachineRoom":TutorialMachineRoom,
+            "CpuWasterRoom":CpuWasterRoom,
+            "InfanteryQuarters":InfanteryQuarters,
+            "VatFermenting":VatFermenting,
+            "VatProcessing":VatProcessing,
+            "ChallengeRoom":ChallengeRoom,
+            "LabRoom":LabRoom,
+            "MechArmor":MechArmor,
+            "MiniMech":MiniMech,
+            "MiniBase":MiniBase,
+            "CargoRoom":CargoRoom,
+            "StorageRoom":StorageRoom,
+            "WakeUpRoom":WakeUpRoom,
+            "WaitingRoom":WaitingRoom,
+            "MechCommand":MechCommand,
+            "MetalWorkshop":MetalWorkshop,
+            "HuntersLodge":HuntersLodge,
+            "EmptyRoom":EmptyRoom,
+            "ConstructionSite":ConstructionSite,
+            "GameTestingRoom":GameTestingRoom,
+}
+
+'''
+get item instances from dict state
+'''
+def getRoomFromState(state,terrain=None):
+    room = roomMap[state["objType"]](state["xPosition"],state["yPosition"],state["offsetX"],state["offsetY"],creator=void)
+    room.terrain = terrain
+    room.setState(state)
+    loadingRegistry.register(room)
+    return room
+

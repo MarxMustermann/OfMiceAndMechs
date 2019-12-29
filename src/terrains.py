@@ -50,6 +50,7 @@ class Terrain(src.saveing.Saveable):
         self.itemByCoordinates = {}
         self.roomByCoordinates = {}
         self.listeners = {"default":[]}
+        self.initialSeed = seed
         self.seed = seed
 
         # set id
@@ -1263,12 +1264,12 @@ class Terrain(src.saveing.Saveable):
     set state from dict
     bad code: should be in saveable
     '''
-    def setState(self,state,tick):
+    def setState(self,state,tick=0):
         # update rooms
-        for room in terrain.rooms:
+        for room in self.rooms:
             if room.id in state["changedRoomList"]:
                 room.setState(state["roomStates"][room.id])
-        for room in terrain.rooms:
+        for room in self.rooms:
             room.timeIndex = tick
 
         for item in self.itemsOnFloor[:]:
@@ -1305,20 +1306,21 @@ class Terrain(src.saveing.Saveable):
             self.addCharacter(char,charState["xPosition"],charState["yPosition"])
 
         # store the list of items to transport
-        # bad code: too specific. should be in story or something
-        self.toTransport = []
-        for item in state["toTransport"]:
-            newItem = []
-            newItem.append(None)
-            newItem.append((item[1][0],item[1][1]))
-            self.toTransport.append(newItem)
+        if "toTransport" in state:
+            # bad code: too specific. should be in story or something
+            self.toTransport = []
+            for item in state["toTransport"]:
+                newItem = []
+                newItem.append(None)
+                newItem.append((item[1][0],item[1][1]))
+                self.toTransport.append(newItem)
 
-            '''
-            set value
-            '''
-            def setThing(thing):
-                newItem[0] = thing
-            loadingRegistry.callWhenAvailable(item[0],setThing)
+                '''
+                set value
+                '''
+                def setThing(thing):
+                    newItem[0] = thing
+                loadingRegistry.callWhenAvailable(item[0],setThing)
 
     '''
     get difference between initial and current state
@@ -1348,6 +1350,8 @@ class Terrain(src.saveing.Saveable):
                   "changedCharList":changedCharList,
                   "removedCharList":removedCharList,
                   "charStates":charStates,
+                  "initialSeed":self.initialSeed,
+                  "objType":self.objType,
                }
 
     '''
@@ -1371,12 +1375,16 @@ class Terrain(src.saveing.Saveable):
                   "itemStates":itemStates,
                   "characterIds":characterIds,
                   "chracterStates":chracterStates,
+                  "initialSeed":self.initialSeed,
+                  "objType":self.objType,
                }
 
 '''
 a almost empty terrain
 '''
 class Nothingness(Terrain):
+    objType = "Nothingness"
+
     '''
     paint floor with minimal variation to ease perception of movement
     '''
@@ -1433,6 +1441,8 @@ class Nothingness(Terrain):
 a gameplay test
 '''
 class GameplayTest(Terrain):
+    objType = "GameplayTest"
+
     '''
     state initialization
     '''
@@ -1600,6 +1610,8 @@ class GameplayTest(Terrain):
 a wrecked mech
 '''
 class ScrapField(Terrain):
+    objType = "ScrapField"
+
     '''
     state initialization
     '''
@@ -1682,6 +1694,8 @@ U  U
 the tutorial mech
 '''
 class TutorialTerrain(Terrain):
+    objType = "TutorialTerrain"
+
     def __init__(self,creator=None,seed=None):
         self.toTransport = []
 
@@ -1988,4 +2002,22 @@ XXXCCCCCXXX """
         outerQuest.addQuest(innerQuest)
         self.waitingRoom.quests.append(outerQuest)
         self.waitingRoom.addEvent(events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToLeft"},creator=self))
+
+# maping from strings to all items
+# should be extendable
+terrainMap = {
+        "TutorialTerrain":TutorialTerrain,
+        "Nothingness":Nothingness,
+        "GameplayTest":GameplayTest,
+        "ScrapField":ScrapField,
+}
+
+'''
+get item instances from dict state
+'''
+def getTerrainFromState(state):
+    terrain = terrainMap[state["objType"]](creator=void,seed=state["initialSeed"])
+    terrain.setState(state)
+    loadingRegistry.register(item)
+    return item
 

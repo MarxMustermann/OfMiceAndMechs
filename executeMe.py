@@ -59,7 +59,151 @@ if args.seed:
 else:
     import random
     seed = random.randint(1,100000)
-print(seed)
+
+# bad code: common variables with modules
+void = saveing.Void()
+characters.void = void
+rooms.void = void
+items.void = void
+terrains.void = void
+gamestate.void = void
+story.void = void
+interaction.void = void
+quests.void = void
+cinematics.void = void
+events.void = void
+chats.void = void
+
+# bad code: common variables with modules
+loadingRegistry = saveing.LoadingRegistry()
+characters.loadingRegistry = loadingRegistry
+quests.loadingRegistry = loadingRegistry
+rooms.loadingRegistry = loadingRegistry
+cinematics.loadingRegistry = loadingRegistry
+items.loadingRegistry = loadingRegistry
+story.loadingRegistry = loadingRegistry
+events.loadingRegistry = loadingRegistry
+terrains.loadingRegistry = loadingRegistry
+saveing.loadingRegistry = loadingRegistry
+interaction.loadingRegistry = loadingRegistry
+
+# bad code: common variables with modules
+items.characters = characters
+rooms.characters = characters
+story.characters = characters
+terrains.characters = characters
+
+# bad code: common variables with modules
+story.names = names
+characters.names = names
+gamestate.names = names
+items.names = names
+rooms.names = names
+
+# bad code: common variables with modules
+phasesByName = {}
+gamestate.phasesByName = phasesByName
+story.phasesByName = phasesByName
+story.registerPhases()
+
+# create and load the gamestate
+gameStateObj = gamestate.GameState()
+
+# set up debugging
+if args.debug:
+    '''
+    logger object for logging to file
+    '''
+    class debugToFile(object):
+        '''
+        clear file
+        '''
+        def __init__(self):
+            logfile = open("debug.log","w")
+            logfile.close()
+        '''
+        add log message to file
+        '''
+        def append(self,message):
+            logfile = open("debug.log","a")
+            logfile.write(str(message)+"\n")
+            logfile.close()
+    
+    # set debug mode
+    debugMessages = debugToFile()
+    interaction.debug = True
+    characters.debug = True
+    quests.debug = True
+    canvas.debug = True
+    gameMath.debug = True
+
+# set dummies to replace dummy objects
+else:
+    '''
+    dummy logger
+    '''
+    class FakeLogger(object):
+        '''
+        discard input
+        '''
+        def append(self,message):
+            pass
+
+    # set debug mode
+    debugMessages = FakeLogger()
+    interaction.debug = False
+    characters.debug = False
+    quests.debug = False
+    canvas.debug = False
+    gameMath.debug = False
+
+# bad code: common variables with modules
+items.displayChars = displayChars
+rooms.displayChars = displayChars
+terrains.displayChars = displayChars
+story.displayChars = displayChars
+gamestate.displayChars = displayChars
+interaction.displayChars = displayChars
+cinematics.displayChars = displayChars
+characters.displayChars = displayChars
+events.displayChars = displayChars
+chats.displayChars = displayChars
+
+# bad code: common variables with modules
+items.debugMessages = debugMessages
+quests.debugMessages = debugMessages
+rooms.debugMessages = debugMessages
+characters.debugMessages = debugMessages
+terrains.debugMessages = debugMessages
+cinematics.debugMessages = debugMessages
+story.debugMessages = debugMessages
+interaction.debugMessages = debugMessages
+events.debugMessages = debugMessages
+canvas.debugMessages = debugMessages
+gamestate.debugMessages = debugMessages
+
+# load the gamestate
+loaded = False
+if args.load:
+    shouldLoad = True
+else:
+    load = input("load game? (Y/n)")
+    if load.lower() == "n":
+        shouldLoad = False
+    else:
+        shouldLoad = True
+print(shouldLoad)
+if shouldLoad:
+    try:
+        print("try load")
+        # load the game
+        loaded = gameStateObj.load()
+        seed = gameStateObj.initialSeed
+    except Exception as e:
+        ignore = input("error in gamestate, could not load gamestate completely. Abort and show error message? (Y/n)")
+        if not ignore.lower() == "n":
+            raise e
+print(loaded)
 
 ##################################################################################################################################
 ###
@@ -106,20 +250,6 @@ else:
 #################################################################################################################################
 
 # bad code: common variables with modules
-void = saveing.Void()
-characters.void = void
-rooms.void = void
-items.void = void
-terrains.void = void
-gamestate.void = void
-story.void = void
-interaction.void = void
-quests.void = void
-cinematics.void = void
-events.void = void
-chats.void = void
-
-# bad code: common variables with modules
 rooms.story = story
 chats.story = story
 
@@ -128,25 +258,6 @@ story.chats = chats
 characters.chats = chats
 rooms.chats = chats
 quests.chats = chats
-
-# bad code: common variables with modules
-loadingRegistry = saveing.LoadingRegistry()
-characters.loadingRegistry = loadingRegistry
-quests.loadingRegistry = loadingRegistry
-rooms.loadingRegistry = loadingRegistry
-cinematics.loadingRegistry = loadingRegistry
-items.loadingRegistry = loadingRegistry
-story.loadingRegistry = loadingRegistry
-events.loadingRegistry = loadingRegistry
-terrains.loadingRegistry = loadingRegistry
-saveing.loadingRegistry = loadingRegistry
-interaction.loadingRegistry = loadingRegistry
-
-# bad code: common variables with modules
-phasesByName = {}
-story.phasesByName = phasesByName
-story.registerPhases()
-gamestate.phasesByName = phasesByName
 
 # bad code: common variables with modules
 cinematics.quests = quests
@@ -158,18 +269,6 @@ chats.quests = quests
 
 # bad code: common variables with modules
 story.rooms = rooms
-
-# bad code: common variables with modules
-items.displayChars = displayChars
-rooms.displayChars = displayChars
-terrains.displayChars = displayChars
-story.displayChars = displayChars
-gamestate.displayChars = displayChars
-interaction.displayChars = displayChars
-cinematics.displayChars = displayChars
-characters.displayChars = displayChars
-events.displayChars = displayChars
-chats.displayChars = displayChars
 
 # bad code: common variables with modules
 story.cinematics = cinematics
@@ -188,20 +287,7 @@ chats.commandChars = commandChars
 interaction.setFooter()
 
 # bad code: common variables with modules
-story.names = names
-characters.names = names
-gamestate.names = names
-items.names = names
-rooms.names = names
-
-# bad code: common variables with modules
 story.items = items
-
-# bad code: common variables with modules
-items.characters = characters
-rooms.characters = characters
-story.characters = characters
-terrains.characters = characters
 
 # bad code: common variables with modules
 cinematics.main = interaction.main
@@ -260,67 +346,6 @@ items.interaction = interaction
 quests.interaction = interaction
 chats.interaction = interaction
 
-# set up debugging
-if args.debug:
-    '''
-    logger object for logging to file
-    '''
-    class debugToFile(object):
-        '''
-        clear file
-        '''
-        def __init__(self):
-            logfile = open("debug.log","w")
-            logfile.close()
-        '''
-        add log message to file
-        '''
-        def append(self,message):
-            logfile = open("debug.log","a")
-            logfile.write(str(message)+"\n")
-            logfile.close()
-    
-    # set debug mode
-    debugMessages = debugToFile()
-    interaction.debug = True
-    characters.debug = True
-    quests.debug = True
-    canvas.debug = True
-    gameMath.debug = True
-
-# set dummies to replace dummy objects
-else:
-    '''
-    dummy logger
-    '''
-    class FakeLogger(object):
-        '''
-        discard input
-        '''
-        def append(self,message):
-            pass
-
-    # set debug mode
-    debugMessages = FakeLogger()
-    interaction.debug = False
-    characters.debug = False
-    quests.debug = False
-    canvas.debug = False
-    gameMath.debug = False
-
-# bad code: common variables with modules
-items.debugMessages = debugMessages
-quests.debugMessages = debugMessages
-rooms.debugMessages = debugMessages
-characters.debugMessages = debugMessages
-terrains.debugMessages = debugMessages
-cinematics.debugMessages = debugMessages
-story.debugMessages = debugMessages
-interaction.debugMessages = debugMessages
-events.debugMessages = debugMessages
-canvas.debugMessages = debugMessages
-gamestate.debugMessages = debugMessages
-
 # bad code: common variables with modules
 quests.showCinematic = cinematics.showCinematic
 
@@ -330,15 +355,19 @@ quests.showCinematic = cinematics.showCinematic
 #
 ##########################################
 
-# spawn selected terrain
-if args.terrain and args.terrain == "scrapField":
-    terrain = terrains.ScrapField(creator=void,seed=seed)
-elif args.terrain and args.terrain == "nothingness":
-    terrain = terrains.Nothingness(creator=void,seed=seed)
-elif args.terrain and args.terrain == "test":
-    terrain = terrains.GameplayTest(creator=void,seed=seed)
+if not loaded:
+    print("generate terrain")
+    # spawn selected terrain
+    if args.terrain and args.terrain == "scrapField":
+        terrain = terrains.ScrapField(creator=void,seed=seed)
+    elif args.terrain and args.terrain == "nothingness":
+        terrain = terrains.Nothingness(creator=void,seed=seed)
+    elif args.terrain and args.terrain == "test":
+        terrain = terrains.GameplayTest(creator=void,seed=seed)
+    else:
+        terrain = terrains.TutorialTerrain(creator=void,seed=seed)
 else:
-    terrain = terrains.TutorialTerrain(creator=void,seed=seed)
+    terrain = None
 
 # bad code: common variables with modules
 items.terrain = terrain
@@ -360,23 +389,14 @@ characters.roomsOnMap = terrain.rooms
 mapHidden = True
 mainChar = None
 
-# the available Phases
-phasesByName["BoilerRoomWelcome"] = story.BoilerRoomWelcome
-phasesByName["BoilerRoomInteractionTraining"] = story.BoilerRoomInteractionTraining
-phasesByName["FurnaceCompetition"] = story.FurnaceCompetition
-phasesByName["VatPhase"] = story.VatPhase
-phasesByName["MachineRoomPhase"] = story.MachineRoomPhase
-phasesByName["OpenWorld"] = story.OpenWorld
-phasesByName["Test"] = story.Testing_1
+if not loaded:
+    gameStateObj.setup(phase=args.phase, seed=seed)
 
 ##################################################################################################################################
 ###
 ##        setup the game
 #
 #################################################################################################################################
-
-# create and load the gamestate
-gameStateObj = gamestate.GameState(phase=args.phase, seed=seed)
 
 # bad code: common variables with modules
 story.gamestate = gameStateObj
@@ -421,28 +441,6 @@ def advanceGame():
 # bad code: common variables with modules
 cinematics.advanceGame = advanceGame
 interaction.advanceGame = advanceGame
-
-# load the gamestate
-loaded = False
-"""
-if args.load:
-    shouldLoad = True
-else:
-    load = input("load game? (Y/n)")
-    if load.lower() == "n":
-        shouldLoad = False
-    else:
-        shouldLoad = True
-"""
-shouldLoad = False
-if shouldLoad:
-    try:
-        # load the game
-        loaded = gameStateObj.load()
-    except Exception as e:
-        ignore = input("error in gamestate, could not load gamestate completely. Abort and show error message? (Y/n)")
-        if not ignore.lower() == "n":
-            raise e
 
 # set up the splash screen
 if not args.debug and not interaction.submenue:

@@ -692,6 +692,10 @@ class Furnace(Item):
     '''
     def apply(self,character):
         super().apply(character,silent=True)
+
+        if not self.room:
+            return
+        
         # select fuel
         # bad pattern: the player should be able to select fuel
         # bad pattern: coal should be preferred
@@ -730,9 +734,11 @@ class Furnace(Item):
 
                 # get the boilers affected
                 self.boilers = []
-                for boiler in self.room.boilers:
-                    if ((boiler.xPosition in [self.xPosition,self.xPosition-1,self.xPosition+1] and boiler.yPosition == self.yPosition) or boiler.yPosition in [self.yPosition-1,self.yPosition+1] and boiler.xPosition == self.xPosition):
-                        self.boilers.append(boiler)
+                #for boiler in self.room.boilers:
+                for boiler in self.room.itemsOnFloor:
+                    if isinstance(boiler, src.items.Boiler):
+                        if ((boiler.xPosition in [self.xPosition,self.xPosition-1,self.xPosition+1] and boiler.yPosition == self.yPosition) or boiler.yPosition in [self.yPosition-1,self.yPosition+1] and boiler.xPosition == self.xPosition):
+                            self.boilers.append(boiler)
 
                 # heat up boilers
                 for boiler in self.boilers:
@@ -822,52 +828,185 @@ class Display(Item):
     '''
     def apply(self,character):
         super().apply(character,silent=True)
-        # handle movement keystrokes
-        '''
-        move room to north
-        '''
-        def moveNorth():
-            self.room.moveDirection("north",force=self.room.engineStrength)
-        '''
-        move room to south
-        '''
-        def moveSouth():
-            self.room.moveDirection("south",force=self.room.engineStrength)
-        '''
-        move room to west
-        '''
-        def moveWest():
-            self.room.moveDirection("west",force=self.room.engineStrength)
-        '''
-        move room to east
-        '''
-        def moveEast():
-            self.room.moveDirection("east",force=self.room.engineStrength)
 
-        '''
-        reset key mapping
-        '''
-        def disapply():
-            del stealKey[commandChars.move_north]
-            del stealKey[commandChars.move_south]
-            del stealKey[commandChars.move_west]
-            del stealKey[commandChars.move_east]
-            del stealKey["up"]
-            del stealKey["down"]
-            del stealKey["right"]
-            del stealKey["left"]
-            del stealKey[commandChars.activate]
+        if self.room:
+            # handle movement keystrokes
+            '''
+            move room to north
+            '''
+            def moveNorth():
+                self.room.moveDirection("north",force=self.room.engineStrength)
+            '''
+            move room to south
+            '''
+            def moveSouth():
+                self.room.moveDirection("south",force=self.room.engineStrength)
+            '''
+            move room to west
+            '''
+            def moveWest():
+                self.room.moveDirection("west",force=self.room.engineStrength)
+            '''
+            move room to east
+            '''
+            def moveEast():
+                self.room.moveDirection("east",force=self.room.engineStrength)
 
-        # map the keystrokes
-        stealKey[commandChars.move_north] = moveNorth
-        stealKey[commandChars.move_south] = moveSouth
-        stealKey[commandChars.move_west] = moveWest
-        stealKey[commandChars.move_east] = moveEast
-        stealKey["up"] = moveNorth
-        stealKey["down"] = moveSouth
-        stealKey["left"] = moveWest
-        stealKey["right"] = moveEast
-        stealKey[commandChars.activate] = disapply
+            '''
+            reset key mapping
+            '''
+            def disapply():
+                del stealKey[commandChars.move_north]
+                del stealKey[commandChars.move_south]
+                del stealKey[commandChars.move_west]
+                del stealKey[commandChars.move_east]
+                del stealKey["up"]
+                del stealKey["down"]
+                del stealKey["right"]
+                del stealKey["left"]
+                del stealKey[commandChars.activate]
+
+            # map the keystrokes
+            stealKey[commandChars.move_north] = moveNorth
+            stealKey[commandChars.move_south] = moveSouth
+            stealKey[commandChars.move_west] = moveWest
+            stealKey[commandChars.move_east] = moveEast
+            stealKey["up"] = moveNorth
+            stealKey["down"] = moveSouth
+            stealKey["left"] = moveWest
+            stealKey["right"] = moveEast
+            stealKey[commandChars.activate] = disapply
+        else:
+            wallLeft = False
+            for offset in range(1,15):
+                pos = (self.xPosition-offset,self.yPosition)
+                if pos in self.terrain.itemByCoordinates:
+                    for item in self.terrain.itemByCoordinates[pos]:
+                        if isinstance(item,Wall) or isinstance(item,Door):
+                            wallLeft = item
+            wallRight = False
+            for offset in range(1,15):
+                pos = (self.xPosition+offset,self.yPosition)
+                if pos in self.terrain.itemByCoordinates:
+                    for item in self.terrain.itemByCoordinates[pos]:
+                        if isinstance(item,Wall) or isinstance(item,Door):
+                            wallRight = item
+            wallTop = False
+            for offset in range(1,15):
+                pos = (self.xPosition,self.yPosition-offset)
+                if pos in self.terrain.itemByCoordinates:
+                    for item in self.terrain.itemByCoordinates[pos]:
+                        if isinstance(item,Wall) or isinstance(item,Door):
+                            wallTop = item
+            wallBottom = False
+            for offset in range(1,15):
+                pos = (self.xPosition,self.yPosition+offset)
+                if pos in self.terrain.itemByCoordinates:
+                    for item in self.terrain.itemByCoordinates[pos]:
+                        if isinstance(item,Wall) or isinstance(item,Door):
+                            wallBottom = item
+
+            if not ( wallLeft and wallRight and wallTop and wallBottom) :
+                messages.append("no boundaries found")
+                messages.append((wallLeft,wallRight,wallTop,wallBottom))
+                return
+
+            roomLeft = self.xPosition-wallLeft.xPosition
+            roomRight = wallRight.xPosition-self.xPosition
+            roomTop = self.yPosition-wallTop.yPosition
+            roomBottom = wallBottom.yPosition-self.yPosition
+
+            wallMissing = False
+            items = []
+            for x in range(-roomLeft,roomRight+1):
+                pos = (self.xPosition+x,self.yPosition-roomTop)
+                wallFound = None 
+                if pos in self.terrain.itemByCoordinates:
+                    for item in self.terrain.itemByCoordinates[pos]:
+                        if isinstance(item,Wall) or isinstance(item,Door):
+                            wallFound = item
+                            items.append(item)
+                            break
+                if not wallFound:
+                    wallMissing = True
+                    break
+            for y in range(-roomTop,roomBottom+1):
+                pos = (self.xPosition-roomLeft,self.yPosition+y)
+                wallFound = None 
+                if pos in self.terrain.itemByCoordinates:
+                    for item in self.terrain.itemByCoordinates[pos]:
+                        if isinstance(item,Wall) or isinstance(item,Door):
+                            wallFound = item
+                            items.append(item)
+                            break
+                if not wallFound:
+                    wallMissing = True
+                    break
+            for y in range(-roomTop,roomBottom+1):
+                pos = (self.xPosition+roomRight,self.yPosition+y)
+                wallFound = None 
+                if pos in self.terrain.itemByCoordinates:
+                    for item in self.terrain.itemByCoordinates[pos]:
+                        if isinstance(item,Wall) or isinstance(item,Door):
+                            wallFound = item
+                            items.append(item)
+                            break
+                if not wallFound:
+                    wallMissing = True
+                    break
+            for x in range(-roomLeft,roomRight+1):
+                pos = (self.xPosition+x,self.yPosition+roomBottom)
+                wallFound = None 
+                if pos in self.terrain.itemByCoordinates:
+                    for item in self.terrain.itemByCoordinates[pos]:
+                        if isinstance(item,Wall) or isinstance(item,Door):
+                            wallFound = item
+                            items.append(item)
+                            break
+                if not wallFound:
+                    wallMissing = True
+                    break
+
+            if wallMissing:
+                messages.append("wall missing")
+                return
+
+            messages.append(len(items))
+            for item in items:
+                try:
+                    terrain.removeItem(item)
+                except:
+                    messages.append(("failed to remove item",item))
+
+            door = None
+            for item in items:
+                if isinstance(item,Door):
+                    if not door:
+                        door = item
+                    else:
+                        messages.append("too many doors")
+                        return
+            if not door:
+                messages.append("too little doors")
+                return
+
+            import src.rooms
+            doorPos = (roomLeft+door.xPosition-self.xPosition,roomTop+door.yPosition-self.yPosition)
+            room = src.rooms.EmptyRoom(self.xPosition//15,self.yPosition//15,self.xPosition%15-roomLeft,self.yPosition%15-roomTop,roomLeft+roomRight+1,roomTop+roomBottom+1,doorPos,creator=self)
+            room.open = True
+
+            xOffset = character.xPosition-self.xPosition
+            yOffset = character.yPosition-self.yPosition
+
+            self.terrain.removeCharacter(character)
+            self.terrain.addRooms([room])
+            character.xPosition = roomLeft+xOffset
+            character.yPosition = roomTop+yOffset
+            room.addCharacter(character,roomLeft+xOffset,roomTop+yOffset)
+
+            self.xPosition = roomLeft
+            self.yPosition = roomTop
+            room.addItems([self])
 
 '''
 basic item with different appearance
@@ -1955,6 +2094,18 @@ itemMap = {
             "ScrapCompactor":ScrapCompactor,
             "ObjectDispenser":OjectDispenser,
             "Token":Token,
+            "Connector":Connector,
+            "Bolt":Bolt,
+            "Stripe":Stripe,
+            "puller":Puller,
+            "pusher":Pusher,
+            "Stripe":Stripe,
+            "Sheet":Sheet,
+            "Rod":Rod,
+            "Heater":Heater,
+            "Nook":Nook,
+            "Tank":Tank,
+            "Coil":Coil,
 }
 
 '''

@@ -21,6 +21,11 @@ class GameState():
     bad code: initialization should happen in story or from loading
     '''
     def __init__(self,phase=None, seed=0):
+        pass
+
+    def setup(self,phase=None, seed=0):
+        self.initialSeed = seed
+
         self.gameWon = False
         self.tick = 0
 
@@ -116,11 +121,16 @@ class GameState():
         self.currentPhase = phasesByName[state["currentPhase"]["name"]]()
         self.currentPhase.setState(state["currentPhase"])
         self.tick = state["tick"]
+        self.initialSeed = state["initialSeed"]
 
         # update void
         void.setState(state["void"])
 
         # load the terrain
+        global terrain
+        print("load terrain")
+        import src.terrains
+        terrain = src.terrains.getTerrainFromState(state["terrain"])
         terrain.setState(state["terrain"],self.tick)
 
         # load the main character
@@ -169,6 +179,7 @@ class GameState():
         state["tick"] = self.tick
         state["gameWon"] = self.gameWon
         state["void"] = void.getState()
+        state["initialSeed"] = self.initialSeed
 
         # generate the main characters state
         mainCharState = self.mainChar.getDiffState()

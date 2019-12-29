@@ -321,6 +321,8 @@ class Room(src.saveing.Saveable):
         for listenFunction in self.listeners["default"]:
             listenFunction()
 
+        self.engineStrength = 250*self.steamGeneration
+
     '''
     get the difference in state since creation
     '''
@@ -649,6 +651,10 @@ class Room(src.saveing.Saveable):
 
         # add the items to the easy access map
         for item in items:
+
+            if isinstance(item,src.items.Boiler):
+                self.boilers.append(item)
+
             item.room = self
             item.terrain = None
             if (item.xPosition,item.yPosition) in self.itemByCoordinates:
@@ -1386,6 +1392,9 @@ X ......... X
 X           X
 X           X
 X           X
+X           X
+X           X
+X           X
 XXXXXXXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
@@ -1393,6 +1402,14 @@ XXXXXXXXXXXXX
         exclude1 = [src.items.Scrap]
         exclude2 = [src.items.Corpse]
         itemList.append(src.items.ScrapCompactor(10,1,creator=creator))
+
+        itemList.append(src.items.GameTestingProducer(3,12,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Wall]))
+        itemList.append(src.items.GameTestingProducer(6,12,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Door]))
+        itemList.append(src.items.GameTestingProducer(9,12,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Display]))
+
+        itemList.append(src.items.GameTestingProducer(3,13,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Boiler]))
+        itemList.append(src.items.GameTestingProducer(6,13,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Pile]))
+        itemList.append(src.items.GameTestingProducer(9,13,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Furnace]))
 
         l1Items = [src.items.Sheet,src.items.Rod,src.items.Sheet,src.items.Nook,src.items.Stripe,src.items.Bolt,src.items.Coil]
         y = 0
@@ -2418,6 +2435,23 @@ XXXXX$XXXXX
             mainChar.assignQuest(quest,active=True)
         mainChar.revokeReputation(amount=20,reason=" for balancing")
 
+'''
+a empty room
+'''
+class EmptyRoom(Room):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,sizeX,sizeY,doorPos,desiredPosition=None,creator=None):
+        self.roomLayout = """
+"""
+        self.roomLayout += "X"*sizeX+"\n"
+        self.roomLayout += "X"+" "*(sizeX-3)+".X"+"\n"
+        self.roomLayout += ("X"+" "*(sizeX-2)+"X"+"\n")*(sizeY-3)
+        self.roomLayout += "X"*sizeX+"\n"
+
+        splited = self.roomLayout.split("\n")
+        splited[doorPos[1]] = splited[doorPos[1]][0:doorPos[0]]+"$"+splited[doorPos[1]][doorPos[0]+1:]
+        self.roomLayout = "\n".join(splited)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        self.name = "room"
 
 '''
 a room in the process of beeing constructed. The room itself exists but no items within

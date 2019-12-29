@@ -3433,7 +3433,7 @@ class FillGrowthTankMeta(MetaQuestSequence):
         hasFullFlask = False
         for item in self.character.inventory:
             if isinstance(item,src.items.GooFlask):
-                if item.uses < 100:
+                if item.uses < 10:
                     continue
                 hasFullFlask = True
 

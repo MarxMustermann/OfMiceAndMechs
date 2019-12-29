@@ -2634,3 +2634,5 @@ def registerPhases():
     phasesByName["BasicMovementTraining"] = BasicMovementTraining
     phasesByName["FindWork"] = FindWork
     phasesByName["Challenge"] = Challenge
+    phasesByName["Test"] = Testing_1
+    phasesByName["Testing_1"] = Testing_1

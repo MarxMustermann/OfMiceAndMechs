@@ -164,10 +164,10 @@ class GameState(src.saveing.Saveable):
                         break
             else:
                 if state["terrain"]:
-                    terrain.addCharacter(self.mainChar,xPosition,yPosition)
+                    self.terrain.addCharacter(self.mainChar,xPosition,yPosition)
         else:
             if state["terrain"]:
-                terrain.addCharacter(self.mainChar,xPosition,yPosition)
+                self.terrain.addCharacter(self.mainChar,xPosition,yPosition)
         self.mainChar.setState(state["mainChar"])
 
         # load cinematics

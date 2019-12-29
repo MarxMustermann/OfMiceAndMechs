@@ -525,7 +525,13 @@ def processInput(key):
 
                                 # teleport the character into the room
                                 room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
-                                terrain.characters.remove(mainChar)
+                                messages.append(("removing from terrain",room))
+                                try:
+                                    terrain.characters.remove(mainChar)
+                                except:
+                                    messages.append("fail,fail,fail")
+
+                                return
 
                         # do not move player into the room
                         else:

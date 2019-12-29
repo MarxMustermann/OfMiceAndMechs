@@ -21,6 +21,7 @@ class GameState():
     bad code: initialization should happen in story or from loading
     '''
     def __init__(self,phase=None, seed=0):
+        self.mainChar = None
         pass
 
     def setup(self,phase=None, seed=0):
@@ -132,9 +133,12 @@ class GameState():
         import src.terrains
         terrain = src.terrains.getTerrainFromState(state["terrain"])
         terrain.setState(state["terrain"],self.tick)
+        self.terrain = terrain
 
         # load the main character
         # bad code: should be simplified
+        if not self.mainChar:
+            self.mainChar = src.characters.Character(displayChars.main_char,3,3,automated=False,name=names.characterFirstNames[self.tick%len(names.characterFirstNames)]+" "+names.characterLastNames[self.tick%len(names.characterLastNames)],creator=void)
         xPosition = self.mainChar.xPosition
         if "xPosition" in state["mainChar"]:
             xPosition = state["mainChar"]["xPosition"]

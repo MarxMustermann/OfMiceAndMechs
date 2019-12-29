@@ -942,7 +942,7 @@ class Terrain(src.saveing.Saveable):
     '''
     add items to terrain and add them to internal datastructures
     '''
-    def addItems(self,items):
+    def addItems(self,items,recalculate=True):
         self.itemsOnFloor.extend(items)
         for item in items:
             item.terrain = self
@@ -951,7 +951,7 @@ class Terrain(src.saveing.Saveable):
                 self.itemByCoordinates[(item.xPosition,item.yPosition)].append(item)
             else:
                 self.itemByCoordinates[(item.xPosition,item.yPosition)] = [item]
-        if hasattr(self,"watershedStart"): # nontrivial: prevents crashes in constructor
+        if hasattr(self,"watershedStart") and recalculate: # nontrivial: prevents crashes in constructor
             self.calculatePathMap()
 
     '''
@@ -1285,7 +1285,7 @@ class Terrain(src.saveing.Saveable):
         # add items
         for itemId in state["newItemList"]:
             item = src.items.getItemFromState(state["itemStates"][itemId])
-            self.addItems([item])
+            self.addItems([item],recalculate=False)
 
         for char in self.characters:
             # update characters
@@ -2018,6 +2018,6 @@ get item instances from dict state
 def getTerrainFromState(state):
     terrain = terrainMap[state["objType"]](creator=void,seed=state["initialSeed"])
     terrain.setState(state)
-    loadingRegistry.register(item)
-    return item
+    loadingRegistry.register(terrain)
+    return terrain
 

@@ -109,6 +109,9 @@ story.registerPhases()
 # create and load the gamestate
 gameStateObj = gamestate.GameState()
 
+terrain = None
+gamestate.terrain = terrain
+
 # set up debugging
 if args.debug:
     '''
@@ -367,13 +370,12 @@ if not loaded:
     else:
         terrain = terrains.TutorialTerrain(creator=void,seed=seed)
 else:
-    terrain = None
+    terrain = gameStateObj.terrain
 
 # bad code: common variables with modules
 items.terrain = terrain
 story.terrain = terrain
 interaction.terrain = terrain
-gamestate.terrain = terrain
 terrains.terrain = terrain
 quests.terrain = terrain
 chats.terrain = terrain

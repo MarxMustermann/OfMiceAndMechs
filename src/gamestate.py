@@ -34,6 +34,8 @@ class GameState(src.saveing.Saveable):
         self.gameWon = False
         self.tick = 0
 
+        self.macros = {}
+
         try:
             with open("gamestate/successSeed.json","r") as successSeedFile:
                 rawState = json.loads(successSeedFile.read())
@@ -129,6 +131,8 @@ class GameState(src.saveing.Saveable):
         self.tick = state["tick"]
         self.initialSeed = state["initialSeed"]
 
+        self.macros = state["macros"]
+
         # update void
         void.setState(state["void"])
 
@@ -195,6 +199,7 @@ class GameState(src.saveing.Saveable):
         state["gameWon"] = self.gameWon
         state["void"] = void.getState()
         state["initialSeed"] = self.initialSeed
+        state["macros"] = self.macros
 
         state["terrainMap"] = []
         for line in self.terrainMap:

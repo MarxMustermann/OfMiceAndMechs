@@ -158,7 +158,7 @@ def processAllInput(commandKeyQueue):
 
 
 shownStarvationWarning = False
-macros = {None:[]}
+macros = {}
 recording = False
 recordingTo = None
 replay = []

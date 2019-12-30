@@ -100,6 +100,8 @@ gamestate.names = names
 items.names = names
 rooms.names = names
 
+gamestate.macros = interaction.macros
+
 # bad code: common variables with modules
 phasesByName = {}
 gamestate.phasesByName = phasesByName
@@ -382,6 +384,8 @@ mainChar = None
 if not loaded:
     gameStateObj.setup(phase=args.phase, seed=seed)
     terrain = gameStateObj.terrain
+
+interaction.macros = gameStateObj.macros
 
 # bad code: common variables with modules
 characters.roomsOnMap = terrain.rooms

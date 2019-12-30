@@ -6,6 +6,8 @@ a to-be prototype for a game
 * [news (latest: "commit 1203-1302")](NEWS.md)
 * [credits](CREDITS.md)
 
+discord: https://discord.gg/uUMWHbS
+
 ## state of the game
 
 Quite some work was done on the game so far. It has a playtime of 11 minutes for a near optimal run at the time of writing ([how to beat the game](HOWTO.md)), actual playtime should be magnitudes longer. You have beaten the game when you see "good job. credits". I try to get playtesters to play the game and meanwhile fix the bugs und broken features. This sadly means now real playtime extension for quite some time and no significant progress with the story board.

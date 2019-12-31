@@ -1840,6 +1840,8 @@ class SurviveQuest(Quest):
         for item in self.character.inventory:
             if isinstance(item,src.items.GooFlask):
                 if item.uses < 10 and not self.refillQuest:
+                    if not terrain.wakeUpRoom or not terrain.wakeUpRoom.gooDispenser:
+                        return
                     self.refillQuest = RefillDrinkQuest(creator=self)
                     self.character.assignQuest(self.refillQuest,active=True)
 

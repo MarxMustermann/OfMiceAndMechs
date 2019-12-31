@@ -132,7 +132,7 @@ bad code: this is abused as the main loop for this game
 '''
 def show_or_exit(key,charState=None):
     if charState == None:
-        charState = multi_state[mainChar]
+        charState = mainChar.macroState
 
     # store the commands for later processing
     charState["commandKeyQueue"].append((key,[]))
@@ -169,7 +169,7 @@ bad code: there are way too much lines of code in this function
 '''
 def processInput(key,charState=None,noAdvanceGame=False,char=None):
     if charState == None:
-        charState = multi_state[mainChar]
+        charState = mainChar.macroState
 
     if char == None:
         char = mainChar
@@ -1923,54 +1923,18 @@ def render():
 
 multi_currentChar = None
 multi_chars = None
-multi_state = None
-
-def genState():
-    global mainChar
-    global multi_state
-
-    if not mainChar in multi_state:
-        state = {
-            "commandKeyQueue":[],
-            "state":[],
-            "recording":False,
-            "recordingTo":None,
-            "replay":[],
-            "number":None,
-            "doNumber":False,
-            "macros":{},
-            "shownStarvationWarning":False,
-            "lastLagDetection":time.time(),
-            "lastRedraw":time.time(),
-            "idleCounter":0,
-            "submenue":None,
-            "ignoreNextAutomated": False,
-            "ticksSinceDeath": None,
-            "footerPosition":0,
-            "footerLength":len(footerText),
-            "footerSkipCounter":20,
-            "itemMarkedLast":None,
-            "lastMoveAutomated":False,
-                }
-
-        multi_state[mainChar] = state
 
 def keyboardListener(key):
     global mainChar
     global multi_currentChar
     global multi_chars
-    global multi_state
 
     if not multi_currentChar:
         multi_currentChar = mainChar
     if multi_chars == None:
         multi_chars = terrain.characters[:]
-    if multi_state == None:
-        multi_state = {}
 
-    genState()
-
-    state = multi_state[mainChar]
+    state = mainChar.macroState
 
     if key == "ctrl d":
         state["commandKeyQueue"].clear()
@@ -1984,8 +1948,7 @@ def keyboardListener(key):
             newChar = character
             break
         mainChar = newChar
-        genState()
-        state = multi_state[mainChar]
+        state = mainChar.macroState
         show_or_exit("~",charState=state)
         show_or_exit("lagdetection",charState=state)
     else:
@@ -1993,19 +1956,19 @@ def keyboardListener(key):
 
 def gameLoop(loop,user_data):
 
-    if multi_state[mainChar]["commandKeyQueue"]:
-        for char in multi_state.keys():
+    if mainChar.macroState["commandKeyQueue"]:
+        for char in multi_chars:
             if char == mainChar:
                 noAdvanceGame = False
             else:
                 noAdvanceGame = True
-            state = multi_state[char]
+            state = char.macroState
             if len(state["commandKeyQueue"]):
                 key = state["commandKeyQueue"][0]
                 state["commandKeyQueue"].remove(key)
                 processInput(key,charState=state,noAdvanceGame=noAdvanceGame,char=char)
 
-    loop.set_alarm_in(0.01, gameLoop)
+    loop.set_alarm_in(0.001, gameLoop)
 
 # get the interaction loop from the library
 loop = urwid.MainLoop(frame, unhandled_input=keyboardListener)
@@ -2018,6 +1981,55 @@ def tmp(loop,user_data):
     gameLoop(loop,user_data)
 
 loop.set_alarm_in(0.1, tmp)
+
+HOST = '127.0.0.1'
+PORT = 65440
+
+import socket
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+s.bind((HOST, PORT))
+s.listen()
+
+def tmp2(loop,user_data):
+    import json
+    import urwid
+
+    global mainChar
+    
+    conn, addr = s.accept()
+    with conn:
+        data = conn.recv(1024*1024*1024)
+        
+        if data == b'ignore':
+            loop.set_alarm_in(0.1, tmp2)
+            return
+
+        realMainChar = mainChar
+        canvas = render()
+        info = {"head":["adsada"],"main":[(urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible())],"footer":["asdasdasf sf"]}
+        mainChar = realMainChar
+
+        def serializeUrwid(inData):
+            outData = []
+            for item in inData:
+                if isinstance(item,tuple):
+                    outData.append(["tuple",[item[0].foreground,item[0].background],serializeUrwid(item[1])])
+                if isinstance(item,list):
+                    outData.append(["list",serializeUrwid(item)])
+                if isinstance(item,str):
+                    outData.append(["str",item])
+            return outData
+
+        info["head"] = serializeUrwid(info["head"])
+        info["main"] = serializeUrwid(info["main"])
+        info["footer"] = serializeUrwid(info["footer"])
+
+        info = json.dumps(info)
+        data = info.encode("utf-8")
+        conn.sendall(data)
+
+    loop.set_alarm_in(0.1, tmp2)
+loop.set_alarm_in(0.1, tmp2)
 
 # the directory for the submenues
 subMenuMap = {

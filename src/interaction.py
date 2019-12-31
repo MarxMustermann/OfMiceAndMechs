@@ -124,14 +124,15 @@ bad code: keystrokes should not be injected in the first place
 def callShow_or_exit(loop,key):
     show_or_exit(key)
 
+commandKeyQueue = []
 '''
 the callback for urwid keystrokes
 bad code: this is abused as the main loop for this game
 '''
 def show_or_exit(key):
     # store the commands for later processing
-    commandKeyQueue = []
-    commandKeyQueue.append(key)
+    global commandKeyQueue
+    commandKeyQueue.append((key,[]))
 
     # transform and store the keystrokes that accumulated in pygame
     if useTiles:
@@ -142,11 +143,11 @@ def show_or_exit(key):
             key = item.unicode
             if key == "\x1b":
                 key = "esc"
-            commandKeyQueue.append(key)
+            commandKeyQueue.append((key,[]))
             debugMessages.append("pressed "+key+" ")
 
     # handle the keystrokes
-    processAllInput(commandKeyQueue)
+    #processAllInput(commandKeyQueue)
 
 '''
 the abstracted processing for keystrokes.
@@ -170,6 +171,9 @@ handle a keystroke
 bad code: there are way too much lines of code in this function
 '''
 def processInput(key):
+    flags = key[1]
+    key = key[0]
+
     # ignore mouse interaction
     # bad pattern: mouse input should be used
     if type(key) == tuple:
@@ -181,6 +185,10 @@ def processInput(key):
     global replay
     global number
     global doNumber
+    global commandKeyQueue
+
+    if key == "esc":
+        replay = []
 
     if recording:
         if not key in ("lagdetection","lagdetection_","-"):
@@ -190,7 +198,7 @@ def processInput(key):
                 messages.append("start recording to: %s"%(recordingTo))
                 key = commandChars.ignore
             else:
-                if not replay and not doNumber:
+                if not replay and not doNumber and not "norecord" in flags:
                     macros[recordingTo].append(key)
 
     if key in "0123456789":
@@ -213,16 +221,17 @@ def processInput(key):
             if not number:
 
                 replay[-1] = 1
-                if recording and not doNumber:
+                if recording and not doNumber and not "norecord" in flags:
                     macros[recordingTo].append(key)
 
                 if key in macros:
                     messages.append("replaying %s: %s"%(key,''.join(macros[key])))
                     commands = []
                     for keyPress in macros[key]:
-                        commands.append("lagdetection_")
-                        commands.append(keyPress)
-                    processAllInput(commands)
+                        commands.append(("lagdetection_",["norecord"]))
+                        commands.append((keyPress,["norecord"]))
+                    #processAllInput(commands)
+                    commandKeyQueue = commands+commandKeyQueue
                 else:
                     messages.append("no macro recorded to %s"%(key))
 
@@ -233,17 +242,19 @@ def processInput(key):
 
                 doNumber = True
 
-                if recording:
+                if recording and not "norecord" in flags:
                     macros[recordingTo].append(key)
 
                 commands = []
                 counter = 0
                 while counter < num:
-                    commands.append("lagdetection_")
-                    commands.append("_")
-                    commands.append(key)
+                    commands.append(("lagdetection_",["norecord"]))
+                    commands.append(("_",["norecord"]))
+                    commands.append((key,["norecord"]))
                     counter += 1
-                processAllInput(commands)
+                replay.pop()
+                #processAllInput(commands)
+                commandKeyQueue = commands+commandKeyQueue
 
                 doNumber = False
 
@@ -261,10 +272,11 @@ def processInput(key):
             commands = []
             counter = 0
             while counter < num:
-                commands.append("lagdetection_")
-                commands.append(key)
+                commands.append(("lagdetection_",["norecord"]))
+                commands.append((key,["norecord"]))
                 counter += 1
-            processAllInput(commands)
+            #processAllInput(commands)
+            commandKeyQueue = commands+commandKeyQueue
 
             doNumber = False
 
@@ -1911,12 +1923,29 @@ def render():
 
     return canvas
 
+def keyboardListener(key):
+    if key == "ctrl d":
+        commandKeyQueue.clear()
+        replay.clear()
+        show_or_exit("lagdetection")
+    else:
+        show_or_exit(key)
+
+def gameLoop(loop,user_data):
+    if len(commandKeyQueue):
+        key = commandKeyQueue[0]
+        commandKeyQueue.remove(key)
+        processInput(key)
+    loop.set_alarm_in(0.001, gameLoop)
+
 # get the interaction loop from the library
-loop = urwid.MainLoop(frame, unhandled_input=show_or_exit)
+loop = urwid.MainLoop(frame, unhandled_input=keyboardListener)
 
 # kick off the interaction loop
 loop.set_alarm_in(0.2, callShow_or_exit, "lagdetection")
 loop.set_alarm_in(0.0, callShow_or_exit, "~")
+
+gameLoop(loop,None)
 
 # the directory for the submenues
 subMenuMap = {

@@ -41,6 +41,29 @@ class Character(src.saveing.Saveable):
         if display == None:
             display = "＠"
 
+        import time
+        self.macroState = {
+            "commandKeyQueue":[],
+            "state":[],
+            "recording":False,
+            "recordingTo":None,
+            "replay":[],
+            "number":None,
+            "doNumber":False,
+            "macros":{},
+            "shownStarvationWarning":False,
+            "lastLagDetection":time.time(),
+            "lastRedraw":time.time(),
+            "idleCounter":0,
+            "submenue":None,
+            "ignoreNextAutomated": False,
+            "ticksSinceDeath": None,
+            "footerPosition":0,
+            #"footerLength":len(footerText),
+            "footerSkipCounter":20,
+            "itemMarkedLast":None,
+            "lastMoveAutomated":False,
+                }
         # set basic state
         self.automated = automated
         self.quests = []
@@ -282,6 +305,8 @@ class Character(src.saveing.Saveable):
                 chatOptions.append(option)
         result["chatOptions"] = chatOptions
 
+        result["macroState"] = self.macroState
+
         return result
 
     '''
@@ -290,6 +315,8 @@ class Character(src.saveing.Saveable):
     def getState(self):
         # fetch base state
         state = super().getState()
+
+        state["macroState"] = self.macroState
 
         # add simple structures
         state.update({ 
@@ -341,6 +368,8 @@ class Character(src.saveing.Saveable):
     def setState(self,state):
         # set basic state
         super().setState(state)
+
+        self.macroState = state["macroState"]
 
         # set unconcious state
         if "unconcious" in state:

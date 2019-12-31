@@ -67,6 +67,8 @@ footerPosition = 0
 footerLength = len(footerText)
 footerSkipCounter = 20
 
+macros = {}
+
 '''
 calculate footer text
 '''
@@ -160,18 +162,12 @@ def processAllInput(commandKeyQueue):
 
 
 shownStarvationWarning = False
-macros = {}
-recording = False
-recordingTo = None
-replay = []
-number = None
-doNumber = False
 
 '''
 handle a keystroke
 bad code: there are way too much lines of code in this function
 '''
-def processInput(key,charState=None):
+def processInput(key,charState=None,noAdvanceGame=False):
     if charState == None:
         charState = multi_state[mainChar]
 
@@ -183,54 +179,47 @@ def processInput(key,charState=None):
     if type(key) == tuple:
         return
 
-    global recording
-    global recordingTo
-    global macros
-    global replay
-    global number
-    global doNumber
-
     if key == "esc":
-        replay = []
+        charState["replay"] = []
 
-    if recording:
+    if charState["recording"]:
         if not key in ("lagdetection","lagdetection_","-"):
-            if recordingTo == None:
-                recordingTo = key
-                macros[recordingTo] = []
-                messages.append("start recording to: %s"%(recordingTo))
+            if charState["recordingTo"] == None:
+                charState["recordingTo"] = key
+                charState["macros"][charState["recordingTo"]] = []
+                messages.append("start recording to: %s"%(charState["recordingTo"]))
                 key = commandChars.ignore
             else:
-                if not replay and not doNumber and not "norecord" in flags:
-                    macros[recordingTo].append(key)
+                if not charState["replay"] and not charState["doNumber"] and not "norecord" in flags:
+                    charState["macros"][charState["recordingTo"]].append(key)
 
     if key in "0123456789":
-        if number == None:
-            number = ""
-        number += key
+        if charState["number"] == None:
+            charState["number"] = ""
+        charState["number"] += key
         key = commandChars.ignore
 
     if key in ("-",):
-        if not recording:
+        if not charState["recording"]:
             messages.append("press key to record to")
-            recording = True
+            charState["recording"] = True
         else:
-            recording = False
-            messages.append("recorded: %s to %s"%(''.join(macros[recordingTo]),recordingTo))
-            recordingTo = None
+            charState["recording"] = False
+            messages.append("recorded: %s to %s"%(''.join(charState["macros"][charState["recordingTo"]]),charState["recordingTo"]))
+            charState["recordingTo"] = None
 
-    if replay and not key in ("lagdetection","lagdetection_"):
-        if replay and replay[-1] == 2:
-            if not number:
+    if charState["replay"] and not key in ("lagdetection","lagdetection_"):
+        if charState["replay"] and charState["replay"][-1] == 2:
+            if not charState["number"]:
 
-                replay[-1] = 1
-                if recording and not doNumber and not "norecord" in flags:
-                    macros[recordingTo].append(key)
+                charState["replay"][-1] = 1
+                if charState["recording"] and not charState["doNumber"] and not "norecord" in flags:
+                    charState["macros"][charState["recordingTo"]].append(key)
 
-                if key in macros:
-                    messages.append("replaying %s: %s"%(key,''.join(macros[key])))
+                if key in charState["macros"]:
+                    messages.append("replaying %s: %s"%(key,''.join(charState["macros"][key])))
                     commands = []
-                    for keyPress in macros[key]:
+                    for keyPress in charState["macros"][key]:
                         commands.append(("lagdetection_",["norecord"]))
                         commands.append((keyPress,["norecord"]))
                     #processAllInput(commands)
@@ -238,15 +227,15 @@ def processInput(key,charState=None):
                 else:
                     messages.append("no macro recorded to %s"%(key))
 
-                replay.pop()
+                charState["replay"].pop()
             else:
-                num = int(number)
-                number = None
+                num = int(charState["number"])
+                charState["number"] = None
 
-                doNumber = True
+                charState["doNumber"] = True
 
-                if recording and not "norecord" in flags:
-                    macros[recordingTo].append(key)
+                if charState["recording"] and not "norecord" in flags:
+                    charState["macros"][charState["recordingTo"]].append(key)
 
                 commands = []
                 counter = 0
@@ -255,22 +244,22 @@ def processInput(key,charState=None):
                     commands.append(("_",["norecord"]))
                     commands.append((key,["norecord"]))
                     counter += 1
-                replay.pop()
+                charState["replay"].pop()
                 #processAllInput(commands)
                 charState["commandKeyQueue"] = commands+charState["commandKeyQueue"]
 
-                doNumber = False
+                charState["doNumber"] = False
 
             key = commandChars.ignore
     if key in ("_",):
-        replay.append(2)
+        charState["replay"].append(2)
         key = commandChars.ignore
 
-    if number and not key in (commandChars.ignore,"lagdetection","lagdetection_"):
-            num = int(number)
-            number = None
+    if charState["number"] and not key in (commandChars.ignore,"lagdetection","lagdetection_"):
+            num = int(charState["number"])
+            charState["number"] = None
 
-            doNumber = True
+            charState["doNumber"] = True
 
             commands = []
             counter = 0
@@ -281,7 +270,7 @@ def processInput(key,charState=None):
             #processAllInput(commands)
             charState["commandKeyQueue"] = commands+charState["commandKeyQueue"]
 
-            doNumber = False
+            charState["doNumber"] = False
 
             key = commandChars.ignore
 
@@ -844,6 +833,9 @@ def processInput(key,charState=None):
             pauseGame = False
             specialRender = False
             doAdvanceGame = False
+
+    if noAdvanceGame:
+        return
         
     # render the game
     if not specialRender:
@@ -1960,7 +1952,6 @@ def genState():
 
         multi_state[mainChar] = state
 
-
 def keyboardListener(key):
     global mainChar
     global multi_currentChar
@@ -1989,7 +1980,7 @@ def keyboardListener(key):
                 continue
             newChar = character
             break
-        mainChar = character
+        mainChar = newChar
         genState()
         state = multi_state[mainChar]
         show_or_exit("~",charState=state)
@@ -1998,12 +1989,19 @@ def keyboardListener(key):
         show_or_exit(key,charState=state)
 
 def gameLoop(loop,user_data):
-    state = multi_state[mainChar]
-    if len(state["commandKeyQueue"]):
-        key = state["commandKeyQueue"][0]
-        state["commandKeyQueue"].remove(key)
-        processInput(key,charState=state)
-    loop.set_alarm_in(0.001, gameLoop)
+
+    for char in multi_state.keys():
+        if char == mainChar:
+            noAdvanceGame = False
+        else:
+            noAdvanceGame = True
+        state = multi_state[char]
+        if len(state["commandKeyQueue"]):
+            key = state["commandKeyQueue"][0]
+            state["commandKeyQueue"].remove(key)
+            processInput(key,charState=state,noAdvanceGame=noAdvanceGame)
+
+    loop.set_alarm_in(0.01, gameLoop)
 
 # get the interaction loop from the library
 loop = urwid.MainLoop(frame, unhandled_input=keyboardListener)

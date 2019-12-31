@@ -1990,16 +1990,17 @@ def keyboardListener(key):
 
 def gameLoop(loop,user_data):
 
-    for char in multi_state.keys():
-        if char == mainChar:
-            noAdvanceGame = False
-        else:
-            noAdvanceGame = True
-        state = multi_state[char]
-        if len(state["commandKeyQueue"]):
-            key = state["commandKeyQueue"][0]
-            state["commandKeyQueue"].remove(key)
-            processInput(key,charState=state,noAdvanceGame=noAdvanceGame)
+    if multi_state[mainChar]["commandKeyQueue"]:
+        for char in multi_state.keys():
+            if char == mainChar:
+                noAdvanceGame = False
+            else:
+                noAdvanceGame = True
+            state = multi_state[char]
+            if len(state["commandKeyQueue"]):
+                key = state["commandKeyQueue"][0]
+                state["commandKeyQueue"].remove(key)
+                processInput(key,charState=state,noAdvanceGame=noAdvanceGame)
 
     loop.set_alarm_in(0.01, gameLoop)
 

@@ -124,15 +124,16 @@ bad code: keystrokes should not be injected in the first place
 def callShow_or_exit(loop,key):
     show_or_exit(key)
 
-commandKeyQueue = []
 '''
 the callback for urwid keystrokes
 bad code: this is abused as the main loop for this game
 '''
-def show_or_exit(key):
+def show_or_exit(key,charState=None):
+    if charState == None:
+        charState = multi_state[mainChar]
+
     # store the commands for later processing
-    global commandKeyQueue
-    commandKeyQueue.append((key,[]))
+    charState["commandKeyQueue"].append((key,[]))
 
     # transform and store the keystrokes that accumulated in pygame
     if useTiles:
@@ -143,7 +144,7 @@ def show_or_exit(key):
             key = item.unicode
             if key == "\x1b":
                 key = "esc"
-            commandKeyQueue.append((key,[]))
+            state["commandKeyQueue"].append((key,[]))
             debugMessages.append("pressed "+key+" ")
 
     # handle the keystrokes
@@ -170,7 +171,10 @@ doNumber = False
 handle a keystroke
 bad code: there are way too much lines of code in this function
 '''
-def processInput(key):
+def processInput(key,charState=None):
+    if charState == None:
+        charState = multi_state[mainChar]
+
     flags = key[1]
     key = key[0]
 
@@ -185,7 +189,6 @@ def processInput(key):
     global replay
     global number
     global doNumber
-    global commandKeyQueue
 
     if key == "esc":
         replay = []
@@ -231,7 +234,7 @@ def processInput(key):
                         commands.append(("lagdetection_",["norecord"]))
                         commands.append((keyPress,["norecord"]))
                     #processAllInput(commands)
-                    commandKeyQueue = commands+commandKeyQueue
+                    charState["commandKeyQueue"] = commands+charState["commandKeyQueue"]
                 else:
                     messages.append("no macro recorded to %s"%(key))
 
@@ -254,7 +257,7 @@ def processInput(key):
                     counter += 1
                 replay.pop()
                 #processAllInput(commands)
-                commandKeyQueue = commands+commandKeyQueue
+                charState["commandKeyQueue"] = commands+charState["commandKeyQueue"]
 
                 doNumber = False
 
@@ -276,7 +279,7 @@ def processInput(key):
                 commands.append((key,["norecord"]))
                 counter += 1
             #processAllInput(commands)
-            commandKeyQueue = commands+commandKeyQueue
+            charState["commandKeyQueue"] = commands+charState["commandKeyQueue"]
 
             doNumber = False
 
@@ -1923,19 +1926,83 @@ def render():
 
     return canvas
 
+multi_currentChar = None
+multi_chars = None
+multi_state = None
+
+def genState():
+    global mainChar
+    global multi_state
+
+    if not mainChar in multi_state:
+        state = {
+            "commandKeyQueue":[],
+            "state":[],
+            "recording":False,
+            "recordingTo":None,
+            "replay":[],
+            "number":None,
+            "doNumber":False,
+            "macros":{},
+            "shownStarvationWarning":False,
+            "lastLagDetection":time.time(),
+            "lastRedraw":time.time(),
+            "idleCounter":0,
+            "submenue":None,
+            "ignoreNextAutomated": False,
+            "ticksSinceDeath": None,
+            "footerPosition":0,
+            "footerLength":len(footerText),
+            "footerSkipCounter":20,
+            "itemMarkedLast":None,
+            "lastMoveAutomated":False,
+                }
+
+        multi_state[mainChar] = state
+
+
 def keyboardListener(key):
+    global mainChar
+    global multi_currentChar
+    global multi_chars
+    global multi_state
+
+    if not multi_currentChar:
+        multi_currentChar = mainChar
+    if multi_chars == None:
+        multi_chars = terrain.characters[:]
+    if multi_state == None:
+        multi_state = {}
+
+    genState()
+
+    state = multi_state[mainChar]
+
     if key == "ctrl d":
-        commandKeyQueue.clear()
-        replay.clear()
-        show_or_exit("lagdetection")
+        state["commandKeyQueue"].clear()
+        state["replay"].clear()
+        show_or_exit("lagdetection",charState=state)
+    elif key == "ctrl a":
+        newChar = None
+        for character in multi_chars:
+            if character == mainChar:
+                continue
+            newChar = character
+            break
+        mainChar = character
+        genState()
+        state = multi_state[mainChar]
+        show_or_exit("~",charState=state)
+        show_or_exit("lagdetection",charState=state)
     else:
-        show_or_exit(key)
+        show_or_exit(key,charState=state)
 
 def gameLoop(loop,user_data):
-    if len(commandKeyQueue):
-        key = commandKeyQueue[0]
-        commandKeyQueue.remove(key)
-        processInput(key)
+    state = multi_state[mainChar]
+    if len(state["commandKeyQueue"]):
+        key = state["commandKeyQueue"][0]
+        state["commandKeyQueue"].remove(key)
+        processInput(key,charState=state)
     loop.set_alarm_in(0.001, gameLoop)
 
 # get the interaction loop from the library
@@ -1943,9 +2010,12 @@ loop = urwid.MainLoop(frame, unhandled_input=keyboardListener)
 
 # kick off the interaction loop
 loop.set_alarm_in(0.2, callShow_or_exit, "lagdetection")
-loop.set_alarm_in(0.0, callShow_or_exit, "~")
 
-gameLoop(loop,None)
+def tmp(loop,user_data):
+    keyboardListener(('~',[]))
+    gameLoop(loop,user_data)
+
+loop.set_alarm_in(0.1, tmp)
 
 # the directory for the submenues
 subMenuMap = {

@@ -2478,7 +2478,7 @@ a empty room
 class EmptyRoom(Room):
     objType = "EmptyRoom"
 
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,sizeX,sizeY,doorPos,desiredPosition=None,creator=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,sizeX=3,sizeY=3,doorPos=(4,2),desiredPosition=None,creator=None):
         self.roomLayout = """
 """
         self.roomLayout += "X"*sizeX+"\n"

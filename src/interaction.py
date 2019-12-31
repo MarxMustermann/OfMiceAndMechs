@@ -167,9 +167,12 @@ shownStarvationWarning = False
 handle a keystroke
 bad code: there are way too much lines of code in this function
 '''
-def processInput(key,charState=None,noAdvanceGame=False):
+def processInput(key,charState=None,noAdvanceGame=False,char=None):
     if charState == None:
         charState = multi_state[mainChar]
+
+    if char == None:
+        char = mainChar
 
     flags = key[1]
     key = key[0]
@@ -395,11 +398,11 @@ def processInput(key,charState=None,noAdvanceGame=False):
             doAdvanceGame = False
 
         # invalidate input for unconcious char
-        if mainChar.unconcious:
+        if char.unconcious:
             key = commandChars.wait
 
         # show a few rounds after death and exit
-        if mainChar.dead:
+        if char.dead:
             if not ticksSinceDeath:
                 ticksSinceDeath = gamestate.tick
             key = commandChars.wait
@@ -444,37 +447,37 @@ def processInput(key,charState=None,noAdvanceGame=False):
             def moveCharacter(direction):
                 global terrain
                 if direction == "west":
-                    if mainChar.xPosition == 0:
+                    if char.xPosition == 0:
                         messages.append("switch to")
                         messages.append((terrain.xPosition-1,terrain.yPosition))
                         terrain = gamestate.terrainMap[terrain.yPosition][terrain.xPosition-1]
-                        mainChar.xPosition = 15*15
-                        mainChar.terrain = terrain
+                        char.xPosition = 15*15
+                        char.terrain = terrain
                         return
                 if direction == "east":
-                    if mainChar.xPosition == 15*15:
+                    if char.xPosition == 15*15:
                         messages.append("switch to")
                         messages.append((terrain.xPosition+1,terrain.yPosition))
                         terrain = gamestate.terrainMap[terrain.yPosition][terrain.xPosition+1]
-                        mainChar.xPosition = 0
-                        mainChar.terrain = terrain
+                        char.xPosition = 0
+                        char.terrain = terrain
                         return
                 if direction == "north":
-                    if mainChar.yPosition == 0:
+                    if char.yPosition == 0:
                         terrain = gamestate.terrainMap[terrain.xPosition][terrain.yPosition-1]
-                        mainChar.yPosition = 15*15
-                        mainChar.terrain = terrain
+                        char.yPosition = 15*15
+                        char.terrain = terrain
                         return
                 if direction == "south":
-                    if mainChar.yPosition == 15*15:
+                    if char.yPosition == 15*15:
                         terrain = gamestate.terrainMap[terrain.xPosition][terrain.yPosition+1]
-                        mainChar.yPosition = 0
-                        mainChar.terrain = terrain
+                        char.yPosition = 0
+                        char.terrain = terrain
                         return
 
                 # do inner room movement
-                if mainChar.room:
-                    item = mainChar.room.moveCharacterDirection(mainChar,direction)
+                if char.room:
+                    item = char.room.moveCharacterDirection(char,direction)
 
                     # remember items bumped into for possible interaction
                     if item:
@@ -488,17 +491,17 @@ def processInput(key,charState=None,noAdvanceGame=False):
                 else:
                     # gather the rooms the character might have entered
                     if direction == "north":
-                        bigX = (mainChar.xPosition)//15
-                        bigY = (mainChar.yPosition-1)//15
+                        bigX = (char.xPosition)//15
+                        bigY = (char.yPosition-1)//15
                     elif direction == "south":
-                        bigX = (mainChar.xPosition)//15
-                        bigY = (mainChar.yPosition+1)//15
+                        bigX = (char.xPosition)//15
+                        bigY = (char.yPosition+1)//15
                     elif direction == "east":
-                        bigX = (mainChar.xPosition+1)//15
-                        bigY = (mainChar.yPosition)//15
+                        bigX = (char.xPosition+1)//15
+                        bigY = (char.yPosition)//15
                     elif direction == "west":
-                        bigX = (mainChar.xPosition)//15
-                        bigY = (mainChar.yPosition-1)//15
+                        bigX = (char.xPosition)//15
+                        bigY = (char.yPosition-1)//15
 
                     # gather the rooms the player might step into
                     roomCandidates = []
@@ -528,10 +531,10 @@ def processInput(key,charState=None,noAdvanceGame=False):
                                     return item
 
                                 # teleport the character into the room
-                                room.addCharacter(mainChar,localisedEntry[0],localisedEntry[1])
+                                room.addCharacter(char,localisedEntry[0],localisedEntry[1])
                                 messages.append(("removing from terrain",room))
                                 try:
-                                    terrain.characters.remove(mainChar)
+                                    terrain.characters.remove(char)
                                 except:
                                     messages.append("fail,fail,fail")
 
@@ -547,40 +550,40 @@ def processInput(key,charState=None,noAdvanceGame=False):
                         # check north
                         if direction == "north":
                             # check if the character crossed the edge of the room
-                            if room.yPosition*15+room.offsetY+room.sizeY == mainChar.yPosition:
-                                if room.xPosition*15+room.offsetX-1 < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
+                            if room.yPosition*15+room.offsetY+room.sizeY == char.yPosition:
+                                if room.xPosition*15+room.offsetX-1 < char.xPosition and room.xPosition*15+room.offsetX+room.sizeX > char.xPosition:
                                     # get the entry point in room coordinates
                                     hadRoomInteraction = True
-                                    localisedEntry = (mainChar.xPosition%15-room.offsetX,mainChar.yPosition%15-room.offsetY-1)
+                                    localisedEntry = (char.xPosition%15-room.offsetX,char.yPosition%15-room.offsetY-1)
                                     if localisedEntry[1] == -1:
                                         localisedEntry = (localisedEntry[0],room.sizeY-1)
 
                         # check south
                         elif direction == "south":
                             # check if the character crossed the edge of the room
-                            if room.yPosition*15+room.offsetY == mainChar.yPosition+1:
-                                if room.xPosition*15+room.offsetX-1 < mainChar.xPosition and room.xPosition*15+room.offsetX+room.sizeX > mainChar.xPosition:
+                            if room.yPosition*15+room.offsetY == char.yPosition+1:
+                                if room.xPosition*15+room.offsetX-1 < char.xPosition and room.xPosition*15+room.offsetX+room.sizeX > char.xPosition:
                                     # get the entry point in room coordinates
                                     hadRoomInteraction = True
-                                    localisedEntry = ((mainChar.xPosition-room.offsetX)%15,(mainChar.yPosition-room.offsetY+1)%15)
+                                    localisedEntry = ((char.xPosition-room.offsetX)%15,(char.yPosition-room.offsetY+1)%15)
 
                         # check east
                         elif direction == "east":
                             # check if the character crossed the edge of the room
-                            if room.xPosition*15+room.offsetX == mainChar.xPosition+1:
-                                if room.yPosition*15+room.offsetY < mainChar.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > mainChar.yPosition:
+                            if room.xPosition*15+room.offsetX == char.xPosition+1:
+                                if room.yPosition*15+room.offsetY < char.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > char.yPosition:
                                     # get the entry point in room coordinates
                                     hadRoomInteraction = True
-                                    localisedEntry = ((mainChar.xPosition-room.offsetX+1)%15,(mainChar.yPosition-room.offsetY)%15)
+                                    localisedEntry = ((char.xPosition-room.offsetX+1)%15,(char.yPosition-room.offsetY)%15)
 
                         # check west
                         elif direction == "west":
                             # check if the character crossed the edge of the room
-                            if room.xPosition*15+room.offsetX+room.sizeX == mainChar.xPosition:
-                                if room.yPosition*15+room.offsetY < mainChar.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > mainChar.yPosition:
+                            if room.xPosition*15+room.offsetX+room.sizeX == char.xPosition:
+                                if room.yPosition*15+room.offsetY < char.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > char.yPosition:
                                     # get the entry point in room coordinates
                                     hadRoomInteraction = True
-                                    localisedEntry = ((mainChar.xPosition-room.offsetX-1)%15,(mainChar.yPosition-room.offsetY)%15)
+                                    localisedEntry = ((char.xPosition-room.offsetX-1)%15,(char.yPosition-room.offsetY)%15)
 
                         else:
                             debugMessages.append("moved into invalid direction: "+str(direction))
@@ -595,13 +598,13 @@ def processInput(key,charState=None,noAdvanceGame=False):
                     if not hadRoomInteraction:
                         # get the items on the destination coordinate 
                         if direction == "north":
-                            destCoord = (mainChar.xPosition,mainChar.yPosition-1)
+                            destCoord = (char.xPosition,char.yPosition-1)
                         elif direction == "south":
-                            destCoord = (mainChar.xPosition,mainChar.yPosition+1)
+                            destCoord = (char.xPosition,char.yPosition+1)
                         elif direction == "east":
-                            destCoord = (mainChar.xPosition+1,mainChar.yPosition)
+                            destCoord = (char.xPosition+1,char.yPosition)
                         elif direction == "west":
-                            destCoord = (mainChar.xPosition-1,mainChar.yPosition)
+                            destCoord = (char.xPosition-1,char.yPosition)
 
                         if destCoord in terrain.itemByCoordinates:
                             foundItems = terrain.itemByCoordinates[destCoord]
@@ -625,14 +628,14 @@ def processInput(key,charState=None,noAdvanceGame=False):
                         # move the character
                         if not foundItem:
                             if direction == "north":
-                                mainChar.yPosition -= 1
+                                char.yPosition -= 1
                             elif direction == "south":
-                                mainChar.yPosition += 1
+                                char.yPosition += 1
                             elif direction == "east":
-                                mainChar.xPosition += 1
+                                char.xPosition += 1
                             elif direction == "west":
-                                mainChar.xPosition -= 1
-                            mainChar.changed()
+                                char.xPosition -= 1
+                            char.changed()
 
                         return item
 
@@ -657,70 +660,70 @@ def processInput(key,charState=None,noAdvanceGame=False):
             # murder the next available character
             # bad pattern: player should be able to select whom to kill if there are multiple targets
             if key in (commandChars.attack):
-                if not "NaiveMurderQuest" in mainChar.solvers:
+                if not "NaiveMurderQuest" in char.solvers:
                     messages.append("you do not have the nessecary solver yet")
                 else:
                     # bad code: should be part of a position object
-                    adjascentFields = [(mainChar.xPosition,mainChar.yPosition),
-                                       (mainChar.xPosition-1,mainChar.yPosition),
-                                       (mainChar.xPosition+1,mainChar.yPosition),
-                                       (mainChar.xPosition,mainChar.yPosition-1),
-                                       (mainChar.xPosition,mainChar.yPosition+1),
+                    adjascentFields = [(char.xPosition,char.yPosition),
+                                       (char.xPosition-1,char.yPosition),
+                                       (char.xPosition+1,char.yPosition),
+                                       (char.xPosition,char.yPosition-1),
+                                       (char.xPosition,char.yPosition+1),
                                       ]
-                    for char in mainChar.container.characters:
-                        if char == mainChar:
+                    for enemy in char.container.characters:
+                        if enemy == char:
                             continue
-                        if not (char.xPosition,char.yPosition) in adjascentFields:
+                        if not (enemy.xPosition,char.yPosition) in adjascentFields:
                             continue
-                        char.die()
+                        enemy.die()
                         break
 
             # activate an item 
             if key in (commandChars.activate):
-                if not "NaiveActivateQuest" in mainChar.solvers:
+                if not "NaiveActivateQuest" in char.solvers:
                     messages.append("you do not have the nessecary solver yet")
                 else:
                     # activate the marked item
                     if itemMarkedLast:
-                        itemMarkedLast.apply(mainChar)
+                        itemMarkedLast.apply(char)
 
                     # activate an item on floor
                     else:
-                        for item in mainChar.container.itemsOnFloor:
-                            if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
-                                item.apply(mainChar)
+                        for item in char.container.itemsOnFloor:
+                            if item.xPosition == char.xPosition and item.yPosition == char.yPosition:
+                                item.apply(char)
                                 break
 
             # examine an item 
             if key in (commandChars.examine):
-                if not "ExamineQuest" in mainChar.solvers:
+                if not "ExamineQuest" in char.solvers:
                     messages.append("you do not have the nessecary solver yet")
                 else:
                     # examine the marked item
                     if itemMarkedLast:
-                        mainChar.examine(itemMarkedLast)
+                        char.examine(itemMarkedLast)
 
                     # examine an item on floor
                     else:
-                        for item in mainChar.container.itemsOnFloor:
-                            if item.xPosition == mainChar.xPosition and item.yPosition == mainChar.yPosition:
-                                mainChar.examine(item)
+                        for item in char.container.itemsOnFloor:
+                            if item.xPosition == char.xPosition and item.yPosition == char.yPosition:
+                                char.examine(item)
                                 break
 
             # drop first item from inventory
             # bad pattern: the user has to have the choice for what item to drop
             if key in (commandChars.drop):
-                if not "NaiveDropQuest" in mainChar.solvers:
+                if not "NaiveDropQuest" in char.solvers:
                     messages.append("you do not have the nessecary solver yet")
                 else:
-                    if len(mainChar.inventory):
-                        mainChar.drop(mainChar.inventory[-1])
+                    if len(char.inventory):
+                        char.drop(char.inventory[-1])
 
             # drink from the first available item in inventory
             # bad pattern: the user has to have the choice from what item to drink from
             # bad code: drinking should happen in character
             if key in (commandChars.drink):
-                character = mainChar
+                character = char
                 for item in character.inventory:
                     if isinstance(item,src.items.GooFlask):
                         if item.uses > 0:
@@ -730,24 +733,24 @@ def processInput(key,charState=None,noAdvanceGame=False):
             # pick up items
             # bad code: picking up should happen in character
             if key in (commandChars.pickUp):
-                if not "NaivePickupQuest" in mainChar.solvers:
+                if not "NaivePickupQuest" in char.solvers:
                     messages.append("you do not have the nessecary solver yet")
                 else:
-                    if len(mainChar.inventory) >= 10:
+                    if len(char.inventory) >= 10:
                         messages.append("you cannot carry more items")
                     else:
                         # get the position to pickup from
                         if itemMarkedLast:
                             pos = (itemMarkedLast.xPosition,itemMarkedLast.yPosition)
                         else:
-                            pos = (mainChar.xPosition,mainChar.yPosition)
+                            pos = (char.xPosition,char.yPosition)
 
                         # pickup an item from this coordinate
-                        itemByCoordinates = mainChar.container.itemByCoordinates
+                        itemByCoordinates = char.container.itemByCoordinates
                         if pos in itemByCoordinates:
                             for item in itemByCoordinates[pos]:
-                                item.pickUp(mainChar)
-                                mainChar.container.calculatePathMap()
+                                item.pickUp(char)
+                                char.container.calculatePathMap()
                                 messages.append("you pick up a "+item.type)
                                 break
 
@@ -755,20 +758,20 @@ def processInput(key,charState=None,noAdvanceGame=False):
             if key in (commandChars.hail):
                 submenue = ChatPartnerselection()
 
-            mainChar.automated = False
+            char.automated = False
             # do automated movement for the main character
             if key in (commandChars.advance,commandChars.autoAdvance):
-                if len(mainChar.quests):
+                if len(char.quests):
                     lastMoveAutomated = True
-                    mainChar.automated = True
+                    char.automated = True
                 else:
                     pass
 
             # recalculate the questmarker since it could be tainted
             elif not key in (commandChars.pause):
                 lastMoveAutomated = False
-                if mainChar.quests:
-                    mainChar.setPathToQuest(mainChar.quests[0])
+                if char.quests:
+                    char.setPathToQuest(char.quests[0])
 
         # drop the marker for interacting with an item after bumping into it 
         # bad code: ignore autoadvance opens up an unintended exploit
@@ -843,11 +846,11 @@ def processInput(key,charState=None,noAdvanceGame=False):
         # advance the game
         if doAdvanceGame:
             global shownStarvationWarning
-            if mainChar.satiation < 30 and mainChar.satiation > -1:
+            if char.satiation < 30 and char.satiation > -1:
                 if not shownStarvationWarning:
-                    cinematics.showCinematic("you will starve in %s ticks. drink something"%(mainChar.satiation))
+                    cinematics.showCinematic("you will starve in %s ticks. drink something"%(char.satiation))
                     shownStarvationWarning = True
-                if mainChar.satiation == 0:
+                if char.satiation == 0:
                     messages.append("you starved")
             else:
                 shownStarvationWarning = False
@@ -2000,7 +2003,7 @@ def gameLoop(loop,user_data):
             if len(state["commandKeyQueue"]):
                 key = state["commandKeyQueue"][0]
                 state["commandKeyQueue"].remove(key)
-                processInput(key,charState=state,noAdvanceGame=noAdvanceGame)
+                processInput(key,charState=state,noAdvanceGame=noAdvanceGame,char=char)
 
     loop.set_alarm_in(0.01, gameLoop)
 

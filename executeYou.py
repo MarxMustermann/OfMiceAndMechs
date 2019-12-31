@@ -30,7 +30,7 @@ def draw(raw):
 
         return outData
 
-    header.set_text((urwid.AttrSpec("default","default"),deserializeUrwid(raw["head"])))
+    #header.set_text((urwid.AttrSpec("default","default"),deserializeUrwid(raw["head"])))
     main.set_text((urwid.AttrSpec("default","default"),deserializeUrwid(raw["main"])))
     footer.set_text((urwid.AttrSpec("default","default"),deserializeUrwid(raw["footer"])))
 
@@ -46,16 +46,22 @@ def getData(request=b'ignore'):
                 break
         return data.decode("utf-8")
 
+commands = []
 def keyboardListener(key):
-    data = getData(request=b'n')
+    header.set_text(str(key))
+    if not isinstance(key,str):
+        return
 
-    raw = json.loads(data)
-    draw(raw)
+    commands.append(key)
 
 loop = urwid.MainLoop(frame, unhandled_input=keyboardListener)
 
 def tmp3(loop,user_data):
-    data = getData(request=b'n')
+    if not commands:
+        data = getData(request=b'redraw')
+    else:
+        data = getData(request=json.dumps(commands).encode("utf-8"))
+        commands.clear()
 
     raw = json.loads(data)
     draw(raw)

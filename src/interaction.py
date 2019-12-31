@@ -2003,6 +2003,11 @@ def tmp2(loop,user_data):
         if data == b'ignore':
             loop.set_alarm_in(0.1, tmp2)
             return
+        if data == b'redraw':
+            pass
+        else:
+            for key in json.loads(data.decode("utf-8")):
+                keyboardListener(key)
 
         realMainChar = mainChar
         canvas = render()

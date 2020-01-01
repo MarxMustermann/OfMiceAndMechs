@@ -1568,6 +1568,9 @@ class GooDispenser(Item):
 
         # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
+
+    def setDescription(self):
+        self.description = self.baseName + " (%s charges)"%(self.charges)
     
     '''
     fill goo flask
@@ -1594,6 +1597,14 @@ class GooDispenser(Item):
     def addCharge(self):
         self.charges += 1 
         self.description = self.baseName + " (%s charges)"%(self.charges)
+
+    '''
+    set state from dict
+    '''
+    def setState(self,state):
+        super().setState(state)
+
+        self.setDescription()
 
 '''
 '''

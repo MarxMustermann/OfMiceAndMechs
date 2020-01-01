@@ -1964,6 +1964,16 @@ def keyboardListener(key):
         gamestate.save()
         raise urwid.ExitMainLoop()
 
+    elif key == "ctrl o":
+        with open("macros.json","r") as macroFile:
+            import json
+            mainChar.macroState["macros"] = json.loads(macroFile.read())
+
+    elif key == "ctrl k":
+        with open("macros.json","w") as macroFile:
+            import json
+            macroFile.write(json.dumps(mainChar.macroState["macros"]))
+
     elif key == "ctrl a":
         newChar = None
         for character in multi_chars:

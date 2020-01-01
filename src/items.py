@@ -1559,7 +1559,9 @@ class GooDispenser(Item):
 
         # set up meta information for saveing
         self.attributesToStore.extend([
-               "activated"])
+               "activated","charges"])
+
+        self.charges = 0
 
         # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
@@ -1569,11 +1571,17 @@ class GooDispenser(Item):
     '''
     def apply(self,character):
         super().apply(character,silent=True)
+
+        if not self.charges:
+            messages.append("the dispenser has no charges")
+            return
+
         filled = False
         for item in character.inventory:
             if isinstance(item,GooFlask) and not item.uses == 100:
                 item.uses = 100
                 filled = True
+                self.charges -= 1 
                 break
         if filled:
             messages.append("you fill the goo flask")

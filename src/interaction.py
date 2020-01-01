@@ -163,6 +163,8 @@ def processAllInput(commandKeyQueue):
 
 shownStarvationWarning = False
 
+pauseGame = False
+
 '''
 handle a keystroke
 bad code: there are way too much lines of code in this function
@@ -1943,6 +1945,7 @@ def keyboardListener(key):
         state["commandKeyQueue"].clear()
         state["replay"].clear()
         show_or_exit("lagdetection",charState=state)
+
     elif key == "ctrl p":
         if not mainChar.macroStateBackup:
             mainChar.macroStateBackup = mainChar.macroState
@@ -1956,6 +1959,10 @@ def keyboardListener(key):
             mainChar.macroState["macros"] = mainChar.macroStateBackup["macros"]
             mainChar.macroStateBackup = None
         show_or_exit("~",charState=state)
+
+    elif key == "ctrl x":
+        gamestate.save()
+        raise urwid.ExitMainLoop()
 
     elif key == "ctrl a":
         newChar = None

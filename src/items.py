@@ -1555,6 +1555,7 @@ class GooDispenser(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None,name="goo dispenser",creator=None):
         self.activated = False
+        self.baseName = name
         super().__init__("g%",xPosition,yPosition,name=name,creator=creator)
 
         # set up meta information for saveing
@@ -1562,6 +1563,8 @@ class GooDispenser(Item):
                "activated","charges"])
 
         self.charges = 0
+
+        self.description = self.baseName + " (%s charges)"%(self.charges)
 
         # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
@@ -1582,10 +1585,159 @@ class GooDispenser(Item):
                 item.uses = 100
                 filled = True
                 self.charges -= 1 
+                self.description = self.baseName + " (%s charges)"%(self.charges)
                 break
         if filled:
             messages.append("you fill the goo flask")
         self.activated = True
+
+    def addCharge(self):
+        self.charges += 1 
+        self.description = self.baseName + " (%s charges)"%(self.charges)
+
+'''
+'''
+class MaggotFermenter(Item):
+    type = "MaggotFermenter"
+
+    '''
+    call superclass constructor with modified paramters and set some state
+    '''
+    def __init__(self,xPosition=None,yPosition=None,name="maggot fermenter",creator=None):
+        self.activated = False
+        super().__init__("%0",xPosition,yPosition,name=name,creator=creator)
+
+        # bad code: repetetive and easy to forgett
+        self.initialState = self.getState()
+    
+    '''
+    '''
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        # fetch input scrap
+        items = []
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+                if isinstance(item,VatMaggot):
+                    items.append(item)
+
+        # refuse to produce without ressources
+        if len(items) < 10:
+            messages.append("not enough maggots")
+            return
+       
+        # remove ressources
+        counter = 0
+        for item in items:
+            if counter >= 10:
+                break
+            counter += 1
+            self.room.removeItem(item)
+
+        # spawn the new item
+        new = BioMass(creator=self)
+        new.xPosition = self.xPosition+1
+        new.yPosition = self.yPosition
+        self.room.addItems([new])
+
+'''
+'''
+class GooProducer(Item):
+    type = "GooProducer"
+
+    '''
+    call superclass constructor with modified paramters and set some state
+    '''
+    def __init__(self,xPosition=None,yPosition=None,name="goo producer",creator=None):
+        self.activated = False
+        super().__init__("%>",xPosition,yPosition,name=name,creator=creator)
+
+        # bad code: repetetive and easy to forgett
+        self.initialState = self.getState()
+    
+    '''
+    '''
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        # fetch input scrap
+        items = []
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+                if isinstance(item,PressCake):
+                    items.append(item)
+
+        # refuse to produce without ressources
+        if len(items) < 10:
+            messages.append("not enough press cakes")
+            return
+       
+        # refill goo dispenser
+        dispenser = None
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                if isinstance(item,GooDispenser):
+                    dispenser = item
+        if not dispenser:
+            messages.append("no goo dispenser attached")
+            return 
+
+        # remove ressources
+        counter = 0
+        for item in items:
+            if counter >= 10:
+                break
+            counter += 1
+            self.room.removeItem(item)
+
+        dispenser.addCharge()
+
+'''
+'''
+class BioPress(Item):
+    type = "BioPress"
+
+    '''
+    call superclass constructor with modified paramters and set some state
+    '''
+    def __init__(self,xPosition=None,yPosition=None,name="bio press",creator=None):
+        self.activated = False
+        super().__init__("%=",xPosition,yPosition,name=name,creator=creator)
+
+        # bad code: repetetive and easy to forgett
+        self.initialState = self.getState()
+    
+    '''
+    '''
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        # fetch input scrap
+        items = []
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+                if isinstance(item,BioMass):
+                    items.append(item)
+
+        # refuse to produce without ressources
+        if len(items) < 10:
+            messages.append("not enough bio mass")
+            return
+       
+        # remove ressources
+        counter = 0
+        for item in items:
+            if counter >= 10:
+                break
+            counter += 1
+            self.room.removeItem(item)
+
+        # spawn the new item
+        new = PressCake(creator=self)
+        new.xPosition = self.xPosition+1
+        new.yPosition = self.yPosition
+        self.room.addItems([new])
 
 '''
 flask with food to carry around and drink from
@@ -1994,7 +2146,7 @@ class Tree(Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="pusher",creator=None):
+    def __init__(self,xPosition=None,yPosition=None, name="tree",creator=None):
         super().__init__("&/",xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = True
@@ -2008,6 +2160,34 @@ class Tree(Item):
         new.yPosition = self.yPosition
         new.bolted = False
         self.terrain.addItems([new])
+
+'''
+'''
+class BioMass(Item):
+    type = "BioMass"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="bio mass",creator=None):
+        super().__init__("~=",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+
+'''
+'''
+class PressCake(Item):
+    type = "PressCake"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="press cake",creator=None):
+        super().__init__("~#",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
 
 '''
 '''
@@ -2138,6 +2318,12 @@ itemMap = {
             "Tank":Tank,
             "Coil":Coil,
             "Tree":Tree,
+            "MaggotFermenter":MaggotFermenter,
+            "BioPress":BioPress,
+            "PressCake":PressCake,
+            "BioMass":BioMass,
+            "VatMaggot":VatMaggot,
+            "GooProducer":GooProducer,
 }
 
 '''

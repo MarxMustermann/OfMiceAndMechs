@@ -1943,6 +1943,20 @@ def keyboardListener(key):
         state["commandKeyQueue"].clear()
         state["replay"].clear()
         show_or_exit("lagdetection",charState=state)
+    elif key == "ctrl p":
+        if not mainChar.macroStateBackup:
+            mainChar.macroStateBackup = mainChar.macroState
+            mainChar.setDefaultMacroState()
+            mainChar.macroState["macros"] = mainChar.macroStateBackup["macros"]
+
+            state = mainChar.macroState
+            show_or_exit("lagdetection",charState=state)
+        else:
+            mainChar.macroState = mainChar.macroStateBackup
+            mainChar.macroState["macros"] = mainChar.macroStateBackup["macros"]
+            mainChar.macroStateBackup = None
+        show_or_exit("~",charState=state)
+
     elif key == "ctrl a":
         newChar = None
         for character in multi_chars:

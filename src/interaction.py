@@ -1982,15 +1982,22 @@ def tmp(loop,user_data):
 
 loop.set_alarm_in(0.1, tmp)
 
-HOST = '127.0.0.1'
-PORT = 65440
-
-import socket
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-s.bind((HOST, PORT))
-s.listen()
+s = None
 
 def tmp2(loop,user_data):
+    if not multiplayer:
+        return
+
+    HOST = '127.0.0.1'
+    PORT = 65440
+
+    global s
+    if not s:
+        import socket
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+        s.bind((HOST, PORT))
+        s.listen()
+
     import json
     import urwid
 
@@ -2039,6 +2046,7 @@ def tmp2(loop,user_data):
         conn.sendall(data)
 
     loop.set_alarm_in(0.1, tmp2)
+
 loop.set_alarm_in(0.1, tmp2)
 
 # the directory for the submenues

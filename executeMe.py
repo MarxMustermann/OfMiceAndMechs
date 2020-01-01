@@ -43,6 +43,7 @@ parser.add_argument("-t", "--tiles", action="store_true", help="spawn a tile bas
 parser.add_argument("-ts", "--tileSize", type=int, help="the base size of tiles")
 parser.add_argument("-T", "--terrain", type=str, help="select the terrain")
 parser.add_argument("-s", "--seed", type=str, help="select the seed of a new game")
+parser.add_argument("--multiplayer", action="store_true", help="activate multiplayer")
 parser.add_argument("--load", action="store_true", help="load")
 args = parser.parse_args()
 
@@ -509,6 +510,11 @@ else:
 ##    main loop is started here
 #
 ######################################################################################################
+
+if args.multiplayer:
+    interaction.multiplayer = True
+else:
+    interaction.multiplayer = False
 
 # start the interaction loop of the underlying library
 try:

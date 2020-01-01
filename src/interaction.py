@@ -282,6 +282,9 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
         gamestate.save()
         raise urwid.ExitMainLoop()
 
+    if key in ('S',):
+        gamestate.save()
+
     # bad code: global variables
     global lastLagDetection
     global idleCounter

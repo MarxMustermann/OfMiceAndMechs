@@ -1858,11 +1858,19 @@ class ProductionArtwork(Item):
     def __init__(self,xPosition=None,yPosition=None, name="production artwork",creator=None):
         super().__init__("U\\",xPosition,yPosition,name=name,creator=creator)
 
+        self.coolDown = 0
+
     '''
     trigger production of a player selected item
     '''
     def apply(self,character,resultType=None):
         super().apply(character,silent=True)
+
+        if gamestate.tick < self.coolDown+10000:
+            messages.append("cooldown not reached")
+            return
+        self.coolDown = gamestate.tick
+
         options = []
         for key,value in itemMap.items():
             options.append((value,key))
@@ -2297,11 +2305,18 @@ class MachineMachine(Item):
     def __init__(self,xPosition=None,yPosition=None, name="machine machine",creator=None):
         super().__init__("M\\",xPosition,yPosition,name=name,creator=creator)
 
+        self.coolDown = 0
+
     '''
     trigger production of a player selected item
     '''
     def apply(self,character,resultType=None):
         super().apply(character,silent=True)
+
+        if gamestate.tick < self.coolDown+1000:
+            messages.append("cooldown not reached")
+            return
+        self.coolDown = gamestate.tick
 
         endProducts = {
             "GrowthTank":GrowthTank,
@@ -2404,6 +2419,8 @@ class Machine(Item):
 
         self.baseName = name
 
+        self.coolDown = 0
+
         self.setDescription()
 
         self.initialState = self.getState()
@@ -2420,6 +2437,11 @@ class Machine(Item):
     '''
     def apply(self,character):
         super().apply(character,silent=True)
+
+        if gamestate.tick < self.coolDown+100:
+            messages.append("cooldown not reached")
+            return
+        self.coolDown = gamestate.tick
 
         # gather a metal bar
         metalBar = None

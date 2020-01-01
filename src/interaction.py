@@ -28,7 +28,7 @@ import src.terrains
 # the containers for the shown text
 header = urwid.Text(u"")
 main = urwid.Text(u"")
-footer = urwid.Text(u"")
+footer = urwid.Text(u"",align = 'right')
 main.set_layout('left', 'clip')
 
 frame = urwid.Frame(urwid.Filler(main,"top"),header=header,footer=footer)
@@ -184,6 +184,14 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
     if type(key) == tuple:
         return
 
+    text = ""
+    for cmd in charState["commandKeyQueue"]:
+        item = cmd[0]
+        if isinstance(item,list) or isinstance(item,tuple) or item in ("lagdetection","lagdetection_"):
+            continue
+        text += str(cmd[0])
+    footer.set_text((urwid.AttrSpec("default","default"),text))
+
     if key == "esc":
         charState["replay"] = []
 
@@ -203,6 +211,27 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             charState["number"] = ""
         charState["number"] += key
         key = commandChars.ignore
+
+    if key in ("§",):
+        charState["loop"].append(2)
+        key = commandChars.ignore
+    
+    if charState["loop"] and not key in ("lagdetection","lagdetection_",commandChars.ignore,"_","~"):
+        if not charState["replay"]:
+            commands = []
+            commands.append(("lagdetection_",["norecord"]))
+            commands.append(("§",["norecord"]))
+            commands.append((key,["norecord"]))
+            charState["commandKeyQueue"] = commands+charState["commandKeyQueue"]
+            charState["loop"].pop()
+        else:
+            commands = []
+            commands.append(("lagdetection_",["norecord"]))
+            commands.append(("§",["norecord"]))
+            commands.append(("_",["norecord"]))
+            commands.append((key,["norecord"]))
+            charState["commandKeyQueue"] = commands+charState["commandKeyQueue"]
+            charState["loop"].pop()
 
     if key in ("-",):
         if not charState["recording"]:
@@ -309,13 +338,14 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             # bad code: using the lagdetection as timer is abuse
             if footerSkipCounter == 20:
                footerSkipCounter = 0
-               screensize = loop.screen.get_cols_rows()
-               footer.set_text(doubleFooterText[footerPosition:screensize[0]-1+footerPosition])
-               if footerPosition == footerLength:
-                   footerPosition = 0
-               else:
-                   footerPosition += 1
-            footerSkipCounter += 1
+               if not (charState["replay"] or charState["doNumber"]):
+                   screensize = loop.screen.get_cols_rows()
+                   footer.set_text(doubleFooterText[footerPosition:screensize[0]-1+footerPosition])
+                   if footerPosition == footerLength:
+                       footerPosition = 0
+                   else:
+                       footerPosition += 1
+               footerSkipCounter += 1
 
         # set the cinematic specific footer
         else:
@@ -870,6 +900,15 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
         main.set_text((urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible()));
         if (useTiles):
             canvas.setPygameDisplay(pydisplay,pygame,tileSize)
+
+    if charState["replay"] or charState["doNumber"]:
+        text = ""
+        for cmd in reversed(charState["commandKeyQueue"]):
+            item = cmd[0]
+            if isinstance(item,list) or isinstance(item,tuple) or item in ("lagdetection","lagdetection_"):
+                continue
+            text += str(cmd[0])
+        footer.set_text((urwid.AttrSpec("default","default"),text))
 
     # show the game won screen
     # bad code: display mode specific code

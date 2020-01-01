@@ -33,6 +33,7 @@ class Character(src.saveing.Saveable):
             "recording":False,
             "recordingTo":None,
             "replay":[],
+            "loop":False,
             "number":None,
             "doNumber":False,
             "macros":{},
@@ -375,6 +376,9 @@ class Character(src.saveing.Saveable):
     def setState(self,state):
         # set basic state
         super().setState(state)
+
+        if not "loop" in state["macroState"]:
+            state["macroState"]["loop"] = []
 
         self.macroState = state["macroState"]
 

@@ -1594,8 +1594,22 @@ class GameplayTest(Terrain):
         self.addItems(extraItems)
 
         # add base of operations
-        self.miniBase = src.rooms.GameTestingRoom(4,8,0,0,creator=self,seed=seed)
+        # add base of operations
+        self.miniBase = src.rooms.MiniBase(4,8,0,0,creator=self,seed=seed)
         self.addRooms([self.miniBase])
+
+        extraItems = []
+        tree = src.items.Tree(64,103,creator=self)
+        extraItems.append(tree)
+        tree = src.items.Tree(103,64,creator=self)
+        extraItems.append(tree)
+        tree = src.items.Tree(80,25,creator=self)
+        extraItems.append(tree)
+        tree = src.items.Tree(125,74,creator=self)
+        extraItems.append(tree)
+        tree = src.items.Tree(15,14,creator=self)
+        extraItems.append(tree)
+        self.addItems(extraItems)
 
         # save internal state
         self.initialState = self.getState()

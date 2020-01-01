@@ -296,8 +296,15 @@ class OpenWorld(BasicPhase):
         else:
             mainChar.xPosition = 2
             mainChar.yPosition = 4
+            mainChar.reputation = 100
             mainChar.terrain = terrain
             terrain.addCharacter(mainChar,2,4)
+
+            npc1 = characters.Character(xPosition=4,yPosition=3,creator=void,seed=gamestate.tick+2)
+            npc1.xPosition = 10
+            npc1.yPosition = 10
+            npc1.terrain = terrain
+            terrain.addCharacter(npc1,10,10)
 
         # add basic set of abilities in openworld phase
         mainChar.questsDone = [
@@ -313,6 +320,7 @@ class OpenWorld(BasicPhase):
                   "ExamineQuest",
                   "NaiveDropQuest",
                   "DropQuestMeta",
+                  "LeaveRoomQuest",
               ]
 
         mainChar.solvers = [
@@ -333,6 +341,26 @@ class OpenWorld(BasicPhase):
                   "NaiveDropQuest",
                   "DropQuestMeta",
                 ]
+
+        npc1.solvers = [
+                  "SurviveQuest",
+                  "Serve",
+                  "NaiveMoveQuest",
+                  "MoveQuestMeta",
+                  "NaiveActivateQuest",
+                  "ActivateQuestMeta",
+                  "NaivePickupQuest",
+                  "PickupQuestMeta",
+                  "DrinkQuest",
+                  "ExamineQuest",
+                  "FireFurnaceMeta",
+                  "CollectQuestMeta",
+                  "WaitQuest"
+                  "NaiveDropQuest",
+                  "NaiveDropQuest",
+                  "DropQuestMeta",
+                ]
+
 
         gamestate.save()
 
@@ -2255,7 +2283,6 @@ class Testing_1(BasicPhase):
         showText("Since you lost your memory again i will feed you the most important data.\n\nYou are represented by the @ character and you are in the wastelands.\n\nTo the east there is a scrap field. You may ignore it for now.\n\nTo your south is a minibase. You are assigned to work there\n\nYou can move by using the w a s d keys or the arrow keys.\n\nnow move to your assigned workplace.")
 
         self.mainChar = mainChar
-
         self.mainChar.xPosition = 70
         self.mainChar.yPosition = 74
         self.mainChar.terrain = terrain

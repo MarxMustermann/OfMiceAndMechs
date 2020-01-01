@@ -1365,7 +1365,7 @@ class MiniBase(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None,seed=0):
         self.roomLayout = """
 XXXXXXXXXXXXX
 X           X

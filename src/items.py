@@ -1980,6 +1980,29 @@ class Pusher(Item):
 
 '''
 '''
+class Tree(Item):
+    type = "Tree"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="pusher",creator=None):
+        super().__init__("&/",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = True
+        self.walkable = False
+
+    def apply(self,character):
+
+        # spawn new item
+        new = VatMaggot(creator=self)
+        new.xPosition = self.xPosition+1
+        new.yPosition = self.yPosition
+        new.bolted = False
+        self.terrain.addItems([new])
+
+'''
+'''
 class GameTestingProducer(Item):
     type = "GameTestingProducer"
 
@@ -2106,6 +2129,7 @@ itemMap = {
             "Nook":Nook,
             "Tank":Tank,
             "Coil":Coil,
+            "Tree":Tree,
 }
 
 '''

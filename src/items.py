@@ -2275,6 +2275,172 @@ class GameTestingProducer(Item):
 
         super().apply(character,silent=True)
 
+'''
+'''
+class MachineMachine(Item):
+    type = "MachineMachine"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="machine machine",creator=None):
+        super().__init__("M\\",xPosition,yPosition,name=name,creator=creator)
+
+    '''
+    trigger production of a player selected item
+    '''
+    def apply(self,character,resultType=None):
+        super().apply(character,silent=True)
+
+        endProducts = {
+            "GrowthTank":GrowthTank,
+            "Hutch":Hutch,
+            "Lever":Lever,
+            "Furnace":Furnace,
+            "CommLink":Commlink,
+            "Display":Display,
+            "Wall":Wall,
+            "Pipe":Pipe,
+            "Coal":Coal,
+            "Door":Door,
+            "Pile":Pile,
+            "Chain":Chain,
+            "Winch":Winch,
+            "Boiler":Boiler,
+            "Spray":Spray,
+            "MarkerBean":MarkerBean,
+            "GooDispenser":GooDispenser,
+            "GooFlask":GooFlask,
+            "ScrapCompactor":ScrapCompactor,
+            "ObjectDispenser":OjectDispenser,
+            "Token":Token,
+            "Connector":Connector,
+            "Bolt":Bolt,
+            "Stripe":Stripe,
+            "puller":Puller,
+            "pusher":Pusher,
+            "Stripe":Stripe,
+            "Sheet":Sheet,
+            "Rod":Rod,
+            "Heater":Heater,
+            "Nook":Nook,
+            "Tank":Tank,
+            "Coil":Coil,
+            "MaggotFermenter":MaggotFermenter,
+            "BioPress":BioPress,
+            "PressCake":PressCake,
+            "BioMass":BioMass,
+            "GooProducer":GooProducer,
+        }
+
+        options = []
+        for key,value in endProducts.items():
+            options.append((value,key))
+        self.submenue = interaction.SelectionMenu("select the item to produce",options)
+        interaction.submenue = self.submenue
+        interaction.submenue.followUp = self.produceSelection
+
+    '''
+    trigger production of the selected item
+    '''
+    def produceSelection(self):
+        self.produce(interaction.submenue.selection)
+
+    '''
+    produce an item
+    '''
+    def produce(self,itemType,resultType=None):
+        # gather a metal bar
+        metalBar = None
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+                if isinstance(item,MetalBars):
+                   metalBar = item
+                   break
+        
+        # refuse production without ressources
+        if not metalBar:
+            messages.append("no metal bars available")
+            return
+
+        # remove ressources
+        self.room.removeItem(item)
+
+        # spawn new item
+        new = Machine(creator=self)
+        new.setToProduce(itemType.type)
+        new.xPosition = self.xPosition+1
+        new.yPosition = self.yPosition
+        new.bolted = False
+        self.room.addItems([new])
+
+'''
+'''
+class Machine(Item):
+    type = "Machine"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="Machine",creator=None):
+        self.toProduce = "Wall"
+
+
+        super().__init__("X\\",xPosition,yPosition,name=name,creator=creator)
+
+        self.attributesToStore.extend([
+               "toProduce"])
+
+        self.baseName = name
+
+        self.setDescription()
+
+        self.initialState = self.getState()
+
+    def setDescription(self):
+        self.description = self.baseName+" MetalBar -> %s"%(self.toProduce,)
+
+    def setToProduce(self,toProduce):
+        self.toProduce = toProduce
+        self.setDescription()
+
+    '''
+    trigger production of a player selected item
+    '''
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        # gather a metal bar
+        metalBar = None
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+                if isinstance(item,MetalBars):
+                   metalBar = item
+                   break
+        
+        # refuse production without ressources
+        if not metalBar:
+            messages.append("no metal bars available")
+            return
+
+        # remove ressources
+        self.room.removeItem(item)
+
+        # spawn new item
+        new = itemMap[self.toProduce](creator=self)
+        new.xPosition = self.xPosition+1
+        new.yPosition = self.yPosition
+        new.bolted = False
+        self.room.addItems([new])
+
+    '''
+    set state from dict
+    '''
+    def setState(self,state):
+        super().setState(state)
+
+        self.setDescription()
+
 # maping from strings to all items
 # should be extendable
 itemMap = {
@@ -2324,6 +2490,8 @@ itemMap = {
             "BioMass":BioMass,
             "VatMaggot":VatMaggot,
             "GooProducer":GooProducer,
+            "Machine":Machine,
+            "MachineMachine":MachineMachine,
 }
 
 '''

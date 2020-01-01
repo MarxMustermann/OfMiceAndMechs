@@ -452,7 +452,7 @@ cinematics.advanceGame = advanceGame
 interaction.advanceGame = advanceGame
 
 # set up the splash screen
-if not args.debug and not interaction.submenue:
+if not args.debug and not interaction.submenue and not loaded:
     text = """
 
      OOO FFF          AAA N N DD

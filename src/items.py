@@ -1111,6 +1111,10 @@ class Door(Item):
     open door
     '''
     def open(self,character):
+        if not self.room:
+            messages.append("you can only use doors within rooms")
+            return
+
         # check if the door can be opened
         if (self.room.isContainment and character.room):
             # bad code: should only apply tho watched characters

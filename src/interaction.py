@@ -49,8 +49,6 @@ lastLagDetection = time.time()
 lastRedraw = time.time()
 
 # states for stateful interaction
-itemMarkedLast = None
-lastMoveAutomated = False
 fullAutoMode = False
 idleCounter = 0
 submenue = None
@@ -396,9 +394,6 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
     # handle a keystroke while on map or in cinemetic
     if not submenue:
-        # bad code: global variables
-        global itemMarkedLast
-        global lastMoveAutomated
 
         # handle cinematics
         if len(cinematics.cinematicQueue):
@@ -676,20 +671,20 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
             # move the player
             if key in (commandChars.move_north,"up"):
-                itemMarkedLast = moveCharacter("north")
-                if itemMarkedLast and not itemMarkedLast.walkable:
+                charState["itemMarkedLast"] = moveCharacter("north")
+                if charState["itemMarkedLast"] and not charState["itemMarkedLast"].walkable:
                     return
             if key in (commandChars.move_south,"down"):
-                itemMarkedLast = moveCharacter("south")
-                if itemMarkedLast and not itemMarkedLast.walkable:
+                charState["itemMarkedLast"] = moveCharacter("south")
+                if charState["itemMarkedLast"] and not charState["itemMarkedLast"].walkable:
                     return
             if key in (commandChars.move_east,"right"):
-                itemMarkedLast = moveCharacter("east")
-                if itemMarkedLast and not itemMarkedLast.walkable:
+                charState["itemMarkedLast"] = moveCharacter("east")
+                if charState["itemMarkedLast"] and not charState["itemMarkedLast"].walkable:
                     return
             if key in (commandChars.move_west,"left"):
-                itemMarkedLast = moveCharacter("west")
-                if itemMarkedLast and not itemMarkedLast.walkable:
+                charState["itemMarkedLast"] = moveCharacter("west")
+                if charState["itemMarkedLast"] and not charState["itemMarkedLast"].walkable:
                     return
 
             # murder the next available character
@@ -719,8 +714,8 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                     messages.append("you do not have the nessecary solver yet")
                 else:
                     # activate the marked item
-                    if itemMarkedLast:
-                        itemMarkedLast.apply(char)
+                    if charState["itemMarkedLast"]:
+                        charState["itemMarkedLast"].apply(char)
 
                     # activate an item on floor
                     else:
@@ -735,8 +730,8 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                     messages.append("you do not have the nessecary solver yet")
                 else:
                     # examine the marked item
-                    if itemMarkedLast:
-                        char.examine(itemMarkedLast)
+                    if charState["itemMarkedLast"]:
+                        char.examine(charState["itemMarkedLast"])
 
                     # examine an item on floor
                     else:
@@ -775,8 +770,8 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                         messages.append("you cannot carry more items")
                     else:
                         # get the position to pickup from
-                        if itemMarkedLast:
-                            pos = (itemMarkedLast.xPosition,itemMarkedLast.yPosition)
+                        if charState["itemMarkedLast"]:
+                            pos = (charState["itemMarkedLast"].xPosition,charState["itemMarkedLast"].yPosition)
                         else:
                             pos = (char.xPosition,char.yPosition)
 
@@ -797,21 +792,21 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             # do automated movement for the main character
             if key in (commandChars.advance,commandChars.autoAdvance):
                 if len(char.quests):
-                    lastMoveAutomated = True
+                    charState["lastMoveAutomated"] = True
                     char.automated = True
                 else:
                     pass
 
             # recalculate the questmarker since it could be tainted
             elif not key in (commandChars.pause):
-                lastMoveAutomated = False
+                charState["lastMoveAutomated"] = False
                 if char.quests:
                     char.setPathToQuest(char.quests[0])
 
         # drop the marker for interacting with an item after bumping into it 
         # bad code: ignore autoadvance opens up an unintended exploit
         if not key in ("lagdetection","lagdetection_",commandChars.wait,commandChars.autoAdvance):
-            itemMarkedLast = None
+            charState["itemMarkedLast"] = None
 
         # enforce 60fps
         # bad code: urwid specific code should be isolated

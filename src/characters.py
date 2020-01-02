@@ -315,6 +315,8 @@ class Character(src.saveing.Saveable):
 
         result["macroState"] = self.macroState
 
+        result["macroState"]["itemMarkedLast"] = None
+
         return result
 
     '''

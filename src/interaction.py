@@ -2014,6 +2014,17 @@ def keyboardListener(key):
             macroFile.write(json.dumps(mainChar.macroState["macros"]))
 
     elif key == "ctrl a":
+        for character in terrain.characters[:]:
+            if not character in multi_chars:
+                multi_chars.append(character)
+
+        toRemove = []
+        for character in multi_chars:
+            if character.dead:
+                toRemove.append(character)
+        for character in toRemove:
+            multi_chars.remove(character)
+
         newChar = None
         for character in multi_chars:
             if character == mainChar:

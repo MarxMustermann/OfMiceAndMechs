@@ -33,7 +33,7 @@ class Character(src.saveing.Saveable):
             "recording":False,
             "recordingTo":None,
             "replay":[],
-            "loop":False,
+            "loop":[],
             "number":None,
             "doNumber":False,
             "macros":{},

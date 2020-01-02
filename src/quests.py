@@ -1787,7 +1787,8 @@ class DrinkQuest(Quest):
     def setState(self,state):
         super().setState(state)
         if state["character"]:
-            self.startWatching(self.character,self.recalculate)
+            if self.character:
+                self.startWatching(self.character,self.recalculate)
 
 
 '''

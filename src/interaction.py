@@ -52,7 +52,6 @@ lastRedraw = time.time()
 fullAutoMode = False
 idleCounter = 0
 submenue = None
-ignoreNextAutomated = False
 ticksSinceDeath = None
 levelAutomated = 0
 
@@ -319,15 +318,13 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
     global lastLagDetection
     global idleCounter
     global pauseGame
-    global submenue
-    global ignoreNextAutomated
     global ticksSinceDeath
 
     # show the scrolling footer
     # bad code: this should be contained in an object
     if key in ("lagdetection","lagdetection_"):
         # show the scrolling footer
-        if (not submenue) and (not len(cinematics.cinematicQueue) or not cinematics.cinematicQueue[0].overwriteFooter):
+        if (not charState["submenue"]) and (not len(cinematics.cinematicQueue) or not cinematics.cinematicQueue[0].overwriteFooter):
             # bad code: global variables
             global footerPosition
             global footerLength
@@ -349,12 +346,12 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
         # set the cinematic specific footer
         else:
             footerSkipCounter = 20
-            if not submenue:
+            if not charState["submenue"]:
                 footer.set_text(" "+cinematics.cinematicQueue[0].footerText)
                 if isinstance(cinematics.cinematicQueue[0], src.cinematics.TextCinematic) and cinematics.cinematicQueue[0].firstRun:
                     cinematics.cinematicQueue[0].advance()
             else:
-                footer.set_text(" "+submenue.footerText)
+                footer.set_text(" "+charState["submenue"].footerText)
 
     # handle lag detection
     # bad code: lagdetection is abused as a timer
@@ -388,13 +385,13 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
     # repeat autoadvance keystrokes
     # bad code: keystrokes are abused here, a timer would be more appropriate
     if key in (commandChars.autoAdvance):
-        if not ignoreNextAutomated:
+        if not charState["ignoreNextAutomated"]:
             loop.set_alarm_in(0.2, callShow_or_exit, commandChars.autoAdvance)
         else:
-            ignoreNextAutomated = False
+            charState["ignoreNextAutomated"] = False
 
     # handle a keystroke while on map or in cinemetic
-    if not submenue:
+    if not charState["submenue"]:
 
         # handle cinematics
         if len(cinematics.cinematicQueue):
@@ -454,7 +451,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             # open the debug menue
             if key in ("´",):
                 if debug:
-                    submenue = DebugMenu()
+                    charState["submenue"] = DebugMenu()
                 else:
                     messages.append("debug not enabled")
 
@@ -468,7 +465,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             # kill one of the autoadvance keystrokes
             # bad pattern: doesn't actually pause
             if key in (commandChars.pause):
-                ignoreNextAutomated = True
+                charState["ignoreNextAutomated"] = True
                 doAdvanceGame = False
 
             '''
@@ -787,7 +784,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
             # open chat partner selection
             if key in (commandChars.hail):
-                submenue = ChatPartnerselection()
+                charState["submenue"] = ChatPartnerselection()
 
             char.automated = False
             # do automated movement for the main character
@@ -828,23 +825,23 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
         # open quest menu
         if key in (commandChars.show_quests):
-            submenue = QuestMenu()
+            charState["submenue"] = QuestMenu()
 
         # open help menu
         if key in (commandChars.show_help):
-            submenue = HelpMenu()
+            charState["submenue"] = HelpMenu()
 
         # open inventory
         if key in (commandChars.show_inventory):
-            submenue = InventoryMenu()
+            charState["submenue"] = InventoryMenu()
 
         # open the menu for giving quests
         if key in (commandChars.show_quests_detailed):
-            submenue = AdvancedQuestMenu()
+            charState["submenue"] = AdvancedQuestMenu()
 
         # open the character information
         if key in (commandChars.show_characterInfo):
-            submenue = CharacterInfoMenu()
+            character["submenue"] = CharacterInfoMenu()
 
         # open the help screen
         if key in (commandChars.show_help):
@@ -852,18 +849,18 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             pauseGame = True
 
     # render submenues
-    if submenue:
+    if charState["submenue"]:
 
         # set flag to not render the game
         specialRender = True        
         pauseGame = True
 
         # let the submenu handle the keystroke
-        done = submenue.handleKey(key)
+        done = charState["submenue"].handleKey(key)
 
         # reset rendering flags
         if done:
-            submenue = None
+            charState["submenue"] = None
             pauseGame = False
             specialRender = False
             doAdvanceGame = False

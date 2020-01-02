@@ -2004,7 +2004,13 @@ class VatMaggot(Item):
 
         # remove ressources
         messages.append("you consume the vat maggot")
-        character.inventory.remove(self)
+        if self.xPosition and self.yPosition:
+            if self.room:
+                self.room.removeItem(self)
+            elif self.terrain:
+                self.terrain.removeItem(self)
+        else:
+            character.inventory.remove(self)
         character.awardReputation(amount=5,reason="eating a vat magot")
         if (gamestate.tick%2 == 0):
             if (gamestate.tick%8 == 0):

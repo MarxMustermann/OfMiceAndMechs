@@ -555,6 +555,25 @@ class GrowthTank(Item):
             name = getRandomName(self.xPosition+self.room.timeIndex,self.yPosition+self.room.timeIndex)
             character = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],self.xPosition+1,self.yPosition,name=name,creator=self)
 
+            character.solvers = [
+                      "SurviveQuest",
+                      "Serve",
+                      "NaiveMoveQuest",
+                      "MoveQuestMeta",
+                      "NaiveActivateQuest",
+                      "ActivateQuestMeta",
+                      "NaivePickupQuest",
+                      "PickupQuestMeta",
+                      "DrinkQuest",
+                      "ExamineQuest",
+                      "FireFurnaceMeta",
+                      "CollectQuestMeta",
+                      "WaitQuest"
+                      "NaiveDropQuest",
+                      "NaiveDropQuest",
+                      "DropQuestMeta",
+                    ]
+
         # inhabit character
         character.fallUnconcious()
         character.hasFloorPermit = False

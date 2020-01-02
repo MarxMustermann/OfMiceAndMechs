@@ -2004,6 +2004,7 @@ class VatMaggot(Item):
 
         # remove ressources
         messages.append("you consume the vat maggot")
+        character.satiation += 50
         if self.xPosition and self.yPosition:
             if self.room:
                 self.room.removeItem(self)
@@ -2014,6 +2015,7 @@ class VatMaggot(Item):
         character.awardReputation(amount=5,reason="eating a vat magot")
         if (gamestate.tick%2 == 0):
             if (gamestate.tick%8 == 0):
+                character.satiation -= 25
                 character.fallUnconcious()
                 character.revokeReputation(amount=15,reason="passing out from eating a vat magot")
             else:

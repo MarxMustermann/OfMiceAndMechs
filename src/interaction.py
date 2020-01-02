@@ -842,7 +842,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
         # open the character information
         if key in (commandChars.show_characterInfo):
-            character["submenue"] = CharacterInfoMenu()
+            charState["submenue"] = CharacterInfoMenu()
 
         # open the help screen
         if key in (commandChars.show_help):

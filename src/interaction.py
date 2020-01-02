@@ -182,13 +182,14 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
     if type(key) == tuple:
         return
 
-    text = ""
-    for cmd in charState["commandKeyQueue"]:
-        item = cmd[0]
-        if isinstance(item,list) or isinstance(item,tuple) or item in ("lagdetection","lagdetection_"):
-            continue
-        text += str(cmd[0])
-    footer.set_text((urwid.AttrSpec("default","default"),text))
+    if char == mainChar:
+        text = ""
+        for cmd in charState["commandKeyQueue"]:
+            item = cmd[0]
+            if isinstance(item,list) or isinstance(item,tuple) or item in ("lagdetection","lagdetection_"):
+                continue
+            text += str(cmd[0])
+        footer.set_text((urwid.AttrSpec("default","default"),text))
 
     if key == "esc":
         charState["replay"] = []

@@ -237,7 +237,8 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             charState["recording"] = True
         else:
             charState["recording"] = False
-            messages.append("recorded: %s to %s"%(''.join(charState["macros"][charState["recordingTo"]]),charState["recordingTo"]))
+            if charState["recordingTo"]:
+                messages.append("recorded: %s to %s"%(''.join(charState["macros"][charState["recordingTo"]]),charState["recordingTo"]))
             charState["recordingTo"] = None
 
     if charState["replay"] and not key in ("lagdetection","lagdetection_"):

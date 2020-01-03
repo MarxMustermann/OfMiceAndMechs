@@ -524,7 +524,7 @@ class Character(src.saveing.Saveable):
     bad pattern: the walking should be done in a quest solver so this method should removed on the long run
     '''
     def setPathToQuest(self,quest):
-        if hasattr(quest,"dstX") and hasattr(quest,"dstY"):
+        if hasattr(quest,"dstX") and hasattr(quest,"dstY") and self.container:
             self.path = self.container.findPath((self.xPosition,self.yPosition),(quest.dstX,quest.dstY))
         else:
             self.path = []

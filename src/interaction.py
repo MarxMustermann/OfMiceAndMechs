@@ -474,35 +474,36 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             bad code: huge inline function + player vs. npc movement should use same code
             '''
             def moveCharacter(direction):
-                global terrain
-                if direction == "west":
-                    if char.xPosition == 0:
-                        messages.append("switch to")
-                        messages.append((terrain.xPosition-1,terrain.yPosition))
-                        terrain = gamestate.terrainMap[terrain.yPosition][terrain.xPosition-1]
-                        char.xPosition = 15*15
-                        char.terrain = terrain
-                        return
-                if direction == "east":
-                    if char.xPosition == 15*15:
-                        messages.append("switch to")
-                        messages.append((terrain.xPosition+1,terrain.yPosition))
-                        terrain = gamestate.terrainMap[terrain.yPosition][terrain.xPosition+1]
-                        char.xPosition = 0
-                        char.terrain = terrain
-                        return
-                if direction == "north":
-                    if char.yPosition == 0:
-                        terrain = gamestate.terrainMap[terrain.xPosition][terrain.yPosition-1]
-                        char.yPosition = 15*15
-                        char.terrain = terrain
-                        return
-                if direction == "south":
-                    if char.yPosition == 15*15:
-                        terrain = gamestate.terrainMap[terrain.xPosition][terrain.yPosition+1]
-                        char.yPosition = 0
-                        char.terrain = terrain
-                        return
+                if not char.room:
+                    global terrain
+                    if direction == "west":
+                        if char.xPosition == 0:
+                            messages.append("switch to")
+                            messages.append((terrain.xPosition-1,terrain.yPosition))
+                            terrain = gamestate.terrainMap[terrain.yPosition][terrain.xPosition-1]
+                            char.xPosition = 15*15
+                            char.terrain = terrain
+                            return
+                    if direction == "east":
+                        if char.xPosition == 15*15:
+                            messages.append("switch to")
+                            messages.append((terrain.xPosition+1,terrain.yPosition))
+                            terrain = gamestate.terrainMap[terrain.yPosition][terrain.xPosition+1]
+                            char.xPosition = 0
+                            char.terrain = terrain
+                            return
+                    if direction == "north":
+                        if char.yPosition == 0:
+                            terrain = gamestate.terrainMap[terrain.xPosition][terrain.yPosition-1]
+                            char.yPosition = 15*15
+                            char.terrain = terrain
+                            return
+                    if direction == "south":
+                        if char.yPosition == 15*15:
+                            terrain = gamestate.terrainMap[terrain.xPosition][terrain.yPosition+1]
+                            char.yPosition = 0
+                            char.terrain = terrain
+                            return
 
                 # do inner room movement
                 if char.room:

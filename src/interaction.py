@@ -781,7 +781,8 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                         if pos in itemByCoordinates:
                             for item in itemByCoordinates[pos]:
                                 item.pickUp(char)
-                                char.container.calculatePathMap()
+                                if not item.walkable:
+                                    char.container.calculatePathMap()
                                 messages.append("you pick up a "+item.type)
                                 break
 

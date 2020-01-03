@@ -936,7 +936,7 @@ class Terrain(src.saveing.Saveable):
     def removeItem(self,item,recalculate=True):
         self.itemsOnFloor.remove(item)
         self.itemByCoordinates[(item.xPosition,item.yPosition)].remove(item)
-        if hasattr(self,"watershedStart") and recalculate: # nontrivial: prevents crashes in constructor
+        if not item.walkable and hasattr(self,"watershedStart") and recalculate: # nontrivial: prevents crashes in constructor
             self.calculatePathMap()
 
     '''
@@ -944,14 +944,17 @@ class Terrain(src.saveing.Saveable):
     '''
     def addItems(self,items,recalculate=True):
         self.itemsOnFloor.extend(items)
+        recalc = False
         for item in items:
             item.terrain = self
             item.room = None
+            if not item.walkable:
+                recalc = True
             if (item.xPosition,item.yPosition) in self.itemByCoordinates:
                 self.itemByCoordinates[(item.xPosition,item.yPosition)].append(item)
             else:
                 self.itemByCoordinates[(item.xPosition,item.yPosition)] = [item]
-        if hasattr(self,"watershedStart") and recalculate: # nontrivial: prevents crashes in constructor
+        if recalc and hasattr(self,"watershedStart") and recalculate: # nontrivial: prevents crashes in constructor
             self.calculatePathMap()
 
     '''

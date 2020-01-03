@@ -118,7 +118,9 @@ class Item(src.saveing.Saveable):
             container.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
             if not container.itemByCoordinates[(self.xPosition,self.yPosition)]:
                 del container.itemByCoordinates[(self.xPosition,self.yPosition)]
-            terrain.calculatePathMap()
+
+            if not self.walkable:
+                terrain.calculatePathMap()
 
         """
         # spawn mice with pseudorandom chance

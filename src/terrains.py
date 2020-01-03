@@ -1244,9 +1244,10 @@ class Terrain(src.saveing.Saveable):
         # remove room from old position
         oldPosition = (room.xPosition,room.yPosition)
         if oldPosition in self.roomByCoordinates:
-            self.roomByCoordinates[oldPosition].remove(room)
-            if not len(self.roomByCoordinates[oldPosition]):
-                del self.roomByCoordinates[oldPosition]
+            if room in self.roomByCoordinates[oldPosition]:
+                self.roomByCoordinates[oldPosition].remove(room)
+                if not len(self.roomByCoordinates[oldPosition]):
+                    del self.roomByCoordinates[oldPosition]
 
         # add room to new position
         if newPosition in self.roomByCoordinates:

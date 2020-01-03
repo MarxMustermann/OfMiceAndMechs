@@ -277,7 +277,7 @@ class Room(src.saveing.Saveable):
 
         # set meta information for saving
         self.attributesToStore.extend([
-              "yPosition","xPosition","offsetX","offsetY","objType"
+              "yPosition","xPosition","offsetX","offsetY","objType","sizeX","sizeY","walkingAccess","open","engineStrength","steamGeneration","isContainment",
                 ])
 
         self.initialState = self.getState()
@@ -374,9 +374,9 @@ class Room(src.saveing.Saveable):
         state = super().getState()
 
         # get states from lists
-        (eventIds,eventStates) = self.storeStateList(self.events)
-        (itemIds,itemStates) = self.storeStateList(self.itemsOnFloor)
-        (charIds,charStates) = self.storeStateList(self.characters)
+        (eventStates,eventIds) = self.storeStateList(self.events)
+        (itemStates,itemIds) = self.storeStateList(self.itemsOnFloor)
+        (charStates,charIds) = self.storeStateList(self.characters)
 
         # store the substates
         state["eventIds"] = eventIds
@@ -428,6 +428,14 @@ class Room(src.saveing.Saveable):
         # add new items
         if "newItems" in state:
             for itemId in state["newItems"]:
+                itemState = state["itemStates"][itemId]
+                item = src.items.getItemFromState(itemState)
+                self.addItems([item])
+
+        if "itemIds" in state:
+            for item in self.itemsOnFloor[:]:
+                self.removeItem(item)
+            for itemId in state["itemIds"]:
                 itemState = state["itemStates"][itemId]
                 item = src.items.getItemFromState(itemState)
                 self.addItems([item])
@@ -2478,19 +2486,49 @@ a empty room
 class EmptyRoom(Room):
     objType = "EmptyRoom"
 
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,sizeX=3,sizeY=3,doorPos=(4,2),desiredPosition=None,creator=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
         self.roomLayout = """
+XXX
+X.$
+XXX
 """
-        self.roomLayout += "X"*sizeX+"\n"
-        self.roomLayout += "X"+" "*(sizeX-3)+".X"+"\n"
-        self.roomLayout += ("X"+" "*(sizeX-2)+"X"+"\n")*(sizeY-3)
-        self.roomLayout += "X"*sizeX+"\n"
-
-        splited = self.roomLayout.split("\n")
-        splited[doorPos[1]] = splited[doorPos[1]][0:doorPos[0]]+"$"+splited[doorPos[1]][doorPos[0]+1:]
-        self.roomLayout = "\n".join(splited)
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.name = "room"
+
+    def reconfigure(self,sizeX=3,sizeY=3,doorPos=(2,1)):
+        self.sizeX = sizeX
+        self.sizeY = sizeY
+
+        for item in self.itemsOnFloor[:]:
+            self.removeItem(item)
+
+        newItems = []
+        y = 0
+        for x in range(0,self.sizeX):
+            if not (x,y) == doorPos:
+                newItems.append(src.items.Wall(x,y,creator=self))
+        y = sizeY-1
+        for x in range(0,self.sizeX):
+            if not (x,y) == doorPos:
+                newItems.append(src.items.Wall(x,y,creator=self))
+        x = 0
+        for y in range(1,self.sizeY):
+            if not (x,y) == doorPos:
+                newItems.append(src.items.Wall(x,y,creator=self))
+        x = sizeX-1
+        for y in range(1,self.sizeY):
+            if not (x,y) == doorPos:
+                newItems.append(src.items.Wall(x,y,creator=self))
+        newItems.append(src.items.Door(doorPos[0],doorPos[1],creator=self))
+
+        self.walkingAccess = [doorPos]
+
+        self.addItems(newItems)
+
+    def setState(self,state):
+        super().setState(state)
+
+        self.walkingAccess = [(state["walkingAccess"][0][0],state["walkingAccess"][0][1])]
 
 '''
 a room in the process of beeing constructed. The room itself exists but no items within

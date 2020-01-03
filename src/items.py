@@ -355,6 +355,15 @@ class Item(src.saveing.Saveable):
         self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(newItem)
         self.terrain.itemsOnFloor.append(newItem)
             
+    def getDiffState(self):
+        state = super().getDiffState()
+
+        state["type"] = self.type
+        state["xPosition"] = self.xPosition
+        state["yPosition"] = self.yPosition
+
+        return state
+
 '''
 crushed something, basically raw metal
 '''
@@ -903,6 +912,9 @@ class Display(Item):
                     for item in self.terrain.itemByCoordinates[pos]:
                         if isinstance(item,Wall) or isinstance(item,Door):
                             wallLeft = item
+                            break
+                if wallLeft:
+                    break
             wallRight = False
             for offset in range(1,15):
                 pos = (self.xPosition+offset,self.yPosition)
@@ -910,6 +922,9 @@ class Display(Item):
                     for item in self.terrain.itemByCoordinates[pos]:
                         if isinstance(item,Wall) or isinstance(item,Door):
                             wallRight = item
+                            break
+                if wallRight:
+                    break
             wallTop = False
             for offset in range(1,15):
                 pos = (self.xPosition,self.yPosition-offset)
@@ -917,6 +932,9 @@ class Display(Item):
                     for item in self.terrain.itemByCoordinates[pos]:
                         if isinstance(item,Wall) or isinstance(item,Door):
                             wallTop = item
+                            break
+                if wallTop:
+                    break
             wallBottom = False
             for offset in range(1,15):
                 pos = (self.xPosition,self.yPosition+offset)
@@ -924,6 +942,9 @@ class Display(Item):
                     for item in self.terrain.itemByCoordinates[pos]:
                         if isinstance(item,Wall) or isinstance(item,Door):
                             wallBottom = item
+                            break
+                if wallBottom:
+                    break
 
             if not ( wallLeft and wallRight and wallTop and wallBottom) :
                 messages.append("no boundaries found")
@@ -937,6 +958,7 @@ class Display(Item):
 
             wallMissing = False
             items = []
+            messages.append([roomLeft,roomRight,roomTop,roomBottom,])
             for x in range(-roomLeft,roomRight+1):
                 pos = (self.xPosition+x,self.yPosition-roomTop)
                 wallFound = None 
@@ -1011,8 +1033,8 @@ class Display(Item):
 
             import src.rooms
             doorPos = (roomLeft+door.xPosition-self.xPosition,roomTop+door.yPosition-self.yPosition)
-            room = src.rooms.EmptyRoom(self.xPosition//15,self.yPosition//15,self.xPosition%15-roomLeft,self.yPosition%15-roomTop,roomLeft+roomRight+1,roomTop+roomBottom+1,doorPos,creator=self)
-            room.open = True
+            room = src.rooms.EmptyRoom(self.xPosition//15,self.yPosition//15,self.xPosition%15-roomLeft,self.yPosition%15-roomTop,creator=self)
+            room.reconfigure(roomLeft+roomRight+1,roomTop+roomBottom+1,doorPos)
 
             xOffset = character.xPosition-self.xPosition
             yOffset = character.yPosition-self.yPosition
@@ -1112,6 +1134,7 @@ class Door(Item):
     '''
     def open(self,character):
         if not self.room:
+            return
             messages.append("you can only use doors within rooms")
             return
 
@@ -1881,7 +1904,7 @@ class ProductionArtwork(Item):
     def __init__(self,xPosition=None,yPosition=None, name="production artwork",creator=None):
         super().__init__("U\\",xPosition,yPosition,name=name,creator=creator)
 
-        self.coolDown = 0
+        self.coolDown = -10000
 
     '''
     trigger production of a player selected item
@@ -1890,7 +1913,7 @@ class ProductionArtwork(Item):
         super().apply(character,silent=True)
 
         if gamestate.tick < self.coolDown+10000:
-            messages.append("cooldown not reached")
+            messages.append("cooldown not reached (%s)"%(gamestate.tick-self.coolDown,))
             return
         self.coolDown = gamestate.tick
 
@@ -1898,14 +1921,14 @@ class ProductionArtwork(Item):
         for key,value in itemMap.items():
             options.append((value,key))
         self.submenue = interaction.SelectionMenu("select the item to produce",options)
-        interaction.submenue = self.submenue
-        interaction.submenue.followUp = self.produceSelection
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.produceSelection
 
     '''
     trigger production of the selected item
     '''
     def produceSelection(self):
-        self.produce(interaction.submenue.selection)
+        self.produce(self.submenue.selection)
 
     '''
     produce an item
@@ -2261,7 +2284,7 @@ class GameTestingProducer(Item):
                 token = item
 
         if gamestate.tick < self.coolDown+20:
-            messages.append("cooldown not reached")
+            messages.append("cooldown not reached (%s)"%(gamestate.tick-self.coolDown,))
             return
         self.coolDown = gamestate.tick
 
@@ -2273,15 +2296,15 @@ class GameTestingProducer(Item):
     def change_apply_1(self,character,token):
         options = [(("yes",character,token),"yes"),(("no",character,token),"no")]
         self.submenue = interaction.SelectionMenu("Do you want to reconfigure the machine?",options)
-        interaction.submenue = self.submenue
-        interaction.submenue.followUp = self.change_apply_2
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.change_apply_2
 
     def change_apply_2(self,force=False):
         if not force:
-            if interaction.submenue.selection[0] == "no":
+            if self.submenue.selection[0] == "no":
                 return
-            character = interaction.submenue.selection[1]
-            token = interaction.submenue.selection[2]
+            character = self.submenue.selection[1]
+            token = self.submenue.selection[2]
             character.inventory.remove(token)
 
         seed = self.seed
@@ -2336,7 +2359,7 @@ class MachineMachine(Item):
     def __init__(self,xPosition=None,yPosition=None, name="machine machine",creator=None):
         super().__init__("M\\",xPosition,yPosition,name=name,creator=creator)
 
-        self.coolDown = 0
+        self.coolDown = -1000
 
     '''
     trigger production of a player selected item
@@ -2345,7 +2368,7 @@ class MachineMachine(Item):
         super().apply(character,silent=True)
 
         if gamestate.tick < self.coolDown+1000:
-            messages.append("cooldown not reached")
+            messages.append("cooldown not reached (%s)"%(gamestate.tick-self.coolDown,))
             return
         self.coolDown = gamestate.tick
 
@@ -2394,14 +2417,14 @@ class MachineMachine(Item):
         for key,value in endProducts.items():
             options.append((value,key))
         self.submenue = interaction.SelectionMenu("select the item to produce",options)
-        interaction.submenue = self.submenue
-        interaction.submenue.followUp = self.produceSelection
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.produceSelection
 
     '''
     trigger production of the selected item
     '''
     def produceSelection(self):
-        self.produce(interaction.submenue.selection)
+        self.produce(self.submenue.selection)
 
     '''
     produce an item
@@ -2450,7 +2473,7 @@ class Machine(Item):
 
         self.baseName = name
 
-        self.coolDown = 0
+        self.coolDown = -100
 
         self.setDescription()
 
@@ -2470,7 +2493,7 @@ class Machine(Item):
         super().apply(character,silent=True)
 
         if gamestate.tick < self.coolDown+100:
-            messages.append("cooldown not reached")
+            messages.append("cooldown not reached (%s)"%(gamestate.tick-self.coolDown,))
             return
         self.coolDown = gamestate.tick
 

@@ -190,6 +190,7 @@ class Saveable(object):
                 currentValue = None
 
             if not attribute in self.initialState:
+                result[attribute] = currentValue
                 continue
 
             if not currentValue == self.initialState[attribute]:

@@ -2019,6 +2019,54 @@ class ScrapCompactor(Item):
 
 '''
 '''
+class Scraper(Item):
+    type = "Scraper"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="scraper",creator=None):
+        self.coolDown = 1000
+        self.coolDownTimer = -self.coolDown
+        
+        super().__init__("U\\",xPosition,yPosition,name=name,creator=creator)
+
+        self.attributesToStore.extend([
+               "coolDown","coolDownTimer"])
+
+    '''
+    '''
+    def apply(self,character,resultType=None):
+        super().apply(character,silent=True)
+
+        # fetch input scrap
+        itemFound = None
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+                itemFound = item
+                break
+
+        if gamestate.tick < self.coolDownTimer+self.coolDown:
+            messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            return
+        self.coolDownTimer = gamestate.tick
+
+        # refuse to produce without ressources
+        if not itemFound:
+            messages.append("no items available")
+            return
+
+        # remove ressources
+        self.room.removeItem(item)
+
+        # spawn scrap
+        new = Scrap(self.xPosition,self.yPosition,10,creator=self)
+        new.xPosition = self.xPosition+1
+        new.yPosition = self.yPosition
+        self.room.addItems([new])
+
+'''
+'''
 class Token(Item):
     type = "Token"
 
@@ -2442,6 +2490,7 @@ class MachineMachine(Item):
             "PressCake":PressCake,
             "BioMass":BioMass,
             "GooProducer":GooProducer,
+            "Scraper":Scraper,
         }
 
         options = []
@@ -2613,6 +2662,7 @@ itemMap = {
             "GooProducer":GooProducer,
             "Machine":Machine,
             "MachineMachine":MachineMachine,
+            "Scraper":Scraper,
 }
 
 producables = {
@@ -2658,6 +2708,7 @@ producables = {
             "BioMass":BioMass,
             "VatMaggot":VatMaggot,
             "MetalBars":MetalBars,
+            "Scraper":Scraper,
         }
 
 '''

@@ -622,6 +622,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                             item = enterLocalised(room,localisedEntry)
                             if item:
                                 return item
+                            break
 
                     # handle walking without room interaction
                     if not hadRoomInteraction:

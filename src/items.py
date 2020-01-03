@@ -1919,6 +1919,10 @@ class ProductionArtwork(Item):
 
         options = []
         for key,value in itemMap.items():
+            if key in producables:
+                continue
+            if key in ("ProductionArtwork","Machine","Tree","Scrap","Corpse","Acid","Item"):
+                continue
             options.append((value,key))
         self.submenue = interaction.SelectionMenu("select the item to produce",options)
         character.macroState["submenue"] = self.submenue
@@ -2580,6 +2584,51 @@ itemMap = {
             "Machine":Machine,
             "MachineMachine":MachineMachine,
 }
+
+producables = {
+            "GrowthTank":GrowthTank,
+            "Hutch":Hutch,
+            "Lever":Lever,
+            "Furnace":Furnace,
+            "CommLink":Commlink,
+            "Display":Display,
+            "Wall":Wall,
+            "Pipe":Pipe,
+            "Coal":Coal,
+            "Door":Door,
+            "Pile":Pile,
+            "Chain":Chain,
+            "Winch":Winch,
+            "Boiler":Boiler,
+            "Spray":Spray,
+            "MarkerBean":MarkerBean,
+            "GooDispenser":GooDispenser,
+            "GooFlask":GooFlask,
+            "ScrapCompactor":ScrapCompactor,
+            "ObjectDispenser":OjectDispenser,
+            "Token":Token,
+            "Connector":Connector,
+            "Bolt":Bolt,
+            "Stripe":Stripe,
+            "puller":Puller,
+            "pusher":Pusher,
+            "Stripe":Stripe,
+            "Sheet":Sheet,
+            "Rod":Rod,
+            "Heater":Heater,
+            "Nook":Nook,
+            "Tank":Tank,
+            "Coil":Coil,
+            "MaggotFermenter":MaggotFermenter,
+            "BioPress":BioPress,
+            "PressCake":PressCake,
+            "BioMass":BioMass,
+            "GooProducer":GooProducer,
+            "BioPress":BioPress,
+            "BioMass":BioMass,
+            "VatMaggot":VatMaggot,
+            "MetalBars":MetalBars,
+        }
 
 '''
 get item instances from dict state

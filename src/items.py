@@ -1902,9 +1902,14 @@ class ProductionArtwork(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="production artwork",creator=None):
+        self.coolDown = 10000
+        self.coolDownTimer = -self.coolDown
+
         super().__init__("U\\",xPosition,yPosition,name=name,creator=creator)
 
-        self.coolDown = -10000
+        self.attributesToStore.extend([
+               "coolDown","coolDownTimer"])
+
 
     '''
     trigger production of a player selected item
@@ -1912,10 +1917,10 @@ class ProductionArtwork(Item):
     def apply(self,character,resultType=None):
         super().apply(character,silent=True)
 
-        if gamestate.tick < self.coolDown+10000:
-            messages.append("cooldown not reached (%s)"%(gamestate.tick-self.coolDown,))
+        if gamestate.tick < self.coolDownTimer+self.coolDown:
+            messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
-        self.coolDown = gamestate.tick
+        self.coolDownTimer = gamestate.tick
 
         options = []
         for key,value in itemMap.items():
@@ -1971,7 +1976,13 @@ class ScrapCompactor(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="scrap compactor",creator=None):
+        self.coolDown = 100
+        self.coolDownTimer = -self.coolDown
+        
         super().__init__("U\\",xPosition,yPosition,name=name,creator=creator)
+
+        self.attributesToStore.extend([
+               "coolDown","coolDownTimer"])
 
     '''
     produce a metal bar
@@ -1987,11 +1998,16 @@ class ScrapCompactor(Item):
                     scrap = item
                     break
 
+        if gamestate.tick < self.coolDownTimer+self.coolDown:
+            messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            return
+        self.coolDownTimer = gamestate.tick
+
         # refuse to produce without ressources
         if not scrap:
             messages.append("no scraps available")
             return
-       
+
         # remove ressources
         self.room.removeItem(item)
 
@@ -2272,13 +2288,19 @@ class GameTestingProducer(Item):
     type = "GameTestingProducer"
 
     def __init__(self,xPosition=None,yPosition=None, name="testing producer",creator=None, seed=0, possibleSources=[], possibleResults=[]):
+        self.coolDown = 20
+        self.coolDownTimer = -self.coolDown
+
         super().__init__("/\\",xPosition,yPosition,name=name,creator=creator)
+
         self.seed = seed
         self.baseName = name
         self.possibleResults = possibleResults
         self.possibleSources = possibleSources
         self.change_apply_2(force=True)
-        self.coolDown = 0
+
+        self.attributesToStore.extend([
+               "coolDown","coolDownTimer"])
 
     def apply(self,character,resultType=None):
 
@@ -2287,10 +2309,10 @@ class GameTestingProducer(Item):
             if isinstance(item,src.items.Token):
                 token = item
 
-        if gamestate.tick < self.coolDown+20:
-            messages.append("cooldown not reached (%s)"%(gamestate.tick-self.coolDown,))
+        if gamestate.tick < self.coolDownTimer+self.coolDown:
+            messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
-        self.coolDown = gamestate.tick
+        self.coolDownTimer = gamestate.tick
 
         if token:
             self.change_apply_1(character,token)
@@ -2361,9 +2383,14 @@ class MachineMachine(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="machine machine",creator=None):
+        self.coolDown = 1000
+        self.coolDownTimer = -self.coolDown
+
         super().__init__("M\\",xPosition,yPosition,name=name,creator=creator)
 
-        self.coolDown = -1000
+        self.attributesToStore.extend([
+               "coolDown","coolDownTimer"])
+
 
     '''
     trigger production of a player selected item
@@ -2371,10 +2398,10 @@ class MachineMachine(Item):
     def apply(self,character,resultType=None):
         super().apply(character,silent=True)
 
-        if gamestate.tick < self.coolDown+1000:
-            messages.append("cooldown not reached (%s)"%(gamestate.tick-self.coolDown,))
+        if gamestate.tick < self.coolDownTimer+self.coolDown:
+            messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
-        self.coolDown = gamestate.tick
+        self.coolDownTimer = gamestate.tick
 
         endProducts = {
             "GrowthTank":GrowthTank,
@@ -2469,6 +2496,8 @@ class Machine(Item):
     def __init__(self,xPosition=None,yPosition=None, name="Machine",creator=None):
         self.toProduce = "Wall"
 
+        self.coolDown = 100
+        self.coolDownTimer = -self.coolDown
 
         super().__init__("X\\",xPosition,yPosition,name=name,creator=creator)
 
@@ -2477,7 +2506,8 @@ class Machine(Item):
 
         self.baseName = name
 
-        self.coolDown = -100
+        self.attributesToStore.extend([
+               "coolDown","coolDownTimer"])
 
         self.setDescription()
 
@@ -2496,10 +2526,10 @@ class Machine(Item):
     def apply(self,character):
         super().apply(character,silent=True)
 
-        if gamestate.tick < self.coolDown+100:
-            messages.append("cooldown not reached (%s)"%(gamestate.tick-self.coolDown,))
+        if gamestate.tick < self.coolDownTimer+self.coolDown:
+            messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
-        self.coolDown = gamestate.tick
+        self.coolDownTimer = gamestate.tick
 
         # gather a metal bar
         metalBar = None

@@ -2026,7 +2026,7 @@ class Scraper(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="scraper",creator=None):
-        self.coolDown = 1000
+        self.coolDown = 10
         self.coolDownTimer = -self.coolDown
         
         super().__init__("U\\",xPosition,yPosition,name=name,creator=creator)
@@ -2064,6 +2064,65 @@ class Scraper(Item):
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
         self.room.addItems([new])
+
+'''
+'''
+class Sorter(Item):
+    type = "Sorter"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="sorter",creator=None):
+        self.coolDown = 10
+        self.coolDownTimer = -self.coolDown
+        
+        super().__init__("U\\",xPosition,yPosition,name=name,creator=creator)
+
+        self.attributesToStore.extend([
+               "coolDown","coolDownTimer"])
+
+    '''
+    '''
+    def apply(self,character,resultType=None):
+        super().apply(character,silent=True)
+
+        # fetch input scrap
+        itemFound = None
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+                itemFound = item
+                break
+
+        compareItemFound = None
+        if (self.xPosition,self.yPosition-1) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition,self.yPosition-1)]:
+                compareItemFound = item
+                break
+
+        if gamestate.tick < self.coolDownTimer+self.coolDown:
+            messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            return
+        self.coolDownTimer = gamestate.tick
+
+        # refuse to produce without ressources
+        if not itemFound:
+            messages.append("no items available")
+            return
+        if not compareItemFound:
+            messages.append("no compare items available")
+            return
+
+        # remove ressources
+        self.room.removeItem(itemFound)
+
+        if itemFound.type == compareItemFound.type:
+            itemFound.xPosition = self.xPosition
+            itemFound.yPosition = self.yPosition+1
+        else:
+            itemFound.xPosition = self.xPosition+1
+            itemFound.yPosition = self.yPosition
+        self.room.addItems([itemFound])
 
 '''
 '''
@@ -2491,6 +2550,7 @@ class MachineMachine(Item):
             "BioMass":BioMass,
             "GooProducer":GooProducer,
             "Scraper":Scraper,
+            "Sorter":Sorter,
         }
 
         options = []
@@ -2663,6 +2723,7 @@ itemMap = {
             "Machine":Machine,
             "MachineMachine":MachineMachine,
             "Scraper":Scraper,
+            "Sorter":Sorter,
 }
 
 producables = {
@@ -2709,6 +2770,7 @@ producables = {
             "VatMaggot":VatMaggot,
             "MetalBars":MetalBars,
             "Scraper":Scraper,
+            "Sorter":Sorter,
         }
 
 '''

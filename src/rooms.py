@@ -522,7 +522,8 @@ class Room(src.saveing.Saveable):
             return self.lastRender
         
         # render room
-        if not self.hidden:
+        #if not self.hidden:
+        if 1==1:
             # fill the area with floor tiles
             chars = []
             fixedChar = None

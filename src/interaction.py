@@ -374,7 +374,8 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
     ignoreList = (commandChars.autoAdvance, commandChars.quit_instant, commandChars.ignore,commandChars.quit_delete, commandChars.pause, commandChars.show_quests, commandChars.show_quests_detailed, commandChars.show_inventory, commandChars.show_inventory_detailed, commandChars.show_characterInfo)
     if not key in ignoreList:
         if lastLagDetection < time.time()-0.4:
-            return
+            pass
+            #return
 
     pauseGame = False
 

@@ -86,8 +86,8 @@ class Character(src.saveing.Saveable):
         self.events = []
         self.room = None
         self.terrain = None
-        self.xPosition = xPosition
-        self.yPosition = yPosition
+        self.xPosition = 0
+        self.yPosition = 0
         self.satiation = 1000
         self.dead = False
         self.deathReason = None
@@ -144,6 +144,9 @@ class Character(src.saveing.Saveable):
         # save state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
+
+        self.xPosition = xPosition
+        self.yPosition = yPosition
 
     """
     proxy render method to display attribute

@@ -881,6 +881,9 @@ class Display(Item):
             def moveEast():
                 self.room.moveDirection("east",force=self.room.engineStrength)
 
+            if not "stealKey" in character.macroState:
+                character.macroState["stealKey"] = {}
+
             '''
             reset key mapping
             '''

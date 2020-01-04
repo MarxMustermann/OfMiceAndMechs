@@ -1971,6 +1971,10 @@ def keyboardListener(key):
         multi_currentChar = mainChar
     if multi_chars == None:
         multi_chars = terrain.characters[:]
+        for room in terrain.rooms:
+            for character in room.characters[:]:
+                if not character in multi_chars:
+                    multi_chars.append(character)
 
     state = mainChar.macroState
 
@@ -2009,9 +2013,13 @@ def keyboardListener(key):
             macroFile.write(json.dumps(mainChar.macroState["macros"]))
 
     elif key == "ctrl a":
-        for character in terrain.characters[:]:
+        for character in terrain.characters:
             if not character in multi_chars:
                 multi_chars.append(character)
+        for room in terrain.rooms:
+            for character in room.characters[:]:
+                if not character in multi_chars:
+                    multi_chars.append(character)
 
         toRemove = []
         for character in multi_chars:

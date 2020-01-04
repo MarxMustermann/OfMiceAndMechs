@@ -1959,11 +1959,13 @@ def render():
 
 multi_currentChar = None
 multi_chars = None
+charindex = 0
 
 def keyboardListener(key):
     global mainChar
     global multi_currentChar
     global multi_chars
+    global charindex
 
     if not multi_currentChar:
         multi_currentChar = mainChar
@@ -2019,11 +2021,16 @@ def keyboardListener(key):
             multi_chars.remove(character)
 
         newChar = None
-        for character in multi_chars:
-            if character == mainChar:
-                continue
-            newChar = character
-            break
+
+        charindex += 1
+        if charindex >= len(multi_chars):
+            charindex = 0
+        newChar = multi_chars[charindex]
+
+        if not newChar:
+            messages.append("charindex %s"%(charindex))
+            return
+
         mainChar = newChar
         state = mainChar.macroState
         show_or_exit("~",charState=state)

@@ -39,11 +39,6 @@ frame = urwid.Frame(urwid.Filler(main,"top"),header=header,footer=footer)
 #
 #################################################################################################################################
 
-# the keys that should not be handled like usual but are overwritten by other places
-stealKey = {}
-# bad code: common variables with modules
-src.items.stealKey = stealKey
-
 # timestamps for detecting periods in inactivity etc
 lastLagDetection = time.time()
 lastRedraw = time.time()
@@ -444,8 +439,8 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                 raise urwid.ExitMainLoop()
 
         # call callback if key was overwritten
-        if key in stealKey:
-            stealKey[key]()
+        if "stealKey" in charState and key in charState["stealKey"]:
+            charState["stealKey"][key]()
 
         # handle the keystroke for a char on the map
         else:

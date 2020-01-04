@@ -16,7 +16,6 @@ import src.events
 messages = None
 characters = None
 displayChars = None
-stealKey = None
 commandChars = None
 terrain = None
 
@@ -886,26 +885,26 @@ class Display(Item):
             reset key mapping
             '''
             def disapply():
-                del stealKey[commandChars.move_north]
-                del stealKey[commandChars.move_south]
-                del stealKey[commandChars.move_west]
-                del stealKey[commandChars.move_east]
-                del stealKey["up"]
-                del stealKey["down"]
-                del stealKey["right"]
-                del stealKey["left"]
-                del stealKey[commandChars.activate]
+                del character.macroState["stealKey"][commandChars.move_north]
+                del character.macroState["stealKey"][commandChars.move_south]
+                del character.macroState["stealKey"][commandChars.move_west]
+                del character.macroState["stealKey"][commandChars.move_east]
+                del character.macroState["stealKey"]["up"]
+                del character.macroState["stealKey"]["down"]
+                del character.macroState["stealKey"]["right"]
+                del character.macroState["stealKey"]["left"]
+                del character.macroState["stealKey"][commandChars.activate]
 
             # map the keystrokes
-            stealKey[commandChars.move_north] = moveNorth
-            stealKey[commandChars.move_south] = moveSouth
-            stealKey[commandChars.move_west] = moveWest
-            stealKey[commandChars.move_east] = moveEast
-            stealKey["up"] = moveNorth
-            stealKey["down"] = moveSouth
-            stealKey["left"] = moveWest
-            stealKey["right"] = moveEast
-            stealKey[commandChars.activate] = disapply
+            character.macroState["stealKey"][commandChars.move_north] = moveNorth
+            character.macroState["stealKey"][commandChars.move_south] = moveSouth
+            character.macroState["stealKey"][commandChars.move_west] = moveWest
+            character.macroState["stealKey"][commandChars.move_east] = moveEast
+            character.macroState["stealKey"]["up"] = moveNorth
+            character.macroState["stealKey"]["down"] = moveSouth
+            character.macroState["stealKey"]["left"] = moveWest
+            character.macroState["stealKey"]["right"] = moveEast
+            character.macroState["stealKey"][commandChars.activate] = disapply
         else:
             wallLeft = False
             for offset in range(1,15):

@@ -49,6 +49,7 @@ class Character(src.saveing.Saveable):
             "footerSkipCounter":20,
             "itemMarkedLast":None,
             "lastMoveAutomated":False,
+            "stealKey":{},
                 }
 
     '''

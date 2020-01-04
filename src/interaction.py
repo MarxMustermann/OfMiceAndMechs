@@ -1979,6 +1979,7 @@ def keyboardListener(key):
 
     if key == "ctrl d":
         state["commandKeyQueue"].clear()
+        state["loop"] = []
         state["replay"].clear()
         show_or_exit("lagdetection",charState=state)
 

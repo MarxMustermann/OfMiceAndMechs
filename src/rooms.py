@@ -468,6 +468,14 @@ class Room(src.saveing.Saveable):
                 event = events.getEventFromState(eventState)
                 self.addEvent(event)
 
+        if "characterIds" in state:
+            for charId in state["characterIds"]:
+                charState = state["characterStates"][charId]
+                char = characters.Character(creator=void)
+                char.setState(charState)
+                loadingRegistry.register(char)
+                self.addCharacter(char,charState["xPosition"],charState["yPosition"])
+
         self.forceRedraw()
 
     '''

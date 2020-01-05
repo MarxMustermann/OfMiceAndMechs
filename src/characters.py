@@ -136,9 +136,6 @@ class Character(src.saveing.Saveable):
         for quest in quests:
             self.assignQuest(quest)
 
-        # add default items
-        self.inventory.append(src.items.GooFlask(creator=self))
-
         self.silent = False
 
         # save state and register

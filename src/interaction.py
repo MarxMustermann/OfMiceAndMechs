@@ -434,10 +434,11 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             if gamestate.tick > ticksSinceDeath+5:
                 # destroy the gamestate
                 # bad pattern: should not always destroy gamestate
-                saveFile = open("gamestate/gamestate.json","w")
-                saveFile.write("you lost")
-                saveFile.close()
-                raise urwid.ExitMainLoop()
+                #saveFile = open("gamestate/gamestate.json","w")
+                #saveFile.write("you lost")
+                #saveFile.close()
+                #raise urwid.ExitMainLoop()
+                pass
 
         # call callback if key was overwritten
         if "stealKey" in charState and key in charState["stealKey"]:
@@ -876,7 +877,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             global shownStarvationWarning
             if char.satiation < 30 and char.satiation > -1:
                 if not shownStarvationWarning:
-                    cinematics.showCinematic("you will starve in %s ticks. drink something"%(char.satiation))
+                    #cinematics.showCinematic("you will starve in %s ticks. drink something"%(char.satiation))
                     shownStarvationWarning = True
                 if char.satiation == 0:
                     messages.append("you starved")
@@ -2006,12 +2007,44 @@ def keyboardListener(key):
     elif key == "ctrl o":
         with open("macros.json","r") as macroFile:
             import json
-            mainChar.macroState["macros"] = json.loads(macroFile.read())
+            rawMacros = json.loads(macroFile.read())
+            parsedMacros = {}
+
+            state = "normal"
+            for key,value in rawMacros.items():
+                parsedMacro = []
+                for char in value:
+                    if state == "normal":
+                        if char == "/":
+                            state = "multi"
+                            combinedKey = ""
+                            continue
+                        parsedMacro.append(char)
+                    if state == "multi":
+                        if char == "/":
+                            state = "normal"
+                            parsedMacro.append(combinedKey)
+                        else:
+                            combinedKey += char
+                parsedMacros[key] = parsedMacro
+
+
+            mainChar.macroState["macros"] = parsedMacros
 
     elif key == "ctrl k":
         with open("macros.json","w") as macroFile:
             import json
-            macroFile.write(json.dumps(mainChar.macroState["macros"]))
+
+            compressedMacros = {} 
+            for key,value in mainChar.macroState["macros"].items():
+                compressedMacro = ""
+                for keystroke in value:
+                    if len(keystroke) == 1:
+                        compressedMacro += keystroke
+                    else:
+                        compressedMacro += "/"+keystroke+"/"
+                compressedMacros[key] = compressedMacro
+            macroFile.write(json.dumps(compressedMacros,indent = 10, sort_keys = True))
 
     elif key == "ctrl a":
         for character in terrain.characters:

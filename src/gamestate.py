@@ -220,6 +220,7 @@ class GameState(src.saveing.Saveable):
             mainCharState["terrain"] = None
         mainCharState["xPosition"] = self.mainChar.xPosition
         mainCharState["yPosition"] = self.mainChar.yPosition
+        mainCharState["id"] = self.mainChar.id
         state["mainChar"] = mainCharState
 
         # generate the cinematics

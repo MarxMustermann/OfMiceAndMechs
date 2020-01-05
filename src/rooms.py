@@ -378,6 +378,16 @@ class Room(src.saveing.Saveable):
         (itemStates,itemIds) = self.storeStateList(self.itemsOnFloor)
         (charStates,charIds) = self.storeStateList(self.characters)
 
+        try:
+            toRemove = None
+            for charId in charIds:
+                if charId == mainChar.id:
+                    toRemove = charId
+            if toRemove:
+                charIds.remove(toRemove)
+        except:
+            pass
+
         # store the substates
         state["eventIds"] = eventIds
         state["eventStates"] = eventStates
@@ -471,6 +481,8 @@ class Room(src.saveing.Saveable):
         if "characterIds" in state:
             for charId in state["characterIds"]:
                 charState = state["characterStates"][charId]
+                if not "xPosition" in charState or not "yPosition" in charState:
+                    continue
                 char = characters.Character(creator=void)
                 char.setState(charState)
                 loadingRegistry.register(char)

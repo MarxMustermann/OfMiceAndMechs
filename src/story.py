@@ -294,8 +294,8 @@ class OpenWorld(BasicPhase):
             self.mainCharRoom.addCharacter(mainChar,2,4)
         # place character on terrain
         else:
-            mainChar.xPosition = 2
-            mainChar.yPosition = 4
+            mainChar.xPosition = 65
+            mainChar.yPosition = 111
             mainChar.reputation = 100
             mainChar.terrain = terrain
             terrain.addCharacter(mainChar,2,4)

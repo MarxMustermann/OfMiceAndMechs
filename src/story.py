@@ -300,11 +300,11 @@ class OpenWorld(BasicPhase):
             mainChar.terrain = terrain
             terrain.addCharacter(mainChar,2,4)
 
-            npc1 = characters.Character(xPosition=4,yPosition=3,creator=void,seed=gamestate.tick+2)
-            npc1.xPosition = 10
-            npc1.yPosition = 10
-            npc1.terrain = terrain
-            terrain.addCharacter(npc1,10,10)
+            #npc1 = characters.Character(xPosition=4,yPosition=3,creator=void,seed=gamestate.tick+2)
+            #npc1.xPosition = 10
+            #npc1.yPosition = 10
+            #npc1.terrain = terrain
+            #terrain.addCharacter(npc1,10,10)
 
         # add basic set of abilities in openworld phase
         mainChar.questsDone = [
@@ -342,24 +342,24 @@ class OpenWorld(BasicPhase):
                   "DropQuestMeta",
                 ]
 
-        npc1.solvers = [
-                  "SurviveQuest",
-                  "Serve",
-                  "NaiveMoveQuest",
-                  "MoveQuestMeta",
-                  "NaiveActivateQuest",
-                  "ActivateQuestMeta",
-                  "NaivePickupQuest",
-                  "PickupQuestMeta",
-                  "DrinkQuest",
-                  "ExamineQuest",
-                  "FireFurnaceMeta",
-                  "CollectQuestMeta",
-                  "WaitQuest"
-                  "NaiveDropQuest",
-                  "NaiveDropQuest",
-                  "DropQuestMeta",
-                ]
+        #npc1.solvers = [
+        #          "SurviveQuest",
+        #          "Serve",
+        #          "NaiveMoveQuest",
+        #          "MoveQuestMeta",
+        #          "NaiveActivateQuest",
+        #          "ActivateQuestMeta",
+        #          "NaivePickupQuest",
+        #          "PickupQuestMeta",
+        #          "DrinkQuest",
+        #          "ExamineQuest",
+        #          "FireFurnaceMeta",
+        #          "CollectQuestMeta",
+        #          "WaitQuest"
+        #          "NaiveDropQuest",
+        #          "NaiveDropQuest",
+        #          "DropQuestMeta",
+        #        ]
 
 
         gamestate.save()

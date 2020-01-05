@@ -2556,6 +2556,7 @@ class MachineMachine(Item):
             "Scraper":Scraper,
             "Sorter":Sorter,
             "Drill":Drill,
+            "MemoryBank":MemoryBank,
         }
 
         options = []
@@ -2787,6 +2788,67 @@ class Drill(Item):
 
         self.setDescription()
 
+'''
+'''
+class MemoryBank(Item):
+    type = "MemoryBank"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="MemoryBank",creator=None):
+
+        self.macros = {}
+
+        self.baseName = name
+
+        super().__init__("mM",xPosition,yPosition,name=name,creator=creator)
+
+        self.attributesToStore.extend([
+                "macros"])
+
+        self.setDescription()
+
+        self.initialState = self.getState()
+
+    def setDescription(self):
+        addition = ""
+        if self.macros:
+            addition = " (imprinted)"
+        self.description = self.baseName+addition
+
+    def setToProduce(self,toProduce):
+        self.setDescription()
+
+    '''
+    trigger production of a player selected item
+    '''
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        if not self.room:
+            messages.append("this machine can not be used within rooms")
+            return
+
+        import copy
+        if self.macros:
+            messages.append("you overwrite xour macros with the ones in your memory bank")
+            character.macroState["macros"] = copy.deepcopy(self.macros)
+        else:
+            messages.append("you store your macros in the memory bank")
+            self.macros = copy.deepcopy(character.macroState["macros"])
+
+        self.setDescription()
+
+    '''
+    set state from dict
+    '''
+    def setState(self,state):
+        super().setState(state)
+
+        self.setDescription()
+
+
 # maping from strings to all items
 # should be extendable
 itemMap = {
@@ -2841,6 +2903,7 @@ itemMap = {
             "Scraper":Scraper,
             "Sorter":Sorter,
             "Drill":Drill,
+            "MemoryBank":MemoryBank,
 }
 
 producables = {
@@ -2889,6 +2952,7 @@ producables = {
             "Scraper":Scraper,
             "Sorter":Sorter,
             "Drill":Drill,
+            "MemoryBank":MemoryBank,
         }
 
 '''

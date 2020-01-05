@@ -331,6 +331,7 @@ class Character(src.saveing.Saveable):
         state = super().getState()
 
         state["macroState"] = self.macroState
+        state["macroState"]["itemMarkedLast"] = None
 
         # add simple structures
         state.update({ 

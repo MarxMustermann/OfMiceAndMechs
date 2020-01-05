@@ -2555,6 +2555,7 @@ class MachineMachine(Item):
             "GooProducer":GooProducer,
             "Scraper":Scraper,
             "Sorter":Sorter,
+            "Drill":Drill,
         }
 
         options = []
@@ -2675,6 +2676,117 @@ class Machine(Item):
 
         self.setDescription()
 
+'''
+'''
+class Drill(Item):
+    type = "Drill"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="Drill",creator=None):
+
+        self.coolDown = 100
+        self.coolDownTimer = -self.coolDown
+        self.isBroken = False
+        self.isCleaned = True
+
+        self.baseName = name
+
+        super().__init__("&|",xPosition,yPosition,name=name,creator=creator)
+
+        self.attributesToStore.extend([
+                "coolDown","coolDownTimer",
+                "isBroken","isCleaned"])
+
+        self.setDescription()
+
+        self.initialState = self.getState()
+
+    def setDescription(self):
+        addition = ""
+        if self.isBroken:
+            addition = " (broken)"
+        self.description = self.baseName+addition
+
+    def setToProduce(self,toProduce):
+        self.setDescription()
+
+    '''
+    trigger production of a player selected item
+    '''
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        if self.room:
+            messages.append("this machine can not be used in rooms")
+            return
+
+        if self.isBroken:
+            if not self.isCleaned:
+
+                messages.append("you remove the broken rod")
+
+                # spawn new item
+                new = Scrap(self.xPosition,self.yPosition,3,creator=self)
+                new.xPosition = self.xPosition
+                new.yPosition = self.yPosition+1
+                new.bolted = False
+                self.terrain.addItems([new])
+
+                self.isCleaned = True
+
+            else:
+
+                messages.append("you repair te machine")
+
+                rod = None
+                if (self.xPosition-1,self.yPosition) in self.terrain.itemByCoordinates:
+                    for item in self.terrain.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+                        if isinstance(item,Rod):
+                           rod = item
+                           break
+                
+                # refuse production without ressources
+                if not rod:
+                    messages.append("needs repairs Rod -> repaired")
+                    messages.append("no rod available")
+                    return
+
+                # remove ressources
+                self.terrain.removeItem(item)
+
+                self.isBroken = False
+
+            self.setDescription()
+            return
+
+        if gamestate.tick < self.coolDownTimer+self.coolDown:
+            messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            return
+        self.coolDownTimer = gamestate.tick
+
+
+        # spawn new item
+        new = Scrap(self.xPosition,self.yPosition,3,creator=self)
+        new.xPosition = self.xPosition+1
+        new.yPosition = self.yPosition
+        new.bolted = False
+        self.terrain.addItems([new])
+
+        self.isBroken = True
+        self.isCleaned = False
+
+        self.setDescription()
+
+    '''
+    set state from dict
+    '''
+    def setState(self,state):
+        super().setState(state)
+
+        self.setDescription()
+
 # maping from strings to all items
 # should be extendable
 itemMap = {
@@ -2728,6 +2840,7 @@ itemMap = {
             "MachineMachine":MachineMachine,
             "Scraper":Scraper,
             "Sorter":Sorter,
+            "Drill":Drill,
 }
 
 producables = {
@@ -2775,6 +2888,7 @@ producables = {
             "MetalBars":MetalBars,
             "Scraper":Scraper,
             "Sorter":Sorter,
+            "Drill":Drill,
         }
 
 '''

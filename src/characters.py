@@ -138,6 +138,8 @@ class Character(src.saveing.Saveable):
 
         self.silent = False
 
+        self.messages = []
+
         # save state and register
         self.initialState = self.getState()
         loadingRegistry.register(self)
@@ -469,7 +471,7 @@ class Character(src.saveing.Saveable):
             text = "you were rewarded %i reputation"%totalAmount
             if reason:
                 text += " for "+reason
-            messages.append(text)
+            self.messages.append(text)
 
     def revokeReputation(self,amount=0,fraction=0, reason=None):
         totalAmount = amount
@@ -480,7 +482,7 @@ class Character(src.saveing.Saveable):
             text = "you lost %i reputation"%totalAmount
             if reason:
                 text += " for "+reason
-            messages.append(text)
+            self.messages.append(text)
 
     '''
     starts the next quest in the quest list
@@ -551,7 +553,7 @@ class Character(src.saveing.Saveable):
     def fallUnconcious(self):
         self.unconcious = True
         if self.watched:
-            messages.append("*thump,snort*")
+            self.messages.append("*thump,snort*")
         self.changed("fallen unconcious",self)
 
     '''
@@ -560,7 +562,7 @@ class Character(src.saveing.Saveable):
     def wakeUp(self):
         self.unconcious = False
         if self.watched:
-            messages.append("*grown*")
+            self.messages.append("*grown*")
         self.changed("woke up",self)
 
     '''
@@ -663,7 +665,7 @@ class Character(src.saveing.Saveable):
                     else:
                         # show message the character bumped into a wall
                         # bad pattern: why restrict the player to standard entry points?
-                        messages.append("you cannot move there ("+direction+")")
+                        self.messages.append("you cannot move there ("+direction+")")
                         return
 
                 # handle the character moving into the rooms boundaries
@@ -742,9 +744,9 @@ class Character(src.saveing.Saveable):
     """
     def examine(self,item):
         # print info
-        messages.append(item.description)
+        self.messages.append(item.description)
         if item.description != item.getDetailedInfo():
-            messages.append(item.getDetailedInfo())
+            self.messages.append(item.getDetailedInfo())
 
         # notify listeners
         self.changed("examine",item)
@@ -776,7 +778,7 @@ class Character(src.saveing.Saveable):
             return
 
         if self == mainChar and self.satiation < 30 and self.satiation > -1:
-            messages.append("you'll starve in "+str(mainChar.satiation)+" ticks!")
+            self.messages.append("you'll starve in "+str(mainChar.satiation)+" ticks!")
 
         # call the autosolver
         if self.automated:

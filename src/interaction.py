@@ -204,13 +204,13 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             charState["macros"][charState["recordingTo"]].append(key)
         if charState["ifCondition"][-1] == None:
             charState["ifCondition"][-1] = key
-            messages.append(charState["ifCondition"][-1])
+            char.messages.append(charState["ifCondition"][-1])
         elif charState["ifParam1"][-1] in ([],[("_",["norecord"])]):
             charState["ifParam1"][-1].append((key,["norecord"]))
-            messages.append(charState["ifParam1"][-1])
+            char.messages.append(charState["ifParam1"][-1])
         elif charState["ifParam2"][-1] in ([],[("_",["norecord"])]):
             charState["ifParam2"][-1].append((key,["norecord"]))
-            messages.append(charState["ifParam2"][-1])
+            char.messages.append(charState["ifParam2"][-1])
 
             if not charState["ifParam2"][-1] in ([],[("_",["norecord"])]):
                 conditionTrue = True
@@ -242,7 +242,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                 else:
                     charState["commandKeyQueue"] = charState["ifParam2"][-1] + charState["commandKeyQueue"]
 
-                messages.append((charState["ifCondition"][-1],charState["ifParam1"][-1],charState["ifParam2"][-1]))
+                char.messages.append((charState["ifCondition"][-1],charState["ifParam1"][-1],charState["ifParam2"][-1]))
                 charState["ifCondition"].pop()
                 charState["ifParam1"].pop()
                 charState["ifParam2"].pop()
@@ -253,7 +253,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             if charState["recordingTo"] == None:
                 charState["recordingTo"] = key
                 charState["macros"][charState["recordingTo"]] = []
-                messages.append("start recording to: %s"%(charState["recordingTo"]))
+                char.messages.append("start recording to: %s"%(charState["recordingTo"]))
                 key = commandChars.ignore
             else:
                 if not charState["replay"] and not charState["doNumber"] and not "norecord" in flags:
@@ -288,12 +288,12 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
     if key in ("-",):
         if not charState["recording"]:
-            messages.append("press key to record to")
+            char.messages.append("press key to record to")
             charState["recording"] = True
         else:
             charState["recording"] = False
             if charState["recordingTo"]:
-                messages.append("recorded: %s to %s"%(''.join(charState["macros"][charState["recordingTo"]]),charState["recordingTo"]))
+                char.messages.append("recorded: %s to %s"%(''.join(charState["macros"][charState["recordingTo"]]),charState["recordingTo"]))
             charState["recordingTo"] = None
 
     if charState["replay"] and not key in ("lagdetection","lagdetection_"):
@@ -305,7 +305,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                     charState["macros"][charState["recordingTo"]].append(key)
 
                 if key in charState["macros"]:
-                    messages.append("replaying %s: %s"%(key,''.join(charState["macros"][key])))
+                    char.messages.append("replaying %s: %s"%(key,''.join(charState["macros"][key])))
                     commands = []
                     for keyPress in charState["macros"][key]:
                         commands.append(("lagdetection_",["norecord"]))
@@ -313,7 +313,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                     #processAllInput(commands)
                     charState["commandKeyQueue"] = commands+charState["commandKeyQueue"]
                 else:
-                    messages.append("no macro recorded to %s"%(key))
+                    char.messages.append("no macro recorded to %s"%(key))
 
                 charState["replay"].pop()
             else:
@@ -511,7 +511,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                 if debug:
                     charState["submenue"] = DebugMenu()
                 else:
-                    messages.append("debug not enabled")
+                    char.messages.append("debug not enabled")
 
             # destroy save and quit
             if key in (commandChars.quit_delete,):
@@ -535,16 +535,16 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                     global terrain
                     if direction == "west":
                         if char.xPosition == 0:
-                            messages.append("switch to")
-                            messages.append((terrain.xPosition-1,terrain.yPosition))
+                            char.messages.append("switch to")
+                            char.messages.append((terrain.xPosition-1,terrain.yPosition))
                             terrain = gamestate.terrainMap[terrain.yPosition][terrain.xPosition-1]
                             char.xPosition = 15*15
                             char.terrain = terrain
                             return
                     if direction == "east":
                         if char.xPosition == 15*15:
-                            messages.append("switch to")
-                            messages.append((terrain.xPosition+1,terrain.yPosition))
+                            char.messages.append("switch to")
+                            char.messages.append((terrain.xPosition+1,terrain.yPosition))
                             terrain = gamestate.terrainMap[terrain.yPosition][terrain.xPosition+1]
                             char.xPosition = 0
                             char.terrain = terrain
@@ -568,9 +568,10 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
                     # remember items bumped into for possible interaction
                     if item:
-                        messages.append("You cannot walk there "+str(direction))
-                        messages.append("press "+commandChars.activate+" to apply")
-                        header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
+                        char.messages.append("You cannot walk there "+str(direction))
+                        char.messages.append("press "+commandChars.activate+" to apply")
+                        if noAdvanceGame == False:
+                            header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
                         return item
 
                 # do movement on terrain
@@ -610,26 +611,27 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                                 # handle collisions
                                 if not item.walkable:
                                     # print some info
-                                    messages.append("you need to open the door first")
-                                    messages.append("press "+commandChars.activate+" to apply")
-                                    header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
+                                    char.messages.append("you need to open the door first")
+                                    char.messages.append("press "+commandChars.activate+" to apply")
+                                    if noAdvanceGame == False:
+                                        header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
 
                                     # remember the item for interaction and abort
                                     return item
 
                                 # teleport the character into the room
                                 room.addCharacter(char,localisedEntry[0],localisedEntry[1])
-                                messages.append(("removing from terrain",room))
+                                char.messages.append(("removing from terrain",room))
                                 try:
                                     terrain.characters.remove(char)
                                 except:
-                                    messages.append("fail,fail,fail")
+                                    char.messages.append("fail,fail,fail")
 
                                 return
 
                         # do not move player into the room
                         else:
-                            messages.append("you cannot move there")
+                            char.messages.append("you cannot move there")
 
                     # check if character has entered a room
                     hadRoomInteraction = False
@@ -705,9 +707,10 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                         for item in foundItems:
                             if item and not item.walkable:
                                 # print some info
-                                messages.append("You cannot walk there")
-                                messages.append("press "+commandChars.activate+" to apply")
-                                header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
+                                char.messages.append("You cannot walk there")
+                                char.messages.append("press "+commandChars.activate+" to apply")
+                                if noAdvanceGame == False:
+                                    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
 
                                 # remember the item for interaction and abort
                                 foundItem = True
@@ -749,7 +752,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             # bad pattern: player should be able to select whom to kill if there are multiple targets
             if key in (commandChars.attack):
                 if not "NaiveMurderQuest" in char.solvers:
-                    messages.append("you do not have the nessecary solver yet")
+                    char.messages.append("you do not have the nessecary solver yet")
                 else:
                     # bad code: should be part of a position object
                     adjascentFields = [(char.xPosition,char.yPosition),
@@ -769,7 +772,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             # activate an item 
             if key in (commandChars.activate):
                 if not "NaiveActivateQuest" in char.solvers:
-                    messages.append("you do not have the nessecary solver yet")
+                    char.messages.append("you do not have the nessecary solver yet")
                 else:
                     # activate the marked item
                     if charState["itemMarkedLast"]:
@@ -785,7 +788,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             # examine an item 
             if key in (commandChars.examine):
                 if not "ExamineQuest" in char.solvers:
-                    messages.append("you do not have the nessecary solver yet")
+                    char.messages.append("you do not have the nessecary solver yet")
                 else:
                     # examine the marked item
                     if charState["itemMarkedLast"]:
@@ -802,7 +805,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             # bad pattern: the user has to have the choice for what item to drop
             if key in (commandChars.drop):
                 if not "NaiveDropQuest" in char.solvers:
-                    messages.append("you do not have the nessecary solver yet")
+                    char.messages.append("you do not have the nessecary solver yet")
                 else:
                     if len(char.inventory):
                         char.drop(char.inventory[-1])
@@ -822,10 +825,10 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             # bad code: picking up should happen in character
             if key in (commandChars.pickUp):
                 if not "NaivePickupQuest" in char.solvers:
-                    messages.append("you do not have the nessecary solver yet")
+                    char.messages.append("you do not have the nessecary solver yet")
                 else:
                     if len(char.inventory) >= 10:
-                        messages.append("you cannot carry more items")
+                        char.messages.append("you cannot carry more items")
                     else:
                         # get the position to pickup from
                         if charState["itemMarkedLast"]:
@@ -840,7 +843,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                                 item.pickUp(char)
                                 if not item.walkable:
                                     char.container.calculatePathMap()
-                                messages.append("you pick up a "+item.type)
+                                char.messages.append("you pick up a "+item.type)
                                 break
 
             # open chat partner selection
@@ -940,13 +943,14 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                     #cinematics.showCinematic("you will starve in %s ticks. drink something"%(char.satiation))
                     shownStarvationWarning = True
                 if char.satiation == 0:
-                    messages.append("you starved")
+                    char.messages.append("you starved")
             else:
                 shownStarvationWarning = False
             advanceGame()
 
         # render information on top
-        header.set_text((urwid.AttrSpec("default","default"),renderHeader()))
+        if noAdvanceGame == False:
+            header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
 
         # render map
         # bad code: display mode specific code
@@ -1436,7 +1440,7 @@ class InventoryMenu(SubMenu):
                         text = "you activate the "+mainChar.inventory[self.subMenu.getSelection()].name
                         self.persistentText = (urwid.AttrSpec("default","default"),text)
                         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
-                        messages.append(text)
+                        char.messages.append(text)
                         mainChar.inventory[self.subMenu.getSelection()].apply(mainChar)
                     self.activate = False
                 if self.drop:
@@ -1447,7 +1451,7 @@ class InventoryMenu(SubMenu):
                         text = "you drop the "+mainChar.inventory[self.subMenu.getSelection()].name
                         self.persistentText = (urwid.AttrSpec("default","default"), text)
                         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
-                        messages.append(text)
+                        char.messages.append(text)
                         mainChar.drop(mainChar.inventory[self.subMenu.getSelection()])
                     self.drop = False
                 self.subMenu = None
@@ -1785,10 +1789,10 @@ class AdvancedQuestMenu(SubMenu):
 render the information section on top of the screen
 bad pattern: should be configurable
 '''
-def renderHeader():
+def renderHeader(character):
     # render the sections to display
     questSection = renderQuests(maxQuests=2)
-    messagesSection = renderMessages()
+    messagesSection = renderMessages(character)
 
     # calculate the size of the elements
     screensize = loop.screen.get_cols_rows()
@@ -1855,8 +1859,9 @@ def renderHeader():
 render the last x messages into a string
 bad code: global function
 '''
-def renderMessages(maxMessages=5):
+def renderMessages(character,maxMessages=5):
     txt = ""
+    messages = character.messages
     if len(messages) > maxMessages:
         for message in messages[-maxMessages+1:]:
             txt += str(message)+"\n"

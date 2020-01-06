@@ -90,7 +90,7 @@ class Item(src.saveing.Saveable):
         character.changed("activate",self)
         self.changed("activated",character)
         if not silent:
-            messages.append("i can't do anything useful with this")
+            character.messages.append("i can't do anything useful with this")
 
     '''
     get picked up by the supplied character
@@ -101,7 +101,7 @@ class Item(src.saveing.Saveable):
 
         # apply restrictions
         if self.bolted:
-            messages.append("you cannot pick up bolted items")
+            character.messages.append("you cannot pick up bolted items")
             return
 
         # bad code: should be a simple self.container.removeItem(self)
@@ -531,7 +531,7 @@ class GrowthTank(Item):
                 self.filled = True
                 self.changed()
             else:
-                messages.append("you need to have a full goo flask to refill the growth tank")
+                character.messages.append("you need to have a full goo flask to refill the growth tank")
 
     '''
     render the growth tank
@@ -742,13 +742,13 @@ class Furnace(Item):
         if not foundItem:
             # bad code: return would be preferable to if/else
             if character.watched:
-                messages.append("you need coal to fire the furnace and you have none")
+                character.messages.append("you need coal to fire the furnace and you have none")
         else:
             # refuse to fire burning furnace
             if self.activated:
                 # bad code: return would be preferable to if/else
                 if character.watched:
-                    messages.append("already burning")
+                    character.messages.append("already burning")
             # fire the furnace
             else:
                 self.activated = True
@@ -759,7 +759,7 @@ class Furnace(Item):
 
                 # add fluff
                 if character.watched:
-                    messages.append("*wush*")
+                    character.messages.append("*wush*")
 
                 # get the boilers affected
                 self.boilers = []
@@ -811,8 +811,8 @@ class Commlink(Item):
         super().apply(character,silent=True)
         # add messages requesting coal
         # bad pattern: requesting coal in random room is not smart
-        messages.append("Sigmund Bärenstein@Logisticcentre: we need more coal")
-        messages.append("Logisticcentre@Sigmund Bärenstein: on its way")
+        character.messages.append("Sigmund Bärenstein@Logisticcentre: we need more coal")
+        character.messages.append("Logisticcentre@Sigmund Bärenstein: on its way")
     
         '''
         the event for stopping to burn after a while
@@ -830,11 +830,11 @@ class Commlink(Item):
             make coal delivery noises
             '''
             def handleEvent(subself):
-                messages.append("*rumbling*")
-                messages.append("*rumbling*")
-                messages.append("*smoke and dust on cole piles and neighbour fields*")
-                messages.append("*a chunk of coal drops onto the floor*")
-                messages.append("*smoke clears*")
+                character.messages.append("*rumbling*")
+                character.messages.append("*rumbling*")
+                character.messages.append("*smoke and dust on cole piles and neighbour fields*")
+                character.messages.append("*a chunk of coal drops onto the floor*")
+                character.messages.append("*smoke clears*")
 
         # add event for the faked coal delivery
         self.room.events.append(CoalRefillEvent(self.room.timeIndex+10,creator=self))
@@ -951,8 +951,8 @@ class Display(Item):
                     break
 
             if not ( wallLeft and wallRight and wallTop and wallBottom) :
-                messages.append("no boundaries found")
-                messages.append((wallLeft,wallRight,wallTop,wallBottom))
+                character.messages.append("no boundaries found")
+                character.messages.append((wallLeft,wallRight,wallTop,wallBottom))
                 return
 
             roomLeft = self.xPosition-wallLeft.xPosition
@@ -962,7 +962,7 @@ class Display(Item):
 
             wallMissing = False
             items = []
-            messages.append([roomLeft,roomRight,roomTop,roomBottom,])
+            character.messages.append([roomLeft,roomRight,roomTop,roomBottom,])
             for x in range(-roomLeft,roomRight+1):
                 pos = (self.xPosition+x,self.yPosition-roomTop)
                 wallFound = None 
@@ -1013,15 +1013,15 @@ class Display(Item):
                     break
 
             if wallMissing:
-                messages.append("wall missing")
+                character.messages.append("wall missing")
                 return
 
-            messages.append(len(items))
+            character.messages.append(len(items))
             for item in items:
                 try:
                     terrain.removeItem(item)
                 except:
-                    messages.append(("failed to remove item",item))
+                    character.messages.append(("failed to remove item",item))
 
             door = None
             for item in items:
@@ -1029,10 +1029,10 @@ class Display(Item):
                     if not door:
                         door = item
                     else:
-                        messages.append("too many doors")
+                        character.messages.append("too many doors")
                         return
             if not door:
-                messages.append("too little doors")
+                character.messages.append("too little doors")
                 return
 
             import src.rooms
@@ -1139,13 +1139,13 @@ class Door(Item):
     def open(self,character):
         if not self.room:
             return
-            messages.append("you can only use doors within rooms")
+            character.messages.append("you can only use doors within rooms")
             return
 
         # check if the door can be opened
         if (self.room.isContainment and character.room):
             # bad code: should only apply tho watched characters
-            messages.append("you cannot open the door from the inside")
+            character.messages.append("you cannot open the door from the inside")
             return
 
         # open the door
@@ -1176,7 +1176,7 @@ class Door(Item):
                 '''
                 def handleEvent(subself):
                     # bad pattern: should only generate sound for nearby characters
-                    messages.append("*TSCHUNK*")
+                    character.messages.append("*TSCHUNK*")
                     self.close()
 
             self.room.addEvent(AutoCloseDoor(self.room.timeIndex+5))
@@ -1224,13 +1224,13 @@ class Pile(Item):
 
         # check characters inventory
         if len(character.inventory) > 10:
-            messages.append("you cannot carry more items")
+            character.messages.append("you cannot carry more items")
             return
 
         # spawn item to inventory
         character.inventory.append(self.itemType(creator=self))
         character.changed()
-        messages.append("you take a piece of "+str(self.itemType.type))
+        character.messages.append("you take a piece of "+str(self.itemType.type))
 
         # reduce item count
         self.numContained -= 1
@@ -1301,7 +1301,7 @@ class Chain(Item):
         if not self.fixed:
             if self.room:
                 # bad code: NIY
-                messages.append("TODO")
+                character.messages.append("TODO")
             else:
                 # flag self as chained onto something
                 self.fixed = True
@@ -1340,7 +1340,7 @@ class Chain(Item):
                 # set chaining for chained objects
                 for thing in self.chainedTo:
                     thing.chainedTo.append(self)
-                    messages.append(thing.chainedTo)
+                    character.messages.append(thing.chainedTo)
 
         # unchain from chained items
         else:
@@ -1431,7 +1431,7 @@ class Boiler(Item):
                 def handleEvent(subself):
                     # add noises
                     # bad pattern: should only make noise for nearby things
-                    messages.append("*boil*")
+                    character.messages.append("*boil*")
 
                     # set own state
                     self.display = displayChars.boiler_active
@@ -1485,7 +1485,7 @@ class Boiler(Item):
                 '''
                 def handleEvent(subself):
                     # add noises
-                    messages.append("*unboil*")
+                    character.messages.append("*unboil*")
 
                     # set own state
                     self.display = displayChars.boiler_inactive
@@ -1591,7 +1591,7 @@ class MarkerBean(Item):
     '''
     def apply(self,character):
         super().apply(character,silent=True)
-        messages.append(character.name+" activates a marker bean")
+        character.messages.append(character.name+" activates a marker bean")
         self.activated = True
 
 '''
@@ -1629,7 +1629,7 @@ class GooDispenser(Item):
         super().apply(character,silent=True)
 
         if not self.charges:
-            messages.append("the dispenser has no charges")
+            character.messages.append("the dispenser has no charges")
             return
 
         filled = False
@@ -1641,7 +1641,7 @@ class GooDispenser(Item):
                 self.description = self.baseName + " (%s charges)"%(self.charges)
                 break
         if filled:
-            messages.append("you fill the goo flask")
+            character.messages.append("you fill the goo flask")
         self.activated = True
 
     def addCharge(self):
@@ -1685,7 +1685,7 @@ class MaggotFermenter(Item):
 
         # refuse to produce without ressources
         if len(items) < 10:
-            messages.append("not enough maggots")
+            character.messages.append("not enough maggots")
             return
        
         # remove ressources
@@ -1731,7 +1731,7 @@ class GooProducer(Item):
 
         # refuse to produce without ressources
         if len(items) < 10:
-            messages.append("not enough press cakes")
+            character.messages.append("not enough press cakes")
             return
        
         # refill goo dispenser
@@ -1741,7 +1741,7 @@ class GooProducer(Item):
                 if isinstance(item,GooDispenser):
                     dispenser = item
         if not dispenser:
-            messages.append("no goo dispenser attached")
+            character.messages.append("no goo dispenser attached")
             return 
 
         # remove ressources
@@ -1783,7 +1783,7 @@ class BioPress(Item):
 
         # refuse to produce without ressources
         if len(items) < 10:
-            messages.append("not enough bio mass")
+            character.messages.append("not enough bio mass")
             return
        
         # remove ressources
@@ -1832,15 +1832,15 @@ class GooFlask(Item):
         # handle edge case
         if self.uses <= 0:
             if character.watched:
-                messages.append("you drink from your flask, but it is empty")
+                character.messages.append("you drink from your flask, but it is empty")
             return
 
         # print feedback
         if character.watched:
             if not self.uses == 1:
-                messages.append("you drink from your flask")
+                character.messages.append("you drink from your flask")
             else:
-                messages.append("you drink from your flask and empty it")
+                character.messages.append("you drink from your flask and empty it")
 
         # change state
         self.uses -= 1
@@ -1932,7 +1932,7 @@ class ProductionArtwork(Item):
             return
         
         if gamestate.tick < self.coolDownTimer+self.coolDown:
-            messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            character.messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
         self.coolDownTimer = gamestate.tick
 
@@ -2013,13 +2013,13 @@ class ScrapCompactor(Item):
                     break
 
         if gamestate.tick < self.coolDownTimer+self.coolDown:
-            messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            character.messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
         self.coolDownTimer = gamestate.tick
 
         # refuse to produce without ressources
         if not scrap:
-            messages.append("no scraps available")
+            character.messages.append("no scraps available")
             return
 
         # remove ressources
@@ -2061,13 +2061,13 @@ class Scraper(Item):
                 break
 
         if gamestate.tick < self.coolDownTimer+self.coolDown:
-            messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            character.messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
         self.coolDownTimer = gamestate.tick
 
         # refuse to produce without ressources
         if not itemFound:
-            messages.append("no items available")
+            character.messages.append("no items available")
             return
 
         # remove ressources
@@ -2115,16 +2115,16 @@ class Sorter(Item):
                 break
 
         if gamestate.tick < self.coolDownTimer+self.coolDown:
-            messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            character.messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
         self.coolDownTimer = gamestate.tick
 
         # refuse to produce without ressources
         if not itemFound:
-            messages.append("no items available")
+            character.messages.append("no items available")
             return
         if not compareItemFound:
-            messages.append("no compare items available")
+            character.messages.append("no compare items available")
             return
 
         # remove ressources
@@ -2171,7 +2171,7 @@ class VatMaggot(Item):
     def apply(self,character,resultType=None):
 
         # remove ressources
-        messages.append("you consume the vat maggot")
+        character.messages.append("you consume the vat maggot")
         character.satiation += 50
         if self.xPosition and self.yPosition:
             if self.room:
@@ -2187,7 +2187,7 @@ class VatMaggot(Item):
                 character.fallUnconcious()
                 character.revokeReputation(amount=15,reason="passing out from eating a vat magot")
             else:
-                messages.append("you wretch")
+                character.messages.append("you wretch")
                 character.revokeReputation(amount=5,reason="wretching from eating a vat magot")
 
         super().apply(character,silent=True)
@@ -2431,7 +2431,7 @@ class GameTestingProducer(Item):
                 token = item
 
         if gamestate.tick < self.coolDownTimer+self.coolDown:
-            messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            character.messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
         self.coolDownTimer = gamestate.tick
 
@@ -2480,7 +2480,7 @@ class GameTestingProducer(Item):
         
         # refuse production without ressources
         if not itemFound:
-            messages.append("no "+self.ressource.type+" available")
+            character.messages.append("no "+self.ressource.type+" available")
             return
 
         # remove ressources
@@ -2520,7 +2520,7 @@ class MachineMachine(Item):
         super().apply(character,silent=True)
 
         if gamestate.tick < self.coolDownTimer+self.coolDown:
-            messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            character.messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
         self.coolDownTimer = gamestate.tick
 
@@ -2652,7 +2652,7 @@ class Machine(Item):
         super().apply(character,silent=True)
 
         if gamestate.tick < self.coolDownTimer+self.coolDown:
-            messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            character.messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
         self.coolDownTimer = gamestate.tick
 
@@ -2666,7 +2666,7 @@ class Machine(Item):
         
         # refuse production without ressources
         if not metalBar:
-            messages.append("no metal bars available")
+            character.messages.append("no metal bars available")
             return
 
         # remove ressources
@@ -2730,13 +2730,13 @@ class Drill(Item):
         super().apply(character,silent=True)
 
         if self.room:
-            messages.append("this machine can not be used in rooms")
+            character.messages.append("this machine can not be used in rooms")
             return
 
         if self.isBroken:
             if not self.isCleaned:
 
-                messages.append("you remove the broken rod")
+                character.messages.append("you remove the broken rod")
 
                 # spawn new item
                 new = Scrap(self.xPosition,self.yPosition,3,creator=self)
@@ -2749,7 +2749,7 @@ class Drill(Item):
 
             else:
 
-                messages.append("you repair te machine")
+                character.messages.append("you repair te machine")
 
                 rod = None
                 if (self.xPosition-1,self.yPosition) in self.terrain.itemByCoordinates:
@@ -2760,8 +2760,8 @@ class Drill(Item):
                 
                 # refuse production without ressources
                 if not rod:
-                    messages.append("needs repairs Rod -> repaired")
-                    messages.append("no rod available")
+                    character.messages.append("needs repairs Rod -> repaired")
+                    character.messages.append("no rod available")
                     return
 
                 # remove ressources
@@ -2773,7 +2773,7 @@ class Drill(Item):
             return
 
         if gamestate.tick < self.coolDownTimer+self.coolDown:
-            messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            character.messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
         self.coolDownTimer = gamestate.tick
 
@@ -2837,15 +2837,15 @@ class MemoryBank(Item):
         super().apply(character,silent=True)
 
         if not self.room:
-            messages.append("this machine can not be used within rooms")
+            character.messages.append("this machine can not be used within rooms")
             return
 
         import copy
         if self.macros:
-            messages.append("you overwrite xour macros with the ones in your memory bank")
+            character.messages.append("you overwrite xour macros with the ones in your memory bank")
             character.macroState["macros"] = copy.deepcopy(self.macros)
         else:
-            messages.append("you store your macros in the memory bank")
+            character.messages.append("you store your macros in the memory bank")
             self.macros = copy.deepcopy(character.macroState["macros"])
 
         self.setDescription()

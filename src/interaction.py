@@ -2049,6 +2049,9 @@ def keyboardListener(key):
         state["commandKeyQueue"].clear()
         state["loop"] = []
         state["replay"].clear()
+        charState["ifCondition"].clear()
+        charState["ifParam1"].clear()
+        charState["ifParam2"].clear()
         show_or_exit("lagdetection",charState=state)
 
     elif key == "ctrl p":

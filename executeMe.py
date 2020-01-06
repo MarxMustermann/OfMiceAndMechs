@@ -200,7 +200,7 @@ loaded = False
 if args.load:
     shouldLoad = True
 else:
-    load = input("load game? (Y/n)")
+    load = input("load gamestate? (Y/n)")
     if load.lower() == "n":
         shouldLoad = False
     else:
@@ -216,6 +216,7 @@ if shouldLoad:
         ignore = input("error in gamestate, could not load gamestate completely. Abort and show error message? (Y/n)")
         if not ignore.lower() == "n":
             raise e
+mainChar = gameStateObj.mainChar
 print(loaded)
 
 ##################################################################################################################################

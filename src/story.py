@@ -298,7 +298,7 @@ class OpenWorld(BasicPhase):
             mainChar.yPosition = 111
             mainChar.reputation = 100
             mainChar.terrain = terrain
-            terrain.addCharacter(mainChar,2,4)
+            terrain.addCharacter(mainChar,65,111)
 
             #npc1 = characters.Character(xPosition=4,yPosition=3,creator=void,seed=gamestate.tick+2)
             #npc1.xPosition = 10

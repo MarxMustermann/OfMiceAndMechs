@@ -188,6 +188,66 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
     if key == "esc":
         charState["replay"] = []
 
+    if not "ifCondition" in charState:
+        charState["ifCondition"] = []
+    if not "ifParam1" in charState:
+        charState["ifParam1"] = []
+    if not "ifParam2" in charState:
+        charState["ifParam2"] = []
+    if key in ("$",):
+        charState["ifCondition"].append(None)
+        charState["ifParam1"].append([])
+        charState["ifParam2"].append([])
+
+    if len(charState["ifCondition"]) and not key in ("$","lagdetection","lagdetection_"):
+        if charState["recordingTo"] and not "norecord" in flags:
+            charState["macros"][charState["recordingTo"]].append(key)
+        if charState["ifCondition"][-1] == None:
+            charState["ifCondition"][-1] = key
+            messages.append(charState["ifCondition"][-1])
+        elif charState["ifParam1"][-1] in ([],[("_",["norecord"])]):
+            charState["ifParam1"][-1].append((key,["norecord"]))
+            messages.append(charState["ifParam1"][-1])
+        elif charState["ifParam2"][-1] in ([],[("_",["norecord"])]):
+            charState["ifParam2"][-1].append((key,["norecord"]))
+            messages.append(charState["ifParam2"][-1])
+
+            if not charState["ifParam2"][-1] in ([],[("_",["norecord"])]):
+                conditionTrue = True
+
+                if charState["ifCondition"][-1] == "i":
+                    if len(char.inventory) == 0:
+                        conditionTrue = True
+                    else:
+                        conditionTrue = False
+                if charState["ifCondition"][-1] == "f":
+                    pos = (char.xPosition,char.yPosition)
+                    if char.container and pos in char.container.itemByCoordinates and len(char.container.itemByCoordinates[pos]) > 0:
+                        conditionTrue = True
+                    else:
+                        conditionTrue = False
+                if charState["ifCondition"][-1] == "t":
+                    if char.satiation < 100:
+                        conditionTrue = True
+                    else:
+                        conditionTrue = False
+                if charState["ifCondition"][-1] == "e":
+                    conditionTrue = False
+                    for item in char.inventory:
+                        if isinstance(item,src.items.GooFlask) and item.uses > 1:
+                            conditionTrue = True
+                            break
+                if conditionTrue:
+                    charState["commandKeyQueue"] = charState["ifParam1"][-1] + charState["commandKeyQueue"]
+                else:
+                    charState["commandKeyQueue"] = charState["ifParam2"][-1] + charState["commandKeyQueue"]
+
+                messages.append((charState["ifCondition"][-1],charState["ifParam1"][-1],charState["ifParam2"][-1]))
+                charState["ifCondition"].pop()
+                charState["ifParam1"].pop()
+                charState["ifParam2"].pop()
+        return
+
     if charState["recording"]:
         if not key in ("lagdetection","lagdetection_","-"):
             if charState["recordingTo"] == None:

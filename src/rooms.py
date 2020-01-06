@@ -1415,6 +1415,7 @@ XXXXXXXXXXXXX
         self.artwork = src.items.ProductionArtwork(4,1,creator=creator)
         self.compactor = src.items.ScrapCompactor(6,1,creator=creator)
         flask = src.items.GooFlask(8,1,creator=creator)
+        flask.uses = 100
         self.addItems([self.artwork,self.compactor,flask])
         self.initialState = self.getState()
         loadingRegistry.register(self)

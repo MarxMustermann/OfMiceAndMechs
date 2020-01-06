@@ -227,7 +227,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                     else:
                         conditionTrue = False
                 if charState["ifCondition"][-1] == "t":
-                    if char.satiation < 100:
+                    if char.satiation < 250:
                         conditionTrue = True
                     else:
                         conditionTrue = False
@@ -1451,7 +1451,7 @@ class InventoryMenu(SubMenu):
                         text = "you drop the "+mainChar.inventory[self.subMenu.getSelection()].name
                         self.persistentText = (urwid.AttrSpec("default","default"), text)
                         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
-                        char.messages.append(text)
+                        messages.append(text)
                         mainChar.drop(mainChar.inventory[self.subMenu.getSelection()])
                     self.drop = False
                 self.subMenu = None
@@ -2049,9 +2049,10 @@ def keyboardListener(key):
         state["commandKeyQueue"].clear()
         state["loop"] = []
         state["replay"].clear()
-        charState["ifCondition"].clear()
-        charState["ifParam1"].clear()
-        charState["ifParam2"].clear()
+        if "ifCondition" in state:
+            state["ifCondition"].clear()
+            state["ifParam1"].clear()
+            state["ifParam2"].clear()
         show_or_exit("lagdetection",charState=state)
 
     elif key == "ctrl p":

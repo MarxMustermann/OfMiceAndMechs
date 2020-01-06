@@ -1921,6 +1921,16 @@ class ProductionArtwork(Item):
     def apply(self,character,resultType=None):
         super().apply(character,silent=True)
 
+        # gather a metal bar
+        metalBar = None
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                if isinstance(item,MetalBars):
+                   metalBar = item
+                   break
+        if not metalBar:
+            return
+        
         if gamestate.tick < self.coolDownTimer+self.coolDown:
             messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return

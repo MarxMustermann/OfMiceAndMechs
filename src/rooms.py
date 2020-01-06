@@ -648,7 +648,8 @@ class Room(src.saveing.Saveable):
     maybe drop rendering cache
     '''
     def requestRedraw(self):
-        if not self.hidden:
+        #if not self.hidden:
+        if 1==1:
             self.lastRender = None
 
     '''

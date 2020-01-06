@@ -1431,7 +1431,7 @@ class Boiler(Item):
                 def handleEvent(subself):
                     # add noises
                     # bad pattern: should only make noise for nearby things
-                    character.messages.append("*boil*")
+                    messages.append("*boil*")
 
                     # set own state
                     self.display = displayChars.boiler_active
@@ -1485,7 +1485,7 @@ class Boiler(Item):
                 '''
                 def handleEvent(subself):
                     # add noises
-                    character.messages.append("*unboil*")
+                    messages.append("*unboil*")
 
                     # set own state
                     self.display = displayChars.boiler_inactive
@@ -1810,7 +1810,7 @@ class GooFlask(Item):
     call superclass constructor with modified paramters and set some state
     '''
     def __init__(self,xPosition=None,yPosition=None,name="goo flask",creator=None):
-        self.uses = 100
+        self.uses = 0
         super().__init__(" -",xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
         self.bolted = False

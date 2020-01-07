@@ -316,9 +316,10 @@ class Character(src.saveing.Saveable):
                 chatOptions.append(option)
         result["chatOptions"] = chatOptions
 
-        result["macroState"] = self.macroState
-
-        result["macroState"]["itemMarkedLast"] = None
+        import copy
+        result["macroState"] = copy.deepcopy(self.macroState)
+        if not result["macroState"]["itemMarkedLast"] == None:
+            result["macroState"]["itemMarkedLast"] = result["macroState"]["itemMarkedLast"].id
 
         return result
 
@@ -329,8 +330,10 @@ class Character(src.saveing.Saveable):
         # fetch base state
         state = super().getState()
 
-        state["macroState"] = self.macroState
-        state["macroState"]["itemMarkedLast"] = None
+        import copy
+        state["macroState"] = copy.deepcopy(self.macroState)
+        if not state["macroState"]["itemMarkedLast"] == None:
+            state["macroState"]["itemMarkedLast"] = state["macroState"]["itemMarkedLast"].id
 
         # add simple structures
         state.update({ 
@@ -387,6 +390,11 @@ class Character(src.saveing.Saveable):
             state["macroState"]["loop"] = []
 
         self.macroState = state["macroState"]
+
+        if not self.macroState["itemMarkedLast"] == None:
+            def setParam(instance):
+                self.macroState["itemMarkedLast"] = instance
+            loadingRegistry.callWhenAvailable(self.macroState["itemMarkedLast"],setParam)
 
         # set unconcious state
         if "unconcious" in state:

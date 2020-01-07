@@ -220,6 +220,11 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                         conditionTrue = True
                     else:
                         conditionTrue = False
+                if charState["ifCondition"][-1] == "I":
+                    if len(char.inventory) >= 10:
+                        conditionTrue = True
+                    else:
+                        conditionTrue = False
                 if charState["ifCondition"][-1] == "f":
                     pos = (char.xPosition,char.yPosition)
                     if char.container and pos in char.container.itemByCoordinates and len(char.container.itemByCoordinates[pos]) > 0:
@@ -301,7 +306,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             if not charState["number"]:
 
                 charState["replay"][-1] = 1
-                if charState["recording"] and not charState["doNumber"] and not "norecord" in flags:
+                if charState["recording"] and not charState["doNumber"] and not "norecord" in flags and charState["recordingTo"]:
                     charState["macros"][charState["recordingTo"]].append(key)
 
                 if key in charState["macros"]:
@@ -322,7 +327,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
                 charState["doNumber"] = True
 
-                if charState["recording"] and not "norecord" in flags:
+                if charState["recording"] and not "norecord" in flags and charState["recordingTo"]:
                     charState["macros"][charState["recordingTo"]].append(key)
 
                 commands = []
@@ -2067,7 +2072,8 @@ def keyboardListener(key):
             mainChar.macroState = mainChar.macroStateBackup
             mainChar.macroState["macros"] = mainChar.macroStateBackup["macros"]
             mainChar.macroStateBackup = None
-        show_or_exit("~",charState=state)
+        if state["commandKeyQueue"]:
+            show_or_exit("~",charState=state)
 
     elif key == "ctrl x":
         gamestate.save()
@@ -2144,8 +2150,9 @@ def keyboardListener(key):
 
         mainChar = newChar
         state = mainChar.macroState
-        show_or_exit("~",charState=state)
-        show_or_exit("lagdetection",charState=state)
+        if state["commandKeyQueue"]:
+            show_or_exit("~",charState=state)
+            show_or_exit("lagdetection",charState=state)
     else:
         show_or_exit(key,charState=state)
 

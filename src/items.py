@@ -2567,6 +2567,7 @@ class MachineMachine(Item):
             "Sorter":Sorter,
             "Drill":Drill,
             "MemoryBank":MemoryBank,
+            "MemoryDump":MemoryDump,
         }
 
         options = []
@@ -2798,6 +2799,65 @@ class Drill(Item):
 
         self.setDescription()
 
+class MemoryDump(Item):
+    type = "MemoryDump"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="MemoryDump",creator=None):
+
+        self.macros = {}
+
+        self.baseName = name
+
+        super().__init__("mD",xPosition,yPosition,name=name,creator=creator)
+
+        self.attributesToStore.extend([
+                "macros"])
+
+        self.setDescription()
+
+        self.initialState = self.getState()
+
+    def setDescription(self):
+        addition = ""
+        if self.macros:
+            addition = " (imprinted)"
+        self.description = self.baseName+addition
+
+    def setToProduce(self,toProduce):
+        self.setDescription()
+
+    '''
+    trigger production of a player selected item
+    '''
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        if not self.room:
+            character.messages.append("this machine can not be used within rooms")
+            return
+
+        import copy
+        if self.macros:
+            character.messages.append("you overwrite your macros with the ones in your memory dump")
+            character.macroState["macros"] = copy.deepcopy(self.macros)
+            self.macros = None
+        else:
+            character.messages.append("you dump your macros in the memory dump")
+            self.macros = copy.deepcopy(character.macroState["macros"])
+
+        self.setDescription()
+
+    '''
+    set state from dict
+    '''
+    def setState(self,state):
+        super().setState(state)
+
+        self.setDescription()
+
 '''
 '''
 class MemoryBank(Item):
@@ -2842,7 +2902,7 @@ class MemoryBank(Item):
 
         import copy
         if self.macros:
-            character.messages.append("you overwrite xour macros with the ones in your memory bank")
+            character.messages.append("you overwrite your macros with the ones in your memory bank")
             character.macroState["macros"] = copy.deepcopy(self.macros)
         else:
             character.messages.append("you store your macros in the memory bank")
@@ -2914,6 +2974,7 @@ itemMap = {
             "Sorter":Sorter,
             "Drill":Drill,
             "MemoryBank":MemoryBank,
+            "MemoryDump":MemoryDump,
 }
 
 producables = {
@@ -2963,6 +3024,7 @@ producables = {
             "Sorter":Sorter,
             "Drill":Drill,
             "MemoryBank":MemoryBank,
+            "MemoryDump":MemoryDump,
         }
 
 '''

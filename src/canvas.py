@@ -210,7 +210,7 @@ class Canvas(object):
         # copy the supplied canvas into the current canvas
         for x in range(self.coordinateOffset[0],self.coordinateOffset[0]+self.size[0]):
             for y in range(self.coordinateOffset[1],self.coordinateOffset[1]+self.size[1]):
-                if x > 0 and y > 0 and x < 224 and y < 224:
+                if x >= 0 and y >= 0 and x <= 224 and y <= 224:
                     self.setPseudoPixel(x,y,chars[x][y])
 
     """

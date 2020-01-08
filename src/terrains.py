@@ -40,6 +40,8 @@ class Terrain(src.saveing.Saveable):
     straightforward state initialization
     '''
     def __init__(self,layout,detailedLayout,creator=None,seed=None, noPaths = False):
+        super().__init__()
+
         self.noPaths = noPaths
 
         # store terrain content
@@ -278,6 +280,13 @@ class Terrain(src.saveing.Saveable):
         #self.addCharacter(npc,21,50)
         #self.runner = npc
         #self.runner1()
+
+        
+
+        # set meta information for saving
+        self.attributesToStore.extend([
+              "yPosition","xPosition",
+                ])
 
 
     def runner1(self):
@@ -1005,6 +1014,12 @@ class Terrain(src.saveing.Saveable):
 
         # paint floor
         chars = self.paintFloor()
+        for x in range (0,225):
+            chars[x][0] = "##"
+            chars[x][224] = "##"
+        for y in range (0,225):
+            chars[0][y] = "##"
+            chars[224][y] = "##"
 
         # show/hide rooms
         for room in self.rooms:
@@ -1198,6 +1213,14 @@ class Terrain(src.saveing.Saveable):
                 self.removeRoom(room)
                 room.xPosition -= 1
                 self.addRoom(room)
+
+        if room.xPosition < 0:
+            mainChar.messages.append("switch to")
+            terrain = gamestate.terrainMap[self.yPosition][self.xPosition-1]
+            room.terrain = terrain
+            self.removeRoom(room)
+            terrain.addRoom(room)
+            room.xPosition = 15
 
         # kill characters driven over by the room
         for char in self.characters:

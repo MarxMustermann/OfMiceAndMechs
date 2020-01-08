@@ -963,7 +963,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
         # render map
         # bad code: display mode specific code
-        canvas = render()
+        canvas = render(char)
         main.set_text((urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible()));
         if (useTiles):
             canvas.setPygameDisplay(pydisplay,pygame,tileSize)
@@ -2005,7 +2005,12 @@ def renderHelp():
 render the map
 bad code: should be contained somewhere
 '''
-def render():
+def render(char):
+    if char.room:
+        terrain = char.room.terrain
+    else:
+        terrain = char.terrain
+
     # render the map
     chars = terrain.render()
 

@@ -138,12 +138,18 @@ class GameState(src.saveing.Saveable):
 
         import src.terrains
         self.terrainMap = []
+        y = 0
         for line in state["terrainMap"]:
             newLine = []
+            x = 0
             for item in line:
                 thisTerrain = src.terrains.getTerrainFromState(item,creator=self)
+                thisTerrain.xPosition = x
+                thisTerrain.yPosition = y
                 newLine.append(thisTerrain)
+                x += 1
             self.terrainMap.append(newLine)
+            y += 1
 
         # load the terrain
         global terrain

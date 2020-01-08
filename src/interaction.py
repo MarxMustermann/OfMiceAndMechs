@@ -162,11 +162,18 @@ handle a keystroke
 bad code: there are way too much lines of code in this function
 '''
 def processInput(key,charState=None,noAdvanceGame=False,char=None):
+    
     if charState == None:
         charState = mainChar.macroState
 
     if char == None:
         char = mainChar
+
+    global terrain
+    if char.room:
+        terrain = char.room.terrain
+    else:
+        terrain = char.terrain
 
     flags = key[1]
     key = key[0]
@@ -602,7 +609,11 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
                     # gather the rooms the player might step into
                     roomCandidates = []
-                    for coordinate in [(bigX,bigY),(bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY)]:
+                    for coordinate in [(bigX,bigY),
+                                       (bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY),
+                                       (bigX-2,bigY),(bigX-2,bigY-1),(bigX-2,bigY-2),(bigX-1,bigY-2),(bigX,bigY-2),(bigX+1,bigY-2),(bigX+2,bigY-2),(bigX+2,bigY-1),
+                                       (bigX+2,bigY),(bigX+2,bigY-1),(bigX+2,bigY-2),(bigX+1,bigY-2),(bigX,bigY-2),(bigX-1,bigY-2),(bigX-2,bigY-2),(bigX-1,bigY-2),
+                                      ]:
                         if coordinate in terrain.roomByCoordinates:
                             roomCandidates.extend(terrain.roomByCoordinates[coordinate])
 

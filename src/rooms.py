@@ -530,8 +530,8 @@ class Room(src.saveing.Saveable):
     '''
     def render(self):
         # skip rendering
-        if self.lastRender:
-            return self.lastRender
+        #if self.lastRender:
+        #    return self.lastRender
         
         # render room
         #if not self.hidden:

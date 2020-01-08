@@ -1017,9 +1017,10 @@ class Display(Item):
                 return
 
             character.messages.append(len(items))
+            items.append(self)
             for item in items:
                 try:
-                    terrain.removeItem(item)
+                    terrain.removeItem(item,recalculate=False)
                 except:
                     character.messages.append(("failed to remove item",item))
 

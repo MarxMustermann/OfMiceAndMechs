@@ -957,6 +957,7 @@ class Terrain(src.saveing.Saveable):
         for item in items:
             item.terrain = self
             item.room = None
+            item.container = self
             if not item.walkable:
                 recalc = True
             if (item.xPosition,item.yPosition) in self.itemByCoordinates:

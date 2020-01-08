@@ -112,7 +112,7 @@ class Item(src.saveing.Saveable):
         else:
             # remove item from terrain
             # bad code: should be handled by the terrain
-            container = terrain
+            container = self.terrain
             container.itemsOnFloor.remove(self)
             container.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
             if not container.itemByCoordinates[(self.xPosition,self.yPosition)]:

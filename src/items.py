@@ -106,6 +106,8 @@ class Item(src.saveing.Saveable):
             character.messages.append("you cannot pick up bolted items")
             return
 
+        character.messages.append("you pick up a "+self.type)
+
         # bad code: should be a simple self.container.removeItem(self)
         if self.room:
             # remove item from room
@@ -1937,7 +1939,6 @@ class ProductionArtwork(Item):
         if gamestate.tick < self.coolDownTimer+self.coolDown:
             character.messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
-        self.coolDownTimer = gamestate.tick
 
         options = []
         for key,value in itemMap.items():
@@ -1960,6 +1961,8 @@ class ProductionArtwork(Item):
     produce an item
     '''
     def produce(self,itemType,resultType=None):
+        self.coolDownTimer = gamestate.tick
+
         # gather a metal bar
         metalBar = None
         if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:

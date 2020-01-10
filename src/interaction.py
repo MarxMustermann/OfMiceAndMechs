@@ -863,7 +863,6 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                                 item.pickUp(char)
                                 if not item.walkable:
                                     char.container.calculatePathMap()
-                                char.messages.append("you pick up a "+item.type)
                                 break
 
             # open chat partner selection

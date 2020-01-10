@@ -51,6 +51,8 @@ class Item(src.saveing.Saveable):
         self.mayContainMice = False
         self.bolted = not self.walkable
 
+        self.customDescription = None
+
         # set up metadata for saving
         self.attributesToStore.extend([
                "mayContainMice","name","type","walkable","xPosition","yPosition","bolted"])
@@ -2919,6 +2921,38 @@ class MemoryBank(Item):
 
         self.setDescription()
 
+'''
+'''
+class Engraver(Item):
+    type = "Engraver"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="Engraver",creator=None):
+        super().__init__("eE",xPosition,yPosition,name=name,creator=creator)
+        self.submenue = None
+        self.text = None
+
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        if not self.text:
+            character.messages.append("starting interaction")
+            self.submenue = interaction.InputMenu("Set the text to engrave")
+            character.macroState["submenue"] = self.submenue
+            character.macroState["submenue"].followUp = self.setText()
+        else:
+            pass
+            
+
+    '''
+    trigger production of the selected item
+    '''
+    def setText(self):
+        self.submenue = None
+        self.text = character.macroState["submenue"].text
+        character.macroState["submenue"] = None
 
 # maping from strings to all items
 # should be extendable
@@ -2976,6 +3010,7 @@ itemMap = {
             "Drill":Drill,
             "MemoryBank":MemoryBank,
             "MemoryDump":MemoryDump,
+            "Engraver":Engraver,
 }
 
 producables = {

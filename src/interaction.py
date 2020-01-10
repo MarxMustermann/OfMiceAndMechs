@@ -1520,6 +1520,42 @@ class InventoryMenu(SubMenu):
         return False
 
 '''
+show the players inventory
+'''
+class InputMenu(SubMenu):
+    type = "InputMenu"
+
+    def __init__(self,query="",char=None):
+        self.query = query
+        self.text = ""
+        super().__init__()
+        self.footerText = "enter the text press enter to confirm"
+        self.firstHit = True
+
+    '''
+    show the inventory
+    '''
+    def handleKey(self, key):
+
+        if key == "enter":
+            return True
+
+        if self.firstHit:
+            self.firstHit = False
+        else:
+            self.text += key
+
+        header.set_text((urwid.AttrSpec("default","default"),"\ntext input\n\n"))
+
+        self.persistentText = (urwid.AttrSpec("default","default"),"\n"+self.query+"\n\n"+self.text)
+
+        # show the render
+        main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+
+        return False
+
+
+'''
 show the players attributes
 bad code: should be abstracted
 bad code: uses global function to render
@@ -2018,9 +2054,14 @@ bad code: should be contained somewhere
 '''
 def render(char):
     if char.room:
-        terrain = char.room.terrain
+        thisTerrain = char.room.terrain
     else:
-        terrain = char.terrain
+        thisTerrain = char.terrain
+
+    if thisTerrain == None:
+        global terrain
+    else:
+        terrain = thisTerrain
 
     # render the map
     chars = terrain.render()

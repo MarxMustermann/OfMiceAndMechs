@@ -2813,7 +2813,7 @@ class MemoryDump(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None, name="MemoryDump",creator=None):
 
-        self.macros = {}
+        self.macros = None
 
         self.baseName = name
 
@@ -2846,7 +2846,7 @@ class MemoryDump(Item):
             return
 
         import copy
-        if self.macros:
+        if not self.macros == None:
             character.messages.append("you overwrite your macros with the ones in your memory dump")
             character.macroState["macros"] = copy.deepcopy(self.macros)
             self.macros = None

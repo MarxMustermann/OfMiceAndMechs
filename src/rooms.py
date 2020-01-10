@@ -1414,9 +1414,13 @@ XXXXXXXXXXXXX
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.artwork = src.items.ProductionArtwork(4,1,creator=creator)
         self.compactor = src.items.ScrapCompactor(6,1,creator=creator)
-        flask = src.items.GooFlask(8,1,creator=creator)
-        flask.uses = 100
-        self.addItems([self.artwork,self.compactor,flask])
+        flask1 = src.items.GooFlask(8,1,creator=creator)
+        flask1.uses = 100
+        flask2 = src.items.GooFlask(9,1,creator=creator)
+        flask2.uses = 100
+        flask3 = src.items.GooFlask(10,1,creator=creator)
+        flask3.uses = 100
+        self.addItems([self.artwork,self.compactor,flask1,flask2,flask3])
         self.initialState = self.getState()
         loadingRegistry.register(self)
 

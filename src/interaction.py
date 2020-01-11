@@ -939,7 +939,12 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
         pauseGame = True
 
         # let the submenu handle the keystroke
+        lastSubmenu = charState["submenue"]
         done = charState["submenue"].handleKey(key)
+
+        if not lastSubmenu == charState["submenue"]:
+            charState["submenue"].handleKey("~")
+            done = False
 
         # reset rendering flags
         if done:
@@ -977,6 +982,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
         main.set_text((urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible()));
         if (useTiles):
             canvas.setPygameDisplay(pydisplay,pygame,tileSize)
+
 
     if charState["replay"] or charState["doNumber"]:
         text = ""
@@ -1346,7 +1352,6 @@ class QuestMenu(SubMenu):
         self.char = char
         self.offsetX = 0
         self.questIndex = 0
-        self.done = False
         super().__init__()
 
     '''
@@ -1356,7 +1361,6 @@ class QuestMenu(SubMenu):
     def handleKey(self, key):
         # exit submenu
         if key == "esc":
-            self.done = True
             return True
 
         # scrolling
@@ -1537,6 +1541,8 @@ class InputMenu(SubMenu):
     def handleKey(self, key):
 
         if key == "enter":
+            if self.followUp:
+                self.followUp()
             return True
 
         if self.firstHit:
@@ -2000,7 +2006,6 @@ class HelpMenu(SubMenu):
         # exit the submenu
         if key == "esc":
             return True
-        global submenue #bad code: global variable is not even used
 
         # show info
         header.set_text((urwid.AttrSpec("default","default"),"\nquest overview\n\n"))
@@ -2009,6 +2014,33 @@ class HelpMenu(SubMenu):
         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
 
         return False
+
+'''
+'''
+class TextMenu(SubMenu):
+    type = "TextMenu"
+    
+    def __init__(self, text = ""):
+        super().__init__()
+        self.text = text
+
+    '''
+    '''
+    def handleKey(self, key):
+        # exit the submenu
+        if key in ("esc","enter","space","j",):
+            if self.followUp:
+                self.followUp()
+            return True
+
+        # show info
+        header.set_text((urwid.AttrSpec("default","default"),""))
+        self.persistentText = ""
+        self.persistentText += self.text
+        main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+
+        return False
+
 
 '''
 return the help text
@@ -2056,11 +2088,6 @@ def render(char):
         thisTerrain = char.room.terrain
     else:
         thisTerrain = char.terrain
-
-    if thisTerrain == None:
-        global terrain
-    else:
-        terrain = thisTerrain
 
     # render the map
     chars = terrain.render()
@@ -2321,6 +2348,7 @@ subMenuMap = {
                "CharacterInfoMenu":CharacterInfoMenu,
                "AdvancedQuestMenu":AdvancedQuestMenu,
                "HelpMenu":HelpMenu,
+               "TextMenu":TextMenu,
              }
 
 '''

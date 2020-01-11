@@ -2635,6 +2635,83 @@ class Testing_1(BasicPhase):
 
             self.productionSection()
 
+"""
+the phase is intended to give the player access to the true gameworld without manipulations
+
+this phase should be left as blank as possible
+"""
+class BuildBase(BasicPhase):
+    def __init__(self,seed=0):
+        super().__init__("BuildBase",seed=seed)
+    '''
+    place main char
+    bad code: superclass call should not be prevented
+    '''
+    def start(self,seed=0):
+        showText("build a base.\n\npress space to continue")
+        showText("\n\n * press ? for help\n\n * press a to move left/west\n * press w to move up/north\n * press s to move down/south\n * press d to move right/east\n\n")
+
+        # place character in wakeup room
+        if terrain.wakeUpRoom:
+            self.mainCharRoom = terrain.wakeUpRoom
+            self.mainCharRoom.addCharacter(mainChar,2,4)
+        # place character on terrain
+        else:
+            mainChar.xPosition = 65
+            mainChar.yPosition = 111
+            mainChar.reputation = 100
+            mainChar.terrain = terrain
+            terrain.addCharacter(mainChar,65,111)
+
+        self.miniBase = terrain.rooms[0]
+
+        mainChar.addListener(self.checkRoomEnteredMain)
+
+        # add basic set of abilities in openworld phase
+        mainChar.questsDone = [
+                  "NaiveMoveQuest",
+                  "MoveQuestMeta",
+                  "NaiveActivateQuest",
+                  "ActivateQuestMeta",
+                  "NaivePickupQuest",
+                  "PickupQuestMeta",
+                  "DrinkQuest",
+                  "CollectQuestMeta",
+                  "FireFurnaceMeta",
+                  "ExamineQuest",
+                  "NaiveDropQuest",
+                  "DropQuestMeta",
+                  "LeaveRoomQuest",
+              ]
+
+        mainChar.solvers = [
+                  "SurviveQuest",
+                  "Serve",
+                  "NaiveMoveQuest",
+                  "MoveQuestMeta",
+                  "NaiveActivateQuest",
+                  "ActivateQuestMeta",
+                  "NaivePickupQuest",
+                  "PickupQuestMeta",
+                  "DrinkQuest",
+                  "ExamineQuest",
+                  "FireFurnaceMeta",
+                  "CollectQuestMeta",
+                  "WaitQuest"
+                  "NaiveDropQuest",
+                  "NaiveDropQuest",
+                  "DropQuestMeta",
+                ]
+
+        self.mainChar = mainChar
+
+        gamestate.save()
+
+    def checkRoomEnteredMain(self):
+        if self.mainChar.room and self.mainChar.room == self.miniBase:
+            showText("\n\n * press k to pick up\n * press l to pick up\n * press i to view inventory\n * press @ to view your stats\n * press j to activate \n * press e to examine\n * press ? for help\n\nMove onto an item and press the key to interact with it. Move against big items and press the key to interact with it\n\n")
+            mainChar.delListener(self.checkRoomEnteredMain)
+
 ###############################################################
 ###
 ##   the glue to be able to call the phases from configs etc
@@ -2663,3 +2740,4 @@ def registerPhases():
     phasesByName["Challenge"] = Challenge
     phasesByName["Test"] = Testing_1
     phasesByName["Testing_1"] = Testing_1
+    phasesByName["BuildBase"] = BuildBase

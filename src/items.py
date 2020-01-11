@@ -1914,7 +1914,7 @@ class ProductionArtwork(Item):
         self.coolDown = 10000
         self.coolDownTimer = -self.coolDown
 
-        super().__init__("U\\",xPosition,yPosition,name=name,creator=creator)
+        super().__init__("ßß",xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
                "coolDown","coolDownTimer"])
@@ -1999,7 +1999,7 @@ class ScrapCompactor(Item):
         self.coolDown = 100
         self.coolDownTimer = -self.coolDown
         
-        super().__init__("U\\",xPosition,yPosition,name=name,creator=creator)
+        super().__init__("RC",xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
                "coolDown","coolDownTimer"])
@@ -2049,7 +2049,7 @@ class Scraper(Item):
         self.coolDown = 10
         self.coolDownTimer = -self.coolDown
         
-        super().__init__("U\\",xPosition,yPosition,name=name,creator=creator)
+        super().__init__("RS",xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
                "coolDown","coolDownTimer"])
@@ -2541,7 +2541,6 @@ class MachineMachine(Item):
             "Pipe":Pipe,
             "Coal":Coal,
             "Door":Door,
-            "Pile":Pile,
             "Chain":Chain,
             "Winch":Winch,
             "Boiler":Boiler,
@@ -2574,6 +2573,7 @@ class MachineMachine(Item):
             "Drill":Drill,
             "MemoryBank":MemoryBank,
             "MemoryDump":MemoryDump,
+            "InfoScreen":InfoScreen,
         }
 
         options = []
@@ -2940,22 +2940,156 @@ class Engraver(Item):
     def apply(self,character):
         super().apply(character,silent=True)
 
+        self.character = character
+
         if not self.text:
             character.messages.append("starting interaction")
             self.submenue = interaction.InputMenu("Set the text to engrave")
             character.macroState["submenue"] = self.submenue
-            character.macroState["submenue"].followUp = self.setText()
+            character.macroState["submenue"].followUp = self.setText
         else:
-            pass
-            
+            if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+                 self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)][0].customDescription = self.text
 
     '''
     trigger production of the selected item
     '''
     def setText(self):
+        self.character.messages.append("stopping interaction")
+        self.text = self.submenue.text
         self.submenue = None
-        self.text = character.macroState["submenue"].text
-        character.macroState["submenue"] = None
+
+'''
+'''
+class InfoScreen(Item):
+    type = "InfoScreen"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="InfoScreen",creator=None):
+        super().__init__("iD",xPosition,yPosition,name=name,creator=creator)
+        self.submenue = None
+        self.text = None
+
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        options = []
+
+        options.append(("level1","basic Information"))
+        options.append(("level2","NOT ENOUGH ENERGY"))
+        options.append(("level3","NOT ENOUGH ENERGY"))
+        options.append(("level4","NOT ENOUGH ENERGY"))
+
+        self.submenue = interaction.SelectionMenu("select the information you need",options)
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.step2
+
+        self.character = character
+
+    def step2(self):
+
+        selection = self.submenue.getSelection()
+        self.submenue = None
+
+        if selection == "level1":
+            self.stepBasic()
+        else:
+            self.character.messages.append("NOT ENOUGH ENERGY")
+
+    def stepBasic(self):
+
+        options = []
+
+        options.append(("level1_movement","movement"))
+        options.append(("level1_interaction","interaction"))
+        options.append(("level1_machines","machines"))
+
+        self.submenue = interaction.SelectionMenu("select the information you need",options)
+        self.character.macroState["submenue"] = self.submenue
+        self.character.macroState["submenue"].followUp = self.stepLevel1
+
+    def stepLevel1(self):
+
+        selection = self.submenue.getSelection()
+
+        if selection == "level1_movement":
+            self.submenue = interaction.TextMenu("\n\n * press ? for help\n\n * press a to move left/west\n * press w to move up/north\n * press s to move down/south\n * press d to move right/east\n\n")
+            self.character.macroState["submenue"] = self.submenue
+        elif selection == "level1_interaction":
+            self.submenue = interaction.TextMenu("\n\n * press k to pick up\n * press l to pick up\n * press i to view inventory\n * press @ to view your stats\n * press j to activate \n * press e to examine\n * press ? for help\n\nMove onto an item and press the key to interact with it. Move against big items and press the key to interact with it\n\n")
+            self.character.macroState["submenue"] = self.submenue
+        elif selection == "level1_machines":
+            options = []
+
+            options.append(("level1_machines_bars","metal bar production"))
+            options.append(("level1_machines_machines","machine production"))
+            options.append(("level1_machines_food","food production"))
+            options.append(("level1_machines_energy","energy production"))
+
+            self.submenue = interaction.SelectionMenu("select the information you need",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.stepLevel1Machines
+
+    def stepLevel1Machines(self):
+
+        selection = self.submenue.getSelection()
+
+        if selection == "level1_machines_bars":
+            self.submenue = interaction.TextMenu("\n\nMetal bars are used to produce most thing. You can produce metal bars by using a scrap compactor.\nA scrap compactor is represented by RC. Place the scrap to the right/east of the scrap compactor.\nActivate it to produce a metal bar. The metal bar will be outputted to the left/west of the scrap compactor.\n\n")
+            self.character.macroState["submenue"] = self.submenue
+        elif selection == "level1_machines_machines":
+            self.submenue = interaction.TextMenu("\n\nAll items are produces in machines. There is a special machine to produce each item.\nThese machines are shown as X\\. Place metal bars to the west/left of the machine and activate it to produce the item.\n\nThe machines to produce items with are produced by a machine-machine. The machine machine is shown as M\\\nPlace a metal bar to the west/left of the machine-machine and activate it. Select what the machine should produce.\n\nMachine-machines are produced by the production artwork. The production artwork is represented by ßß.\nPlace metal bars to the right of the production artwork and activate it to produce a machine-machine.\n\n")
+            self.character.macroState["submenue"] = self.submenue
+        elif selection == "level1_machines_food":
+            self.submenue = interaction.TextMenu("\n\nFood production is based on vat maggots. Vat maggots can be harvested from trees.\nActivate the tree and a vat maggot will be dropped to the east of the tree.\n\nvat maggots are processed into bio mass using a maggot fermenter.\nPlace 10 vat maggots left/west to the maggot fermenter and activate it to produce 1 bio mass.\n\nThe bio mass is processed into press cake using a bio press.\nPlace 10 biomass left/west to the bio press and activate it to produce one press cake.\n\nThe press cake is processed into goo by a goo producer. Place 10 press cakes west/left to the goo producer and a goo dispenser to the right/east of the goo producer.\nActivate the goo producer to add a charge to the goo dispenser.\n\nIf the goo dispenser is charged, you can fill your flask by having it in your inventory and activating the goo dispenser.\n\n")
+            self.character.macroState["submenue"] = self.submenue
+        elif selection == "level1_machines_energy":
+            self.submenue = interaction.TextMenu("\n\nEnergy production is steam based. Steam is generated heating a boiler.\nA boiler is represented by OO or 00.\n\nA boiler is heated by placing a furnace next to it and fireing it. A furnace is fired by activating it while having coal in you inventory.\nA furnace is represented by oo or öö.\n\nCoal can be harvested from coal mines. Coal mines are represented by &c.\nActivate it and a piece of coal will be outputted to the right/east.\ncoal is represented by sc.")
+            self.character.macroState["submenue"] = self.submenue
+
+'''
+'''
+class BluePrinter(Item):
+    type = "BluePrinter"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="BluePrinter",creator=None):
+        super().__init__("sX",xPosition,yPosition,name=name,creator=creator)
+        self.submenue = None
+        self.text = None
+
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        character.messages.append("NO ENERGY")
+
+'''
+'''
+class CoalMine(Item):
+    type = "CoalMine"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="tree",creator=None):
+        super().__init__("&c",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = True
+        self.walkable = False
+
+    def apply(self,character):
+
+        # spawn new item
+        new = Coal(creator=self)
+        new.xPosition = self.xPosition+1
+        new.yPosition = self.yPosition
+        new.bolted = False
+        self.terrain.addItems([new])
+
 
 # maping from strings to all items
 # should be extendable
@@ -3014,6 +3148,8 @@ itemMap = {
             "MemoryBank":MemoryBank,
             "MemoryDump":MemoryDump,
             "Engraver":Engraver,
+            "InfoScreen":InfoScreen,
+            "CoalMine":CoalMine,
 }
 
 producables = {
@@ -3064,6 +3200,8 @@ producables = {
             "Drill":Drill,
             "MemoryBank":MemoryBank,
             "MemoryDump":MemoryDump,
+            "InfoScreen":InfoScreen,
+            "CoalMine":CoalMine,
         }
 
 '''

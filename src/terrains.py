@@ -1649,6 +1649,7 @@ class GameplayTest(Terrain):
         self.addRooms([self.miniBase])
 
         extraItems = []
+
         tree = src.items.Tree(64,103,creator=self)
         extraItems.append(tree)
         tree = src.items.Tree(103,64,creator=self)
@@ -1659,6 +1660,10 @@ class GameplayTest(Terrain):
         extraItems.append(tree)
         tree = src.items.Tree(15,14,creator=self)
         extraItems.append(tree)
+
+        coalMine = src.items.CoalMine(58,112,creator=self)
+        extraItems.append(coalMine)
+
         self.addItems(extraItems)
 
         # save internal state

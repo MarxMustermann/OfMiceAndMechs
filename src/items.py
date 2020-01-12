@@ -1937,7 +1937,7 @@ class ProductionArtwork(Item):
             return
         
         if gamestate.tick < self.coolDownTimer+self.coolDown:
-            character.messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
 
         options = []
@@ -2019,7 +2019,7 @@ class ScrapCompactor(Item):
                     break
 
         if gamestate.tick < self.coolDownTimer+self.coolDown:
-            character.messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
         self.coolDownTimer = gamestate.tick
 
@@ -2067,7 +2067,7 @@ class Scraper(Item):
                 break
 
         if gamestate.tick < self.coolDownTimer+self.coolDown:
-            character.messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
         self.coolDownTimer = gamestate.tick
 
@@ -2121,7 +2121,7 @@ class Sorter(Item):
                 break
 
         if gamestate.tick < self.coolDownTimer+self.coolDown:
-            character.messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
         self.coolDownTimer = gamestate.tick
 
@@ -2437,7 +2437,7 @@ class GameTestingProducer(Item):
                 token = item
 
         if gamestate.tick < self.coolDownTimer+self.coolDown:
-            character.messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
         self.coolDownTimer = gamestate.tick
 
@@ -2526,7 +2526,7 @@ class MachineMachine(Item):
         super().apply(character,silent=True)
 
         if gamestate.tick < self.coolDownTimer+self.coolDown:
-            character.messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
         self.coolDownTimer = gamestate.tick
 
@@ -2578,7 +2578,7 @@ class MachineMachine(Item):
 
         options = []
         for key,value in endProducts.items():
-            options.append((value,key))
+            options.append((value,key+" machine"))
         self.submenue = interaction.SelectionMenu("select the item to produce",options)
         character.macroState["submenue"] = self.submenue
         character.macroState["submenue"].followUp = self.produceSelection
@@ -2659,7 +2659,7 @@ class Machine(Item):
         super().apply(character,silent=True)
 
         if gamestate.tick < self.coolDownTimer+self.coolDown:
-            character.messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
         self.coolDownTimer = gamestate.tick
 
@@ -2780,7 +2780,7 @@ class Drill(Item):
             return
 
         if gamestate.tick < self.coolDownTimer+self.coolDown:
-            character.messages.append("cooldown not reached (%s)"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
         self.coolDownTimer = gamestate.tick
 

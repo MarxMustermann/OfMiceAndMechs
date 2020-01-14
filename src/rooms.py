@@ -11,6 +11,7 @@ import json
 import src.items
 import src.quests
 import src.saveing
+import src.events
 
 # bad code: global state
 Character = None
@@ -475,7 +476,7 @@ class Room(src.saveing.Saveable):
         if "newEvents" in state:
             for eventId in state["newEvents"]:
                 eventState = state["eventStates"][eventId]
-                event = events.getEventFromState(eventState)
+                event = src.events.getEventFromState(eventState)
                 self.addEvent(event)
 
         if "characterIds" in state:

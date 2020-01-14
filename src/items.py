@@ -1059,6 +1059,169 @@ class Display(Item):
             room.addItems([self])
 
 '''
+'''
+class RoomBuilder(Item):
+    type = "RoomBuilder"
+
+    '''
+    call superclass constructor with modified paramters
+    '''
+    def __init__(self,xPosition=0,yPosition=0,name="RoomBuilder",creator=None):
+        super().__init__("RB",xPosition,yPosition,name=name,creator=creator)
+
+    '''
+    map player controls to room movement 
+    '''
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        wallLeft = False
+        for offset in range(1,15):
+            pos = (self.xPosition-offset,self.yPosition)
+            if pos in self.terrain.itemByCoordinates:
+                for item in self.terrain.itemByCoordinates[pos]:
+                    if isinstance(item,Wall) or isinstance(item,Door):
+                        wallLeft = item
+                        break
+            if wallLeft:
+                break
+        wallRight = False
+        for offset in range(1,15):
+            pos = (self.xPosition+offset,self.yPosition)
+            if pos in self.terrain.itemByCoordinates:
+                for item in self.terrain.itemByCoordinates[pos]:
+                    if isinstance(item,Wall) or isinstance(item,Door):
+                        wallRight = item
+                        break
+            if wallRight:
+                break
+        wallTop = False
+        for offset in range(1,15):
+            pos = (self.xPosition,self.yPosition-offset)
+            if pos in self.terrain.itemByCoordinates:
+                for item in self.terrain.itemByCoordinates[pos]:
+                    if isinstance(item,Wall) or isinstance(item,Door):
+                        wallTop = item
+                        break
+            if wallTop:
+                break
+        wallBottom = False
+        for offset in range(1,15):
+            pos = (self.xPosition,self.yPosition+offset)
+            if pos in self.terrain.itemByCoordinates:
+                for item in self.terrain.itemByCoordinates[pos]:
+                    if isinstance(item,Wall) or isinstance(item,Door):
+                        wallBottom = item
+                        break
+            if wallBottom:
+                break
+
+        if not ( wallLeft and wallRight and wallTop and wallBottom) :
+            character.messages.append("no boundaries found")
+            character.messages.append((wallLeft,wallRight,wallTop,wallBottom))
+            return
+
+        roomLeft = self.xPosition-wallLeft.xPosition
+        roomRight = wallRight.xPosition-self.xPosition
+        roomTop = self.yPosition-wallTop.yPosition
+        roomBottom = wallBottom.yPosition-self.yPosition
+
+        wallMissing = False
+        items = []
+        character.messages.append([roomLeft,roomRight,roomTop,roomBottom,])
+        for x in range(-roomLeft,roomRight+1):
+            pos = (self.xPosition+x,self.yPosition-roomTop)
+            wallFound = None 
+            if pos in self.terrain.itemByCoordinates:
+                for item in self.terrain.itemByCoordinates[pos]:
+                    if isinstance(item,Wall) or isinstance(item,Door):
+                        wallFound = item
+                        items.append(item)
+                        break
+            if not wallFound:
+                wallMissing = True
+                break
+        for y in range(-roomTop,roomBottom+1):
+            pos = (self.xPosition-roomLeft,self.yPosition+y)
+            wallFound = None 
+            if pos in self.terrain.itemByCoordinates:
+                for item in self.terrain.itemByCoordinates[pos]:
+                    if isinstance(item,Wall) or isinstance(item,Door):
+                        wallFound = item
+                        items.append(item)
+                        break
+            if not wallFound:
+                wallMissing = True
+                break
+        for y in range(-roomTop,roomBottom+1):
+            pos = (self.xPosition+roomRight,self.yPosition+y)
+            wallFound = None 
+            if pos in self.terrain.itemByCoordinates:
+                for item in self.terrain.itemByCoordinates[pos]:
+                    if isinstance(item,Wall) or isinstance(item,Door):
+                        wallFound = item
+                        items.append(item)
+                        break
+            if not wallFound:
+                wallMissing = True
+                break
+        for x in range(-roomLeft,roomRight+1):
+            pos = (self.xPosition+x,self.yPosition+roomBottom)
+            wallFound = None 
+            if pos in self.terrain.itemByCoordinates:
+                for item in self.terrain.itemByCoordinates[pos]:
+                    if isinstance(item,Wall) or isinstance(item,Door):
+                        wallFound = item
+                        items.append(item)
+                        break
+            if not wallFound:
+                wallMissing = True
+                break
+
+        if wallMissing:
+            character.messages.append("wall missing")
+            return
+
+        character.messages.append(len(items))
+        items.append(self)
+        for item in items:
+            try:
+                terrain.removeItem(item,recalculate=False)
+            except:
+                character.messages.append(("failed to remove item",item))
+
+        door = None
+        for item in items:
+            if isinstance(item,Door):
+                if not door:
+                    door = item
+                else:
+                    character.messages.append("too many doors")
+                    return
+        if not door:
+            character.messages.append("too little doors")
+            return
+
+        import src.rooms
+        doorPos = (roomLeft+door.xPosition-self.xPosition,roomTop+door.yPosition-self.yPosition)
+        room = src.rooms.EmptyRoom(self.xPosition//15,self.yPosition//15,self.xPosition%15-roomLeft,self.yPosition%15-roomTop,creator=self)
+        room.reconfigure(roomLeft+roomRight+1,roomTop+roomBottom+1,doorPos)
+
+        xOffset = character.xPosition-self.xPosition
+        yOffset = character.yPosition-self.yPosition
+
+        self.terrain.removeCharacter(character)
+        self.terrain.addRooms([room])
+        character.xPosition = roomLeft+xOffset
+        character.yPosition = roomTop+yOffset
+        room.addCharacter(character,roomLeft+xOffset,roomTop+yOffset)
+
+        self.xPosition = roomLeft
+        self.yPosition = roomTop
+        room.addItems([self])
+
+
+'''
 basic item with different appearance
 '''
 class Wall(Item):
@@ -1919,7 +2082,6 @@ class ProductionArtwork(Item):
         self.attributesToStore.extend([
                "coolDown","coolDownTimer"])
 
-
     '''
     trigger production of a player selected item
     '''
@@ -1940,11 +2102,11 @@ class ProductionArtwork(Item):
             character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
 
+        excludeList = ("ProductionArtwork","Machine","Tree","Scrap","Corpse","Acid","Item","Pile","InfoScreen","CoalMine","RoomBuilder","BluePrint",)
+
         options = []
         for key,value in itemMap.items():
-            if key in producables:
-                continue
-            if key in ("ProductionArtwork","Machine","Tree","Scrap","Corpse","Acid","Item"):
+            if key in excludeList:
                 continue
             options.append((value,key))
         self.submenue = interaction.SelectionMenu("select the item to produce",options)
@@ -1973,7 +2135,7 @@ class ProductionArtwork(Item):
         
         # refuse production without ressources
         if not metalBar:
-            messages.append("no metal bars available")
+            messages.append("no metal bars available - place a metal bar to left/west")
             return
 
         # remove ressources
@@ -2513,10 +2675,58 @@ class MachineMachine(Item):
         self.coolDown = 1000
         self.coolDownTimer = -self.coolDown
 
+        self.endProducts = [
+            "GrowthTank",
+            "Hutch",
+            "Lever",
+            "Furnace",
+            "CommLink",
+            "Display",
+            "Wall",
+            "Pipe",
+            "Coal",
+            "Door",
+            "Chain",
+            "Winch",
+            "Boiler",
+            "Spray",
+            "MarkerBean",
+            "GooDispenser",
+            "GooFlask",
+            "ScrapCompactor",
+            "ObjectDispenser",
+            "Token",
+            "Connector",
+            "Bolt",
+            "Stripe",
+            "puller",
+            "pusher",
+            "Stripe",
+            "Sheet",
+            "Rod",
+            "Heater",
+            "Nook",
+            "Tank",
+            "Coil",
+            "MaggotFermenter",
+            "BioPress",
+            "GooProducer",
+            "Scraper",
+            "Sorter",
+            "Drill",
+            "MemoryBank",
+            "MemoryDump",
+            "InfoScreen",
+            "RoomBuilder",
+        ]
+
+        self.endProducts = {
+        }
+
         super().__init__("M\\",xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
-               "coolDown","coolDownTimer"])
+               "coolDown","coolDownTimer","endProducts"])
 
 
     '''
@@ -2525,63 +2735,53 @@ class MachineMachine(Item):
     def apply(self,character,resultType=None):
         super().apply(character,silent=True)
 
-        if gamestate.tick < self.coolDownTimer+self.coolDown:
-            character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
-            return
-        self.coolDownTimer = gamestate.tick
-
-        endProducts = {
-            "GrowthTank":GrowthTank,
-            "Hutch":Hutch,
-            "Lever":Lever,
-            "Furnace":Furnace,
-            "CommLink":Commlink,
-            "Display":Display,
-            "Wall":Wall,
-            "Pipe":Pipe,
-            "Coal":Coal,
-            "Door":Door,
-            "Chain":Chain,
-            "Winch":Winch,
-            "Boiler":Boiler,
-            "Spray":Spray,
-            "MarkerBean":MarkerBean,
-            "GooDispenser":GooDispenser,
-            "GooFlask":GooFlask,
-            "ScrapCompactor":ScrapCompactor,
-            "ObjectDispenser":OjectDispenser,
-            "Token":Token,
-            "Connector":Connector,
-            "Bolt":Bolt,
-            "Stripe":Stripe,
-            "puller":Puller,
-            "pusher":Pusher,
-            "Stripe":Stripe,
-            "Sheet":Sheet,
-            "Rod":Rod,
-            "Heater":Heater,
-            "Nook":Nook,
-            "Tank":Tank,
-            "Coil":Coil,
-            "MaggotFermenter":MaggotFermenter,
-            "BioPress":BioPress,
-            "PressCake":PressCake,
-            "BioMass":BioMass,
-            "GooProducer":GooProducer,
-            "Scraper":Scraper,
-            "Sorter":Sorter,
-            "Drill":Drill,
-            "MemoryBank":MemoryBank,
-            "MemoryDump":MemoryDump,
-            "InfoScreen":InfoScreen,
-        }
-
         options = []
-        for key,value in endProducts.items():
-            options.append((value,key+" machine"))
+        options.append(("blueprint","insert blueprint"))
+        options.append(("produce","produce machine"))
         self.submenue = interaction.SelectionMenu("select the item to produce",options)
         character.macroState["submenue"] = self.submenue
-        character.macroState["submenue"].followUp = self.produceSelection
+        character.macroState["submenue"].followUp = self.basicSwitch
+        self.character = character
+
+    def basicSwitch(self):
+        selection = self.character.macroState["submenue"].getSelection() 
+        if selection == "blueprint":
+            self.addBlueprint()
+        elif selection == "produce":
+            self.productionSwitch()
+
+    def addBlueprint(self):
+        blueprintFound = None
+        for item in self.character.inventory:
+            if isinstance(item,BluePrint):
+                blueprintFound = item
+
+        if not blueprintFound:
+            self.character.messages.append("no blueprint found in inventory")
+            return
+
+        self.endProducts[blueprintFound.endProduct] = blueprintFound.endProduct
+        self.character.messages.append("blueprint for "+blueprintFound.endProduct+" inserted")
+        self.character.inventory.remove(blueprintFound)
+
+    def productionSwitch(self):
+
+        if self.endProducts == {}:
+            self.character.messages.append("no blueprints available.")
+            return
+
+        if gamestate.tick < self.coolDownTimer+self.coolDown:
+            self.character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            return
+
+        self.coolDownTimer = gamestate.tick
+
+        options = []
+        for itemType in self.endProducts:
+            options.append((itemType,itemType+" machine"))
+        self.submenue = interaction.SelectionMenu("select the item to produce",options)
+        self.character.macroState["submenue"] = self.submenue
+        self.character.macroState["submenue"].followUp = self.produceSelection
 
     '''
     trigger production of the selected item
@@ -2611,7 +2811,7 @@ class MachineMachine(Item):
 
         # spawn new item
         new = Machine(creator=self)
-        new.setToProduce(itemType.type)
+        new.setToProduce(itemType)
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
         new.bolted = False
@@ -2973,14 +3173,26 @@ class InfoScreen(Item):
         self.text = None
 
     def apply(self,character):
+        if not self.room:
+            character.messages.append("can only be used within rooms")
+            return
         super().apply(character,silent=True)
 
         options = []
 
-        options.append(("level1","basic Information"))
-        options.append(("level2","NOT ENOUGH ENERGY"))
-        options.append(("level3","NOT ENOUGH ENERGY"))
-        options.append(("level4","NOT ENOUGH ENERGY"))
+        options.append(("level1","basic information "+str(self.room.steamGeneration)))
+        if self.room.steamGeneration > 0:
+            options.append(("level2","l2 information"))
+        else:
+            options.append(("level2","disabled - NOT ENOUGH ENERGY"))
+        if self.room.steamGeneration > 1:
+            options.append(("level3","l3 information"))
+        else:
+            options.append(("level3","disabled - NOT ENOUGH ENERGY"))
+        if self.room.steamGeneration > 2:
+            options.append(("level3","l4 information"))
+        else:
+            options.append(("level4","disabled - NOT ENOUGH ENERGY"))
 
         self.submenue = interaction.SelectionMenu("select the information you need",options)
         character.macroState["submenue"] = self.submenue
@@ -2994,11 +3206,17 @@ class InfoScreen(Item):
         self.submenue = None
 
         if selection == "level1":
-            self.stepBasic()
+            self.basicInfo()
+        elif selection == "level2" and self.room.steamGeneration > 0:
+            self.l2Info()
+        elif selection == "level3" and self.room.steamGeneration > 1:
+            self.l3Info()
+        elif selection == "level4" and self.room.steamGeneration > 2:
+            self.l4Info()
         else:
             self.character.messages.append("NOT ENOUGH ENERGY")
 
-    def stepBasic(self):
+    def basicInfo(self):
 
         options = []
 
@@ -3008,9 +3226,9 @@ class InfoScreen(Item):
 
         self.submenue = interaction.SelectionMenu("select the information you need",options)
         self.character.macroState["submenue"] = self.submenue
-        self.character.macroState["submenue"].followUp = self.stepLevel1
+        self.character.macroState["submenue"].followUp = self.level1_selection
 
-    def stepLevel1(self):
+    def level1_selection(self):
 
         selection = self.submenue.getSelection()
 
@@ -3049,6 +3267,67 @@ class InfoScreen(Item):
             self.submenue = interaction.TextMenu("\n\nEnergy production is steam based. Steam is generated heating a boiler.\nA boiler is represented by OO or 00.\n\nA boiler is heated by placing a furnace next to it and fireing it. A furnace is fired by activating it while having coal in you inventory.\nA furnace is represented by oo or öö.\n\nCoal can be harvested from coal mines. Coal mines are represented by &c.\nActivate it and a piece of coal will be outputted to the right/east.\ncoal is represented by sc.")
             self.character.macroState["submenue"] = self.submenue
 
+    def l2Info(self):
+
+        options = []
+
+        options.append(("level2_multiplier","action multipliers"))
+        options.append(("level2_rooms","room"))
+        options.append(("level2_machines","machines"))
+
+        self.submenue = interaction.SelectionMenu("select the information you need",options)
+        self.character.macroState["submenue"] = self.submenue
+        self.character.macroState["submenue"].followUp = self.level2_selection
+
+    def level2_selection(self):
+
+        selection = self.submenue.getSelection()
+
+        if selection == "level2_multiplier":
+            self.submenue = interaction.TextMenu("\n\nyou can use multiplicators with commands. Typing a number followed by a command will result in the command to to be run multiple times\n\nTyping 10l is the same as typing llllllllll.\nThis will result in you dropping 10 items from your inventory\n\nThe multiplicator only applies to the following command.\nTyping 3aj will be expanded to aaaj.\n\n")
+            self.character.macroState["submenue"] = self.submenue
+        elif selection == "level2_rooms":
+            self.submenue = interaction.TextMenu("\n\nmany machines only work within rooms. You can build new rooms.\nRooms are rectangular and have one door.\n\nYou can build new rooms. Prepare by placing walls and a door in the form of a rectangle on the ground.\n\nPlace a room builder within the walls and activate it to create a room from the basic items.\n\n")
+            self.character.macroState["submenue"] = self.submenue
+        elif selection == "level2_machines":
+            options = []
+
+            options.append(("level2_machines_blueprinter","blueprinter"))
+
+            self.submenue = interaction.SelectionMenu("select the information you need",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.stepLevel1Machines
+
+    def l3Info(self):
+
+        options = []
+
+        options.append(("level3_macros","macros"))
+        options.append(("level3_machines","machines"))
+
+        self.submenue = interaction.SelectionMenu("select the information you need",options)
+        self.character.macroState["submenue"] = self.submenue
+        self.character.macroState["submenue"].followUp = self.level3_selection
+
+    def level2_selection(self):
+
+        selection = self.submenue.getSelection()
+
+    def l4Info(self):
+
+        options = []
+
+        options.append(("level4_npcs","npcs"))
+
+        self.submenue = interaction.SelectionMenu("select the information you need",options)
+        self.character.macroState["submenue"] = self.submenue
+        self.character.macroState["submenue"].followUp = self.level4_selection
+
+    def level2_selection(self):
+
+        selection = self.submenue.getSelection()
+
+
 '''
 '''
 class BluePrinter(Item):
@@ -3062,10 +3341,100 @@ class BluePrinter(Item):
         self.submenue = None
         self.text = None
 
+        self.reciepes = [
+                [["MetalBars","Scrap"],"Scraper"],
+                [["Scrap"],"ScrapCompactor"],
+                [["MetalBars"],"Wall"],
+            ]
+
     def apply(self,character):
         super().apply(character,silent=True)
 
-        character.messages.append("NO ENERGY")
+        inputThings = []
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            inputThings = self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]
+
+        if not inputThings:
+            character.messages.append("no items - place items to the left/west")
+            return
+
+        abstractedInputThings = {}
+        for item in inputThings:
+            abstractedInputThings[item.type] = {"item":item}
+
+        reciepeFound = None
+        for reciepe in self.reciepes:
+            hasMaterials = True
+            for requirement in reciepe[0]:
+                if not requirement in abstractedInputThings:
+                    hasMaterials = False
+
+            if hasMaterials:
+                reciepeFound = reciepe
+                break
+
+        if reciepeFound:
+            # spawn new item
+            new = BluePrint(creator=self)
+            new.setToProduce(reciepeFound[1])
+            new.xPosition = self.xPosition+1
+            new.yPosition = self.yPosition
+            new.bolted = False
+            self.room.addItems([new])
+
+            for itemType in reciepeFound[0]:
+                self.room.removeItem(abstractedInputThings[itemType]["item"])
+            character.messages.append("you create a blueprint for "+reciepe[1])
+        else:
+            character.messages.append("unable to produce blueprint from given items")
+            return
+
+
+'''
+'''
+class BluePrint(Item):
+    type = "BluePrint"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="BluePrint",creator=None):
+        super().__init__("bb",xPosition,yPosition,name=name,creator=creator)
+
+        self.endProduct = None
+        self.walkable = True
+        self.baseName = name
+
+        self.attributesToStore.extend([
+                "endProduct"])
+
+        self.setDescription()
+
+        self.initialState = self.getState()
+
+    def setDescription(self):
+        if not self.endProduct:
+            self.description = self.baseName
+        else:
+            self.description = self.baseName+" for %s"%(self.endProduct,)
+
+    def setToProduce(self, toProduce):
+        self.endProduct = toProduce
+
+        self.setDescription()
+
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        character.messages.append("a blueprint for "+self.endProduct)
+
+    '''
+    set state from dict
+    '''
+    def setState(self,state):
+        super().setState(state)
+
+        self.setDescription()
 
 '''
 '''
@@ -3150,28 +3519,29 @@ itemMap = {
             "Engraver":Engraver,
             "InfoScreen":InfoScreen,
             "CoalMine":CoalMine,
+            "RoomBuilder":RoomBuilder,
+            "BluePrinter":BluePrinter,
+            "BluePrint":BluePrint,
 }
 
 producables = {
+            "Wall":Wall,
+            "Door":Door,
             "GrowthTank":GrowthTank,
+            "ScrapCompactor":ScrapCompactor,
+            "Scraper":Scraper,
+            "Drill":Drill,
             "Hutch":Hutch,
             "Lever":Lever,
             "Furnace":Furnace,
             "CommLink":Commlink,
             "Display":Display,
-            "Wall":Wall,
             "Pipe":Pipe,
-            "Coal":Coal,
-            "Door":Door,
-            "Pile":Pile,
             "Chain":Chain,
             "Winch":Winch,
             "Boiler":Boiler,
             "Spray":Spray,
             "MarkerBean":MarkerBean,
-            "GooDispenser":GooDispenser,
-            "GooFlask":GooFlask,
-            "ScrapCompactor":ScrapCompactor,
             "ObjectDispenser":OjectDispenser,
             "Token":Token,
             "Connector":Connector,
@@ -3188,20 +3558,13 @@ producables = {
             "Coil":Coil,
             "MaggotFermenter":MaggotFermenter,
             "BioPress":BioPress,
-            "PressCake":PressCake,
-            "BioMass":BioMass,
             "GooProducer":GooProducer,
-            "BioPress":BioPress,
-            "BioMass":BioMass,
-            "VatMaggot":VatMaggot,
-            "MetalBars":MetalBars,
-            "Scraper":Scraper,
+            "GooDispenser":GooDispenser,
+            "GooFlask":GooFlask,
             "Sorter":Sorter,
-            "Drill":Drill,
             "MemoryBank":MemoryBank,
             "MemoryDump":MemoryDump,
-            "InfoScreen":InfoScreen,
-            "CoalMine":CoalMine,
+            
         }
 
 '''

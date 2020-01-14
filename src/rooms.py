@@ -1402,9 +1402,9 @@ X           X
 X           X
 X           X
 X           X
-X          vX
+X           X
 X  .........$
-X          vX
+X           X
 X           X
 X           X
 X           X
@@ -1422,11 +1422,13 @@ XXXXXXXXXXXXX
         flask3.uses = 100
         self.doors[0].walkable = True
 
+        self.machinemachine = src.items.MachineMachine(4,3,creator=creator)
+
         self.infoScreen = src.items.InfoScreen(4,9,creator=creator)
 
         self.bluePrinter = src.items.BluePrinter(8,9,creator=creator)
 
-        self.addItems([self.artwork,self.compactor,flask1,flask2,flask3,self.infoScreen,self.bluePrinter])
+        self.addItems([self.artwork,self.compactor,flask1,flask2,flask3,self.infoScreen,self.bluePrinter,self.machinemachine])
         self.initialState = self.getState()
         loadingRegistry.register(self)
 

@@ -746,7 +746,7 @@ class Furnace(Item):
         if not foundItem:
             # bad code: return would be preferable to if/else
             if character.watched:
-                character.messages.append("you need coal to fire the furnace and you have none")
+                character.messages.append("you need coal to fire the furnace and you have no coal in your inventory")
         else:
             # refuse to fire burning furnace
             if self.activated:
@@ -763,7 +763,7 @@ class Furnace(Item):
 
                 # add fluff
                 if character.watched:
-                    character.messages.append("*wush*")
+                    character.messages.append("you fire the furnace")
 
                 # get the boilers affected
                 self.boilers = []
@@ -2536,6 +2536,8 @@ class Tree(Item):
 
     def apply(self,character):
 
+        character.messages.append("you harvest a vat maggot")
+
         # spawn new item
         new = VatMaggot(creator=self)
         new.xPosition = self.xPosition+1
@@ -3272,7 +3274,7 @@ class InfoScreen(Item):
         options = []
 
         options.append(("level2_multiplier","action multipliers"))
-        options.append(("level2_rooms","room"))
+        options.append(("level2_rooms","room creation"))
         options.append(("level2_machines","machines"))
 
         self.submenue = interaction.SelectionMenu("select the information you need",options)
@@ -3297,6 +3299,8 @@ class InfoScreen(Item):
             self.submenue = interaction.SelectionMenu("select the information you need",options)
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.stepLevel1Machines
+        else:
+            self.character.messages.append("unknown selection: "+selection)
 
     def l3Info(self):
 
@@ -3473,13 +3477,15 @@ class CoalMine(Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="tree",creator=None):
+    def __init__(self,xPosition=None,yPosition=None, name="coal mine",creator=None):
         super().__init__("&c",xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = True
         self.walkable = False
 
     def apply(self,character):
+
+        character.messages.append("you mine a piece of coal")
 
         # spawn new item
         new = Coal(creator=self)

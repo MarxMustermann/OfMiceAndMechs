@@ -3343,8 +3343,37 @@ class BluePrinter(Item):
 
         self.reciepes = [
                 [["MetalBars","Scrap"],"Scraper"],
+                [["GooFlask","Tank"],"GrowthTank"],
+
+                [["Sheet","MetalBars"],"Tank"],
+                [["Coil","MetalBars"],"Heater"],
+                [["Nook","MetalBars"],"Connector"],
+                [["Stripe","MetalBars"],"Pusher"],
+                [["Bolt","MetalBars"],"Puller"],
+                [["Rod","MetalBars"],"GooFlask"],
+
+                [["Tank"],"GooFlask"],
+                [["Heater"],"Boiler"],
+                [["Connector"],"Door"],
+                [["pusher"],"Drill"],
+                [["puller"],"RoomBuilder"],
+
+                [["Sheet"],"Sheet"],
+                [["Coil"],"Coil"],
+                [["Nook"],"Nook"],
+                [["Stripe"],"Stripe"],
+                [["Bolt"],"Bolt"],
+                [["Rod"],"Rod"],
+
                 [["Scrap"],"ScrapCompactor"],
+                [["Coal"],"Furnace"],
+                [["BluePrint"],"BluePrinter"],
                 [["MetalBars"],"Wall"],
+
+                [["GooFlask"],"GooDispenser"],
+                [["VatMaggot"],"MaggotFermenter"],
+                [["BioMass"],"BioPress"],
+                [["PressCake"],"GooProducer"],
             ]
 
     def apply(self,character):

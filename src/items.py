@@ -3306,31 +3306,46 @@ class InfoScreen(Item):
 
         options = []
 
-        options.append(("level3_macros","macros"))
-        options.append(("level3_machines","machines"))
+        options.append(("level3_macrosBasic","macro basics"))
+        options.append(("level3_macrosExtra","macro extra"))
 
         self.submenue = interaction.SelectionMenu("select the information you need",options)
         self.character.macroState["submenue"] = self.submenue
         self.character.macroState["submenue"].followUp = self.level3_selection
 
-    def level2_selection(self):
+    def level3_selection(self):
 
         selection = self.submenue.getSelection()
+
+        if selection == "level3_macrosBasic":
+            self.submenue = interaction.TextMenu("\n\nyou can use macros to automate task. This means you can record and replay keystrokes.\n\nTo record a macro press - to start recording and press the key to record to.\nAfterwards do your movement and press - to stop recording.\nTo replay the recorded macro press _ and the key the macro was recorded to.\n\nFor example typing -kasdw- will record asdw to the buffer k\nPressing _k afterwards will be the same as pressing asdw\n\n")
+            self.character.macroState["submenue"] = self.submenue
+        elif selection == "level3_macrosExtra":
+            self.submenue = interaction.TextMenu("\n\nMacros can be combined with each other. You can do this by replaying a macro while recording a macro\nFor example -qaaa- will record aaa to the buffer q.\nPressing -wddd_q- will record ddd_q to the buffer w. Pressing _w will be the same as dddaaa\nThe macro are referenced not copied. This means overwriting a macro will change alle macros referencing it. \n\nYou also can use multipliers within and with macros.\nPressing 5_q for example is the same as _q_q_q_q_q\n\n")
+            self.character.macroState["submenue"] = self.submenue
+        else:
+            self.character.messages.append("unknown selection: "+selection)
+
 
     def l4Info(self):
 
         options = []
 
-        options.append(("level4_npcs","npcs"))
+        options.append(("level4_npcCreation","npc creation"))
+        options.append(("level4_npcControl","npc control"))
+        options.append(("level4_npcCreation","npc creation"))
 
         self.submenue = interaction.SelectionMenu("select the information you need",options)
         self.character.macroState["submenue"] = self.submenue
         self.character.macroState["submenue"].followUp = self.level4_selection
 
-    def level2_selection(self):
+    def level4_selection(self):
 
-        selection = self.submenue.getSelection()
-
+        if selection == "level4_npcCreation":
+            self.submenue = interaction.TextMenu("\n\nYou can spawn new npcs. Npcs ar\n\n")
+            self.character.macroState["submenue"] = self.submenue
+        else:
+            self.character.messages.append("unknown selection: "+selection)
 
 '''
 '''

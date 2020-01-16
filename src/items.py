@@ -3356,9 +3356,14 @@ class BluePrinter(Item):
         self.text = None
 
         self.reciepes = [
-                [["MetalBars","Scrap"],"Scraper"],
+                [["Stripe","Connector","Rod"],"MemoryBank"],
+                [["Stripe","Connector","Coil"],"MemoryDump"],
+
+                [["Sheet","pusher"],"Sorter"],
+                [["Stripe","Connector"],"Display"],
                 [["GooFlask","Tank"],"GrowthTank"],
 
+                [["Scrap","MetalBars"],"Scraper"],
                 [["Sheet","MetalBars"],"Tank"],
                 [["Coil","MetalBars"],"Heater"],
                 [["Nook","MetalBars"],"Connector"],

@@ -577,6 +577,9 @@ class Character(src.saveing.Saveable):
     kill the character and do a bit of extra stuff like placing corpses
     '''
     def die(self,reason=None):
+        self.lastRoom = self.room
+        self.lastTerrain = self.terrain
+
         # replace character with corpse
         if self.container:
             container = self.container

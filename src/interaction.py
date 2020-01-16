@@ -172,11 +172,16 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
     if char == None:
         char = mainChar
 
-    global terrain
     if char.room:
         terrain = char.room.terrain
     else:
         terrain = char.terrain
+
+    if terrain == None:
+        if char.lastRoom:
+            terrain = char.lastRoom.terrain
+        else:
+            terrain = char.lastTerrain
 
     flags = key[1]
     key = key[0]

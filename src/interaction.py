@@ -207,9 +207,12 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
     if not "ifParam2" in charState:
         charState["ifParam2"] = []
     if key in ("$",):
+        if charState["recordingTo"] and not "norecord" in flags:
+            charState["macros"][charState["recordingTo"]].append("$")
         charState["ifCondition"].append(None)
         charState["ifParam1"].append([])
         charState["ifParam2"].append([])
+        return
 
     if len(charState["ifCondition"]) and not key in ("$","lagdetection","lagdetection_"):
         if charState["recordingTo"] and not "norecord" in flags:
@@ -229,6 +232,11 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
                 if charState["ifCondition"][-1] == "i":
                     if len(char.inventory) == 0:
+                        conditionTrue = True
+                    else:
+                        conditionTrue = False
+                if charState["ifCondition"][-1] == "b":
+                    if charState["itemMarkedLast"]:
                         conditionTrue = True
                     else:
                         conditionTrue = False
@@ -300,6 +308,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             commands.append((key,["norecord"]))
             charState["commandKeyQueue"] = commands+charState["commandKeyQueue"]
             charState["loop"].pop()
+        return
 
     if key in ("-",):
         if not charState["recording"]:
@@ -352,9 +361,11 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                 charState["doNumber"] = False
 
             key = commandChars.ignore
+        return
     if key in ("_",):
         charState["replay"].append(2)
         key = commandChars.ignore
+        return
 
     if charState["number"] and not key in (commandChars.ignore,"lagdetection","lagdetection_"):
             num = int(charState["number"])

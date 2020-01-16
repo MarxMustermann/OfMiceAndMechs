@@ -157,6 +157,9 @@ shownStarvationWarning = False
 
 pauseGame = False
 
+global specialRender
+specialRender = False
+
 '''
 handle a keystroke
 bad code: there are way too much lines of code in this function
@@ -284,14 +287,12 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
     if charState["loop"] and not key in ("lagdetection","lagdetection_",commandChars.ignore,"_","~"):
         if not charState["replay"]:
             commands = []
-            commands.append(("lagdetection_",["norecord"]))
             commands.append(("§",["norecord"]))
             commands.append((key,["norecord"]))
             charState["commandKeyQueue"] = commands+charState["commandKeyQueue"]
             charState["loop"].pop()
         else:
             commands = []
-            commands.append(("lagdetection_",["norecord"]))
             commands.append(("§",["norecord"]))
             commands.append(("_",["norecord"]))
             commands.append((key,["norecord"]))
@@ -320,7 +321,6 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                     char.messages.append("replaying %s: %s"%(key,''.join(charState["macros"][key])))
                     commands = []
                     for keyPress in charState["macros"][key]:
-                        commands.append(("lagdetection_",["norecord"]))
                         commands.append((keyPress,["norecord"]))
                     #processAllInput(commands)
                     charState["commandKeyQueue"] = commands+charState["commandKeyQueue"]
@@ -340,7 +340,6 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                 commands = []
                 counter = 0
                 while counter < num:
-                    commands.append(("lagdetection_",["norecord"]))
                     commands.append(("_",["norecord"]))
                     commands.append((key,["norecord"]))
                     counter += 1
@@ -364,7 +363,6 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             commands = []
             counter = 0
             while counter < num:
-                commands.append(("lagdetection_",["norecord"]))
                 commands.append((key,["norecord"]))
                 counter += 1
             #processAllInput(commands)
@@ -426,8 +424,6 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
     if key in ("lagdetection","lagdetection_"):
 
         # trigger the next lagdetection keystroke
-        if key in ("lagdetection",):
-            loop.set_alarm_in(0.1, callShow_or_exit, "lagdetection")
         lastLagDetection = time.time()
 
         # advance the game if the character stays idle
@@ -896,6 +892,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             loop.draw_screen()
             lastRedraw = time.time()
 
+        global specialRender
         specialRender = False
 
         # doesn't open the dev menu and toggles rendering mode instead
@@ -959,6 +956,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
     # render the game
     if not specialRender:
         
+        """
         # advance the game
         if doAdvanceGame:
             global shownStarvationWarning
@@ -971,6 +969,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             else:
                 shownStarvationWarning = False
             advanceGame()
+        """
 
         # render information on top
         if noAdvanceGame == False:
@@ -2145,7 +2144,6 @@ def keyboardListener(key):
             state["ifCondition"].clear()
             state["ifParam1"].clear()
             state["ifParam2"].clear()
-        show_or_exit("lagdetection",charState=state)
 
     elif key == "ctrl p":
         if not mainChar.macroStateBackup:
@@ -2154,7 +2152,6 @@ def keyboardListener(key):
             mainChar.macroState["macros"] = mainChar.macroStateBackup["macros"]
 
             state = mainChar.macroState
-            show_or_exit("lagdetection",charState=state)
         else:
             mainChar.macroState = mainChar.macroStateBackup
             mainChar.macroState["macros"] = mainChar.macroStateBackup["macros"]
@@ -2239,12 +2236,12 @@ def keyboardListener(key):
         state = mainChar.macroState
         if state["commandKeyQueue"]:
             show_or_exit("~",charState=state)
-            show_or_exit("lagdetection",charState=state)
     else:
         show_or_exit(key,charState=state)
 
 def gameLoop(loop,user_data):
 
+    """
     if mainChar.macroState["commandKeyQueue"]:
         for char in multi_chars:
             if char == mainChar:
@@ -2256,14 +2253,67 @@ def gameLoop(loop,user_data):
                 key = state["commandKeyQueue"][0]
                 state["commandKeyQueue"].remove(key)
                 processInput(key,charState=state,noAdvanceGame=noAdvanceGame,char=char)
+    """
 
-    loop.set_alarm_in(0.001, gameLoop)
+    if mainChar.macroState["commandKeyQueue"]:
+        advanceGame()
+        for char in multi_chars:
+            noAdvanceGame = True
+            state = char.macroState
+
+            key = state["commandKeyQueue"][0]
+            while isinstance(key[0],list) or isinstance(key[0],tuple) or key[0] in ("lagdetection","lagdetection_"):
+                if len(state["commandKeyQueue"]):
+                    key = state["commandKeyQueue"][0]
+                    state["commandKeyQueue"].remove(key)
+                else:
+                    key = ("~",[])
+
+            if len(state["commandKeyQueue"]):
+                key = state["commandKeyQueue"][0]
+                state["commandKeyQueue"].remove(key)
+                processInput(key,charState=state,noAdvanceGame=noAdvanceGame,char=char)
+
+        text = ""
+        for cmd in mainChar.macroState["commandKeyQueue"]:
+            item = cmd[0]
+            if isinstance(item,list) or isinstance(item,tuple) or item in ("lagdetection","lagdetection_"):
+                continue
+            text += str(cmd[0])
+        footer.set_text((urwid.AttrSpec("default","default"),text))
+
+        global specialRender
+            
+        # render the game
+        if not specialRender:
+            
+            """
+            global shownStarvationWarning
+            if char.satiation < 30 and char.satiation > -1:
+                if not shownStarvationWarning:
+                    #cinematics.showCinematic("you will starve in %s ticks. drink something"%(char.satiation))
+                    shownStarvationWarning = True
+                if char.satiation == 0:
+                    char.messages.append("you starved")
+            else:
+                shownStarvationWarning = False
+
+            # render information on top
+            if noAdvanceGame == False:
+            """
+
+            # render map
+            # bad code: display mode specific code
+            canvas = render(mainChar)
+            main.set_text((urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible()));
+            if (useTiles):
+                canvas.setPygameDisplay(pydisplay,pygame,tileSize)
+            header.set_text((urwid.AttrSpec("default","default"),renderHeader(mainChar)))
+        
+    loop.set_alarm_in(0.0001, gameLoop)
 
 # get the interaction loop from the library
 loop = urwid.MainLoop(frame, unhandled_input=keyboardListener)
-
-# kick off the interaction loop
-loop.set_alarm_in(0.2, callShow_or_exit, "lagdetection")
 
 def tmp(loop,user_data):
     keyboardListener(('~',[]))

@@ -279,7 +279,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                 charState["recordingTo"] = key
                 charState["macros"][charState["recordingTo"]] = []
                 char.messages.append("start recording to: %s"%(charState["recordingTo"]))
-                key = commandChars.ignore
+                return
             else:
                 if not charState["replay"] and not charState["doNumber"] and not "norecord" in flags:
                     charState["macros"][charState["recordingTo"]].append(key)
@@ -292,7 +292,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
     if key in ("§",):
         charState["loop"].append(2)
-        key = commandChars.ignore
+        return
     
     if charState["loop"] and not key in ("lagdetection","lagdetection_",commandChars.ignore,"_","~"):
         if not charState["replay"]:
@@ -308,7 +308,6 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             commands.append((key,["norecord"]))
             charState["commandKeyQueue"] = commands+charState["commandKeyQueue"]
             charState["loop"].pop()
-        return
 
     if key in ("-",):
         if not charState["recording"]:
@@ -320,7 +319,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                 char.messages.append("recorded: %s to %s"%(''.join(charState["macros"][charState["recordingTo"]]),charState["recordingTo"]))
             charState["recordingTo"] = None
 
-    if charState["replay"] and not key in ("lagdetection","lagdetection_"):
+    if charState["replay"] and not key in ("lagdetection","lagdetection_","~",):
         if charState["replay"] and charState["replay"][-1] == 2:
             if not charState["number"]:
 
@@ -360,11 +359,9 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
                 charState["doNumber"] = False
 
-            key = commandChars.ignore
         return
     if key in ("_",):
         charState["replay"].append(2)
-        key = commandChars.ignore
         return
 
     if charState["number"] and not key in (commandChars.ignore,"lagdetection","lagdetection_"):
@@ -2168,8 +2165,6 @@ def keyboardListener(key):
             mainChar.macroState = mainChar.macroStateBackup
             mainChar.macroState["macros"] = mainChar.macroStateBackup["macros"]
             mainChar.macroStateBackup = None
-        if state["commandKeyQueue"]:
-            show_or_exit("~",charState=state)
 
     elif key == "ctrl x":
         gamestate.save()
@@ -2246,8 +2241,6 @@ def keyboardListener(key):
 
         mainChar = newChar
         state = mainChar.macroState
-        if state["commandKeyQueue"]:
-            show_or_exit("~",charState=state)
     else:
         show_or_exit(key,charState=state)
 
@@ -2266,6 +2259,18 @@ def gameLoop(loop,user_data):
                 state["commandKeyQueue"].remove(key)
                 processInput(key,charState=state,noAdvanceGame=noAdvanceGame,char=char)
     """
+
+    global multi_currentChar
+    global multi_chars
+
+    if not multi_currentChar:
+        multi_currentChar = mainChar
+    if multi_chars == None:
+        multi_chars = terrain.characters[:]
+        for room in terrain.rooms:
+            for character in room.characters[:]:
+                if not character in multi_chars:
+                    multi_chars.append(character)
 
     if mainChar.macroState["commandKeyQueue"]:
         advanceGame()
@@ -2327,7 +2332,6 @@ def gameLoop(loop,user_data):
 loop = urwid.MainLoop(frame, unhandled_input=keyboardListener)
 
 def tmp(loop,user_data):
-    keyboardListener(('~',[]))
     gameLoop(loop,user_data)
 
 loop.set_alarm_in(0.1, tmp)

@@ -74,6 +74,7 @@ class Character(src.saveing.Saveable):
         self.macroStateBackup = None
 
         # set basic state
+        self.specialRender = False
         self.automated = automated
         self.quests = []
         self.name = name

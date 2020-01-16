@@ -157,9 +157,6 @@ shownStarvationWarning = False
 
 pauseGame = False
 
-global specialRender
-specialRender = False
-
 '''
 handle a keystroke
 bad code: there are way too much lines of code in this function
@@ -897,8 +894,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             loop.draw_screen()
             lastRedraw = time.time()
 
-        global specialRender
-        specialRender = False
+        char.specialRender = False
 
         # doesn't open the dev menu and toggles rendering mode instead
         # bad code: code should act as advertised
@@ -930,14 +926,14 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
         # open the help screen
         if key in (commandChars.show_help):
-            specialRender = True        
+            char.specialRender = True        
             pauseGame = True
 
     # render submenues
     if charState["submenue"]:
 
         # set flag to not render the game
-        specialRender = True        
+        char.specialRender = True        
         pauseGame = True
 
         # let the submenu handle the keystroke
@@ -952,14 +948,14 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
         if done:
             charState["submenue"] = None
             pauseGame = False
-            specialRender = False
+            char.specialRender = False
             doAdvanceGame = False
 
     if noAdvanceGame:
         return
         
     # render the game
-    if not specialRender:
+    if not char.specialRender:
         
         """
         # advance the game
@@ -2266,18 +2262,19 @@ def gameLoop(loop,user_data):
             noAdvanceGame = True
             state = char.macroState
 
-            key = state["commandKeyQueue"][0]
-            while isinstance(key[0],list) or isinstance(key[0],tuple) or key[0] in ("lagdetection","lagdetection_"):
+            if len(state["commandKeyQueue"]):
+                key = state["commandKeyQueue"][0]
+                while isinstance(key[0],list) or isinstance(key[0],tuple) or key[0] in ("lagdetection","lagdetection_"):
+                    if len(state["commandKeyQueue"]):
+                        key = state["commandKeyQueue"][0]
+                        state["commandKeyQueue"].remove(key)
+                    else:
+                        key = ("~",[])
+
                 if len(state["commandKeyQueue"]):
                     key = state["commandKeyQueue"][0]
                     state["commandKeyQueue"].remove(key)
-                else:
-                    key = ("~",[])
-
-            if len(state["commandKeyQueue"]):
-                key = state["commandKeyQueue"][0]
-                state["commandKeyQueue"].remove(key)
-                processInput(key,charState=state,noAdvanceGame=noAdvanceGame,char=char)
+                    processInput(key,charState=state,noAdvanceGame=noAdvanceGame,char=char)
 
         text = ""
         for cmd in mainChar.macroState["commandKeyQueue"]:
@@ -2287,10 +2284,8 @@ def gameLoop(loop,user_data):
             text += str(cmd[0])
         footer.set_text((urwid.AttrSpec("default","default"),text))
 
-        global specialRender
-            
         # render the game
-        if not specialRender:
+        if not mainChar.specialRender:
             
             """
             global shownStarvationWarning

@@ -3266,7 +3266,7 @@ class InfoScreen(Item):
             self.submenue = interaction.TextMenu("\n\nFood production is based on vat maggots. Vat maggots can be harvested from trees.\nActivate the tree and a vat maggot will be dropped to the east of the tree.\n\nvat maggots are processed into bio mass using a maggot fermenter.\nPlace 10 vat maggots left/west to the maggot fermenter and activate it to produce 1 bio mass.\n\nThe bio mass is processed into press cake using a bio press.\nPlace 10 biomass left/west to the bio press and activate it to produce one press cake.\n\nThe press cake is processed into goo by a goo producer. Place 10 press cakes west/left to the goo producer and a goo dispenser to the right/east of the goo producer.\nActivate the goo producer to add a charge to the goo dispenser.\n\nIf the goo dispenser is charged, you can fill your flask by having it in your inventory and activating the goo dispenser.\n\n")
             self.character.macroState["submenue"] = self.submenue
         elif selection == "level1_machines_energy":
-            self.submenue = interaction.TextMenu("\n\nEnergy production is steam based. Steam is generated heating a boiler.\nA boiler is represented by OO or 00.\n\nA boiler is heated by placing a furnace next to it and fireing it. A furnace is fired by activating it while having coal in you inventory.\nA furnace is represented by oo or öö.\n\nCoal can be harvested from coal mines. Coal mines are represented by &c.\nActivate it and a piece of coal will be outputted to the right/east.\ncoal is represented by sc.")
+            self.submenue = interaction.TextMenu("\n\nEnergy production is steam based. Steam is generated heating a boiler.\nA boiler is represented by OO or 00.\n\nA boiler is heated by placing a furnace next to it and fireing it. A furnace is fired by activating it while having coal in you inventory.\nA furnace is represented by oo or öö.\n\nCoal can be harvested from coal mines. Coal mines are represented by &c.\nActivate it and a piece of coal will be outputted to the right/east.\ncoal is represented by sc.\n\n")
             self.character.macroState["submenue"] = self.submenue
 
     def l2Info(self):
@@ -3275,7 +3275,6 @@ class InfoScreen(Item):
 
         options.append(("level2_multiplier","action multipliers"))
         options.append(("level2_rooms","room creation"))
-        options.append(("level2_machines","machines"))
 
         self.submenue = interaction.SelectionMenu("select the information you need",options)
         self.character.macroState["submenue"] = self.submenue
@@ -3291,14 +3290,6 @@ class InfoScreen(Item):
         elif selection == "level2_rooms":
             self.submenue = interaction.TextMenu("\n\nmany machines only work within rooms. You can build new rooms.\nRooms are rectangular and have one door.\n\nYou can build new rooms. Prepare by placing walls and a door in the form of a rectangle on the ground.\n\nPlace a room builder within the walls and activate it to create a room from the basic items.\n\n")
             self.character.macroState["submenue"] = self.submenue
-        elif selection == "level2_machines":
-            options = []
-
-            options.append(("level2_machines_blueprinter","blueprinter"))
-
-            self.submenue = interaction.SelectionMenu("select the information you need",options)
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.stepLevel1Machines
         else:
             self.character.messages.append("unknown selection: "+selection)
 
@@ -3308,6 +3299,7 @@ class InfoScreen(Item):
 
         options.append(("level3_macrosBasic","macro basics"))
         options.append(("level3_macrosExtra","macro extra"))
+        options.append(("level3_macrosShortcuts","macro shortCuts"))
 
         self.submenue = interaction.SelectionMenu("select the information you need",options)
         self.character.macroState["submenue"] = self.submenue
@@ -3322,6 +3314,9 @@ class InfoScreen(Item):
             self.character.macroState["submenue"] = self.submenue
         elif selection == "level3_macrosExtra":
             self.submenue = interaction.TextMenu("\n\nMacros can be combined with each other. You can do this by replaying a macro while recording a macro\nFor example -qaaa- will record aaa to the buffer q.\nPressing -wddd_q- will record ddd_q to the buffer w. Pressing _w will be the same as dddaaa\nThe macro are referenced not copied. This means overwriting a macro will change alle macros referencing it. \n\nYou also can use multipliers within and with macros.\nPressing 5_q for example is the same as _q_q_q_q_q\n\n")
+            self.character.macroState["submenue"] = self.submenue
+        elif selection == "level3_macrosShortcuts":
+            self.submenue = interaction.TextMenu("\n\nThere are some shortcuts that are usefull in combination with macros.\n\nctrl-d - aborts running the current macro\nctrl-p - pauses/unpauses running the current macro\nctrl-k writes macros fo disk\nctrl-o loads macros from disk\nctrl-x - saves and exits the game without interrupting running macros\n\n")
             self.character.macroState["submenue"] = self.submenue
         else:
             self.character.messages.append("unknown selection: "+selection)
@@ -3342,7 +3337,7 @@ class InfoScreen(Item):
     def level4_selection(self):
 
         if selection == "level4_npcCreation":
-            self.submenue = interaction.TextMenu("\n\nYou can spawn new npcs. Npcs ar\n\n")
+            self.submenue = interaction.TextMenu("\n\nYou can spawn new npcs. Npcs work just like your main character\nNpcs are generated from growth tanks. You need to activate the growth tank with a full flask in your inventory\nActivate the filled growth tank to spwan the npc. \n\n")
             self.character.macroState["submenue"] = self.submenue
         else:
             self.character.messages.append("unknown selection: "+selection)

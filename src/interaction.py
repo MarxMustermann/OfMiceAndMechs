@@ -379,8 +379,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             charState["commandKeyQueue"] = commands+charState["commandKeyQueue"]
 
             charState["doNumber"] = False
-
-            key = commandChars.ignore
+            return
 
     # save and quit
     if key in (commandChars.quit_normal, commandChars.quit_instant):
@@ -470,6 +469,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
         # handle cinematics
         if len(cinematics.cinematicQueue):
+            char.specialRender = True
             
             # get current cinematic
             cinematic = cinematics.cinematicQueue[0]
@@ -2325,6 +2325,7 @@ def gameLoop(loop,user_data):
             if (useTiles):
                 canvas.setPygameDisplay(pydisplay,pygame,tileSize)
             header.set_text((urwid.AttrSpec("default","default"),renderHeader(mainChar)))
+            footer.set_text((urwid.AttrSpec("default","default"),"satiation: "+str(mainChar.satiation)))
         
     loop.set_alarm_in(0.0001, gameLoop)
 

@@ -379,19 +379,22 @@ class Scrap(Item):
     almost straightforward state initialization
     '''
     def __init__(self,xPosition=0,yPosition=0,amount=1,name="scrap",creator=None):
-        self.amount = amount
+
+        self.amount = 1
 
         super().__init__(displayChars.scrap_light,xPosition,yPosition,creator=creator,name=name)
-        self.bolted = False
-
-        self.setWalkable()
-
+        
         # set up metadata for saveing
         self.attributesToStore.extend([
                "amount"])
-
-        # bad code: repetetive and easy to forgett
+        
         self.initialState = self.getState()
+
+        self.bolted = False
+
+        self.amount = amount
+
+        self.setWalkable()
 
     '''
     move the item and leave residue

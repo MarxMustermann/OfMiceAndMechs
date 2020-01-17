@@ -2154,6 +2154,31 @@ class ProductionArtwork(Item):
         new.bolted = False
         self.room.addItems([new])
 
+    def getLongInfo(self):
+        text = """
+This is a one of its kind machine. It cannot be reproduced and was created by an artisan.
+This machine can build almost anything, but is very slow.
+
+Prepare for production by placing metal bars to the west/left of this machine.
+Activate the machine to start producing. You will be shown a list of things to produce.
+Select the thing to produce and confirm.
+
+After using this machine you need to wait %s ticks till you can use this machine again.
+"""%(self.coolDown,)
+
+        coolDownLeft = self.coolDown-(gamestate.tick-self.coolDownTimer)
+        if coolDownLeft > 0:
+            text += """
+Currently you need to wait %s ticks to use this machine again.
+
+"""%(coolDownLeft,)
+        else:
+            text += """
+Currently you do not have to wait to use this machine.
+
+"""
+        return text
+
 '''
 scrap to metal bar converter
 '''
@@ -2825,6 +2850,48 @@ class MachineMachine(Item):
         new.bolted = False
         self.room.addItems([new])
 
+    def getLongInfo(self):
+        text = """
+This machine produces machines that build machines. It needs blueprints to do that.
+
+You can add blueprints by activating the machine while having a blueprint in your inventory.
+After activation select "insert blueprint" and the blueprint will be added.
+
+You can produce machines for blueprints that were added.
+Prepare for production by placing metal bars to the west/left of this machine.
+Activate the machine to start producing. You will be shown a list of things to produce.
+Select the thing to produce and confirm.
+
+After using this machine you need to wait %s ticks till you can use this machine again.
+"""%(self.coolDown,)
+
+        coolDownLeft = self.coolDown-(gamestate.tick-self.coolDownTimer)
+        if coolDownLeft > 0:
+            text += """
+Currently you need to wait %s ticks to use this machine again.
+
+"""%(coolDownLeft,)
+        else:
+            text += """
+Currently you do not have to wait to use this machine.
+
+"""
+
+        if len(self.endProducts):
+            text += """
+This machine has blueprints for:
+
+"""
+            for itemType in self.endProducts:
+                text += "* %s\n"%(itemType)
+            text += "\n"
+        else:
+            text += """
+This machine cannot produce anything since there were no blueprints added to the machine
+
+"""
+        return text
+
 '''
 '''
 class Machine(Item):
@@ -2901,6 +2968,8 @@ class Machine(Item):
         super().setState(state)
 
         self.setDescription()
+
+
 
 '''
 '''

@@ -772,6 +772,9 @@ class Character(src.saveing.Saveable):
     advance the character one tick
     """
     def advance(self):
+        if self.stasis:
+            return
+
         # smooth over impossible state
         while self.events and gamestate.tick > self.events[0].tick:
             event = self.events[0]

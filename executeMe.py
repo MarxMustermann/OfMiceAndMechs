@@ -522,6 +522,7 @@ else:
 
 # start the interaction loop of the underlying library
 try:
+    input("game ready press key to start")
     interaction.loop.run()
 except:
     if musicThread:

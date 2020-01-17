@@ -369,6 +369,9 @@ class Item(src.saveing.Saveable):
 
         return state
 
+    def getLongInfo(self):
+        return
+
 '''
 crushed something, basically raw metal
 '''

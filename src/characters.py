@@ -759,6 +759,9 @@ class Character(src.saveing.Saveable):
         self.messages.append(item.description)
         if item.description != item.getDetailedInfo():
             self.messages.append(item.getDetailedInfo())
+        if item.getLongInfo():
+            self.submenue = interaction.TextMenu(item.getLongInfo())
+            self.macroState["submenue"] = self.submenue
 
         # notify listeners
         self.changed("examine",item)

@@ -102,6 +102,7 @@ class Character(src.saveing.Saveable):
         self.questsDone = []
         self.solvers = []
         self.aliances = []
+        self.stasis = False
 
         # generate the id for this object
         if characterId:
@@ -120,7 +121,8 @@ class Character(src.saveing.Saveable):
         self.attributesToStore.extend([
                "gotBasicSchooling","gotMovementSchooling","gotInteractionSchooling","gotExamineSchooling",
                "xPosition","yPosition","name","satiation","unconcious","reputation","tutorialStart",
-               "isMilitary","hasFloorPermit","dead","deathReason","automated","watched","solvers","questsDone"])
+               "isMilitary","hasFloorPermit","dead","deathReason","automated","watched","solvers","questsDone",
+               "stasis",])
         self.objectsToStore.append("serveQuest")
         self.objectsToStore.append("room")
 

@@ -3584,6 +3584,73 @@ class CoalMine(Item):
         new.bolted = False
         self.terrain.addItems([new])
 
+'''
+'''
+class StasisTank(Item):
+    type = "StasisTank"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="stasis tank",creator=None):
+        self.character = None
+        super().__init__("&c",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = True
+        self.walkable = False
+        self.character = None
+
+    def apply(self,character):
+        if not self.room:
+            messages.append("you can not use item outside of rooms")
+            return
+
+        if self.character:
+            self.room.addCharacter(self.character,self.xPosition,self.yPosition+1)
+            self.character.stasis = False
+            self.character = None
+        else:
+            self.character = character
+            self.character.stasis = True
+            self.room.removeCharacter(character)
+
+    def getState(self):
+        state = super().getState()
+
+        if self.character:
+            state["character"] = self.character.getState()
+        else:
+            state["character"] = None
+
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+
+        if "character" in state and state["character"]:
+            char = characters.Character(creator=void)
+            char.setState(state["character"])
+            loadingRegistry.register(char)
+
+            self.character = char
+        else:
+            state["character"] = None
+
+    def getLongInfo(self):
+        text = """
+
+This machine allow to enter stasis. In stasis you do not need food and can not do anything.
+
+You cannot leave the stasis tank on your own.
+
+If the stasis tank is empty you can activate it to enter the stasis tank.
+
+If the stasis tank is occupied, you can activate it to eject the character from the tank.
+The ejected character will be placed to the south of the stasis tank and will start to act again.
+
+"""
+        return text
+        
 
 # maping from strings to all items
 # should be extendable
@@ -3647,6 +3714,7 @@ itemMap = {
             "RoomBuilder":RoomBuilder,
             "BluePrinter":BluePrinter,
             "BluePrint":BluePrint,
+            "StasisTank":StasisTank,
 }
 
 producables = {

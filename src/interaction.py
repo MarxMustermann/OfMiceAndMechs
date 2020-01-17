@@ -2266,16 +2266,23 @@ def gameLoop(loop,user_data):
     if not multi_currentChar:
         multi_currentChar = mainChar
     if multi_chars == None:
-        multi_chars = terrain.characters[:]
-        for room in terrain.rooms:
-            for character in room.characters[:]:
-                if not character in multi_chars:
-                    multi_chars.append(character)
+        multi_chars = []
+
+    for char in terrain.characters[:]:
+        if not char in multi_chars:
+            multi_chars.append(char)
+
+    for room in terrain.rooms:
+        for character in room.characters[:]:
+            if not character in multi_chars:
+                multi_chars.append(character)
 
     if mainChar.macroState["commandKeyQueue"]:
         advanceGame()
         for char in multi_chars:
-            noAdvanceGame = True
+            if char.stasis:
+                continue
+
             state = char.macroState
 
             if len(state["commandKeyQueue"]):
@@ -2290,7 +2297,7 @@ def gameLoop(loop,user_data):
                 if len(state["commandKeyQueue"]):
                     key = state["commandKeyQueue"][0]
                     state["commandKeyQueue"].remove(key)
-                    processInput(key,charState=state,noAdvanceGame=noAdvanceGame,char=char)
+                    processInput(key,charState=state,noAdvanceGame=True,char=char)
 
         text = ""
         for cmd in mainChar.macroState["commandKeyQueue"]:
@@ -2298,6 +2305,7 @@ def gameLoop(loop,user_data):
             if isinstance(item,list) or isinstance(item,tuple) or item in ("lagdetection","lagdetection_"):
                 continue
             text += str(cmd[0])
+        text += " | satiation: "+str(mainChar.satiation)
         footer.set_text((urwid.AttrSpec("default","default"),text))
 
         # render the game
@@ -2325,7 +2333,6 @@ def gameLoop(loop,user_data):
             if (useTiles):
                 canvas.setPygameDisplay(pydisplay,pygame,tileSize)
             header.set_text((urwid.AttrSpec("default","default"),renderHeader(mainChar)))
-            footer.set_text((urwid.AttrSpec("default","default"),"satiation: "+str(mainChar.satiation)))
         
     loop.set_alarm_in(0.0001, gameLoop)
 

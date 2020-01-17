@@ -1,5 +1,9 @@
 # news
 
+### commit 1302-1574
+
+A lot of things happened. Multiple new modes were added and i developed a new gameplay mechanism. Please check the commits for details, sry.
+
 ### commit 1203-1302
 
 These commits were a bugfix code enhancement round.

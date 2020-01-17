@@ -472,6 +472,9 @@ if not args.debug and not interaction.submenue and not loaded:
 
         - a pipedream
 
+
+    press space to continue
+
 """
     openingCinematic = cinematics.TextCinematic(text,rusty=True,scrolling=True,creator=void)
     cinematics.cinematicQueue.insert(0,openingCinematic)

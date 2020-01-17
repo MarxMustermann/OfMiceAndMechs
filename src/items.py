@@ -3437,6 +3437,7 @@ class BluePrinter(Item):
                 [["Sheet","pusher"],"Sorter"],
                 [["Stripe","Connector"],"Display"],
                 [["GooFlask","Tank"],"GrowthTank"],
+                [["Coil","Heater"],"StasisTank"],
 
                 [["Scrap","MetalBars"],"Scraper"],
                 [["Sheet","MetalBars"],"Tank"],

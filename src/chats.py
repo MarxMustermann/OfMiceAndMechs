@@ -1373,8 +1373,9 @@ class ChatMenu(Chat):
         self.partner = partner
         self.subMenu = None
         self.skipTurn = False
+        self.macro = None
         super().__init__()
-        self.objectsToStore.append("partner")
+        self.objectsToStore.extend(["partner","macro"])
 
     '''
     get state as dictionary
@@ -1471,6 +1472,8 @@ class ChatMenu(Chat):
                         options.append((option,option.dialogName))
                     else:
                         options.append((option,option["dialogName"]))
+                options.append(("copyMacros","copy my macros"))
+                options.append(("runMacro","run a macro"))
 
                 # add default dialog options
                 if not self.partner.silent:
@@ -1502,6 +1505,15 @@ class ChatMenu(Chat):
                     self.subMenu = submenue
                     submenue.handleKey(key)
                     return False
+                elif self.selection == "copyMacros":
+                    self.partner.macroState["macros"] = mainChar.macroState["macros"]
+                    mainChar.messages.append("copy macros")
+                    return True
+                elif self.selection == "runMacro":
+                    submenue = src.interaction.OneKeystokeMenu(text = "press key for the macro to run")
+                    self.subMenu = submenue
+                    self.subMenu.followUp = self.runMacro
+                    submenue.handleKey(key)
                 elif self.selection == "exit":
                     # end the conversation
                     self.state = "done"
@@ -1525,6 +1537,19 @@ class ChatMenu(Chat):
             self.set_text((urwid.AttrSpec("default","default"),self.persistentText))
 
         return False
+
+    def runMacro(self):
+
+        if not self.subMenu.keyPressed in self.partner.macroState["macros"]:
+            mainChar.messages.append("no macro found")
+            return
+
+        commands = []
+        for command in self.partner.macroState["macros"][self.subMenu.keyPressed]:
+            commands.append((command,[]))
+        self.partner.macroState["commandKeyQueue"] = commands
+
+        mainChar.messages.append("run macros - "+self.subMenu.keyPressed)
 
 # a map alowing to get classes from strings
 chatMap = {

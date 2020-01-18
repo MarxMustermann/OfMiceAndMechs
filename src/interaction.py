@@ -802,7 +802,11 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                 else:
                     # activate the marked item
                     if charState["itemMarkedLast"]:
-                        charState["itemMarkedLast"].apply(char)
+                        try:
+                            charState["itemMarkedLast"].apply(char)
+                        except:
+                            print(charState["itemMarkedLast"])
+                            pass
 
                     # activate an item on floor
                     else:
@@ -858,7 +862,11 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                     else:
                         # get the position to pickup from
                         if charState["itemMarkedLast"]:
-                            pos = (charState["itemMarkedLast"].xPosition,charState["itemMarkedLast"].yPosition)
+                            try:
+                                pos = (charState["itemMarkedLast"].xPosition,charState["itemMarkedLast"].yPosition)
+                            except:
+                                print(charState["itemMarkedLast"])
+                                pos = (0,0)
                         else:
                             pos = (char.xPosition,char.yPosition)
 

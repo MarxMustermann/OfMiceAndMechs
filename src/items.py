@@ -3063,7 +3063,9 @@ class Drill(Item):
 
 
         # spawn new item
-        new = Scrap(self.xPosition,self.yPosition,3,creator=self)
+        possibleProducts = [Scrap,Coal,Scrap,Coil,Scrap,Nook,Scrap,Sheet,Scrap,Rod,Scrap,Bolt,Scrap,Stripe,Scrap,]
+        productIndex = gamestate.tick%len(possibleProducts)
+        new = possibleProducts[productIndex](self.xPosition,self.yPosition,creator=self)
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
         new.bolted = False

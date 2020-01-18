@@ -2057,6 +2057,39 @@ class TextMenu(SubMenu):
 
         return False
 
+'''
+'''
+class OneKeystokeMenu(SubMenu):
+    type = "OneKeystokeMenu"
+    
+    def __init__(self, text = ""):
+        super().__init__()
+        self.text = text
+        self.firstRun = True
+        self.keyPressed = ""
+        self.done = False
+
+    '''
+    '''
+    def handleKey(self, key):
+
+        # show info
+        header.set_text((urwid.AttrSpec("default","default"),""))
+        self.persistentText = ""
+        self.persistentText += self.text
+        main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+
+        # exit the submenu
+        if not key in ("~",) and not self.firstRun:
+            self.keyPressed = key
+            if self.followUp:
+                self.followUp()
+            self.done = True
+            return True
+
+        self.firstRun = False
+
+        return False
 
 '''
 return the help text
@@ -2430,6 +2463,7 @@ subMenuMap = {
                "AdvancedQuestMenu":AdvancedQuestMenu,
                "HelpMenu":HelpMenu,
                "TextMenu":TextMenu,
+               "OneKeystokeMenu":OneKeystokeMenu,
              }
 
 '''

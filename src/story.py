@@ -6,6 +6,7 @@
 ##############################################################################
 
 import src.saveing
+import src.rooms
 
 phasesByName = None
 gamestate = None
@@ -2664,6 +2665,12 @@ class BuildBase(BasicPhase):
             terrain.addCharacter(mainChar,65,111)
 
         self.miniBase = terrain.rooms[0]
+
+        import json
+        with open("states/theftBase1.json","r") as stateFile:
+            theft1BaseState = json.loads(stateFile.read())
+
+        terrain.addRoom(src.rooms.getRoomFromState(theft1BaseState,terrain))
 
         mainChar.addListener(self.checkRoomEnteredMain)
 

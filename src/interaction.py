@@ -203,7 +203,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
     if not "varActions" in charState:
         charState["varActions"] = []
 
-    if key == "%":
+    if key == "$":
         charState["varActions"].append({"outOperator":None})
         if charState["recordingTo"] and not "norecord" in flags:
             charState["macros"][charState["recordingTo"]].append(key)
@@ -276,15 +276,15 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
         charState["ifParam1"] = []
     if not "ifParam2" in charState:
         charState["ifParam2"] = []
-    if key in ("$",):
+    if key in ("%",):
         if charState["recordingTo"] and not "norecord" in flags:
-            charState["macros"][charState["recordingTo"]].append("$")
+            charState["macros"][charState["recordingTo"]].append("%")
         charState["ifCondition"].append(None)
         charState["ifParam1"].append([])
         charState["ifParam2"].append([])
         return
 
-    if len(charState["ifCondition"]) and not key in ("$","lagdetection","lagdetection_"):
+    if len(charState["ifCondition"]) and not key in ("%","lagdetection","lagdetection_"):
         if charState["recordingTo"] and not "norecord" in flags:
             charState["macros"][charState["recordingTo"]].append(key)
         if charState["ifCondition"][-1] == None:
@@ -360,7 +360,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
         charState["number"] += key
         key = commandChars.ignore
 
-    if key in ("§",):
+    if key in ("%",):
         charState["loop"].append(2)
         return
     
@@ -2352,6 +2352,17 @@ def keyboardListener(key):
 
         mainChar = newChar
         state = mainChar.macroState
+
+    elif key == "ctrl w":
+        if not mainChar.room:
+            return
+        import json
+        state = mainChar.room.getState()
+        serializedState = json.dumps(state, indent = 10, sort_keys = True)
+
+        with open("roomExport.json","w") as exportFile:
+            exportFile.write(serializedState)
+
     else:
         show_or_exit(key,charState=state)
 
@@ -2389,9 +2400,13 @@ def gameLoop(loop,user_data):
                 multi_chars.append(character)
 
     if mainChar.macroState["commandKeyQueue"]:
-        advanceGame()
+        if not len(cinematics.cinematicQueue):
+            advanceGame()
         for char in multi_chars:
             if char.stasis:
+                continue
+
+            if len(cinematics.cinematicQueue) and not char == mainChar:
                 continue
 
             state = char.macroState

@@ -200,6 +200,76 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
     if key == "esc":
         charState["replay"] = []
 
+    if not "varActions" in charState:
+        charState["varActions"] = []
+
+    if key == "%":
+        charState["varActions"].append({"outOperator":None})
+        if charState["recordingTo"] and not "norecord" in flags:
+            charState["macros"][charState["recordingTo"]].append(key)
+        return
+    if charState["varActions"]:
+
+        if charState["recordingTo"] and not "norecord" in flags:
+            charState["macros"][charState["recordingTo"]].append(key)
+
+        lastVarAction = charState["varActions"][-1]
+        if lastVarAction["outOperator"] == None:
+            if key == "=":
+                lastVarAction["outOperator"] = True
+                return
+            else:
+                lastVarAction["outOperator"] = False
+                lastVarAction["register"] = None
+                lastVarAction["action"] = None
+                lastVarAction["number"] = ""
+
+        if lastVarAction["outOperator"] == True:
+            def getValue():
+                if not key in char.registers:
+                    char.messages.append("no value in register using %s"%(key,))
+                    return 0
+
+                if char.registers[key] < 0:
+                    char.messages.append("negative value in register using %s"%(key,))
+                    return 0
+
+                char.messages.append("found value %s for register using %s"%(char.registers[key],key,))
+                return char.registers[key]
+
+            value = getValue()
+
+            valueCommand = []
+            for numChar in str(value):
+                valueCommand.append((numChar,["norecord"]))
+
+            char.messages.append(valueCommand)
+
+            charState["varActions"].pop()
+            charState["commandKeyQueue"] = valueCommand + charState["commandKeyQueue"]
+            return
+        else:
+            if lastVarAction["register"] == None:
+                lastVarAction["register"] = key
+                return
+            if lastVarAction["action"] == None:
+                lastVarAction["action"] = key
+                return
+            if key in "0123456789":
+                lastVarAction["number"] += key
+                return
+
+            if lastVarAction["action"] == "=":
+                 char.registers[lastVarAction["register"]] = int(lastVarAction["number"])
+            if lastVarAction["action"] == "+":
+                 char.registers[lastVarAction["register"]] += int(lastVarAction["number"])
+            if lastVarAction["action"] == "-":
+                 char.registers[lastVarAction["register"]] -= int(lastVarAction["number"])
+
+            charState["commandKeyQueue"] = [(key,flags+["norecord"])] + charState["commandKeyQueue"]
+            charState["varActions"].pop()
+            return
+
     if not "ifCondition" in charState:
         charState["ifCondition"] = []
     if not "ifParam1" in charState:

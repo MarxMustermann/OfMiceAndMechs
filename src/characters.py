@@ -103,6 +103,7 @@ class Character(src.saveing.Saveable):
         self.solvers = []
         self.aliances = []
         self.stasis = False
+        self.registers = {}
 
         # generate the id for this object
         if characterId:
@@ -122,7 +123,7 @@ class Character(src.saveing.Saveable):
                "gotBasicSchooling","gotMovementSchooling","gotInteractionSchooling","gotExamineSchooling",
                "xPosition","yPosition","name","satiation","unconcious","reputation","tutorialStart",
                "isMilitary","hasFloorPermit","dead","deathReason","automated","watched","solvers","questsDone",
-               "stasis",])
+               "stasis","registers",])
         self.objectsToStore.append("serveQuest")
         self.objectsToStore.append("room")
 

@@ -188,6 +188,49 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
     if type(key) == tuple:
         return
 
+    if char.enumerateState:
+        if char.enumerateState[-1]["type"] == None:
+            if key == "p":
+
+                if not "x" in char.registers:
+                    char.registers["x"] = [0]
+                char.registers["x"][-1] = 0
+                if not "y" in char.registers:
+                    char.registers["y"] = [0]
+                char.registers["y"][-1] = 0
+
+                char.enumerateState.pop()
+
+                if not char.container:
+                    char.messages.append("character is nowhere")
+                    return
+
+                listItems = char.container.itemsOnFloor
+
+                drillFound = None
+                for item in listItems:
+                    if isinstance(item,src.items.Drill):
+                        drillFound = item
+                        break
+
+                if not drillFound:
+                    char.messages.append("no drill found")
+                    return
+
+                options = []
+                for item in listItems:
+                    options.append([item,item.name])
+
+                char.registers["x"][-1] = drillFound.xPosition
+                char.registers["y"][-1] = drillFound.yPosition
+
+                char.messages.append("drill found at %s/%s"%(char.registers["x"][-1],char.registers["y"][-1]))
+                return
+                
+            else:
+                char.enumerateState.pop()
+            return
+
     if char == mainChar:
         text = ""
         for cmd in charState["commandKeyQueue"]:
@@ -230,12 +273,12 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                     char.messages.append("no value in register using %s"%(key,))
                     return 0
 
-                if char.registers[key] < 0:
+                if char.registers[key][-1] < 0:
                     char.messages.append("negative value in register using %s"%(key,))
                     return 0
 
-                char.messages.append("found value %s for register using %s"%(char.registers[key],key,))
-                return char.registers[key]
+                char.messages.append("found value %s for register using %s"%(char.registers[key][-1],key,))
+                return char.registers[key][-1]
 
             value = getValue()
 
@@ -260,11 +303,19 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                 return
 
             if lastVarAction["action"] == "=":
-                 char.registers[lastVarAction["register"]] = int(lastVarAction["number"])
+                if not lastVarAction["register"] in char.registers:
+                    char.registers[lastVarAction["register"]] = [0]
+                char.registers[lastVarAction["register"]][-1] = int(lastVarAction["number"])
             if lastVarAction["action"] == "+":
-                 char.registers[lastVarAction["register"]] += int(lastVarAction["number"])
+                 char.registers[lastVarAction["register"]][-1] += int(lastVarAction["number"])
             if lastVarAction["action"] == "-":
-                 char.registers[lastVarAction["register"]] -= int(lastVarAction["number"])
+                 char.registers[lastVarAction["register"]][-1] -= int(lastVarAction["number"])
+            if lastVarAction["action"] == "/":
+                 char.registers[lastVarAction["register"]][-1] //= int(lastVarAction["number"])
+            if lastVarAction["action"] == "%":
+                 char.registers[lastVarAction["register"]][-1] %= int(lastVarAction["number"])
+            if lastVarAction["action"] == "*":
+                 char.registers[lastVarAction["register"]][-1] *= int(lastVarAction["number"])
 
             charState["commandKeyQueue"] = [(key,flags+["norecord"])] + charState["commandKeyQueue"]
             charState["varActions"].pop()
@@ -458,6 +509,11 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
     if key in ('S',):
         gamestate.save()
+        return
+
+    if key in ('o',):
+        char.enumerateState.append({"type":None}) 
+        return
 
     # bad code: global variables
     global lastLagDetection
@@ -1549,7 +1605,7 @@ class InventoryMenu(SubMenu):
                         text = "you activate the "+mainChar.inventory[self.subMenu.getSelection()].name
                         self.persistentText = (urwid.AttrSpec("default","default"),text)
                         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
-                        char.messages.append(text)
+                        mainChar.messages.append(text)
                         mainChar.inventory[self.subMenu.getSelection()].apply(mainChar)
                     self.activate = False
                 if self.drop:

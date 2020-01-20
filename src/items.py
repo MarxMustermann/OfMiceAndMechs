@@ -2108,7 +2108,7 @@ class ProductionArtwork(Item):
             character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
 
-        excludeList = ("ProductionArtwork","Machine","Tree","Scrap","Corpse","Acid","Item","Pile","InfoScreen","CoalMine","RoomBuilder","BluePrint",)
+        excludeList = ("ProductionArtwork","Machine","Tree","Scrap","Corpse","Acid","Item","Pile","InfoScreen","CoalMine","BluePrint",)
 
         options = []
         for key,value in itemMap.items():
@@ -3655,6 +3655,96 @@ The ejected character will be placed to the south of the stasis tank and will st
         return text
         
 
+'''
+'''
+class PositioningDevice(Item):
+    type = "PositioningDevice"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="positioning device",creator=None):
+        super().__init__("op",xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+
+    def apply(self,character):
+
+        if not "x" in character.registers:
+            character.registers["x"] = [0]
+        character.registers["x"][-1] = character.xPosition
+        if not "y" in character.registers:
+            character.registers["y"] = [0]
+        character.registers["y"][-1] = character.yPosition
+
+        character.messages.append("your position is %s/%s"%(character.xPosition,character.yPosition,))
+
+    def getLongInfo(self):
+        text = """
+
+this device allows you to determine your postion. Use it to get your position.
+
+use it to determine your position. Your position will be shown as a message.
+
+Also the position will be written to your registers.
+The x-position will be written to the register x.
+The y-position will be written to the register y.
+
+"""
+        return text
+
+'''
+'''
+class Watch(Item):
+    type = "Watch"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="watch",creator=None):
+        super().__init__("ow",xPosition,yPosition,name=name,creator=creator)
+
+        self.creationTime = 0
+        self.maxSize = 10000
+
+        self.attributesToStore.extend([
+               "creationTime"])
+        
+        self.initialState = self.getState()
+
+        self.bolted = False
+        self.walkable = True
+        try:
+            self.creationTime = gamestate.tick
+        except:
+            pass
+
+    def apply(self,character):
+
+        time = gamestate.tick-self.creationTime
+        while time > self.maxSize:
+            self.creationTime += self.maxSize
+            time -= self.maxSize
+
+        if not "t" in character.registers:
+            character.registers["t"] = [0]
+        character.registers["t"][-1] = gamestate.tick-self.creationTime
+
+        character.messages.append("it shows %s ticks"%(character.registers["t"][-1]))
+
+    def getLongInfo(self):
+        text = """
+
+This device tracks ticks since creation. You can use it to measure time.
+
+Activate it to get a message with the number of ticks passed.
+
+Also the number of ticks will be written to the register t.
+
+"""
+        return text
+
 # maping from strings to all items
 # should be extendable
 itemMap = {
@@ -3718,6 +3808,8 @@ itemMap = {
             "BluePrinter":BluePrinter,
             "BluePrint":BluePrint,
             "StasisTank":StasisTank,
+            "PositioningDevice":PositioningDevice,
+            "Watch":Watch,
 }
 
 producables = {
@@ -3760,7 +3852,6 @@ producables = {
             "Sorter":Sorter,
             "MemoryBank":MemoryBank,
             "MemoryDump":MemoryDump,
-            
         }
 
 '''

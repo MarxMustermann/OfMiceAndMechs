@@ -104,6 +104,7 @@ class Character(src.saveing.Saveable):
         self.aliances = []
         self.stasis = False
         self.registers = {}
+        self.enumerateState = []
 
         # generate the id for this object
         if characterId:

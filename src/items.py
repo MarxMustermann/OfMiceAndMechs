@@ -2749,6 +2749,7 @@ class MachineMachine(Item):
             "Drill",
             "MemoryBank",
             "MemoryDump",
+            "MemoryStack",
             "InfoScreen",
             "RoomBuilder",
         ]
@@ -3172,9 +3173,6 @@ class MemoryBank(Item):
             addition = " (imprinted)"
         self.description = self.baseName+addition
 
-    def setToProduce(self,toProduce):
-        self.setDescription()
-
     '''
     trigger production of a player selected item
     '''
@@ -3202,6 +3200,84 @@ class MemoryBank(Item):
         super().setState(state)
 
         self.setDescription()
+
+'''
+'''
+class MemoryStack(Item):
+    type = "MemoryStack"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="MemoryStack",creator=None):
+
+        self.macros = []
+
+        super().__init__("mS",xPosition,yPosition,name=name,creator=creator)
+
+        self.attributesToStore.extend([
+                "macros"])
+
+        self.initialState = self.getState()
+
+    '''
+    trigger production of a player selected item
+    '''
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        if not self.room:
+            character.messages.append("this machine can not be used within rooms")
+            return
+
+        options = []
+
+        options.append(("p","push macro on stack"))
+        options.append(("l","load/pop macro from stack"))
+
+        self.submenue = interaction.SelectionMenu("what do you want to do?",options)
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.doAction
+
+        self.character = character
+
+    '''
+    '''
+    def doAction(self):
+
+        import copy
+        if self.submenue.getSelection() == "p":
+            self.character.messages.append("push your macro onto the memory stack")
+            self.macros.append(copy.deepcopy(self.character.macroState["macros"]))
+            self.character.messages.append(self.macros)
+        elif self.submenue.getSelection() == "l":
+            self.character.messages.append("you load a macro from the memory stack")
+            self.character.macroState["macros"] = copy.deepcopy(self.macros.pop())
+            self.character.messages.append(self.character.macroState["macros"])
+        else:
+            self.character.messages.append("invalid option")
+
+'''
+'''
+class MemoryReset(Item):
+    type = "MemoryReset"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="MemoryStack",creator=None):
+
+        super().__init__("mR",xPosition,yPosition,name=name,creator=creator)
+
+
+    '''
+    trigger production of a player selected item
+    '''
+    def apply(self,character):
+        character.messages.append("you clear your macros")
+
+        character.macroState["macros"] = {}
+        character.registers = {}
 
 '''
 '''
@@ -3419,6 +3495,115 @@ class InfoScreen(Item):
         else:
             self.character.messages.append("unknown selection: "+selection)
 
+class SimpleRunner(Item):
+    type = "SimpleRunner"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="SimpleRunner",creator=None):
+        super().__init__("Rs",xPosition,yPosition,name=name,creator=creator)
+        self.command = None
+
+        self.attributesToStore.extend([
+                "command"])
+        self.initialState = self.getState()
+
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        if self.command == None:
+            if not len(character.macroState["macros"]):
+                character.messages.append("no macro found - record a macro to store it in this machine")
+
+            options = []
+            for key,value in character.macroState["macros"].items():
+                compressedMacro = ""
+                for keystroke in value:
+                    if len(keystroke) == 1:
+                        compressedMacro += keystroke
+                    else:
+                        compressedMacro += "/"+keystroke+"/"
+                options.append((key,compressedMacro))
+
+            self.submenue = interaction.SelectionMenu("select the macro you want to store",options)
+            character.macroState["submenue"] = self.submenue
+            character.macroState["submenue"].followUp = self.storeMacro
+
+            self.character = character
+        else:
+            import copy
+            convertedCommand = []
+            for item in self.command:
+                convertedCommand.append((item,["norecord"]))
+            character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
+
+    def storeMacro(self):
+        key = self.submenue.selection
+
+        if not key in self.character.macroState["macros"]:
+            self.character.messages.append("command not found in macro")
+            return
+            
+        import copy
+        self.command = copy.deepcopy(self.character.macroState["macros"][key])
+        self.character.messages.append("you store the command into the machine")
+
+class MacroRunner(Item):
+    type = "MacroRunner"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="MacroRunner",creator=None):
+        super().__init__("Rm",xPosition,yPosition,name=name,creator=creator)
+        self.command = None
+
+        self.attributesToStore.extend([
+                "command"])
+        self.initialState = self.getState()
+
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        if self.command == None:
+            if not len(character.macroState["macros"]):
+                character.messages.append("no macro found - record a macro to store it in this machine")
+
+            options = []
+            for key,value in character.macroState["macros"].items():
+                compressedMacro = ""
+                for keystroke in value:
+                    if len(keystroke) == 1:
+                        compressedMacro += keystroke
+                    else:
+                        compressedMacro += "/"+keystroke+"/"
+                options.append((key,compressedMacro))
+
+            self.submenue = interaction.SelectionMenu("select the macro you want to store",options)
+            character.macroState["submenue"] = self.submenue
+            character.macroState["submenue"].followUp = self.storeMacro
+
+            self.character = character
+        else:
+            import copy
+            convertedCommand = []
+            for item in self.command:
+                convertedCommand.append((item,["norecord"]))
+            character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
+
+    def storeMacro(self):
+        key = self.submenue.selection
+
+        if not key in self.character.macroState["macros"]:
+            self.character.messages.append("command not found in macro")
+            return
+            
+        import copy
+        self.command = copy.deepcopy(self.character.macroState["macros"][key])
+        self.character.messages.append("you store the command into the machine")
+
+
 '''
 '''
 class BluePrinter(Item):
@@ -3433,20 +3618,26 @@ class BluePrinter(Item):
         self.text = None
 
         self.reciepes = [
-                [["Stripe","Connector","Rod"],"MemoryBank"],
-                [["Stripe","Connector","Coil"],"MemoryDump"],
+                [["Stripe","Connector","Tank"],"MemoryBank"],
+                [["Stripe","Connector","Puller"],"MemoryDump"],
+                [["Stripe","Connector","Heater"],"SimpleRunner"],
+                [["Stripe","Connector","Pusher"],"MemoryStack"],
+                [["Stripe","Connector","puller"],"MemoryReset"],
 
                 [["Sheet","pusher"],"Sorter"],
                 [["Stripe","Connector"],"Display"],
                 [["GooFlask","Tank"],"GrowthTank"],
                 [["Coil","Heater"],"StasisTank"],
+                [["Nook","Tank"],"MarkerBean"],
+                [["Bolt","Tank"],"PositioningDevice"],
+                [["Bolt","puller"],"Watch"],
 
                 [["Scrap","MetalBars"],"Scraper"],
                 [["Sheet","MetalBars"],"Tank"],
                 [["Coil","MetalBars"],"Heater"],
                 [["Nook","MetalBars"],"Connector"],
-                [["Stripe","MetalBars"],"Pusher"],
-                [["Bolt","MetalBars"],"Puller"],
+                [["Stripe","MetalBars"],"pusher"],
+                [["Bolt","MetalBars"],"puller"],
                 [["Rod","MetalBars"],"GooFlask"],
 
                 [["Tank"],"GooFlask"],
@@ -3515,6 +3706,39 @@ class BluePrinter(Item):
             character.messages.append("unable to produce blueprint from given items")
             return
 
+
+    def getLongInfo(self):
+        text = """
+This machine can store a simple sequence of commands and injects it into characters.
+
+To run the stored command activate the machine and confirm.
+
+If no command was stored in the machine, you can store a command in the machine.
+To store the command, activate the machine and select the macro buffer to store.
+
+"""
+
+        if self.command == None:
+            text += """
+
+There is currently no command stored in the machine
+
+"""
+        else:
+            compressedMacro = ""
+            for keystroke in value:
+                if len(keystroke) == 1:
+                    compressedMacro += keystroke
+                else:
+                    compressedMacro += "/"+keystroke+"/"
+
+            text += """
+
+There command stored in this machine is "%s" 
+
+"""%(compressedMacro)
+
+        return text
 
 '''
 '''
@@ -3810,6 +4034,9 @@ itemMap = {
             "StasisTank":StasisTank,
             "PositioningDevice":PositioningDevice,
             "Watch":Watch,
+            "SimpleRunner":SimpleRunner,
+            "MemoryStack":MemoryStack,
+            "MemoryReset":MemoryReset,
 }
 
 producables = {
@@ -3852,6 +4079,7 @@ producables = {
             "Sorter":Sorter,
             "MemoryBank":MemoryBank,
             "MemoryDump":MemoryDump,
+            "MemoryStack":MemoryStack,
         }
 
 '''

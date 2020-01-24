@@ -105,6 +105,8 @@ class Character(src.saveing.Saveable):
         self.stasis = False
         self.registers = {}
         self.enumerateState = []
+        self.doStackPop = False
+        self.doStackPush = False
 
         # generate the id for this object
         if characterId:
@@ -124,7 +126,7 @@ class Character(src.saveing.Saveable):
                "gotBasicSchooling","gotMovementSchooling","gotInteractionSchooling","gotExamineSchooling",
                "xPosition","yPosition","name","satiation","unconcious","reputation","tutorialStart",
                "isMilitary","hasFloorPermit","dead","deathReason","automated","watched","solvers","questsDone",
-               "stasis","registers",])
+               "stasis","registers","doStackPop","doStackPush"])
         self.objectsToStore.append("serveQuest")
         self.objectsToStore.append("room")
 

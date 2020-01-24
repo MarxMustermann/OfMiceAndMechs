@@ -188,57 +188,137 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
     if type(key) == tuple:
         return
 
+    char.specialRender = False
+
+    if char.doStackPop:
+        if key in char.registers:
+            char.registers[key].pop()
+            if not len(char.registers[key]):
+                del char.registers[key]
+        char.doStackPop = False
+        return
+    if char.doStackPush:
+        if not key in char.registers:
+            char.registers[key] = []
+        char.registers[key].append(0)
+        char.doStackPush = False
+        return
+
     if char.enumerateState:
         if char.enumerateState[-1]["type"] == None:
-            if key == "p":
+            char.enumerateState[-1]["type"] = key
+            if mainChar == char and not "norecord" in flags:
+                header.set_text((urwid.AttrSpec("default","default"),"observe"))
+                main.set_text((urwid.AttrSpec("default","default"),"""
 
-                if not "x" in char.registers:
-                    char.registers["x"] = [0]
-                char.registers["x"][-1] = 0
-                if not "y" in char.registers:
-                    char.registers["y"] = [0]
-                char.registers["y"][-1] = 0
+get position for what thing
 
-                char.enumerateState.pop()
+* d - drill
+* s - scrap
+* f - goo flask
+* c - character
+* m - marker bean
+* t - tree
+* C - coal
 
-                if not char.container:
-                    char.messages.append("character is nowhere")
-                    return
-
-                listItems = char.container.itemsOnFloor
-
-                drillFound = None
-                for item in listItems:
-                    if isinstance(item,src.items.Drill):
-                        drillFound = item
-                        break
-
-                if not drillFound:
-                    char.messages.append("no drill found")
-                    return
-
-                options = []
-                for item in listItems:
-                    options.append([item,item.name])
-
-                char.registers["x"][-1] = drillFound.xPosition
-                char.registers["y"][-1] = drillFound.yPosition
-
-                char.messages.append("drill found at %s/%s"%(char.registers["x"][-1],char.registers["y"][-1]))
-                return
-                
-            else:
-                char.enumerateState.pop()
+"""))
+                footer.set_text((urwid.AttrSpec("default","default"),""))
+                char.specialRender = True
             return
 
-    if char == mainChar:
-        text = ""
-        for cmd in charState["commandKeyQueue"]:
-            item = cmd[0]
-            if isinstance(item,list) or isinstance(item,tuple) or item in ("lagdetection","lagdetection_"):
-                continue
-            text += str(cmd[0])
-        footer.set_text((urwid.AttrSpec("default","default"),text))
+        if char.enumerateState[-1]["type"] == "p":
+            char.messages.append("type:"+key)
+
+            if key == "d":
+                char.enumerateState[-1]["target"] = ["Drill"]
+            elif key == "s":
+                char.enumerateState[-1]["target"] = ["Scrap"]
+            elif key == "f":
+                char.enumerateState[-1]["target"] = ["GooFlask"]
+            elif key == "c":
+                char.enumerateState[-1]["target"] = ["character"]
+            elif key == "m":
+                char.enumerateState[-1]["target"] = ["MarkerBean"]
+            elif key == "t":
+                char.enumerateState[-1]["target"] = ["Tree"]
+            elif key == "C":
+                char.enumerateState[-1]["target"] = ["Coal"]
+            else:
+                char.messages.append("not a valid target")
+                char.enumerateState.pop()
+                return
+
+            if not "a" in char.registers:
+                char.registers["a"] = [0]
+            char.registers["a"][-1] = 0
+            if not "w" in char.registers:
+                char.registers["w"] = [0]
+            char.registers["w"][-1] = 0
+            if not "s" in char.registers:
+                char.registers["s"] = [0]
+            char.registers["s"][-1] = 0
+            if not "d" in char.registers:
+                char.registers["d"] = [0]
+            char.registers["d"][-1] = 0
+
+            if not char.container:
+                char.messages.append("character is nowhere")
+                char.enumerateState.pop()
+                return
+
+            foundItems = []
+
+            if not char.enumerateState[-1]["target"] == ["character"]:
+                listFound = char.container.itemsOnFloor
+
+                for item in listFound:
+                    if not item.type in char.enumerateState[-1]["target"]:
+                        continue
+                    if item.xPosition < char.xPosition-20:
+                        continue
+                    if item.xPosition > char.xPosition+20:
+                        continue
+                    if item.yPosition < char.yPosition-20:
+                        continue
+                    if item.yPosition > char.yPosition+20:
+                        continue
+                    foundItems.append(item)
+
+            if "character" in char.enumerateState[-1]["target"]:
+                listFound = char.container.itemsOnFloor
+                for otherChar in char.container.characters:
+                    if otherChar == char:
+                        continue
+                    if otherChar.xPosition < char.xPosition-20:
+                        continue
+                    if otherChar.xPosition > char.xPosition+20:
+                        continue
+                    if otherChar.yPosition < char.yPosition-20:
+                        continue
+                    if otherChar.yPosition > char.yPosition+20:
+                        continue
+                    foundItems.append(otherChar)
+
+            found = None
+            if len(foundItems):
+                found = foundItems[gamestate.tick%len(foundItems)]
+
+            if not found:
+                char.messages.append("no "+",".join(char.enumerateState[-1]["target"])+" found")
+                char.enumerateState.pop()
+                return
+
+            char.registers["d"][-1] = found.xPosition-char.xPosition
+            char.registers["s"][-1] = found.yPosition-char.yPosition
+            char.registers["a"][-1] = -char.registers["d"][-1]
+            char.registers["w"][-1] = -char.registers["s"][-1]
+
+            char.messages.append(",".join(char.enumerateState[-1]["target"])+" found in direction %sa %ss %sd %sw"%(char.registers["a"][-1],char.registers["s"][-1],char.registers["d"][-1],char.registers["w"][-1],))
+            char.enumerateState.pop()
+            return
+            
+        char.enumerateState.pop()
+        return
 
     if key == "esc":
         charState["replay"] = []
@@ -247,6 +327,26 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
         charState["varActions"] = []
 
     if key == "$":
+        if mainChar == char and not "norecord" in flags:
+            text = """
+
+press key for register to modify or press = to load value from a register
+
+current registers:
+
+"""
+            for key,value in char.registers.items(): 
+                convertedValues = []
+                for item in reversed(value):
+                    convertedValues.append(str(item))
+                text += """
+%s - %s"""%(key,",".join(convertedValues))
+
+            header.set_text((urwid.AttrSpec("default","default"),"registers"))
+            main.set_text((urwid.AttrSpec("default","default"),text))
+            footer.set_text((urwid.AttrSpec("default","default"),""))
+            char.specialRender = True
+
         charState["varActions"].append({"outOperator":None})
         if charState["recordingTo"] and not "norecord" in flags:
             charState["macros"][charState["recordingTo"]].append(key)
@@ -260,6 +360,25 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
         if lastVarAction["outOperator"] == None:
             if key == "=":
                 lastVarAction["outOperator"] = True
+                if mainChar == char and not "norecord" in flags:
+                    text = """
+
+press key for register to load value from
+
+current registers:
+
+"""
+                    for key,value in char.registers.items(): 
+                        convertedValues = []
+                        for item in reversed(value):
+                            convertedValues.append(str(item))
+                        text += """
+%s - %s"""%(key,",".join(convertedValues))
+
+                    header.set_text((urwid.AttrSpec("default","default"),"reading registers"))
+                    main.set_text((urwid.AttrSpec("default","default"),text))
+                    footer.set_text((urwid.AttrSpec("default","default"),""))
+                    char.specialRender = True
                 return
             else:
                 lastVarAction["outOperator"] = False
@@ -294,12 +413,61 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
         else:
             if lastVarAction["register"] == None:
                 lastVarAction["register"] = key
+
+                if mainChar == char and not "norecord" in flags:
+                    text = """
+
+press key for the action you want to do on the register
+
+* = - assign value to register
+* + - add to register
+* - - subtract from register
+* / - divide register
+* * - mulitply register
+* % - apply modulo to register
+
+"""
+                    header.set_text((urwid.AttrSpec("default","default"),"reading registers"))
+                    main.set_text((urwid.AttrSpec("default","default"),text))
+                    footer.set_text((urwid.AttrSpec("default","default"),""))
+                    char.specialRender = True
+
                 return
             if lastVarAction["action"] == None:
                 lastVarAction["action"] = key
+
+                if mainChar == char and not "norecord" in flags:
+                    text = """
+
+input value for this operation ($%s%s)
+
+type number or load value from register
+
+"""%( lastVarAction["register"], lastVarAction["action"])
+                    header.set_text((urwid.AttrSpec("default","default"),"reading registers"))
+                    main.set_text((urwid.AttrSpec("default","default"),text))
+                    footer.set_text((urwid.AttrSpec("default","default"),""))
+                    char.specialRender = True
+
                 return
             if key in "0123456789":
                 lastVarAction["number"] += key
+
+                if mainChar == char and not "norecord" in flags:
+                    text = """
+
+input value for this operation ($%s%s%s)
+
+type number
+
+press any other key to finish
+
+"""%( lastVarAction["register"], lastVarAction["action"], lastVarAction["number"])
+                    header.set_text((urwid.AttrSpec("default","default"),"reading registers"))
+                    main.set_text((urwid.AttrSpec("default","default"),text))
+                    footer.set_text((urwid.AttrSpec("default","default"),""))
+                    char.specialRender = True
+
                 return
 
             if lastVarAction["action"] == "=":
@@ -362,7 +530,23 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                     else:
                         conditionTrue = False
                 if charState["ifCondition"][-1] == "I":
+                    char.messages.append(len(char.inventory))
                     if len(char.inventory) >= 10:
+                        conditionTrue = True
+                    else:
+                        conditionTrue = False
+                if charState["ifCondition"][-1] == ">":
+                    if "c" in char.registers and char.registers["c"][-1] > 0:
+                        conditionTrue = True
+                    else:
+                        conditionTrue = False
+                if charState["ifCondition"][-1] == "<":
+                    if "c" in char.registers and char.registers["c"][-1] < 0:
+                        conditionTrue = True
+                    else:
+                        conditionTrue = False
+                if charState["ifCondition"][-1] == "=":
+                    if "c" in char.registers and "v" in char.registers and char.registers["c"][-1] == char.registers["v"][-1]:
                         conditionTrue = True
                     else:
                         conditionTrue = False
@@ -433,7 +617,33 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
     if key in ("-",):
         if not charState["recording"]:
             char.messages.append("press key to record to")
+            if mainChar == char and not "norecord" in flags:
+                header.set_text((urwid.AttrSpec("default","default"),"observe"))
+                text = """
+
+press key to record to.
+
+current macros:
+
+"""
+            for key,value in charState["macros"].items():
+                compressedMacro = ""
+                for keystroke in value:
+                    if len(keystroke) == 1:
+                        compressedMacro += keystroke
+                    else:
+                        compressedMacro += "/"+keystroke+"/"
+
+                text += """
+%s - %s"""%(key,compressedMacro)
+
+            header.set_text((urwid.AttrSpec("default","default"),"record macro"))
+            main.set_text((urwid.AttrSpec("default","default"),text))
+            footer.set_text((urwid.AttrSpec("default","default"),""))
+            char.specialRender = True
+
             charState["recording"] = True
+            return
         else:
             charState["recording"] = False
             if charState["recordingTo"]:
@@ -482,6 +692,32 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
         return
     if key in ("_",):
+
+        if mainChar == char and not "norecord" in flags:
+            header.set_text((urwid.AttrSpec("default","default"),"observe"))
+            text = """
+
+press key for macro to replay
+
+current macros:
+
+"""
+            for key,value in charState["macros"].items():
+                compressedMacro = ""
+                for keystroke in value:
+                    if len(keystroke) == 1:
+                        compressedMacro += keystroke
+                    else:
+                        compressedMacro += "/"+keystroke+"/"
+
+                text += """
+    %s - %s"""%(key,compressedMacro)
+
+            header.set_text((urwid.AttrSpec("default","default"),"record macro"))
+            main.set_text((urwid.AttrSpec("default","default"),text))
+            footer.set_text((urwid.AttrSpec("default","default"),""))
+            char.specialRender = True
+
         charState["replay"].append(2)
         return
 
@@ -512,7 +748,65 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
         return
 
     if key in ('o',):
+        if mainChar == char and not "norecord" in flags:
+            header.set_text((urwid.AttrSpec("default","default"),"observe"))
+            main.set_text((urwid.AttrSpec("default","default"),"""
+
+select what you want to observe
+
+* p - get position of something
+
+"""))
+            footer.set_text((urwid.AttrSpec("default","default"),""))
+            char.specialRender = True
         char.enumerateState.append({"type":None}) 
+        return
+
+    if key in ('<',):
+        if mainChar == char and not "norecord" in flags:
+            text = """
+
+type key for the register to pop.
+
+current registers
+
+"""
+            for key,value in char.registers.items(): 
+                convertedValues = []
+                for item in reversed(value):
+                    convertedValues.append(str(item))
+                text += """
+%s - %s"""%(key,",".join(convertedValues))
+
+            header.set_text((urwid.AttrSpec("default","default"),"popping registers"))
+            main.set_text((urwid.AttrSpec("default","default"),text))
+            footer.set_text((urwid.AttrSpec("default","default"),""))
+            char.specialRender = True
+
+        char.doStackPop = True
+        return
+    if key in ('>',):
+        if mainChar == char and "norecord" in flags:
+            text = """
+
+type key for the register to push.
+
+current registers
+
+"""
+            for key,value in char.registers.items(): 
+                convertedValues = []
+                for item in reversed(value):
+                    convertedValues.append(str(item))
+                text += """
+%s - %s"""%(key,",".join(convertedValues))
+
+            header.set_text((urwid.AttrSpec("default","default"),"pushing registers"))
+            main.set_text((urwid.AttrSpec("default","default"),text))
+            footer.set_text((urwid.AttrSpec("default","default"),""))
+            char.specialRender = True
+
+        char.doStackPush = True
         return
 
     # bad code: global variables
@@ -595,7 +889,8 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
         # handle cinematics
         if len(cinematics.cinematicQueue):
-            char.specialRender = True
+            if mainChar == char and not "norecord" in flags:
+                char.specialRender = True
             
             # get current cinematic
             cinematic = cinematics.cinematicQueue[0]
@@ -928,11 +1223,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                 else:
                     # activate the marked item
                     if charState["itemMarkedLast"]:
-                        try:
-                            charState["itemMarkedLast"].apply(char)
-                        except:
-                            print(charState["itemMarkedLast"])
-                            pass
+                        charState["itemMarkedLast"].apply(char)
 
                     # activate an item on floor
                     else:
@@ -1056,7 +1347,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
         # open inventory
         if key in (commandChars.show_inventory):
-            charState["submenue"] = InventoryMenu()
+            charState["submenue"] = InventoryMenu(char)
 
         # open the menu for giving quests
         if key in (commandChars.show_quests_detailed):
@@ -1075,7 +1366,8 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
     if charState["submenue"]:
 
         # set flag to not render the game
-        char.specialRender = True        
+        if mainChar == char and not "norecord" in flags:
+            char.specialRender = True        
         pauseGame = True
 
         # let the submenu handle the keystroke
@@ -1586,6 +1878,7 @@ class InventoryMenu(SubMenu):
         self.skipKeypress = False
         self.activate = False
         self.drop = False
+        self.char = char
         super().__init__()
         self.footerText = "press j to activate, press l to drop, press esc to exit"
 
@@ -1598,26 +1891,26 @@ class InventoryMenu(SubMenu):
             self.subMenu.handleKey(key)
             if not self.subMenu.getSelection() == None:
                 if self.activate:
-                    if not "NaiveActivateQuest" in mainChar.solvers:
+                    if not "NaiveActivateQuest" in self.char.solvers:
                         self.persistentText = (urwid.AttrSpec("default","default"),"you do not have the nessecary solver yet")
                         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
                     else:
-                        text = "you activate the "+mainChar.inventory[self.subMenu.getSelection()].name
+                        text = "you activate the "+self.char.inventory[self.subMenu.getSelection()].name
                         self.persistentText = (urwid.AttrSpec("default","default"),text)
                         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
-                        mainChar.messages.append(text)
-                        mainChar.inventory[self.subMenu.getSelection()].apply(mainChar)
+                        self.char.messages.append(text)
+                        self.char.inventory[self.subMenu.getSelection()].apply(self.char)
                     self.activate = False
                 if self.drop:
-                    if not "NaiveDropQuest" in mainChar.solvers:
+                    if not "NaiveDropQuest" in self.char.solvers:
                         self.persistentText = (urwid.AttrSpec("default","default"),"you do not have the nessecary solver yet")
                         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
                     else:
-                        text = "you drop the "+mainChar.inventory[self.subMenu.getSelection()].name
+                        text = "you drop the "+self.char.inventory[self.subMenu.getSelection()].name
                         self.persistentText = (urwid.AttrSpec("default","default"), text)
                         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
-                        messages.append(text)
-                        mainChar.drop(mainChar.inventory[self.subMenu.getSelection()])
+                        self.char.messages.append(text)
+                        self.char.drop(self.char.inventory[self.subMenu.getSelection()])
                     self.drop = False
                 self.subMenu = None
                 self.skipKeypress = True
@@ -1635,7 +1928,7 @@ class InventoryMenu(SubMenu):
             if key == "j":
                 options = []
                 counter = 0
-                for item in mainChar.inventory:
+                for item in self.char.inventory:
                     options.append([counter,item.name])
                     counter += 1
                 self.subMenu = SelectionMenu("activate what?",options)
@@ -1646,7 +1939,7 @@ class InventoryMenu(SubMenu):
             if key == "l":
                 options = []
                 counter = 0
-                for item in mainChar.inventory:
+                for item in self.char.inventory:
                     options.append([counter,item.name])
                     counter += 1
                 self.subMenu = SelectionMenu("drop what?",options)

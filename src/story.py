@@ -2669,8 +2669,10 @@ class BuildBase(BasicPhase):
         import json
         with open("states/theftBase1.json","r") as stateFile:
             theft1BaseState = json.loads(stateFile.read())
-
         terrain.addRoom(src.rooms.getRoomFromState(theft1BaseState,terrain))
+        with open("states/theftBase2.json","r") as stateFile:
+            theft2BaseState = json.loads(stateFile.read())
+        terrain.addRoom(src.rooms.getRoomFromState(theft2BaseState,terrain))
 
         mainChar.addListener(self.checkRoomEnteredMain)
 

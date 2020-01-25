@@ -1577,6 +1577,10 @@ class SubMenu(src.saveing.Saveable):
                 # bad code: transforming the key to the shortcut is needlessly complicated
                 if len(self.options.items()):
                     key = list(self.options.items())[self.selectionIndex-1][0]
+                else:
+                    self.selection = None
+                    self.done = True
+                    return True
 
             # select option by shortcut
             if key in self.options:
@@ -1931,6 +1935,9 @@ class InventoryMenu(SubMenu):
                 return True
 
             if key == "j":
+                if not len(self.char.inventory):
+                    return True
+
                 options = []
                 counter = 0
                 for item in self.char.inventory:
@@ -1942,6 +1949,9 @@ class InventoryMenu(SubMenu):
                 return False
 
             if key == "l":
+                if not len(self.char.inventory):
+                    return True
+
                 options = []
                 counter = 0
                 for item in self.char.inventory:

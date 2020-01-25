@@ -483,6 +483,13 @@ class Scrap(Item):
                 self.terrain.itemsOnFloor.remove(item)
                 self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(item)
 
+    def getLongInfo(self):
+        text = """
+Scrap is a raw material. Its main use is to be converted to metal bars in a scrap compactor.
+
+"""
+        return text
+
 '''
 dummy class for a corpse
 '''
@@ -499,6 +506,13 @@ class Corpse(Item):
 
         # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
+
+    def getLongInfo(self):
+        text = """
+A corpse. It is not useful
+
+"""
+        return text
 
 '''
 an character spawning item
@@ -602,6 +616,21 @@ class GrowthTank(Item):
 
         return character
 
+    def getLongInfo(self):
+        text = """
+A growth tank produces NPCs. 
+
+Fill a growth tank to prepare it for generating an npc.
+You can fill it by activating it with a full goo flask in your inventory.
+
+Activate a filled growth tank to spawn a new npc.
+Wake the NPC by taking to the NPC.
+
+You talk to NPCs by pressing h and selecting the NPC to talk to.
+
+"""
+        return text
+
 '''
 basically a bed with a activatable cover
 '''
@@ -645,6 +674,13 @@ class Hutch(Item):
     '''
     def setState(self,state):
         super().setState(state)
+
+    def getLongInfo(self):
+        text = """
+A hutch. It is not useful.
+
+"""
+        return text
 
 '''
 item for letting characters trigger something
@@ -703,6 +739,13 @@ class Lever(Item):
             return displayChars.lever_pulled
         else:
             return displayChars.lever_notPulled
+
+    def getLongInfo(self):
+        text = """
+A lever. It is not useful.
+
+"""
+        return text
 
 '''
 heat source for generating steam and similar
@@ -801,6 +844,17 @@ class Furnace(Item):
         else:
             return displayChars.furnace_inactive
 
+    def getLongInfo(self):
+        text = """
+A furnace is used to generate heat. Heat is used to produce steam in boilers.
+
+You can fire the furnace by activating it with coal in your inventory.
+
+Place the furnace next to a boiler to be able to heat up the boiler with this furnace.
+
+"""
+        return text
+
 '''
 a dummy for an interface with the mech communication network
 bad code: this class is dummy only and basically is to be implemented
@@ -849,6 +903,12 @@ class Commlink(Item):
         # add event for the faked coal delivery
         self.room.events.append(CoalRefillEvent(self.room.timeIndex+10,creator=self))
 
+    def getLongInfo(self):
+        text = """
+A comlink. It is useless.
+
+"""
+
 '''
 should be a display, but is abused as vehicle control
 bad code: use an actual vehicle control
@@ -868,201 +928,75 @@ class Display(Item):
     def apply(self,character):
         super().apply(character,silent=True)
 
-        if self.room:
-            # handle movement keystrokes
-            '''
-            move room to north
-            '''
-            def moveNorth():
-                self.room.moveDirection("north",force=self.room.engineStrength)
-            '''
-            move room to south
-            '''
-            def moveSouth():
-                self.room.moveDirection("south",force=self.room.engineStrength)
-            '''
-            move room to west
-            '''
-            def moveWest():
-                self.room.moveDirection("west",force=self.room.engineStrength)
-            '''
-            move room to east
-            '''
-            def moveEast():
-                self.room.moveDirection("east",force=self.room.engineStrength)
+        if not self.room:
+            self.character.messages("this machine can only be used within rooms")
+            return
 
-            if not "stealKey" in character.macroState:
-                character.macroState["stealKey"] = {}
+        # handle movement keystrokes
+        '''
+        move room to north
+        '''
+        def moveNorth():
+            self.room.moveDirection("north",force=self.room.engineStrength)
+        '''
+        move room to south
+        '''
+        def moveSouth():
+            self.room.moveDirection("south",force=self.room.engineStrength)
+        '''
+        move room to west
+        '''
+        def moveWest():
+            self.room.moveDirection("west",force=self.room.engineStrength)
+        '''
+        move room to east
+        '''
+        def moveEast():
+            self.room.moveDirection("east",force=self.room.engineStrength)
 
-            '''
-            reset key mapping
-            '''
-            def disapply():
-                del character.macroState["stealKey"][commandChars.move_north]
-                del character.macroState["stealKey"][commandChars.move_south]
-                del character.macroState["stealKey"][commandChars.move_west]
-                del character.macroState["stealKey"][commandChars.move_east]
-                del character.macroState["stealKey"]["up"]
-                del character.macroState["stealKey"]["down"]
-                del character.macroState["stealKey"]["right"]
-                del character.macroState["stealKey"]["left"]
-                del character.macroState["stealKey"][commandChars.activate]
+        if not "stealKey" in character.macroState:
+            character.macroState["stealKey"] = {}
 
-            # map the keystrokes
-            character.macroState["stealKey"][commandChars.move_north] = moveNorth
-            character.macroState["stealKey"][commandChars.move_south] = moveSouth
-            character.macroState["stealKey"][commandChars.move_west] = moveWest
-            character.macroState["stealKey"][commandChars.move_east] = moveEast
-            character.macroState["stealKey"]["up"] = moveNorth
-            character.macroState["stealKey"]["down"] = moveSouth
-            character.macroState["stealKey"]["left"] = moveWest
-            character.macroState["stealKey"]["right"] = moveEast
-            character.macroState["stealKey"][commandChars.activate] = disapply
-        else:
-            wallLeft = False
-            for offset in range(1,15):
-                pos = (self.xPosition-offset,self.yPosition)
-                if pos in self.terrain.itemByCoordinates:
-                    for item in self.terrain.itemByCoordinates[pos]:
-                        if isinstance(item,Wall) or isinstance(item,Door):
-                            wallLeft = item
-                            break
-                if wallLeft:
-                    break
-            wallRight = False
-            for offset in range(1,15):
-                pos = (self.xPosition+offset,self.yPosition)
-                if pos in self.terrain.itemByCoordinates:
-                    for item in self.terrain.itemByCoordinates[pos]:
-                        if isinstance(item,Wall) or isinstance(item,Door):
-                            wallRight = item
-                            break
-                if wallRight:
-                    break
-            wallTop = False
-            for offset in range(1,15):
-                pos = (self.xPosition,self.yPosition-offset)
-                if pos in self.terrain.itemByCoordinates:
-                    for item in self.terrain.itemByCoordinates[pos]:
-                        if isinstance(item,Wall) or isinstance(item,Door):
-                            wallTop = item
-                            break
-                if wallTop:
-                    break
-            wallBottom = False
-            for offset in range(1,15):
-                pos = (self.xPosition,self.yPosition+offset)
-                if pos in self.terrain.itemByCoordinates:
-                    for item in self.terrain.itemByCoordinates[pos]:
-                        if isinstance(item,Wall) or isinstance(item,Door):
-                            wallBottom = item
-                            break
-                if wallBottom:
-                    break
+        '''
+        reset key mapping
+        '''
+        def disapply():
+            del character.macroState["stealKey"][commandChars.move_north]
+            del character.macroState["stealKey"][commandChars.move_south]
+            del character.macroState["stealKey"][commandChars.move_west]
+            del character.macroState["stealKey"][commandChars.move_east]
+            del character.macroState["stealKey"]["up"]
+            del character.macroState["stealKey"]["down"]
+            del character.macroState["stealKey"]["right"]
+            del character.macroState["stealKey"]["left"]
+            del character.macroState["stealKey"][commandChars.activate]
 
-            if not ( wallLeft and wallRight and wallTop and wallBottom) :
-                character.messages.append("no boundaries found")
-                character.messages.append((wallLeft,wallRight,wallTop,wallBottom))
-                return
+        # map the keystrokes
+        character.macroState["stealKey"][commandChars.move_north] = moveNorth
+        character.macroState["stealKey"][commandChars.move_south] = moveSouth
+        character.macroState["stealKey"][commandChars.move_west] = moveWest
+        character.macroState["stealKey"][commandChars.move_east] = moveEast
+        character.macroState["stealKey"]["up"] = moveNorth
+        character.macroState["stealKey"]["down"] = moveSouth
+        character.macroState["stealKey"]["left"] = moveWest
+        character.macroState["stealKey"]["right"] = moveEast
+        character.macroState["stealKey"][commandChars.activate] = disapply
 
-            roomLeft = self.xPosition-wallLeft.xPosition
-            roomRight = wallRight.xPosition-self.xPosition
-            roomTop = self.yPosition-wallTop.yPosition
-            roomBottom = wallBottom.yPosition-self.yPosition
+    def getLongInfo(self):
+        text = """
+A Display. Can be used to control vehicles.
 
-            wallMissing = False
-            items = []
-            character.messages.append([roomLeft,roomRight,roomTop,roomBottom,])
-            for x in range(-roomLeft,roomRight+1):
-                pos = (self.xPosition+x,self.yPosition-roomTop)
-                wallFound = None 
-                if pos in self.terrain.itemByCoordinates:
-                    for item in self.terrain.itemByCoordinates[pos]:
-                        if isinstance(item,Wall) or isinstance(item,Door):
-                            wallFound = item
-                            items.append(item)
-                            break
-                if not wallFound:
-                    wallMissing = True
-                    break
-            for y in range(-roomTop,roomBottom+1):
-                pos = (self.xPosition-roomLeft,self.yPosition+y)
-                wallFound = None 
-                if pos in self.terrain.itemByCoordinates:
-                    for item in self.terrain.itemByCoordinates[pos]:
-                        if isinstance(item,Wall) or isinstance(item,Door):
-                            wallFound = item
-                            items.append(item)
-                            break
-                if not wallFound:
-                    wallMissing = True
-                    break
-            for y in range(-roomTop,roomBottom+1):
-                pos = (self.xPosition+roomRight,self.yPosition+y)
-                wallFound = None 
-                if pos in self.terrain.itemByCoordinates:
-                    for item in self.terrain.itemByCoordinates[pos]:
-                        if isinstance(item,Wall) or isinstance(item,Door):
-                            wallFound = item
-                            items.append(item)
-                            break
-                if not wallFound:
-                    wallMissing = True
-                    break
-            for x in range(-roomLeft,roomRight+1):
-                pos = (self.xPosition+x,self.yPosition+roomBottom)
-                wallFound = None 
-                if pos in self.terrain.itemByCoordinates:
-                    for item in self.terrain.itemByCoordinates[pos]:
-                        if isinstance(item,Wall) or isinstance(item,Door):
-                            wallFound = item
-                            items.append(item)
-                            break
-                if not wallFound:
-                    wallMissing = True
-                    break
+Use it to take control over the vehice.
 
-            if wallMissing:
-                character.messages.append("wall missing")
-                return
+While controlling the vehicle your movement keys will be overriden. 
+The movement key will move the room instead of yourself.
+For example pressing w will not move you to the north, but will move the room to the north.
+You need enough steam generation to move
 
-            character.messages.append(len(items))
-            items.append(self)
-            for item in items:
-                try:
-                    terrain.removeItem(item,recalculate=False)
-                except:
-                    character.messages.append(("failed to remove item",item))
+To stop using the display press j again.
 
-            door = None
-            for item in items:
-                if isinstance(item,Door):
-                    if not door:
-                        door = item
-                    else:
-                        character.messages.append("too many doors")
-                        return
-            if not door:
-                character.messages.append("too little doors")
-                return
-
-            import src.rooms
-            doorPos = (roomLeft+door.xPosition-self.xPosition,roomTop+door.yPosition-self.yPosition)
-            room = src.rooms.EmptyRoom(self.xPosition//15,self.yPosition//15,self.xPosition%15-roomLeft,self.yPosition%15-roomTop,creator=self)
-            room.reconfigure(roomLeft+roomRight+1,roomTop+roomBottom+1,doorPos)
-
-            xOffset = character.xPosition-self.xPosition
-            yOffset = character.yPosition-self.yPosition
-
-            self.terrain.removeCharacter(character)
-            self.terrain.addRooms([room])
-            character.xPosition = roomLeft+xOffset
-            character.yPosition = roomTop+yOffset
-            room.addCharacter(character,roomLeft+xOffset,roomTop+yOffset)
-
-            self.xPosition = roomLeft
-            self.yPosition = roomTop
-            room.addItems([self])
+"""
+        return text
 
 '''
 '''
@@ -1226,6 +1160,16 @@ class RoomBuilder(Item):
         self.yPosition = roomTop
         room.addItems([self])
 
+    def getLongInfo(self):
+        text = """
+The roombuilder creates rooms from basic items.
+
+Place Walls and one Door around the room builder and activate the room builder to create a room.
+
+The room has to be a rectangle.
+
+"""
+        return text
 
 '''
 basic item with different appearance
@@ -1239,6 +1183,13 @@ class Wall(Item):
     def __init__(self,xPosition=0,yPosition=0,name="Wall",creator=None):
         super().__init__(displayChars.wall,xPosition,yPosition,name=name,creator=creator)
 
+    def getLongInfo(self):
+        text = """
+A Wall. Used to build rooms.
+
+"""
+        return text
+
 '''
 basic item with different appearance
 '''
@@ -1250,6 +1201,13 @@ class Pipe(Item):
     '''
     def __init__(self,xPosition=0,yPosition=0,name="Pipe",creator=None):
         super().__init__(displayChars.pipe,xPosition,yPosition,name=name,creator=creator)
+
+    def getLongInfo(self):
+        text = """
+A Pipe. It is useless
+
+"""
+        return text
 
 '''
 basic item with different appearance
@@ -1268,6 +1226,13 @@ class Coal(Item):
 
         # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
+
+    def getLongInfo(self):
+        text = """
+Coal is used as an energy source. It can be used to fire furnaces.
+
+"""
+        return text
 
 '''
 a door for opening/closing and locking people in/out
@@ -1364,6 +1329,13 @@ class Door(Item):
         self.room.open = False
         self.room.forceRedraw()
 
+    def getLongInfo(self):
+        text = """
+A Door. Used to enter and leave rooms.
+
+"""
+        return text
+
 '''
 a pile of stuff to take things from
 this doesn't hold objects but spawns them
@@ -1425,6 +1397,13 @@ class Pile(Item):
     def getDetailedInfo(self):
         return super().getDetailedInfo()+" of "+str(self.itemType.type)+" containing "+str(self.numContained)
 
+    def getLongInfo(self):
+        text = """
+A Pile. Use it to take coal from it
+
+"""
+        return text
+
 '''
 basic item with different appearance
 '''
@@ -1442,6 +1421,13 @@ class Acid(Item):
 
         # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
+
+    def getLongInfo(self):
+        text = """
+It is completely useless
+
+"""
+        return text
 
 '''
 used to connect rooms and items to drag them around
@@ -1525,6 +1511,13 @@ class Chain(Item):
                     thing.chainedTo.remove(self)
             self.chainedTo = []
             
+    def getLongInfo(self):
+        text = """
+can be used to chain rooms together. Place it next to one or more rooms and activate it to chain rooms together.
+
+"""
+        return text
+
 '''
 basic item with different appearance
 '''
@@ -1537,6 +1530,13 @@ class Winch(Item):
     def __init__(self,xPosition=0,yPosition=0,name="winch",creator=None):
         super().__init__(displayChars.winch_inactive,xPosition,yPosition,name=name,creator=creator)
 
+    def getLongInfo(self):
+        text = """
+A Winch. It is useless.
+
+"""
+        return text
+
 '''
 basic item with different appearance
 '''
@@ -1547,6 +1547,13 @@ class MetalBars(Item):
         super().__init__("==",xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
         self.bolted = False
+
+    def getLongInfo(self):
+        text = """
+A metal bar is a raw ressource. It is used by most machines and produced by a scrap compactor.
+
+"""
+        return text
 
 '''
 produces steam from heat
@@ -1677,6 +1684,13 @@ class Boiler(Item):
 
         # notify listeners
         self.changed()
+
+    def getLongInfo(self):
+        text = """
+a boiler can be heated by a furnace to produce steam. Steam is the basis for energy generation.
+
+"""
+        return text
             
 '''
 steam sprayer used as a prop in the vat
@@ -1727,6 +1741,13 @@ class Spray(Item):
                 return displayChars.spray_right_stage2
             elif terrain.tutorialMachineRoom.steamGeneration == 3:
                 return displayChars.spray_right_stage3
+
+    def getLongInfo(self):
+        text = """
+a boiler can be heated by a furnace to produce steam. Steam is the basis for energy generation.
+
+"""
+        return text
             
 '''
 marker ment to be placed by characters and to control actions with
@@ -1767,6 +1788,13 @@ class MarkerBean(Item):
         super().apply(character,silent=True)
         character.messages.append(character.name+" activates a marker bean")
         self.activated = True
+
+    def getLongInfo(self):
+        text = """
+A marker been. It can be used to mark things.
+
+"""
+        return text
 
 '''
 machine for filling up goo flasks
@@ -1830,6 +1858,20 @@ class GooDispenser(Item):
 
         self.setDescription()
 
+    def getLongInfo(self):
+        text = """
+A goo dispenser can fill goo flasks.
+
+Activate it with a goo flask in you inventory.
+The goo flask will be filled by the goo dispenser.
+
+Filling a flask will use up a charge from your goo dispenser.
+
+This goo dispenser currently has %s charges
+
+"""%(self.charges)
+        return text
+
 '''
 '''
 class MaggotFermenter(Item):
@@ -1875,6 +1917,16 @@ class MaggotFermenter(Item):
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
         self.room.addItems([new])
+
+    def getLongInfo(self):
+        text = """
+A maggot fermenter produces bio mass from vat maggots.
+
+Place 10 vat maggots to the left/west of the maggot fermenter.
+Activate the maggot fermenter to produce biomass.
+
+"""
+        return text
 
 '''
 '''
@@ -1928,6 +1980,16 @@ class GooProducer(Item):
 
         dispenser.addCharge()
 
+    def getLongInfo(self):
+        text = """
+A goo producer produces goo from press cakes.
+
+Place 10 press cakes to the left/west of the goo producer and a goo dispenser to the rigth/east.
+Activate the maggot fermenter to add a charge to the goo dispenser.
+
+"""
+        return text
+
 '''
 '''
 class BioPress(Item):
@@ -1973,6 +2035,17 @@ class BioPress(Item):
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
         self.room.addItems([new])
+
+    def getLongInfo(self):
+        text = """
+A bio press produces press cake from bio mass.
+
+Place 10 bio mass to the left/west of the bio press.
+Activate the bio press to produce biomass.
+
+"""
+        return text
+
 
 '''
 flask with food to carry around and drink from
@@ -2036,6 +2109,18 @@ class GooFlask(Item):
     def getDetailedInfo(self):
         return super().getDetailedInfo()+" ("+str(self.uses)+" charges)"
 
+    def getLongInfo(self):
+        text = """
+A goo flask holds goo. Goo is nourishment for you.
+
+If you do not drink from the flask every 1000 ticks you will starve.
+
+A goo flask can be refilled at a goo dispenser and can hold a maximum of a 100 charges.
+
+"""
+        return text
+
+
 '''
 a vending machine basically
 bad code: currently only dispenses goo flasks
@@ -2068,6 +2153,16 @@ class OjectDispenser(Item):
             self.room.addItems([new])
         else:
             messages.append("the object dispenser is empty")
+
+    def getLongInfo(self):
+        text = """
+A object dispenser holds and returns objects.
+
+You can use it to retrieve an object from the object dispenser.
+
+"""
+        return text
+
 
 '''
 token object ment to produce anything from metal bars
@@ -2221,6 +2316,10 @@ class ScrapCompactor(Item):
     def apply(self,character,resultType=None):
         super().apply(character,silent=True)
 
+        if not self.room:
+            self.character.messages.append("this machine can not be used within rooms")
+            return
+
         # fetch input scrap
         scrap = None
         if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
@@ -2340,6 +2439,15 @@ class Scraper(Item):
         new.yPosition = self.yPosition
         self.room.addItems([new])
 
+    def getLongInfo(self):
+        text = """
+A scrapper shreds items to scrap.
+
+Place an item to the left/west and activate the scrapper to shred an item.
+
+"""
+        return text
+
 '''
 '''
 class Sorter(Item):
@@ -2399,6 +2507,18 @@ class Sorter(Item):
             itemFound.yPosition = self.yPosition
         self.room.addItems([itemFound])
 
+    def getLongInfo(self):
+        text = """
+A sorter can sort items.
+
+To sort item with a sorter place the item you want to compare against on the top/north.
+Place the item or items to be sorted on the left/west of the sorter.
+Activate the sorter to sort an item.
+Matching items will be moved to the bottom/south and non matching items will be moved to the right/east.
+
+"""
+        return text
+
 '''
 '''
 class Token(Item):
@@ -2412,6 +2532,13 @@ class Token(Item):
 
         self.bolted = False
         self.walkable = True
+
+    def getLongInfo(self):
+        text = """
+A token. Only has value in the eyes of the beholder.
+
+"""
+        return text
 
 '''
 '''
@@ -2453,6 +2580,18 @@ class VatMaggot(Item):
 
         super().apply(character,silent=True)
 
+    def getLongInfo(self):
+        text = """
+A vat maggot is the basis for food.
+
+You can eat it, but it may kill you. Activate it to eat it.
+
+Can be processed into bio mass by a maggot fermenter.
+
+"""
+        return text
+
+
 '''
 '''
 class Sheet(Item):
@@ -2466,6 +2605,13 @@ class Sheet(Item):
 
         self.bolted = False
         self.walkable = True
+
+    def getLongInfo(self):
+        text = """
+A sheet. Simple building material.
+
+"""
+        return text
 
 '''
 '''
@@ -2481,6 +2627,12 @@ class Rod(Item):
         self.bolted = False
         self.walkable = True
 
+    def getLongInfo(self):
+        text = """
+A rod. Simple building material.
+
+"""
+        return text
 
 '''
 '''
@@ -2496,6 +2648,12 @@ class Nook(Item):
         self.bolted = False
         self.walkable = True
 
+    def getLongInfo(self):
+        text = """
+A Nook. Simple building material.
+
+"""
+        return text
 
 '''
 '''
@@ -2511,6 +2669,12 @@ class Stripe(Item):
         self.bolted = False
         self.walkable = True
 
+    def getLongInfo(self):
+        text = """
+A Stripe. Simple building material.
+
+"""
+        return text
 
 '''
 '''
@@ -2526,6 +2690,13 @@ class Bolt(Item):
         self.bolted = False
         self.walkable = True
 
+    def getLongInfo(self):
+        text = """
+A Bolt. Simple building material.
+
+"""
+        return text
+
 '''
 '''
 class Coil(Item):
@@ -2539,6 +2710,13 @@ class Coil(Item):
 
         self.bolted = False
         self.walkable = True
+
+    def getLongInfo(self):
+        text = """
+A coil. Simple building material.
+
+"""
+        return text
 
 '''
 '''
@@ -2554,6 +2732,13 @@ class Tank(Item):
         self.bolted = False
         self.walkable = True
 
+    def getLongInfo(self):
+        text = """
+A tank. Building material.
+
+"""
+        return text
+
 '''
 '''
 class Heater(Item):
@@ -2568,6 +2753,12 @@ class Heater(Item):
         self.bolted = False
         self.walkable = True
 
+    def getLongInfo(self):
+        text = """
+A heater. Building material.
+
+"""
+        return text
 
 '''
 '''
@@ -2582,6 +2773,13 @@ class Connector(Item):
 
         self.bolted = False
         self.walkable = True
+
+    def getLongInfo(self):
+        text = """
+A connector. Building material.
+
+"""
+        return text
 
 
 '''
@@ -2598,6 +2796,13 @@ class Puller(Item):
         self.bolted = False
         self.walkable = True
 
+    def getLongInfo(self):
+        text = """
+A puller. Building material.
+
+"""
+        return text
+
 
 '''
 '''
@@ -2612,6 +2817,13 @@ class Pusher(Item):
 
         self.bolted = False
         self.walkable = True
+
+    def getLongInfo(self):
+        text = """
+A pusher. Building material.
+
+"""
+        return text
 
 '''
 '''
@@ -2638,6 +2850,15 @@ class Tree(Item):
         new.bolted = False
         self.terrain.addItems([new])
 
+    def getLongInfo(self):
+        text = """
+A tree can be used as a source for vat maggots.
+
+Activate the tree to harvest a vat maggot.
+
+"""
+        return text
+
 '''
 '''
 class BioMass(Item):
@@ -2652,6 +2873,14 @@ class BioMass(Item):
         self.bolted = False
         self.walkable = True
 
+    def getLongInfo(self):
+        text = """
+A bio mass is basis for food production.
+
+Can be processed into press cake by a bio press.
+"""
+        return text
+
 '''
 '''
 class PressCake(Item):
@@ -2665,6 +2894,14 @@ class PressCake(Item):
 
         self.bolted = False
         self.walkable = True
+
+    def getLongInfo(self):
+        text = """
+A press cake is basis for food production.
+
+Can be processed into goo by a goo producer.
+"""
+        return text
 
 '''
 '''
@@ -2757,6 +2994,15 @@ class GameTestingProducer(Item):
         self.room.addItems([new])
 
         super().apply(character,silent=True)
+
+    def getLongInfo(self):
+        text = """
+A game testing producer. It produces things.
+
+Place metalbars to left/west and activate the machine to produce.
+
+"""
+        return text
 
 '''
 '''
@@ -2983,6 +3229,7 @@ class Machine(Item):
 
         self.coolDown = 100
         self.coolDownTimer = -self.coolDown
+        self.charges = 3
 
         super().__init__("X\\",xPosition,yPosition,name=name,creator=creator)
 
@@ -3011,10 +3258,18 @@ class Machine(Item):
     def apply(self,character):
         super().apply(character,silent=True)
 
-        if gamestate.tick < self.coolDownTimer+self.coolDown:
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
+
+        if gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
             character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
-        self.coolDownTimer = gamestate.tick
+
+        if self.charges:
+            self.charges -= 1
+        else:
+            self.coolDownTimer = gamestate.tick
 
         # gather a metal bar
         metalBar = None
@@ -3047,7 +3302,40 @@ class Machine(Item):
 
         self.setDescription()
 
+    def getLongInfo(self):
+        text = """
+This Machine produces %s.
 
+Prepare for production by placing metal bars to the west/left of this machine.
+Activate the machine to produce.
+
+After using this machine you need to wait %s ticks till you can use this machine again.
+"""%(self.coolDown,)
+
+        coolDownLeft = self.coolDown-(gamestate.tick-self.coolDownTimer)
+        if coolDownLeft > 0:
+            text += """
+Currently you need to wait %s ticks to use this machine again.
+
+"""%(coolDownLeft,)
+        else:
+            text += """
+Currently you do not have to wait to use this machine.
+
+"""
+
+        if self.charges:
+            text += """
+Currently the machine has %s charges 
+
+"""%(self.charges)
+        else:
+            text += """
+Currently the machine has no charges 
+
+"""
+
+        return text
 
 '''
 '''
@@ -3161,6 +3449,19 @@ class Drill(Item):
         super().setState(state)
 
         self.setDescription()
+
+    def getLongInfo(self):
+        text = """
+This drills items from the ground. You get different things from time to time.
+
+Activate the drill to drill something up. Most likely you will dig up scrap.
+
+After the every use the rod in the drill will break.
+You need to replace the rod in the drill to repair it.
+Use the drill to 
+
+After using this machine you need to wait %s ticks till you can use this machine again.
+"""%(self.coolDown,)
 
 class MemoryDump(Item):
     type = "MemoryDump"

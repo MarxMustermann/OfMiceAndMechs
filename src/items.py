@@ -3364,6 +3364,8 @@ class Machine(Item):
         self.setDescription()
 
     def getLongInfo(self):
+        coolDownLeft = self.coolDown-(gamestate.tick-self.coolDownTimer)
+
         text = """
 This Machine produces %s.
 
@@ -3371,9 +3373,8 @@ Prepare for production by placing metal bars to the west/left of this machine.
 Activate the machine to produce.
 
 After using this machine you need to wait %s ticks till you can use this machine again.
-"""%(self.coolDown,)
+"""%(self.coolDown,coolDownLeft,)
 
-        coolDownLeft = self.coolDown-(gamestate.tick-self.coolDownTimer)
         if coolDownLeft > 0:
             text += """
 Currently you need to wait %s ticks to use this machine again.

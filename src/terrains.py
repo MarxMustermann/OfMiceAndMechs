@@ -961,7 +961,7 @@ class Terrain(src.saveing.Saveable):
             if not item.walkable:
                 recalc = True
             if (item.xPosition,item.yPosition) in self.itemByCoordinates:
-                self.itemByCoordinates[(item.xPosition,item.yPosition)].append(item)
+                self.itemByCoordinates[(item.xPosition,item.yPosition)].insert(0,item)
             else:
                 self.itemByCoordinates[(item.xPosition,item.yPosition)] = [item]
         if recalc and hasattr(self,"watershedStart") and recalculate: # nontrivial: prevents crashes in constructor

@@ -691,7 +691,7 @@ class Room(src.saveing.Saveable):
             item.room = self
             item.terrain = None
             if (item.xPosition,item.yPosition) in self.itemByCoordinates:
-                self.itemByCoordinates[(item.xPosition,item.yPosition)].append(item)
+                self.itemByCoordinates[(item.xPosition,item.yPosition)].insert(0,item)
             else:
                 self.itemByCoordinates[(item.xPosition,item.yPosition)] = [item]
 

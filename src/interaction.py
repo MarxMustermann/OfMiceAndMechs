@@ -205,6 +205,9 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
         return
 
     if char.enumerateState:
+        if charState["recordingTo"] and not "norecord" in flags:
+            charState["macros"][charState["recordingTo"]].append(key)
+
         if char.enumerateState[-1]["type"] == None:
             char.enumerateState[-1]["type"] = key
             if mainChar == char and not "norecord" in flags:
@@ -335,12 +338,12 @@ press key for register to modify or press = to load value from a register
 current registers:
 
 """
-            for key,value in char.registers.items(): 
+            for itemKey,value in char.registers.items(): 
                 convertedValues = []
                 for item in reversed(value):
-                    convertedValues.append(str(item))
+                    convertedValues.append(str(itemKey))
                 text += """
-%s - %s"""%(key,",".join(convertedValues))
+%s - %s"""%(itemKey,",".join(convertedValues))
 
             header.set_text((urwid.AttrSpec("default","default"),"registers"))
             main.set_text((urwid.AttrSpec("default","default"),text))
@@ -348,6 +351,7 @@ current registers:
             char.specialRender = True
 
         charState["varActions"].append({"outOperator":None})
+
         if charState["recordingTo"] and not "norecord" in flags:
             charState["macros"][charState["recordingTo"]].append(key)
         return
@@ -626,21 +630,21 @@ press key to record to.
 current macros:
 
 """
-            for key,value in charState["macros"].items():
-                compressedMacro = ""
-                for keystroke in value:
-                    if len(keystroke) == 1:
-                        compressedMacro += keystroke
-                    else:
-                        compressedMacro += "/"+keystroke+"/"
+                for key,value in charState["macros"].items():
+                    compressedMacro = ""
+                    for keystroke in value:
+                        if len(keystroke) == 1:
+                            compressedMacro += keystroke
+                        else:
+                            compressedMacro += "/"+keystroke+"/"
 
-                text += """
+                    text += """
 %s - %s"""%(key,compressedMacro)
 
-            header.set_text((urwid.AttrSpec("default","default"),"record macro"))
-            main.set_text((urwid.AttrSpec("default","default"),text))
-            footer.set_text((urwid.AttrSpec("default","default"),""))
-            char.specialRender = True
+                header.set_text((urwid.AttrSpec("default","default"),"record macro"))
+                main.set_text((urwid.AttrSpec("default","default"),text))
+                footer.set_text((urwid.AttrSpec("default","default"),""))
+                char.specialRender = True
 
             charState["recording"] = True
             return

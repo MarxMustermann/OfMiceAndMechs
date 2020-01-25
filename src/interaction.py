@@ -2859,7 +2859,7 @@ def tmp2(loop,user_data):
             for key in json.loads(data.decode("utf-8")):
                 keyboardListener(key)
 
-        canvas = render()
+        canvas = render(mainChar)
         info = {"head":["adsada"],"main":[(urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible())],"footer":["asdasdasf sf"]}
         mainChar = realMainChar
 

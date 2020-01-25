@@ -2082,11 +2082,12 @@ class ProductionArtwork(Item):
     def __init__(self,xPosition=None,yPosition=None, name="production artwork",creator=None):
         self.coolDown = 10000
         self.coolDownTimer = -self.coolDown
+        self.charges = 3
 
         super().__init__("ßß",xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
-               "coolDown","coolDownTimer"])
+               "coolDown","coolDownTimer","charges"])
 
     '''
     trigger production of a player selected item
@@ -2096,15 +2097,16 @@ class ProductionArtwork(Item):
 
         # gather a metal bar
         metalBar = None
-        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
                 if isinstance(item,MetalBars):
                    metalBar = item
                    break
         if not metalBar:
+            character.messages.append("no metal bars on the left/west")
             return
         
-        if gamestate.tick < self.coolDownTimer+self.coolDown:
+        if gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
             character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
 
@@ -2129,12 +2131,15 @@ class ProductionArtwork(Item):
     produce an item
     '''
     def produce(self,itemType,resultType=None):
-        self.coolDownTimer = gamestate.tick
+        if self.charges:
+            self.charges -= 1
+        else:
+            self.coolDownTimer = gamestate.tick
 
         # gather a metal bar
         metalBar = None
-        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
                 if isinstance(item,MetalBars):
                    metalBar = item
                    break
@@ -2149,7 +2154,7 @@ class ProductionArtwork(Item):
 
         # spawn new item
         new = itemType(creator=self)
-        new.xPosition = self.xPosition-1
+        new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
         new.bolted = False
         self.room.addItems([new])
@@ -2177,6 +2182,18 @@ Currently you need to wait %s ticks to use this machine again.
 Currently you do not have to wait to use this machine.
 
 """
+
+        if self.charges:
+            text += """
+Currently the machine has %s charges 
+
+"""%(self.charges)
+        else:
+            text += """
+Currently the machine has no charges 
+
+"""
+
         return text
 
 '''
@@ -2191,11 +2208,12 @@ class ScrapCompactor(Item):
     def __init__(self,xPosition=None,yPosition=None, name="scrap compactor",creator=None):
         self.coolDown = 100
         self.coolDownTimer = -self.coolDown
+        self.charges = 3
         
         super().__init__("RC",xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
-               "coolDown","coolDownTimer"])
+               "coolDown","coolDownTimer","charges"])
 
     '''
     produce a metal bar
@@ -2205,16 +2223,20 @@ class ScrapCompactor(Item):
 
         # fetch input scrap
         scrap = None
-        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
                 if isinstance(item,Scrap):
                     scrap = item
                     break
 
-        if gamestate.tick < self.coolDownTimer+self.coolDown:
+        if gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
             character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
-        self.coolDownTimer = gamestate.tick
+
+        if self.charges:
+            self.charges -= 1
+        else:
+            self.coolDownTimer = gamestate.tick
 
         # refuse to produce without ressources
         if not scrap:
@@ -2226,9 +2248,44 @@ class ScrapCompactor(Item):
 
         # spawn the metal bar
         new = MetalBars(creator=self)
-        new.xPosition = self.xPosition-1
+        new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
         self.room.addItems([new])
+
+    def getLongInfo(self):
+        text = """
+
+This machine converts scrap into metal bars. Metal bars are a form of metal that can be used to produce other things.
+
+Place scrap to the left/west of the machine and activate it 
+
+After using this machine you need to wait %s ticks till you can use this machine again.
+"""%(self.coolDown,)
+
+        coolDownLeft = self.coolDown-(gamestate.tick-self.coolDownTimer)
+        if coolDownLeft > 0:
+            text += """
+Currently you need to wait %s ticks to use this machine again.
+
+"""%(coolDownLeft,)
+        else:
+            text += """
+Currently you do not have to wait to use this machine.
+
+"""
+
+        if self.charges:
+            text += """
+Currently the machine has %s charges
+
+"""%(self.charges)
+        else:
+            text += """
+Currently the machine has no charges
+
+"""
+        return text
+
 
 '''
 '''
@@ -2241,11 +2298,12 @@ class Scraper(Item):
     def __init__(self,xPosition=None,yPosition=None, name="scraper",creator=None):
         self.coolDown = 10
         self.coolDownTimer = -self.coolDown
+        self.charges = 3
         
         super().__init__("RS",xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
-               "coolDown","coolDownTimer"])
+               "coolDown","coolDownTimer","charges"])
 
     '''
     '''
@@ -2259,10 +2317,14 @@ class Scraper(Item):
                 itemFound = item
                 break
 
-        if gamestate.tick < self.coolDownTimer+self.coolDown:
+        if gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
             character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
-        self.coolDownTimer = gamestate.tick
+
+        if self.charges:
+            self.charges -= 1
+        else:
+            self.coolDownTimer = gamestate.tick
 
         # refuse to produce without ressources
         if not itemFound:
@@ -2707,6 +2769,7 @@ class MachineMachine(Item):
     def __init__(self,xPosition=None,yPosition=None, name="machine machine",creator=None):
         self.coolDown = 1000
         self.coolDownTimer = -self.coolDown
+        self.charges = 3
 
         self.endProducts = [
             "GrowthTank",
@@ -2760,7 +2823,7 @@ class MachineMachine(Item):
         super().__init__("M\\",xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
-               "coolDown","coolDownTimer","endProducts"])
+               "coolDown","coolDownTimer","endProducts","charges"])
 
 
     '''
@@ -2804,11 +2867,14 @@ class MachineMachine(Item):
             self.character.messages.append("no blueprints available.")
             return
 
-        if gamestate.tick < self.coolDownTimer+self.coolDown:
+        if gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
             self.character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
 
-        self.coolDownTimer = gamestate.tick
+        if self.charges:
+            self.charges -= 1
+        else:
+            self.coolDownTimer = gamestate.tick
 
         options = []
         for itemType in self.endProducts:
@@ -2875,6 +2941,17 @@ Currently you need to wait %s ticks to use this machine again.
         else:
             text += """
 Currently you do not have to wait to use this machine.
+
+"""
+
+        if self.charges:
+            text += """
+Currently the machine has %s charges 
+
+"""%(self.charges)
+        else:
+            text += """
+Currently the machine has no charges 
 
 """
 
@@ -3706,39 +3783,6 @@ class BluePrinter(Item):
             character.messages.append("unable to produce blueprint from given items")
             return
 
-
-    def getLongInfo(self):
-        text = """
-This machine can store a simple sequence of commands and injects it into characters.
-
-To run the stored command activate the machine and confirm.
-
-If no command was stored in the machine, you can store a command in the machine.
-To store the command, activate the machine and select the macro buffer to store.
-
-"""
-
-        if self.command == None:
-            text += """
-
-There is currently no command stored in the machine
-
-"""
-        else:
-            compressedMacro = ""
-            for keystroke in value:
-                if len(keystroke) == 1:
-                    compressedMacro += keystroke
-                else:
-                    compressedMacro += "/"+keystroke+"/"
-
-            text += """
-
-There command stored in this machine is "%s" 
-
-"""%(compressedMacro)
-
-        return text
 
 '''
 '''

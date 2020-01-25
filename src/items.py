@@ -540,6 +540,11 @@ class GrowthTank(Item):
     manually eject character
     '''
     def apply(self,character):
+
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
+
         super().apply(character,silent=True)
         if self.filled:
             self.eject()
@@ -663,6 +668,11 @@ class Hutch(Item):
     bad code: open close methods would be nice
     '''
     def apply(self,character):
+
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
+
         super().apply(character,silent=True)
         if not self.activated:
             self.activated = True
@@ -712,6 +722,11 @@ class Lever(Item):
     '''
     def apply(self,character):
         super().apply(character,silent=True)
+
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
+
         if not self.activated:
             # activate the lever
             self.activated = True
@@ -776,6 +791,7 @@ class Furnace(Item):
         super().apply(character,silent=True)
 
         if not self.room:
+            character.messages.append("this machine can only be used within rooms")
             return
         
         # select fuel
@@ -873,6 +889,11 @@ class Commlink(Item):
     '''
     def apply(self,character):
         super().apply(character,silent=True)
+
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
+        
         # add messages requesting coal
         # bad pattern: requesting coal in random room is not smart
         character.messages.append("Sigmund Bärenstein@Logisticcentre: we need more coal")
@@ -1013,6 +1034,10 @@ class RoomBuilder(Item):
     map player controls to room movement 
     '''
     def apply(self,character):
+        if self.room:
+            character.messages.append("this machine can not be used within rooms")
+            return
+        
         super().apply(character,silent=True)
 
         wallLeft = False
@@ -1830,6 +1855,10 @@ class GooDispenser(Item):
     def apply(self,character):
         super().apply(character,silent=True)
 
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
+
         if not self.charges:
             character.messages.append("the dispenser has no charges")
             return
@@ -1899,6 +1928,10 @@ class MaggotFermenter(Item):
                 if isinstance(item,VatMaggot):
                     items.append(item)
 
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
+
         # refuse to produce without ressources
         if len(items) < 10:
             character.messages.append("not enough maggots")
@@ -1947,6 +1980,10 @@ class GooProducer(Item):
     '''
     def apply(self,character):
         super().apply(character,silent=True)
+
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
 
         # fetch input scrap
         items = []
@@ -2009,6 +2046,10 @@ class BioPress(Item):
     '''
     def apply(self,character):
         super().apply(character,silent=True)
+
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
 
         # fetch input scrap
         items = []
@@ -2190,6 +2231,10 @@ class ProductionArtwork(Item):
     def apply(self,character,resultType=None):
         super().apply(character,silent=True)
 
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
+
         # gather a metal bar
         metalBar = None
         if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
@@ -2317,7 +2362,7 @@ class ScrapCompactor(Item):
         super().apply(character,silent=True)
 
         if not self.room:
-            self.character.messages.append("this machine can not be used within rooms")
+            self.character.messages.append("this machine can only be used within rooms")
             return
 
         # fetch input scrap
@@ -2409,6 +2454,10 @@ class Scraper(Item):
     def apply(self,character,resultType=None):
         super().apply(character,silent=True)
 
+        if not self.room:
+            self.character.messages.append("this machine can only be used within rooms")
+            return
+
         # fetch input scrap
         itemFound = None
         if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
@@ -2469,6 +2518,10 @@ class Sorter(Item):
     '''
     def apply(self,character,resultType=None):
         super().apply(character,silent=True)
+
+        if not self.room:
+            self.character.messages.append("this machine can only be used within rooms")
+            return
 
         # fetch input scrap
         itemFound = None
@@ -2925,6 +2978,10 @@ class GameTestingProducer(Item):
 
     def apply(self,character,resultType=None):
 
+        if not self.room:
+            self.character.messages.append("this machine can only be used within rooms")
+            return
+
         token = None
         for item in character.inventory:
             if isinstance(item,src.items.Token):
@@ -3077,6 +3134,10 @@ class MachineMachine(Item):
     '''
     def apply(self,character,resultType=None):
         super().apply(character,silent=True)
+
+        if not self.room:
+            self.character.messages.append("this machine can only be used within rooms")
+            return
 
         options = []
         options.append(("blueprint","insert blueprint"))
@@ -3500,7 +3561,7 @@ class MemoryDump(Item):
         super().apply(character,silent=True)
 
         if not self.room:
-            character.messages.append("this machine can not be used within rooms")
+            character.messages.append("this machine can only be used within rooms")
             return
 
         import copy
@@ -3558,7 +3619,7 @@ class MemoryBank(Item):
         super().apply(character,silent=True)
 
         if not self.room:
-            character.messages.append("this machine can not be used within rooms")
+            character.messages.append("this machine can only be used within rooms")
             return
 
         import copy
@@ -3605,7 +3666,7 @@ class MemoryStack(Item):
         super().apply(character,silent=True)
 
         if not self.room:
-            character.messages.append("this machine can not be used within rooms")
+            character.messages.append("this machine can only be used within rooms")
             return
 
         options = []
@@ -3652,6 +3713,10 @@ class MemoryReset(Item):
     trigger production of a player selected item
     '''
     def apply(self,character):
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
+
         character.messages.append("you clear your macros")
 
         character.macroState["macros"] = {}
@@ -3672,6 +3737,10 @@ class Engraver(Item):
 
     def apply(self,character):
         super().apply(character,silent=True)
+
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
 
         self.character = character
 
@@ -3944,6 +4013,10 @@ class MacroRunner(Item):
     def apply(self,character):
         super().apply(character,silent=True)
 
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
+
         if self.command == None:
             if not len(character.macroState["macros"]):
                 character.messages.append("no macro found - record a macro to store it in this machine")
@@ -4044,6 +4117,10 @@ class BluePrinter(Item):
 
     def apply(self,character):
         super().apply(character,silent=True)
+
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
 
         inputThings = []
         if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:

@@ -1575,7 +1575,8 @@ class SubMenu(src.saveing.Saveable):
             # select the marked option
             if key in ["enter","j","k","right"]:
                 # bad code: transforming the key to the shortcut is needlessly complicated
-                key = list(self.options.items())[self.selectionIndex-1][0]
+                if len(self.options.items()):
+                    key = list(self.options.items())[self.selectionIndex-1][0]
 
             # select option by shortcut
             if key in self.options:

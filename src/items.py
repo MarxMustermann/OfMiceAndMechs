@@ -950,7 +950,7 @@ class Display(Item):
         super().apply(character,silent=True)
 
         if not self.room:
-            self.character.messages("this machine can only be used within rooms")
+            character.messages("this machine can only be used within rooms")
             return
 
         # handle movement keystrokes
@@ -2362,7 +2362,7 @@ class ScrapCompactor(Item):
         super().apply(character,silent=True)
 
         if not self.room:
-            self.character.messages.append("this machine can only be used within rooms")
+            character.messages.append("this machine can only be used within rooms")
             return
 
         # fetch input scrap
@@ -2455,7 +2455,7 @@ class Scraper(Item):
         super().apply(character,silent=True)
 
         if not self.room:
-            self.character.messages.append("this machine can only be used within rooms")
+            character.messages.append("this machine can only be used within rooms")
             return
 
         # fetch input scrap
@@ -2520,7 +2520,7 @@ class Sorter(Item):
         super().apply(character,silent=True)
 
         if not self.room:
-            self.character.messages.append("this machine can only be used within rooms")
+            character.messages.append("this machine can only be used within rooms")
             return
 
         # fetch input scrap
@@ -2979,7 +2979,7 @@ class GameTestingProducer(Item):
     def apply(self,character,resultType=None):
 
         if not self.room:
-            self.character.messages.append("this machine can only be used within rooms")
+            character.messages.append("this machine can only be used within rooms")
             return
 
         token = None
@@ -3136,7 +3136,7 @@ class MachineMachine(Item):
         super().apply(character,silent=True)
 
         if not self.room:
-            self.character.messages.append("this machine can only be used within rooms")
+            character.messages.append("this machine can only be used within rooms")
             return
 
         options = []
@@ -3519,9 +3519,9 @@ Activate the drill to drill something up. Most likely you will dig up scrap.
 
 After the every use the rod in the drill will break.
 You need to replace the rod in the drill to repair it.
-Use the drill to 
+Use the drill to eject the broken rod from the drill.
+place a rod to the left/west of the drill and activate the drill, to repair it
 
-After using this machine you need to wait %s ticks till you can use this machine again.
 """%(self.coolDown,)
 
 class MemoryDump(Item):
@@ -4251,7 +4251,7 @@ class StasisTank(Item):
 
     def apply(self,character):
         if not self.room:
-            messages.append("you can not use item outside of rooms")
+            character.messages.append("you can not use item outside of rooms")
             return
 
         if self.character:

@@ -3373,7 +3373,7 @@ Prepare for production by placing metal bars to the west/left of this machine.
 Activate the machine to produce.
 
 After using this machine you need to wait %s ticks till you can use this machine again.
-"""%(self.coolDown,coolDownLeft,)
+"""%(self.toProduce,)
 
         if coolDownLeft > 0:
             text += """

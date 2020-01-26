@@ -4469,6 +4469,78 @@ Also the number of ticks will be written to the register t.
             mov = "a"
         self.command.insert(0,mov)
 
+'''
+'''
+class Tumbler(Item):
+    type = "Tumbler"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="tumbler",creator=None):
+        super().__init__("ot",xPosition,yPosition,name=name,creator=creator)
+
+        self.initialState = self.getState()
+
+        self.tracking = False
+        self.tracked = None
+        self.walkable = True
+        self.command = []
+
+        self.addListener(self.registerDrop,"dropped")
+        self.addListener(self.registerPickUp,"pickUp")
+
+    def apply(self,character):
+
+        direction = gamestate.tick%4
+        strength = gamestate.tick%20+1
+
+        direction = ["w","a","s","d"][direction]
+        convertedCommands = [(".",["norecord"]),("esc",["norecord"])] + [(direction,["norecord"])] * strength
+        character.macroState["commandKeyQueue"] = convertedCommands + character.macroState["commandKeyQueue"]
+
+        character.messages.append("tumbling %s %s "%(direction,strength))
+        self.tracking = True
+
+    def getLongInfo(self):
+        text = """
+
+This device tracks ticks since creation. You can use it to measure time.
+
+Activate it to get a message with the number of ticks passed.
+
+Also the number of ticks will be written to the register t.
+
+"""
+        return text
+
+    def registerPickUp(self,param):
+        if self.tracked:
+            self.tracked.messages.append("pickUp")
+            self.tracked.messages.append(param)
+
+    def registerDrop(self,param):
+        if self.tracked:
+            self.tracked.messages.append("drop")
+            self.tracked.messages.append(param)
+
+    def registerMovement(self,param):
+        if self.tracked:
+            self.tracked.messages.append("mov")
+            self.tracked.messages.append(param)
+
+        mov = ""
+        if param == "north":
+            mov = "s"
+        elif param == "south":
+            mov = "w"
+        elif param == "west":
+            mov = "d"
+        elif param == "east":
+            mov = "a"
+        self.command.insert(0,mov)
+
+
 # maping from strings to all items
 # should be extendable
 itemMap = {
@@ -4538,6 +4610,7 @@ itemMap = {
             "MemoryStack":MemoryStack,
             "MemoryReset":MemoryReset,
             "BackTracker":BackTracker,
+            "Tumbler":Tumbler,
 }
 
 producables = {

@@ -748,6 +748,19 @@ class Character(src.saveing.Saveable):
     almost straightforward dropping of items
     """
     def drop(self,item):
+        if (self.xPosition,self.yPosition) in self.container.itemByCoordinates:
+            itemList = self.container.itemByCoordinates[(self.xPosition,self.yPosition)]
+            foundBig = False
+
+            for compareItem in itemList:
+                if compareItem.walkable == False:
+                    foundBig = True
+                    break
+
+            if foundBig:
+                self.messages.append("there is no space to drop the item")
+                return
+
         # remove item from inventory
         self.inventory.remove(item)
 

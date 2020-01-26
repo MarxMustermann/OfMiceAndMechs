@@ -106,6 +106,16 @@ class Item(src.saveing.Saveable):
             character.messages.append("you cannot pick up bolted items")
             return
 
+        foundBig = False
+        for item in character.inventory:
+            if item.walkable == False:
+                foundBig = True
+                break
+
+        if foundBig:
+            character.messages.append("you cannot carry more big items")
+            return
+
         character.messages.append("you pick up a "+self.type)
 
         # bad code: should be a simple self.container.removeItem(self)

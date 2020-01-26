@@ -3373,7 +3373,8 @@ Prepare for production by placing metal bars to the west/left of this machine.
 Activate the machine to produce.
 
 After using this machine you need to wait %s ticks till you can use this machine again.
-"""%(self.toProduce,)
+
+"""%(self.toProduce,self.coolDown)
 
         if coolDownLeft > 0:
             text += """
@@ -4357,7 +4358,7 @@ class Watch(Item):
 
         self.attributesToStore.extend([
                "creationTime"])
-        
+
         self.initialState = self.getState()
 
         self.bolted = False
@@ -4382,6 +4383,56 @@ class Watch(Item):
 
     def getLongInfo(self):
         text = """
+This device tracks ticks since creation. You can use it to measure time.
+Activate it to get a message with the number of ticks passed.
+Also the number of ticks will be written to the register t.
+"""
+        return text
+
+'''
+'''
+class BackTracker(Item):
+    type = "BackTracker"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="back tracker",creator=None):
+        super().__init__("ob",xPosition,yPosition,name=name,creator=creator)
+
+        self.initialState = self.getState()
+
+        self.tracking = False
+        self.tracked = None
+        self.walkable = True
+        self.command = []
+
+        self.addListener(self.registerDrop,"dropped")
+        self.addListener(self.registerPickUp,"pickUp")
+
+    def apply(self,character):
+
+        if self.tracking:
+            self.tracked.delListener(self.registerMovement,"moved")
+            character.messages.append("backtracking")
+            self.tracking = False
+
+            convertedCommand = [(".",["norecord"]),("esc",["norecord"])]
+            for item in self.command:
+                convertedCommand.append((item,["norecord"]))
+
+            character.messages.append("runs the stored path")
+            character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
+            self.command = []
+        else:
+            self.tracked = character
+            self.tracked.addListener(self.registerMovement,"moved")
+
+            character.messages.append("it starts to track")
+            self.tracking = True
+
+    def getLongInfo(self):
+        text = """
 
 This device tracks ticks since creation. You can use it to measure time.
 
@@ -4391,6 +4442,32 @@ Also the number of ticks will be written to the register t.
 
 """
         return text
+
+    def registerPickUp(self,param):
+        if self.tracked:
+            self.tracked.messages.append("pickUp")
+            self.tracked.messages.append(param)
+
+    def registerDrop(self,param):
+        if self.tracked:
+            self.tracked.messages.append("drop")
+            self.tracked.messages.append(param)
+
+    def registerMovement(self,param):
+        if self.tracked:
+            self.tracked.messages.append("mov")
+            self.tracked.messages.append(param)
+
+        mov = ""
+        if param == "north":
+            mov = "s"
+        elif param == "south":
+            mov = "w"
+        elif param == "west":
+            mov = "d"
+        elif param == "east":
+            mov = "a"
+        self.command.insert(0,mov)
 
 # maping from strings to all items
 # should be extendable
@@ -4460,6 +4537,7 @@ itemMap = {
             "SimpleRunner":SimpleRunner,
             "MemoryStack":MemoryStack,
             "MemoryReset":MemoryReset,
+            "BackTracker":BackTracker,
 }
 
 producables = {

@@ -190,6 +190,38 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
     char.specialRender = False
 
+    if key in ("|",):
+        char.interactionState["stateChange"] = True
+        char.messages.append("stachangekey")
+        return
+
+    if "stateChange" in char.interactionState and char.interactionState["stateChange"]:
+        if key in (">",):
+            # do stateSave
+            char.interactionState["replay"] = charState["replay"]
+            char.interactionState["submenue"] = charState["submenue"]
+            char.interactionState["number"] = charState["number"]
+            char.interactionState["itemMarkedLast"] = charState["itemMarkedLast"]
+            char.interactionStateBackup.append(char.interactionState)
+            char.interactionState = {}
+            charState["replay"] = []
+            char.messages.append("backupped")
+            charState["submenue"] = None
+            charState["number"] = None
+            charState["itemMarkedLast"] = None
+        elif key in ("<",):
+            if len(char.interactionStateBackup):
+                char.interactionState = char.interactionStateBackup.pop()
+                charState["replay"] = char.interactionState["replay"]
+                charState["submenue"] = char.interactionState["submenue"]
+                charState["number"] = char.interactionState["number"]
+                charState["itemMarkedLast"] = char.interactionState["itemMarkedLast"]
+                char.messages.append("restored")
+            else:
+                char.messages.append("nothing to restore")
+            del char.interactionState["stateChange"]
+        return
+
     if char.doStackPop:
         if key in char.registers:
             char.registers[key].pop()
@@ -326,8 +358,8 @@ get position for what thing
     if key == "esc":
         charState["replay"] = []
 
-    if not "varActions" in charState:
-        charState["varActions"] = []
+    if not "varActions" in char.interactionState:
+        char.interactionState["varActions"] = []
 
     if key == "$":
         if mainChar == char and not "norecord" in flags:
@@ -350,17 +382,17 @@ current registers:
             footer.set_text((urwid.AttrSpec("default","default"),""))
             char.specialRender = True
 
-        charState["varActions"].append({"outOperator":None})
+        char.interactionState["varActions"].append({"outOperator":None})
 
         if charState["recordingTo"] and not "norecord" in flags:
             charState["macros"][charState["recordingTo"]].append(key)
         return
-    if charState["varActions"]:
+    if char.interactionState["varActions"]:
 
         if charState["recordingTo"] and not "norecord" in flags:
             charState["macros"][charState["recordingTo"]].append(key)
 
-        lastVarAction = charState["varActions"][-1]
+        lastVarAction = char.interactionState["varActions"][-1]
         if lastVarAction["outOperator"] == None:
             if key == "=":
                 lastVarAction["outOperator"] = True
@@ -411,7 +443,7 @@ current registers:
 
             char.messages.append(valueCommand)
 
-            charState["varActions"].pop()
+            char.interactionState["varActions"].pop()
             charState["commandKeyQueue"] = valueCommand + charState["commandKeyQueue"]
             return
         else:
@@ -490,7 +522,7 @@ press any other key to finish
                  char.registers[lastVarAction["register"]][-1] *= int(lastVarAction["number"])
 
             charState["commandKeyQueue"] = [(key,flags+["norecord"])] + charState["commandKeyQueue"]
-            charState["varActions"].pop()
+            char.interactionState["varActions"].pop()
             return
 
     if not "ifCondition" in charState:
@@ -561,7 +593,7 @@ press any other key to finish
                     else:
                         conditionTrue = False
                 if charState["ifCondition"][-1] == "t":
-                    if char.satiation < 250:
+                    if char.satiation < 300:
                         conditionTrue = True
                     else:
                         conditionTrue = False
@@ -601,6 +633,10 @@ press any other key to finish
 
     if key in ("%",):
         charState["loop"].append(2)
+        return
+
+    if key in ("u",):
+        char.setInterrupt = True
         return
     
     if charState["loop"] and not key in ("lagdetection","lagdetection_",commandChars.ignore,"_","~"):
@@ -979,34 +1015,18 @@ current registers
                     if direction == "west":
                         if char.xPosition == 0+1:
                             char.messages.append("a force field pushes you back")
-                            #char.messages.append("switch to")
-                            #char.messages.append((terrain.xPosition-1,terrain.yPosition))
-                            #terrain = gamestate.terrainMap[terrain.yPosition][terrain.xPosition-1]
-                            #char.xPosition = 15*15
-                            #char.terrain = terrain
                             return
                     if direction == "east":
                         if char.xPosition == 15*15-2:
                             char.messages.append("a force field pushes you back")
-                            #char.messages.append("switch to")
-                            #char.messages.append((terrain.xPosition+1,terrain.yPosition))
-                            #terrain = gamestate.terrainMap[terrain.yPosition][terrain.xPosition+1]
-                            #char.xPosition = 0
-                            #char.terrain = terrain
                             return
                     if direction == "north":
                         if char.yPosition == 0+1:
                             char.messages.append("a force field pushes you back")
-                            #terrain = gamestate.terrainMap[terrain.xPosition][terrain.yPosition-1]
-                            #char.yPosition = 15*15
-                            #char.terrain = terrain
                             return
                     if direction == "south":
                         if char.yPosition == 15*15-2:
                             char.messages.append("a force field pushes you back")
-                            #terrain = gamestate.terrainMap[terrain.xPosition][terrain.yPosition+1]
-                            #char.yPosition = 0
-                            #char.terrain = terrain
                             return
 
                 # do inner room movement
@@ -1020,6 +1040,8 @@ current registers
                         if noAdvanceGame == False:
                             header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
                         return item
+                    else:
+                        char.changed("moved",direction)
 
                 # do movement on terrain
                 # bad code: these calculation should be done elsewhere
@@ -1041,12 +1063,14 @@ current registers
                     # gather the rooms the player might step into
                     roomCandidates = []
                     for coordinate in [(bigX,bigY),
-                                       (bigX,bigY+1),(bigX,bigY-1),(bigX+1,bigY),(bigX-1,bigY),
+                                       (bigX,bigY+1),(bigX+1,bigY+1),(bigX+1,bigY),(bigX+1,bigY-1),(bigX,bigY-1),(bigX-1,bigY-1),(bigX-1,bigY),(bigX-1,bigY+1),
                                        (bigX-2,bigY),(bigX-2,bigY-1),(bigX-2,bigY-2),(bigX-1,bigY-2),(bigX,bigY-2),(bigX+1,bigY-2),(bigX+2,bigY-2),(bigX+2,bigY-1),
                                        (bigX+2,bigY),(bigX+2,bigY-1),(bigX+2,bigY-2),(bigX+1,bigY-2),(bigX,bigY-2),(bigX-1,bigY-2),(bigX-2,bigY-2),(bigX-1,bigY-2),
                                       ]:
                         if coordinate in terrain.roomByCoordinates:
-                            roomCandidates.extend(terrain.roomByCoordinates[coordinate])
+                            for room in terrain.roomByCoordinates[coordinate]:
+                                if not room in roomCandidates:
+                                    roomCandidates.append(room)
 
                     '''
                     move a player into a room
@@ -1070,9 +1094,10 @@ current registers
                                     # remember the item for interaction and abort
                                     return item
 
+                                char.changed("moved",direction)
+
                                 # teleport the character into the room
                                 room.addCharacter(char,localisedEntry[0],localisedEntry[1])
-                                char.messages.append(("removing from terrain",room))
                                 try:
                                     terrain.characters.remove(char)
                                 except:
@@ -1133,6 +1158,7 @@ current registers
                             item = enterLocalised(room,localisedEntry)
                             if item:
                                 return item
+
                             break
 
                     # handle walking without room interaction
@@ -1178,6 +1204,7 @@ current registers
                             elif direction == "west":
                                 char.xPosition -= 1
                             char.changed()
+                            char.changed("moved",direction)
 
                         return item
 
@@ -1296,6 +1323,7 @@ current registers
                         if pos in itemByCoordinates:
                             for item in itemByCoordinates[pos]:
                                 item.pickUp(char)
+                                item.changed("pickedUp",char)
                                 if not item.walkable:
                                     char.container.calculatePathMap()
                                 break

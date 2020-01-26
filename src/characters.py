@@ -108,6 +108,9 @@ class Character(src.saveing.Saveable):
         self.doStackPop = False
         self.doStackPush = False
 
+        self.interactionState = {}
+        self.interactionStateBackup = []
+
         # generate the id for this object
         if characterId:
             self.id = characterId
@@ -755,6 +758,7 @@ class Character(src.saveing.Saveable):
 
         # notify listener
         item.changed()
+        item.changed("dropped",self)
         self.changed()
 
     """
@@ -800,6 +804,13 @@ class Character(src.saveing.Saveable):
         if self.satiation < 0:
             self.die(reason="you starved. This happens when your satiation falls below 0\nPrevent this by drinking using the "+commandChars.drink+" key")
             return
+
+        if self.satiation == 300-1:
+            self.changed("thirst")
+            self.macroState["commandKeyQueue"] = [("|",["norecord"]),(">",["norecord"]),("_",["norecord"]),("j",["norecord"]),("|",["norecord"]),("<",["norecord"])] + self.macroState["commandKeyQueue"]
+
+        if self.satiation == 30-1:
+            self.changed("severeThirst")
 
         if self == mainChar and self.satiation < 30 and self.satiation > -1:
             self.messages.append("you'll starve in "+str(mainChar.satiation)+" ticks!")

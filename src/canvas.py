@@ -111,7 +111,7 @@ class TileMapping(Mapping):
     """
     def __init__(self,mode):
         super().__init__()
-        self.modes = {"testTiles":"","pseudeUnicode":""}
+        self.modes = {"testTiles":"","pseudeUnicode":"","testTiles2":""}
         self.setRenderingMode(mode)
 
     """
@@ -120,7 +120,7 @@ class TileMapping(Mapping):
     def setRenderingMode(self,mode):
         # input validation
         if mode not in self.modes:
-            raise Exception("tired to switch to unkown mode: "+mode)
+            raise Exception("tried to switch to unkown mode: "+mode)
 
         # set mode
         self.mode = mode
@@ -136,6 +136,9 @@ class TileMapping(Mapping):
         if self.mode == "testTiles":
             # bad code: reimport the config as library, i don't think this is a good thing to do
             import config.tileMap as rawConfig
+        if self.mode == "testTiles2":
+            # bad code: reimport the config as library, i don't think this is a good thing to do
+            import config.tileMap2 as rawConfig
         return rawConfig
 
 """
@@ -190,7 +193,7 @@ class Canvas(object):
     set up state AND fill the canvas with the (default) chars
     bad code: should be split into 3 methods
     """
-    def __init__(self,size=(41,41),chars=None,defaultChar="::",coordinateOffset=(0,0),shift=(0,0),displayChars=None,tileMapping=None):
+    def __init__(self,size=(41,41),chars=None,defaultChar="::",coordinateOffset=(0,0),shift=(0,0),displayChars=None,tileMapping=None,tileMapping2=None):
         # set basic information
         self.size = size
         self.coordinateOffset = coordinateOffset
@@ -198,6 +201,7 @@ class Canvas(object):
         self.defaultChar = defaultChar
         self.displayChars = displayChars
         self.tileMapping = tileMapping
+        self.tileMapping2 = tileMapping2
 
         # fill the canvas with the default char
         self.chars = []
@@ -281,6 +285,60 @@ class Canvas(object):
         for line in self.chars:
             counterX = 0
             for char in line:
+
+                def renderText(text,colour):
+                    image = pygame.image.load('config/Images/perspectiveTry/textChar.png')
+                    pydisplay.blit(image,(250+counterX*(tileSize+1), 110+counterY*(tileSize+1)))
+
+                    font = pygame.font.Font(None,12)
+                    text = font.render(text, True, colour)
+                    pydisplay.blit(text,(250+(counterX*(tileSize+1))+2, 110+(counterY*(tileSize+1))+8))
+
+                # bad code: colour information is lost
+                if isinstance(char, int):
+                    # scale the tile
+                    # bad code: rescales each tile individually and on each render
+                    try:
+                        # fetch image
+                        image = self.tileMapping.indexedMapping[char]
+
+                        # scale image
+                        if not tileSize == 10:
+                            image = pygame.transform.scale(image,(int(tileSize*(image.get_width()/10)),int(tileSize*(image.get_height()/10))))
+
+                        # render image
+                        pydisplay.blit(image,(250+counterX*(tileSize+1), 110+counterY*(tileSize+1)))
+                    except:
+                        if debug:
+                            raise Exception("unable to scale image")
+                elif isinstance(char, str):
+                    renderText(char,(255, 255, 255))
+                else:
+                    renderText(char[1],char[0].get_rgb_values()[0:3])
+
+                counterX += 1
+            counterY += 1
+
+        # refresh display
+        pygame.display.update()
+
+    """
+    draw the display onto a pygame display
+    bad code: pygame specific code should be in one place not everywhere
+    bad code: the method should return a rendered result instead of rendering directly
+    """
+    def setSDL2Display(self,display,tileSize):
+        pass
+        """
+        # fill game area
+        pydisplay.fill((0,0,0))
+
+        # add rendered content
+        # bad pattern: this rendering relies on strict top left to bottom right rendering with overlapping tiles to create perspective without having propper mechanism to enforce and control this
+        counterY = 0
+        for line in self.chars:
+            counterX = 0
+            for char in line:
                 # bad code: only tiles are rendered. special chars and text is not rendered
                 # bad code: colour information is lost
                 if isinstance(char, int):
@@ -304,3 +362,39 @@ class Canvas(object):
 
         # refresh display
         pygame.display.update()
+        import sdl2
+        import sdl2.ext
+        from sdl2_displaymanager import sdl2_DisplayManager
+
+        # fill game area
+        surface = display.get_surface()
+        sdl2.ext.fill(surface, 0)
+        
+        RESOURCES = sdl2.ext.Resources(__file__, "resources")
+        factory = sdl2.ext.SpriteFactory(sdl2.ext.SOFTWARE)
+        spriterenderer = factory.create_sprite_render_system(display)
+
+        # add rendered content
+        # bad pattern: this rendering relies on strict top left to bottom right rendering with overlapping tiles to create perspective without having propper mechanism to enforce and control this
+        counterY = 0
+        for line in self.chars:
+            counterX = 0
+            for char in line:
+                # bad code: only tiles are rendered. special chars and text is not rendered
+                # bad code: colour information is lost
+                if isinstance(char, int):
+                    # fetch image
+                    sprite = self.tileMapping2.indexedMapping[char]
+                    # sprite = factory.from_image(RESOURCES.get_path(image))
+
+                    # render image
+                    sprite.position = (counterX*(tileSize+1), counterY*(tileSize+1))
+                    spriterenderer.render(sprite)
+                counterX += 1
+            counterY += 1
+
+
+        # refresh display
+        display.refresh()
+        """
+

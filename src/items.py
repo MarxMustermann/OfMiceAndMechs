@@ -112,7 +112,7 @@ class Item(src.saveing.Saveable):
                 foundBig = True
                 break
 
-        if foundBig:
+        if foundBig and self.walkable == False:
             character.messages.append("you cannot carry more big items")
             return
 
@@ -500,6 +500,32 @@ Scrap is a raw material. Its main use is to be converted to metal bars in a scra
 """
         return text
 
+    '''
+    get picked up by the supplied character
+    '''
+    def pickUp(self,character):
+        if self.amount == 1:
+            super().pickUp(character)
+            return
+
+        if self.xPosition == None or self.yPosition == None:
+            return
+
+        foundBig = False
+        for item in character.inventory:
+            if item.walkable == False:
+                foundBig = True
+                break
+
+        character.messages.append("you pick up a piece of scrap, there is %s left"%(self.amount,))
+
+        self.amount -= 1
+        self.setWalkable()
+
+        # add item to characters inventory
+        character.inventory.append(Scrap(amount=1,creator=self))
+        self.changed()
+
 '''
 dummy class for a corpse
 '''
@@ -522,6 +548,65 @@ class Corpse(Item):
 A corpse. It is not useful
 
 """
+        return text
+
+class ItemUpgrader(Item):
+    type = "ItemUpgrader"
+
+    def __init__(self,xPosition=0,yPosition=0,name="item upgrader",creator=None):
+        super().__init__(xPosition,yPosition,name=name,creator=creator)
+        self.charges = 3
+
+    def apply(self,character):
+        if not self.room:
+            character.messages.append("place item to upgrade on the left")
+
+        inputItem = None
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            inputItem = self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)][0]
+
+        if not inputItem.type in ["GrowthTank","GrowthTankII","GrowthTankIII","GrowthTankIIII"]:
+            character.messages.append("cannot upgrade %s"%(inputItem.type))
+
+        self.room.removeItem(inputItem)
+        if inputItem.type == "GrowthTank":
+            chance = 2
+        elif inputItem.type == "GrowthTankII":
+            chance = 5
+        elif inputItem.type == "GrowthTankIII":
+            chance = 10
+        elif inputItem.type == "GrowthTankIIII":
+            chance = 20
+
+        if (gamestate.tick + chance + self.charges) % (self.charges+1) > chance:
+            if inputItem.type == "GrowthTank":
+                result = "GrowthTankII"
+            elif inputItem.type == "GrowthTankII":
+                result = "GrowthTankIII"
+            elif inputItem.type == "GrowthTankIII":
+                result = "GrowthTankIIII"
+            elif inputItem.type == "GrowthTankIIII":
+                result = "GrowthTankIIIII"
+
+            new = itemMap[result](creator=self)
+            character.messages.append("%s upgraded to %s"%(inputItem.type,result,))
+            self.charges = 0
+        else:
+            new = Scrap(creator=self)
+            self.charges += 1
+            character.messages.append("failed to upgrade %s - has %s charges now"%(inputItem.type,self.charges))
+        new.xPosition = self.xPosition+1
+        new.yPosition = self.yPosition
+        new.bolted = False
+        self.room.addItems([new])
+
+    def getLongInfo(self):
+        text = """
+An upgrader works from time to time. A failed upgrade will destroy the item but increase the chances of success
+
+it has %s charges
+
+"""%(self.charges)
         return text
 
 '''
@@ -645,6 +730,54 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
 
 """
         return text
+
+'''
+an character spawning item
+'''
+class GrowthTankII(GrowthTank):
+    type = "GrowthTankII"
+
+    '''
+    almost straightforward state initialization
+    '''
+    def __init__(self,xPosition=0,yPosition=0,name="growth tank II",filled=False,creator=None):
+        super().__init__(xPosition,yPosition,name=name,filled=filled,creator=creator)
+
+'''
+an character spawning item
+'''
+class GrowthTankIII(GrowthTank):
+    type = "GrowthTankIII"
+
+    '''
+    almost straightforward state initialization
+    '''
+    def __init__(self,xPosition=0,yPosition=0,name="growth tank III",filled=False,creator=None):
+        super().__init__(xPosition,yPosition,name=name,filled=filled,creator=creator)
+
+'''
+an character spawning item
+'''
+class GrowthTankIIII(GrowthTank):
+    type = "GrowthTankIIII"
+
+    '''
+    almost straightforward state initialization
+    '''
+    def __init__(self,xPosition=0,yPosition=0,name="growth tank IIII",filled=False,creator=None):
+        super().__init__(xPosition,yPosition,name=name,filled=filled,creator=creator)
+
+'''
+an character spawning item
+'''
+class GrowthTankIIIII(GrowthTank):
+    type = "GrowthTankIIIII"
+
+    '''
+    almost straightforward state initialization
+    '''
+    def __init__(self,xPosition=0,yPosition=0,name="growth tank IIIII",filled=False,creator=None):
+        super().__init__(xPosition,yPosition,name=name,filled=filled,creator=creator)
 
 '''
 basically a bed with a activatable cover
@@ -1579,7 +1712,7 @@ class MetalBars(Item):
     type = "MetalBars"
 
     def __init__(self,xPosition=0,yPosition=0,name="metal bar",creator=None):
-        super().__init__("==",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.metalBars,xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
         self.bolted = False
 
@@ -1843,7 +1976,7 @@ class GooDispenser(Item):
     def __init__(self,xPosition=None,yPosition=None,name="goo dispenser",creator=None):
         self.activated = False
         self.baseName = name
-        super().__init__("g%",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.gooDispenser,xPosition,yPosition,name=name,creator=creator)
 
         # set up meta information for saveing
         self.attributesToStore.extend([
@@ -1921,7 +2054,7 @@ class MaggotFermenter(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None,name="maggot fermenter",creator=None):
         self.activated = False
-        super().__init__("%0",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.maggotFermenter,xPosition,yPosition,name=name,creator=creator)
 
         # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
@@ -1981,7 +2114,7 @@ class GooProducer(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None,name="goo producer",creator=None):
         self.activated = False
-        super().__init__("%>",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.gooProducer,xPosition,yPosition,name=name,creator=creator)
 
         # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
@@ -2047,7 +2180,7 @@ class BioPress(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None,name="bio press",creator=None):
         self.activated = False
-        super().__init__("%=",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.bioPress,xPosition,yPosition,name=name,creator=creator)
 
         # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
@@ -2151,8 +2284,8 @@ class GooFlask(Item):
     '''
     @property
     def display(self):
-        displayByUses = ["ò ","ò.","ò,","ò-","ò~","ò="]
-        return (urwid.AttrSpec("#3f3","black"),displayByUses[self.uses//20])
+        displayByUses = [displayChars.gooflask_empty, displayChars.gooflask_part1, displayChars.gooflask_part2, displayChars.gooflask_part3, displayChars.gooflask_part4, displayChars.gooflask_full]
+        return displayByUses[self.uses//20]
 
     '''
     get info including the charges on the flask
@@ -2230,7 +2363,7 @@ class ProductionArtwork(Item):
         self.coolDownTimer = -self.coolDown
         self.charges = 3
 
-        super().__init__("ßß",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.productionArtwork,xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
                "coolDown","coolDownTimer","charges"])
@@ -2360,7 +2493,7 @@ class ScrapCompactor(Item):
         self.coolDownTimer = -self.coolDown
         self.charges = 3
         
-        super().__init__("RC",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.scrapCompactor,xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
                "coolDown","coolDownTimer","charges"])
@@ -2612,7 +2745,7 @@ class VatMaggot(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="vat maggot",creator=None):
-        super().__init__("~-",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.vatMaggot,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
@@ -2664,7 +2797,7 @@ class Sheet(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="sheet",creator=None):
-        super().__init__("+#",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.sheet,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
@@ -2897,7 +3030,7 @@ class Tree(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="tree",creator=None):
-        super().__init__("&/",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.tree,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = True
         self.walkable = False
@@ -2931,7 +3064,7 @@ class BioMass(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="bio mass",creator=None):
-        super().__init__("~=",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.bioMass,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
@@ -2953,7 +3086,7 @@ class PressCake(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="press cake",creator=None):
-        super().__init__("~#",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.pressCake,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
@@ -3133,7 +3266,7 @@ class MachineMachine(Item):
         self.endProducts = {
         }
 
-        super().__init__("M\\",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.machineMachine,xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
                "coolDown","coolDownTimer","endProducts","charges"])
@@ -3211,20 +3344,26 @@ class MachineMachine(Item):
     '''
     def produce(self,itemType,resultType=None):
         # gather a metal bar
-        metalBar = None
+        if itemType == "GrowthTank":
+            ressourcesNeeded = ["MetalBars","Tank"]
+        else:
+            ressourcesNeeded = ["MetalBars"]
+
+        ressourcesFound = []
         if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
             for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
-                if isinstance(item,MetalBars):
-                   metalBar = item
-                   break
+                if item.type in ressourcesNeeded:
+                   ressourcesFound.append(item)
+                   ressourcesNeeded.remove(item.type)
         
         # refuse production without ressources
-        if not metalBar:
-            messages.append("no metal bars available")
+        if ressourcesNeeded:
+            self.character.messages.append("missing ressources: %s"%(",".join(ressourcesNeeded)))
             return
 
         # remove ressources
-        self.room.removeItem(item)
+        for item in ressourcesFound:
+            self.room.removeItem(item)
 
         # spawn new item
         new = Machine(creator=self)
@@ -3302,7 +3441,7 @@ class Machine(Item):
         self.coolDownTimer = -self.coolDown
         self.charges = 3
 
-        super().__init__("X\\",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.machine,xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
                "toProduce"])
@@ -3342,21 +3481,27 @@ class Machine(Item):
         else:
             self.coolDownTimer = gamestate.tick
 
+        if self.toProduce == "GrowthTank":
+            ressourcesNeeded = ["MetalBars","GooFlask"]
+        else:
+            ressourcesNeeded = ["MetalBars"]
+
         # gather a metal bar
-        metalBar = None
+        ressourcesFound = []
         if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
             for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
-                if isinstance(item,MetalBars):
-                   metalBar = item
-                   break
+                if item.type in ressourcesNeeded:
+                    ressourcesFound.append(item)
+                    ressourcesNeeded.remove(item.type)
         
         # refuse production without ressources
-        if not metalBar:
-            character.messages.append("no metal bars available")
+        if ressourcesNeeded:
+            character.messages.append("missing ressources: %s"%(", ".join(ressourcesNeeded)))
             return
 
         # remove ressources
-        self.room.removeItem(item)
+        for item in ressourcesFound:
+            self.room.removeItem(item)
 
         # spawn new item
         new = itemMap[self.toProduce](creator=self)
@@ -3427,7 +3572,7 @@ class Drill(Item):
 
         self.baseName = name
 
-        super().__init__("&|",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.drill,xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
                 "coolDown","coolDownTimer",
@@ -3782,7 +3927,7 @@ class InfoScreen(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="InfoScreen",creator=None):
-        super().__init__("iD",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.infoscreen,xPosition,yPosition,name=name,creator=creator)
         self.submenue = None
         self.text = None
 
@@ -4076,7 +4221,7 @@ class BluePrinter(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="BluePrinter",creator=None):
-        super().__init__("sX",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.blueprinter,xPosition,yPosition,name=name,creator=creator)
         self.submenue = None
         self.text = None
 
@@ -4183,7 +4328,7 @@ class BluePrint(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="BluePrint",creator=None):
-        super().__init__("bb",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.blueprint,xPosition,yPosition,name=name,creator=creator)
 
         self.endProduct = None
         self.walkable = True
@@ -4229,7 +4374,7 @@ class CoalMine(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="coal mine",creator=None):
-        super().__init__("&c",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.coalMine,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = True
         self.walkable = False
@@ -4558,6 +4703,10 @@ itemMap = {
             "Scrap":Scrap,
             "Corpse":Corpse,
             "GrowthTank":GrowthTank,
+            "GrowthTankII":GrowthTankII,
+            "GrowthTankIII":GrowthTankIII,
+            "GrowthTankIIII":GrowthTankIIII,
+            "GrowthTankIIIII":GrowthTankIIIII,
             "Hutch":Hutch,
             "Lever":Lever,
             "Furnace":Furnace,
@@ -4621,6 +4770,7 @@ itemMap = {
             "MemoryReset":MemoryReset,
             "BackTracker":BackTracker,
             "Tumbler":Tumbler,
+            "ItemUpgrader":ItemUpgrader,
 }
 
 producables = {

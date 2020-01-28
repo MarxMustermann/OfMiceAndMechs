@@ -26,12 +26,30 @@ import src.terrains
 #################################################################################################################################
 
 # the containers for the shown text
-header = urwid.Text(u"")
-main = urwid.Text(u"")
-footer = urwid.Text(u"",align = 'right')
-main.set_layout('left', 'clip')
+urwidHeader = urwid.Text(u"")
+urwidMain = urwid.Text(u"")
+urwidFooter = urwid.Text(u"",align = 'right')
 
-frame = urwid.Frame(urwid.Filler(main,"top"),header=header,footer=footer)
+class abstractedDisplay(object):
+    def __init__(self,urwidInstance):
+        self.urwidInstance = urwidInstance
+
+    def set_text(self,text):
+        self.urwidInstance.set_text(text)
+        self.text = text
+
+    def get_text(self):
+        return self.text
+
+    def renderSDL2(self):
+        pass
+
+main = abstractedDisplay(urwidMain)
+footer = abstractedDisplay(urwidFooter)
+header = abstractedDisplay(urwidHeader)
+
+urwidMain.set_layout('left', 'clip')
+frame = urwid.Frame(urwid.Filler(urwidMain,"top"),header=urwidHeader,footer=urwidFooter)
 
 ##################################################################################################################################
 ###
@@ -2623,7 +2641,7 @@ def render(char):
     shift = (screensize[1]//2-20,screensize[0]//4-20)
 
     # place rendering in screen
-    canvas = src.canvas.Canvas(size=(viewsize,viewsize),chars=chars,coordinateOffset=(centerY-halfviewsite,centerX-halfviewsite),shift=shift,displayChars=displayChars,tileMapping=tileMapping)
+    canvas = src.canvas.Canvas(size=(viewsize,viewsize),chars=chars,coordinateOffset=(centerY-halfviewsite,centerX-halfviewsite),shift=shift,displayChars=displayChars,tileMapping=tileMapping,tileMapping2=tileMapping2)
 
     return canvas
 
@@ -2782,6 +2800,20 @@ def gameLoop(loop,user_data):
     if multi_chars == None:
         multi_chars = []
 
+    # transform and store the keystrokes that accumulated in pygame
+    if useTiles:
+        import pygame
+        for item in pygame.event.get():
+            if not hasattr(item,"unicode"):
+                continue
+            key = item.unicode
+            if key == "\x1b":
+                key = "esc"
+            mainChar.macroState["commandKeyQueue"].append((key,[]))
+
+    # handle the keystrokes
+    #processAllInput(commandKeyQueue)
+
     for char in terrain.characters[:]:
         if not char in multi_chars:
             multi_chars.append(char)
@@ -2826,6 +2858,17 @@ def gameLoop(loop,user_data):
         text += " | satiation: "+str(mainChar.satiation)
         footer.set_text((urwid.AttrSpec("default","default"),text))
 
+        def stringifyUrwid(inData):
+            outData = ""
+            for item in inData:
+                if isinstance(item,tuple):
+                    outData += stringifyUrwid(item[1])
+                if isinstance(item,list):
+                    outData += stringifyUrwid(item)
+                if isinstance(item,str):
+                    outData += item
+            return outData
+
         # render the game
         if not mainChar.specialRender:
             
@@ -2850,8 +2893,39 @@ def gameLoop(loop,user_data):
             main.set_text((urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible()));
             if (useTiles):
                 canvas.setPygameDisplay(pydisplay,pygame,tileSize)
+                #canvas.setSDL2Display(sdl2Main,tileSize)
             header.set_text((urwid.AttrSpec("default","default"),renderHeader(mainChar)))
-        
+            if (useTiles):
+                w, h = pydisplay.get_size()
+
+                font = pygame.font.Font("config/DejaVuSansMono.ttf",14)
+                plainText = stringifyUrwid(header.get_text())
+                counter = 0
+                for line in plainText.split("\n"):
+                    text = font.render(line, True, (200, 200, 200))
+                    pydisplay.blit(text,(0,0+15*counter))
+                    counter += 1
+                pygame.display.update()
+
+                plainText = stringifyUrwid(footer.get_text())
+                text = font.render(plainText, True, (200, 200, 200))
+                tw, th = font.size(plainText)
+                pydisplay.blit(text,(w-tw-8,h-th-8))
+                pygame.display.update()
+        else:
+            if (useTiles):
+                pydisplay.fill((0,0,0))
+                font = pygame.font.Font("config/DejaVuSansMono.ttf",14)
+
+                plainText = stringifyUrwid(main.get_text())
+                counter = 0
+                for line in plainText.split("\n"):
+                    text = font.render(line, True, (200, 200, 200))
+                    pydisplay.blit(text,(30,110+15*counter))
+                    counter += 1
+
+                pygame.display.update()
+
     loop.set_alarm_in(0.0001, gameLoop)
 
 # get the interaction loop from the library

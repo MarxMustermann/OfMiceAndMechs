@@ -147,21 +147,6 @@ def show_or_exit(key,charState=None):
     # store the commands for later processing
     charState["commandKeyQueue"].append((key,[]))
 
-    # transform and store the keystrokes that accumulated in pygame
-    if useTiles:
-        import pygame
-        for item in pygame.event.get():
-            if not hasattr(key,"unicode"):
-                continue
-            key = item.unicode
-            if key == "\x1b":
-                key = "esc"
-            state["commandKeyQueue"].append((key,[]))
-            debugMessages.append("pressed "+key+" ")
-
-    # handle the keystrokes
-    #processAllInput(commandKeyQueue)
-
 '''
 the abstracted processing for keystrokes.
 Takes a list of keystrokes, that have been converted to a common format
@@ -2809,12 +2794,25 @@ def gameLoop(loop,user_data):
             if not hasattr(item,"unicode"):
                 continue
             key = item.unicode
+            if key == "":
+                continue
+            if key == "\x10":
+                key = "ctrl p"
+            if key == "\x18":
+                key = "ctrl x"
+            if key == "\x0f":
+                key = "ctrl o"
+            if key == "\x04":
+                key = "ctrl d"
+            if key == "\x0b":
+                key = "ctrl k"
+            if key == "\x01":
+                key = "ctrl a"
+            if key == "\x17":
+                key = "ctrl w"
             if key == "\x1b":
                 key = "esc"
-            mainChar.macroState["commandKeyQueue"].append((key,[]))
-
-    # handle the keystrokes
-    #processAllInput(commandKeyQueue)
+            keyboardListener(key)
 
     for char in terrain.characters[:]:
         if not char in multi_chars:

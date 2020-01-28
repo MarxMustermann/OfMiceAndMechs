@@ -506,17 +506,6 @@ if args.tiles:
     interaction.useTiles = True
     interaction.tileMapping = canvas.TileMapping("testTiles")
     interaction.tileMapping2 = canvas.TileMapping("testTiles2")
-
-    """
-    import sdl2
-    import sdl2.ext
-
-    sdl2.ext.init()
-    window = sdl2.ext.Window("Of Mice and Mechs", size=(41*(interaction.tileSize+1), 41*(interaction.tileSize+1)))
-    window.show()
-    interaction.sdl2Main = window
-    """
-
 else:
     interaction.useTiles = False
     interaction.tileMapping = None

@@ -1236,14 +1236,9 @@ class RoomBuilder(Item):
         if roomLeft+roomRight+1 > 15:
             character.messages.append("room to big")
             return
-        character.messages.append(roomLeft+roomRight+1)
         if roomTop+roomBottom+1 > 15:
             character.messages.append("room to big")
             return
-        character.messages.append(roomTop+roomBottom+1)
-        
-        character.messages.append(roomLeft)
-        character.messages.append(roomRight)
 
         wallMissing = False
         items = []

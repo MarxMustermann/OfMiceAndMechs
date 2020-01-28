@@ -1125,6 +1125,8 @@ current registers
 
                         # do not move player into the room
                         else:
+                            char.messages.append(localisedEntry)
+                            char.messages.append(room.walkingAccess)
                             char.messages.append("you cannot move there")
 
                     # check if character has entered a room

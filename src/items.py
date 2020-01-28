@@ -1226,7 +1226,6 @@ class RoomBuilder(Item):
 
         if not ( wallLeft and wallRight and wallTop and wallBottom) :
             character.messages.append("no boundaries found")
-            character.messages.append((wallLeft,wallRight,wallTop,wallBottom))
             return
 
         roomLeft = self.xPosition-wallLeft.xPosition
@@ -1234,9 +1233,20 @@ class RoomBuilder(Item):
         roomTop = self.yPosition-wallTop.yPosition
         roomBottom = wallBottom.yPosition-self.yPosition
 
+        if roomLeft+roomRight+1 > 15:
+            character.messages.append("room to big")
+            return
+        character.messages.append(roomLeft+roomRight+1)
+        if roomTop+roomBottom+1 > 15:
+            character.messages.append("room to big")
+            return
+        character.messages.append(roomTop+roomBottom+1)
+        
+        character.messages.append(roomLeft)
+        character.messages.append(roomRight)
+
         wallMissing = False
         items = []
-        character.messages.append([roomLeft,roomRight,roomTop,roomBottom,])
         for x in range(-roomLeft,roomRight+1):
             pos = (self.xPosition+x,self.yPosition-roomTop)
             wallFound = None 

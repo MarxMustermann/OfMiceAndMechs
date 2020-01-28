@@ -2764,6 +2764,8 @@ def keyboardListener(key):
     else:
         show_or_exit(key,charState=state)
 
+continousOperation = 0
+
 def gameLoop(loop,user_data):
 
     global multi_currentChar
@@ -2810,7 +2812,10 @@ def gameLoop(loop,user_data):
             if not character in multi_chars:
                 multi_chars.append(character)
 
+    global continousOperation
     if mainChar.macroState["commandKeyQueue"]:
+        continousOperation += 1
+
         if not len(cinematics.cinematicQueue):
             advanceGame()
         for char in multi_chars:
@@ -2859,19 +2864,16 @@ def gameLoop(loop,user_data):
         # render the game
         if not mainChar.specialRender:
                 
-            skipRender = False
-            if len(mainChar.macroState["commandKeyQueue"]) > 5:
-                skipRender = True
-                if gamestate.tick%5 == 0:
-                    skipRender = False
-            elif len(mainChar.macroState["commandKeyQueue"]) > 10:
-                skipRender = True
-                if gamestate.tick%10 == 0:
-                    skipRender = False
-            elif len(mainChar.macroState["commandKeyQueue"]) > 100:
-                skipRender = True
-                if gamestate.tick%100 == 0:
-                    skipRender = False
+            skipRender = True
+
+            thresholds = [10,50,100,500,1000,5000,10000,50000,100000,500000,1000000]
+            skipper = 0
+            for threshold in thresholds:
+                if continousOperation > threshold:
+                    skipper += 1
+            if skipper == 0 or gamestate.tick%skipper == 0:
+                skipRender = False
+
             if not skipRender:
 
                 # render map
@@ -2912,6 +2914,8 @@ def gameLoop(loop,user_data):
                     counter += 1
 
                 pygame.display.update()
+    else:
+        continousOperation = 0
 
     loop.set_alarm_in(0.0001, gameLoop)
 

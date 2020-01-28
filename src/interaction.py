@@ -1428,31 +1428,32 @@ current registers
     # render the game
     if not char.specialRender:
         
-        """
-        # advance the game
-        if doAdvanceGame:
-            global shownStarvationWarning
-            if char.satiation < 30 and char.satiation > -1:
-                if not shownStarvationWarning:
-                    #cinematics.showCinematic("you will starve in %s ticks. drink something"%(char.satiation))
-                    shownStarvationWarning = True
-                if char.satiation == 0:
-                    char.messages.append("you starved")
-            else:
-                shownStarvationWarning = False
-            advanceGame()
-        """
-
         # render information on top
         if noAdvanceGame == False:
             header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
 
         # render map
         # bad code: display mode specific code
-        canvas = render(char)
-        main.set_text((urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible()));
-        if (useTiles):
-            canvas.setPygameDisplay(pydisplay,pygame,tileSize)
+        skipRender = False
+        mainChar.messages.append("test")
+        if len(mainChar.macroState["commandKeyQueue"]) > 5:
+            if gamestate.tick%2 == 0:
+                skipRender = True
+                mainChar.messages.append("skipping5")
+        elif len(mainChar.macroState["commandKeyQueue"]) > 10:
+            if gamestate.tick%5 == 0:
+                skipRender = True
+                mainChar.messages.append("skipping10")
+        elif len(mainChar.macroState["commandKeyQueue"]) > 100:
+            if gamestate.tick%10 == 0:
+                skipRender = True
+                mainChar.messages.append("skipping100")
+        skipRender = True
+        if not skipRender:
+            canvas = render(char)
+            main.set_text((urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible()));
+            if (useTiles):
+                canvas.setPygameDisplay(pydisplay,pygame,tileSize)
 
 
     if charState["replay"] or charState["doNumber"]:
@@ -2765,20 +2766,6 @@ def keyboardListener(key):
 
 def gameLoop(loop,user_data):
 
-    """
-    if mainChar.macroState["commandKeyQueue"]:
-        for char in multi_chars:
-            if char == mainChar:
-                noAdvanceGame = False
-            else:
-                noAdvanceGame = True
-            state = char.macroState
-            if len(state["commandKeyQueue"]):
-                key = state["commandKeyQueue"][0]
-                state["commandKeyQueue"].remove(key)
-                processInput(key,charState=state,noAdvanceGame=noAdvanceGame,char=char)
-    """
-
     global multi_currentChar
     global multi_chars
 
@@ -2871,47 +2858,47 @@ def gameLoop(loop,user_data):
 
         # render the game
         if not mainChar.specialRender:
-            
-            """
-            global shownStarvationWarning
-            if char.satiation < 30 and char.satiation > -1:
-                if not shownStarvationWarning:
-                    #cinematics.showCinematic("you will starve in %s ticks. drink something"%(char.satiation))
-                    shownStarvationWarning = True
-                if char.satiation == 0:
-                    char.messages.append("you starved")
-            else:
-                shownStarvationWarning = False
+                
+            skipRender = False
+            if len(mainChar.macroState["commandKeyQueue"]) > 5:
+                skipRender = True
+                if gamestate.tick%5 == 0:
+                    skipRender = False
+            elif len(mainChar.macroState["commandKeyQueue"]) > 10:
+                skipRender = True
+                if gamestate.tick%10 == 0:
+                    skipRender = False
+            elif len(mainChar.macroState["commandKeyQueue"]) > 100:
+                skipRender = True
+                if gamestate.tick%100 == 0:
+                    skipRender = False
+            if not skipRender:
 
-            # render information on top
-            if noAdvanceGame == False:
-            """
+                # render map
+                # bad code: display mode specific code
+                canvas = render(mainChar)
+                main.set_text((urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible()));
+                if (useTiles):
+                    canvas.setPygameDisplay(pydisplay,pygame,tileSize)
+                    #canvas.setSDL2Display(sdl2Main,tileSize)
+                header.set_text((urwid.AttrSpec("default","default"),renderHeader(mainChar)))
+                if (useTiles):
+                    w, h = pydisplay.get_size()
 
-            # render map
-            # bad code: display mode specific code
-            canvas = render(mainChar)
-            main.set_text((urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible()));
-            if (useTiles):
-                canvas.setPygameDisplay(pydisplay,pygame,tileSize)
-                #canvas.setSDL2Display(sdl2Main,tileSize)
-            header.set_text((urwid.AttrSpec("default","default"),renderHeader(mainChar)))
-            if (useTiles):
-                w, h = pydisplay.get_size()
+                    font = pygame.font.Font("config/DejaVuSansMono.ttf",14)
+                    plainText = stringifyUrwid(header.get_text())
+                    counter = 0
+                    for line in plainText.split("\n"):
+                        text = font.render(line, True, (200, 200, 200))
+                        pydisplay.blit(text,(0,0+15*counter))
+                        counter += 1
+                    pygame.display.update()
 
-                font = pygame.font.Font("config/DejaVuSansMono.ttf",14)
-                plainText = stringifyUrwid(header.get_text())
-                counter = 0
-                for line in plainText.split("\n"):
-                    text = font.render(line, True, (200, 200, 200))
-                    pydisplay.blit(text,(0,0+15*counter))
-                    counter += 1
-                pygame.display.update()
-
-                plainText = stringifyUrwid(footer.get_text())
-                text = font.render(plainText, True, (200, 200, 200))
-                tw, th = font.size(plainText)
-                pydisplay.blit(text,(w-tw-8,h-th-8))
-                pygame.display.update()
+                    plainText = stringifyUrwid(footer.get_text())
+                    text = font.render(plainText, True, (200, 200, 200))
+                    tw, th = font.size(plainText)
+                    pydisplay.blit(text,(w-tw-8,h-th-8))
+                    pygame.display.update()
         else:
             if (useTiles):
                 pydisplay.fill((0,0,0))

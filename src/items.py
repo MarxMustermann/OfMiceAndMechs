@@ -1177,7 +1177,7 @@ class RoomBuilder(Item):
     map player controls to room movement 
     '''
     def apply(self,character):
-        if not self.room:
+        if self.room:
             character.messages.append("this machine can not be used within rooms")
             return
         

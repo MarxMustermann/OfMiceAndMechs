@@ -225,14 +225,18 @@ gamestate.cinematics = cinematics
 
 # load the gamestate
 loaded = False
-if args.load:
-    shouldLoad = True
-else:
-    load = input("load gamestate? (Y/n)")
-    if load.lower() == "n":
-        shouldLoad = False
-    else:
+if not args.nourwid:
+    if args.load:
         shouldLoad = True
+    else:
+        load = input("load gamestate? (Y/n)")
+        if load.lower() == "n":
+            shouldLoad = False
+        else:
+            shouldLoad = True
+else:
+    shouldLoad = True
+
 print(shouldLoad)
 if shouldLoad:
     try:

@@ -963,7 +963,10 @@ current registers
             elif key in (commandChars.pause,commandChars.advance,commandChars.autoAdvance,commandChars.redraw,"enter") and cinematic.skipable:
                 cinematic.abort()
                 cinematics.cinematicQueue = cinematics.cinematicQueue[1:]
-                loop.set_alarm_in(0.0, callShow_or_exit, commandChars.ignore)
+                if loop:
+                    loop.set_alarm_in(0.0, callShow_or_exit, commandChars.ignore)
+                else:
+                    callShow_or_exit(None,commandChars.ignore)
                 return
 
             # advance the cutscene

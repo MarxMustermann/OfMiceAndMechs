@@ -5,7 +5,6 @@
 #
 ################################################################################
 
-import urwid
 
 """
 split a mix of strings and urwid formating into a list where each element contains exactly
@@ -40,6 +39,8 @@ def flattenToPeseudoString(urwidText):
 add rusty colors to a string
 '''
 def makeRusty(payload):
+    import urwid
+
     converted = []
     colours = ['#f50',"#a60","#f80","#fa0","#860"]
     counter = 0

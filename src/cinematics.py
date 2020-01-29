@@ -292,10 +292,11 @@ class TextCinematic(BasicCinematic):
         # scroll the text in char by char
         if self.position < self.endPosition:
             baseText = self.text[0:self.position]
-            if isinstance(self.text[self.position],str) and self.text[self.position] in ("\n"):
-                self.alarm = loop.set_alarm_in(0.5, callShow_or_exit, '~')
-            else:
-                self.alarm = loop.set_alarm_in(0.05, callShow_or_exit, '~')
+            if loop:
+                if isinstance(self.text[self.position],str) and self.text[self.position] in ("\n"):
+                    self.alarm = loop.set_alarm_in(0.5, callShow_or_exit, '~')
+                else:
+                    self.alarm = loop.set_alarm_in(0.05, callShow_or_exit, '~')
             addition = ""
 
         # show the complete text
@@ -304,14 +305,19 @@ class TextCinematic(BasicCinematic):
             self.skipable = True
             if not self.autocontinue:
                 self.footerText = "press space to proceed"
-                self.alarm = loop.set_alarm_in(0, callShow_or_exit, '~')
+                if loop:
+                    self.alarm = loop.set_alarm_in(0, callShow_or_exit, '~')
             else:
-                self.alarm = loop.set_alarm_in(0, callShow_or_exit, ' ')
+                if loop:
+                    self.alarm = loop.set_alarm_in(0, callShow_or_exit, ' ')
 
         # set or not set rusty colors
         if self.rusty:
-            import src.urwidSpecials
-            base = src.urwidSpecials.makeRusty(baseText)
+            try:
+                import src.urwidSpecials
+                base = src.urwidSpecials.makeRusty(baseText)
+            except:
+                base = [baseText]
         else:
             base = [baseText]
 

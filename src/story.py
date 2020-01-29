@@ -2668,11 +2668,17 @@ class BuildBase(BasicPhase):
 
         import json
         with open("states/theftBase1.json","r") as stateFile:
-            theft1BaseState = json.loads(stateFile.read())
-        terrain.addRoom(src.rooms.getRoomFromState(theft1BaseState,terrain))
+            room = json.loads(stateFile.read())
+        terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
         with open("states/theftBase2.json","r") as stateFile:
-            theft2BaseState = json.loads(stateFile.read())
-        terrain.addRoom(src.rooms.getRoomFromState(theft2BaseState,terrain))
+            room = json.loads(stateFile.read())
+        terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
+        with open("states/emptyRoom1.json","r") as stateFile:
+            room = json.loads(stateFile.read())
+        terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
+        with open("states/emptyRoom2.json","r") as stateFile:
+            room = json.loads(stateFile.read())
+        terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
 
         mainChar.addListener(self.checkRoomEnteredMain)
 

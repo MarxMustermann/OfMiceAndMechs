@@ -67,7 +67,7 @@ class Character(src.saveing.Saveable):
         if name == None:
             name = "Person"
         if display == None:
-            display = "＠"
+            display = displayChars.staffCharacters[0]
 
         self.setDefaultMacroState()
 

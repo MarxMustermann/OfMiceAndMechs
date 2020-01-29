@@ -505,7 +505,6 @@ if args.tiles:
     interaction.pydisplay = pydisplay
     interaction.useTiles = True
     interaction.tileMapping = canvas.TileMapping("testTiles")
-    interaction.tileMapping2 = canvas.TileMapping("testTiles2")
 else:
     interaction.useTiles = False
     interaction.tileMapping = None

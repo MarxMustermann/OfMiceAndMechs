@@ -2629,7 +2629,7 @@ def render(char):
     shift = (screensize[1]//2-20,screensize[0]//4-20)
 
     # place rendering in screen
-    canvas = src.canvas.Canvas(size=(viewsize,viewsize),chars=chars,coordinateOffset=(centerY-halfviewsite,centerX-halfviewsite),shift=shift,displayChars=displayChars,tileMapping=tileMapping,tileMapping2=tileMapping2)
+    canvas = src.canvas.Canvas(size=(viewsize,viewsize),chars=chars,coordinateOffset=(centerY-halfviewsite,centerX-halfviewsite),shift=shift,displayChars=displayChars,tileMapping=tileMapping)
 
     return canvas
 

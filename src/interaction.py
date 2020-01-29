@@ -891,25 +891,6 @@ current registers
             else:
                 footer.set_text(" "+charState["submenue"].footerText)
 
-    # handle lag detection
-    # bad code: lagdetection is abused as a timer
-    if key in ("lagdetection","lagdetection_"):
-
-        # trigger the next lagdetection keystroke
-        lastLagDetection = time.time()
-
-        # advance the game if the character stays idle
-        if len(cinematics.cinematicQueue) or pauseGame:
-            return
-        idleCounter += 1
-        if idleCounter < 15 or not idleCounter%10 == 0:
-            return
-        key = commandChars.wait
-
-    # reset activity counter
-    else:
-        idleCounter = 0
-
     # discard keysstrokes, if they were not processed for too long
     ignoreList = (commandChars.autoAdvance, commandChars.quit_instant, commandChars.ignore,commandChars.quit_delete, commandChars.pause, commandChars.show_quests, commandChars.show_quests_detailed, commandChars.show_inventory, commandChars.show_inventory_detailed, commandChars.show_characterInfo)
     if not key in ignoreList:
@@ -1357,13 +1338,6 @@ current registers
         if not key in ("lagdetection","lagdetection_",commandChars.wait,commandChars.autoAdvance):
             charState["itemMarkedLast"] = None
 
-        # enforce 60fps
-        # bad code: urwid specific code should be isolated
-        global lastRedraw
-        if lastRedraw < time.time()-0.016:
-            loop.draw_screen()
-            lastRedraw = time.time()
-
         char.specialRender = False
 
         # doesn't open the dev menu and toggles rendering mode instead
@@ -1422,40 +1396,6 @@ current registers
             char.specialRender = False
             doAdvanceGame = False
 
-    if noAdvanceGame:
-        return
-        
-    # render the game
-    if not char.specialRender:
-        
-        # render information on top
-        if noAdvanceGame == False:
-            header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
-
-        # render map
-        # bad code: display mode specific code
-        skipRender = False
-        mainChar.messages.append("test")
-        if len(mainChar.macroState["commandKeyQueue"]) > 5:
-            if gamestate.tick%2 == 0:
-                skipRender = True
-                mainChar.messages.append("skipping5")
-        elif len(mainChar.macroState["commandKeyQueue"]) > 10:
-            if gamestate.tick%5 == 0:
-                skipRender = True
-                mainChar.messages.append("skipping10")
-        elif len(mainChar.macroState["commandKeyQueue"]) > 100:
-            if gamestate.tick%10 == 0:
-                skipRender = True
-                mainChar.messages.append("skipping100")
-        skipRender = True
-        if not skipRender:
-            canvas = render(char)
-            main.set_text((urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible()));
-            if (useTiles):
-                canvas.setPygameDisplay(pydisplay,pygame,tileSize)
-
-
     if charState["replay"] or charState["doNumber"]:
         text = ""
         for cmd in reversed(charState["commandKeyQueue"]):
@@ -1464,13 +1404,6 @@ current registers
                 continue
             text += str(cmd[0])
         footer.set_text((urwid.AttrSpec("default","default"),text))
-
-    # show the game won screen
-    # bad code: display mode specific code
-    if gamestate.gameWon:
-        main.set_text((urwid.AttrSpec("default","default"),""))
-        main.set_text((urwid.AttrSpec("default","default"),"credits"))
-        header.set_text((urwid.AttrSpec("default","default"),"good job"))
 
 '''
 The base class for submenues offering selections

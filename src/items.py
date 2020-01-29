@@ -4678,33 +4678,6 @@ Also the number of ticks will be written to the register t.
 """
         return text
 
-    def registerPickUp(self,param):
-        if self.tracked:
-            self.tracked.messages.append("pickUp")
-            self.tracked.messages.append(param)
-
-    def registerDrop(self,param):
-        if self.tracked:
-            self.tracked.messages.append("drop")
-            self.tracked.messages.append(param)
-
-    def registerMovement(self,param):
-        if self.tracked:
-            self.tracked.messages.append("mov")
-            self.tracked.messages.append(param)
-
-        mov = ""
-        if param == "north":
-            mov = "s"
-        elif param == "south":
-            mov = "w"
-        elif param == "west":
-            mov = "d"
-        elif param == "east":
-            mov = "a"
-        self.command.insert(0,mov)
-
-
 # maping from strings to all items
 # should be extendable
 itemMap = {

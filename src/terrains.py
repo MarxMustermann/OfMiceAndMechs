@@ -1473,7 +1473,6 @@ class Nothingness(Terrain):
         """
 
         super().__init__(layout,detailedLayout,creator=creator,seed=seed, noPaths = True)
-        self.noPaths = True
 
         # add a few items scattered around
         self.dekoItems = []
@@ -1529,6 +1528,7 @@ class GameplayTest(Terrain):
         """
         detailedLayout = """
         """
+
         super().__init__(layout,detailedLayout,creator=creator,seed=seed)
 
         self.floordisplay = displayChars.dirt
@@ -1626,6 +1626,7 @@ class GameplayTest(Terrain):
             if (item.xPosition,item.yPosition) in self.itemByCoordinates:
                 for subItem in self.itemByCoordinates[(item.xPosition,item.yPosition)]:
                     toRemove.append(subItem)
+
         self.addItems(self.scrapItems)
         
         for item in toRemove:
@@ -1665,6 +1666,16 @@ class GameplayTest(Terrain):
         extraItems.append(coalMine)
 
         self.addItems(extraItems)
+
+        toRemove = []
+        for x in range(124,131):
+            for y in range(124,131):
+                if (x,y) in self.itemByCoordinates:
+                    for subItem in self.itemByCoordinates[(x,y)]:
+                        toRemove.append(subItem)
+
+        for item in toRemove:
+            self.removeItem(item, recalculate=False)
 
         # save internal state
         self.initialState = self.getState()

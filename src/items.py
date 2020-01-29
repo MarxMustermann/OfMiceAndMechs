@@ -567,6 +567,7 @@ class ItemUpgrader(Item):
 
         if not inputItem.type in ["GrowthTank","GrowthTankII","GrowthTankIII","GrowthTankIIII"]:
             character.messages.append("cannot upgrade %s"%(inputItem.type))
+            return
 
         self.room.removeItem(inputItem)
         if inputItem.type == "GrowthTank":
@@ -4244,6 +4245,9 @@ class BluePrinter(Item):
                 [["Nook","Tank"],"MarkerBean"],
                 [["Bolt","Tank"],"PositioningDevice"],
                 [["Bolt","puller"],"Watch"],
+                [["Bolt","Heater"],"BackTracker"],
+                [["Bolt","pusher"],"Tumbler"],
+                [["Sheet","Heater"],"ItemUpgrader"],
 
                 [["Scrap","MetalBars"],"Scraper"],
                 [["Sheet","MetalBars"],"Tank"],

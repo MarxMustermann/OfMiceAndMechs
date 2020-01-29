@@ -7,7 +7,7 @@
 
 # import basic libs
 # bad code: should not be imported when using tile based display only
-import urwid
+urwid = None
 
 """
 maps things to abstrect representation and back

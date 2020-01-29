@@ -7,7 +7,6 @@
 
 # load libraries
 import time
-import urwid
 
 # load internal libraries
 import src.rooms
@@ -25,17 +24,19 @@ import src.terrains
 #
 #################################################################################################################################
 
-# the containers for the shown text
-urwidHeader = urwid.Text(u"")
-urwidMain = urwid.Text(u"")
-urwidFooter = urwid.Text(u"",align = 'right')
+main = None
+footer = None
+header = None
+frame = None
+urwid = None
 
 class abstractedDisplay(object):
     def __init__(self,urwidInstance):
         self.urwidInstance = urwidInstance
 
     def set_text(self,text):
-        self.urwidInstance.set_text(text)
+        if self.urwidInstance:
+            self.urwidInstance.set_text(text)
         self.text = text
 
     def get_text(self):
@@ -44,12 +45,45 @@ class abstractedDisplay(object):
     def renderSDL2(self):
         pass
 
-main = abstractedDisplay(urwidMain)
-footer = abstractedDisplay(urwidFooter)
-header = abstractedDisplay(urwidHeader)
+def setUpUrwid():
+    import urwid
 
-urwidMain.set_layout('left', 'clip')
-frame = urwid.Frame(urwid.Filler(urwidMain,"top"),header=urwidHeader,footer=urwidFooter)
+    # the containers for the shown text
+    urwidHeader = urwid.Text(u"")
+    urwidMain = urwid.Text(u"")
+    urwidFooter = urwid.Text(u"",align = 'right')
+
+    global main
+    global footer
+    global header
+    global frame
+    global loop
+
+    main = abstractedDisplay(urwidMain)
+    footer = abstractedDisplay(urwidFooter)
+    header = abstractedDisplay(urwidHeader)
+
+    urwidMain.set_layout('left', 'clip')
+    frame = urwid.Frame(urwid.Filler(urwidMain,"top"),header=urwidHeader,footer=urwidFooter)
+
+    # get the interaction loop from the library
+    loop = urwid.MainLoop(frame, unhandled_input=keyboardListener)
+
+    def tmp(loop,user_data):
+        gameLoop(loop,user_data)
+
+    loop.set_alarm_in(0.1, tmp)
+
+    loop.set_alarm_in(0.1, tmp2)
+
+def setUpNoUrwid():
+    global main
+    global footer
+    global header
+
+    main = abstractedDisplay(None)
+    footer = abstractedDisplay(None)
+    header = abstractedDisplay(None)
 
 ##################################################################################################################################
 ###
@@ -2273,7 +2307,10 @@ def renderHeader(character):
     messagesSection = renderMessages(character)
 
     # calculate the size of the elements
-    screensize = loop.screen.get_cols_rows()
+    if loop:
+        screensize = loop.screen.get_cols_rows()
+    else:
+        screensize = (400,400)
     questWidth = (screensize[0]//3)-2
     messagesWidth = screensize[0]-questWidth-3
 
@@ -2556,9 +2593,12 @@ def render(char):
     halfviewsite = (viewsize-1)//2
 
     # calculate the windows position
-    screensize = loop.screen.get_cols_rows()
-    decorationSize = frame.frame_top_bottom(loop.screen.get_cols_rows(),True)
-    screensize = (screensize[0]-decorationSize[0][0],screensize[1]-decorationSize[0][1])
+    if loop:
+        screensize = loop.screen.get_cols_rows()
+        screensize = (screensize[0]-decorationSize[0][0],screensize[1]-decorationSize[0][1])
+        decorationSize = frame.frame_top_bottom(loop.screen.get_cols_rows(),True)
+    else:
+        screensize = (400,400)
     shift = (screensize[1]//2-20,screensize[0]//4-20)
 
     # place rendering in screen
@@ -2704,161 +2744,159 @@ def gameLoop(loop,user_data):
     global multi_currentChar
     global multi_chars
 
-    if not multi_currentChar:
-        multi_currentChar = mainChar
-    if multi_chars == None:
-        multi_chars = []
+    while not loop:
+        if not multi_currentChar:
+            multi_currentChar = mainChar
+        if multi_chars == None:
+            multi_chars = []
 
-    # transform and store the keystrokes that accumulated in pygame
-    if useTiles:
-        import pygame
-        for item in pygame.event.get():
-            if not hasattr(item,"unicode"):
-                continue
-            key = item.unicode
-            if key == "":
-                continue
-            if key == "\x10":
-                key = "ctrl p"
-            if key == "\x18":
-                key = "ctrl x"
-            if key == "\x0f":
-                key = "ctrl o"
-            if key == "\x04":
-                key = "ctrl d"
-            if key == "\x0b":
-                key = "ctrl k"
-            if key == "\x01":
-                key = "ctrl a"
-            if key == "\x17":
-                key = "ctrl w"
-            if key == "\x1b":
-                key = "esc"
-            keyboardListener(key)
+        # transform and store the keystrokes that accumulated in pygame
+        if useTiles:
+            import pygame
+            for item in pygame.event.get():
+                if item.type == pygame.QUIT:
+                    gamestate.save()
+                    pygame.quit()
+                if not hasattr(item,"unicode"):
+                    continue
+                key = item.unicode
+                if key == "":
+                    continue
+                if key == "\x10":
+                    key = "ctrl p"
+                if key == "\x18":
+                    key = "ctrl x"
+                if key == "\x0f":
+                    key = "ctrl o"
+                if key == "\x04":
+                    key = "ctrl d"
+                if key == "\x0b":
+                    key = "ctrl k"
+                if key == "\x01":
+                    key = "ctrl a"
+                if key == "\x17":
+                    key = "ctrl w"
+                if key == "\x1b":
+                    key = "esc"
+                keyboardListener(key)
 
-    for char in terrain.characters[:]:
-        if not char in multi_chars:
-            multi_chars.append(char)
+        for char in terrain.characters[:]:
+            if not char in multi_chars:
+                multi_chars.append(char)
 
-    for room in terrain.rooms:
-        for character in room.characters[:]:
-            if not character in multi_chars:
-                multi_chars.append(character)
+        for room in terrain.rooms:
+            for character in room.characters[:]:
+                if not character in multi_chars:
+                    multi_chars.append(character)
 
-    global continousOperation
-    if mainChar.macroState["commandKeyQueue"]:
-        continousOperation += 1
+        global continousOperation
+        if mainChar.macroState["commandKeyQueue"]:
+            continousOperation += 1
 
-        if not len(cinematics.cinematicQueue):
-            advanceGame()
-        for char in multi_chars:
-            if char.stasis:
-                continue
+            if not len(cinematics.cinematicQueue):
+                advanceGame()
+            for char in multi_chars:
+                if char.stasis:
+                    continue
 
-            if len(cinematics.cinematicQueue) and not char == mainChar:
-                continue
+                if len(cinematics.cinematicQueue) and not char == mainChar:
+                    continue
 
-            state = char.macroState
-
-            if len(state["commandKeyQueue"]):
-                key = state["commandKeyQueue"][0]
-                while isinstance(key[0],list) or isinstance(key[0],tuple) or key[0] in ("lagdetection","lagdetection_"):
-                    if len(state["commandKeyQueue"]):
-                        key = state["commandKeyQueue"][0]
-                        state["commandKeyQueue"].remove(key)
-                    else:
-                        key = ("~",[])
+                state = char.macroState
 
                 if len(state["commandKeyQueue"]):
                     key = state["commandKeyQueue"][0]
-                    state["commandKeyQueue"].remove(key)
-                    processInput(key,charState=state,noAdvanceGame=True,char=char)
+                    while isinstance(key[0],list) or isinstance(key[0],tuple) or key[0] in ("lagdetection","lagdetection_"):
+                        if len(state["commandKeyQueue"]):
+                            key = state["commandKeyQueue"][0]
+                            state["commandKeyQueue"].remove(key)
+                        else:
+                            key = ("~",[])
 
-        text = ""
-        for cmd in mainChar.macroState["commandKeyQueue"]:
-            item = cmd[0]
-            if isinstance(item,list) or isinstance(item,tuple) or item in ("lagdetection","lagdetection_"):
-                continue
-            text += str(cmd[0])
-        text += " | satiation: "+str(mainChar.satiation)
-        footer.set_text((urwid.AttrSpec("default","default"),text))
+                    if len(state["commandKeyQueue"]):
+                        key = state["commandKeyQueue"][0]
+                        state["commandKeyQueue"].remove(key)
+                        processInput(key,charState=state,noAdvanceGame=True,char=char)
 
-        def stringifyUrwid(inData):
-            outData = ""
-            for item in inData:
-                if isinstance(item,tuple):
-                    outData += stringifyUrwid(item[1])
-                if isinstance(item,list):
-                    outData += stringifyUrwid(item)
-                if isinstance(item,str):
-                    outData += item
-            return outData
+            text = ""
+            for cmd in mainChar.macroState["commandKeyQueue"]:
+                item = cmd[0]
+                if isinstance(item,list) or isinstance(item,tuple) or item in ("lagdetection","lagdetection_"):
+                    continue
+                text += str(cmd[0])
+            text += " | satiation: "+str(mainChar.satiation)
+            footer.set_text((urwid.AttrSpec("default","default"),text))
 
-        # render the game
-        if not mainChar.specialRender:
-                
-            skipRender = True
+            def stringifyUrwid(inData):
+                outData = ""
+                for item in inData:
+                    if isinstance(item,tuple):
+                        outData += stringifyUrwid(item[1])
+                    if isinstance(item,list):
+                        outData += stringifyUrwid(item)
+                    if isinstance(item,str):
+                        outData += item
+                return outData
 
-            thresholds = [10,50,100,500,1000,5000,10000,50000,100000,500000,1000000]
-            skipper = 0
-            for threshold in thresholds:
-                if continousOperation > threshold:
-                    skipper += 1
-            if skipper == 0 or gamestate.tick%skipper == 0:
-                skipRender = False
+            # render the game
+            if not mainChar.specialRender:
+                    
+                skipRender = True
 
-            if not skipRender:
+                thresholds = [10,50,100,500,1000,5000,10000,50000,100000,500000,1000000]
+                skipper = 0
+                for threshold in thresholds:
+                    if continousOperation > threshold:
+                        skipper += 1
+                if skipper == 0 or gamestate.tick%skipper == 0:
+                    skipRender = False
 
-                # render map
-                # bad code: display mode specific code
-                canvas = render(mainChar)
-                main.set_text((urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible()));
+                if not skipRender:
+
+                    # render map
+                    # bad code: display mode specific code
+                    canvas = render(mainChar)
+                    main.set_text((urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible()));
+                    if (useTiles):
+                        canvas.setPygameDisplay(pydisplay,pygame,tileSize)
+                        #canvas.setSDL2Display(sdl2Main,tileSize)
+                    header.set_text((urwid.AttrSpec("default","default"),renderHeader(mainChar)))
+                    if (useTiles):
+                        w, h = pydisplay.get_size()
+
+                        font = pygame.font.Font("config/DejaVuSansMono.ttf",14)
+                        plainText = stringifyUrwid(header.get_text())
+                        counter = 0
+                        for line in plainText.split("\n"):
+                            text = font.render(line, True, (200, 200, 200))
+                            pydisplay.blit(text,(0,0+15*counter))
+                            counter += 1
+                        pygame.display.update()
+
+                        plainText = stringifyUrwid(footer.get_text())
+                        text = font.render(plainText, True, (200, 200, 200))
+                        tw, th = font.size(plainText)
+                        pydisplay.blit(text,(w-tw-8,h-th-8))
+                        pygame.display.update()
+            else:
                 if (useTiles):
-                    canvas.setPygameDisplay(pydisplay,pygame,tileSize)
-                    #canvas.setSDL2Display(sdl2Main,tileSize)
-                header.set_text((urwid.AttrSpec("default","default"),renderHeader(mainChar)))
-                if (useTiles):
-                    w, h = pydisplay.get_size()
-
+                    pydisplay.fill((0,0,0))
                     font = pygame.font.Font("config/DejaVuSansMono.ttf",14)
-                    plainText = stringifyUrwid(header.get_text())
+
+                    plainText = stringifyUrwid(main.get_text())
                     counter = 0
                     for line in plainText.split("\n"):
                         text = font.render(line, True, (200, 200, 200))
-                        pydisplay.blit(text,(0,0+15*counter))
+                        pydisplay.blit(text,(30,110+15*counter))
                         counter += 1
-                    pygame.display.update()
 
-                    plainText = stringifyUrwid(footer.get_text())
-                    text = font.render(plainText, True, (200, 200, 200))
-                    tw, th = font.size(plainText)
-                    pydisplay.blit(text,(w-tw-8,h-th-8))
                     pygame.display.update()
         else:
-            if (useTiles):
-                pydisplay.fill((0,0,0))
-                font = pygame.font.Font("config/DejaVuSansMono.ttf",14)
-
-                plainText = stringifyUrwid(main.get_text())
-                counter = 0
-                for line in plainText.split("\n"):
-                    text = font.render(line, True, (200, 200, 200))
-                    pydisplay.blit(text,(30,110+15*counter))
-                    counter += 1
-
-                pygame.display.update()
-    else:
-        continousOperation = 0
+            continousOperation = 0
 
     loop.set_alarm_in(0.0001, gameLoop)
 
-# get the interaction loop from the library
-loop = urwid.MainLoop(frame, unhandled_input=keyboardListener)
-
-def tmp(loop,user_data):
-    gameLoop(loop,user_data)
-
-loop.set_alarm_in(0.1, tmp)
+loop = None
 
 s = None
 
@@ -2924,8 +2962,6 @@ def tmp2(loop,user_data):
         conn.sendall(data)
 
     loop.set_alarm_in(0.1, tmp2)
-
-loop.set_alarm_in(0.1, tmp2)
 
 # the directory for the submenues
 subMenuMap = {

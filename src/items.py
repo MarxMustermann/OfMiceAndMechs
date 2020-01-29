@@ -5,7 +5,6 @@
 ####################################################################################
 
 # load basic libs
-import urwid
 import json
 
 # load basic internal libs
@@ -18,6 +17,7 @@ characters = None
 displayChars = None
 commandChars = None
 terrain = None
+urwid = None
 
 '''
 the base class for all items.

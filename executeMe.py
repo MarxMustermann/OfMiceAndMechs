@@ -40,6 +40,7 @@ parser.add_argument("--unicode", action="store_true", help="force fallback encod
 parser.add_argument("-d", "--debug", action="store_true", help="enable debug mode")
 parser.add_argument("-m", "--music", action="store_true", help="enable music (downloads stuff and runs mplayer!)")
 parser.add_argument("-t", "--tiles", action="store_true", help="spawn a tile based view of the map (requires pygame)")
+parser.add_argument("--nourwid", action="store_true", help="do not show shell based")
 parser.add_argument("-ts", "--tileSize", type=int, help="the base size of tiles")
 parser.add_argument("-T", "--terrain", type=str, help="select the terrain")
 parser.add_argument("-s", "--seed", type=str, help="select the seed of a new game")
@@ -50,16 +51,43 @@ args = parser.parse_args()
 import src.canvas as canvas
 
 # set rendering mode
-if args.unicode:
-    displayChars = canvas.DisplayMapping("unicode")
+if not args.nourwid:
+    if args.unicode:
+        displayChars = canvas.DisplayMapping("unicode")
+    else:
+        displayChars = canvas.DisplayMapping("pureASCII")
 else:
-    displayChars = canvas.DisplayMapping("pureASCII")
+    displayChars = canvas.TileMapping("testTiles")
 
 if args.seed:
     seed = int(args.seed)
 else:
     import random
     seed = random.randint(1,100000)
+
+if args.nourwid:
+    interaction.nourwid = True
+
+    import src.pseudoUrwid
+    interaction.urwid = src.pseudoUrwid
+    items.urwid = src.pseudoUrwid
+    chats.urwid = src.pseudoUrwid
+    canvas.urwid = src.pseudoUrwid
+    cinematics.urwid = src.pseudoUrwid
+
+    interaction.setUpNoUrwid()
+
+else:
+    interaction.nourwid = False
+
+    import urwid
+    interaction.urwid = urwid
+    items.urwid = urwid
+    chats.urwid = urwid
+    canvas.urwid = urwid
+    cinematics.urwid = urwid
+
+    interaction.setUpUrwid()
 
 # bad code: common variables with modules
 void = saveing.Void()
@@ -522,8 +550,9 @@ else:
 
 # start the interaction loop of the underlying library
 try:
-    input("game ready press enter to start")
-    interaction.loop.run()
+    if not args.nourwid:
+        input("game ready press enter to start")
+        interaction.loop.run()
 except:
     if musicThread:
         musicThread.stop = True
@@ -532,6 +561,10 @@ except:
 # stop the music
 if musicThread:
     musicThread.stop = True
+
+if args.nourwid:
+    while 1:
+        interaction.gameLoop(None,None)
 
 # print death messages
 if gameStateObj.mainChar.dead:

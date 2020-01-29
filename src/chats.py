@@ -5,7 +5,7 @@
 #
 ####################################################################################################################
 
-import urwid
+urwid = None
 
 # import the other internal libs
 import src.interaction

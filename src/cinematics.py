@@ -5,13 +5,13 @@
 ##############################################################################################################
 
 # import basic libs
-import urwid
 import json
 
 # import basic internal libs
-import src.urwidSpecials
 import src.chats
 import src.saveing
+
+urwid = None
 
 """
 bad code: containers for global state
@@ -264,6 +264,7 @@ class TextCinematic(BasicCinematic):
            self.footerText = ""
 
         # flatten text and text information
+        import src.urwidSpecials
         self.text = src.urwidSpecials.flattenToPeseudoString(self.text)
         self.endPosition = len(self.text)
         if not scrolling:
@@ -309,6 +310,7 @@ class TextCinematic(BasicCinematic):
 
         # set or not set rusty colors
         if self.rusty:
+            import src.urwidSpecials
             base = src.urwidSpecials.makeRusty(baseText)
         else:
             base = [baseText]

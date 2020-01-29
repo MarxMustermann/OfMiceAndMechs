@@ -290,7 +290,7 @@ class Canvas(object):
                     image = pygame.image.load('config/Images/perspectiveTry/textChar.png')
                     pydisplay.blit(image,(250+counterX*(tileSize+1), 110+counterY*(tileSize+1)))
 
-                    font = pygame.font.Font(None,12)
+                    font = pygame.font.Font("config/DejaVuSansMono.ttf",10)
                     text = font.render(text, True, colour)
                     pydisplay.blit(text,(250+(counterX*(tileSize+1))+2, 110+(counterY*(tileSize+1))+8))
 

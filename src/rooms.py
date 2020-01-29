@@ -1430,6 +1430,33 @@ XXXXXXXXXXXXX
         self.bluePrinter = src.items.BluePrinter(8,9,creator=creator)
 
         self.addItems([self.artwork,self.compactor,flask1,flask2,flask3,self.infoScreen,self.bluePrinter,self.machinemachine])
+
+        metalbars = src.items.MetalBars(3,1,creator=creator)
+        metalbars2 = src.items.MetalBars(7,9,creator=creator)
+        metalbars3 = src.items.MetalBars(9,1,creator=creator)
+        metalbars4 = src.items.MetalBars(3,3,creator=creator)
+        scrap = src.items.Scrap(7,1,creator=creator)
+        connector = src.items.Nook(7,9,creator=creator)
+        blueprint1 = src.items.BluePrint(9,9,creator=creator)
+        blueprint1.setToProduce("Sheet")
+        blueprint1.bolted = False
+        blueprint2 = src.items.BluePrint(9,9,creator=creator)
+        blueprint2.setToProduce("Coil")
+        blueprint2.bolted = False
+        blueprint3 = src.items.BluePrint(9,9,creator=creator)
+        blueprint3.setToProduce("Nook")
+        blueprint3.bolted = False
+        blueprint4 = src.items.BluePrint(9,9,creator=creator)
+        blueprint4.setToProduce("Stripe")
+        blueprint4.bolted = False
+        blueprint5 = src.items.BluePrint(9,9,creator=creator)
+        blueprint5.setToProduce("Bolt")
+        blueprint5.bolted = False
+        blueprint6 = src.items.BluePrint(9,9,creator=creator)
+        blueprint6.setToProduce("Rod")
+        blueprint6.bolted = False
+        self.addItems([metalbars,metalbars2,metalbars3,metalbars4,scrap,connector,blueprint1,blueprint2,blueprint3,blueprint4,blueprint5,blueprint6])
+
         self.initialState = self.getState()
         loadingRegistry.register(self)
 

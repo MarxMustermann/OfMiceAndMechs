@@ -1551,6 +1551,39 @@ class SubMenu(src.saveing.Saveable):
         if key == "esc":
             return True
 
+        if key == "a":
+            # convert options to ordered dict
+            oldOptions = self.options
+            oldNiceOptions = self.niceOptions
+
+            import collections
+            self.options = collections.OrderedDict()
+            self.niceOptions = collections.OrderedDict()
+            counter = 1
+            while counter < len(oldOptions):
+                self.options[str(counter)] = oldOptions[str(counter+1)]
+                self.niceOptions[str(counter)] = oldNiceOptions[str(counter+1)]
+                counter += 1
+            self.options[str(counter)] = oldOptions[str(1)]
+            self.niceOptions[str(counter)] = oldNiceOptions[str(1)]
+
+        if key == "d":
+            # convert options to ordered dict
+            oldOptions = self.options
+            oldNiceOptions = self.niceOptions
+
+            import collections
+            self.options = collections.OrderedDict()
+            self.niceOptions = collections.OrderedDict()
+            counter = 1
+            self.options[str(counter)] = oldOptions[str(len(oldOptions))]
+            self.niceOptions[str(counter)] = oldNiceOptions[str(len(oldOptions))]
+            counter = 2
+            while counter < len(oldOptions)+1:
+                self.options[str(counter)] = oldOptions[str(counter-1)]
+                self.niceOptions[str(counter)] = oldNiceOptions[str(counter-1)]
+                counter += 1
+
         if key in (commandChars.autoAdvance, commandChars.advance):
             if not self.default == None:
                 self.selection = self.default

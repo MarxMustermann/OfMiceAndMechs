@@ -1078,13 +1078,13 @@ A comlink. It is useless.
 should be a display, but is abused as vehicle control
 bad code: use an actual vehicle control
 '''
-class Display(Item):
-    type = "Display"
+class RoomControls(Item):
+    type = "RoomControls"
 
     '''
     call superclass constructor with modified paramters
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="Display",creator=None):
+    def __init__(self,xPosition=0,yPosition=0,name="RoomControls",creator=None):
         super().__init__(displayChars.display,xPosition,yPosition,name=name,creator=creator)
 
     '''
@@ -1149,7 +1149,7 @@ class Display(Item):
 
     def getLongInfo(self):
         text = """
-A Display. Can be used to control vehicles.
+Room controls. Can be used to control vehicles.
 
 Use it to take control over the vehice.
 
@@ -3235,7 +3235,7 @@ class MachineMachine(Item):
             "Lever",
             "Furnace",
             "CommLink",
-            "Display",
+            "RoomControls",
             "Wall",
             "Pipe",
             "Coal",
@@ -4249,7 +4249,7 @@ class BluePrinter(Item):
                 [["Stripe","Connector","puller"],"MemoryReset"],
 
                 [["Sheet","pusher"],"Sorter"],
-                [["Stripe","Connector"],"Display"],
+                [["Stripe","Connector"],"RoomControls"],
                 [["GooFlask","Tank"],"GrowthTank"],
                 [["Coil","Heater"],"StasisTank"],
                 [["Nook","Tank"],"MarkerBean"],
@@ -4815,7 +4815,8 @@ itemMap = {
             "Lever":Lever,
             "Furnace":Furnace,
             "CommLink":Commlink,
-            "Display":Display,
+            "Display":RoomControls,
+            "RoomControls":RoomControls,
             "Wall":Wall,
             "Pipe":Pipe,
             "Coal":Coal,
@@ -4889,7 +4890,7 @@ producables = {
             "Lever":Lever,
             "Furnace":Furnace,
             "CommLink":Commlink,
-            "Display":Display,
+            "RoomControls":RoomControls,
             "Pipe":Pipe,
             "Chain":Chain,
             "Winch":Winch,

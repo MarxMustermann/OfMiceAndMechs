@@ -2631,8 +2631,8 @@ def render(char):
     # calculate the windows position
     if loop:
         screensize = loop.screen.get_cols_rows()
-        screensize = (screensize[0]-decorationSize[0][0],screensize[1]-decorationSize[0][1])
         decorationSize = frame.frame_top_bottom(loop.screen.get_cols_rows(),True)
+        screensize = (screensize[0]-decorationSize[0][0],screensize[1]-decorationSize[0][1])
     else:
         screensize = (400,400)
     shift = (screensize[1]//2-20,screensize[0]//4-20)
@@ -2780,7 +2780,10 @@ def gameLoop(loop,user_data):
     global multi_currentChar
     global multi_chars
 
-    while not loop:
+    firstRun = True
+    while not loop or firstRun:
+        firstRun = False
+
         if not multi_currentChar:
             multi_currentChar = mainChar
         if multi_chars == None:

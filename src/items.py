@@ -2399,6 +2399,8 @@ class ProductionArtwork(Item):
             character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
 
+        self.character = character
+
         excludeList = ("ProductionArtwork","Machine","Tree","Scrap","Corpse","Acid","Item","Pile","InfoScreen","CoalMine","BluePrint","GlobalMacroStorage")
 
         options = []
@@ -2437,6 +2439,8 @@ class ProductionArtwork(Item):
         if not metalBar:
             messages.append("no metal bars available - place a metal bar to left/west")
             return
+
+        self.character.messages.append("you produce a %s"%(itemType.type,))
 
         # remove ressources
         self.room.removeItem(item)
@@ -2535,6 +2539,8 @@ class ScrapCompactor(Item):
         if not scrap:
             character.messages.append("no scraps available")
             return
+
+        character.messages.append("you produce a metal bar")
 
         # remove ressources
         self.room.removeItem(item)
@@ -3367,6 +3373,8 @@ class MachineMachine(Item):
             self.character.messages.append("missing ressources: %s"%(",".join(ressourcesNeeded)))
             return
 
+        self.character.messages.append("you produce a machine that produces %s"%(itemType,))
+
         # remove ressources
         for item in ressourcesFound:
             self.room.removeItem(item)
@@ -3504,6 +3512,8 @@ class Machine(Item):
         if ressourcesNeeded:
             character.messages.append("missing ressources: %s"%(", ".join(ressourcesNeeded)))
             return
+
+        character.messages.append("you produce a %s"%(self.toProduce,))
 
         # remove ressources
         for item in ressourcesFound:

@@ -1,0 +1,998 @@
+{
+          "characterIds": [],
+          "characterStates": {
+                    "{\"counter\": 1, \"creator\": \"void\", \"other\": \"character\", \"xPosition\": 3, \"yPosition\": 3}": {
+                              "chatOptions": [],
+                              "id": "{\"counter\": 1, \"creator\": \"void\", \"other\": \"character\", \"xPosition\": 3, \"yPosition\": 3}",
+                              "inventory": {
+                                        "new": [
+                                                  "{\"counter\": 6776, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 11, \"yPosition\": 1}",
+                                                  "{\"counter\": 6775, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 11, \"yPosition\": 1}"
+                                        ],
+                                        "states": {
+                                                  "{\"counter\": 6775, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 11, \"yPosition\": 1}": {
+                                                            "bolted": false,
+                                                            "creationCounter": 0,
+                                                            "id": "{\"counter\": 6775, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 11, \"yPosition\": 1}",
+                                                            "mayContainMice": false,
+                                                            "name": "goo flask",
+                                                            "type": "GooFlask",
+                                                            "uses": 0,
+                                                            "walkable": true,
+                                                            "xPosition": null,
+                                                            "yPosition": null
+                                                  },
+                                                  "{\"counter\": 6776, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 11, \"yPosition\": 1}": {
+                                                            "bolted": false,
+                                                            "creationCounter": 0,
+                                                            "id": "{\"counter\": 6776, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 11, \"yPosition\": 1}",
+                                                            "mayContainMice": false,
+                                                            "name": "goo flask",
+                                                            "type": "GooFlask",
+                                                            "uses": 37,
+                                                            "walkable": true,
+                                                            "xPosition": null,
+                                                            "yPosition": null
+                                                  }
+                                        }
+                              },
+                              "macroState": {
+                                        "commandKeyQueue": [],
+                                        "doNumber": false,
+                                        "footerPosition": 0,
+                                        "footerSkipCounter": 20,
+                                        "idleCounter": 0,
+                                        "ifCondition": [],
+                                        "ifParam1": [],
+                                        "ifParam2": [],
+                                        "ignoreNextAutomated": false,
+                                        "itemMarkedLast": null,
+                                        "lastLagDetection": 1580260545.5256314,
+                                        "lastMoveAutomated": false,
+                                        "lastRedraw": 1580260545.5256317,
+                                        "loop": [],
+                                        "macros": {
+                                                  "A": [
+                                                            "d",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "d",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "_",
+                                                            "s"
+                                                  ],
+                                                  "a": [
+                                                            "1",
+                                                            "4",
+                                                            "s",
+                                                            "k",
+                                                            "1",
+                                                            "4",
+                                                            "w",
+                                                            "a",
+                                                            "w",
+                                                            "w",
+                                                            "d",
+                                                            "d",
+                                                            "d",
+                                                            "d",
+                                                            "d",
+                                                            "d",
+                                                            "s",
+                                                            "1",
+                                                            "3",
+                                                            "s",
+                                                            "d",
+                                                            "1",
+                                                            "4",
+                                                            "w",
+                                                            "l",
+                                                            "1",
+                                                            "4",
+                                                            "s",
+                                                            "a",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "a",
+                                                            "a",
+                                                            "a",
+                                                            "a",
+                                                            "a",
+                                                            "a",
+                                                            "a",
+                                                            "d",
+                                                            "s",
+                                                            "s",
+                                                            "d"
+                                                  ],
+                                                  "b": [
+                                                            "d",
+                                                            "d",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "i",
+                                                            "k",
+                                                            "s",
+                                                            "j",
+                                                            "s",
+                                                            "j",
+                                                            "j",
+                                                            "esc",
+                                                            "3",
+                                                            "0",
+                                                            "d",
+                                                            "_",
+                                                            "w",
+                                                            "i",
+                                                            "j",
+                                                            "s",
+                                                            "j",
+                                                            "s",
+                                                            "s",
+                                                            "a",
+                                                            "a",
+                                                            "a",
+                                                            "s",
+                                                            "8",
+                                                            "l",
+                                                            "s",
+                                                            "d",
+                                                            "d",
+                                                            "w",
+                                                            "a",
+                                                            "j",
+                                                            "a",
+                                                            "j",
+                                                            "1",
+                                                            "0",
+                                                            ".",
+                                                            "a",
+                                                            "j",
+                                                            "1",
+                                                            "0",
+                                                            ".",
+                                                            "a",
+                                                            "j",
+                                                            "1",
+                                                            "0",
+                                                            ".",
+                                                            "a",
+                                                            "j",
+                                                            "1",
+                                                            "0",
+                                                            ".",
+                                                            "a",
+                                                            "j",
+                                                            "1",
+                                                            "0",
+                                                            ".",
+                                                            "a",
+                                                            "j",
+                                                            "1",
+                                                            "0",
+                                                            ".",
+                                                            "a",
+                                                            "j",
+                                                            "1",
+                                                            "0",
+                                                            ".",
+                                                            "a",
+                                                            "j",
+                                                            "1",
+                                                            "0",
+                                                            ".",
+                                                            "a",
+                                                            "j",
+                                                            "d",
+                                                            "w",
+                                                            "d",
+                                                            "_",
+                                                            "d"
+                                                  ],
+                                                  "d": [
+                                                            "a",
+                                                            "a",
+                                                            "s",
+                                                            "s",
+                                                            "a",
+                                                            "%",
+                                                            "f",
+                                                            "_",
+                                                            "v",
+                                                            "_",
+                                                            "b"
+                                                  ],
+                                                  "esc": [
+                                                            "d",
+                                                            "w",
+                                                            "a",
+                                                            "a",
+                                                            "s",
+                                                            "k",
+                                                            "s",
+                                                            "s",
+                                                            "a",
+                                                            "l",
+                                                            "d",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "k",
+                                                            "s",
+                                                            "l",
+                                                            "d",
+                                                            "d",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "d",
+                                                            "s",
+                                                            "d",
+                                                            "a"
+                                                  ],
+                                                  "j": [
+                                                            "J"
+                                                  ],
+                                                  "q": [
+                                                            "o",
+                                                            "p",
+                                                            "s",
+                                                            "$",
+                                                            "=",
+                                                            "a",
+                                                            "a",
+                                                            "k",
+                                                            "$",
+                                                            "=",
+                                                            "w",
+                                                            "w",
+                                                            "k",
+                                                            "$",
+                                                            "=",
+                                                            "s",
+                                                            "s",
+                                                            "k",
+                                                            "$",
+                                                            "=",
+                                                            "d",
+                                                            "d",
+                                                            "k"
+                                                  ],
+                                                  "r": [
+                                                            "s",
+                                                            "s",
+                                                            "s",
+                                                            "s",
+                                                            "s",
+                                                            "s",
+                                                            "s",
+                                                            "s",
+                                                            "s",
+                                                            "a",
+                                                            "a",
+                                                            "j",
+                                                            "_",
+                                                            "a"
+                                                  ],
+                                                  "s": [
+                                                            "d",
+                                                            "%",
+                                                            "b",
+                                                            "_",
+                                                            "r",
+                                                            "_",
+                                                            "d"
+                                                  ],
+                                                  "v": [
+                                                            "k",
+                                                            "a",
+                                                            "s",
+                                                            "s",
+                                                            "l",
+                                                            "s",
+                                                            "d",
+                                                            "w",
+                                                            "j",
+                                                            "d",
+                                                            "w",
+                                                            "k",
+                                                            "s",
+                                                            "a",
+                                                            "a",
+                                                            "s",
+                                                            "l",
+                                                            "k",
+                                                            "s",
+                                                            "l",
+                                                            "s",
+                                                            "d",
+                                                            "w",
+                                                            "j",
+                                                            "d",
+                                                            "w",
+                                                            "k",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "w",
+                                                            "d",
+                                                            "d",
+                                                            "d",
+                                                            "1",
+                                                            "4",
+                                                            "s",
+                                                            "l",
+                                                            "1",
+                                                            "4",
+                                                            "w",
+                                                            "6",
+                                                            "a",
+                                                            "d",
+                                                            "d",
+                                                            "d",
+                                                            "_",
+                                                            "s"
+                                                  ],
+                                                  "w": [
+                                                            "_",
+                                                            "q",
+                                                            "%",
+                                                            "I",
+                                                            ".",
+                                                            "_",
+                                                            "w"
+                                                  ]
+                                        },
+                                        "number": null,
+                                        "recording": false,
+                                        "recordingTo": null,
+                                        "replay": [],
+                                        "shownStarvationWarning": false,
+                                        "state": [],
+                                        "stealKey": {},
+                                        "submenue": null,
+                                        "ticksSinceDeath": null
+                              },
+                              "quests": {
+                                        "changed": [
+                                                  "{\"counter\": 1, \"creator\": \"{\"counter\": 1513, \"creator\": \"void\", \"other\": \"character\", \"xPosition\": 3, \"yPosition\": 3}\"}"
+                                        ],
+                                        "states": {
+                                                  "{\"counter\": 1, \"creator\": \"{\"counter\": 1513, \"creator\": \"void\", \"other\": \"character\", \"xPosition\": 3, \"yPosition\": 3}\"}": {
+                                                            "active": true,
+                                                            "character": "{\"counter\": 1, \"creator\": \"void\", \"other\": \"character\", \"xPosition\": 3, \"yPosition\": 3}"
+                                                  }
+                                        }
+                              },
+                              "questsDone": [
+                                        "NaiveMoveQuest",
+                                        "MoveQuestMeta",
+                                        "NaiveActivateQuest",
+                                        "ActivateQuestMeta",
+                                        "NaivePickupQuest",
+                                        "PickupQuestMeta",
+                                        "DrinkQuest",
+                                        "CollectQuestMeta",
+                                        "FireFurnaceMeta",
+                                        "ExamineQuest",
+                                        "NaiveDropQuest",
+                                        "DropQuestMeta",
+                                        "LeaveRoomQuest"
+                              ],
+                              "reputation": 100,
+                              "room": "{\"counter\": 2, \"creator\": \"{\"counter\": 1, \"creator\": \"{\"counter\": 4, \"creator\": \"{\"counter\": 1, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}\", \"other\": \"room\", \"xPosition\": 5, \"yPosition\": 12}",
+                              "satiation": 744,
+                              "solvers": [
+                                        "SurviveQuest",
+                                        "Serve",
+                                        "NaiveMoveQuest",
+                                        "MoveQuestMeta",
+                                        "NaiveActivateQuest",
+                                        "ActivateQuestMeta",
+                                        "NaivePickupQuest",
+                                        "PickupQuestMeta",
+                                        "DrinkQuest",
+                                        "ExamineQuest",
+                                        "FireFurnaceMeta",
+                                        "CollectQuestMeta",
+                                        "WaitQuestNaiveDropQuest",
+                                        "NaiveDropQuest",
+                                        "DropQuestMeta"
+                              ],
+                              "watched": true,
+                              "xPosition": 3,
+                              "yPosition": 2
+                    }
+          },
+          "creationCounter": 52,
+          "engineStrength": 0,
+          "eventIds": [],
+          "eventStates": {},
+          "id": "{\"counter\": 2, \"creator\": \"{\"counter\": 1, \"creator\": \"{\"counter\": 4, \"creator\": \"{\"counter\": 1, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}\", \"other\": \"room\", \"xPosition\": 5, \"yPosition\": 12}",
+          "isContainment": false,
+          "itemIds": [
+                    "{\"counter\": 1435, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1436, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1437, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1438, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1439, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1440, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1441, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1442, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1443, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1444, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1445, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1446, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1447, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1448, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1449, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1450, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1451, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1452, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1453, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1454, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1455, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1456, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1457, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1458, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1459, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1460, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1461, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1462, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1463, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1464, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1465, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1466, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1467, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1468, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1469, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1470, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1471, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1472, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1473, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1474, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1475, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1476, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1477, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1478, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 3, \"creator\": \"{\"counter\": 1, \"creator\": \"{\"counter\": 1, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}",
+                    "{\"counter\": 1480, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1481, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}",
+                    "{\"counter\": 1500, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1501, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1502, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1503, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}",
+                    "{\"counter\": 1505, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}",
+                    "{\"counter\": 5, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 6, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 7, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 12, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 13, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 14, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 15, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 27, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 28, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 29, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 30, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 31, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 32, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 33, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 34, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 35, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 36, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 37, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 38, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1, \"creator\": \"{\"counter\": 1211, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 101, \"yPosition\": 176}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 2, \"creator\": \"{\"counter\": 1211, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 101, \"yPosition\": 176}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1, \"creator\": \"{\"counter\": 2481, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 106, \"yPosition\": 177}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 1, \"creator\": \"{\"counter\": 1243, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 96, \"yPosition\": 172}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 2, \"creator\": \"{\"counter\": 1243, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 96, \"yPosition\": 172}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 39, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 40, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}",
+                    "{\"counter\": 41, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}"
+          ],
+          "itemStates": {
+                    "{\"counter\": 1, \"creator\": \"{\"counter\": 1211, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 101, \"yPosition\": 176}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Scrap",
+                              "walkable": true,
+                              "xPosition": 2,
+                              "yPosition": 3
+                    },
+                    "{\"counter\": 1, \"creator\": \"{\"counter\": 1243, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 96, \"yPosition\": 172}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Scrap",
+                              "walkable": true,
+                              "xPosition": 2,
+                              "yPosition": 3
+                    },
+                    "{\"counter\": 1, \"creator\": \"{\"counter\": 2481, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 106, \"yPosition\": 177}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Scrap",
+                              "walkable": true,
+                              "xPosition": 2,
+                              "yPosition": 3
+                    },
+                    "{\"counter\": 12, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 6,
+                              "yPosition": 6
+                    },
+                    "{\"counter\": 13, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 6,
+                              "yPosition": 5
+                    },
+                    "{\"counter\": 14, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 6,
+                              "yPosition": 4
+                    },
+                    "{\"counter\": 1435, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 0,
+                              "yPosition": 0
+                    },
+                    "{\"counter\": 1436, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 1,
+                              "yPosition": 0
+                    },
+                    "{\"counter\": 1437, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 2,
+                              "yPosition": 0
+                    },
+                    "{\"counter\": 1438, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 3,
+                              "yPosition": 0
+                    },
+                    "{\"counter\": 1439, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 5,
+                              "yPosition": 0
+                    },
+                    "{\"counter\": 1440, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 6,
+                              "yPosition": 0
+                    },
+                    "{\"counter\": 1441, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 7,
+                              "yPosition": 0
+                    },
+                    "{\"counter\": 1442, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 0,
+                              "yPosition": 14
+                    },
+                    "{\"counter\": 1443, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 1,
+                              "yPosition": 14
+                    },
+                    "{\"counter\": 1444, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 2,
+                              "yPosition": 14
+                    },
+                    "{\"counter\": 1445, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 3,
+                              "yPosition": 14
+                    },
+                    "{\"counter\": 1446, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 4,
+                              "yPosition": 14
+                    },
+                    "{\"counter\": 1447, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 5,
+                              "yPosition": 14
+                    },
+                    "{\"counter\": 1448, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 6,
+                              "yPosition": 14
+                    },
+                    "{\"counter\": 1449, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 7,
+                              "yPosition": 14
+                    },
+                    "{\"counter\": 1450, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 0,
+                              "yPosition": 1
+                    },
+                    "{\"counter\": 1451, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 0,
+                              "yPosition": 2
+                    },
+                    "{\"counter\": 1452, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 0,
+                              "yPosition": 3
+                    },
+                    "{\"counter\": 1453, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 0,
+                              "yPosition": 4
+                    },
+                    "{\"counter\": 1454, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 0,
+                              "yPosition": 5
+                    },
+                    "{\"counter\": 1455, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 0,
+                              "yPosition": 6
+                    },
+                    "{\"counter\": 1456, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 0,
+                              "yPosition": 7
+                    },
+                    "{\"counter\": 1457, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 0,
+                              "yPosition": 8
+                    },
+                    "{\"counter\": 1458, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 0,
+                              "yPosition": 9
+                    },
+                    "{\"counter\": 1459, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 0,
+                              "yPosition": 10
+                    },
+                    "{\"counter\": 1460, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 0,
+                              "yPosition": 11
+                    },
+                    "{\"counter\": 1461, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 0,
+                              "yPosition": 12
+                    },
+                    "{\"counter\": 1462, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 0,
+                              "yPosition": 13
+                    },
+                    "{\"counter\": 1463, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 0,
+                              "yPosition": 14
+                    },
+                    "{\"counter\": 1464, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 7,
+                              "yPosition": 1
+                    },
+                    "{\"counter\": 1465, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 7,
+                              "yPosition": 2
+                    },
+                    "{\"counter\": 1466, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 7,
+                              "yPosition": 3
+                    },
+                    "{\"counter\": 1467, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 7,
+                              "yPosition": 4
+                    },
+                    "{\"counter\": 1468, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 7,
+                              "yPosition": 5
+                    },
+                    "{\"counter\": 1469, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 7,
+                              "yPosition": 6
+                    },
+                    "{\"counter\": 1470, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 7,
+                              "yPosition": 7
+                    },
+                    "{\"counter\": 1471, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 7,
+                              "yPosition": 8
+                    },
+                    "{\"counter\": 1472, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 7,
+                              "yPosition": 9
+                    },
+                    "{\"counter\": 1473, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 7,
+                              "yPosition": 10
+                    },
+                    "{\"counter\": 1474, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 7,
+                              "yPosition": 11
+                    },
+                    "{\"counter\": 1475, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 7,
+                              "yPosition": 12
+                    },
+                    "{\"counter\": 1476, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 7,
+                              "yPosition": 13
+                    },
+                    "{\"counter\": 1477, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Wall",
+                              "xPosition": 7,
+                              "yPosition": 14
+                    },
+                    "{\"counter\": 1478, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "type": "Door",
+                              "walkable": true,
+                              "xPosition": 4,
+                              "yPosition": 0
+                    },
+                    "{\"counter\": 1480, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "creationCounter": 3,
+                              "type": "Scrap",
+                              "walkable": true,
+                              "xPosition": 2,
+                              "yPosition": 1
+                    },
+                    "{\"counter\": 1481, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}": {
+                              "bolted": false,
+                              "coolDown": 10,
+                              "coolDownTimer": 42806,
+                              "type": "Sorter",
+                              "xPosition": 2,
+                              "yPosition": 2
+                    },
+                    "{\"counter\": 15, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 6,
+                              "yPosition": 3
+                    },
+                    "{\"counter\": 1500, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 6,
+                              "yPosition": 13
+                    },
+                    "{\"counter\": 1501, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 6,
+                              "yPosition": 12
+                    },
+                    "{\"counter\": 1502, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 6,
+                              "yPosition": 11
+                    },
+                    "{\"counter\": 1503, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 6,
+                              "yPosition": 10
+                    },
+                    "{\"counter\": 1505, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}": {
+                              "bolted": false,
+                              "type": "StasisTank",
+                              "xPosition": 2,
+                              "yPosition": 10
+                    },
+                    "{\"counter\": 2, \"creator\": \"{\"counter\": 1211, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 101, \"yPosition\": 176}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Scrap",
+                              "walkable": true,
+                              "xPosition": 2,
+                              "yPosition": 3
+                    },
+                    "{\"counter\": 2, \"creator\": \"{\"counter\": 1243, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 96, \"yPosition\": 172}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Scrap",
+                              "walkable": true,
+                              "xPosition": 2,
+                              "yPosition": 3
+                    },
+                    "{\"counter\": 27, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 6,
+                              "yPosition": 2
+                    },
+                    "{\"counter\": 28, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 6,
+                              "yPosition": 1
+                    },
+                    "{\"counter\": 29, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 5,
+                              "yPosition": 13
+                    },
+                    "{\"counter\": 3, \"creator\": \"{\"counter\": 1, \"creator\": \"{\"counter\": 1, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}": {
+                              "bolted": false,
+                              "charges": 0,
+                              "coolDown": 100,
+                              "coolDownTimer": 43105,
+                              "creationCounter": 56,
+                              "id": "{\"counter\": 3, \"creator\": \"{\"counter\": 1, \"creator\": \"{\"counter\": 1, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}",
+                              "type": "ScrapCompactor",
+                              "xPosition": 2,
+                              "yPosition": 5
+                    },
+                    "{\"counter\": 30, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 5,
+                              "yPosition": 12
+                    },
+                    "{\"counter\": 31, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 5,
+                              "yPosition": 11
+                    },
+                    "{\"counter\": 32, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 5,
+                              "yPosition": 10
+                    },
+                    "{\"counter\": 33, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 5,
+                              "yPosition": 9
+                    },
+                    "{\"counter\": 34, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 5,
+                              "yPosition": 8
+                    },
+                    "{\"counter\": 35, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 5,
+                              "yPosition": 7
+                    },
+                    "{\"counter\": 36, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 5,
+                              "yPosition": 6
+                    },
+                    "{\"counter\": 37, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 5,
+                              "yPosition": 5
+                    },
+                    "{\"counter\": 38, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 5,
+                              "yPosition": 4
+                    },
+                    "{\"counter\": 39, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 5,
+                              "yPosition": 3
+                    },
+                    "{\"counter\": 40, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 5,
+                              "yPosition": 2
+                    },
+                    "{\"counter\": 41, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 5,
+                              "yPosition": 1
+                    },
+                    "{\"counter\": 5, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 6,
+                              "yPosition": 9
+                    },
+                    "{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}": {
+                              "bolted": false,
+                              "coolDownTimer": 43120,
+                              "creationCounter": 41,
+                              "id": "{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}",
+                              "type": "Machine",
+                              "xPosition": 2,
+                              "yPosition": 8
+                    },
+                    "{\"counter\": 6, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 6,
+                              "yPosition": 8
+                    },
+                    "{\"counter\": 7, \"creator\": \"{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": 0, \"yPosition\": 0}": {
+                              "bolted": false,
+                              "type": "Wall",
+                              "xPosition": 6,
+                              "yPosition": 7
+                    }
+          },
+          "objType": "EmptyRoom",
+          "offsetX": 0,
+          "offsetY": 2,
+          "open": true,
+          "sizeX": 8,
+          "sizeY": 15,
+          "steamGeneration": 0,
+          "walkingAccess": [
+                    [
+                              4,
+                              0
+                    ]
+          ],
+          "xPosition": 5,
+          "yPosition": 12
+}

@@ -2814,6 +2814,8 @@ def gameLoop(loop,user_data):
                     key = "ctrl w"
                 if key == "\x1b":
                     key = "esc"
+                if key == "\r":
+                    key = "enter"
                 keyboardListener(key)
 
         for char in terrain.characters[:]:

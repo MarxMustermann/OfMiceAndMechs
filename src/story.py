@@ -2667,17 +2667,23 @@ class BuildBase(BasicPhase):
         self.miniBase = terrain.rooms[0]
 
         import json
-        with open("states/theftBase1.json","r") as stateFile:
-            room = json.loads(stateFile.read())
-        terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
-        with open("states/theftBase2.json","r") as stateFile:
-            room = json.loads(stateFile.read())
-        terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
+        if seed%2==0:
+            with open("states/theftBase1.json","r") as stateFile:
+                room = json.loads(stateFile.read())
+            terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
+        if seed%3==1:
+            with open("states/theftBase2.json","r") as stateFile:
+                room = json.loads(stateFile.read())
+            terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
         with open("states/emptyRoom1.json","r") as stateFile:
             room = json.loads(stateFile.read())
         terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
-        with open("states/emptyRoom2.json","r") as stateFile:
-            room = json.loads(stateFile.read())
+        if seed%4:
+            with open("states/emptyRoom2.json","r") as stateFile:
+                room = json.loads(stateFile.read())
+        else:
+            with open("states/wallRoom.json","r") as stateFile:
+                room = json.loads(stateFile.read())
         terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
         with open("states/globalMacroStorage.json","r") as stateFile:
             room = json.loads(stateFile.read())

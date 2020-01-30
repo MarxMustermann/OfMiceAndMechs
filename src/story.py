@@ -2679,6 +2679,9 @@ class BuildBase(BasicPhase):
         with open("states/emptyRoom2.json","r") as stateFile:
             room = json.loads(stateFile.read())
         terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
+        with open("states/globalMacroStorage.json","r") as stateFile:
+            room = json.loads(stateFile.read())
+        terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
 
         mainChar.addListener(self.checkRoomEnteredMain)
 

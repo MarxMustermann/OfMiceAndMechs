@@ -2889,6 +2889,9 @@ def gameLoop(loop,user_data):
                 if skipper == 0 or gamestate.tick%skipper == 0:
                     skipRender = False
 
+                if len(mainChar.macroState["commandKeyQueue"]) == 0:
+                    skipRender = False
+
                 if not skipRender:
 
                     # render map

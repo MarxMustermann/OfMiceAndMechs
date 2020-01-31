@@ -1108,7 +1108,10 @@ current registers
                                 # handle collisions
                                 if not item.walkable:
                                     # print some info
-                                    char.messages.append("you need to open the door first")
+                                    if hasattr(item,src.items.Door):
+                                        char.messages.append("you need to open the door first")
+                                    else:
+                                        char.messages.append("the entry is blocked")
                                     char.messages.append("press "+commandChars.activate+" to apply")
                                     if noAdvanceGame == False:
                                         header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
@@ -1116,21 +1119,26 @@ current registers
                                     # remember the item for interaction and abort
                                     return item
 
-                                char.changed("moved",direction)
+                            if len(room.itemByCoordinates[localisedEntry]) >= 25:
+                                char.messages.append("the entry is blocked by items.")
+                                char.messages.append("press "+commandChars.activate+" to apply")
+                                if noAdvanceGame == False:
+                                    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
+                                return room.itemByCoordinates[localisedEntry][0]
 
-                                # teleport the character into the room
-                                room.addCharacter(char,localisedEntry[0],localisedEntry[1])
-                                try:
-                                    terrain.characters.remove(char)
-                                except:
-                                    char.messages.append("fail,fail,fail")
+                            char.changed("moved",direction)
 
-                                return
+                            # teleport the character into the room
+                            room.addCharacter(char,localisedEntry[0],localisedEntry[1])
+                            try:
+                                terrain.characters.remove(char)
+                            except:
+                                char.messages.append("fail,fail,fail")
+
+                            return
 
                         # do not move player into the room
                         else:
-                            char.messages.append(localisedEntry)
-                            char.messages.append(room.walkingAccess)
                             char.messages.append("you cannot move there")
 
                     # check if character has entered a room
@@ -1216,6 +1224,15 @@ current registers
                                 # remember the item for interaction and abort
                                 foundItem = True
                                 break
+                        if not foundItem:
+                            if len(foundItems) >= 25:
+                                char.messages.append("the floor is too full to walk there")
+                                char.messages.append("press "+commandChars.activate+" to apply")
+                                if noAdvanceGame == False:
+                                    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
+
+                                # remember the item for interaction and abort
+                                foundItem = foundItems[0]
 
                         # move the character
                         if not foundItem:
@@ -1235,19 +1252,19 @@ current registers
             # move the player
             if key in (commandChars.move_north,"up"):
                 charState["itemMarkedLast"] = moveCharacter("north")
-                if charState["itemMarkedLast"] and not charState["itemMarkedLast"].walkable:
+                if charState["itemMarkedLast"]:
                     return
             if key in (commandChars.move_south,"down"):
                 charState["itemMarkedLast"] = moveCharacter("south")
-                if charState["itemMarkedLast"] and not charState["itemMarkedLast"].walkable:
+                if charState["itemMarkedLast"]:
                     return
             if key in (commandChars.move_east,"right"):
                 charState["itemMarkedLast"] = moveCharacter("east")
-                if charState["itemMarkedLast"] and not charState["itemMarkedLast"].walkable:
+                if charState["itemMarkedLast"]:
                     return
             if key in (commandChars.move_west,"left"):
                 charState["itemMarkedLast"] = moveCharacter("west")
-                if charState["itemMarkedLast"] and not charState["itemMarkedLast"].walkable:
+                if charState["itemMarkedLast"]:
                     return
 
             # murder the next available character
@@ -1332,25 +1349,20 @@ current registers
                     if len(char.inventory) >= 10:
                         char.messages.append("you cannot carry more items")
                     else:
-                        # get the position to pickup from
-                        if charState["itemMarkedLast"]:
-                            try:
-                                pos = (charState["itemMarkedLast"].xPosition,charState["itemMarkedLast"].yPosition)
-                            except:
-                                print(charState["itemMarkedLast"])
-                                pos = (0,0)
-                        else:
-                            pos = (char.xPosition,char.yPosition)
+                        item = charState["itemMarkedLast"]
 
-                        # pickup an item from this coordinate
-                        itemByCoordinates = char.container.itemByCoordinates
-                        if pos in itemByCoordinates:
-                            for item in itemByCoordinates[pos]:
-                                item.pickUp(char)
-                                item.changed("pickedUp",char)
-                                if not item.walkable:
-                                    char.container.calculatePathMap()
-                                break
+                        if not item:
+                            if (char.xPosition,char.yPosition) in char.container.itemByCoordinates:
+                                item = char.container.itemByCoordinates[(char.xPosition,char.yPosition)][0]
+
+                        if not item:
+                            char.messages.append("no item to pick up found")
+                            return
+
+                        item.pickUp(char)
+                        item.changed("pickedUp",char)
+                        if not item.walkable:
+                            char.container.calculatePathMap()
 
             # open chat partner selection
             if key in (commandChars.hail):

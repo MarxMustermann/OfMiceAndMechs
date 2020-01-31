@@ -802,6 +802,16 @@ class Room(src.saveing.Saveable):
             newXPos += 1
         else:
             debugMessages.append("invalid movement direction")
+
+        newPosition = (newXPos,newYPos)
+        if newPosition in self.terrain.itemByCoordinates:
+            for item in self.terrain.itemByCoordinates[newPosition]:
+                if not item.walkable:
+                    return item
+
+            if len(self.terrain.itemByCoordinates[newPosition]) > 25:
+                return self.terrain.itemByCoordinates[newPosition][0]
+
         self.removeCharacter(character)
         self.terrain.addCharacter(character,newXPos,newYPos)
         return
@@ -816,6 +826,9 @@ class Room(src.saveing.Saveable):
             for item in self.itemByCoordinates[newPosition]:
                 if not item.walkable:
                     return item
+
+            if len(self.itemByCoordinates[newPosition]) > 25:
+                return self.itemByCoordinates[newPosition][0]
 
         # teleport character to new position
         character.xPosition = newPosition[0]

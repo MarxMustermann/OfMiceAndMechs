@@ -1172,7 +1172,7 @@ class RoomBuilder(Item):
     call superclass constructor with modified paramters
     '''
     def __init__(self,xPosition=0,yPosition=0,name="RoomBuilder",creator=None):
-        super().__init__("RB",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.roomBuilder,xPosition,yPosition,name=name,creator=creator)
 
     '''
     map player controls to room movement 
@@ -1934,7 +1934,7 @@ class MarkerBean(Item):
     '''
     def __init__(self,xPosition=0,yPosition=0,name="bean",creator=None):
         self.activated = False
-        super().__init__(" -",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.markerBean_inactive,xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
         self.bolted = False
 
@@ -1951,9 +1951,9 @@ class MarkerBean(Item):
     @property
     def display(self):
         if self.activated:
-            return "x-"
+            return displayChars.markerBean_active
         else:
-            return " -"
+            return displayChars.markerBean_inactive
 
     '''
     activate marker
@@ -2248,7 +2248,7 @@ class GooFlask(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None,name="goo flask",creator=None):
         self.uses = 0
-        super().__init__(" -",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.gooflask_empty,xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
         self.bolted = False
         self.description = "a flask containing goo"
@@ -2321,7 +2321,7 @@ class OjectDispenser(Item):
     '''
     '''
     def __init__(self,xPosition=None,yPosition=None, name="object dispenser",creator=None):
-        super().__init__("U\\",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.objectDispenser,xPosition,yPosition,name=name,creator=creator)
 
         self.storage = []
         counter = 0
@@ -2599,7 +2599,7 @@ class Scraper(Item):
         self.coolDownTimer = -self.coolDown
         self.charges = 3
         
-        super().__init__("RS",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.scraper,xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
                "coolDown","coolDownTimer","charges"])
@@ -2664,7 +2664,7 @@ class Sorter(Item):
         self.coolDown = 10
         self.coolDownTimer = -self.coolDown
         
-        super().__init__("U\\",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.sorter,xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
                "coolDown","coolDownTimer"])
@@ -2736,7 +2736,7 @@ class Token(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="token",creator=None):
-        super().__init__(". ",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.token,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
@@ -2830,7 +2830,7 @@ class Rod(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="rod",creator=None):
-        super().__init__("+|",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.rod,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
@@ -2851,7 +2851,7 @@ class Nook(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="nook",creator=None):
-        super().__init__("+L",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.nook,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
@@ -2872,7 +2872,7 @@ class Stripe(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="stripe",creator=None):
-        super().__init__("+-",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.stripe,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
@@ -2893,7 +2893,7 @@ class Bolt(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="bolt",creator=None):
-        super().__init__("+i",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.bolt,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
@@ -2914,7 +2914,7 @@ class Coil(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="coil",creator=None):
-        super().__init__("+g",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.coil,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
@@ -2935,7 +2935,7 @@ class Tank(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="tank",creator=None):
-        super().__init__("#o",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.tank,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
@@ -2956,7 +2956,7 @@ class Heater(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="heater",creator=None):
-        super().__init__("#%",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.heater,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
@@ -2977,7 +2977,7 @@ class Connector(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="connector",creator=None):
-        super().__init__("#H",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.connector,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
@@ -2999,7 +2999,7 @@ class Puller(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="puller",creator=None):
-        super().__init__("#>",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.puller,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
@@ -3021,7 +3021,7 @@ class Pusher(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="pusher",creator=None):
-        super().__init__("#<",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.pusher,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
@@ -3116,11 +3116,11 @@ Can be processed into goo by a goo producer.
 class GameTestingProducer(Item):
     type = "GameTestingProducer"
 
-    def __init__(self,xPosition=None,yPosition=None, name="testing producer",creator=None, seed=0, possibleSources=[], possibleResults=[]):
+    def __init__(self,xPosition=None,yPosition=None, name="testing producer",creator=None, seed=0, possibleSources=[MetalBars], possibleResults=[Wall]):
         self.coolDown = 20
         self.coolDownTimer = -self.coolDown
 
-        super().__init__("/\\",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.gameTestingProducer,xPosition,yPosition,name=name,creator=creator)
 
         self.seed = seed
         self.baseName = name
@@ -3709,7 +3709,7 @@ class MemoryDump(Item):
 
         self.baseName = name
 
-        super().__init__("mD",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.memoryDump,xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
                 "macros"])
@@ -3770,7 +3770,7 @@ class MemoryBank(Item):
 
         self.baseName = name
 
-        super().__init__("mM",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.memoryBank,xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
                 "macros"])
@@ -3825,7 +3825,7 @@ class MemoryStack(Item):
 
         self.macros = []
 
-        super().__init__("mS",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.memoryStack,xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
                 "macros"])
@@ -3879,7 +3879,7 @@ class MemoryReset(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None, name="MemoryStack",creator=None):
 
-        super().__init__("mR",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.memoryReset,xPosition,yPosition,name=name,creator=creator)
 
 
     '''
@@ -3904,7 +3904,7 @@ class Engraver(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="Engraver",creator=None):
-        super().__init__("eE",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.engraver,xPosition,yPosition,name=name,creator=creator)
         self.submenue = None
         self.text = None
 
@@ -4122,7 +4122,7 @@ class SimpleRunner(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="SimpleRunner",creator=None):
-        super().__init__("Rs",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.simpleRunner,xPosition,yPosition,name=name,creator=creator)
         self.command = None
 
         self.attributesToStore.extend([
@@ -4176,7 +4176,7 @@ class MacroRunner(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="MacroRunner",creator=None):
-        super().__init__("Rm",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.macroRunner,xPosition,yPosition,name=name,creator=creator)
         self.command = None
 
         self.attributesToStore.extend([
@@ -4419,7 +4419,7 @@ class StasisTank(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None, name="stasis tank",creator=None):
         self.character = None
-        super().__init__("&c",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.stasisTank,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = True
         self.walkable = False
@@ -4486,7 +4486,7 @@ class PositioningDevice(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="positioning device",creator=None):
-        super().__init__("op",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.positioningDevice,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
@@ -4525,7 +4525,7 @@ class Watch(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="watch",creator=None):
-        super().__init__("ow",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.watch,xPosition,yPosition,name=name,creator=creator)
 
         self.creationTime = 0
         self.maxSize = 10000
@@ -4572,7 +4572,7 @@ class BackTracker(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="back tracker",creator=None):
-        super().__init__("ob",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.backTracker,xPosition,yPosition,name=name,creator=creator)
 
         self.initialState = self.getState()
 
@@ -4652,7 +4652,7 @@ class Tumbler(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="tumbler",creator=None):
-        super().__init__("ot",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.tumbler,xPosition,yPosition,name=name,creator=creator)
 
         self.initialState = self.getState()
 
@@ -4660,9 +4660,6 @@ class Tumbler(Item):
         self.tracked = None
         self.walkable = True
         self.command = []
-
-        self.addListener(self.registerDrop,"dropped")
-        self.addListener(self.registerPickUp,"pickUp")
 
     def apply(self,character):
 
@@ -4697,7 +4694,7 @@ class GlobalMacroStorage(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="global macro storage",creator=None):
-        super().__init__("mG",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.globalMacroStorage,xPosition,yPosition,name=name,creator=creator)
 
         self.initialState = self.getState()
 
@@ -4877,6 +4874,8 @@ itemMap = {
             "Tumbler":Tumbler,
             "ItemUpgrader":ItemUpgrader,
             "GlobalMacroStorage":GlobalMacroStorage,
+            "MacroRunner":MacroRunner,
+            "GameTestingProducer":GameTestingProducer,
 }
 
 producables = {

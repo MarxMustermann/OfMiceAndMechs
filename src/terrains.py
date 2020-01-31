@@ -1016,11 +1016,11 @@ class Terrain(src.saveing.Saveable):
         # paint floor
         chars = self.paintFloor()
         for x in range (0,225):
-            chars[x][0] = "##"
-            chars[x][224] = "##"
+            chars[x][0] = displayChars.forceField
+            chars[x][224] = displayChars.forceField
         for y in range (0,225):
-            chars[0][y] = "##"
-            chars[224][y] = "##"
+            chars[0][y] = displayChars.forceField
+            chars[224][y] = displayChars.forceField
 
         # show/hide rooms
         for room in self.rooms:

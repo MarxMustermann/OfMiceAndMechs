@@ -193,7 +193,11 @@ class Canvas(object):
     set up state AND fill the canvas with the (default) chars
     bad code: should be split into 3 methods
     """
-    def __init__(self,size=(41,41),chars=None,defaultChar="::",coordinateOffset=(0,0),shift=(0,0),displayChars=None,tileMapping=None,tileMapping2=None):
+    def __init__(self,size=(41,41),chars=None,defaultChar=None,coordinateOffset=(0,0),shift=(0,0),displayChars=None,tileMapping=None,tileMapping2=None):
+
+        if defaultChar == None:
+            defaultChar = displayChars.void
+
         # set basic information
         self.size = size
         self.coordinateOffset = coordinateOffset

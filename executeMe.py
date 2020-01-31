@@ -549,8 +549,10 @@ else:
 
 if args.multiplayer:
     interaction.multiplayer = True
+    interaction.fixedTicks = 0.1
 else:
     interaction.multiplayer = False
+    interaction.fixesTicks = False
 
 # start the interaction loop of the underlying library
 try:

@@ -29,6 +29,7 @@ footer = None
 header = None
 frame = None
 urwid = None
+fixedTicks = False
 
 class abstractedDisplay(object):
     def __init__(self,urwidInstance):
@@ -2774,8 +2775,16 @@ def keyboardListener(key):
         show_or_exit(key,charState=state)
 
 continousOperation = 0
+lastAdvance = 0 
 
 def gameLoop(loop,user_data):
+
+    import time
+    
+    global lastAdvance
+    runFixedTick = False
+    if fixedTicks and time.time()-lastAdvance > fixedTicks:
+        runFixedTick = True
 
     global multi_currentChar
     global multi_chars
@@ -2831,10 +2840,11 @@ def gameLoop(loop,user_data):
                     multi_chars.append(character)
 
         global continousOperation
-        if mainChar.macroState["commandKeyQueue"]:
+        if mainChar.macroState["commandKeyQueue"] or runFixedTick:
             continousOperation += 1
 
             if not len(cinematics.cinematicQueue):
+                lastAdvance = time.time()
                 advanceGame()
             for char in multi_chars:
                 if char.stasis:
@@ -2895,7 +2905,7 @@ def gameLoop(loop,user_data):
                 if len(mainChar.macroState["commandKeyQueue"]) == 0:
                     skipRender = False
 
-                if not skipRender:
+                if not skipRender or fixedTicks:
 
                     # render map
                     # bad code: display mode specific code

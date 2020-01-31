@@ -2,7 +2,7 @@
 
 import socket
 
-HOST = '127.0.0.1'  # The server's hostname or IP address
+HOST = input("enter server adress")  # The server's hostname or IP address
 PORT = 65440        # The port used by the server
 
 import time

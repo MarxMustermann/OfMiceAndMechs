@@ -1,10 +1,10 @@
 import pygame
 
+frame = pygame.image.load('config/Images/perspectiveTry/Frame.png')
 watch = pygame.image.load('config/Images/perspectiveTry/watch.png')
 backTracker = pygame.image.load('config/Images/perspectiveTry/backTracker.png')
 tumbler = pygame.image.load('config/Images/perspectiveTry/tumbler.png')
 positioningDevice = pygame.image.load('config/Images/perspectiveTry/positioningDevice.png')
-
 stasisTank = pygame.image.load('config/Images/perspectiveTry/stasisTank.png')
 engraver = pygame.image.load('config/Images/perspectiveTry/engraver.png')
 gameTestingProducer = pygame.image.load('config/Images/perspectiveTry/gameTestingProducer.png')

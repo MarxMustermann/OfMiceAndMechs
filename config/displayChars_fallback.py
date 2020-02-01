@@ -1,12 +1,13 @@
 import urwid
 
+frame = (urwid.AttrSpec("#aaa","black"),"#O")
 watch = (urwid.AttrSpec("#aaa","black"),"ow")
 backTracker = (urwid.AttrSpec("#aaa","black"),"ob")
 tumbler = (urwid.AttrSpec("#aaa","black"),"ot")
 positioningDevice = (urwid.AttrSpec("#aaa","black"),"op")
-
 stasisTank = (urwid.AttrSpec("#aaa","black"),"$c")
 engraver = (urwid.AttrSpec("#aaa","black"),"eE")
+gameTestingProducer = (urwid.AttrSpec("#aaa","black"),"/\\")
 token = (urwid.AttrSpec("#aaa","black"),". ")
 macroRunner = (urwid.AttrSpec("#33f","black"),"Rm")
 objectDispenser = (urwid.AttrSpec("#aaa","black"),"U\\")

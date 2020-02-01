@@ -2691,6 +2691,9 @@ class BuildBase(BasicPhase):
         room = src.rooms.EmptyRoom(1,1,2,2,creator=self)
         room.reconfigure(sizeX=seed%12+3,sizeY=(seed+seed%236)%12+3,doorPos=(0,1))
         terrain.addRoom(room)
+        room = src.rooms.EmptyRoom(4,9,-1,0,creator=self)
+        room.reconfigure(sizeX=14,sizeY=14,doorPos=(13,6))
+        terrain.addRoom(room)
         with open("states/globalMacroStorage.json","r") as stateFile:
             room = json.loads(stateFile.read())
         terrain.addRoom(src.rooms.getRoomFromState(room,terrain))

@@ -1033,7 +1033,6 @@ current registers
             '''
             def moveCharacter(direction):
                 if not char.room:
-                    global terrain
                     if direction == "west":
                         if char.xPosition == 0+1:
                             char.messages.append("a force field pushes you back")
@@ -1089,8 +1088,8 @@ current registers
                                        (bigX-2,bigY),(bigX-2,bigY-1),(bigX-2,bigY-2),(bigX-1,bigY-2),(bigX,bigY-2),(bigX+1,bigY-2),(bigX+2,bigY-2),(bigX+2,bigY-1),
                                        (bigX+2,bigY),(bigX+2,bigY-1),(bigX+2,bigY-2),(bigX+1,bigY-2),(bigX,bigY-2),(bigX-1,bigY-2),(bigX-2,bigY-2),(bigX-1,bigY-2),
                                       ]:
-                        if coordinate in terrain.roomByCoordinates:
-                            for room in terrain.roomByCoordinates[coordinate]:
+                        if coordinate in char.terrain.roomByCoordinates:
+                            for room in char.terrain.roomByCoordinates[coordinate]:
                                 if not room in roomCandidates:
                                     roomCandidates.append(room)
 
@@ -1131,7 +1130,7 @@ current registers
                             # teleport the character into the room
                             room.addCharacter(char,localisedEntry[0],localisedEntry[1])
                             try:
-                                terrain.characters.remove(char)
+                                char.terrain.characters.remove(char)
                             except:
                                 char.messages.append("fail,fail,fail")
 
@@ -1205,8 +1204,8 @@ current registers
                         elif direction == "west":
                             destCoord = (char.xPosition-1,char.yPosition)
 
-                        if destCoord in terrain.itemByCoordinates:
-                            foundItems = terrain.itemByCoordinates[destCoord]
+                        if destCoord in char.terrain.itemByCoordinates:
+                            foundItems = char.terrain.itemByCoordinates[destCoord]
                         else:
                             foundItems = []
 
@@ -1775,9 +1774,9 @@ class ChatPartnerselection(SubMenu):
                 rooms = []
                 coordinates = [(bigX,bigY),(bigX-1,bigY),(bigX+1,bigY),(bigX,bigY-1),(bigX,bigY+1)]
                 for coordinate in coordinates:
-                    if not coordinate in terrain.roomByCoordinates:
+                    if not coordinate in char.terrain.roomByCoordinates:
                         continue
-                    rooms.extend(terrain.roomByCoordinates[coordinate])
+                    rooms.extend(char.terrain.roomByCoordinates[coordinate])
 
                 # add character from nearby open rooms
                 for room in rooms:

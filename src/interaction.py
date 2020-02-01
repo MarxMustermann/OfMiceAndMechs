@@ -1107,7 +1107,7 @@ current registers
                                 # handle collisions
                                 if not item.walkable:
                                     # print some info
-                                    if hasattr(item,src.items.Door):
+                                    if isinstance(item,src.items.Door):
                                         char.messages.append("you need to open the door first")
                                     else:
                                         char.messages.append("the entry is blocked")

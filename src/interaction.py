@@ -274,12 +274,15 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
         char.doStackPush = False
         return
 
-    if char.enumerateState:
+    if not "enumerateState" in char.interactionState:
+        char.interactionState["enumerateState"] = []
+
+    if char.interactionState["enumerateState"]:
         if charState["recordingTo"] and not "norecord" in flags:
             charState["macros"][charState["recordingTo"]].append(key)
 
-        if char.enumerateState[-1]["type"] == None:
-            char.enumerateState[-1]["type"] = key
+        if char.interactionState["enumerateState"][-1]["type"] == None:
+            char.interactionState["enumerateState"][-1]["type"] = key
             if mainChar == char and not "norecord" in flags:
                 header.set_text((urwid.AttrSpec("default","default"),"observe"))
                 main.set_text((urwid.AttrSpec("default","default"),"""
@@ -299,26 +302,26 @@ get position for what thing
                 char.specialRender = True
             return
 
-        if char.enumerateState[-1]["type"] == "p":
+        if char.interactionState["enumerateState"][-1]["type"] == "p":
             char.messages.append("type:"+key)
 
             if key == "d":
-                char.enumerateState[-1]["target"] = ["Drill"]
+                char.interactionState["enumerateState"][-1]["target"] = ["Drill"]
             elif key == "s":
-                char.enumerateState[-1]["target"] = ["Scrap"]
+                char.interactionState["enumerateState"][-1]["target"] = ["Scrap"]
             elif key == "f":
-                char.enumerateState[-1]["target"] = ["GooFlask"]
+                char.interactionState["enumerateState"][-1]["target"] = ["GooFlask"]
             elif key == "c":
-                char.enumerateState[-1]["target"] = ["character"]
+                char.interactionState["enumerateState"][-1]["target"] = ["character"]
             elif key == "m":
-                char.enumerateState[-1]["target"] = ["MarkerBean"]
+                char.interactionState["enumerateState"][-1]["target"] = ["MarkerBean"]
             elif key == "t":
-                char.enumerateState[-1]["target"] = ["Tree"]
+                char.interactionState["enumerateState"][-1]["target"] = ["Tree"]
             elif key == "C":
-                char.enumerateState[-1]["target"] = ["Coal"]
+                char.interactionState["enumerateState"][-1]["target"] = ["Coal"]
             else:
                 char.messages.append("not a valid target")
-                char.enumerateState.pop()
+                char.interactionState["enumerateState"].pop()
                 return
 
             if not "a" in char.registers:
@@ -336,16 +339,16 @@ get position for what thing
 
             if not char.container:
                 char.messages.append("character is nowhere")
-                char.enumerateState.pop()
+                char.interactionState["enumerateState"].pop()
                 return
 
             foundItems = []
 
-            if not char.enumerateState[-1]["target"] == ["character"]:
+            if not char.interactionState["enumerateState"][-1]["target"] == ["character"]:
                 listFound = char.container.itemsOnFloor
 
                 for item in listFound:
-                    if not item.type in char.enumerateState[-1]["target"]:
+                    if not item.type in char.interactionState["enumerateState"][-1]["target"]:
                         continue
                     if item.xPosition < char.xPosition-20:
                         continue
@@ -357,7 +360,7 @@ get position for what thing
                         continue
                     foundItems.append(item)
 
-            if "character" in char.enumerateState[-1]["target"]:
+            if "character" in char.interactionState["enumerateState"][-1]["target"]:
                 listFound = char.container.itemsOnFloor
                 for otherChar in char.container.characters:
                     if otherChar == char:
@@ -377,8 +380,8 @@ get position for what thing
                 found = foundItems[gamestate.tick%len(foundItems)]
 
             if not found:
-                char.messages.append("no "+",".join(char.enumerateState[-1]["target"])+" found")
-                char.enumerateState.pop()
+                char.messages.append("no "+",".join(char.interactionState["enumerateState"][-1]["target"])+" found")
+                char.interactionState["enumerateState"].pop()
                 return
 
             char.registers["d"][-1] = found.xPosition-char.xPosition
@@ -386,11 +389,11 @@ get position for what thing
             char.registers["a"][-1] = -char.registers["d"][-1]
             char.registers["w"][-1] = -char.registers["s"][-1]
 
-            char.messages.append(",".join(char.enumerateState[-1]["target"])+" found in direction %sa %ss %sd %sw"%(char.registers["a"][-1],char.registers["s"][-1],char.registers["d"][-1],char.registers["w"][-1],))
-            char.enumerateState.pop()
+            char.messages.append(",".join(char.interactionState["enumerateState"][-1]["target"])+" found in direction %sa %ss %sd %sw"%(char.registers["a"][-1],char.registers["s"][-1],char.registers["d"][-1],char.registers["w"][-1],))
+            char.interactionState["enumerateState"].pop()
             return
             
-        char.enumerateState.pop()
+        char.interactionState["enumerateState"].pop()
         return
 
     if key == "esc":
@@ -837,7 +840,7 @@ select what you want to observe
 """))
             footer.set_text((urwid.AttrSpec("default","default"),""))
             char.specialRender = True
-        char.enumerateState.append({"type":None}) 
+        char.interactionState["enumerateState"].append({"type":None}) 
         return
 
     if key in ('<',):

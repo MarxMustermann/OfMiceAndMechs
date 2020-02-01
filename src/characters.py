@@ -104,7 +104,6 @@ class Character(src.saveing.Saveable):
         self.aliances = []
         self.stasis = False
         self.registers = {}
-        self.enumerateState = []
         self.doStackPop = False
         self.doStackPush = False
 

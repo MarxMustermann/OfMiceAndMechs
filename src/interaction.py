@@ -2626,7 +2626,7 @@ def render(char):
         thisTerrain = char.terrain
 
     # render the map
-    chars = terrain.render()
+    chars = thisTerrain.render()
 
     # center on player
     # bad code: should focus on arbitrary positions

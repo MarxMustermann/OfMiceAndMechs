@@ -2685,6 +2685,9 @@ class BuildBase(BasicPhase):
             with open("states/wallRoom.json","r") as stateFile:
                 room = json.loads(stateFile.read())
         terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
+        with open("states/miniMech.json","r") as stateFile:
+            room = json.loads(stateFile.read())
+        terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
         room = src.rooms.EmptyRoom(1,1,2,2,creator=self)
         room.reconfigure(sizeX=seed%12+3,sizeY=(seed+seed%236)%12+3,doorPos=(0,1))
         terrain.addRoom(room)

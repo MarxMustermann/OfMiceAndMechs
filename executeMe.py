@@ -472,11 +472,13 @@ characters.mainChar = gameStateObj.mainChar
 advance the game
 '''
 def advanceGame():
-    for character in terrain.characters:
-        character.advance()
+    for row in gameStateObj.terrainMap:
+        for specificTerrain in row:
+            for character in specificTerrain.characters:
+                character.advance()
 
-    for room in terrain.rooms:
-        room.advance()
+            for room in specificTerrain.rooms:
+                room.advance()
 
     gameStateObj.tick += 1
 

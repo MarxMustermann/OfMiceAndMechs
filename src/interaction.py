@@ -240,6 +240,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             char.interactionState["submenue"] = charState["submenue"]
             char.interactionState["number"] = charState["number"]
             char.interactionState["itemMarkedLast"] = charState["itemMarkedLast"]
+            char.interactionState["macrostate"] = charState
             char.interactionStateBackup.append(char.interactionState)
             char.interactionState = {}
             charState["replay"] = []
@@ -566,93 +567,91 @@ press any other key to finish
             char.interactionState["varActions"].pop()
             return
 
-    if not "ifCondition" in charState:
-        charState["ifCondition"] = []
-    if not "ifParam1" in charState:
-        charState["ifParam1"] = []
-    if not "ifParam2" in charState:
-        charState["ifParam2"] = []
+    if not "ifCondition" in char.interactionState:
+        char.interactionState["ifCondition"] = []
+    if not "ifParam1" in char.interactionState:
+        char.interactionState["ifParam1"] = []
+    if not "ifParam2" in char.interactionState:
+        char.interactionState["ifParam2"] = []
     if key in ("%",):
         if charState["recordingTo"] and not "norecord" in flags:
             charState["macros"][charState["recordingTo"]].append("%")
-        charState["ifCondition"].append(None)
-        charState["ifParam1"].append([])
-        charState["ifParam2"].append([])
+        char.interactionState["ifCondition"].append(None)
+        char.interactionState["ifParam1"].append([])
+        char.interactionState["ifParam2"].append([])
         return
 
-    if len(charState["ifCondition"]) and not key in ("%","lagdetection","lagdetection_"):
+    if len(char.interactionState["ifCondition"]) and not key in ("%","lagdetection","lagdetection_"):
         if charState["recordingTo"] and not "norecord" in flags:
             charState["macros"][charState["recordingTo"]].append(key)
-        if charState["ifCondition"][-1] == None:
-            charState["ifCondition"][-1] = key
-            char.messages.append(charState["ifCondition"][-1])
-        elif charState["ifParam1"][-1] in ([],[("_",["norecord"])]):
-            charState["ifParam1"][-1].append((key,["norecord"]))
-            char.messages.append(charState["ifParam1"][-1])
-        elif charState["ifParam2"][-1] in ([],[("_",["norecord"])]):
-            charState["ifParam2"][-1].append((key,["norecord"]))
-            char.messages.append(charState["ifParam2"][-1])
+        if char.interactionState["ifCondition"][-1] == None:
+            char.interactionState["ifCondition"][-1] = key
+        elif char.interactionState["ifParam1"][-1] in ([],[("_",["norecord"])]):
+            char.interactionState["ifParam1"][-1].append((key,["norecord"]))
+            char.messages.append(char.interactionState["ifParam1"][-1])
+        elif char.interactionState["ifParam2"][-1] in ([],[("_",["norecord"])]):
+            char.interactionState["ifParam2"][-1].append((key,["norecord"]))
+            char.messages.append(char.interactionState["ifParam2"][-1])
 
-            if not charState["ifParam2"][-1] in ([],[("_",["norecord"])]):
+            if not char.interactionState["ifParam2"][-1] in ([],[("_",["norecord"])]):
                 conditionTrue = True
 
-                if charState["ifCondition"][-1] == "i":
+                if char.interactionState["ifCondition"][-1] == "i":
                     if len(char.inventory) == 0:
                         conditionTrue = True
                     else:
                         conditionTrue = False
-                if charState["ifCondition"][-1] == "b":
+                if char.interactionState["ifCondition"][-1] == "b":
                     if charState["itemMarkedLast"]:
                         conditionTrue = True
                     else:
                         conditionTrue = False
-                if charState["ifCondition"][-1] == "I":
-                    char.messages.append(len(char.inventory))
+                if char.interactionState["ifCondition"][-1] == "I":
                     if len(char.inventory) >= 10:
                         conditionTrue = True
                     else:
                         conditionTrue = False
-                if charState["ifCondition"][-1] == ">":
+                if char.interactionState["ifCondition"][-1] == ">":
                     if "c" in char.registers and char.registers["c"][-1] > 0:
                         conditionTrue = True
                     else:
                         conditionTrue = False
-                if charState["ifCondition"][-1] == "<":
+                if char.interactionState["ifCondition"][-1] == "<":
                     if "c" in char.registers and char.registers["c"][-1] < 0:
                         conditionTrue = True
                     else:
                         conditionTrue = False
-                if charState["ifCondition"][-1] == "=":
+                if char.interactionState["ifCondition"][-1] == "=":
                     if "c" in char.registers and "v" in char.registers and char.registers["c"][-1] == char.registers["v"][-1]:
                         conditionTrue = True
                     else:
                         conditionTrue = False
-                if charState["ifCondition"][-1] == "f":
+                if char.interactionState["ifCondition"][-1] == "f":
                     pos = (char.xPosition,char.yPosition)
                     if char.container and pos in char.container.itemByCoordinates and len(char.container.itemByCoordinates[pos]) > 0:
                         conditionTrue = True
                     else:
                         conditionTrue = False
-                if charState["ifCondition"][-1] == "t":
+                if char.interactionState["ifCondition"][-1] == "t":
                     if char.satiation < 300:
                         conditionTrue = True
                     else:
                         conditionTrue = False
-                if charState["ifCondition"][-1] == "e":
+                if char.interactionState["ifCondition"][-1] == "e":
                     conditionTrue = False
                     for item in char.inventory:
                         if isinstance(item,src.items.GooFlask) and item.uses > 1:
                             conditionTrue = True
                             break
                 if conditionTrue:
-                    charState["commandKeyQueue"] = charState["ifParam1"][-1] + charState["commandKeyQueue"]
+                    charState["commandKeyQueue"] = char.interactionState["ifParam1"][-1] + charState["commandKeyQueue"]
                 else:
-                    charState["commandKeyQueue"] = charState["ifParam2"][-1] + charState["commandKeyQueue"]
+                    charState["commandKeyQueue"] = char.interactionState["ifParam2"][-1] + charState["commandKeyQueue"]
 
-                char.messages.append((charState["ifCondition"][-1],charState["ifParam1"][-1],charState["ifParam2"][-1]))
-                charState["ifCondition"].pop()
-                charState["ifParam1"].pop()
-                charState["ifParam2"].pop()
+                char.messages.append((char.interactionState["ifCondition"][-1],char.interactionState["ifParam1"][-1],char.interactionState["ifParam2"][-1]))
+                char.interactionState["ifCondition"].pop()
+                char.interactionState["ifParam1"].pop()
+                char.interactionState["ifParam2"].pop()
         return
 
     if charState["recording"]:
@@ -2683,10 +2682,10 @@ def keyboardListener(key):
         state["commandKeyQueue"].clear()
         state["loop"] = []
         state["replay"].clear()
-        if "ifCondition" in state:
-            state["ifCondition"].clear()
-            state["ifParam1"].clear()
-            state["ifParam2"].clear()
+        if "ifCondition" in char.interactionState:
+            char.interactionState["ifCondition"].clear()
+            char.interactionState["ifParam1"].clear()
+            char.interactionState["ifParam2"].clear()
 
     elif key == "ctrl p":
         if not mainChar.macroStateBackup:
@@ -2928,7 +2927,6 @@ def gameLoop(loop,user_data):
                     main.set_text((urwid.AttrSpec("#999","black"),canvas.getUrwirdCompatible()));
                     if (useTiles):
                         canvas.setPygameDisplay(pydisplay,pygame,tileSize)
-                        #canvas.setSDL2Display(sdl2Main,tileSize)
                     header.set_text((urwid.AttrSpec("default","default"),renderHeader(mainChar)))
                     if (useTiles):
                         w, h = pydisplay.get_size()

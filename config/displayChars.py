@@ -133,7 +133,7 @@ staffCharactersByLetter = {"a":"Ⓐ ","b":"Ⓑ ","c":"Ⓒ ","d":"Ⓓ ","e":(urwi
 winch = "🞇 "
 winch_inactive = "🞅 "
 winch_active = "🞇 "
-scrap_light = "㌱"
-scrap_medium = "㌭"
-scrap_heavy = "㌕"
+scrap_light = (urwid.AttrSpec("#f50",'black'),"㌱")
+scrap_medium = (urwid.AttrSpec("#a60",'black'),"㌭")
+scrap_heavy = (urwid.AttrSpec("#860",'black'),"㌕")
 

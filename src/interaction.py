@@ -1121,7 +1121,7 @@ current registers
                                     # remember the item for interaction and abort
                                     return item
 
-                            if len(room.itemByCoordinates[localisedEntry]) >= 25:
+                            if len(room.itemByCoordinates[localisedEntry]) >= 15:
                                 char.messages.append("the entry is blocked by items.")
                                 char.messages.append("press "+commandChars.activate+" to apply")
                                 if noAdvanceGame == False:
@@ -1227,7 +1227,7 @@ current registers
                                 foundItem = True
                                 break
                         if not foundItem:
-                            if len(foundItems) >= 25:
+                            if len(foundItems) >= 15:
                                 char.messages.append("the floor is too full to walk there")
                                 char.messages.append("press "+commandChars.activate+" to apply")
                                 if noAdvanceGame == False:
@@ -1355,7 +1355,8 @@ current registers
 
                         if not item:
                             if (char.xPosition,char.yPosition) in char.container.itemByCoordinates:
-                                item = char.container.itemByCoordinates[(char.xPosition,char.yPosition)][0]
+                                if len(char.container.itemByCoordinates[(char.xPosition,char.yPosition)]):
+                                    item = char.container.itemByCoordinates[(char.xPosition,char.yPosition)][0]
 
                         if not item:
                             char.messages.append("no item to pick up found")

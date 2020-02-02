@@ -1562,10 +1562,10 @@ class GameplayTest(Terrain):
                 noScrap = False
                 if counter%5 == 0:
                     if not counter%(5*3) == 0:
-                        l1types = [src.items.Sheet,src.items.Rod,src.items.Sheet,src.items.Nook,src.items.Stripe,src.items.Bolt,src.items.Coil]
+                        l1types = [src.items.Sheet,src.items.Rod,src.items.Sheet,src.items.Mount,src.items.Stripe,src.items.Bolt,src.items.Radiator]
                         self.scrapItems.append(l1types[seed%len(l1types)](key[0],key[1],creator=self))
                     else:
-                        l2types = [src.items.Tank,src.items.Heater,src.items.Connector,src.items.Pusher,src.items.Puller,src.items.GooFlask]
+                        l2types = [src.items.Tank,src.items.Heater,src.items.Connector,src.items.Pusher,src.items.Puller,src.items.GooFlask,src.items.Frame]
                         self.scrapItems.append(l2types[seed%len(l2types)](key[0],key[1],creator=self))
 
                     if seed%15:

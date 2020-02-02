@@ -809,7 +809,7 @@ class Room(src.saveing.Saveable):
                 if not item.walkable:
                     return item
 
-            if len(self.terrain.itemByCoordinates[newPosition]) > 25:
+            if len(self.terrain.itemByCoordinates[newPosition]) > 15:
                 return self.terrain.itemByCoordinates[newPosition][0]
 
         self.removeCharacter(character)
@@ -1449,15 +1449,15 @@ XXXXXXXXXXXXX
         metalbars3 = src.items.MetalBars(9,1,creator=creator)
         metalbars4 = src.items.MetalBars(3,3,creator=creator)
         scrap = src.items.Scrap(7,1,creator=creator)
-        connector = src.items.Nook(7,9,creator=creator)
+        connector = src.items.Connector(7,9,creator=creator)
         blueprint1 = src.items.BluePrint(9,9,creator=creator)
         blueprint1.setToProduce("Sheet")
         blueprint1.bolted = False
         blueprint2 = src.items.BluePrint(9,9,creator=creator)
-        blueprint2.setToProduce("Coil")
+        blueprint2.setToProduce("Radiator")
         blueprint2.bolted = False
         blueprint3 = src.items.BluePrint(9,9,creator=creator)
-        blueprint3.setToProduce("Nook")
+        blueprint3.setToProduce("Mount")
         blueprint3.bolted = False
         blueprint4 = src.items.BluePrint(9,9,creator=creator)
         blueprint4.setToProduce("Stripe")
@@ -1516,7 +1516,7 @@ XXXXXXXXXXXXX
         itemList.append(src.items.GameTestingProducer(6,13,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Pile]))
         itemList.append(src.items.GameTestingProducer(9,13,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Furnace]))
 
-        l1Items = [src.items.Sheet,src.items.Rod,src.items.Sheet,src.items.Nook,src.items.Stripe,src.items.Bolt,src.items.Coil]
+        l1Items = [src.items.Sheet,src.items.Rod,src.items.Sheet,src.items.Mount,src.items.Stripe,src.items.Bolt,src.items.Radiator]
         y = 0
         while y < 2:
             x = 0

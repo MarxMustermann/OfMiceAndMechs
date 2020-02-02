@@ -1,5 +1,7 @@
 import urwid
 
+case = (urwid.AttrSpec("#aaa","black"),"*H")
+memoryCell = (urwid.AttrSpec("#33f","black"),"*m")
 frame = (urwid.AttrSpec("#aaa","black"),"#O")
 watch = (urwid.AttrSpec("#aaa","black"),"ow")
 backTracker = (urwid.AttrSpec("#aaa","black"),"ob")

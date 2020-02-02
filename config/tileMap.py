@@ -1,5 +1,7 @@
 import pygame
 
+case = pygame.image.load('config/Images/perspectiveTry/case.png')
+memoryCell = pygame.image.load('config/Images/perspectiveTry/memoryCell.png')
 frame = pygame.image.load('config/Images/perspectiveTry/Frame.png')
 watch = pygame.image.load('config/Images/perspectiveTry/watch.png')
 backTracker = pygame.image.load('config/Images/perspectiveTry/backTracker.png')

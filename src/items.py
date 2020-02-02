@@ -2844,13 +2844,13 @@ A rod. Simple building material.
 
 '''
 '''
-class Nook(Item):
-    type = "Nook"
+class Mount(Item):
+    type = "Mount"
 
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="nook",creator=None):
+    def __init__(self,xPosition=None,yPosition=None, name="mount",creator=None):
         super().__init__(displayChars.nook,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
@@ -2858,7 +2858,7 @@ class Nook(Item):
 
     def getLongInfo(self):
         text = """
-A Nook. Simple building material.
+A mount. Simple building material.
 
 """
         return text
@@ -2907,13 +2907,13 @@ A Bolt. Simple building material.
 
 '''
 '''
-class Coil(Item):
-    type = "Coil"
+class Radiator(Item):
+    type = "Radiator"
 
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="coil",creator=None):
+    def __init__(self,xPosition=None,yPosition=None, name="radiator",creator=None):
         super().__init__(displayChars.coil,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
@@ -2921,7 +2921,7 @@ class Coil(Item):
 
     def getLongInfo(self):
         text = """
-A coil. Simple building material.
+A radiator. Simple building material.
 
 """
         return text
@@ -3011,7 +3011,6 @@ A puller. Building material.
 """
         return text
 
-
 '''
 '''
 class Pusher(Item):
@@ -3029,6 +3028,27 @@ class Pusher(Item):
     def getLongInfo(self):
         text = """
 A pusher. Building material.
+
+"""
+        return text
+
+'''
+'''
+class Frame(Item):
+    type = "Frame"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="Frame",creator=None):
+        super().__init__(displayChars.frame,xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+
+    def getLongInfo(self):
+        text = """
+A frame. Building material.
 
 """
         return text
@@ -3259,9 +3279,9 @@ class MachineMachine(Item):
             "Sheet",
             "Rod",
             "Heater",
-            "Nook",
+            "Mount",
             "Tank",
-            "Coil",
+            "Radiator",
             "MaggotFermenter",
             "BioPress",
             "GooProducer",
@@ -3333,11 +3353,6 @@ class MachineMachine(Item):
             self.character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
 
-        if self.charges:
-            self.charges -= 1
-        else:
-            self.coolDownTimer = gamestate.tick
-
         options = []
         for itemType in self.endProducts:
             options.append((itemType,itemType+" machine"))
@@ -3356,10 +3371,7 @@ class MachineMachine(Item):
     '''
     def produce(self,itemType,resultType=None):
         # gather a metal bar
-        if itemType == "GrowthTank":
-            ressourcesNeeded = ["MetalBars","Tank"]
-        else:
-            ressourcesNeeded = ["MetalBars"]
+        ressourcesNeeded = ["MetalBars"]
 
         ressourcesFound = []
         if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
@@ -3372,6 +3384,11 @@ class MachineMachine(Item):
         if ressourcesNeeded:
             self.character.messages.append("missing ressources: %s"%(",".join(ressourcesNeeded)))
             return
+
+        if self.charges:
+            self.charges -= 1
+        else:
+            self.coolDownTimer = gamestate.tick
 
         self.character.messages.append("you produce a machine that produces %s"%(itemType,))
 
@@ -3463,7 +3480,7 @@ class Machine(Item):
         self.baseName = name
 
         self.attributesToStore.extend([
-               "coolDown","coolDownTimer"])
+               "coolDown","coolDownTimer","charges"])
 
         self.setDescription()
 
@@ -3490,13 +3507,102 @@ class Machine(Item):
             character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
 
-        if self.charges:
-            self.charges -= 1
-        else:
-            self.coolDownTimer = gamestate.tick
+        if self.toProduce == "Sheet":
+            ressourcesNeeded = ["MetalBars"]
+        elif self.toProduce == "Radiator":
+            ressourcesNeeded = ["MetalBars"]
+        elif self.toProduce == "Mount":
+            ressourcesNeeded = ["MetalBars"]
+        elif self.toProduce == "Stripe":
+            ressourcesNeeded = ["MetalBars"]
+        elif self.toProduce == "Bolt":
+            ressourcesNeeded = ["MetalBars"]
+        elif self.toProduce == "Rod":
+            ressourcesNeeded = ["MetalBars"]
 
-        if self.toProduce == "GrowthTank":
-            ressourcesNeeded = ["MetalBars","GooFlask"]
+        elif self.toProduce == "Tank":
+            ressourcesNeeded = ["MetalBars","Sheet","Sheet","Rod"]
+        elif self.toProduce == "Heater":
+            ressourcesNeeded = ["MetalBars","Radiator","Radiator"]
+        elif self.toProduce == "Connector":
+            ressourcesNeeded = ["MetalBars","Mount","Stripe","Rod"]
+        elif self.toProduce == "pusher":
+            ressourcesNeeded = ["MetalBars","Stripe","Rod"]
+        elif self.toProduce == "puller":
+            ressourcesNeeded = ["MetalBars","Stripe","Rod"]
+        elif self.toProduce == "Frame":
+            ressourcesNeeded = ["MetalBars","Sheet","Rod"]
+
+        elif self.toProduce == "Case":
+            ressourcesNeeded = ["Frame","Frame","MetalBars","MetalBars","MetalBars","MetalBars"]
+        elif self.toProduce == "MemoryCell":
+            ressourcesNeeded = ["MetalBars","Coal","Tank","Rod","Stripe","Stripe"]
+
+        elif self.toProduce == "ScrapCompactor":
+            ressourcesNeeded = ["Case","pusher"]
+        elif self.toProduce == "Wall":
+            ressourcesNeeded = ["Case" ,"MetalBars","MetalBars","MetalBars","MetalBars","MetalBars"]
+        elif self.toProduce == "Door":
+            ressourcesNeeded = ["Case","Sheet","Connector"]
+        elif self.toProduce == "Drill":
+            ressourcesNeeded = ["Case","Rod","pusher"]
+        elif self.toProduce == "Furnace":
+            ressourcesNeeded = ["Case","Mount","Radiator"]
+        elif self.toProduce == "Scraper":
+            ressourcesNeeded = ["Case","puller","pusher"]
+        elif self.toProduce == "GooDispenser":
+            ressourcesNeeded = ["Case","Tank","GooFlask"]
+        elif self.toProduce == "MaggotFermenter":
+            ressourcesNeeded = ["Case","Tank","Heater"]
+        elif self.toProduce == "BioPress":
+            ressourcesNeeded = ["Case","Sheet","pusher"]
+        elif self.toProduce == "GooProducer":
+            ressourcesNeeded = ["Case","Stripe","Heater"]
+        elif self.toProduce == "Sorter":
+            ressourcesNeeded = ["Case","Rod","Connector"]
+        elif self.toProduce == "GrowthTank":
+            ressourcesNeeded = ["Case","Sheet","Tank"]
+
+        elif self.toProduce == "MemoryDump":
+            ressourcesNeeded = ["Case","MemoryCell","Connector"]
+        elif self.toProduce == "MemoryStack":
+            ressourcesNeeded = ["Case","MemoryCell","MemoryCell","Connector"]
+        elif self.toProduce == "MemoryReset":
+            ressourcesNeeded = ["Case","Connector"]
+        elif self.toProduce == "MemoryBank":
+            ressourcesNeeded = ["Case","MemoryCell","Connector","puller"]
+        elif self.toProduce == "SimpleRunner":
+            ressourcesNeeded = ["Case","MemoryCell","Connector","pusher"]
+
+        elif self.toProduce == "Watch":
+            ressourcesNeeded = ["Frame","MemoryCell","Connector","pusher"]
+        elif self.toProduce == "BackTracker":
+            ressourcesNeeded = ["Frame","MemoryCell","MemoryCell","MemoryCell","puller","pusher"]
+        elif self.toProduce == "PositioningDevice":
+            ressourcesNeeded = ["Frame","MemoryCell","Connector","Connector","Connector","Connector","pusher"]
+        elif self.toProduce == "Tumbler":
+            ressourcesNeeded = ["Frame","Watch","MemoryCell","puller","pusher"]
+
+        elif self.toProduce == "MarkerBean":
+            ressourcesNeeded = ["Frame","Tank","Coal","Coal","Heater"]
+
+        elif self.toProduce == "RoomBuilder":
+            ressourcesNeeded = ["Frame","MetalBars","MetalBars","MetalBars","MetalBars","Tank","pusher","puller","Rod","Connector"]
+
+        elif self.toProduce == "GooFlask":
+            ressourcesNeeded = ["MetalBars","Tank"]
+
+        elif self.toProduce == "Sorter":
+            ressourcesNeeded = ["Case","pusher","puller","Connector","pusher","puller",]
+        elif self.toProduce == "StasisTank":
+            ressourcesNeeded = ["GrowthTank","Connector","Tank","Sheet","Rod","Rod"]
+        elif self.toProduce == "RoomControls":
+            ressourcesNeeded = ["Case","pusher","puller","Sheet","Stripe","Rod"]
+        elif self.toProduce == "ItemUpgrader":
+            ressourcesNeeded = ["Case","Connector","Connector","pusher","puller","Rod"]
+        elif self.toProduce == "BluePrinter":
+            ressourcesNeeded = ["Case","Connector","Connector","Stripe","Stripe","Rod"]
+
         else:
             ressourcesNeeded = ["MetalBars"]
 
@@ -3510,8 +3616,13 @@ class Machine(Item):
         
         # refuse production without ressources
         if ressourcesNeeded:
-            character.messages.append("missing ressources: %s"%(", ".join(ressourcesNeeded)))
+            character.messages.append("missing ressources (place left/west): %s"%(", ".join(ressourcesNeeded)))
             return
+
+        if self.charges:
+            self.charges -= 1
+        else:
+            self.coolDownTimer = gamestate.tick
 
         character.messages.append("you produce a %s"%(self.toProduce,))
 
@@ -3663,7 +3774,7 @@ class Drill(Item):
 
 
         # spawn new item
-        possibleProducts = [Scrap,Coal,Scrap,Coil,Scrap,Nook,Scrap,Sheet,Scrap,Rod,Scrap,Bolt,Scrap,Stripe,Scrap,]
+        possibleProducts = [Scrap,Coal,Scrap,Radiator,Scrap,Mount,Scrap,Sheet,Scrap,Rod,Scrap,Bolt,Scrap,Stripe,Scrap,]
         productIndex = gamestate.tick%len(possibleProducts)
         new = possibleProducts[productIndex](self.xPosition,self.yPosition,creator=self)
         new.xPosition = self.xPosition+1
@@ -4246,26 +4357,29 @@ class BluePrinter(Item):
                 [["Stripe","Connector","Puller"],"MemoryDump"],
                 [["Stripe","Connector","Heater"],"SimpleRunner"],
                 [["Stripe","Connector","Pusher"],"MemoryStack"],
-                [["Stripe","Connector","puller"],"MemoryReset"],
+                [["Stripe","Connector","Connector"],"MemoryReset"],
 
                 [["Sheet","pusher"],"Sorter"],
                 [["Stripe","Connector"],"RoomControls"],
                 [["GooFlask","Tank"],"GrowthTank"],
-                [["Coil","Heater"],"StasisTank"],
-                [["Nook","Tank"],"MarkerBean"],
+                [["Radiator","Heater"],"StasisTank"],
+                [["Mount","Tank"],"MarkerBean"],
                 [["Bolt","Tank"],"PositioningDevice"],
                 [["Bolt","puller"],"Watch"],
                 [["Bolt","Heater"],"BackTracker"],
                 [["Bolt","pusher"],"Tumbler"],
                 [["Sheet","Heater"],"ItemUpgrader"],
-
                 [["Scrap","MetalBars"],"Scraper"],
+
+                [["Frame","MetalBars"],"Case"],
+                [["Connector","MetalBars"],"MemoryCell"],
+
                 [["Sheet","MetalBars"],"Tank"],
-                [["Coil","MetalBars"],"Heater"],
-                [["Nook","MetalBars"],"Connector"],
+                [["Radiator","MetalBars"],"Heater"],
+                [["Mount","MetalBars"],"Connector"],
                 [["Stripe","MetalBars"],"pusher"],
                 [["Bolt","MetalBars"],"puller"],
-                [["Rod","MetalBars"],"GooFlask"],
+                [["Rod","MetalBars"],"Frame"],
 
                 [["Tank"],"GooFlask"],
                 [["Heater"],"Boiler"],
@@ -4274,8 +4388,8 @@ class BluePrinter(Item):
                 [["puller"],"RoomBuilder"],
 
                 [["Sheet"],"Sheet"],
-                [["Coil"],"Coil"],
-                [["Nook"],"Nook"],
+                [["Radiator"],"Radiator"],
+                [["Mount"],"Mount"],
                 [["Stripe"],"Stripe"],
                 [["Bolt"],"Bolt"],
                 [["Rod"],"Rod"],
@@ -4296,6 +4410,17 @@ class BluePrinter(Item):
 
         if not self.room:
             character.messages.append("this machine can only be used within rooms")
+            return
+
+        sheet = None
+        if (self.xPosition,self.yPosition-1) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition,self.yPosition-1)]:
+                if item.type == "Sheet":
+                    sheet = item
+                    break
+
+        if not sheet:
+            character.messages.append("no sheet - place sheet to the top/north")
             return
 
         inputThings = []
@@ -4332,6 +4457,7 @@ class BluePrinter(Item):
 
             for itemType in reciepeFound[0]:
                 self.room.removeItem(abstractedInputThings[itemType]["item"])
+            self.room.removeItem(sheet)
             character.messages.append("you create a blueprint for "+reciepe[1])
         else:
             character.messages.append("unable to produce blueprint from given items")
@@ -4796,6 +4922,48 @@ This device is a one of a kind machine. It allows to store and load marcos betwe
 """
         return text
 
+'''
+'''
+class Case(Item):
+    type = "Case"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="case",creator=None):
+        super().__init__(displayChars.case,xPosition,yPosition,name=name,creator=creator)
+        self.initialState = self.getState()
+
+    def getLongInfo(self):
+        text = """
+
+A case. Is complex building item. It is used to build bigger things.
+
+"""
+        return text
+
+
+'''
+'''
+class MemoryCell(Item):
+    type = "MemoryCell"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="memory cell",creator=None):
+        super().__init__(displayChars.memoryCell,xPosition,yPosition,name=name,creator=creator)
+        self.walkable = True
+
+        self.initialState = self.getState()
+
+    def getLongInfo(self):
+        text = """
+
+A memory cell. Is complex building item. It is used to build logic items.
+
+"""
+        return text
 
 # maping from strings to all items
 # should be extendable
@@ -4841,9 +5009,10 @@ itemMap = {
             "Sheet":Sheet,
             "Rod":Rod,
             "Heater":Heater,
-            "Nook":Nook,
+            "Mount":Mount,
             "Tank":Tank,
-            "Coil":Coil,
+            "Frame":Frame,
+            "Radiator":Radiator,
             "Tree":Tree,
             "MaggotFermenter":MaggotFermenter,
             "BioPress":BioPress,
@@ -4876,6 +5045,8 @@ itemMap = {
             "GlobalMacroStorage":GlobalMacroStorage,
             "MacroRunner":MacroRunner,
             "GameTestingProducer":GameTestingProducer,
+            "MemoryCell":MemoryCell,
+            "Case":Case,
 }
 
 producables = {
@@ -4907,9 +5078,9 @@ producables = {
             "Sheet":Sheet,
             "Rod":Rod,
             "Heater":Heater,
-            "Nook":Nook,
+            "Mount":Mount,
             "Tank":Tank,
-            "Coil":Coil,
+            "Radiator":Radiator,
             "MaggotFermenter":MaggotFermenter,
             "BioPress":BioPress,
             "GooProducer":GooProducer,

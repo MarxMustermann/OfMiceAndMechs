@@ -1422,7 +1422,7 @@ class Terrain(src.saveing.Saveable):
         exclude = []
         if mainChar:
             exclude.append(mainChar.id)
-        (characterIds,chracterStates) = self.storeStateList(self.characters,exclude=exclude)
+        (characterIds,characterStates) = self.storeStateList(self.characters,exclude=exclude)
 
         # generate state
         return {
@@ -1431,7 +1431,7 @@ class Terrain(src.saveing.Saveable):
                   "itemIds":itemIds,
                   "itemStates":itemStates,
                   "characterIds":characterIds,
-                  "chracterStates":chracterStates,
+                  "characterStates":characterStates,
                   "initialSeed":self.initialSeed,
                   "objType":self.objType,
                }

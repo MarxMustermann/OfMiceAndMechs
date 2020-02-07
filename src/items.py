@@ -106,6 +106,7 @@ class Item(src.saveing.Saveable):
             character.messages.append("you cannot pick up bolted items")
             return
 
+        """
         foundBig = False
         for item in character.inventory:
             if item.walkable == False:
@@ -117,6 +118,7 @@ class Item(src.saveing.Saveable):
             return
 
         character.messages.append("you pick up a "+self.type)
+        """
 
         # bad code: should be a simple self.container.removeItem(self)
         if self.room:
@@ -497,14 +499,16 @@ class Scrap(Item):
         text = """
 Scrap is a raw material. Its main use is to be converted to metal bars in a scrap compactor.
 
-"""
+There is %s in this pile
+"""%(self.amount,)
+
         return text
 
     '''
     get picked up by the supplied character
     '''
     def pickUp(self,character):
-        if self.amount == 1:
+        if self.amount <= 1:
             super().pickUp(character)
             return
 
@@ -516,15 +520,37 @@ Scrap is a raw material. Its main use is to be converted to metal bars in a scra
             if item.walkable == False:
                 foundBig = True
                 break
+        self.amount -= 1
 
         character.messages.append("you pick up a piece of scrap, there is %s left"%(self.amount,))
 
-        self.amount -= 1
         self.setWalkable()
 
         # add item to characters inventory
         character.inventory.append(Scrap(amount=1,creator=self))
         self.changed()
+
+    '''
+    get picked up by the supplied character
+    '''
+    def apply(self,character):
+        scrapFound = []
+        for item in character.inventory:
+            if item.type == "Scrap":
+                scrapFound.append(item)
+
+        for item in scrapFound:
+            if self.amount < 20:
+                character.messages.append("you add a piece of scrap there pile contains %s scrap now."%(self.amount,))
+                character.inventory.remove(item)
+                self.amount += item.amount
+
+        self.changed()
+
+    def setState(self,state):
+        super().setState(state)
+
+        self.setWalkable()
 
 '''
 dummy class for a corpse
@@ -1184,6 +1210,9 @@ class RoomBuilder(Item):
         
         super().apply(character,silent=True)
 
+        self.character = character
+
+    def apply(self,character):
         wallLeft = False
         for offset in range(1,15):
             pos = (self.xPosition-offset,self.yPosition)
@@ -2530,20 +2559,24 @@ class ScrapCompactor(Item):
             character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
 
-        if self.charges:
-            self.charges -= 1
-        else:
-            self.coolDownTimer = gamestate.tick
-
         # refuse to produce without ressources
         if not scrap:
             character.messages.append("no scraps available")
             return
 
+        if self.charges:
+            self.charges -= 1
+        else:
+            self.coolDownTimer = gamestate.tick
+
         character.messages.append("you produce a metal bar")
 
         # remove ressources
-        self.room.removeItem(item)
+        if item.amount <= 1:
+            self.room.removeItem(item)
+        else:
+            item.amount -= 1
+            item.changed()
 
         # spawn the metal bar
         new = MetalBars(creator=self)
@@ -2820,6 +2853,39 @@ A sheet. Simple building material.
 
 """
         return text
+
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        command = Command(self.xPosition,self.yPosition, creator=self)
+
+        if self.xPosition:
+            self.container.removeItem(self)
+            self.container.addItems([command])
+
+'''
+'''
+class Command(Item):
+    type = "Command"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="Command",creator=None):
+        super().__init__(displayChars.sheet,xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+
+    def getLongInfo(self):
+        text = """
+A sheet. Simple building material.
+
+"""
+        return text
+
+    def apply(self,character):
+        super().apply(character,silent=True)
 
 '''
 '''
@@ -3521,6 +3587,107 @@ class Machine(Item):
             ressourcesNeeded = ["MetalBars"]
 
         elif self.toProduce == "Tank":
+            ressourcesNeeded = ["Sheet"]
+        elif self.toProduce == "Heater":
+            ressourcesNeeded = ["Radiator"]
+        elif self.toProduce == "Connector":
+            ressourcesNeeded = ["Mount"]
+        elif self.toProduce == "pusher":
+            ressourcesNeeded = ["Stripe"]
+        elif self.toProduce == "puller":
+            ressourcesNeeded = ["Bolt"]
+        elif self.toProduce == "Frame":
+            ressourcesNeeded = ["Rod"]
+
+        elif self.toProduce == "Case":
+            ressourcesNeeded = ["Frame"]
+        elif self.toProduce == "PocketFrame":
+            ressourcesNeeded = ["Frame"]
+        elif self.toProduce == "MemoryCell":
+            ressourcesNeeded = ["Connector"]
+
+        elif self.toProduce == "Sorter":
+            ressourcesNeeded = ["Case","MetalBars"]
+        elif self.toProduce == "Scraper":
+            ressourcesNeeded = ["Case","MetalBars"]
+        elif self.toProduce == "GrowthTank":
+            ressourcesNeeded = ["Case","MetalBars"]
+        elif self.toProduce == "Door":
+            ressourcesNeeded = ["Case","MetalBars"]
+        elif self.toProduce == "Wall":
+            ressourcesNeeded = ["Case","MetalBars"]
+        elif self.toProduce == "Boiler":
+            ressourcesNeeded = ["Case","MetalBars"]
+        elif self.toProduce == "Drill":
+            ressourcesNeeded = ["Case","MetalBars"]
+        elif self.toProduce == "ScrapCompactor":
+            ressourcesNeeded = ["Case","MetalBars"]
+        elif self.toProduce == "Furnace":
+            ressourcesNeeded = ["Case","MetalBars"]
+
+        elif self.toProduce == "GooFlask":
+            ressourcesNeeded = ["Tank"]
+
+        elif self.toProduce == "GooDispenser":
+            ressourcesNeeded = ["Case","MetalBars","Heater"]
+        elif self.toProduce == "MaggotFermenter":
+            ressourcesNeeded = ["Case","MetalBars","Heater"]
+        elif self.toProduce == "BioPress":
+            ressourcesNeeded = ["Case","MetalBars","Heater"]
+        elif self.toProduce == "GooProducer":
+            ressourcesNeeded = ["Case","MetalBars","Heater"]
+
+        elif self.toProduce == "MemoryDump":
+            ressourcesNeeded = ["Case","MemoryCell"]
+        elif self.toProduce == "MemoryStack":
+            ressourcesNeeded = ["Case","MemoryCell"]
+        elif self.toProduce == "MemoryReset":
+            ressourcesNeeded = ["Case","MemoryCell"]
+        elif self.toProduce == "MemoryBank":
+            ressourcesNeeded = ["Case","MemoryCell"]
+        elif self.toProduce == "SimpleRunner":
+            ressourcesNeeded = ["Case","MemoryCell"]
+
+        elif self.toProduce == "MarkerBean":
+            ressourcesNeeded = ["PocketFrame"]
+        elif self.toProduce == "PositioningDevice":
+            ressourcesNeeded = ["PocketFrame"]
+        elif self.toProduce == "Watch":
+            ressourcesNeeded = ["PocketFrame"]
+        elif self.toProduce == "BackTracker":
+            ressourcesNeeded = ["PocketFrame"]
+        elif self.toProduce == "Tumbler":
+            ressourcesNeeded = ["PocketFrame"]
+
+        elif self.toProduce == "RoomControls":
+            ressourcesNeeded = ["Case","pusher","puller"]
+        elif self.toProduce == "StasisTank":
+            ressourcesNeeded = ["Case","pusher","puller"]
+        elif self.toProduce == "ItemUpgrader":
+            ressourcesNeeded = ["Case","pusher","puller"]
+        elif self.toProduce == "RoomBuilder":
+            ressourcesNeeded = ["Case","pusher","puller"]
+        elif self.toProduce == "BluePrinter":
+            ressourcesNeeded = ["Case","pusher","puller"]
+
+        else:
+            ressourcesNeeded = ["MetalBars"]
+
+        """
+        if self.toProduce == "Sheet":
+            ressourcesNeeded = ["MetalBars"]
+        elif self.toProduce == "Radiator":
+            ressourcesNeeded = ["MetalBars"]
+        elif self.toProduce == "Mount":
+            ressourcesNeeded = ["MetalBars"]
+        elif self.toProduce == "Stripe":
+            ressourcesNeeded = ["MetalBars"]
+        elif self.toProduce == "Bolt":
+            ressourcesNeeded = ["MetalBars"]
+        elif self.toProduce == "Rod":
+            ressourcesNeeded = ["MetalBars"]
+
+        elif self.toProduce == "Tank":
             ressourcesNeeded = ["MetalBars","Sheet","Sheet","Rod"]
         elif self.toProduce == "Heater":
             ressourcesNeeded = ["MetalBars","Radiator","Radiator"]
@@ -3587,7 +3754,7 @@ class Machine(Item):
             ressourcesNeeded = ["Frame","Tank","Coal","Coal","Heater"]
 
         elif self.toProduce == "RoomBuilder":
-            ressourcesNeeded = ["Frame","MetalBars","MetalBars","MetalBars","MetalBars","Tank","pusher","puller","Rod","Connector"]
+            ressourcesNeeded = ["Case","Tank","pusher","puller","Rod","Connector"]
 
         elif self.toProduce == "GooFlask":
             ressourcesNeeded = ["MetalBars","Tank"]
@@ -3605,6 +3772,7 @@ class Machine(Item):
 
         else:
             ressourcesNeeded = ["MetalBars"]
+        """
 
         # gather a metal bar
         ressourcesFound = []
@@ -4353,11 +4521,11 @@ class BluePrinter(Item):
         self.text = None
 
         self.reciepes = [
-                [["Stripe","Connector","Tank"],"MemoryBank"],
-                [["Stripe","Connector","Puller"],"MemoryDump"],
-                [["Stripe","Connector","Heater"],"SimpleRunner"],
-                [["Stripe","Connector","Pusher"],"MemoryStack"],
-                [["Stripe","Connector","Connector"],"MemoryReset"],
+                [["MemoryCell","Tank"],"MemoryBank"],
+                [["MemoryCell","Puller"],"MemoryDump"],
+                [["MemoryCell","Heater"],"SimpleRunner"],
+                [["MemoryCell","Pusher"],"MemoryStack"],
+                [["MemoryCell","Connector"],"MemoryReset"],
 
                 [["Sheet","pusher"],"Sorter"],
                 [["Stripe","Connector"],"RoomControls"],
@@ -4701,6 +4869,9 @@ class BackTracker(Item):
         super().__init__(displayChars.backTracker,xPosition,yPosition,name=name,creator=creator)
 
         self.initialState = self.getState()
+
+        self.attributesToStore.extend([
+               "command"])
 
         self.tracking = False
         self.tracked = None

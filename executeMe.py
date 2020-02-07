@@ -46,6 +46,7 @@ parser.add_argument("-T", "--terrain", type=str, help="select the terrain")
 parser.add_argument("-s", "--seed", type=str, help="select the seed of a new game")
 parser.add_argument("--multiplayer", action="store_true", help="activate multiplayer")
 parser.add_argument("--load", action="store_true", help="load")
+parser.add_argument("-S", "--speed", type=int, help="set the speed of the game to a fixed speed")
 args = parser.parse_args()
 
 import src.canvas as canvas
@@ -58,6 +59,9 @@ if not args.nourwid:
         displayChars = canvas.DisplayMapping("pureASCII")
 else:
     displayChars = canvas.TileMapping("testTiles")
+
+if args.speed:
+    interaction.speed = args.speed
 
 if args.seed:
     seed = int(args.seed)

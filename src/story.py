@@ -2675,9 +2675,14 @@ class BuildBase(BasicPhase):
             with open("states/theftBase2.json","r") as stateFile:
                 room = json.loads(stateFile.read())
             terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
-        with open("states/emptyRoom1.json","r") as stateFile:
-            room = json.loads(stateFile.read())
-        terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
+        if seed%2==1:
+            with open("states/caseStorage.json","r") as stateFile:
+                room = json.loads(stateFile.read())
+            terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
+        else:
+            with open("states/emptyRoom1.json","r") as stateFile:
+                room = json.loads(stateFile.read())
+            terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
         if seed%4:
             with open("states/emptyRoom2.json","r") as stateFile:
                 room = json.loads(stateFile.read())

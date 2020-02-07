@@ -30,6 +30,7 @@ header = None
 frame = None
 urwid = None
 fixedTicks = False
+speed = None
 
 class abstractedDisplay(object):
     def __init__(self,urwidInstance):
@@ -2682,10 +2683,10 @@ def keyboardListener(key):
         state["commandKeyQueue"].clear()
         state["loop"] = []
         state["replay"].clear()
-        if "ifCondition" in char.interactionState:
-            char.interactionState["ifCondition"].clear()
-            char.interactionState["ifParam1"].clear()
-            char.interactionState["ifParam2"].clear()
+        if "ifCondition" in mainChar.interactionState:
+            mainChar.interactionState["ifCondition"].clear()
+            mainChar.interactionState["ifParam1"].clear()
+            mainChar.interactionState["ifParam2"].clear()
 
     elif key == "ctrl p":
         if not mainChar.macroStateBackup:
@@ -2796,7 +2797,11 @@ def gameLoop(loop,user_data):
     import time
     
     global lastAdvance
+    global fixedTicks
+
     runFixedTick = False
+    if speed:
+        fixedTicks = speed
     if fixedTicks and time.time()-lastAdvance > fixedTicks:
         runFixedTick = True
 
@@ -2854,7 +2859,7 @@ def gameLoop(loop,user_data):
                     multi_chars.append(character)
 
         global continousOperation
-        if mainChar.macroState["commandKeyQueue"] or runFixedTick:
+        if (mainChar.macroState["commandKeyQueue"] and not speed) or runFixedTick:
             continousOperation += 1
 
             if not len(cinematics.cinematicQueue):
@@ -2919,7 +2924,7 @@ def gameLoop(loop,user_data):
                 if len(mainChar.macroState["commandKeyQueue"]) == 0:
                     skipRender = False
 
-                if not skipRender or fixedTicks:
+                if (not skipRender) or fixedTicks:
 
                     # render map
                     # bad code: display mode specific code

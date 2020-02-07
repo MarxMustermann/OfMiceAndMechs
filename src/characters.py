@@ -747,32 +747,40 @@ class Character(src.saveing.Saveable):
     almost straightforward dropping of items
     """
     def drop(self,item):
+        foundScrap = None
         if (self.xPosition,self.yPosition) in self.container.itemByCoordinates:
             itemList = self.container.itemByCoordinates[(self.xPosition,self.yPosition)]
             foundBig = False
 
             for compareItem in itemList:
-                if compareItem.walkable == False:
+                if compareItem.type == "Scrap":
+                    foundScrap = compareItem
+                if compareItem.walkable == False and not (compareItem.type == "Scrap" and compareItem.amount < 15):
                     foundBig = True
                     break
 
+            """
             if foundBig:
                 self.messages.append("there is no space to drop the item")
                 return
-
-        self.messages.append("you drop a %s"%(item.type))
+            """
 
         # remove item from inventory
         self.inventory.remove(item)
 
-        # add item to floor
-        item.xPosition = self.xPosition
-        item.yPosition = self.yPosition
-        self.container.addItems([item])
+        if foundScrap and item.type == "Scrap":
+            foundScrap.amount += item.amount
+            foundScrap.changed()
+            foundScrap.setWalkable()
+        else:
+            # add item to floor
+            item.xPosition = self.xPosition
+            item.yPosition = self.yPosition
+            self.container.addItems([item])
 
-        # notify listener
-        item.changed()
-        item.changed("dropped",self)
+            # notify listener
+            item.changed()
+            item.changed("dropped",self)
         self.changed()
 
     """

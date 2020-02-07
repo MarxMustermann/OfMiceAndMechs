@@ -3782,6 +3782,12 @@ class Machine(Item):
                     ressourcesFound.append(item)
                     ressourcesNeeded.remove(item.type)
         
+        if (self.xPosition,self.yPosition-1) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition,self.yPosition-1)]:
+                if item.type in ressourcesNeeded:
+                    ressourcesFound.append(item)
+                    ressourcesNeeded.remove(item.type)
+        
         # refuse production without ressources
         if ressourcesNeeded:
             character.messages.append("missing ressources (place left/west): %s"%(", ".join(ressourcesNeeded)))

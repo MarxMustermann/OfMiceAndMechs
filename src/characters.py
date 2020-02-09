@@ -749,7 +749,13 @@ class Character(src.saveing.Saveable):
     def drop(self,item):
         foundScrap = None
         if (self.xPosition,self.yPosition) in self.container.itemByCoordinates:
+
             itemList = self.container.itemByCoordinates[(self.xPosition,self.yPosition)]
+
+            if item.walkable == False and len(itemList):
+                self.messages.append("you need a clear space to drop big items")
+                return
+
             foundBig = False
 
             for compareItem in itemList:
@@ -759,11 +765,9 @@ class Character(src.saveing.Saveable):
                     foundBig = True
                     break
 
-            """
             if foundBig:
                 self.messages.append("there is no space to drop the item")
                 return
-            """
 
         # remove item from inventory
         self.inventory.remove(item)

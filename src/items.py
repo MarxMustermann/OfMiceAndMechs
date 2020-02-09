@@ -3790,7 +3790,7 @@ class Machine(Item):
         
         # refuse production without ressources
         if ressourcesNeeded:
-            character.messages.append("missing ressources (place left/west): %s"%(", ".join(ressourcesNeeded)))
+            character.messages.append("missing ressources (place left/west or up/north): %s"%(", ".join(ressourcesNeeded)))
             return
 
         if self.charges:

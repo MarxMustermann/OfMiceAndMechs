@@ -209,7 +209,7 @@ class Terrain(src.saveing.Saveable):
                         itemTypes.append(src.items.Winch)
                         amount += 7
                     if not (lineCounter+seed)%5:
-                        itemTypes.append(src.items.Display)
+                        itemTypes.append(src.items.RoomControls)
                         amount += 7
                     if not (lineCounter+seed)%6:
                         itemTypes.append(src.items.Commlink)

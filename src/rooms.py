@@ -142,7 +142,7 @@ class Room(src.saveing.Saveable):
                     self.pipes.append(item)
                 elif char == "D":
                     # add display
-                    itemsOnFloor.append(src.items.Display(rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.RoomControls(rowCounter,lineCounter,creator=self))
                 elif char == "v":
                     # to be bin
                     itemsOnFloor.append(src.items.Item(displayChars.binStorage,rowCounter,lineCounter,creator=self))

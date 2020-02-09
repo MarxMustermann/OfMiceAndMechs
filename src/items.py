@@ -26,8 +26,10 @@ class Item(src.saveing.Saveable):
     '''
     state initialization and id generation
     '''
-    def __init__(self,display=None,xPosition=0,yPosition=0,creator=None,name="item"):
+    def __init__(self,display=None,xPosition=0,yPosition=0,creator=None,name="item",seed=0):
         super().__init__()
+
+        self.seed = seed
 
         # set attributes
         if not hasattr(self,"type"):
@@ -3531,14 +3533,14 @@ class Machine(Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="Machine",creator=None):
+    def __init__(self,xPosition=None,yPosition=None, name="Machine",creator=None,seed=0):
         self.toProduce = "Wall"
 
         self.coolDown = 100
         self.coolDownTimer = -self.coolDown
         self.charges = 3
 
-        super().__init__(displayChars.machine,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.machine,xPosition,yPosition,name=name,creator=creator,seed=seed)
 
         self.attributesToStore.extend([
                "toProduce"])

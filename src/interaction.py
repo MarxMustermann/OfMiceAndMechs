@@ -1963,6 +1963,8 @@ class InventoryMenu(SubMenu):
                         self.char.messages.append(text)
                         self.char.inventory[self.subMenu.getSelection()].apply(self.char)
                     self.activate = False
+                    self.subMenu = None
+                    return True
                 if self.drop:
                     if not "NaiveDropQuest" in self.char.solvers:
                         self.persistentText = (urwid.AttrSpec("default","default"),"you do not have the nessecary solver yet")

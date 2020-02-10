@@ -2848,10 +2848,17 @@ class Sheet(Item):
 
         self.bolted = False
         self.walkable = True
+        self.recording = False
+
+        self.attributesToStore.extend([
+                "recording"])
+        self.initialState = self.getState()
 
     def getLongInfo(self):
         text = """
-A sheet. Simple building material.
+A sheet. Simple building material and use to store information.
+
+Needs to create blueprints and can be activated to create a written command.
 
 """
         return text
@@ -2859,11 +2866,88 @@ A sheet. Simple building material.
     def apply(self,character):
         super().apply(character,silent=True)
 
+        self.character = character
+
+        if not len(character.macroState["macros"]):
+            character.messages.append("no macro found - record a macro to be able to write a command")
+        
+        if self.recording:
+            convertedCommand = []
+            convertedCommand.append(("-",["norecord"]))
+            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+            if self.xPosition:
+                self.character.macroState["macros"]["a"] = self.character.macroState["macros"]["a"][:-1]
+            else:
+                counter = 1
+                while not self.character.macroState["macros"]["a"][-counter] == "i":
+                    counter += 1
+                self.character.macroState["macros"]["a"] = self.character.macroState["macros"]["a"][:-counter]
+            self.storeMacro("a")
+            self.recording = False
+            del self.character.macroState["macros"]["a"]
+            return
+
+        options = []
+        options.append(("record","start recording (records to buffer + reapply to create command)"))
+        options.append(("store","store macro from memory"))
+        self.submenue = interaction.SelectionMenu("select how to get the commands content",options)
+        self.character.macroState["submenue"] = self.submenue
+        self.character.macroState["submenue"].followUp = self.storeSelect
+
+    def storeSelect(self):
+        if self.submenue.selection == "record":
+            self.recordAndstore()
+        elif self.submenue.selection == "store":
+            self.storeFromMacro()
+
+    def recordAndstore(self):
+        self.recording = True
+        convertedCommand = []
+        convertedCommand.append(("-",["norecord"]))
+        convertedCommand.append(("a",["norecord"]))
+        self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+
+    def storeFromMacro(self):
+        self.recording = True
+
+        options = []
+        for key,value in character.macroState["macros"].items():
+            compressedMacro = ""
+            for keystroke in value:
+                if len(keystroke) == 1:
+                    compressedMacro += keystroke
+                else:
+                    compressedMacro += "/"+keystroke+"/"
+            options.append((key,key+" - "+compressedMacro))
+
+        self.submenue = interaction.SelectionMenu("select the macro you want to store",options)
+        self.character.macroState["submenue"] = self.submenue
+        self.character.macroState["submenue"].followUp = self.storeMacro
+
+
+    def storeMacro(self,key=None):
+        if not key:
+            key = self.submenue.selection
+
+        if not key in self.character.macroState["macros"]:
+            self.character.messages.append("command not found in macro")
+            return
+
         command = Command(self.xPosition,self.yPosition, creator=self)
+        command.setPayload(self.character.macroState["macros"][key])
+
+        self.character.messages.append("you created a written command")
 
         if self.xPosition:
-            self.container.removeItem(self)
-            self.container.addItems([command])
+            if self.room:
+                self.room.removeItem(self)
+                self.room.addItems([command])
+            else:
+                self.container.removeItem(self)
+                self.container.addItems([command])
+        else:
+            self.character.inventory.remove(self)
+            self.character.inventory.append(command)
 
 '''
 '''
@@ -2878,16 +2962,42 @@ class Command(Item):
 
         self.bolted = False
         self.walkable = True
+        self.command = ""
+
+        self.attributesToStore.extend([
+                "command"])
+        self.initialState = self.getState()
 
     def getLongInfo(self):
+        compressedMacro = ""
+        for keystroke in self.command:
+            if len(keystroke) == 1:
+                compressedMacro += keystroke
+            else:
+                compressedMacro += "/"+keystroke+"/"
+
         text = """
-A sheet. Simple building material.
+A command. A command is written on it. Activate it to run command.
+
+it holds the command:
+
+"""+compressedMacro+"""
 
 """
         return text
 
     def apply(self,character):
         super().apply(character,silent=True)
+
+        convertedCommand = []
+        for item in self.command:
+            convertedCommand.append((item,["norecord"]))
+        character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
+
+
+    def setPayload(self,command):
+        import copy
+        self.command = copy.deepcopy(command)
 
 '''
 '''
@@ -4439,7 +4549,6 @@ class SimpleRunner(Item):
 
             self.character = character
         else:
-            import copy
             convertedCommand = []
             for item in self.command:
                 convertedCommand.append((item,["norecord"]))
@@ -5226,6 +5335,7 @@ itemMap = {
             "GameTestingProducer":GameTestingProducer,
             "MemoryCell":MemoryCell,
             "Case":Case,
+            "Command":Command,
 }
 
 producables = {
@@ -5255,6 +5365,7 @@ producables = {
             "pusher":Pusher,
             "Stripe":Stripe,
             "Sheet":Sheet,
+            "Command":Command,
             "Rod":Rod,
             "Heater":Heater,
             "Mount":Mount,

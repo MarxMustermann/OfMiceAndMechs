@@ -1477,6 +1477,113 @@ XXXXXXXXXXXXX
 a room to test gameplay concepts
 bad code: serves no real function yet
 '''
+class TutorialMiniBase(Room):
+    objType = "TutorialMiniBase"
+
+    '''
+    create room and add special items
+    '''
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None, seed=0):
+        self.roomLayout = """
+XXXXXXXXXXXXX
+X           X
+X           X
+X           X
+X .........@X
+X .       .vX
+X .       ..$
+X .        vX
+X ......... X
+X           X
+X           X
+X           X
+X           X
+X           X
+X           X
+XXXXXXXXXXXXX
+"""
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        itemList = []
+        exclude1 = [src.items.Scrap]
+        exclude2 = [src.items.Corpse]
+        itemList.append(src.items.ScrapCompactor(10,1,creator=creator))
+
+        machine = src.items.Machine(3,2,creator=creator,seed=seed)
+        machine.setToProduce("Sheet")
+        itemList.append(machine)
+
+        machine = src.items.Machine(6,2,creator=creator,seed=seed)
+        machine.setToProduce("Radiator")
+        itemList.append(machine)
+
+        machine = src.items.Machine(9,2,creator=creator,seed=seed)
+        machine.setToProduce("Mount")
+        itemList.append(machine)
+
+        machine = src.items.Machine(3,4,creator=creator,seed=seed)
+        machine.setToProduce("Stripe")
+        itemList.append(machine)
+
+        machine = src.items.Machine(3,4,creator=creator,seed=seed)
+        machine.setToProduce("Bolt")
+        itemList.append(machine)
+
+        machine = src.items.Machine(3,4,creator=creator,seed=seed)
+        machine.setToProduce("Rod")
+        itemList.append(machine)
+
+        """
+        itemList.append(src.items.GameTestingProducer(3,12,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Wall]))
+        itemList.append(src.items.GameTestingProducer(6,12,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Door]))
+        itemList.append(src.items.GameTestingProducer(9,12,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.RoomControls]))
+
+        itemList.append(src.items.GameTestingProducer(3,13,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Boiler]))
+        itemList.append(src.items.GameTestingProducer(6,13,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Pile]))
+        itemList.append(src.items.GameTestingProducer(9,13,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Furnace]))
+
+        l1Items = [src.items.Sheet,src.items.Rod,src.items.Sheet,src.items.Mount,src.items.Stripe,src.items.Bolt,src.items.Radiator]
+        y = 0
+        while y < 2:
+            x = 0
+            while x < 3:
+                itemList.append(src.items.GameTestingProducer(3+x*3,2+y,creator=creator,seed=seed, possibleSources=[src.items.MetalBars]*5+l1Items,possibleResults=l1Items))
+                x += 1
+                seed += 13
+            y += 1
+            seed += seed%7
+
+        l2Items = [src.items.Tank,src.items.Heater,src.items.Connector,src.items.Pusher,src.items.Puller,src.items.GooFlask]
+        y = 0
+        while y < 3:
+            x = 0
+            while x < 3:
+                itemList.append(src.items.GameTestingProducer(3+x*3,5+y,creator=creator,seed=seed, possibleSources=l1Items+l2Items, possibleResults=l2Items))
+                x += 1
+                seed += 13
+            y += 1
+            seed += seed%7
+
+        l3Items = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
+        y = 0
+        while y < 2:
+            x = 0
+            while x < 3:
+                itemList.append(src.items.GameTestingProducer(3+x*3,9+y,creator=creator,seed=seed, possibleSources=l2Items, possibleResults=l3Items))
+                x += 1
+                seed += 13
+            y += 1
+            seed += seed%7
+        """
+
+        self.addItems(itemList)
+        self.initialState = self.getState()
+        loadingRegistry.register(self)
+
+
+'''
+a room to test gameplay concepts
+bad code: serves no real function yet
+'''
 class GameTestingRoom(Room):
     objType = "GameTestingRoom"
 
@@ -1510,7 +1617,7 @@ XXXXXXXXXXXXX
 
         itemList.append(src.items.GameTestingProducer(3,12,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Wall]))
         itemList.append(src.items.GameTestingProducer(6,12,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Door]))
-        itemList.append(src.items.GameTestingProducer(9,12,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Display]))
+        itemList.append(src.items.GameTestingProducer(9,12,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.RoomControls]))
 
         itemList.append(src.items.GameTestingProducer(3,13,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Boiler]))
         itemList.append(src.items.GameTestingProducer(6,13,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Pile]))

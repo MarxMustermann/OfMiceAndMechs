@@ -2271,6 +2271,377 @@ the phase is intended to give the player access to the true gameworld without ma
 
 this phase should be left as blank as possible
 """
+class Tutorial(BasicPhase):
+    def __init__(self,seed=0):
+        super().__init__("Tutorial",seed=seed)
+    '''
+    place main char
+    bad code: superclass call should not be prevented
+    '''
+    def start(self,seed=0):
+        showText("Your current sitiuation is:\n\n\nYour memory has been resetted and you have been dumped here for manual work.\n\nIf you keep getting caught violating order XXI you will be killed.\nIf it were not for your heritage you would be dead a long time ago.\n\nAs your Implant i can only strictly advise against getting caught again.")
+        say("now move to your assigned workplace.")
+        showText("Since you lost your memory again i will feed you the most important data.\n\nYou are represented by the @ character and you are in the wastelands.\n\nTo the east there is a scrap field. You may ignore it for now.\n\nTo your south is a minibase. You are assigned to work there\n\nYou can move by using the w a s d keys or the arrow keys.\n\nnow move to your assigned workplace.")
+
+        self.mainChar = mainChar
+        self.mainChar.xPosition = 70
+        self.mainChar.yPosition = 74
+        self.mainChar.terrain = terrain
+        terrain.addCharacter(self.mainChar,self.mainChar.xPosition,self.mainChar.yPosition)
+
+        self.seed = seed
+
+        self.mainChar.addListener(self.checkNearTarget)
+
+        # add basic set of abilities in openworld phase
+        self.mainChar.questsDone = [
+              ]
+
+        self.mainChar.solvers = [
+                  "SurviveQuest",
+                  "Serve",
+                  "NaiveMoveQuest",
+                  "MoveQuestMeta",
+                  "NaiveActivateQuest",
+                  "ActivateQuestMeta",
+                  "NaivePickupQuest",
+                  "PickupQuestMeta",
+                  "DrinkQuest",
+                  "ExamineQuest",
+                  "FireFurnaceMeta",
+                  "CollectQuestMeta",
+                  "WaitQuest"
+                  "NaiveDropQuest",
+                  "NaiveDropQuest",
+                  "DropQuestMeta",
+                ]
+
+        self.miniBase = terrain.miniBase
+
+        self.reportQuest = None
+
+        desiredProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
+
+        numProducts = 0
+        while not len(self.helper_getFilteredProducables()) in (1,) or not numProducts == 3:
+            seed += seed%42
+            terrain.removeRoom(self.miniBase)
+
+            self.miniBase = src.rooms.TutorialMiniBase(4,8,0,0,creator=void,seed=seed)
+            terrain.addRoom(self.miniBase)
+
+            itemsFound = []
+            for item in self.miniBase.itemsOnFloor:
+                if isinstance(item,src.items.GameTestingProducer):
+                    if item.product in desiredProducts and not item.product in itemsFound:
+                        itemsFound.append(item.product)                        
+
+            numProducts = len(itemsFound)
+
+        quest = quests.EnterRoomQuestMeta(self.miniBase,3,3,creator=void)
+        quest.endTrigger = {"container":self,"method":"reportForDuty"}
+        #quest.endTrigger = {"container":self,"method":"scrapTest1"}
+        self.mainChar.assignQuest(quest,active=True)
+
+        queueOk = False
+        while not queueOk:
+            productionQueue = []
+            productionQueue.append(self.helper_getFilteredProducables()[0])
+
+            counter = 0
+            while counter < 3:
+                productionQueue.append(desiredProducts[seed%len(desiredProducts)])
+                seed += seed%12 + counter
+                counter += 1
+
+            for item in desiredProducts:
+                if not item in self.helper_getFilteredProducables():
+                    productionQueue.append(item)
+                    break
+
+            seed += seed%37
+
+            queueOk = True
+            for item in desiredProducts:
+                if not item in productionQueue:
+                    queueOk = False
+
+        self.productionQueue = productionQueue
+
+        self.miniBase.firstOfficer.silent = True
+
+        self.dupPrevention = False
+
+        gamestate.save()
+
+    def scrapTest1(self):
+        if self.dupPrevention:
+            return
+        self.dupPrevention = True
+
+        toRemove = []
+        for item in mainChar.inventory:
+            if isinstance(item,src.items.Scrap):
+                toRemove.append(item)
+        for item in toRemove:
+             mainChar.inventory.remove(item)
+
+        itemCount = 0
+        for item in terrain.itemsOnFloor:
+            if isinstance(item,src.items.Scrap):
+                if (item.xPosition-1,item.yPosition) in terrain.watershedCoordinates or (item.xPosition+1,item.yPosition) in terrain.watershedCoordinates or (item.xPosition,item.yPosition-1) in terrain.watershedCoordinates or (item.xPosition,item.yPosition+1) in terrain.watershedCoordinates:
+                    quest = quests.PickupQuestMeta(toPickup=item,creator=void)
+                    if len(mainChar.inventory) < 9:
+                        method = "scrapTest1"
+                    else:
+                        method = "scrapTest2"
+                    quest.endTrigger = {"container":self,"method":method}
+                    self.mainChar.assignQuest(quest,active=True)
+                    break
+
+        self.dupPrevention = False
+
+    def scrapTest2(self):
+        quest = quests.EnterRoomQuestMeta(self.miniBase,3,3,creator=void)
+        quest.endTrigger = {"container":self,"method":"scrapTest1"}
+        self.mainChar.assignQuest(quest,active=True)
+
+    def checkNearTarget(self):
+        if (self.mainChar.xPosition//15 in (4,5,) and self.mainChar.yPosition//15 in (8,9,)):
+            self.mainChar.delListener(self.checkNearTarget)
+            showText("the minibase you are assigned to work in is to the west.\nenter the room through its door. The door is shown as [].\nopen the door and enter the room. Activate the door to open it.\n\nYou activate items by walking into them and pressing j afterwards");
+            say("walk into items and press j to activate them")
+
+    def reportForDuty(self):
+        showText("I did not expect that you will start following orders after your memory wipe.\nYou might make it, if you continue to do so.\n\nNow report for duty and work your way out of here.\n\nyou can talk to people by pressing the h key.\nNavigate the chat options by using the w s keys or the arrow keys.\nUse the j or enter key to select dialog options")
+        self.reportQuest = src.quests.DummyQuest(description="report for duty", creator=self)
+        self.mainChar.assignQuest(self.reportQuest, active=True)
+
+        self.miniBase.firstOfficer.basicChatOptions.append({"dialogName":"I hereby report for duty.","chat":src.chats.ConfigurableChat,"params":{"text":"You may serve.\n\nThey did not send someone for some time after my latest subordinate died. I question how they did expect any work getting done here.\n\nStart by gathering some scrap form the scrap field in the east.","info":[{"type":"text","text":"Return the scrap to me","name":"Starting now","delete":True,"trigger":{"container":self,"method":"startDuty"},"quitAfter":True}],"allowExit":False}})
+
+    def startDuty(self):
+        self.miniBase.firstOfficer.basicChatOptions.pop()
+        self.reportQuest.postHandler()
+        self.scrapQuest = src.quests.DummyQuest(description="gather scrap", creator=self)
+        self.mainChar.assignQuest(self.scrapQuest, active=True)
+        self.mainChar.addListener(self.checkOutside)
+
+    def checkOutside(self):
+        if self.mainChar.room == None:
+            self.mainChar.delListener(self.checkOutside)
+            showText("well that is not the most of productive task, but scrap metal is needed to produce other things.\nGo and grab some scrap.\n\nscrap is shown as *, or .; or %# . Almost the whole area in the east is composed of scrap.\n\nTo pick up items walk onto them or into them and press k. This works like activating items.")
+            self.mainChar.addListener(self.checkScrapCollected)
+
+    def checkScrapCollected(self):
+        numScrapCollected = 0
+        for item in self.mainChar.inventory:
+            if isinstance(item,src.items.Scrap):
+                numScrapCollected += 1
+
+        if numScrapCollected >= 1:
+            showText("you collected some scrap. return to your superviser and you may see what to do now")
+            self.mainChar.delListener(self.checkScrapCollected)
+
+            self.miniBase.firstOfficer.basicChatOptions.append({"dialogName":"I collected some scrap.","chat":src.chats.ConfigurableChat,"params":{"text":"now go and produce some metal bars","info":[{"type":"text","text":"Return the scrap to me","name":"Starting now","delete":True,"trigger":{"container":self,"method":"startMetalBarChecking"},"quitAfter":True}],"allowExit":False}})
+
+    def startMetalBarChecking(self):
+
+        showText("I seems like this is a simple ressource gathering job. Metal bars are used to produce most of the materials needed in a mech.\n\nThe scrap is compacted to metal bars in a machine called scrap compactor\nThe machine is represented by the U\\ character. It processes scrap on the tile to its east and outputs the bars on the tile to its west.\n\nstart by dropping the scrap on the tile east of the machine.\nMove onto the tile and press l to drop items.")
+
+        self.scrapQuest.postHandler()
+        self.scrapQuest.completed = True
+
+        self.mainChar.addListener(self.checkScrapDropped)
+
+        self.mainChar.addListener(self.checkMetalBars)
+
+        self.miniBase.firstOfficer.basicChatOptions.pop()
+
+        self.barQuest = src.quests.DummyQuest(description="create metal bars", creator=self)
+        self.mainChar.assignQuest(self.barQuest, active=True)
+
+    def checkScrapDropped(self):
+        coordinate = (11,1)
+        if coordinate in self.miniBase.itemByCoordinates:
+            for item in self.miniBase.itemByCoordinates[coordinate]:
+                if isinstance(item,src.items.Scrap):
+                    showText("That should work. Now activate the scrap compactor to produce a metal bar")
+                    self.mainChar.delListener(self.checkScrapDropped)
+                    self.mainChar.addListener(self.checkFirstMetalBar)
+                    break
+
+    def checkFirstMetalBar(self):
+        coordinate = (9,1)
+        if coordinate in self.miniBase.itemByCoordinates:
+            for item in self.miniBase.itemByCoordinates[coordinate]:
+                if isinstance(item,src.items.MetalBars):
+                    showText("now go and grab the metal bar you produced")
+                    self.mainChar.delListener(self.checkFirstMetalBar)
+                    self.mainChar.addListener(self.checkFirstMetalBarFirstPickedUp)
+
+    def checkFirstMetalBarFirstPickedUp(self):
+        for item in self.mainChar.inventory:
+            if isinstance(item,src.items.MetalBars):
+                showText("You got that figgured out. Now produce 4 more metal bars and pick them up")
+                self.mainChar.delListener(self.checkFirstMetalBarFirstPickedUp)
+                break
+
+    def checkMetalBars(self):
+        numMetalBars = 0
+        for item in self.mainChar.inventory:
+            if isinstance(item,src.items.MetalBars):
+                numMetalBars += 1
+
+        if numMetalBars >= 5:
+            self.mainChar.delListener(self.checkMetalBars)
+            self.barQuest.postHandler()
+            self.producedCount = 0
+            self.firstTimeImpossibleCraft = True
+            self.firstRegularCraft = True
+            self.firstProduced = True
+            self.queueProduction = True
+            self.producedFurnaces = 0
+            self.producedGrowthTanks = 0
+            self.producedHutches = 0
+            self.batchProducing = False
+            self.productionSection()
+            self.batchFurnaceProducing = False
+            self.batchHutchProducing = False
+            self.batchGrowthTankProcing = False
+            self.fastProduction = False
+
+    def helper_getFilteredProducables(self):
+        desiredProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
+        filteredProducables = []
+        for item in self.helper_getProducables():
+            if item in desiredProducts:
+                filteredProducables.append(item)
+        return filteredProducables
+
+    def helper_getProducables(self):
+        producableStuff = [src.items.MetalBars]
+        lastLength = 0
+        while lastLength < len(producableStuff):
+            lastLength = len(producableStuff)
+            for item in self.miniBase.itemsOnFloor:
+                if isinstance(item,src.items.GameTestingProducer):
+                    if item.ressource in producableStuff and not item.product in producableStuff:
+                        producableStuff.append(item.product)
+        return producableStuff
+
+    def productionSection(self):
+
+        if not len(self.productionQueue) and self.queueProduction:
+            showText("that is enough to satisfy the minimal stock requirements. Exceding the minimal requirements will gain you a small reward.\n\nIn this case you will be rewarded with tokens. These tokens allow you to reconfigure the machines you use for production.\nThe production lines are hardly working at all and reconfiguring these machines should resolve that\n\nYour supervisor was not ambitious enough to do this, but i know you are. As you implant i will reward you, when you are done\n\nYou can reconfigure a machine by using it with a token in your inventory. It will reset to a new random state.\nReplace the useless machines until the machines are able to produce\nFurnaces, Growthtanks, Hutches\nstarting from metal bars.")
+            self.mainChar.addListener(self.checkProductionLine)
+            self.queueProduction = False
+
+        if not len(self.productionQueue) and self.batchProducing:
+            if self.batchFurnaceProducing and not self.batchHutchProducing and not self.batchGrowthTankProcing:
+                showText("The first batch is ready. You can optimise your macros in many ways.\nYou can record your macros to buffers from a-z. This way you can store marcos for different actions.\n\nI recommend recording the macro for producing furnaces to f, the macro for producing hutches to h and the macro for producing the growthtanks to g\n\nproduce 10 hutches now.")
+                for x in range(0,10):
+                    self.productionQueue.append(src.items.Hutch)
+                self.batchFurnaceProducing = False
+                self.batchHutchProducing = True
+
+            elif not self.batchFurnaceProducing and self.batchHutchProducing and not self.batchGrowthTankProcing:
+                showText("The second batch is ready. Another trick that may be useful for you is the multiplier. It allows to repeat commmands\n\nYou can use this for example to drop 7 items by pressing 7l . This will be translated to lllllll .\nYou can use this within macros and when calling macros. Press 5_f to run the macro f 5 times.\n\nUse this the produce 10 growth tanks with one macro.")
+                for x in range(0,10):
+                    self.productionQueue.append(src.items.GrowthTank)
+                self.batchHutchProducing = False
+                self.batchGrowthTankProcing = True
+
+            elif not self.batchFurnaceProducing and not self.batchHutchProducing and self.batchGrowthTankProcing:
+                showText("The first order is completed and will be shipped out to the main base. Your supervisor did not get praised for this.\nYou did get a small supply drop. A goo dispenser is supplied for easier survival.\n\nIt seemes the delivery was overdue. There are only few ressources spent on this outpost, but productivity is a must.\nRegular deliveries will ensure this output will stay supplied, but nothing more.\n\nSince your supervisor has no ambition to overachieve, this will only ensure your survival.\nIgnore your supervisor and pace up production. As soon this outpost achives noticeable output, we will have more options.\n\nProduce 3 successive deliveries with a production time under 100 ticks each.") 
+                self.batchGrowthTankProcing = False
+                self.fastProduction = True
+                self.fastProductionStart = 0
+            else:
+                raise Exception("should not happen")
+                return
+
+        if not len(self.productionQueue) and self.fastProduction:
+            """
+            for x in range(0,10):
+                self.productionQueue.append(src.items.GrowthTank)
+            for x in range(0,10):
+                self.productionQueue.append(src.items.Furnace)
+            """
+            if not self.fastProductionStart == 0:
+                if gamestate.tick-self.fastProductionStart > 100:
+                    showText("it took you %s ticks to complete the order.")
+                else:
+                    gamestate.gameWon = True
+                    return
+
+            self.fastProductionStart = gamestate.tick
+            for x in range(0,10):
+                self.productionQueue.append(src.items.Hutch)
+
+        self.seed += self.seed%43
+        
+        possibleProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
+        if self.queueProduction or self.batchProducing or self.fastProduction:
+            self.product = self.productionQueue[0]
+            self.productionQueue.remove(self.product)
+        else:
+            filteredProducts = self.helper_getFilteredProducables()
+            self.product = possibleProducts[self.seed%len(possibleProducts)]
+            self.seed += self.seed%37
+
+            mainChar.inventory.append(src.items.Token(creator=self))
+
+        producableStuff = self.helper_getProducables()
+
+        description = "produce a "+self.product.type
+        if self.batchProducing:
+            description += " (use macros)"
+        self.produceQuest = src.quests.DummyQuest(description="produce a "+self.product.type, creator=self)
+        self.mainChar.assignQuest(self.produceQuest, active=True)
+        if self.product in producableStuff:
+            if self.firstRegularCraft: 
+                showText("produce a "+self.product.type+". use the machines below to produce it.\n\nexamine the machines by walking into it and pressing the e key.\nIt will show what the machine produces and what ressource is needed to produce.\n\nstart from a metal bar and create interstage products until you produce a "+self.product.type)
+                self.firstRegularCraft = False
+        elif self.firstTimeImpossibleCraft:
+            showText("you should produce a "+self.product.type+" now, but you can not do this directly.\n\nThe machines here are not actually able to produce a "+self.product.type+" from metal bars. You need to get creative here.\n\nUsually you tried to bend the rules a bit. Try searching the scrap field for a working "+self.product.type)
+            self.firstTimeImpossibleCraft = False
+        self.mainChar.addListener(self.checkProduction)
+
+    def checkProductionLine(self):
+        filteredProducts = self.helper_getFilteredProducables()
+        if len(filteredProducts) == 3:
+            showText("The machines are reconfigured now. I promised you are reward. Here it is:\n\nI can help you with the repetive tasks. You need to do something and i make you repeat the movements.\n\nYou can use this to produce items on these machines without thinking about it.\nWe will use this to produce enough items to get noticed by somebody up the command chain.\n\nYour superior will gain the most from this at first, but you need to trust me and do not break any rules again.\n\nYou can start recording the movement by pressing the - key and pressing some other key afterwards. Your movements will be recorded to the second key.\nAn Example: If you press - f for example your movements will be recoded to the f buffer\nTo stop recording press - again.\nTo replay the movement press _ and the key for the buffer you want to replay. Press _ f to replay the movement from the last example.\n\nget familiar with recording macros and then record macros for producing each item. We will need at least 10 furnaces, 10 hutches and 10 growth tanks to fill the whole order.\n\nIt is important for you to use macros and not get bogged down in mundane tasks. We need your creativity for greater things." )
+
+            self.batchProducing = True
+            for x in range(0,10):
+                self.productionQueue.append(src.items.Furnace)
+            self.batchFurnaceProducing = True
+            self.mainChar.delListener(self.checkProductionLine)
+
+    def checkProduction(self):
+
+        toRemove = None
+        for item in self.mainChar.inventory:
+            if isinstance(item,self.product):
+                self.producedCount += 1
+                toRemove = item
+                break
+        if toRemove:
+            if self.firstProduced:
+                showText("you produced your first item. congratulations. Produce some more and you will have a chance of getting out of here.\n\nThe produced item is removed from your inventory directly. Do not think about this.")
+                self.firstProduced = False
+            self.mainChar.delListener(self.checkProduction)
+            self.mainChar.inventory.remove(toRemove)
+            self.produceQuest.postHandler()
+
+            self.productionSection()
+
+
+"""
+the phase is intended to give the player access to the true gameworld without manipulations
+
+this phase should be left as blank as possible
+"""
 class Testing_1(BasicPhase):
     def __init__(self,seed=0):
         super().__init__("Testing_1",seed=seed)
@@ -2779,3 +3150,4 @@ def registerPhases():
     phasesByName["Test"] = Testing_1
     phasesByName["Testing_1"] = Testing_1
     phasesByName["BuildBase"] = BuildBase
+    phasesByName["Tutorial"] = Tutorial

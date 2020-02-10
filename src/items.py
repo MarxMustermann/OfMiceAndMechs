@@ -2866,10 +2866,51 @@ Needs to create blueprints and can be activated to create a written command.
     def apply(self,character):
         super().apply(character,silent=True)
 
+        if self.recording:
+            self.createCommand()
+            return
+
         self.character = character
 
-        if not len(character.macroState["macros"]):
-            character.messages.append("no macro found - record a macro to be able to write a command")
+        options = []
+        options.append(("createNote","create a note"))
+        options.append(("createCommand","create a written command"))
+        self.submenue = interaction.SelectionMenu("What do you want do do?",options)
+        self.character.macroState["submenue"] = self.submenue
+        self.character.macroState["submenue"].followUp = self.actionSwitch
+
+    def actionSwitch(self):
+        if self.submenue.selection == "createNote":
+            self.createNote()
+        elif self.submenue.selection == "createCommand":
+            self.createCommand()
+
+    def createNote(self):
+        self.submenue = interaction.InputMenu("what do you want to create?")
+        self.character.macroState["submenue"] = self.submenue
+        self.character.macroState["submenue"].followUp = self.createNoteItem
+
+    def createNoteItem(self):
+
+        note = Note(self.xPosition,self.yPosition, creator=self)
+        note.setText(self.submenue.text)
+
+        if self.xPosition:
+            if self.room:
+                self.room.removeItem(self)
+                self.room.addItems([note])
+            else:
+                self.container.removeItem(self)
+                self.container.addItems([note])
+        else:
+            self.character.inventory.remove(self)
+            self.character.inventory.append(note)
+
+
+    def createCommand(self):
+
+        if not len(self.character.macroState["macros"]):
+            self.character.messages.append("no macro found - record a macro to be able to write a command")
         
         if self.recording:
             convertedCommand = []
@@ -2911,7 +2952,7 @@ Needs to create blueprints and can be activated to create a written command.
         self.recording = True
 
         options = []
-        for key,value in character.macroState["macros"].items():
+        for key,value in self.character.macroState["macros"].items():
             compressedMacro = ""
             for keystroke in value:
                 if len(keystroke) == 1:
@@ -2948,6 +2989,46 @@ Needs to create blueprints and can be activated to create a written command.
         else:
             self.character.inventory.remove(self)
             self.character.inventory.append(command)
+
+'''
+'''
+class Note(Item):
+    type = "Note"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="Note",creator=None):
+        super().__init__(displayChars.sheet,xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+        self.text = ""
+
+        self.attributesToStore.extend([
+                "text"])
+        self.initialState = self.getState()
+
+    def getLongInfo(self):
+
+        text = """
+A Note. It has a text on it. You can activate it to read it.
+
+it holds the text:
+
+"""+self.text+"""
+
+"""
+        return text
+
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        character.messages.append("the note has the text: %s"%(self.text,))
+
+    def setText(self,text):
+        self.text = text
+
 
 '''
 '''
@@ -5336,6 +5417,7 @@ itemMap = {
             "MemoryCell":MemoryCell,
             "Case":Case,
             "Command":Command,
+            "Note":Note,
 }
 
 producables = {

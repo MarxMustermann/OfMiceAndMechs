@@ -272,8 +272,6 @@ class Character(src.saveing.Saveable):
         # bad code: should be abstracted
         (itemStates,changedItems,newItems,removedItems) = self.getDiffList(self.inventory,self.initialState["inventory"]["inventoryIds"])
         
-        self.messages.append("stuff")
-        self.messages.append((itemStates,changedItems,newItems,removedItems))
         inventory = {}
         if changedItems:
             inventory["changed"] = changedItems

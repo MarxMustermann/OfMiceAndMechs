@@ -780,6 +780,8 @@ class Character(src.saveing.Saveable):
                 self.messages.append("there is no space to drop the item")
                 return
 
+        self.messages.append("you drop a %s"%(item.type))
+
         # remove item from inventory
         self.inventory.remove(item)
 

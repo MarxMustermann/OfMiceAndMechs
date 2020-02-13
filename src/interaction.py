@@ -2813,6 +2813,10 @@ def gameLoop(loop,user_data):
 
     firstRun = True
     while not loop or firstRun:
+
+        if gamestate.tick%1000 == 0:
+            gamestate.save()
+
         firstRun = False
 
         if not multi_currentChar:

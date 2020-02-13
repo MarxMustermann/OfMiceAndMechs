@@ -108,6 +108,7 @@ class Item(src.saveing.Saveable):
             character.messages.append("you cannot pick up bolted items")
             return
 
+        character.messages.append("you pick up a %s"%(self.type))
         """
         foundBig = False
         for item in character.inventory:

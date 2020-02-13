@@ -271,6 +271,9 @@ class Character(src.saveing.Saveable):
         # save inventory
         # bad code: should be abstracted
         (itemStates,changedItems,newItems,removedItems) = self.getDiffList(self.inventory,self.initialState["inventory"]["inventoryIds"])
+        
+        self.messages.append("stuff")
+        self.messages.append((itemStates,changedItems,newItems,removedItems))
         inventory = {}
         if changedItems:
             inventory["changed"] = changedItems
@@ -352,10 +355,13 @@ class Character(src.saveing.Saveable):
                })
                  
         # store inventory
-        inventory = []
+        inventoryIds = []
+        inventoryStates = {}
         for item in self.inventory:
-            inventory.append(item.id)
-        state["inventory"]["inventoryIds"] = inventory
+            inventoryIds.append(item.id)
+            inventoryStates[item.id] = item.getState()
+        state["inventory"]["inventoryIds"] = inventoryIds
+        state["inventory"]["states"] = inventoryStates
 
         # store quests
         questIds = []
@@ -416,7 +422,12 @@ class Character(src.saveing.Saveable):
         
         # set inventory
         if "inventory" in state:
-            self.loadFromList(state["inventory"],self.inventory,src.items.getItemFromState)
+            if "inventoryIds" in state["inventory"]:
+                for inventoryId in state["inventory"]["inventoryIds"]:
+                    item = src.items.getItemFromState(state["inventory"]["states"][inventoryId])
+                    self.inventory.append(item)
+            else:
+                self.loadFromList(state["inventory"],self.inventory,src.items.getItemFromState)
 
         # set quests
         if "quests" in state:

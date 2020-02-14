@@ -4826,6 +4826,7 @@ class BluePrinter(Item):
                 self.room.removeItem(abstractedInputThings[itemType]["item"])
             self.room.removeItem(sheet)
             character.messages.append("you create a blueprint for "+reciepe[1])
+            character.messages.append("items used: "+", ".join(reciepeFound[0]))
         else:
             character.messages.append("unable to produce blueprint from given items")
             return

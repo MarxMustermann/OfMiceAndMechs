@@ -81,6 +81,9 @@ class GameState(src.saveing.Saveable):
         with open("gamestate/successSeed.json","w") as successSeedFile:
             successSeedFile.write(json.dumps({"successSeed":self.successSeed}))
 
+        from shutil import copyfile
+        copyfile("gamestate/gamestate.json", "gamestate/gamestate_backup.json")
+
         # write the savefile
         with open("gamestate/gamestate.json","w") as saveFile:
 

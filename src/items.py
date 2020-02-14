@@ -2859,7 +2859,25 @@ class Sheet(Item):
         text = """
 A sheet. Simple building material and use to store information.
 
-Needs to create blueprints and can be activated to create a written command.
+Can be used to create a Note or a written command directly from the sheet.
+Activate the sheet to get a selection, whether to create a command or a note.
+
+To create a note select the "create note" option and type the text of the note.
+Press enter to finish entering the text.
+
+To create a command from a sheet. select the the "create command" option.
+There are two ways to enter the command.
+
+The first option is to record a new command.
+After activating this option you will start to record your actions.
+Activate the sheet again to create to command and to stop recording.
+
+The second option ist to store a command from an existing macro buffer.
+Activate this option and select the macro buffer to create the command.
+
+Sheets are also needed as ressource to create a blueprint in the blueprinter machine.
+
+Sheets can be produced from metal bars.
 
 """
         return text

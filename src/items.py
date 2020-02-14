@@ -1800,39 +1800,10 @@ class Boiler(Item):
 
         # shedule the steam generation
         if not self.startBoilingEvent and not self.isBoiling:
-            '''
-            the event for starting to boil
-            bad code: should be an abstact event calling a method
-            '''
-            class StartBoilingEvent(object):
-                id = "StartBoilingEvent"
-                '''
-                straightforward state initialization
-                '''
-                def __init__(subself,tick):
-                    subself.tick = tick
-            
-                '''
-                start producing steam
-                '''
-                def handleEvent(subself):
-                    # add noises
-                    # bad pattern: should only make noise for nearby things
-                    messages.append("*boil*")
-
-                    # set own state
-                    self.display = displayChars.boiler_active
-                    self.isBoiling = True
-                    self.startBoilingEvent = None
-                    self.changed()
-
-                    # change rooms steam production
-                    self.room.steamGeneration += 1
-                    self.room.changed()
-
             # shedule the event
-            self.startBoilingEvent = StartBoilingEvent(self.room.timeIndex+5)
-            self.room.addEvent(self.startBoilingEvent)
+            event = src.events.StartBoilingEvent(self.room.timeIndex+5,creator=self)
+            event.boiler = self
+            self.room.addEvent(event)
 
         # notify listeners
         self.changed()
@@ -1853,40 +1824,10 @@ class Boiler(Item):
             self.room.removeEvent(self.startBoilingEvent)
             self.startBoilingEvent = None
         if not self.stopBoilingEvent and self.isBoiling:
-            '''
-            the event for stopping to boil
-            bad code: should be an abstract event calling a method
-            '''
-            class StopBoilingEvent(object):
-                id = "StopBoilingEvent"
-                type = "StopBoilingEvent"
 
-                '''
-                straightforward state initialization
-                '''
-                def __init__(subself,tick):
-                    subself.tick = tick
-            
-                '''
-                start producing steam
-                '''
-                def handleEvent(subself):
-                    # add noises
-                    messages.append("*unboil*")
-
-                    # set own state
-                    self.display = displayChars.boiler_inactive
-                    self.isBoiling = False
-                    self.stopBoilingEvent = None
-                    self.changed()
-
-                    # change rooms steam production
-                    self.room.steamGeneration -= 1
-                    self.room.changed()
-
-            # stop boiling after some time
-            self.stopBoilingEvent = StopBoilingEvent(self.room.timeIndex+5)
-            self.room.addEvent(self.stopBoilingEvent)
+            event = src.events.StopBoilingEvent(self.room.timeIndex+5,creator=self)
+            event.boiler = self
+            self.room.addEvent(event)
 
         # notify listeners
         self.changed()

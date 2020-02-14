@@ -162,6 +162,123 @@ eventMap = {
            }
 
 '''
+the event for stopping to burn after a while
+bad code: should be an abstact event calling a method
+'''
+class FurnaceBurnoutEvent(Event):
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,tick,creator=None):
+        self.furnace = None
+        super().__init__(tick,creator=creator)
+        self.id = "FurnaceBurnoutEvent"
+        self.type = "FurnaceBurnoutEvent"
+
+        self.tick = tick
+
+        # set meta information for saving
+        self.objectsToStore.append("furnace")
+
+        # self initial state
+        self.initialState = self.getState()
+
+    '''
+    stop burning
+    '''
+    def handleEvent(self):
+        # stop burning
+        self.furnace.activated = False
+
+        # stop heating the boilers
+        for boiler in self.furnace.boilers:
+            boiler.stopHeatingUp()
+
+        # notify listeners
+        self.furnace.changed()
+
+'''
+the event for stopping to boil
+bad code: should be an abstract event calling a method
+'''
+class StopBoilingEvent(Event):
+
+    '''
+    straightforward state initialization
+    '''
+    def __init__(subself,tick,creator=None):
+        self.boiler = None
+        super().__init__(tick,creator=creator)
+        self.id = "StopBoilingEvent"
+        self.type = "StopBoilingEvent"
+
+        self.tick = tick
+
+        # set meta information for saving
+        self.objectsToStore.append("boiler")
+
+        # self initial state
+        self.initialState = self.getState()
+
+    '''
+    start producing steam
+    '''
+    def handleEvent(self):
+        # add noises
+        messages.append("*unboil*")
+
+        # set own state
+        self.boiler.display = displayChars.boiler_inactive
+        self.boiler.isBoiling = False
+        self.boiler.stopBoilingEvent = None
+        self.boiler.changed()
+
+        # change rooms steam production
+        self.boiler.room.steamGeneration -= 1
+        self.boiler.room.changed()
+
+'''
+the event for starting to boil
+bad code: should be an abstact event calling a method
+'''
+class StartBoilingEvent(Event):
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,tick,creator=None):
+        self.boiler = None
+        super().__init__(tick,creator=creator)
+
+        self.id = "StopBoilingEvent"
+        self.type = "StopBoilingEvent"
+
+        self.tick = tick
+
+        # set meta information for saving
+        self.objectsToStore.append("boiler")
+
+        # self initial state
+        self.initialState = self.getState()
+
+    '''
+    start producing steam
+    '''
+    def handleEvent(self):
+        # add noises
+        # bad pattern: should only make noise for nearby things
+        messages.append("*boil*")
+
+        # set own state
+        self.boiler.display = displayChars.boiler_active
+        self.boiler.isBoiling = True
+        self.boiler.startBoilingEvent = None
+        self.boiler.changed()
+
+        # change rooms steam production
+        self.boiler.room.steamGeneration += 1
+        self.boiler.room.changed()
+
+'''
 create an event from a state dict
 '''
 def getEventFromState(state):

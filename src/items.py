@@ -2340,7 +2340,7 @@ class ProductionArtwork(Item):
     def __init__(self,xPosition=None,yPosition=None, name="production artwork",creator=None):
         self.coolDown = 10000
         self.coolDownTimer = -self.coolDown
-        self.charges = 3
+        self.charges = 10
 
         super().__init__(displayChars.productionArtwork,xPosition,yPosition,name=name,creator=creator)
 
@@ -3466,7 +3466,7 @@ class MachineMachine(Item):
     def __init__(self,xPosition=None,yPosition=None, name="machine machine",creator=None):
         self.coolDown = 1000
         self.coolDownTimer = -self.coolDown
-        self.charges = 10
+        self.charges = 3
 
         self.endProducts = [
             "GrowthTank",

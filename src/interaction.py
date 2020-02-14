@@ -2794,6 +2794,7 @@ def keyboardListener(key):
 
 continousOperation = 0
 lastAdvance = 0 
+lastAutosave = 0
 
 def gameLoop(loop,user_data):
 
@@ -2801,6 +2802,7 @@ def gameLoop(loop,user_data):
     
     global lastAdvance
     global fixedTicks
+    global lastAutosave
 
     runFixedTick = False
     if speed:
@@ -2814,8 +2816,11 @@ def gameLoop(loop,user_data):
     firstRun = True
     while not loop or firstRun:
 
-        if gamestate.tick%1000 == 0:
+        if lastAutosave == 0:
+            lastAutosave = gamestate.tick
+        if gamestate.tick-lastAutosave > 1000:
             gamestate.save()
+            lastAutosave = gamestate.tick
 
         firstRun = False
 

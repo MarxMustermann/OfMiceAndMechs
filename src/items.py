@@ -3525,7 +3525,7 @@ class MachineMachine(Item):
     def __init__(self,xPosition=None,yPosition=None, name="machine machine",creator=None):
         self.coolDown = 1000
         self.coolDownTimer = -self.coolDown
-        self.charges = 3
+        self.charges = 10
 
         self.endProducts = [
             "GrowthTank",

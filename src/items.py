@@ -2374,7 +2374,7 @@ class ProductionArtwork(Item):
 
         self.character = character
 
-        excludeList = ("ProductionArtwork","Machine","Tree","Scrap","Corpse","Acid","Item","Pile","InfoScreen","CoalMine","BluePrint","GlobalMacroStorage")
+        excludeList = ("ProductionArtwork","Machine","Tree","Scrap","Corpse","Acid","Item","Pile","InfoScreen","CoalMine","BluePrint","GlobalMacroStorage","Note","Command")
 
         options = []
         for key,value in itemMap.items():

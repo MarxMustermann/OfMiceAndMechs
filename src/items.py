@@ -947,7 +947,6 @@ class Furnace(Item):
     def __init__(self,xPosition=0,yPosition=0,name="Furnace",creator=None):
         self.activated = False
         self.boilers = []
-        self.stopBoilingEvent = None
         super().__init__(displayChars.furnace_inactive,xPosition,yPosition,name=name,creator=creator)
 
         # set metadata for saving
@@ -1043,6 +1042,9 @@ Place the furnace next to a boiler to be able to heat up the boiler with this fu
 
 """
         return text
+
+    def getLongInfo(self):
+        return str(self.id)
 
 '''
 a dummy for an interface with the mech communication network
@@ -1778,6 +1780,13 @@ class Boiler(Item):
         self.startBoilingEvent = None
         self.stopBoilingEvent = None
 
+        # set metadata for saving
+        self.attributesToStore.extend([
+               "isBoiling","isHeated"])
+
+        self.objectsToStore.append("startBoilingEvent")
+        self.objectsToStore.append("stopBoilingEvent")
+
         # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
 
@@ -1839,6 +1848,15 @@ a boiler can be heated by a furnace to produce steam. Steam is the basis for ene
 """
         return text
             
+    '''
+    set state from dict
+    '''
+    def setState(self,state):
+        super().setState(state)
+
+        if self.isBoiling:
+            self.display = displayChars.boiler_active
+
 '''
 steam sprayer used as a prop in the vat
 '''

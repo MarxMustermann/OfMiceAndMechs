@@ -44,6 +44,12 @@ class Event(src.saveing.Saveable):
         # self initial state
         self.initialState = self.getState()
 
+    def getDiffState(self):
+        state = super().getDiffState()
+        state["type"] = self.type
+        state["tick"] = self.tick
+        return state
+
     '''
     do nothing
     '''
@@ -59,7 +65,6 @@ class ShowMessageEvent(Event):
     '''
     def __init__(self,tick,message,creator=None):
         super().__init__(tick,creator=creator)
-        self.id = "ShowMessageEvent"
         self.type = "ShowMessageEvent"
         self.message = message
 
@@ -78,7 +83,6 @@ class ShowCinematicEvent(Event):
     '''
     def __init__(self,tick,cinematic,creator=None):
         super().__init__(tick,creator=creator)
-        self.id = "ShowCinematicEvent"
         self.type = "ShowCinematicEvent"
         self.cinematic = cinematic
 
@@ -102,13 +106,14 @@ class FurnaceBurnoutEvent(Event):
     def __init__(self,tick,creator=None):
         self.furnace = None
         super().__init__(tick,creator=creator)
-        self.id = "FurnaceBurnoutEvent"
         self.type = "FurnaceBurnoutEvent"
 
         self.tick = tick
 
         # set meta information for saving
         self.objectsToStore.append("furnace")
+
+        print("loaded FurnaceBurnoutEvent")
 
         # self initial state
         self.initialState = self.getState()
@@ -151,15 +156,6 @@ class EndQuestEvent(Event):
         else:
             pass
 
-# supply a mapping from strings to events
-# bad pattern: has to be extendable
-eventMap = {
-             "Event":Event,
-             "ShowMessageEvent":ShowMessageEvent,
-             "ShowCinematicEvent":ShowCinematicEvent,
-             "FurnaceBurnoutEvent":FurnaceBurnoutEvent,
-             "EndQuestEvent":EndQuestEvent,
-           }
 
 '''
 the event for stopping to burn after a while
@@ -172,7 +168,6 @@ class FurnaceBurnoutEvent(Event):
     def __init__(self,tick,creator=None):
         self.furnace = None
         super().__init__(tick,creator=creator)
-        self.id = "FurnaceBurnoutEvent"
         self.type = "FurnaceBurnoutEvent"
 
         self.tick = tick
@@ -188,14 +183,21 @@ class FurnaceBurnoutEvent(Event):
     '''
     def handleEvent(self):
         # stop burning
-        self.furnace.activated = False
+        try:
+            self.furnace.activated = False
 
-        # stop heating the boilers
-        for boiler in self.furnace.boilers:
-            boiler.stopHeatingUp()
+            # stop heating the boilers
+            for boiler in self.furnace.boilers:
+                boiler.stopHeatingUp()
 
-        # notify listeners
-        self.furnace.changed()
+            # notify listeners
+            self.furnace.changed()
+        except:
+            pass
+
+    def setState(self,state):
+        super().setState(state)
+        print(state)
 
 '''
 the event for stopping to boil
@@ -206,10 +208,9 @@ class StopBoilingEvent(Event):
     '''
     straightforward state initialization
     '''
-    def __init__(subself,tick,creator=None):
+    def __init__(self,tick,creator=None):
         self.boiler = None
         super().__init__(tick,creator=creator)
-        self.id = "StopBoilingEvent"
         self.type = "StopBoilingEvent"
 
         self.tick = tick
@@ -249,7 +250,6 @@ class StartBoilingEvent(Event):
         self.boiler = None
         super().__init__(tick,creator=creator)
 
-        self.id = "StopBoilingEvent"
         self.type = "StopBoilingEvent"
 
         self.tick = tick
@@ -277,6 +277,18 @@ class StartBoilingEvent(Event):
         # change rooms steam production
         self.boiler.room.steamGeneration += 1
         self.boiler.room.changed()
+
+# supply a mapping from strings to events
+# bad pattern: has to be extendable
+eventMap = {
+             "Event":Event,
+             "ShowMessageEvent":ShowMessageEvent,
+             "ShowCinematicEvent":ShowCinematicEvent,
+             "FurnaceBurnoutEvent":FurnaceBurnoutEvent,
+             "EndQuestEvent":EndQuestEvent,
+             "StopBoilingEvent":StopBoilingEvent,
+             "StartBoilingEvent":StartBoilingEvent,
+           }
 
 '''
 create an event from a state dict

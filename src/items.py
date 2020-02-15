@@ -4151,7 +4151,7 @@ You need to replace the rod in the drill to repair it.
 Use the drill to eject the broken rod from the drill.
 place a rod to the left/west of the drill and activate the drill, to repair it
 
-"""%(self.coolDown,)
+"""
 
 class MemoryDump(Item):
     type = "MemoryDump"

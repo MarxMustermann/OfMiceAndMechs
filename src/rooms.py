@@ -474,7 +474,15 @@ class Room(src.saveing.Saveable):
 
         # add new events
         if "newEvents" in state:
+            print("newEvents")
             for eventId in state["newEvents"]:
+                eventState = state["eventStates"][eventId]
+                event = src.events.getEventFromState(eventState)
+                self.addEvent(event)
+
+        if "eventIds" in state:
+            print("eventIds")
+            for eventId in state["eventIds"]:
                 eventState = state["eventStates"][eventId]
                 event = src.events.getEventFromState(eventState)
                 self.addEvent(event)

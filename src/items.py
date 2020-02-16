@@ -2471,10 +2471,6 @@ class ProductionArtwork(Item):
     produce an item
     '''
     def produce(self,itemType,resultType=None):
-        if self.charges:
-            self.charges -= 1
-        else:
-            self.coolDownTimer = gamestate.tick
 
         # gather a metal bar
         metalBar = None
@@ -2491,12 +2487,17 @@ class ProductionArtwork(Item):
 
         targetFull = False
         if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
-            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 1:
+            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 0:
                 targetFull = True
 
         if targetFull:
-            character.messages.append("the target area is full, the machine does not produce anything")
+            self.character.messages.append("the target area is full, the machine does not produce anything")
             return
+
+        if self.charges:
+            self.charges -= 1
+        else:
+            self.coolDownTimer = gamestate.tick
 
         self.character.messages.append("you produce a %s"%(itemType.type,))
 
@@ -2593,11 +2594,6 @@ class ScrapCompactor(Item):
             character.messages.append("no scraps available")
             return
 
-        if self.charges:
-            self.charges -= 1
-        else:
-            self.coolDownTimer = gamestate.tick
-
         targetFull = False
         if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
             if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
@@ -2609,6 +2605,11 @@ class ScrapCompactor(Item):
         if targetFull:
             character.messages.append("the target area is full, the machine does not produce anything")
             return
+
+        if self.charges:
+            self.charges -= 1
+        else:
+            self.coolDownTimer = gamestate.tick
 
         character.messages.append("you produce a metal bar")
 
@@ -3763,19 +3764,23 @@ class MachineMachine(Item):
             self.character.messages.append("missing ressources: %s"%(",".join(ressourcesNeeded)))
             return
 
+        targetFull = False
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            self.character.messages.append("test1")
+            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 0:
+                self.character.messages.append("test2")
+                targetFull = True
+
+        if targetFull:
+            self.character.messages.append("the target area is full, the machine does not produce anything")
+            return
+        else:
+            self.character.messages.append("not full")
+
         if self.charges:
             self.charges -= 1
         else:
             self.coolDownTimer = gamestate.tick
-
-        targetFull = False
-        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
-            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 1:
-                targetFull = True
-
-        if targetFull:
-            character.messages.append("the target area is full, the machine does not produce anything")
-            return
 
         self.character.messages.append("you produce a machine that produces %s"%(itemType,))
 
@@ -4116,16 +4121,18 @@ class Machine(Item):
 
         targetFull = False
         new = itemMap[self.toProduce](creator=self)
+
         if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            character.messages.append("test1")
             if new.walkable:
+                character.messages.append("test1")
                 if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
                     targetFull = True
                 for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
-                    if item.type in ressourcesNeeded:
-                        if item.walkable == False:
-                            targetFull = True
+                    if item.walkable == False:
+                        targetFull = True
             else:
-                if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 1:
+                if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 0:
                     targetFull = True
 
         if targetFull:
@@ -4999,9 +5006,8 @@ class BluePrinter(Item):
                 if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
                     targetFull = True
                 for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
-                    if item.type in ressourcesNeeded:
-                        if item.walkable == False:
-                            targetFull = True
+                    if item.walkable == False:
+                        targetFull = True
 
             if targetFull:
                 character.messages.append("the target area is full, the machine does not produce anything")

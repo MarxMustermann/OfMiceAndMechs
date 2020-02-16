@@ -94,7 +94,7 @@ class Item(src.saveing.Saveable):
         character.changed("activate",self)
         self.changed("activated",character)
         if not silent:
-            character.messages.append("i can't do anything useful with this")
+            character.messages.append("i can not do anything useful with this")
 
     '''
     get picked up by the supplied character
@@ -359,21 +359,32 @@ class Item(src.saveing.Saveable):
     '''
     def destroy(self):
 
-        # remove item from terrain
-        self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
-        self.terrain.itemsOnFloor.remove(self)
-
-        # generatate scrao
-        if self.walkable:
-            newItem = Scrap(self.xPosition,self.yPosition,3,creator=self)
+        if self.room:
+            container = self.room
         else:
-            newItem = Scrap(self.xPosition,self.yPosition,10,creator=self)
+            container = self.terrain
+
+        pos = (self.xPosition,self.yPosition) 
+
+        # remove item from terrain
+        container.removeItem(self)
+
+        # generatate scrap
+        newItem = Scrap(pos[0],pos[1],1,creator=self)
         newItem.room = self.room
         newItem.terrain = self.terrain
 
+        if pos in container.itemByCoordinates:
+            for item in container.itemByCoordinates[pos]:
+                container.removeItem(item)
+                if not item.type == "Scrap":
+                    newItem.amount += 1
+                else:
+                    newItem.amount += item.amount
+        newItem.setWalkable()
+
         # place scrap
-        self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(newItem)
-        self.terrain.itemsOnFloor.append(newItem)
+        container.addItems([newItem])
             
     def getDiffState(self):
         state = super().getDiffState()
@@ -608,6 +619,7 @@ class ItemUpgrader(Item):
         elif inputItem.type == "GrowthTankIIII":
             chance = 20
 
+        success = False
         if (gamestate.tick + chance + self.charges) % (self.charges+1) > chance:
             if inputItem.type == "GrowthTank":
                 result = "GrowthTankII"
@@ -618,6 +630,27 @@ class ItemUpgrader(Item):
             elif inputItem.type == "GrowthTankIIII":
                 result = "GrowthTankIIIII"
 
+            success = True
+
+        targetFull = False
+        new = itemMap[self.toProduce](creator=self)
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            if new.walkable:
+                if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+                    targetFull = True
+                for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                    if item.type in ressourcesNeeded:
+                        if item.walkable == False:
+                            targetFull = True
+            else:
+                if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 1:
+                    targetFull = True
+
+        if targetFull:
+            character.messages.append("the target area is full, the machine does not produce anything")
+            return
+
+        if success:
             new = itemMap[result](creator=self)
             character.messages.append("%s upgraded to %s"%(inputItem.type,result,))
             self.charges = 0
@@ -625,6 +658,7 @@ class ItemUpgrader(Item):
             new = Scrap(creator=self)
             self.charges += 1
             character.messages.append("failed to upgrade %s - has %s charges now"%(inputItem.type,self.charges))
+
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
         new.bolted = False
@@ -2085,6 +2119,18 @@ class MaggotFermenter(Item):
             counter += 1
             self.room.removeItem(item)
 
+        targetFull = False
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+                targetFull = True
+            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                if item.walkable == False:
+                    targetFull = True
+
+        if targetFull:
+            character.messages.append("the target area is full, the machine does not produce anything")
+            return
+
         # spawn the new item
         new = BioMass(creator=self)
         new.xPosition = self.xPosition+1
@@ -2210,6 +2256,18 @@ class BioPress(Item):
                 break
             counter += 1
             self.room.removeItem(item)
+
+        targetFull = False
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+                targetFull = True
+            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                if item.walkable == False:
+                    targetFull = True
+
+        if targetFull:
+            character.messages.append("the target area is full, the machine does not produce anything")
+            return
 
         # spawn the new item
         new = PressCake(creator=self)
@@ -2431,6 +2489,15 @@ class ProductionArtwork(Item):
             messages.append("no metal bars available - place a metal bar to left/west")
             return
 
+        targetFull = False
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 1:
+                targetFull = True
+
+        if targetFull:
+            character.messages.append("the target area is full, the machine does not produce anything")
+            return
+
         self.character.messages.append("you produce a %s"%(itemType.type,))
 
         # remove ressources
@@ -2531,6 +2598,18 @@ class ScrapCompactor(Item):
         else:
             self.coolDownTimer = gamestate.tick
 
+        targetFull = False
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+                targetFull = True
+            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                if item.walkable == False:
+                    targetFull = True
+
+        if targetFull:
+            character.messages.append("the target area is full, the machine does not produce anything")
+            return
+
         character.messages.append("you produce a metal bar")
 
         # remove ressources
@@ -2629,6 +2708,20 @@ class Scraper(Item):
             character.messages.append("no items available")
             return
 
+        targetFull = False
+        new = itemMap[self.toProduce](creator=self)
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+                targetFull = True
+            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                if item.type in ressourcesNeeded:
+                    if item.walkable == False:
+                        targetFull = True
+
+        if targetFull:
+            character.messages.append("the target area is full, the machine does not produce anything")
+            return
+
         # remove ressources
         self.room.removeItem(item)
 
@@ -2703,11 +2796,46 @@ class Sorter(Item):
         self.room.removeItem(itemFound)
 
         if itemFound.type == compareItemFound.type:
-            itemFound.xPosition = self.xPosition
-            itemFound.yPosition = self.yPosition+1
+            targetPos = (self.xPosition,self.yPosition+1)
         else:
-            itemFound.xPosition = self.xPosition+1
-            itemFound.yPosition = self.yPosition
+            targetPos = (self.xPosition+1,self.yPosition)
+
+        itemFound.xPosition = targetPos[0]
+        itemFound.yPosition = targetPos[1]
+
+
+        targetFull = False
+        new = itemMap[self.toProduce](creator=self)
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            if itemMap.walkable:
+                if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+                    targetFull = True
+                for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                    if item.type in ressourcesNeeded:
+                        if item.walkable == False:
+                            targetFull = True
+            else:
+                if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 1:
+                    targetFull = True
+
+        if targetFull:
+            character.messages.append("the target area is full, the machine does not produce anything")
+            return
+
+        targetFull = False
+        new = itemMap[self.toProduce](creator=self)
+        if targetPos in self.room.itemByCoordinates:
+            if len(self.room.itemByCoordinates[targetPos]) > 15:
+                targetFull = True
+            for item in self.room.itemByCoordinates[targetPos]:
+                if item.type in ressourcesNeeded:
+                    if item.walkable == False:
+                        targetFull = True
+
+        if targetFull:
+            character.messages.append("the target area is full, the machine does not work")
+            return
+
         self.room.addItems([itemFound])
 
     def getLongInfo(self):
@@ -3308,6 +3436,19 @@ class Tree(Item):
 
         character.messages.append("you harvest a vat maggot")
 
+        targetFull = False
+        targetPos = (self.xPosition+1,self.yPosition)
+        if targetPos in self.terrain.itemByCoordinates:
+            if len(self.terrain.itemByCoordinates[targetPos]) > 15:
+                targetFull = True
+            for item in self.terrain.itemByCoordinates[targetPos]:
+                if item.walkable == False:
+                    targetFull = True
+
+        if targetFull:
+            character.messages.append("the target area is full, the machine does not work")
+            return
+
         # spawn new item
         new = VatMaggot(creator=self)
         new.xPosition = self.xPosition+1
@@ -3626,6 +3767,15 @@ class MachineMachine(Item):
             self.charges -= 1
         else:
             self.coolDownTimer = gamestate.tick
+
+        targetFull = False
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 1:
+                targetFull = True
+
+        if targetFull:
+            character.messages.append("the target area is full, the machine does not produce anything")
+            return
 
         self.character.messages.append("you produce a machine that produces %s"%(itemType,))
 
@@ -3964,6 +4114,24 @@ class Machine(Item):
             character.messages.append("missing ressources (place left/west or up/north): %s"%(", ".join(ressourcesNeeded)))
             return
 
+        targetFull = False
+        new = itemMap[self.toProduce](creator=self)
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            if new.walkable:
+                if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+                    targetFull = True
+                for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                    if item.type in ressourcesNeeded:
+                        if item.walkable == False:
+                            targetFull = True
+            else:
+                if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 1:
+                    targetFull = True
+
+        if targetFull:
+            character.messages.append("the target area is full, the machine does not produce anything")
+            return
+
         if self.charges:
             self.charges -= 1
         else:
@@ -4076,13 +4244,27 @@ class Drill(Item):
         if self.isBroken:
             if not self.isCleaned:
 
-                character.messages.append("you remove the broken rod")
-
                 # spawn new item
                 new = Scrap(self.xPosition,self.yPosition,3,creator=self)
                 new.xPosition = self.xPosition
                 new.yPosition = self.yPosition+1
                 new.bolted = False
+
+                targetFull = False
+                if (self.xPosition,self.yPosition+1) in self.room.itemByCoordinates:
+                    if len(self.room.itemByCoordinates[(self.xPosition,self.yPosition+1)]) > 15:
+                        targetFull = True
+                    for item in self.room.itemByCoordinates[(self.xPosition,self.yPosition+1)]:
+                        if item.type in ressourcesNeeded:
+                            if item.walkable == False:
+                                targetFull = True
+
+                if targetFull:
+                    character.messages.append("the target area is full, the machine does not produce anything")
+                    return
+
+                character.messages.append("you remove the broken rod")
+
                 self.terrain.addItems([new])
 
                 self.isCleaned = True
@@ -4117,7 +4299,6 @@ class Drill(Item):
             return
         self.coolDownTimer = gamestate.tick
 
-
         # spawn new item
         possibleProducts = [Scrap,Coal,Scrap,Radiator,Scrap,Mount,Scrap,Sheet,Scrap,Rod,Scrap,Bolt,Scrap,Stripe,Scrap,]
         productIndex = gamestate.tick%len(possibleProducts)
@@ -4125,6 +4306,20 @@ class Drill(Item):
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
         new.bolted = False
+
+        targetFull = False
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+                targetFull = True
+            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                if item.type in ressourcesNeeded:
+                    if item.walkable == False:
+                        targetFull = True
+
+        if targetFull:
+            character.messages.append("the target area is full, the machine does not produce anything")
+            return
+
         self.terrain.addItems([new])
 
         self.isBroken = True
@@ -4798,6 +4993,20 @@ class BluePrinter(Item):
             new.xPosition = self.xPosition+1
             new.yPosition = self.yPosition
             new.bolted = False
+
+            targetFull = False
+            if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+                if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+                    targetFull = True
+                for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                    if item.type in ressourcesNeeded:
+                        if item.walkable == False:
+                            targetFull = True
+
+            if targetFull:
+                character.messages.append("the target area is full, the machine does not produce anything")
+                return
+
             self.room.addItems([new])
 
             for itemType in reciepeFound[0]:
@@ -4871,6 +5080,19 @@ class CoalMine(Item):
         self.walkable = False
 
     def apply(self,character):
+
+        targetFull = False
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+                targetFull = True
+            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                if item.type in ressourcesNeeded:
+                    if item.walkable == False:
+                        targetFull = True
+
+        if targetFull:
+            character.messages.append("the target area is full, the machine does not produce anything")
+            return
 
         character.messages.append("you mine a piece of coal")
 

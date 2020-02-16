@@ -835,7 +835,7 @@ class Room(src.saveing.Saveable):
                 if not item.walkable:
                     return item
 
-            if len(self.itemByCoordinates[newPosition]) > 25:
+            if len(self.itemByCoordinates[newPosition]) > 15:
                 return self.itemByCoordinates[newPosition][0]
 
         # teleport character to new position

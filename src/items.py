@@ -4251,20 +4251,16 @@ class Drill(Item):
         if self.isBroken:
             if not self.isCleaned:
 
-                # spawn new item
-                new = Scrap(self.xPosition,self.yPosition,3,creator=self)
-                new.xPosition = self.xPosition
-                new.yPosition = self.yPosition+1
-                new.bolted = False
-
                 targetFull = False
-                if (self.xPosition,self.yPosition+1) in self.room.itemByCoordinates:
-                    if len(self.room.itemByCoordinates[(self.xPosition,self.yPosition+1)]) > 15:
+                scrapFound = None
+                if (self.xPosition,self.yPosition+1) in self.terrain.itemByCoordinates:
+                    if len(self.terrain.itemByCoordinates[(self.xPosition,self.yPosition+1)]) > 15:
                         targetFull = True
-                    for item in self.room.itemByCoordinates[(self.xPosition,self.yPosition+1)]:
-                        if item.type in ressourcesNeeded:
-                            if item.walkable == False:
-                                targetFull = True
+                    for item in self.terrain.itemByCoordinates[(self.xPosition,self.yPosition+1)]:
+                        if item.walkable == False:
+                            targetFull = True
+                        if item.type == "Scrap":
+                            scrapFound = item
 
                 if targetFull:
                     character.messages.append("the target area is full, the machine does not produce anything")
@@ -4272,13 +4268,22 @@ class Drill(Item):
 
                 character.messages.append("you remove the broken rod")
 
-                self.terrain.addItems([new])
+                if scrapFound:
+                    item.amount += 1
+                else:
+                    # spawn new item
+                    new = Scrap(self.xPosition,self.yPosition,1,creator=self)
+                    new.xPosition = self.xPosition
+                    new.yPosition = self.yPosition+1
+                    new.bolted = False
+
+                    self.terrain.addItems([new])
 
                 self.isCleaned = True
 
             else:
 
-                character.messages.append("you repair te machine")
+                character.messages.append("you repair the machine")
 
                 rod = None
                 if (self.xPosition-1,self.yPosition) in self.terrain.itemByCoordinates:
@@ -4314,20 +4319,25 @@ class Drill(Item):
         new.yPosition = self.yPosition
         new.bolted = False
 
+        foundScrap = None
         targetFull = False
-        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
-            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+        if (self.xPosition+1,self.yPosition) in self.terrain.itemByCoordinates:
+            if len(self.terrain.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
                 targetFull = True
-            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
-                if item.type in ressourcesNeeded:
-                    if item.walkable == False:
-                        targetFull = True
+            for item in self.terrain.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                if item.walkable == False:
+                    targetFull = True
+                if item.type == "Scrap":
+                    foundScrap = item
 
         if targetFull:
             character.messages.append("the target area is full, the machine does not produce anything")
             return
 
-        self.terrain.addItems([new])
+        if new.type == "Scrap" and foundScrap:
+            foundScrap.amount += new.amount
+        else:
+            self.terrain.addItems([new])
 
         self.isBroken = True
         self.isCleaned = False

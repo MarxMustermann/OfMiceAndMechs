@@ -5086,15 +5086,17 @@ class CoalMine(Item):
         self.walkable = False
 
     def apply(self,character):
+        if self.room:
+            character.messages.append("this item cannot be used within rooms")
+            return
 
         targetFull = False
-        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
-            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+        if (self.xPosition+1,self.yPosition) in self.terrain.itemByCoordinates:
+            if len(self.terrain.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
                 targetFull = True
-            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
-                if item.type in ressourcesNeeded:
-                    if item.walkable == False:
-                        targetFull = True
+            for item in self.terrain.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                if item.walkable == False:
+                    targetFull = True
 
         if targetFull:
             character.messages.append("the target area is full, the machine does not produce anything")

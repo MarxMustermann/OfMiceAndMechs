@@ -27,6 +27,7 @@ class LoadingRegistry(object):
             else:
                 callback(thing)
             counter += 1
+        del self.delayedCalls[thing.id]
 
     '''
     trigger a call or register as backlog

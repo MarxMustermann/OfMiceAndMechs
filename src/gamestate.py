@@ -121,6 +121,7 @@ class GameState(src.saveing.Saveable):
 
         # set state
         self.setState(state)
+        print(src.saveing.loadingRegistry.delayedCalls)
         return True
 
     '''

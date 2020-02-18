@@ -241,10 +241,8 @@ if not args.nourwid:
 else:
     shouldLoad = True
 
-print(shouldLoad)
 if shouldLoad:
     try:
-        print("try load")
         # load the game
         loaded = gameStateObj.load()
         seed = gameStateObj.initialSeed
@@ -253,7 +251,6 @@ if shouldLoad:
         if not ignore.lower() == "n":
             raise e
 mainChar = gameStateObj.mainChar
-print(loaded)
 
 ##################################################################################################################################
 ###
@@ -399,7 +396,6 @@ quests.showCinematic = cinematics.showCinematic
 ##########################################
 
 if not loaded:
-    print("generate terrain")
     # spawn selected terrain
     if args.terrain and args.terrain == "scrapField":
         gameStateObj.terrainType = terrains.ScrapField

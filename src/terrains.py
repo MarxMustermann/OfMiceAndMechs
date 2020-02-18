@@ -1326,9 +1326,6 @@ class Terrain(src.saveing.Saveable):
             room = src.rooms.getRoomFromState(state["roomStates"][roomId],terrain=self)
             self.addRoom(room)
 
-        for room in self.rooms:
-            room.timeIndex = tick
-
         for item in self.itemsOnFloor[:]:
             # update items
             if item.id in state["changedItemList"]:

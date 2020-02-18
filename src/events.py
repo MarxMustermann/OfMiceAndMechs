@@ -96,43 +96,6 @@ class ShowCinematicEvent(Event):
 
 
 '''
-the event for stopping to burn after a while
-bad code: should be an abstact event calling a method
-'''
-class FurnaceBurnoutEvent(Event):
-    '''
-    straightforward state initialization
-    '''
-    def __init__(self,tick,creator=None):
-        self.furnace = None
-        super().__init__(tick,creator=creator)
-        self.type = "FurnaceBurnoutEvent"
-
-        self.tick = tick
-
-        # set meta information for saving
-        self.objectsToStore.append("furnace")
-
-        print("loaded FurnaceBurnoutEvent")
-
-        # self initial state
-        self.initialState = self.getState()
-
-    '''
-    stop burning
-    '''
-    def handleEvent(self):
-        # stop burning
-        self.furnace.activated = False
-
-        # stop heating the boilers
-        for boiler in self.furnace.boilers:
-            boiler.stopHeatingUp()
-
-        # notify listeners
-        self.furnace.changed()
-
-'''
 the event for automatically terminating the quest
 '''
 class EndQuestEvent(Event):
@@ -183,21 +146,25 @@ class FurnaceBurnoutEvent(Event):
     '''
     def handleEvent(self):
         # stop burning
-        try:
-            self.furnace.activated = False
+        self.furnace.activated = False
 
-            # stop heating the boilers
-            for boiler in self.furnace.boilers:
-                boiler.stopHeatingUp()
+        # get the boilers affected
+        self.furnace.boilers = [] 
+        #for boiler in self.room.boilers:
+        for boiler in self.furnace.room.itemsOnFloor:
+            if isinstance(boiler, src.items.Boiler):
+                if ((boiler.xPosition in [self.furnace.xPosition,self.furnace.xPosition-1,self.furnace.xPosition+1] and boiler.yPosition == self.furnace.yPosition) or boiler.yPosition in [self.furnace.yPosition-1,self.furnace.yPosition+1] and boiler.xPosition == self.furnace.xPosition):
+                    self.furnace.boilers.append(boiler)
 
-            # notify listeners
-            self.furnace.changed()
-        except:
-            pass
+        # stop heating the boilers
+        for boiler in self.furnace.boilers:
+            boiler.stopHeatingUp()
+
+        # notify listeners
+        self.furnace.changed()
 
     def setState(self,state):
         super().setState(state)
-        print(state)
 
 '''
 the event for stopping to boil
@@ -250,7 +217,7 @@ class StartBoilingEvent(Event):
         self.boiler = None
         super().__init__(tick,creator=creator)
 
-        self.type = "StopBoilingEvent"
+        self.type = "StartBoilingEvent"
 
         self.tick = tick
 

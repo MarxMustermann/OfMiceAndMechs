@@ -278,7 +278,7 @@ class Room(src.saveing.Saveable):
 
         # set meta information for saving
         self.attributesToStore.extend([
-              "yPosition","xPosition","offsetX","offsetY","objType","sizeX","sizeY","walkingAccess","open","engineStrength","steamGeneration","isContainment",
+              "yPosition","xPosition","offsetX","offsetY","objType","sizeX","sizeY","walkingAccess","open","engineStrength","steamGeneration","isContainment","timeIndex",
                 ])
 
         self.initialState = self.getState()
@@ -404,6 +404,10 @@ class Room(src.saveing.Saveable):
     bad code: incomplete
     '''
     def setState(self,state):
+
+        if "timeIndex" in state:
+            self.timeIndex = state["timeIndex"]
+
         # move room to correct position
         xPosition = None
         yPosition = None
@@ -474,14 +478,12 @@ class Room(src.saveing.Saveable):
 
         # add new events
         if "newEvents" in state:
-            print("newEvents")
             for eventId in state["newEvents"]:
                 eventState = state["eventStates"][eventId]
                 event = src.events.getEventFromState(eventState)
                 self.addEvent(event)
 
         if "eventIds" in state:
-            print("eventIds")
             for eventId in state["eventIds"]:
                 eventState = state["eventStates"][eventId]
                 event = src.events.getEventFromState(eventState)

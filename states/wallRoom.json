@@ -796,7 +796,7 @@
                     "{\"counter\": 1481, \"creator\": \"void\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}": {
                               "bolted": false,
                               "coolDown": 10,
-                              "coolDownTimer": 42806,
+                              "coolDownTimer": 0,
                               "type": "Sorter",
                               "xPosition": 2,
                               "yPosition": 2
@@ -873,7 +873,7 @@
                               "bolted": false,
                               "charges": 0,
                               "coolDown": 100,
-                              "coolDownTimer": 43105,
+                              "coolDownTimer": 0,
                               "creationCounter": 56,
                               "id": "{\"counter\": 3, \"creator\": \"{\"counter\": 1, \"creator\": \"{\"counter\": 1, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}",
                               "type": "ScrapCompactor",
@@ -960,7 +960,7 @@
                     },
                     "{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}": {
                               "bolted": false,
-                              "coolDownTimer": 43120,
+                              "coolDownTimer": 0,
                               "creationCounter": 41,
                               "id": "{\"counter\": 6, \"creator\": \"{\"counter\": 3, \"creator\": \"{\"counter\": 6772, \"creator\": \"{\"counter\": 11161, \"creator\": \"gamestate\", \"other\": \"terrain\"}\", \"other\": \"item\", \"xPosition\": 4, \"yPosition\": 1}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}\", \"other\": \"item\", \"xPosition\": null, \"yPosition\": null}",
                               "type": "Machine",

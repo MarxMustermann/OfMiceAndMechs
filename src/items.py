@@ -389,25 +389,20 @@ class Item(src.saveing.Saveable):
         # place scrap
         container.addItems([newItem])
             
-    def getDiffState(self):
-        state = super().getDiffState()
-
-        state["type"] = self.type
-        state["xPosition"] = self.xPosition
-        state["yPosition"] = self.yPosition
-
-        return state
-
     def getState(self):
         state = super().getState()
         state["id"] = self.id
         state["type"] = self.type
+        state["xPosition"] = self.xPosition
+        state["yPosition"] = self.yPosition
         return state
 
     def getDiffState(self):
         state = super().getDiffState()
         state["id"] = self.id
         state["type"] = self.type
+        state["xPosition"] = self.xPosition
+        state["yPosition"] = self.yPosition
         return state
 
 '''
@@ -2822,9 +2817,9 @@ class Sorter(Item):
 
 
         targetFull = False
-        new = itemMap[self.toProduce](creator=self)
+        new = itemFound
         if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
-            if itemMap.walkable:
+            if new.walkable:
                 if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
                     targetFull = True
                 for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
@@ -2837,20 +2832,6 @@ class Sorter(Item):
 
         if targetFull:
             character.messages.append("the target area is full, the machine does not produce anything")
-            return
-
-        targetFull = False
-        new = itemMap[self.toProduce](creator=self)
-        if targetPos in self.room.itemByCoordinates:
-            if len(self.room.itemByCoordinates[targetPos]) > 15:
-                targetFull = True
-            for item in self.room.itemByCoordinates[targetPos]:
-                if item.type in ressourcesNeeded:
-                    if item.walkable == False:
-                        targetFull = True
-
-        if targetFull:
-            character.messages.append("the target area is full, the machine does not work")
             return
 
         self.room.addItems([itemFound])

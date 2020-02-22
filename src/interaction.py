@@ -2621,6 +2621,7 @@ def renderHelp():
     txt += "* devMenu: "+commandChars.devMenu+"\n"
     return txt
     
+lastTerrain = None
 '''
 render the map
 bad code: should be contained somewhere
@@ -2630,6 +2631,12 @@ def render(char):
         thisTerrain = char.room.terrain
     else:
         thisTerrain = char.terrain
+
+    global lastTerrain
+    if thisTerrain:
+        lastTerrain = thisTerrain
+    else:
+        thisTerrain = lastTerrain
 
     # render the map
     chars = thisTerrain.render()

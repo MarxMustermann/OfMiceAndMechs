@@ -3058,7 +3058,9 @@ class BuildBase(BasicPhase):
             with open("states/emptyRoom2.json","r") as stateFile:
                 room = json.loads(stateFile.read())
         else:
-            with open("states/wallRoom.json","r") as stateFile:
+            wallRooms = ["states/wallRoom_1.json"]
+            wallRoom = wallRooms[seed%5%len(wallRooms)]
+            with open(wallRoom,"r") as stateFile:
                 room = json.loads(stateFile.read())
         terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
         with open("states/miniMech.json","r") as stateFile:

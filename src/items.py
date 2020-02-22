@@ -5139,14 +5139,36 @@ class StasisTank(Item):
             character.messages.append("you can not use item outside of rooms")
             return
 
-        if self.character:
+        if self.character and self.character.stasis:
             self.room.addCharacter(self.character,self.xPosition,self.yPosition+1)
             self.character.stasis = False
             self.character = None
         else:
+            options = []
+            options.append(("enter","yes"))
+            options.append(("noEnter","no"))
+            self.submenue = interaction.SelectionMenu("The stasis tank is empty. You will not be able to leave it on your on.\nDo you want to enter it?",options)
             self.character = character
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.enterSelection
+
+    def enterSelection(self):
+        if self.submenue.selection == "enter":
             self.character.stasis = True
-            self.room.removeCharacter(character)
+            self.room.removeCharacter(self.character)
+            self.character.messages.append("you entered the stasis tank. You will not be able to move until somebody activates it")
+        else:
+            self.character.messages.append("you do not enter the stasis tank")
+
+    def getDiffState(self):
+        state = super().getDiffState()
+
+        if self.character:
+            state["character"] = self.character.getState()
+        else:
+            state["character"] = None
+
+        return state
 
     def getState(self):
         state = super().getState()

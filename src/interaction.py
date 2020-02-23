@@ -1269,6 +1269,25 @@ current registers
                 if charState["itemMarkedLast"]:
                     return
 
+            # move the player
+            if key in ("W","S","D","A",):
+                lastXposition = char.xPosition
+                lastYposition = char.yPosition
+                if key in ("W",):
+                    charState["itemMarkedLast"] = moveCharacter("north")
+                if key in ("S",):
+                    charState["itemMarkedLast"] = moveCharacter("south")
+                if key in ("D",):
+                    charState["itemMarkedLast"] = moveCharacter("east")
+                if key in ("A",):
+                    charState["itemMarkedLast"] = moveCharacter("west")
+
+                if not lastXposition == char.xPosition or not lastYposition == char.yPosition:
+                    charState["commandKeyQueue"].insert(0,(key,("norecord",)))
+
+                if charState["itemMarkedLast"]:
+                    return
+
             # murder the next available character
             # bad pattern: player should be able to select whom to kill if there are multiple targets
             if key in (commandChars.attack):

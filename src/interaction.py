@@ -996,7 +996,9 @@ current registers
             if not ticksSinceDeath:
                 ticksSinceDeath = gamestate.tick
             key = commandChars.wait
-            if gamestate.tick > ticksSinceDeath+5:
+            if gamestate.tick == ticksSinceDeath+5:
+                char.macroState["commandKeyQueue"] = []
+                char.macroState["submenue"] = TextMenu("You died. press ctrl-c and reload to start from last save")
                 # destroy the gamestate
                 # bad pattern: should not always destroy gamestate
                 #saveFile = open("gamestate/gamestate.json","w")

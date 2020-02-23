@@ -231,7 +231,6 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
     if key in ("|",):
         char.interactionState["stateChange"] = True
-        char.messages.append("stachangekey")
         return
 
     if "stateChange" in char.interactionState and char.interactionState["stateChange"]:
@@ -245,7 +244,6 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             char.interactionStateBackup.append(char.interactionState)
             char.interactionState = {}
             charState["replay"] = []
-            char.messages.append("backupped")
             charState["submenue"] = None
             charState["number"] = None
             charState["itemMarkedLast"] = None
@@ -256,7 +254,6 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
                 charState["submenue"] = char.interactionState["submenue"]
                 charState["number"] = char.interactionState["number"]
                 charState["itemMarkedLast"] = char.interactionState["itemMarkedLast"]
-                char.messages.append("restored")
             else:
                 char.messages.append("nothing to restore")
             del char.interactionState["stateChange"]

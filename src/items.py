@@ -2990,7 +2990,7 @@ Sheets can be produced from metal bars.
             self.createCommand()
 
     def createNote(self):
-        self.submenue = interaction.InputMenu("what do you want to create?")
+        self.submenue = interaction.InputMenu("type the text you want to write on the note")
         self.character.macroState["submenue"] = self.submenue
         self.character.macroState["submenue"].followUp = self.createNoteItem
 

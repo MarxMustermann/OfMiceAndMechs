@@ -770,6 +770,7 @@ current macros:
                 charState["doNumber"] = False
 
         return
+
     if key in ("_",):
 
         if mainChar == char and not "norecord" in flags:
@@ -822,9 +823,11 @@ current macros:
         gamestate.save()
         raise urwid.ExitMainLoop()
 
+    '''
     if key in ('S',):
         gamestate.save()
         return
+    '''
 
     if key in ('o',):
         if mainChar == char and not "norecord" in flags:
@@ -1271,6 +1274,7 @@ current registers
 
             # move the player
             if key in ("W","S","D","A",):
+
                 lastXposition = char.xPosition
                 lastYposition = char.yPosition
                 if key in ("W",):

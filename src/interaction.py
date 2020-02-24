@@ -2075,6 +2075,9 @@ class InputMenu(SubMenu):
 
         if self.firstHit:
             self.firstHit = False
+
+        if key == "backspace":
+            self.text = self.text[:-1]
         else:
             self.text += key
 

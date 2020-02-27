@@ -2725,9 +2725,8 @@ class Scraper(Item):
             if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
                 targetFull = True
             for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
-                if item.type in ressourcesNeeded:
-                    if item.walkable == False:
-                        targetFull = True
+                if item.walkable == False:
+                    targetFull = True
 
         if targetFull:
             character.messages.append("the target area is full, the machine does not produce anything")

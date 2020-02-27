@@ -2721,7 +2721,6 @@ class Scraper(Item):
             return
 
         targetFull = False
-        new = itemMap[self.toProduce](creator=self)
         if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
             if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
                 targetFull = True
@@ -2738,7 +2737,7 @@ class Scraper(Item):
         self.room.removeItem(item)
 
         # spawn scrap
-        new = Scrap(self.xPosition,self.yPosition,10,creator=self)
+        new = Scrap(self.xPosition,self.yPosition,1,creator=self)
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
         self.room.addItems([new])
@@ -2823,9 +2822,8 @@ class Sorter(Item):
                 if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
                     targetFull = True
                 for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
-                    if item.type in ressourcesNeeded:
-                        if item.walkable == False:
-                            targetFull = True
+                    if item.walkable == False:
+                        targetFull = True
             else:
                 if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 1:
                     targetFull = True

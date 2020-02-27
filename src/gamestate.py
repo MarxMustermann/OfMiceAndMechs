@@ -84,15 +84,14 @@ class GameState(src.saveing.Saveable):
         from shutil import copyfile
         copyfile("gamestate/gamestate.json", "gamestate/gamestate_backup.json")
 
+        if not state["gameWon"]:
+            gamedump = json.dumps(state,indent=4, sort_keys=True)
+        else:
+            gamedump = json.dumps("Winning is no fun at all")
+
         # write the savefile
         with open("gamestate/gamestate.json","w") as saveFile:
-
-            # write the gamestate
-            if not state["gameWon"]:
-                saveFile.write(json.dumps(state,indent=4, sort_keys=True))
-            # destroy the savefile
-            else:
-                saveFile.write(json.dumps("Winning is no fun at all"))
+            saveFile.write(gamedump)
 
     '''
     load the gamestate from disc

@@ -2890,7 +2890,7 @@ def gameLoop(loop,user_data):
         if lastAutosave == 0:
             lastAutosave = gamestate.tick
         if gamestate.tick-lastAutosave > 1000:
-            gamestate.save()
+            #gamestate.save()
             lastAutosave = gamestate.tick
 
         firstRun = False

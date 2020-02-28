@@ -673,10 +673,6 @@ press any other key to finish
         charState["loop"].append(2)
         return
 
-    if key in ("u",):
-        char.setInterrupt = True
-        return
-    
     if charState["loop"] and not key in ("lagdetection","lagdetection_",commandChars.ignore,"_","~"):
         if not charState["replay"]:
             commands = []
@@ -829,21 +825,6 @@ current macros:
         return
     '''
 
-    if key in ('o',):
-        if mainChar == char and not "norecord" in flags:
-            header.set_text((urwid.AttrSpec("default","default"),"observe"))
-            main.set_text((urwid.AttrSpec("default","default"),"""
-
-select what you want to observe
-
-* p - get position of something
-
-"""))
-            footer.set_text((urwid.AttrSpec("default","default"),""))
-            char.specialRender = True
-        char.interactionState["enumerateState"].append({"type":None}) 
-        return
-
     if key in ('<',):
         if mainChar == char and not "norecord" in flags:
             text = """
@@ -949,6 +930,56 @@ current registers
 
     # handle a keystroke while on map or in cinemetic
     if not charState["submenue"]:
+        if key in ("u",):
+            char.setInterrupt = True
+            return
+
+        if key in ("esc",):
+            char.messages.append("esc pressed")
+            options = []
+            options.append(("save","save"))
+            options.append(("quit","quit and save"))
+            options.append(("macros","macros"))
+            options.append(("help","help"))
+            options.append(("keybinding","keybinding"))
+            submenu = SelectionMenu("What do you want to do?",options)
+            char.macroState["submenue"] = submenu
+
+            def trigger():
+                selection = submenu.getSelection()
+                if selection == "save":
+                    tmp = char.macroState["submenue"]
+                    char.macroState["submenue"] = None
+                    gamestate.save()
+                    char.macroState["submenue"] = tmp
+                elif selection == "quit":
+                    char.macroState["submenue"] = None
+                    gamestate.save()
+                    raise urwid.ExitMainLoop()
+                elif selection == "macros":
+                    pass
+                elif selection == "help":
+                    charState["submenue"] = HelpMenu()
+                elif selection == "keybinding":
+                    pass
+                char.messages.append("triggered")
+            char.macroState["submenue"].followUp = trigger
+            key = "."
+
+        if key in ('o',):
+            if mainChar == char and not "norecord" in flags:
+                header.set_text((urwid.AttrSpec("default","default"),"observe"))
+                main.set_text((urwid.AttrSpec("default","default"),"""
+
+    select what you want to observe
+
+    * p - get position of something
+
+    """))
+                footer.set_text((urwid.AttrSpec("default","default"),""))
+                char.specialRender = True
+            char.interactionState["enumerateState"].append({"type":None}) 
+            return
 
         # handle cinematics
         if len(cinematics.cinematicQueue):
@@ -2062,13 +2093,14 @@ class InputMenu(SubMenu):
         super().__init__()
         self.footerText = "enter the text press enter to confirm"
         self.firstHit = True
+        self.escape = False
 
     '''
     show the inventory
     '''
     def handleKey(self, key):
 
-        if key == "enter":
+        if key == "enter" and not self.escape:
             if self.followUp:
                 self.followUp()
             return True
@@ -2076,10 +2108,17 @@ class InputMenu(SubMenu):
         if self.firstHit:
             self.firstHit = False
 
-        if key == "backspace":
+        if key == "\\" and not self.escape:
+            self.escape = True
+        elif key == "backspace" and not self.escape:
             self.text = self.text[:-1]
+        elif key == "~" and not self.escape:
+            pass
         else:
+            if key == "enter":
+                key = "\n"
             self.text += key
+            self.escape = False
 
         header.set_text((urwid.AttrSpec("default","default"),"\ntext input\n\n"))
 

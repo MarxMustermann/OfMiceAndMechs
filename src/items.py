@@ -4924,6 +4924,7 @@ class BluePrinter(Item):
                 [["Scrap","MetalBars"],"Scraper"],
 
                 [["Frame","MetalBars"],"Case"],
+                [["Frame"],"PocketFrame"],
                 [["Connector","MetalBars"],"MemoryCell"],
 
                 [["Sheet","MetalBars"],"Tank"],

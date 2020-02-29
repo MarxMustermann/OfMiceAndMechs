@@ -3124,9 +3124,8 @@ it holds the text:
     def apply(self,character):
         super().apply(character,silent=True)
 
-        character.messages.append("the note has the text: %s"%(self.text,))
-        self.submenue = interaction.SelectionMenu("Do you want to reconfigure the machine?",{})
-        character.macroState["submenue"] = self.submenue
+        submenue = interaction.OneKeystokeMenu("the note has the text: \n\n\n%s"%(self.text,))
+        character.macroState["submenue"] = submenue
 
     def setText(self,text):
         self.text = text

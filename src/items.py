@@ -405,6 +405,9 @@ class Item(src.saveing.Saveable):
         state["yPosition"] = self.yPosition
         return state
 
+    def getLongInfo(self):
+        return None
+
 '''
 crushed something, basically raw metal
 '''
@@ -2622,10 +2625,8 @@ class ScrapCompactor(Item):
 
         # remove ressources
         if scrap.amount <= 1:
-            character.messages.append("wtf1")
             self.room.removeItem(scrap)
         else:
-            character.messages.append("wtf2")
             scrap.amount -= 1
             scrap.changed()
 
@@ -2634,8 +2635,6 @@ class ScrapCompactor(Item):
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
         self.room.addItems([new])
-
-        character.messages.append("end")
 
     def getLongInfo(self):
         text = """
@@ -3126,6 +3125,8 @@ it holds the text:
         super().apply(character,silent=True)
 
         character.messages.append("the note has the text: %s"%(self.text,))
+        self.submenue = interaction.SelectionMenu("Do you want to reconfigure the machine?",{})
+        character.macroState["submenue"] = self.submenue
 
     def setText(self,text):
         self.text = text

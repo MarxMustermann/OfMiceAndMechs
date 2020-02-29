@@ -1,5 +1,6 @@
 import pygame
 
+pocketFrame = pygame.image.load('config/Images/perspectiveTry/pocketFrame.png')
 case = pygame.image.load('config/Images/perspectiveTry/case.png')
 memoryCell = pygame.image.load('config/Images/perspectiveTry/memoryCell.png')
 frame = pygame.image.load('config/Images/perspectiveTry/Frame.png')

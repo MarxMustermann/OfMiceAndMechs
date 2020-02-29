@@ -1,5 +1,6 @@
 import urwid
 
+pocketFrame = (urwid.AttrSpec("#aaa","black"),"*h")
 case = (urwid.AttrSpec("#aaa","black"),"*H")
 memoryCell = (urwid.AttrSpec("#33f","black"),"*m")
 frame = (urwid.AttrSpec("#aaa","black"),"#O")

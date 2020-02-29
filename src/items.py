@@ -4118,9 +4118,7 @@ class Machine(Item):
         new = itemMap[self.toProduce](creator=self)
 
         if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
-            character.messages.append("test1")
             if new.walkable:
-                character.messages.append("test1")
                 if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
                     targetFull = True
                 for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
@@ -5549,6 +5547,26 @@ A case. Is complex building item. It is used to build bigger things.
 """
         return text
 
+'''
+'''
+class PocketFrame(Item):
+    type = "PocketFrame"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="pocket frame",creator=None,noId=False):
+        super().__init__(displayChars.pocketFrame,xPosition,yPosition,name=name,creator=creator)
+        self.walkable = True
+        self.initialState = self.getState()
+
+    def getLongInfo(self):
+        text = """
+
+A pocket frame. Is complex building item. It is used to build smaller things.
+
+"""
+        return text
 
 '''
 '''
@@ -5656,6 +5674,7 @@ itemMap = {
             "Case":Case,
             "Command":Command,
             "Note":Note,
+            "PocketFrame":PocketFrame,
 }
 
 producables = {
@@ -5700,6 +5719,7 @@ producables = {
             "MemoryBank":MemoryBank,
             "MemoryDump":MemoryDump,
             "MemoryStack":MemoryStack,
+            "PocketFrame":PocketFrame,
         }
 
 '''

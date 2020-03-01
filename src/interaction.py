@@ -229,6 +229,17 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
     char.specialRender = False
 
+    if charState["recording"]:
+        if not key in ("lagdetection","lagdetection_","-"):
+            if charState["recordingTo"] == None:
+                charState["recordingTo"] = key
+                charState["macros"][charState["recordingTo"]] = []
+                char.messages.append("start recording to: %s"%(charState["recordingTo"]))
+                return
+            else:
+                if not "norecord" in flags:
+                    charState["macros"][charState["recordingTo"]].append(key)
+
     if key in ("|",):
         char.interactionState["stateChange"] = True
         return
@@ -277,8 +288,6 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
         char.interactionState["enumerateState"] = []
 
     if char.interactionState["enumerateState"]:
-        if charState["recordingTo"] and not "norecord" in flags:
-            charState["macros"][charState["recordingTo"]].append(key)
 
         if char.interactionState["enumerateState"][-1]["type"] == None:
             char.interactionState["enumerateState"][-1]["type"] = key
@@ -424,13 +433,8 @@ current registers:
 
         char.interactionState["varActions"].append({"outOperator":None})
 
-        if charState["recordingTo"] and not "norecord" in flags:
-            charState["macros"][charState["recordingTo"]].append(key)
         return
     if char.interactionState["varActions"]:
-
-        if charState["recordingTo"] and not "norecord" in flags:
-            charState["macros"][charState["recordingTo"]].append(key)
 
         lastVarAction = char.interactionState["varActions"][-1]
         if lastVarAction["outOperator"] == None:
@@ -572,16 +576,12 @@ press any other key to finish
     if not "ifParam2" in char.interactionState:
         char.interactionState["ifParam2"] = []
     if key in ("%",):
-        if charState["recordingTo"] and not "norecord" in flags:
-            charState["macros"][charState["recordingTo"]].append("%")
         char.interactionState["ifCondition"].append(None)
         char.interactionState["ifParam1"].append([])
         char.interactionState["ifParam2"].append([])
         return
 
     if len(char.interactionState["ifCondition"]) and not key in ("%","lagdetection","lagdetection_"):
-        if charState["recordingTo"] and not "norecord" in flags:
-            charState["macros"][charState["recordingTo"]].append(key)
         if char.interactionState["ifCondition"][-1] == None:
             char.interactionState["ifCondition"][-1] = key
         elif char.interactionState["ifParam1"][-1] in ([],[("_",["norecord"])]):
@@ -652,22 +652,12 @@ press any other key to finish
                 char.interactionState["ifParam2"].pop()
         return
 
-    if charState["recording"]:
-        if not key in ("lagdetection","lagdetection_","-"):
-            if charState["recordingTo"] == None:
-                charState["recordingTo"] = key
-                charState["macros"][charState["recordingTo"]] = []
-                char.messages.append("start recording to: %s"%(charState["recordingTo"]))
-                return
-            else:
-                if not charState["replay"] and not charState["doNumber"] and not "norecord" in flags:
-                    charState["macros"][charState["recordingTo"]].append(key)
-
     if key in "0123456789":
         if charState["number"] == None:
             charState["number"] = ""
         charState["number"] += key
         key = commandChars.ignore
+
 
     if key in ("%",):
         charState["loop"].append(2)
@@ -730,8 +720,6 @@ current macros:
             if not charState["number"]:
 
                 charState["replay"][-1] = 1
-                if charState["recording"] and not charState["doNumber"] and not "norecord" in flags and charState["recordingTo"]:
-                    charState["macros"][charState["recordingTo"]].append(key)
 
                 if key in charState["macros"]:
                     char.messages.append("replaying %s: %s"%(key,''.join(charState["macros"][key])))
@@ -749,9 +737,6 @@ current macros:
                 charState["number"] = None
 
                 charState["doNumber"] = True
-
-                if charState["recording"] and not "norecord" in flags and charState["recordingTo"]:
-                    charState["macros"][charState["recordingTo"]].append(key)
 
                 commands = []
                 counter = 0

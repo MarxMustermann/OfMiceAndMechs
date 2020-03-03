@@ -2121,14 +2121,6 @@ class MaggotFermenter(Item):
             character.messages.append("not enough maggots")
             return
        
-        # remove ressources
-        counter = 0
-        for item in items:
-            if counter >= 10:
-                break
-            counter += 1
-            self.room.removeItem(item)
-
         targetFull = False
         if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
             if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
@@ -2140,6 +2132,14 @@ class MaggotFermenter(Item):
         if targetFull:
             character.messages.append("the target area is full, the machine does not produce anything")
             return
+
+        # remove ressources
+        counter = 0
+        for item in items:
+            if counter >= 10:
+                break
+            counter += 1
+            self.room.removeItem(item)
 
         # spawn the new item
         new = BioMass(creator=self)
@@ -2258,14 +2258,6 @@ class BioPress(Item):
         if len(items) < 10:
             character.messages.append("not enough bio mass")
             return
-       
-        # remove ressources
-        counter = 0
-        for item in items:
-            if counter >= 10:
-                break
-            counter += 1
-            self.room.removeItem(item)
 
         targetFull = False
         if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
@@ -2278,6 +2270,14 @@ class BioPress(Item):
         if targetFull:
             character.messages.append("the target area is full, the machine does not produce anything")
             return
+       
+        # remove ressources
+        counter = 0
+        for item in items:
+            if counter >= 10:
+                break
+            counter += 1
+            self.room.removeItem(item)
 
         # spawn the new item
         new = PressCake(creator=self)

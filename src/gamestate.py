@@ -159,6 +159,13 @@ class GameState(src.saveing.Saveable):
         self.terrain = self.terrainMap[15][15]
         terrain = self.terrain
 
+        if state["mainChar"]["terrain"]:
+            for terrainLine in self.terrainMap:
+                for iterTerrain in terrainLine:
+                    if iterTerrain.id == state["mainChar"]["terrain"]:
+                        terrain = iterTerrain
+                        self.terrain = iterTerrain
+
         # load the main character
         # bad code: should be simplified
         if not self.mainChar:
@@ -169,18 +176,13 @@ class GameState(src.saveing.Saveable):
         yPosition = self.mainChar.yPosition
         if "yPosition" in state["mainChar"]:
             yPosition = state["mainChar"]["yPosition"]
-        if "room" in state["mainChar"]:
-            if state["mainChar"]["room"]:
-                for room in terrain.rooms:
-                    if room.id == state["mainChar"]["room"]:
-                        room.addCharacter(self.mainChar,xPosition,yPosition)
-                        break
-            else:
-                if state["terrain"]:
-                    self.terrain.addCharacter(self.mainChar,xPosition,yPosition)
+        if "room" in state["mainChar"] and state["mainChar"]["room"]:
+            for room in terrain.rooms:
+                if room.id == state["mainChar"]["room"]:
+                    room.addCharacter(self.mainChar,xPosition,yPosition)
+                    break
         else:
-            if state["terrain"]:
-                self.terrain.addCharacter(self.mainChar,xPosition,yPosition)
+            terrain.addCharacter(self.mainChar,xPosition,yPosition)
         self.mainChar.setState(state["mainChar"])
 
         # load cinematics

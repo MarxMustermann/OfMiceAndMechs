@@ -194,8 +194,6 @@ def processAllInput(commandKeyQueue):
 
 shownStarvationWarning = False
 
-pauseGame = False
-
 '''
 handle a keystroke
 bad code: there are way too much lines of code in this function
@@ -239,6 +237,23 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
             else:
                 if not "norecord" in flags:
                     charState["macros"][charState["recordingTo"]].append(key)
+
+    if charState["submenue"] and charState["submenue"].type == "InputMenu" and not (key in ("|",">","<") and not charState["submenue"].escape):
+
+        # let the submenu handle the keystroke
+        lastSubmenu = charState["submenue"]
+        done = charState["submenue"].handleKey(key)
+
+        if not lastSubmenu == charState["submenue"]:
+            charState["submenue"].handleKey("~")
+            done = False
+
+        # reset rendering flags
+        if done:
+            charState["submenue"] = None
+            char.specialRender = False
+            doAdvanceGame = False
+        key = commandChars.ignore
 
     if key in ("|",):
         char.interactionState["stateChange"] = True
@@ -860,7 +875,6 @@ current registers
     # bad code: global variables
     global lastLagDetection
     global idleCounter
-    global pauseGame
     global ticksSinceDeath
 
     # show the scrolling footer
@@ -902,8 +916,6 @@ current registers
         if lastLagDetection < time.time()-0.4:
             pass
             #return
-
-    pauseGame = False
 
     # repeat autoadvance keystrokes
     # bad code: keystrokes are abused here, a timer would be more appropriate
@@ -1463,7 +1475,6 @@ current registers
         # open the help screen
         if key in (commandChars.show_help):
             char.specialRender = True        
-            pauseGame = True
 
     # render submenues
     if charState["submenue"]:
@@ -1471,7 +1482,6 @@ current registers
         # set flag to not render the game
         if mainChar == char and not "norecord" in flags:
             char.specialRender = True        
-        pauseGame = True
 
         # let the submenu handle the keystroke
         lastSubmenu = charState["submenue"]
@@ -1484,7 +1494,6 @@ current registers
         # reset rendering flags
         if done:
             charState["submenue"] = None
-            pauseGame = False
             char.specialRender = False
             doAdvanceGame = False
 

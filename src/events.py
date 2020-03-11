@@ -56,6 +56,16 @@ class Event(src.saveing.Saveable):
     def handleEvent(self):
         pass
 
+class RunFunctionEvent(Event):
+    def __init__(self,tick,creator=None):
+        super().__init__(tick=tick,creator=creator)
+
+    def setFunction(self,function):
+        self.function = function
+
+    def handleEvent(self):
+        self.function()
+
 '''
 straightforward adding a message
 '''

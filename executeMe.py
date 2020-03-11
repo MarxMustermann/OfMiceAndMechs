@@ -480,6 +480,13 @@ def advanceGame():
             for room in specificTerrain.rooms:
                 room.advance()
 
+            while specificTerrain.events and specificTerrain.events[0].tick <= gameStateObj.tick:
+                event = specificTerrain.events[0]
+                if event.tick < gameStateObj.tick:
+                    continue
+                event.handleEvent()
+                specificTerrain.events.remove(event)
+
     gameStateObj.tick += 1
 
 # bad code: common variables with modules

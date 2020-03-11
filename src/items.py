@@ -472,7 +472,7 @@ class Scrap(Item):
         self.terrain.itemsOnFloor.append(newItem)
 
     '''
-    recalculate the walkabe attribute
+    recalculate the walkable attribute
     '''
     def setWalkable(self):
         if self.amount < 5:
@@ -3989,6 +3989,9 @@ class Machine(Item):
             ressourcesNeeded = ["Case","pusher","puller"]
         elif self.toProduce == "BluePrinter":
             ressourcesNeeded = ["Case","pusher","puller"]
+        
+        elif self.toProduce == "Bomb":
+            ressourcesNeeded = ["Frame","Explosive"]
 
         else:
             ressourcesNeeded = ["MetalBars"]
@@ -4919,6 +4922,7 @@ class BluePrinter(Item):
                 [["Bolt","pusher"],"Tumbler"],
                 [["Sheet","Heater"],"ItemUpgrader"],
                 [["Scrap","MetalBars"],"Scraper"],
+                [["Tank","Connector"],"ReactionChamber"],
 
                 [["Frame","MetalBars"],"Case"],
                 [["Frame"],"PocketFrame"],
@@ -4936,6 +4940,9 @@ class BluePrinter(Item):
                 [["Connector"],"Door"],
                 [["pusher"],"Drill"],
                 [["puller"],"RoomBuilder"],
+
+                [["Explosive"],"Bomb"],
+                [["Bomb"],"Mortar"],
 
                 [["Sheet"],"Sheet"],
                 [["Radiator"],"Radiator"],
@@ -5589,6 +5596,250 @@ A memory cell. Is complex building item. It is used to build logic items.
 """
         return text
 
+class Bomb(Item):
+    type = "Bomb"
+
+    '''
+    almost straightforward state initialization
+    '''
+    def __init__(self,xPosition=0,yPosition=0,amount=1,name="bomb",creator=None,noId=False):
+
+        super().__init__(displayChars.bomb,xPosition,yPosition,creator=creator,name=name)
+        
+        self.bolted = False
+        self.walkable = True
+
+        self.initialState = self.getState()
+
+    def getLongInfo(self):
+
+        text = """
+
+A simple Bomb. It explodes when destroyed.
+
+The explosion will damage/destroy everything on the current tile or the container.
+
+Activate it to trigger a exlosion.
+
+"""
+        return text
+
+    def apply(self,character):
+        self.destroy()
+
+    def destroy(self):
+        xPosition = self.xPosition
+        yPosition = self.yPosition
+
+        new = Explosion(creator=self)
+        new.xPosition = self.xPosition
+        new.yPosition = self.yPosition
+        new.bolted = False
+
+        event = src.events.RunFunctionEvent(gamestate.tick+1,creator=self)
+        event.setFunction(new.explode)
+        self.terrain.addEvent(event)
+
+        super().destroy()
+
+        """
+        if xPosition and yPosition:
+            for item in self.container.itemByCoordinates[(xPosition,yPosition)]:
+                if item == self:
+                    continue
+                if item.type == "Explosion":
+                    continue
+                item.destroy()
+        """
+
+        self.container.addItems([new])
+
+class Explosive(Item):
+    type = "Explosive"
+
+    '''
+    almost straightforward state initialization
+    '''
+    def __init__(self,xPosition=0,yPosition=0,amount=1,name="explosive",creator=None,noId=False):
+
+        super().__init__(displayChars.bomb,xPosition,yPosition,creator=creator,name=name)
+        
+        self.bolted = False
+        self.walkable = True
+
+        self.initialState = self.getState()
+
+    def getLongInfo(self):
+
+        text = """
+
+A Explosive. Simple building material. Used to build bombs.
+
+"""
+        return text
+
+class Mortar(Item):
+    type = "Mortar"
+    '''
+    almost straightforward state initialization
+    '''
+    def __init__(self,xPosition=0,yPosition=0,amount=1,name="mortar",creator=None,noId=False):
+
+        super().__init__(displayChars.mortar,xPosition,yPosition,creator=creator,name=name)
+        
+        self.bolted = False
+        self.loaded = False
+        self.loadedWith = None
+        self.precision = 5
+
+        self.attributesToStore.extend([
+               "loaded","precision"])
+
+        self.initialState = self.getState()
+
+    def apply(self,character):
+        if not self.loaded:
+            itemFound = None
+            for item in character.inventory:
+                if item.type == "Bomb":
+                    itemFound = item
+                    continue
+
+            if not itemFound:
+                character.messages.append("could not load mortar. no bomb in inventory")
+                return
+
+            character.messages.append("you load the mortar")
+
+            character.inventory.remove(itemFound)
+            self.loadedWith = itemFound
+            self.loaded = True
+        else:
+            if not self.loadedWith:
+                self.loaded = False
+                return
+            character.messages.append("you fire the mortar")
+            bomb = self.loadedWith
+            self.loadedWith = None
+            self.loaded = False
+
+            bomb.yPosition = self.yPosition
+            bomb.xPosition = self.xPosition
+            bomb.bolted = False
+
+            distance = 10
+            if (gamestate.tick+self.yPosition+self.xPosition)%self.precision == 0:
+                character.messages.append("you missfire (0)")
+                self.precision += 10
+                distance -= gamestate.tick%10-10//2
+                character.messages.append((distance,gamestate.tick%10,10//2))
+            elif (gamestate.tick+self.yPosition+self.xPosition)%self.precision == 1:
+                character.messages.append("you missfire (1)")
+                self.precision += 5
+                distance -= gamestate.tick%7-7//2
+                character.messages.append((distance,gamestate.tick%7,7//2))
+            elif (gamestate.tick+self.yPosition+self.xPosition)%self.precision < 10:
+                character.messages.append("you missfire (10)")
+                self.precision += 2
+                distance -= gamestate.tick%3-3//2
+                character.messages.append((distance,gamestate.tick%3,3//2))
+            elif (gamestate.tick+self.yPosition+self.xPosition)%self.precision < 100:
+                character.messages.append("you missfire (100)")
+                self.precision += 1
+                distance -= gamestate.tick%2-2//2
+                character.messages.append((distance,gamestate.tick%2,2//2))
+
+            bomb.yPosition += distance
+
+            self.container.addItems([bomb])
+
+            bomb.destroy()
+
+    def getLongInfo(self):
+
+        text = """
+
+A mortar. Load it with bombs and activate it to fire.
+
+It fires 10 steps to the south. Its current precision is """+str(self.precision)+""".
+
+"""
+        return text
+
+
+class FireCrystals(Item):
+    type = "FireCrystals"
+
+    def __init__(self,xPosition=0,yPosition=0,amount=1,name="mortar",creator=None,noId=False):
+
+        super().__init__(displayChars.reactionChamber,xPosition,yPosition,creator=creator,name=name)
+
+class ReactionChamber(Item):
+    type = "ReactionChamber"
+
+    def __init__(self,xPosition=0,yPosition=0,amount=1,name="mortar",creator=None,noId=False):
+
+        super().__init__(displayChars.reactionChamber,xPosition,yPosition,creator=creator,name=name)
+        
+    def apply(self,character):
+
+        coalFound = None
+        flaskFound = None
+
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+                if item.type in "Coal":
+                    coalFound = item
+                if item.type in "GooFlask" and item.uses == 100:
+                    flaskFound = item
+
+        if not coalFound or not flaskFound:
+            character.messages.append("reagents not found. place coal and a full goo flask to the left/west")
+            return
+
+        self.room.removeItem(coalFound)
+        self.room.removeItem(flaskFound)
+        
+        new = Explosive(creator=self)
+
+        new.xPosition = self.xPosition+1
+        new.yPosition = self.yPosition
+        new.bolted = False
+        self.room.addItems([new])
+    
+    def getLongInfo(self):
+
+        text = """
+
+A raction chamber. It is used to mix chemicals together.
+
+"""
+        return text
+
+class Explosion(Item):
+    type = "Explosion"
+
+    def __init__(self,xPosition=0,yPosition=0,amount=1,name="explosion",creator=None,noId=False):
+        super().__init__(displayChars.explosion,xPosition,yPosition,creator=creator,name=name)
+
+    def pickUp(self,character):
+        pass
+    def apply(self,character):
+        self.explode()
+        pass
+    def drop(self,character):
+        pass
+    def explode(self):
+
+        if self.xPosition and self.yPosition:
+            for item in self.container.itemByCoordinates[(self.xPosition,self.yPosition)]:
+                if item == self:
+                    continue
+                if item.type == "Explosion":
+                    continue
+                item.destroy()
+        self.container.removeItem(self)
+        
 # maping from strings to all items
 # should be extendable
 itemMap = {
@@ -5674,6 +5925,11 @@ itemMap = {
             "Command":Command,
             "Note":Note,
             "PocketFrame":PocketFrame,
+            "Bomb":Bomb,
+            "Mortar":Mortar,
+            "Explosive":Explosive,
+            "ReactionChamber":ReactionChamber,
+            "Explosion":Explosion,
 }
 
 producables = {

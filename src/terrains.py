@@ -54,6 +54,7 @@ class Terrain(src.saveing.Saveable):
         self.listeners = {"default":[]}
         self.initialSeed = seed
         self.seed = seed
+        self.events = []
 
         # set id
         self.id = {
@@ -1432,6 +1433,18 @@ class Terrain(src.saveing.Saveable):
                   "initialSeed":self.initialSeed,
                   "objType":self.objType,
                }
+
+    '''
+    add an event to internal structure
+    bad code: should be in extra class
+    '''
+    def addEvent(self,event):
+        index = 0
+        for existingEvent in self.events:
+            if event.tick < existingEvent.tick:
+                break
+            index += 1
+        self.events.insert(index,event)
 
 '''
 a almost empty terrain

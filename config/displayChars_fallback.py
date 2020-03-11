@@ -1,5 +1,11 @@
 import urwid
 
+explosion = (urwid.AttrSpec("#fa0","#f00"),"##")
+reactionChamber = (urwid.AttrSpec("#aaa","black"),"[}")
+explosive = (urwid.AttrSpec("#a55","black"),"be")
+fireCrystals = (urwid.AttrSpec("#3f3","black"),"bc")
+bomb = (urwid.AttrSpec("#a88","black"),"bb")
+mortar = (urwid.AttrSpec("#aaa","black"),"Bm")
 pocketFrame = (urwid.AttrSpec("#aaa","black"),"*h")
 case = (urwid.AttrSpec("#aaa","black"),"*H")
 memoryCell = (urwid.AttrSpec("#33f","black"),"*m")

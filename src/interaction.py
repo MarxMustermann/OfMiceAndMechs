@@ -2106,7 +2106,7 @@ class InputMenu(SubMenu):
             self.escape = True
         elif key == "backspace" and not self.escape:
             self.text = self.text[:-1]
-        elif key == "~" and not self.escape:
+        elif key == "~":
             pass
         else:
             if key == "enter":

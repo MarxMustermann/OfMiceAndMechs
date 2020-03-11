@@ -1,5 +1,10 @@
 import pygame
 
+reactionChamber = pygame.image.load('config/Images/perspectiveTry/reactionChamber.png')
+explosive = pygame.image.load('config/Images/perspectiveTry/explosive.png')
+fireCrystals = pygame.image.load('config/Images/perspectiveTry/fireCrystals.png')
+bomb = pygame.image.load('config/Images/perspectiveTry/bomb.png')
+mortar = pygame.image.load('config/Images/perspectiveTry/mortar.png')
 pocketFrame = pygame.image.load('config/Images/perspectiveTry/pocketFrame.png')
 case = pygame.image.load('config/Images/perspectiveTry/case.png')
 memoryCell = pygame.image.load('config/Images/perspectiveTry/memoryCell.png')

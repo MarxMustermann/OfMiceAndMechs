@@ -1,5 +1,6 @@
 import urwid
 
+fireCrystals = (urwid.AttrSpec("#33f","#007"),";x")
 explosion = (urwid.AttrSpec("#fa0","#f00"),"##")
 reactionChamber = (urwid.AttrSpec("#aaa","black"),"[}")
 explosive = (urwid.AttrSpec("#a55","black"),"be")

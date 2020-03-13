@@ -319,7 +319,8 @@ class Item(src.saveing.Saveable):
                 newPosition = (self.xPosition+1,self.yPosition)
 
             # remove self from current position
-            self.terrain.itemByCoordinates[oldPosition].remove(self)
+            if self in self.terrain.itemByCoordinates[oldPosition]:
+                self.terrain.itemByCoordinates[oldPosition].remove(self)
             if len(self.terrain.itemByCoordinates) == 0:
                 del self.terrain.itemByCoordinates[oldPosition]
 
@@ -5772,7 +5773,7 @@ class FireCrystals(Item):
 
     def __init__(self,xPosition=0,yPosition=0,amount=1,name="mortar",creator=None,noId=False):
 
-        super().__init__(displayChars.reactionChamber,xPosition,yPosition,creator=creator,name=name)
+        super().__init__(displayChars.fireCrystals,xPosition,yPosition,creator=creator,name=name)
 
 class ReactionChamber(Item):
     type = "ReactionChamber"
@@ -5800,12 +5801,17 @@ class ReactionChamber(Item):
         self.room.removeItem(coalFound)
         self.room.removeItem(flaskFound)
         
-        new = Explosive(creator=self)
+        explosive = Explosive(creator=self)
+        explosive.xPosition = self.xPosition+1
+        explosive.yPosition = self.yPosition
+        explosive.bolted = False
 
-        new.xPosition = self.xPosition+1
-        new.yPosition = self.yPosition
-        new.bolted = False
-        self.room.addItems([new])
+        byProduct = FireCrystals(creator=self)
+        byProduct.xPosition = self.xPosition
+        byProduct.yPosition = self.yPosition+1
+        byProduct.bolted = False
+
+        self.room.addItems([byProduct,explosive])
     
     def getLongInfo(self):
 

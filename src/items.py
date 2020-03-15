@@ -5767,18 +5767,17 @@ It fires 10 steps to the south. Its current precision is """+str(self.precision)
 """
         return text
 
-
 class FireCrystals(Item):
     type = "FireCrystals"
 
-    def __init__(self,xPosition=0,yPosition=0,amount=1,name="mortar",creator=None,noId=False):
+    def __init__(self,xPosition=0,yPosition=0,amount=1,name="fireCrystals",creator=None,noId=False):
 
         super().__init__(displayChars.fireCrystals,xPosition,yPosition,creator=creator,name=name)
 
 class ReactionChamber(Item):
     type = "ReactionChamber"
 
-    def __init__(self,xPosition=0,yPosition=0,amount=1,name="mortar",creator=None,noId=False):
+    def __init__(self,xPosition=0,yPosition=0,amount=1,name="reactionChamber",creator=None,noId=False):
 
         super().__init__(displayChars.reactionChamber,xPosition,yPosition,creator=creator,name=name)
         

@@ -2025,6 +2025,7 @@ class GooDispenser(Item):
                "activated","charges"])
 
         self.charges = 0
+        self.maxCharges = 100
 
         self.description = self.baseName + " (%s charges)"%(self.charges)
 
@@ -2202,6 +2203,10 @@ class GooProducer(Item):
                     dispenser = item
         if not dispenser:
             character.messages.append("no goo dispenser attached")
+            return 
+
+        if dispenser.charges >= dispenser.maxCharges:
+            character.messages.append("the goo dispenser is full")
             return 
 
         # remove ressources

@@ -382,6 +382,7 @@ class Terrain(src.saveing.Saveable):
         self.setNonMovableMap()
         self.watershedCoordinates = {}
 
+        return
         if self.noPaths:
             return
 

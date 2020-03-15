@@ -5772,6 +5772,22 @@ It fires 10 steps to the south. Its current precision is """+str(self.precision)
 """
         return text
 
+class Chute(Item):
+    type = "Chute"
+
+    def __init__(self,xPosition=0,yPosition=0,amount=1,name="chute",creator=None,noId=False):
+
+        super().__init__(displayChars.fireCrystals,xPosition,yPosition,creator=creator,name=name)
+
+    def apply(self,character):
+        if character.inventory:
+            item = character.inventory[-1]
+            character.inventory.remove(item)
+            item.xPosition = self.xPosition+1
+            item.yPosition = self.yPosition
+
+            self.room.addItems([item])
+
 class FireCrystals(Item):
     type = "FireCrystals"
 
@@ -5940,6 +5956,7 @@ itemMap = {
             "Explosive":Explosive,
             "ReactionChamber":ReactionChamber,
             "Explosion":Explosion,
+            "Chute":Chute,
 }
 
 producables = {

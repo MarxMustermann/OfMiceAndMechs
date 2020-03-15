@@ -3022,6 +3022,11 @@ Sheets can be produced from metal bars.
             convertedCommand = []
             convertedCommand.append(("-",["norecord"]))
             self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+
+            if not "a" in self.character.macroState["macros"]:
+                character.messages.append("no macro found in buffer \"a\"")
+                return
+
             if self.xPosition:
                 self.character.macroState["macros"]["a"] = self.character.macroState["macros"]["a"][:-1]
             else:

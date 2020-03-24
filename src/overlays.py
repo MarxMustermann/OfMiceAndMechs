@@ -87,7 +87,7 @@ class MainCharOverlay(object):
     add overlayed information
     '''
     def apply(self,chars,mainChar):
-        if not mainChar.dead: 
+        if not mainChar.dead and not mainChar.room: 
             chars[mainChar.yPosition][mainChar.xPosition] =  mainChar.display
 
 

@@ -229,10 +229,16 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
     if charState["recording"]:
         if not key in ("lagdetection","lagdetection_","-"):
-            if charState["recordingTo"] == None:
-                charState["recordingTo"] = key
-                charState["macros"][charState["recordingTo"]] = []
-                char.messages.append("start recording to: %s"%(charState["recordingTo"]))
+            if charState["recordingTo"] == None or charState["recordingTo"][-1].isupper():
+                if charState["recordingTo"] == None:
+                    charState["recordingTo"] = key
+                else:
+                    charState["recordingTo"] += key
+
+                if not key.isupper():
+                    charState["macros"][charState["recordingTo"]] = []
+                    char.messages.append("start recording to: %s"%(charState["recordingTo"]))
+
                 return
             else:
                 if not "norecord" in flags:
@@ -731,20 +737,48 @@ current macros:
             charState["recordingTo"] = None
 
     if charState["replay"] and not key in ("lagdetection","lagdetection_","~",):
-        if charState["replay"] and charState["replay"][-1] == 2:
+        if charState["replay"] and (charState["replay"][-1] == "" or charState["replay"][-1][-1].isupper()):
             if not charState["number"]:
 
-                charState["replay"][-1] = 1
+                charState["replay"][-1] += key
 
-                if key in charState["macros"]:
-                    char.messages.append("replaying %s: %s"%(key,''.join(charState["macros"][key])))
+                if charState["replay"][-1][-1].isupper():
+                    text = """
+
+        press key for macro to replay
+
+        current macros:
+
+        """
+
+                    for macroName,value in charState["macros"].items():
+                        if not macroName.startswith(charState["replay"][-1]):
+                            continue
+
+                        compressedMacro = ""
+                        for keystroke in value:
+                            if len(keystroke) == 1:
+                                compressedMacro += keystroke
+                            else:
+                                compressedMacro += "/"+keystroke+"/"
+
+                        text += """
+    %s - %s"""%(macroName,compressedMacro)
+
+                    header.set_text((urwid.AttrSpec("default","default"),"record macro"))
+                    main.set_text((urwid.AttrSpec("default","default"),text))
+                    footer.set_text((urwid.AttrSpec("default","default"),""))
+                    char.specialRender = True
+                    return
+
+                if charState["replay"][-1] in charState["macros"]:
+                    char.messages.append("replaying %s: %s"%(charState["replay"][-1],''.join(charState["macros"][charState["replay"][-1]])))
                     commands = []
-                    for keyPress in charState["macros"][key]:
+                    for keyPress in charState["macros"][charState["replay"][-1]]:
                         commands.append((keyPress,["norecord"]))
-                    #processAllInput(commands)
                     charState["commandKeyQueue"] = commands+charState["commandKeyQueue"]
                 else:
-                    char.messages.append("no macro recorded to %s"%(key))
+                    char.messages.append("no macro recorded to %s"%(charState["replay"][-1]))
 
                 charState["replay"].pop()
             else:
@@ -760,7 +794,6 @@ current macros:
                     commands.append((key,["norecord"]))
                     counter += 1
                 charState["replay"].pop()
-                #processAllInput(commands)
                 charState["commandKeyQueue"] = commands+charState["commandKeyQueue"]
 
                 charState["doNumber"] = False
@@ -770,7 +803,6 @@ current macros:
     if key in ("_",):
 
         if mainChar == char and not "norecord" in flags:
-            header.set_text((urwid.AttrSpec("default","default"),"observe"))
             text = """
 
 press key for macro to replay
@@ -794,7 +826,7 @@ current macros:
             footer.set_text((urwid.AttrSpec("default","default"),""))
             char.specialRender = True
 
-        charState["replay"].append(2)
+        charState["replay"].append("")
         return
 
     if charState["number"] and not key in (commandChars.ignore,"lagdetection","lagdetection_"):

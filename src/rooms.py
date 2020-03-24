@@ -2689,35 +2689,19 @@ XXX
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.name = "room"
 
-    def reconfigure(self,sizeX=3,sizeY=3,doorPos=(2,1)):
+    def reconfigure(self,sizeX=3,sizeY=3,items=[]):
         self.sizeX = sizeX
         self.sizeY = sizeY
 
         for item in self.itemsOnFloor[:]:
             self.removeItem(item)
 
-        newItems = []
-        y = 0
-        for x in range(0,self.sizeX):
-            if not (x,y) == doorPos:
-                newItems.append(src.items.Wall(x,y,creator=self))
-        y = sizeY-1
-        for x in range(0,self.sizeX):
-            if not (x,y) == doorPos:
-                newItems.append(src.items.Wall(x,y,creator=self))
-        x = 0
-        for y in range(1,self.sizeY):
-            if not (x,y) == doorPos:
-                newItems.append(src.items.Wall(x,y,creator=self))
-        x = sizeX-1
-        for y in range(1,self.sizeY):
-            if not (x,y) == doorPos:
-                newItems.append(src.items.Wall(x,y,creator=self))
-        newItems.append(src.items.Door(doorPos[0],doorPos[1],creator=self))
+        self.addItems(items)
 
-        self.walkingAccess = [doorPos]
-
-        self.addItems(newItems)
+        self.walkingAccess = []
+        for item in items:
+            if item.type == "Door" or item.type == "Chute":
+                self.walkingAccess.append((item.xPosition,item.yPosition))
 
     def setState(self,state):
         super().setState(state)

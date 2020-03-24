@@ -1322,14 +1322,19 @@ class RoomBuilder(Item):
 
         wallMissing = False
         items = []
+        specialItems = []
         for x in range(-roomLeft,roomRight+1):
             pos = (self.xPosition+x,self.yPosition-roomTop)
             wallFound = None 
             if pos in self.terrain.itemByCoordinates:
                 for item in self.terrain.itemByCoordinates[pos]:
-                    if isinstance(item,Wall) or isinstance(item,Door):
+                    if isinstance(item,Wall) or isinstance(item,Door) or isinstance(item,Chute):
                         wallFound = item
-                        items.append(item)
+                        if not item in items:
+                            items.append(item)
+                        if isinstance(item,Door) or isinstance(item,Chute):
+                            if not item in specialItems:
+                                specialItems.append(item)
                         break
             if not wallFound:
                 wallMissing = True
@@ -1339,9 +1344,13 @@ class RoomBuilder(Item):
             wallFound = None 
             if pos in self.terrain.itemByCoordinates:
                 for item in self.terrain.itemByCoordinates[pos]:
-                    if isinstance(item,Wall) or isinstance(item,Door):
+                    if isinstance(item,Wall) or isinstance(item,Door) or isinstance(item,Chute):
                         wallFound = item
-                        items.append(item)
+                        if not item in items:
+                            items.append(item)
+                        if isinstance(item,Door) or isinstance(item,Chute):
+                            if not item in specialItems:
+                                specialItems.append(item)
                         break
             if not wallFound:
                 wallMissing = True
@@ -1351,9 +1360,13 @@ class RoomBuilder(Item):
             wallFound = None 
             if pos in self.terrain.itemByCoordinates:
                 for item in self.terrain.itemByCoordinates[pos]:
-                    if isinstance(item,Wall) or isinstance(item,Door):
+                    if isinstance(item,Wall) or isinstance(item,Door) or isinstance(item,Chute):
                         wallFound = item
-                        items.append(item)
+                        if not item in items:
+                            items.append(item)
+                        if isinstance(item,Door) or isinstance(item,Chute):
+                            if not item in specialItems:
+                                specialItems.append(item)
                         break
             if not wallFound:
                 wallMissing = True
@@ -1363,9 +1376,13 @@ class RoomBuilder(Item):
             wallFound = None 
             if pos in self.terrain.itemByCoordinates:
                 for item in self.terrain.itemByCoordinates[pos]:
-                    if isinstance(item,Wall) or isinstance(item,Door):
+                    if isinstance(item,Wall) or isinstance(item,Door) or isinstance(item,Chute):
                         wallFound = item
-                        items.append(item)
+                        if not item in items:
+                            items.append(item)
+                        if isinstance(item,Door) or isinstance(item,Chute):
+                            if not item in specialItems:
+                                specialItems.append(item)
                         break
             if not wallFound:
                 wallMissing = True
@@ -1375,42 +1392,51 @@ class RoomBuilder(Item):
             character.messages.append("wall missing")
             return
 
-        character.messages.append(len(items))
-        items.append(self)
-        for item in items:
-            try:
-                terrain.removeItem(item,recalculate=False)
-            except:
-                character.messages.append(("failed to remove item",item))
-
-        door = None
-        for item in items:
-            if isinstance(item,Door):
-                if not door:
-                    door = item
-                else:
-                    character.messages.append("too many doors")
-                    return
-        if not door:
-            character.messages.append("too little doors")
-            return
+        for item in specialItems:
+            for compareItem in specialItems:
+                if item == compareItem:
+                    continue
+                if abs(item.xPosition-compareItem.xPosition) > 1 or (abs(item.xPosition-compareItem.xPosition) == 1 and abs(item.yPosition-compareItem.yPosition) > 0):
+                    continue
+                if abs(item.yPosition-compareItem.yPosition) > 1 or (abs(item.yPosition-compareItem.yPosition) == 1 and abs(item.xPosition-compareItem.xPosition) > 0):
+                    continue
+                character.messages.append("special items to near to each other")
+                return
 
         import src.rooms
-        doorPos = (roomLeft+door.xPosition-self.xPosition,roomTop+door.yPosition-self.yPosition)
-        room = src.rooms.EmptyRoom(self.xPosition//15,self.yPosition//15,self.xPosition%15-roomLeft,self.yPosition%15-roomTop,creator=self)
-        room.reconfigure(roomLeft+roomRight+1,roomTop+roomBottom+1,doorPos)
+        oldTerrain = self.terrain
+        for item in items:
+            if item == self:
+                continue
 
+            oldX = item.xPosition
+            oldY = item.yPosition
+            item.xPosition = roomLeft+item.xPosition-self.xPosition
+            item.yPosition = roomTop+item.yPosition-self.yPosition
+            if (item.xPosition < 0 ):
+                character.messages.append((oldX,oldY))
+                character.messages.append((roomLeft,roomTop))
+                character.messages.append((self.xPosition,self.yPosition))
+                character.messages.append((item.yPosition,item.xPosition))
+        room = src.rooms.EmptyRoom(self.xPosition//15,self.yPosition//15,self.xPosition%15-roomLeft,self.yPosition%15-roomTop,creator=self)
+        room.reconfigure(roomLeft+roomRight+1,roomTop+roomBottom+1,items)
+
+        
         xOffset = character.xPosition-self.xPosition
         yOffset = character.yPosition-self.yPosition
 
-        self.terrain.removeCharacter(character)
-        self.terrain.addRooms([room])
+        oldTerrain.removeCharacter(character)
+        oldTerrain.addRooms([room])
         character.xPosition = roomLeft+xOffset
         character.yPosition = roomTop+yOffset
         room.addCharacter(character,roomLeft+xOffset,roomTop+yOffset)
 
+        self.terrain.removeItem(self)
+
         self.xPosition = roomLeft
         self.yPosition = roomTop
+        self.room = None
+        self.terrain = None
         room.addItems([self])
 
     def getLongInfo(self):

@@ -743,6 +743,10 @@ current macros:
                 charState["replay"][-1] += key
 
                 if charState["replay"][-1][-1].isupper():
+
+                    if "norecord" in flags:
+                        return
+
                     text = """
 
         press key for macro to replay

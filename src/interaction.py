@@ -971,7 +971,7 @@ current registers
             char.messages.append("esc pressed")
             options = []
             options.append(("save","save"))
-            options.append(("quit","quit and save"))
+            options.append(("quit","save and quit"))
             options.append(("macros","macros"))
             options.append(("help","help"))
             options.append(("keybinding","keybinding"))

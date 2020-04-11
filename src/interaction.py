@@ -2124,6 +2124,7 @@ class InputMenu(SubMenu):
         self.footerText = "enter the text press enter to confirm"
         self.firstHit = True
         self.escape = False
+        self.position = 0
 
     '''
     show the inventory
@@ -2141,18 +2142,37 @@ class InputMenu(SubMenu):
         if key == "\\" and not self.escape:
             self.escape = True
         elif key == "backspace" and not self.escape:
-            self.text = self.text[:-1]
+            if self.position:
+                self.text = self.text[0:self.position-1] + self.text[self.position:]
+                self.position -= 1
+        elif key == "delete" and not self.escape:
+            if self.position < len(self.text):
+                self.text = self.text[0:self.position] + self.text[self.position+1:]
         elif key == "~":
             pass
+        elif key == "left":
+            self.position -= 1
+        elif key == "right":
+            self.position += 1
         else:
             if key == "enter":
                 key = "\n"
-            self.text += key
+            if len(self.text):
+                self.text = self.text[0:self.position] + key + self.text[self.position:]
+            else:
+                self.text = key
+            self.position += 1
             self.escape = False
 
-        header.set_text((urwid.AttrSpec("default","default"),"\ntext input\n\n"))
+        if len(self.text):
+            text = self.text[0:self.position] + "█" + self.text[self.position:]
+        else:
+            text = "█"
 
-        self.persistentText = (urwid.AttrSpec("default","default"),"\n"+self.query+"\n\n"+self.text)
+        header.set_text((urwid.AttrSpec("default","default"),"\ntext input\n\n"))
+        footer.set_text((urwid.AttrSpec("default","default"),"\ntext input\n\n"))
+
+        self.persistentText = (urwid.AttrSpec("default","default"),"\n"+self.query+"\n\n"+text)
 
         # show the render
         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))

@@ -77,6 +77,8 @@ class NPCsOverlay(object):
     '''
     def apply(self,chars,terrain):
         for character in terrain.characters:
+            if not (character.yPosition and character.xPosition):
+                continue
             chars[character.yPosition][character.xPosition] = character.display
 
 '''

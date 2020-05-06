@@ -135,10 +135,7 @@ class Item(src.saveing.Saveable):
             # remove item from terrain
             # bad code: should be handled by the terrain
             container = self.terrain
-            container.itemsOnFloor.remove(self)
-            container.itemByCoordinates[(self.xPosition,self.yPosition)].remove(self)
-            if not container.itemByCoordinates[(self.xPosition,self.yPosition)]:
-                del container.itemByCoordinates[(self.xPosition,self.yPosition)]
+            container.removeItem(self)
 
             if not self.walkable:
                 terrain.calculatePathMap()
@@ -361,7 +358,7 @@ class Item(src.saveing.Saveable):
     destroy the item and leave scrap
     bad code: only works on terrain
     '''
-    def destroy(self):
+    def destroy(self,generateSrcap=True):
 
         if self.room:
             container = self.room
@@ -370,25 +367,32 @@ class Item(src.saveing.Saveable):
 
         pos = (self.xPosition,self.yPosition) 
 
+        if pos == (None,None):
+            return
+
         # remove item from terrain
         container.removeItem(self)
 
         # generatate scrap
-        newItem = Scrap(pos[0],pos[1],1,creator=self)
-        newItem.room = self.room
-        newItem.terrain = self.terrain
+        if generateSrcap:
+            newItem = Scrap(pos[0],pos[1],1,creator=self)
+            newItem.room = self.room
+            newItem.terrain = self.terrain
 
-        if pos in container.itemByCoordinates:
-            for item in container.itemByCoordinates[pos]:
-                container.removeItem(item)
-                if not item.type == "Scrap":
-                    newItem.amount += 1
-                else:
-                    newItem.amount += item.amount
-        newItem.setWalkable()
+            if pos in container.itemByCoordinates:
+                for item in container.itemByCoordinates[pos]:
+                    container.removeItem(item)
+                    if not item.type == "Scrap":
+                        newItem.amount += 1
+                    else:
+                        newItem.amount += item.amount
+            newItem.setWalkable()
 
-        # place scrap
-        container.addItems([newItem])
+            # place scrap
+            container.addItems([newItem])
+
+        self.xPosition = None
+        self.yPosition = None
             
     def getState(self):
         state = super().getState()
@@ -569,6 +573,8 @@ There is %s in this pile
                 character.messages.append("you add a piece of scrap there pile contains %s scrap now."%(self.amount,))
                 character.inventory.remove(item)
                 self.amount += item.amount
+
+        self.setWalkable()
 
         self.changed()
 
@@ -2963,6 +2969,7 @@ class Sheet(Item):
         self.bolted = False
         self.walkable = True
         self.recording = False
+        self.character = None
 
         self.attributesToStore.extend([
                 "recording"])
@@ -3040,6 +3047,9 @@ Sheets can be produced from metal bars.
 
 
     def createCommand(self):
+
+        if not self.character:
+            return
 
         if not len(self.character.macroState["macros"]):
             self.character.messages.append("no macro found - record a macro to be able to write a command")
@@ -5365,7 +5375,7 @@ class BackTracker(Item):
             character.messages.append("backtracking")
             self.tracking = False
 
-            convertedCommand = [(".",["norecord"]),("esc",["norecord"])]
+            convertedCommand = []
             for item in self.command:
                 convertedCommand.append((item,["norecord"]))
 
@@ -5430,6 +5440,7 @@ class Tumbler(Item):
 
         self.initialState = self.getState()
 
+        self.strength = 20
         self.tracking = False
         self.tracked = None
         self.walkable = True
@@ -5437,11 +5448,11 @@ class Tumbler(Item):
 
     def apply(self,character):
 
-        direction = gamestate.tick%4
-        strength = gamestate.tick%20+1
+        direction = gamestate.tick%33%4
+        strength = gamestate.tick%self.strength+1
 
         direction = ["w","a","s","d"][direction]
-        convertedCommands = [(".",["norecord"]),("esc",["norecord"])] + [(direction,["norecord"])] * strength
+        convertedCommands = [(direction,["norecord"])] * strength
         character.macroState["commandKeyQueue"] = convertedCommands + character.macroState["commandKeyQueue"]
 
         character.messages.append("tumbling %s %s "%(direction,strength))
@@ -5673,8 +5684,8 @@ Activate it to trigger a exlosion.
         new.yPosition = self.yPosition
         new.bolted = False
 
-        event = src.events.RunFunctionEvent(gamestate.tick+1,creator=self)
-        event.setFunction(new.explode)
+        event = src.events.RunCallbackEvent(gamestate.tick+1,creator=self)
+        event.setCallback({"container":new,"method":"explode"})
         self.terrain.addEvent(event)
 
         super().destroy()
@@ -5830,6 +5841,65 @@ class ReactionChamber(Item):
     type = "ReactionChamber"
 
     def __init__(self,xPosition=0,yPosition=0,amount=1,name="reactionChamber",creator=None,noId=False):
+        super().__init__(displayChars.reactionChamber,xPosition,yPosition,creator=creator,name=name)
+        contains = ""
+        
+    def apply(self,character):
+
+        options = []
+        options.append(("add","add"))
+        options.append(("boil","boil"))
+        options.append(("mix","mix"))
+        self.submenue = interaction.SelectionMenu("select the item to produce",options)
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.doAction
+
+    def doAction(self):
+        selection = self.submenue.selection
+        if (selection == "add"):
+            #self.add()
+            pass
+        if (selection == "mix"):
+            self.mix()
+        if (selection == "boil"):
+            self.boil()
+
+    def add(self,chemical):
+        if len(self.contains) >= 10:
+            self.character.messages.append("the reaction chamber is full")
+            return
+
+        self.character.messages.append("you add a "+chemical.type+" to the reaction chamber")
+
+    def mix(self,granularity=9):
+        if len(self.contains) < 10:
+            self.character.messages.append("the reaction chamber is not full")
+            return
+            
+        self.character.messages.append("the reaction chambers contents are mixed with granularity %s"%(granularity))
+
+    def boil(self):
+
+        self.character.messages.append("the reaction chambers contents are boiled")
+        self.contents = self.contents[19]+self.contents[0:19]
+    
+    def getLongInfo(self):
+
+        text = """
+
+A raction chamber. It is used to mix chemicals together.
+
+contains:
+
+"""+self.contains
+
+        return text
+
+
+class ReactionChamber_2(Item):
+    type = "ReactionChamber_2"
+
+    def __init__(self,xPosition=0,yPosition=0,amount=1,name="reactionChamber_2",creator=None,noId=False):
 
         super().__init__(displayChars.reactionChamber,xPosition,yPosition,creator=creator,name=name)
         
@@ -5896,7 +5966,558 @@ class Explosion(Item):
                     continue
                 item.destroy()
         self.container.removeItem(self)
-        
+
+class Chemical(Item):
+    type = "Chemical"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.fireCrystals,xPosition,yPosition,creator=creator,name="chemical")
+        self.composition = b"cccccggggg"
+
+    def apply(self,character):
+        import hashlib
+
+        results = []
+        counter = 0
+
+        import random
+
+        while 1:
+
+            tmp = random.choice(["mix","shift"])
+
+            if tmp == "mix":
+                self.mix(character)
+            elif tmp == "switch":
+                self.mix(character)
+            elif tmp == "shift":
+                self.shift()
+
+            test = hashlib.sha256(self.composition[0:9])
+            character.messages.append(counter)
+
+            result = int(test.digest()[-1])
+            result2 = int(test.digest()[-2])
+            if result < 15:
+                character.messages.append(test.digest())
+                character.messages.append(result)
+                character.messages.append(result2)
+                break
+
+            counter += 1
+
+        #character.messages.append(results)
+
+    def shift(self):
+        self.composition = self.composition[1:]+self.composition[0:1]
+
+    def mix(self,character):
+        part1 = self.composition[0:5]
+        part2 = self.composition[5:10]
+
+        self.composition = part1[0:1]+part2[0:1]+part1[1:2]+part2[1:2]+part1[2:3]+part2[2:3]+part1[3:4]+part2[3:4]+part1[4:5]+part2[4:5]
+
+class Spawner(Item):
+    type = "Spawner"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.fireCrystals,xPosition,yPosition,creator=creator,name="spawner")
+        self.charges = 1
+
+    def apply(self,character):
+        corpses = []
+        for item in character.inventory:
+            if item.type == "Corpse":
+                corpses.append(item)
+
+        for corpse in corpses:
+            self.charges += 1
+            character.inventory.remove(corpse)
+
+        if self.charges:
+            event = src.events.RunCallbackEvent(gamestate.tick+100,creator=self)
+            event.setCallback({"container":self,"method":"spawn"})
+            self.terrain.addEvent(event)
+
+    def spawn(self):
+        if not self.charges:
+            return
+
+        character = characters.Character(displayChars.staffCharactersByLetter["a".lower()],self.xPosition+1,self.yPosition,name="a",creator=self)
+
+        character.solvers = [
+                  "SurviveQuest",
+                  "Serve",
+                  "NaiveMoveQuest",
+                  "MoveQuestMeta",
+                  "NaiveActivateQuest",
+                  "ActivateQuestMeta",
+                  "NaivePickupQuest",
+                  "NaiveDropQuest",
+                  "PickupQuestMeta",
+                  "DrinkQuest",
+                  "ExamineQuest",
+                  "FireFurnaceMeta",
+                  "CollectQuestMeta",
+                  "WaitQuest"
+                  "NaiveDropQuest",
+                  "DropQuestMeta",
+                  "NaiveMurderQuest",
+                ]
+
+        character.inventory.append(Tumbler(None,None,creator=self))
+        character.inventory.append(BackTracker(None,None,creator=self))
+        character.faction = "monster"
+
+        def splitCommand(newCommand):
+            splittedCommand = []
+            for char in newCommand:
+                    splittedCommand.append(char)
+            return splittedCommand
+
+        character.macroState["macros"]["WALKTo"] = splitCommand("$=aa$=ww$=ss$=dd")
+        """
+        character.macroState["macros"]["MURDEr"] = splitCommand("ope_WALKTomijj_u")
+        character.macroState["macros"]["u"] = splitCommand("%E_i_o")
+        character.macroState["macros"]["i"] = splitCommand("_MURDEr")
+        character.macroState["macros"]["o"] = splitCommand("%c_p_a")
+        character.macroState["macros"]["p"] = splitCommand("_GETBODYs")
+        character.macroState["macros"]["a"] = splitCommand("ijj_u")
+        character.macroState["macros"]["s"] = splitCommand("_u")
+        character.macroState["macros"]["GETBODYs"] = splitCommand("opM_WALKTokijsjajijsjijj_u")
+        character.macroState["macros"]["STARt"] = splitCommand("ijsj_a")
+        character.macroState["macros"]["m"] = splitCommand("_STARt")
+        """
+        character.macroState["macros"]["_GOTOTREe"] = splitCommand("opt_WALKTo")
+        character.macroState["macros"]["_RANDOMWALk"] = splitCommand("ijj")
+        character.macroState["macros"]["_a"] = splitCommand("_RANDOMWALk")
+        character.macroState["macros"]["m"] = splitCommand("ijj_GOTOTREe")
+
+        character.macroState["commandKeyQueue"] = [("_",[]),("m",[])]
+        character.satiation = 100000
+        self.container.addCharacter(character,self.xPosition+1,self.yPosition)
+
+        event = src.events.RunCallbackEvent(gamestate.tick+100,creator=self)
+        event.setCallback({"container":self,"method":"spawn"})
+        self.terrain.addEvent(event)
+
+        self.charges -= 1
+
+    def getLongInfo(self):
+        return """
+spawner with %s charges
+"""%(self.charges)
+
+class MoldSpore(Item):
+    type = "MoldSpore"
+
+    def apply(self,character):
+        self.startSpawn()
+
+    def startSpawn(self):
+        event = src.events.RunCallbackEvent(gamestate.tick+(2*self.xPosition+3*self.yPosition+gamestate.tick)%10,creator=self)
+        event.setCallback({"container":self,"method":"spawn"})
+        self.terrain.addEvent(event)
+
+    def spawn(self):
+        new = itemMap["Mold"](creator=self)
+        new.xPosition = self.xPosition
+        new.yPosition = self.yPosition
+        self.container.addItems([new])
+        new.startSpawn()
+        self.destroy(generateSrcap=False)
+
+class Mold(Item):
+    type = "Mold"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.moss,xPosition,yPosition,creator=creator,name="mold")
+        self.charges = 2
+        self.walkable = True
+        self.attributesToStore.extend([
+               "charges"])
+        self.initialState = self.getState()
+
+
+    def apply(self,character):
+        character.satiation += 2
+        if character.satiation > 1000:
+            character.satiation = 1000
+        self.destroy(generateSrcap=False)
+
+    def startSpawn(self):
+        if self.charges:
+            if not (self.xPosition and self.yPosition and self.terrain):
+                return
+            event = src.events.RunCallbackEvent(gamestate.tick+(2*self.xPosition+3*self.yPosition+gamestate.tick)%1000,creator=self)
+            event.setCallback({"container":self,"method":"spawn"})
+            self.terrain.addEvent(event)
+
+    def spawn(self):
+        if self.charges:
+            if not (self.xPosition and self.yPosition):
+                return
+            direction = (2*self.xPosition+3*self.yPosition+gamestate.tick)%4
+            import random
+            direction = random.choice([0,1,2,3])
+            if direction == 0:
+                newPos = (self.xPosition,self.yPosition+1)
+            if direction == 1:
+                newPos = (self.xPosition+1,self.yPosition)
+            if direction == 2:
+                newPos = (self.xPosition,self.yPosition-1)
+            if direction == 3:
+                newPos = (self.xPosition-1,self.yPosition)
+
+            if newPos[0] < 1 or newPos[1] < 1 or newPos[0] > 15*15-2 or newPos[1] > 15*15-2:
+                return
+
+            if not (newPos in self.container.itemByCoordinates and len(self.container.itemByCoordinates[newPos])):
+                new = itemMap["Mold"](creator=self)
+                new.xPosition = newPos[0]
+                new.yPosition = newPos[1]
+                self.container.addItems([new])
+                new.startSpawn()
+            else:
+                if self.container.itemByCoordinates[newPos][-1].type == "Mold":
+                    self.charges += self.container.itemByCoordinates[newPos][-1].charges%2
+                    self.container.itemByCoordinates[newPos][-1].destroy(generateSrcap=False)
+
+                    new = itemMap["Sprout"](creator=self)
+                    new.xPosition = newPos[0]
+                    new.yPosition = newPos[1]
+                    self.container.addItems([new])
+
+                elif self.container.itemByCoordinates[newPos][-1].type == "Sprout":
+                    self.container.itemByCoordinates[newPos][-1].destroy(generateSrcap=False)
+
+                    new = itemMap["Sprout2"](creator=self)
+                    new.xPosition = newPos[0]
+                    new.yPosition = newPos[1]
+                    self.container.addItems([new])
+                elif self.container.itemByCoordinates[newPos][-1].type == "Sprout2":
+                    self.container.itemByCoordinates[newPos][-1].destroy(generateSrcap=False)
+
+                    new = itemMap["Bloom"](creator=self)
+                    new.xPosition = newPos[0]
+                    new.yPosition = newPos[1]
+                    self.container.addItems([new])
+                    new.startSpawn()
+                elif self.container.itemByCoordinates[newPos][-1].type == "Bloom":
+                    self.container.itemByCoordinates[newPos][-1].destroy(generateSrcap=False)
+
+                    new = itemMap["SickBloom"](creator=self)
+                    new.xPosition = newPos[0]
+                    new.yPosition = newPos[1]
+                    self.container.addItems([new])
+                    new.startSpawn()
+                elif self.container.itemByCoordinates[newPos][-1].type == "Corpse":
+                    self.container.itemByCoordinates[newPos][-1].destroy(generateSrcap=False)
+
+                    new = itemMap["PoisonBloom"](creator=self)
+                    new.xPosition = newPos[0]
+                    new.yPosition = newPos[1]
+                    self.container.addItems([new])
+
+                elif self.container.itemByCoordinates[newPos][-1].type == "SickBloom":
+                    self.container.itemByCoordinates[newPos][-1].destroy(generateSrcap=False)
+
+                    new = itemMap["Bush"](creator=self)
+                    new.xPosition = newPos[0]
+                    new.yPosition = newPos[1]
+                    self.container.addItems([new])
+
+                elif self.container.itemByCoordinates[newPos][-1].type == "PoisonBloom":
+                    self.container.itemByCoordinates[newPos][-1].destroy(generateSrcap=False)
+
+                    new = itemMap["PoisonBush"](creator=self)
+                    new.xPosition = newPos[0]
+                    new.yPosition = newPos[1]
+                    self.container.addItems([new])
+
+                elif self.container.itemByCoordinates[newPos][-1].type == "Bush":
+                    self.container.itemByCoordinates[newPos][-1].charges += 10
+
+                elif self.container.itemByCoordinates[newPos][-1].type == "EncrustedBush":
+                    new = itemMap["EncrustedBush"](creator=self)
+                    new.xPosition = self.xPosition
+                    new.yPosition = self.yPosition
+                    self.container.addItems([new])
+                    self.destroy(generateSrcap=False)
+
+                elif self.container.itemByCoordinates[newPos][-1].type in ["PoisonBush","Test"]:
+                    new = itemMap["PoisonBloom"](creator=self)
+                    new.xPosition = self.xPosition
+                    new.yPosition = self.yPosition
+                    self.container.addItems([new])
+                    self.destroy(generateSrcap=False)
+
+        self.charges -= 1
+        if self.charges:
+            self.startSpawn()
+
+class Sprout(Item):
+    type = "Sprout"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.sprout,xPosition,yPosition,creator=creator,name="sprout")
+        self.walkable = True
+
+    def apply(self,character):
+        character.satiation += 10
+        if character.satiation > 1000:
+            character.satiation = 1000
+        new = itemMap["Mold"](creator=self)
+        new.xPosition = self.xPosition
+        new.yPosition = self.yPosition
+        self.container.addItems([new])
+        new.startSpawn()
+        self.destroy(generateSrcap=False)
+
+class Sprout2(Item):
+    type = "Sprout2"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.sprout2,xPosition,yPosition,creator=creator,name="sprout2")
+        self.walkable = True
+
+    def apply(self,character):
+        character.satiation += 25
+        if character.satiation > 1000:
+            character.satiation = 1000
+        new = itemMap["Mold"](creator=self)
+        new.xPosition = self.xPosition
+        new.yPosition = self.yPosition
+        self.container.addItems([new])
+        new.startSpawn()
+        self.destroy(generateSrcap=False)
+
+class Bloom(Item):
+    type = "Bloom"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.bloom,xPosition,yPosition,creator=creator,name="bloom")
+        self.walkable = True
+
+    def apply(self,character):
+        character.satiation += 115
+        if character.satiation > 1000:
+            character.satiation = 1000
+        new = itemMap["Mold"](creator=self)
+        new.xPosition = self.xPosition
+        new.yPosition = self.yPosition
+        self.container.addItems([new])
+        new.startSpawn()
+        self.destroy(generateSrcap=False)
+
+    def startSpawn(self):
+        event = src.events.RunCallbackEvent(gamestate.tick+(2*self.xPosition+3*self.yPosition+gamestate.tick)%10000,creator=self)
+        event.setCallback({"container":self,"method":"spawn"})
+        self.terrain.addEvent(event)
+
+    def spawn(self):
+        if not (self.xPosition and self.yPosition):
+            return
+        direction = (2*self.xPosition+3*self.yPosition+gamestate.tick)%4
+        import random
+        direction = (random.randint(1,20),random.randint(1,20))
+        newPos = (self.xPosition+direction[0]-5,self.yPosition+direction[1]-5)
+
+        if newPos[0] < 1 or newPos[1] < 1 or newPos[0] > 15*15-2 or newPos[1] > 15*15-2:
+            return
+
+        if not (newPos in self.container.itemByCoordinates and len(self.container.itemByCoordinates[newPos])):
+            new = itemMap["Mold"](creator=self)
+            new.xPosition = newPos[0]
+            new.yPosition = newPos[1]
+            self.container.addItems([new])
+            new.startSpawn()
+
+class SickBloom(Item):
+    type = "SickBloom"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.sickBloom,xPosition,yPosition,creator=creator,name="sick bloom")
+        self.walkable = True
+        self.charges = 1
+        self.attributesToStore.extend([
+               "charges"])
+
+    def apply(self,character):
+        if self.charges:
+            self.spawn()
+        else:
+            character.satiation += 100
+            if character.satiation > 1000:
+                character.satiation = 1000
+            new = itemMap["Mold"](creator=self)
+            new.xPosition = self.xPosition
+            new.yPosition = self.yPosition
+            self.container.addItems([new])
+            new.startSpawn()
+            self.destroy(generateSrcap=False)
+
+    def startSpawn(self):
+        event = src.events.RunCallbackEvent(gamestate.tick+(2*self.xPosition+3*self.yPosition+gamestate.tick)%2500,creator=self)
+        event.setCallback({"container":self,"method":"spawn"})
+        self.terrain.addEvent(event)
+
+    def spawn(self):
+        if not self.charges:
+            return
+
+        character = characters.Monster(creator=self)
+
+        character.solvers = [
+                  "NaiveActivateQuest",
+                  "ActivateQuestMeta",
+                ]
+
+        tumbler = Tumbler(None,None,creator=self)
+        tumbler.strength = 1
+        character.inventory.append(tumbler)
+        character.faction = "monster"
+
+        def splitCommand(newCommand):
+            splittedCommand = []
+            for char in newCommand:
+                    splittedCommand.append(char)
+            return splittedCommand
+
+        character.macroState["macros"]["w"] = splitCommand("wj")
+        character.macroState["macros"]["a"] = splitCommand("aj")
+        character.macroState["macros"]["s"] = splitCommand("sj")
+        character.macroState["macros"]["d"] = splitCommand("dj")
+
+        counter = 0
+        command = ""
+        import random
+        while counter < 100:
+            command += "j%s_w%s_a%s_s%s_d"%(random.randint(1,counter+2),random.randint(1,counter+2),random.randint(1,counter+2),random.randint(1,counter+2))
+            counter += 1
+        character.macroState["macros"]["m"] = splitCommand(command+"_m")
+
+        character.macroState["commandKeyQueue"] = [("_",[]),("m",[])]
+        character.satiation = 10
+        self.container.addCharacter(character,self.xPosition,self.yPosition)
+
+        self.charges -= 1
+
+class PoisonBloom(Item):
+    type = "PoisonBloom"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.poisonBloom,xPosition,yPosition,creator=creator,name="poison bloom")
+        self.walkable = True
+
+    def apply(self,character):
+
+        character.die()
+
+        new = itemMap["PoisonBush"](creator=self)
+        new.xPosition = self.xPosition
+        new.yPosition = self.yPosition
+        self.container.addItems([new])
+
+        self.destroy(generateSrcap=False)
+
+class PoisonBush(Item):
+    type = "PoisonBush"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.poisonBush,xPosition,yPosition,creator=creator,name="poison bush")
+        self.walkable = False
+        self.charges = 0
+        self.attributesToStore.extend([
+               "charges"])
+        self.initialState = self.getState()
+
+    def apply(self,character):
+        self.charges += 1
+        if 100 > character.satiation:
+            character.satiation = 0
+        else:
+            character.satiation -= 100
+
+        if self.charges > 10:
+            
+            new = itemMap["Test"](creator=self)
+            new.xPosition = self.xPosition
+            new.yPosition = self.yPosition
+            self.container.addItems([new])
+            
+            self.destroy(generateSrcap=False)
+
+    def spawn(self,distance=1):
+        if not (self.xPosition and self.yPosition):
+            return
+        direction = (2*self.xPosition+3*self.yPosition+gamestate.tick)%4
+        import random
+        direction = (random.randint(1,distance+1),random.randint(1,distance+1))
+        newPos = (self.xPosition+direction[0]-5,self.yPosition+direction[1]-5)
+
+        if newPos[0] < 1 or newPos[1] < 1 or newPos[0] > 15*15-2 or newPos[1] > 15*15-2:
+            return
+
+        if not (newPos in self.container.itemByCoordinates and len(self.container.itemByCoordinates[newPos])):
+            new = itemMap["PoisonBloom"](creator=self)
+            new.xPosition = newPos[0]
+            new.yPosition = newPos[1]
+            self.container.addItems([new])
+
+    def getLongInfo(self):
+        return "poison charges: %s"%(self.charges)
+
+
+class Test(Item):
+    type = "Test"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.door_closed,xPosition,yPosition,creator=creator,name="test")
+        self.walkable = False
+
+    def apply(self,character):
+        if 100 > character.satiation:
+            character.satiation = 0
+        else:
+            character.satiation -= 100
+
+class Bush(Item):
+    type = "Bush"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.bush,xPosition,yPosition,creator=creator,name="bush")
+        self.walkable = False
+        self.charges = 10
+        self.attributesToStore.extend([
+               "charges"])
+        self.initialState = self.getState()
+
+    def apply(self,character):
+        if self.charges > 10:
+            new = itemMap["EncrustedBush"](creator=self)
+            new.xPosition = self.xPosition
+            new.yPosition = self.yPosition
+            self.container.addItems([new])
+
+            self.destroy(generateSrcap=False)
+
+        if self.charges:
+            character.satiation += 5
+            self.charges -= 1
+        else:
+            self.destroy(generateSrcap=False)
+
+    def getLongInfo(self):
+        return "charges: %s"%(self.charges)
+
+class EncrustedBush(Item):
+    type = "EncrustedBush"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.wall,xPosition,yPosition,creator=creator,name="encrusted bush")
+        self.walkable = False
+
 # maping from strings to all items
 # should be extendable
 itemMap = {
@@ -5988,6 +6609,21 @@ itemMap = {
             "ReactionChamber":ReactionChamber,
             "Explosion":Explosion,
             "Chute":Chute,
+            "Chemical":Chemical,
+            "Spawner":Spawner,
+            "Moss":Mold,
+            "Mold":Mold,
+            "MossSeed":MoldSpore,
+            "MoldSpore":MoldSpore,
+            "Bloom":Bloom,
+            "Sprout":Sprout,
+            "Sprout2":Sprout2,
+            "SickBloom":SickBloom,
+            "PoisonBloom":PoisonBloom,
+            "Bush":Bush,
+            "PoisonBush":PoisonBush,
+            "EncrustedBush":EncrustedBush,
+            "Test":Test,
 }
 
 producables = {

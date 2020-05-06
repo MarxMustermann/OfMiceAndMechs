@@ -139,6 +139,7 @@ class Character(src.saveing.Saveable):
         self.gotMovementSchooling = False
         self.gotInteractionSchooling = False
         self.gotExamineSchooling = False
+        self.faction = "player"
 
         # add default quests
         self.assignQuest(src.quests.SurviveQuest(creator=self))
@@ -328,7 +329,7 @@ class Character(src.saveing.Saveable):
 
         import copy
         result["macroState"] = copy.deepcopy(self.macroState)
-        if not result["macroState"]["itemMarkedLast"] == None:
+        if not result["macroState"]["itemMarkedLast"] == None and not isinstance( result["macroState"]["itemMarkedLast"],str):
             result["macroState"]["itemMarkedLast"] = result["macroState"]["itemMarkedLast"].id
 
         return result
@@ -342,7 +343,7 @@ class Character(src.saveing.Saveable):
 
         import copy
         state["macroState"] = copy.deepcopy(self.macroState)
-        if not state["macroState"]["itemMarkedLast"] == None:
+        if not state["macroState"]["itemMarkedLast"] == None and not isinstance(state["macroState"]["itemMarkedLast"],str):
             state["macroState"]["itemMarkedLast"] = state["macroState"]["itemMarkedLast"].id
 
         # add simple structures
@@ -527,7 +528,7 @@ class Character(src.saveing.Saveable):
     straightforward getting a string with detailed info about the character
     '''
     def getDetailedInfo(self):
-        return "\nname: "+str(self.name)+"\nroom: "+str(self.room)+"\ncoordinate: "+str(self.xPosition)+" "+str(self.yPosition)+"\nsubordinates: "+str(self.subordinates)+"\nsat: "+str(self.satiation)+"\nreputation: "+str(self.reputation)+"\ntick: "+str(gamestate.tick)
+        return "\nname: "+str(self.name)+"\nroom: "+str(self.room)+"\ncoordinate: "+str(self.xPosition)+" "+str(self.yPosition)+"\nsubordinates: "+str(self.subordinates)+"\nsat: "+str(self.satiation)+"\nreputation: "+str(self.reputation)+"\ntick: "+str(gamestate.tick)+"\nfaction: "+str(self.faction)
 
     '''
     adds a quest to the characters quest list
@@ -594,7 +595,7 @@ class Character(src.saveing.Saveable):
     '''
     kill the character and do a bit of extra stuff like placing corpses
     '''
-    def die(self,reason=None):
+    def die(self,reason=None,addCorpse=True):
         self.lastRoom = self.room
         self.lastTerrain = self.terrain
 
@@ -602,8 +603,9 @@ class Character(src.saveing.Saveable):
         if self.container:
             container = self.container
             container.removeCharacter(self)
-            corpse = src.items.Corpse(self.xPosition,self.yPosition,creator=self)
-            container.addItems([corpse])
+            if addCorpse:
+                corpse = src.items.Corpse(self.xPosition,self.yPosition,creator=self)
+                container.addItems([corpse])
         # log impossible state
         else:
             debugMessages.append("this should not happen, character died without beeing somewhere ("+str(self)+")")
@@ -615,7 +617,7 @@ class Character(src.saveing.Saveable):
         self.path = []
 
         # notify listeners
-        self.changed("died",{"character":self,"corpse":corpse,"reason":reason})
+        self.changed("died",{"character":self,"reason":reason})
 
         # notify listeners
         self.changed()
@@ -911,6 +913,10 @@ class Mouse(Character):
     def __init__(self,display="🝆 ",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None):
         super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator)
         self.vanished = False
+        self.attributesToStore.extend([
+               "vanished",
+               ])
+        self.initialState = self.getState()
 
     '''
     disapear
@@ -919,3 +925,37 @@ class Mouse(Character):
         # remove self from map
         self.container.removeCharacter(self)
         self.vanished = True
+
+"""
+"""
+class Monster(Character):
+    '''
+    basic state setting
+    '''
+    def __init__(self,display="🝆~",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None):
+        super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator)
+        self.phase = 1
+        self.attributesToStore.extend([
+               "phase",
+               ])
+        self.initialState = self.getState()
+
+    def die(self,reason=None,addCorpse=True):
+        if self.phase == 1:
+            new = src.items.itemMap["Mold"](creator=self)
+            new.xPosition = self.xPosition
+            new.yPosition = self.yPosition
+            self.container.addItems([new])
+            new.startSpawn()
+
+            super().die(reason,addCorpse=False)
+        else:
+            super().die(reason,addCorpse)
+
+    def changed(self,tag="default",info=None):
+        if self.phase == 1 and self.satiation == 999:
+            self.enterPhase2()
+        super().changed(tag,info)
+
+    def enterPhase2(self):
+        self.phase = 2

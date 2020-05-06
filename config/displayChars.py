@@ -1,5 +1,15 @@
 import urwid
 
+moss = (urwid.AttrSpec("#030","black"),",.")
+sprout = (urwid.AttrSpec("#252","black"),",*")
+sprout2 = (urwid.AttrSpec("#474","black"),"**")
+bloom = (urwid.AttrSpec("#fff","black"),"**")
+sickBloom = (urwid.AttrSpec("#ff2","black"),"**")
+poisonBloom = (urwid.AttrSpec("#3f3","black"),"**")
+poisonBush = (urwid.AttrSpec("#3f3","black"),"#%")
+bush = (urwid.AttrSpec("#353","black"),"#%")
+encrustedBush = (urwid.AttrSpec("#484","black"),"##")
+monster = (urwid.AttrSpec("#33f","#007"),"MM")
 fireCrystals = (urwid.AttrSpec("#33f","#007"),";x")
 explosion = (urwid.AttrSpec("#fa0","#f00"),"##")
 reactionChamber = (urwid.AttrSpec("#aaa","black"),"[}")

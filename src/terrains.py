@@ -45,7 +45,7 @@ class Terrain(src.saveing.Saveable):
         self.noPaths = noPaths
 
         # store terrain content
-        self.itemsOnFloor = []
+        #self.itemsOnFloor = []
         self.characters = []
         self.rooms = []
         self.floordisplay = displayChars.floor
@@ -945,7 +945,7 @@ class Terrain(src.saveing.Saveable):
     remove item from terrain
     '''
     def removeItem(self,item,recalculate=True):
-        self.itemsOnFloor.remove(item)
+        #self.itemsOnFloor.remove(item)
         self.itemByCoordinates[(item.xPosition,item.yPosition)].remove(item)
         if not item.walkable and hasattr(self,"watershedStart") and recalculate: # nontrivial: prevents crashes in constructor
             self.calculatePathMap()
@@ -954,7 +954,7 @@ class Terrain(src.saveing.Saveable):
     add items to terrain and add them to internal datastructures
     '''
     def addItems(self,items,recalculate=True):
-        self.itemsOnFloor.extend(items)
+        #self.itemsOnFloor.extend(items)
         recalc = False
         for item in items:
             item.terrain = self
@@ -1055,8 +1055,18 @@ class Terrain(src.saveing.Saveable):
                 
         # draw items on map
         if not mapHidden:
-            for item in self.itemsOnFloor:
+            #for item in self.itemsOnFloor:
+            #    if not (item.yPosition and item.xPosition):
+            #        continue
+            #    chars[item.yPosition][item.xPosition] = item.display
+            for entry in self.itemByCoordinates.values():
+                if not entry:
+                    continue
+                item = entry[0]
+                if not (item.yPosition and item.xPosition):
+                    continue
                 chars[item.yPosition][item.xPosition] = item.display
+
 
         # render each room
         for room in self.rooms:
@@ -1328,16 +1338,28 @@ class Terrain(src.saveing.Saveable):
             room = src.rooms.getRoomFromState(state["roomStates"][roomId],terrain=self)
             self.addRoom(room)
 
-        for item in self.itemsOnFloor[:]:
-            # update items
-            if item.id in state["changedItemList"]:
-                self.removeItem(item,recalculate=False)
-                item.setState(state["itemStates"][item.id])
-                self.addItems([item],recalculate=False)
+        #for item in self.itemsOnFloor[:]:
+        #    # update items
+        #    if item.id in state["changedItemList"]:
+        #        self.removeItem(item,recalculate=False)
+        #        item.setState(state["itemStates"][item.id])
+        #        self.addItems([item],recalculate=False)
+        replaceItems = {}
+        for entry in self.itemByCoordinates.values():
+            for item in entry:
+                # update items
+                if item.id in state["changedItemList"]:
+                    replaceItems[item] = state["itemStates"][item.id]
 
-            # remove items
-            if item.id in state["removedItemList"]:
-                self.removeItem(item)
+        for item,itemState in replaceItems.items():
+            self.removeItem(item,recalculate=False)
+            item.setState(itemState)
+            self.addItems([item],recalculate=False)
+
+        # remove items
+        if item.id in state["removedItemList"]:
+            self.removeItem(item)
+
         # add items
         for itemId in state["newItemList"]:
             item = src.items.getItemFromState(state["itemStates"][itemId])
@@ -1378,6 +1400,19 @@ class Terrain(src.saveing.Saveable):
                     newItem[0] = thing
                 loadingRegistry.callWhenAvailable(item[0],setThing)
 
+        # add new events
+        if "newEvents" in state:
+            for eventId in state["newEvents"]:
+                eventState = state["eventStates"][eventId]
+                event = src.events.getEventFromState(eventState)
+                self.addEvent(event)
+
+        if "eventIds" in state:
+            for eventId in state["eventIds"]:
+                eventState = state["eventStates"][eventId]
+                event = src.events.getEventFromState(eventState)
+                self.addEvent(event)
+
     '''
     get difference between initial and current state
     bad code: should be in saveable
@@ -1386,11 +1421,18 @@ class Terrain(src.saveing.Saveable):
 
         # serialize lists
         (roomStates,changedRoomList,newRoomList,removedRoomList) = self.getDiffList(self.rooms,self.initialState["roomIds"])
-        (itemStates,changedItemList,newItemList,removedItemList) = self.getDiffList(self.itemsOnFloor,self.initialState["itemIds"])
+        #(itemStates,changedItemList,newItemList,removedItemList) = self.getDiffList(self.itemsOnFloor,self.initialState["itemIds"])
+        itemsOnFloor = []
+        for entry in self.itemByCoordinates.values():
+            itemsOnFloor.extend(entry)
+        (itemStates,changedItemList,newItemList,removedItemList) = self.getDiffList(itemsOnFloor,self.initialState["itemIds"])
         exclude = []
         if mainChar:
             exclude.append(mainChar.id)
         (charStates,changedCharList,newCharList,removedCharList) = self.getDiffList(self.characters,self.initialState["characterIds"],exclude=exclude)
+
+        # store events diff
+        (eventStates,changedEvents,newEvents,removedEvents) = self.getDiffList(self.events,self.initialState["eventIds"])
 
         # generate state dict
         return {
@@ -1408,6 +1450,10 @@ class Terrain(src.saveing.Saveable):
                   "charStates":charStates,
                   "initialSeed":self.initialSeed,
                   "objType":self.objType,
+                  "newEvents":newEvents,
+                  "changedEvents":newEvents,
+                  "removedEvents":removedEvents,
+                  "eventStates":eventStates,
                }
 
     '''
@@ -1417,11 +1463,18 @@ class Terrain(src.saveing.Saveable):
     def getState(self):
         # get states for lists
         (roomIds,roomStates) = self.storeStateList(self.rooms)
-        (itemIds,itemStates) = self.storeStateList(self.itemsOnFloor)
+        #(itemIds,itemStates) = self.storeStateList(self.itemsOnFloor)
+        itemsOnFloor = []
+        for entry in self.itemByCoordinates.values():
+            itemsOnFloor.extend(entry)
+        (itemIds,itemStates) = self.storeStateList(itemsOnFloor)
         exclude = []
         if mainChar:
             exclude.append(mainChar.id)
         (characterIds,characterStates) = self.storeStateList(self.characters,exclude=exclude)
+
+        # store events diff
+        (eventStates,eventIds) = self.storeStateList(self.events)
 
         # generate state
         return {
@@ -1433,6 +1486,9 @@ class Terrain(src.saveing.Saveable):
                   "characterStates":characterStates,
                   "initialSeed":self.initialSeed,
                   "objType":self.objType,
+                  "eventStates":eventStates,
+                  "eventIds":eventIds,
+                  "eventStates":eventStates,
                }
 
     '''

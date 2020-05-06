@@ -67,6 +67,37 @@ class RunFunctionEvent(Event):
         self.function()
 
 '''
+the event for automatically terminating the quest
+'''
+class RunCallbackEvent(Event):
+    '''
+    straightforward state setting
+    '''
+    def __init__(self,tick,creator=None):
+        super().__init__(tick,creator=creator)
+        self.type = "RunCallbackEvent"
+        self.callback = None
+
+        # set meta information for saving
+        self.callbacksToStore.append("callback")
+
+    def setCallback(self,callback):
+        self.callback = callback
+
+    '''
+    terminate the quest
+    '''
+    def handleEvent(self):
+        try:
+            self.callback
+        except:
+            return
+        if (self.callback):
+            self.callIndirect(self.callback)
+        else:
+            pass
+
+'''
 straightforward adding a message
 '''
 class ShowMessageEvent(Event):
@@ -112,20 +143,20 @@ class EndQuestEvent(Event):
     '''
     straightforward state setting
     '''
-    def __init__(subself,tick,callback=None,creator=None):
+    def __init__(self,tick,callback=None,creator=None):
         super().__init__(tick,creator=creator)
-        subself.type = "EndQuestEvent"
-        subself.callback = callback
+        self.type = "EndQuestEvent"
+        self.callback = callback
 
         # set meta information for saving
-        subself.callbacksToStore.append("callback")
+        self.callbacksToStore.append("callback")
 
     '''
     terminate the quest
     '''
-    def handleEvent(subself):
-        if (subself.callback):
-            subself.callIndirect(subself.callback)
+    def handleEvent(self):
+        if (self.callback):
+            self.callIndirect(self.callback)
         else:
             pass
 
@@ -265,6 +296,7 @@ eventMap = {
              "EndQuestEvent":EndQuestEvent,
              "StopBoilingEvent":StopBoilingEvent,
              "StartBoilingEvent":StartBoilingEvent,
+             "RunCallbackEvent":RunCallbackEvent,
            }
 
 '''

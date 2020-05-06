@@ -24,6 +24,7 @@ import src.terrains
 #
 #################################################################################################################################
 
+continousOperation = 0
 main = None
 footer = None
 header = None
@@ -325,6 +326,8 @@ get position for what thing
 * m - marker bean
 * t - tree
 * C - coal
+* M - corpse
+* e - enemy
 
 """))
                 footer.set_text((urwid.AttrSpec("default","default"),""))
@@ -348,6 +351,10 @@ get position for what thing
                 char.interactionState["enumerateState"][-1]["target"] = ["Tree"]
             elif key == "C":
                 char.interactionState["enumerateState"][-1]["target"] = ["Coal"]
+            elif key == "M":
+                char.interactionState["enumerateState"][-1]["target"] = ["Corpse"]
+            elif key == "e":
+                char.interactionState["enumerateState"][-1]["target"] = ["enemy"]
             else:
                 char.messages.append("not a valid target")
                 char.interactionState["enumerateState"].pop()
@@ -373,7 +380,7 @@ get position for what thing
 
             foundItems = []
 
-            if not char.interactionState["enumerateState"][-1]["target"] == ["character"]:
+            if not char.interactionState["enumerateState"][-1]["target"] == ["character"] and not char.interactionState["enumerateState"][-1]["target"] == ["enemy"]:
                 listFound = char.container.itemsOnFloor
 
                 for item in listFound:
@@ -401,6 +408,23 @@ get position for what thing
                     if otherChar.yPosition < char.yPosition-20:
                         continue
                     if otherChar.yPosition > char.yPosition+20:
+                        continue
+                    foundItems.append(otherChar)
+
+            if "enemy" in char.interactionState["enumerateState"][-1]["target"]:
+                listFound = char.container.itemsOnFloor
+                for otherChar in char.container.characters:
+                    if otherChar == char:
+                        continue
+                    if otherChar.xPosition < char.xPosition-20:
+                        continue
+                    if otherChar.xPosition > char.xPosition+20:
+                        continue
+                    if otherChar.yPosition < char.yPosition-20:
+                        continue
+                    if otherChar.yPosition > char.yPosition+20:
+                        continue
+                    if otherChar.faction == char.faction:
                         continue
                     foundItems.append(otherChar)
 
@@ -662,6 +686,20 @@ press any other key to finish
                         if isinstance(item,src.items.GooFlask) and item.uses > 1:
                             conditionTrue = True
                             break
+                if char.interactionState["ifCondition"][-1] == "E":
+                    conditionTrue = False
+                    if char.container:
+                        for character in char.container.characters:
+                            if abs(character.xPosition-char.xPosition) < 20 and abs(character.yPosition-char.yPosition) < 20 and not character.faction == char.faction:
+                                conditionTrue = True
+                                break
+                if char.interactionState["ifCondition"][-1] == "c":
+                    conditionTrue = False
+                    if char.container:
+                        for item in char.container.itemsOnFloor:
+                            if item.type == "Corpse" and abs(item.xPosition-char.xPosition) < 20 and abs(item.yPosition-char.yPosition) < 20:
+                                conditionTrue = True
+                                break
                 if conditionTrue:
                     charState["commandKeyQueue"] = char.interactionState["ifParam1"][-1] + charState["commandKeyQueue"]
                 else:
@@ -972,9 +1010,11 @@ current registers
             options = []
             options.append(("save","save"))
             options.append(("quit","save and quit"))
+            options.append(("actions","actions"))
             options.append(("macros","macros"))
             options.append(("help","help"))
             options.append(("keybinding","keybinding"))
+            options.append(("changeFaction","changeFaction"))
             submenu = SelectionMenu("What do you want to do?",options)
             char.macroState["submenue"] = submenu
 
@@ -989,7 +1029,15 @@ current registers
                     char.macroState["submenue"] = None
                     gamestate.save()
                     raise urwid.ExitMainLoop()
+                elif selection == "actions":
+                    pass
                 elif selection == "macros":
+                    pass
+                elif selection == "changeFaction":
+                    if char.faction == "player":
+                        char.faction = "monster"
+                    else:
+                        char.faction = "player"
                     pass
                 elif selection == "help":
                     charState["submenue"] = HelpMenu()
@@ -1137,6 +1185,8 @@ current registers
                 # do movement on terrain
                 # bad code: these calculation should be done elsewhere
                 else:
+                    if not (char.xPosition and char.yPosition):
+                        return
                     # gather the rooms the character might have entered
                     if direction == "north":
                         bigX = (char.xPosition)//15
@@ -1372,7 +1422,7 @@ current registers
                     for enemy in char.container.characters:
                         if enemy == char:
                             continue
-                        if not (enemy.xPosition,char.yPosition) in adjascentFields:
+                        if not (enemy.xPosition,enemy.yPosition) in adjascentFields:
                             continue
                         enemy.die()
                         break
@@ -1388,10 +1438,14 @@ current registers
 
                     # activate an item on floor
                     else:
-                        for item in char.container.itemsOnFloor:
-                            if item.xPosition == char.xPosition and item.yPosition == char.yPosition:
-                                item.apply(char)
-                                break
+                        #for item in char.container.itemsOnFloor:
+                        #    if item.xPosition == char.xPosition and item.yPosition == char.yPosition:
+                        #        item.apply(char)
+                        #        break
+                        if (char.xPosition,char.yPosition) in char.container.itemByCoordinates:
+                            entry = char.container.itemByCoordinates[(char.xPosition,char.yPosition)]
+                            if len(entry):
+                                entry[0].apply(char)
 
             # examine an item 
             if key in (commandChars.examine):
@@ -1443,7 +1497,7 @@ current registers
                         if not item:
                             if (char.xPosition,char.yPosition) in char.container.itemByCoordinates:
                                 if len(char.container.itemByCoordinates[(char.xPosition,char.yPosition)]):
-                                    item = char.container.itemByCoordinates[(char.xPosition,char.yPosition)][0]
+                                    item = char.container.itemByCoordinates[(char.xPosition,char.yPosition)][-1]
 
                         if not item:
                             char.messages.append("no item to pick up found")
@@ -2792,6 +2846,9 @@ def keyboardListener(key):
     global multi_chars
     global charindex
 
+    global continousOperation
+    continousOperation = 0
+
     if not multi_currentChar:
         multi_currentChar = mainChar
     if multi_chars == None:
@@ -2913,7 +2970,6 @@ def keyboardListener(key):
     else:
         show_or_exit(key,charState=state)
 
-continousOperation = 0
 lastAdvance = 0 
 lastAutosave = 0
 

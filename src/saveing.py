@@ -88,6 +88,8 @@ class Saveable(object):
             if isinstance(callback,dict):
                 # serialize and store callback
                 serializedCallback = {}
+                if not "container" in callback:
+                    return
                 serializedCallback["container"] = callback["container"].id
                 serializedCallback["method"] = callback["method"]
             else:
@@ -311,6 +313,8 @@ class Saveable(object):
             # bad code: direct function calls are deprecated, but not completely removed
             callback()
         else:
+            if not "container" in callback:
+                return
             container = callback["container"]
             function = getattr(container,callback["method"])
             if "params" in callback:

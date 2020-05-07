@@ -407,6 +407,7 @@ if not loaded:
         gameStateObj.terrainType = terrains.TutorialTerrain
 else:
     terrain = gameStateObj.terrain
+    interaction.lastTerrain = terrain
 
 # bad code: common variables with modules
 cinematics.interaction = interaction

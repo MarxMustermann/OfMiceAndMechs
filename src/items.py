@@ -6172,6 +6172,10 @@ class Mold(Item):
             if newPos[0] < 1 or newPos[1] < 1 or newPos[0] > 15*15-2 or newPos[1] > 15*15-2:
                 return
 
+            if (((newPos[0] == 0 or newPos[0] == 14) and not (newPos[1] in (8,))) or
+                ((newPos[1] == 0 or newPos[1] == 14) and not (newPos[0] in (8,)))):
+                return
+
             if not (newPos in self.container.itemByCoordinates and len(self.container.itemByCoordinates[newPos])):
                 new = itemMap["Mold"](creator=self)
                 new.xPosition = newPos[0]
@@ -6311,6 +6315,7 @@ class Bloom(Item):
         self.destroy(generateSrcap=False)
 
     def startSpawn(self):
+        return
         event = src.events.RunCallbackEvent(gamestate.tick+(2*self.xPosition+3*self.yPosition+gamestate.tick)%10000,creator=self)
         event.setCallback({"container":self,"method":"spawn"})
         self.terrain.addEvent(event)

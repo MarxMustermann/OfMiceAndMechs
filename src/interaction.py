@@ -1151,22 +1151,52 @@ current registers
             '''
             def moveCharacter(direction):
                 if not char.room:
+                    if not (char.xPosition and char.yPosition):
+                        return
                     if direction == "west":
-                        if char.xPosition == 0+1:
-                            char.messages.append("a force field pushes you back")
-                            return
-                    if direction == "east":
-                        if char.xPosition == 15*15-2:
-                            char.messages.append("a force field pushes you back")
-                            return
-                    if direction == "north":
-                        if char.yPosition == 0+1:
-                            char.messages.append("a force field pushes you back")
-                            return
-                    if direction == "south":
-                        if char.yPosition == 15*15-2:
-                            char.messages.append("a force field pushes you back")
-                            return
+                        if char.xPosition%15 == 1:
+                            if (char.yPosition%15 < 7):
+                                direction = "south"
+                            elif (char.yPosition%15 > 7):
+                                direction = "north"
+                            else:
+                                #char.stasis = True
+                                pass
+                            char.messages.append("a force field pushes you")
+                    elif direction == "east":
+                        if char.xPosition%15 == 13:
+                            if (char.yPosition%15 < 7):
+                                direction = "south"
+                            elif (char.yPosition%15 > 7):
+                                direction = "north"
+                            else:
+                                #char.stasis = True
+                                pass
+                            char.messages.append("a force field pushes you")
+                    elif direction == "north":
+                        if char.yPosition%15 == 1:
+                            if (char.xPosition%15 < 7):
+                                direction = "east"
+                            elif (char.xPosition%15 > 7):
+                                direction = "west"
+                            else:
+                                #char.stasis = True
+                                pass
+                            char.messages.append("a force field pushes you")
+                    elif direction == "south":
+                        if char.yPosition%15 == 13:
+                            if (char.xPosition%15 < 7):
+                                direction = "east"
+                            elif (char.xPosition%15 > 7):
+                                direction = "west"
+                            else:
+                                #char.stasis = True
+                                pass
+                            char.messages.append("a force field pushes you")
+                    if char.xPosition%15 in (0,14) and direction in ("north","south"):
+                        return
+                    if char.yPosition%15 in (0,14) and direction in ("east","west"):
+                        return
 
                 # do inner room movement
                 if char.room:

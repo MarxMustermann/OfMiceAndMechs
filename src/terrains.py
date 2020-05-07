@@ -645,7 +645,7 @@ class Terrain(src.saveing.Saveable):
 
         # recursevly increase section
         self.superWatershed(counter,newLast)
-                    
+
     '''
     remove a character from the terrain
     '''
@@ -1089,6 +1089,17 @@ class Terrain(src.saveing.Saveable):
                     rowCounter += 1
                 lineCounter += 1
 
+        for bigX in range(0,14):
+            for bigY in range(0,14):
+                for x in range(0,14):
+                    for y in range(0,14):
+                        if x == 7 or y == 7:
+                            continue 
+                        chars[bigX*15+x][bigY*15+0] = displayChars.forceField
+                        chars[bigX*15+x][bigY*15+14] = displayChars.forceField
+                        chars[bigX*15+0][bigY*15+y] = displayChars.forceField
+                        chars[bigX*15+14][bigY*15+y] = displayChars.forceField
+
         # add overlays
         if not mapHidden:
             #src.overlays.QuestMarkerOverlay().apply(chars,mainChar,displayChars)
@@ -1102,6 +1113,13 @@ class Terrain(src.saveing.Saveable):
         if self.overlay:
             self.overlay(chars)
 
+        for bigX in range(1,15):
+            for bigY in range(1,15):
+                for x in range(1,8):
+                    chars[bigX*15+x][1] = displayChars.void
+
+        chars[127][42] = displayChars.void
+        chars[42][127] = displayChars.void
         return chars
 
     '''

@@ -79,7 +79,10 @@ class NPCsOverlay(object):
         for character in terrain.characters:
             if not (character.yPosition and character.xPosition):
                 continue
-            chars[character.yPosition][character.xPosition] = character.display
+            try:
+                chars[character.yPosition][character.xPosition] = character.display
+            except:
+                pass
 
 '''
 adds main char

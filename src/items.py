@@ -567,6 +567,7 @@ There is %s in this pile
         for item in character.inventory:
             if item.type == "Scrap":
                 scrapFound.append(item)
+                break
 
         for item in scrapFound:
             if self.amount < 20:
@@ -3988,7 +3989,7 @@ class Machine(Item):
         elif self.toProduce == "Drill":
             ressourcesNeeded = ["Case","MetalBars"]
         elif self.toProduce == "ScrapCompactor":
-            ressourcesNeeded = ["Case","MetalBars"]
+            ressourcesNeeded = ["MetalBars"]
         elif self.toProduce == "Furnace":
             ressourcesNeeded = ["Case","MetalBars"]
 
@@ -6113,6 +6114,7 @@ class MoldSpore(Item):
 
     def apply(self,character):
         self.startSpawn()
+        character.messages.append("you activate the mold spore")
 
     def startSpawn(self):
         event = src.events.RunCallbackEvent(gamestate.tick+(2*self.xPosition+3*self.yPosition+gamestate.tick)%10,creator=self)
@@ -6144,6 +6146,7 @@ class Mold(Item):
         if character.satiation > 1000:
             character.satiation = 1000
         self.destroy(generateSrcap=False)
+        character.messages.append("you eat the mold and gain 2 satiation")
 
     def startSpawn(self):
         if self.charges:
@@ -6169,11 +6172,8 @@ class Mold(Item):
             if direction == 3:
                 newPos = (self.xPosition-1,self.yPosition)
 
-            if newPos[0] < 1 or newPos[1] < 1 or newPos[0] > 15*15-2 or newPos[1] > 15*15-2:
-                return
-
-            if (((newPos[0] == 0 or newPos[0] == 14) and not (newPos[1] in (8,))) or
-                ((newPos[1] == 0 or newPos[1] == 14) and not (newPos[0] in (8,)))):
+            if (((newPos[0]%15 == 0 or newPos[0]%15 == 14) and not (newPos[1]%15 in (8,))) or
+                ((newPos[1]%15 == 0 or newPos[1]%15 == 14) and not (newPos[0]%15 in (8,)))):
                 return
 
             if not (newPos in self.container.itemByCoordinates and len(self.container.itemByCoordinates[newPos])):
@@ -6277,6 +6277,7 @@ class Sprout(Item):
         self.container.addItems([new])
         new.startSpawn()
         self.destroy(generateSrcap=False)
+        character.messages.append("you eat the sprout and gain 10 satiation")
 
 class Sprout2(Item):
     type = "Sprout2"
@@ -6295,6 +6296,7 @@ class Sprout2(Item):
         self.container.addItems([new])
         new.startSpawn()
         self.destroy(generateSrcap=False)
+        character.messages.append("you eat the sprout and gain 25 satiation")
 
 class Bloom(Item):
     type = "Bloom"
@@ -6313,9 +6315,9 @@ class Bloom(Item):
         self.container.addItems([new])
         new.startSpawn()
         self.destroy(generateSrcap=False)
+        character.messages.append("you eat the bloom and gain 115 satiation")
 
     def startSpawn(self):
-        return
         event = src.events.RunCallbackEvent(gamestate.tick+(2*self.xPosition+3*self.yPosition+gamestate.tick)%10000,creator=self)
         event.setCallback({"container":self,"method":"spawn"})
         self.terrain.addEvent(event)
@@ -6325,10 +6327,11 @@ class Bloom(Item):
             return
         direction = (2*self.xPosition+3*self.yPosition+gamestate.tick)%4
         import random
-        direction = (random.randint(1,20),random.randint(1,20))
-        newPos = (self.xPosition+direction[0]-5,self.yPosition+direction[1]-5)
+        direction = (random.randint(1,13),random.randint(1,13))
+        newPos = (self.xPosition%15+direction[0],self.yPosition%15+direction[1])
 
-        if newPos[0] < 1 or newPos[1] < 1 or newPos[0] > 15*15-2 or newPos[1] > 15*15-2:
+        if (((newPos[0] < 1 or newPos[0] > 15*15-2) and not newPos[1]%15 == 8) or
+            ((newPos[1] < 1 or newPos[1] > 15*15-2) and not newPos[0]%15 == 8)):
             return
 
         if not (newPos in self.container.itemByCoordinates and len(self.container.itemByCoordinates[newPos])):
@@ -6361,6 +6364,7 @@ class SickBloom(Item):
             self.container.addItems([new])
             new.startSpawn()
             self.destroy(generateSrcap=False)
+        character.messages.append("you eat the sick bloom and gain 100 satiation")
 
     def startSpawn(self):
         event = src.events.RunCallbackEvent(gamestate.tick+(2*self.xPosition+3*self.yPosition+gamestate.tick)%2500,creator=self)
@@ -6424,6 +6428,8 @@ class PoisonBloom(Item):
         new.yPosition = self.yPosition
         self.container.addItems([new])
 
+        character.messages.append("you eat the poison bloom and die")
+
         self.destroy(generateSrcap=False)
 
 class PoisonBush(Item):
@@ -6452,6 +6458,8 @@ class PoisonBush(Item):
             self.container.addItems([new])
             
             self.destroy(generateSrcap=False)
+
+        character.messages.append("you give your blood to the poison bush")
 
     def spawn(self,distance=1):
         if not (self.xPosition and self.yPosition):
@@ -6487,6 +6495,8 @@ class Test(Item):
         else:
             character.satiation -= 100
 
+        character.messages.append("you give your blood to the encrusted poison bush and loose 100 satiation")
+
 class Bush(Item):
     type = "Bush"
 
@@ -6507,9 +6517,12 @@ class Bush(Item):
 
             self.destroy(generateSrcap=False)
 
+            character.messages.append("the bush encrusts")
+
         if self.charges:
             character.satiation += 5
             self.charges -= 1
+            character.messages.append("you eat from the bush and gain 5 satiation")
         else:
             self.destroy(generateSrcap=False)
 

@@ -3066,17 +3066,25 @@ class BuildBase(BasicPhase):
         with open("states/miniMech.json","r") as stateFile:
             room = json.loads(stateFile.read())
         terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
-        room = src.rooms.EmptyRoom(1,1,2,2,creator=self)
-        room.reconfigure(sizeX=seed%12+3,sizeY=(seed+seed%236)%12+3,doorPos=(0,1))
-        terrain.addRoom(room)
-        room = src.rooms.EmptyRoom(4,9,-1,0,creator=self)
-        room.reconfigure(sizeX=14,sizeY=14,doorPos=(13,6))
-        terrain.addRoom(room)
+        #room = src.rooms.EmptyRoom(1,1,2,2,creator=self)
+        #room.reconfigure(sizeX=seed%12+3,sizeY=(seed+seed%236)%12+3,doorPos=(0,1))
+        #terrain.addRoom(room)
+        #room = src.rooms.EmptyRoom(4,9,-1,0,creator=self)
+        #room.reconfigure(sizeX=14,sizeY=14,doorPos=(13,6))
+        #terrain.addRoom(room)
         with open("states/globalMacroStorage.json","r") as stateFile:
             room = json.loads(stateFile.read())
         terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
 
         mainChar.addListener(self.checkRoomEnteredMain)
+
+        molds = []
+        for bigX in range(0,14):
+            for bigY in range(0,14):
+                molds.append(src.items.Mold(bigX*15+8,bigY*15+8,creator=self))
+        terrain.addItems(molds)
+        for mold in molds:
+            mold.startSpawn()
 
         # add basic set of abilities in openworld phase
         mainChar.questsDone = [

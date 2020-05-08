@@ -419,6 +419,7 @@ mainChar = None
 if not loaded:
     gameStateObj.setup(phase=args.phase, seed=seed)
     terrain = gameStateObj.terrain
+    interaction.lastTerrain = terrain
 
 interaction.macros = gameStateObj.macros
 

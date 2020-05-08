@@ -1034,6 +1034,17 @@ class Terrain(src.saveing.Saveable):
                     room.applySkippedAdvances() # ensure the rooms state is up to date
                 else:
                     room.hidden = True
+
+        for bigX in range(0,14):
+            for bigY in range(0,14):
+                for x in range(0,14):
+                    for y in range(0,14):
+                        if x == 7 or y == 7:
+                            continue 
+                        chars[bigX*15+x][bigY*15+0] = displayChars.forceField
+                        chars[bigX*15+x][bigY*15+14] = displayChars.forceField
+                        chars[bigX*15+0][bigY*15+y] = displayChars.forceField
+                        chars[bigX*15+14][bigY*15+y] = displayChars.forceField
                 
         # calculate room visibility
         if not mapHidden:
@@ -1088,17 +1099,6 @@ class Terrain(src.saveing.Saveable):
                     chars[lineCounter+yOffset][rowCounter+xOffset] = char
                     rowCounter += 1
                 lineCounter += 1
-
-        for bigX in range(0,14):
-            for bigY in range(0,14):
-                for x in range(0,14):
-                    for y in range(0,14):
-                        if x == 7 or y == 7:
-                            continue 
-                        chars[bigX*15+x][bigY*15+0] = displayChars.forceField
-                        chars[bigX*15+x][bigY*15+14] = displayChars.forceField
-                        chars[bigX*15+0][bigY*15+y] = displayChars.forceField
-                        chars[bigX*15+14][bigY*15+y] = displayChars.forceField
 
         # add overlays
         if not mapHidden:
@@ -1646,6 +1646,8 @@ class GameplayTest(Terrain):
             for (key,thickness) in excludes.items():
                 noScrap = False
                 if counter%5 == 0:
+                    if key[0]%15 in (0,14) or key[1]%15 in (0,14):
+                        continue
                     if not counter%(5*3) == 0:
                         l1types = [src.items.Sheet,src.items.Rod,src.items.Sheet,src.items.Mount,src.items.Stripe,src.items.Bolt,src.items.Radiator]
                         self.scrapItems.append(l1types[seed%len(l1types)](key[0],key[1],creator=self))
@@ -1734,23 +1736,23 @@ class GameplayTest(Terrain):
 
         # add base of operations
         # add base of operations
-        self.miniBase = src.rooms.MiniBase(4,8,0,0,creator=self,seed=seed)
+        self.miniBase = src.rooms.MiniBase(3,8,1,1,creator=self,seed=seed)
         self.addRooms([self.miniBase])
 
         extraItems = []
 
-        tree = src.items.Tree(64,103,creator=self)
-        extraItems.append(tree)
-        tree = src.items.Tree(103,64,creator=self)
-        extraItems.append(tree)
-        tree = src.items.Tree(80,25,creator=self)
-        extraItems.append(tree)
-        tree = src.items.Tree(125,74,creator=self)
-        extraItems.append(tree)
-        tree = src.items.Tree(15,14,creator=self)
-        extraItems.append(tree)
+        #tree = src.items.Tree(67,93,creator=self)
+        #extraItems.append(tree)
+        #tree = src.items.Tree(103,64,creator=self)
+        #extraItems.append(tree)
+        #tree = src.items.Tree(80,25,creator=self)
+        #extraItems.append(tree)
+        #tree = src.items.Tree(125,74,creator=self)
+        #extraItems.append(tree)
+        #tree = src.items.Tree(15,14,creator=self)
+        #extraItems.append(tree)
 
-        coalMine = src.items.CoalMine(58,112,creator=self)
+        coalMine = src.items.CoalMine(50,112,creator=self)
         extraItems.append(coalMine)
 
         self.addItems(extraItems)

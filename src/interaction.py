@@ -1488,10 +1488,9 @@ current registers
 
                     # examine an item on floor
                     else:
-                        for item in char.container.itemsOnFloor:
-                            if item.xPosition == char.xPosition and item.yPosition == char.yPosition:
-                                char.examine(item)
-                                break
+                        for item in char.container.itemByCoordinates[(char.xPosition,char.yPosition)]:
+                            char.examine(item)
+                            break
 
             # drop first item from inventory
             # bad pattern: the user has to have the choice for what item to drop
@@ -2877,7 +2876,7 @@ def keyboardListener(key):
     global charindex
 
     global continousOperation
-    continousOperation = 0
+    continousOperation = -1
 
     if not multi_currentChar:
         multi_currentChar = mainChar

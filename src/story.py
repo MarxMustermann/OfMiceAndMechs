@@ -3077,11 +3077,14 @@ class BuildBase(BasicPhase):
         terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
 
         mainChar.addListener(self.checkRoomEnteredMain)
+        mainChar.macroState["macros"]["j"] = ["J"]
 
         molds = []
-        for bigX in range(0,14):
-            for bigY in range(0,14):
-                molds.append(src.items.Mold(bigX*15+8,bigY*15+8,creator=self))
+        for bigX in range(1,13):
+            for bigY in range(1,13):
+                import random
+                if random.randint(1,2) == 1:
+                    molds.append(src.items.Mold(bigX*15+random.randint(1,13),bigY*15+random.randint(1,13),creator=self))
         terrain.addItems(molds)
         for mold in molds:
             mold.startSpawn()

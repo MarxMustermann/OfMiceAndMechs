@@ -52,6 +52,7 @@ class Item(src.saveing.Saveable):
         self.description = "a "+self.name
         self.mayContainMice = False
         self.bolted = not self.walkable
+        self.container = None
 
         self.customDescription = None
 
@@ -129,13 +130,13 @@ class Item(src.saveing.Saveable):
         # bad code: should be a simple self.container.removeItem(self)
         if self.room:
             # remove item from room
-            container = self.room
-            container.removeItem(self)
+            self.container = self.room
+            self.container.removeItem(self)
         else:
             # remove item from terrain
             # bad code: should be handled by the terrain
-            container = self.terrain
-            container.removeItem(self)
+            self.container = self.terrain
+            self.container.removeItem(self)
 
             if not self.walkable:
                 terrain.calculatePathMap()
@@ -360,10 +361,14 @@ class Item(src.saveing.Saveable):
     '''
     def destroy(self,generateSrcap=True):
 
+        if not hasattr(self,"terrain"):
+            self.terrain = None
         if self.room:
             container = self.room
-        else:
+        elif self.terrain:
             container = self.terrain
+        else:
+            return
 
         pos = (self.xPosition,self.yPosition) 
 
@@ -2622,17 +2627,17 @@ class ScrapCompactor(Item):
     def apply(self,character,resultType=None):
         super().apply(character,silent=True)
 
-        if not self.room:
-            character.messages.append("this machine can only be used within rooms")
-            return
-
         # fetch input scrap
         scrap = None
-        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
-                if isinstance(item,Scrap):
-                    scrap = item
-                    break
+        if not hasattr(self,"container"):
+            if self.room:
+                self.container = self.room
+            else:
+                self.container = self.terrain
+        for item in self.container.getItemByPosition((self.xPosition-1,self.yPosition)):
+            if isinstance(item,Scrap):
+                scrap = item
+                break
 
         if gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
             character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
@@ -2643,13 +2648,15 @@ class ScrapCompactor(Item):
             character.messages.append("no scraps available")
             return
 
+        targetPos = (self.xPosition+1,self.yPosition)
         targetFull = False
-        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
-            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+        itemList = self.container.getItemByPosition(targetPos)
+
+        if len(itemList) > 15:
+            targetFull = True
+        for item in itemList:
+            if item.walkable == False:
                 targetFull = True
-            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
-                if item.walkable == False:
-                    targetFull = True
 
         if targetFull:
             character.messages.append("the target area is full, the machine does not produce anything")
@@ -2664,7 +2671,7 @@ class ScrapCompactor(Item):
 
         # remove ressources
         if scrap.amount <= 1:
-            self.room.removeItem(scrap)
+            self.container.removeItem(scrap)
         else:
             scrap.amount -= 1
             scrap.changed()
@@ -2673,7 +2680,7 @@ class ScrapCompactor(Item):
         new = MetalBars(creator=self)
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
-        self.room.addItems([new])
+        self.container.addItems([new])
 
     def getLongInfo(self):
         text = """
@@ -3791,6 +3798,13 @@ class MachineMachine(Item):
     produce an item
     '''
     def produce(self,itemType,resultType=None):
+
+        if not self.container:
+            if self.room:
+                self.container = self.room
+            elif self.terrain:
+                self.container = self.terrain
+
         # gather a metal bar
         ressourcesNeeded = ["MetalBars"]
 
@@ -3933,9 +3947,15 @@ class Machine(Item):
     def apply(self,character):
         super().apply(character,silent=True)
 
-        if not self.room:
-            character.messages.append("this machine can only be used within rooms")
-            return
+        if not self.container:
+            if self.room:
+                self.container = self.room
+            elif self.terrain:
+                self.container = self.terrain
+
+        #if not self.room:
+        #    character.messages.append("this machine can only be used within rooms")
+        #    return
 
         if gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
             character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
@@ -4147,14 +4167,14 @@ class Machine(Item):
 
         # gather a metal bar
         ressourcesFound = []
-        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+        if (self.xPosition-1,self.yPosition) in self.container.itemByCoordinates:
+            for item in self.container.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
                 if item.type in ressourcesNeeded:
                     ressourcesFound.append(item)
                     ressourcesNeeded.remove(item.type)
         
-        if (self.xPosition,self.yPosition-1) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[(self.xPosition,self.yPosition-1)]:
+        if (self.xPosition,self.yPosition-1) in self.container.itemByCoordinates:
+            for item in self.container.itemByCoordinates[(self.xPosition,self.yPosition-1)]:
                 if item.type in ressourcesNeeded:
                     ressourcesFound.append(item)
                     ressourcesNeeded.remove(item.type)
@@ -4167,15 +4187,15 @@ class Machine(Item):
         targetFull = False
         new = itemMap[self.toProduce](creator=self)
 
-        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+        if (self.xPosition+1,self.yPosition) in self.container.itemByCoordinates:
             if new.walkable:
-                if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+                if len(self.container.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
                     targetFull = True
-                for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                for item in self.container.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
                     if item.walkable == False:
                         targetFull = True
             else:
-                if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 0:
+                if len(self.container.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 0:
                     targetFull = True
 
         if targetFull:
@@ -4191,14 +4211,14 @@ class Machine(Item):
 
         # remove ressources
         for item in ressourcesFound:
-            self.room.removeItem(item)
+            self.container.removeItem(item)
 
         # spawn new item
         new = itemMap[self.toProduce](creator=self)
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
         new.bolted = False
-        self.room.addItems([new])
+        self.container.addItems([new])
 
     '''
     set state from dict
@@ -4655,9 +4675,33 @@ class InfoScreen(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="InfoScreen",creator=None,noId=False):
+        self.knownBlueprints = []
+        self.availableChallenges = {
+                                    "produceScrapCompactors":{"text":"produce scrap compactor"},
+                                    "gatherBloom":{"text":"gather bloom"},
+                                   }
+
         super().__init__(displayChars.infoscreen,xPosition,yPosition,name=name,creator=creator)
         self.submenue = None
         self.text = None
+        self.gooChallengeDone = False
+        self.metalbarChallengeDone = False
+        self.sheetChallengeDone = False
+        self.machineChallengeDone = False
+        self.blueprintChallengeDone = False
+        self.commandChallengeDone = False
+        self.energyChallengeDone = False
+        self.activateChallengeDone = False
+        self.activateChallenge = 100
+        self.metalbarChallenge = 100
+        self.challengeRun2Done = False
+
+        self.attributesToStore.extend([
+               "gooChallengeDone","metalbarChallengeDone","sheetChallengeDone","machineChallengeDone","blueprintChallengeDone","energyChallengeDone","activateChallengeDone",
+               "commandChallengeDone","challengeRun2Done",
+               "activateChallenge","metalbarChallenge",
+               "knownBlueprints","availableChallenges"])
+        self.initialState = self.getState()
 
     def apply(self,character):
         if not self.room:
@@ -4665,23 +4709,15 @@ class InfoScreen(Item):
             return
         super().apply(character,silent=True)
 
+        self.character = character
+
         options = []
 
-        options.append(("level1","basic information "+str(self.room.steamGeneration)))
-        if self.room.steamGeneration > 0:
-            options.append(("level2","l2 information"))
-        else:
-            options.append(("level2","disabled - NOT ENOUGH ENERGY"))
-        if self.room.steamGeneration > 1:
-            options.append(("level3","l3 information"))
-        else:
-            options.append(("level3","disabled - NOT ENOUGH ENERGY"))
-        if self.room.steamGeneration > 2:
-            options.append(("level3","l4 information"))
-        else:
-            options.append(("level4","disabled - NOT ENOUGH ENERGY"))
+        options.append(("level1","check information"))
+        options.append(("challenge","do challenge"))
 
-        self.submenue = interaction.SelectionMenu("select the information you need",options)
+        self.submenue = interaction.SelectionMenu("This is the automated trainer. Complete challenges and get information.\n\nwhat do you want do to?",options)
+
         character.macroState["submenue"] = self.submenue
         character.macroState["submenue"].followUp = self.step2
 
@@ -4694,22 +4730,245 @@ class InfoScreen(Item):
 
         if selection == "level1":
             self.basicInfo()
-        elif selection == "level2" and self.room.steamGeneration > 0:
+        elif selection == "challenge":
+            self.challenge()
+        elif selection == "level2":
             self.l2Info()
-        elif selection == "level3" and self.room.steamGeneration > 1:
+        elif selection == "level3":
             self.l3Info()
-        elif selection == "level4" and self.room.steamGeneration > 2:
+        elif selection == "level4":
             self.l4Info()
         else:
             self.character.messages.append("NOT ENOUGH ENERGY")
+
+    def challenge(self):
+
+        if not self.activateChallengeDone:
+            if not self.gooChallengeDone:
+                foundFlask = False
+                for item in self.character.inventory:
+                    if isinstance(item,src.items.GooFlask):
+                        foundFlask = True
+                if not foundFlask:
+                    self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with a goo flask in your inventory.\n\nThere should be some flasks in the room.\n\n")
+                else:
+                    self.submenue = interaction.TextMenu("\n\nchallenge completed. Try to always keep a goo flask with some charges in your inventory.\n\nIf you are hungry you will drink from it automatically.\nIf you do not drink regulary you will die.\n\nNew information option on \"information->machines\"\n\n")
+                    self.gooChallengeDone = True
+                self.character.macroState["submenue"] = self.submenue
+            elif not self.metalbarChallengeDone:
+                foundMetalBar = False
+                for item in self.character.inventory:
+                    if isinstance(item,src.items.MetalBars):
+                        foundMetalBar = True
+                if not foundMetalBar:
+                    self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with a metal bar in your inventory.\n\n check \"information->machines->metal bar production\" on how to produce metal bars.\n\n")
+                else:
+                    self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nNew information option on \"information->machines->simple item production\"\n\n")
+                    self.metalbarChallengeDone = True
+                self.character.macroState["submenue"] = self.submenue
+            elif not self.sheetChallengeDone:
+                foundSheet = False
+                for item in self.character.inventory:
+                    if isinstance(item,src.items.Sheet):
+                        foundSheet = True
+                if not foundSheet:
+                    self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with a sheet in your inventory.\n\n check \"information->machines->simple item production\" on how to produce simple items.\nA sheet machine should be within this room.\n\n")
+                else:
+                    self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nNew information option on \"information->machines->machine production\"\n\n")
+                    self.sheetChallengeDone = True
+                self.character.macroState["submenue"] = self.submenue
+            elif not self.machineChallengeDone:
+                foundMachine = False
+                for item in self.character.inventory:
+                    if isinstance(item,src.items.Machine) and item.toProduce == "Rod":
+                        foundMachine = True
+                if not foundMachine:
+                    self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with a machine that produces rods in your inventory.\n\n check \"information->machines->machine production\" on how to produce machines.\n\n")
+                else:
+                    self.knownBlueprints.append("Frame")
+                    self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nNew information option on \"information->machines->blueprint production\"\nNew information option on \"information->blueprints\"\n\n")
+                    self.machineChallengeDone = True
+                self.character.macroState["submenue"] = self.submenue
+            elif not self.blueprintChallengeDone:
+                foundBluePrint = False
+                for item in self.character.inventory:
+                    if isinstance(item,src.items.BluePrint) and item.endProduct == "Frame":
+                        foundBluePrint = True
+                if not foundBluePrint:
+                    self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with a blueprint for frame in your inventory.\n\n check \"information->machines->blueprint production\" on how to produce blueprints.\n\nThe reciepe for Frame is rod+metalbar\n\n")
+                else:
+                    self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nNew information option on \"information->automation\"")
+                    self.blueprintChallengeDone = True
+                self.character.macroState["submenue"] = self.submenue
+            elif not self.commandChallengeDone:
+                foundCommand = False
+                for item in self.character.inventory:
+                    if isinstance(item,src.items.Command):
+                        foundCommand = True
+                if not foundCommand:
+                    self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with a command in your inventory.\n\n check \"information->automation->command creation\" on how to record commands.\n\n")
+                else:
+                    self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nNew information option on \"information->automation->multiplier\"")
+                    self.commandChallengeDone = True
+                self.character.macroState["submenue"] = self.submenue
+            elif not self.activateChallengeDone:
+                if self.activateChallenge:
+                    if self.activateChallenge == 100:
+                        self.submenue = interaction.TextMenu("\n\nchallenge in progress. The first step is done. Activations remaining %s"%(self.activateChallenge,))
+                    else:
+                        self.submenue = interaction.TextMenu("\n\nchallenge in progress. Activations remaining %s"%(self.activateChallenge,))
+                    self.activateChallenge -= 1
+                else:
+                    if len(self.character.inventory):
+                        self.submenue = interaction.TextMenu("\n\nchallenge in progress. Try again with empty inventory to complete.\n\n")
+                    else:
+                        self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
+                        self.activateChallengeDone = True
+                        self.knownBlueprints.append("ScrapCompactor")
+                self.character.macroState["submenue"] = self.submenue
+        else:
+            if not self.challengeRun2Done:
+                if len(self.availableChallenges):
+                    options = []
+                    for (key,value) in self.availableChallenges.items():
+                        options.append([key,value["text"]])
+
+                    self.submenue = interaction.SelectionMenu("select the challenge",options)
+                    self.character.macroState["submenue"] = self.submenue
+                    self.character.macroState["submenue"].followUp = self.challengeRun2
+                else:
+                    if self.metalbarChallenge:
+
+                        metalBarFound = None
+                        for item in self.character.inventory:
+                            if isinstance(item,src.items.MetalBars):
+                                metalBarFound = item
+                                break
+
+                        if not metalBarFound:
+                            self.submenue = interaction.TextMenu("\n\nno progress - no metal bars in inventory\n\n")
+                            self.character.macroState["submenue"] = self.submenue
+                            return
+
+                        targetFull = False
+                        itemList = self.container.getItemByPosition((self.xPosition,self.yPosition+1))
+                        if len(itemList) > 15:
+                            targetFull = True
+                        for item in itemList:
+                            if item.walkable == False:
+                                targetFull = True
+
+                        if targetFull:
+                            self.submenue = interaction.TextMenu("\n\nno progress - no space to drop scrap\n\n")
+                            self.character.macroState["submenue"] = self.submenue
+                            return
+
+                        # spawn scrap
+                        new = Scrap(self.xPosition,self.yPosition,1,creator=self)
+                        new.xPosition = self.xPosition
+                        new.yPosition = self.yPosition+1
+                        self.room.addItems([new])
+
+                        self.submenue = interaction.TextMenu("\n\nchallenge in progress. Activate with metal bar in inventory. Activations remaining %s"%(self.metalbarChallenge,))
+                        self.character.inventory.remove(metalBarFound)
+                        self.metalbarChallenge -= 1
+
+                    else:
+                        if len(self.character.inventory):
+                            self.submenue = interaction.TextMenu("\n\nchallenge in progress. Try again with empty inventory to complete.\n\n")
+                        else:
+                            self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
+                            self.challengeRun2Done = True
+                    self.character.macroState["submenue"] = self.submenue
+            else:
+                self.submenue = interaction.TextMenu("\n\nTBD\n\n")
+                self.character.macroState["submenue"] = self.submenue
+
+
+
+    def challengeRun2(self):
+
+        selection = self.submenue.getSelection()
+        self.submenue = None
+
+        if selection == "note": # from gatherBloom
+            found = False
+            for item in self.character.inventory:
+                if isinstance(item,src.items.Note):
+                    found = True
+            if not found:
+                self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with a note in your inventory.\n\n check \"information->items->notes\" on how to create notes.\n\n")
+            else:
+                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
+                del self.availableChallenges["note"]
+
+        elif selection == "prodCase": # from produceBasics
+            found = False
+            for item in self.character.inventory:
+                if isinstance(item,src.items.Case):
+                    found = True
+            if not found:
+                self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with a case in your inventory.\n\n")
+            else:
+                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
+                del self.availableChallenges["prodCase"]
+
+        elif selection == "gatherBloom": # from root
+            found = False
+            for item in self.character.inventory:
+                if isinstance(item,src.items.Bloom):
+                    found = True
+            if not found:
+                self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with a bloom in your inventory.\n\n they are represented by ** and are white.\n\n")
+            else:
+                del self.availableChallenges["gatherBloom"]
+                self.availableChallenges["note"] = {"text":"write a note"}
+                self.knownBlueprints.append("Tank")
+                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nchallenge \"%s\" added\n\n"%(self.availableChallenges["note"]["text"]))
+
+        elif selection == "produceBasics": # from produceScrapCompactors
+            itemsLeft = ["Rod","Bolt","Stripe","Mount","Radiator","Sheet"]
+            for item in self.character.inventory:
+                if item.type in itemsLeft:
+                    itemsLeft.remove(item.type)
+            if len(itemsLeft):
+                self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with rod + bolt + stripe + mount + radiator + sheet in your inventory.\n\n")
+            else:
+                del self.availableChallenges["produceBasics"]
+                self.knownBlueprints.append("Case")
+                self.availableChallenges["prodCase"] = {"text":"produce case"}
+                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nchallenge \"%s\" added\n\n"%(self.availableChallenges["prodCase"]["text"]))
+
+        elif selection == "produceScrapCompactors": # from root
+            found = False
+            for item in self.character.inventory:
+                if isinstance(item,src.items.ScrapCompactor):
+                    found = True
+            if not found:
+                self.submenue = interaction.TextMenu("\n\nchallenge failed. Try with scrap compactor in your inventory.\n\n")
+            else:
+                self.knownBlueprints.append("Tank")
+                self.availableChallenges["produceBasics"] = {"text":"produce basics"}
+                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nchallenge \"%s\" added\n\n"%(self.availableChallenges["produceBasics"]["text"]))
+                del self.availableChallenges["produceScrapCompactors"]
+
+        self.character.macroState["submenue"] = self.submenue
 
     def basicInfo(self):
 
         options = []
 
-        options.append(("level1_movement","movement"))
-        options.append(("level1_interaction","interaction"))
-        options.append(("level1_machines","machines"))
+        options.append(("movement","movement"))
+        options.append(("interaction","interaction"))
+
+        if self.gooChallengeDone: 
+            options.append(("machines","machines"))
+
+        if self.blueprintChallengeDone: 
+            options.append(("automation","automation"))
+
+        if self.machineChallengeDone: 
+            options.append(("blueprints","blueprints"))
 
         self.submenue = interaction.SelectionMenu("select the information you need",options)
         self.character.macroState["submenue"] = self.submenue
@@ -4719,23 +4978,63 @@ class InfoScreen(Item):
 
         selection = self.submenue.getSelection()
 
-        if selection == "level1_movement":
+        if selection == "movement":
             self.submenue = interaction.TextMenu("\n\n * press ? for help\n\n * press a to move left/west\n * press w to move up/north\n * press s to move down/south\n * press d to move right/east\n\n")
             self.character.macroState["submenue"] = self.submenue
-        elif selection == "level1_interaction":
+        elif selection == "interaction":
             self.submenue = interaction.TextMenu("\n\n * press k to pick up\n * press l to pick up\n * press i to view inventory\n * press @ to view your stats\n * press j to activate \n * press e to examine\n * press ? for help\n\nMove onto an item and press the key to interact with it. Move against big items and press the key to interact with it\n\n")
             self.character.macroState["submenue"] = self.submenue
-        elif selection == "level1_machines":
+        elif selection == "machines":
             options = []
 
             options.append(("level1_machines_bars","metal bar production"))
-            options.append(("level1_machines_machines","machine production"))
-            options.append(("level1_machines_food","food production"))
-            options.append(("level1_machines_energy","energy production"))
+            if self.metalbarChallengeDone:
+                options.append(("level1_machines_simpleItem","simple item production"))
+            if self.sheetChallengeDone:
+                options.append(("level1_machines_machines","machine production"))
+            if self.machineChallengeDone:
+                options.append(("level1_machines_machineMachines","machine machine production"))
+                options.append(("level1_machines_blueprints","blueprint production"))
+                #options.append(("level1_machines_food","food production"))
+                #options.append(("level1_machines_energy","energy production"))
 
             self.submenue = interaction.SelectionMenu("select the information you need",options)
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.stepLevel1Machines
+        elif selection == "automation":
+            options = []
+
+            options.append(("commands","creating commands"))
+            if self.commandChallengeDone: 
+                options.append(("multiplier","multiplier"))
+
+            self.submenue = interaction.SelectionMenu("select the information you need",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.stepLevel1Automation
+        elif selection == "blueprints":
+            text = "\n\nknown blueprint recieps:\n\n"
+            if "Frame" in self.knownBlueprints:
+                text += " * frame           = rod + metal bars\n"
+            if "Tank" in self.knownBlueprints:
+                text += " * tank            = sheet + metal bars\n"
+            if "Case" in self.knownBlueprints:
+                text += " * case            = frame + metal bars\n"
+            if "ScrapCompactor" in self.knownBlueprints:
+                text += " * scrap compactor = scrap\n"
+            text += "\n\n"
+            self.submenue = interaction.TextMenu(text)
+            self.character.macroState["submenue"] = self.submenue
+
+    def stepLevel1Automation(self):
+
+        selection = self.submenue.getSelection()
+
+        if selection == "commands":
+            self.submenue = interaction.TextMenu("\n\nCommands are a way of automating actions. A character will run a command after activating it.\n\nThe easiest way of creating a command is:\n * drop a sheet on the floor\n * activate the sheet on the floor\n * select \"create a written command\"\n * select \"start recording\"\n * do the action\n * return to the sheet on the ground\n * activate the sheet again\n\nTo do the recorded action activate the command on the floor.\nWhile running the command you are not able the control your character and the game will speed up the longer the command runs.\n\nYou can press ctrl-d to abort running a commmand.")
+            self.character.macroState["submenue"] = self.submenue
+        if selection == "multiplier":
+            self.submenue = interaction.TextMenu("\n\nThe multiplier allow to do something x times. For example walking 5 steps to the right, waiting 100 turns, activating commands 3 times\n\nTo use multiplier type in the number of times you want to do something and the action.\n\nexamples:\n\n * 5d => 5 steps to the right\n100. => wait a hundred turns\n3j => activating a command you are standing on 3 times\n\n")
+            self.character.macroState["submenue"] = self.submenue
 
     def stepLevel1Machines(self):
 
@@ -4744,8 +5043,18 @@ class InfoScreen(Item):
         if selection == "level1_machines_bars":
             self.submenue = interaction.TextMenu("\n\nMetal bars are used to produce most thing. You can produce metal bars by using a scrap compactor.\nA scrap compactor is represented by RC. Place the scrap to the right/east of the scrap compactor.\nActivate it to produce a metal bar. The metal bar will be outputted to the left/west of the scrap compactor.\n\n")
             self.character.macroState["submenue"] = self.submenue
+        elif selection == "level1_machines_simpleItem":
+            self.submenue = interaction.TextMenu("\n\nMost items are produced in machines. A machine usually produces only one type of item.\nThese machines are shown as X\\. Place raw materials to the west/left/north/above of the machine and activate it to produce the item.\n\nYou can examine machines to get a more detailed descripton.\n\n")
+            self.character.macroState["submenue"] = self.submenue
+        elif selection == "level1_machines_food":
+            self.submenue = interaction.TextMenu("\n\nFood production is based on vat maggots. Vat maggots can be harvested from trees.\nActivate the tree and a vat maggot will be dropped to the east of the tree.\n\nvat maggots are processed into bio mass using a maggot fermenter.\nPlace 10 vat maggots left/west to the maggot fermenter and activate it to produce 1 bio mass.\n\nThe bio mass is processed into press cake using a bio press.\nPlace 10 biomass left/west to the bio press and activate it to produce one press cake.\n\nThe press cake is processed into goo by a goo producer. Place 10 press cakes west/left to the goo producer and a goo dispenser to the right/east of the goo producer.\nActivate the goo producer to add a charge to the goo dispenser.\n\nIf the goo dispenser is charged, you can fill your flask by having it in your inventory and activating the goo dispenser.\n\n")
         elif selection == "level1_machines_machines":
-            self.submenue = interaction.TextMenu("\n\nAll items are produces in machines. There is a special machine to produce each item.\nThese machines are shown as X\\. Place metal bars to the west/left of the machine and activate it to produce the item.\n\nThe machines to produce items with are produced by a machine-machine. The machine machine is shown as M\\\nPlace a metal bar to the west/left of the machine-machine and activate it. Select what the machine should produce.\n\nMachine-machines are produced by the production artwork. The production artwork is represented by ßß.\nPlace metal bars to the right of the production artwork and activate it to produce a machine-machine.\n\n")
+            self.submenue = interaction.TextMenu("\n\nThe machines are produced by a machine-machine. The machine machines are shown as M\\\nMachine-machines require blueprints to produce machines. For example a blueprint for rods allows to build a machine that builds rods.\n\n")
+        elif selection == "level1_machines_blueprints":
+            self.submenue = interaction.TextMenu("\n\nBlueprints are produced by a blueprinter.\nThe blueprinter takes items and a sheet as input and produces blueprints.\n\nDifferent items or combinations of items produce blueprints for different things.\n\n")
+            self.character.macroState["submenue"] = self.submenue
+        elif selection == "level1_machines_machineMachines":
+            self.submenue = interaction.TextMenu("\n\nMachine-machines can only be produced by the production artwork. The production artwork is represented by ßß.\n\n")
             self.character.macroState["submenue"] = self.submenue
         elif selection == "level1_machines_food":
             self.submenue = interaction.TextMenu("\n\nFood production is based on vat maggots. Vat maggots can be harvested from trees.\nActivate the tree and a vat maggot will be dropped to the east of the tree.\n\nvat maggots are processed into bio mass using a maggot fermenter.\nPlace 10 vat maggots left/west to the maggot fermenter and activate it to produce 1 bio mass.\n\nThe bio mass is processed into press cake using a bio press.\nPlace 10 biomass left/west to the bio press and activate it to produce one press cake.\n\nThe press cake is processed into goo by a goo producer. Place 10 press cakes west/left to the goo producer and a goo dispenser to the right/east of the goo producer.\nActivate the goo producer to add a charge to the goo dispenser.\n\nIf the goo dispenser is charged, you can fill your flask by having it in your inventory and activating the goo dispenser.\n\n")
@@ -4826,6 +5135,23 @@ class InfoScreen(Item):
             self.character.macroState["submenue"] = self.submenue
         else:
             self.character.messages.append("unknown selection: "+selection)
+
+    def getState(self):
+        state = super().getState()
+        state["availableChallenges"] = self.availableChallenges
+        state["knownBlueprints"] = self.knownBlueprints
+        return state
+
+    def getDiffState(self):
+        state = super().getDiffState()
+        state["availableChallenges"] = self.availableChallenges
+        state["knownBlueprints"] = self.knownBlueprints
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        self.availableChallenges = state["availableChallenges"]
+        self.knownBlueprints = state["knownBlueprints"]
 
 class SimpleRunner(Item):
     type = "SimpleRunner"
@@ -5310,7 +5636,7 @@ class Watch(Item):
         super().__init__(displayChars.watch,xPosition,yPosition,name=name,creator=creator)
 
         self.creationTime = 0
-        self.maxSize = 10000
+        self.maxSize = 100
 
         self.attributesToStore.extend([
                "creationTime"])
@@ -6172,84 +6498,85 @@ class Mold(Item):
             if direction == 3:
                 newPos = (self.xPosition-1,self.yPosition)
 
-            if (((newPos[0]%15 == 0 or newPos[0]%15 == 14) and not (newPos[1]%15 in (8,))) or
-                ((newPos[1]%15 == 0 or newPos[1]%15 == 14) and not (newPos[0]%15 in (8,)))):
-                return
+            #if (((newPos[0]%15 == 0 or newPos[0]%15 == 14) and not (newPos[1]%15 in (8,))) or
+            #    ((newPos[1]%15 == 0 or newPos[1]%15 == 14) and not (newPos[0]%15 in (8,)))):
+            #    return
 
-            if not (newPos in self.container.itemByCoordinates and len(self.container.itemByCoordinates[newPos])):
+            itemList = self.container.getItemByPosition(newPos)
+            if not len(itemList):
                 new = itemMap["Mold"](creator=self)
                 new.xPosition = newPos[0]
                 new.yPosition = newPos[1]
                 self.container.addItems([new])
                 new.startSpawn()
-            else:
-                if self.container.itemByCoordinates[newPos][-1].type == "Mold":
-                    self.charges += self.container.itemByCoordinates[newPos][-1].charges%2
-                    self.container.itemByCoordinates[newPos][-1].destroy(generateSrcap=False)
+            elif len(itemList) > 0:
+                if itemList[-1].type == "Mold":
+                    self.charges += itemList[-1].charges%2
+                    itemList[-1].destroy(generateSrcap=False)
 
                     new = itemMap["Sprout"](creator=self)
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])
 
-                elif self.container.itemByCoordinates[newPos][-1].type == "Sprout":
-                    self.container.itemByCoordinates[newPos][-1].destroy(generateSrcap=False)
+                elif itemList[-1].type == "Sprout":
+                    itemList[-1].destroy(generateSrcap=False)
 
                     new = itemMap["Sprout2"](creator=self)
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])
-                elif self.container.itemByCoordinates[newPos][-1].type == "Sprout2":
-                    self.container.itemByCoordinates[newPos][-1].destroy(generateSrcap=False)
+                elif itemList[-1].type == "Sprout2":
+                    itemList[-1].destroy(generateSrcap=False)
 
                     new = itemMap["Bloom"](creator=self)
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])
                     new.startSpawn()
-                elif self.container.itemByCoordinates[newPos][-1].type == "Bloom":
-                    self.container.itemByCoordinates[newPos][-1].destroy(generateSrcap=False)
+                elif itemList[-1].type == "Bloom":
+                    itemList[-1].destroy(generateSrcap=False)
 
                     new = itemMap["SickBloom"](creator=self)
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])
                     new.startSpawn()
-                elif self.container.itemByCoordinates[newPos][-1].type == "Corpse":
-                    self.container.itemByCoordinates[newPos][-1].destroy(generateSrcap=False)
+                elif itemList[-1].type == "Corpse":
+                    itemList[-1].destroy(generateSrcap=False)
 
                     new = itemMap["PoisonBloom"](creator=self)
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])
 
-                elif self.container.itemByCoordinates[newPos][-1].type == "SickBloom":
-                    self.container.itemByCoordinates[newPos][-1].destroy(generateSrcap=False)
+                elif itemList[-1].type == "SickBloom":
+                    itemList[-1].destroy(generateSrcap=False)
 
                     new = itemMap["Bush"](creator=self)
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])
 
-                elif self.container.itemByCoordinates[newPos][-1].type == "PoisonBloom":
-                    self.container.itemByCoordinates[newPos][-1].destroy(generateSrcap=False)
+                elif itemList[-1].type == "PoisonBloom":
+                    itemList[-1].destroy(generateSrcap=False)
 
                     new = itemMap["PoisonBush"](creator=self)
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])
 
-                elif self.container.itemByCoordinates[newPos][-1].type == "Bush":
-                    self.container.itemByCoordinates[newPos][-1].charges += 10
+                elif itemList[-1].type == "Bush":
+                    itemList[-1].charges += 10
 
-                elif self.container.itemByCoordinates[newPos][-1].type == "EncrustedBush":
+                elif itemList[-1].type == "EncrustedBush":
                     new = itemMap["EncrustedBush"](creator=self)
                     new.xPosition = self.xPosition
                     new.yPosition = self.yPosition
                     self.container.addItems([new])
                     self.destroy(generateSrcap=False)
 
-                elif self.container.itemByCoordinates[newPos][-1].type in ["PoisonBush","Test"]:
+                elif itemList[-1].type in ["PoisonBush","Test"]:
                     new = itemMap["PoisonBloom"](creator=self)
                     new.xPosition = self.xPosition
                     new.yPosition = self.yPosition
@@ -6303,36 +6630,56 @@ class Bloom(Item):
 
     def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
         super().__init__(displayChars.bloom,xPosition,yPosition,creator=creator,name="bloom")
+        self.bolted = False
         self.walkable = True
+        self.dead = False
+        self.attributesToStore.extend([
+               "dead"])
+        self.initialState = self.getState()
 
     def apply(self,character):
-        character.satiation += 115
-        if character.satiation > 1000:
-            character.satiation = 1000
-        new = itemMap["Mold"](creator=self)
-        new.xPosition = self.xPosition
-        new.yPosition = self.yPosition
-        self.container.addItems([new])
-        new.startSpawn()
-        self.destroy(generateSrcap=False)
-        character.messages.append("you eat the bloom and gain 115 satiation")
+        if self.dead:
+            character.satiation += 100
+            self.destroy(generateSrcap=False)
+            character.messages.append("you eat the dead bloom and gain 100 satiation")
+        else:
+            character.satiation += 115
+            if character.satiation > 1000:
+                character.satiation = 1000
+            new = itemMap["Mold"](creator=self)
+            new.xPosition = self.xPosition
+            new.yPosition = self.yPosition
+            self.container.addItems([new])
+            if not self.dead:
+                new.startSpawn()
+            self.destroy(generateSrcap=False)
+            character.messages.append("you eat the bloom and gain 115 satiation")
 
     def startSpawn(self):
-        event = src.events.RunCallbackEvent(gamestate.tick+(2*self.xPosition+3*self.yPosition+gamestate.tick)%10000,creator=self)
-        event.setCallback({"container":self,"method":"spawn"})
-        self.terrain.addEvent(event)
+        if not self.dead:
+            event = src.events.RunCallbackEvent(gamestate.tick+(2*self.xPosition+3*self.yPosition+gamestate.tick)%10000,creator=self)
+            event.setCallback({"container":self,"method":"spawn"})
+            self.terrain.addEvent(event)
+
+    def pickUp(self,character):
+        self.bolted = False
+        self.dead = True
+        if not self.dead:
+            new = itemMap["Mold"](creator=self)
+            new.xPosition = self.xPosition
+            new.yPosition = self.yPosition
+            self.container.addItems([new])
+        super().pickUp(character)
 
     def spawn(self):
+        if self.dead:
+            return
         if not (self.xPosition and self.yPosition):
             return
         direction = (2*self.xPosition+3*self.yPosition+gamestate.tick)%4
         import random
         direction = (random.randint(1,13),random.randint(1,13))
-        newPos = (self.xPosition%15+direction[0],self.yPosition%15+direction[1])
-
-        if (((newPos[0] < 1 or newPos[0] > 15*15-2) and not newPos[1]%15 == 8) or
-            ((newPos[1] < 1 or newPos[1] > 15*15-2) and not newPos[0]%15 == 8)):
-            return
+        newPos = (self.xPosition-self.xPosition%15+direction[0],self.yPosition-self.yPosition%15+direction[1])
 
         if not (newPos in self.container.itemByCoordinates and len(self.container.itemByCoordinates[newPos])):
             new = itemMap["Mold"](creator=self)

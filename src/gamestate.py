@@ -47,7 +47,7 @@ class GameState(src.saveing.Saveable):
         if phase:
             self.currentPhase = phasesByName[phase](seed=seed)
         else:
-            self.currentPhase = phasesByName["BrainTesting"](seed=seed)
+            self.currentPhase = phasesByName["BuildBase"](seed=seed)
 
         # add the main char
         self.mainChar = src.characters.Character(displayChars.main_char,3,3,automated=False,name=names.characterFirstNames[self.tick%len(names.characterFirstNames)]+" "+names.characterLastNames[self.tick%len(names.characterLastNames)],creator=void)

@@ -289,6 +289,33 @@ class Terrain(src.saveing.Saveable):
               "yPosition","xPosition",
                 ])
 
+    def getItemByPosition(self,position):
+
+        if position[0]%15 == 0:
+            if position[1]%15 < 7:
+                position = (position[0]+1,position[1]+1)
+            elif position[1]%15 > 7:
+                position = (position[0]+1,position[1]-1)
+        if position[0]%15 == 14:
+            if position[1]%15 < 7:
+                position = (position[0]-1,position[1]+1)
+            elif position[1]%15 > 7:
+                position = (position[0]-1,position[1]-1)
+        if position[1]%15 == 0:
+            if position[0]%15 < 7:
+                position = (position[0]+1,position[1]+1)
+            elif position[0]%15 > 7:
+                position = (position[0]-1,position[1]+1)
+        if position[1]%15 == 14:
+            if position[0]%15 < 7:
+                position = (position[0]+1,position[1]-1)
+            elif position[0]%15 > 7:
+                position = (position[0]-1,position[1]-1)
+
+        try:
+            return self.itemByCoordinates[(position[0],position[1])]
+        except:
+            return []
 
     def runner1(self):
         room = None
@@ -946,7 +973,12 @@ class Terrain(src.saveing.Saveable):
     '''
     def removeItem(self,item,recalculate=True):
         #self.itemsOnFloor.remove(item)
-        self.itemByCoordinates[(item.xPosition,item.yPosition)].remove(item)
+        pos = (item.xPosition,item.yPosition)
+        if pos in self.itemByCoordinates:
+            try:
+                self.itemByCoordinates[pos].remove(item)
+            except:
+                pass
         if not item.walkable and hasattr(self,"watershedStart") and recalculate: # nontrivial: prevents crashes in constructor
             self.calculatePathMap()
 
@@ -962,10 +994,39 @@ class Terrain(src.saveing.Saveable):
             item.container = self
             if not item.walkable:
                 recalc = True
-            if (item.xPosition,item.yPosition) in self.itemByCoordinates:
-                self.itemByCoordinates[(item.xPosition,item.yPosition)].insert(0,item)
+
+            if not (item.xPosition or item.xPosition):
+                return 
+
+            position = (item.xPosition,item.yPosition)
+            if position[0]%15 == 0:
+                if position[1]%15 < 7:
+                    position = (position[0]+1,position[1]+1)
+                elif position[1]%15 > 7:
+                    position = (position[0]+1,position[1]-1)
+            if position[0]%15 == 14:
+                if position[1]%15 < 7:
+                    position = (position[0]-1,position[1]+1)
+                elif position[1]%15 > 7:
+                    position = (position[0]-1,position[1]-1)
+            if position[1]%15 == 0:
+                if position[0]%15 < 7:
+                    position = (position[0]+1,position[1]+1)
+                elif position[0]%15 > 7:
+                    position = (position[0]-1,position[1]+1)
+            if position[1]%15 == 14:
+                if position[0]%15 < 7:
+                    position = (position[0]+1,position[1]-1)
+                elif position[0]%15 > 7:
+                    position = (position[0]-1,position[1]-1)
+
+            item.xPosition = position[0]
+            item.yPosition = position[1]
+
+            if position in self.itemByCoordinates:
+                self.itemByCoordinates[position].insert(0,item)
             else:
-                self.itemByCoordinates[(item.xPosition,item.yPosition)] = [item]
+                self.itemByCoordinates[position] = [item]
         if recalc and hasattr(self,"watershedStart") and recalculate: # nontrivial: prevents crashes in constructor
             self.calculatePathMap()
 

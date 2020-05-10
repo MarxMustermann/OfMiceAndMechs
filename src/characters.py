@@ -844,7 +844,7 @@ class Character(src.saveing.Saveable):
             self.die(reason="you starved. This happens when your satiation falls below 0\nPrevent this by drinking using the "+commandChars.drink+" key")
             return
 
-        if self.satiation == 300-1:
+        if self.satiation in (300-1,200-1,100-1,30-1):
             self.changed("thirst")
             self.macroState["commandKeyQueue"] = [("|",["norecord"]),(">",["norecord"]),("_",["norecord"]),("j",["norecord"]),("|",["norecord"]),("<",["norecord"])] + self.macroState["commandKeyQueue"]
 

@@ -249,10 +249,13 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
         # let the submenu handle the keystroke
         lastSubmenu = charState["submenue"]
-        done = charState["submenue"].handleKey(key)
+        noRender = True
+        if mainChar == char and not "norecord" in flags:
+            noRender = False
+        done = charState["submenue"].handleKey(key,noRender=noRender)
 
         if not lastSubmenu == charState["submenue"]:
-            charState["submenue"].handleKey("~")
+            charState["submenue"].handleKey("~",noRender=noRender)
             done = False
 
         # reset rendering flags
@@ -1161,6 +1164,8 @@ current registers
                                 direction = "north"
                             else:
                                 #char.stasis = True
+                                char.macroState["commandKeyQueue"].insert(0,("a",["norecord"]))
+                                char.macroState["commandKeyQueue"].insert(0,("a",["norecord"]))
                                 pass
                             char.messages.append("a force field pushes you")
                     elif direction == "east":
@@ -1171,6 +1176,8 @@ current registers
                                 direction = "north"
                             else:
                                 #char.stasis = True
+                                char.macroState["commandKeyQueue"].insert(0,("d",["norecord"]))
+                                char.macroState["commandKeyQueue"].insert(0,("d",["norecord"]))
                                 pass
                             char.messages.append("a force field pushes you")
                     elif direction == "north":
@@ -1181,6 +1188,8 @@ current registers
                                 direction = "west"
                             else:
                                 #char.stasis = True
+                                char.macroState["commandKeyQueue"].insert(0,("w",["norecord"]))
+                                char.macroState["commandKeyQueue"].insert(0,("w",["norecord"]))
                                 pass
                             char.messages.append("a force field pushes you")
                     elif direction == "south":
@@ -1191,6 +1200,8 @@ current registers
                                 direction = "west"
                             else:
                                 #char.stasis = True
+                                char.macroState["commandKeyQueue"].insert(0,("s",["norecord"]))
+                                char.macroState["commandKeyQueue"].insert(0,("s",["norecord"]))
                                 pass
                             char.messages.append("a force field pushes you")
                     if char.xPosition%15 in (0,14) and direction in ("north","south"):
@@ -1464,6 +1475,12 @@ current registers
                 else:
                     # activate the marked item
                     if charState["itemMarkedLast"]:
+                        if not charState["itemMarkedLast"].container:
+                            if charState["itemMarkedLast"].room:
+                                charState["itemMarkedLast"].container = charState["itemMarkedLast"].room
+                            elif charState["itemMarkedLast"].terrain:
+                                charState["itemMarkedLast"].container = charState["itemMarkedLast"].terrain
+
                         charState["itemMarkedLast"].apply(char)
 
                     # activate an item on floor
@@ -1506,11 +1523,15 @@ current registers
             # bad code: drinking should happen in character
             if key in (commandChars.drink):
                 character = char
-                for item in character.inventory:
+                for item in reversed(character.inventory):
                     if isinstance(item,src.items.GooFlask):
                         if item.uses > 0:
                             item.apply(character)
                             break
+                    if isinstance(item,src.items.Bloom):
+                        item.apply(character)
+                        character.inventory.remove(item)
+                        break
 
             # pick up items
             # bad code: picking up should happen in character
@@ -1602,12 +1623,16 @@ current registers
         if mainChar == char and not "norecord" in flags:
             char.specialRender = True        
 
+        noRender = True
+        if mainChar == char and not "norecord" in flags:
+            noRender = False
+
         # let the submenu handle the keystroke
         lastSubmenu = charState["submenue"]
-        done = charState["submenue"].handleKey(key)
+        done = charState["submenue"].handleKey(key,noRender=noRender)
 
         if not lastSubmenu == charState["submenue"]:
-            charState["submenue"].handleKey("~")
+            charState["submenue"].handleKey("~",noRender=noRender)
             done = False
 
         # reset rendering flags
@@ -1729,7 +1754,7 @@ class SubMenu(src.saveing.Saveable):
     '''
     show the options and allow the user to select one
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # exit submenue
         if key == "esc":
             return True
@@ -1812,18 +1837,19 @@ class SubMenu(src.saveing.Saveable):
         else:
              self.lockOptions = False
 
-        # render the options
-        counter = 0
-        for k,v in self.niceOptions.items():
-            counter += 1
-            if counter == self.selectionIndex:
-                out += str(k)+" ->"+str(v)+"\n"
-            else:
-                out += str(k)+" - "+str(v)+"\n"
+        if not noRender:
+            # render the options
+            counter = 0
+            for k,v in self.niceOptions.items():
+                counter += 1
+                if counter == self.selectionIndex:
+                    out += str(k)+" ->"+str(v)+"\n"
+                else:
+                    out += str(k)+" - "+str(v)+"\n"
 
-        # show the rendered options 
-        # bad code: uwrid specific code
-        main.set_text((urwid.AttrSpec("default","default"),self.persistentText+"\n\n"+out))
+            # show the rendered options 
+            # bad code: uwrid specific code
+            main.set_text((urwid.AttrSpec("default","default"),self.persistentText+"\n\n"+out))
 
         return False
 
@@ -1851,15 +1877,16 @@ class SelectionMenu(SubMenu):
     '''
     handles the key
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # exit submenue
         if key == "esc":
             return True
-        header.set_text("")
+        if not noRender:
+            header.set_text("")
 
         # let superclass handle the actual selection
         if not self.getSelection():
-             super().handleKey(key)
+             super().handleKey(key,noRender=noRender)
 
         # stop when done
         if self.getSelection():
@@ -1908,10 +1935,10 @@ class ChatPartnerselection(SubMenu):
     '''
     set up the selection and spawn the chat 
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # wrap around the chat menu
         if self.subMenu:
-            return self.subMenu.handleKey(key)
+            return self.subMenu.handleKey(key,noRender=noRender)
 
         # exit the submenu
         if key == "esc":
@@ -1961,12 +1988,12 @@ class ChatPartnerselection(SubMenu):
 
         # delegate the actual selection to the super class
         if not self.getSelection():
-             super().handleKey(key)
+             super().handleKey(key,noRender=noRender)
 
         # spawn the chat submenu
         if self.getSelection():
             self.subMenu = src.chats.ChatMenu(self.selection)
-            self.subMenu.handleKey(key)
+            self.subMenu.handleKey(key,noRender=noRender)
 
         # wait for input
         else:
@@ -1987,7 +2014,7 @@ class DebugMenu(SubMenu):
     '''
     show some debug output
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # exit submenu
         if key == "esc":
             return True
@@ -2021,7 +2048,7 @@ class QuestMenu(SubMenu):
     show a questlist and handle interactions
     overrides the superclasses method completely
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # exit submenu
         if key == "esc":
             return True
@@ -2067,7 +2094,7 @@ class QuestMenu(SubMenu):
             if key in ["q"]:
                 global submenue
                 submenue = AdvancedQuestMenu()
-                submenue.handleKey(key)
+                submenue.handleKey(key,noRender=noRender)
                 return False
         self.lockOptions = False
 
@@ -2115,9 +2142,9 @@ class InventoryMenu(SubMenu):
     show the inventory
     bad pattern: no player interaction
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         if self.subMenu:
-            self.subMenu.handleKey(key)
+            self.subMenu.handleKey(key, noRender=noRender)
             if not self.subMenu.getSelection() == None:
                 if self.activate:
                     if not "NaiveActivateQuest" in self.char.solvers:
@@ -2166,7 +2193,7 @@ class InventoryMenu(SubMenu):
                     options.append([counter,item.name])
                     counter += 1
                 self.subMenu = SelectionMenu("activate what?",options)
-                self.subMenu.handleKey(".")
+                self.subMenu.handleKey(".",noRender=noRender)
                 self.activate = True
                 return False
 
@@ -2180,7 +2207,7 @@ class InventoryMenu(SubMenu):
                     options.append([counter,item.name])
                     counter += 1
                 self.subMenu = SelectionMenu("drop what?",options)
-                self.subMenu.handleKey(".")
+                self.subMenu.handleKey(".",noRender=noRender)
                 self.drop = True
                 return False
 
@@ -2212,7 +2239,7 @@ class InputMenu(SubMenu):
     '''
     show the inventory
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
 
         if key == "enter" and not self.escape:
             if self.followUp:
@@ -2274,7 +2301,7 @@ class CharacterInfoMenu(SubMenu):
     '''
     show the attributes
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # exit the submenu
         if key == "esc":
             return True
@@ -2302,7 +2329,7 @@ class AdvancedQuestMenu(SubMenu):
     '''
     gather the quests parameters and assign the quest
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # exit submenu
         if key == "esc":
             return True
@@ -2335,7 +2362,7 @@ class AdvancedQuestMenu(SubMenu):
 
             # let the superclass handle the actual selection
             if not self.getSelection():
-                super().handleKey(key)
+                super().handleKey(key, noRender=noRender)
                 
             # store the character to assign the quest to
             if self.getSelection():
@@ -2368,7 +2395,7 @@ class AdvancedQuestMenu(SubMenu):
 
             # let the superclass handle the actual selection
             if not self.getSelection():
-                super().handleKey(key)
+                super().handleKey(key,noRender=noRender)
 
             # store the type of quest to create
             if self.getSelection():
@@ -2398,7 +2425,7 @@ class AdvancedQuestMenu(SubMenu):
 
                 # let the superclass handle the actual selection
                 if not self.getSelection():
-                    super().handleKey(key)
+                    super().handleKey(key,noRender=noRender)
 
                 # store the parameter
                 if self.getSelection():
@@ -2425,7 +2452,7 @@ class AdvancedQuestMenu(SubMenu):
 
                     # let the superclass handle the actual selection
                     if not self.getSelection():
-                        super().handleKey(key)
+                        super().handleKey(key,noRender=noRender)
 
                     # store the parameter
                     if self.getSelection():
@@ -2448,7 +2475,7 @@ class AdvancedQuestMenu(SubMenu):
 
                     # let the superclass handle the actual selection
                     if not self.getSelection():
-                        super().handleKey(key)
+                        super().handleKey(key,noRender=noRender)
 
                     # store the parameter
                     if self.getSelection():
@@ -2475,7 +2502,7 @@ class AdvancedQuestMenu(SubMenu):
 
             # let the superclass handle the actual selection
             if not self.getSelection():
-                super().handleKey(key)
+                super().handleKey(key,noRender=noRender)
 
             if self.getSelection():
                 # instanciate quest
@@ -2708,7 +2735,7 @@ class HelpMenu(SubMenu):
     '''
     show the help text
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # exit the submenu
         if key == "esc":
             return True
@@ -2732,18 +2759,19 @@ class TextMenu(SubMenu):
 
     '''
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # exit the submenu
         if key in ("esc","enter","space","j",):
             if self.followUp:
                 self.followUp()
             return True
 
-        # show info
-        header.set_text((urwid.AttrSpec("default","default"),""))
-        self.persistentText = ""
-        self.persistentText += self.text
-        main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+        if not noRender:
+            # show info
+            header.set_text((urwid.AttrSpec("default","default"),""))
+            self.persistentText = ""
+            self.persistentText += self.text
+            main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
 
         return False
 
@@ -2761,7 +2789,7 @@ class OneKeystokeMenu(SubMenu):
 
     '''
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
 
         # show info
         header.set_text((urwid.AttrSpec("default","default"),""))

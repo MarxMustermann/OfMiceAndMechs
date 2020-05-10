@@ -403,8 +403,10 @@ if not loaded:
         gameStateObj.terrainType = terrains.Nothingness
     elif args.terrain and args.terrain == "test":
         gameStateObj.terrainType = terrains.GameplayTest
-    else:
+    elif args.terrain and args.terrain == "tutorial":
         gameStateObj.terrainType = terrains.TutorialTerrain
+    else:
+        gameStateObj.terrainType = terrains.GameplayTest
 else:
     terrain = gameStateObj.terrain
     interaction.lastTerrain = terrain

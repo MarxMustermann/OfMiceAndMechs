@@ -306,6 +306,12 @@ class Room(src.saveing.Saveable):
         if not self.listeners[tag]:
             del self.listeners[tag]
 
+    def getItemByPosition(self,position):
+        try:
+            return self.itemByCoordinates[(position[0],position[1])]
+        except:
+            return []
+
     '''
     sending notifications
     bad code: probably misnamed
@@ -1452,7 +1458,10 @@ XXXXXXXXXXXXX
 
         self.bluePrinter = src.items.BluePrinter(8,9,creator=creator)
 
-        self.addItems([self.artwork,self.compactor,flask1,flask2,flask3,self.infoScreen,self.bluePrinter,self.machinemachine])
+        self.machine = src.items.Machine(7,8,creator=creator)
+        self.machine.setToProduce("Sheet")
+
+        self.addItems([self.artwork,self.compactor,flask1,flask2,flask3,self.infoScreen,self.bluePrinter,self.machinemachine,self.machine])
 
         metalbars = src.items.MetalBars(3,1,creator=creator)
         metalbars2 = src.items.MetalBars(7,9,creator=creator)

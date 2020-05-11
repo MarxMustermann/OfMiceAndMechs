@@ -493,9 +493,11 @@ def advanceGame():
 
     gameStateObj.tick += 1
 
+
 # bad code: common variables with modules
 cinematics.advanceGame = advanceGame
 interaction.advanceGame = advanceGame
+story.advanceGame = advanceGame
 
 # set up the splash screen
 if not args.debug and not interaction.submenue and not loaded:

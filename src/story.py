@@ -3076,9 +3076,6 @@ class BuildBase(BasicPhase):
             room = json.loads(stateFile.read())
         terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
 
-        mainChar.addListener(self.checkRoomEnteredMain)
-        mainChar.macroState["macros"]["j"] = ["J"]
-
         molds = []
         for bigX in range(1,13):
             for bigY in range(1,13):
@@ -3088,6 +3085,12 @@ class BuildBase(BasicPhase):
         terrain.addItems(molds)
         for mold in molds:
             mold.startSpawn()
+
+        for i in range(1,100):
+            advanceGame()
+
+        mainChar.addListener(self.checkRoomEnteredMain)
+        mainChar.macroState["macros"]["j"] = ["J"]
 
         # add basic set of abilities in openworld phase
         mainChar.questsDone = [

@@ -4826,8 +4826,7 @@ class InfoScreen(Item):
                         self.activateChallengeDone = True
                         self.knownBlueprints.append("ScrapCompactor")
                 self.character.macroState["submenue"] = self.submenue
-        else:
-            if not self.challengeRun2Done:
+        elif not self.challengeRun2Done:
                 if len(self.availableChallenges):
                     options = []
                     for (key,value) in self.availableChallenges.items():
@@ -4878,13 +4877,25 @@ class InfoScreen(Item):
                             self.submenue = interaction.TextMenu("\n\nchallenge in progress. Try again with empty inventory to complete.\n\n")
                         else:
                             self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
+                            self.availableChallenges["differentBlueprints"] = {"text":"9 different blueprints"}
+                            self.availableChallenges["9blooms"] = {"text":"9 blooms"}
+                            self.availableChallenges["produceAdvanced"] = {"text":"produce items"}
+                            self.availableChallenges["produceScraper"] = {"text":"scraper"}
+                            self.availableChallenges["processedBloom"] = {"text":"bio mass"}
                             self.challengeRun2Done = True
                     self.character.macroState["submenue"] = self.submenue
+        else:
+            if len(self.availableChallenges):
+                options = []
+                for (key,value) in self.availableChallenges.items():
+                    options.append([key,value["text"]])
+
+                self.submenue = interaction.SelectionMenu("select the challenge",options)
+                self.character.macroState["submenue"] = self.submenue
+                self.character.macroState["submenue"].followUp = self.challengeRun2
             else:
                 self.submenue = interaction.TextMenu("\n\nTBD\n\n")
                 self.character.macroState["submenue"] = self.submenue
-
-
 
     def challengeRun2(self):
 
@@ -4945,12 +4956,67 @@ class InfoScreen(Item):
                 if isinstance(item,src.items.ScrapCompactor):
                     found = True
             if not found:
-                self.submenue = interaction.TextMenu("\n\nchallenge failed. Try with scrap compactor in your inventory.\n\n")
+                self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with scrap compactor in your inventory.\n\n")
             else:
                 self.knownBlueprints.append("Tank")
                 self.availableChallenges["produceBasics"] = {"text":"produce basics"}
                 self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nchallenge \"%s\" added\n\n"%(self.availableChallenges["produceBasics"]["text"]))
                 del self.availableChallenges["produceScrapCompactors"]
+
+        elif selection == "differentBlueprints": # from root2
+            blueprints = []
+            for item in self.character.inventory:
+                if isinstance(item,src.items.BluePrint) and not item.endProduct in blueprints:
+                    blueprints.append(item.endProduct)
+            if not len(blueprints) > 8:
+                self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with 9 different blueprints in your inventory.\n\n")
+            else:
+                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nchallenge \"%s\" added\n\n"%(self.availableChallenges["produceBasics"]["text"]))
+                del self.availableChallenges["differentBlueprints"]
+
+        elif selection == "9blooms": # from root2
+            found = 0
+            for item in self.character.inventory:
+                if isinstance(item,src.items.Bloom):
+                    found += 1
+            if not found > 8:
+                self.submenue = interaction.TextMenu("\n\nchallenge failed. Try with 9 bloom in your inventory.\n\n")
+            else:
+                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
+                del self.availableChallenges["9blooms"]
+
+        elif selection == "produceAdvanced": # from root2
+            itemsLeft = ["Tank","Heater","Connector","pusher","puller","Frame"]
+            for item in self.character.inventory:
+                if item.type in itemsLeft:
+                    itemsLeft.remove(item.type)
+            if len(itemsLeft):
+                self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with tank + heater + connector + pusher + puller + frame in your inventory.\n\n")
+            else:
+                del self.availableChallenges["produceAdvanced"]
+                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
+
+        elif selection == "processedBloom": # from root2
+            found = False
+            for item in self.character.inventory:
+                if isinstance(item,src.items.BioMass):
+                    found = True
+            if not found:
+                self.submenue = interaction.TextMenu("\n\nchallenge failed. Try with bio mass in your inventory.\n\n")
+            else:
+                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
+                del self.availableChallenges["processedBloom"]
+
+        elif selection == "produceScraper": # from root2
+            found = False
+            for item in self.character.inventory:
+                if isinstance(item,src.items.Scraper):
+                    found = True
+            if not found:
+                self.submenue = interaction.TextMenu("\n\nchallenge failed. Try with scraper in your inventory.\n\n")
+            else:
+                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
+                del self.availableChallenges["produceScraper"]
 
         self.character.macroState["submenue"] = self.submenue
 
@@ -6013,7 +6079,7 @@ Activate it to trigger a exlosion.
 
         event = src.events.RunCallbackEvent(gamestate.tick+1,creator=self)
         event.setCallback({"container":new,"method":"explode"})
-        self.terrain.addEvent(event)
+        self.container.addEvent(event)
 
         super().destroy()
 
@@ -6649,6 +6715,7 @@ class Bloom(Item):
             new = itemMap["Mold"](creator=self)
             new.xPosition = self.xPosition
             new.yPosition = self.yPosition
+            new.charges = 4
             self.container.addItems([new])
             if not self.dead:
                 new.startSpawn()
@@ -6663,12 +6730,13 @@ class Bloom(Item):
 
     def pickUp(self,character):
         self.bolted = False
-        self.dead = True
         if not self.dead:
             new = itemMap["Mold"](creator=self)
             new.xPosition = self.xPosition
             new.yPosition = self.yPosition
+            new.charges = 4
             self.container.addItems([new])
+        self.dead = True
         super().pickUp(character)
 
     def spawn(self):

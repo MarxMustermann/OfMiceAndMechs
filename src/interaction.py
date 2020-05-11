@@ -1505,9 +1505,10 @@ current registers
 
                     # examine an item on floor
                     else:
-                        for item in char.container.itemByCoordinates[(char.xPosition,char.yPosition)]:
-                            char.examine(item)
-                            break
+                        if (char.xPosition,char.yPosition) in char.container.itemByCoordinates:
+                            for item in char.container.itemByCoordinates[(char.xPosition,char.yPosition)]:
+                                char.examine(item)
+                                break
 
             # drop first item from inventory
             # bad pattern: the user has to have the choice for what item to drop
@@ -3212,7 +3213,7 @@ def gameLoop(loop,user_data):
         else:
             continousOperation = 0
 
-    loop.set_alarm_in(0.0001, gameLoop)
+    loop.set_alarm_in(0.001, gameLoop)
 
 loop = None
 

@@ -82,7 +82,10 @@ class GameState(src.saveing.Saveable):
             successSeedFile.write(json.dumps({"successSeed":self.successSeed}))
 
         from shutil import copyfile
-        copyfile("gamestate/gamestate.json", "gamestate/gamestate_backup.json")
+        try:
+            copyfile("gamestate/gamestate.json", "gamestate/gamestate_backup.json")
+        except:
+            pass
 
         if not state["gameWon"]:
             gamedump = json.dumps(state,indent=4, sort_keys=True)

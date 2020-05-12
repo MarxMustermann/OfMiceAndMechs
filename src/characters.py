@@ -610,6 +610,8 @@ class Character(src.saveing.Saveable):
         else:
             debugMessages.append("this should not happen, character died without beeing somewhere ("+str(self)+")")
 
+        self.macroState["commandKeyQueue"] = []
+
         # set attributes
         self.dead = True
         if reason:
@@ -819,7 +821,7 @@ class Character(src.saveing.Saveable):
     advance the character one tick
     """
     def advance(self):
-        if self.stasis:
+        if self.stasis or self.dead:
             return
 
         # smooth over impossible state
@@ -942,11 +944,12 @@ class Monster(Character):
 
     def die(self,reason=None,addCorpse=True):
         if self.phase == 1:
-            new = src.items.itemMap["Mold"](creator=self)
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition
-            self.container.addItems([new])
-            new.startSpawn()
+            if self.xPosition and self.yPosition and (not self.container.getItemByPosition((self.xPosition,self.yPosition))):
+                new = src.items.itemMap["Mold"](creator=self)
+                new.xPosition = self.xPosition
+                new.yPosition = self.yPosition
+                self.container.addItems([new])
+                new.startSpawn()
 
             super().die(reason,addCorpse=False)
         else:

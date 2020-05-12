@@ -1137,7 +1137,10 @@ class Terrain(src.saveing.Saveable):
                 item = entry[0]
                 if not (item.yPosition and item.xPosition):
                     continue
-                chars[item.yPosition][item.xPosition] = item.display
+                try:
+                    chars[item.yPosition][item.xPosition] = item.display
+                except:
+                    pass
 
 
         # render each room

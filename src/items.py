@@ -2127,6 +2127,73 @@ This goo dispenser currently has %s charges
 
 '''
 '''
+class BloomShredder(Item):
+    type = "BloomShredder"
+
+    '''
+    call superclass constructor with modified paramters and set some state
+    '''
+    def __init__(self,xPosition=None,yPosition=None,name="bloom shredder",creator=None,noId=False):
+        self.activated = False
+        super().__init__(displayChars.maggotFermenter,xPosition,yPosition,name=name,creator=creator)
+
+        # bad code: repetetive and easy to forgett
+        self.initialState = self.getState()
+    
+    '''
+    '''
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        items = []
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+                if isinstance(item,Bloom):
+                    items.append(item)
+
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
+
+        # refuse to produce without ressources
+        if len(items) < 1:
+            character.messages.append("not enough blooms")
+            return
+       
+        targetFull = False
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+                targetFull = True
+            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                if item.walkable == False:
+                    targetFull = True
+
+        if targetFull:
+            character.messages.append("the target area is full, the machine does not produce anything")
+            return
+
+        # remove ressources
+        self.room.removeItem(items[0])
+
+        # spawn the new item
+        new = BioMass(creator=self)
+        new.xPosition = self.xPosition+1
+        new.yPosition = self.yPosition
+        self.room.addItems([new])
+
+    def getLongInfo(self):
+        text = """
+A bloom shredder produces bio mass from blooms.
+
+Place 10 vat maggots to the left/west of the maggot fermenter.
+Activate the maggot fermenter to produce biomass.
+
+"""
+        return text
+
+
+'''
+'''
 class MaggotFermenter(Item):
     type = "MaggotFermenter"
 
@@ -4020,6 +4087,8 @@ class Machine(Item):
             ressourcesNeeded = ["Case","MetalBars","Heater"]
         elif self.toProduce == "MaggotFermenter":
             ressourcesNeeded = ["Case","MetalBars","Heater"]
+        elif self.toProduce == "BloomShredder":
+            ressourcesNeeded = ["Case","MetalBars","Heater"]
         elif self.toProduce == "BioPress":
             ressourcesNeeded = ["Case","MetalBars","Heater"]
         elif self.toProduce == "GooProducer":
@@ -4745,33 +4814,21 @@ class InfoScreen(Item):
 
         if not self.activateChallengeDone:
             if not self.gooChallengeDone:
-                foundFlask = False
-                for item in self.character.inventory:
-                    if isinstance(item,src.items.GooFlask):
-                        foundFlask = True
-                if not foundFlask:
+                if not self.checkInInventory(src.items.GooFlask):
                     self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with a goo flask in your inventory.\n\nThere should be some flasks in the room.\n\n")
                 else:
                     self.submenue = interaction.TextMenu("\n\nchallenge completed. Try to always keep a goo flask with some charges in your inventory.\n\nIf you are hungry you will drink from it automatically.\nIf you do not drink regulary you will die.\n\nNew information option on \"information->machines\"\n\n")
                     self.gooChallengeDone = True
                 self.character.macroState["submenue"] = self.submenue
             elif not self.metalbarChallengeDone:
-                foundMetalBar = False
-                for item in self.character.inventory:
-                    if isinstance(item,src.items.MetalBars):
-                        foundMetalBar = True
-                if not foundMetalBar:
+                if not self.checkInInventory(src.items.MetalBars):
                     self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with a metal bar in your inventory.\n\n check \"information->machines->metal bar production\" on how to produce metal bars.\n\n")
                 else:
                     self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nNew information option on \"information->machines->simple item production\"\n\n")
                     self.metalbarChallengeDone = True
                 self.character.macroState["submenue"] = self.submenue
             elif not self.sheetChallengeDone:
-                foundSheet = False
-                for item in self.character.inventory:
-                    if isinstance(item,src.items.Sheet):
-                        foundSheet = True
-                if not foundSheet:
+                if not self.checkInInventory(src.items.Sheet):
                     self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with a sheet in your inventory.\n\n check \"information->machines->simple item production\" on how to produce simple items.\nA sheet machine should be within this room.\n\n")
                 else:
                     self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nNew information option on \"information->machines->machine production\"\n\n")
@@ -4801,11 +4858,7 @@ class InfoScreen(Item):
                     self.blueprintChallengeDone = True
                 self.character.macroState["submenue"] = self.submenue
             elif not self.commandChallengeDone:
-                foundCommand = False
-                for item in self.character.inventory:
-                    if isinstance(item,src.items.Command):
-                        foundCommand = True
-                if not foundCommand:
+                if not self.checkInInventory(src.items.Command):
                     self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with a command in your inventory.\n\n check \"information->automation->command creation\" on how to record commands.\n\n")
                 else:
                     self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nNew information option on \"information->automation->multiplier\"")
@@ -4903,33 +4956,21 @@ class InfoScreen(Item):
         self.submenue = None
 
         if selection == "note": # from gatherBloom
-            found = False
-            for item in self.character.inventory:
-                if isinstance(item,src.items.Note):
-                    found = True
-            if not found:
+            if not self.checkInInventory(src.items.Note):
                 self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with a note in your inventory.\n\n check \"information->items->notes\" on how to create notes.\n\n")
             else:
                 self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
                 del self.availableChallenges["note"]
 
         elif selection == "prodCase": # from produceBasics
-            found = False
-            for item in self.character.inventory:
-                if isinstance(item,src.items.Case):
-                    found = True
-            if not found:
+            if not self.checkInInventory(src.items.Case):
                 self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with a case in your inventory.\n\n")
             else:
                 self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
                 del self.availableChallenges["prodCase"]
 
         elif selection == "gatherBloom": # from root
-            found = False
-            for item in self.character.inventory:
-                if isinstance(item,src.items.Bloom):
-                    found = True
-            if not found:
+            if not self.checkInInventory(src.items.Bloom):
                 self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with a bloom in your inventory.\n\n they are represented by ** and are white.\n\n")
             else:
                 del self.availableChallenges["gatherBloom"]
@@ -4938,11 +4979,7 @@ class InfoScreen(Item):
                 self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nchallenge \"%s\" added\n\n"%(self.availableChallenges["note"]["text"]))
 
         elif selection == "produceBasics": # from produceScrapCompactors
-            itemsLeft = ["Rod","Bolt","Stripe","Mount","Radiator","Sheet"]
-            for item in self.character.inventory:
-                if item.type in itemsLeft:
-                    itemsLeft.remove(item.type)
-            if len(itemsLeft):
+            if self.checkListAgainstInventory(["Rod","Bolt","Stripe","Mount","Radiator","Sheet"]):
                 self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with rod + bolt + stripe + mount + radiator + sheet in your inventory.\n\n")
             else:
                 del self.availableChallenges["produceBasics"]
@@ -4951,11 +4988,7 @@ class InfoScreen(Item):
                 self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nchallenge \"%s\" added\n\n"%(self.availableChallenges["prodCase"]["text"]))
 
         elif selection == "produceScrapCompactors": # from root
-            found = False
-            for item in self.character.inventory:
-                if isinstance(item,src.items.ScrapCompactor):
-                    found = True
-            if not found:
+            if not self.checkInInventory(src.items.ScrapCompactor):
                 self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with scrap compactor in your inventory.\n\n")
             else:
                 self.knownBlueprints.append("Tank")
@@ -4971,54 +5004,60 @@ class InfoScreen(Item):
             if not len(blueprints) > 8:
                 self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with 9 different blueprints in your inventory.\n\n")
             else:
-                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nchallenge \"%s\" added\n\n"%(self.availableChallenges["produceBasics"]["text"]))
+                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
                 del self.availableChallenges["differentBlueprints"]
 
         elif selection == "9blooms": # from root2
-            found = 0
-            for item in self.character.inventory:
-                if isinstance(item,src.items.Bloom):
-                    found += 1
-            if not found > 8:
+            if self.countInInventory(src.items.Bloom) < 9:
                 self.submenue = interaction.TextMenu("\n\nchallenge failed. Try with 9 bloom in your inventory.\n\n")
             else:
                 self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
                 del self.availableChallenges["9blooms"]
 
         elif selection == "produceAdvanced": # from root2
-            itemsLeft = ["Tank","Heater","Connector","pusher","puller","Frame"]
-            for item in self.character.inventory:
-                if item.type in itemsLeft:
-                    itemsLeft.remove(item.type)
-            if len(itemsLeft):
+            if self.checkListAgainstInventory(["Tank","Heater","Connector","pusher","puller","Frame"]):
                 self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with tank + heater + connector + pusher + puller + frame in your inventory.\n\n")
             else:
                 del self.availableChallenges["produceAdvanced"]
                 self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
 
         elif selection == "processedBloom": # from root2
-            found = False
-            for item in self.character.inventory:
-                if isinstance(item,src.items.BioMass):
-                    found = True
-            if not found:
+            if not self.checkInInventory(src.items.BioMass):
                 self.submenue = interaction.TextMenu("\n\nchallenge failed. Try with bio mass in your inventory.\n\n")
             else:
                 self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
                 del self.availableChallenges["processedBloom"]
 
         elif selection == "produceScraper": # from root2
-            found = False
-            for item in self.character.inventory:
-                if isinstance(item,src.items.Scraper):
-                    found = True
-            if not found:
+            if not self.checkInInventory(src.items.Scraper):
                 self.submenue = interaction.TextMenu("\n\nchallenge failed. Try with scraper in your inventory.\n\n")
             else:
                 self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
                 del self.availableChallenges["produceScraper"]
 
         self.character.macroState["submenue"] = self.submenue
+
+    def countInInventory(self,itemType):
+        num = 0 
+        for item in self.character.inventory:
+            if isinstance(item,itemType):
+                num += 1
+        return num
+
+    def basicInfo(self):
+        itemsLeft = ["Tank","Heater","Connector","pusher","puller","Frame"]
+
+    def checkListAgainstInventory(self,itemTypes):
+        for item in self.character.inventory:
+            if item.type in itemTypes:
+                itemTypes.remove(item.type)
+        return itemTypes
+
+    def checkInInventory(self,itemType):
+        for item in self.character.inventory:
+            if isinstance(item,itemType):
+                return True
+        return False
 
     def basicInfo(self):
 
@@ -5397,6 +5436,7 @@ class BluePrinter(Item):
                 [["MetalBars"],"Wall"],
 
                 [["GooFlask"],"GooDispenser"],
+                [["Bloom"],"BloomShredder"],
                 [["VatMaggot"],"MaggotFermenter"],
                 [["BioMass"],"BioPress"],
                 [["PressCake"],"GooProducer"],
@@ -6769,6 +6809,13 @@ class SickBloom(Item):
     def apply(self,character):
         if self.charges:
             self.spawn()
+            if isinstance(character,src.characters.Monster):
+                if character.phase == 1:
+                    character.phase = 2
+                    self.spawn()
+                else:
+                    character.satiation += 400
+                    self.charges -= 1
         else:
             character.satiation += 100
             if character.satiation > 1000:
@@ -6797,9 +6844,6 @@ class SickBloom(Item):
                   "ActivateQuestMeta",
                 ]
 
-        tumbler = Tumbler(None,None,creator=self)
-        tumbler.strength = 1
-        character.inventory.append(tumbler)
         character.faction = "monster"
 
         def splitCommand(newCommand):
@@ -6813,11 +6857,12 @@ class SickBloom(Item):
         character.macroState["macros"]["s"] = splitCommand("sj")
         character.macroState["macros"]["d"] = splitCommand("dj")
 
-        counter = 0
+        counter = 1
         command = ""
         import random
-        while counter < 100:
-            command += "j%s_w%s_a%s_s%s_d"%(random.randint(1,counter+2),random.randint(1,counter+2),random.randint(1,counter+2),random.randint(1,counter+2))
+        directions =["w","a","s","d"]
+        while counter < 8:
+            command += "j%s_%s"%(random.randint(1,counter*4),directions[random.randint(0,3)])
             counter += 1
         character.macroState["macros"]["m"] = splitCommand(command+"_m")
 
@@ -7056,6 +7101,7 @@ itemMap = {
             "Bush":Bush,
             "PoisonBush":PoisonBush,
             "EncrustedBush":EncrustedBush,
+            "BloomShredder":BloomShredder,
             "Test":Test,
 }
 

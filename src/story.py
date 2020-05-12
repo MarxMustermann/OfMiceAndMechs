@@ -3080,7 +3080,7 @@ class BuildBase(BasicPhase):
         for bigX in range(1,13):
             for bigY in range(1,13):
                 import random
-                if random.randint(1,2) == 1:
+                if random.randint(1,3) == 1:
                     molds.append(src.items.Mold(bigX*15+random.randint(1,13),bigY*15+random.randint(1,13),creator=self))
         terrain.addItems(molds)
         for mold in molds:

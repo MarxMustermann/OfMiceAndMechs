@@ -1,6 +1,7 @@
 import urwid
 
 moss = (urwid.AttrSpec("#030","black"),",.")
+moldSpore = (urwid.AttrSpec("#436","black"),",.")
 sprout = (urwid.AttrSpec("#252","black"),",*")
 sprout2 = (urwid.AttrSpec("#474","black"),"**")
 bloom = (urwid.AttrSpec("#fff","black"),"**")

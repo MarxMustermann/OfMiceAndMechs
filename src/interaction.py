@@ -3112,7 +3112,11 @@ def gameLoop(loop,user_data):
             if not len(cinematics.cinematicQueue):
                 lastAdvance = time.time()
                 advanceGame()
+
+            removeChars = []
             for char in multi_chars:
+                if char.dead and not char == mainChar:
+                    removeChars.append(char)
                 if char.stasis:
                     continue
 
@@ -3134,6 +3138,9 @@ def gameLoop(loop,user_data):
                         key = state["commandKeyQueue"][0]
                         state["commandKeyQueue"].remove(key)
                         processInput(key,charState=state,noAdvanceGame=True,char=char)
+
+            for char in removeChars:
+                multi_chars.remove(char)
 
             text = ""
             for cmd in mainChar.macroState["commandKeyQueue"]:

@@ -2191,6 +2191,73 @@ Activate the maggot fermenter to produce biomass.
 """
         return text
 
+'''
+'''
+class SporeExtractor(Item):
+    type = "SporeExtractor"
+
+    '''
+    call superclass constructor with modified paramters and set some state
+    '''
+    def __init__(self,xPosition=None,yPosition=None,name="spore extractor",creator=None,noId=False):
+        self.activated = False
+        super().__init__(displayChars.maggotFermenter,xPosition,yPosition,name=name,creator=creator)
+
+        # bad code: repetetive and easy to forgett
+        self.initialState = self.getState()
+    
+    '''
+    '''
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        items = []
+        if (self.xPosition-1,self.yPosition) in self.container.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+                if isinstance(item,Bloom):
+                    items.append(item)
+
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
+
+        # refuse to produce without ressources
+        if len(items) < 1:
+            character.messages.append("not enough blooms")
+            return
+       
+        targetFull = False
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+                targetFull = True
+            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                if item.walkable == False:
+                    targetFull = True
+
+        if targetFull:
+            character.messages.append("the target area is full, the machine does not produce anything")
+            return
+
+        # remove ressources
+        self.room.removeItem(items[0])
+
+        # spawn the new item
+        for i in range(1,5):
+            new = MoldSpore(creator=self)
+            new.xPosition = self.xPosition+1
+            new.yPosition = self.yPosition
+            self.room.addItems([new])
+
+    def getLongInfo(self):
+        text = """
+A bloom shredder produces bio mass from blooms.
+
+Place 10 vat maggots to the left/west of the maggot fermenter.
+Activate the maggot fermenter to produce biomass.
+
+"""
+        return text
+
 
 '''
 '''
@@ -4089,6 +4156,8 @@ class Machine(Item):
             ressourcesNeeded = ["Case","MetalBars","Heater"]
         elif self.toProduce == "BloomShredder":
             ressourcesNeeded = ["Case","MetalBars","Heater"]
+        elif self.toProduce == "SporeExtractor":
+            ressourcesNeeded = ["Case","MetalBars","puller"]
         elif self.toProduce == "BioPress":
             ressourcesNeeded = ["Case","MetalBars","Heater"]
         elif self.toProduce == "GooProducer":
@@ -4763,12 +4832,13 @@ class InfoScreen(Item):
         self.activateChallengeDone = False
         self.activateChallenge = 100
         self.metalbarChallenge = 100
+        self.wallChallenge = 100
         self.challengeRun2Done = False
 
         self.attributesToStore.extend([
                "gooChallengeDone","metalbarChallengeDone","sheetChallengeDone","machineChallengeDone","blueprintChallengeDone","energyChallengeDone","activateChallengeDone",
                "commandChallengeDone","challengeRun2Done",
-               "activateChallenge","metalbarChallenge",
+               "activateChallenge","wallChallenge",
                "knownBlueprints","availableChallenges"])
         self.initialState = self.getState()
 
@@ -4934,7 +5004,6 @@ class InfoScreen(Item):
                             self.availableChallenges["9blooms"] = {"text":"9 blooms"}
                             self.availableChallenges["produceAdvanced"] = {"text":"produce items"}
                             self.availableChallenges["produceScraper"] = {"text":"scraper"}
-                            self.availableChallenges["processedBloom"] = {"text":"bio mass"}
                             self.challengeRun2Done = True
                     self.character.macroState["submenue"] = self.submenue
         else:
@@ -4947,8 +5016,49 @@ class InfoScreen(Item):
                 self.character.macroState["submenue"] = self.submenue
                 self.character.macroState["submenue"].followUp = self.challengeRun2
             else:
-                self.submenue = interaction.TextMenu("\n\nTBD\n\n")
-                self.character.macroState["submenue"] = self.submenue
+                if self.wallChallenge:
+                    wallFound = None
+                    for item in self.character.inventory:
+                        if isinstance(item,src.items.Wall):
+                            wallFound = item
+                            break
+
+                    if not wallFound:
+                        self.submenue = interaction.TextMenu("\n\nno progress - no walls in inventory\n\n")
+                        self.character.macroState["submenue"] = self.submenue
+                        return
+
+                    targetFull = False
+                    itemList = self.container.getItemByPosition((self.xPosition,self.yPosition+1))
+                    if len(itemList) > 15:
+                        targetFull = True
+                    for item in itemList:
+                        if item.walkable == False:
+                            targetFull = True
+
+                    if targetFull:
+                        self.submenue = interaction.TextMenu("\n\nno progress - no space to drop scrap\n\n")
+                        self.character.macroState["submenue"] = self.submenue
+                        return
+
+                    # spawn scrap
+                    new = Scrap(self.xPosition,self.yPosition,1,creator=self)
+                    new.xPosition = self.xPosition
+                    new.yPosition = self.yPosition+1
+                    self.room.addItems([new])
+                    new = Scrap(self.xPosition,self.yPosition,1,creator=self)
+                    new.xPosition = self.xPosition
+                    new.yPosition = self.yPosition+1
+                    self.room.addItems([new])
+
+                    self.submenue = interaction.TextMenu("\n\nchallenge in progress. Activate with wall in inventory. Activations remaining %s"%(self.wallChallenge,))
+                    self.character.inventory.remove(wallFound)
+                    self.wallChallenge -= 1
+                    self.character.macroState["submenue"] = self.submenue
+
+                else:
+                    self.submenue = interaction.TextMenu("\n\nTBD\n\n")
+                    self.character.macroState["submenue"] = self.submenue
 
     def challengeRun2(self):
 
@@ -5009,9 +5119,18 @@ class InfoScreen(Item):
 
         elif selection == "9blooms": # from root2
             if self.countInInventory(src.items.Bloom) < 9:
-                self.submenue = interaction.TextMenu("\n\nchallenge failed. Try with 9 bloom in your inventory.\n\n")
+                self.submenue = interaction.TextMenu("\n\nchallenge failed. Try with 9 bloom in your inventory.\n\nYou were .\n\n")
             else:
-                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
+                self.availableChallenges["processedBloom"] = {"text":"process bloom"}
+                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nchallenge %s added\n\nNew Information option on \"information->fooo->mold farming\".\n\nMoldspores added to south/below\n\n"%(self.availableChallenges["processedBloom"]["text"]))
+                blooms = []
+                for i in range(0,9):
+                    new = itemMap["MoldSpore"](creator=self)
+                    new.xPosition = self.xPosition
+                    new.yPosition = self.yPosition+1
+                    blooms.append(new)
+
+                self.container.addItems(blooms)
                 del self.availableChallenges["9blooms"]
 
         elif selection == "produceAdvanced": # from root2
@@ -5413,6 +5532,8 @@ class BluePrinter(Item):
                 [["Stripe","MetalBars"],"pusher"],
                 [["Bolt","MetalBars"],"puller"],
                 [["Rod","MetalBars"],"Frame"],
+
+                [["Bloom","MetalBars"],"SporeExtractor"],
 
                 [["Tank"],"GooFlask"],
                 [["Heater"],"Boiler"],
@@ -6544,6 +6665,11 @@ spawner with %s charges
 class MoldSpore(Item):
     type = "MoldSpore"
 
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.moldSpore,xPosition,yPosition,creator=creator,name="mold spore")
+        self.walkable = True
+        self.bolted = False
+
     def apply(self,character):
         self.startSpawn()
         character.messages.append("you activate the mold spore")
@@ -6752,13 +6878,7 @@ class Bloom(Item):
             character.satiation += 115
             if character.satiation > 1000:
                 character.satiation = 1000
-            new = itemMap["Mold"](creator=self)
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition
-            new.charges = 4
-            self.container.addItems([new])
-            if not self.dead:
-                new.startSpawn()
+            self.localSpawn()
             self.destroy(generateSrcap=False)
             character.messages.append("you eat the bloom and gain 115 satiation")
 
@@ -6770,12 +6890,7 @@ class Bloom(Item):
 
     def pickUp(self,character):
         self.bolted = False
-        if not self.dead:
-            new = itemMap["Mold"](creator=self)
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition
-            new.charges = 4
-            self.container.addItems([new])
+        self.localSpawn()
         self.dead = True
         super().pickUp(character)
 
@@ -6793,6 +6908,15 @@ class Bloom(Item):
             new = itemMap["Mold"](creator=self)
             new.xPosition = newPos[0]
             new.yPosition = newPos[1]
+            self.container.addItems([new])
+            new.startSpawn()
+
+    def localSpawn(self):
+        if not self.dead:
+            new = itemMap["Mold"](creator=self)
+            new.xPosition = self.xPosition
+            new.yPosition = self.yPosition
+            new.charges = 4
             self.container.addItems([new])
             new.startSpawn()
 
@@ -7102,6 +7226,7 @@ itemMap = {
             "PoisonBush":PoisonBush,
             "EncrustedBush":EncrustedBush,
             "BloomShredder":BloomShredder,
+            "SporeExtractor":SporeExtractor,
             "Test":Test,
 }
 

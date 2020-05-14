@@ -3663,6 +3663,17 @@ class BioMass(Item):
         self.bolted = False
         self.walkable = True
 
+    '''
+    '''
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        # change state
+        character.satiation = 1000
+        character.changed()
+        self.destroy(generateSrcap=False)
+        character.messages.append("you eat the bio mass")
+
     def getLongInfo(self):
         text = """
 A bio mass is basis for food production.
@@ -3692,6 +3703,19 @@ A press cake is basis for food production.
 Can be processed into goo by a goo producer.
 """
         return text
+
+    '''
+    '''
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        # change state
+        character.satiation += 1000
+        if character.satiation > 10000:
+            character.satiation = 10000
+        character.changed()
+        self.destroy(generateSrcap=False)
+        character.messages.append("you eat the press cake and gain 1000 satiation")
 
 '''
 '''
@@ -5086,7 +5110,14 @@ class InfoScreen(Item):
                 del self.availableChallenges["gatherBloom"]
                 self.availableChallenges["note"] = {"text":"write a note"}
                 self.knownBlueprints.append("Tank")
-                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nchallenge \"%s\" added\n\n"%(self.availableChallenges["note"]["text"]))
+                blooms = []
+                for i in range(0,4):
+                    new = itemMap["MoldSpore"](creator=self)
+                    new.xPosition = self.xPosition
+                    new.yPosition = self.yPosition+1
+                    blooms.append(new)
+                self.container.addItems(blooms)
+                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nchallenge \"%s\" added\n\nmold spores added to south/below\n\nnew Information option on \"information->foodstuffs->mold farming\"\n\n"%(self.availableChallenges["note"]["text"]))
 
         elif selection == "produceBasics": # from produceScrapCompactors
             if self.checkListAgainstInventory(["Rod","Bolt","Stripe","Mount","Radiator","Sheet"]):
@@ -5122,15 +5153,7 @@ class InfoScreen(Item):
                 self.submenue = interaction.TextMenu("\n\nchallenge failed. Try with 9 bloom in your inventory.\n\nYou were .\n\n")
             else:
                 self.availableChallenges["processedBloom"] = {"text":"process bloom"}
-                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nchallenge %s added\n\nNew Information option on \"information->fooo->mold farming\".\n\nMoldspores added to south/below\n\n"%(self.availableChallenges["processedBloom"]["text"]))
-                blooms = []
-                for i in range(0,9):
-                    new = itemMap["MoldSpore"](creator=self)
-                    new.xPosition = self.xPosition
-                    new.yPosition = self.yPosition+1
-                    blooms.append(new)
-
-                self.container.addItems(blooms)
+                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nchallenge %s added\n\n"%(self.availableChallenges["processedBloom"]["text"]))
                 del self.availableChallenges["9blooms"]
 
         elif selection == "produceAdvanced": # from root2
@@ -6927,12 +6950,13 @@ class SickBloom(Item):
         super().__init__(displayChars.sickBloom,xPosition,yPosition,creator=creator,name="sick bloom")
         self.walkable = True
         self.charges = 1
+        self.dead = False
         self.attributesToStore.extend([
-               "charges"])
+               "charges","dead"])
+        self.initialState = self.getState()
 
     def apply(self,character):
-        if self.charges:
-            self.spawn()
+        if self.charges and not self.dead:
             if isinstance(character,src.characters.Monster):
                 if character.phase == 1:
                     character.phase = 2
@@ -6940,17 +6964,26 @@ class SickBloom(Item):
                 else:
                     character.satiation += 400
                     self.charges -= 1
+            else:
+                self.spawn()
         else:
             character.satiation += 100
             if character.satiation > 1000:
                 character.satiation = 1000
-            new = itemMap["Mold"](creator=self)
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition
-            self.container.addItems([new])
-            new.startSpawn()
+            if not self.dead:
+                new = itemMap["Mold"](creator=self)
+                new.xPosition = self.xPosition
+                new.yPosition = self.yPosition
+                self.container.addItems([new])
+                new.startSpawn()
             self.destroy(generateSrcap=False)
         character.messages.append("you eat the sick bloom and gain 100 satiation")
+
+    def pickUp(self,character):
+        self.bolted = False
+        self.dead = True
+        self.charges = 0
+        super().pickUp(character)
 
     def startSpawn(self):
         event = src.events.RunCallbackEvent(gamestate.tick+(2*self.xPosition+3*self.yPosition+gamestate.tick)%2500,creator=self)
@@ -6959,6 +6992,9 @@ class SickBloom(Item):
 
     def spawn(self):
         if not self.charges:
+            return
+
+        if self.dead:
             return
 
         character = characters.Monster(creator=self)

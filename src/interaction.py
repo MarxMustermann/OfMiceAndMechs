@@ -324,7 +324,7 @@ get position for what thing
 
 * d - drill
 * s - scrap
-* f - goo flask
+* f - food
 * c - character
 * m - marker bean
 * t - tree
@@ -345,7 +345,7 @@ get position for what thing
             elif key == "s":
                 char.interactionState["enumerateState"][-1]["target"] = ["Scrap"]
             elif key == "f":
-                char.interactionState["enumerateState"][-1]["target"] = ["GooFlask"]
+                char.interactionState["enumerateState"][-1]["target"] = ["GooFlask","Bloom","SickBloom","BioMass","PressCake"]
             elif key == "c":
                 char.interactionState["enumerateState"][-1]["target"] = ["character"]
             elif key == "m":
@@ -382,20 +382,20 @@ get position for what thing
                 return
 
             foundItems = []
-
             if not char.interactionState["enumerateState"][-1]["target"] == ["character"] and not char.interactionState["enumerateState"][-1]["target"] == ["enemy"]:
-                listFound = char.container.itemsOnFloor
+                listFound = []
+                for (pos,value) in char.container.itemByCoordinates.items():
+                    if pos[0]-(char.xPosition-char.xPosition%15) > 13 or pos[0]-(char.xPosition-char.xPosition%15) < 1:
+                        continue
+                    if pos[1]-(char.yPosition-char.yPosition%15) > 13 or pos[1]-(char.yPosition-char.yPosition%15) < 1:
+                        continue
+                    char.messages.append(pos[0])
+                    char.messages.append((char.xPosition-char.xPosition%15))
+                    char.messages.append(pos[0]-(char.xPosition-char.xPosition%15))
+                    listFound.extend(value)
 
                 for item in listFound:
                     if not item.type in char.interactionState["enumerateState"][-1]["target"]:
-                        continue
-                    if item.xPosition < char.xPosition-20:
-                        continue
-                    if item.xPosition > char.xPosition+20:
-                        continue
-                    if item.yPosition < char.yPosition-20:
-                        continue
-                    if item.yPosition > char.yPosition+20:
                         continue
                     foundItems.append(item)
 
@@ -1529,7 +1529,7 @@ current registers
                         if item.uses > 0:
                             item.apply(character)
                             break
-                    if isinstance(item,src.items.Bloom):
+                    if isinstance(item,src.items.Bloom) or isinstance(item,src.items.BioMass) or isinstance(item,src.items.PressCake) or isinstance(item,src.items.SickBloom):
                         item.apply(character)
                         character.inventory.remove(item)
                         break
@@ -1548,7 +1548,7 @@ current registers
                         if not item:
                             if (char.xPosition,char.yPosition) in char.container.itemByCoordinates:
                                 if len(char.container.itemByCoordinates[(char.xPosition,char.yPosition)]):
-                                    item = char.container.itemByCoordinates[(char.xPosition,char.yPosition)][-1]
+                                    item = char.container.itemByCoordinates[(char.xPosition,char.yPosition)][0]
 
                         if not item:
                             char.messages.append("no item to pick up found")

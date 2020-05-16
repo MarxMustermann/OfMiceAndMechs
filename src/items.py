@@ -600,6 +600,9 @@ class Corpse(Item):
     '''
     def __init__(self,xPosition=0,yPosition=0,name="corpse",creator=None,noId=False):
         super().__init__(displayChars.corpse,xPosition,yPosition,name=name,creator=creator)
+        self.charges = 1000
+        self.attributesToStore.extend([
+               "activated","charges"])
         self.walkable = True
         self.bolted = False
 
@@ -612,6 +615,19 @@ A corpse. It is not useful
 
 """
         return text
+
+    def apply(self,character):
+        if isinstance(character,src.characters.Monster):
+            if not character.phase > 3:
+                character.enterPhase4()
+        if self.charges:
+            character.satiation += 15
+            if character.satiation > 1000:
+                character.satiation = 1000
+            self.charges -= 1
+            character.messages.append("you eat from the corpse and gain 15 satiation")
+        else:
+            self.destroy(generateSrcap=False)
 
 class ItemUpgrader(Item):
     type = "ItemUpgrader"
@@ -3026,6 +3042,109 @@ Matching items will be moved to the bottom/south and non matching items will be 
 
 '''
 '''
+class AutoScribe(Item):
+    type = "AutoScribe"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="copy machine",creator=None,noId=False):
+        self.coolDown = 10
+        self.coolDownTimer = -self.coolDown
+        
+        super().__init__(displayChars.sorter,xPosition,yPosition,name=name,creator=creator)
+
+        self.attributesToStore.extend([
+               "coolDown","coolDownTimer"])
+
+    '''
+    '''
+    def apply(self,character,resultType=None):
+        super().apply(character,silent=True)
+
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
+
+        # fetch input command or Note
+        itemFound = None
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+                if item.type in ["Command","Note"]:
+                    itemFound = item
+                    break
+
+        sheetFound = None
+        if (self.xPosition,self.yPosition-1) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition,self.yPosition-1)]:
+                if item.type in ["Sheet"]:
+                    sheetFound = item
+                    break
+
+        if gamestate.tick < self.coolDownTimer+self.coolDown:
+            character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            return
+        self.coolDownTimer = gamestate.tick
+
+        # refuse to produce without ressources
+        if not itemFound:
+            character.messages.append("no items available")
+            return
+        if not sheetFound:
+            character.messages.append("no sheet available")
+            return
+
+        # remove ressources
+        self.room.removeItem(sheetFound)
+        self.room.removeItem(itemFound)
+
+        # spawn new item
+        if itemFound.type == "Command":
+            new = Command(creator=self)
+            new.command = itemFound.command
+        elif itemFound.type == "Note":
+            new = Note(creator=self)
+            new.text = itemFound.text
+        new.xPosition = self.xPosition+1
+        new.yPosition = self.yPosition
+        new.bolted = False
+
+        targetFull = False
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            if new.walkable:
+                if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+                    targetFull = True
+                for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                    if item.walkable == False:
+                        targetFull = True
+            else:
+                if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 1:
+                    targetFull = True
+
+        if targetFull:
+            character.messages.append("the target area is full, the machine does not produce anything")
+            return
+
+        self.room.addItems([new])
+        itemFound.xPosition = self.xPosition
+        itemFound.yPosition = self.yPosition + 1
+        self.room.addItems([itemFound])
+
+    def getLongInfo(self):
+        text = """
+A sorter can sort items.
+
+To sort item with a sorter place the item you want to compare against on the top/north.
+Place the item or items to be sorted on the left/west of the sorter.
+Activate the sorter to sort an item.
+Matching items will be moved to the bottom/south and non matching items will be moved to the right/east.
+
+"""
+        return text
+
+
+'''
+'''
 class Token(Item):
     type = "Token"
 
@@ -3149,6 +3268,9 @@ Sheets can be produced from metal bars.
 
         if self.recording:
             self.createCommand()
+            return
+
+        if isinstance(character,src.characters.Monster):
             return
 
         self.character = character
@@ -3360,6 +3482,9 @@ it holds the command:
     def apply(self,character):
         super().apply(character,silent=True)
 
+        if isinstance(character,src.characters.Monster):
+            return
+
         convertedCommand = []
         for item in self.command:
             convertedCommand.append((item,["norecord"]))
@@ -3369,6 +3494,26 @@ it holds the command:
     def setPayload(self,command):
         import copy
         self.command = copy.deepcopy(command)
+
+'''
+'''
+class FloorPlate(Item):
+    type = "FloorPlate"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="floor plate",creator=None,noId=False):
+        super().__init__(displayChars.floor,xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+
+    def getLongInfo(self):
+        text = """
+
+"""
+        return text
 
 '''
 '''
@@ -3669,7 +3814,9 @@ class BioMass(Item):
         super().apply(character,silent=True)
 
         # change state
-        character.satiation = 1000
+        character.satiation += 200
+        if character.satiation > 1000:
+            character.satiation = 1000
         character.changed()
         self.destroy(generateSrcap=False)
         character.messages.append("you eat the bio mass")
@@ -3710,9 +3857,7 @@ Can be processed into goo by a goo producer.
         super().apply(character,silent=True)
 
         # change state
-        character.satiation += 1000
-        if character.satiation > 10000:
-            character.satiation = 10000
+        character.satiation = 1000
         character.changed()
         self.destroy(generateSrcap=False)
         character.messages.append("you eat the press cake and gain 1000 satiation")
@@ -4151,6 +4296,10 @@ class Machine(Item):
             ressourcesNeeded = ["Frame"]
         elif self.toProduce == "MemoryCell":
             ressourcesNeeded = ["Connector"]
+        elif self.toProduce == "AutoScribe":
+            ressourcesNeeded = ["Case","MetalBars","MemoryCell","pusher","puller"]
+        elif self.toProduce == "FloorPlate":
+            ressourcesNeeded = ["Sheet","MetalBars"]
 
         elif self.toProduce == "Sorter":
             ressourcesNeeded = ["Case","MetalBars"]
@@ -5557,6 +5706,8 @@ class BluePrinter(Item):
                 [["Rod","MetalBars"],"Frame"],
 
                 [["Bloom","MetalBars"],"SporeExtractor"],
+                [["Sheet","Rod","Bolt"],"FloorPlate"],
+                [["Command"],"AutoScribe"],
 
                 [["Tank"],"GooFlask"],
                 [["Heater"],"Boiler"],
@@ -6260,7 +6411,43 @@ Activate it to trigger a exlosion.
         new.xPosition = self.xPosition
         new.yPosition = self.yPosition
         new.bolted = False
+        self.container.addItems([new])
+        event = src.events.RunCallbackEvent(gamestate.tick+1,creator=self)
+        event.setCallback({"container":new,"method":"explode"})
+        self.container.addEvent(event)
 
+        new = Explosion(creator=self)
+        new.xPosition = self.xPosition-1
+        new.yPosition = self.yPosition
+        new.bolted = False
+        self.container.addItems([new])
+        event = src.events.RunCallbackEvent(gamestate.tick+1,creator=self)
+        event.setCallback({"container":new,"method":"explode"})
+        self.container.addEvent(event)
+
+        new = Explosion(creator=self)
+        new.xPosition = self.xPosition
+        new.yPosition = self.yPosition-1
+        new.bolted = False
+        self.container.addItems([new])
+        event = src.events.RunCallbackEvent(gamestate.tick+1,creator=self)
+        event.setCallback({"container":new,"method":"explode"})
+        self.container.addEvent(event)
+
+        new = Explosion(creator=self)
+        new.xPosition = self.xPosition+1
+        new.yPosition = self.yPosition
+        new.bolted = False
+        self.container.addItems([new])
+        event = src.events.RunCallbackEvent(gamestate.tick+1,creator=self)
+        event.setCallback({"container":new,"method":"explode"})
+        self.container.addEvent(event)
+
+        new = Explosion(creator=self)
+        new.xPosition = self.xPosition
+        new.yPosition = self.yPosition+1
+        new.bolted = False
+        self.container.addItems([new])
         event = src.events.RunCallbackEvent(gamestate.tick+1,creator=self)
         event.setCallback({"container":new,"method":"explode"})
         self.container.addEvent(event)
@@ -6959,8 +7146,14 @@ class SickBloom(Item):
         if self.charges and not self.dead:
             if isinstance(character,src.characters.Monster):
                 if character.phase == 1:
-                    character.phase = 2
+                    character.enterPhase2()
                     self.spawn()
+                    self.charges -= 1
+                    self.dead = True
+                elif character.phase == 2:
+                    character.enterPhase3()
+                    self.charges -= 1
+                    self.destroy(generateSrcap=False)
                 else:
                     character.satiation += 400
                     self.charges -= 1
@@ -7002,6 +7195,8 @@ class SickBloom(Item):
         character.solvers = [
                   "NaiveActivateQuest",
                   "ActivateQuestMeta",
+                  "NaivePickupQuest",
+                  "NaiveMurderQuest",
                 ]
 
         character.faction = "monster"
@@ -7264,6 +7459,8 @@ itemMap = {
             "BloomShredder":BloomShredder,
             "SporeExtractor":SporeExtractor,
             "Test":Test,
+            "AutoScribe":AutoScribe,
+            "FloorPlate":FloorPlate,
 }
 
 producables = {

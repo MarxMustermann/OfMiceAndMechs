@@ -2,6 +2,11 @@ import urwid
 
 moss = (urwid.AttrSpec("#030","black"),",.")
 moldSpore = (urwid.AttrSpec("#436","black"),",.")
+monster_spore = (urwid.AttrSpec("#030","black"),"🝆 ")
+monster_feeder = (urwid.AttrSpec("#252","black"),"🝆~")
+monster_grazer = (urwid.AttrSpec("#484","black"),"🝆=")
+monster_corpseGrazer = (urwid.AttrSpec("#824","black"),"🝆-")
+monster_hunter = (urwid.AttrSpec("#f48","black"),"🝆>")
 sprout = (urwid.AttrSpec("#252","black"),",*")
 sprout2 = (urwid.AttrSpec("#474","black"),"**")
 bloom = (urwid.AttrSpec("#fff","black"),"**")

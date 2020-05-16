@@ -200,6 +200,8 @@ handle a keystroke
 bad code: there are way too much lines of code in this function
 '''
 def processInput(key,charState=None,noAdvanceGame=False,char=None):
+
+    char.timeTaken += 1
     
     if charState == None:
         charState = mainChar.macroState
@@ -331,10 +333,12 @@ get position for what thing
 * C - coal
 * M - corpse
 * e - enemy
+* x - tilecenter
 
 """))
                 footer.set_text((urwid.AttrSpec("default","default"),""))
                 char.specialRender = True
+            char.timeTaken -= 0.99
             return
 
         if char.interactionState["enumerateState"][-1]["type"] == "p":
@@ -345,7 +349,7 @@ get position for what thing
             elif key == "s":
                 char.interactionState["enumerateState"][-1]["target"] = ["Scrap"]
             elif key == "f":
-                char.interactionState["enumerateState"][-1]["target"] = ["GooFlask","Bloom","SickBloom","BioMass","PressCake"]
+                char.interactionState["enumerateState"][-1]["target"] = ["Corpse","GooFlask","Bloom","SickBloom","BioMass","PressCake"]
             elif key == "c":
                 char.interactionState["enumerateState"][-1]["target"] = ["character"]
             elif key == "m":
@@ -358,9 +362,19 @@ get position for what thing
                 char.interactionState["enumerateState"][-1]["target"] = ["Corpse"]
             elif key == "e":
                 char.interactionState["enumerateState"][-1]["target"] = ["enemy"]
+            elif key == "x":
+                char.registers["d"][-1] = 7-char.xPosition%15
+                char.registers["s"][-1] = 7-char.yPosition%15
+                char.registers["a"][-1] = -char.registers["d"][-1]
+                char.registers["w"][-1] = -char.registers["s"][-1]
+                char.messages.append("found in direction %sa %ss %sd %sw"%(char.registers["a"][-1],char.registers["s"][-1],char.registers["d"][-1],char.registers["w"][-1],))
+                char.interactionState["enumerateState"].pop()
+                char.timeTaken -= 0.99
+                return
             else:
                 char.messages.append("not a valid target")
                 char.interactionState["enumerateState"].pop()
+                char.timeTaken -= 0.99
                 return
 
             if not "a" in char.registers:
@@ -379,6 +393,7 @@ get position for what thing
             if not char.container:
                 char.messages.append("character is nowhere")
                 char.interactionState["enumerateState"].pop()
+                char.timeTaken -= 0.99
                 return
 
             foundItems = []
@@ -392,7 +407,8 @@ get position for what thing
                     char.messages.append(pos[0])
                     char.messages.append((char.xPosition-char.xPosition%15))
                     char.messages.append(pos[0]-(char.xPosition-char.xPosition%15))
-                    listFound.extend(value)
+                    if value:
+                        listFound.append(value[-1])
 
                 for item in listFound:
                     if not item.type in char.interactionState["enumerateState"][-1]["target"]:
@@ -400,9 +416,10 @@ get position for what thing
                     foundItems.append(item)
 
             if "character" in char.interactionState["enumerateState"][-1]["target"]:
-                listFound = char.container.itemsOnFloor
                 for otherChar in char.container.characters:
                     if otherChar == char:
+                        continue
+                    if not otherChar.xPosition or otherChar.yPosition or char.xPosition or char.yPosition:
                         continue
                     if otherChar.xPosition < char.xPosition-20:
                         continue
@@ -415,9 +432,10 @@ get position for what thing
                     foundItems.append(otherChar)
 
             if "enemy" in char.interactionState["enumerateState"][-1]["target"]:
-                listFound = char.container.itemsOnFloor
                 for otherChar in char.container.characters:
                     if otherChar == char:
+                        continue
+                    if not otherChar.xPosition or otherChar.yPosition or char.xPosition or char.yPosition:
                         continue
                     if otherChar.xPosition < char.xPosition-20:
                         continue
@@ -438,6 +456,7 @@ get position for what thing
             if not found:
                 char.messages.append("no "+",".join(char.interactionState["enumerateState"][-1]["target"])+" found")
                 char.interactionState["enumerateState"].pop()
+                char.timeTaken -= 0.99
                 return
 
             char.registers["d"][-1] = found.xPosition-char.xPosition
@@ -450,6 +469,7 @@ get position for what thing
             return
             
         char.interactionState["enumerateState"].pop()
+        char.timeTaken -= 0.99
         return
 
     if key == "esc":
@@ -480,7 +500,7 @@ current registers:
             char.specialRender = True
 
         char.interactionState["varActions"].append({"outOperator":None})
-
+        char.timeTaken -= 0.99
         return
     if char.interactionState["varActions"]:
 
@@ -507,6 +527,7 @@ current registers:
                     main.set_text((urwid.AttrSpec("default","default"),text))
                     footer.set_text((urwid.AttrSpec("default","default"),""))
                     char.specialRender = True
+                char.timeTaken -= 0.99
                 return
             else:
                 lastVarAction["outOperator"] = False
@@ -537,6 +558,7 @@ current registers:
 
             char.interactionState["varActions"].pop()
             charState["commandKeyQueue"] = valueCommand + charState["commandKeyQueue"]
+            char.timeTaken -= 0.99
             return
         else:
             if lastVarAction["register"] == None:
@@ -559,7 +581,7 @@ press key for the action you want to do on the register
                     main.set_text((urwid.AttrSpec("default","default"),text))
                     footer.set_text((urwid.AttrSpec("default","default"),""))
                     char.specialRender = True
-
+                char.timeTaken -= 0.99
                 return
             if lastVarAction["action"] == None:
                 lastVarAction["action"] = key
@@ -576,7 +598,7 @@ type number or load value from register
                     main.set_text((urwid.AttrSpec("default","default"),text))
                     footer.set_text((urwid.AttrSpec("default","default"),""))
                     char.specialRender = True
-
+                char.timeTaken -= 0.99
                 return
             if key in "0123456789":
                 lastVarAction["number"] += key
@@ -595,7 +617,7 @@ press any other key to finish
                     main.set_text((urwid.AttrSpec("default","default"),text))
                     footer.set_text((urwid.AttrSpec("default","default"),""))
                     char.specialRender = True
-
+                char.timeTaken -= 0.99
                 return
 
             if lastVarAction["action"] == "=":
@@ -615,6 +637,7 @@ press any other key to finish
 
             charState["commandKeyQueue"] = [(key,flags+["norecord"])] + charState["commandKeyQueue"]
             char.interactionState["varActions"].pop()
+            char.timeTaken -= 0.99
             return
 
     if not "ifCondition" in char.interactionState:
@@ -699,8 +722,25 @@ press any other key to finish
                 if char.interactionState["ifCondition"][-1] == "c":
                     conditionTrue = False
                     if char.container:
-                        for item in char.container.itemsOnFloor:
-                            if item.type == "Corpse" and abs(item.xPosition-char.xPosition) < 20 and abs(item.yPosition-char.yPosition) < 20:
+                        for (item,value) in char.container.itemByCoordinates.items():
+                            if not (item[0]//15 == char.xPosition//15 and item[1]//15 == char.yPosition//15):
+                                continue
+                            if not value:
+                                continue
+
+                            if value[-1].type == "Corpse":
+                                conditionTrue = True
+                                break
+                if char.interactionState["ifCondition"][-1] == "F":
+                    conditionTrue = False
+                    if char.container:
+                        for (item,value) in char.container.itemByCoordinates.items():
+                            if not (item[0]//15 == char.xPosition//15 and item[1]//15 == char.yPosition//15):
+                                continue
+                            if not value:
+                                continue
+
+                            if value[-1].type in ["Corpse","GooFlask","Bloom","SickBloom","BioMass","PressCake"]:
                                 conditionTrue = True
                                 break
                 if conditionTrue:
@@ -719,7 +759,8 @@ press any other key to finish
             charState["number"] = ""
         charState["number"] += key
         key = commandChars.ignore
-
+        char.timeTaken -= 0.99
+        return
 
     if key in ("%",):
         charState["loop"].append(2)
@@ -842,6 +883,7 @@ current macros:
                 charState["commandKeyQueue"] = commands+charState["commandKeyQueue"]
 
                 charState["doNumber"] = False
+                char.timeTaken -= 0.99
 
         return
 
@@ -889,6 +931,7 @@ current macros:
             charState["commandKeyQueue"] = commands+charState["commandKeyQueue"]
 
             charState["doNumber"] = False
+            char.timeTaken -= 0.99
             return
 
     # save and quit
@@ -1063,6 +1106,7 @@ current registers
                 footer.set_text((urwid.AttrSpec("default","default"),""))
                 char.specialRender = True
             char.interactionState["enumerateState"].append({"type":None}) 
+            char.timeTaken -= 0.99
             return
 
         # handle cinematics
@@ -1465,6 +1509,9 @@ current registers
                             continue
                         if not (enemy.xPosition,enemy.yPosition) in adjascentFields:
                             continue
+                        if isinstance(char,src.characters.Monster) and char.phase == 4:
+                            char.messages.append("entered stage 5")
+                            char.enterPhase5()
                         enemy.die()
                         break
 
@@ -1533,6 +1580,9 @@ current registers
                         item.apply(character)
                         character.inventory.remove(item)
                         break
+                    if isinstance(item,src.items.Corpse):
+                        item.apply(character)
+                        break
 
             # pick up items
             # bad code: picking up should happen in character
@@ -1556,6 +1606,7 @@ current registers
 
                         item.pickUp(char)
                         item.changed("pickedUp",char)
+                        char.changed()
                         if not item.walkable:
                             char.container.calculatePathMap()
 
@@ -3134,10 +3185,13 @@ def gameLoop(loop,user_data):
                         else:
                             key = ("~",[])
 
-                    if len(state["commandKeyQueue"]):
+                    #while len(state["commandKeyQueue"]) and char.timeTaken < 1:
+                    while len(state["commandKeyQueue"]) and char.timeTaken < 1:
                         key = state["commandKeyQueue"][0]
                         state["commandKeyQueue"].remove(key)
                         processInput(key,charState=state,noAdvanceGame=True,char=char)
+
+                    char.timeTaken -= 1
 
             for char in removeChars:
                 multi_chars.remove(char)

@@ -106,6 +106,7 @@ class Character(src.saveing.Saveable):
         self.registers = {}
         self.doStackPop = False
         self.doStackPush = False
+        self.timeTaken = 0
 
         self.interactionState = {}
         self.interactionStateBackup = []
@@ -128,7 +129,7 @@ class Character(src.saveing.Saveable):
                "gotBasicSchooling","gotMovementSchooling","gotInteractionSchooling","gotExamineSchooling",
                "xPosition","yPosition","name","satiation","unconcious","reputation","tutorialStart",
                "isMilitary","hasFloorPermit","dead","deathReason","automated","watched","solvers","questsDone",
-               "stasis","registers","doStackPop","doStackPush"])
+               "stasis","registers","doStackPop","doStackPush","timeTaken"])
         self.objectsToStore.append("serveQuest")
         self.objectsToStore.append("room")
 
@@ -956,9 +957,95 @@ class Monster(Character):
             super().die(reason,addCorpse)
 
     def changed(self,tag="default",info=None):
-        if self.phase == 1 and self.satiation == 999:
-            self.enterPhase2()
+        #if self.phase == 1 and self.satiation == 999:
+        #    self.enterPhase2()
         super().changed(tag,info)
 
     def enterPhase2(self):
         self.phase = 2
+
+    def enterPhase3(self):
+        self.phase = 3
+        self.macroState["macros"] = {"s":["o","p","f","$","=","a","a","$","=","s","s","$","=","w","w","$","=","d","d","j"]}
+        self.macroState["macros"]["m"] = []
+        import random
+        for i in range(0,8):
+            self.macroState["macros"]["m"].extend(["_","s"])
+            self.macroState["macros"]["m"].append(str(random.randint(0,9)))
+            self.macroState["macros"]["m"].append(random.choice(["a","w","s","d"]))
+        self.macroState["macros"]["m"].extend(["_","m"])
+        self.macroState["commandKeyQueue"] = [("_",[]),("m",[])]
+
+    def enterPhase4(self):
+        self.phase = 4
+        self.macroState["macros"] = {
+                                      "e":["1","0","j","m"],
+                                      "s":["o","p","M","$","=","a","a","$","=","w","w","$","=","d","d","$","=","s","s","_","e"],
+                                      "w":[],
+                                      "f":["%","c","_","s","_","w","_","f"],
+                                    }
+        import random
+        for i in range(0,4):
+            self.macroState["macros"]["w"].append(str(random.randint(0,9)))
+            self.macroState["macros"]["w"].append(random.choice(["a","w","s","d"]))
+        self.macroState["commandKeyQueue"] = [("_",[]),("f",[])]
+
+    def enterPhase5(self):
+        self.phase = 5
+        import random
+        self.faction = ""
+        for i in range(0,5):
+            self.faction += random.choice("abcdefghiasjlkasfhoiuoijpqwei10934009138402")
+        self.macroState["macros"] = {
+                                      "j":["7","0","J","m"],
+                                      "s":["o","p","M","$","=","a","a","$","=","w","w","$","=","d","d","$","=","s","s","j","j","j""k"],
+                                      "w":[],
+                                      "k":["o","p","e","$","=","a","a","m","$","=","w","w","m","$","=","d","d","m","$","=","s","s","m"],
+                                      "f":["%","c","_","s","_","w","_","k","_","f"],
+                                    }
+        import random
+        for i in range(0,8):
+            self.macroState["macros"]["w"].append(str(random.randint(0,9)))
+            self.macroState["macros"]["w"].append(random.choice(["a","w","s","d"]))
+            self.macroState["macros"]["w"].append("m")
+        self.macroState["commandKeyQueue"] = [("_",[]),("f",[])]
+
+    def changed(self,tag="default",info=None):
+        self.messages.append("check inv")
+        if len(self.inventory) == 10:
+            fail = False
+            for item in self.inventory:
+                if not item.type == "Corpse":
+                    fail = True
+            if not fail:
+                self.messages.append("do action")
+                newChar = Monster(creator=self)
+
+                newChar.solvers = [
+                          "NaiveActivateQuest",
+                          "ActivateQuestMeta",
+                          "NaivePickupQuest",
+                          "NaiveMurderQuest",
+                        ]
+
+                newChar.faction = self.faction
+                newChar.enterPhase5()
+
+                toDestroy = self.inventory[0:5]
+                for item in toDestroy:
+                    item.destroy()
+                    self.inventory.remove(item)
+                self.container.addCharacter(newChar,self.xPosition,self.yPosition)
+
+        super().changed(tag,info)
+
+    def render(self):
+        if self.phase == 2:
+            return displayChars.monster_feeder
+        elif self.phase == 3:
+            return displayChars.monster_grazer
+        elif self.phase == 4:
+            return displayChars.monster_corpseGrazer
+        elif self.phase == 5:
+            return displayChars.monster_hunter
+        return displayChars.monster_spore

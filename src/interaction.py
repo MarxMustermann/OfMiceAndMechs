@@ -404,9 +404,6 @@ get position for what thing
                         continue
                     if pos[1]-(char.yPosition-char.yPosition%15) > 13 or pos[1]-(char.yPosition-char.yPosition%15) < 1:
                         continue
-                    char.messages.append(pos[0])
-                    char.messages.append((char.xPosition-char.xPosition%15))
-                    char.messages.append(pos[0]-(char.xPosition-char.xPosition%15))
                     if value:
                         listFound.append(value[-1])
 
@@ -435,17 +432,13 @@ get position for what thing
                 for otherChar in char.container.characters:
                     if otherChar == char:
                         continue
-                    if not otherChar.xPosition or otherChar.yPosition or char.xPosition or char.yPosition:
-                        continue
-                    if otherChar.xPosition < char.xPosition-20:
-                        continue
-                    if otherChar.xPosition > char.xPosition+20:
-                        continue
-                    if otherChar.yPosition < char.yPosition-20:
-                        continue
-                    if otherChar.yPosition > char.yPosition+20:
+                    if not (otherChar.xPosition and otherChar.yPosition and char.xPosition and char.yPosition):
                         continue
                     if otherChar.faction == char.faction:
+                        continue
+                    if otherChar.xPosition-(char.xPosition-char.xPosition%15) > 13 or otherChar.xPosition-(char.xPosition-char.xPosition%15) < 1:
+                        continue
+                    if otherChar.yPosition-(char.yPosition-char.yPosition%15) > 13 or otherChar.yPosition-(char.yPosition-char.yPosition%15) < 1:
                         continue
                     foundItems.append(otherChar)
 
@@ -723,7 +716,7 @@ press any other key to finish
                     conditionTrue = False
                     if char.container:
                         for (item,value) in char.container.itemByCoordinates.items():
-                            if not (item[0]//15 == char.xPosition//15 and item[1]//15 == char.yPosition//15):
+                            if (not (item[0]//15 == char.xPosition//15 and item[1]//15 == char.yPosition//15)) or item[0]%15 in [0,14] or item[1]%15 in [0,14]:
                                 continue
                             if not value:
                                 continue
@@ -1207,10 +1200,13 @@ current registers
                             elif (char.yPosition%15 > 7):
                                 direction = "north"
                             else:
-                                #char.stasis = True
-                                char.macroState["commandKeyQueue"].insert(0,("a",["norecord"]))
-                                char.macroState["commandKeyQueue"].insert(0,("a",["norecord"]))
-                                pass
+                                if char.xPosition == 16:
+                                    return
+                                else:
+                                    #char.stasis = True
+                                    char.macroState["commandKeyQueue"].insert(0,("a",["norecord"]))
+                                    char.macroState["commandKeyQueue"].insert(0,("a",["norecord"]))
+                                    pass
                             char.messages.append("a force field pushes you")
                     elif direction == "east":
                         if char.xPosition%15 == 13:
@@ -1219,10 +1215,13 @@ current registers
                             elif (char.yPosition%15 > 7):
                                 direction = "north"
                             else:
-                                #char.stasis = True
-                                char.macroState["commandKeyQueue"].insert(0,("d",["norecord"]))
-                                char.macroState["commandKeyQueue"].insert(0,("d",["norecord"]))
-                                pass
+                                if char.xPosition == 15*14-2:
+                                    return
+                                else:
+                                    #char.stasis = True
+                                    char.macroState["commandKeyQueue"].insert(0,("d",["norecord"]))
+                                    char.macroState["commandKeyQueue"].insert(0,("d",["norecord"]))
+                                    pass
                             char.messages.append("a force field pushes you")
                     elif direction == "north":
                         if char.yPosition%15 == 1:
@@ -1231,10 +1230,13 @@ current registers
                             elif (char.xPosition%15 > 7):
                                 direction = "west"
                             else:
-                                #char.stasis = True
-                                char.macroState["commandKeyQueue"].insert(0,("w",["norecord"]))
-                                char.macroState["commandKeyQueue"].insert(0,("w",["norecord"]))
-                                pass
+                                if char.yPosition == 16:
+                                    return
+                                else:
+                                    #char.stasis = True
+                                    char.macroState["commandKeyQueue"].insert(0,("w",["norecord"]))
+                                    char.macroState["commandKeyQueue"].insert(0,("w",["norecord"]))
+                                    pass
                             char.messages.append("a force field pushes you")
                     elif direction == "south":
                         if char.yPosition%15 == 13:
@@ -1243,10 +1245,13 @@ current registers
                             elif (char.xPosition%15 > 7):
                                 direction = "west"
                             else:
-                                #char.stasis = True
-                                char.macroState["commandKeyQueue"].insert(0,("s",["norecord"]))
-                                char.macroState["commandKeyQueue"].insert(0,("s",["norecord"]))
-                                pass
+                                if char.yPosition == 15*14-2:
+                                    return
+                                else:
+                                    #char.stasis = True
+                                    char.macroState["commandKeyQueue"].insert(0,("s",["norecord"]))
+                                    char.macroState["commandKeyQueue"].insert(0,("s",["norecord"]))
+                                    pass
                             char.messages.append("a force field pushes you")
                     if char.xPosition%15 in (0,14) and direction in ("north","south"):
                         return
@@ -2899,6 +2904,9 @@ def renderHelp():
     return txt
     
 lastTerrain = None
+
+lastCenterX = None
+lastCenterY = None
 '''
 render the map
 bad code: should be contained somewhere
@@ -2926,6 +2934,15 @@ def render(char):
     else:
         centerX = mainChar.xPosition
         centerY = mainChar.yPosition
+
+    global lastCenterX
+    global lastCenterY
+    if not centerX:
+        centerX = lastCenterX
+        centerY = lastCenterY
+    else:
+        lastCenterX = centerX
+        lastCenterY = centerY
 
     # set size of the window into the world
     viewsize = 41

@@ -1004,21 +1004,29 @@ class Terrain(src.saveing.Saveable):
                     position = (position[0]+1,position[1]+1)
                 elif position[1]%15 > 7:
                     position = (position[0]+1,position[1]-1)
+                else:
+                    continue
             if position[0]%15 == 14:
                 if position[1]%15 < 7:
                     position = (position[0]-1,position[1]+1)
                 elif position[1]%15 > 7:
                     position = (position[0]-1,position[1]-1)
+                else:
+                    continue
             if position[1]%15 == 0:
                 if position[0]%15 < 7:
                     position = (position[0]+1,position[1]+1)
                 elif position[0]%15 > 7:
                     position = (position[0]-1,position[1]+1)
+                else:
+                    continue
             if position[1]%15 == 14:
                 if position[0]%15 < 7:
                     position = (position[0]+1,position[1]-1)
                 elif position[0]%15 > 7:
                     position = (position[0]-1,position[1]-1)
+                else:
+                    continue
 
             item.xPosition = position[0]
             item.yPosition = position[1]
@@ -1079,11 +1087,14 @@ class Terrain(src.saveing.Saveable):
         # paint floor
         chars = self.paintFloor()
         for x in range (0,225):
-            chars[x][0] = displayChars.forceField
-            chars[x][224] = displayChars.forceField
+            for y in range (0,16):
+                chars[x][y] = displayChars.forceField
+                chars[x][y+14*15-1] = displayChars.forceField
+
         for y in range (0,225):
-            chars[0][y] = displayChars.forceField
-            chars[224][y] = displayChars.forceField
+            for x in range (0,16):
+                chars[x][y] = displayChars.forceField
+                chars[x+14*15-1][y] = displayChars.forceField
 
         # show/hide rooms
         for room in self.rooms:
@@ -1843,11 +1854,7 @@ class GameplayTest(Terrain):
             line = []
             for j in range(0,250):
                 if not self.hidden:
-                    if not i%5 and not j%7 and not (i+j)%2:
-                        # paint grass at pseudo random location
-                        line.append(displayChars.grass)
-                    else:
-                        line.append(self.floordisplay)
+                    line.append(self.floordisplay)
                 else:
                     line.append(displayChars.void)
             chars.append(line)

@@ -618,7 +618,7 @@ A corpse. It is not useful
 
     def apply(self,character):
         if isinstance(character,src.characters.Monster):
-            if not character.phase > 3:
+            if character.phase == 3:
                 character.enterPhase4()
         if self.charges:
             character.satiation += 15
@@ -5086,6 +5086,7 @@ class InfoScreen(Item):
                     self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with a machine that produces rods in your inventory.\n\n check \"information->machines->machine production\" on how to produce machines.\n\n")
                 else:
                     self.knownBlueprints.append("Frame")
+                    self.knownBlueprints.append("Rod")
                     self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nNew information option on \"information->machines->blueprint production\"\nNew information option on \"information->blueprints\"\n\n")
                     self.machineChallengeDone = True
                 self.character.macroState["submenue"] = self.submenue
@@ -5178,6 +5179,10 @@ class InfoScreen(Item):
                             self.availableChallenges["produceAdvanced"] = {"text":"produce items"}
                             self.availableChallenges["produceScraper"] = {"text":"scraper"}
                             self.challengeRun2Done = True
+                            self.knownBlueprints.append("Heater")
+                            self.knownBlueprints.append("Connector")
+                            self.knownBlueprints.append("Pusher")
+                            self.knownBlueprints.append("Puller")
                     self.character.macroState["submenue"] = self.submenue
         else:
             if len(self.availableChallenges):
@@ -5274,6 +5279,7 @@ class InfoScreen(Item):
             else:
                 del self.availableChallenges["produceBasics"]
                 self.knownBlueprints.append("Case")
+                self.knownBlueprints.append("Wall")
                 self.availableChallenges["prodCase"] = {"text":"produce case"}
                 self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nchallenge \"%s\" added\n\n"%(self.availableChallenges["prodCase"]["text"]))
 
@@ -5282,6 +5288,7 @@ class InfoScreen(Item):
                 self.submenue = interaction.TextMenu("\n\nchallenge failed. Try again with scrap compactor in your inventory.\n\n")
             else:
                 self.knownBlueprints.append("Tank")
+                self.knownBlueprints.append("Scraper")
                 self.availableChallenges["produceBasics"] = {"text":"produce basics"}
                 self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nchallenge \"%s\" added\n\n"%(self.availableChallenges["produceBasics"]["text"]))
                 del self.availableChallenges["produceScrapCompactors"]
@@ -5409,14 +5416,30 @@ class InfoScreen(Item):
             self.character.macroState["submenue"].followUp = self.stepLevel1Automation
         elif selection == "blueprints":
             text = "\n\nknown blueprint recieps:\n\n"
+            if "Rod" in self.knownBlueprints:
+                text += " * rod             = rod\n"
             if "Frame" in self.knownBlueprints:
                 text += " * frame           = rod + metal bars\n"
             if "Tank" in self.knownBlueprints:
                 text += " * tank            = sheet + metal bars\n"
+            if "Wall" in self.knownBlueprints:
+                text += " * wall            = metal bars\n"
+            if "FloorPlate" in self.knownBlueprints:
+                text += " * floor plate     = sheet + rod + bolt\n"
             if "Case" in self.knownBlueprints:
                 text += " * case            = frame + metal bars\n"
             if "ScrapCompactor" in self.knownBlueprints:
                 text += " * scrap compactor = scrap\n"
+            if "Scraper" in self.knownBlueprints:
+                text += " * scraper         = scrap + metal bars\n"
+            if "Heater" in self.knownBlueprints:
+                text += " * heater          = radiator\n"
+            if "Connector" in self.knownBlueprints:
+                text += " * connector       = mount + metal bars\n"
+            if "Pusher" in self.knownBlueprints:
+                text += " * pusher          = stripe + metal bars\n"
+            if "Puller" in self.knownBlueprints:
+                text += " * puller          = bolt + metal bars\n"
             text += "\n\n"
             self.submenue = interaction.TextMenu(text)
             self.character.macroState["submenue"] = self.submenue
@@ -7146,7 +7169,10 @@ class SickBloom(Item):
         if self.charges and not self.dead:
             if isinstance(character,src.characters.Monster):
                 if character.phase == 1:
-                    character.enterPhase2()
+                    #character.enterPhase2()
+                    character.satiation += 100
+                    if character.satiation > 1000:
+                        character.satiation = 1000
                     self.spawn()
                     self.charges -= 1
                     self.dead = True

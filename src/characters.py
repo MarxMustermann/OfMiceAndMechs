@@ -957,8 +957,8 @@ class Monster(Character):
             super().die(reason,addCorpse)
 
     def changed(self,tag="default",info=None):
-        #if self.phase == 1 and self.satiation == 999:
-        #    self.enterPhase2()
+        if self.phase == 1 and self.satiation == 900:
+            self.enterPhase2()
         super().changed(tag,info)
 
     def enterPhase2(self):
@@ -998,7 +998,7 @@ class Monster(Character):
             self.faction += random.choice("abcdefghiasjlkasfhoiuoijpqwei10934009138402")
         self.macroState["macros"] = {
                                       "j":["7","0","J","m"],
-                                      "s":["o","p","M","$","=","a","a","$","=","w","w","$","=","d","d","$","=","s","s","j","j","j""k"],
+                                      "s":["o","p","M","$","=","a","a","$","=","w","w","$","=","d","d","$","=","s","s","k","j","j","j","k"],
                                       "w":[],
                                       "k":["o","p","e","$","=","a","a","m","$","=","w","w","m","$","=","d","d","m","$","=","s","s","m"],
                                       "f":["%","c","_","s","_","w","_","k","_","f"],

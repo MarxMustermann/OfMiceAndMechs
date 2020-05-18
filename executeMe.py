@@ -233,7 +233,7 @@ if not args.nourwid:
     if args.load:
         shouldLoad = True
     else:
-        load = input("load gamestate? (Y/n)")
+        load = input("load saved game? (Y/n)")
         if load.lower() == "n":
             shouldLoad = False
         else:

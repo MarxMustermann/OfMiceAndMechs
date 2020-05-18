@@ -2798,7 +2798,7 @@ class HelpMenu(SubMenu):
             return True
 
         # show info
-        header.set_text((urwid.AttrSpec("default","default"),"\nquest overview\n\n"))
+        header.set_text((urwid.AttrSpec("default","default"),"\n\nhelp\n\n"))
         self.persistentText = ""
         self.persistentText += renderHelp()
         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
@@ -2901,6 +2901,7 @@ def renderHelp():
     txt += "* show_help: "+commandChars.show_help+"\n"
     txt += "* attack: "+commandChars.attack+"\n"
     txt += "* devMenu: "+commandChars.devMenu+"\n"
+    txt += "\n\nMove onto an item and press the key to interact with it. Move against big items and press the key to interact with it\n\n"
     return txt
     
 lastTerrain = None

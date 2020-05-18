@@ -956,11 +956,6 @@ class Monster(Character):
         else:
             super().die(reason,addCorpse)
 
-    def changed(self,tag="default",info=None):
-        if self.phase == 1 and self.satiation == 900:
-            self.enterPhase2()
-        super().changed(tag,info)
-
     def enterPhase2(self):
         self.phase = 2
 
@@ -1011,7 +1006,8 @@ class Monster(Character):
         self.macroState["commandKeyQueue"] = [("_",[]),("f",[])]
 
     def changed(self,tag="default",info=None):
-        self.messages.append("check inv")
+        if self.phase == 1 and self.satiation > 900:
+            self.enterPhase2()
         if len(self.inventory) == 10:
             fail = False
             for item in self.inventory:

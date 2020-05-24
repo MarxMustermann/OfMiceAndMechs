@@ -1109,8 +1109,8 @@ class Terrain(src.saveing.Saveable):
 
         for bigX in range(0,14):
             for bigY in range(0,14):
-                for x in range(0,14):
-                    for y in range(0,14):
+                for x in range(0,15):
+                    for y in range(0,15):
                         if x == 7 or y == 7:
                             continue 
                         chars[bigX*15+x][bigY*15+0] = displayChars.forceField
@@ -1827,8 +1827,8 @@ class GameplayTest(Terrain):
         #tree = src.items.Tree(15,14,creator=self)
         #extraItems.append(tree)
 
-        coalMine = src.items.CoalMine(50,112,creator=self)
-        extraItems.append(coalMine)
+        #coalMine = src.items.CoalMine(50,112,creator=self)
+        #extraItems.append(coalMine)
 
         self.addItems(extraItems)
 

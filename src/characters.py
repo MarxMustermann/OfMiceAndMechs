@@ -1045,3 +1045,21 @@ class Monster(Character):
         elif self.phase == 5:
             return displayChars.monster_hunter
         return displayChars.monster_spore
+
+class Exploder(Monster):
+
+    def __init__(self,display="🝆~",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None):
+        super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator)
+
+    def render(self):
+        return displayChars.monster_exploder
+
+    def die(self,reason=None,addCorpse=True):
+        new = src.items.itemMap["FireCrystals"](creator=self)
+        new.xPosition = self.xPosition
+        new.yPosition = self.yPosition
+        self.container.addItems([new])
+        new.startExploding()
+
+        super().die(reason=reason, addCorpse=False)
+

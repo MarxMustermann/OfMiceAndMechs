@@ -363,6 +363,14 @@ get position for what thing
             elif key == "e":
                 char.interactionState["enumerateState"][-1]["target"] = ["enemy"]
             elif key == "x":
+                if not "d" in char.registers:
+                    char.registers["d"] = [0]
+                if not "s" in char.registers:
+                    char.registers["s"] = [0]
+                if not "a" in char.registers:
+                    char.registers["a"] = [0]
+                if not "w" in char.registers:
+                    char.registers["w"] = [0]
                 char.registers["d"][-1] = 7-char.xPosition%15
                 char.registers["s"][-1] = 7-char.yPosition%15
                 char.registers["a"][-1] = -char.registers["d"][-1]
@@ -416,15 +424,11 @@ get position for what thing
                 for otherChar in char.container.characters:
                     if otherChar == char:
                         continue
-                    if not otherChar.xPosition or otherChar.yPosition or char.xPosition or char.yPosition:
+                    if not (otherChar.xPosition and otherChar.yPosition and char.xPosition and char.yPosition):
                         continue
-                    if otherChar.xPosition < char.xPosition-20:
+                    if otherChar.xPosition-(char.xPosition-char.xPosition%15) > 13 or otherChar.xPosition-(char.xPosition-char.xPosition%15) < 1:
                         continue
-                    if otherChar.xPosition > char.xPosition+20:
-                        continue
-                    if otherChar.yPosition < char.yPosition-20:
-                        continue
-                    if otherChar.yPosition > char.yPosition+20:
+                    if otherChar.yPosition-(char.yPosition-char.yPosition%15) > 13 or otherChar.yPosition-(char.yPosition-char.yPosition%15) < 1:
                         continue
                     foundItems.append(otherChar)
 
@@ -709,6 +713,8 @@ press any other key to finish
                     conditionTrue = False
                     if char.container:
                         for character in char.container.characters:
+                            if (not (character.xPosition//15 == char.xPosition//15 and character.yPosition//15 == char.yPosition//15)) or character.xPosition%15 in [0,14] or character.yPosition%15 in [0,14]:
+                                continue
                             if abs(character.xPosition-char.xPosition) < 20 and abs(character.yPosition-char.yPosition) < 20 and not character.faction == char.faction:
                                 conditionTrue = True
                                 break
@@ -1576,7 +1582,7 @@ current registers
             # bad code: drinking should happen in character
             if key in (commandChars.drink):
                 character = char
-                for item in reversed(character.inventory):
+                for item in character.inventory:
                     if isinstance(item,src.items.GooFlask):
                         if item.uses > 0:
                             item.apply(character)

@@ -1444,17 +1444,17 @@ XXXXXXXXXXXXX
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.artwork = src.items.ProductionArtwork(4,1,creator=creator)
         self.compactor = src.items.ScrapCompactor(8,1,creator=creator)
-        flask1 = src.items.GooFlask(11,1,creator=creator)
+        flask1 = src.items.GooFlask(10,2,creator=creator)
         flask1.uses = 100
-        flask2 = src.items.GooFlask(11,1,creator=creator)
+        flask2 = src.items.GooFlask(10,3,creator=creator)
         flask2.uses = 100
-        flask3 = src.items.GooFlask(11,1,creator=creator)
+        flask3 = src.items.GooFlask(10,4,creator=creator)
         flask3.uses = 100
         self.doors[0].walkable = True
 
         self.machinemachine = src.items.MachineMachine(4,3,creator=creator)
 
-        self.infoScreen = src.items.InfoScreen(4,9,creator=creator)
+        self.infoScreen = src.items.AutoTutor(4,9,creator=creator)
 
         self.bluePrinter = src.items.BluePrinter(8,9,creator=creator)
 

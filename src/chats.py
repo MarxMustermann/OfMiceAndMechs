@@ -53,7 +53,7 @@ class OneTimeMessage(Chat):
 
     '''
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         if self.firstRun:
             self.set_text(self.persistentText)
             self.done = False
@@ -77,9 +77,9 @@ class ConfigurableChat(Chat):
 
     '''
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         if self.subMenu:
-             if not self.subMenu.handleKey(key):
+             if not self.subMenu.handleKey(key, noRender=noRender):
                  return False
              self.subMenu = None
 
@@ -100,7 +100,7 @@ class ConfigurableChat(Chat):
 
         # let the superclass handle the actual selection
         if not self.getSelection():
-            super().handleKey(key)
+            super().handleKey(key, noRender=noRender)
 
         # spawn the dialog options submenu
         if self.getSelection():
@@ -110,11 +110,11 @@ class ConfigurableChat(Chat):
 
             if self.selection["type"] == "text":
                 self.subMenu = OneTimeMessage(self.selection["text"])
-                self.subMenu.handleKey("~")
+                self.subMenu.handleKey("~", noRender=noRender)
             elif self.selection["type"] == "sub":
                 self.subMenu = ConfigurableChat()
                 self.subMenu.setUp({"text":self.selection["text"],"info":self.selection["sub"]})
-                self.subMenu.handleKey("~")
+                self.subMenu.handleKey("~", noRender=noRender)
             else:
                 self.set_text("NIY")
 
@@ -158,7 +158,7 @@ class RewardChat(Chat):
     '''
     call the solver to assign reward
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         self.persistentText = "here is your reward"
         self.set_text(self.persistentText)
         
@@ -207,7 +207,7 @@ class GrowthTankRefillChat(Chat):
     '''
     show the dialog for one keystroke
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # do all activity on the first run
         if self.firstRun:
             # show fluffed up information
@@ -277,7 +277,7 @@ class TutorialSpeechTest(Chat):
     '''
     show the dialog for one keystroke
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # do all activity on the first run
         if self.firstRun:
             # show fluffed up information
@@ -346,8 +346,7 @@ class FurnaceChat(Chat):
     '''
     offer the player a option to go deeper
     '''
-    def handleKey(self, key):
-
+    def handleKey(self, key, noRender=False):
         # set up the chat
         if self.firstRun:
 
@@ -366,7 +365,7 @@ class FurnaceChat(Chat):
 
         if self.submenue:
             # try to let the selection option handle the keystroke
-            if not self.submenue.handleKey(key):
+            if not self.submenue.handleKey(key, noRender=noRender):
                 return False
 
             # tear down the submenue
@@ -414,7 +413,7 @@ class SternChat(Chat):
     '''
     show the dialog for one keystroke
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # show information on first run
         if self.firstRun:
             # show fluffed up information
@@ -473,7 +472,7 @@ class InfoChat(Chat):
     '''
     show the dialog for one keystroke
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # do all activity on first run
         if self.firstRun:
             # show fluffed up information
@@ -530,7 +529,7 @@ class ReReport(src.interaction.SubMenu):
     '''
     scold the player and start intro
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         if self.firstRun:
             # show message
             self.persistentText = "It seems you did not report for duty immediately. Try to not repeat that"
@@ -582,7 +581,7 @@ class JobChatFirst(Chat):
     '''
     show dialog and assign quest 
     '''
-    def handleKey(subSelf, key):
+    def handleKey(self, key, noRender=False):
         # handle chat termination
         if key == "esc":
 
@@ -669,7 +668,7 @@ class JobChatSecond(Chat):
     '''
     show dialog and assign quest 
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # handle termination of this chat
         if key == "esc":
            # quit dialog
@@ -685,7 +684,7 @@ class JobChatSecond(Chat):
                              
         # let the superclass do the selection
         if self.submenue:
-            if not self.submenue.handleKey(key):
+            if not self.submenue.handleKey(key, noRender=noRender):
                 return False
             else:
                 self.selectedQuest = self.submenue.selection
@@ -756,7 +755,7 @@ class RoomDutyChat(Chat):
     def setUp(self,state):
         self.superior = state["superior"]
         
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
 
         if gamestate.tick%2:
             self.persistentText = "yes, you may."
@@ -786,7 +785,7 @@ class RoomDutyChat2(Chat):
     def setUp(self,state):
         pass
         
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         self.persistentText = "Drink something"
 
         quest = quests.PickupQuestMeta(self.partner.room.bean,creator=void)
@@ -830,7 +829,7 @@ class JobChatThird(Chat):
     '''
     show dialog and assign quest 
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # handle termination of this chat
         if key == "esc":
            # quit dialog
@@ -846,7 +845,7 @@ class JobChatThird(Chat):
                              
         # let the superclass do the selection
         if self.submenue:
-            if not self.submenue.handleKey(key):
+            if not self.submenue.handleKey(key, noRender=noRender):
                 return False
             else:
                 self.selectedQuest = self.submenue.selection
@@ -928,7 +927,7 @@ class StopChat(Chat):
     '''
     stop furnace quest and correct dialog
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # show information on first run
         if self.firstRun:
             # stop firing the furnace
@@ -974,7 +973,7 @@ class StartChat(Chat):
     '''
     start furnace quest and correct dialog
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # show information on first run
         if self.firstRun:
 
@@ -1024,7 +1023,7 @@ class RecruitChat(Chat):
     bad code: showing the messages should be handled in __init__ or a setup method
     bad code: the dialog and reactions should be generated within the characters
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # exit submenu
         if key == "esc":
             return True
@@ -1097,7 +1096,7 @@ class JoinMilitaryChat(Chat):
     bad code: showing the messages should be handled in __init__ or a setup method
     bad code: the dialog and reactions should be generated within the characters
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # exit submenu
         if key == "esc":
             return True
@@ -1151,7 +1150,7 @@ class CaptainChat(Chat):
     bad code: showing the messages should be handled in __init__ or a setup method
     bad code: the dialog and reactions should be generated within the characters
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # exit submenu
         if key == "esc":
             return True
@@ -1206,7 +1205,7 @@ class FactionChat1(Chat):
 
     '''
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # exit submenu
         if key == "esc":
             return True
@@ -1256,7 +1255,7 @@ class FactionChat2(Chat):
 
     '''
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # exit submenu
         if key == "esc":
             return True
@@ -1322,7 +1321,7 @@ class CaptainChat2(Chat):
     bad code: showing the messages should be handled in __init__ or a setup method
     bad code: the dialog and reactions should be generated within the characters
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # exit submenu
         if key == "esc":
             return True
@@ -1406,7 +1405,7 @@ class ChatMenu(Chat):
     bad code: showing the messages should be handled in __init__ or a setup method
     bad code: the dialog should be generated within the characters
     '''
-    def handleKey(self, key):
+    def handleKey(self, key, noRender=False):
         # smooth over impossible state
         if self.partner == None:
            debugMessages.append("chatmenu spawned without partner")
@@ -1443,10 +1442,10 @@ class ChatMenu(Chat):
         if self.subMenu:
             # let the submenue handle the key
             if not self.subMenu.done:
-                self.subMenu.handleKey(key)
+                self.subMenu.handleKey(key, noRender=noRender)
                 if not self.subMenu.done:
                     return False
-                self.handleKey(commandChars.wait)
+                self.handleKey(commandChars.wait, noRender=noRender)
 
             # return to main dialog menu
             self.subMenu = None
@@ -1485,7 +1484,7 @@ class ChatMenu(Chat):
 
             # let the superclass handle the actual selection
             if not self.getSelection():
-                super().handleKey(key)
+                super().handleKey(key, noRender=noRender)
 
             # spawn the dialog options submenu
             if self.getSelection():
@@ -1498,12 +1497,12 @@ class ChatMenu(Chat):
                         if "params" in self.selection:
                             self.subMenu.setUp(self.selection["params"])
 
-                    self.subMenu.handleKey(key)
+                    self.subMenu.handleKey(key, noRender=noRender)
                 elif self.selection == "showQuests":
                     # spawn quest submenu for partner
                     submenue = src.interaction.QuestMenu(char=self.partner)
                     self.subMenu = submenue
-                    submenue.handleKey(key)
+                    submenue.handleKey(key, noRender=noRender)
                     return False
                 elif self.selection == "copyMacros":
                     self.partner.macroState["macros"] = mainChar.macroState["macros"]
@@ -1513,7 +1512,7 @@ class ChatMenu(Chat):
                     submenue = src.interaction.OneKeystokeMenu(text = "press key for the macro to run")
                     self.subMenu = submenue
                     self.subMenu.followUp = self.runMacro
-                    submenue.handleKey(key)
+                    submenue.handleKey(key, noRender=noRender)
                 elif self.selection == "exit":
                     # end the conversation
                     self.state = "done"

@@ -3029,11 +3029,8 @@ class BuildBase(BasicPhase):
             self.mainCharRoom.addCharacter(mainChar,2,4)
         # place character on terrain
         else:
-            mainChar.xPosition = 65
-            mainChar.yPosition = 111
-            mainChar.reputation = 100
             mainChar.terrain = terrain
-            terrain.addCharacter(mainChar,65,111)
+            terrain.addCharacter(mainChar,65,126)
 
         self.miniBase = terrain.rooms[0]
 
@@ -3134,7 +3131,7 @@ class BuildBase(BasicPhase):
 
     def checkRoomEnteredMain(self):
         if self.mainChar.room and self.mainChar.room == self.miniBase:
-            showText("\n\n * press k to pick up\n * press l to pick up\n * press i to view inventory\n * press @ to view your stats\n * press j to activate \n * press e to examine\n * press ? for help\n\nMove onto an item and press the key to interact with it. Move against big items and press the key to interact with it\n\n")
+            showText("\n\nUse the auto tutor for more information. The autotutor is represented by iD\n\n * press j to activate \n * press k to pick up\n * press l to pick up\n * press i to view inventory\n * press @ to view your stats\n * press e to examine\n * press ? for help\n\nMove onto an item and press the key to interact with it. Move against big items and press the key to interact with it\n\npress space to continue\n\n")
             mainChar.delListener(self.checkRoomEnteredMain)
 
 ###############################################################

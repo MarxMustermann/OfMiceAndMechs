@@ -5749,12 +5749,12 @@ class AutoTutor(Item):
             else:
                 self.submenue = interaction.TextMenu("\n\nchallenge: produce press cake\nstatus: challenge completed.\n\n")
                 self.availableChallenges["producePressCakes"] = {"text":"produce press cakes"}
-                self.availableChallenges["buildGooProducer"] = {"text":"guild goo producer"}
+                self.availableChallenges["buildGooProducer"] = {"text":"build goo producer"}
                 self.knownBlueprints.append("GooProducer")
                 del self.availableChallenges["processBioMass"]
 
         elif selection == "producePressCakes": # from processBioMass
-            if self.countInInventory(src.items.PressCakes) < 4:
+            if self.countInInventory(src.items.PressCake) < 4:
                 self.submenue = interaction.TextMenu("\n\nchallenge: produce press cakes\nstatus: challenge in progress. Try with 4 press cake in your inventory.\n\n")
             else:
                 self.submenue = interaction.TextMenu("\n\nchallenge: produce press cake\nstatus: challenge completed.\n\n")
@@ -5764,12 +5764,10 @@ class AutoTutor(Item):
 
         elif selection == "buildGooProducer": # from processBioMass
             if not self.checkInInventory(src.items.PressCake):
-                self.submenue = interaction.TextMenu("\n\nchallenge: produce press cake\nstatus: challenge in progress. Try with Press cake in your inventory.\n\n")
+                self.submenue = interaction.TextMenu("\n\nchallenge: build goo producer\nstatus: challenge in progress. Try with Press cake in your inventory.\n\n")
             else:
-                self.submenue = interaction.TextMenu("\n\nchallenge: produce press cake\nstatus: challenge completed.\n\n")
-                self.availableChallenges["producePressCakes"] = {"text":"process bio mass"}
-                self.knownBlueprints.append("GooDispenser")
-                del self.availableChallenges["processBioMass"]
+                self.submenue = interaction.TextMenu("\n\nchallenge: build goo producer\nstatus: challenge completed.\n\n")
+                del self.availableChallenges["buildGooProducer"]
 
         elif selection == "createMap": # from root3
             if not self.checkInInventory(src.items.Map):

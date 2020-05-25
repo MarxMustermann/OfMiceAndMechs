@@ -3083,9 +3083,6 @@ class BuildBase(BasicPhase):
         for mold in molds:
             mold.startSpawn()
 
-        for i in range(1,100):
-            advanceGame()
-
         mainChar.addListener(self.checkRoomEnteredMain)
         mainChar.macroState["macros"]["j"] = ["J"]
 

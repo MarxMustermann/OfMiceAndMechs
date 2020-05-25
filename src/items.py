@@ -3528,14 +3528,6 @@ class Map(Item):
         super().__init__(displayChars.sheet,xPosition,yPosition,name=name,creator=creator)
 
         self.routes = {
-                          (22,22):{
-                                        (42,56):["d","d","d","s","s","s"],
-                                        (42,55):["s","s","s","d","d","d"],
-                                  },
-                          (22,23):{
-                                        (42,56):["s","s","s"],
-                                        (42,55):["d","d","d"],
-                                  },
                       }
         self.walkable = True
         self.bolted = False
@@ -5523,7 +5515,6 @@ class AutoTutor(Item):
                         self.submenue = interaction.TextMenu("\n\nchallenge: produce 25 walls\nstatus: challenge completed\n\n")
                         self.availableChallenges["produceRoomBuilder"] = {"text":"produce room builder"}
                         self.availableChallenges["produceBioMasses"] = {"text":"produce 9 bio mass"}
-                        self.availableChallenges["gatherCorpse"] = {"text":"gather corpse"}
                         self.availableChallenges["createMap"] = {"text":"create map"}
                         self.challengeRun3Done = True
                         self.knownBlueprints.append("RoomBuilder")
@@ -5774,13 +5765,13 @@ class AutoTutor(Item):
                 self.submenue = interaction.TextMenu("\n\nchallenge: create map\nstatus: challenge in progress. Try with map in your inventory.\n\n")
             else:
                 self.submenue = interaction.TextMenu("\n\nchallenge: create map\nstatus: challenge completed.\n\n")
-                self.availableChallenges["createMapWithPaths"] = {"text":"create map with paths"}
+                self.availableChallenges["createMapWithPaths"] = {"text":"create map with routes"}
                 del self.availableChallenges["createMap"]
 
         elif selection == "createMapWithPaths": # from root3
             itemFound = False
             for item in self.character.inventory:
-                if isinstance(item,src.items.Map) and item.paths:
+                if isinstance(item,src.items.Map) and item.routes:
                     itemFound = True
                     break
             if not itemFound:
@@ -5789,7 +5780,7 @@ class AutoTutor(Item):
                 self.submenue = interaction.TextMenu("\n\nchallenge: create map with paths\nstatus: challenge completed.\n\n")
                 del self.availableChallenges["createMapWithPaths"]
 
-        elif selection == "gatherCorpse": # from root3
+        elif selection == "gatherCorpse": # NOT ASSIGNED
             if not self.checkInInventory(src.items.Corpse):
                 self.submenue = interaction.TextMenu("\n\nchallenge: gather corpse\nstatus: challenge in progress. Try with corpse in your inventory.\n\n")
             else:
@@ -5820,7 +5811,7 @@ class AutoTutor(Item):
                 self.submenue = interaction.TextMenu("\n\nchallenge: gather poison bloom\nstatus: challenge completed.\n\n")
                 del self.availableChallenges["gatherPoisonBlooms"]
 
-        elif selection == "produceAutoScribe": # not assigned
+        elif selection == "produceAutoScribe": # NOT ASSIGNED
             if not self.checkInInventory(src.items.AutoScribe):
                 self.submenue = interaction.TextMenu("\n\nchallenge: produce auto scribe\nstatus: challenge in progress. Try with auto scribe in your inventory.\n\n")
             else:

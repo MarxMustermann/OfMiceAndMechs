@@ -208,7 +208,6 @@ class GameState(src.saveing.Saveable):
         # generate simple state
         state = {}
         state["currentPhase"] = self.currentPhase.getState()
-        state["terrain"] = terrain.getDiffState()
         state["tick"] = self.tick
         state["gameWon"] = self.gameWon
         state["void"] = void.getState()
@@ -219,7 +218,7 @@ class GameState(src.saveing.Saveable):
         for line in self.terrainMap:
             newLine = []
             for item in line:
-                newLine.append(item.getDiffState())
+                newLine.append(item.getState())
             state["terrainMap"].append(newLine)
 
         # generate the main characters state

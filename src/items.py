@@ -2973,12 +2973,9 @@ class Mover(Item):
             break
 
         # remove ressources
-        self.room.removeItem(itemFound)
+        self.container.removeItem(itemFound)
 
-        if itemFound.type == compareItemFound.type:
-            targetPos = (self.xPosition,self.yPosition+1)
-        else:
-            targetPos = (self.xPosition+1,self.yPosition)
+        targetPos = (self.xPosition+1,self.yPosition)
 
         itemFound.xPosition = targetPos[0]
         itemFound.yPosition = targetPos[1]

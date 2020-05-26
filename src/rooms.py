@@ -372,6 +372,12 @@ class Room(src.saveing.Saveable):
         if eventStates:
             result["eventStates"] = eventStates
 
+        result["objType"] = self.objType
+        result["xPosition"] = self.xPosition
+        result["yPosition"] = self.yPosition
+        result["offsetX"] = self.offsetX
+        result["offsetY"] = self.offsetY
+
         return result
 
     '''
@@ -396,6 +402,10 @@ class Room(src.saveing.Saveable):
             pass
 
         # store the substates
+        state["objType"] = self.objType
+
+        state["walkingAccess"] = self.walkingAccess
+
         state["eventIds"] = eventIds
         state["eventStates"] = eventStates
         state["itemIds"] = itemIds
@@ -431,6 +441,10 @@ class Room(src.saveing.Saveable):
             self.terrain.teleportRoom(self,(xPosition,yPosition))
 
         super().setState(state)
+
+        self.walkingAccess = []
+        for item in state["walkingAccess"]:
+            self.walkingAccess.append((item[0],item[1]))
 
         # update changed items
         if "changedItems" in state:

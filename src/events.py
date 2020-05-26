@@ -56,6 +56,11 @@ class Event(src.saveing.Saveable):
     def handleEvent(self):
         pass
 
+    def getState(self):
+        state = super().getState()
+        state["objType"] = self.type
+        return state
+
 class RunFunctionEvent(Event):
     def __init__(self,tick,creator=None):
         super().__init__(tick=tick,creator=creator)

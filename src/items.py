@@ -6032,6 +6032,7 @@ class AutoTutor(Item):
                 del self.availableChallenges["producePressCakes"]
 
                 self.knownBlueprints.append("GooDispenser")
+                self.knownBlueprints.append("GooFlask")
 
         elif selection == "buildGooProducer": # from processBioMass
             if not self.checkInInventory(src.items.GooProducer):
@@ -6176,7 +6177,7 @@ class AutoTutor(Item):
             options = []
 
             options.append(("food_basics","food basics"))
-            if "food/moldfarming" in self.knownBlueprints:
+            if "food/moldfarming" in self.knownInfos:
                 options.append(("food_moldfarming","mold farming"))
 
             self.submenue = interaction.SelectionMenu("select the information you need",options)
@@ -6264,6 +6265,9 @@ class AutoTutor(Item):
                 shownText = True
             if "BioPress" in self.knownBlueprints:
                 text += " * bio press       = bio mass\n"
+                shownText = True
+            if "GooFlask" in self.knownBlueprints:
+                text += " * goo flask       = tank\n"
                 shownText = True
             if "GooProducer" in self.knownBlueprints:
                 text += " * goo producer    = press cake\n"

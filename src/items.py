@@ -6431,18 +6431,21 @@ class AutoTutor(Item):
         state = super().getState()
         state["availableChallenges"] = self.availableChallenges
         state["knownBlueprints"] = self.knownBlueprints
+        state["knownInfos"] = self.knownInfos
         return state
 
     def getDiffState(self):
         state = super().getDiffState()
         state["availableChallenges"] = self.availableChallenges
         state["knownBlueprints"] = self.knownBlueprints
+        state["knownInfos"] = self.knownInfos
         return state
 
     def setState(self,state):
         super().setState(state)
         self.availableChallenges = state["availableChallenges"]
         self.knownBlueprints = state["knownBlueprints"]
+        self.knownInfos = state["knownInfos"]
 
     def getLongInfo(self):
         text = """

@@ -5340,7 +5340,6 @@ class AutoTutor(Item):
         self.activateChallenge = 100
         self.metalbarChallenge = 100
         self.wallChallenge = 25
-        self.wallChallenge = 0
         self.autoScribeChallenge = 25
         self.challengeRun2Done = False
         self.challengeRun3Done = False

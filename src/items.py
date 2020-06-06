@@ -4554,8 +4554,6 @@ class Machine(Item):
         elif self.toProduce == "FloorPlate":
             ressourcesNeeded = ["Sheet","MetalBars"]
 
-        elif self.toProduce == "Sorter":
-            ressourcesNeeded = ["Case","MetalBars"]
         elif self.toProduce == "Scraper":
             ressourcesNeeded = ["Case","MetalBars"]
         elif self.toProduce == "GrowthTank":
@@ -4620,6 +4618,11 @@ class Machine(Item):
         elif self.toProduce == "RoomBuilder":
             ressourcesNeeded = ["Case","pusher","puller"]
         elif self.toProduce == "BluePrinter":
+            ressourcesNeeded = ["Case","pusher","puller"]
+
+        elif self.toProduce == "Mover":
+            ressourcesNeeded = ["Case","pusher","puller"]
+        elif self.toProduce == "Sorter":
             ressourcesNeeded = ["Case","pusher","puller"]
         
         elif self.toProduce == "FireCrystals":
@@ -5262,18 +5265,51 @@ class AutoTutor(Item):
         self.activateChallenge = 100
         self.metalbarChallenge = 100
         self.wallChallenge = 25
+        self.wallChallenge = 0
         self.autoScribeChallenge = 25
         self.challengeRun2Done = False
         self.challengeRun3Done = False
         self.challengeRun4Done = False
         self.initialChallengeDone = False
+        self.challengeInfo = {}
 
         self.attributesToStore.extend([
                "gooChallengeDone","metalbarChallengeDone","sheetChallengeDone","machineChallengeDone","blueprintChallengeDone","energyChallengeDone","activateChallengeDone",
                "commandChallengeDone","challengeRun2Done","challengeRun3Done","challengeRun4Done","initialChallengeDone",
                "activateChallenge","wallChallenge","autoScribeChallenge",
-               "knownBlueprints","availableChallenges","knownInfos"])
+               "knownBlueprints","availableChallenges","knownInfos","challengeInfo"])
         self.initialState = self.getState()
+
+    def addScraps(self,amount=1):
+        
+        targetFull = False
+        scrapFound = None
+        itemList = self.container.getItemByPosition((self.xPosition,self.yPosition+1))
+        if len(itemList) > 15:
+            targetFull = True
+        for item in itemList:
+            if item.walkable == False:
+                targetFull = True
+            if item.type == "Scrap":
+                scrapFound = item
+
+        if targetFull:
+            return False
+        
+        if scrapFound:
+            scrapFound.amount += amount
+            scrapFound.setWalkable()
+        else:
+            # spawn scrap
+            new = Scrap(self.xPosition,self.yPosition,1,creator=self)
+            new.xPosition = self.xPosition
+            new.yPosition = self.yPosition+1
+            new.amount = amount
+            self.room.addItems([new])
+            new.setWalkable()
+
+        return True
+
 
     def apply(self,character):
         if not self.room:
@@ -5419,24 +5455,11 @@ class AutoTutor(Item):
                             self.character.macroState["submenue"] = self.submenue
                             return
 
-                        targetFull = False
-                        itemList = self.container.getItemByPosition((self.xPosition,self.yPosition+1))
-                        if len(itemList) > 15:
-                            targetFull = True
-                        for item in itemList:
-                            if item.walkable == False:
-                                targetFull = True
-
-                        if targetFull:
+                        didAdd = self.addScraps(amount=1)
+                        if not didAdd:
                             self.submenue = interaction.TextMenu("\n\nchallenge: produce 100 metal bars\nstatus: no progress - no space to drop scrap\nMetal bars remaining %s\n\n"%(self.metalbarChallenge,))
                             self.character.macroState["submenue"] = self.submenue
                             return
-
-                        # spawn scrap
-                        new = Scrap(self.xPosition,self.yPosition,1,creator=self)
-                        new.xPosition = self.xPosition
-                        new.yPosition = self.yPosition+1
-                        self.room.addItems([new])
 
                         self.submenue = interaction.TextMenu("\n\nchallenge: produce 100 metal bars\nstatus: challenge in progress.\nMetal bars remaining %s\n\ncomment: \nscrap ejected to the south/below\nuse commands and multipliers to do this.\n\n"%(self.metalbarChallenge,))
                         self.character.inventory.remove(metalBarFound)
@@ -5477,28 +5500,11 @@ class AutoTutor(Item):
                         self.character.macroState["submenue"] = self.submenue
                         return
 
-                    targetFull = False
-                    itemList = self.container.getItemByPosition((self.xPosition,self.yPosition+1))
-                    if len(itemList) > 15:
-                        targetFull = True
-                    for item in itemList:
-                        if item.walkable == False:
-                            targetFull = True
-
-                    if targetFull:
+                    didAdd = self.addScraps(amount=2)
+                    if didAdd:
                         self.submenue = interaction.TextMenu("\n\nchallenge: produce 25 walls\nstatus: challenge in progress.\nno progress - no space to drop scrap\nWalls remaining: %s\n\ncomment:\nuse commands and multipliers to do this.\n\n"%(self.wallChallenge,))
                         self.character.macroState["submenue"] = self.submenue
                         return
-
-                    # spawn scrap
-                    new = Scrap(self.xPosition,self.yPosition,1,creator=self)
-                    new.xPosition = self.xPosition
-                    new.yPosition = self.yPosition+1
-                    self.room.addItems([new])
-                    new = Scrap(self.xPosition,self.yPosition,1,creator=self)
-                    new.xPosition = self.xPosition
-                    new.yPosition = self.yPosition+1
-                    self.room.addItems([new])
 
                     self.submenue = interaction.TextMenu("\n\nchallenge: produce 25 walls\nstatus: challenge in progress.\nWalls remaining: %s\n\ncomment:\nuse commands and multipliers to do this.\n\n"%(self.wallChallenge,))
                     self.character.inventory.remove(wallFound)
@@ -5527,59 +5533,32 @@ class AutoTutor(Item):
                 self.character.macroState["submenue"] = self.submenue
                 self.character.macroState["submenue"].followUp = self.challengeRun2
             else:
-                if self.autoScribeChallenge:
-                    autoScribeFound = None
-                    for item in self.character.inventory:
-                        if isinstance(item,src.items.AutoScribe):
-                            wallFound = item
-                            break
+                if not self.challengeInfo:
+                    self.challengeInfo = {"current":"testWallCommand","testWallCommand":False,"testDoorCommand":False,"testFloorPlateCommand":False,"mainChallengeRunning":False,"mainQueue":[]}
 
-                    if not wallFound:
-                        self.submenue = interaction.TextMenu("\n\nchallenge: produce 25 auto scribes\nstatus: challenge in progress.\nno progress - try again with auto scribes in inventory\nauto scribes remaining: %s\n\ncomment:\nuse commands and multipliers to do this.\n\n"%(self.autoScribeChallenge,))
+                if self.challengeInfo["mainChallengeRunning"] and not self.challengeInfo["mainQueue"]:
+                    if self.character.inventory:
+                        self.submenue = interaction.TextMenu("\n\nactivate with empty inventory to complete challenge.\n\n")
                         self.character.macroState["submenue"] = self.submenue
-                        return
-
-                    targetFull = False
-                    itemList = self.container.getItemByPosition((self.xPosition,self.yPosition+1))
-                    if len(itemList) > 15:
-                        targetFull = True
-                    for item in itemList:
-                        if item.walkable == False:
-                            targetFull = True
-
-                    if targetFull:
-                        self.submenue = interaction.TextMenu("\n\nchallenge: produce 25 auto scribes\nstatus: challenge in progress.\nno progress - no space to drop scrap\nauto scribes remaining: %s\n\ncomment:\nuse commands and multipliers to do this.\n\n"%(self.autoScribeChallenge,))
-                        self.character.macroState["submenue"] = self.submenue
-                        return
-
-                    # spawn scrap
-                    new = Scrap(self.xPosition,self.yPosition,1,creator=self)
-                    new.xPosition = self.xPosition
-                    new.yPosition = self.yPosition+1
-                    self.room.addItems([new])
-                    new = Scrap(self.xPosition,self.yPosition,1,creator=self)
-                    new.xPosition = self.xPosition
-                    new.yPosition = self.yPosition+1
-                    self.room.addItems([new])
-
-                    self.submenue = interaction.TextMenu("\n\nchallenge: produce 25 auto scribes\nstatus: challenge in progress.\nAuto scribes remaining: %s\n\ncomment:\nuse commands and multipliers to do this.\n\n"%(self.autoScribeChallenge,))
-                    self.character.inventory.remove(autoScribeFound)
-                    self.wallChallenge -= 1
-                    self.character.macroState["submenue"] = self.submenue
-
-                else:
-                    if len(self.character.inventory):
-                        self.submenue = interaction.TextMenu("\n\nchallenge: produce 25 walls\nstatus: challenge in progress. Try again with empty inventory to complete.\n\n")
                     else:
-                        self.submenue = interaction.TextMenu("\n\nchallenge: produce 25 walls\nstatus: challenge completed\n\n")
-                        self.availableChallenges["produceRoomBuilder"] = {"text":"produce room builder"}
-                        self.availableChallenges["produceBioMasses"] = {"text":"produce 9 bio mass"}
-                        self.availableChallenges["gatherCorpse"] = {"text":"gather corpse"}
-                        self.availableChallenges["createMap"] = {"text":"create map"}
-                        self.challengeRun3Done = True
-                        self.knownBlueprints.append("RoomBuilder")
-                        self.knownBlueprints.append("FloorPlate")
-                    self.character.macroState["submenue"] = self.submenue
+                        self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
+                        self.character.macroState["submenue"] = self.submenue
+                        self.challengeRun4Done = True
+                    return
+
+                options = []
+                options.append(["deliverProduct","deliver the product"])
+                options.append(["doChallenge","do the challenge"])
+                options.append(["setWallCommand","set command for wall"])
+                options.append(["testWallCommand","test command for wall"])
+                options.append(["setDoorCommand","set command for door"])
+                options.append(["testDoorCommand","test command for door"])
+                options.append(["setFloorPlateCommand","set command for floor plate"])
+                options.append(["testFloorPlateCommand","test command for floor plate"])
+
+                self.submenue = interaction.SelectionMenu("This challenge has two phases:\n * creating commands for producing and delivering Walls, Door and Floorplates each\n * the Autotutor will make your run the commands to produce these items in a random order\n\nIf you set up your commands correctly, you will produce those items and complete the challenge.\n\nlast wall test: %s\nlast door test: %s\nlast floor plate: %s\n\nselect what you want to do:"%(self.challengeInfo["testWallCommand"],self.challengeInfo["testDoorCommand"],self.challengeInfo["testFloorPlateCommand"]),options)
+                self.character.macroState["submenue"] = self.submenue
+                self.character.macroState["submenue"].followUp = self.challengeRun4FinalSelection
         else:
             if len(self.availableChallenges):
                 options = []
@@ -5592,6 +5571,236 @@ class AutoTutor(Item):
             else:
                 self.submenue = interaction.TextMenu("\n\nTBD\n\n")
                 self.character.macroState["submenue"] = self.submenue
+
+    def checkForOtherItem(self,itemType):
+        if len(self.character.inventory) > 2:
+            return True
+        foundOtherItem = None
+        for item in self.character.inventory:
+            if not item.type in ["GooFlask",itemType]:
+                foundOtherItem = item
+                break
+        if foundOtherItem:
+            return True
+        return False
+
+    def getFromInventory(self,itemType):
+        foundItem = None
+        for item in self.character.inventory:
+            if item.type in [itemType]:
+                foundItem = item
+                break
+        return foundItem
+
+    def challengeRun4FinalSelection(self):
+        selection = self.submenue.getSelection()
+        self.submenue = None
+
+        if selection == "deliverProduct":
+            currentChallenge = self.challengeInfo["current"]
+            if currentChallenge == "doChallenge":
+                item = self.challengeInfo["mainQueue"][0]
+                if self.checkForOtherItem(item):
+                    self.submenue = interaction.TextMenu("\n\nclear your inventory except the item and a goo flask.\n\n")
+                    self.character.macroState["submenue"] = self.submenue
+                    self.challengeInfo["testWallCommand"] = "fail - inventory not clear/wrong item"
+                    self.challengeInfo["mainChallengeRunning"] = False
+                    return
+
+                foundWall = self.getFromInventory(item)
+                if not foundWall:
+                    self.submenue = interaction.TextMenu("\n\ntry again with the item in your inventory.\n\n")
+                    self.character.macroState["submenue"] = self.submenue
+                    self.challengeInfo["testWallCommand"] = "fail - item not in inventory/wrong item"
+                    self.challengeInfo["mainChallengeRunning"] = False
+                    return
+                
+                self.submenue = interaction.TextMenu("\n\nyou completed the test.\n\n")
+                self.character.macroState["submenue"] = self.submenue
+                self.character.inventory.remove(foundWall)
+                self.challengeInfo["testWallCommand"] = "success - item delivered"
+
+                self.challengeInfo["mainQueue"].remove(item)
+
+                self.addScraps(amount=2)
+            if currentChallenge == "testWallCommand":
+                if self.checkForOtherItem("Wall"):
+                    self.submenue = interaction.TextMenu("\n\nclear your inventory except for the wall and a goo flask.\n\n")
+                    self.character.macroState["submenue"] = self.submenue
+                    self.challengeInfo["testWallCommand"] = "fail - inventory not clear"
+                    return
+
+                foundWall = self.getFromInventory("Wall")
+                if not foundWall:
+                    self.submenue = interaction.TextMenu("\n\ntry again with a wall in your inventory.\n\n")
+                    self.character.macroState["submenue"] = self.submenue
+                    self.challengeInfo["testWallCommand"] = "fail - item not in inventory"
+                    return
+                
+                self.submenue = interaction.TextMenu("\n\nyou completed the test.\n\n")
+                self.character.macroState["submenue"] = self.submenue
+                self.character.inventory.remove(foundWall)
+                self.challengeInfo["testWallCommand"] = "success - item delivered"
+
+                self.addScraps(amount=2)
+            elif currentChallenge == "testDoorCommand":
+                if self.checkForOtherItem("Door"):
+                    self.submenue = interaction.TextMenu("\n\nclear your inventory except for the door and a goo flask.\n\n")
+                    self.character.macroState["submenue"] = self.submenue
+                    self.challengeInfo["testDoorCommand"] = "fail - inventory not clear"
+                    return
+
+                foundDoor = self.getFromInventory("Door")
+                if not foundDoor:
+                    self.submenue = interaction.TextMenu("\n\ntry again with a door in your inventory.\n\n")
+                    self.character.macroState["submenue"] = self.submenue
+                    self.challengeInfo["testDoorCommand"] = "fail - item not in inventory"
+                    return
+                
+                self.submenue = interaction.TextMenu("\n\nyou completed the test.\n\n")
+                self.character.macroState["submenue"] = self.submenue
+                self.character.inventory.remove(foundDoor)
+                self.challengeInfo["testDoorCommand"] = "success - item delivered"
+
+                self.addScraps(amount=2)
+            elif currentChallenge == "testFloorPlateCommand":
+                if self.checkForOtherItem("FloorPlate"):
+                    self.submenue = interaction.TextMenu("\n\nclear your inventory except for the floor plate and a goo flask.\n\n")
+                    self.character.macroState["submenue"] = self.submenue
+                    self.challengeInfo["testFloorPlateCommand"] = "fail - inventory not clear"
+
+                foundFloorplate = self.getFromInventory("FloorPlate")
+                if not foundFloorplate:
+                    self.submenue = interaction.TextMenu("\n\ntry again with a floor plate in your inventory.\n\n")
+                    self.character.macroState["submenue"] = self.submenue
+                    self.challengeInfo["testFloorPlateCommand"] = "fail - item not in inventory"
+                    return
+                
+                self.submenue = interaction.TextMenu("\n\nyou completed the test.\n\n")
+                self.character.macroState["submenue"] = self.submenue
+                self.character.inventory.remove(foundFloorplate)
+                self.challengeInfo["testFloorPlateCommand"] = "success - item delivered"
+
+                self.addScraps(amount=2)
+            else:
+                self.submenue = interaction.TextMenu("\n\nno item requested at the moment.\n\n")
+                
+            self.character.macroState["submenue"] = self.submenue
+            return
+
+        elif selection == "doChallenge":
+            self.challengeInfo["mainQueue"] = []
+            self.challengeInfo["mainQueue"].insert(0,"Wall")
+            convertedCommand = []
+            for char in self.challengeInfo["wallCommand"]:
+                convertedCommand.append((char,[]))
+            self.challengeInfo["current"] = "doChallenge"
+            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+
+            self.challengeInfo["mainQueue"].insert(0,"Door")
+            convertedCommand = []
+            for char in self.challengeInfo["doorCommand"]:
+                convertedCommand.append((char,[]))
+            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+
+            self.challengeInfo["mainQueue"].insert(0,"FloorPlate")
+            convertedCommand = []
+            for char in self.challengeInfo["floorPlateCommand"]:
+                convertedCommand.append((char,[]))
+            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+            
+            self.challengeInfo["mainChallengeRunning"] = True
+            return
+
+        elif selection == "setWallCommand":
+            foundCommands = []
+            for item in self.character.inventory:
+                if item.type == "Command":
+                    foundCommands.append(item)
+
+            if not foundCommands:
+                self.submenue = interaction.TextMenu("\n\nno command found\n\n")
+                self.character.macroState["submenue"] = self.submenue
+                return
+
+            if len(foundCommands) > 1:
+                self.submenue = interaction.TextMenu("\n\nmore than one command found\n\n")
+                self.character.macroState["submenue"] = self.submenue
+                return
+
+            self.challengeInfo["wallCommand"] = foundCommands[0].command
+            self.submenue = interaction.TextMenu("\n\nloaded command for producing wall.\n\nremember to include delivering the product.\n\ncommand: %s\n\n"%(str(self.challengeInfo["wallCommand"])))
+            self.character.macroState["submenue"] = self.submenue
+            return
+                
+        elif selection == "testWallCommand":
+            convertedCommand = []
+            for char in self.challengeInfo["wallCommand"]:
+                convertedCommand.append((char,[]))
+            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+            self.challengeInfo["current"] = "testWallCommand"
+            self.challengeInfo["testWallCommand"] = "started - not returned"
+            return
+        elif selection == "setDoorCommand":
+            foundCommands = []
+            for item in self.character.inventory:
+                if item.type == "Command":
+                    foundCommands.append(item)
+
+            if not foundCommands:
+                self.submenue = interaction.TextMenu("\n\nno command found\n\n")
+                self.character.macroState["submenue"] = self.submenue
+                return
+
+            if len(foundCommands) > 1:
+                self.submenue = interaction.TextMenu("\n\nmore than one command found\n\n")
+                self.character.macroState["submenue"] = self.submenue
+                return
+
+            self.challengeInfo["doorCommand"] = foundCommands[0].command
+            self.submenue = interaction.TextMenu("\n\nloaded command for producing door.\n\nremember to include delivering the product.\n\ncommand: %s\n\n"%(str(self.challengeInfo["doorCommand"])))
+            self.character.macroState["submenue"] = self.submenue
+            return
+        elif selection == "testDoorCommand":
+            convertedCommand = []
+            for char in self.challengeInfo["doorCommand"]:
+                convertedCommand.append((char,[]))
+            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+            self.challengeInfo["current"] = "testDoorCommand"
+            self.challengeInfo["testWallCommand"] = "started - not returned"
+            return
+        elif selection == "setFloorPlateCommand":
+            foundCommands = []
+            for item in self.character.inventory:
+                if item.type == "Command":
+                    foundCommands.append(item)
+
+            if not foundCommands:
+                self.submenue = interaction.TextMenu("\n\nno command found\n\n")
+                self.character.macroState["submenue"] = self.submenue
+                return
+
+            if len(foundCommands) > 1:
+                self.submenue = interaction.TextMenu("\n\nmore than one command found\n\n")
+                self.character.macroState["submenue"] = self.submenue
+                return
+
+            self.challengeInfo["floorPlateCommand"] = foundCommands[0].command
+            self.submenue = interaction.TextMenu("\n\nloaded command for producing door.\n\nremember to include delivering the product.\n\ncommand: %s\n\n"%(str(self.challengeInfo["floorPlateCommand"])))
+            self.character.macroState["submenue"] = self.submenue
+            return
+        elif selection == "testFloorPlateCommand":
+            convertedCommand = []
+            for char in self.challengeInfo["floorPlateCommand"]:
+                convertedCommand.append((char,[]))
+            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+            self.challengeInfo["current"] = "testFloorPlateCommand"
+            self.challengeInfo["testFloorPlateCommand"] = "started - not returned"
+            return
+
+        self.submenue = interaction.TextMenu("\n\ninvalid option: %s\n\n"%(selection))
+        self.character.macroState["submenue"] = self.submenue
+
 
     def challengeRun2(self):
 
@@ -6300,6 +6509,7 @@ class BluePrinter(Item):
                 [["MemoryCell","Connector"],"MemoryReset"],
 
                 [["Sheet","pusher"],"Sorter"],
+                [["Sheet","puller"],"Mover"],
                 [["Stripe","Connector"],"RoomControls"],
                 [["GooFlask","Tank"],"GrowthTank"],
                 [["Radiator","Heater"],"StasisTank"],

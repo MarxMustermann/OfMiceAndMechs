@@ -1516,11 +1516,10 @@ class Terrain(src.saveing.Saveable):
 
         for eventId in state["eventIds"]:
             eventState = state["eventStates"][eventId]
-            print(state["eventStates"])
             event = src.events.getEventFromState(eventState)
             self.addEvent(event)
 
-        for eventId in state["characterIds"]:
+        for charId in state["characterIds"]:
             charState = state["characterStates"][charId]
             char = self.fetchThroughRegistry(characters.Character(creator=self,characterId=charId))
             char.setState(charState)
@@ -1603,8 +1602,14 @@ class Terrain(src.saveing.Saveable):
         if mainChar:
             exclude.append(mainChar.id)
         (characterIds,characterStates) = self.storeStateList(self.characters,exclude=exclude)
+        characterIds = []
+        characterStates = {}
+        for character in self.characters:
+            if character == mainChar:
+                continue
+            characterIds.append(character.id)
+            characterStates[character.id] = character.getState()
 
-        # store events diff
         eventIds = []
         eventStates = {}
         for event in self.events:

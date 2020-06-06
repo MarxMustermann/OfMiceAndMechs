@@ -530,6 +530,9 @@ class Scrap(Item):
 
     def getLongInfo(self):
         text = """
+item: Scrap
+
+description:
 Scrap is a raw material. Its main use is to be converted to metal bars in a scrap compactor.
 
 There is %s in this pile
@@ -610,9 +613,14 @@ class Corpse(Item):
 
     def getLongInfo(self):
         text = """
-A corpse. It is not useful
+item: Corpse
 
-"""
+description:
+A corpse. Activate it to eat from it. Eating from a Corpse will gain you 15 Satiation.
+
+The corpse has %s charges left.
+
+"""%(self.charges)
         return text
 
     def apply(self,character):
@@ -704,6 +712,9 @@ class ItemUpgrader(Item):
 
     def getLongInfo(self):
         text = """
+item: ItemUpgrader
+
+description:
 An upgrader works from time to time. A failed upgrade will destroy the item but increase the chances of success
 
 it has %s charges
@@ -822,6 +833,9 @@ class GrowthTank(Item):
 
     def getLongInfo(self):
         text = """
+item: GrowthTank
+
+description:
 A growth tank produces NPCs. 
 
 Fill a growth tank to prepare it for generating an npc.
@@ -934,6 +948,9 @@ class Hutch(Item):
 
     def getLongInfo(self):
         text = """
+item: Hutch
+
+description:
 A hutch. It is not useful.
 
 """
@@ -1004,6 +1021,9 @@ class Lever(Item):
 
     def getLongInfo(self):
         text = """
+item: Lever
+
+description:
 A lever. It is not useful.
 
 """
@@ -1108,6 +1128,9 @@ class Furnace(Item):
 
     def getLongInfo(self):
         text = """
+item: Furnace
+
+description:
 A furnace is used to generate heat. Heat is used to produce steam in boilers.
 
 You can fire the furnace by activating it with coal in your inventory.
@@ -1175,6 +1198,9 @@ class Commlink(Item):
 
     def getLongInfo(self):
         text = """
+item: CommLink
+
+description:
 A comlink. It is useless.
 
 """
@@ -1254,6 +1280,9 @@ class RoomControls(Item):
 
     def getLongInfo(self):
         text = """
+item: RoomControls
+
+description:
 Room controls. Can be used to control vehicles.
 
 Use it to take control over the vehice.
@@ -1263,7 +1292,7 @@ The movement key will move the room instead of yourself.
 For example pressing w will not move you to the north, but will move the room to the north.
 You need enough steam generation to move
 
-To stop using the display press j again.
+To stop using the room controls press j again.
 
 """
         return text
@@ -1470,9 +1499,12 @@ class RoomBuilder(Item):
 
     def getLongInfo(self):
         text = """
+item: RoomBuilder
+
+description:
 The roombuilder creates rooms from basic items.
 
-Place Walls and one Door around the room builder and activate the room builder to create a room.
+Place Walls and and Doors around the room builder and activate the room builder to create a room.
 
 The room has to be a rectangle.
 
@@ -1493,6 +1525,9 @@ class Wall(Item):
 
     def getLongInfo(self):
         text = """
+item: Wall
+
+description:
 A Wall. Used to build rooms.
 
 """
@@ -1512,6 +1547,9 @@ class Pipe(Item):
 
     def getLongInfo(self):
         text = """
+item: Pipe
+
+description:
 A Pipe. It is useless
 
 """
@@ -1537,6 +1575,9 @@ class Coal(Item):
 
     def getLongInfo(self):
         text = """
+item: Coal
+
+description:
 Coal is used as an energy source. It can be used to fire furnaces.
 
 """
@@ -1642,6 +1683,9 @@ class Door(Item):
 
     def getLongInfo(self):
         text = """
+item: Door
+
+description:
 A Door. Used to enter and leave rooms.
 
 """
@@ -1710,6 +1754,9 @@ class Pile(Item):
 
     def getLongInfo(self):
         text = """
+item: Pile
+
+description:
 A Pile. Use it to take coal from it
 
 """
@@ -1735,6 +1782,9 @@ class Acid(Item):
 
     def getLongInfo(self):
         text = """
+item: Acid
+
+description:
 It is completely useless
 
 """
@@ -1824,6 +1874,9 @@ class Chain(Item):
             
     def getLongInfo(self):
         text = """
+item: Chain
+
+description:
 can be used to chain rooms together. Place it next to one or more rooms and activate it to chain rooms together.
 
 """
@@ -1843,6 +1896,9 @@ class Winch(Item):
 
     def getLongInfo(self):
         text = """
+item: Winch
+
+description:
 A Winch. It is useless.
 
 """
@@ -1861,6 +1917,9 @@ class MetalBars(Item):
 
     def getLongInfo(self):
         text = """
+item: MetalBars
+
+description:
 A metal bar is a raw ressource. It is used by most machines and produced by a scrap compactor.
 
 """
@@ -2012,6 +2071,9 @@ class Spray(Item):
 
     def getLongInfo(self):
         text = """
+item: Boiler
+
+description:
 a boiler can be heated by a furnace to produce steam. Steam is the basis for energy generation.
 
 """
@@ -2059,6 +2121,9 @@ class MarkerBean(Item):
 
     def getLongInfo(self):
         text = """
+item: MarkerBean
+
+description:
 A marker been. It can be used to mark things.
 
 """
@@ -2133,6 +2198,9 @@ class GooDispenser(Item):
 
     def getLongInfo(self):
         text = """
+item: GooDispenser
+
+description:
 A goo dispenser can fill goo flasks.
 
 Activate it with a goo flask in you inventory.
@@ -2203,10 +2271,13 @@ class BloomShredder(Item):
 
     def getLongInfo(self):
         text = """
+item: BloomShredder
+
+description:
 A bloom shredder produces bio mass from blooms.
 
-Place 10 vat maggots to the left/west of the maggot fermenter.
-Activate the maggot fermenter to produce biomass.
+Place bloom to the left/west of the bloom shredder.
+Activate the bloom shredder to produce biomass.
 
 """
         return text
@@ -2270,10 +2341,13 @@ class SporeExtractor(Item):
 
     def getLongInfo(self):
         text = """
-A bloom shredder produces bio mass from blooms.
+item: SporeExtractor
 
-Place 10 vat maggots to the left/west of the maggot fermenter.
-Activate the maggot fermenter to produce biomass.
+description:
+A Spore Extractor removes spores from mold blooms.
+
+Place mold bloom to the west/left and activate the Spore Extractor.
+The MoldSpores will be outputted to the east/right.
 
 """
         return text

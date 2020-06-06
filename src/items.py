@@ -2832,6 +2832,7 @@ class ScrapCompactor(Item):
         else:
             scrap.amount -= 1
             scrap.changed()
+            scrap.setWalkable()
 
         # spawn the metal bar
         new = MetalBars(creator=self)

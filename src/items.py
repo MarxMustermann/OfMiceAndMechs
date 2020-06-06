@@ -7876,6 +7876,9 @@ class Spawner(Item):
 
     def getLongInfo(self):
         return """
+item: Spawner
+
+description:
 spawner with %s charges
 """%(self.charges)
 
@@ -7906,6 +7909,9 @@ class MoldSpore(Item):
 
     def getLongInfo(self):
         return """
+item: MoldSpore
+
+description:
 This is a mold spore 
 
 put it on the ground and activate it to plant it
@@ -8090,6 +8096,9 @@ class Mold(Item):
 
     def getLongInfo(self):
         return """
+item: Mold
+
+description:
 This is a patch of mold
 
 you can eat it to gain 2 satiation.
@@ -8114,6 +8123,9 @@ class Sprout(Item):
 
     def getLongInfo(self):
         return """
+item: Sprout
+
+description:
 This is a mold patch that shows the first sign of a bloom.
 
 you can eat it to gain 10 satiation.
@@ -8145,6 +8157,9 @@ class Sprout2(Item):
 
     def getLongInfo(self):
         return """
+item: Sprout2
+
+description:
 This is a mold patch that developed a bloom sprout.
 
 you can eat it to gain 25 satiation.
@@ -8227,6 +8242,9 @@ class Bloom(Item):
         if self.dead:
             satiation = 100
         return """
+item: Bloom
+
+description:
 This is a mold bloom. 
 
 you can eat it to gain %s satiation.
@@ -8338,6 +8356,9 @@ class SickBloom(Item):
         if self.dead:
             satiation = 100
         return """
+item: SickBloom
+
+description:
 This is a mold bloom. Its spore sacks are swollen and developed a protective shell
 
 you can eat it to gain %s satiation.

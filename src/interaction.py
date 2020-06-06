@@ -1462,7 +1462,7 @@ current registers
                             char.changed()
                             char.changed("moved",direction)
 
-                        return item
+                        return foundItem
 
             # move the player
             if key in (commandChars.move_north,"up"):

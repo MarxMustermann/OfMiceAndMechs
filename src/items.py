@@ -6034,8 +6034,8 @@ class AutoTutor(Item):
                 self.knownBlueprints.append("GooDispenser")
 
         elif selection == "buildGooProducer": # from processBioMass
-            if not self.checkInInventory(src.items.PressCake):
-                self.submenue = interaction.TextMenu("\n\nchallenge: build goo producer\nstatus: challenge in progress. Try with Press cake in your inventory.\n\n")
+            if not self.checkInInventory(src.items.GooProducer):
+                self.submenue = interaction.TextMenu("\n\nchallenge: build goo producer\nstatus: challenge in progress. Try with goo producer in your inventory.\n\n")
             else:
                 self.submenue = interaction.TextMenu("\n\nchallenge: build goo producer\nstatus: challenge completed.\n\n")
                 del self.availableChallenges["buildGooProducer"]

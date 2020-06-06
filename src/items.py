@@ -3471,7 +3471,7 @@ Sheets can be produced from metal bars.
             self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
 
             if not "a" in self.character.macroState["macros"]:
-                character.messages.append("no macro found in buffer \"a\"")
+                self.character.messages.append("no macro found in buffer \"a\"")
                 return
 
             if self.xPosition:

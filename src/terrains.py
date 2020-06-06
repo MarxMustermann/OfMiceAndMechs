@@ -1591,7 +1591,7 @@ class Terrain(src.saveing.Saveable):
 
         itemsOnFloor = []
         for entry in self.itemByCoordinates.values():
-            itemsOnFloor.extend(entry)
+            itemsOnFloor.extend(reversed(entry))
         itemIds = []
         itemStates = {}
         for item in itemsOnFloor:

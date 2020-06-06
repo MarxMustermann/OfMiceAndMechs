@@ -1426,7 +1426,7 @@ current registers
                             foundItems = []
 
                         # check for items blocking the move to the destination coordinate
-                        foundItem = False
+                        foundItem = None
                         item = None
                         for item in foundItems:
                             if item and not item.walkable:
@@ -1437,7 +1437,7 @@ current registers
                                     header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
 
                                 # remember the item for interaction and abort
-                                foundItem = True
+                                foundItem = item
                                 break
                         if not foundItem:
                             if len(foundItems) >= 15:

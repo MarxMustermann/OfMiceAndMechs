@@ -719,6 +719,7 @@ class Room(src.saveing.Saveable):
                 self.furnaces.append(item)
 
             item.room = self
+            item.container = self
             item.terrain = None
             if (item.xPosition,item.yPosition) in self.itemByCoordinates:
                 self.itemByCoordinates[(item.xPosition,item.yPosition)].insert(0,item)

@@ -672,9 +672,6 @@ class ItemUpgrader(Item):
             chance = 100
 
         success = False
-        character.messages.append(gamestate.tick)
-        character.messages.append((self.charges+1))
-        character.messages.append(gamestate.tick % (self.charges+1))
         if gamestate.tick % (self.charges+1) > chance:
             success = True
 
@@ -684,9 +681,8 @@ class ItemUpgrader(Item):
                 if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
                     targetFull = True
                 for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
-                    if item.type in ressourcesNeeded:
-                        if item.walkable == False:
-                            targetFull = True
+                    if item.walkable == False:
+                        targetFull = True
             else:
                 if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 1:
                     targetFull = True
@@ -3147,11 +3143,12 @@ class AutoScribe(Item):
     def __init__(self,xPosition=None,yPosition=None, name="copy machine",creator=None,noId=False):
         self.coolDown = 10
         self.coolDownTimer = -self.coolDown
+        self.level = 1
         
         super().__init__(displayChars.sorter,xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
-               "coolDown","coolDownTimer"])
+               "coolDown","coolDownTimer","level"])
 
     '''
     '''
@@ -3205,6 +3202,14 @@ class AutoScribe(Item):
         new.yPosition = self.yPosition
         new.bolted = False
 
+        if itemFound.type == "Command":
+            new.name = itemFound.name
+            new.description = itemFound.description
+
+        if hasattr(itemFound,"level"):
+            newLevel = min(itemFound.level,sheetFound.level,self.level)
+            new.level = newLevel
+
         targetFull = False
         if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
             if new.walkable:
@@ -3228,14 +3233,21 @@ class AutoScribe(Item):
 
     def getLongInfo(self):
         text = """
-A sorter can sort items.
+item: AutoScribe
 
-To sort item with a sorter place the item you want to compare against on the top/north.
-Place the item or items to be sorted on the left/west of the sorter.
-Activate the sorter to sort an item.
-Matching items will be moved to the bottom/south and non matching items will be moved to the right/east.
+description:
+A AutoScribe copies commands.
 
-"""
+The command to copy has to be placed to the west of the machine.
+A sheet has to be placed to the north of the machine.
+The copy of the command will be outputted to the east.
+The original command will be outputted to the south.
+
+The level of the copied command is the minimum level of the input command, sheet and the auto scribe itself.
+
+This is a level %s item
+
+"""%(self.level)
         return text
 
 
@@ -3328,8 +3340,10 @@ class Sheet(Item):
         self.recording = False
         self.character = None
 
+        self.level = 1
+
         self.attributesToStore.extend([
-                "recording"])
+                "recording","level"])
         self.initialState = self.getState()
 
     def getLongInfo(self):
@@ -3356,7 +3370,9 @@ Sheets are also needed as ressource to create a blueprint in the blueprinter mac
 
 Sheets can be produced from metal bars.
 
-"""
+This is a level %s item
+
+"""%(self.level)
         return text
 
     def apply(self,character):

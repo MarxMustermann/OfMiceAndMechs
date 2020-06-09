@@ -2365,6 +2365,9 @@ class MaggotFermenter(Item):
 
     def getLongInfo(self):
         text = """
+item: MaggotFermenter
+
+description:
 A maggot fermenter produces bio mass from vat maggots.
 
 Place 10 vat maggots to the left/west of the maggot fermenter.
@@ -2435,6 +2438,9 @@ class GooProducer(Item):
 
     def getLongInfo(self):
         text = """
+item: GooProducer
+
+description:
 A goo producer produces goo from press cakes.
 
 Place 10 press cakes to the left/west of the goo producer and a goo dispenser to the rigth/east.
@@ -2507,6 +2513,9 @@ class BioPress(Item):
 
     def getLongInfo(self):
         text = """
+item: BioPress
+
+description:
 A bio press produces press cake from bio mass.
 
 Place 10 bio mass to the left/west of the bio press.
@@ -2580,6 +2589,9 @@ class GooFlask(Item):
 
     def getLongInfo(self):
         text = """
+item: GooFlask
+
+description:
 A goo flask holds goo. Goo is nourishment for you.
 
 If you do not drink from the flask every 1000 ticks you will starve.
@@ -2625,6 +2637,9 @@ class OjectDispenser(Item):
 
     def getLongInfo(self):
         text = """
+item: ObjectDispenser
+
+description:
 A object dispenser holds and returns objects.
 
 You can use it to retrieve an object from the object dispenser.
@@ -2749,6 +2764,9 @@ class ProductionArtwork(Item):
 
     def getLongInfo(self):
         text = """
+item: ProductionArtwork
+
+description:
 This is a one of its kind machine. It cannot be reproduced and was created by an artisan.
 This machine can build almost anything, but is very slow.
 
@@ -2878,7 +2896,9 @@ class ScrapCompactor(Item):
 
     def getLongInfo(self):
         text = """
+item: ScrapCompactor
 
+description:
 This machine converts scrap into metal bars. Metal bars are a form of metal that can be used to produce other things.
 
 Place scrap to the west or north or south of the machine and activate it 
@@ -2982,9 +3002,12 @@ class Scraper(Item):
 
     def getLongInfo(self):
         text = """
+item: Scrapper
+
+description:
 A scrapper shreds items to scrap.
 
-Place an item to the left/west and activate the scrapper to shred an item.
+Place an item to the west and activate the scrapper to shred an item.
 
 """
         return text
@@ -3036,6 +3059,20 @@ class Mover(Item):
             return
 
         self.container.addItems([itemFound])
+
+    def getLongInfo(self):
+        text = """
+item: Mover
+
+description:
+A mover moves items
+
+Place the item or items to the west of the mover.
+activate the mover to move one item to the east of the mover.
+
+"""
+        return text
+
 
 '''
 '''
@@ -3122,6 +3159,9 @@ class Sorter(Item):
 
     def getLongInfo(self):
         text = """
+item: Sorter
+
+description:
 A sorter can sort items.
 
 To sort item with a sorter place the item you want to compare against on the north.

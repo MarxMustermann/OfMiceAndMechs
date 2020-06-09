@@ -232,17 +232,47 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
     if charState["recording"]:
         if not key in ("lagdetection","lagdetection_","-"):
-            if charState["recordingTo"] == None or charState["recordingTo"][-1].isupper():
+            if charState["recordingTo"] == None or charState["recordingTo"][-1].isupper() or charState["recordingTo"][-1] == " ":
                 if charState["recordingTo"] == None:
                     charState["recordingTo"] = key
                 else:
                     charState["recordingTo"] += key
 
-                if not key.isupper():
+                if not (key.isupper() or key == " "):
                     charState["macros"][charState["recordingTo"]] = []
                     char.messages.append("start recording to: %s"%(charState["recordingTo"]))
+                else:
+                    if mainChar == char and not "norecord" in flags:
+                        text = """
 
-                return
+type the macro name you want to record to
+
+%s
+
+"""%(charState["recordingTo"])
+
+                        for key,value in charState["macros"].items():
+
+                            if not key.startswith(charState["recordingTo"]):
+                                continue
+
+                            compressedMacro = ""
+                            for keystroke in value:
+                                if len(keystroke) == 1:
+                                    compressedMacro += keystroke
+                                else:
+                                    compressedMacro += "/"+keystroke+"/"
+
+                            text += """
+%s - %s"""%(key,compressedMacro)
+
+
+                        header.set_text((urwid.AttrSpec("default","default"),"record macro"))
+                        main.set_text((urwid.AttrSpec("default","default"),text))
+                        footer.set_text((urwid.AttrSpec("default","default"),""))
+                        char.specialRender = True
+
+                    return
             else:
                 if not "norecord" in flags:
                     charState["macros"][charState["recordingTo"]].append(key)
@@ -689,17 +719,131 @@ press any other key to finish
         char.interactionState["ifCondition"].append(None)
         char.interactionState["ifParam1"].append([])
         char.interactionState["ifParam2"].append([])
+
+        if mainChar == char and not "norecord" in flags:
+            text = """
+
+press key for the condition you want to check against.
+
+* i = inventory empty
+* b = latest move was blocked by item
+* I = inventory full
+* > = register c is bigger than 0
+* < = register c is lower than 0
+* = = register c is exactly 0
+* f = floor empty
+* t = satiation below 300
+* e = food source in inventory
+* E = enemy nearby
+* c = corpse nearby
+* F = food nearby
+
+"""
+
+            header.set_text((urwid.AttrSpec("default","default"),"conditional action"))
+            main.set_text((urwid.AttrSpec("default","default"),text))
+            footer.set_text((urwid.AttrSpec("default","default"),""))
+            char.specialRender = True
+
         return
 
     if len(char.interactionState["ifCondition"]) and not key in ("%","lagdetection","lagdetection_"):
         if char.interactionState["ifCondition"][-1] == None:
             char.interactionState["ifCondition"][-1] = key
-        elif char.interactionState["ifParam1"][-1] in ([],[("_",["norecord"])]):
+
+            if mainChar == char and not "norecord" in flags:
+                text = """
+
+press key for the action to run in case the condition is true or
+press _ to run a macro in case the condition is true
+
+"""
+
+                header.set_text((urwid.AttrSpec("default","default"),"conditional action"))
+                main.set_text((urwid.AttrSpec("default","default"),text))
+                footer.set_text((urwid.AttrSpec("default","default"),""))
+                char.specialRender = True
+
+        elif char.interactionState["ifParam1"][-1] in ([],[("_",["norecord"])]) or (char.interactionState["ifParam1"][-1][-1][0].isupper() and char.interactionState["ifParam1"][-1][0][0] == "_"):
             char.interactionState["ifParam1"][-1].append((key,["norecord"]))
-            char.messages.append(char.interactionState["ifParam1"][-1])
-        elif char.interactionState["ifParam2"][-1] in ([],[("_",["norecord"])]):
+
+            if mainChar == char and not "norecord" in flags:
+                if (char.interactionState["ifParam1"][-1][-1][0].isupper() and char.interactionState["ifParam1"][-1][0][0] == "_") or char.interactionState["ifParam1"][-1][-1][0] == "_":
+                    inputString = ""
+                    for item in char.interactionState["ifParam1"][-1]:
+                        inputString += item[0]
+                    inputString = inputString[1:]
+
+                    text = """
+
+type the macro that should be run in case the condition is true
+
+%s
+
+"""%(inputString)
+
+                    for key,value in charState["macros"].items():
+
+                        if not key.startswith(inputString):
+                            continue
+                        compressedMacro = ""
+                        for keystroke in value:
+                            if len(keystroke) == 1:
+                                compressedMacro += keystroke
+                            else:
+                                compressedMacro += "/"+keystroke+"/"
+
+                            text += """
+%s - %s"""%(key,compressedMacro)
+
+                else:
+                    text = """
+
+press key for the action to run in case the condition is false
+press _ to run a macro in case the condition is false
+
+"""
+
+                header.set_text((urwid.AttrSpec("default","default"),"conditional action"))
+                main.set_text((urwid.AttrSpec("default","default"),text))
+                footer.set_text((urwid.AttrSpec("default","default"),""))
+                char.specialRender = True
+
+        elif char.interactionState["ifParam2"][-1] in ([],[("_",["norecord"])]) or (char.interactionState["ifParam2"][-1][-1][0].isupper() and char.interactionState["ifParam2"][-1][0][0] == "_"):
             char.interactionState["ifParam2"][-1].append((key,["norecord"]))
-            char.messages.append(char.interactionState["ifParam2"][-1])
+
+            if mainChar == char and not "norecord" in flags:
+                inputString = ""
+                for item in char.interactionState["ifParam2"][-1]:
+                    inputString += item[0]
+                inputString = inputString[1:]
+
+                text = """
+
+type the macro that should be run in case the condition is false
+
+%s
+
+"""%(inputString)
+
+                for key,value in charState["macros"].items():
+
+                    if not key.startswith(inputString):
+                        continue
+                    compressedMacro = ""
+                    for keystroke in value:
+                        if len(keystroke) == 1:
+                            compressedMacro += keystroke
+                        else:
+                            compressedMacro += "/"+keystroke+"/"
+
+                        text += """
+%s - %s"""%(key,compressedMacro)
+
+                header.set_text((urwid.AttrSpec("default","default"),"conditional action"))
+                main.set_text((urwid.AttrSpec("default","default"),text))
+                footer.set_text((urwid.AttrSpec("default","default"),""))
+                char.specialRender = True
 
             if not char.interactionState["ifParam2"][-1] in ([],[("_",["norecord"])]):
                 conditionTrue = True
@@ -789,7 +933,6 @@ press any other key to finish
                 else:
                     charState["commandKeyQueue"] = char.interactionState["ifParam2"][-1] + charState["commandKeyQueue"]
 
-                char.messages.append((char.interactionState["ifCondition"][-1],char.interactionState["ifParam1"][-1],char.interactionState["ifParam2"][-1]))
                 char.interactionState["ifCondition"].pop()
                 char.interactionState["ifParam1"].pop()
                 char.interactionState["ifParam2"].pop()
@@ -860,23 +1003,25 @@ current macros:
             charState["recordingTo"] = None
 
     if charState["replay"] and not key in ("lagdetection","lagdetection_","~",):
-        if charState["replay"] and (charState["replay"][-1] == "" or charState["replay"][-1][-1].isupper()):
+        if charState["replay"] and (charState["replay"][-1] == "" or charState["replay"][-1][-1].isupper() or charState["replay"][-1][-1] == " "):
             if not charState["number"]:
 
                 charState["replay"][-1] += key
 
-                if charState["replay"][-1][-1].isupper():
+                if charState["replay"][-1][-1].isupper() or charState["replay"][-1][-1] == " ":
 
                     if "norecord" in flags:
                         return
 
                     text = """
 
-        press key for macro to replay
+press key for macro to replay
 
-        current macros:
+%s
 
-        """
+current macros:
+
+"""%(charState["replay"][-1])
 
                     for macroName,value in charState["macros"].items():
                         if not macroName.startswith(charState["replay"][-1]):
@@ -890,7 +1035,7 @@ current macros:
                                 compressedMacro += "/"+keystroke+"/"
 
                         text += """
-    %s - %s"""%(macroName,compressedMacro)
+%s - %s"""%(macroName,compressedMacro)
 
                     header.set_text((urwid.AttrSpec("default","default"),"record macro"))
                     main.set_text((urwid.AttrSpec("default","default"),text))
@@ -947,7 +1092,7 @@ current macros:
                         compressedMacro += "/"+keystroke+"/"
 
                 text += """
-    %s - %s"""%(key,compressedMacro)
+%s - %s"""%(key,compressedMacro)
 
             header.set_text((urwid.AttrSpec("default","default"),"record macro"))
             main.set_text((urwid.AttrSpec("default","default"),text))

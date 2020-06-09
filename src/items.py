@@ -645,43 +645,42 @@ class ItemUpgrader(Item):
 
     def apply(self,character):
         if not self.room:
-            character.messages.append("place item to upgrade on the left")
+            character.messages.append("this machine can only be used within rooms")
 
         inputItem = None
         if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
             inputItem = self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)][0]
 
-        if not inputItem.type in ["GrowthTank","GrowthTankII","GrowthTankIII","GrowthTankIIII"]:
+        if not inputItem:
+            character.messages.append("place item to upgrade on the left")
+            return
+
+        if not hasattr(inputItem,"level"):
             character.messages.append("cannot upgrade %s"%(inputItem.type))
             return
 
         self.room.removeItem(inputItem)
-        if inputItem.type == "GrowthTank":
+        if inputItem.level == 1:
+            chance = -1
+        elif inputItem.level == 2:
+            chance = 0
+        elif inputItem.level == 3:
+            chance = 1
+        elif inputItem.level == 4:
             chance = 2
-        elif inputItem.type == "GrowthTankII":
-            chance = 5
-        elif inputItem.type == "GrowthTankIII":
-            chance = 10
-        elif inputItem.type == "GrowthTankIIII":
-            chance = 20
+        else:
+            chance = 100
 
         success = False
-        if (gamestate.tick + chance + self.charges) % (self.charges+1) > chance:
-            if inputItem.type == "GrowthTank":
-                result = "GrowthTankII"
-            elif inputItem.type == "GrowthTankII":
-                result = "GrowthTankIII"
-            elif inputItem.type == "GrowthTankIII":
-                result = "GrowthTankIIII"
-            elif inputItem.type == "GrowthTankIIII":
-                result = "GrowthTankIIIII"
-
+        character.messages.append(gamestate.tick)
+        character.messages.append((self.charges+1))
+        character.messages.append(gamestate.tick % (self.charges+1))
+        if gamestate.tick % (self.charges+1) > chance:
             success = True
 
         targetFull = False
-        new = itemMap[self.toProduce](creator=self)
         if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
-            if new.walkable:
+            if inputItem.walkable:
                 if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
                     targetFull = True
                 for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
@@ -697,18 +696,19 @@ class ItemUpgrader(Item):
             return
 
         if success:
-            new = itemMap[result](creator=self)
-            character.messages.append("%s upgraded to %s"%(inputItem.type,result,))
+            inputItem.level += 1
+            character.messages.append("%s upgraded"%(inputItem.type,))
             self.charges = 0
+            inputItem.xPosition = self.xPosition+1
+            inputItem.yPosition = self.yPosition
+            self.room.addItems([inputItem])
         else:
-            new = Scrap(creator=self)
             self.charges += 1
             character.messages.append("failed to upgrade %s - has %s charges now"%(inputItem.type,self.charges))
-
-        new.xPosition = self.xPosition+1
-        new.yPosition = self.yPosition
-        new.bolted = False
-        self.room.addItems([new])
+            inputItem.xPosition = self.xPosition
+            inputItem.yPosition = self.yPosition+1
+            self.room.addItems([inputItem])
+            inputItem.destroy()
 
     def getLongInfo(self):
         text = """
@@ -739,7 +739,7 @@ class GrowthTank(Item):
             super().__init__(displayChars.growthTank_unfilled,xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
-               "filled"])
+               "filled",])
 
         # bad code: repetetive and easy to forget
         self.initialState = self.getState()
@@ -848,54 +848,6 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
 
 """
         return text
-
-'''
-an character spawning item
-'''
-class GrowthTankII(GrowthTank):
-    type = "GrowthTankII"
-
-    '''
-    almost straightforward state initialization
-    '''
-    def __init__(self,xPosition=0,yPosition=0,name="growth tank II",filled=False,creator=None,noId=False):
-        super().__init__(xPosition,yPosition,name=name,filled=filled,creator=creator)
-
-'''
-an character spawning item
-'''
-class GrowthTankIII(GrowthTank):
-    type = "GrowthTankIII"
-
-    '''
-    almost straightforward state initialization
-    '''
-    def __init__(self,xPosition=0,yPosition=0,name="growth tank III",filled=False,creator=None,noId=False):
-        super().__init__(xPosition,yPosition,name=name,filled=filled,creator=creator)
-
-'''
-an character spawning item
-'''
-class GrowthTankIIII(GrowthTank):
-    type = "GrowthTankIIII"
-
-    '''
-    almost straightforward state initialization
-    '''
-    def __init__(self,xPosition=0,yPosition=0,name="growth tank IIII",filled=False,creator=None,noId=False):
-        super().__init__(xPosition,yPosition,name=name,filled=filled,creator=creator)
-
-'''
-an character spawning item
-'''
-class GrowthTankIIIII(GrowthTank):
-    type = "GrowthTankIIIII"
-
-    '''
-    almost straightforward state initialization
-    '''
-    def __init__(self,xPosition=0,yPosition=0,name="growth tank IIIII",filled=False,creator=None,noId=False):
-        super().__init__(xPosition,yPosition,name=name,filled=filled,creator=creator)
 
 '''
 basically a bed with a activatable cover
@@ -2733,7 +2685,7 @@ class ProductionArtwork(Item):
         self.character = character
 
         excludeList = ("ProductionArtwork","Machine","Tree","Scrap","Corpse","Acid","Item","Pile","InfoScreen","CoalMine","BluePrint","GlobalMacroStorage","Note","Command",
-                       "GrowthTankII","GrowthTankIII","GrowthTankIII","GrowthTankIIII","GrowthTankIIIII","Hutch","Lever","CommLink","Display","Pipe","Chain",
+                       "Hutch","Lever","CommLink","Display","Pipe","Chain","AutoTutor",
                        "Winch","Spray","ObjectDispenser","Token","PressCake","BioMass","VatMaggot","Moss","Mold","MossSeed","MoldSpore","Bloom","Sprout","Sprout2","SickBloom",
                        "PoisonBloom","Bush","PoisonBush","EncrustedBush","Test","EncrustedPoisonBush","Chemical","Spawner","Explosion")
 
@@ -3743,9 +3695,10 @@ class Command(Item):
         self.command = ""
         self.extraName = ""
         self.description = None
+        self.level = 1
 
         self.attributesToStore.extend([
-                "command","extraName"])
+                "command","extraName","level","description"])
         self.initialState = self.getState()
 
     def getLongInfo(self):
@@ -3757,19 +3710,31 @@ class Command(Item):
                 compressedMacro += "/"+keystroke+"/"
 
         text = """
+item: Command
+
+description:
 A command. A command is written on it. Activate it to run command.
 
 """
-        if len(self.description) > 0:
-            description += """description:\n%s
-    """%(self.description)
+        text += """
+
+This is a level %s item.
+"""%(self.level)
+
+        if self.name:
+            text += """
+name: %s"""%(self.name)
+        if self.description and len(self.description) > 0:
+            text += """
+
+description:\n%s"""%(self.description)
         text += """
 
 it holds the command:
 
-"""+compressedMacro+"""
+%s
 
-"""
+"""%(compressedMacro)
         return text
 
     def apply(self,character):
@@ -3778,11 +3743,69 @@ it holds the command:
         if isinstance(character,src.characters.Monster):
             return
 
+        if self.level == 1:
+            self.runPayload(character)
+        else:
+            options = [("runCommand","run command"),
+                       ("setName","set name"),]
+            if self.level > 2:
+                options.append(("setDescription","set description"))
+            if self.level > 3:
+                options.append(("rememberCommand","store command in memory"))
+
+            self.submenue = interaction.SelectionMenu("Do you want to reconfigure the machine?",options)
+            character.macroState["submenue"] = self.submenue
+            character.macroState["submenue"].followUp = self.advancedActions
+            self.character = character
+            pass
+
+    def advancedActions(self):
+        if self.submenue.selection == "runCommand":
+            self.runPayload(self.character)
+        elif self.submenue.selection == "setName":
+            self.submenue = interaction.InputMenu("Enter the name")
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.setName
+        elif self.submenue.selection == "setDescription":
+            self.submenue = interaction.InputMenu("Enter the description")
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.setDescription
+        elif self.submenue.selection == "rememberCommand":
+
+            if not self.name or self.name == "":
+                self.character.messages("command not loaded: command has no name")
+                return
+
+            properName = True
+            for char in self.name[:-1]:
+                if not (char.isupper() or char == " "):
+                    properName = False
+                    break
+            if self.name[-1].isupper():
+                properName = False
+                pass
+
+            if properName:
+                self.character.macroState["macros"][self.name] = self.command
+                self.character.messages.append("loaded command to macro storage")
+            else:
+                self.character.messages.append("command not loaded: name not in propper format. Should be capital letters except the last letter. example \"EXAMPLE NAMe\"")
+        else:
+            self.character.messages("action not found")
+
+    def setName(self):
+        self.name = self.submenue.text
+        self.character.messages.append("set command name to %s"%(self.name))
+
+    def setDescription(self):
+        self.description = self.submenue.text
+        self.character.messages.append("set command description")
+
+    def runPayload(self,character):
         convertedCommand = []
         for item in self.command:
             convertedCommand.append((item,["norecord"]))
         character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
-
 
     def setPayload(self,command):
         import copy
@@ -9113,10 +9136,6 @@ itemMap = {
             "Scrap":Scrap,
             "Corpse":Corpse,
             "GrowthTank":GrowthTank,
-            "GrowthTankII":GrowthTankII,
-            "GrowthTankIII":GrowthTankIII,
-            "GrowthTankIIII":GrowthTankIIII,
-            "GrowthTankIIIII":GrowthTankIIIII,
             "Hutch":Hutch,
             "Lever":Lever,
             "Furnace":Furnace,

@@ -818,7 +818,6 @@ class Character(src.saveing.Saveable):
     """
     def examine(self,item):
         # print info
-        self.messages.append(item.description)
         if item.description != item.getDetailedInfo():
             self.messages.append(item.getDetailedInfo())
         if item.getLongInfo():
@@ -841,6 +840,8 @@ class Character(src.saveing.Saveable):
             text += addRegister("CHARGEs",item.charges)
         if hasattr(item,"uses"):
             text += addRegister("USEs",item.uses)
+        if hasattr(item,"level"):
+            text += addRegister("LEVEl",item.level)
         if hasattr(item,"coolDown"):
             text += addRegister("COOLDOWN REMAININg",item.coolDown-(gamestate.tick-item.coolDownTimer))
         if hasattr(item,"amount"):

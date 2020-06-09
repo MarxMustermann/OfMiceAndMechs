@@ -272,7 +272,7 @@ type the macro name you want to record to
                         footer.set_text((urwid.AttrSpec("default","default"),""))
                         char.specialRender = True
 
-                    return
+                return
             else:
                 if not "norecord" in flags:
                     charState["macros"][charState["recordingTo"]].append(key)
@@ -544,7 +544,7 @@ current registers:
                 lastVarAction["number"] = ""
 
         if lastVarAction["outOperator"] == True:
-            if lastVarAction["register"] == None or lastVarAction["register"] == "" or key.isupper() or key == " ":
+            if lastVarAction["register"] == None or (lastVarAction["register"] == "" and (key.isupper() or key == " ")):
 
                 if lastVarAction["register"] == None:
                     lastVarAction["register"] = ""
@@ -586,7 +586,7 @@ current registers (%s):
                         char.messages.append("negative value in register using %s"%(key,))
                         return 0
 
-                    char.messages.append("found value %s for register using %s"%(char.registers[key][-1],key,))
+                    #char.messages.append("found value %s for register using %s"%(char.registers[key][-1],key,))
                     return char.registers[key][-1]
 
                 value = getValue()
@@ -594,8 +594,6 @@ current registers (%s):
                 valueCommand = []
                 for numChar in str(value):
                     valueCommand.append((numChar,["norecord"]))
-
-                char.messages.append(valueCommand)
 
                 char.interactionState["varActions"].pop()
                 charState["commandKeyQueue"] = valueCommand + charState["commandKeyQueue"]

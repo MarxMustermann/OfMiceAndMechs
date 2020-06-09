@@ -158,6 +158,11 @@ class Character(src.saveing.Saveable):
         self.xPosition = xPosition
         self.yPosition = yPosition
 
+    def setRegisterValue(self,key,value):
+        if not key in self.registers:
+            self.registers[key] = [0]
+        self.registers[key][-1] = value
+
     """
     proxy render method to display attribute
     """
@@ -817,6 +822,31 @@ class Character(src.saveing.Saveable):
 
         # notify listeners
         self.changed("examine",item)
+    """
+    examine an item
+    """
+    def examineRegisters(self,item):
+        text = ""
+
+        def addRegister(key,value):
+            self.setRegisterValue(key,value)
+            return "%s - %s\n"%(key,value)
+
+        if hasattr(item,"charges"):
+            text += addRegister("CHARGEs",item.charges)
+        if hasattr(item,"uses"):
+            text += addRegister("USEs",item.uses)
+        if hasattr(item,"coolDown"):
+            text += addRegister("COOLDOWN REMAININg",item.coolDown-(gamestate.tick-item.coolDownTimer))
+        if hasattr(item,"amount"):
+            text += addRegister("AMOUNt",item.amount)
+        if hasattr(item,"walkable"):
+            text += addRegister("WALKABLe",int(item.walkable))
+        if hasattr(item,"bolted"):
+            text += addRegister("BOLTEd",int(item.bolted))
+
+        self.submenue = interaction.TextMenu(text)
+        self.macroState["submenue"] = self.submenue
 
     """
     advance the character one tick

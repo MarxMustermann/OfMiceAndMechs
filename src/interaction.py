@@ -487,7 +487,7 @@ current registers:
             for itemKey,value in char.registers.items(): 
                 convertedValues = []
                 for item in reversed(value):
-                    convertedValues.append(str(itemKey))
+                    convertedValues.append(str(item))
                 text += """
 %s - %s"""%(itemKey,",".join(convertedValues))
 
@@ -499,21 +499,39 @@ current registers:
         char.interactionState["varActions"].append({"outOperator":None})
         char.timeTaken -= 0.99
         return
+
     if char.interactionState["varActions"]:
 
         lastVarAction = char.interactionState["varActions"][-1]
         if lastVarAction["outOperator"] == None:
             if key == "=":
                 lastVarAction["outOperator"] = True
+                lastVarAction["register"] = None
+            else:
+                lastVarAction["outOperator"] = False
+                lastVarAction["register"] = ""
+                lastVarAction["action"] = None
+                lastVarAction["number"] = ""
+
+        if lastVarAction["outOperator"] == True:
+            if lastVarAction["register"] == None or lastVarAction["register"] == "" or key.isupper() or key == " ":
+
+                if lastVarAction["register"] == None:
+                    lastVarAction["register"] = ""
+                else:
+                    lastVarAction["register"] += key
+
                 if mainChar == char and not "norecord" in flags:
                     text = """
 
 press key for register to load value from
 
-current registers:
+current registers (%s):
 
-"""
+"""%(lastVarAction["register"])
                     for key,value in char.registers.items(): 
+                        if not key.startswith(lastVarAction["register"]):
+                            continue
                         convertedValues = []
                         for item in reversed(value):
                             convertedValues.append(str(item))
@@ -526,43 +544,67 @@ current registers:
                     char.specialRender = True
                 char.timeTaken -= 0.99
                 return
+
             else:
-                lastVarAction["outOperator"] = False
-                lastVarAction["register"] = None
-                lastVarAction["action"] = None
-                lastVarAction["number"] = ""
+                key = lastVarAction["register"]+key
+                def getValue():
+                    if not key in char.registers:
+                        char.messages.append("no value in register using %s"%(key,))
+                        return 0
 
-        if lastVarAction["outOperator"] == True:
-            def getValue():
-                if not key in char.registers:
-                    char.messages.append("no value in register using %s"%(key,))
-                    return 0
+                    if char.registers[key][-1] < 0:
+                        char.messages.append("negative value in register using %s"%(key,))
+                        return 0
 
-                if char.registers[key][-1] < 0:
-                    char.messages.append("negative value in register using %s"%(key,))
-                    return 0
+                    char.messages.append("found value %s for register using %s"%(char.registers[key][-1],key,))
+                    return char.registers[key][-1]
 
-                char.messages.append("found value %s for register using %s"%(char.registers[key][-1],key,))
-                return char.registers[key][-1]
+                value = getValue()
 
-            value = getValue()
+                valueCommand = []
+                for numChar in str(value):
+                    valueCommand.append((numChar,["norecord"]))
 
-            valueCommand = []
-            for numChar in str(value):
-                valueCommand.append((numChar,["norecord"]))
+                char.messages.append(valueCommand)
 
-            char.messages.append(valueCommand)
-
-            char.interactionState["varActions"].pop()
-            charState["commandKeyQueue"] = valueCommand + charState["commandKeyQueue"]
-            char.timeTaken -= 0.99
-            return
+                char.interactionState["varActions"].pop()
+                charState["commandKeyQueue"] = valueCommand + charState["commandKeyQueue"]
+                char.timeTaken -= 0.99
+                return
         else:
-            if lastVarAction["register"] == None:
-                lastVarAction["register"] = key
+            if lastVarAction["register"] == "" or lastVarAction["register"][-1].isupper():
+                if key.isupper() or key == " ":
+                    lastVarAction["register"] += key
 
-                if mainChar == char and not "norecord" in flags:
-                    text = """
+                    if mainChar == char and not "norecord" in flags:
+                        text = """
+
+press key for register manipulate
+
+current registers (%s):
+
+"""%(lastVarAction["register"])
+                        for key,value in char.registers.items(): 
+                            if not key.startswith(lastVarAction["register"]):
+                                continue
+                            convertedValues = []
+                            for item in reversed(value):
+                                convertedValues.append(str(item))
+                            text += """
+%s - %s"""%(key,",".join(convertedValues))
+
+                        header.set_text((urwid.AttrSpec("default","default"),"registers"))
+                        main.set_text((urwid.AttrSpec("default","default"),text))
+                        footer.set_text((urwid.AttrSpec("default","default"),""))
+                        char.specialRender = True
+                    char.timeTaken -= 0.99
+                    return
+
+                else:
+                    lastVarAction["register"] += key
+
+                    if mainChar == char and not "norecord" in flags:
+                        text = """
 
 press key for the action you want to do on the register
 
@@ -574,12 +616,12 @@ press key for the action you want to do on the register
 * % - apply modulo to register
 
 """
-                    header.set_text((urwid.AttrSpec("default","default"),"reading registers"))
-                    main.set_text((urwid.AttrSpec("default","default"),text))
-                    footer.set_text((urwid.AttrSpec("default","default"),""))
-                    char.specialRender = True
-                char.timeTaken -= 0.99
-                return
+                        header.set_text((urwid.AttrSpec("default","default"),"reading registers"))
+                        main.set_text((urwid.AttrSpec("default","default"),text))
+                        footer.set_text((urwid.AttrSpec("default","default"),""))
+                        char.specialRender = True
+                    char.timeTaken -= 0.99
+                    return
             if lastVarAction["action"] == None:
                 lastVarAction["action"] = key
 
@@ -1568,6 +1610,22 @@ current registers
                                 char.examine(item)
                                 break
 
+            # examine registers
+            if key in ("E"):
+                if not "ExamineQuest" in char.solvers:
+                    char.messages.append("you do not have the nessecary solver yet")
+                else:
+                    # examine the marked item
+                    if charState["itemMarkedLast"]:
+                        char.examineRegisters(charState["itemMarkedLast"])
+
+                    # examine an item on floor
+                    else:
+                        if (char.xPosition,char.yPosition) in char.container.itemByCoordinates:
+                            for item in char.container.itemByCoordinates[(char.xPosition,char.yPosition)]:
+                                char.examineRegisters(item)
+                                break
+
             # drop first item from inventory
             # bad pattern: the user has to have the choice for what item to drop
             if key in (commandChars.drop):
@@ -1673,7 +1731,7 @@ current registers
 
         # open the character information
         if key in (commandChars.show_characterInfo):
-            charState["submenue"] = CharacterInfoMenu()
+            charState["submenue"] = CharacterInfoMenu(char=char)
 
         # open the help screen
         if key in (commandChars.show_help):
@@ -2361,6 +2419,9 @@ bad code: uses global function to render
 class CharacterInfoMenu(SubMenu):
     type = "CharacterInfoMenu"
 
+    def __init__(self,char=None):
+        self.char = char
+
     '''
     show the attributes
     '''
@@ -2369,9 +2430,20 @@ class CharacterInfoMenu(SubMenu):
         if key == "esc":
             return True
 
+        char = self.char
+
+        text = char.getDetailedInfo()+"\n\n"
+
+        char.setRegisterValue("SELFx",char.xPosition%15)
+        text += "SELFx - %s"%(char.xPosition%15)+"\n"
+        char.setRegisterValue("SELFy",char.yPosition%15)
+        text += "SELFy - %s"%(char.yPosition%15)+"\n"
+        char.setRegisterValue("SATIATIOn",char.satiation)
+        text += "SATIATIOn - %s"%(char.satiation)+"\n"
+
         # show info
         header.set_text((urwid.AttrSpec("default","default"),"\ncharacter overview"))
-        main.set_text((urwid.AttrSpec("default","default"),[mainChar.getDetailedInfo()]))
+        main.set_text((urwid.AttrSpec("default","default"),[text]))
         header.set_text((urwid.AttrSpec("default","default"),""))
 
 '''

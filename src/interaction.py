@@ -999,7 +999,11 @@ current macros:
             charState["recording"] = False
             if charState["recordingTo"]:
                 if charState["recordingTo"] in charState["macros"]:
-                    char.messages.append("recorded: %s to %s"%(''.join(charState["macros"][charState["recordingTo"]]),charState["recordingTo"]))
+                    if charState["macros"][charState["recordingTo"]]:
+                        char.messages.append("recorded: %s to %s"%(''.join(charState["macros"][charState["recordingTo"]]),charState["recordingTo"]))
+                    else:
+                        del charState["macros"][charState["recordingTo"]]
+                        char.messages.append("deleted: %s because of empty recording"%(charState["recordingTo"]))
             charState["recordingTo"] = None
 
     if charState["replay"] and not key in ("lagdetection","lagdetection_","~",):

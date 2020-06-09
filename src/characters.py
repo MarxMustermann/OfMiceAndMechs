@@ -352,6 +352,8 @@ class Character(src.saveing.Saveable):
         if not state["macroState"]["itemMarkedLast"] == None and not isinstance(state["macroState"]["itemMarkedLast"],str):
             state["macroState"]["itemMarkedLast"] = state["macroState"]["itemMarkedLast"].id
 
+        state["registers"] = copy.deepcopy(self.registers)
+
         # add simple structures
         state.update({ 
                  "inventory": {},
@@ -415,6 +417,9 @@ class Character(src.saveing.Saveable):
             def setParam(instance):
                 self.macroState["itemMarkedLast"] = instance
             loadingRegistry.callWhenAvailable(self.macroState["itemMarkedLast"],setParam)
+
+        if "registers" in state:
+            self.registers = state["registers"]
 
         # set unconcious state
         if "unconcious" in state:

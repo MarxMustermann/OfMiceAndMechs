@@ -1466,6 +1466,16 @@ class ChatMenu(Chat):
             if not self.options and not self.getSelection():
                 # add the chat partners special dialog options
                 options = []
+                options.append(("goToChar","go to my position"))
+                options.append(("activate","activate item on Floor"))
+                options.append(("pickUp","pick up items"))
+                options.append(("dropAll","drop everyting"))
+                options.append(("stopCommand","stop"))
+                options.append(("moveWest","move west"))
+                options.append(("moveNorth","move north"))
+                options.append(("moveSouth","move south"))
+                options.append(("moveEast","move east"))
+                """
                 for option in self.partner.getChatOptions(mainChar):
                     if not isinstance(option,dict):
                         options.append((option,option.dialogName))
@@ -1477,6 +1487,7 @@ class ChatMenu(Chat):
                 # add default dialog options
                 if not self.partner.silent:
                     options.append(("showQuests","what are you dooing?"))
+                """
                 options.append(("exit","let us proceed, "+self.partner.name))
 
                 # set the options
@@ -1507,6 +1518,75 @@ class ChatMenu(Chat):
                 elif self.selection == "copyMacros":
                     self.partner.macroState["macros"] = mainChar.macroState["macros"]
                     mainChar.messages.append("copy macros")
+                    return True
+                elif self.selection == "goToChar":
+                    xDiff = mainChar.xPosition-self.partner.xPosition
+                    yDiff = mainChar.yPosition-self.partner.yPosition
+
+                    moveCommand = []
+
+                    if xDiff < 0:
+                        localMoveCommand = []
+                        strXDiff = str(-xDiff)
+                        for char in strXDiff:
+                            localMoveCommand.append((char,["norecord"]))
+                        localMoveCommand.append(("a",["norecord"]))
+                        moveCommand = localMoveCommand + moveCommand
+                    if yDiff < 0:
+                        localMoveCommand = []
+                        strYDiff = str(-yDiff)
+                        for char in strYDiff:
+                            localMoveCommand.append((char,["norecord"]))
+                        localMoveCommand.append(("w",["norecord"]))
+                        moveCommand = localMoveCommand + moveCommand
+                    if yDiff > 0:
+                        localMoveCommand = []
+                        strYDiff = str(yDiff)
+                        for char in strYDiff:
+                            localMoveCommand.append((char,["norecord"]))
+                        localMoveCommand.append(("s",["norecord"]))
+                        moveCommand = localMoveCommand + moveCommand
+                    if xDiff > 0:
+                        localMoveCommand = []
+                        strXDiff = str(xDiff)
+                        for char in strXDiff:
+                            localMoveCommand.append((char,["norecord"]))
+                        localMoveCommand.append(("d",["norecord"]))
+                        moveCommand = localMoveCommand + moveCommand
+
+                    self.partner.macroState["commandKeyQueue"] = self.partner.macroState["commandKeyQueue"]+moveCommand
+                    return True
+                elif self.selection == "activate":
+                    self.partner.macroState["commandKeyQueue"] = self.partner.macroState["commandKeyQueue"]+[("j",[])]
+                    return True
+                elif self.selection == "pickUp":
+                    self.partner.macroState["commandKeyQueue"] = self.partner.macroState["commandKeyQueue"]+[("1",[]),("0",[]),("k",[])]
+                    return True
+                elif self.selection == "dropAll":
+                    self.partner.macroState["commandKeyQueue"] = self.partner.macroState["commandKeyQueue"]+[("1",[]),("0",[]),("l",[])]
+                    return True
+                elif self.selection == "moveWest":
+                    self.partner.macroState["commandKeyQueue"] = self.partner.macroState["commandKeyQueue"]+[("a",[])]
+                    return True
+                elif self.selection == "moveNorth":
+                    self.partner.macroState["commandKeyQueue"] = self.partner.macroState["commandKeyQueue"]+[("w",[])]
+                    return True
+                elif self.selection == "moveSouth":
+                    self.partner.macroState["commandKeyQueue"] = self.partner.macroState["commandKeyQueue"]+[("s",[])]
+                    return True
+                elif self.selection == "moveEast":
+                    self.partner.macroState["commandKeyQueue"] = self.partner.macroState["commandKeyQueue"]+[("d",[])]
+                    return True
+                elif self.selection == "stopCommand":
+                    self.partner.macroState["commandKeyQueue"] = self.partner.macroState["commandKeyQueue"]+[("1",[]),("0",[]),("l",[])]
+                    self.partner.macroState["commandKeyQueue"].clear()
+                    self.partner.macroState["loop"] = []
+                    self.partner.macroState["replay"].clear()
+                    if "ifCondition" in self.partner.interactionState:
+                        self.partner.interactionState["ifCondition"].clear()
+                        self.partner.interactionState["ifParam1"].clear()
+                        self.partner.interactionState["ifParam2"].clear()
+
                     return True
                 elif self.selection == "runMacro":
                     submenue = src.interaction.OneKeystokeMenu(text = "press key for the macro to run")

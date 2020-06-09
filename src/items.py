@@ -826,7 +826,7 @@ class GrowthTank(Item):
         #character.hasFloorPermit = False
         self.room.addCharacter(character,self.xPosition+1,self.yPosition)
         #character.revokeReputation(amount=4,reason="beeing helpless")
-        character.macroState["commandKeyQueue"] = "j"
+        #character.macroState["commandKeyQueue"] = [("j",[])]
         character.macroState["macros"]["j"] = "J"
 
         return character

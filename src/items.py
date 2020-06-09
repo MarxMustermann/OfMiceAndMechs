@@ -578,9 +578,9 @@ There is %s in this pile
 
         for item in scrapFound:
             if self.amount < 20:
+                self.amount += item.amount
                 character.messages.append("you add a piece of scrap there pile contains %s scrap now."%(self.amount,))
                 character.inventory.remove(item)
-                self.amount += item.amount
 
         self.setWalkable()
 
@@ -3124,10 +3124,10 @@ class Sorter(Item):
         text = """
 A sorter can sort items.
 
-To sort item with a sorter place the item you want to compare against on the top/north.
-Place the item or items to be sorted on the left/west of the sorter.
+To sort item with a sorter place the item you want to compare against on the north.
+Place the item or items to be sorted on the west of the sorter.
 Activate the sorter to sort an item.
-Matching items will be moved to the bottom/south and non matching items will be moved to the right/east.
+Matching items will be moved to the south and non matching items will be moved to the east.
 
 """
         return text

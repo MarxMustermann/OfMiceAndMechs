@@ -2868,10 +2868,21 @@ class ScrapCompactor(Item):
                 self.container = self.room
             else:
                 self.container = self.terrain
+
         for item in self.container.getItemByPosition((self.xPosition-1,self.yPosition)):
             if isinstance(item,Scrap):
                 scrap = item
                 break
+        if not scrap:
+            for item in self.container.getItemByPosition((self.xPosition,self.yPosition+1)):
+                if isinstance(item,Scrap):
+                    scrap = item
+                    break
+        if not scrap:
+            for item in self.container.getItemByPosition((self.xPosition,self.yPosition-1)):
+                if isinstance(item,Scrap):
+                    scrap = item
+                    break
 
         if gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
             character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
@@ -2922,7 +2933,7 @@ class ScrapCompactor(Item):
 
 This machine converts scrap into metal bars. Metal bars are a form of metal that can be used to produce other things.
 
-Place scrap to the left/west of the machine and activate it 
+Place scrap to the west or north or south of the machine and activate it 
 
 After using this machine you need to wait %s ticks till you can use this machine again.
 """%(self.coolDown,)

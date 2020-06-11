@@ -7204,7 +7204,7 @@ class PortableChallenger(Item):
                     text = "challenge: go to the most east south\n\nchallenge in progress\n\ncomment:\n"
                     if character.xPosition//15 < 13:
                         text += "go futher east\n"
-                    if character.yPosition//15 > 13:
+                    if character.yPosition//15 < 13:
                         text += "go futher south\n"
 
                     self.submenue = interaction.TextMenu(text)

@@ -5917,7 +5917,7 @@ class AutoTutor(Item):
                 self.character.macroState["submenue"].followUp = self.challengeRun2
             else:
                 numFlasksFound = 0
-                for item in character.inventory:
+                for item in self.character.inventory:
                     if item.type == "GooFlask" and item.uses == 100:
                         numFlasksFound += 1
 

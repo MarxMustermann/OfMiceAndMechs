@@ -6414,47 +6414,7 @@ class AutoTutor(Item):
                 self.submenue = interaction.TextMenu("\n\nchallenge: gather poison bloom\nstatus: challenge completed.\n\n")
                 del self.availableChallenges["gatherPoisonBlooms"]
 
-        elif selection == "produceFilledGooDispenser": # NOT ASSIGNED
-            itemFound = False
-            for item in self.character.inventory:
-                if isinstance(item,src.items.GooDispenser) and item.charges > 0:
-                    itemFound = True
-                    break
-            if not itemFound:
-                self.submenue = interaction.TextMenu("\n\nchallenge: produce goo\nstatus: challenge in progress. Try again with a goo dispenser with at least one charge in your inventory.\n\n")
-            else:
-                self.submenue = interaction.TextMenu("\n\nchallenge: produce goo\nstatus: challenge completed.\n\nreward:\nNew Blueprint reciepe for growth tank\nCommand \"STIMULATE MOLD GROWTh\" dropped to the south\n\n")
-                self.availableChallenges["produceGrowthTank"] = {"text":"produce growth tank"}
-
-                self.knownBlueprints.append("GrowthTank")
-
-                newCommand = Command(creator=self)
-                newCommand.setPayload(["o","p","x","$","=","a","a","$","=","w","w","$","=","s","s","$","=","d","d",
-                                       "a","j","a","j",
-                                       "w","j","w","j","w","j","w","j","o","p","x","$","=","s","s",
-                                       "s","j","s","j","s","j","s","j","o","p","x","$","=","w","w",
-                                       "a","j","a","j",
-                                       "w","j","w","j","w","j","w","j","o","p","x","$","=","s","s",
-                                       "s","j","s","j","s","j","s","j","o","p","x","$","=","w","w",
-                                       "$","=","d","d",
-                                       "w","j","w","j","w","j","w","j","o","p","x","$","=","s","s",
-                                       "s","j","s","j","s","j","s","j","o","p","x","$","=","w","w",
-                                       "d","j","d","j",
-                                       "w","j","w","j","w","j","w","j","o","p","x","$","=","s","s",
-                                       "s","j","s","j","s","j","s","j","o","p","x","$","=","w","w",
-                                       "d","j","d","j",
-                                       "w","j","w","j","w","j","w","j","o","p","x","$","=","s","s",
-                                       "s","j","s","j","s","j","s","j","o","p","x","$","=","w","w",
-                                       "$","=","a","a"])
-                newCommand.extraName = "STIMULATE MOLD GROWTh"
-                newCommand.description = "using this command will make you move around and pick mold to make it grow.\nIf there are things lying around they might be activated."
-                newCommand.xPosition = self.xPosition
-                newCommand.yPosition = self.yPosition+1
-                self.container.addItems([newCommand])
-
-                del self.availableChallenges["produceFilledGooDispenser"]
-
-        elif selection == "produceGrowthTank": # from produceFilledGooDispenser
+        elif selection == "produceGrowthTank": # NOT ASSIGNED
             if not self.checkInInventory(src.items.GrowthTank):
                 self.submenue = interaction.TextMenu("\n\nchallenge: produce growth tank\nstatus: challenge in progress. Try with growth tank in your inventory.\n\n")
             else:
@@ -6504,16 +6464,16 @@ class AutoTutor(Item):
         #X clear tile x/y
             #> floor right empty
             # build room
+        #- build growth tank
+            #- build NPC
+                #> go to scrap
+                #> go to character
+                #- gather corpse
+                    #> go to corpse
+                    #> decide corpse
+
         #- produceFilledGooDispenser
             #- > strengthen mold growth
-            #- build growth tank
-                #- build NPC
-                    #> go to scrap
-                    #> go to character
-                    #- gather corpse
-                        #> go to corpse
-                        #> decide corpse
-
         #- autoScribe 
             #- > go to tile center
             #- copy commmand
@@ -6539,6 +6499,45 @@ class AutoTutor(Item):
             #- gather 9 sick bloom
 
         # => proudce 3 goo flasks 
+
+        elif selection == "produceFilledGooDispenser": # NOT ASSIGNED
+            itemFound = False
+            for item in self.character.inventory:
+                if isinstance(item,src.items.GooDispenser) and item.charges > 0:
+                    itemFound = True
+                    break
+            if not itemFound:
+                self.submenue = interaction.TextMenu("\n\nchallenge: produce goo\nstatus: challenge in progress. Try again with a goo dispenser with at least one charge in your inventory.\n\n")
+            else:
+                self.submenue = interaction.TextMenu("\n\nchallenge: produce goo\nstatus: challenge completed.\n\nreward:\nNew Blueprint reciepe for growth tank\nCommand \"STIMULATE MOLD GROWTh\" dropped to the south\n\n")
+
+                self.knownBlueprints.append("GrowthTank")
+
+                newCommand = Command(creator=self)
+                newCommand.setPayload(["o","p","x","$","=","a","a","$","=","w","w","$","=","s","s","$","=","d","d",
+                                       "a","j","a","j",
+                                       "w","j","w","j","w","j","w","j","o","p","x","$","=","s","s",
+                                       "s","j","s","j","s","j","s","j","o","p","x","$","=","w","w",
+                                       "a","j","a","j",
+                                       "w","j","w","j","w","j","w","j","o","p","x","$","=","s","s",
+                                       "s","j","s","j","s","j","s","j","o","p","x","$","=","w","w",
+                                       "$","=","d","d",
+                                       "w","j","w","j","w","j","w","j","o","p","x","$","=","s","s",
+                                       "s","j","s","j","s","j","s","j","o","p","x","$","=","w","w",
+                                       "d","j","d","j",
+                                       "w","j","w","j","w","j","w","j","o","p","x","$","=","s","s",
+                                       "s","j","s","j","s","j","s","j","o","p","x","$","=","w","w",
+                                       "d","j","d","j",
+                                       "w","j","w","j","w","j","w","j","o","p","x","$","=","s","s",
+                                       "s","j","s","j","s","j","s","j","o","p","x","$","=","w","w",
+                                       "$","=","a","a"])
+                newCommand.extraName = "STIMULATE MOLD GROWTh"
+                newCommand.description = "using this command will make you move around and pick mold to make it grow.\nIf there are things lying around they might be activated."
+                newCommand.xPosition = self.xPosition
+                newCommand.yPosition = self.yPosition+1
+                self.container.addItems([newCommand])
+
+                del self.availableChallenges["produceFilledGooDispenser"]
 
         elif selection == "produceAutoScribe": # from root 4
             if not self.checkInInventory(src.items.AutoScribe):

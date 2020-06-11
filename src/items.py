@@ -5921,7 +5921,7 @@ class AutoTutor(Item):
                     if item.type == "GooFlask" and item.uses == 100:
                         numFlasksFound += 1
 
-                if numFlasksFound > 3:
+                if not numFlasksFound > 3:
                     self.submenue = interaction.TextMenu("\n\nchallenge: Produce 4 filled goo flasks. \nchallenge in progress. Try again with 4 goo flasks with 100 uses left in each in your inventory.\n\n")
                     self.character.macroState["submenue"] = self.submenue
                 else:

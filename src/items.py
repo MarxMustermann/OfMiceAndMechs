@@ -5964,6 +5964,8 @@ class AutoTutor(Item):
                               "DropQuestMeta",
                             ]
 
+                    self.challengeRun5Done = True
+
                     self.room.addCharacter(newCharacter,self.xPosition,self.yPosition+1)
                     newCharacter.macroState["macros"]["j"] = "J"
                     newCharacter.inventory.append(gooFlask2)

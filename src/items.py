@@ -6622,6 +6622,8 @@ class AutoTutor(Item):
                 newCommand.xPosition = self.xPosition
                 newCommand.yPosition = self.yPosition+1
                 self.container.addItems([newCommand])
+
+                del self.availableChallenges["copyCommand"]
         
         # copy command
         elif selection == "gatherSickBloom": # from root 4

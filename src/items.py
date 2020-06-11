@@ -9737,6 +9737,7 @@ itemMap = {
             "FireCrystals":FireCrystals,
             "Map":Map,
             "Mover":Mover,
+            "PortableChallenger":PortableChallenger,
 }
 
 producables = {

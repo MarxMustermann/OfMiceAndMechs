@@ -6700,7 +6700,7 @@ class AutoTutor(Item):
                 new.yPosition = self.yPosition+1
                 new.secret = secret
                 new.challenges = ["3livingSickBlooms","9livingBlooms","fullMoldCover"]
-                self.submenue = interaction.TextMenu("\n\nchallenge: explore terrain\nstatus: challenge in progress. A portable challanger was outputted to the south. \nUse it and complete its challenges. Return afterwards.\n\ncomment: do not loose or destroy the challenger\n\n")
+                self.submenue = interaction.TextMenu("\n\nchallenge: explore mold\nstatus: challenge in progress. A portable challanger was outputted to the south. \nUse it and complete its challenges. Return afterwards.\n\ncomment: do not loose or destroy the challenger\n\n")
                 self.challengeInfo["challengerGiven"].append("explore")
                 self.container.addItems([new])
             else:
@@ -6710,9 +6710,9 @@ class AutoTutor(Item):
                         itemFound = item
 
                 if not itemFound:
-                    self.submenue = interaction.TextMenu("\n\nchallenge: explore terrain\nstatus: challenge in progress. \nUse the portable challenger and complete its challenges.\nTry again with the completed portable challenger in you inventory.\n\n")
+                    self.submenue = interaction.TextMenu("\n\nchallenge: explore mold\nstatus: challenge in progress. \nUse the portable challenger and complete its challenges.\nTry again with the completed portable challenger in you inventory.\n\n")
                 else:
-                    self.submenue = interaction.TextMenu("\n\nchallenge: explore terrain\nstatus: challenge completed.\n\n")
+                    self.submenue = interaction.TextMenu("\n\nchallenge: explore mold\nstatus: challenge completed.\n\n")
                     self.character.inventory.remove(itemFound)
                     del self.availableChallenges["challengerExplore1"]
         elif selection == "challengerGoTo1": # from gatherSickBloom

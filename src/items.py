@@ -5941,7 +5941,7 @@ class AutoTutor(Item):
                     gooFlask1.uses = 0
 
                     # add character
-                    name = getRandomName(self.xPosition+self.room.timeIndex,self.yPosition+self.room.timeIndex)
+                    name = "Erwin Lauterbach"
                     newCharacter = characters.Character(displayChars.staffCharactersByLetter[name[0].lower()],self.xPosition+1,self.yPosition,name=name,creator=self)
 
                     newCharacter.solvers = [

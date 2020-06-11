@@ -7147,6 +7147,8 @@ class PortableChallenger(Item):
         super().__init__(displayChars.simpleRunner,xPosition,yPosition,name=name,creator=creator)
         self.challenges = []
         self.done = False
+        self.walkable = True
+        self.bolted = False
         self.secret = ""
 
         self.attributesToStore.extend([

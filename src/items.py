@@ -7165,7 +7165,7 @@ class PortableChallenger(Item):
         else:
             if self.challenges[-1] == "gotoEastNorthTile":
                 if not (character.room == None and character.xPosition%15 == 1 and character.yPosition%15 == 14):
-                    text = "challenge: go to the most north challenge in progress\n\ncomment: "
+                    text = "challenge: go to the most east north tile\n\nchallenge in progress\n\ncomment:\n"
                     if character.xPosition%15 < 14:
                         text += "go futher east\n"
                     if character.yPosition%15 > 1:
@@ -7177,7 +7177,7 @@ class PortableChallenger(Item):
                     self.challenge.pop()
             elif self.challenges[-1] == "gotoWestNorthTile":
                 if not (character.room == None and character.xPosition%15 == 1 and character.yPosition%15 == 1):
-                    text = "challenge: go to the most north challenge in progress\n\ncomment: "
+                    text = "challenge: go to the most west north tile\n\nchallenge in progress\n\ncomment:\n"
                     if character.xPosition%15 > 1:
                         text += "go futher west\n"
                     if character.yPosition%15 > 1:
@@ -7189,7 +7189,7 @@ class PortableChallenger(Item):
                     self.challenge.pop()
             elif self.challenges[-1] == "gotoWestSouthTile":
                 if not (character.room == None and character.xPosition%15 == 14 and character.yPosition%15 == 14):
-                    text = "challenge: go to the most north challenge in progress\n\ncomment: "
+                    text = "challenge: go to the most west south\n\nchallenge in progress\n\ncomment:\n"
                     if character.xPosition%15 < 14:
                         text += "go futher east\n"
                     if character.yPosition%15 < 14:
@@ -7201,7 +7201,7 @@ class PortableChallenger(Item):
                     self.challenge.pop()
             elif self.challenges[-1] == "gotoEastSouthTile":
                 if not (character.room == None and character.xPosition%15 == 1 and character.yPosition%15 == 1):
-                    text = "challenge: go to the most north challenge in progress\n\ncomment: "
+                    text = "challenge: go to the most east south\n\nchallenge in progress\n\ncomment:\n"
                     if character.xPosition%15 < 14:
                         text += "go futher east\n"
                     if character.yPosition%15 > 1:

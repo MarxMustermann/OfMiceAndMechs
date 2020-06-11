@@ -6700,6 +6700,7 @@ class AutoTutor(Item):
                 new.challenges = ["3livingSickBlooms","9livingBlooms","fullMoldCover"]
                 self.submenue = interaction.TextMenu("\n\nchallenge: explore terrain\nstatus: challenge in progress. A portable challanger was outputted to the south. \nUse it and complete its challenges. Return afterwards.\n\ncomment: do not loose or destroy the challenger\n\n")
                 self.challengeInfo["challengerGiven"].append("explore")
+                self.container.addItems([new])
             else:
                 itemFound = None
                 for item in self.character.inventory:
@@ -6720,6 +6721,8 @@ class AutoTutor(Item):
                 new.yPosition = self.yPosition+1
                 new.secret = secret
                 new.challenges = ["gotoWestSouthTile","gotoEastSouthTile","gotoEastNorthTile","gotoWestNorthTile"]
+                self.container.addItems([new])
+
                 self.submenue = interaction.TextMenu("\n\nchallenge: explore terrain\nstatus: challenge in progress. A portable challanger was outputted to the south. \nUse it and complete its challenges. Return afterwards.\n\n")
                 self.challengeInfo["challengerGiven"].append("goto")
             else:

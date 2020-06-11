@@ -5887,6 +5887,8 @@ class AutoTutor(Item):
                         self.character.macroState["submenue"] = self.submenue
                         self.challengeRun4Done = True
 
+                        self.challengeInfo = {"challengerGiven":[]}
+
                         self.availableChallenges["produceAutoScribe"] = {"text":"produce auto scribe"}
                         self.availableChallenges["produceFilledGooDispenser"] = {"text":"produce goo"}
                         self.availableChallenges["gatherSickBloom"] = {"text":"gather sick bloom"}
@@ -5905,7 +5907,6 @@ class AutoTutor(Item):
                 self.submenue = interaction.SelectionMenu("This challenge has two phases:\n * creating commands for producing and delivering Walls, Door and Floorplates each\n * the Autotutor will make your run the commands to produce these items in a random order\n\nIf you set up your commands correctly, you will produce those items and complete the challenge.\n\nlast wall test: %s\nlast door test: %s\nlast floor plate: %s\n\nselect what you want to do:"%(self.challengeInfo["testWallCommand"],self.challengeInfo["testDoorCommand"],self.challengeInfo["testFloorPlateCommand"]),options)
                 self.character.macroState["submenue"] = self.submenue
                 self.character.macroState["submenue"].followUp = self.challengeRun4FinalSelection
-                self.challengeInfo = {"challengerGiven":[]}
         elif not self.challengeRun5Done:
             if len(self.availableChallenges):
                 options = []
@@ -6720,6 +6721,7 @@ class AutoTutor(Item):
                 new.secret = secret
                 new.challenges = ["gotoWestSouthTile","gotoEastSouthTile","gotoEastNorthTile","gotoWestNorthTile"]
                 self.submenue = interaction.TextMenu("\n\nchallenge: explore terrain\nstatus: challenge in progress. A portable challanger was outputted to the south. \nUse it and complete its challenges. Return afterwards.\n\n")
+                self.challengeInfo["challengerGiven"].append("goto")
             else:
                 itemFound = None
                 for item in self.character.inventory:

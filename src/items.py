@@ -4708,7 +4708,7 @@ class MachineMachine(Item):
 
         # spawn new item
         new = Machine(creator=self)
-        new.productionLevel = self.blueprintLevels[blueprintFound.endProduct]
+        new.productionLevel = self.blueprintLevels[itemType]
         new.setToProduce(itemType)
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition

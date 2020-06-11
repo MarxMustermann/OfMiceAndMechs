@@ -5929,7 +5929,7 @@ class AutoTutor(Item):
                     self.character.macroState["submenue"] = self.submenue
                     gooFlask1 = None
                     gooFlask2 = None
-                    for item in reversed(character.inventory):
+                    for item in reversed(src.character.inventory):
                         if item.type == "GooFlask" and item.uses == 100:
                             if gooFlask1 == None:
                                 gooFlask1 = item

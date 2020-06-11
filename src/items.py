@@ -7164,53 +7164,53 @@ class PortableChallenger(Item):
             self.submenue = interaction.SelectionMenu("all challenges completed return to auto tutor",options)
         else:
             if self.challenges[-1] == "gotoEastNorthTile":
-                if not (character.room == None and character.xPosition%15 == 1 and character.yPosition%15 == 14):
+                if not (character.room == None and character.xPosition//15 == 1 and character.yPosition//15 == 14):
                     text = "challenge: go to the most east north tile\n\nchallenge in progress\n\ncomment:\n"
-                    if character.xPosition%15 < 14:
+                    if character.xPosition//15 < 14:
                         text += "go futher east\n"
-                    if character.yPosition%15 > 1:
+                    if character.yPosition//15 > 1:
                         text += "go futher north\n"
 
                     self.submenue = interaction.TextMenu(text)
                 else:
                     self.submenue = interaction.TextMenu("challenge done")
-                    self.challenge.pop()
+                    self.challenges.pop()
             elif self.challenges[-1] == "gotoWestNorthTile":
-                if not (character.room == None and character.xPosition%15 == 1 and character.yPosition%15 == 1):
+                if not (character.room == None and character.xPosition//15 == 1 and character.yPosition//15 == 1):
                     text = "challenge: go to the most west north tile\n\nchallenge in progress\n\ncomment:\n"
-                    if character.xPosition%15 > 1:
+                    if character.xPosition//15 > 1:
                         text += "go futher west\n"
-                    if character.yPosition%15 > 1:
+                    if character.yPosition//15 > 1:
                         text += "go futher north\n"
 
                     self.submenue = interaction.TextMenu(text)
                 else:
                     self.submenue = interaction.TextMenu("challenge done")
-                    self.challenge.pop()
+                    self.challenges.pop()
             elif self.challenges[-1] == "gotoWestSouthTile":
-                if not (character.room == None and character.xPosition%15 == 14 and character.yPosition%15 == 14):
+                if not (character.room == None and character.xPosition//15 == 14 and character.yPosition//15 == 14):
                     text = "challenge: go to the most west south\n\nchallenge in progress\n\ncomment:\n"
-                    if character.xPosition%15 < 14:
+                    if character.xPosition//15 < 14:
                         text += "go futher east\n"
-                    if character.yPosition%15 < 14:
+                    if character.yPosition//15 < 14:
                         text += "go futher south\n"
 
                     self.submenue = interaction.TextMenu(text)
                 else:
                     self.submenue = interaction.TextMenu("challenge done")
-                    self.challenge.pop()
+                    self.challenges.pop()
             elif self.challenges[-1] == "gotoEastSouthTile":
-                if not (character.room == None and character.xPosition%15 == 1 and character.yPosition%15 == 1):
+                if not (character.room == None and character.xPosition//15 == 1 and character.yPosition//15 == 1):
                     text = "challenge: go to the most east south\n\nchallenge in progress\n\ncomment:\n"
-                    if character.xPosition%15 < 14:
+                    if character.xPosition//15 < 14:
                         text += "go futher east\n"
-                    if character.yPosition%15 > 1:
+                    if character.yPosition//15 > 1:
                         text += "go futher north\n"
 
                     self.submenue = interaction.TextMenu(text)
                 else:
                     self.submenue = interaction.TextMenu("challenge done")
-                    self.challenge.pop()
+                    self.challenges.pop()
             elif self.challenges[-1] == "9livingBlooms":
                 baseCoordinateX = character.xPosition-(character.xPosition%15)
                 baseCoordinateY = character.yPosition-(character.yPosition%15)
@@ -7226,6 +7226,7 @@ class PortableChallenger(Item):
                     self.submenue = interaction.TextMenu("challenge: find 9 living blooms\n\nchallenge in progress:\ngo to tile with 9 living blooms on it and activate challenger")
                 else:
                     self.submenue = interaction.TextMenu("challenge done")
+                    self.challenges.pop()
             elif self.challenges[-1] == "3livingSickBlooms":
                 baseCoordinateX = character.xPosition-(character.xPosition%15)
                 baseCoordinateY = character.yPosition-(character.yPosition%15)
@@ -7241,6 +7242,7 @@ class PortableChallenger(Item):
                     self.submenue = interaction.TextMenu("challenge: find 3 living sick blooms\n\nchallenge in progress:\ngo to tile with 3 living blooms on it and activate challenger")
                 else:
                     self.submenue = interaction.TextMenu("challenge done")
+                    self.challenges.pop()
             elif self.challenges[-1] == "fullMoldCover":
                 baseCoordinateX = character.xPosition-(character.xPosition%15)
                 baseCoordinateY = character.yPosition-(character.yPosition%15)
@@ -7259,6 +7261,7 @@ class PortableChallenger(Item):
                     self.submenue = interaction.TextMenu("challenge: find tile completely covered in mold\n\nchallenge in progress:\ngo to a tile completed covered in mold and activate challenger")
                 else:
                     self.submenue = interaction.TextMenu("challenge done")
+                    self.challenges.pop()
             else:
                 self.submenue = interaction.TextMenu("unkown challenge")
 

@@ -4949,6 +4949,11 @@ class Machine(Item):
         elif self.toProduce == "BluePrinter":
             ressourcesNeeded = ["Case","pusher","puller"]
 
+        elif self.toProduce == "Container":
+            ressourcesNeeded = ["Case","Sheet"]
+        elif self.toProduce == "BloomContainer":
+            ressourcesNeeded = ["Case","Sheet"]
+
         elif self.toProduce == "Mover":
             ressourcesNeeded = ["Case","pusher","puller"]
         elif self.toProduce == "Sorter":
@@ -7413,6 +7418,9 @@ class BluePrinter(Item):
                 [["MemoryCell","Pusher"],"MemoryStack"],
                 [["MemoryCell","Connector"],"MemoryReset"],
 
+                [["Case","Sheet","Bloom"],"BloomContainer"],
+                [["Case","Sheet"],"Container"],
+
                 [["Sheet","pusher"],"Sorter"],
                 [["Sheet","puller"],"Mover"],
                 [["Stripe","Connector"],"RoomControls"],
@@ -7493,7 +7501,9 @@ class BluePrinter(Item):
 
         inputThings = []
         if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
-            inputThings = self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]
+            inputThings.extend(self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)])
+        if (self.xPosition,self.yPosition-1) in self.room.itemByCoordinates:
+            inputThings.extend(self.room.itemByCoordinates[(self.xPosition,self.yPosition+1)])
 
         if not inputThings:
             character.messages.append("no items - place items to the left/west")
@@ -7551,8 +7561,8 @@ class BluePrinter(Item):
 This machine creates Blueprints.
 
 The Blueprinter has two inputs
-It needs a sheet on the north/above to print the blueprint onto.
-The items from the blueprint reciepe need to be added to the left/west.
+It needs a sheet on the north to print the blueprint onto.
+The items from the blueprint reciepe need to be added to the west or south.
 
 """
         return text

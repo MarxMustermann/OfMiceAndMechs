@@ -5118,8 +5118,7 @@ class Machine(Item):
         new.bolted = False
         
         if hasattr(new,"coolDown"):
-            import math
-            new.coolDown = math.round(new.coolDown*(1-(0.05*self.productionLevel)))
+            new.coolDown = round(new.coolDown*(1-(0.05*(self.productionLevel-1))))
 
         self.container.addItems([new])
 
@@ -7239,7 +7238,7 @@ class PortableChallenger(Item):
                                 numFound += 1
 
                 if not numFound >= 3:
-                    self.submenue = interaction.TextMenu("challenge: find 3 living sick blooms\n\nchallenge in progress:\ngo to tile with 3 living blooms on it and activate challenger")
+                    self.submenue = interaction.TextMenu("challenge: find 3 living sick blooms\n\nchallenge in progress:\ngo to tile with 3 living sick blooms on it and activate challenger")
                 else:
                     self.submenue = interaction.TextMenu("challenge done")
                     self.challenges.pop()

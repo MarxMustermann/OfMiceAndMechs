@@ -6561,7 +6561,6 @@ class AutoTutor(Item):
             for item in self.character.inventory:
                 if isinstance(item,src.items.Command) and item.command == ["o","p","x","$","=","a","a","$","=","w","w","$","=","s","s","$","=","d","d"]:
                     itemCount += 1
-                    break
 
             if not itemCount > 2:
                 self.submenue = interaction.TextMenu("\n\nchallenge: copy command\nstatus: challenge in progress. Try again with 3 copies of the \"GO TO TILE CENTEr\" command\n\ncomment:\nuse the auto scribe to copy commands.\nthe \"GO TO TILE CENTEr\" command was dropped as reward for the \"produce auto scribe\" challenge.\n\n")

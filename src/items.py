@@ -7161,7 +7161,7 @@ class PortableChallenger(Item):
         super().apply(character,silent=True)
 
         if self.done:
-            self.submenue = interaction.SelectionMenu("all challenges completed return to auto tutor")
+            self.submenue = interaction.TextMenu("all challenges completed return to auto tutor")
         else:
             if self.challenges[-1] == "gotoEastNorthTile":
                 if not (character.room == None and character.xPosition//15 == 13 and character.yPosition//15 == 1):

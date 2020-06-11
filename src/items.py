@@ -9564,6 +9564,8 @@ class MoldFeed(Item):
 item: MoldFeed
 
 description:
+
+This is a good base for mold growth. If mold grows onto it, it will grow into a bloom.
 """
 
     def destroy(self, generateSrcap=True):
@@ -9601,11 +9603,255 @@ item: SeededMoldFeed
 
 description:
 
-actions:
+This is mold feed mixed with mold spores. 
+Place it on the ground and activate it to start mold growth.
+The seeded mold feed grows stronger then a mold spore on its own.
 """
 
     def destroy(self, generateSrcap=True):
         super().destroy(generateSrcap=False)
+
+class BloomContainer(Item):
+    type = "BloomContainer"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.wall,xPosition,yPosition,creator=creator,name="bloom container")
+
+        self.charges = 0
+        self.maxCharges = 15
+        self.level = 1
+
+        self.attributesToStore.extend([
+               "charges","maxCharges","level"])
+        self.initialState = self.getState()
+
+    def getLongInfo(self):
+        return """
+item: BloomContainer
+
+description:
+The bloom container is used to carry an store blooms.
+
+it has %s blooms (charges) in it. It can hold a maximum of %s blooms.
+
+This is a level %s item.
+
+actions:
+
+= loading blooms =
+prepare by placing the bloom container on the ground and placing blooms around the container.
+Activate the bloom container and select the option "load bloom" to load the blooms into the container.
+
+= unload blooms =
+prepare by placing the bloom container on the ground.
+Activate the bloom container and select the option "unload bloom" to unload the blooms to the east.
+"""%(self.charges,self.maxCharges,self.level)
+
+    def apply(self,character):
+        options = []
+        options.append(("load","load blooms"))
+        options.append(("unload","unload blooms"))
+        self.submenue = interaction.SelectionMenu("select the item to produce",options)
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.doSelection
+        self.character = character
+
+    def doSelection(self):
+        selection = self.submenue.selection
+        if selection == "load":
+            if self.charges >= self.maxCharges:
+                self.character.messages.append("bloom container full. no blooms loaded")
+                return
+
+            blooms = []
+            positions = [(self.xPosition+1,self.yPosition),(self.xPosition-1,self.yPosition),(self.xPosition,self.yPosition+1),(self.xPosition,self.yPosition-1),]
+            for position in positions:
+                for item in self.container.getItemByPosition(position):
+                    if item.type == "Bloom":
+                        blooms.append(item)
+
+            if not blooms:
+                self.character.messages.append("no blooms to load")
+                return
+
+            for bloom in blooms:
+                if self.charges >= self.maxCharges:
+                    self.character.messages.append("bloom container full. not all blooms loaded")
+                    return
+
+                self.container.removeItem(bloom)
+                self.charges += 1
+
+            self.character.messages.append("blooms loaded")
+            return
+
+        elif selection == "unload":
+
+            if self.charges == 0:
+                self.character.messages.append("no blooms to unload")
+                return
+            
+            foundWalkable = 0
+            foundNonWalkable = 0
+            for item in self.container.getItemByPosition((self.xPosition+1,self.yPosition)):
+                if item.walkable:
+                    foundWalkable += 1
+                else:
+                    foundNonWalkable += 1
+            
+            if foundWalkable > 0 or foundNonWalkable >= 15:
+                self.character.messages.append("target area full. no blooms unloaded")
+                return
+
+            toAdd = []
+            while foundNonWalkable <= 15 and self.charges:
+                new = Bloom(creator=self)
+                new.xPosition = self.xPosition+1
+                new.yPosition = self.yPosition
+                new.dead = True
+
+                toAdd.append(new)
+                self.charges -= 1
+            self.container.addItems(toAdd)
+
+class Container(Item):
+    type = "Container"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        self.contained = []
+        super().__init__(displayChars.wall,xPosition,yPosition,creator=creator,name="container")
+
+        self.charges = 0
+        self.maxItems = 10
+        self.level = 1
+
+        self.attributesToStore.extend([
+               "charges","maxCharges","level"])
+        self.initialState = self.getState()
+
+    def getLongInfo(self):
+        text = """
+item: Container
+
+description:
+The container is used to carry and store small items.
+
+it holds the items. It can hold a maximum of %s items.
+
+This is a level %s item.
+
+"""%(self.maxItems,self.level)
+
+        if self.contained:
+            for item in self.contained:
+                text += """
+* %s
+%s"""%(item.name,item.description)
+        else:
+            text += """
+the container is empty
+"""
+
+        text += """ 
+
+actions:
+
+= load items =
+prepare by placing the bloom container on the ground and placing the items to the east of the container.
+Activate the bloom container and select the option "load items" to load the blooms into the container.
+
+= unload items =
+prepare by placing the container on the ground.
+Activate the container and select the option "unload items" to unload the items.
+"""
+        return text
+            
+    def getState(self):
+        state = super().getState()
+        state["contained"] = []
+        for item in self.contained:
+            state["contained"].append(item.getState())
+        return state
+
+    def getDiffState(self):
+        state = super().getDiffState()
+        state["contained"] = []
+        for item in self.contained:
+            state["contained"].append(item.getState())
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        
+        if "contained" in state:
+            for item in state["contained"]:
+                self.contained.append(getItemFromState(item))
+
+    def apply(self,character):
+        options = []
+        options.append(("load","load items"))
+        options.append(("unload","unload items"))
+        self.submenue = interaction.SelectionMenu("select the item to produce",options)
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.doSelection
+        self.character = character
+
+    def doSelection(self):
+        selection = self.submenue.selection
+        if selection == "load":
+            if len(self.contained) >= self.maxItems:
+                self.character.messages.append("container full. no items loaded")
+                return
+
+            items = []
+            for item in self.container.getItemByPosition((self.xPosition-1,self.yPosition)):
+                if item.walkable:
+                    items.append(item)
+
+
+            if not items:
+                self.character.messages.append("no small items to load")
+                return
+
+            for item in items:
+                if len(self.contained) >= self.maxItems:
+                    self.character.messages.append("container full. not all items loaded")
+                    return
+
+                self.contained.append(item)
+
+                self.container.removeItem(item)
+                self.charges += 1
+
+            self.character.messages.append("items loaded")
+            return
+
+        elif selection == "unload":
+
+            if self.charges == 0:
+                self.character.messages.append("no items to unload")
+                return
+            
+            foundWalkable = 0
+            foundNonWalkable = 0
+            for item in self.container.getItemByPosition((self.xPosition+1,self.yPosition)):
+                if item.walkable:
+                    foundWalkable += 1
+                else:
+                    foundNonWalkable += 1
+            
+            if foundWalkable > 0 or foundNonWalkable >= 15:
+                self.character.messages.append("target area full. no items unloaded")
+                return
+
+            toAdd = []
+            while foundNonWalkable <= 15 and self.contained:
+                new = self.contained.pop()
+                new.xPosition = self.xPosition+1
+                new.yPosition = self.yPosition
+
+                toAdd.append(new)
+            self.container.addItems(toAdd)
 
 
 class TrailHead(Item):
@@ -9620,7 +9866,7 @@ class TrailHead(Item):
         return """
 item: TrailHead
 
-actions:
+description:
 You can use it to create paths
 """
 
@@ -9738,6 +9984,10 @@ itemMap = {
             "Map":Map,
             "Mover":Mover,
             "PortableChallenger":PortableChallenger,
+            "MoldFeed":MoldFeed,
+            "SeededMoldFeed":SeededMoldFeed,
+            "BloomContainer":BloomContainer,
+            "Container":Container,
 }
 
 producables = {

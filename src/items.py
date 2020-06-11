@@ -5611,12 +5611,13 @@ class AutoTutor(Item):
         self.challengeRun2Done = False
         self.challengeRun3Done = False
         self.challengeRun4Done = False
+        self.challengeRun5Done = False
         self.initialChallengeDone = False
         self.challengeInfo = {}
 
         self.attributesToStore.extend([
                "gooChallengeDone","metalbarChallengeDone","sheetChallengeDone","machineChallengeDone","blueprintChallengeDone","energyChallengeDone","activateChallengeDone",
-               "commandChallengeDone","challengeRun2Done","challengeRun3Done","challengeRun4Done","initialChallengeDone",
+               "commandChallengeDone","challengeRun2Done","challengeRun3Done","challengeRun4Done","challengeRun5Done","initialChallengeDone",
                "activateChallenge","wallChallenge","autoScribeChallenge",
                "knownBlueprints","availableChallenges","knownInfos","challengeInfo"])
         self.initialState = self.getState()

@@ -7164,9 +7164,9 @@ class PortableChallenger(Item):
             self.submenue = interaction.SelectionMenu("all challenges completed return to auto tutor",options)
         else:
             if self.challenges[-1] == "gotoEastNorthTile":
-                if not (character.room == None and character.xPosition//15 == 1 and character.yPosition//15 == 14):
+                if not (character.room == None and character.xPosition//15 == 13 and character.yPosition//15 == 1):
                     text = "challenge: go to the most east north tile\n\nchallenge in progress\n\ncomment:\n"
-                    if character.xPosition//15 < 14:
+                    if character.xPosition//15 < 13:
                         text += "go futher east\n"
                     if character.yPosition//15 > 1:
                         text += "go futher north\n"
@@ -7188,11 +7188,11 @@ class PortableChallenger(Item):
                     self.submenue = interaction.TextMenu("challenge done")
                     self.challenges.pop()
             elif self.challenges[-1] == "gotoWestSouthTile":
-                if not (character.room == None and character.xPosition//15 == 14 and character.yPosition//15 == 14):
+                if not (character.room == None and character.xPosition//15 == 13 and character.yPosition//15 == 13):
                     text = "challenge: go to the most west south\n\nchallenge in progress\n\ncomment:\n"
-                    if character.xPosition//15 < 14:
+                    if character.xPosition//15 < 13:
                         text += "go futher east\n"
-                    if character.yPosition//15 < 14:
+                    if character.yPosition//15 < 13:
                         text += "go futher south\n"
 
                     self.submenue = interaction.TextMenu(text)
@@ -7200,11 +7200,11 @@ class PortableChallenger(Item):
                     self.submenue = interaction.TextMenu("challenge done")
                     self.challenges.pop()
             elif self.challenges[-1] == "gotoEastSouthTile":
-                if not (character.room == None and character.xPosition//15 == 1 and character.yPosition//15 == 1):
+                if not (character.room == None and character.xPosition//15 == 1 and character.yPosition//15 == 13):
                     text = "challenge: go to the most east south\n\nchallenge in progress\n\ncomment:\n"
-                    if character.xPosition//15 < 14:
+                    if character.xPosition//15 < 1:
                         text += "go futher east\n"
-                    if character.yPosition//15 > 1:
+                    if character.yPosition//15 > 13:
                         text += "go futher north\n"
 
                     self.submenue = interaction.TextMenu(text)

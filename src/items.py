@@ -7169,9 +7169,9 @@ class PortableChallenger(Item):
                     if character.yPosition%15 > 1:
                         text += "go futher north\n"
 
-                    self.submenue = interaction.TextMenu(text,options)
+                    self.submenue = interaction.TextMenu(text)
                 else:
-                    self.submenue = interaction.TextMenu("challenge done",options)
+                    self.submenue = interaction.TextMenu("challenge done")
                     self.challenge.pop()
             elif self.challenges[-1] == "gotoWestNorthTile":
                 if not (character.room == None and character.xPosition%15 == 1 and character.yPosition%15 == 1):
@@ -7181,9 +7181,9 @@ class PortableChallenger(Item):
                     if character.yPosition%15 > 1:
                         text += "go futher north\n"
 
-                    self.submenue = interaction.TextMenu(text,options)
+                    self.submenue = interaction.TextMenu(text)
                 else:
-                    self.submenue = interaction.TextMenu("challenge done",options)
+                    self.submenue = interaction.TextMenu("challenge done")
                     self.challenge.pop()
             elif self.challenges[-1] == "gotoWestSouthTile":
                 if not (character.room == None and character.xPosition%15 == 14 and character.yPosition%15 == 14):
@@ -7193,9 +7193,9 @@ class PortableChallenger(Item):
                     if character.yPosition%15 < 14:
                         text += "go futher south\n"
 
-                    self.submenue = interaction.TextMenu(text,options)
+                    self.submenue = interaction.TextMenu(text)
                 else:
-                    self.submenue = interaction.TextMenu("challenge done",options)
+                    self.submenue = interaction.TextMenu("challenge done")
                     self.challenge.pop()
             elif self.challenges[-1] == "gotoEastSouthTile":
                 if not (character.room == None and character.xPosition%15 == 1 and character.yPosition%15 == 1):
@@ -7205,9 +7205,9 @@ class PortableChallenger(Item):
                     if character.yPosition%15 > 1:
                         text += "go futher north\n"
 
-                    self.submenue = interaction.TextMenu(text,options)
+                    self.submenue = interaction.TextMenu(text)
                 else:
-                    self.submenue = interaction.TextMenu("challenge done",options)
+                    self.submenue = interaction.TextMenu("challenge done")
                     self.challenge.pop()
             elif self.challenges[-1] == "9livingBlooms":
                 baseCoordinateX = character.xPosition-(character.xPosition%15)

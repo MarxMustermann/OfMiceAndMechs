@@ -7200,12 +7200,12 @@ class PortableChallenger(Item):
                     self.submenue = interaction.TextMenu("challenge done")
                     self.challenges.pop()
             elif self.challenges[-1] == "gotoEastSouthTile":
-                if not (character.room == None and character.xPosition//15 == 1 and character.yPosition//15 == 13):
+                if not (character.room == None and character.xPosition//15 == 13 and character.yPosition//15 == 13):
                     text = "challenge: go to the most east south\n\nchallenge in progress\n\ncomment:\n"
-                    if character.xPosition//15 < 1:
+                    if character.xPosition//15 < 13:
                         text += "go futher east\n"
                     if character.yPosition//15 > 13:
-                        text += "go futher north\n"
+                        text += "go futher south\n"
 
                     self.submenue = interaction.TextMenu(text)
                 else:

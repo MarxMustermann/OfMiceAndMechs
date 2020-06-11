@@ -6088,25 +6088,33 @@ class AutoTutor(Item):
 
         elif selection == "doChallenge":
             self.challengeInfo["mainQueue"] = []
-            self.challengeInfo["mainQueue"].insert(0,"Wall")
-            convertedCommand = []
-            for char in self.challengeInfo["wallCommand"]:
-                convertedCommand.append((char,[]))
-            self.challengeInfo["current"] = "doChallenge"
-            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+            for i in range(0,25):
 
-            self.challengeInfo["mainQueue"].insert(0,"Door")
-            convertedCommand = []
-            for char in self.challengeInfo["doorCommand"]:
-                convertedCommand.append((char,[]))
-            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+                import random
+                selected = random.choice("Wall","Door","FloorPlate")
 
-            self.challengeInfo["mainQueue"].insert(0,"FloorPlate")
-            convertedCommand = []
-            for char in self.challengeInfo["floorPlateCommand"]:
-                convertedCommand.append((char,[]))
-            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
-            
+                if selected == "Wall":
+                    self.challengeInfo["mainQueue"].insert(0,"Wall")
+                    convertedCommand = []
+                    for char in self.challengeInfo["wallCommand"]:
+                        convertedCommand.append((char,[]))
+                    self.challengeInfo["current"] = "doChallenge"
+                    self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+
+                elif selected == "Door":
+                    self.challengeInfo["mainQueue"].insert(0,"Door")
+                    convertedCommand = []
+                    for char in self.challengeInfo["doorCommand"]:
+                        convertedCommand.append((char,[]))
+                    self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+
+                elif selected == "FloorPlate":
+                    self.challengeInfo["mainQueue"].insert(0,"FloorPlate")
+                    convertedCommand = []
+                    for char in self.challengeInfo["floorPlateCommand"]:
+                        convertedCommand.append((char,[]))
+                    self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+                
             self.challengeInfo["mainChallengeRunning"] = True
             return
 

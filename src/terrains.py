@@ -1083,7 +1083,7 @@ class Terrain(src.saveing.Saveable):
                 mapHidden = False
             else:
                 mapHidden = True
-        mapHidden = False
+        #mapHidden = False
         self.hidden = mapHidden
 
         # paint floor
@@ -1162,6 +1162,8 @@ class Terrain(src.saveing.Saveable):
             # skip hidden rooms
             #if mapHidden and room.hidden:
             #    continue
+            if not mainChar in room.characters:
+                room.hidden = True
 
             # get the render for the room
             renderedRoom = room.render()

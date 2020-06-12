@@ -1,5 +1,15 @@
 import pygame
 
+moss = pygame.image.load('config/Images/perspectiveTry/mold.png')
+sprout = pygame.image.load('config/Images/perspectiveTry/sprout.png')
+sprout2 = pygame.image.load('config/Images/perspectiveTry/sprout2.png')
+bloom = pygame.image.load('config/Images/perspectiveTry/bloom.png')
+sickBloom = pygame.image.load('config/Images/perspectiveTry/sickBloom.png')
+poisonBloom = pygame.image.load('config/Images/perspectiveTry/poisonBloom.png')
+bush = pygame.image.load('config/Images/perspectiveTry/bush.png')
+encrustedBush = pygame.image.load('config/Images/perspectiveTry/encrustedBush.png')
+poisonBush = pygame.image.load('config/Images/perspectiveTry/poisonBush.png')
+encrustedPoisonBush = pygame.image.load('config/Images/perspectiveTry/encrustedPoisonBush.png')
 reactionChamber = pygame.image.load('config/Images/perspectiveTry/reactionChamber.png')
 explosive = pygame.image.load('config/Images/perspectiveTry/explosive.png')
 fireCrystals = pygame.image.load('config/Images/perspectiveTry/fireCrystals.png')

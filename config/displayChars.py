@@ -1,5 +1,7 @@
 import urwid
 
+moldFeed = (urwid.AttrSpec("black","#600"),"::")
+seededMoldFeed = (urwid.AttrSpec("#436","#600"),";;")
 moss = (urwid.AttrSpec("#030","black"),",.")
 moldSpore = (urwid.AttrSpec("#436","black"),",.")
 monster_spore = (urwid.AttrSpec("#030","black"),"🝆 ")
@@ -18,7 +20,6 @@ bush = (urwid.AttrSpec("#484","black"),"#%")
 encrustedBush = (urwid.AttrSpec("#484","black"),"##")
 encrustedPoisonBush = (urwid.AttrSpec("#3f3","black"),"##")
 monster = (urwid.AttrSpec("#33f","#007"),"MM")
-fireCrystals = (urwid.AttrSpec("#33f","#007"),";x")
 explosion = (urwid.AttrSpec("#fa0","#f00"),"##")
 reactionChamber = (urwid.AttrSpec("#aaa","black"),"[}")
 explosive = (urwid.AttrSpec("#a55","black"),"be")

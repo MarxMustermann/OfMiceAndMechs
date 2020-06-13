@@ -2315,6 +2315,84 @@ Activate the bloom shredder to produce biomass.
 
 '''
 '''
+class CorpseShredder(Item):
+    type = "CorpseShredder"
+
+    '''
+    call superclass constructor with modified paramters and set some state
+    '''
+    def __init__(self,xPosition=None,yPosition=None,name="corpse shredder",creator=None,noId=False):
+        self.activated = False
+        super().__init__(displayChars.maggotFermenter,xPosition,yPosition,name=name,creator=creator)
+
+        # bad code: repetetive and easy to forgett
+        self.initialState = self.getState()
+    
+    '''
+    '''
+    def apply(self,character):
+        super().apply(character,silent=True)
+
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
+
+        corpse = None
+        moldSpores = []
+        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+                if isinstance(item,Corpse):
+                    corpse = item
+                if isinstance(item,MoldSpore):
+                    moldSpores.append(item)
+
+        # refuse to produce without ressources
+        if not corpse:
+            character.messages.append("no corpse")
+            return
+       
+        targetFull = False
+        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+                targetFull = True
+            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                if item.walkable == False:
+                    targetFull = True
+
+        if targetFull:
+            character.messages.append("the target area is full, the machine does not produce anything")
+            return
+
+        # remove ressources
+        self.room.removeItem(corpse)
+
+        for i in range(0,10):
+            if moldSpores:
+                self.room.removeItem(moldSpores.pop())
+                new = SeededMoldFeed(creator=self)
+            else:
+                # spawn the new item
+                new = MoldFeed(creator=self)
+            new.xPosition = self.xPosition+1
+            new.yPosition = self.yPosition
+            self.room.addItems([new])
+
+    def getLongInfo(self):
+        text = """
+item: CorpseShredder
+
+description:
+A corpse shredder produces mold feed from corpses.
+If corpses and MoldSpores are supplied it produces seeded mold feed
+
+Place corpse/mold seed to the west of the bloom shredder.
+Activate the corpse shredder to produce mold feed/seeded mold feed.
+
+"""
+        return text
+
+'''
+'''
 class SporeExtractor(Item):
     type = "SporeExtractor"
 
@@ -2791,7 +2869,7 @@ class ProductionArtwork(Item):
 
         self.character = character
 
-        excludeList = ("ProductionArtwork","Machine","Tree","Scrap","Corpse","Acid","Item","Pile","InfoScreen","CoalMine","BluePrint","GlobalMacroStorage","Note","Command",
+        excludeList = ("ProductionArtwork","Machine","Tree","Scrap","xCorpse","Acid","Item","Pile","InfoScreen","CoalMine","BluePrint","GlobalMacroStorage","Note","Command",
                        "Hutch","Lever","CommLink","Display","Pipe","Chain","AutoTutor",
                        "Winch","Spray","ObjectDispenser","Token","PressCake","BioMass","VatMaggot","Moss","Mold","MossSeed","MoldSpore","Bloom","Sprout","Sprout2","SickBloom",
                        "PoisonBloom","Bush","PoisonBush","EncrustedBush","Test","EncrustedPoisonBush","Chemical","Spawner","Explosion")
@@ -4912,6 +4990,8 @@ class Machine(Item):
         elif self.toProduce == "BioPress":
             ressourcesNeeded = ["Case","MetalBars","Heater"]
         elif self.toProduce == "GooProducer":
+            ressourcesNeeded = ["Case","MetalBars","Heater"]
+        elif self.toProduce == "CorpseShredder":
             ressourcesNeeded = ["Case","MetalBars","Heater"]
 
         elif self.toProduce == "MemoryDump":
@@ -7452,6 +7532,7 @@ class BluePrinter(Item):
                 [["Coal","SickBloom"],"FireCrystals"],
 
                 [["Command"],"AutoScribe"],
+                [["Corpse"],"CorpseShredder"],
 
                 [["Tank"],"GooFlask"],
                 [["Heater"],"Boiler"],
@@ -7502,7 +7583,7 @@ class BluePrinter(Item):
         inputThings = []
         if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
             inputThings.extend(self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)])
-        if (self.xPosition,self.yPosition-1) in self.room.itemByCoordinates:
+        if (self.xPosition,self.yPosition+1) in self.room.itemByCoordinates:
             inputThings.extend(self.room.itemByCoordinates[(self.xPosition,self.yPosition+1)])
 
         if not inputThings:
@@ -8817,13 +8898,16 @@ class Mold(Item):
                 new.startSpawn()
             elif len(itemList) > 0:
                 if itemList[-1].type == "Mold":
-                    self.charges += itemList[-1].charges%2
+                    self.charges += itemList[-1].charges//2
                     item = itemList[-1]
                     item.container.removeItem(item)
                     item.xPosition = None
                     item.yPosition = None
 
-                    new = itemMap["Sprout"](creator=self)
+                    if not item.charges%2:
+                        new = itemMap["Sprout"](creator=self)
+                    else:
+                        new = itemMap["Sprout2"](creator=self)
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])
@@ -9565,8 +9649,8 @@ class MoldFeed(Item):
     type = "MoldFeed"
 
     def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(displayChars.wall,xPosition,yPosition,creator=creator,name="mold feed")
-        self.walkable = False
+        super().__init__(displayChars.moldFeed,xPosition,yPosition,creator=creator,name="mold feed")
+        self.walkable = True
         self.bolted = False
 
     def getLongInfo(self):
@@ -9585,8 +9669,8 @@ class SeededMoldFeed(Item):
     type = "SeededMoldFeed"
 
     def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(displayChars.wall,xPosition,yPosition,creator=creator,name="seeded mold feed")
-        self.walkable = False
+        super().__init__(displayChars.seededMoldFeed,xPosition,yPosition,creator=creator,name="seeded mold feed")
+        self.walkable = True
         self.bolted = False
 
     def apply(self,character):
@@ -9998,6 +10082,7 @@ itemMap = {
             "SeededMoldFeed":SeededMoldFeed,
             "BloomContainer":BloomContainer,
             "Container":Container,
+            "CorpseShredder":CorpseShredder,
 }
 
 producables = {

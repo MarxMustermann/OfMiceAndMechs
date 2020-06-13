@@ -8989,7 +8989,7 @@ class Mold(Item):
                     self.container.addItems([new])
 
                 elif itemList[-1].type == "EncrustedBush":
-                    new = itemMap["EncrustedBush"](creator=self)
+                    new = itemMap["Bush"](creator=self)
                     new.xPosition = self.xPosition
                     new.yPosition = self.yPosition
                     self.container.addItems([new])

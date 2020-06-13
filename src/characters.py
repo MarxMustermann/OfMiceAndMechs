@@ -1042,7 +1042,7 @@ class Monster(Character):
         self.macroState["commandKeyQueue"] = [("_",[]),("f",[])]
 
     def changed(self,tag="default",info=None):
-        if self.phase == 1:
+        if self.phase == 1 and self.satiation > 900:
             self.enterPhase2()
         if len(self.inventory) == 10:
             fail = False

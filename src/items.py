@@ -631,6 +631,8 @@ The corpse has %s charges left.
 
     def apply(self,character):
         if isinstance(character,src.characters.Monster):
+            if character.phase == 2:
+                character.enterPhase3()
             if character.phase == 3:
                 character.enterPhase4()
         if self.charges:

@@ -1620,6 +1620,19 @@ Coal is used as an energy source. It can be used to fire furnaces.
     def destroy(self, generateSrcap=True):
         super().destroy(generateSrcap=False)
 
+    def apply(self,character):
+        if isinstance(character,src.characters.Monster) and character.phase == 2:
+            newChar = characters.Exploder(creator=self)
+            import copy
+            newChar.macroState = copy.deepcopy(character.macroState)
+            newChar.satiation = character.satiation
+            self.container.addCharacter(newChar,self.xPosition,self.yPosition)
+            character.die()
+            self.destroy(generateSrcap=False)
+        else:
+            super().apply(character)
+
+
 '''
 a door for opening/closing and locking people in/out
 # bad code: should use a rendering method

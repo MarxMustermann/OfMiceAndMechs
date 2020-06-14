@@ -9029,10 +9029,7 @@ class Mold(Item):
                     item.xPosition = None
                     item.yPosition = None
 
-                    if not item.charges%2:
-                        new = itemMap["Sprout"](creator=self)
-                    else:
-                        new = itemMap["Sprout2"](creator=self)
+                    new = itemMap["Sprout"](creator=self)
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])

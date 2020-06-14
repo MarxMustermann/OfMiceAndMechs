@@ -5959,7 +5959,7 @@ class AutoTutor(Item):
                         return
 
                     didAdd = self.addScraps(amount=2)
-                    if didAdd:
+                    if not didAdd:
                         self.submenue = interaction.TextMenu("\n\nchallenge: produce 25 walls\nstatus: challenge in progress.\nno progress - no space to drop scrap\nWalls remaining: %s\n\ncomment:\nuse commands and multipliers to do this.\n\n"%(self.wallChallenge,))
                         self.character.macroState["submenue"] = self.submenue
                         return

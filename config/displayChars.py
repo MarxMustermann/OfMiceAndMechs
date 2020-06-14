@@ -1,5 +1,10 @@
 import urwid
 
+bloomShredder = (urwid.AttrSpec("#fff","black"),"%>")
+corpseShredder = (urwid.AttrSpec("#800","black"),"%>")
+sporeExtractor = (urwid.AttrSpec("#ff2","black"),"%>")
+bloomContainer = (urwid.AttrSpec("#fff","black"),"[H")
+container = (urwid.AttrSpec("#446","black"),"[H")
 moldFeed = (urwid.AttrSpec("black","#600"),"::")
 seededMoldFeed = (urwid.AttrSpec("#436","#600"),";;")
 moss = (urwid.AttrSpec("#030","black"),",.")

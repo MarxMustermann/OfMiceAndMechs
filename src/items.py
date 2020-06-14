@@ -2279,7 +2279,7 @@ class BloomShredder(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None,name="bloom shredder",creator=None,noId=False):
         self.activated = False
-        super().__init__(displayChars.maggotFermenter,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.bloomShredder,xPosition,yPosition,name=name,creator=creator)
 
         # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
@@ -2348,7 +2348,7 @@ class CorpseShredder(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None,name="corpse shredder",creator=None,noId=False):
         self.activated = False
-        super().__init__(displayChars.maggotFermenter,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.corpseShredder,xPosition,yPosition,name=name,creator=creator)
 
         # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
@@ -2426,7 +2426,7 @@ class SporeExtractor(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None,name="spore extractor",creator=None,noId=False):
         self.activated = False
-        super().__init__(displayChars.maggotFermenter,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.sporeExtractor,xPosition,yPosition,name=name,creator=creator)
 
         # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
@@ -4787,9 +4787,7 @@ class MachineMachine(Item):
 
         targetFull = False
         if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
-            self.character.messages.append("test1")
             if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 0:
-                self.character.messages.append("test2")
                 targetFull = True
 
         if targetFull:
@@ -4816,6 +4814,11 @@ class MachineMachine(Item):
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
         new.bolted = False
+
+        if hasattr(new,"coolDown"):
+            import random
+            new.coolDown = random.randint(new.coolDown,int(new.coolDown*1.25))
+
         self.room.addItems([new])
 
     def getState(self):
@@ -5226,9 +5229,12 @@ class Machine(Item):
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
         new.bolted = False
-        
+
         if hasattr(new,"coolDown"):
             new.coolDown = round(new.coolDown*(1-(0.05*(self.productionLevel-1))))
+
+            import random
+            new.coolDown = random.randint(new.coolDown,int(new.coolDown*1.25))
 
         self.container.addItems([new])
 
@@ -6562,30 +6568,11 @@ class AutoTutor(Item):
 
                 del self.availableChallenges["gatherCorpse"]
 
-
-        # Note
-        # build room
-        # build map to room
-        # goto map center
-        # build working map (drop marker in 5 rooms with requirement, make random star movement)
-        # tile with 9 living sick blooms
-        # spawn NPC
-        # gather posion bloom
-        # memory cell
-            # learn command
-        #X clear tile x/y
-            #> floor right empty
-            # build room
-        #- build growth tank
-            #- build NPC
-                #> go to scrap
-                #> go to character
-                #- gather corpse
-                    #> go to corpse
-                    #> decide corpse
-
         #- produceFilledGooDispenser
             #- > strengthen mold growth
+            #R Container
+            #R BloomContainer
+            #R GrowthTank
         #- autoScribe 
             #- > go to tile center
             #- copy commmand
@@ -6624,6 +6611,8 @@ class AutoTutor(Item):
                 self.submenue = interaction.TextMenu("\n\nchallenge: produce goo\nstatus: challenge completed.\n\nreward:\nNew Blueprint reciepe for growth tank\nCommand \"STIMULATE MOLD GROWTh\" dropped to the south\n\n")
 
                 self.knownBlueprints.append("GrowthTank")
+                self.knownBlueprints.append("Container")
+                self.knownBlueprints.append("BloomContainer")
 
                 newCommand = Command(creator=self)
                 newCommand.setPayload(["o","p","x","$","=","a","a","$","=","w","w","$","=","s","s","$","=","d","d",
@@ -6886,6 +6875,28 @@ class AutoTutor(Item):
                 del self.availableChallenges["gatherSickBlooms"]
         self.character.macroState["submenue"] = self.submenue
 
+        # Note
+        # build room
+        # build map to room
+        # goto map center
+        # build working map (drop marker in 5 rooms with requirement, make random star movement)
+        # tile with 9 living sick blooms
+        # spawn NPC
+        # gather posion bloom
+        # memory cell
+            # learn command
+        #X clear tile x/y
+            #> floor right empty
+            # build room
+        #- build growth tank
+            #- build NPC
+                #> go to scrap
+                #> go to character
+                #- gather corpse
+                    #> go to corpse
+                    #> decide corpse
+
+
     def countInInventory(self,itemType):
         num = 0 
         for item in self.character.inventory:
@@ -7088,6 +7099,16 @@ class AutoTutor(Item):
                 shownText = True
             if "Scraper" in self.knownBlueprints:
                 text += " * scraper         = scrap + metal bars\n"
+                shownText = True
+            if shownText:
+                text += "\n"
+
+            shownText = False
+            if "Container" in self.knownBlueprints:
+                text += " * container       = case + sheet\n"
+                shownText = True
+            if "BloomContainer" in self.knownBlueprints:
+                text += " * bloom container = case + sheet + bloom\n"
                 shownText = True
             if shownText:
                 text += "\n"
@@ -9740,7 +9761,7 @@ class BloomContainer(Item):
     type = "BloomContainer"
 
     def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(displayChars.wall,xPosition,yPosition,creator=creator,name="bloom container")
+        super().__init__(displayChars.bloomContainer,xPosition,yPosition,creator=creator,name="bloom container")
 
         self.charges = 0
         self.maxCharges = 15
@@ -9844,7 +9865,7 @@ class Container(Item):
 
     def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
         self.contained = []
-        super().__init__(displayChars.wall,xPosition,yPosition,creator=creator,name="container")
+        super().__init__(displayChars.container,xPosition,yPosition,creator=creator,name="container")
 
         self.charges = 0
         self.maxItems = 10
@@ -9983,7 +10004,7 @@ class TrailHead(Item):
     type = "TrailHead"
 
     def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(displayChars.wall,xPosition,yPosition,creator=creator,name="encrusted bush")
+        super().__init__(displayChars.floor_node,xPosition,yPosition,creator=creator,name="encrusted bush")
         self.walkable = False
         targets = []
 

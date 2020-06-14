@@ -24,6 +24,7 @@ all characters except the pcs always have automated = True to
 make them to things on their own
 """
 class Character(src.saveing.Saveable):
+    charType = "Character"
 
     def setDefaultMacroState(self):
         import time
@@ -338,6 +339,8 @@ class Character(src.saveing.Saveable):
         if not result["macroState"]["itemMarkedLast"] == None and not isinstance( result["macroState"]["itemMarkedLast"],str):
             result["macroState"]["itemMarkedLast"] = result["macroState"]["itemMarkedLast"].id
 
+        result["type"] = self.charType
+
         return result
 
     '''
@@ -398,6 +401,8 @@ class Character(src.saveing.Saveable):
                 if "params" in chat:
                     chatOptions.append(option)
         state["chatOptions"] = chatOptions
+
+        state["type"] = self.charType
 
         return state
 
@@ -843,6 +848,7 @@ class Character(src.saveing.Saveable):
         if hasattr(item,"level"):
             text += addRegister("LEVEl",item.level)
         if hasattr(item,"coolDown"):
+            text += addRegister("COOLDOWN",item.coolDown)
             text += addRegister("COOLDOWN REMAININg",item.coolDown-(gamestate.tick-item.coolDownTimer))
         if hasattr(item,"amount"):
             text += addRegister("AMOUNt",item.amount)
@@ -946,11 +952,13 @@ the class for mice. Intended to be used for manipulating the gamestate used for 
 bad code: animals should not be characters. This means it is possible to chat with a mouse 
 """
 class Mouse(Character):
+    charType = "Mouse"
+
     '''
     basic state setting
     '''
-    def __init__(self,display="🝆 ",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None):
-        super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator)
+    def __init__(self,display="🝆 ",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None,characterId=None):
+        super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator,characterId=characterId)
         self.vanished = False
         self.attributesToStore.extend([
                "vanished",
@@ -968,11 +976,13 @@ class Mouse(Character):
 """
 """
 class Monster(Character):
+    charType = "Monster"
+
     '''
     basic state setting
     '''
-    def __init__(self,display="🝆~",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None):
-        super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator)
+    def __init__(self,display="🝆~",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None,characterId=None):
+        super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator,characterId=characterId)
         self.phase = 1
         self.attributesToStore.extend([
                "phase",
@@ -1083,11 +1093,14 @@ class Monster(Character):
         return displayChars.monster_spore
 
 class Exploder(Monster):
+    charType = "Exploder"
 
-    def __init__(self,display="🝆~",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None):
-        super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator)
+    def __init__(self,display="🝆~",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None,characterId=None):
+        super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator,characterId=characterId)
 
         self.explode = True
+        self.attributesToStore.extend([
+               "explode"])
 
     def render(self):
         return displayChars.monster_exploder
@@ -1101,4 +1114,20 @@ class Exploder(Monster):
             new.startExploding()
 
         super().die(reason=reason, addCorpse=False)
+
+characterMap = {
+        "Character":Character,
+        "Monster":Monster,
+        "Exploder":Exploder,
+        "Mouse":Mouse,
+        }
+
+'''
+get item instances from dict state
+'''
+def getCharacterFromState(state):
+    character = characterMap[state["type"]](creator=void,characterId=state["id"])
+    loadingRegistry.register(character)
+    character.setState(state)
+    return character
 

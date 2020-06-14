@@ -1,5 +1,18 @@
 import pygame
 
+bloomShredder = pygame.image.load('config/Images/perspectiveTry/bloomShredder.png')
+corpseShredder = pygame.image.load('config/Images/perspectiveTry/corpseShredder.png')
+sporeExtractor = pygame.image.load('config/Images/perspectiveTry/sporeExtractor.png')
+bloomContainer = pygame.image.load('config/Images/perspectiveTry/bloomContainer.png')
+container = pygame.image.load('config/Images/perspectiveTry/container.png')
+moldFeed = pygame.image.load('config/Images/perspectiveTry/moldFeed.png')
+seededMoldFeed = pygame.image.load('config/Images/perspectiveTry/seededMoldFeed.png')
+monster_spore = pygame.image.load('config/Images/perspectiveTry/monster_spore.png')
+monster_feeder = pygame.image.load('config/Images/perspectiveTry/monster_feeder.png')
+monster_grazer = pygame.image.load('config/Images/perspectiveTry/monster_grazer.png')
+monster_corpseGrazer = pygame.image.load('config/Images/perspectiveTry/monster_corpseGrazer.png')
+monster_hunter = pygame.image.load('config/Images/perspectiveTry/monster_hunter.png')
+monster_exploder = pygame.image.load('config/Images/perspectiveTry/monster_exploder.png')
 moss = pygame.image.load('config/Images/perspectiveTry/mold.png')
 sprout = pygame.image.load('config/Images/perspectiveTry/sprout.png')
 sprout2 = pygame.image.load('config/Images/perspectiveTry/sprout2.png')

@@ -572,7 +572,7 @@ else:
 # start the interaction loop of the underlying library
 try:
     if not args.nourwid:
-        input("game ready press enter to start")
+        input("game ready. press enter to start")
         interaction.loop.run()
 except:
     if musicThread:

@@ -6900,7 +6900,6 @@ class AutoTutor(Item):
             else:
                 self.submenue = interaction.TextMenu("\n\nchallenge: gather sick blooms\nstatus: challenge completed.\n\n")
                 del self.availableChallenges["gatherSickBlooms"]
-        self.character.macroState["submenue"] = self.submenue
 
 
         elif selection == "produceFloorPlates": # from produceRoomBuilder
@@ -6970,6 +6969,11 @@ class AutoTutor(Item):
                 newCommand.yPosition = self.yPosition+1
 
                 del self.availableChallenges["gatherCorpse"]
+
+
+
+
+        self.character.macroState["submenue"] = self.submenue
 
 
     def countInInventory(self,itemType):

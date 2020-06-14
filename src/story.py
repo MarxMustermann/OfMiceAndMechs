@@ -3021,7 +3021,7 @@ class BuildBase(BasicPhase):
     '''
     def start(self,seed=0):
         showText("build a base.\n\npress space to continue")
-        showText("\n\n * press ? for help\n\n * press a to move left/west\n * press w to move up/north\n * press s to move down/south\n * press d to move right/east\n\n")
+        showText("\n\n * press ? for help\n\n * press a to move left/west\n * press w to move up/north\n * press s to move down/south\n * press d to move right/east\n\npress space to continue\n\n")
 
         # place character in wakeup room
         if terrain.wakeUpRoom:
@@ -3034,6 +3034,7 @@ class BuildBase(BasicPhase):
 
         self.miniBase = terrain.rooms[0]
 
+        """
         import json
         if seed%2==0:
             with open("states/theftBase1.json","r") as stateFile:
@@ -3072,6 +3073,7 @@ class BuildBase(BasicPhase):
         with open("states/globalMacroStorage.json","r") as stateFile:
             room = json.loads(stateFile.read())
         terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
+        """
 
         molds = []
         for bigX in range(1,13):

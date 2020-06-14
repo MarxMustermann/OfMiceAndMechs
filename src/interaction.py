@@ -3097,7 +3097,7 @@ bad code: should not be a global function
 '''
 def renderHelp():
     char = mainChar
-    txt = "the Goal of the Game is to stay alive and build a base.\nThe daily Grind can be delageted to subordinates.\n\nThe game is focused on automation so try to use Commands and NPCs to automate production.\n\n"
+    txt = "the Goal of the Game is to stay alive and build a base.\nThe daily Grind can be delageted to subordinates.\n\nThe game is focused on automation so try to use Commands and NPCs to automate production.\n\nUse the Auto tutor to do challenges and to learn how to play the game.\n\n"
     txt += "your keybindings are:\n\n"
     txt += "* move_north: "+commandChars.move_north+"\n"
     txt += "* move_east: "+commandChars.move_east+"\n"

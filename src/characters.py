@@ -1087,6 +1087,8 @@ class Exploder(Monster):
     def __init__(self,display="🝆~",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None):
         super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator)
 
+        self.explode = True
+
     def render(self):
         return displayChars.monster_exploder
 
@@ -1095,7 +1097,8 @@ class Exploder(Monster):
         new.xPosition = self.xPosition
         new.yPosition = self.yPosition
         self.container.addItems([new])
-        new.startExploding()
+        if self.explode:
+            new.startExploding()
 
         super().die(reason=reason, addCorpse=False)
 

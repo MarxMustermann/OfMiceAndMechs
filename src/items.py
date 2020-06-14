@@ -1621,11 +1621,20 @@ Coal is used as an energy source. It can be used to fire furnaces.
         super().destroy(generateSrcap=False)
 
     def apply(self,character):
-        if isinstance(character,src.characters.Monster) and character.phase == 2:
+        if isinstance(character,src.characters.Monster) and character.phase == 1 and ((gamestate.tick+self.xPosition)%10 == 5):
             newChar = characters.Exploder(creator=self)
             import copy
             newChar.macroState = copy.deepcopy(character.macroState)
             newChar.satiation = character.satiation
+            newChar.explode = False
+            
+            character.solvers = [
+                      "NaiveActivateQuest",
+                      "ActivateQuestMeta",
+                      "NaivePickupQuest",
+                      "NaiveMurderQuest",
+                    ]
+
             self.container.addCharacter(newChar,self.xPosition,self.yPosition)
             character.die()
             self.destroy(generateSrcap=False)
@@ -9003,6 +9012,12 @@ class Mold(Item):
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])
+
+                    new = itemMap["Bush"](creator=self)
+                    new.xPosition = self.xPosition
+                    new.yPosition = self.yPosition
+                    self.container.addItems([new])
+                    self.container.removeItem(self)
 
                 elif itemList[-1].type == "EncrustedBush":
                     new = itemMap["Bush"](creator=self)

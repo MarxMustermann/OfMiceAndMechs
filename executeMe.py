@@ -527,6 +527,9 @@ if not args.debug and not interaction.submenue and not loaded:
     cinematics.cinematicQueue.insert(0,openingCinematic)
     gameStateObj.openingCinematic = openingCinematic
     gameStateObj.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
+    gameStateObj.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
+    gameStateObj.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
+    gameStateObj.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
 else:
     gameStateObj.openingCinematic = None
 

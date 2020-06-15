@@ -364,6 +364,8 @@ get position for what thing
 * M - corpse
 * e - enemy
 * x - tilecenter
+* k - command
+* n - machinery
 
 """))
                 footer.set_text((urwid.AttrSpec("default","default"),""))
@@ -388,8 +390,12 @@ get position for what thing
                 char.interactionState["enumerateState"][-1]["target"] = ["Tree"]
             elif key == "C":
                 char.interactionState["enumerateState"][-1]["target"] = ["Coal"]
+            elif key == "k":
+                char.interactionState["enumerateState"][-1]["target"] = ["Command"]
             elif key == "M":
                 char.interactionState["enumerateState"][-1]["target"] = ["Corpse"]
+            elif key == "n":
+                char.interactionState["enumerateState"][-1]["target"] = ["Machine","ScrapCompactor"]
             elif key == "e":
                 char.interactionState["enumerateState"][-1]["target"] = ["enemy"]
             elif key == "x":
@@ -3418,6 +3424,10 @@ def gameLoop(loop,user_data):
                     continue
 
                 state = char.macroState
+
+                # do random action
+                if not len(state["commandKeyQueue"]):
+                    char.startIdling()
 
                 if len(state["commandKeyQueue"]):
                     key = state["commandKeyQueue"][0]

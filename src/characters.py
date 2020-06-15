@@ -947,6 +947,35 @@ class Character(src.saveing.Saveable):
             else:
                 listenFunction(info)
 
+    def startIdling(self):
+        import random
+
+        if not random.randint(1,10) == 1: # real idle
+            command = "10."
+        elif not random.randint(1,10) == 1: # do mainly harmless stuff
+            command = random.choice(["w"+str(random.randint(1,10))+".s",
+                                     "a"+str(random.randint(1,10))+".d",
+                                     "d"+str(random.randint(1,10))+".a",
+                                     "s"+str(random.randint(1,10))+".w",
+                                     "w"+str(random.randint(1,10))+".a"+str(random.randint(1,10))+".s"+str(random.randint(1,10))+".d",
+                                     "d"+str(random.randint(1,10))+".s"+str(random.randint(1,10))+".a"+str(random.randint(1,10))+".w",
+                                    ])
+        elif not random.randint(1,10) == 1: # do not so harmless stuff
+            command = random.choice(["ls"+str(random.randint(1,10))+".wk"])
+        else:
+            command = random.choice(["opk$=aa$=ww$=ss$=ddj",
+                                     "opx$=aa$=ww$=ss$=dd"
+                                     "opn$=aaj$=wwij$=ssij$=ddij"
+                                     "j","ajd","wjs","dja","sjw"
+                                     "opf$=aa$=ww$=ss$=ddj$=da$=sw$=ws$=ad"
+                                    ])
+
+        parsedCommand = []
+        for char in command:
+            parsedCommand.append((char,["norecord"]))
+
+        self.macroState["commandKeyQueue"] = parsedCommand
+
 """
 the class for mice. Intended to be used for manipulating the gamestate used for example to attack the player
 bad code: animals should not be characters. This means it is possible to chat with a mouse 

@@ -1,5 +1,6 @@
 import pygame
 
+itemUpgrader = pygame.image.load('config/Images/perspectiveTry/itemUpgrader.png')
 bloomShredder = pygame.image.load('config/Images/perspectiveTry/bloomShredder.png')
 corpseShredder = pygame.image.load('config/Images/perspectiveTry/corpseShredder.png')
 sporeExtractor = pygame.image.load('config/Images/perspectiveTry/sporeExtractor.png')

@@ -952,7 +952,7 @@ class Character(src.saveing.Saveable):
 
         if not random.randint(1,10) == 1: # real idle
             command = "10."
-        elif not random.randint(1,10) == 1: # do mainly harmless stuff
+        elif not random.randint(1,3) == 1: # do mainly harmless stuff
             command = random.choice(["w"+str(random.randint(1,10))+".s",
                                      "a"+str(random.randint(1,10))+".d",
                                      "d"+str(random.randint(1,10))+".a",
@@ -960,11 +960,11 @@ class Character(src.saveing.Saveable):
                                      "w"+str(random.randint(1,10))+".a"+str(random.randint(1,10))+".s"+str(random.randint(1,10))+".d",
                                      "d"+str(random.randint(1,10))+".s"+str(random.randint(1,10))+".a"+str(random.randint(1,10))+".w",
                                     ])
-        elif not random.randint(1,10) == 1: # do not so harmless stuff
+        elif not random.randint(1,3) == 1: # do not so harmless stuff
             command = random.choice(["ls"+str(random.randint(1,10))+".wk",
                                      "opf$=aa$=ww$=ss$=ddj$=da$=sw$=ws$=ad",
                                      "j","ajd","wjs","dja","sjw",
-                                     "opn$=aaj$=wwij$=ssij$=ddij",
+                                     "opn$=aaj$=wwj$=ssj$=ddj",
                                      "opx$=aa$=ww$=ss$=dd",
                                     ])
         else:

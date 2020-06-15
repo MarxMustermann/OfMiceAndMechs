@@ -961,13 +961,14 @@ class Character(src.saveing.Saveable):
                                      "d"+str(random.randint(1,10))+".s"+str(random.randint(1,10))+".a"+str(random.randint(1,10))+".w",
                                     ])
         elif not random.randint(1,10) == 1: # do not so harmless stuff
-            command = random.choice(["ls"+str(random.randint(1,10))+".wk"])
+            command = random.choice(["ls"+str(random.randint(1,10))+".wk",
+                                     "opf$=aa$=ww$=ss$=ddj$=da$=sw$=ws$=ad",
+                                     "j","ajd","wjs","dja","sjw",
+                                     "opn$=aaj$=wwij$=ssij$=ddij",
+                                     "opx$=aa$=ww$=ss$=dd",
+                                    ])
         else:
             command = random.choice(["opk$=aa$=ww$=ss$=ddj",
-                                     "opx$=aa$=ww$=ss$=dd"
-                                     "opn$=aaj$=wwij$=ssij$=ddij"
-                                     "j","ajd","wjs","dja","sjw"
-                                     "opf$=aa$=ww$=ss$=ddj$=da$=sw$=ws$=ad"
                                     ])
 
         parsedCommand = []

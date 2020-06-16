@@ -775,11 +775,14 @@ class Character(src.saveing.Saveable):
     """
     almost straightforward dropping of items
     """
-    def drop(self,item):
+    def drop(self,item,position=None):
         foundScrap = None
-        if (self.xPosition,self.yPosition) in self.container.itemByCoordinates:
 
-            itemList = self.container.itemByCoordinates[(self.xPosition,self.yPosition)]
+        if not position:
+            position = (self.xPosition,self.yPosition)
+        if position in self.container.itemByCoordinates:
+
+            itemList = self.container.itemByCoordinates[position]
 
             if item.walkable == False and len(itemList):
                 self.messages.append("you need a clear space to drop big items")
@@ -809,8 +812,8 @@ class Character(src.saveing.Saveable):
             foundScrap.setWalkable()
         else:
             # add item to floor
-            item.xPosition = self.xPosition
-            item.yPosition = self.yPosition
+            item.xPosition = position[0]
+            item.yPosition = position[1]
             self.container.addItems([item])
 
             # notify listener

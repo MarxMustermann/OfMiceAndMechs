@@ -341,6 +341,103 @@ type the macro name you want to record to
         char.doStackPush = False
         return
 
+    if "advancedInteraction" in char.interactionState:
+        if key == "w":
+            items = char.container.getItemByPosition((char.xPosition,char.yPosition-1))
+            if items:
+                items[0].apply(char)
+        elif key == "s":
+            items = char.container.getItemByPosition((char.xPosition,char.yPosition+1))
+            if items:
+                items[0].apply(char)
+        elif key == "d":
+            items = char.container.getItemByPosition((char.xPosition+1,char.yPosition))
+            if items:
+                items[0].apply(char)
+        elif key == "a":
+            items = char.container.getItemByPosition((char.xPosition-1,char.yPosition))
+            if items:
+                items[0].apply(char)
+        elif key == ".":
+            items = char.container.getItemByPosition((char.xPosition,char.yPosition))
+            if items:
+                items[0].apply(char)
+        elif key == "f":
+            character = char
+            for item in character.inventory:
+                if isinstance(item,src.items.GooFlask):
+                    if item.uses > 0:
+                        item.apply(character)
+                        break
+                if isinstance(item,src.items.Bloom) or isinstance(item,src.items.BioMass) or isinstance(item,src.items.PressCake) or isinstance(item,src.items.SickBloom):
+                    item.apply(character)
+                    character.inventory.remove(item)
+                    break
+                if isinstance(item,src.items.Corpse):
+                    item.apply(character)
+                    break
+        del char.interactionState["advancedInteraction"]
+        return
+
+    if "advancedPickup" in char.interactionState:
+        if key == "w":
+            items = char.container.getItemByPosition((char.xPosition,char.yPosition-1))
+            if items:
+                item = items[0]
+                item.pickUp(char)
+                item.changed("pickedUp",char)
+                char.changed()
+        elif key == "s":
+            items = char.container.getItemByPosition((char.xPosition,char.yPosition+1))
+            if items:
+                item = items[0]
+                item.pickUp(char)
+                item.changed("pickedUp",char)
+                char.changed()
+        elif key == "d":
+            items = char.container.getItemByPosition((char.xPosition+1,char.yPosition))
+            if items:
+                item = items[0]
+                item.pickUp(char)
+                item.changed("pickedUp",char)
+                char.changed()
+        elif key == "a":
+            items = char.container.getItemByPosition((char.xPosition-1,char.yPosition))
+            if items:
+                item = items[0]
+                item.pickUp(char)
+                item.changed("pickedUp",char)
+                char.changed()
+        elif key == ".":
+            items = char.container.getItemByPosition((char.xPosition,char.yPosition))
+            if items:
+                item = items[0]
+                item.pickUp(char)
+                item.changed("pickedUp",char)
+                char.changed()
+        del char.interactionState["advancedPickup"]
+        return
+
+    if "advancedDrop" in char.interactionState:
+        if key == "w":
+            if char.inventory:
+                char.drop(char.inventory[-1],(char.xPosition,char.yPosition-1))
+        elif key == "s":
+            if char.inventory:
+                char.drop(char.inventory[-1],(char.xPosition,char.yPosition+1))
+        elif key == "d":
+            if char.inventory:
+                char.drop(char.inventory[-1],(char.xPosition+1,char.yPosition))
+        elif key == "a":
+            if char.inventory:
+                char.drop(char.inventory[-1],(char.xPosition-1,char.yPosition))
+        elif key == ".":
+            if char.inventory:
+                char.drop(char.inventory[-1],(char.xPosition,char.yPosition))
+        del char.interactionState["advancedDrop"]
+        return
+
+
     if not "enumerateState" in char.interactionState:
         char.interactionState["enumerateState"] = []
 
@@ -1791,20 +1888,73 @@ current registers
             # drink from the first available item in inventory
             # bad pattern: the user has to have the choice from what item to drink from
             # bad code: drinking should happen in character
-            if key in (commandChars.drink):
-                character = char
-                for item in character.inventory:
-                    if isinstance(item,src.items.GooFlask):
-                        if item.uses > 0:
-                            item.apply(character)
-                            break
-                    if isinstance(item,src.items.Bloom) or isinstance(item,src.items.BioMass) or isinstance(item,src.items.PressCake) or isinstance(item,src.items.SickBloom):
-                        item.apply(character)
-                        character.inventory.remove(item)
-                        break
-                    if isinstance(item,src.items.Corpse):
-                        item.apply(character)
-                        break
+            if key in ("J"):
+                if mainChar == char and not "norecord" in flags:
+                    text = """
+
+press key for the advanced interaction
+
+* w = activate north
+* a = activate west
+* s = activate east
+* d = activate south
+* . = activate item on floor
+* f = eat food
+
+"""
+
+                    header.set_text((urwid.AttrSpec("default","default"),"advanced activate"))
+                    main.set_text((urwid.AttrSpec("default","default"),text))
+                    footer.set_text((urwid.AttrSpec("default","default"),""))
+                    char.specialRender = True
+
+                char.interactionState["advancedInteraction"] = {}
+                return
+
+            if key in ("K"):
+                if mainChar == char and not "norecord" in flags:
+                    text = """
+
+press key for advanced pickup
+
+* w = pick up north
+* a = pick up west
+* s = pick up east
+* d = pick up south
+* . = pick item on floor
+
+"""
+
+                    header.set_text((urwid.AttrSpec("default","default"),"advanced pick up"))
+                    main.set_text((urwid.AttrSpec("default","default"),text))
+                    footer.set_text((urwid.AttrSpec("default","default"),""))
+                    char.specialRender = True
+
+                char.interactionState["advancedPickup"] = {}
+                return
+
+            if key in ("L"):
+                if mainChar == char and not "norecord" in flags:
+                    text = """
+
+press key for advanced drop
+
+* w = drop north
+* a = drop west
+* s = drop east
+* d = drop south
+* . = drop on floor
+
+"""
+
+                    header.set_text((urwid.AttrSpec("default","default"),"advanced drop"))
+                    main.set_text((urwid.AttrSpec("default","default"),text))
+                    footer.set_text((urwid.AttrSpec("default","default"),""))
+                    char.specialRender = True
+
+                char.interactionState["advancedDrop"] = {}
+                return
+
 
             # pick up items
             # bad code: picking up should happen in character

@@ -108,6 +108,7 @@ class Character(src.saveing.Saveable):
         self.doStackPop = False
         self.doStackPush = False
         self.timeTaken = 0
+        self.personality = {}
 
         self.interactionState = {}
         self.interactionStateBackup = []
@@ -130,7 +131,7 @@ class Character(src.saveing.Saveable):
                "gotBasicSchooling","gotMovementSchooling","gotInteractionSchooling","gotExamineSchooling",
                "xPosition","yPosition","name","satiation","unconcious","reputation","tutorialStart",
                "isMilitary","hasFloorPermit","dead","deathReason","automated","watched","solvers","questsDone",
-               "stasis","registers","doStackPop","doStackPush","timeTaken"])
+               "stasis","registers","doStackPop","doStackPush","timeTaken","personality"])
         self.objectsToStore.append("serveQuest")
         self.objectsToStore.append("room")
 
@@ -142,6 +143,9 @@ class Character(src.saveing.Saveable):
         self.gotInteractionSchooling = False
         self.gotExamineSchooling = False
         self.faction = "player"
+
+        self.personality["idleWaitTime"] = 10
+        self.personality["idleWaitChance"] = 3
 
         # add default quests
         self.assignQuest(src.quests.SurviveQuest(creator=self))
@@ -952,25 +956,27 @@ class Character(src.saveing.Saveable):
 
     def startIdling(self):
         import random
+        waitString = str(random.randint(1,self.personality["idleWaitTime"]))+".")
+        waitChance = self.personality["idleWaitChance"]
 
-        if not random.randint(1,10) == 1: # real idle
-            command = "10."
-        elif not random.randint(1,3) == 1: # do mainly harmless stuff
-            command = random.choice(["w"+str(random.randint(1,10))+".s",
-                                     "a"+str(random.randint(1,10))+".d",
-                                     "d"+str(random.randint(1,10))+".a",
-                                     "s"+str(random.randint(1,10))+".w",
-                                     "w"+str(random.randint(1,10))+".a"+str(random.randint(1,10))+".s"+str(random.randint(1,10))+".d",
-                                     "d"+str(random.randint(1,10))+".s"+str(random.randint(1,10))+".a"+str(random.randint(1,10))+".w",
+        if not random.randint(1,waitChance) == 1: # real idle
+            command = waitString
+        elif not random.randint(1,waitChance) == 1: # do mainly harmless stuff
+            command = random.choice(["w"+waitString+"s",
+                                     "a"+waitString+"d",
+                                     "d"+waitString+"a",
+                                     "s"+waitString+"w",
+                                     "w"+waitString+"a"+waitString+"s"+waitString+"d",
+                                     "d"+waitString+"s"+waitString+"a"+waitString+"w",
                                     ])
-        elif not random.randint(1,3) == 1: # do not so harmless stuff
-            command = random.choice(["ls"+str(random.randint(1,10))+".wk",
+        elif not random.randint(1,waitChance) == 1: # do not so harmless stuff
+            command = random.choice(["ls"+waitString+"wk",
                                      "opf$=aa$=ww$=ss$=ddj$=da$=sw$=ws$=ad",
                                      "j","ajd","wjs","dja","sjw",
                                      "opn$=aaj$=wwj$=ssj$=ddj",
                                      "opx$=aa$=ww$=ss$=dd",
                                     ])
-        else:
+        else: #do dangerous stuff
             command = random.choice(["opk$=aa$=ww$=ss$=ddj",
                                     ])
 

@@ -956,7 +956,7 @@ class Character(src.saveing.Saveable):
 
     def startIdling(self):
         import random
-        waitString = str(random.randint(1,self.personality["idleWaitTime"]))+".")
+        waitString = str(random.randint(1,self.personality["idleWaitTime"]))+"."
         waitChance = self.personality["idleWaitChance"]
 
         if not random.randint(1,waitChance) == 1: # real idle
@@ -973,6 +973,7 @@ class Character(src.saveing.Saveable):
             command = random.choice(["ls"+waitString+"wk",
                                      "opf$=aa$=ww$=ss$=ddj$=da$=sw$=ws$=ad",
                                      "j","ajd","wjs","dja","sjw",
+                                     "Ja","Jw","Js","Jd","J.",
                                      "opn$=aaj$=wwj$=ssj$=ddj",
                                      "opx$=aa$=ww$=ss$=dd",
                                     ])

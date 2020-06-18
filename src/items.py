@@ -4122,6 +4122,149 @@ class CommandBook(Item):
         state["knownBlueprints"] = self.knownBlueprints
         return state
 
+class JobOrder(Item):
+    type = "JobOrder"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="job order",creator=None,noId=False):
+        super().__init__(displayChars.floor,xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = True
+        self.toProduce = "Wall"
+        self.macro = "PRODUCE WALl"
+
+    def getLongInfo(self):
+        text = """
+item: JobOrder
+
+description:
+Stores the information that something should be done, without describing how it should be done.
+
+the order is:
+
+produce %s
+
+"""%(self.toProduce)
+        return text
+
+    def apply(self,character):
+        options = [("runJobOrder","run job order macro"),("configureJobOrder","configure job order")]
+        self.submenue = interaction.SelectionMenu("what do you want to do?",options)
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.apply2
+        self.character = character
+
+    def apply2(self):
+        if self.submenue.selection == "runJobOrder":
+            if not self.macro in self.character.macroState["macros"]:
+                self.character.messages.append("no solver found - record solver to %s"%(command))
+                return
+
+            convertedCommand = []
+            for char in "_"+self.macro:
+                convertedCommand.append((char,[]))
+            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+        else:
+            options = [("wall","wall"),("door","door"),("FloorPlate","floor plate")]
+            self.submenue = interaction.SelectionMenu("what should be produced?",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.configureJobOrder2
+
+    def configureJobOrder2(self):
+        self.toProduce = self.submenue.selection
+        self.macro = "PRODUCE "+self.toProduce.upper()[:-1]+self.toProduce[-1].lower()
+
+class JobBoard(Item):
+    type = "JobBoard"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="job board",creator=None,noId=False):
+        super().__init__(displayChars.floor,xPosition,yPosition,name=name,creator=creator)
+
+        self.todo = []
+
+        self.bolted = False
+        self.walkable = False
+
+    def getLongInfo(self):
+        text = """
+item: JobBoard
+
+description:
+Stores a collection of job board. Serving as a todo list.
+
+"""
+        return text
+
+    def apply(self,character):
+        options = [("addJobOrder","add job order"),("getSolvableJobOrder","get solvable job order"),("getJobOrder","get job order")]
+        self.submenue = interaction.SelectionMenu("what do you want to do?",options)
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.apply2
+        self.character = character
+
+    def apply2(self):
+        if self.submenue.selection == "addJobOrder":
+            itemFound = None
+            for item in self.character.inventory:
+                if item.type == "JobOrder":
+                    itemFound = item
+                    break
+            self.todo.append(itemFound)
+            self.character.inventory.remove(itemFound)
+            self.character.messages.append("job order added")
+        elif self.submenue.selection == "getSolvableJobOrder":
+
+            if len(self.character.inventory) > 9:
+                self.character.messages.append("no space in inventory")
+                return
+
+            itemFound = None
+            for jobOrder in self.todo:
+                if jobOrder.macro in self.character.macroState["macros"]:
+                   itemFound = jobOrder 
+                   break
+
+            if not itemFound:
+                self.character.messages.append("no fitting job order found")
+                return
+
+            self.todo.remove(jobOrder)
+            self.character.inventory.append(jobOrder)
+            self.character.messages.append("you take a job order")
+
+        elif self.submenue.selection == "getJobOrder":
+            if not self.todo:
+                self.character.messages.append("no job order on job board")
+            elif len(self.character.inventory) > 9:
+                self.character.messages.append("inventory not empty")
+            else:
+                self.character.inventory.append(self.todo.pop())
+                self.character.messages.append("you take a job order from the job board")
+        else:
+            self.character.messages.append("noption not found")
+
+class TransportContainer():
+    type = "TransportContainer"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="Transport Container",creator=None,noId=False):
+
+        self.bolted = False
+        self.walkable = False
+        
+        # add item
+        # remove item
+        # transport item
+        # set transport command
+
 '''
 '''
 class FloorPlate_real(Item):
@@ -10261,6 +10404,8 @@ itemMap = {
             "BloomContainer":BloomContainer,
             "Container":Container,
             "CorpseShredder":CorpseShredder,
+            "JobBoard":JobBoard,
+            "JobOrder":JobOrder,
 }
 
 producables = {

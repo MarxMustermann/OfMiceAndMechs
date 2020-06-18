@@ -2743,6 +2743,8 @@ class CharacterInfoMenu(SubMenu):
         text += "SELFy - %s"%(char.yPosition%15)+"\n"
         char.setRegisterValue("SATIATIOn",char.satiation)
         text += "SATIATIOn - %s"%(char.satiation)+"\n"
+        char.setRegisterValue("NUM INVENTORY ITEMs",len(char.inventory))
+        text += "NUM INVENTORY ITEMs - %s"%(len(char.inventory))+"\n"
 
         # show info
         header.set_text((urwid.AttrSpec("default","default"),"\ncharacter overview"))

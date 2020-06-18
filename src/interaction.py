@@ -646,13 +646,16 @@ current registers:
                 lastVarAction["action"] = None
                 lastVarAction["number"] = ""
 
-        if lastVarAction["outOperator"] == True:
-            if lastVarAction["register"] == None or (lastVarAction["register"] == "" and (key.isupper() or key == " ")):
+        register = lastVarAction["register"]
 
-                if lastVarAction["register"] == None:
+        if lastVarAction["outOperator"] == True:
+            if (register == None or register == "") or ((register[-1].isupper() or register.endswith(" ")) and (key.isupper() or key == " ")):
+
+                if register == None:
                     lastVarAction["register"] = ""
                 else:
                     lastVarAction["register"] += key
+                register = lastVarAction["register"]
 
                 if mainChar == char and not "norecord" in flags:
                     text = """
@@ -661,9 +664,9 @@ press key for register to load value from
 
 current registers (%s):
 
-"""%(lastVarAction["register"])
+"""%(register)
                     for key,value in char.registers.items(): 
-                        if not key.startswith(lastVarAction["register"]):
+                        if not key.startswith(register):
                             continue
                         convertedValues = []
                         for item in reversed(value):
@@ -679,7 +682,8 @@ current registers (%s):
                 return
 
             else:
-                key = lastVarAction["register"]+key
+                if register:
+                    key = register+key
                 def getValue():
                     if not key in char.registers:
                         char.messages.append("no value in register using %s"%(key,))
@@ -703,9 +707,10 @@ current registers (%s):
                 char.timeTaken -= 0.99
                 return
         else:
-            if lastVarAction["register"] == "" or lastVarAction["register"][-1].isupper():
+            if register == "" or register[-1].isupper() or register[-1] == " ":
                 if key.isupper() or key == " ":
                     lastVarAction["register"] += key
+                    register = lastVarAction["register"]
 
                     if mainChar == char and not "norecord" in flags:
                         text = """
@@ -714,9 +719,9 @@ press key for register manipulate
 
 current registers (%s):
 
-"""%(lastVarAction["register"])
+"""%(register)
                         for key,value in char.registers.items(): 
-                            if not key.startswith(lastVarAction["register"]):
+                            if not key.startswith(register):
                                 continue
                             convertedValues = []
                             for item in reversed(value):
@@ -753,7 +758,8 @@ press key for the action you want to do on the register
                         char.specialRender = True
                     char.timeTaken -= 0.99
                     return
-            if lastVarAction["action"] == None:
+            action = lastVarAction["action"]
+            if action == None:
                 lastVarAction["action"] = key
 
                 if mainChar == char and not "norecord" in flags:
@@ -763,7 +769,7 @@ input value for this operation ($%s%s)
 
 type number or load value from register
 
-"""%( lastVarAction["register"], lastVarAction["action"])
+"""%( register, action)
                     header.set_text((urwid.AttrSpec("default","default"),"reading registers"))
                     main.set_text((urwid.AttrSpec("default","default"),text))
                     footer.set_text((urwid.AttrSpec("default","default"),""))
@@ -782,7 +788,7 @@ type number
 
 press any other key to finish
 
-"""%( lastVarAction["register"], lastVarAction["action"], lastVarAction["number"])
+"""%( register, action, lastVarAction["number"])
                     header.set_text((urwid.AttrSpec("default","default"),"reading registers"))
                     main.set_text((urwid.AttrSpec("default","default"),text))
                     footer.set_text((urwid.AttrSpec("default","default"),""))
@@ -790,20 +796,20 @@ press any other key to finish
                 char.timeTaken -= 0.99
                 return
 
-            if lastVarAction["action"] == "=":
-                if not lastVarAction["register"] in char.registers:
-                    char.registers[lastVarAction["register"]] = [0]
-                char.registers[lastVarAction["register"]][-1] = int(lastVarAction["number"])
-            if lastVarAction["action"] == "+":
-                 char.registers[lastVarAction["register"]][-1] += int(lastVarAction["number"])
-            if lastVarAction["action"] == "-":
-                 char.registers[lastVarAction["register"]][-1] -= int(lastVarAction["number"])
-            if lastVarAction["action"] == "/":
-                 char.registers[lastVarAction["register"]][-1] //= int(lastVarAction["number"])
-            if lastVarAction["action"] == "%":
-                 char.registers[lastVarAction["register"]][-1] %= int(lastVarAction["number"])
-            if lastVarAction["action"] == "*":
-                 char.registers[lastVarAction["register"]][-1] *= int(lastVarAction["number"])
+            if action == "=":
+                if not register in char.registers:
+                    char.registers[register] = [0]
+                char.registers[register][-1] = int(lastVarAction["number"])
+            if action == "+":
+                 char.registers[register][-1] += int(lastVarAction["number"])
+            if action == "-":
+                 char.registers[register][-1] -= int(lastVarAction["number"])
+            if action == "/":
+                 char.registers[register][-1] //= int(lastVarAction["number"])
+            if action == "%":
+                 char.registers[register][-1] %= int(lastVarAction["number"])
+            if action == "*":
+                 char.registers[register][-1] *= int(lastVarAction["number"])
 
             charState["commandKeyQueue"] = [(key,flags+["norecord"])] + charState["commandKeyQueue"]
             char.interactionState["varActions"].pop()

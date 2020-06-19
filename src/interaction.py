@@ -231,7 +231,7 @@ def processInput(key,charState=None,noAdvanceGame=False,char=None):
     char.specialRender = False
 
     if charState["recording"]:
-        if not key in ("lagdetection","lagdetection_","-"):
+        if not key in ("lagdetection","lagdetection_","-") or char.interactionState["varActions"]:
             if charState["recordingTo"] == None or charState["recordingTo"][-1].isupper() or charState["recordingTo"][-1] == " ":
                 if charState["recordingTo"] == None:
                     charState["recordingTo"] = key
@@ -456,13 +456,16 @@ get position for what thing
 * f - food
 * c - character
 * m - marker bean
-* t - tree
 * C - coal
 * M - corpse
 * e - enemy
 * x - tilecenter
 * k - command
 * n - machinery
+* j - jobOrder
+* J - jobBoard
+* t - transport in
+* T - transport out
 
 """))
                 footer.set_text((urwid.AttrSpec("default","default"),""))
@@ -483,8 +486,6 @@ get position for what thing
                 char.interactionState["enumerateState"][-1]["target"] = ["character"]
             elif key == "m":
                 char.interactionState["enumerateState"][-1]["target"] = ["MarkerBean"]
-            elif key == "t":
-                char.interactionState["enumerateState"][-1]["target"] = ["Tree"]
             elif key == "C":
                 char.interactionState["enumerateState"][-1]["target"] = ["Coal"]
             elif key == "k":
@@ -512,6 +513,14 @@ get position for what thing
                 char.interactionState["enumerateState"].pop()
                 char.timeTaken -= 0.99
                 return
+            elif key == "j":
+                char.interactionState["enumerateState"][-1]["target"] = ["JobOrder"]
+            elif key == "s":
+                char.interactionState["enumerateState"][-1]["target"] = ["JobBoard"]
+            elif key == "t":
+                char.interactionState["enumerateState"][-1]["target"] = ["TransportInNode"]
+            elif key == "T":
+                char.interactionState["enumerateState"][-1]["target"] = ["TransportOutNode"]
             else:
                 char.messages.append("not a valid target")
                 char.interactionState["enumerateState"].pop()
@@ -649,8 +658,7 @@ current registers:
         register = lastVarAction["register"]
 
         if lastVarAction["outOperator"] == True:
-            if (register == None or register == "") or ((register[-1].isupper() or register.endswith(" ")) and (key.isupper() or key == " ")):
-
+            if register == None or ((register == "" or register[-1].isupper() or register.endswith(" ")) and (key.isupper() or key == " ")):
                 if register == None:
                     lastVarAction["register"] = ""
                 else:
@@ -871,11 +879,11 @@ press _ to run a macro in case the condition is true
                 footer.set_text((urwid.AttrSpec("default","default"),""))
                 char.specialRender = True
 
-        elif char.interactionState["ifParam1"][-1] in ([],[("_",["norecord"])]) or (char.interactionState["ifParam1"][-1][-1][0].isupper() and char.interactionState["ifParam1"][-1][0][0] == "_"):
+        elif char.interactionState["ifParam1"][-1] in ([],[("_",["norecord"])]) or ((char.interactionState["ifParam1"][-1][-1][0].isupper() or char.interactionState["ifParam1"][-1][-1][0] == " ") and char.interactionState["ifParam1"][-1][0][0] == "_"):
             char.interactionState["ifParam1"][-1].append((key,["norecord"]))
 
             if mainChar == char and not "norecord" in flags:
-                if (char.interactionState["ifParam1"][-1][-1][0].isupper() and char.interactionState["ifParam1"][-1][0][0] == "_") or char.interactionState["ifParam1"][-1][-1][0] == "_":
+                if ((char.interactionState["ifParam1"][-1][-1][0].isupper() or char.interactionState["ifParam1"][-1][-1][0] == " ") and char.interactionState["ifParam1"][-1][0][0] == "_") or char.interactionState["ifParam1"][-1][-1][0] == "_":
                     inputString = ""
                     for item in char.interactionState["ifParam1"][-1]:
                         inputString += item[0]
@@ -916,7 +924,7 @@ press _ to run a macro in case the condition is false
                 footer.set_text((urwid.AttrSpec("default","default"),""))
                 char.specialRender = True
 
-        elif char.interactionState["ifParam2"][-1] in ([],[("_",["norecord"])]) or (char.interactionState["ifParam2"][-1][-1][0].isupper() and char.interactionState["ifParam2"][-1][0][0] == "_"):
+        elif char.interactionState["ifParam2"][-1] in ([],[("_",["norecord"])]) or ((char.interactionState["ifParam2"][-1][-1][0].isupper() or char.interactionState["ifParam2"][-1][-1][0] == " ") and char.interactionState["ifParam2"][-1][0][0] == "_"):
             char.interactionState["ifParam2"][-1].append((key,["norecord"]))
 
             if mainChar == char and not "norecord" in flags:
@@ -952,7 +960,7 @@ type the macro that should be run in case the condition is false
                 footer.set_text((urwid.AttrSpec("default","default"),""))
                 char.specialRender = True
 
-            if not char.interactionState["ifParam2"][-1] in ([],[("_",["norecord"])]):
+            if not (char.interactionState["ifParam2"][-1] in ([],[("_",["norecord"])]) or char.interactionState["ifParam2"][-1][-1][0].isupper() or char.interactionState["ifParam2"][-1][-1][0] == " "):
                 conditionTrue = True
 
                 if char.interactionState["ifCondition"][-1] == "i":
@@ -1072,7 +1080,7 @@ type the macro that should be run in case the condition is false
             charState["commandKeyQueue"] = commands+charState["commandKeyQueue"]
             charState["loop"].pop()
 
-    if key in ("-",):
+    if key in ("-",) and not char.interactionState["varActions"]:
         if not charState["recording"]:
             char.messages.append("press key to record to")
             if mainChar == char and not "norecord" in flags:

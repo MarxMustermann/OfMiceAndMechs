@@ -864,6 +864,9 @@ class Character(src.saveing.Saveable):
         if hasattr(item,"bolted"):
             text += addRegister("BOLTEd",int(item.bolted))
 
+        for (key,value) in item.fetchSpecialRegisterInformation().items():
+            text += addRegister(key,value)
+
         self.submenue = interaction.TextMenu(text)
         self.macroState["submenue"] = self.submenue
 

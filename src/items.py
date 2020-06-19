@@ -77,6 +77,9 @@ class Item(src.saveing.Saveable):
         self.initialState = self.getState()
         loadingRegistry.register(self)
 
+    def fetchSpecialRegisterInformation(self):
+        return {}
+
     def upgrade(self):
         self.level += 1
 
@@ -4249,17 +4252,103 @@ Stores a collection of job board. Serving as a todo list.
         else:
             self.character.messages.append("noption not found")
 
-class TransportContainer():
+class TransportInNode(Item):
+    type = "TransportInNode"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="Transport In Node",creator=None,noId=False):
+        super().__init__(displayChars.wall,xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = False
+
+    def apply(self,character):
+        if not (character.xPosition == self.xPosition and character.yPosition == self.yPosition+1):
+            character.messages.append("item has to be activated from south")
+            return
+
+        position = (self.xPosition,self.yPosition-1)
+        items = self.container.getItemByPosition(position)
+        if not items:
+            character.messages.append("no items to fetch")
+            return
+
+        itemToMove = items[0]
+
+        self.container.removeItem(itemToMove)
+        character.inventory.append(itemToMove)
+        character.messages.append("you take an item")
+
+    def fetchSpecialRegisterInformation(self):
+        result = {}
+
+        position = (self.xPosition,self.yPosition-1)
+        result["NUM ITEMs"] = len(self.container.getItemByPosition(position))
+        return result
+
+class TransportOutNode(Item):
+    type = "TransportOutNode"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="Transport Out Node",creator=None,noId=False):
+        super().__init__(displayChars.wall,xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = False
+
+    def apply(self,character):
+        if not character.inventory:
+            character.messages.append("no items in inventory")
+            return
+
+        toDrop = character.inventory[-1]
+
+        position = (self.xPosition,self.yPosition+1)
+        items = self.container.getItemByPosition(position)
+        if len(items) > 9:
+            character.messages.append("not enough space on dropoff point (south)")
+
+        toDrop.xPosition = self.xPosition
+        toDrop.yPosition = self.yPosition+1
+        character.inventory.remove(toDrop)
+        self.container.addItems([toDrop])
+        character.messages.append("you take a item")
+
+    def fetchSpecialRegisterInformation(self):
+        result = {}
+
+        position = (self.xPosition,self.yPosition+1)
+        result["NUM ITEMs"] = len(self.container.getItemByPosition(position))
+        return result
+
+class TransportContainer(Item):
     type = "TransportContainer"
 
     '''
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="Transport Container",creator=None,noId=False):
+        super().__init__(displayChars.wall,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = False
         
+    def apply(self,character):
+        options = [("addItems","load item"),
+                   ("transportItem","transport item"),
+                   ("getJobOrder","set transport command")
+                  ]
+        self.submenue = interaction.SelectionMenu("what do you want to do?",options)
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.apply2
+        self.character = character
+
+    def apply2(self):
+        idd
         # add item
         # remove item
         # transport item
@@ -10406,6 +10495,8 @@ itemMap = {
             "CorpseShredder":CorpseShredder,
             "JobBoard":JobBoard,
             "JobOrder":JobOrder,
+            "TransportOutNode":TransportOutNode,
+            "TransportInNode":TransportInNode,
 }
 
 producables = {

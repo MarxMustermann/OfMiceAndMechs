@@ -697,6 +697,9 @@ current registers (%s):
                         char.messages.append("no value in register using %s"%(key,))
                         return 0
 
+                    if isinstance(char.registers[key][-1],str):
+                        return char.registers[key][-1]
+
                     if char.registers[key][-1] < 0:
                         char.messages.append("negative value in register using %s"%(key,))
                         return 0

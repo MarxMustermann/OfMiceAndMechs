@@ -4180,6 +4180,158 @@ produce %s
         self.toProduce = self.submenue.selection
         self.macro = "PRODUCE "+self.toProduce.upper()[:-1]+self.toProduce[-1].lower()
 
+    def fetchSpecialRegisterInformation(self):
+        result = {}
+
+        result["TO PRODUCe"] = self.toProduce
+        return result
+
+class ProductionRunner(Item):
+    type = "ProductionRunner"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="production runner",creator=None,noId=False):
+        self.jobOrders = []
+        self.commands = {}
+
+        super().__init__(displayChars.wall,xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = False
+
+    def getLongInfo(self):
+
+        displayJobOrders = []
+        for jobOrder in self.jobOrders:
+            displayJobOrders.append(jobOrder.toProduce)
+
+        text = """
+item: ProductionRunner
+
+description:
+allows to set commands for production of items.
+job order can be inserted and commands can be run depending on the item the job order is for.
+
+%s
+
+%s
+"""%(self.commands,displayJobOrders)
+        return text
+
+    def apply(self,character):
+        if not (character.xPosition == self.xPosition and character.yPosition == self.yPosition-1):
+            character.messages.append("this item can only be used from north")
+            return
+
+        options = [("runJobOrder","run job order"),("runCommand","run command"),("addJobOrder","add job order"),("addCommand","add command")]
+        self.submenue = interaction.SelectionMenu("what do you want to do?",options)
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.apply2
+        self.character = character
+
+    def apply2(self):
+        if self.submenue.selection == "runJobOrder":
+            if not self.jobOrders:
+                self.character.messages.append("no job orders found")
+                return
+            jobOrder = self.jobOrders.pop()
+            if not jobOrder.toProduce in self.commands:
+                self.character.messages.append("no command for job order found")
+                return
+
+            itemType = jobOrder.toProduce
+            command = self.commands[itemType]
+
+            convertedCommand = []
+            for char in command:
+                convertedCommand.append((char,"norecord"))
+
+            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+            self.character.messages.append("running command to produce %s - %s"%(itemType,command))
+
+        elif self.submenue.selection == "runCommand":
+            options = []
+            for itemType in self.commands:
+                options.append((itemType,itemType))
+            self.submenue = interaction.SelectionMenu("Run command for producing item. select item to produce.",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.runCommand
+        elif self.submenue.selection == "addCommand":
+            options = [("Wall","wall"),("Door","door"),("FloorPlate","floorplate")]
+            self.submenue = interaction.SelectionMenu("Setting command for producing item. What item do you want to set the command for?",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.setCommand
+        elif self.submenue.selection == "addJobOrder":
+            itemFound = None
+            for item in self.character.inventory:
+                if item.type == "JobOrder":
+                    itemFound = item
+                    break
+            self.jobOrders.append(itemFound)
+            self.character.inventory.remove(itemFound)
+
+    def setCommand(self):
+        itemType = self.submenue.selection
+        
+        commandItem = None
+        for item in self.container.getItemByPosition((self.xPosition,self.yPosition-1)):
+            if item.type == "Command":
+                commandItem = item
+
+        if not commandItem:
+            self.character.messages.append("no command found - place command to the north")
+            return
+
+        self.commands[itemType] = commandItem.command
+        self.container.removeItem(commandItem)
+
+        self.character.messages.append("added command for %s - %s"%(itemType,commandItem.command))
+        return
+
+    def runCommand(self):
+        itemType = self.submenue.selection
+        command = self.commands[itemType]
+
+        convertedCommand = []
+        for char in command:
+            convertedCommand.append((char,"norecord"))
+
+        self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+        self.character.messages.append("running command to produce %s - %s"%(itemType,command))
+
+    def getState(self):
+        state = super().getState()
+        state["commands"] = self.commands
+        jobOrderStates = []
+        for item in self.jobOrders:
+            jobOrderStates.append(item.getState())
+        state["jobOrders"] = jobOrderStates
+        return state
+
+    def getDiffState(self):
+        state = super().getDiffState()
+        state["commands"] = self.commands
+        jobOrderStates = []
+        for item in self.jobOrders:
+            jobOrderStates.append(item.getState())
+        state["jobOrders"] = jobOrderStates
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        if "commands" in state:
+            self.commands = state["commands"]
+
+        if "jobOrders" in state:
+            print("---")
+            print(state["jobOrders"])
+            for jobOrderState in state["jobOrders"]:
+                print("+++")
+                print(jobOrderState)
+                self.jobOrders.append(getItemFromState(jobOrderState))
+
 class JobBoard(Item):
     type = "JobBoard"
 
@@ -10497,6 +10649,7 @@ itemMap = {
             "JobOrder":JobOrder,
             "TransportOutNode":TransportOutNode,
             "TransportInNode":TransportInNode,
+            "ProductionRunner":ProductionRunner,
 }
 
 producables = {

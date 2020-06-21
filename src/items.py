@@ -4332,6 +4332,153 @@ job order can be inserted and commands can be run depending on the item the job 
                 print(jobOrderState)
                 self.jobOrders.append(getItemFromState(jobOrderState))
 
+class ProductionRunner2(Item):
+    type = "ProductionRunner2"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="production runner2",creator=None,noId=False):
+        self.jobOrders = []
+        self.commands = {}
+        self.machineMap =  {}
+
+        super().__init__(displayChars.wall,xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = False
+
+    def getLongInfo(self):
+
+        displayJobOrders = []
+        for jobOrder in self.jobOrders:
+            displayJobOrders.append(jobOrder.toProduce)
+
+        text = """
+item: ProductionRunner2
+
+description:
+allows to set commands for production of items.
+job order can be inserted and commands can be run depending on the item the job order is for.
+
+%s
+
+%s
+"""%(self.commands,displayJobOrders)
+        return text
+
+    def apply(self,character):
+        if not (character.xPosition == self.xPosition and character.yPosition == self.yPosition-1):
+            character.messages.append("this item can only be used from north")
+            return
+
+        options = [("runJobOrder","run job order"),("runCommand","run command"),("addJobOrder","add job order"),("addCommand","add command")]
+        self.submenue = interaction.SelectionMenu("what do you want to do?",options)
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.apply2
+        self.character = character
+
+    def apply2(self):
+        if self.submenue.selection == "runJobOrder":
+            if not self.jobOrders:
+                self.character.messages.append("no job orders found")
+                return
+            jobOrder = self.jobOrders.pop()
+            if not jobOrder.toProduce in self.commands:
+                self.character.messages.append("no command for job order found")
+                return
+
+            itemType = jobOrder.toProduce
+            command = self.commands[itemType]
+
+            convertedCommand = []
+            for char in command:
+                convertedCommand.append((char,"norecord"))
+
+            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+            self.character.messages.append("running command to produce %s - %s"%(itemType,command))
+
+        elif self.submenue.selection == "runCommand":
+            options = []
+            for itemType in self.commands:
+                options.append((itemType,itemType))
+            self.submenue = interaction.SelectionMenu("Run command for producing item. select item to produce.",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.runCommand
+        elif self.submenue.selection == "addCommand":
+            options = [("Wall","wall"),("Door","door"),("FloorPlate","floorplate")]
+            self.submenue = interaction.SelectionMenu("Setting command for producing item. What item do you want to set the command for?",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.setCommand
+        elif self.submenue.selection == "addJobOrder":
+            itemFound = None
+            for item in self.character.inventory:
+                if item.type == "JobOrder":
+                    itemFound = item
+                    break
+            self.jobOrders.append(itemFound)
+            self.character.inventory.remove(itemFound)
+
+    def setCommand(self):
+        itemType = self.submenue.selection
+        
+        commandItem = None
+        for item in self.container.getItemByPosition((self.xPosition,self.yPosition-1)):
+            if item.type == "Command":
+                commandItem = item
+
+        if not commandItem:
+            self.character.messages.append("no command found - place command to the north")
+            return
+
+        self.commands[itemType] = commandItem.command
+        self.container.removeItem(commandItem)
+
+        self.character.messages.append("added command for %s - %s"%(itemType,commandItem.command))
+        return
+
+    def runCommand(self):
+        itemType = self.submenue.selection
+        command = self.commands[itemType]
+
+        convertedCommand = []
+        for char in command:
+            convertedCommand.append((char,"norecord"))
+
+        self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+        self.character.messages.append("running command to produce %s - %s"%(itemType,command))
+
+    def getState(self):
+        state = super().getState()
+        state["commands"] = self.commands
+        jobOrderStates = []
+        for item in self.jobOrders:
+            jobOrderStates.append(item.getState())
+        state["jobOrders"] = jobOrderStates
+        return state
+
+    def getDiffState(self):
+        state = super().getDiffState()
+        state["commands"] = self.commands
+        jobOrderStates = []
+        for item in self.jobOrders:
+            jobOrderStates.append(item.getState())
+        state["jobOrders"] = jobOrderStates
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        if "commands" in state:
+            self.commands = state["commands"]
+
+        if "jobOrders" in state:
+            print("---")
+            print(state["jobOrders"])
+            for jobOrderState in state["jobOrders"]:
+                print("+++")
+                print(jobOrderState)
+                self.jobOrders.append(getItemFromState(jobOrderState))
+
 class JobBoard(Item):
     type = "JobBoard"
 
@@ -4505,6 +4652,200 @@ class TransportContainer(Item):
         # remove item
         # transport item
         # set transport command
+
+class UniformStockpileManager(Item):
+    type = "UniformStockpileManager"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="uniform stockpile manager",creator=None,noId=False):
+
+        super().__init__(displayChars.wall,xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = False
+
+        self.storedItemType = None
+
+        self.numItemsStored = 0
+
+        self.attributesToStore.extend([
+                "numItemsStored","storedItemType"])
+        self.initialState = self.getState()
+
+    def getLongInfo(self):
+
+        text = """
+item: StockpileManager
+
+description:
+needs to be placed in the center of a tile. The tile should be emtpy and mold free for proper function.
+"""
+        return text
+
+    def apply(self,character):
+        if not (character.xPosition == self.xPosition and character.yPosition == self.yPosition-1):
+            character.messages.append("this item can only be used from north")
+            return
+
+        options = [("storeItem","store item"),("fetchItem","fetch item"),("","run job order"),("addJobOrder","add job order"),("addCommand","add command")]
+        self.submenue = interaction.SelectionMenu("what do you want to do?",options)
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.apply2
+        self.character = character
+
+    def apply2(self):
+        if self.submenue.selection == "storeItem":
+            sector = self.numItemsStored//35
+            offsetX = 6-self.numItemsStored%35%6-1
+            offsetY = 6-self.numItemsStored%35//6-1
+
+            self.character.messages.append(sector)
+            self.character.messages.append(offsetX)
+            self.character.messages.append(offsetY)
+
+            command = ""
+            if sector == 0:
+                command += str(offsetY)+"w"
+                command += str(offsetX)+"a"
+                command += "La"
+                command += str(offsetX)+"d"
+                command += str(offsetY)+"s"
+            elif sector == 1:
+                command += str(offsetY)+"w"
+                command += str(offsetX)+"d"
+                command += "Ld"
+                command += str(offsetX)+"a"
+                command += str(offsetY)+"s"
+            elif sector == 2:
+                command += "assd"
+                command += str(offsetY)+"s"
+                command += str(offsetX)+"a"
+                command += "La"
+                command += str(offsetX)+"d"
+                command += str(offsetY)+"w"
+                command += "dwwa"
+            elif sector == 3:
+                command += "assd"
+                command += str(offsetY)+"s"
+                command += str(offsetX)+"d"
+                command += "Ld"
+                command += str(offsetX)+"a"
+                command += str(offsetY)+"w"
+                command += "dwwa"
+
+            self.numItemsStored += 1
+
+            self.character.messages.append(command)
+
+            convertedCommand = []
+            for char in command:
+                convertedCommand.append((char,"norecord"))
+
+            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+            self.character.messages.append("running command to store item %s"%(command))
+
+        if self.submenue.selection == "fetchItem":
+            self.numItemsStored -= 1
+
+            sector = self.numItemsStored//35
+            offsetX = 6-self.numItemsStored%35%6-1
+            offsetY = 6-self.numItemsStored%35//6-1
+
+            self.character.messages.append(sector)
+            self.character.messages.append(offsetX)
+            self.character.messages.append(offsetY)
+
+            command = ""
+            if sector == 0:
+                command += str(offsetY)+"w"
+                command += str(offsetX)+"a"
+                command += "Ka"
+                command += str(offsetX)+"d"
+                command += str(offsetY)+"s"
+            elif sector == 1:
+                command += str(offsetY)+"w"
+                command += str(offsetX)+"d"
+                command += "Kd"
+                command += str(offsetX)+"a"
+                command += str(offsetY)+"s"
+            elif sector == 2:
+                command += "assd"
+                command += str(offsetY)+"s"
+                command += str(offsetX)+"a"
+                command += "Ka"
+                command += str(offsetX)+"d"
+                command += str(offsetY)+"w"
+                command += "dwwa"
+            elif sector == 3:
+                command += "assd"
+                command += str(offsetY)+"s"
+                command += str(offsetX)+"d"
+                command += "Kd"
+                command += str(offsetX)+"a"
+                command += str(offsetY)+"w"
+                command += "dwwa"
+
+            self.character.messages.append(command)
+
+            convertedCommand = []
+            for char in command:
+                convertedCommand.append((char,"norecord"))
+
+            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+            self.character.messages.append("running command to fetch item %s"%(command))
+
+
+        elif self.submenue.selection == "runCommand":
+            options = []
+            for itemType in self.commands:
+                options.append((itemType,itemType))
+            self.submenue = interaction.SelectionMenu("Run command for producing item. select item to produce.",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.runCommand
+        elif self.submenue.selection == "addCommand":
+            options = [("Wall","wall"),("Door","door"),("FloorPlate","floorplate")]
+            self.submenue = interaction.SelectionMenu("Setting command for producing item. What item do you want to set the command for?",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.setCommand
+        elif self.submenue.selection == "addJobOrder":
+            itemFound = None
+            for item in self.character.inventory:
+                if item.type == "JobOrder":
+                    itemFound = item
+                    break
+            self.jobOrders.append(itemFound)
+            self.character.inventory.remove(itemFound)
+
+    def setCommand(self):
+        itemType = self.submenue.selection
+        
+        commandItem = None
+        for item in self.container.getItemByPosition((self.xPosition,self.yPosition-1)):
+            if item.type == "Command":
+                commandItem = item
+
+        if not commandItem:
+            self.character.messages.append("no command found - place command to the north")
+            return
+
+        self.commands[itemType] = commandItem.command
+        self.container.removeItem(commandItem)
+
+        self.character.messages.append("added command for %s - %s"%(itemType,commandItem.command))
+        return
+
+    def runCommand(self):
+        itemType = self.submenue.selection
+        command = self.commands[itemType]
+
+        convertedCommand = []
+        for char in command:
+            convertedCommand.append((char,"norecord"))
+
+        self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+        self.character.messages.append("running command to produce %s - %s"%(itemType,command))
 
 '''
 '''
@@ -10650,6 +10991,8 @@ itemMap = {
             "TransportOutNode":TransportOutNode,
             "TransportInNode":TransportInNode,
             "ProductionRunner":ProductionRunner,
+            "ProductionRunner2":ProductionRunner2,
+            "UniformStockpileManager":UniformStockpileManager,
 }
 
 producables = {

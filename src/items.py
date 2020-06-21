@@ -4847,6 +4847,11 @@ needs to be placed in the center of a tile. The tile should be emtpy and mold fr
         self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
         self.character.messages.append("running command to produce %s - %s"%(itemType,command))
 
+    def fetchSpecialRegisterInformation(self):
+        result = {}
+        result["NUM ITEMS STOREd"] = self.numItemsStored
+        return result
+
 '''
 '''
 class FloorPlate_real(Item):

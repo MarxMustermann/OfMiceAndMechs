@@ -1,5 +1,7 @@
 import urwid
 
+jobOrder = (urwid.AttrSpec("#33f",'black'),"j#")
+jobBoard = (urwid.AttrSpec("#33f",'black'),"JB")
 itemUpgrader = (urwid.AttrSpec("#aaa",'black'),"iU")
 blueprint = (urwid.AttrSpec("#aaa",'black'),"bd")
 command = (urwid.AttrSpec("#aaa",'black'),"c#")

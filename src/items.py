@@ -427,6 +427,9 @@ class Item(src.saveing.Saveable):
     def getLongInfo(self):
         return None
 
+    def configure(self,character):
+        character.messages.append("nothing to configure")
+
 '''
 crushed something, basically raw metal
 '''
@@ -6144,6 +6147,7 @@ class Machine(Item):
         self.charges = 3
         self.level = 1
         self.productionLevel = 1
+        self.commands = {}
 
         super().__init__(displayChars.machine,xPosition,yPosition,name=name,creator=creator,seed=seed)
 
@@ -6158,6 +6162,64 @@ class Machine(Item):
         self.setDescription()
 
         self.initialState = self.getState()
+
+        self.rawMaterialLookup = {
+            "Sheet":["MetalBars"],
+            "Radiator":["MetalBars"],
+            "Mount":["MetalBars"],
+            "Stripe":["MetalBars"],
+            "Bolt":["MetalBars"],
+            "Rod":["MetalBars"],
+            "Tank":["Sheet"],
+            "Heater":["Radiator"],
+            "Connector":["Mount"],
+            "pusher":["Stripe"],
+            "puller":["Bolt"],
+            "Frame":["Rod"],
+            "Case":["Frame"],
+            "PocketFrame":["Frame"],
+            "MemoryCell":["Connector"],
+            "AutoScribe":["Case","MetalBars","MemoryCell","pusher","puller"],
+            "FloorPlate":["Sheet","MetalBars"],
+            "Scraper":["Case","MetalBars"],
+            "GrowthTank":["Case","MetalBars"],
+            "Door":["Case","MetalBars"],
+            "Wall":["Case","MetalBars"],
+            "Boiler":["Case","MetalBars"],
+            "Drill":["Case","MetalBars"],
+            "Furnace":["Case","MetalBars"],
+            "ScrapCompactor":["MetalBars"],
+            "GooFlask":["Tank"],
+            "GooDispenser":["Case","MetalBars","Heater"],
+            "MaggotFermenter":["Case","MetalBars","Heater"],
+            "BloomShredder":["Case","MetalBars","Heater"],
+            "SporeExtractor":["Case","MetalBars","puller"],
+            "BioPress":["Case","MetalBars","Heater"],
+            "GooProducer":["Case","MetalBars","Heater"],
+            "CorpseShredder":["Case","MetalBars","Heater"],
+            "MemoryDump":["Case","MemoryCell"],
+            "MemoryStack":["Case","MemoryCell"],
+            "MemoryReset":["Case","MemoryCell"],
+            "MemoryBank":["Case","MemoryCell"],
+            "SimpleRunner":["Case","MemoryCell"],
+            "MarkerBean":["PocketFrame"],
+            "PositioningDevice":["PocketFrame"],
+            "Watch":["PocketFrame"],
+            "BackTracker":["PocketFrame"],
+            "Tumbler":["PocketFrame"],
+            "RoomControls":["Case","pusher","puller"],
+            "StasisTank":["Case","pusher","puller"],
+            "ItemUpgrader":["Case","pusher","puller"],
+            "ItemDowngrader":["Case","pusher","puller"],
+            "RoomBuilder":["Case","pusher","puller"],
+            "BluePrinter":["Case","pusher","puller"],
+            "Container":["Case","Sheet"],
+            "BloomContainer":["Case","Sheet"],
+            "Mover":["Case","pusher","puller"],
+            "Sorter":["Case","pusher","puller"],
+            "FireCrystals":["Coal","SickBloom"],
+            "Bomb":["Frame","Explosive"],
+        }
 
     def setDescription(self):
         self.description = self.baseName+" MetalBar -> %s"%(self.toProduce,)
@@ -6184,6 +6246,7 @@ class Machine(Item):
 
         if gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
             character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            self.runCommand("cooldown",character)
             return
 
         jobOrder = None
@@ -6192,231 +6255,10 @@ class Machine(Item):
                 jobOrder = item
                 break
 
-        if self.toProduce == "Sheet":
-            ressourcesNeeded = ["MetalBars"]
-        elif self.toProduce == "Radiator":
-            ressourcesNeeded = ["MetalBars"]
-        elif self.toProduce == "Mount":
-            ressourcesNeeded = ["MetalBars"]
-        elif self.toProduce == "Stripe":
-            ressourcesNeeded = ["MetalBars"]
-        elif self.toProduce == "Bolt":
-            ressourcesNeeded = ["MetalBars"]
-        elif self.toProduce == "Rod":
-            ressourcesNeeded = ["MetalBars"]
-
-        elif self.toProduce == "Tank":
-            ressourcesNeeded = ["Sheet"]
-        elif self.toProduce == "Heater":
-            ressourcesNeeded = ["Radiator"]
-        elif self.toProduce == "Connector":
-            ressourcesNeeded = ["Mount"]
-        elif self.toProduce == "pusher":
-            ressourcesNeeded = ["Stripe"]
-        elif self.toProduce == "puller":
-            ressourcesNeeded = ["Bolt"]
-        elif self.toProduce == "Frame":
-            ressourcesNeeded = ["Rod"]
-
-        elif self.toProduce == "Case":
-            ressourcesNeeded = ["Frame"]
-        elif self.toProduce == "PocketFrame":
-            ressourcesNeeded = ["Frame"]
-        elif self.toProduce == "MemoryCell":
-            ressourcesNeeded = ["Connector"]
-        elif self.toProduce == "AutoScribe":
-            ressourcesNeeded = ["Case","MetalBars","MemoryCell","pusher","puller"]
-        elif self.toProduce == "FloorPlate":
-            ressourcesNeeded = ["Sheet","MetalBars"]
-
-        elif self.toProduce == "Scraper":
-            ressourcesNeeded = ["Case","MetalBars"]
-        elif self.toProduce == "GrowthTank":
-            ressourcesNeeded = ["Case","MetalBars"]
-        elif self.toProduce == "Door":
-            ressourcesNeeded = ["Case","MetalBars"]
-        elif self.toProduce == "Wall":
-            ressourcesNeeded = ["Case","MetalBars"]
-        elif self.toProduce == "Boiler":
-            ressourcesNeeded = ["Case","MetalBars"]
-        elif self.toProduce == "Drill":
-            ressourcesNeeded = ["Case","MetalBars"]
-        elif self.toProduce == "ScrapCompactor":
-            ressourcesNeeded = ["MetalBars"]
-        elif self.toProduce == "Furnace":
-            ressourcesNeeded = ["Case","MetalBars"]
-
-        elif self.toProduce == "GooFlask":
-            ressourcesNeeded = ["Tank"]
-
-        elif self.toProduce == "GooDispenser":
-            ressourcesNeeded = ["Case","MetalBars","Heater"]
-        elif self.toProduce == "MaggotFermenter":
-            ressourcesNeeded = ["Case","MetalBars","Heater"]
-        elif self.toProduce == "BloomShredder":
-            ressourcesNeeded = ["Case","MetalBars","Heater"]
-        elif self.toProduce == "SporeExtractor":
-            ressourcesNeeded = ["Case","MetalBars","puller"]
-        elif self.toProduce == "BioPress":
-            ressourcesNeeded = ["Case","MetalBars","Heater"]
-        elif self.toProduce == "GooProducer":
-            ressourcesNeeded = ["Case","MetalBars","Heater"]
-        elif self.toProduce == "CorpseShredder":
-            ressourcesNeeded = ["Case","MetalBars","Heater"]
-
-        elif self.toProduce == "MemoryDump":
-            ressourcesNeeded = ["Case","MemoryCell"]
-        elif self.toProduce == "MemoryStack":
-            ressourcesNeeded = ["Case","MemoryCell"]
-        elif self.toProduce == "MemoryReset":
-            ressourcesNeeded = ["Case","MemoryCell"]
-        elif self.toProduce == "MemoryBank":
-            ressourcesNeeded = ["Case","MemoryCell"]
-        elif self.toProduce == "SimpleRunner":
-            ressourcesNeeded = ["Case","MemoryCell"]
-
-        elif self.toProduce == "MarkerBean":
-            ressourcesNeeded = ["PocketFrame"]
-        elif self.toProduce == "PositioningDevice":
-            ressourcesNeeded = ["PocketFrame"]
-        elif self.toProduce == "Watch":
-            ressourcesNeeded = ["PocketFrame"]
-        elif self.toProduce == "BackTracker":
-            ressourcesNeeded = ["PocketFrame"]
-        elif self.toProduce == "Tumbler":
-            ressourcesNeeded = ["PocketFrame"]
-
-        elif self.toProduce == "RoomControls":
-            ressourcesNeeded = ["Case","pusher","puller"]
-        elif self.toProduce == "StasisTank":
-            ressourcesNeeded = ["Case","pusher","puller"]
-        elif self.toProduce == "ItemUpgrader":
-            ressourcesNeeded = ["Case","pusher","puller"]
-        elif self.toProduce == "ItemDowngrader":
-            ressourcesNeeded = ["Case","pusher","puller"]
-        elif self.toProduce == "RoomBuilder":
-            ressourcesNeeded = ["Case","pusher","puller"]
-        elif self.toProduce == "BluePrinter":
-            ressourcesNeeded = ["Case","pusher","puller"]
-
-        elif self.toProduce == "Container":
-            ressourcesNeeded = ["Case","Sheet"]
-        elif self.toProduce == "BloomContainer":
-            ressourcesNeeded = ["Case","Sheet"]
-
-        elif self.toProduce == "Mover":
-            ressourcesNeeded = ["Case","pusher","puller"]
-        elif self.toProduce == "Sorter":
-            ressourcesNeeded = ["Case","pusher","puller"]
-        
-        elif self.toProduce == "FireCrystals":
-            ressourcesNeeded = ["Coal","SickBloom"]
-        elif self.toProduce == "Bomb":
-            ressourcesNeeded = ["Frame","Explosive"]
-
+        if self.toProduce in self.rawMaterialLookup:
+            ressourcesNeeded = self.rawMaterialLookup[self.toProduce]
         else:
             ressourcesNeeded = ["MetalBars"]
-
-        """
-        if self.toProduce == "Sheet":
-            ressourcesNeeded = ["MetalBars"]
-        elif self.toProduce == "Radiator":
-            ressourcesNeeded = ["MetalBars"]
-        elif self.toProduce == "Mount":
-            ressourcesNeeded = ["MetalBars"]
-        elif self.toProduce == "Stripe":
-            ressourcesNeeded = ["MetalBars"]
-        elif self.toProduce == "Bolt":
-            ressourcesNeeded = ["MetalBars"]
-        elif self.toProduce == "Rod":
-            ressourcesNeeded = ["MetalBars"]
-
-        elif self.toProduce == "Tank":
-            ressourcesNeeded = ["MetalBars","Sheet","Sheet","Rod"]
-        elif self.toProduce == "Heater":
-            ressourcesNeeded = ["MetalBars","Radiator","Radiator"]
-        elif self.toProduce == "Connector":
-            ressourcesNeeded = ["MetalBars","Mount","Stripe","Rod"]
-        elif self.toProduce == "pusher":
-            ressourcesNeeded = ["MetalBars","Stripe","Rod"]
-        elif self.toProduce == "puller":
-            ressourcesNeeded = ["MetalBars","Stripe","Rod"]
-        elif self.toProduce == "Frame":
-            ressourcesNeeded = ["MetalBars","Sheet","Rod"]
-
-        elif self.toProduce == "Case":
-            ressourcesNeeded = ["Frame","Frame","MetalBars","MetalBars","MetalBars","MetalBars"]
-        elif self.toProduce == "MemoryCell":
-            ressourcesNeeded = ["MetalBars","Coal","Tank","Rod","Stripe","Stripe"]
-
-        elif self.toProduce == "ScrapCompactor":
-            ressourcesNeeded = ["Case","pusher"]
-        elif self.toProduce == "Wall":
-            ressourcesNeeded = ["Case" ,"MetalBars","MetalBars","MetalBars","MetalBars","MetalBars"]
-        elif self.toProduce == "Door":
-            ressourcesNeeded = ["Case","Sheet","Connector"]
-        elif self.toProduce == "Drill":
-            ressourcesNeeded = ["Case","Rod","pusher"]
-        elif self.toProduce == "Furnace":
-            ressourcesNeeded = ["Case","Mount","Radiator"]
-        elif self.toProduce == "Scraper":
-            ressourcesNeeded = ["Case","puller","pusher"]
-        elif self.toProduce == "GooDispenser":
-            ressourcesNeeded = ["Case","Tank","GooFlask"]
-        elif self.toProduce == "MaggotFermenter":
-            ressourcesNeeded = ["Case","Tank","Heater"]
-        elif self.toProduce == "BioPress":
-            ressourcesNeeded = ["Case","Sheet","pusher"]
-        elif self.toProduce == "GooProducer":
-            ressourcesNeeded = ["Case","Stripe","Heater"]
-        elif self.toProduce == "Sorter":
-            ressourcesNeeded = ["Case","Rod","Connector"]
-        elif self.toProduce == "GrowthTank":
-            ressourcesNeeded = ["Case","Sheet","Tank"]
-
-        elif self.toProduce == "MemoryDump":
-            ressourcesNeeded = ["Case","MemoryCell","Connector"]
-        elif self.toProduce == "MemoryStack":
-            ressourcesNeeded = ["Case","MemoryCell","MemoryCell","Connector"]
-        elif self.toProduce == "MemoryReset":
-            ressourcesNeeded = ["Case","Connector"]
-        elif self.toProduce == "MemoryBank":
-            ressourcesNeeded = ["Case","MemoryCell","Connector","puller"]
-        elif self.toProduce == "SimpleRunner":
-            ressourcesNeeded = ["Case","MemoryCell","Connector","pusher"]
-
-        elif self.toProduce == "Watch":
-            ressourcesNeeded = ["Frame","MemoryCell","Connector","pusher"]
-        elif self.toProduce == "BackTracker":
-            ressourcesNeeded = ["Frame","MemoryCell","MemoryCell","MemoryCell","puller","pusher"]
-        elif self.toProduce == "PositioningDevice":
-            ressourcesNeeded = ["Frame","MemoryCell","Connector","Connector","Connector","Connector","pusher"]
-        elif self.toProduce == "Tumbler":
-            ressourcesNeeded = ["Frame","Watch","MemoryCell","puller","pusher"]
-
-        elif self.toProduce == "MarkerBean":
-            ressourcesNeeded = ["Frame","Tank","Coal","Coal","Heater"]
-
-        elif self.toProduce == "RoomBuilder":
-            ressourcesNeeded = ["Case","Tank","pusher","puller","Rod","Connector"]
-
-        elif self.toProduce == "GooFlask":
-            ressourcesNeeded = ["MetalBars","Tank"]
-
-        elif self.toProduce == "Sorter":
-            ressourcesNeeded = ["Case","pusher","puller","Connector","pusher","puller",]
-        elif self.toProduce == "StasisTank":
-            ressourcesNeeded = ["GrowthTank","Connector","Tank","Sheet","Rod","Rod"]
-        elif self.toProduce == "RoomControls":
-            ressourcesNeeded = ["Case","pusher","puller","Sheet","Stripe","Rod"]
-        elif self.toProduce == "ItemUpgrader":
-            ressourcesNeeded = ["Case","Connector","Connector","pusher","puller","Rod"]
-        elif self.toProduce == "BluePrinter":
-            ressourcesNeeded = ["Case","Connector","Connector","Stripe","Stripe","Rod"]
-
-        else:
-            ressourcesNeeded = ["MetalBars"]
-        """
 
         # gather a metal bar
         ressourcesFound = []
@@ -6449,6 +6291,7 @@ class Machine(Item):
                         }
                     )
             character.messages.append("missing ressources (place left/west or up/north): %s"%(", ".join(ressourcesNeeded)))
+            self.runCommand("material %s"%(ressourcesNeeded[0]),character)
             return
 
         targetFull = False
@@ -6467,6 +6310,7 @@ class Machine(Item):
 
         if targetFull:
             character.messages.append("the target area is full, the machine does not produce anything")
+            self.runCommand("targetFull",character)
             return
 
         if self.charges:
@@ -6502,6 +6346,8 @@ class Machine(Item):
 
         if hasattr(new,"level"):
             new.level = self.level
+
+        self.runCommand("success",character)
 
     '''
     set state from dict
@@ -6552,6 +6398,92 @@ Currently the machine has no charges
 """
 
         return text
+
+    def configure(self,character):
+        options = [("addCommand","add command")]
+        self.submenue = interaction.SelectionMenu("what do you want to do?",options)
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.apply2
+        self.character = character
+
+    def apply2(self):
+        if self.submenue.selection == "runCommand":
+            options = []
+            for itemType in self.commands:
+                options.append((itemType,itemType))
+            self.submenue = interaction.SelectionMenu("Run command for producing item. select item to produce.",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.runCommand
+        elif self.submenue.selection == "addCommand":
+            options = []
+            options.append(("success","set success command"))
+            options.append(("cooldown","set cooldown command"))
+            options.append(("targetFull","set target full command"))
+
+            if self.toProduce in self.rawMaterialLookup:
+                ressourcesNeeded = self.rawMaterialLookup[self.toProduce]
+            else:
+                ressourcesNeeded = ["MetalBars"]
+
+            for itemType in ressourcesNeeded:
+                options.append(("material %s"%(itemType,),"set %s fetching command"%(itemType,)))
+            self.submenue = interaction.SelectionMenu("Setting command for handling triggers.",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.setCommand
+        elif self.submenue.selection == "addJobOrder":
+            itemFound = None
+            for item in self.character.inventory:
+                if item.type == "JobOrder":
+                    itemFound = item
+                    break
+            self.jobOrders.append(itemFound)
+            self.character.inventory.remove(itemFound)
+
+    def setCommand(self):
+        itemType = self.submenue.selection
+        
+        commandItem = None
+        for item in self.container.getItemByPosition((self.xPosition,self.yPosition-1)):
+            if item.type == "Command":
+                commandItem = item
+
+        if not commandItem:
+            self.character.messages.append("no command found - place command to the north")
+            return
+
+        self.commands[itemType] = commandItem.command
+        self.container.removeItem(commandItem)
+
+        self.character.messages.append("added command for %s - %s"%(itemType,commandItem.command))
+        return
+
+    def runCommand(self,trigger,character):
+        if not trigger in self.commands:
+            return
+
+        command = self.commands[trigger]
+
+        convertedCommand = []
+        for char in command:
+            convertedCommand.append((char,"norecord"))
+
+        character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
+        character.messages.append("running command to handle trigger %s - %s"%(trigger,command))
+
+    def getState(self):
+        state = super().getState()
+        state["commands"] = self.commands
+        return state
+
+    def getDiffState(self):
+        state = super().getDiffState()
+        state["commands"] = self.commands
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        if "commands" in state:
+            self.commands = state["commands"]
 
 '''
 '''

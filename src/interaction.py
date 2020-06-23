@@ -1843,6 +1843,32 @@ current registers
                         break
 
             # activate an item 
+            if key in ("c",):
+                if not "NaiveActivateQuest" in char.solvers:
+                    char.messages.append("you do not have the nessecary solver yet")
+                else:
+                    # activate the marked item
+                    if charState["itemMarkedLast"]:
+                        if not charState["itemMarkedLast"].container:
+                            if charState["itemMarkedLast"].room:
+                                charState["itemMarkedLast"].container = charState["itemMarkedLast"].room
+                            elif charState["itemMarkedLast"].terrain:
+                                charState["itemMarkedLast"].container = charState["itemMarkedLast"].terrain
+
+                        charState["itemMarkedLast"].configure(char)
+
+                    # activate an item on floor
+                    else:
+                        #for item in char.container.itemsOnFloor:
+                        #    if item.xPosition == char.xPosition and item.yPosition == char.yPosition:
+                        #        item.apply(char)
+                        #        break
+                        if (char.xPosition,char.yPosition) in char.container.itemByCoordinates:
+                            entry = char.container.itemByCoordinates[(char.xPosition,char.yPosition)]
+                            if len(entry):
+                                entry[0].configure(char)
+
+            # activate an item 
             if key in (commandChars.activate):
                 if not "NaiveActivateQuest" in char.solvers:
                     char.messages.append("you do not have the nessecary solver yet")

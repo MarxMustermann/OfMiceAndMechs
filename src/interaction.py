@@ -362,6 +362,13 @@ type the macro name you want to record to
             items = char.container.getItemByPosition((char.xPosition,char.yPosition))
             if items:
                 items[0].apply(char)
+        elif key == "j":
+            character = char
+            for item in reversed(character.inventory):
+                if isinstance(item,src.items.JobOrder):
+                    item.apply(char)
+                    char.messages.append("ran job Order")
+                    break
         elif key == "f":
             character = char
             for item in character.inventory:
@@ -1917,6 +1924,7 @@ press key for the advanced interaction
 * d = activate south
 * . = activate item on floor
 * f = eat food
+* j = activate job order
 
 """
 

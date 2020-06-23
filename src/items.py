@@ -3039,6 +3039,12 @@ class ScrapCompactor(Item):
     def apply(self,character,resultType=None):
         super().apply(character,silent=True)
 
+        jobOrder = None
+        for item in character.inventory:
+            if item.type == "JobOrder" and not item.done and item.tasks[-1]["task"] == "produce" and item.tasks[-1]["toProduce"] == "MetalBars":
+                jobOrder = item
+                break
+
         # fetch input scrap
         scrap = None
         if not hasattr(self,"container"):
@@ -3093,6 +3099,12 @@ class ScrapCompactor(Item):
             self.coolDownTimer = gamestate.tick
 
         character.messages.append("you produce a metal bar")
+
+        if jobOrder:
+            if len(jobOrder.tasks) > 1:
+                jobOrder.tasks.pop()
+            else:
+                jobOrder.done = True
 
         # remove ressources
         if scrap.amount <= 1:
@@ -3427,7 +3439,7 @@ class AutoScribe(Item):
         itemFound = None
         if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
             for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
-                if item.type in ["Command","Note"]:
+                if item.type in ["Command","Note","JobOrder"]:
                     itemFound = item
                     break
 
@@ -3465,6 +3477,11 @@ class AutoScribe(Item):
         elif itemFound.type == "BluePrint":
             new = BluePrint(creator=self)
             new.setToProduce(itemFound.endProduct)
+        elif itemFound.type == "JobOrder":
+            new = JobOrder(creator=self)
+            new.macro = itemFound.macro
+            new.command = itemFound.command
+            new.toProduce = itemFound.toProduce
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
         new.bolted = False
@@ -3658,6 +3675,7 @@ This is a level %s item
         options.append(("createCommand","create a written command"))
         options.append(("createNote","create a note"))
         options.append(("createMap","create a map"))
+        options.append(("createJobOrder","create a job order"))
         self.submenue = interaction.SelectionMenu("What do you want do do?",options)
         self.character.macroState["submenue"] = self.submenue
         self.character.macroState["submenue"].followUp = self.actionSwitch
@@ -3669,6 +3687,8 @@ This is a level %s item
             self.createCommand()
         elif self.submenue.selection == "createMap":
             self.createMapItem()
+        elif self.submenue.selection == "createJobOrder":
+            self.createJobOrder()
 
     def createNote(self):
         self.submenue = interaction.InputMenu("type the text you want to write on the note")
@@ -3705,6 +3725,21 @@ This is a level %s item
         else:
             self.character.inventory.remove(self)
             self.character.inventory.append(mapItem)
+
+    def createJobOrder(self):
+
+        jobOrder = JobOrder(self.xPosition,self.yPosition, creator=self)
+
+        if self.xPosition:
+            if self.room:
+                self.room.removeItem(self)
+                self.room.addItems([jobOrder])
+            else:
+                self.container.removeItem(self)
+                self.container.addItems([jobOrder])
+        else:
+            self.character.inventory.remove(self)
+            self.character.inventory.append(jobOrder)
 
     def createCommand(self):
 
@@ -4132,14 +4167,27 @@ class JobOrder(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="job order",creator=None,noId=False):
-        super().__init__(displayChars.floor,xPosition,yPosition,name=name,creator=creator)
+        self.tasks = [
+                    {
+                    "task":"produce",
+                    "toProduce":"Wall",
+                    "macro":"PRODUCE WALl",
+                    "command":None
+                    }
+                ]
+
+        super().__init__(displayChars.jobOrder,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
-        self.toProduce = "Wall"
-        self.macro = "PRODUCE WALl"
+        self.done = False
+
+        self.attributesToStore.extend([
+                "done"])
+        self.initialState = self.getState()
 
     def getLongInfo(self):
+        import json
         text = """
 item: JobOrder
 
@@ -4148,13 +4196,14 @@ Stores the information that something should be done, without describing how it 
 
 the order is:
 
-produce %s
+tasks: %s
+done: %s
 
-"""%(self.toProduce)
+"""%(json.dumps(self.tasks,indent=4), self.done)
         return text
 
     def apply(self,character):
-        options = [("runJobOrder","run job order macro"),("configureJobOrder","configure job order")]
+        options = [("runJobOrder","run job order macro"),("configureJobOrder","configure job order"),("setCommand","set command")]
         self.submenue = interaction.SelectionMenu("what do you want to do?",options)
         character.macroState["submenue"] = self.submenue
         character.macroState["submenue"].followUp = self.apply2
@@ -4162,29 +4211,75 @@ produce %s
 
     def apply2(self):
         if self.submenue.selection == "runJobOrder":
-            if not self.macro in self.character.macroState["macros"]:
-                self.character.messages.append("no solver found - record solver to %s"%(command))
-                return
+            if self.tasks[-1]["command"]:
+                command = self.tasks[-1]["command"]
+
+            if self.tasks[-1]["task"] == "produce":
+                if "PRODUCe" in self.character.macroState["macros"]:
+                    command = "_PRODUCe"
+                else:
+                    if not self.tasks[-1]["macro"] in self.character.macroState["macros"]:
+                        self.character.messages.append("no solver found - record solver to %s"%(self.tasks[-1]["macro"]))
+                        return
+                    command = "_"+self.tasks[-1]["macro"]
+            elif self.tasks[-1]["task"] == "place":
+                if not "PLACe" in self.character.macroState["macros"]:
+                    self.character.messages.append("no solver found - record solver to %s"%("PLACe"))
+                    return
+                command = "_PLACe"
+
+                if not "PLACE x" in self.character.registers:
+                    self.character.registers["PLACE x"] = []
+                self.character.registers["PLACE x"][-1] = self.tasks[-1]["placeX"]
+                if not "PLACE y" in self.character.registers:
+                    self.character.registers["PLACE y"] = []
+                self.character.registers["PLACE y"][-1] = self.tasks[-1]["placeY"]
+                if not "PLACE BIG x" in self.character.registers:
+                    self.character.registers["PLACE BIG x"] = []
+                self.character.registers["PLACE BIG x"][-1] = self.tasks[-1]["placeBigX"]
+                if not "PLACE BIG y" in self.character.registers:
+                    self.character.registers["PLACE BIG y"] = []
+                self.character.registers["PLACE BIG y"][-1] = self.tasks[-1]["placeBigY"]
 
             convertedCommand = []
-            for char in "_"+self.macro:
+            for char in command:
                 convertedCommand.append((char,[]))
             self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
-        else:
-            options = [("wall","wall"),("door","door"),("FloorPlate","floor plate")]
+        elif self.submenue.selection == "configureJobOrder":
+            options = []
+            for key in itemMap.keys():
+                options.append((key,key))
             self.submenue = interaction.SelectionMenu("what should be produced?",options)
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.configureJobOrder2
+        elif self.submenue.selection == "setCommand":
+            self.tasks[-1]["command"] = self.character.macroState["macros"]["a"]
+            self.tasks[-1]["macro"] = None
 
     def configureJobOrder2(self):
-        self.toProduce = self.submenue.selection
-        self.macro = "PRODUCE "+self.toProduce.upper()[:-1]+self.toProduce[-1].lower()
+        self.tasks[-1]["toProduce"] = self.submenue.selection
+        if not self.tasks[-1]["command"]:
+            self.tasks[-1]["macro"] = "PRODUCE "+self.tasks[-1]["toProduce"].upper()[:-1]+self.tasks[-1]["toProduce"][-1].lower()
 
     def fetchSpecialRegisterInformation(self):
         result = {}
 
-        result["TO PRODUCe"] = self.toProduce
         return result
+
+    def getState(self):
+        state = super().getState()
+        state["tasks"] = self.tasks
+        return state
+
+    def getDiffState(self):
+        state = super().getDiffState()
+        state["tasks"] = self.tasks
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        if "tasks" in state:
+            self.tasks = state["tasks"]
 
 class ProductionRunner(Item):
     type = "ProductionRunner"
@@ -4233,15 +4328,24 @@ job order can be inserted and commands can be run depending on the item the job 
 
     def apply2(self):
         if self.submenue.selection == "runJobOrder":
-            if not self.jobOrders:
-                self.character.messages.append("no job orders found")
-                return
-            jobOrder = self.jobOrders.pop()
-            if not jobOrder.toProduce in self.commands:
+            jobOrder = None
+            for item in reversed(self.character.inventory):
+                if item.type == "JobOrder" and not item.done and item.tasks[-1]["task"] == "produce":
+                    jobOrder = item
+                    break
+
+            if not jobOrder:
+                if not self.jobOrders:
+                    self.character.messages.append("no job orders found")
+                    return
+
+                jobOrder = self.jobOrders.pop()
+
+            if not jobOrder.tasks[-1]["toProduce"] in self.commands:
                 self.character.messages.append("no command for job order found")
                 return
 
-            itemType = jobOrder.toProduce
+            itemType = jobOrder.tasks[-1]["toProduce"]
             command = self.commands[itemType]
 
             convertedCommand = []
@@ -4259,7 +4363,9 @@ job order can be inserted and commands can be run depending on the item the job 
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.runCommand
         elif self.submenue.selection == "addCommand":
-            options = [("Wall","wall"),("Door","door"),("FloorPlate","floorplate")]
+            options = []
+            for key in itemMap.keys():
+                options.append((key,key))
             self.submenue = interaction.SelectionMenu("Setting command for producing item. What item do you want to set the command for?",options)
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setCommand
@@ -4472,11 +4578,7 @@ job order can be inserted and commands can be run depending on the item the job 
             self.commands = state["commands"]
 
         if "jobOrders" in state:
-            print("---")
-            print(state["jobOrders"])
             for jobOrderState in state["jobOrders"]:
-                print("+++")
-                print(jobOrderState)
                 self.jobOrders.append(getItemFromState(jobOrderState))
 
 class JobBoard(Item):
@@ -4486,7 +4588,7 @@ class JobBoard(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="job board",creator=None,noId=False):
-        super().__init__(displayChars.floor,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.jobBoard,xPosition,yPosition,name=name,creator=creator)
 
         self.todo = []
 
@@ -4517,6 +4619,15 @@ Stores a collection of job board. Serving as a todo list.
                 if item.type == "JobOrder":
                     itemFound = item
                     break
+
+            if not itemFound:
+                self.character.messages.append("no job order found")
+                return
+
+            if itemFound.done:
+                self.character.inventory.remove(itemFound)
+                return
+
             self.todo.append(itemFound)
             self.character.inventory.remove(itemFound)
             self.character.messages.append("job order added")
@@ -4851,6 +4962,379 @@ needs to be placed in the center of a tile. The tile should be emtpy and mold fr
         result = {}
         result["NUM ITEMS STOREd"] = self.numItemsStored
         return result
+
+class TypedStockpileManager(Item):
+    type = "TypedStockpileManager"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="typed stockpile manager",creator=None,noId=False):
+
+        super().__init__(displayChars.wall,xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = False
+
+        self.freeItemSlots = []
+        for x in range(1,14):
+            for y in range(1,14):
+                if x == 7 or y == 7:
+                    continue
+                if y in (2,5,9,12):
+                    continue
+                if x in (6,8) and y in (6,8):
+                    continue
+                self.freeItemSlots.append((x,y))
+
+        self.slotsByItemtype = {}
+
+    def getLongInfo(self):
+
+        text = """
+item: StockpileManager2
+
+description:
+needs to be placed in the center of a tile. The tile should be emtpy and mold free for proper function.
+"""
+        return text
+
+    def apply(self,character):
+        if not (character.xPosition == self.xPosition and character.yPosition == self.yPosition-1):
+            character.messages.append("this item can only be used from north")
+            return
+
+        options = [("storeItem","store item"),("fetchItem","fetch item"),("fetchByJobOrder","fetch by job order")]
+        self.submenue = interaction.SelectionMenu("what do you want to do?",options)
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.apply2
+        self.character = character
+
+    def apply2(self):
+        if self.submenue.selection == "storeItem":
+            if not self.freeItemSlots:
+                self.character.messages.append("no free item slot")
+                return
+
+            slot = self.freeItemSlots.pop()
+            if not self.character.inventory[-1].type in self.slotsByItemtype:
+                self.slotsByItemtype[self.character.inventory[-1].type] = []
+            self.slotsByItemtype[self.character.inventory[-1].type].append(slot)
+
+            command = ""
+            if slot[1] < 7:
+                if slot[1] in (6,4):
+                    command += "w"
+                elif slot[1] in (3,1):
+                    command += "4w"
+                if slot[0] < 7:
+                    command += str(7-slot[0])+"a"
+                else:
+                    command += str(slot[0]-7)+"d"
+                command += "L"
+                if slot[1] in (1,4):
+                    command += "w"
+                elif slot[1] in (3,6):
+                    command += "s"
+                if slot[0] < 7:
+                    command += str(7-slot[0])+"d"
+                else:
+                    command += str(slot[0]-7)+"a"
+                if slot[1] in (6,4):
+                    command += "s"
+                elif slot[1] in (3,1):
+                    command += "4s"
+            else:
+                command += "assd"
+                if slot[1] in (8,10):
+                    command += "s"
+                elif slot[1] in (11,13):
+                    command += "4s"
+                if slot[0] < 7:
+                    command += str(7-slot[0])+"a"
+                else:
+                    command += str(slot[0]-7)+"d"
+                command += "L"
+                if slot[1] in (8,11):
+                    command += "w"
+                elif slot[1] in (10,13):
+                    command += "s"
+                if slot[0] < 7:
+                    command += str(7-slot[0])+"d"
+                else:
+                    command += str(slot[0]-7)+"a"
+                if slot[1] in (8,10):
+                    command += "w"
+                elif slot[1] in (11,13):
+                    command += "4w"
+                command += "dwwa"
+
+            convertedCommand = []
+            for char in command:
+                convertedCommand.append((char,"norecord"))
+
+            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+            self.character.messages.append("running command to store item %s"%(command))
+
+        if self.submenue.selection == "fetchItem":
+            options = []
+            for key in self.slotsByItemtype.keys():
+                options.append((key,key))
+            self.submenue = interaction.SelectionMenu("what do you want to do?",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.fetchItem
+
+        if self.submenue.selection == "fetchByJobOrder":
+            jobOrder = None
+            for item in self.character.inventory:
+                if item.type == "JobOrder" and not item.done and item.tasks[-1]["task"] == "place":
+                    jobOrder = item
+                    break
+
+            if not jobOrder: 
+                self.character.messages.append("no job order found")
+                return
+
+            if jobOrder.tasks[-1]["toPlace"] not in self.slotsByItemtype:
+                self.character.messages.append("no "+item.type+" in storage")
+
+                jobOrder.tasks.append(
+                    {
+                    "task":"produce",
+                    "toProduce":item.tasks[-1]["toPlace"],
+                    "macro":"PRODUCE "+item.tasks[-1]["toPlace"].upper()[:-1]+item.tasks[-1]["toPlace"][-1].lower(),
+                    "command":None
+                    })
+                return
+            self.submenue.selection = item.tasks[-1]["toPlace"]
+            self.fetchItem()
+            return
+
+    def fetchItem(self):
+
+        slot = self.slotsByItemtype[self.submenue.selection].pop()
+        if not self.slotsByItemtype[self.submenue.selection]:
+            del self.slotsByItemtype[self.submenue.selection]
+        self.freeItemSlots.append(slot)
+
+        command = ""
+        if slot[1] < 7:
+            if slot[1] in (6,4):
+                command += "w"
+            elif slot[1] in (3,1):
+                command += "4w"
+            if slot[0] < 7:
+                command += str(7-slot[0])+"a"
+            else:
+                command += str(slot[0]-7)+"d"
+            command += "K"
+            if slot[1] in (1,4):
+                command += "w"
+            elif slot[1] in (3,6):
+                command += "s"
+            if slot[0] < 7:
+                command += str(7-slot[0])+"d"
+            else:
+                command += str(slot[0]-7)+"a"
+            if slot[1] in (6,4):
+                command += "s"
+            elif slot[1] in (3,1):
+                command += "4s"
+        else:
+            command += "assd"
+            if slot[1] in (8,10):
+                command += "s"
+            elif slot[1] in (11,13):
+                command += "4s"
+            if slot[0] < 7:
+                command += str(7-slot[0])+"a"
+            else:
+                command += str(slot[0]-7)+"d"
+            command += "K"
+            if slot[1] in (8,11):
+                command += "w"
+            elif slot[1] in (10,13):
+                command += "s"
+            if slot[0] < 7:
+                command += str(7-slot[0])+"d"
+            else:
+                command += str(slot[0]-7)+"a"
+            if slot[1] in (8,10):
+                command += "w"
+            elif slot[1] in (11,13):
+                command += "4w"
+            command += "dwwa"
+
+        convertedCommand = []
+        for char in command:
+            convertedCommand.append((char,"norecord"))
+
+        self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+        self.character.messages.append("running command to fetch item %s"%(command))
+
+    def fetchSpecialRegisterInformation(self):
+        result = {}
+        for itemType in self.slotsByItemtype.keys():
+            result["NUM "+str(itemType).upper()+" STOREd"] = len(self.slotsByItemtype[itemType])
+        result["NUM FREE SLOTs"] = len(self.freeItemSlots)
+        return result
+
+class LogisticsRunner(Item):
+    type = "LogisticsRunner"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="production runner",creator=None,noId=False):
+        self.jobOrders = []
+        self.commands = {}
+
+        super().__init__(displayChars.wall,xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = False
+
+    def getLongInfo(self):
+
+        displayJobOrders = []
+        for jobOrder in self.jobOrders:
+            displayJobOrders.append(jobOrder.toProduce)
+
+        text = """
+item: ProductionRunner
+
+description:
+allows to set commands for production of items.
+job order can be inserted and commands can be run depending on the item the job order is for.
+
+%s
+
+%s
+"""%(self.commands,displayJobOrders)
+        return text
+
+    def apply(self,character):
+        if not (character.xPosition == self.xPosition and character.yPosition == self.yPosition-1):
+            character.messages.append("this item can only be used from north")
+            return
+
+        options = [("runJobOrder","run job order"),("runCommand","run command"),("addJobOrder","add job order"),("addCommand","add command")]
+        self.submenue = interaction.SelectionMenu("what do you want to do?",options)
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.apply2
+        self.character = character
+
+    def apply2(self):
+        if self.submenue.selection == "runJobOrder":
+            jobOrder = None
+            for item in reversed(self.character.inventory):
+                if item.type == "JobOrder" and not item.done and item.tasks[-1]["task"] == "produce":
+                    jobOrder = item
+                    break
+
+            if not jobOrder:
+                if not self.jobOrders:
+                    self.character.messages.append("no job orders found")
+                    return
+
+                jobOrder = self.jobOrders.pop()
+
+            if not jobOrder.tasks[-1]["toProduce"] in self.commands:
+                self.character.messages.append("no command for job order found")
+                return
+
+            itemType = jobOrder.tasks[-1]["toProduce"]
+            command = self.commands[itemType]
+
+            convertedCommand = []
+            for char in command:
+                convertedCommand.append((char,"norecord"))
+
+            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+            self.character.messages.append("running command to produce %s - %s"%(itemType,command))
+
+        elif self.submenue.selection == "runCommand":
+            options = []
+            for itemType in self.commands:
+                options.append((itemType,itemType))
+            self.submenue = interaction.SelectionMenu("Run command for producing item. select item to produce.",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.runCommand
+        elif self.submenue.selection == "addCommand":
+            options = []
+            for key in itemMap.keys():
+                options.append((key,key))
+            self.submenue = interaction.SelectionMenu("Setting command for producing item. What item do you want to set the command for?",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.setCommand
+        elif self.submenue.selection == "addJobOrder":
+            itemFound = None
+            for item in self.character.inventory:
+                if item.type == "JobOrder":
+                    itemFound = item
+                    break
+            self.jobOrders.append(itemFound)
+            self.character.inventory.remove(itemFound)
+
+    def setCommand(self):
+        itemType = self.submenue.selection
+        
+        commandItem = None
+        for item in self.container.getItemByPosition((self.xPosition,self.yPosition-1)):
+            if item.type == "Command":
+                commandItem = item
+
+        if not commandItem:
+            self.character.messages.append("no command found - place command to the north")
+            return
+
+        self.commands[itemType] = commandItem.command
+        self.container.removeItem(commandItem)
+
+        self.character.messages.append("added command for %s - %s"%(itemType,commandItem.command))
+        return
+
+    def runCommand(self):
+        itemType = self.submenue.selection
+        command = self.commands[itemType]
+
+        convertedCommand = []
+        for char in command:
+            convertedCommand.append((char,"norecord"))
+
+        self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+        self.character.messages.append("running command to produce %s - %s"%(itemType,command))
+
+    def getState(self):
+        state = super().getState()
+        state["commands"] = self.commands
+        jobOrderStates = []
+        for item in self.jobOrders:
+            jobOrderStates.append(item.getState())
+        state["jobOrders"] = jobOrderStates
+        return state
+
+    def getDiffState(self):
+        state = super().getDiffState()
+        state["commands"] = self.commands
+        jobOrderStates = []
+        for item in self.jobOrders:
+            jobOrderStates.append(item.getState())
+        state["jobOrders"] = jobOrderStates
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        if "commands" in state:
+            self.commands = state["commands"]
+
+        if "jobOrders" in state:
+            print("---")
+            print(state["jobOrders"])
+            for jobOrderState in state["jobOrders"]:
+                print("+++")
+                print(jobOrderState)
+                self.jobOrders.append(getItemFromState(jobOrderState))
 
 '''
 '''
@@ -5702,6 +6186,12 @@ class Machine(Item):
             character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
             return
 
+        jobOrder = None
+        for item in character.inventory:
+            if item.type == "JobOrder" and not item.done and item.tasks[-1]["task"] == "produce" and item.tasks[-1]["toProduce"] == self.toProduce:
+                jobOrder = item
+                break
+
         if self.toProduce == "Sheet":
             ressourcesNeeded = ["MetalBars"]
         elif self.toProduce == "Radiator":
@@ -5944,6 +6434,20 @@ class Machine(Item):
         
         # refuse production without ressources
         if ressourcesNeeded:
+            if jobOrder:
+                for ressource in ressourcesNeeded:
+                    jobOrder.tasks.append(
+                        {
+                        "task":"place",
+                        "toPlace":ressource,
+                        "macro":"PLACE "+ressource.upper()[:-1]+ressource[-1].lower(),
+                        "placeX":(self.xPosition-1)%15,
+                        "placeY":self.yPosition%15,
+                        "placeBigX":(self.xPosition-1)//15,
+                        "placeBigY":self.yPosition//15,
+                        "command":None
+                        }
+                    )
             character.messages.append("missing ressources (place left/west or up/north): %s"%(", ".join(ressourcesNeeded)))
             return
 
@@ -5971,6 +6475,12 @@ class Machine(Item):
             self.coolDownTimer = gamestate.tick
 
         character.messages.append("you produce a %s"%(self.toProduce,))
+
+        if jobOrder:
+            if len(jobOrder.tasks) > 1:
+                jobOrder.tasks.pop()
+            else:
+                jobOrder.done = True
 
         # remove ressources
         for item in ressourcesFound:
@@ -10998,6 +11508,7 @@ itemMap = {
             "ProductionRunner":ProductionRunner,
             "ProductionRunner2":ProductionRunner2,
             "UniformStockpileManager":UniformStockpileManager,
+            "TypedStockpileManager":TypedStockpileManager,
 }
 
 producables = {

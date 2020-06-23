@@ -807,6 +807,15 @@ class Character(src.saveing.Saveable):
 
         self.messages.append("you drop a %s"%(item.type))
 
+        for jobOrderCandidate in self.inventory:
+            if jobOrderCandidate.type == "JobOrder" and not jobOrderCandidate.done and jobOrderCandidate.tasks[-1]["task"] == "place":
+                if item.type == jobOrderCandidate.tasks[-1]["toPlace"] and self.xPosition == jobOrderCandidate.tasks[-1]["placeBigX"]*15+jobOrderCandidate.tasks[-1]["placeX"] and self.yPosition == jobOrderCandidate.tasks[-1]["placeBigY"]*15+jobOrderCandidate.tasks[-1]["placeY"]:
+                    if len(jobOrderCandidate.tasks) > 1:
+                        jobOrderCandidate.tasks.pop()
+                    else:
+                        jobOrderCandidate.done = True
+                    break
+
         # remove item from inventory
         self.inventory.remove(item)
 

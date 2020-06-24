@@ -6421,7 +6421,7 @@ Currently the machine has no charges
             options.append(("targetFull","set target full command"))
 
             if self.toProduce in self.rawMaterialLookup:
-                ressourcesNeeded = self.rawMaterialLookup[self.toProduce]
+                ressourcesNeeded = self.rawMaterialLookup[self.toProduce][:]
             else:
                 ressourcesNeeded = ["MetalBars"]
 

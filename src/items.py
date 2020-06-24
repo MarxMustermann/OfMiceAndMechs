@@ -6341,7 +6341,7 @@ class Machine(Item):
                 break
 
         if self.toProduce in self.rawMaterialLookup:
-            ressourcesNeeded = self.rawMaterialLookup[self.toProduce]
+            ressourcesNeeded = self.rawMaterialLookup[self.toProduce][:]
         else:
             ressourcesNeeded = ["MetalBars"]
 

@@ -1367,7 +1367,6 @@ current registers
             return
 
         if key in ("esc",):
-            char.messages.append("esc pressed")
             options = []
             options.append(("save","save"))
             options.append(("quit","save and quit"))
@@ -1404,7 +1403,6 @@ current registers
                     charState["submenue"] = HelpMenu()
                 elif selection == "keybinding":
                     pass
-                char.messages.append("triggered")
             char.macroState["submenue"].followUp = trigger
             key = "."
 

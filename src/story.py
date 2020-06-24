@@ -3086,7 +3086,7 @@ class BuildBase(BasicPhase):
             mold.startSpawn()
 
         mainChar.addListener(self.checkRoomEnteredMain)
-        mainChar.macroState["macros"]["j"] = ["J"]
+        mainChar.macroState["macros"]["j"] = ["J","f"]
 
         # add basic set of abilities in openworld phase
         mainChar.questsDone = [

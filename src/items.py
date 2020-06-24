@@ -3030,6 +3030,7 @@ class ScrapCompactor(Item):
         self.coolDownTimer = -self.coolDown
         self.charges = 3
         self.level = 1
+        self.commands = {}
         
         super().__init__(displayChars.scrapCompactor,xPosition,yPosition,name=name,creator=creator)
 
@@ -3075,11 +3076,13 @@ class ScrapCompactor(Item):
 
         if gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
             character.messages.append("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            self.runCommand("cooldown",character)
             return
 
         # refuse to produce without ressources
         if not scrap:
             character.messages.append("no scraps available")
+            self.runCommand("material Scrap",character)
             return
 
         targetPos = (self.xPosition+1,self.yPosition)
@@ -3094,6 +3097,7 @@ class ScrapCompactor(Item):
 
         if targetFull:
             character.messages.append("the target area is full, the machine does not produce anything")
+            self.runCommand("targetFull",character)
             return
 
         if self.charges:
@@ -3122,6 +3126,8 @@ class ScrapCompactor(Item):
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
         self.container.addItems([new])
+
+        self.runCommand("success",character)
 
     def getLongInfo(self):
         directions = "west"
@@ -3168,6 +3174,85 @@ thie is a level %s item
 
 """%(self.level)
         return text
+
+    def configure(self,character):
+        options = [("addCommand","add command")]
+        self.submenue = interaction.SelectionMenu("what do you want to do?",options)
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.apply2
+        self.character = character
+
+    def apply2(self):
+        if self.submenue.selection == "runCommand":
+            options = []
+            for itemType in self.commands:
+                options.append((itemType,itemType))
+            self.submenue = interaction.SelectionMenu("Run command for producing item. select item to produce.",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.runCommand
+        elif self.submenue.selection == "addCommand":
+            options = []
+            options.append(("success","set success command"))
+            options.append(("cooldown","set cooldown command"))
+            options.append(("targetFull","set target full command"))
+            options.append(("material Scrap","set Scrap fetching command"))
+            self.submenue = interaction.SelectionMenu("Setting command for handling triggers.",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.setCommand
+        elif self.submenue.selection == "addJobOrder":
+            itemFound = None
+            for item in self.character.inventory:
+                if item.type == "JobOrder":
+                    itemFound = item
+                    break
+            self.jobOrders.append(itemFound)
+            self.character.inventory.remove(itemFound)
+
+    def setCommand(self):
+        itemType = self.submenue.selection
+        
+        commandItem = None
+        for item in self.container.getItemByPosition((self.xPosition,self.yPosition-1)):
+            if item.type == "Command":
+                commandItem = item
+
+        if not commandItem:
+            self.character.messages.append("no command found - place command to the north")
+            return
+
+        self.commands[itemType] = commandItem.command
+        self.container.removeItem(commandItem)
+
+        self.character.messages.append("added command for %s - %s"%(itemType,commandItem.command))
+        return
+
+    def runCommand(self,trigger,character):
+        if not trigger in self.commands:
+            return
+
+        command = self.commands[trigger]
+
+        convertedCommand = []
+        for char in command:
+            convertedCommand.append((char,"norecord"))
+
+        character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
+        character.messages.append("running command to handle trigger %s - %s"%(trigger,command))
+
+    def getState(self):
+        state = super().getState()
+        state["commands"] = self.commands
+        return state
+
+    def getDiffState(self):
+        state = super().getDiffState()
+        state["commands"] = self.commands
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        if "commands" in state:
+            self.commands = state["commands"]
 
 
 '''

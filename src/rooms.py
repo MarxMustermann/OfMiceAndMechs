@@ -2703,16 +2703,25 @@ a empty room
 class EmptyRoom(Room):
     objType = "EmptyRoom"
 
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None,bio=False):
         self.roomLayout = """
 XXX
 X.$
 XXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        self.bio = bio
+
+        if self.bio:
+            self.floorDisplay = [displayChars.moss,displayChars.moss,displayChars.sprout,displayChars.moss,displayChars.moss,displayChars.sprout2]
+
         self.name = "room"
 
-    def reconfigure(self,sizeX=3,sizeY=3,items=[]):
+        self.attributesToStore.extend([
+               "bio"])
+        self.initialState = self.getState()
+
+    def reconfigure(self,sizeX=3,sizeY=3,items=[],bio=False):
         self.sizeX = sizeX
         self.sizeY = sizeY
 

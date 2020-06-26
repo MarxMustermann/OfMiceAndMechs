@@ -1658,9 +1658,18 @@ class Door(Item):
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="Door",creator=None,noId=False):
-        super().__init__(displayChars.door_closed,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self,xPosition=0,yPosition=0,name="Door",creator=None,noId=False,bio=False):
+        if bio:
+            displayChar = displayChars.bioDoor_closed
+        else:
+            displayChar = displayChars.door_closed
+        super().__init__(displayChar,xPosition,yPosition,name=name,creator=creator)
         self.walkable = False
+        self.bio = bio
+
+        # bad code: set metadata for saving
+        self.attributesToStore.extend([
+               "bio","walkable"])
 
         # bad code: repetetive and easy to forgett
         self.initialState = self.getState()
@@ -1703,7 +1712,10 @@ class Door(Item):
 
         # open the door
         self.walkable = True
-        self.display = displayChars.door_opened
+        if self.bio:
+            self.display = displayChars.bioDoor_opened
+        else:
+            self.display = displayChars.door_opened
         self.room.open = True
 
         # redraw room
@@ -1739,7 +1751,10 @@ class Door(Item):
     '''
     def close(self):
         self.walkable = False
-        self.display = displayChars.door_closed
+        if self.bio:
+            self.display = displayChars.bioDoor_closed
+        else:
+            self.display = displayChars.door_closed
         self.room.open = False
         self.room.forceRedraw()
 
@@ -8018,6 +8033,7 @@ class AutoTutor(Item):
                 newCommand.description = "using this command will make you go to a food source nearby."
                 newCommand.xPosition = self.xPosition
                 newCommand.yPosition = self.yPosition+1
+                self.container.addItems([newCommand])
 
                 newCommand = Command(creator=self)
                 newCommand.setPayload(["%","F","a","d"])
@@ -8025,7 +8041,6 @@ class AutoTutor(Item):
                 newCommand.description = "using this command will make you go west in case there is a food source nearby and to the east otherwise."
                 newCommand.xPosition = self.xPosition
                 newCommand.yPosition = self.yPosition+1
-
                 self.container.addItems([newCommand])
 
                 del self.availableChallenges["gatherSickBloom"]
@@ -8044,6 +8059,7 @@ class AutoTutor(Item):
                 newCommand.description = "using this command will make you go to a food source nearby."
                 newCommand.xPosition = self.xPosition
                 newCommand.yPosition = self.yPosition+1
+                self.container.addItems([newCommand])
 
                 newCommand = Command(creator=self)
                 newCommand.setPayload(["%","F","a","d"])
@@ -8051,6 +8067,7 @@ class AutoTutor(Item):
                 newCommand.description = "using this command will make you go west in case there is a food source nearby and to the east otherwise."
                 newCommand.xPosition = self.xPosition
                 newCommand.yPosition = self.yPosition+1
+                self.container.addItems([newCommand])
 
                 del self.availableChallenges["gatherCoal"]
 
@@ -8122,6 +8139,7 @@ class AutoTutor(Item):
                     newCommand.description = "using this command will make you go the west tile edge."
                     newCommand.xPosition = self.xPosition
                     newCommand.yPosition = self.yPosition+1
+                    self.container.addItems([newCommand])
 
                     newCommand = Command(creator=self)
                     newCommand.setPayload(["$",">","x","$","x","=","1","4","@","$","x","-","S","E","L","F","x","$","=","x","a","<","x"])
@@ -8129,6 +8147,7 @@ class AutoTutor(Item):
                     newCommand.description = "using this command will make you go the east tile edge."
                     newCommand.xPosition = self.xPosition
                     newCommand.yPosition = self.yPosition+1
+                    self.container.addItems([newCommand])
 
                     newCommand = Command(creator=self)
                     newCommand.setPayload(["@","$","=","S","E","L","F","y","w"])
@@ -8136,6 +8155,7 @@ class AutoTutor(Item):
                     newCommand.description = "using this command will make you go the north tile edge."
                     newCommand.xPosition = self.xPosition
                     newCommand.yPosition = self.yPosition+1
+                    self.container.addItems([newCommand])
 
                     newCommand = Command(creator=self)
                     newCommand.setPayload(["$",">","y","$","y","=","1","4","@","$","y","-","S","E","L","F","y","$","=","y","s","<","y"])
@@ -8143,76 +8163,25 @@ class AutoTutor(Item):
                     newCommand.description = "using this command will make you go the south tile edge."
                     newCommand.xPosition = self.xPosition
                     newCommand.yPosition = self.yPosition+1
-
-        # build room
-        # build map to room
-        # goto map center
-        # build working map (drop marker in 5 rooms with requirement, make random star movement)
-        # tile with 9 living sick blooms
-        # gather posion bloom
-        #X clear tile x/y
-            #> floor right empty
-            # build room
-        # upgrade BloomContainer 3
-        # upgrade Sheet to 4
-        # upgrade Machine
-        #(=> produce goo flask with >100 charges)
-        #(=> build mini mech)
+                    self.container.addItems([newCommand])
 
         #- build growth tank
             #- build NPC
-                #> go to scrap
-                #> go to character
+                #- > go to scrap
+                #- > go to character
                 #- gather corpse
-                    #> go to corpse
-                    #> decide corpse
-        # build item upgrader
-            # upgrade Command to 4
-        # memory cell
+                    #- > go to corpse
+                    #- > decide corpse
+        #- build item upgrader
+            #- upgrade Command to 4
+            #- upgrade BloomContainer 3
+            #- upgrade Sheet to 4
+            #- upgrade Machine
+        #- memory cell
             # learn command
         # => learn 25 commands 
 
-        elif selection == "produceMemoryCell": # from root 4
-            if self.countInInventoryOrRoom(src.items.MemoryCell) < 9:
-                self.submenue = interaction.TextMenu("\n\nchallenge: gather sick blooms\nstatus: challenge in progress. Try with 9 sick blooms in your inventory.\n\n")
-            else:
-                self.submenue = interaction.TextMenu("\n\nchallenge: gather sick blooms\nstatus: challenge completed.\n\n")
-                del self.availableChallenges["gatherSickBlooms"]
-
-
-        elif selection == "produceFloorPlates": # from produceRoomBuilder
-            if self.countInInventoryOrRoom(src.items.FloorPlate) < 9:
-                self.submenue = interaction.TextMenu("\n\nchallenge: produce floor plates\nstatus: challenge in progress. Try with 9 floor plates in your inventory.\n\n")
-            else:
-                self.submenue = interaction.TextMenu("\n\nchallenge: produce floor plates\nstatus: challenge completed.\n\n")
-                del self.availableChallenges["produceFloorPlates"]
-
-
-        elif selection == "produceRoomBuilder": # from root4
-            if not self.checkInInventoryOrInRoom(src.items.RoomBuilder):
-                self.submenue = interaction.TextMenu("\n\nchallenge: produce room builder\nstatus: challenge in progress. Try with room builder in your inventory.\n\n")
-            else:
-                self.submenue = interaction.TextMenu("\n\nchallenge: produce room builder\nstatus: challenge completed.\n\n")
-                self.availableChallenges["produceFloorPlates"] = {"text":"produce floor plates"}
-                del self.availableChallenges["produceRoomBuilder"]
-
-
-        elif selection == "gatherPoisonBloom": # NOT ASSIGNED
-            if self.countInInventoryOrRoom(src.items.PoisonBloom) < 9:
-                self.submenue = interaction.TextMenu("\n\nchallenge: gather poison bloom\nstatus: challenge in progress. Try with poison bloom in your inventory.\n\n")
-            else:
-                self.submenue = interaction.TextMenu("\n\nchallenge: gather poison bloom\nstatus: challenge completed.\n\n")
-                self.availableChallenges["gatherPoisonBlooms"] = {"text":"gather poison blooms"}
-                del self.availableChallenges["gatherPoisonBloom"]
-
-        elif selection == "gatherPoisonBlooms": # from gatherPoisonBloom
-            if self.countInInventoryOrRoom(src.items.PoisonBloom) < 5:
-                self.submenue = interaction.TextMenu("\n\nchallenge: gather poison bloom\nstatus: challenge in progress. Try with 5 poison blooms in your inventory.\n\n")
-            else:
-                self.submenue = interaction.TextMenu("\n\nchallenge: gather poison bloom\nstatus: challenge completed.\n\n")
-                del self.availableChallenges["gatherPoisonBlooms"]
-
-        elif selection == "produceGrowthTank": # NOT ASSIGNED
+        elif selection == "produceGrowthTank": # from root 5
             if not self.checkInInventoryOrInRoom(src.items.GrowthTank):
                 self.submenue = interaction.TextMenu("\n\nchallenge: produce growth tank\nstatus: challenge in progress. Try with growth tank in your inventory.\n\n")
             else:
@@ -8223,6 +8192,23 @@ class AutoTutor(Item):
         elif selection == "spawnNPC": # from produceGrowthTank
             if len(self.room.characters) < 2:
                 self.submenue = interaction.TextMenu("\n\nchallenge: spawn NPC\nstatus: challenge in progress. Try with a NPC in the room.\n\n")
+                
+                newCommand = Command(creator=self)
+                newCommand.setPayload(["o","p","s","$","=","a","a","$","=","w","w","$","=","s","s","$","=","d","d"])
+                newCommand.extraName = "GOTO SCRAp"
+                newCommand.description = "using this command will make you go to scrap nearby."
+                newCommand.xPosition = self.xPosition
+                newCommand.yPosition = self.yPosition+1
+                self.container.addItems([newCommand])
+
+                newCommand = Command(creator=self)
+                newCommand.setPayload(["o","p","c","$","=","a","a","$","=","w","w","$","=","s","s","$","=","d","d"])
+                newCommand.extraName = "GOTO CHARACTEr"
+                newCommand.description = "using this command will make you go to a character nearby."
+                newCommand.xPosition = self.xPosition
+                newCommand.yPosition = self.yPosition+1
+                self.container.addItems([newCommand])
+
             else:
                 self.submenue = interaction.TextMenu("\n\nchallenge: spawn NPC\nstatus: challenge completed.\n\n")
 
@@ -8238,16 +8224,134 @@ class AutoTutor(Item):
                 newCommand.description = "using this command will make you go to a corpse nearby."
                 newCommand.xPosition = self.xPosition
                 newCommand.yPosition = self.yPosition+1
+                self.container.addItems([newCommand])
 
                 newCommand = Command(creator=self)
                 newCommand.setPayload(["%","M","a","d"])
-                newCommand.extraName = "DECIDE CORPSE NEARBY WEST EASt"
-                newCommand.description = "using this command will make you go west in case there is a corpse nearby and to the east otherwise."
+                newCommand.extraName = "DECIDE CORPSE EAST WESt"
+                newCommand.description = "using this command will make you move west in case a corpse is nearby and will move you east otherwise"
                 newCommand.xPosition = self.xPosition
                 newCommand.yPosition = self.yPosition+1
+                self.container.addItems([newCommand])
 
                 del self.availableChallenges["gatherCorpse"]
 
+        elif selection == "produceItemUpgrader": # from root 5
+            if not self.checkInInventoryOrInRoom(src.items.ItemUpgrader):
+                self.submenue = interaction.TextMenu("\n\nchallenge: produce item upgrader\nstatus: challenge in progress. Try with item upgrader in your inventory.\n\n")
+            else:
+                self.submenue = interaction.TextMenu("\n\nchallenge: produce item upgrader\nstatus: challenge completed.\n\n")
+                del self.availableChallenges["produceItemUpgrader"]
+
+        elif selection == "upgradeCommand4": # from produceItemUpgrader
+            itemFound = None
+            for item in self.character.inventory + self.room.itemsOnFloor:
+                if item.type == "Command" and item.level >= 4:
+                    itemFound = item
+
+            if not itemFound:
+                self.submenue = interaction.TextMenu("\n\nchallenge: upgrade command to level 4\nstatus: challenge in progress. Try with a command with level 4 in your inventory.\n\n")
+            else:
+                self.submenue = interaction.TextMenu("\n\nchallenge: upgrade command to level 4\nstatus: challenge completed.\n\n")
+                del self.availableChallenges["upgradeCommand4"]
+
+        elif selection == "upgradeBloomContainer3": # from produceItemUpgrader
+            itemFound = None
+            for item in self.character.inventory + self.room.itemsOnFloor:
+                if item.type == "BloomContainer" and item.level >= 3:
+                    itemFound = item
+
+            if not itemFound:
+                self.submenue = interaction.TextMenu("\n\nchallenge: upgrade bloom container to level 3\nstatus: challenge in progress. Try with a bloom container with level 3 in your inventory.\n\n")
+            else:
+                self.submenue = interaction.TextMenu("\n\nchallenge: upgrade bloom container to level 3\nstatus: challenge completed.\n\n")
+                del self.availableChallenges["upgradeCommand4"]
+
+        elif selection == "upgradeSheet4": # from produceItemUpgrader
+            itemFound = None
+            for item in self.character.inventory + self.room.itemsOnFloor:
+                if item.type == "Sheet" and item.level >= 4:
+                    itemFound = item
+
+            if not itemFound:
+                self.submenue = interaction.TextMenu("\n\nchallenge: upgrade sheet to level 4\nstatus: challenge in progress. Try with a sheet with level 4 in your inventory.\n\n")
+            else:
+                self.submenue = interaction.TextMenu("\n\nchallenge: upgrade sheet to level 4\nstatus: challenge completed.\n\n")
+                del self.availableChallenges["upgradeCommand4"]
+
+        elif selection == "upgradeMachine2": # from produceItemUpgrader
+            itemFound = None
+            for item in self.character.inventory + self.room.itemsOnFloor:
+                if item.type == "Machine" and item.level >= 2:
+                    itemFound = item
+
+            if not itemFound:
+                self.submenue = interaction.TextMenu("\n\nchallenge: upgrade machine to level 2\nstatus: challenge in progress. Try with a machine with level 2 in your inventory.\n\n")
+            else:
+                self.submenue = interaction.TextMenu("\n\nchallenge: upgrade machine to level 2\nstatus: challenge completed.\n\n")
+                del self.availableChallenges["upgradeCommand4"]
+
+        elif selection == "produceMemoryCell": # from root 5
+            if self.countInInventoryOrRoom(src.items.MemoryCell) < 9:
+                self.submenue = interaction.TextMenu("\n\nchallenge: gather sick blooms\nstatus: challenge in progress. Try with 9 sick blooms in your inventory.\n\n")
+            else:
+                self.submenue = interaction.TextMenu("\n\nchallenge: gather sick blooms\nstatus: challenge completed.\n\n")
+                del self.availableChallenges["gatherSickBlooms"]
+
+
+
+
+
+
+
+        #- gather posion bloom
+        #- produce room builder
+            #- build floor plate
+        #X clear tile x/y
+            #> floor right empty
+            # build room
+        #X goto map center
+        # tile with 9 living sick blooms
+        # produce goo flask with >100 charges
+        # 
+        #=> build mini mech
+
+        elif selection == "gatherPoisonBloom": # from root 6
+            if self.countInInventoryOrRoom(src.items.PoisonBloom) < 9:
+                self.submenue = interaction.TextMenu("\n\nchallenge: gather poison bloom\nstatus: challenge in progress. Try with poison bloom in your inventory.\n\n")
+            else:
+                self.submenue = interaction.TextMenu("\n\nchallenge: gather poison bloom\nstatus: challenge completed.\n\n")
+                del self.availableChallenges["gatherPoisonBloom"]
+
+        elif selection == "produceRoomBuilder": # from root 6
+            if not self.checkInInventoryOrInRoom(src.items.RoomBuilder):
+                self.submenue = interaction.TextMenu("\n\nchallenge: produce room builder\nstatus: challenge in progress. Try with room builder in your inventory.\n\n")
+            else:
+                self.submenue = interaction.TextMenu("\n\nchallenge: produce room builder\nstatus: challenge completed.\n\n")
+                self.availableChallenges["produceFloorPlate"] = {"text":"produce floor plate"}
+                del self.availableChallenges["produceRoomBuilder"]
+
+        elif selection == "produceFloorPlate": # from produceRoomBuilder
+            if self.checkInInventoryOrRoom(src.items.FloorPlate):
+                self.submenue = interaction.TextMenu("\n\nchallenge: produce floor plates\nstatus: challenge in progress. Try with 9 floor plates in your inventory.\n\n")
+            else:
+                self.submenue = interaction.TextMenu("\n\nchallenge: produce floor plates\nstatus: challenge completed.\n\n")
+                del self.availableChallenges["produceFloorPlate"]
+
+        # build map to room
+        # build working map (drop marker in 5 rooms with requirement, make random star movement)
+        # gather poision blooms
+
+
+
+
+
+        elif selection == "gatherPoisonBlooms": # from gatherPoisonBloom
+            if self.countInInventoryOrRoom(src.items.PoisonBloom) < 5:
+                self.submenue = interaction.TextMenu("\n\nchallenge: gather poison bloom\nstatus: challenge in progress. Try with 5 poison blooms in your inventory.\n\n")
+            else:
+                self.submenue = interaction.TextMenu("\n\nchallenge: gather poison bloom\nstatus: challenge completed.\n\n")
+                del self.availableChallenges["gatherPoisonBlooms"]
 
 
 
@@ -10294,7 +10398,7 @@ class Mold(Item):
         character.messages.append("you eat the mold and gain 2 satiation")
 
     def startSpawn(self):
-        if self.charges:
+        if self.charges and self.container:
             if not (self.xPosition and self.yPosition and self.terrain):
                 return
             event = src.events.RunCallbackEvent(gamestate.tick+(2*self.xPosition+3*self.yPosition+gamestate.tick)%1000,creator=self)
@@ -10302,7 +10406,7 @@ class Mold(Item):
             self.terrain.addEvent(event)
 
     def spawn(self):
-        if self.charges:
+        if self.charges and self.container:
             if not (self.xPosition and self.yPosition):
                 return
             direction = (2*self.xPosition+3*self.yPosition+gamestate.tick)%4
@@ -10429,6 +10533,8 @@ class Mold(Item):
                     new.yPosition = self.yPosition
                     self.container.addItems([new])
                     self.container.removeItem(self)
+
+                    itemList[-1].tryToGrowRoom(new)
 
                 elif itemList[-1].type in ["PoisonBush","EncrustedPoisonBush"]:
                     new = itemMap["PoisonBloom"](creator=self)
@@ -11031,11 +11137,11 @@ item: EncrustedBush
 
 description:
 This is a cluster of blooms. The veins developed a protecive shell and are dense enough to form a solid wall.
-Its spore sacks shriveled and are covered in green slime.
 
-actions:
-You can use it to loose 100 satiation.
 """%(satiation)
+
+    def apply(self,character):
+        self.tryToGrowRoom(None, character)
 
     def destroy(self, generateSrcap=True):
         new = itemMap["Coal"](creator=self)
@@ -11079,6 +11185,103 @@ You can use it to loose 100 satiation.
         self.container.addCharacter(character,self.xPosition,self.yPosition)
 
         super().destroy(generateSrcap=False)
+
+    def tryToGrowRoom(self, spawnPoint, character=None):
+        if not self.terrain:
+            return
+
+        upperLeftEdge = [self.xPosition,self.yPosition]
+        sizeX = 1
+        sizeY = 1
+
+        growBlock = None
+
+        continueExpanding = True
+        while continueExpanding:
+            continueExpanding = False
+
+            #expand west
+            if upperLeftEdge[0]%15 > 0:
+                rowOk = True
+                for y in range(0,sizeY):
+                    items = self.container.getItemByPosition((upperLeftEdge[0]-1,upperLeftEdge[1]+y))
+                    if not (len(items) > 0 and items[0].type == "EncrustedBush"):
+                        if items and items[0].type == "Bush":
+                            growBlock = items[0]
+                        rowOk = False
+                if rowOk:
+                    sizeX += 1
+                    upperLeftEdge[0] -= 1
+                    continueExpanding = True
+
+            #expand north
+            if upperLeftEdge[1]%15 > 0:
+                rowOk = True
+                for x in range(0,sizeX):
+                    items = self.container.getItemByPosition((upperLeftEdge[0]+x,upperLeftEdge[1]-1))
+                    if not (len(items) > 0 and items[0].type == "EncrustedBush"):
+                        if items and items[0].type == "Bush":
+                            growBlock = items[0]
+                        rowOk = False
+                if rowOk:
+                    sizeY += 1
+                    upperLeftEdge[1] -= 1
+                    continueExpanding = True
+
+            #expand south
+            if upperLeftEdge[1]%15+sizeY < 14:
+                rowOk = True
+                for x in range(0,sizeX):
+                    items = self.container.getItemByPosition((upperLeftEdge[0]+x,upperLeftEdge[1]+sizeY))
+                    if not (len(items) > 0 and items[0].type == "EncrustedBush"):
+                        if items and items[0].type == "Bush":
+                            growBlock = items[0]
+                        rowOk = False
+                if rowOk:
+                    sizeY += 1
+                    continueExpanding = True
+
+            #expand east
+            if upperLeftEdge[0]%15+sizeX < 14:
+                rowOk = True
+                for y in range(0,sizeY):
+                    items = self.container.getItemByPosition((upperLeftEdge[0]+sizeX,upperLeftEdge[1]+y))
+                    if not (len(items) > 0 and items[0].type == "EncrustedBush"):
+                        if items and items[0].type == "Bush":
+                            growBlock = items[0]
+                        rowOk = False
+                if rowOk:
+                    sizeX += 1
+                    continueExpanding = True
+
+        if sizeX < 3 or sizeY < 3:
+            if growBlock:
+                new = itemMap["EncrustedBush"](creator=self)
+                new.xPosition = growBlock.xPosition
+                new.yPosition = growBlock.yPosition
+                self.container.addItems([new])
+                growBlock.container.removeItem(growBlock)
+            return
+
+        keepItems = []
+        import random
+        random.randint()
+        doorPos = ()
+        for x in range(0,sizeX):
+            for y in range(0,sizeY):
+                if x == 0 or y == 0 or x == sizeX-1 or y == sizeY-1:
+                    if x == 0 and y == 1:
+                        item = Door(creator=self,bio=True)
+                    else:
+                        items = self.container.getItemByPosition((upperLeftEdge[0]+x,upperLeftEdge[1]+y))
+                        item = items[0]
+                    item.xPosition = x
+                    item.yPosition = y
+                    keepItems.append(item)
+
+        room = src.rooms.EmptyRoom(upperLeftEdge[0]//15,upperLeftEdge[1]//15,upperLeftEdge[0]%15,upperLeftEdge[1]%15,creator=self,bio=True)
+        self.terrain.addRooms([room])
+        room.reconfigure(sizeX,sizeY,keepItems)
 
 class MoldFeed(Item):
     type = "MoldFeed"

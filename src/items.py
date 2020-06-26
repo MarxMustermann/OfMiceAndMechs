@@ -7140,7 +7140,7 @@ class AutoTutor(Item):
                     self.blueprintChallengeDone = True
                 self.character.macroState["submenue"] = self.submenue
             elif not self.commandChallengeDone:
-                if not self.checkInInventory(src.items.Command + self.room.itemsOnFloor):
+                if not self.checkInInventoryOrInRoom(src.items.Command):
                     self.submenue = interaction.TextMenu("\n\nchallenge: create command\nstatus: challenge in progress - Try again with a command in your inventory.\n\ncomment: \ncheck \"information->automation->command creation\" on how to record commands.\n\n")
                 else:
                     self.knownBlueprints.append("Stripe")

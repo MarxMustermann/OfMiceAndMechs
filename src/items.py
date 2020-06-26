@@ -915,7 +915,7 @@ class GrowthTank(Item):
         self.room.addCharacter(character,self.xPosition+1,self.yPosition)
         #character.revokeReputation(amount=4,reason="beeing helpless")
         #character.macroState["commandKeyQueue"] = [("j",[])]
-        character.macroState["macros"]["j"] = "J"
+        character.macroState["macros"]["j"] = "Jf"
 
         return character
 
@@ -7259,7 +7259,7 @@ class AutoTutor(Item):
                         self.knownBlueprints.append("RoomBuilder")
                         self.knownBlueprints.append("FloorPlate")
                     self.character.macroState["submenue"] = self.submenue
-        elif not self.challengeRun4Done:
+        elif not self.challengeRun4Done: # rebuild to use joborders?
             if len(self.availableChallenges):
                 options = []
                 for (key,value) in self.availableChallenges.items():
@@ -7361,7 +7361,7 @@ class AutoTutor(Item):
                     self.challengeRun5Done = True
 
                     self.room.addCharacter(newCharacter,self.xPosition,self.yPosition+1)
-                    newCharacter.macroState["macros"]["j"] = "J"
+                    newCharacter.macroState["macros"]["j"] = "Jf"
                     newCharacter.inventory.append(gooFlask2)
 
         else:

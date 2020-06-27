@@ -2725,9 +2725,6 @@ XXX
         self.sizeX = sizeX
         self.sizeY = sizeY
 
-        for item in self.itemsOnFloor[:]:
-            self.removeItem(item)
-
         self.addItems(items)
 
         self.walkingAccess = []

@@ -1,5 +1,7 @@
 import urwid
 
+typedStockpileManager = (urwid.AttrSpec("#aaa",'black'),"ST")
+uniformStockpileManager = (urwid.AttrSpec("#aaa",'black'),"SU")
 jobOrder = (urwid.AttrSpec("#33f",'black'),"j#")
 jobBoard = (urwid.AttrSpec("#33f",'black'),"JB")
 itemUpgrader = (urwid.AttrSpec("#aaa",'black'),"iU")

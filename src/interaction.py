@@ -387,41 +387,44 @@ type the macro name you want to record to
         return
 
     if "advancedPickup" in char.interactionState:
-        if key == "w":
-            items = char.container.getItemByPosition((char.xPosition,char.yPosition-1))
-            if items:
-                item = items[0]
-                item.pickUp(char)
-                item.changed("pickedUp",char)
-                char.changed()
-        elif key == "s":
-            items = char.container.getItemByPosition((char.xPosition,char.yPosition+1))
-            if items:
-                item = items[0]
-                item.pickUp(char)
-                item.changed("pickedUp",char)
-                char.changed()
-        elif key == "d":
-            items = char.container.getItemByPosition((char.xPosition+1,char.yPosition))
-            if items:
-                item = items[0]
-                item.pickUp(char)
-                item.changed("pickedUp",char)
-                char.changed()
-        elif key == "a":
-            items = char.container.getItemByPosition((char.xPosition-1,char.yPosition))
-            if items:
-                item = items[0]
-                item.pickUp(char)
-                item.changed("pickedUp",char)
-                char.changed()
-        elif key == ".":
-            items = char.container.getItemByPosition((char.xPosition,char.yPosition))
-            if items:
-                item = items[0]
-                item.pickUp(char)
-                item.changed("pickedUp",char)
-                char.changed()
+        if len(char.inventory) >= 10:
+            char.messages.append("you cannot carry more items")
+        else:
+            if key == "w":
+                items = char.container.getItemByPosition((char.xPosition,char.yPosition-1))
+                if items:
+                    item = items[0]
+                    item.pickUp(char)
+                    item.changed("pickedUp",char)
+                    char.changed()
+            elif key == "s":
+                items = char.container.getItemByPosition((char.xPosition,char.yPosition+1))
+                if items:
+                    item = items[0]
+                    item.pickUp(char)
+                    item.changed("pickedUp",char)
+                    char.changed()
+            elif key == "d":
+                items = char.container.getItemByPosition((char.xPosition+1,char.yPosition))
+                if items:
+                    item = items[0]
+                    item.pickUp(char)
+                    item.changed("pickedUp",char)
+                    char.changed()
+            elif key == "a":
+                items = char.container.getItemByPosition((char.xPosition-1,char.yPosition))
+                if items:
+                    item = items[0]
+                    item.pickUp(char)
+                    item.changed("pickedUp",char)
+                    char.changed()
+            elif key == ".":
+                items = char.container.getItemByPosition((char.xPosition,char.yPosition))
+                if items:
+                    item = items[0]
+                    item.pickUp(char)
+                    item.changed("pickedUp",char)
+                    char.changed()
         del char.interactionState["advancedPickup"]
         return
 
@@ -512,8 +515,9 @@ get position for what thing
                     char.registers["a"] = [0]
                 if not "w" in char.registers:
                     char.registers["w"] = [0]
-                char.registers["d"][-1] = 7-char.xPosition%15
-                char.registers["s"][-1] = 7-char.yPosition%15
+                if char.xPosition:
+                    char.registers["d"][-1] = 7-char.xPosition%15
+                    char.registers["s"][-1] = 7-char.yPosition%15
                 char.registers["a"][-1] = -char.registers["d"][-1]
                 char.registers["w"][-1] = -char.registers["s"][-1]
                 char.messages.append("found in direction %sa %ss %sd %sw"%(char.registers["a"][-1],char.registers["s"][-1],char.registers["d"][-1],char.registers["w"][-1],))

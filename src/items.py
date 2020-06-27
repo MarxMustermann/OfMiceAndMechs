@@ -1635,6 +1635,7 @@ Coal is used as an energy source. It can be used to fire furnaces.
                       "ActivateQuestMeta",
                       "NaivePickupQuest",
                       "NaiveMurderQuest",
+                      "DrinkQuest",
                     ]
 
             self.container.addCharacter(newChar,self.xPosition,self.yPosition)
@@ -4857,11 +4858,11 @@ class TransportContainer(Item):
         self.character = character
 
     def apply2(self):
-        idd
         # add item
         # remove item
         # transport item
         # set transport command
+        pass
 
 class UniformStockpileManager(Item):
     type = "UniformStockpileManager"
@@ -4871,7 +4872,7 @@ class UniformStockpileManager(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None, name="uniform stockpile manager",creator=None,noId=False):
 
-        super().__init__(displayChars.wall,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.uniformStockpileManager,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = False
@@ -4887,7 +4888,7 @@ class UniformStockpileManager(Item):
     def getLongInfo(self):
 
         text = """
-item: StockpileManager
+item: UniformStockpileManager
 
 description:
 needs to be placed in the center of a tile. The tile should be emtpy and mold free for proper function.
@@ -4907,43 +4908,94 @@ needs to be placed in the center of a tile. The tile should be emtpy and mold fr
 
     def apply2(self):
         if self.submenue.selection == "storeItem":
-            sector = self.numItemsStored//35
-            offsetX = 6-self.numItemsStored%35%6-1
-            offsetY = 6-self.numItemsStored%35//6-1
+            if (self.xPosition%15 == 7 and self.yPosition%15 == 7):
+                if self.numItemsStored >= 140:
+                    self.character.messages.append("stockpile full")
+                    return
 
-            self.character.messages.append(sector)
-            self.character.messages.append(offsetX)
-            self.character.messages.append(offsetY)
+                sector = self.numItemsStored//35
+                offsetX = 6-self.numItemsStored%35%6-1
+                offsetY = 6-self.numItemsStored%35//6-1
 
-            command = ""
-            if sector == 0:
-                command += str(offsetY)+"w"
-                command += str(offsetX)+"a"
-                command += "La"
-                command += str(offsetX)+"d"
-                command += str(offsetY)+"s"
-            elif sector == 1:
-                command += str(offsetY)+"w"
-                command += str(offsetX)+"d"
-                command += "Ld"
-                command += str(offsetX)+"a"
-                command += str(offsetY)+"s"
-            elif sector == 2:
-                command += "assd"
-                command += str(offsetY)+"s"
-                command += str(offsetX)+"a"
-                command += "La"
-                command += str(offsetX)+"d"
-                command += str(offsetY)+"w"
-                command += "dwwa"
-            elif sector == 3:
-                command += "assd"
-                command += str(offsetY)+"s"
-                command += str(offsetX)+"d"
-                command += "Ld"
-                command += str(offsetX)+"a"
-                command += str(offsetY)+"w"
-                command += "dwwa"
+                command = ""
+                if sector == 0:
+                    command += str(offsetY)+"w"
+                    command += str(offsetX)+"a"
+                    command += "La"
+                    command += str(offsetX)+"d"
+                    command += str(offsetY)+"s"
+                elif sector == 1:
+                    command += str(offsetY)+"w"
+                    command += str(offsetX)+"d"
+                    command += "Ld"
+                    command += str(offsetX)+"a"
+                    command += str(offsetY)+"s"
+                elif sector == 2:
+                    command += "assd"
+                    command += str(offsetY)+"s"
+                    command += str(offsetX)+"a"
+                    command += "La"
+                    command += str(offsetX)+"d"
+                    command += str(offsetY)+"w"
+                    command += "dwwa"
+                elif sector == 3:
+                    command += "assd"
+                    command += str(offsetY)+"s"
+                    command += str(offsetX)+"d"
+                    command += "Ld"
+                    command += str(offsetX)+"a"
+                    command += str(offsetY)+"w"
+                    command += "dwwa"
+            elif (self.xPosition%15 in (6,8,) and self.yPosition%15 in (6,8)):
+                if self.numItemsStored >= 32:
+                    self.character.messages.append("stockpile full")
+                    return
+
+                row = self.numItemsStored//6
+
+                if (self.xPosition%15 == 6 and self.yPosition%15 == 6):
+                    rowMovUp = "w"
+                    rowMovDown = "s"
+                    colMovUp = "a"
+                    colMovDown = "d"
+                    command = ""
+                    commandEnd = ""
+                elif (self.xPosition%15 == 8 and self.yPosition%15 == 6):
+                    rowMovUp = "w"
+                    rowMovDown = "s"
+                    colMovUp = "d"
+                    colMovDown = "a"
+                    command = ""
+                    commandEnd = ""
+                elif (self.xPosition%15 == 6 and self.yPosition%15 == 8):
+                    rowMovUp = "s"
+                    rowMovDown = "w"
+                    colMovUp = "a"
+                    colMovDown = "d"
+                    command = "dssa"
+                    commandEnd = "awwd"
+                elif (self.xPosition%15 == 8 and self.yPosition%15 == 8):
+                    rowMovUp = "s"
+                    rowMovDown = "w"
+                    colMovUp = "d"
+                    colMovDown = "a"
+                    command = "assd"
+                    commandEnd = "dwwa"
+
+                if row < 4:
+                    command += str(3-row)+rowMovUp
+                    command += str(5-self.numItemsStored%6)+colMovUp+"L"+rowMovUp
+                    command += str(5-self.numItemsStored%6)+colMovDown
+                    command += str(3-row)+rowMovDown
+                elif self.numItemsStored >= 24 and self.numItemsStored < 28:
+                    command += str(4-(self.numItemsStored-24)%4)+colMovUp+"L"+colMovUp
+                    command += str(4-(self.numItemsStored-24)%4)+colMovDown
+                elif self.numItemsStored >= 28 and self.numItemsStored < 32:
+                    command += colMovUp+rowMovDown+str(3-(self.numItemsStored-28)%4)+colMovUp+"L"+colMovUp
+                    command += str(3-(self.numItemsStored-28)%4)+colMovDown+rowMovUp+colMovDown
+                command += commandEnd
+            else:
+                pass
 
             self.numItemsStored += 1
 
@@ -4957,55 +5009,104 @@ needs to be placed in the center of a tile. The tile should be emtpy and mold fr
             self.character.messages.append("running command to store item %s"%(command))
 
         if self.submenue.selection == "fetchItem":
+            if not self.numItemsStored:
+                self.character.messages.append("stockpile empty")
+                return
+
             self.numItemsStored -= 1
 
-            sector = self.numItemsStored//35
-            offsetX = 6-self.numItemsStored%35%6-1
-            offsetY = 6-self.numItemsStored%35//6-1
+            if (self.xPosition%15 == 7 and self.yPosition%15 == 7):
+                sector = self.numItemsStored//35
+                offsetX = 6-self.numItemsStored%35%6-1
+                offsetY = 6-self.numItemsStored%35//6-1
 
-            self.character.messages.append(sector)
-            self.character.messages.append(offsetX)
-            self.character.messages.append(offsetY)
+                command = ""
+                if sector == 0:
+                    command += str(offsetY)+"w"
+                    command += str(offsetX)+"a"
+                    command += "Ka"
+                    command += str(offsetX)+"d"
+                    command += str(offsetY)+"s"
+                elif sector == 1:
+                    command += str(offsetY)+"w"
+                    command += str(offsetX)+"d"
+                    command += "Kd"
+                    command += str(offsetX)+"a"
+                    command += str(offsetY)+"s"
+                elif sector == 2:
+                    command += "assd"
+                    command += str(offsetY)+"s"
+                    command += str(offsetX)+"a"
+                    command += "Ka"
+                    command += str(offsetX)+"d"
+                    command += str(offsetY)+"w"
+                    command += "dwwa"
+                elif sector == 3:
+                    command += "assd"
+                    command += str(offsetY)+"s"
+                    command += str(offsetX)+"d"
+                    command += "Kd"
+                    command += str(offsetX)+"a"
+                    command += str(offsetY)+"w"
+                    command += "dwwa"
 
-            command = ""
-            if sector == 0:
-                command += str(offsetY)+"w"
-                command += str(offsetX)+"a"
-                command += "Ka"
-                command += str(offsetX)+"d"
-                command += str(offsetY)+"s"
-            elif sector == 1:
-                command += str(offsetY)+"w"
-                command += str(offsetX)+"d"
-                command += "Kd"
-                command += str(offsetX)+"a"
-                command += str(offsetY)+"s"
-            elif sector == 2:
-                command += "assd"
-                command += str(offsetY)+"s"
-                command += str(offsetX)+"a"
-                command += "Ka"
-                command += str(offsetX)+"d"
-                command += str(offsetY)+"w"
-                command += "dwwa"
-            elif sector == 3:
-                command += "assd"
-                command += str(offsetY)+"s"
-                command += str(offsetX)+"d"
-                command += "Kd"
-                command += str(offsetX)+"a"
-                command += str(offsetY)+"w"
-                command += "dwwa"
+            elif (self.xPosition%15 in (6,8,) and self.yPosition%15 in (6,8)):
+                if self.numItemsStored >= 32:
+                    self.character.messages.append("stockpile full")
+                    return
 
-            self.character.messages.append(command)
+                row = self.numItemsStored//6
+
+                if (self.xPosition%15 == 6 and self.yPosition%15 == 6):
+                    rowMovUp = "w"
+                    rowMovDown = "s"
+                    colMovUp = "a"
+                    colMovDown = "d"
+                    command = ""
+                    commandEnd = ""
+                elif (self.xPosition%15 == 8 and self.yPosition%15 == 6):
+                    rowMovUp = "w"
+                    rowMovDown = "s"
+                    colMovUp = "d"
+                    colMovDown = "a"
+                    command = ""
+                    commandEnd = ""
+                elif (self.xPosition%15 == 6 and self.yPosition%15 == 8):
+                    rowMovUp = "s"
+                    rowMovDown = "w"
+                    colMovUp = "a"
+                    colMovDown = "d"
+                    command = "dssa"
+                    commandEnd = "dwwa"
+                elif (self.xPosition%15 == 8 and self.yPosition%15 == 8):
+                    rowMovUp = "s"
+                    rowMovDown = "w"
+                    colMovUp = "d"
+                    colMovDown = "a"
+                    command = "assd"
+                    commandEnd = "awwd"
+
+                if row < 4:
+                    command += str(3-row)+rowMovUp
+                    command += str(5-self.numItemsStored%6)+colMovUp+"K"+rowMovUp
+                    command += str(5-self.numItemsStored%6)+colMovDown
+                    command += str(3-row)+rowMovDown
+                elif self.numItemsStored >= 24 and self.numItemsStored < 28:
+                    command += str(4-(self.numItemsStored-24)%4)+colMovUp+"K"+colMovUp
+                    command += str(4-(self.numItemsStored-24)%4)+colMovDown
+                elif self.numItemsStored >= 28 and self.numItemsStored < 32:
+                    command += colMovUp+rowMovDown+str(3-(self.numItemsStored-28)%4)+colMovUp+"K"+colMovUp
+                    command += str(3-(self.numItemsStored-28)%4)+colMovDown+rowMovUp+colMovDown
+                command += commandEnd
+            else:
+                pass
 
             convertedCommand = []
             for char in command:
                 convertedCommand.append((char,"norecord"))
 
             self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
-            self.character.messages.append("running command to fetch item %s"%(command))
-
+            self.character.messages.append("running command to fetch item")
 
         elif self.submenue.selection == "runCommand":
             options = []
@@ -5070,28 +5171,63 @@ class TypedStockpileManager(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None, name="typed stockpile manager",creator=None,noId=False):
 
-        super().__init__(displayChars.wall,xPosition,yPosition,name=name,creator=creator)
+        self.freeItemSlots = {}
 
-        self.bolted = False
-        self.walkable = False
+        self.freeItemSlots[1] = []
+        self.freeItemSlots[2] = []
+        self.freeItemSlots[3] = []
+        self.freeItemSlots[4] = []
 
-        self.freeItemSlots = []
-        for x in range(1,14):
-            for y in range(1,14):
+        for x in range(1,7):
+            for y in range(1,7):
                 if x == 7 or y == 7:
                     continue
                 if y in (2,5,9,12):
                     continue
                 if x in (6,8) and y in (6,8):
                     continue
-                self.freeItemSlots.append((x,y))
+                self.freeItemSlots[1].append((x,y))
+
+        for x in range(1,7):
+            for y in range(7,14):
+                if x == 7 or y == 7:
+                    continue
+                if y in (2,5,9,12):
+                    continue
+                if x in (6,8) and y in (6,8):
+                    continue
+                self.freeItemSlots[2].append((x,y))
+
+        for x in range(7,14):
+            for y in range(1,7):
+                if x == 7 or y == 7:
+                    continue
+                if y in (2,5,9,12):
+                    continue
+                if x in (6,8) and y in (6,8):
+                    continue
+                self.freeItemSlots[3].append((x,y))
+
+        for x in range(7,14):
+            for y in range(7,14):
+                if x == 7 or y == 7:
+                    continue
+                if y in (2,5,9,12):
+                    continue
+                if x in (6,8) and y in (6,8):
+                    continue
+                self.freeItemSlots[4].append((x,y))
 
         self.slotsByItemtype = {}
+        super().__init__(displayChars.typedStockpileManager,xPosition,yPosition,name=name,creator=creator)
+
+        self.bolted = False
+        self.walkable = False
 
     def getLongInfo(self):
 
         text = """
-item: StockpileManager2
+item: TypedStockpileManager
 
 description:
 needs to be placed in the center of a tile. The tile should be emtpy and mold free for proper function.
@@ -5115,10 +5251,19 @@ needs to be placed in the center of a tile. The tile should be emtpy and mold fr
                 self.character.messages.append("no free item slot")
                 return
 
-            slot = self.freeItemSlots.pop()
-            if not self.character.inventory[-1].type in self.slotsByItemtype:
-                self.slotsByItemtype[self.character.inventory[-1].type] = []
-            self.slotsByItemtype[self.character.inventory[-1].type].append(slot)
+            if not self.character.inventory:
+                self.character.messages.append("no item in inventory")
+                return
+
+            for (key,value) in self.freeItemSlots.items():
+                if not value:
+                    continue
+
+                slot = value.pop()
+                if not self.character.inventory[-1].type in self.slotsByItemtype:
+                    self.slotsByItemtype[self.character.inventory[-1].type] = []
+                self.slotsByItemtype[self.character.inventory[-1].type].append((slot,key))
+                break
 
             command = ""
             if slot[1] < 7:
@@ -5211,10 +5356,19 @@ needs to be placed in the center of a tile. The tile should be emtpy and mold fr
 
     def fetchItem(self):
 
-        slot = self.slotsByItemtype[self.submenue.selection].pop()
+        if not self.slotsByItemtype[self.submenue.selection]:
+            self.character.messages.append("no item to fetch")
+            return
+
+        slotTuple = self.slotsByItemtype[self.submenue.selection].pop()
+        slot = slotTuple[0]
         if not self.slotsByItemtype[self.submenue.selection]:
             del self.slotsByItemtype[self.submenue.selection]
-        self.freeItemSlots.append(slot)
+        self.freeItemSlots[slotTuple[1]].append(slot)
+
+        if not slot:
+            self.character.messages.append("no item to fetch")
+            return
 
         command = ""
         if slot[1] < 7:
@@ -5277,6 +5431,22 @@ needs to be placed in the center of a tile. The tile should be emtpy and mold fr
             result["NUM "+str(itemType).upper()+" STOREd"] = len(self.slotsByItemtype[itemType])
         result["NUM FREE SLOTs"] = len(self.freeItemSlots)
         return result
+
+    def getState(self):
+        state = super().getState()
+        state["slotsByItemtype"] = self.slotsByItemtype
+        return state
+
+    def getDiffState(self):
+        state = super().getDiffState()
+        state["slotsByItemtype"] = self.slotsByItemtype
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        if "slotsByItemtype" in state:
+            self.slotsByItemtype = state["slotsByItemtype"]
+
 
 class LogisticsRunner(Item):
     type = "LogisticsRunner"
@@ -6159,16 +6329,19 @@ class MachineMachine(Item):
     def getState(self):
         state = super().getState()
         state["endProducts"] = self.endProducts
+        state["blueprintLevels"] = self.blueprintLevels
         return state
 
     def getDiffState(self):
         state = super().getDiffState()
         state["endProducts"] = self.endProducts
+        state["blueprintLevels"] = self.blueprintLevels
         return state
 
     def setState(self,state):
         super().setState(state)
         self.endProducts = state["endProducts"]
+        self.blueprintLevels = state["blueprintLevels"]
 
     def getLongInfo(self):
         text = """
@@ -10956,6 +11129,7 @@ You can use it to loose 100 satiation.
                   "ActivateQuestMeta",
                   "NaivePickupQuest",
                   "NaiveMurderQuest",
+                  "DrinkQuest",
                 ]
 
         character.faction = "monster"
@@ -11258,7 +11432,6 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
 
         keepItems = []
         import random
-        random.randint()
         doorPos = ()
         for x in range(0,sizeX):
             for y in range(0,sizeY):
@@ -11272,6 +11445,11 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
                     item.xPosition = x
                     item.yPosition = y
                     keepItems.append(item)
+
+        new = SwarmIntegrator(creator=self)
+        new.xPosition = 1
+        new.yPosition = 1
+        keepItems.append(new)
 
         room = src.rooms.EmptyRoom(upperLeftEdge[0]//15,upperLeftEdge[1]//15,upperLeftEdge[0]%15,upperLeftEdge[1]%15,creator=self,bio=True)
         self.terrain.addRooms([room])
@@ -11596,6 +11774,31 @@ description:
 You can use it to create paths
 """
 
+class SwarmIntegrator(Item):
+    type = "SwarmIntegrator"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.floor_node,xPosition,yPosition,creator=creator,name="encrusted bush")
+        self.walkable = False
+        self.faction = "swarm"
+
+    def getLongInfo(self):
+        return """
+item: SwarmIntegrator
+
+description:
+You can use it to create paths
+"""
+
+    def apply(self,character):
+        command = ""
+        convertedCommand = []
+        for char in command:
+            convertedCommand.append((char,"norecord"))
+
+        self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+        self.character.messages.append("running command to produce %s - %s"%(itemType,command))
+
 # maping from strings to all items
 # should be extendable
 itemMap = {
@@ -11723,6 +11926,7 @@ itemMap = {
             "ProductionRunner2":ProductionRunner2,
             "UniformStockpileManager":UniformStockpileManager,
             "TypedStockpileManager":TypedStockpileManager,
+            "SwarmIntegrator":SwarmIntegrator,
 }
 
 producables = {

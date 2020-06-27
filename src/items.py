@@ -11140,9 +11140,6 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
 
 """%(satiation)
 
-    def apply(self,character):
-        self.tryToGrowRoom(None, character)
-
     def destroy(self, generateSrcap=True):
         new = itemMap["Coal"](creator=self)
         new.xPosition = self.xPosition

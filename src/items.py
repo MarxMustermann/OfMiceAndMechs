@@ -1509,13 +1509,9 @@ class RoomBuilder(Item):
 
             oldX = item.xPosition
             oldY = item.yPosition
-            item.xPosition = roomLeft+item.xPosition-self.xPosition
-            item.yPosition = roomTop+item.yPosition-self.yPosition
-            if (item.xPosition < 0 ):
-                character.messages.append((oldX,oldY))
-                character.messages.append((roomLeft,roomTop))
-                character.messages.append((self.xPosition,self.yPosition))
-                character.messages.append((item.yPosition,item.xPosition))
+            item.container.removeItem(item)
+            item.xPosition = roomLeft+oldX-self.xPosition
+            item.yPosition = roomTop+oldY-self.yPosition
         room = src.rooms.EmptyRoom(self.xPosition//15,self.yPosition//15,self.xPosition%15-roomLeft,self.yPosition%15-roomTop,creator=self)
         room.reconfigure(roomLeft+roomRight+1,roomTop+roomBottom+1,items)
 
@@ -11272,6 +11268,7 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
                     else:
                         items = self.container.getItemByPosition((upperLeftEdge[0]+x,upperLeftEdge[1]+y))
                         item = items[0]
+                    item.container.removeItem(item)
                     item.xPosition = x
                     item.yPosition = y
                     keepItems.append(item)

@@ -3076,8 +3076,8 @@ class BuildBase(BasicPhase):
         """
 
         molds = []
-        for bigX in range(1,13):
-            for bigY in range(1,13):
+        for bigX in range(1,14):
+            for bigY in range(1,14):
                 import random
                 if random.randint(1,1) == 1:
                     molds.append(src.items.Mold(bigX*15+random.randint(1,13),bigY*15+random.randint(1,13),creator=self))

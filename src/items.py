@@ -12013,7 +12013,7 @@ class CommandBloom(Item):
                 items = self.container.getItemByPosition(pos)
                 if not items:
                     continue
-                if items[-1].type in ("Mold"):
+                if items[-1].type in ("Mold","Sprout2",):
                     continue
                 elif items[-1].type in ("Sprout","SickBloom","Bloom","FireCrystals","Coal"):
                     if (pos[0]%15,pos[1]%15) in ((1,7),(7,1),(7,13),(13,7)):
@@ -12042,8 +12042,9 @@ class CommandBloom(Item):
                             break
                         else:
                             command += "k"
-
+                    continue
                 elif items[-1].type in ("Bush"):
+                    foundSomething = True
                     if lastCharacterPosition[0] > pos[0]:
                         command += str(lastCharacterPosition[0]-pos[0])+"a"
                         lastDirection = "a"
@@ -12059,6 +12060,8 @@ class CommandBloom(Item):
                     command += "j"
                     for i in range(0,11):
                         command += "J"+lastDirection
+                    command += lastDirection
+                    lastCharacterPosition = pos
 
                     if ((self.container.getItemByPosition((pos[0]-1,pos[1])) and self.container.getItemByPosition((pos[0]-1,pos[1]))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or 
                         (self.container.getItemByPosition((pos[0]+1,pos[1])) and self.container.getItemByPosition((pos[0]+1,pos[1]))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
@@ -12068,10 +12071,10 @@ class CommandBloom(Item):
                         explode = True
                     else:
                         command += "k"
-
                 elif items[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"):
                     break
                 else:
+                    foundSomething = True
                     if lastCharacterPosition[0] > pos[0]:
                         command += str(lastCharacterPosition[0]-pos[0])+"a"
                     if lastCharacterPosition[0] < pos[0]:
@@ -12082,7 +12085,7 @@ class CommandBloom(Item):
                         command += str(pos[1]-lastCharacterPosition[1])+"s"
                     command += "k"
 
-            found = False
+                    lastCharacterPosition = pos
 
             if not explode:
                 pos = (self.xPosition,self.yPosition)
@@ -12099,7 +12102,7 @@ class CommandBloom(Item):
                 if foundSomething:
                     command += "j"
                 if not foundSomething:
-                    command += str(max(character.satiation-30,100))+".j"
+                    command += str(min(character.satiation-30,100))+".j"
 
         convertedCommand = []
         for item in command:

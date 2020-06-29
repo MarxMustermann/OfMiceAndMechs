@@ -12030,6 +12030,10 @@ class CommandBloom(Item):
                 pos[1] -= 1
                 path.append((pos[0],pos[1]))
 
+            if character.satiation < 300 and self.charges:
+                character.satiation += 100
+                self.charges -= 1
+
             foundSomething = False
             lastCharacterPosition = path[0]
             explode = False

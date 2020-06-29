@@ -12001,7 +12001,7 @@ class CommandBloom(Item):
             items = self.container.getItemByPosition(pos)
             if not items:
                 continue
-            if items[-1].type in ("Sprout","Bloom","SickBloom"):
+            if items[-1].type in ("Sprout","Bloom"):
                 if lastCharacterPosition[0] > pos[0]:
                     command += str(lastCharacterPosition[0]-pos[0])+"a"
                 if lastCharacterPosition[0] < pos[0]:
@@ -12014,8 +12014,6 @@ class CommandBloom(Item):
                 if items[-1].type == "Sprout":
                     command += "j"
                 if items[-1].type == "Bloom":
-                    command += "k"
-                if items[-1].type == "SickBloom":
                     command += "k"
                 foundSomething = True
 

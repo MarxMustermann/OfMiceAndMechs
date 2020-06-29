@@ -10739,6 +10739,9 @@ class Mold(Item):
                     new.yPosition = newPos[1]
                     self.container.addItems([new])
 
+                elif itemList[-1].type in ["CommandBloom"]:
+                    itemList[-1].charges += 1
+
         self.charges -= 1
         if self.charges:
             self.startSpawn()
@@ -12034,6 +12037,17 @@ class CommandBloom(Item):
                 character.satiation += 100
                 self.charges -= 1
 
+            if self.charges == 10:
+                command = "13dwjajsjsjdjdjwjwjas"
+                command = command*10
+
+                convertedCommand = []
+                for item in command:
+                    convertedCommand.append((item,["norecord"]))
+
+                character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
+                return
+
             foundSomething = False
             lastCharacterPosition = path[0]
             explode = False
@@ -12135,6 +12149,18 @@ class CommandBloom(Item):
 
         character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
 
+    def getLongInfo(self):
+        return """
+item: TrailHead
+
+description:
+You can use it to create paths
+
+charges: %s
+numCoal: %s
+numSick: %s
+numCorpses: %s
+"""%(self.charges,self.numCoal,self.numSick,self.numCorpses)
 
 # maping from strings to all items
 # should be extendable

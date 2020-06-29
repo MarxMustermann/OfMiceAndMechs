@@ -12041,7 +12041,7 @@ class CommandBloom(Item):
                 command = ""
                 import random
                 direction = random.choice(["w","a","s","d"])
-                command += 13*direction+"opx$=aa$=ww$=ss$=ddwjajsjsjdjdjwjwjas"
+                command += 10*(13*direction+"opx$=aa$=ww$=ss$=ddwjajsjsjdjdjwjwjas")
                 self.charges += 1
 
                 convertedCommand = []

@@ -12049,10 +12049,8 @@ class CommandBloom(Item):
                         command += str(pos[1]-lastCharacterPosition[1])+"s"
                         lastDirection = "s"
                     command += "j"
-                    for i in range(0,9):
+                    for i in range(0,10):
                         command += "J"+lastDirection
-                    explode = True
-                    break
 
                 if items[-1].type in ("EncrustedBush"):
                     break

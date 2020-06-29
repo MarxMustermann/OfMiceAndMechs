@@ -639,7 +639,7 @@ The corpse has %s charges left.
         if isinstance(character,src.characters.Monster):
             if character.phase == 3:
                 character.enterPhase4()
-            elif character.phase == 1:
+            else:
                 if self.container and character.satiation < 1000:
                     character.macroState["commandKeyQueue"] = [("j",[])] + character.macroState["commandKeyQueue"]
         if self.charges:
@@ -12041,7 +12041,7 @@ class CommandBloom(Item):
                 command = ""
                 import random
                 direction = random.choice(["w","a","s","d"])
-                command += 13*direction+"opx$=aa$=ww$=ss$=ddwjajsjsjdjdjwjwjas")
+                command += 13*direction+"opx$=aa$=ww$=ss$=ddwjajsjsjdjdjwjwjas"
                 self.charges += 1
 
                 convertedCommand = []

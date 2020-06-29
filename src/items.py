@@ -11942,7 +11942,6 @@ class AutoFarmer(Item):
         if not foundSomething:
             command += "100."
         command += "opx$=aa$=ww$=ss$=dd"
-        command += "j"
 
         convertedCommand = []
         for item in command:

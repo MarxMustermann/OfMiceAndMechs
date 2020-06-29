@@ -12059,7 +12059,7 @@ class CommandBloom(Item):
                 items = self.container.getItemByPosition(pos)
                 if not items:
                     continue
-                if items[-1].type in ("Mold","Sprout2",):
+                if items[-1].type in ("Mold","Sprout2","CommandBloom"):
                     continue
                 elif items[-1].type in ("Sprout","SickBloom","Bloom","FireCrystals","Coal"):
                     if items[-1].type == "Sprout" and (pos[0]%15,pos[1]%15) in ((1,7),(7,1),(7,13),(13,7)):

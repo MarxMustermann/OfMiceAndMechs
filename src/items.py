@@ -12013,7 +12013,9 @@ class CommandBloom(Item):
                 items = self.container.getItemByPosition(pos)
                 if not items:
                     continue
-                if items[-1].type in ("Sprout","SickBloom","Bloom","FireCrystals","Coal"):
+                if items[-1].type in ("Mold"):
+                    continue
+                elif items[-1].type in ("Sprout","SickBloom","Bloom","FireCrystals","Coal"):
                     if (pos[0]%15,pos[1]%15) in ((1,7),(7,1),(7,13),(13,7)):
                         continue
                     if lastCharacterPosition[0] > pos[0]:
@@ -12041,7 +12043,7 @@ class CommandBloom(Item):
                         else:
                             command += "k"
 
-                if items[-1].type in ("Bush"):
+                elif items[-1].type in ("Bush"):
                     if lastCharacterPosition[0] > pos[0]:
                         command += str(lastCharacterPosition[0]-pos[0])+"a"
                         lastDirection = "a"
@@ -12067,8 +12069,18 @@ class CommandBloom(Item):
                     else:
                         command += "k"
 
-                if items[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"):
+                elif items[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"):
                     break
+                else:
+                    if lastCharacterPosition[0] > pos[0]:
+                        command += str(lastCharacterPosition[0]-pos[0])+"a"
+                    if lastCharacterPosition[0] < pos[0]:
+                        command += str(pos[0]-lastCharacterPosition[0])+"d"
+                    if lastCharacterPosition[1] > pos[1]:
+                        command += str(lastCharacterPosition[1]-pos[1])+"w"
+                    if lastCharacterPosition[1] < pos[1]:
+                        command += str(pos[1]-lastCharacterPosition[1])+"s"
+                    command += "k"
 
             found = False
 

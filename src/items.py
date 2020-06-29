@@ -10630,7 +10630,11 @@ class Mold(Item):
                     item.xPosition = None
                     item.yPosition = None
 
-                    if newPos[0]%15 == 7 and newPos[1]%15 == 7:
+                    if      newPos[0]%15 == 7 and newPos[1]%15 == 7 or
+                            newPos[0]%15 == 7 and newPos[1]%15 == 1 or
+                            newPos[0]%15 == 13 and newPos[1]%15 == 7 or
+                            newPos[0]%15 == 7 and newPos[1]%15 == 13 or
+                            newPos[0]%15 == 1 and newPos[1]%15 == 7:
                         new = itemMap["CommandBloom"](creator=self)
                         new.xPosition = newPos[0]
                         new.yPosition = newPos[1]
@@ -11967,90 +11971,99 @@ class CommandBloom(Item):
         if not self.terrain:
             return
 
-        command = ""
-        length = 1
-        pos = [self.xPosition,self.yPosition]
-        path = []
-        path.append((pos[0],pos[1]))
-        while length < 13:
-            if length%2 == 1:
-                for i in range(0,length):
-                    pos[1] -= 1
-                    path.append((pos[0],pos[1]))
-                for i in range(0,length):
-                    pos[0] += 1
-                    path.append((pos[0],pos[1]))
-            else:
-                for i in range(0,length):
-                    pos[1] += 1
-                    path.append((pos[0],pos[1]))
-                for i in range(0,length):
-                    pos[0] -= 1
-                    path.append((pos[0],pos[1]))
-            length += 1
-        for i in range(0,length-1):
-            pos[1] -= 1
+        if self.xPosition%15 == 1 and self.yPosition%15 == 7:
+            command = "6sj"
+        elif self.xPosition%15 == 13 and self.yPosition%15 == 7:
+            command = "6aj"
+        elif self.xPosition%15 == 7 and self.yPosition%15 == 13:
+            command = "6wj"
+        elif self.xPosition%15 == 1 and self.yPosition%15 == 7:
+            command = "6dj"
+        elif self.xPosition%15 == 7 and self.yPosition%15 == 7
+            command = ""
+            length = 1
+            pos = [self.xPosition,self.yPosition]
+            path = []
             path.append((pos[0],pos[1]))
+            while length < 13:
+                if length%2 == 1:
+                    for i in range(0,length):
+                        pos[1] -= 1
+                        path.append((pos[0],pos[1]))
+                    for i in range(0,length):
+                        pos[0] += 1
+                        path.append((pos[0],pos[1]))
+                else:
+                    for i in range(0,length):
+                        pos[1] += 1
+                        path.append((pos[0],pos[1]))
+                    for i in range(0,length):
+                        pos[0] -= 1
+                        path.append((pos[0],pos[1]))
+                length += 1
+            for i in range(0,length-1):
+                pos[1] -= 1
+                path.append((pos[0],pos[1]))
 
-        foundSomething = False
-        lastCharacterPosition = path[0]
-        for pos in path[1:]:
-            items = self.container.getItemByPosition(pos)
-            if not items:
-                continue
-            if items[-1].type in ("Sprout","SickBloom"):
-                if lastCharacterPosition[0] > pos[0]:
-                    command += str(lastCharacterPosition[0]-pos[0])+"a"
-                if lastCharacterPosition[0] < pos[0]:
-                    command += str(pos[0]-lastCharacterPosition[0])+"d"
-                if lastCharacterPosition[1] > pos[1]:
-                    command += str(lastCharacterPosition[1]-pos[1])+"w"
-                if lastCharacterPosition[1] < pos[1]:
-                    command += str(pos[1]-lastCharacterPosition[1])+"s"
+            foundSomething = False
+            lastCharacterPosition = path[0]
+            for pos in path[1:]:
+                items = self.container.getItemByPosition(pos)
+                if not items:
+                    continue
+                if items[-1].type in ("Sprout","SickBloom"):
+                    if lastCharacterPosition[0] > pos[0]:
+                        command += str(lastCharacterPosition[0]-pos[0])+"a"
+                    if lastCharacterPosition[0] < pos[0]:
+                        command += str(pos[0]-lastCharacterPosition[0])+"d"
+                    if lastCharacterPosition[1] > pos[1]:
+                        command += str(lastCharacterPosition[1]-pos[1])+"w"
+                    if lastCharacterPosition[1] < pos[1]:
+                        command += str(pos[1]-lastCharacterPosition[1])+"s"
 
+                    command += "j"
+                    foundSomething = True
+
+                    lastCharacterPosition = pos
+
+                if items[-1].type in ("Bush"):
+                    if lastCharacterPosition[0] > pos[0]:
+                        command += str(lastCharacterPosition[0]-pos[0])+"a"
+                        lastDirection = "a"
+                    if lastCharacterPosition[0] < pos[0]:
+                        command += str(pos[0]-lastCharacterPosition[0])+"d"
+                        lastDirection = "d"
+                    if lastCharacterPosition[1] > pos[1]:
+                        command += str(lastCharacterPosition[1]-pos[1])+"w"
+                        lastDirection = "w"
+                    if lastCharacterPosition[1] < pos[1]:
+                        command += str(pos[1]-lastCharacterPosition[1])+"s"
+                        lastDirection = "s"
+                    command += "j"
+                    for i in range(0,9):
+                        command += "J"+lastDirection
+                    command += lastDirection+"k"
+
+                if items[-1].type in ("EncrustedBush"):
+                    break
+
+            found = False
+
+            pos = (self.xPosition,self.yPosition)
+            if lastCharacterPosition[0] > pos[0]:
+                command += str(lastCharacterPosition[0]-pos[0])+"a"
+            if lastCharacterPosition[0] < pos[0]:
+                command += str(pos[0]-lastCharacterPosition[0])+"d"
+            if lastCharacterPosition[1] > pos[1]:
+                command += str(lastCharacterPosition[1]-pos[1])+"w"
+            if lastCharacterPosition[1] < pos[1]:
+                command += str(pos[1]-lastCharacterPosition[1])+"s"
+
+            command += "opx$=aa$=ww$=ss$=dd"
+            if foundSomething:
                 command += "j"
-                foundSomething = True
-
-                lastCharacterPosition = pos
-
-            if items[-1].type in ("Bush"):
-                if lastCharacterPosition[0] > pos[0]:
-                    command += str(lastCharacterPosition[0]-pos[0])+"a"
-                    lastDirection = "a"
-                if lastCharacterPosition[0] < pos[0]:
-                    command += str(pos[0]-lastCharacterPosition[0])+"d"
-                    lastDirection = "d"
-                if lastCharacterPosition[1] > pos[1]:
-                    command += str(lastCharacterPosition[1]-pos[1])+"w"
-                    lastDirection = "w"
-                if lastCharacterPosition[1] < pos[1]:
-                    command += str(pos[1]-lastCharacterPosition[1])+"s"
-                    lastDirection = "s"
-                command += "j"
-                for i in range(0,9):
-                    command += "J"+lastDirection
-                command += lastDirection+"k"
-
-            if items[-1].type in ("EncrustedBush"):
-                break
-
-        found = False
-
-        pos = (self.xPosition,self.yPosition)
-        if lastCharacterPosition[0] > pos[0]:
-            command += str(lastCharacterPosition[0]-pos[0])+"a"
-        if lastCharacterPosition[0] < pos[0]:
-            command += str(pos[0]-lastCharacterPosition[0])+"d"
-        if lastCharacterPosition[1] > pos[1]:
-            command += str(lastCharacterPosition[1]-pos[1])+"w"
-        if lastCharacterPosition[1] < pos[1]:
-            command += str(pos[1]-lastCharacterPosition[1])+"s"
-
-        command += "opx$=aa$=ww$=ss$=dd"
-        if foundSomething:
-            command += "j"
-        if not foundSomething:
-            command += "200."
+            if not foundSomething:
+                command += character.satiation-30+"."
 
         convertedCommand = []
         for item in command:

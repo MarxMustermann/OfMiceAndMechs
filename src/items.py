@@ -12062,7 +12062,7 @@ class CommandBloom(Item):
                 if items[-1].type in ("Mold","Sprout2",):
                     continue
                 elif items[-1].type in ("Sprout","SickBloom","Bloom","FireCrystals","Coal"):
-                    if (pos[0]%15,pos[1]%15) in ((1,7),(7,1),(7,13),(13,7)):
+                    if items[-1].type == "Sprout" and (pos[0]%15,pos[1]%15) in ((1,7),(7,1),(7,13),(13,7)):
                         continue
                     if lastCharacterPosition[0] > pos[0]:
                         command += str(lastCharacterPosition[0]-pos[0])+"a"

@@ -11967,6 +11967,14 @@ class CommandBloom(Item):
         super().__init__(displayChars.commandBloom,xPosition,yPosition,creator=creator,name="command bloom")
         self.walkable = True
         self.bolted = True
+        self.charges = 0
+        self.numCoal = 0
+        self.numSick = 0
+        self.numCorpses = 0
+
+        self.attributesToStore.extend([
+               "charges","numCoal","numSick","numCorpses"])
+        self.initialState = self.getState()
 
     def apply(self,character):
         if not self.terrain:
@@ -11981,6 +11989,22 @@ class CommandBloom(Item):
         elif self.xPosition%15 == 7 and self.yPosition%15 == 1:
             command = "6sj"
         elif self.xPosition%15 == 7 and self.yPosition%15 == 7:
+            removeItems = []
+            for item in character.inventory:
+                if item.type == "Bloom":
+                    removeItems.append(item)
+                    self.charges += 1
+                elif item.type == "SickBloom":
+                    removeItems.append(item)
+                    self.numSick += 1
+                elif item.type == "Coal":
+                    removeItems.append(item)
+                    self.numCoal += 1
+                elif item.type == "Corpse":
+                    removeItems.append(item)
+                    self.numCorpses += 1
+            for item in removeItems:
+                character.inventory.remove(item)
             command = ""
             length = 1
             pos = [self.xPosition,self.yPosition]

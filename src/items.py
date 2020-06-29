@@ -10630,7 +10630,7 @@ class Mold(Item):
                     item.xPosition = None
                     item.yPosition = None
 
-                    if (newPos[0]%15,newPos[1]%15) in ((7,7)):
+                    if (newPos[0]%15,newPos[1]%15) in ((7,7),):
                         new = itemMap["CommandBloom"](creator=self)
                         new.xPosition = newPos[0]
                         new.yPosition = newPos[1]

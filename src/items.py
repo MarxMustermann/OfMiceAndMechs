@@ -11852,6 +11852,9 @@ class AutoFarmer(Item):
         if not self.terrain:
             return
 
+        if len(character.inventory) > 5:
+            character.inventory = character.inventory[:4]
+
         command = ""
         length = 1
         pos = [self.xPosition,self.yPosition]
@@ -11918,6 +11921,11 @@ class AutoFarmer(Item):
                 for i in range(0,9):
                     command += "J"+lastDirection
                 command += lastDirection+"k"
+
+            if items[-1].type in ("EncrustedBush"):
+                break
+
+        found = False
 
         pos = (self.xPosition,self.yPosition)
         if lastCharacterPosition[0] > pos[0]:

@@ -10630,11 +10630,11 @@ class Mold(Item):
                     item.xPosition = None
                     item.yPosition = None
 
-                    if      newPos[0]%15 == 7 and newPos[1]%15 == 7 or
+                    if (     newPos[0]%15 == 7 and newPos[1]%15 == 7 or
                             newPos[0]%15 == 7 and newPos[1]%15 == 1 or
                             newPos[0]%15 == 13 and newPos[1]%15 == 7 or
                             newPos[0]%15 == 7 and newPos[1]%15 == 13 or
-                            newPos[0]%15 == 1 and newPos[1]%15 == 7:
+                            newPos[0]%15 == 1 and newPos[1]%15 == 7):
                         new = itemMap["CommandBloom"](creator=self)
                         new.xPosition = newPos[0]
                         new.yPosition = newPos[1]
@@ -11972,14 +11972,14 @@ class CommandBloom(Item):
             return
 
         if self.xPosition%15 == 1 and self.yPosition%15 == 7:
-            command = "6sj"
+            command = "6s"
         elif self.xPosition%15 == 13 and self.yPosition%15 == 7:
-            command = "6aj"
+            command = "6a"
         elif self.xPosition%15 == 7 and self.yPosition%15 == 13:
-            command = "6wj"
+            command = "6w"
         elif self.xPosition%15 == 1 and self.yPosition%15 == 7:
-            command = "6dj"
-        elif self.xPosition%15 == 7 and self.yPosition%15 == 7
+            command = "6d"
+        elif self.xPosition%15 == 7 and self.yPosition%15 == 7:
             command = ""
             length = 1
             pos = [self.xPosition,self.yPosition]
@@ -12012,6 +12012,8 @@ class CommandBloom(Item):
                 if not items:
                     continue
                 if items[-1].type in ("Sprout","SickBloom"):
+                    if (pos[0]%15,pos[1]%15) in ((1,7),(7,1),(7,13),(13,7)):
+                        continue
                     if lastCharacterPosition[0] > pos[0]:
                         command += str(lastCharacterPosition[0]-pos[0])+"a"
                     if lastCharacterPosition[0] < pos[0]:
@@ -12063,7 +12065,7 @@ class CommandBloom(Item):
             if foundSomething:
                 command += "j"
             if not foundSomething:
-                command += character.satiation-30+"."
+                command += str(character.satiation-30)+"."
 
         convertedCommand = []
         for item in command:

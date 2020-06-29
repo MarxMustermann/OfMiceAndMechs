@@ -11967,9 +11967,6 @@ class CommandBloom(Item):
         if not self.terrain:
             return
 
-        if len(character.inventory) > 5:
-            character.inventory = character.inventory[:4]
-
         command = ""
         length = 1
         pos = [self.xPosition,self.yPosition]

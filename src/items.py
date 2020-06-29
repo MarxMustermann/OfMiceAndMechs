@@ -10630,11 +10630,7 @@ class Mold(Item):
                     item.xPosition = None
                     item.yPosition = None
 
-                    if (     newPos[0]%15 == 7 and newPos[1]%15 == 7 or
-                            newPos[0]%15 == 7 and newPos[1]%15 == 1 or
-                            newPos[0]%15 == 13 and newPos[1]%15 == 7 or
-                            newPos[0]%15 == 7 and newPos[1]%15 == 13 or
-                            newPos[0]%15 == 1 and newPos[1]%15 == 7):
+                    if (newPos[0]%15,newPos[1]%15) in ((7,7),(1,7),(7,1),(13,7),(7,13)):
                         new = itemMap["CommandBloom"](creator=self)
                         new.xPosition = newPos[0]
                         new.yPosition = newPos[1]

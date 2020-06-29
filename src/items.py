@@ -10630,28 +10630,28 @@ class Mold(Item):
                     item.xPosition = None
                     item.yPosition = None
 
-                    new = itemMap["Bloom"](creator=self)
-                    new.xPosition = newPos[0]
-                    new.yPosition = newPos[1]
-                    self.container.addItems([new])
-                    new.startSpawn()
-                elif itemList[-1].type == "Bloom":
-                    item = itemList[-1]
-                    item.container.removeItem(item)
-                    item.xPosition = None
-                    item.yPosition = None
-
                     if newPos[0]%15 == 7 and newPos[1]%15 == 7:
                         new = itemMap["CommandBloom"](creator=self)
                         new.xPosition = newPos[0]
                         new.yPosition = newPos[1]
                         self.container.addItems([new])
                     else:
-                        new = itemMap["SickBloom"](creator=self)
+                        new = itemMap["Bloom"](creator=self)
                         new.xPosition = newPos[0]
                         new.yPosition = newPos[1]
                         self.container.addItems([new])
                         new.startSpawn()
+                elif itemList[-1].type == "Bloom":
+                    item = itemList[-1]
+                    item.container.removeItem(item)
+                    item.xPosition = None
+                    item.yPosition = None
+
+                    new = itemMap["SickBloom"](creator=self)
+                    new.xPosition = newPos[0]
+                    new.yPosition = newPos[1]
+                    self.container.addItems([new])
+                    new.startSpawn()
                 elif itemList[-1].type == "Corpse":
                     item = itemList[-1]
                     item.container.removeItem(item)

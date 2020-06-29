@@ -12038,8 +12038,11 @@ class CommandBloom(Item):
                 self.charges -= 1
 
             if self.charges == 10:
-                command = "13dwjajsjsjdjdjwjwjas"
-                command = command*10
+                command = ""
+                for i in range(0,10):
+                    import random
+                    direction = random.choice(["w","a","s","d"])
+                    command += "13"+direction+"wjajsjsjdjdjwjwjas"
 
                 convertedCommand = []
                 for item in command:

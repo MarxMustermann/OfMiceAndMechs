@@ -11968,13 +11968,13 @@ class CommandBloom(Item):
             return
 
         if self.xPosition%15 == 1 and self.yPosition%15 == 7:
-            command = "6s"
+            command = "6d"
         elif self.xPosition%15 == 13 and self.yPosition%15 == 7:
             command = "6a"
         elif self.xPosition%15 == 7 and self.yPosition%15 == 13:
             command = "6w"
         elif self.xPosition%15 == 7 and self.yPosition%15 == 1:
-            command = "6d"
+            command = "6s"
         elif self.xPosition%15 == 7 and self.yPosition%15 == 7:
             command = ""
             length = 1

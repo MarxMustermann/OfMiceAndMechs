@@ -11356,6 +11356,8 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
     def tryToGrowRoom(self, spawnPoint, character=None):
         if not self.terrain:
             return
+        if not self.container:
+            return
 
         upperLeftEdge = [self.xPosition,self.yPosition]
         sizeX = 1
@@ -11791,13 +11793,134 @@ You can use it to create paths
 """
 
     def apply(self,character):
-        command = ""
+        command = "aopR.$a*13.$w*13.$s*13.$d*13.$=aa$=ww$=ss$=dd"
         convertedCommand = []
-        for char in command:
-            convertedCommand.append((char,"norecord"))
+        for item in command:
+            convertedCommand.append((item,["norecord"]))
 
-        self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
-        self.character.messages.append("running command to produce %s - %s"%(itemType,command))
+        
+        character.macros["_Gr"]
+        character.macros["_ER"]
+
+        character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
+
+class HiveMind(Item):
+    type = "HiveMind"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.floor_node,xPosition,yPosition,creator=creator,name="encrusted bush")
+        self.charges = 0
+        self.level = 0
+
+    def apply(self,character):
+        if character.satiation > 500:
+            character.satiation -= 100
+            self.charges += 1
+            character.messages.append("you give blood and recieve instructions")
+
+            character.macroState["macros"]["EAT FOOd"] = list("opf$=aa$=ww$=ss$=ddj")
+            character.macroState["macros"]["INFo"] = ["@","esc"]
+            character.macroState["macros"]["BRANCH EAt"] = list("%F_EAT FOOd_MOVE TILe")
+            character.macroState["macros"]["MOVE TILe"] = list("13w13a")
+            character.macroState["macros"]["GRAZe"] = list("_EAT FOOd_BRANCH GRAZe")
+            character.macroState["macros"]["BRANCH GRAZe"] = list("_INFo$c=$=SATIATIOn.$c-800.%<_GRAZe_RETURn")
+
+            command = "_BRANCH GRAZe"
+            convertedCommand = []
+            for item in command:
+                convertedCommand.append((item,["norecord"]))
+
+            character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
+
+        if self.charges == 10:
+            character.messages("the hivemind grows")
+            self.expand()
+
+    def expand(self):
+        if not self.room and self.room.bio:
+            return
+        
+class AutoFarmer(Item):
+    type = "AutoFarmer"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.floor_node,xPosition,yPosition,creator=creator,name="encrusted bush")
+        self.walkable = True
+        self.bolted = True
+
+    def apply(self,character):
+        if not self.terrain:
+            return
+
+        command = ""
+        length = 1
+        pos = [self.xPosition,self.yPosition]
+        path = []
+        path.append((pos[0],pos[1]))
+        while length < 13:
+            if length%2 == 1:
+                for i in range(0,length):
+                    pos[1] -= 1
+                    path.append((pos[0],pos[1]))
+                for i in range(0,length):
+                    pos[0] += 1
+                    path.append((pos[0],pos[1]))
+            else:
+                for i in range(0,length):
+                    pos[1] += 1
+                    path.append((pos[0],pos[1]))
+                for i in range(0,length):
+                    pos[0] -= 1
+                    path.append((pos[0],pos[1]))
+            length += 1
+        for i in range(0,length-1):
+            pos[1] -= 1
+            path.append((pos[0],pos[1]))
+
+        foundSomething = False
+        lastCharacterPosition = path[0]
+        for pos in path[1:]:
+            items = self.container.getItemByPosition(pos)
+            if not items:
+                continue
+            if items[-1].type in ("Sprout","Bloom"):
+                if lastCharacterPosition[0] > pos[0]:
+                    command += str(lastCharacterPosition[0]-pos[0])+"a"
+                if lastCharacterPosition[0] < pos[0]:
+                    command += str(pos[0]-lastCharacterPosition[0])+"d"
+                if lastCharacterPosition[1] > pos[1]:
+                    command += str(lastCharacterPosition[1]-pos[1])+"w"
+                if lastCharacterPosition[1] < pos[1]:
+                    command += str(pos[1]-lastCharacterPosition[1])+"s"
+
+                if items[-1].type == "Sprout":
+                    command += "j"
+                if items[-1].type == "Bloom":
+                    command += "k"
+                foundSomething = True
+
+                lastCharacterPosition = pos
+
+        pos = (self.xPosition,self.yPosition)
+        if lastCharacterPosition[0] > pos[0]:
+            command += str(lastCharacterPosition[0]-pos[0])+"a"
+        if lastCharacterPosition[0] < pos[0]:
+            command += str(pos[0]-lastCharacterPosition[0])+"d"
+        if lastCharacterPosition[1] > pos[1]:
+            command += str(lastCharacterPosition[1]-pos[1])+"w"
+        if lastCharacterPosition[1] < pos[1]:
+            command += str(pos[1]-lastCharacterPosition[1])+"s"
+
+        if not foundSomething:
+            command += "100."
+        command += "j"
+
+        convertedCommand = []
+        for item in command:
+            convertedCommand.append((item,["norecord"]))
+
+        character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
+
 
 # maping from strings to all items
 # should be extendable
@@ -11927,6 +12050,8 @@ itemMap = {
             "UniformStockpileManager":UniformStockpileManager,
             "TypedStockpileManager":TypedStockpileManager,
             "SwarmIntegrator":SwarmIntegrator,
+            "HiveMind":HiveMind,
+            "AutoFarmer":AutoFarmer,
 }
 
 producables = {

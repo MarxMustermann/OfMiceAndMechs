@@ -476,6 +476,7 @@ get position for what thing
 * J - jobBoard
 * t - transport in
 * T - transport out
+* R - room tile
 
 """))
                 footer.set_text((urwid.AttrSpec("default","default"),""))
@@ -506,6 +507,10 @@ get position for what thing
                 char.interactionState["enumerateState"][-1]["target"] = ["Machine","ScrapCompactor"]
             elif key == "e":
                 char.interactionState["enumerateState"][-1]["target"] = ["enemy"]
+            elif key == "r":
+                char.interactionState["enumerateState"][-1]["target"] = ["roomEntry"]
+            elif key == "R":
+                char.interactionState["enumerateState"][-1]["target"] = ["roomTile"]
             elif key == "x":
                 if not "d" in char.registers:
                     char.registers["d"] = [0]
@@ -558,7 +563,12 @@ get position for what thing
                 return
 
             foundItems = []
-            if not char.interactionState["enumerateState"][-1]["target"] == ["character"] and not char.interactionState["enumerateState"][-1]["target"] == ["enemy"]:
+            foundItemQuery = False
+            for query in char.interactionState["enumerateState"][-1]["target"]:
+                if not query in ("character","enemy","roomEntry","roomTile"):
+                    foundItemQuery = True
+                    break
+            if foundItemQuery:
                 listFound = []
                 for (pos,value) in char.container.itemByCoordinates.items():
                     if pos[0]-(char.xPosition-char.xPosition%15) > 13 or pos[0]-(char.xPosition-char.xPosition%15) < 1:
@@ -572,6 +582,11 @@ get position for what thing
                     if not item.type in char.interactionState["enumerateState"][-1]["target"]:
                         continue
                     foundItems.append(item)
+
+            if "roomTile" in char.interactionState["enumerateState"][-1]["target"]:
+                if char.terrain:
+                    for room in char.terrain.rooms:
+                        foundItems.append(room)
 
             if "character" in char.interactionState["enumerateState"][-1]["target"]:
                 for otherChar in char.container.characters:
@@ -609,10 +624,16 @@ get position for what thing
                 char.timeTaken -= 0.99
                 return
 
-            char.registers["d"][-1] = found.xPosition-char.xPosition
-            char.registers["s"][-1] = found.yPosition-char.yPosition
-            char.registers["a"][-1] = -char.registers["d"][-1]
-            char.registers["w"][-1] = -char.registers["s"][-1]
+            if isinstance(found,src.rooms.Room):
+                char.registers["d"][-1] = found.xPosition-char.xPosition//15
+                char.registers["s"][-1] = found.yPosition-char.yPosition//15
+                char.registers["a"][-1] = -char.registers["d"][-1]
+                char.registers["w"][-1] = -char.registers["s"][-1]
+            else:
+                char.registers["d"][-1] = found.xPosition-char.xPosition
+                char.registers["s"][-1] = found.yPosition-char.yPosition
+                char.registers["a"][-1] = -char.registers["d"][-1]
+                char.registers["w"][-1] = -char.registers["s"][-1]
 
             char.messages.append(",".join(char.interactionState["enumerateState"][-1]["target"])+" found in direction %sa %ss %sd %sw"%(char.registers["a"][-1],char.registers["s"][-1],char.registers["d"][-1],char.registers["w"][-1],))
             char.interactionState["enumerateState"].pop()

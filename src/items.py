@@ -10630,7 +10630,12 @@ class Mold(Item):
                     item.xPosition = None
                     item.yPosition = None
 
-                    if (newPos[0]%15,newPos[1]%15) in ((7,7),(1,7),(7,1),(13,7),(7,13)):
+                    if (newPos[0]%15,newPos[1]%15) in ((7,7)):
+                        new = itemMap["CommandBloom"](creator=self)
+                        new.xPosition = newPos[0]
+                        new.yPosition = newPos[1]
+                        self.container.addItems([new])
+                    elif (newPos[0]%15,newPos[1]%15) in ((1,7),(7,1),(13,7),(7,13)) and self.container.getItemByPosition((newPos[0]-newPos[0]%15+7,newPos[1]-newPos[1]%15+7)) and self.container.getItemByPosition((newPos[0]-newPos[0]%15+7,newPos[1]-newPos[1]%15+7))[-1].type == "CommandBloom":
                         new = itemMap["CommandBloom"](creator=self)
                         new.xPosition = newPos[0]
                         new.yPosition = newPos[1]
@@ -11968,13 +11973,13 @@ class CommandBloom(Item):
             return
 
         if self.xPosition%15 == 1 and self.yPosition%15 == 7:
-            command = "6d"
+            command = "6dj"
         elif self.xPosition%15 == 13 and self.yPosition%15 == 7:
-            command = "6a"
+            command = "6aj"
         elif self.xPosition%15 == 7 and self.yPosition%15 == 13:
-            command = "6w"
+            command = "6wj"
         elif self.xPosition%15 == 7 and self.yPosition%15 == 1:
-            command = "6s"
+            command = "6sj"
         elif self.xPosition%15 == 7 and self.yPosition%15 == 7:
             command = ""
             length = 1
@@ -12008,7 +12013,7 @@ class CommandBloom(Item):
                 items = self.container.getItemByPosition(pos)
                 if not items:
                     continue
-                if items[-1].type in ("Sprout","SickBloom","FireCrystals"):
+                if items[-1].type in ("Sprout","SickBloom","FireCrystals","Coal"):
                     if (pos[0]%15,pos[1]%15) in ((1,7),(7,1),(7,13),(13,7)):
                         continue
                     if lastCharacterPosition[0] > pos[0]:
@@ -12024,6 +12029,11 @@ class CommandBloom(Item):
                     foundSomething = True
 
                     lastCharacterPosition = pos
+
+                    if items[-1].type in ("Coal"):
+                        command += lastDirection+"20j2000."
+                        explode = True
+                        break
 
                 if items[-1].type in ("Bush"):
                     if lastCharacterPosition[0] > pos[0]:
@@ -12042,7 +12052,7 @@ class CommandBloom(Item):
                     for i in range(0,9):
                         command += "J"+lastDirection
                     explode = True
-                    command += lastDirection+"20j"
+                    command += lastDirection+"20j2000."
                     break
 
                 if items[-1].type in ("EncrustedBush"):
@@ -12050,17 +12060,17 @@ class CommandBloom(Item):
 
             found = False
 
-            pos = (self.xPosition,self.yPosition)
-            if lastCharacterPosition[0] > pos[0]:
-                command += str(lastCharacterPosition[0]-pos[0])+"a"
-            if lastCharacterPosition[0] < pos[0]:
-                command += str(pos[0]-lastCharacterPosition[0])+"d"
-            if lastCharacterPosition[1] > pos[1]:
-                command += str(lastCharacterPosition[1]-pos[1])+"w"
-            if lastCharacterPosition[1] < pos[1]:
-                command += str(pos[1]-lastCharacterPosition[1])+"s"
-
             if not explode:
+                pos = (self.xPosition,self.yPosition)
+                if lastCharacterPosition[0] > pos[0]:
+                    command += str(lastCharacterPosition[0]-pos[0])+"a"
+                if lastCharacterPosition[0] < pos[0]:
+                    command += str(pos[0]-lastCharacterPosition[0])+"d"
+                if lastCharacterPosition[1] > pos[1]:
+                    command += str(lastCharacterPosition[1]-pos[1])+"w"
+                if lastCharacterPosition[1] < pos[1]:
+                    command += str(pos[1]-lastCharacterPosition[1])+"s"
+
                 command += "opx$=aa$=ww$=ss$=dd"
                 if foundSomething:
                     command += "j"

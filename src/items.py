@@ -12027,7 +12027,6 @@ class CommandBloom(Item):
                     if lastCharacterPosition[1] < pos[1]:
                         command += str(pos[1]-lastCharacterPosition[1])+"s"
 
-                    command += "j"
                     foundSomething = True
 
                     lastCharacterPosition = pos
@@ -12037,12 +12036,18 @@ class CommandBloom(Item):
                             (self.container.getItemByPosition((pos[0]+1,pos[1])) and self.container.getItemByPosition((pos[0]+1,pos[1]))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
                             (self.container.getItemByPosition((pos[0],pos[1]-1)) and self.container.getItemByPosition((pos[0],pos[1]-1))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
                             (self.container.getItemByPosition((pos[0],pos[1]+1)) and self.container.getItemByPosition((pos[0],pos[1]+1))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"))):
-                            command += "20j2000."
-                            explode = True
-                            break
+                            if character.phase == 1:
+                                command += "20j2000."
+                                explode = True
+                                break
+                            else:
+                                continue
                         else:
                             command += "k"
-                    continue
+                    if items[-1].type in ("Bloom"):
+                        command += "k"
+                    else:
+                        command += "j"
                 elif items[-1].type in ("Bush"):
                     foundSomething = True
                     if lastCharacterPosition[0] > pos[0]:
@@ -12063,14 +12068,6 @@ class CommandBloom(Item):
                     command += lastDirection
                     lastCharacterPosition = pos
 
-                    if ((self.container.getItemByPosition((pos[0]-1,pos[1])) and self.container.getItemByPosition((pos[0]-1,pos[1]))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or 
-                        (self.container.getItemByPosition((pos[0]+1,pos[1])) and self.container.getItemByPosition((pos[0]+1,pos[1]))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
-                        (self.container.getItemByPosition((pos[0],pos[1]-1)) and self.container.getItemByPosition((pos[0],pos[1]-1))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
-                        (self.container.getItemByPosition((pos[0],pos[1]+1)) and self.container.getItemByPosition((pos[0],pos[1]+1))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"))):
-                        command += lastDirection + "20j2000."
-                        explode = True
-                    else:
-                        command += "k"
                 elif items[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"):
                     break
                 else:

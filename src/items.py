@@ -11285,7 +11285,7 @@ This a patch of mold with multiple blooms and a network vains connecting them.
 
 actions:
 If you can eat it to gain 5 satiation.
-"""%(satiation)
+"""
 
     def destroy(self, generateSrcap=True):
         new = itemMap["Coal"](creator=self)
@@ -11901,6 +11901,24 @@ class AutoFarmer(Item):
 
                 lastCharacterPosition = pos
 
+            if items[-1].type in ("Bush"):
+                if lastCharacterPosition[0] > pos[0]:
+                    command += str(lastCharacterPosition[0]-pos[0])+"a"
+                    lastDirection = "a"
+                if lastCharacterPosition[0] < pos[0]:
+                    command += str(pos[0]-lastCharacterPosition[0])+"d"
+                    lastDirection = "d"
+                if lastCharacterPosition[1] > pos[1]:
+                    command += str(lastCharacterPosition[1]-pos[1])+"w"
+                    lastDirection = "w"
+                if lastCharacterPosition[1] < pos[1]:
+                    command += str(pos[1]-lastCharacterPosition[1])+"s"
+                    lastDirection = "s"
+                command += "j"
+                for i in range(0,9):
+                    command += "J"+lastDirection
+                command += lastDirection+"k"
+
         pos = (self.xPosition,self.yPosition)
         if lastCharacterPosition[0] > pos[0]:
             command += str(lastCharacterPosition[0]-pos[0])+"a"
@@ -11913,6 +11931,7 @@ class AutoFarmer(Item):
 
         if not foundSomething:
             command += "100."
+        command += "opx$=aa$=ww$=ss$=dd"
         command += "j"
 
         convertedCommand = []

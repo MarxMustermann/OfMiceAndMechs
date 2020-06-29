@@ -10641,11 +10641,17 @@ class Mold(Item):
                     item.xPosition = None
                     item.yPosition = None
 
-                    new = itemMap["SickBloom"](creator=self)
-                    new.xPosition = newPos[0]
-                    new.yPosition = newPos[1]
-                    self.container.addItems([new])
-                    new.startSpawn()
+                    if newPos[0]%15 == 7 and newPos[1]%15 == 7:
+                        new = itemMap["CommandBloom"](creator=self)
+                        new.xPosition = newPos[0]
+                        new.yPosition = newPos[1]
+                        self.container.addItems([new])
+                    else:
+                        new = itemMap["SickBloom"](creator=self)
+                        new.xPosition = newPos[0]
+                        new.yPosition = newPos[1]
+                        self.container.addItems([new])
+                        new.startSpawn()
                 elif itemList[-1].type == "Corpse":
                     item = itemList[-1]
                     item.container.removeItem(item)
@@ -11443,7 +11449,7 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
                     else:
                         items = self.container.getItemByPosition((upperLeftEdge[0]+x,upperLeftEdge[1]+y))
                         item = items[0]
-                    item.container.removeItem(item)
+                        item.container.removeItem(item)
                     item.xPosition = x
                     item.yPosition = y
                     keepItems.append(item)
@@ -11949,6 +11955,115 @@ class AutoFarmer(Item):
 
         character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
 
+class CommandBloom(Item):
+    type = "CommandBloom"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.commandBloom,xPosition,yPosition,creator=creator,name="command bloom")
+        self.walkable = True
+        self.bolted = True
+
+    def apply(self,character):
+        if not self.terrain:
+            return
+
+        if len(character.inventory) > 5:
+            character.inventory = character.inventory[:4]
+
+        command = ""
+        length = 1
+        pos = [self.xPosition,self.yPosition]
+        path = []
+        path.append((pos[0],pos[1]))
+        while length < 13:
+            if length%2 == 1:
+                for i in range(0,length):
+                    pos[1] -= 1
+                    path.append((pos[0],pos[1]))
+                for i in range(0,length):
+                    pos[0] += 1
+                    path.append((pos[0],pos[1]))
+            else:
+                for i in range(0,length):
+                    pos[1] += 1
+                    path.append((pos[0],pos[1]))
+                for i in range(0,length):
+                    pos[0] -= 1
+                    path.append((pos[0],pos[1]))
+            length += 1
+        for i in range(0,length-1):
+            pos[1] -= 1
+            path.append((pos[0],pos[1]))
+
+        foundSomething = False
+        lastCharacterPosition = path[0]
+        for pos in path[1:]:
+            items = self.container.getItemByPosition(pos)
+            if not items:
+                continue
+            if items[-1].type in ("Sprout","Bloom","SickBloom"):
+                if lastCharacterPosition[0] > pos[0]:
+                    command += str(lastCharacterPosition[0]-pos[0])+"a"
+                if lastCharacterPosition[0] < pos[0]:
+                    command += str(pos[0]-lastCharacterPosition[0])+"d"
+                if lastCharacterPosition[1] > pos[1]:
+                    command += str(lastCharacterPosition[1]-pos[1])+"w"
+                if lastCharacterPosition[1] < pos[1]:
+                    command += str(pos[1]-lastCharacterPosition[1])+"s"
+
+                if items[-1].type == "Sprout":
+                    command += "j"
+                if items[-1].type == "Bloom":
+                    command += "k"
+                if items[-1].type == "SickBloom":
+                    command += "k"
+                foundSomething = True
+
+                lastCharacterPosition = pos
+
+            if items[-1].type in ("Bush"):
+                if lastCharacterPosition[0] > pos[0]:
+                    command += str(lastCharacterPosition[0]-pos[0])+"a"
+                    lastDirection = "a"
+                if lastCharacterPosition[0] < pos[0]:
+                    command += str(pos[0]-lastCharacterPosition[0])+"d"
+                    lastDirection = "d"
+                if lastCharacterPosition[1] > pos[1]:
+                    command += str(lastCharacterPosition[1]-pos[1])+"w"
+                    lastDirection = "w"
+                if lastCharacterPosition[1] < pos[1]:
+                    command += str(pos[1]-lastCharacterPosition[1])+"s"
+                    lastDirection = "s"
+                command += "j"
+                for i in range(0,9):
+                    command += "J"+lastDirection
+                command += lastDirection+"k"
+
+            if items[-1].type in ("EncrustedBush"):
+                break
+
+        found = False
+
+        pos = (self.xPosition,self.yPosition)
+        if lastCharacterPosition[0] > pos[0]:
+            command += str(lastCharacterPosition[0]-pos[0])+"a"
+        if lastCharacterPosition[0] < pos[0]:
+            command += str(pos[0]-lastCharacterPosition[0])+"d"
+        if lastCharacterPosition[1] > pos[1]:
+            command += str(lastCharacterPosition[1]-pos[1])+"w"
+        if lastCharacterPosition[1] < pos[1]:
+            command += str(pos[1]-lastCharacterPosition[1])+"s"
+
+        command += "opx$=aa$=ww$=ss$=dd"
+        if foundSomething:
+            command += "j"
+
+        convertedCommand = []
+        for item in command:
+            convertedCommand.append((item,["norecord"]))
+
+        character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
+
 
 # maping from strings to all items
 # should be extendable
@@ -12049,6 +12164,7 @@ itemMap = {
             "Sprout":Sprout,
             "Sprout2":Sprout2,
             "SickBloom":SickBloom,
+            "CommandBloom":CommandBloom,
             "PoisonBloom":PoisonBloom,
             "Bush":Bush,
             "PoisonBush":PoisonBush,

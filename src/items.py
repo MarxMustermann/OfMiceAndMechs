@@ -637,11 +637,11 @@ The corpse has %s charges left.
 
     def apply(self,character):
         if isinstance(character,src.characters.Monster):
-            if character.phase == 1:
-                if character.satiation < 1000:
-                    character.macroState["commandKeyQueue"] = [("j",[])] + character.macroState["commandKeyQueue"]
             if character.phase == 3:
                 character.enterPhase4()
+            else character.phase == 1:
+                if self.container and character.satiation < 1000:
+                    character.macroState["commandKeyQueue"] = [("j",[])] + character.macroState["commandKeyQueue"]
         if self.charges:
             character.satiation += 15
             if character.satiation > 1000:

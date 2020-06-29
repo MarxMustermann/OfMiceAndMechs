@@ -12013,7 +12013,7 @@ class CommandBloom(Item):
                 items = self.container.getItemByPosition(pos)
                 if not items:
                     continue
-                if items[-1].type in ("Sprout","SickBloom","FireCrystals","Coal"):
+                if items[-1].type in ("Sprout","SickBloom","Bloom","FireCrystals","Coal"):
                     if (pos[0]%15,pos[1]%15) in ((1,7),(7,1),(7,13),(13,7)):
                         continue
                     if lastCharacterPosition[0] > pos[0]:
@@ -12031,9 +12031,15 @@ class CommandBloom(Item):
                     lastCharacterPosition = pos
 
                     if items[-1].type in ("Coal"):
-                        command += "20j2000."
-                        explode = True
-                        break
+                        if ((self.container.getItemByPosition((pos[0]-1,pos[1])) and self.container.getItemByPosition((pos[0]-1,pos[1]))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or 
+                            (self.container.getItemByPosition((pos[0]+1,pos[1])) and self.container.getItemByPosition((pos[0]+1,pos[1]))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
+                            (self.container.getItemByPosition((pos[0],pos[1]-1)) and self.container.getItemByPosition((pos[0],pos[1]-1))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
+                            (self.container.getItemByPosition((pos[0],pos[1]+1)) and self.container.getItemByPosition((pos[0],pos[1]+1))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"))):
+                            command += "20j2000."
+                            explode = True
+                            break
+                        else:
+                            command += "k"
 
                 if items[-1].type in ("Bush"):
                     if lastCharacterPosition[0] > pos[0]:
@@ -12051,10 +12057,17 @@ class CommandBloom(Item):
                     command += "j"
                     for i in range(0,11):
                         command += "J"+lastDirection
-                    command += lastDirection + "20j2000."
-                    explode = True
 
-                if items[-1].type in ("EncrustedBush"):
+                    if ((self.container.getItemByPosition((pos[0]-1,pos[1])) and self.container.getItemByPosition((pos[0]-1,pos[1]))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or 
+                        (self.container.getItemByPosition((pos[0]+1,pos[1])) and self.container.getItemByPosition((pos[0]+1,pos[1]))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
+                        (self.container.getItemByPosition((pos[0],pos[1]-1)) and self.container.getItemByPosition((pos[0],pos[1]-1))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
+                        (self.container.getItemByPosition((pos[0],pos[1]+1)) and self.container.getItemByPosition((pos[0],pos[1]+1))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"))):
+                        command += lastDirection + "20j2000."
+                        explode = True
+                    else:
+                        command += "k"
+
+                if items[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"):
                     break
 
             found = False
@@ -12074,7 +12087,7 @@ class CommandBloom(Item):
                 if foundSomething:
                     command += "j"
                 if not foundSomething:
-                    command += str(character.satiation-30)+".j"
+                    command += str(max(character.satiation-30,100))+".j"
 
         convertedCommand = []
         for item in command:

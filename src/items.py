@@ -12042,7 +12042,7 @@ class CommandBloom(Item):
                 import random
                 direction = random.choice(["w","a","s","d"])
                 command += 5*(direction+4*(direction+"j")+2*direction+5*(direction+"j")+direction+"wjajsjsjdjdjwjwjas")
-                self.charges -= 1
+                self.charges += 1
 
                 convertedCommand = []
                 for item in command:

@@ -12052,7 +12052,6 @@ class CommandBloom(Item):
                     for i in range(0,9):
                         command += "J"+lastDirection
                     explode = True
-                    command += lastDirection+"20j2000."
                     break
 
                 if items[-1].type in ("EncrustedBush"):

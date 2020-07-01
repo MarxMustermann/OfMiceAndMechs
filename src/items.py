@@ -12039,8 +12039,7 @@ class CommandBloom(Item):
                     if gamestate.tick-self.lastFeeding < 60:
                         import random
                         direction = random.choice(["w","a","s","d"])
-                        opposites = {"w":"s","a":"d","s":"w","d":"a"}
-                        command += 13*direction+"j"+13*opposites[direction]+"j"
+                        command += 10*(13*direction+"j")
                     else:
                         while character.satiation < 300 and self.charges:
                             character.satiation += 100

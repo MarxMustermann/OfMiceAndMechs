@@ -905,7 +905,6 @@ class GrowthTank(Item):
                       "CollectQuestMeta",
                       "WaitQuest"
                       "NaiveDropQuest",
-                      "NaiveDropQuest",
                       "DropQuestMeta",
                     ]
 
@@ -11974,9 +11973,10 @@ class CommandBloom(Item):
         self.numCoal = 0
         self.numSick = 0
         self.numCorpses = 0
+        self.lastFeeding = 0
 
         self.attributesToStore.extend([
-               "charges","numCoal","numSick","numCorpses"])
+               "charges","numCoal","numSick","numCorpses","lastFeeding"])
         self.initialState = self.getState()
 
     def apply(self,character):
@@ -12008,143 +12008,166 @@ class CommandBloom(Item):
                     self.numCorpses += 1
             for item in removeItems:
                 character.inventory.remove(item)
-            command = ""
-            length = 1
-            pos = [self.xPosition,self.yPosition]
-            path = []
-            path.append((pos[0],pos[1]))
-            while length < 13:
-                if length%2 == 1:
-                    for i in range(0,length):
-                        pos[1] -= 1
-                        path.append((pos[0],pos[1]))
-                    for i in range(0,length):
-                        pos[0] += 1
-                        path.append((pos[0],pos[1]))
-                else:
-                    for i in range(0,length):
-                        pos[1] += 1
-                        path.append((pos[0],pos[1]))
-                    for i in range(0,length):
-                        pos[0] -= 1
-                        path.append((pos[0],pos[1]))
-                length += 1
-            for i in range(0,length-1):
-                pos[1] -= 1
-                path.append((pos[0],pos[1]))
 
-            if character.satiation < 300 and self.charges:
-                character.satiation += 100
-                self.charges -= 1
-
-            if self.charges == 10:
+            if self.charges < 25:
                 command = ""
-                import random
-                direction = random.choice(["w","a","s","d"])
-                command += 10*(13*direction+"opx$=aa$=ww$=ss$=ddwjajsjsjdjdjwjwjas")
-                self.charges += 1
-
-                convertedCommand = []
-                for item in command:
-                    convertedCommand.append((item,["norecord"]))
-
-                character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
-                return
-
-            foundSomething = False
-            lastCharacterPosition = path[0]
-            explode = False
-            for pos in path[1:]:
-                items = self.container.getItemByPosition(pos)
-                if not items:
-                    continue
-                if items[-1].type in ("Mold","Sprout2","CommandBloom"):
-                    continue
-                elif items[-1].type in ("Sprout","SickBloom","Bloom","FireCrystals","Coal"):
-                    if items[-1].type == "Sprout" and (pos[0]%15,pos[1]%15) in ((1,7),(7,1),(7,13),(13,7)):
-                        continue
-                    if lastCharacterPosition[0] > pos[0]:
-                        command += str(lastCharacterPosition[0]-pos[0])+"a"
-                    if lastCharacterPosition[0] < pos[0]:
-                        command += str(pos[0]-lastCharacterPosition[0])+"d"
-                    if lastCharacterPosition[1] > pos[1]:
-                        command += str(lastCharacterPosition[1]-pos[1])+"w"
-                    if lastCharacterPosition[1] < pos[1]:
-                        command += str(pos[1]-lastCharacterPosition[1])+"s"
-
-                    foundSomething = True
-
-                    lastCharacterPosition = pos
-
-                    if items[-1].type in ("Coal"):
-                        if ((self.container.getItemByPosition((pos[0]-1,pos[1])) and self.container.getItemByPosition((pos[0]-1,pos[1]))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or 
-                            (self.container.getItemByPosition((pos[0]+1,pos[1])) and self.container.getItemByPosition((pos[0]+1,pos[1]))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
-                            (self.container.getItemByPosition((pos[0],pos[1]-1)) and self.container.getItemByPosition((pos[0],pos[1]-1))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
-                            (self.container.getItemByPosition((pos[0],pos[1]+1)) and self.container.getItemByPosition((pos[0],pos[1]+1))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"))):
-                            if character.phase == 1:
-                                command += "20j2000."
-                                explode = True
-                                break
-                            else:
-                                continue
-                        else:
-                            command += "k"
-                    if items[-1].type in ("Bloom"):
-                        command += "k"
+                length = 1
+                pos = [self.xPosition,self.yPosition]
+                path = []
+                path.append((pos[0],pos[1]))
+                while length < 13:
+                    if length%2 == 1:
+                        for i in range(0,length):
+                            pos[1] -= 1
+                            path.append((pos[0],pos[1]))
+                        for i in range(0,length):
+                            pos[0] += 1
+                            path.append((pos[0],pos[1]))
                     else:
+                        for i in range(0,length):
+                            pos[1] += 1
+                            path.append((pos[0],pos[1]))
+                        for i in range(0,length):
+                            pos[0] -= 1
+                            path.append((pos[0],pos[1]))
+                    length += 1
+                for i in range(0,length-1):
+                    pos[1] -= 1
+                    path.append((pos[0],pos[1]))
+
+                if character.satiation < 300 and self.charges:
+                    if gamestate.tick-self.lastFeeding < 60:
+                        import random
+                        direction = random.choice(["w","a","s","d"])
+                        opposites = {"w":"s","a":"d","s":"w","d":"a"}
+                        command += 13*direction+"j"+13*opposites[direction]+"j"
+                    else:
+                        while character.satiation < 300 and self.charges:
+                            character.satiation += 100
+                        self.charges -= 1
+                        self.lastFeeding = gamestate.tick
+
+                if self.charges == 10:
+                    command = ""
+                    import random
+                    direction = random.choice(["w","a","s","d"])
+                    command += 10*(13*direction+"opx$=aa$=ww$=ss$=ddwjajsjsjdjdjwjwjas")
+                    self.charges += 1
+
+                    convertedCommand = []
+                    for item in command:
+                        convertedCommand.append((item,["norecord"]))
+
+                    character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
+                    return
+
+                foundSomething = False
+                lastCharacterPosition = path[0]
+                explode = False
+                for pos in path[1:]:
+                    items = self.container.getItemByPosition(pos)
+                    if not items:
+                        continue
+                    if items[-1].type in ("Mold","Sprout2","CommandBloom"):
+                        continue
+                    elif items[-1].type in ("Sprout","SickBloom","Bloom","FireCrystals","Coal"):
+                        if items[-1].type == "Sprout" and (pos[0]%15,pos[1]%15) in ((1,7),(7,1),(7,13),(13,7)):
+                            continue
+                        if lastCharacterPosition[0] > pos[0]:
+                            command += str(lastCharacterPosition[0]-pos[0])+"a"
+                        if lastCharacterPosition[0] < pos[0]:
+                            command += str(pos[0]-lastCharacterPosition[0])+"d"
+                        if lastCharacterPosition[1] > pos[1]:
+                            command += str(lastCharacterPosition[1]-pos[1])+"w"
+                        if lastCharacterPosition[1] < pos[1]:
+                            command += str(pos[1]-lastCharacterPosition[1])+"s"
+
+                        foundSomething = True
+
+                        lastCharacterPosition = pos
+
+                        if items[-1].type in ("Coal"):
+                            if ((self.container.getItemByPosition((pos[0]-1,pos[1])) and self.container.getItemByPosition((pos[0]-1,pos[1]))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or 
+                                (self.container.getItemByPosition((pos[0]+1,pos[1])) and self.container.getItemByPosition((pos[0]+1,pos[1]))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
+                                (self.container.getItemByPosition((pos[0],pos[1]-1)) and self.container.getItemByPosition((pos[0],pos[1]-1))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
+                                (self.container.getItemByPosition((pos[0],pos[1]+1)) and self.container.getItemByPosition((pos[0],pos[1]+1))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"))):
+                                if character.phase == 1:
+                                    command += "20j2000."
+                                    explode = True
+                                    break
+                                else:
+                                    continue
+                            else:
+                                command += "k"
+                        if items[-1].type in ("Bloom"):
+                            command += "k"
+                        else:
+                            command += "j"
+                    elif items[-1].type in ("Bush"):
+                        foundSomething = True
+                        if lastCharacterPosition[0] > pos[0]:
+                            command += str(lastCharacterPosition[0]-pos[0])+"a"
+                            lastDirection = "a"
+                        if lastCharacterPosition[0] < pos[0]:
+                            command += str(pos[0]-lastCharacterPosition[0])+"d"
+                            lastDirection = "d"
+                        if lastCharacterPosition[1] > pos[1]:
+                            command += str(lastCharacterPosition[1]-pos[1])+"w"
+                            lastDirection = "w"
+                        if lastCharacterPosition[1] < pos[1]:
+                            command += str(pos[1]-lastCharacterPosition[1])+"s"
+                            lastDirection = "s"
                         command += "j"
-                elif items[-1].type in ("Bush"):
-                    foundSomething = True
+                        for i in range(0,11):
+                            command += "J"+lastDirection
+                        command += lastDirection
+                        lastCharacterPosition = pos
+
+                    elif items[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"):
+                        break
+                    else:
+                        foundSomething = True
+                        if lastCharacterPosition[0] > pos[0]:
+                            command += str(lastCharacterPosition[0]-pos[0])+"a"
+                        if lastCharacterPosition[0] < pos[0]:
+                            command += str(pos[0]-lastCharacterPosition[0])+"d"
+                        if lastCharacterPosition[1] > pos[1]:
+                            command += str(lastCharacterPosition[1]-pos[1])+"w"
+                        if lastCharacterPosition[1] < pos[1]:
+                            command += str(pos[1]-lastCharacterPosition[1])+"s"
+                        command += "k"
+
+                        lastCharacterPosition = pos
+
+                if not explode:
+                    pos = (self.xPosition,self.yPosition)
                     if lastCharacterPosition[0] > pos[0]:
                         command += str(lastCharacterPosition[0]-pos[0])+"a"
-                        lastDirection = "a"
-                    if lastCharacterPosition[0] < pos[0]:
-                        command += str(pos[0]-lastCharacterPosition[0])+"d"
-                        lastDirection = "d"
-                    if lastCharacterPosition[1] > pos[1]:
-                        command += str(lastCharacterPosition[1]-pos[1])+"w"
-                        lastDirection = "w"
-                    if lastCharacterPosition[1] < pos[1]:
-                        command += str(pos[1]-lastCharacterPosition[1])+"s"
-                        lastDirection = "s"
-                    command += "j"
-                    for i in range(0,11):
-                        command += "J"+lastDirection
-                    command += lastDirection
-                    lastCharacterPosition = pos
-
-                elif items[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"):
-                    break
-                else:
-                    foundSomething = True
-                    if lastCharacterPosition[0] > pos[0]:
-                        command += str(lastCharacterPosition[0]-pos[0])+"a"
                     if lastCharacterPosition[0] < pos[0]:
                         command += str(pos[0]-lastCharacterPosition[0])+"d"
                     if lastCharacterPosition[1] > pos[1]:
                         command += str(lastCharacterPosition[1]-pos[1])+"w"
                     if lastCharacterPosition[1] < pos[1]:
                         command += str(pos[1]-lastCharacterPosition[1])+"s"
-                    command += "k"
 
-                    lastCharacterPosition = pos
+                    command += "opx$=aa$=ww$=ss$=dd"
+                    if foundSomething:
+                        command += "j"
+                    if not foundSomething:
+                        command += str(min(character.satiation-30,100))+".j"
+            else:
+                command = ""
+                character.inventory.append(CommandBloom(creator=self))
+                if not "NaiveDropQuest" in character.solvers:
+                    character.solvers.append("NaiveDropQuest")
 
-            if not explode:
-                pos = (self.xPosition,self.yPosition)
-                if lastCharacterPosition[0] > pos[0]:
-                    command += str(lastCharacterPosition[0]-pos[0])+"a"
-                if lastCharacterPosition[0] < pos[0]:
-                    command += str(pos[0]-lastCharacterPosition[0])+"d"
-                if lastCharacterPosition[1] > pos[1]:
-                    command += str(lastCharacterPosition[1]-pos[1])+"w"
-                if lastCharacterPosition[1] < pos[1]:
-                    command += str(pos[1]-lastCharacterPosition[1])+"s"
-
-                command += "opx$=aa$=ww$=ss$=dd"
-                if foundSomething:
-                    command += "j"
-                if not foundSomething:
-                    command += str(min(character.satiation-30,100))+".j"
+                import random
+                direction = random.choice(["a","w","s","d"]) 
+                command += 13*direction+"jjlj"
+                self.charges -= 10
+        else:
+            command = ""
+            return
 
         convertedCommand = []
         for item in command:
@@ -12152,9 +12175,12 @@ class CommandBloom(Item):
 
         character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
 
+    def configure(self,character):
+        self.charges += 1
+
     def getLongInfo(self):
         return """
-item: TrailHead
+item: Command Bloom
 
 description:
 You can use it to create paths

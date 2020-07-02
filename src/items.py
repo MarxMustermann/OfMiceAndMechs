@@ -11984,7 +11984,7 @@ class CommandBloom(Item):
             self.faction += char
 
         self.attributesToStore.extend([
-               "charges","numCoal","numSick","numCorpses","lastFeeding","faction","numCommandBlooms"])
+               "charges","numCoal","numSick","numCorpses","lastFeeding","faction","numCommandBlooms","masterCommand"])
         self.initialState = self.getState()
 
     def apply(self,character):
@@ -12221,8 +12221,8 @@ charges: %s
 numCoal: %s
 numSick: %s
 numCorpses: %s
-numCommandBlooms: %s
 masterCommand: %s
+numCommandBlooms: %s
 """%(self.charges,self.numCoal,self.numSick,self.numCorpses,self.masterCommand,self.numCommandBlooms)
 
 # maping from strings to all items

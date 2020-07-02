@@ -12072,6 +12072,20 @@ class HiveMind(Item):
                 command += (13*(self.yPosition//15-target[1]))*"w"
             command += "kkj"
         else:
+            command = ""
+            target = random.choice(self.terretory)
+            new = CommandBloom(creator=self)
+            character.inventory.append(new)
+            self.charges -= 1
+            if (target[0]-self.xPosition//15):
+                command += (13*(target[0]-self.xPosition//15))*"d"
+            if (self.xPosition//15-target[0]):
+                command += (13*(self.xPosition//15-target[0]))*"a"
+            if (target[1]-self.yPosition//15):
+                command += (13*(target[1]-self.yPosition//15))*"s"
+            if (self.yPosition//15-target[1]):
+                command += (13*(self.yPosition//15-target[1]))*"w"
+            command += "kkj"
             
         convertedCommand = []
         for item in command:

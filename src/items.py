@@ -12111,7 +12111,7 @@ class CommandBloom(Item):
                                     continue
                             else:
                                 command += "k"
-                        if items[-1].type in ("Bloom"):
+                        if items[-1].type in ("Bloom","SickBloom"):
                             command += "k"
                         else:
                             command += "j"

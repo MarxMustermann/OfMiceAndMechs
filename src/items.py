@@ -12059,7 +12059,7 @@ class HiveMind(Item):
             if targetPos[1] < neighbourPos[1]:
                 command += 13*"wk"+"kjjlj"
                 new.masterCommand = 13*"s"+"kj"
-        else:
+        elif random.randint(0,1) == 1:
             command = ""
             target = random.choice(self.terretory)
             if (target[0]-self.xPosition//15):
@@ -12071,6 +12071,7 @@ class HiveMind(Item):
             if (self.yPosition//15-target[1]):
                 command += (13*(self.yPosition//15-target[1]))*"w"
             command += "kkj"
+        else:
             
         convertedCommand = []
         for item in command:
@@ -12107,6 +12108,7 @@ class CommandBloom(Item):
         self.numCommandBlooms = 0
         self.lastFeeding = 0
         self.masterCommand = None
+        self.expectedNext = None
         
         import random
         self.faction = ""
@@ -12167,6 +12169,9 @@ class CommandBloom(Item):
                         self.container.addItems([new])
             for item in removeItems:
                 character.inventory.remove(item)
+
+            if expectedNext and expectedNext > gamestate.tick:
+                command = self.masterCommand
 
             if self.charges < 25 and not command:
                 command = ""
@@ -12396,6 +12401,8 @@ class CommandBloom(Item):
             for i in range(1,10):
                 direction = random.choice(["w","a","s","d"])
                 command += direction+"k"
+
+        expectedNext = gamestate.tick+len(command)//2
 
         convertedCommand = []
         for item in command:

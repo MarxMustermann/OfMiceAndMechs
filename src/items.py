@@ -12036,16 +12036,16 @@ class HiveMind(Item):
             character.registers["PATHx"] = []
             character.registers["PATHy"] = []
             if targetPos[0] > neighbourPos[0]:
-                command += "13dkkjjlj"
+                command += 13*"dk"+"kjjlj"
                 new.masterCommand = 13*"a"+"kj"
             if targetPos[0] < neighbourPos[0]:
-                command += "13akkjjlj"
+                command += 13*"ak"+"kjjlj"
                 new.masterCommand = 13*"d"+"kj"
             if targetPos[1] > neighbourPos[1]:
-                command += "13skkjjlj"
+                command += 13*"sk"+"kjjlj"
                 new.masterCommand = 13*"w"+"kj"
             if targetPos[1] < neighbourPos[1]:
-                command += "13wkkjjlj"
+                command += 13*"wk"+"kjjlj"
                 new.masterCommand = 13*"s"+"kj"
         else:
             command = "W"

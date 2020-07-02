@@ -12133,6 +12133,8 @@ class CommandBloom(Item):
                                     for item in newCommand:
                                         convertedCommand.append((item,["norecord"]))
                                     newCharacter.macroState["commandKeyQueue"] = convertedCommand
+                                    newCharacter.xPosition = self.xPosition
+                                    newCharacter.yPosition = self.yPosition
                                     self.container.addCharacter(newCharacter,self.xPosition,self.yPosition)
 
                             else:
@@ -12196,12 +12198,6 @@ class CommandBloom(Item):
             elif not command:
                 command = ""
                 new = CommandBloom(creator=self)
-                character.inventory.append(new)
-                if not "NaiveDropQuest" in character.solvers:
-                    character.solvers.append("NaiveDropQuest")
-
-                character.registers["SOURCEx"] = [self.xPosition//15]
-                character.registers["SOURCEy"] = [self.yPosition//15]
 
                 import random
                 direction = random.choice(["w","a","s","d"]) 
@@ -12209,6 +12205,17 @@ class CommandBloom(Item):
                 command += 13*direction+"jjlj"
                 new.masterCommand = 13*reversedDirection[direction]+"j"
                 new.faction = self.faction
+
+                if self.numSick:
+                    self.runCommandOnNewCrawler("j")
+
+                walker = character
+                walker.inventory.append(new)
+                walker.registers["SOURCEx"] = [self.xPosition//15]
+                walker.registers["SOURCEy"] = [self.yPosition//15]
+
+                if not "NaiveDropQuest" in walker.solvers:
+                    walker.solvers.append("NaiveDropQuest")
 
                 self.charges -= 10
         else:
@@ -12231,8 +12238,29 @@ class CommandBloom(Item):
 
         character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
 
-    def runCommandOnNewCrawler(self):
-        pass
+    def runCommandOnNewCrawler(self,newCommand):
+        newCharacter = characters.Monster(creator=self)
+
+        newCharacter.solvers = [
+                  "NaiveActivateQuest",
+                  "ActivateQuestMeta",
+                  "NaivePickupQuest",
+                  "NaiveMurderQuest",
+                ]
+
+        newCharacter.faction = self.faction
+        newCharacter.satiation = 100
+        convertedCommand = []
+        for item in newCommand:
+            convertedCommand.append((item,["norecord"]))
+        newCharacter.macroState["commandKeyQueue"] = convertedCommand
+        newCharacter.xPosition = self.xPosition
+        newCharacter.yPosition = self.yPosition
+        self.container.addCharacter(newCharacter,self.xPosition,self.yPosition)
+
+        self.numSick -= 1
+
+        return newCharacter
 
     def configure(self,character):
         self.charges += 1

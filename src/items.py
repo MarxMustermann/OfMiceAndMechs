@@ -12223,7 +12223,7 @@ numSick: %s
 numCorpses: %s
 numCommandBlooms: %s
 masterCommand: %s
-"""%(self.charges,self.numCoal,self.numSick,self.numCorpses,self.masterCommand)
+"""%(self.charges,self.numCoal,self.numSick,self.numCorpses,self.masterCommand,self.numCommandBlooms)
 
 # maping from strings to all items
 # should be extendable

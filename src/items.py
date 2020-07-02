@@ -11973,6 +11973,7 @@ class CommandBloom(Item):
         self.numCoal = 0
         self.numSick = 0
         self.numCorpses = 0
+        self.numCommandBloom = 0
         self.lastFeeding = 0
 
         self.attributesToStore.extend([
@@ -12006,6 +12007,9 @@ class CommandBloom(Item):
                 elif item.type == "Corpse":
                     removeItems.append(item)
                     self.numCorpses += 1
+                elif item.type == "CommandBloom":
+                    removeItems.append(item)
+                    self.numCommandBloom += 1
             for item in removeItems:
                 character.inventory.remove(item)
 

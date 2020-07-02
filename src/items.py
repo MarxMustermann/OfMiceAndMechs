@@ -11973,6 +11973,7 @@ class CommandBloom(Item):
         self.numCoal = 0
         self.numSick = 0
         self.numCorpses = 0
+        self.numCommandBlooms = 0
         self.lastFeeding = 0
         self.masterCommand = None
         
@@ -11983,7 +11984,7 @@ class CommandBloom(Item):
             self.faction += char
 
         self.attributesToStore.extend([
-               "charges","numCoal","numSick","numCorpses","lastFeeding","faction"])
+               "charges","numCoal","numSick","numCorpses","lastFeeding","faction","numCommandBlooms"])
         self.initialState = self.getState()
 
     def apply(self,character):
@@ -12016,16 +12017,17 @@ class CommandBloom(Item):
                     removeItems.append(item)
                     self.numCorpses += 1
                 elif item.type == "CommandBloom":
-                    removeItems.append(item)
                     if self.masterCommand:
                         command = self.masterCommand
-                        """
-                        if len(character.inventory) < 10 and (
-        self.numCoal = 0
-        self.numSick = 0
-        self.numCorpses = 0"""
+                        if len(character.inventory) < 10 and (self.numCoal > 5 or self.numSick > 5 or self.numCorpses > 5):
+                            for i in range(len(character.inventory),10): 
+                                """
+            self.numCoal = 0
+            self.numSick = 0
+            self.numCorpses = 0"""
                     else:
-                        self.charges += 10
+                        removeItems.append(item)
+                        self.numCommandBlooms += 1
                         command = ""
             for item in removeItems:
                 character.inventory.remove(item)
@@ -12219,6 +12221,7 @@ charges: %s
 numCoal: %s
 numSick: %s
 numCorpses: %s
+numCommandBlooms: %s
 masterCommand: %s
 """%(self.charges,self.numCoal,self.numSick,self.numCorpses,self.masterCommand)
 

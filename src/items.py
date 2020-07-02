@@ -11817,42 +11817,6 @@ You can use it to create paths
 
         character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
 
-class HiveMind(Item):
-    type = "HiveMind"
-
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(displayChars.floor_node,xPosition,yPosition,creator=creator,name="encrusted bush")
-        self.charges = 0
-        self.level = 0
-
-    def apply(self,character):
-        if character.satiation > 500:
-            character.satiation -= 100
-            self.charges += 1
-            character.messages.append("you give blood and recieve instructions")
-
-            character.macroState["macros"]["EAT FOOd"] = list("opf$=aa$=ww$=ss$=ddj")
-            character.macroState["macros"]["INFo"] = ["@","esc"]
-            character.macroState["macros"]["BRANCH EAt"] = list("%F_EAT FOOd_MOVE TILe")
-            character.macroState["macros"]["MOVE TILe"] = list("13w13a")
-            character.macroState["macros"]["GRAZe"] = list("_EAT FOOd_BRANCH GRAZe")
-            character.macroState["macros"]["BRANCH GRAZe"] = list("_INFo$c=$=SATIATIOn.$c-800.%<_GRAZe_RETURn")
-
-            command = "_BRANCH GRAZe"
-            convertedCommand = []
-            for item in command:
-                convertedCommand.append((item,["norecord"]))
-
-            character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
-
-        if self.charges == 10:
-            character.messages("the hivemind grows")
-            self.expand()
-
-    def expand(self):
-        if not self.room and self.room.bio:
-            return
-        
 class AutoFarmer(Item):
     type = "AutoFarmer"
 
@@ -11962,6 +11926,151 @@ class AutoFarmer(Item):
 
         character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
 
+class HiveMind(Item):
+    type = "HiveMind"
+
+    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        super().__init__(displayChars.floor_node,xPosition,yPosition,creator=creator,name="command bloom")
+        self.walkable = True
+        self.bolted = True
+        self.lastMoldClear = 0
+        self.terretory = []
+        self.charges = 0
+
+        self.attributesToStore.extend([
+               "lastMoldClear","charges"])
+        self.initialState = self.getState()
+
+    def apply(self,character):
+        while "PATHx" in character.registers:
+            if not character.registers["PATHx"]:
+                del character.registers["PATHx"]
+                del character.registers["PATHy"]
+                break
+
+            pos = (character.registers["PATHx"].pop(),character.registers["PATHy"].pop())
+            if not pos in self.terretory:
+                self.terretory.append(pos)
+
+        for item in character.inventory[:]:
+            if item.type == "CommandBloom":
+                self.charges += 1
+                character.inventory.remove(item)
+
+        done = False
+        if gamestate.tick-self.lastMoldClear > 1000:
+                self.lastMoldClear = gamestate.tick
+                command = ""
+                length = 1
+                pos = [7,7]
+                while length < 13:
+                    if length%2 == 1:
+                        for i in range(0,length):
+                            pos[1] -= 1
+                            command += "wjjk"
+                        for i in range(0,length):
+                            pos[0] += 1
+                            if pos == [7,1]:
+                                command += "d"
+                                continue
+                            command += "djjk"
+                    else:
+                        for i in range(0,length):
+                            pos[1] += 1
+                            if pos == [13,7]:
+                                command += "s"
+                                continue
+                            command += "sjjk"
+                        for i in range(0,length):
+                            pos[0] -= 1
+                            if pos == [7,13]:
+                                command += "a"
+                                continue
+                            command += "ajjk"
+                    length += 1
+                for i in range(0,length-1):
+                    pos[1] -= 1
+                    if pos == [1,7]:
+                        command += "w"
+                        continue
+                    command += "wjjk"
+                command += "6s6dk"
+                command = 2*command+"j"
+                done = True
+        elif self.charges:
+            import random
+            command = ""
+            anchor = random.choice(self.terretory)
+            if (anchor[0]-self.xPosition//15):
+                command += (13*(anchor[0]-self.xPosition//15))*"d"
+            if (self.xPosition//15-anchor[0]):
+                command += (13*(self.xPosition//15-anchor[0]))*"a"
+            if (anchor[1]-self.yPosition//15):
+                command += (13*(anchor[1]-self.yPosition//15))*"s"
+            if (self.yPosition//15-anchor[1]):
+                command += (13*(self.yPosition//15-anchor[1]))*"w"
+            targetPos = self.terretory[0]
+            while targetPos in self.terretory:
+                targetPos = [random.randint(1,13),random.randint(1,13)]
+            neighbourPos = targetPos[:]
+            while not (neighbourPos[0],neighbourPos[1]) in self.terretory:
+                index = random.randint(0,1)
+                targetPos = neighbourPos[:]
+                if neighbourPos[index]-anchor[index] > 0:
+                    neighbourPos[index] -= 1
+                elif neighbourPos[index]-anchor[index] < 0:
+                    neighbourPos[index] += 1
+            character.messages.append("neighbourPos: %s"%(neighbourPos))
+            if (neighbourPos[0]-anchor[0]):
+                command += (13*(neighbourPos[0]-anchor[0]//15))*"d"
+            if (anchor[0]-neighbourPos[0]):
+                command += (13*(anchor[0]-neighbourPos[0]))*"a"
+            if (neighbourPos[1]-anchor[1]):
+                command += (13*(neighbourPos[1]-anchor[1]))*"s"
+            if (anchor[1]-neighbourPos[1]):
+                command += (13*(self.yPosition//15-anchor[1]))*"w"
+            character.messages.append("targetPos: %s"%(targetPos))
+            new = CommandBloom(creator=self)
+            self.charges -= 1
+            character.inventory.append(new)
+            character.registers["PATHx"] = []
+            character.registers["PATHy"] = []
+            if targetPos[0] > neighbourPos[0]:
+                command += "13dkkjjlj"
+                new.masterCommand = 13*"a"+"kj"
+            if targetPos[0] < neighbourPos[0]:
+                command += "13akkjjlj"
+                new.masterCommand = 13*"d"+"kj"
+            if targetPos[1] > neighbourPos[1]:
+                command += "13skkjjlj"
+                new.masterCommand = 13*"w"+"kj"
+            if targetPos[1] < neighbourPos[1]:
+                command += "13wkkjjlj"
+                new.masterCommand = 13*"s"+"kj"
+        else:
+            command = "W"
+            
+        convertedCommand = []
+        for item in command:
+            convertedCommand.append((item,["norecord"]))
+
+        character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
+
+    def configure(self,character):
+        self.charges += 1
+
+    def getLongInfo(self):
+        return """
+item: 
+
+description:
+
+charges: %s
+terretory: %s
+lastMoldClear: %s
+"""%(self.charges,self.terretory,self.lastMoldClear)
+
+
 class CommandBloom(Item):
     type = "CommandBloom"
 
@@ -12007,22 +12116,33 @@ class CommandBloom(Item):
                 if item.type == "Bloom":
                     removeItems.append(item)
                     self.charges += 1
-                elif item.type == "SickBloom":
+                elif self.numSick < 5 and item.type == "SickBloom":
                     removeItems.append(item)
                     self.numSick += 1
-                elif item.type == "Coal":
+                elif self.numCoal < 5 and item.type == "Coal":
                     removeItems.append(item)
                     self.numCoal += 1
-                elif item.type == "Corpse":
+                elif self.numCorpses < 1 and item.type == "Corpse":
                     removeItems.append(item)
                     self.numCorpses += 1
                 elif item.type == "CommandBloom":
                     if self.masterCommand:
                         command = self.masterCommand
+                        if "PATHx" in character.registers:
+                            character.registers["PATHx"].append(self.xPosition//15)
+                            character.registers["PATHy"].append(self.yPosition//15)
                     else:
                         removeItems.append(item)
                         self.numCommandBlooms += 1
                         command = "j"
+
+                    if self.numCommandBlooms > 9:
+                        new = HiveMind(creator=self)
+                        new.xPosition = self.xPosition
+                        new.yPosition = self.yPosition
+                        new.terretory.append((new.xPosition//15,new.yPosition//15))
+                        self.container.removeItem(self)
+                        self.container.addItems([new])
             for item in removeItems:
                 character.inventory.remove(item)
 
@@ -12230,6 +12350,8 @@ class CommandBloom(Item):
                 walker.inventory.append(new)
                 walker.registers["SOURCEx"] = [self.xPosition//15]
                 walker.registers["SOURCEy"] = [self.yPosition//15]
+                walker.registers["PATHx"] = [self.xPosition//15]
+                walker.registers["PATHy"] = [self.yPosition//15]
 
                 if not "NaiveDropQuest" in walker.solvers:
                     walker.solvers.append("NaiveDropQuest")
@@ -12433,6 +12555,7 @@ itemMap = {
             "SwarmIntegrator":SwarmIntegrator,
             "HiveMind":HiveMind,
             "AutoFarmer":AutoFarmer,
+            "HiveMind":HiveMind,
 }
 
 producables = {

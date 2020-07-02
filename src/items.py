@@ -12019,10 +12019,11 @@ class CommandBloom(Item):
                     removeItems.append(item)
                     if self.masterCommand:
                         command = self.masterCommand
+                        """
                         if len(character.inventory) < 10 and (
         self.numCoal = 0
         self.numSick = 0
-        self.numCorpses = 0
+        self.numCorpses = 0"""
                     else:
                         self.charges += 10
                         command = ""

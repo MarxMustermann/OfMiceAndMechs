@@ -12077,10 +12077,10 @@ class CommandBloom(Item):
                     items = self.container.getItemByPosition(pos)
                     if not items:
                         continue
-                    if items[-1].type in ("Mold","Sprout2","CommandBloom"):
+                    if items[0].type in ("Mold","Sprout2","CommandBloom"):
                         continue
-                    elif items[-1].type in ("Sprout","SickBloom","Bloom","FireCrystals","Coal"):
-                        if items[-1].type == "Sprout" and (pos[0]%15,pos[1]%15) in ((1,7),(7,1),(7,13),(13,7)):
+                    elif items[0].type in ("Sprout","SickBloom","Bloom","FireCrystals","Coal"):
+                        if items[0].type == "Sprout" and (pos[0]%15,pos[1]%15) in ((1,7),(7,1),(7,13),(13,7)):
                             continue
                         if lastCharacterPosition[0] > pos[0]:
                             command += str(lastCharacterPosition[0]-pos[0])+"a"
@@ -12095,11 +12095,11 @@ class CommandBloom(Item):
 
                         lastCharacterPosition = pos
 
-                        if items[-1].type in ("Coal"):
-                            if ((self.container.getItemByPosition((pos[0]-1,pos[1])) and self.container.getItemByPosition((pos[0]-1,pos[1]))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or 
-                                (self.container.getItemByPosition((pos[0]+1,pos[1])) and self.container.getItemByPosition((pos[0]+1,pos[1]))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
-                                (self.container.getItemByPosition((pos[0],pos[1]-1)) and self.container.getItemByPosition((pos[0],pos[1]-1))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
-                                (self.container.getItemByPosition((pos[0],pos[1]+1)) and self.container.getItemByPosition((pos[0],pos[1]+1))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"))):
+                        if items[0].type in ("Coal"):
+                            if ((self.container.getItemByPosition((pos[0]-1,pos[1])) and self.container.getItemByPosition((pos[0]-1,pos[1]))[0].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or 
+                                (self.container.getItemByPosition((pos[0]+1,pos[1])) and self.container.getItemByPosition((pos[0]+1,pos[1]))[0].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
+                                (self.container.getItemByPosition((pos[0],pos[1]-1)) and self.container.getItemByPosition((pos[0],pos[1]-1))[0].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
+                                (self.container.getItemByPosition((pos[0],pos[1]+1)) and self.container.getItemByPosition((pos[0],pos[1]+1))[0].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"))):
                                 if not self.numSick:
                                     if hasattr(character,"phase") and character.phase == 1:
                                         command += "20j2000."
@@ -12121,13 +12121,11 @@ class CommandBloom(Item):
                                     newCommand += "20j2000."
                                     self.runCommandOnNewCrawler(newCommand)
                                     break
-                            else:
-                                command += "k"
-                        if items[-1].type in ("Bloom","SickBloom"):
+                        if items[0].type in ("Bloom","SickBloom","Coal"):
                             command += "k"
                         else:
                             command += "j"
-                    elif items[-1].type in ("Bush"):
+                    elif items[0].type in ("Bush"):
                         foundSomething = True
                         if lastCharacterPosition[0] > pos[0]:
                             command += str(lastCharacterPosition[0]-pos[0])+"a"
@@ -12148,12 +12146,12 @@ class CommandBloom(Item):
                         lastCharacterPosition = pos
                         break
 
-                    elif items[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"):
+                    elif items[0].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"):
                         if not self.numCoal or not self.numSick:
                             break
 
                         lowestIndex = None
-                        for pos in ((items[-1].xPosition-1,items[-1].yPosition),(items[-1].xPosition+1,items[-1].yPosition),(items[-1].xPosition,items[-1].yPosition+1),(items[-1].xPosition,items[-1].yPosition+1)):
+                        for pos in ((items[0].xPosition-1,items[0].yPosition),(items[0].xPosition+1,items[0].yPosition),(items[0].xPosition,items[0].yPosition+1),(items[0].xPosition,items[0].yPosition+1)):
                             if not pos in path:
                                 continue
                             if lowestIndex == None or path.index(pos) < lowestIndex:

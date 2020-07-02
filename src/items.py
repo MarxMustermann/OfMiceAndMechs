@@ -12010,7 +12010,7 @@ class HiveMind(Item):
             if (self.yPosition//15-target[1]):
                 command += (13*(self.yPosition//15-target[1]))*"w"
             command += "kkj"
-        elif len(self.terretory) < 10 or random.randint(0,1) == 1:
+        elif self.terretory and (len(self.terretory) < 10 or random.randint(0,1) == 1):
             command = ""
             anchor = random.choice(self.terretory)
             if (anchor[0]-self.xPosition//15):

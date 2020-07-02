@@ -12019,6 +12019,10 @@ class CommandBloom(Item):
                     removeItems.append(item)
                     if self.masterCommand:
                         command = self.masterCommand
+                        if len(character.inventory) < 10 and (
+        self.numCoal = 0
+        self.numSick = 0
+        self.numCorpses = 0
                     else:
                         self.charges += 10
                         command = ""
@@ -12053,28 +12057,20 @@ class CommandBloom(Item):
 
                 if character.satiation < 300 and self.charges:
                     if gamestate.tick-self.lastFeeding < 60:
-                        import random
-                        direction = random.choice(["w","a","s","d"])
-                        command += 10*(13*direction+"j")
+                        if self.charges < 15:
+                            import random
+                            direction = random.choice(["w","a","s","d"])
+                            command += 10*(13*direction+"j")
+                        else:
+                            command = ""
+                            import random
+                            direction = random.choice(["w","a","s","d"])
+                            command += 10*(13*direction+"opx$=aa$=ww$=ss$=ddwjajsjsjdjdjwjwjas")
                     else:
                         while character.satiation < 300 and self.charges:
                             character.satiation += 100
                         self.charges -= 1
                         self.lastFeeding = gamestate.tick
-
-                if self.charges == 10:
-                    command = ""
-                    import random
-                    direction = random.choice(["w","a","s","d"])
-                    command += 10*(13*direction+"opx$=aa$=ww$=ss$=ddwjajsjsjdjdjwjwjas")
-                    self.charges += 1
-
-                    convertedCommand = []
-                    for item in command:
-                        convertedCommand.append((item,["norecord"]))
-
-                    character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
-                    return
 
                 foundSomething = False
                 lastCharacterPosition = path[0]
@@ -12222,7 +12218,8 @@ charges: %s
 numCoal: %s
 numSick: %s
 numCorpses: %s
-"""%(self.charges,self.numCoal,self.numSick,self.numCorpses)
+masterCommand: %s
+"""%(self.charges,self.numCoal,self.numSick,self.numCorpses,self.masterCommand)
 
 # maping from strings to all items
 # should be extendable

@@ -11973,11 +11973,17 @@ class CommandBloom(Item):
         self.numCoal = 0
         self.numSick = 0
         self.numCorpses = 0
-        self.numCommandBloom = 0
         self.lastFeeding = 0
+        self.masterCommand = None
+        
+        import random
+        self.faction = ""
+        for i in range(0,5):
+            char = random.choice("abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            self.faction += char
 
         self.attributesToStore.extend([
-               "charges","numCoal","numSick","numCorpses","lastFeeding"])
+               "charges","numCoal","numSick","numCorpses","lastFeeding","faction"])
         self.initialState = self.getState()
 
     def apply(self,character):
@@ -11993,6 +11999,8 @@ class CommandBloom(Item):
         elif self.xPosition%15 == 7 and self.yPosition%15 == 1:
             command = "6sj"
         elif self.xPosition%15 == 7 and self.yPosition%15 == 7:
+            command = None
+
             removeItems = []
             for item in character.inventory:
                 if item.type == "Bloom":
@@ -12009,11 +12017,15 @@ class CommandBloom(Item):
                     self.numCorpses += 1
                 elif item.type == "CommandBloom":
                     removeItems.append(item)
-                    self.numCommandBloom += 1
+                    if self.masterCommand:
+                        command = self.masterCommand
+                    else:
+                        self.charges += 10
+                        command = ""
             for item in removeItems:
                 character.inventory.remove(item)
 
-            if self.charges < 25:
+            if self.charges < 25 and not command:
                 command = ""
                 length = 1
                 pos = [self.xPosition,self.yPosition]
@@ -12158,19 +12170,37 @@ class CommandBloom(Item):
                         command += "j"
                     if not foundSomething:
                         command += str(min(character.satiation-30,100))+".j"
-            else:
+            elif not command:
                 command = ""
-                character.inventory.append(CommandBloom(creator=self))
+                new = CommandBloom(creator=self)
+                character.inventory.append(new)
                 if not "NaiveDropQuest" in character.solvers:
                     character.solvers.append("NaiveDropQuest")
 
+                character.registers["SOURCEx"] = [self.xPosition//15]
+                character.registers["SOURCEy"] = [self.yPosition//15]
+
                 import random
-                direction = random.choice(["a","w","s","d"]) 
+                direction = random.choice(["w","a","s","d"]) 
+                reversedDirection = {"w":"s","s":"w","a":"d","d":"a"}
                 command += 13*direction+"jjlj"
+                new.masterCommand = 13*reversedDirection[direction]+"j"
+                new.faction = self.faction
+
                 self.charges -= 10
         else:
-            command = ""
-            return
+            new = FireCrystals(creator=self)
+            new.xPosition = self.xPosition
+            new.yPosition = self.yPosition
+            self.container.addItems([new])
+            self.container.removeItem(self)
+            import random
+            direction = random.choice(["w","a","s","d"])
+            reverseDirection = {"a":"d","w":"s","d":"a","s":"w"}
+            command = "j"+3*direction+"40."+3*reverseDirection[direction]+"KaKwKsKd"
+            for i in range(1,10):
+                direction = random.choice(["w","a","s","d"])
+                command += direction+"k"
 
         convertedCommand = []
         for item in command:

@@ -12072,6 +12072,7 @@ class CommandBloom(Item):
                 foundSomething = False
                 lastCharacterPosition = path[0]
                 explode = False
+                lastpos = None
                 for pos in path[1:]:
                     items = self.container.getItemByPosition(pos)
                     if not items:
@@ -12100,43 +12101,26 @@ class CommandBloom(Item):
                                 (self.container.getItemByPosition((pos[0],pos[1]-1)) and self.container.getItemByPosition((pos[0],pos[1]-1))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
                                 (self.container.getItemByPosition((pos[0],pos[1]+1)) and self.container.getItemByPosition((pos[0],pos[1]+1))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"))):
                                 if not self.numSick:
-                                    if character.phase == 1:
+                                    if hasattr(character,"phase") and character.phase == 1:
                                         command += "20j2000."
                                         explode = True
                                         break
                                     else:
                                         continue
                                 else:
-                                    newCharacter = characters.Monster(creator=self)
-
-                                    newCharacter.solvers = [
-                                              "NaiveActivateQuest",
-                                              "ActivateQuestMeta",
-                                              "NaivePickupQuest",
-                                              "NaiveMurderQuest",
-                                            ]
-
-                                    newCharacter.faction = self.faction
-                                    newCharacter.satiation = 100
-                                    direction = (items[-1].xPosition-self.xPosition,items[-1].yPosition-self.xPosition)
                                     newCommand = ""
+                                    direction = (items[-1].xPosition-self.xPosition,items[-1].yPosition-self.yPosition)
                                     if (direction[0] > 0):
                                         newCommand += str(direction[0])+"d"
                                     if (direction[0] < 0):
                                         newCommand += str(-direction[0])+"a"
                                     if (direction[1] > 0):
-                                        newCommand += str(direction[0])+"s"
+                                        newCommand += str(direction[1])+"s"
                                     if (direction[1] < 0):
-                                        newCommand += str(direction[0])+"w"
+                                        newCommand += str(-direction[1])+"w"
                                     newCommand += "20j2000."
-                                    convertedCommand = []
-                                    for item in newCommand:
-                                        convertedCommand.append((item,["norecord"]))
-                                    newCharacter.macroState["commandKeyQueue"] = convertedCommand
-                                    newCharacter.xPosition = self.xPosition
-                                    newCharacter.yPosition = self.yPosition
-                                    self.container.addCharacter(newCharacter,self.xPosition,self.yPosition)
-
+                                    self.runCommandOnNewCrawler(newCommand)
+                                    break
                             else:
                                 command += "k"
                         if items[-1].type in ("Bloom","SickBloom"):
@@ -12162,8 +12146,36 @@ class CommandBloom(Item):
                             command += "J"+lastDirection
                         command += lastDirection
                         lastCharacterPosition = pos
+                        break
 
                     elif items[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"):
+                        if not self.numCoal or not self.numSick:
+                            break
+
+                        lowestIndex = None
+                        for pos in ((items[-1].xPosition-1,items[-1].yPosition),(items[-1].xPosition+1,items[-1].yPosition),(items[-1].xPosition,items[-1].yPosition+1),(items[-1].xPosition,items[-1].yPosition+1)):
+                            if not pos in path:
+                                continue
+                            if lowestIndex == None or path.index(pos) < lowestIndex:
+                                lowestIndex = path.index(pos)
+                        if lowestIndex == None:
+                            break
+                        targetPos = path[lowestIndex]
+
+                        newCommand = ""
+                        direction = (targetPos[0]-self.xPosition,targetPos[1]-self.yPosition)
+                        if (direction[0] > 0):
+                            newCommand += str(direction[0])+"d"
+                        if (direction[0] < 0):
+                            newCommand += str(-direction[0])+"a"
+                        if (direction[1] > 0):
+                            newCommand += str(direction[1])+"s"
+                        if (direction[1] < 0):
+                            newCommand += str(-direction[1])+"w"
+                        newCommand += "l20j2000."
+                        newChar = self.runCommandOnNewCrawler(newCommand)
+                        newChar.inventory.append(Coal(creator=self))
+                        self.numCoal -= 1
                         break
                     else:
                         foundSomething = True
@@ -12177,8 +12189,6 @@ class CommandBloom(Item):
                             command += str(pos[1]-lastCharacterPosition[1])+"s"
                         command += "k"
 
-                        lastCharacterPosition = pos
-
                 if not explode:
                     pos = (self.xPosition,self.yPosition)
                     if lastCharacterPosition[0] > pos[0]:
@@ -12190,7 +12200,7 @@ class CommandBloom(Item):
                     if lastCharacterPosition[1] < pos[1]:
                         command += str(pos[1]-lastCharacterPosition[1])+"s"
 
-                    command += "opx$=aa$=ww$=ss$=dd"
+                    command += "opx$=aa$=ww$=ss$=ddk"
                     if foundSomething:
                         command += "j"
                     if not foundSomething:
@@ -12200,10 +12210,19 @@ class CommandBloom(Item):
                 new = CommandBloom(creator=self)
 
                 import random
-                direction = random.choice(["w","a","s","d"]) 
+                directions = []
+                if not self.xPosition//15 == 0:
+                    directions.append("a")
+                if not self.xPosition//15 == 14:
+                    directions.append("d")
+                if not self.yPosition//15 == 0:
+                    directions.append("w")
+                if not self.yPosition//15 == 14:
+                    directions.append("s")
+                direction = random.choice(directions)
                 reversedDirection = {"w":"s","s":"w","a":"d","d":"a"}
-                command += 13*direction+"jjlj"
-                new.masterCommand = 13*reversedDirection[direction]+"j"
+                command += 13*direction+"kkkkkkkjjlj"
+                new.masterCommand = 13*reversedDirection[direction]+"kj"
                 new.faction = self.faction
 
                 if self.numSick:
@@ -12216,6 +12235,10 @@ class CommandBloom(Item):
 
                 if not "NaiveDropQuest" in walker.solvers:
                     walker.solvers.append("NaiveDropQuest")
+
+                while walker.satiation < 900 and self.charges:
+                    walker.satiation += 100
+                    self.charges -= 1
 
                 self.charges -= 10
         else:
@@ -12246,6 +12269,7 @@ class CommandBloom(Item):
                   "ActivateQuestMeta",
                   "NaivePickupQuest",
                   "NaiveMurderQuest",
+                  "NaiveDropQuest",
                 ]
 
         newCharacter.faction = self.faction

@@ -11958,6 +11958,7 @@ class HiveMind(Item):
                 character.inventory.remove(item)
 
         done = False
+        import random
         if gamestate.tick-self.lastMoldClear > 10000:
                 self.lastMoldClear = gamestate.tick
                 command = ""
@@ -11997,8 +11998,19 @@ class HiveMind(Item):
                 command += "6s6dk"
                 command = 2*command+"j"
                 done = True
-        elif self.charges:
-            import random
+        elif not self.charges:
+            command = ""
+            target = random.choice(self.terretory)
+            if (target[0]-self.xPosition//15):
+                command += (13*(target[0]-self.xPosition//15))*"d"
+            if (self.xPosition//15-target[0]):
+                command += (13*(self.xPosition//15-target[0]))*"a"
+            if (target[1]-self.yPosition//15):
+                command += (13*(target[1]-self.yPosition//15))*"s"
+            if (self.yPosition//15-target[1]):
+                command += (13*(self.yPosition//15-target[1]))*"w"
+            command = "j"
+        elif len(self.terretory) > 10 and random.randint(0,1) == 1:
             command = ""
             anchor = random.choice(self.terretory)
             if (anchor[0]-self.xPosition//15):
@@ -12011,7 +12023,7 @@ class HiveMind(Item):
                 command += (13*(self.yPosition//15-anchor[1]))*"w"
             targetPos = self.terretory[0]
             while targetPos in self.terretory:
-                targetPos = [random.randint(1,13),random.randint(1,13)]
+                targetPos = [random.randint(1,12),random.randint(1,12)]
             neighbourPos = targetPos[:]
             while not (neighbourPos[0],neighbourPos[1]) in self.terretory:
                 index = random.randint(0,1)
@@ -12048,7 +12060,17 @@ class HiveMind(Item):
                 command += 13*"wk"+"kjjlj"
                 new.masterCommand = 13*"s"+"kj"
         else:
-            command = "W"
+            command = ""
+            target = random.choice(self.terretory)
+            if (target[0]-self.xPosition//15):
+                command += (13*(target[0]-self.xPosition//15))*"d"
+            if (self.xPosition//15-target[0]):
+                command += (13*(self.xPosition//15-target[0]))*"a"
+            if (target[1]-self.yPosition//15):
+                command += (13*(target[1]-self.yPosition//15))*"s"
+            if (self.yPosition//15-target[1]):
+                command += (13*(self.yPosition//15-target[1]))*"w"
+            command = "j"
             
         convertedCommand = []
         for item in command:

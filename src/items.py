@@ -11958,7 +11958,7 @@ class HiveMind(Item):
                 character.inventory.remove(item)
 
         done = False
-        if gamestate.tick-self.lastMoldClear > 1000:
+        if gamestate.tick-self.lastMoldClear > 10000:
                 self.lastMoldClear = gamestate.tick
                 command = ""
                 length = 1

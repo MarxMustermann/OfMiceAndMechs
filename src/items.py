@@ -12019,16 +12019,10 @@ class CommandBloom(Item):
                 elif item.type == "CommandBloom":
                     if self.masterCommand:
                         command = self.masterCommand
-                        if len(character.inventory) < 10 and (self.numCoal > 5 or self.numSick > 5 or self.numCorpses > 5):
-                            for i in range(len(character.inventory),10): 
-                                """
-            self.numCoal = 0
-            self.numSick = 0
-            self.numCorpses = 0"""
                     else:
                         removeItems.append(item)
                         self.numCommandBlooms += 1
-                        command = ""
+                        command = "j"
             for item in removeItems:
                 character.inventory.remove(item)
 
@@ -12105,12 +12099,42 @@ class CommandBloom(Item):
                                 (self.container.getItemByPosition((pos[0]+1,pos[1])) and self.container.getItemByPosition((pos[0]+1,pos[1]))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
                                 (self.container.getItemByPosition((pos[0],pos[1]-1)) and self.container.getItemByPosition((pos[0],pos[1]-1))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
                                 (self.container.getItemByPosition((pos[0],pos[1]+1)) and self.container.getItemByPosition((pos[0],pos[1]+1))[-1].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"))):
-                                if character.phase == 1:
-                                    command += "20j2000."
-                                    explode = True
-                                    break
+                                if not self.numSick:
+                                    if character.phase == 1:
+                                        command += "20j2000."
+                                        explode = True
+                                        break
+                                    else:
+                                        continue
                                 else:
-                                    continue
+                                    newCharacter = characters.Monster(creator=self)
+
+                                    newCharacter.solvers = [
+                                              "NaiveActivateQuest",
+                                              "ActivateQuestMeta",
+                                              "NaivePickupQuest",
+                                              "NaiveMurderQuest",
+                                            ]
+
+                                    newCharacter.faction = self.faction
+                                    newCharacter.satiation = 100
+                                    direction = (items[-1].xPosition-self.xPosition,items[-1].yPosition-self.xPosition)
+                                    newCommand = ""
+                                    if (direction[0] > 0):
+                                        newCommand += str(direction[0])+"d"
+                                    if (direction[0] < 0):
+                                        newCommand += str(-direction[0])+"a"
+                                    if (direction[1] > 0):
+                                        newCommand += str(direction[0])+"s"
+                                    if (direction[1] < 0):
+                                        newCommand += str(direction[0])+"w"
+                                    newCommand += "20j2000."
+                                    convertedCommand = []
+                                    for item in newCommand:
+                                        convertedCommand.append((item,["norecord"]))
+                                    newCharacter.macroState["commandKeyQueue"] = convertedCommand
+                                    self.container.addCharacter(newCharacter,self.xPosition,self.yPosition)
+
                             else:
                                 command += "k"
                         if items[-1].type in ("Bloom","SickBloom"):
@@ -12206,6 +12230,9 @@ class CommandBloom(Item):
             convertedCommand.append((item,["norecord"]))
 
         character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
+
+    def runCommandOnNewCrawler(self):
+        pass
 
     def configure(self,character):
         self.charges += 1

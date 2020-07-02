@@ -12070,7 +12070,7 @@ class HiveMind(Item):
                 command += (13*(target[1]-self.yPosition//15))*"s"
             if (self.yPosition//15-target[1]):
                 command += (13*(self.yPosition//15-target[1]))*"w"
-            command = "kkj"
+            command += "kkj"
             
         convertedCommand = []
         for item in command:

@@ -11952,10 +11952,12 @@ class HiveMind(Item):
             if not pos in self.terretory:
                 self.terretory.append(pos)
 
+        broughtBloom = False
         for item in character.inventory[:]:
             if item.type == "CommandBloom":
                 self.charges += 1
                 character.inventory.remove(item)
+                broughtBloom = True
 
         done = False
         import random
@@ -12059,7 +12061,7 @@ class HiveMind(Item):
             if targetPos[1] < neighbourPos[1]:
                 command += 13*"wk"+"kjjlj"
                 new.masterCommand = 13*"s"+"kj"
-        elif random.randint(0,1) == 1 and self.terretory:
+        elif (not broughtBloom or random.randint(0,1) == 1) and self.terretory:
             command = ""
             target = random.choice(self.terretory)
             if (target[0]-self.xPosition//15):

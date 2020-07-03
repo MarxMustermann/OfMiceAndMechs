@@ -12061,7 +12061,7 @@ class HiveMind(Item):
             if targetPos[1] < neighbourPos[1]:
                 command += 13*"wk"+"kjjlj"
                 new.masterCommand = 13*"s"+"kj"
-        elif (not broughtBloom or random.randint(0,1) == 1) and self.terretory:
+        elif ((not broughtBloom and self.charges < 20) or random.randint(0,1) == 1) and self.terretory:
             command = ""
             target = random.choice(self.terretory)
             if (target[0]-self.xPosition//15):

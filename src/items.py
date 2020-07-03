@@ -12004,13 +12004,13 @@ class HiveMind(Item):
             command = ""
             target = random.choice(self.terretory)
             if (target[0]-self.xPosition//15):
-                command += (13*(target[0]-self.xPosition//15))*"d"
+                command += (13*(target[0]-self.xPosition//15))*"dk"
             if (self.xPosition//15-target[0]):
-                command += (13*(self.xPosition//15-target[0]))*"a"
+                command += (13*(self.xPosition//15-target[0]))*"ak"
             if (target[1]-self.yPosition//15):
-                command += (13*(target[1]-self.yPosition//15))*"s"
+                command += (13*(target[1]-self.yPosition//15))*"sk"
             if (self.yPosition//15-target[1]):
-                command += (13*(self.yPosition//15-target[1]))*"w"
+                command += (13*(self.yPosition//15-target[1]))*"wk"
             command += "kkj"
         elif self.terretory and (len(self.terretory) < 10 or random.randint(0,1) == 1):
             command = ""
@@ -12065,13 +12065,13 @@ class HiveMind(Item):
             command = ""
             target = random.choice(self.terretory)
             if (target[0]-self.xPosition//15):
-                command += (13*(target[0]-self.xPosition//15))*"d"
+                command += (13*(target[0]-self.xPosition//15))*"dk"
             if (self.xPosition//15-target[0]):
-                command += (13*(self.xPosition//15-target[0]))*"a"
+                command += (13*(self.xPosition//15-target[0]))*"ak"
             if (target[1]-self.yPosition//15):
-                command += (13*(target[1]-self.yPosition//15))*"s"
+                command += (13*(target[1]-self.yPosition//15))*"sk"
             if (self.yPosition//15-target[1]):
-                command += (13*(self.yPosition//15-target[1]))*"w"
+                command += (13*(self.yPosition//15-target[1]))*"wk"
             command += "kkj"
         elif self.terretory:
             command = ""

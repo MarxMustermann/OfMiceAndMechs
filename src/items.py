@@ -11998,7 +11998,7 @@ class HiveMind(Item):
                 command += "6s6dk"
                 command = 2*command+"j"
                 done = True
-        elif not self.charges:
+        elif not self.charges and self.terretory:
             command = ""
             target = random.choice(self.terretory)
             if (target[0]-self.xPosition//15):

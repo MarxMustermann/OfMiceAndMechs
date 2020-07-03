@@ -12059,7 +12059,7 @@ class HiveMind(Item):
             if targetPos[1] < neighbourPos[1]:
                 command += 13*"wk"+"kjjlj"
                 new.masterCommand = 13*"s"+"kj"
-        elif random.randint(0,1) == 1:
+        elif random.randint(0,1) == 1 and self.terretory:
             command = ""
             target = random.choice(self.terretory)
             if (target[0]-self.xPosition//15):
@@ -12071,7 +12071,7 @@ class HiveMind(Item):
             if (self.yPosition//15-target[1]):
                 command += (13*(self.yPosition//15-target[1]))*"w"
             command += "kkj"
-        else:
+        elif self.terretory:
             command = ""
             target = random.choice(self.terretory)
             new = CommandBloom(creator=self)
@@ -12086,6 +12086,8 @@ class HiveMind(Item):
             if (self.yPosition//15-target[1]):
                 command += (13*(self.yPosition//15-target[1]))*"w"
             command += "kkj"
+        else:
+            command += "100.j"
             
         convertedCommand = []
         for item in command:

@@ -12131,7 +12131,7 @@ class CommandBloom(Item):
             self.faction += char
 
         self.attributesToStore.extend([
-               "charges","numCoal","numSick","numCorpses","lastFeeding","faction","numCommandBlooms","masterCommand"])
+               "charges","numCoal","numSick","numCorpses","lastFeeding","faction","numCommandBlooms","masterCommand","expectedNext"])
         self.initialState = self.getState()
 
     def apply(self,character):
@@ -12184,7 +12184,7 @@ class CommandBloom(Item):
             for item in removeItems:
                 character.inventory.remove(item)
 
-            if expectedNext and expectedNext > gamestate.tick:
+            if self.expectedNext and self.expectedNext > gamestate.tick:
                 command = self.masterCommand
 
             if self.charges < 25 and not command:
@@ -12416,7 +12416,7 @@ class CommandBloom(Item):
                 direction = random.choice(["w","a","s","d"])
                 command += direction+"k"
 
-        expectedNext = gamestate.tick+len(command)//2
+        self.expectedNext = gamestate.tick+len(command)//2
 
         convertedCommand = []
         for item in command:

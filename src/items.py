@@ -12461,7 +12461,7 @@ class CommandBloom(Item):
 item: Command Bloom
 
 description:
-You can use it to create paths
+runs commands on any creature activating this item.
 
 charges: %s
 numCoal: %s

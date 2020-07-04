@@ -11934,7 +11934,7 @@ class HiveMind(Item):
         self.walkable = True
         self.bolted = True
         self.lastMoldClear = 0
-        self.terretory = []
+        self.territory = []
         self.charges = 0
 
         self.attributesToStore.extend([
@@ -11949,8 +11949,8 @@ class HiveMind(Item):
                 break
 
             pos = (character.registers["PATHx"].pop(),character.registers["PATHy"].pop())
-            if not pos in self.terretory:
-                self.terretory.append(pos)
+            if not pos in self.territory:
+                self.territory.append(pos)
 
         broughtBloom = False
         for item in character.inventory[:]:
@@ -12000,9 +12000,9 @@ class HiveMind(Item):
                 command += "6s6dk"
                 command = 2*command+"j"
                 done = True
-        elif not self.charges and self.terretory:
+        elif not self.charges and self.territory:
             command = ""
-            target = random.choice(self.terretory)
+            target = random.choice(self.territory)
             if (target[0]-self.xPosition//15):
                 command += (13*(target[0]-self.xPosition//15))*"dk"
             if (self.xPosition//15-target[0]):
@@ -12012,9 +12012,9 @@ class HiveMind(Item):
             if (self.yPosition//15-target[1]):
                 command += (13*(self.yPosition//15-target[1]))*"wk"
             command += "kkj"
-        elif self.terretory and (len(self.terretory) < 10 or (broughtBloom and random.randint(0,1) == 1)):
+        elif self.territory and (len(self.territory) < 10 or (broughtBloom and random.randint(0,1) == 1)):
             command = ""
-            anchor = random.choice(self.terretory)
+            anchor = random.choice(self.territory)
             if (anchor[0]-self.xPosition//15):
                 command += (13*(anchor[0]-self.xPosition//15))*"d"
             if (self.xPosition//15-anchor[0]):
@@ -12023,11 +12023,11 @@ class HiveMind(Item):
                 command += (13*(anchor[1]-self.yPosition//15))*"s"
             if (self.yPosition//15-anchor[1]):
                 command += (13*(self.yPosition//15-anchor[1]))*"w"
-            targetPos = self.terretory[0]
-            while targetPos in self.terretory:
+            targetPos = self.territory[0]
+            while targetPos in self.territory:
                 targetPos = [random.randint(1,12),random.randint(1,12)]
             neighbourPos = targetPos[:]
-            while not (neighbourPos[0],neighbourPos[1]) in self.terretory:
+            while not (neighbourPos[0],neighbourPos[1]) in self.territory:
                 index = random.randint(0,1)
                 targetPos = neighbourPos[:]
                 if neighbourPos[index]-anchor[index] > 0:
@@ -12061,9 +12061,9 @@ class HiveMind(Item):
             if targetPos[1] < neighbourPos[1]:
                 command += 13*"wk"+"kjjlj"
                 new.masterCommand = 13*"s"+"kj"
-        elif ((not broughtBloom and self.charges < 20) or random.randint(0,1) == 1) and self.terretory:
+        elif ((not broughtBloom and self.charges < 20) or random.randint(0,1) == 1) and self.territory:
             command = ""
-            target = random.choice(self.terretory)
+            target = random.choice(self.territory)
             if (target[0]-self.xPosition//15):
                 command += (13*(target[0]-self.xPosition//15))*"dk"
             if (self.xPosition//15-target[0]):
@@ -12073,9 +12073,9 @@ class HiveMind(Item):
             if (self.yPosition//15-target[1]):
                 command += (13*(self.yPosition//15-target[1]))*"wk"
             command += "kkj"
-        elif self.terretory:
+        elif self.territory:
             command = ""
-            target = random.choice(self.terretory)
+            target = random.choice(self.territory)
             new = CommandBloom(creator=self)
             character.inventory.append(new)
             self.charges -= 1
@@ -12107,9 +12107,9 @@ item:
 description:
 
 charges: %s
-terretory: %s
+territory: %s
 lastMoldClear: %s
-"""%(self.charges,self.terretory,self.lastMoldClear)
+"""%(self.charges,self.territory,self.lastMoldClear)
 
 
 class CommandBloom(Item):
@@ -12182,7 +12182,7 @@ class CommandBloom(Item):
                         new = HiveMind(creator=self)
                         new.xPosition = self.xPosition
                         new.yPosition = self.yPosition
-                        new.terretory.append((new.xPosition//15,new.yPosition//15))
+                        new.territory.append((new.xPosition//15,new.yPosition//15))
                         self.container.removeItem(self)
                         self.container.addItems([new])
             for item in removeItems:

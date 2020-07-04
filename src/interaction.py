@@ -2810,11 +2810,17 @@ class CharacterInfoMenu(SubMenu):
         char = self.char
 
         text = char.getDetailedInfo()+"\n\n"
+        
+        text += "numChars: %s\n"%(len(char.container.characters))
 
         char.setRegisterValue("SELFx",char.xPosition%15)
         text += "SELFx - %s"%(char.xPosition%15)+"\n"
         char.setRegisterValue("SELFy",char.yPosition%15)
         text += "SELFy - %s"%(char.yPosition%15)+"\n"
+        char.setRegisterValue("SELF BIG x",char.xPosition//15)
+        text += "SELF BIG x - %s"%(char.xPosition//15)+"\n"
+        char.setRegisterValue("SELF BIG y",char.yPosition//15)
+        text += "SELF BIG y - %s"%(char.yPosition//15)+"\n"
         char.setRegisterValue("SATIATIOn",char.satiation)
         text += "SATIATIOn - %s"%(char.satiation)+"\n"
         char.setRegisterValue("NUM INVENTORY ITEMs",len(char.inventory))

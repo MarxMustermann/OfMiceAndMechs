@@ -11930,18 +11930,23 @@ class HiveMind(Item):
     type = "HiveMind"
 
     def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+        self.territory = []
+        self.paths = {}
         super().__init__(displayChars.floor_node,xPosition,yPosition,creator=creator,name="command bloom")
         self.walkable = True
         self.bolted = True
         self.lastMoldClear = 0
-        self.territory = []
         self.charges = 0
+        
 
         self.attributesToStore.extend([
                "lastMoldClear","charges"])
         self.initialState = self.getState()
 
     def apply(self,character):
+        # get the path from the creature
+        path = []
+        pos = None
         while "PATHx" in character.registers:
             if not character.registers["PATHx"]:
                 del character.registers["PATHx"]
@@ -11949,8 +11954,11 @@ class HiveMind(Item):
                 break
 
             pos = (character.registers["PATHx"].pop(),character.registers["PATHy"].pop())
+            path.append(pos)
             if not pos in self.territory:
                 self.territory.append(pos)
+        if pos:
+            self.paths[pos] = path
 
         broughtBloom = False
         for item in character.inventory[:]:
@@ -12075,19 +12083,51 @@ class HiveMind(Item):
             command += "kkj"
         elif self.territory:
             command = ""
-            target = random.choice(self.territory)
+            target = (self.xPosition//15,self.yPosition//15)
+            while target == (self.xPosition//15,self.yPosition//15) or not target in self.paths:
+                target = random.choice(self.territory)
+
+            path = self.paths[target]
+
+            lastNode = (self.xPosition//15,self.yPosition//15)
+            secondToLastNode = None
+            for node in path:
+                if (node[0]-lastNode[0]):
+                    command += (13*(node[0]-lastNode[0]))*"d"
+                if (lastNode[0]-node[0]):
+                    command += (13*(lastNode[0]-node[0]))*"a"
+                if (node[1]-lastNode[1]):
+                    command += (13*(target[1]-lastNode[1]))*"s"
+                if (lastNode[1]-node[1]):
+                    command += (13*(lastNode[1]-node[1]))*"w"
+                secondToLastNode = lastNode
+                lastNode = node
+                if node == target:
+                    break
+
             new = CommandBloom(creator=self)
             character.inventory.append(new)
             self.charges -= 1
-            if (target[0]-self.xPosition//15):
-                command += (13*(target[0]-self.xPosition//15))*"d"
-            if (self.xPosition//15-target[0]):
-                command += (13*(self.xPosition//15-target[0]))*"a"
-            if (target[1]-self.yPosition//15):
-                command += (13*(target[1]-self.yPosition//15))*"s"
-            if (self.yPosition//15-target[1]):
-                command += (13*(self.yPosition//15-target[1]))*"w"
-            command += "kkj"
+            command += "kkjlj"
+
+            direction = ""
+            character.messages.append(target)
+            character.messages.append(secondToLastNode)
+            if target[1] == secondToLastNode[1]:
+                if target[0] == secondToLastNode[0]-1:
+                    direction = "d"
+                if target[0] == secondToLastNode[0]+1:
+                    direction = "a"
+            elif target[0] == secondToLastNode[0]:
+                if target[1] == secondToLastNode[1]-1:
+                    direction = "s"
+                if target[1] == secondToLastNode[1]+1:
+                    direction = "w"
+
+            character.messages.append(direction)
+
+            new.masterCommand = 13*direction+"kj"
+
         else:
             command = "100.j"
             
@@ -12109,7 +12149,44 @@ description:
 charges: %s
 territory: %s
 lastMoldClear: %s
-"""%(self.charges,self.territory,self.lastMoldClear)
+paths: %s
+"""%(self.charges,self.territory,self.lastMoldClear,self.paths)
+
+    def getState(self):
+        state = super().getState()
+        state["paths"] = []
+        for (key,value) in self.paths.items():
+            step = {}
+            step["key"] = key
+            step["value"] = value
+            state["paths"].append(step)
+        state["territory"] = self.territory
+        return state
+
+    def getDiffState(self):
+        state = super().getDiffState()
+        state["paths"] = []
+        for (key,value) in self.paths.items():
+            step = {}
+            step["key"] = key
+            step["value"] = value
+            state["paths"].append(step)
+        state["territory"] = self.territory
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        if "paths" in state:
+            self.paths = {}
+            for path in state["paths"]:
+                self.paths[tuple(path["key"])] = []
+                for value in path["value"]:
+                    self.paths[tuple(path["key"])].append(tuple(value))
+        if "territory" in state:
+            self.territory = []
+            for item in state["territory"]:
+                self.territory.append(tuple(item))
+
 
 
 class CommandBloom(Item):
@@ -12183,6 +12260,7 @@ class CommandBloom(Item):
                         new.xPosition = self.xPosition
                         new.yPosition = self.yPosition
                         new.territory.append((new.xPosition//15,new.yPosition//15))
+                        new.paths[(new.xPosition//15,new.yPosition//15)] = []
                         self.container.removeItem(self)
                         self.container.addItems([new])
             for item in removeItems:

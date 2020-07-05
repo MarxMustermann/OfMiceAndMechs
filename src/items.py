@@ -1629,12 +1629,13 @@ Coal is used as an energy source. It can be used to fire furnaces.
             newChar.satiation = character.satiation
             newChar.explode = False
             
-            character.solvers = [
+            newChar.solvers = [
                       "NaiveActivateQuest",
                       "ActivateQuestMeta",
                       "NaivePickupQuest",
                       "NaiveMurderQuest",
                       "DrinkQuest",
+                      "NaiveDropQuest",
                     ]
 
             self.container.addCharacter(newChar,self.xPosition,self.yPosition)
@@ -3515,7 +3516,7 @@ class AutoScribe(Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="copy machine",creator=None,noId=False):
+    def __init__(self,xPosition=None,yPosition=None, name="auto scribe",creator=None,noId=False):
         self.coolDown = 10
         self.coolDownTimer = -self.coolDown
         self.level = 1
@@ -3940,7 +3941,7 @@ class Note(Item):
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="Note",creator=None,noId=False):
-        super().__init__(displayChars.sheet,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.note,xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
@@ -7460,9 +7461,11 @@ class AutoTutor(Item):
                         self.submenue = interaction.TextMenu("\n\nactivate with empty inventory to complete challenge.\n\n")
                         self.character.macroState["submenue"] = self.submenue
                     else:
-                        self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\n")
+                        self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nreward: \n* new blueprint reciepe for memory cell\n\n")
                         self.character.macroState["submenue"] = self.submenue
                         self.challengeRun4Done = True
+
+                        self.knownBlueprints.append("MemoryCell")
 
                         self.challengeInfo = {"challengerGiven":[]}
 
@@ -7672,7 +7675,7 @@ class AutoTutor(Item):
             for i in range(0,25):
 
                 import random
-                selected = random.choice("Wall","Door","FloorPlate")
+                selected = random.choice(["Wall","Door","FloorPlate"])
 
                 if selected == "Wall":
                     self.challengeInfo["mainQueue"].insert(0,"Wall")
@@ -7868,8 +7871,9 @@ class AutoTutor(Item):
             if not self.checkInInventoryOrInRoom(src.items.Case):
                 self.submenue = interaction.TextMenu("\n\nchallenge: produce case\nstatus: challenge in progress - Try again with a case in your inventory.\n\n")
             else:
-                self.submenue = interaction.TextMenu("\n\nchallenge: produce case\nstatus: challenge completed.\n\n")
+                self.submenue = interaction.TextMenu("\n\nchallenge: produce case\nstatus: challenge completed.\n\nreward:\nNew blueprint reciepes for Heater, Door\n\n")
                 self.knownBlueprints.append("Heater")
+                self.knownBlueprints.append("Door")
                 del self.availableChallenges["prodCase"]
 
 
@@ -7903,16 +7907,16 @@ class AutoTutor(Item):
 
         elif selection == "9blooms": # from root2
             if self.countInInventoryOrRoom(src.items.Bloom) < 9:
-                self.submenue = interaction.TextMenu("\n\nchallenge: gather 9 blooms\nstatus: failed. Try with 9 bloom in your inventory.\n\n")
+                self.submenue = interaction.TextMenu("\n\nchallenge: gather 9 blooms\nstatus: failed. Try with 9 bloom in your inventory.\n\n\n\n")
             else:
                 self.availableChallenges["processedBloom"] = {"text":"process bloom"}
                 self.knownBlueprints.append("BloomShredder")
-                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nchallenge %s added\n\n"%(self.availableChallenges["processedBloom"]["text"]))
+                self.submenue = interaction.TextMenu("\n\nchallenge completed.\n\nreward:\n* new blueprint reciepe for bloom shredder\n* challenge %s added\n\n"%(self.availableChallenges["processedBloom"]["text"]))
                 del self.availableChallenges["9blooms"]
 
         elif selection == "processedBloom": # from 9blooms
             if not self.checkInInventoryOrInRoom(src.items.BioMass):
-                self.submenue = interaction.TextMenu("\n\nchallenge: process bloom\nstatus: challenge in progress - try with bio mass in your inventory.\n\n")
+                self.submenue = interaction.TextMenu("\n\nchallenge: process bloom\nstatus: challenge in progress - try with bio mass in your inventory.\n\ncomment:\n* use a bloom shreder to produce bio mass\n* check \"information->food->mold farming\" for more information\n\n")
             else:
                 self.submenue = interaction.TextMenu("\n\nchallenge: process bloom\nstatus: challenge completed.\n\n")
                 del self.availableChallenges["processedBloom"]
@@ -7926,11 +7930,11 @@ class AutoTutor(Item):
 
         elif selection == "produceWall": # from produceAdvanced
             if not self.checkInInventoryOrInRoom(src.items.Wall):
-                self.submenue = interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge in progress - try again with wall in your inventory.\n\nreward: new blueprint reciepe for door\n\n")
+                self.submenue = interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge in progress - try again with wall in your inventory.\n\n")
             else:
                 del self.availableChallenges["produceWall"]
                 self.knownBlueprints.append("Door")
-                self.submenue = interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge completed.\n\n")
+                self.submenue = interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge completed.\n\nreward:\n* new blueprint reciepe for door\n\n")
 
         elif selection == "produceDoor": # from produceWall
             if not self.checkInInventoryOrInRoom(src.items.Door):
@@ -7982,7 +7986,7 @@ class AutoTutor(Item):
 
         elif selection == "processBioMass": # from produceBioMasses
             if not self.checkInInventoryOrInRoom(src.items.PressCake):
-                self.submenue = interaction.TextMenu("\n\nchallenge: produce press cake\nstatus: challenge in progress. Try with Press cake in your inventory.\n\n")
+                self.submenue = interaction.TextMenu("\n\nchallenge: produce press cake\nstatus: challenge in progress. Try with Press cake in your inventory.\n\ncomment:\n* use a bio press to produce press cake\n* check \"information->food->mold farming\" for more information\n\n")
             else:
                 self.submenue = interaction.TextMenu("\n\nchallenge: produce press cake\nstatus: challenge completed.\n\n")
                 self.availableChallenges["producePressCakes"] = {"text":"produce press cakes"}
@@ -8459,19 +8463,6 @@ class AutoTutor(Item):
                 self.submenue = interaction.TextMenu("\n\nchallenge: upgrade machine to level 2\nstatus: challenge completed.\n\n")
                 del self.availableChallenges["upgradeCommand4"]
 
-        elif selection == "produceMemoryCell": # from root 5
-            if self.countInInventoryOrRoom(src.items.MemoryCell) < 9:
-                self.submenue = interaction.TextMenu("\n\nchallenge: gather sick blooms\nstatus: challenge in progress. Try with 9 sick blooms in your inventory.\n\n")
-            else:
-                self.submenue = interaction.TextMenu("\n\nchallenge: gather sick blooms\nstatus: challenge completed.\n\n")
-                del self.availableChallenges["gatherSickBlooms"]
-
-
-
-
-
-
-
         #- gather posion bloom
         #- produce room builder
             #- build floor plate
@@ -8550,7 +8541,7 @@ class AutoTutor(Item):
         return itemTypes
 
     def checkListAgainstInventoryOrIsRoom(self,itemTypes):
-        itemTypes = self.checkListAgainstInventory(itemType)
+        itemTypes = self.checkListAgainstInventory(itemTypes)
         if itemTypes:
             for item in self.room.itemsOnFloor:
                 if item.type in itemTypes:
@@ -8651,119 +8642,125 @@ class AutoTutor(Item):
 
             shownText = False
             if "Rod" in self.knownBlueprints:
-                text += " * rod             = rod\n"
+                text += " * rod             <= rod\n"
                 shownText = True
             if "Radiator" in self.knownBlueprints:
-                text += " * radiator        = radiator\n"
+                text += " * radiator        <= radiator\n"
                 shownText = True
             if "Mount" in self.knownBlueprints:
-                text += " * mount           = mount\n"
+                text += " * mount           <= mount\n"
                 shownText = True
             if "Stripe" in self.knownBlueprints:
-                text += " * stripe          = stripe\n"
+                text += " * stripe          <= stripe\n"
                 shownText = True
             if "Bolt" in self.knownBlueprints:
-                text += " * bolt            = bolt\n"
+                text += " * bolt            <= bolt\n"
                 shownText = True
             if "Sheet" in self.knownBlueprints:
-                text += " * sheet           = sheet\n"
+                text += " * sheet           <= sheet\n"
                 shownText = True
             if shownText:
                 text += "\n"
 
             shownText = False
             if "Frame" in self.knownBlueprints:
-                text += " * frame           = rod + metal bars\n"
+                text += " * frame           <= rod + metal bars\n"
                 shownText = True
             if "Heater" in self.knownBlueprints:
-                text += " * heater          = radiator + metal bars\n"
+                text += " * heater          <= radiator + metal bars\n"
                 shownText = True
             if "Connector" in self.knownBlueprints:
-                text += " * connector       = mount + metal bars\n"
+                text += " * connector       <= mount + metal bars\n"
                 shownText = True
             if "Pusher" in self.knownBlueprints:
-                text += " * pusher          = stripe + metal bars\n"
+                text += " * pusher          <= stripe + metal bars\n"
                 shownText = True
             if "Puller" in self.knownBlueprints:
-                text += " * puller          = bolt + metal bars\n"
+                text += " * puller          <= bolt + metal bars\n"
                 shownText = True
             if "Tank" in self.knownBlueprints:
-                text += " * tank            = sheet + metal bars\n"
+                text += " * tank            <= sheet + metal bars\n"
                 shownText = True
             if shownText:
                 text += "\n"
             
             shownText = False
             if "Case" in self.knownBlueprints:
-                text += " * case            = frame + metal bars\n"
+                text += " * case            <= frame + metal bars\n"
                 shownText = True
             if shownText:
                 text += "\n"
 
             shownText = False
             if "Wall" in self.knownBlueprints:
-                text += " * wall            = metal bars\n"
+                text += " * wall            <= metal bars\n"
                 shownText = True
             if "Door" in self.knownBlueprints:
-                text += " * door            = connector\n"
+                text += " * door            <= connector\n"
                 shownText = True
             if "FloorPlate" in self.knownBlueprints:
-                text += " * floor plate     = sheet + rod + bolt\n"
+                text += " * floor plate     <= sheet + rod + bolt\n"
                 shownText = True
             if "RoomBuilder" in self.knownBlueprints:
-                text += " * room builder    = puller\n"
+                text += " * room builder    <= puller\n"
                 shownText = True
             if shownText:
                 text += "\n"
 
             shownText = False
             if "BloomShredder" in self.knownBlueprints:
-                text += " * bloom shredder  = bloom\n"
+                text += " * bloom shredder  <= bloom\n"
                 shownText = True
             if "BioPress" in self.knownBlueprints:
-                text += " * bio press       = bio mass\n"
+                text += " * bio press       <= bio mass\n"
                 shownText = True
             if "GooFlask" in self.knownBlueprints:
-                text += " * goo flask       = tank\n"
+                text += " * goo flask       <= tank\n"
                 shownText = True
             if "GooDispenser" in self.knownBlueprints:
-                text += " * goo dispenser   = flask\n"
+                text += " * goo dispenser   <= flask\n"
                 shownText = True
             if "SporeExtractor" in self.knownBlueprints:
-                text += " * spore extractor = bloom + metal bars\n"
+                text += " * spore extractor <= bloom + metal bars\n"
                 shownText = True
             if shownText:
                 text += "\n"
 
             shownText = False
             if "GooProducer" in self.knownBlueprints:
-                text += " * goo producer    = press cake\n"
+                text += " * goo producer    <= press cake\n"
                 shownText = True
             if "GrowthTank" in self.knownBlueprints:
-                text += " * growth tank     = goo flask\n"
+                text += " * growth tank     <= goo flask\n"
                 shownText = True
             if "FireCrystals" in self.knownBlueprints:
-                text += " * fire crystals   = coal + sick bloom\n"
+                text += " * fire crystals   <= coal + sick bloom\n"
                 shownText = True
             if shownText:
                 text += "\n"
 
             shownText = False
             if "ScrapCompactor" in self.knownBlueprints:
-                text += " * scrap compactor = scrap\n"
+                text += " * scrap compactor <= scrap\n"
                 shownText = True
             if "Scraper" in self.knownBlueprints:
-                text += " * scraper         = scrap + metal bars\n"
+                text += " * scraper         <= scrap + metal bars\n"
                 shownText = True
             if shownText:
                 text += "\n"
 
             shownText = False
             if "Container" in self.knownBlueprints:
-                text += " * container       = case + sheet\n"
+                text += " * container       <= case + sheet\n"
                 shownText = True
             if "BloomContainer" in self.knownBlueprints:
-                text += " * bloom container = case + sheet + bloom\n"
+                text += " * bloom container <= case + sheet + bloom\n"
+                shownText = True
+            if "AutoScribe" in self.knownBlueprints:
+                text += " * auto scribe     <= command\n"
+                shownText = True
+            if "MemoryCell" in self.knownBlueprints:
+                text += " * memory cell     <= connector + metal bars\n"
                 shownText = True
             if shownText:
                 text += "\n"
@@ -8935,7 +8932,7 @@ class PortableChallenger(Item):
     type = "PortableChallenger"
 
     def __init__(self,xPosition=None,yPosition=None, name="PortableChallenger",creator=None,noId=False):
-        super().__init__(displayChars.simpleRunner,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChars.portableChallenger,xPosition,yPosition,name=name,creator=creator)
         self.challenges = []
         self.done = False
         self.walkable = True
@@ -10970,8 +10967,8 @@ class SickBloom(Item):
         character.solvers = [
                   "NaiveActivateQuest",
                   "ActivateQuestMeta",
-                  "NaivePickupQuest",
                   "NaiveMurderQuest",
+                  "NaiveDropQuest",
                 ]
 
         character.faction = "monster"
@@ -11230,6 +11227,7 @@ You can use it to loose 100 satiation.
                   "ActivateQuestMeta",
                   "NaivePickupQuest",
                   "NaiveMurderQuest",
+                  "NaiveDropQuest",
                 ]
 
         character.faction = "monster"
@@ -11321,7 +11319,7 @@ item: EncrustedBush
 description:
 This is a cluster of blooms. The veins developed a protecive shell and are dense enough to form a solid wall.
 
-"""%(satiation)
+"""
 
     def destroy(self, generateSrcap=True):
         new = itemMap["Coal"](creator=self)
@@ -11336,6 +11334,7 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
                   "ActivateQuestMeta",
                   "NaivePickupQuest",
                   "NaiveMurderQuest",
+                  "NaiveDropQuest",
                 ]
 
         character.faction = "monster"
@@ -11356,7 +11355,7 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
         import random
         directions =["w","a","s","d"]
         while counter < 8:
-            command += "j%s_%s"%(random.randint(1,counter*4),directions[random.randint(0,3)])
+            command += "j%s_%sk"%(random.randint(1,counter*4),directions[random.randint(0,3)])
             counter += 1
         character.macroState["macros"]["m"] = splitCommand(command+"_m")
 
@@ -11969,68 +11968,78 @@ class HiveMind(Item):
 
         done = False
         import random
-        if gamestate.tick-self.lastMoldClear > 10000:
-                self.lastMoldClear = gamestate.tick
-                command = ""
-                length = 1
-                pos = [7,7]
-                while length < 13:
-                    if length%2 == 1:
-                        for i in range(0,length):
-                            pos[1] -= 1
-                            command += "wjjk"
-                        for i in range(0,length):
-                            pos[0] += 1
-                            if pos == [7,1]:
-                                command += "d"
-                                continue
-                            command += "djjk"
-                    else:
-                        for i in range(0,length):
-                            pos[1] += 1
-                            if pos == [13,7]:
-                                command += "s"
-                                continue
-                            command += "sjjk"
-                        for i in range(0,length):
-                            pos[0] -= 1
-                            if pos == [7,13]:
-                                command += "a"
-                                continue
-                            command += "ajjk"
-                    length += 1
-                for i in range(0,length-1):
-                    pos[1] -= 1
-                    if pos == [1,7]:
-                        command += "w"
-                        continue
-                    command += "wjjk"
-                command += "6s6dk"
-                command = 2*command+"j"
-                done = True
+        if isinstance(character, src.characters.Exploder):
+            character.explode = True
+            if self.charges and character.satiation < 500:
+                character.satiation = 1000
+
+            command = ""
+
+            target = random.choice(self.territory)
+
+            (movementCommand,lastNode) = self.calculateMovementUsingPaths(target)
+            if movementCommand:
+                command += movementCommand
+           
+            command += 13*(random.choice(["w","a","s","d"])+"k")+"kkj"
+
+        elif gamestate.tick-self.lastMoldClear > 10000:
+            self.lastMoldClear = gamestate.tick
+            command = ""
+            length = 1
+            pos = [7,7]
+            while length < 13:
+                if length%2 == 1:
+                    for i in range(0,length):
+                        pos[1] -= 1
+                        command += "wjjk"
+                    for i in range(0,length):
+                        pos[0] += 1
+                        if pos == [7,1]:
+                            command += "dk"
+                            continue
+                        command += "djjk"
+                else:
+                    for i in range(0,length):
+                        pos[1] += 1
+                        if pos == [13,7]:
+                            command += "sk"
+                            continue
+                        command += "sjjk"
+                    for i in range(0,length):
+                        pos[0] -= 1
+                        if pos == [7,13]:
+                            command += "ak"
+                            continue
+                        command += "ajjk"
+                length += 1
+            for i in range(0,length-1):
+                pos[1] -= 1
+                if pos == [1,7]:
+                    command += "wk"
+                    continue
+                command += "wjjk"
+            command += "6s6dk"
+            command = 2*command+"j"
+            done = True
         elif not self.charges and self.territory:
             command = ""
+
             target = random.choice(self.territory)
-            if (target[0]-self.xPosition//15):
-                command += (13*(target[0]-self.xPosition//15))*"dk"
-            if (self.xPosition//15-target[0]):
-                command += (13*(self.xPosition//15-target[0]))*"ak"
-            if (target[1]-self.yPosition//15):
-                command += (13*(target[1]-self.yPosition//15))*"sk"
-            if (self.yPosition//15-target[1]):
-                command += (13*(self.yPosition//15-target[1]))*"wk"
+
+            (movementCommand,lastNode) = self.calculateMovementUsingPaths(target)
+            if movementCommand:
+                command += movementCommand
+            
             command += "kkj"
         elif self.territory and (len(self.territory) < 10 or (broughtBloom and random.randint(0,1) == 1)):
             command = ""
             anchor = random.choice(self.territory)
-            if (anchor[0]-self.xPosition//15):
-                command += (13*(anchor[0]-self.xPosition//15))*"d"
-            if (self.xPosition//15-anchor[0]):
-                command += (13*(self.xPosition//15-anchor[0]))*"a"
-            if (anchor[1]-self.yPosition//15):
-                command += (13*(anchor[1]-self.yPosition//15))*"s"
-            if (self.yPosition//15-anchor[1]):
-                command += (13*(self.yPosition//15-anchor[1]))*"w"
+
+            (movementCommand,lastNode) = self.calculateMovementUsingPaths(anchor)
+            if movementCommand:
+                command += movementCommand
+
             targetPos = self.territory[0]
             while targetPos in self.territory:
                 targetPos = [random.randint(1,12),random.randint(1,12)]
@@ -12071,15 +12080,12 @@ class HiveMind(Item):
                 new.masterCommand = 13*"s"+"kj"
         elif ((not broughtBloom and self.charges < 20) or random.randint(0,1) == 1) and self.territory:
             command = ""
+
             target = random.choice(self.territory)
-            if (target[0]-self.xPosition//15):
-                command += (13*(target[0]-self.xPosition//15))*"dk"
-            if (self.xPosition//15-target[0]):
-                command += (13*(self.xPosition//15-target[0]))*"ak"
-            if (target[1]-self.yPosition//15):
-                command += (13*(target[1]-self.yPosition//15))*"sk"
-            if (self.yPosition//15-target[1]):
-                command += (13*(self.yPosition//15-target[1]))*"wk"
+
+            (movementCommand,lastNode) = self.calculateMovementUsingPaths(target)
+            command += movementCommand
+            
             command += "kkj"
         elif self.territory:
             command = ""
@@ -12087,23 +12093,8 @@ class HiveMind(Item):
             while target == (self.xPosition//15,self.yPosition//15) or not target in self.paths:
                 target = random.choice(self.territory)
 
-            path = self.paths[target]
-
-            lastNode = (self.xPosition//15,self.yPosition//15)
-            secondToLastNode = None
-            for node in path:
-                if (node[0]-lastNode[0]):
-                    command += (13*(node[0]-lastNode[0]))*"d"
-                if (lastNode[0]-node[0]):
-                    command += (13*(lastNode[0]-node[0]))*"a"
-                if (node[1]-lastNode[1]):
-                    command += (13*(target[1]-lastNode[1]))*"s"
-                if (lastNode[1]-node[1]):
-                    command += (13*(lastNode[1]-node[1]))*"w"
-                secondToLastNode = lastNode
-                lastNode = node
-                if node == target:
-                    break
+            (movementCommand,secondToLastNode) = self.calculateMovementUsingPaths(target)
+            command += movementCommand
 
             new = CommandBloom(creator=self)
             character.inventory.append(new)
@@ -12111,8 +12102,6 @@ class HiveMind(Item):
             command += "kkjlj"
 
             direction = ""
-            character.messages.append(target)
-            character.messages.append(secondToLastNode)
             if target[1] == secondToLastNode[1]:
                 if target[0] == secondToLastNode[0]-1:
                     direction = "d"
@@ -12123,8 +12112,6 @@ class HiveMind(Item):
                     direction = "s"
                 if target[1] == secondToLastNode[1]+1:
                     direction = "w"
-
-            character.messages.append(direction)
 
             new.masterCommand = 13*direction+"kj"
 
@@ -12137,11 +12124,36 @@ class HiveMind(Item):
 
         character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
 
+    def calculateMovementUsingPaths(self,target):
+        if not target in self.paths:
+            return ("",None)
+
+        command = ""
+        path = self.paths[target]
+
+        lastNode = (self.xPosition//15,self.yPosition//15)
+        secondToLastNode = None
+        for node in path:
+            if (node[0]-lastNode[0]):
+                command += (13*(node[0]-lastNode[0]))*"d"
+            if (lastNode[0]-node[0]):
+                command += (13*(lastNode[0]-node[0]))*"a"
+            if (node[1]-lastNode[1]):
+                command += (13*(target[1]-lastNode[1]))*"s"
+            if (lastNode[1]-node[1]):
+                command += (13*(lastNode[1]-node[1]))*"w"
+            secondToLastNode = lastNode
+            lastNode = node
+            if node == target:
+                break
+
+        return (command,secondToLastNode)
+
     def configure(self,character):
         self.charges += 1
 
     def getLongInfo(self):
-        return """
+        text = """
 item: 
 
 description:
@@ -12149,8 +12161,12 @@ description:
 charges: %s
 territory: %s
 lastMoldClear: %s
-paths: %s
-"""%(self.charges,self.territory,self.lastMoldClear,self.paths)
+paths: 
+"""%(self.charges,self.territory,self.lastMoldClear)
+
+        for path,value in self.paths.items():
+            text += " * %s - %s\n"%(path,value)
+        return text
 
     def getState(self):
         state = super().getState()
@@ -12203,7 +12219,7 @@ class CommandBloom(Item):
         self.numCommandBlooms = 0
         self.lastFeeding = 0
         self.masterCommand = None
-        self.expectedNext = None
+        self.expectedNext = 0
         
         import random
         self.faction = ""
@@ -12245,6 +12261,15 @@ class CommandBloom(Item):
                     removeItems.append(item)
                     self.numCorpses += 1
                 elif item.type == "CommandBloom":
+                    if "PATHx" in character.registers and len(character.registers["PATHx"]) > 10:
+                        numIncluded = 0
+                        for i in range(1,len(character.registers["PATHx"])):
+                            if character.registers["PATHx"][i] == self.xPosition//15 and character.registers["PATHy"][i] == self.yPosition//15:
+                                numIncluded += 1
+                                if numIncluded > 2:
+                                    break
+                        if numIncluded > 2:
+                            self.masterCommand = None
                     if self.masterCommand:
                         command = self.masterCommand
                         if "PATHx" in character.registers:
@@ -12266,8 +12291,19 @@ class CommandBloom(Item):
             for item in removeItems:
                 character.inventory.remove(item)
 
+            if isinstance(character,src.characters.Exploder):
+                import random
+                command = "13"+random.choice(["w","a","s","d"])+"kkj"
+                if self.charges and character.satiation < 100:
+                    self.charges -= 1
+                    character.satiation += 100
+
             if self.expectedNext and self.expectedNext > gamestate.tick:
-                command = self.masterCommand
+                if self.masterCommand:
+                    command = self.masterCommand
+                else:
+                    import random
+                    command = 13*random.choice(["w","a","s","d"])+"kkj"
 
             if self.charges < 25 and not command:
                 command = ""
@@ -12307,7 +12343,7 @@ class CommandBloom(Item):
                             direction = random.choice(["w","a","s","d"])
                             command += 10*(13*direction+"opx$=aa$=ww$=ss$=ddwjajsjsjdjdjwjwjas")
                     else:
-                        while character.satiation < 300 and self.charges:
+                        while character.satiation < 500 and self.charges:
                             character.satiation += 100
                         self.charges -= 1
                         self.lastFeeding = gamestate.tick
@@ -12445,7 +12481,16 @@ class CommandBloom(Item):
                     if foundSomething:
                         command += "j"
                     if not foundSomething:
-                        command += str(min(character.satiation-30,100))+".j"
+                        if character.satiation > 100:
+                            import random
+                            command += str(min(character.satiation-30,random.randint(100,200)))+".j"
+                        else:
+                            import random
+                            command = random.choice(["W","A","S","D"])
+
+                    self.expectedNext = gamestate.tick+len(command)-25
+
+
             elif not command:
                 command = ""
                 new = CommandBloom(creator=self)
@@ -12497,8 +12542,6 @@ class CommandBloom(Item):
             for i in range(1,10):
                 direction = random.choice(["w","a","s","d"])
                 command += direction+"k"
-
-        self.expectedNext = gamestate.tick+len(command)//2
 
         convertedCommand = []
         for item in command:

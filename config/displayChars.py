@@ -1,5 +1,6 @@
 import urwid
 
+portableChallenger = (urwid.AttrSpec("#aaa",'black'),"pc")
 typedStockpileManager = (urwid.AttrSpec("#aaa",'black'),"ST")
 uniformStockpileManager = (urwid.AttrSpec("#aaa",'black'),"SU")
 jobOrder = (urwid.AttrSpec("#33f",'black'),"j#")
@@ -7,7 +8,8 @@ jobBoard = (urwid.AttrSpec("#33f",'black'),"JB")
 itemUpgrader = (urwid.AttrSpec("#aaa",'black'),"iU")
 blueprint = (urwid.AttrSpec("#aaa",'black'),"bd")
 command = (urwid.AttrSpec("#aaa",'black'),"c#")
-map = (urwid.AttrSpec("#aaa",'black'),"+#")
+map = (urwid.AttrSpec("#aaa",'black'),"m#")
+note = (urwid.AttrSpec("#aaa",'black'),"n#")
 bloomShredder = (urwid.AttrSpec("#fff","black"),"%>")
 corpseShredder = (urwid.AttrSpec("#800","black"),"%>")
 sporeExtractor = (urwid.AttrSpec("#fff","black"),"%o")

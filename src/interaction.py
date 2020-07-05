@@ -342,6 +342,9 @@ type the macro name you want to record to
         return
 
     if "advancedInteraction" in char.interactionState:
+        if not char.container:
+            del char.interactionState["advancedInteraction"]
+            return
         if key == "w":
             items = char.container.getItemByPosition((char.xPosition,char.yPosition-1))
             if items:
@@ -389,6 +392,8 @@ type the macro name you want to record to
     if "advancedPickup" in char.interactionState:
         if len(char.inventory) >= 10:
             char.messages.append("you cannot carry more items")
+        elif not char.container:
+            pass
         else:
             if key == "w":
                 items = char.container.getItemByPosition((char.xPosition,char.yPosition-1))

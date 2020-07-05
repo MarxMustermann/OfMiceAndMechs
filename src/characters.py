@@ -1056,6 +1056,8 @@ class Monster(Character):
 
     def enterPhase2(self):
         self.phase = 2
+        if not "NaivePickupQuest" in self.solvers:
+            self.solvers.append("NaivePickupQuest")
 
     def enterPhase3(self):
         self.phase = 3
@@ -1090,7 +1092,7 @@ class Monster(Character):
         for i in range(0,5):
             self.faction += random.choice("abcdefghiasjlkasfhoiuoijpqwei10934009138402")
         self.macroState["macros"] = {
-                                      "j":["7","0","J","f","m"],
+                                      "j":70*["J","f"]+["m"],
                                       "s":["o","p","M","$","=","a","a","$","=","w","w","$","=","d","d","$","=","s","s","k","j","j","j","k"],
                                       "w":[],
                                       "k":["o","p","e","$","=","a","a","m","$","=","w","w","m","$","=","d","d","m","$","=","s","s","m"],

@@ -1466,7 +1466,7 @@ XXXXXXXXXXXXX
         flask3.uses = 100
         self.doors[0].walkable = True
 
-        self.machinemachine = src.items.MachineMachine(4,3,creator=creator)
+        self.machinemachine = src.items.MachineMachine(4,4,creator=creator)
 
         self.infoScreen = src.items.AutoTutor(4,9,creator=creator)
 
@@ -1480,7 +1480,7 @@ XXXXXXXXXXXXX
         metalbars = src.items.MetalBars(3,1,creator=creator)
         metalbars2 = src.items.MetalBars(7,9,creator=creator)
         metalbars3 = src.items.MetalBars(9,1,creator=creator)
-        metalbars4 = src.items.MetalBars(3,3,creator=creator)
+        metalbars4 = src.items.MetalBars(3,4,creator=creator)
         scrap = src.items.Scrap(7,1,creator=creator)
         connector = src.items.Connector(7,9,creator=creator)
         blueprint1 = src.items.BluePrint(9,9,creator=creator)
@@ -1498,7 +1498,7 @@ XXXXXXXXXXXXX
         blueprint5 = src.items.BluePrint(9,9,creator=creator)
         blueprint5.setToProduce("Bolt")
         blueprint5.bolted = False
-        blueprint6 = src.items.BluePrint(9,9,creator=creator)
+        blueprint6 = src.items.BluePrint(4,3,creator=creator)
         blueprint6.setToProduce("Rod")
         blueprint6.bolted = False
         self.addItems([metalbars,metalbars2,metalbars3,metalbars4,scrap,connector,blueprint1,blueprint2,blueprint3,blueprint4,blueprint5,blueprint6])

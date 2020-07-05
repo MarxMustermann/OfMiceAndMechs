@@ -3085,9 +3085,6 @@ class BuildBase(BasicPhase):
         for mold in molds:
             mold.startSpawn()
         
-        # add command bloom
-        terrain.addItems([src.items.CommandBloom(127,37,creator=self)])
-
         mainChar.addListener(self.checkRoomEnteredMain)
         mainChar.macroState["macros"]["j"] = ["J","f"]
 

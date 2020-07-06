@@ -267,99 +267,17 @@ class Character(src.saveing.Saveable):
         return chatOptions
 
     '''
-    get the changes in state since creation
-    '''
-    def getDiffState(self):
-        # fetch the basic result
-        result = super().getDiffState()
-
-        # save path
-        if not self.path == self.initialState["path"]:
-            result["path"] = self.path
-
-        result["questsDone"] = self.questsDone
-        result["solvers"] = self.solvers
-
-        # save inventory
-        # bad code: should be abstracted
-        (itemStates,changedItems,newItems,removedItems) = self.getDiffList(self.inventory,self.initialState["inventory"]["inventoryIds"])
-        
-        inventory = {}
-        if changedItems:
-            inventory["changed"] = changedItems
-        if newItems:
-            inventory["new"] = newItems
-        if removedItems:
-            inventory["removed"] = removedItems
-        if itemStates:
-            inventory["states"] = itemStates
-        if itemStates or removedItems:
-            result["inventory"] = inventory
-
-        # save quests
-        # bad code: should be abstracted
-        (questStates,changedQuests,newQuests,removedQuests) = self.getDiffList(self.quests,self.initialState["quests"]["questIds"])
-        quests = {}
-        if changedQuests:
-            quests["changed"] = changedQuests
-        if newQuests:
-            quests["new"] = newQuests
-        if removedQuests:
-            quests["removed"] = removedQuests
-        if questStates:
-            quests["states"] = questStates
-        if questStates or removedQuests:
-            result["quests"] = quests
-
-        # store events diff
-        # bad code: should be abstracted
-        (eventStates,changedEvents,newEvents,removedEvents) = self.getDiffList(self.events,self.initialState["eventIds"])
-        if changedEvents:
-            result["changedEvents"] = changedEvents
-        if newEvents:
-            result["newEvents"] = newEvents
-        if removedEvents:
-            result["removedEvents"] = removedEvents
-        if eventStates:
-            result["eventStates"] = eventStates
-
-        # save chat options
-        # bad code: storing the Chat options as class instead of object complicates things
-        # bad code: probably broken
-        chatOptions = []
-        for chat in self.basicChatOptions:
-            if not isinstance(chat,dict):
-                chatOptions.append(chat.id)
-            else:
-                option = {}
-                option["chat"] = chat["chat"].id
-                option["dialogName"] = chat["dialogName"]
-                option["params"] = {}
-                chatOptions.append(option)
-        result["chatOptions"] = chatOptions
-
-        import copy
-        result["macroState"] = copy.deepcopy(self.macroState)
-        if not result["macroState"]["itemMarkedLast"] == None and not isinstance( result["macroState"]["itemMarkedLast"],str):
-            result["macroState"]["itemMarkedLast"] = result["macroState"]["itemMarkedLast"].id
-
-        result["type"] = self.charType
-
-        return result
-
-    '''
     getter for the players state
     '''
     def getState(self):
         # fetch base state
         state = super().getState()
 
-        import copy
-        state["macroState"] = copy.deepcopy(self.macroState)
+        state["macroState"] = self.macroState
         if not state["macroState"]["itemMarkedLast"] == None and not isinstance(state["macroState"]["itemMarkedLast"],str):
             state["macroState"]["itemMarkedLast"] = state["macroState"]["itemMarkedLast"].id
 
-        state["registers"] = copy.deepcopy(self.registers)
+        state["registers"] = self.registers
 
         # add simple structures
         state.update({ 
@@ -387,8 +305,13 @@ class Character(src.saveing.Saveable):
         state["quests"]["states"] = questStates
 
         # store events
-        (eventIds,eventStates) = self.storeStateList(self.events)
+        eventIds = []
+        eventStates = {}
+        for event in self.events:
+            eventIds.append(event.id)
+            eventStates[event.id] = event.getState()
         state["eventIds"] = eventIds
+        state["eventStates"] = eventStates
 
         # store serve quest
         # bad code: storing the Chat options as class instead of object complicates things

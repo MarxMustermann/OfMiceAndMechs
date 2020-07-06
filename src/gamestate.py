@@ -222,7 +222,7 @@ class GameState(src.saveing.Saveable):
             state["terrainMap"].append(newLine)
 
         # generate the main characters state
-        mainCharState = self.mainChar.getDiffState()
+        mainCharState = self.mainChar.getState()
         if self.mainChar.room:
             mainCharState["room"] = self.mainChar.room.id
         else:

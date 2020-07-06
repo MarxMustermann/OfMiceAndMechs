@@ -44,12 +44,6 @@ class Event(src.saveing.Saveable):
         # self initial state
         self.initialState = self.getState()
 
-    def getDiffState(self):
-        state = super().getDiffState()
-        state["type"] = self.type
-        state["tick"] = self.tick
-        return state
-
     '''
     do nothing
     '''
@@ -59,6 +53,8 @@ class Event(src.saveing.Saveable):
     def getState(self):
         state = super().getState()
         state["objType"] = self.type
+        state["type"] = self.type
+        state["tick"] = self.tick
         return state
 
 class RunFunctionEvent(Event):

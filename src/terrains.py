@@ -378,6 +378,7 @@ class Terrain(src.saveing.Saveable):
     create a map of non passable tiles
     '''
     def setNonMovableMap(self):
+        return
         self.nonMovablecoordinates = {}
 
         # add non movable items
@@ -1424,94 +1425,6 @@ class Terrain(src.saveing.Saveable):
     bad code: should be in saveable
     '''
     def setState(self,state,tick=0):
-        """
-        # update rooms
-        for room in self.rooms:
-            if room.id in state["changedRoomList"]:
-                room.setState(state["roomStates"][room.id])
-        for room in self.rooms:
-            if room.id in state["removedRoomList"]:
-                self.removeRoom(room)
-        for roomId in state["newRoomList"]:
-            room = src.rooms.getRoomFromState(state["roomStates"][roomId],terrain=self)
-            self.addRoom(room)
-
-        #for item in self.itemsOnFloor[:]:
-        #    # update items
-        #    if item.id in state["changedItemList"]:
-        #        self.removeItem(item,recalculate=False)
-        #        item.setState(state["itemStates"][item.id])
-        #        self.addItems([item],recalculate=False)
-        replaceItems = {}
-        for entry in self.itemByCoordinates.values():
-            for item in entry:
-                # update items
-                if item.id in state["changedItemList"]:
-                    replaceItems[item] = state["itemStates"][item.id]
-
-        for item,itemState in replaceItems.items():
-            self.removeItem(item,recalculate=False)
-            item.setState(itemState)
-            self.addItems([item],recalculate=False)
-
-        # remove items
-        if item.id in state["removedItemList"]:
-            self.removeItem(item)
-
-        # add items
-        for itemId in state["newItemList"]:
-            item = src.items.getItemFromState(state["itemStates"][itemId])
-            self.addItems([item],recalculate=False)
-
-        for char in self.characters:
-            # update characters
-            if char.id in state["changedCharList"]:
-                char.setState(state["charStates"][item.id])
-
-            # remove characters
-            if char.id in state["removedCharList"]:
-                self.removeCharacter(char)
-        # add new characters
-        for charId in state["newCharList"]:
-            charState = state["charStates"][charId]
-            char = self.fetchThroughRegistry(characters.Character(creator=self,characterId=charId))
-            char.setState(charState)
-            loadingRegistry.register(char)
-            char.terrain = self
-            char.room = None
-            self.addCharacter(char,charState["xPosition"],charState["yPosition"])
-
-        # store the list of items to transport
-        if "toTransport" in state:
-            # bad code: too specific. should be in story or something
-            self.toTransport = []
-            for item in state["toTransport"]:
-                newItem = []
-                newItem.append(None)
-                newItem.append((item[1][0],item[1][1]))
-                self.toTransport.append(newItem)
-
-                '''
-                set value
-                '''
-                def setThing(thing):
-                    newItem[0] = thing
-                loadingRegistry.callWhenAvailable(item[0],setThing)
-
-        # add new events
-        if "newEvents" in state:
-            for eventId in state["newEvents"]:
-                eventState = state["eventStates"][eventId]
-                event = src.events.getEventFromState(eventState)
-                self.addEvent(event)
-
-        if "eventIds" in state:
-            for eventId in state["eventIds"]:
-                eventState = state["eventStates"][eventId]
-                event = src.events.getEventFromState(eventState)
-                self.addEvent(event)
-        """
-
         for roomId in state["roomIds"]:
             room = src.rooms.getRoomFromState(state["roomStates"][roomId],terrain=self)
             self.addRoom(room)
@@ -1536,49 +1449,6 @@ class Terrain(src.saveing.Saveable):
         self.addItems(addItems)
 
     '''
-    get difference between initial and current state
-    bad code: should be in saveable
-    '''
-    def getDiffState(self):
-
-        # serialize lists
-        (roomStates,changedRoomList,newRoomList,removedRoomList) = self.getDiffList(self.rooms,self.initialState["roomIds"])
-        #(itemStates,changedItemList,newItemList,removedItemList) = self.getDiffList(self.itemsOnFloor,self.initialState["itemIds"])
-        itemsOnFloor = []
-        for entry in self.itemByCoordinates.values():
-            itemsOnFloor.extend(entry)
-        (itemStates,changedItemList,newItemList,removedItemList) = self.getDiffList(itemsOnFloor,self.initialState["itemIds"])
-        exclude = []
-        if mainChar:
-            exclude.append(mainChar.id)
-        (charStates,changedCharList,newCharList,removedCharList) = self.getDiffList(self.characters,self.initialState["characterIds"],exclude=exclude)
-
-        # store events diff
-        (eventStates,changedEvents,newEvents,removedEvents) = self.getDiffList(self.events,self.initialState["eventIds"])
-
-        # generate state dict
-        return {
-                  "changedRoomList":changedRoomList,
-                  "newRoomList":newRoomList,
-                  "removedRoomList":removedRoomList,
-                  "roomStates":roomStates,
-                  "newItemList":newItemList,
-                  "changedItemList":changedItemList,
-                  "removedItemList":removedItemList,
-                  "itemStates":itemStates,
-                  "newCharList":newCharList,
-                  "changedCharList":changedCharList,
-                  "removedCharList":removedCharList,
-                  "charStates":charStates,
-                  "initialSeed":self.initialSeed,
-                  "objType":self.objType,
-                  "newEvents":newEvents,
-                  "changedEvents":newEvents,
-                  "removedEvents":removedEvents,
-                  "eventStates":eventStates,
-               }
-
-    '''
     get state as dict
     bad code: should be in saveable
     '''
@@ -1596,12 +1466,11 @@ class Terrain(src.saveing.Saveable):
         itemStates = {}
         for item in itemsOnFloor:
             itemIds.append(item.id)
-            itemStates[item.id] = item.getDiffState()
+            itemStates[item.id] = item.getState()
 
         exclude = []
         if mainChar:
             exclude.append(mainChar.id)
-        (characterIds,characterStates) = self.storeStateList(self.characters,exclude=exclude)
         characterIds = []
         characterStates = {}
         for character in self.characters:
@@ -1637,11 +1506,22 @@ class Terrain(src.saveing.Saveable):
     '''
     def addEvent(self,event):
         index = 0
-        for existingEvent in self.events:
-            if event.tick < existingEvent.tick:
+        start = 0
+        end = len(self.events)
+
+        import random
+        while not start == end:
+            pivot = (start+end)//2
+            compareEvent = self.events[pivot]
+            if compareEvent.tick < event.tick:
+                start = pivot+1
+            elif compareEvent.tick == event.tick:
+                start = pivot
+                end = pivot
                 break
-            index += 1
-        self.events.insert(index,event)
+            else:
+                end = pivot
+        self.events.insert(start,event)
 
 '''
 a almost empty terrain

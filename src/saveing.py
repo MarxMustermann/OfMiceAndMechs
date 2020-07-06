@@ -179,37 +179,6 @@ class Saveable(object):
                 target.append(item)
             
     '''
-    get difference in state since creation
-    bad code: callbacks are not handled
-    '''
-    def getDiffState(self):
-        result = {}
-
-        # diff attributes
-        for attribute in self.attributesToStore:
-            if hasattr(self,attribute):
-                currentValue = getattr(self,attribute)
-            else:
-                currentValue = None
-
-            if not attribute in self.initialState:
-                result[attribute] = currentValue
-                continue
-
-            if not currentValue == self.initialState[attribute]:
-                result[attribute] = currentValue
-
-        # diff objects
-        for objectName in self.objectsToStore:
-            value = None
-            if hasattr(self,objectName) and getattr(self,objectName):
-                value = getattr(self,objectName).id
-            if not value == self.initialState[objectName]:
-                result[objectName] = value
-               
-        return result
-
-    '''
     set state as dict
     '''
     def setState(self,state):
@@ -244,66 +213,6 @@ class Saveable(object):
                     loadingRegistry.callWhenAvailable(state[objectName],setValue,(objectName))
                 else:
                     setattr(self,objectName,None)
-
-    '''
-    get a list of ids and a dict of their states from a list of objects
-    '''
-    def storeStateList(self,sourceList,exclude=[]):
-        ids = []
-        states = {}
-
-        # fill result
-        for thing in sourceList:
-            if thing.id in exclude:
-                continue
-            ids.append(thing.id)
-            states[thing.id] = thing.getDiffState()
-
-        return (states,ids)
-
-    '''
-    get the difference of a list between existing and initial state
-    '''
-    def getDiffList(self,current,orig,exclude=[]):
-        # the to be result
-        states = {}
-        newThingsList = []
-        changedThingsList = []
-        removedThingsList = []
-
-        # helper state
-        currentThingsList = []
-
-        # handle things that exist right now
-        for thing in current:
-            # skip excludes
-            if thing.id in exclude:
-                continue
-
-            # register thing as existing
-            currentState = thing.getState()
-            currentThingsList.append(thing.id)
-
-            if thing.id in orig:
-                # handle changed things
-                if not currentState == thing.initialState:
-                    diffState = thing.getDiffState()
-                    if diffState: # bad code: this should not be neccessary
-                        changedThingsList.append(thing.id)
-                        states[thing.id] = diffState
-            else:
-                # handle new things
-                newThingsList.append(thing.id)
-                states[thing.id] = thing.getState()
-
-        # handle removed things
-        for thingId in orig:
-            if thingId in exclude:
-                continue
-            if not thingId in currentThingsList:
-                removedThingsList.append(thingId)
-
-        return (states,changedThingsList,newThingsList,removedThingsList)
 
     '''
     call a callback in savable format

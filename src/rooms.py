@@ -331,65 +331,27 @@ class Room(src.saveing.Saveable):
         self.engineStrength = 250*self.steamGeneration
 
     '''
-    get the difference in state since creation
-    '''
-    def getDiffState(self):
-        result = super().getDiffState()
-
-        # store item diff
-        (itemStates,changedItems,newItems,removedItems) = self.getDiffList(self.itemsOnFloor,self.initialState["itemIds"])
-        if changedItems:
-            result["changedItems"] = changedItems
-        if newItems:
-            result["newItems"] = newItems
-        if removedItems:
-            result["removedItems"] = removedItems
-        if itemStates:
-            result["itemStates"] = itemStates
-
-        # store characters diff
-        exclude = []
-        if mainChar:
-            exclude.append(mainChar.id)
-        (charStates,changedChars,newChars,removedChars) = self.getDiffList(self.characters,self.initialState["characterIds"],exclude=exclude)
-        if changedChars:
-            result["changedChars"] = changedChars
-        if newChars:
-            result["newChars"] = newChars
-        if removedChars:
-            result["removedChars"] = removedChars
-        if charStates:
-            result["charStates"] = charStates
-
-        # store events diff
-        (eventStates,changedEvents,newEvents,removedEvents) = self.getDiffList(self.events,self.initialState["eventIds"])
-        if changedEvents:
-            result["changedEvents"] = changedEvents
-        if newEvents:
-            result["newEvents"] = newEvents
-        if removedEvents:
-            result["removedEvents"] = removedEvents
-        if eventStates:
-            result["eventStates"] = eventStates
-
-        result["objType"] = self.objType
-        result["xPosition"] = self.xPosition
-        result["yPosition"] = self.yPosition
-        result["offsetX"] = self.offsetX
-        result["offsetY"] = self.offsetY
-
-        return result
-
-    '''
     get semi serialised room state
     '''
     def getState(self):
         state = super().getState()
 
         # get states from lists
-        (eventStates,eventIds) = self.storeStateList(self.events)
-        (itemStates,itemIds) = self.storeStateList(self.itemsOnFloor)
-        (charStates,charIds) = self.storeStateList(self.characters)
+        eventIds = []
+        eventStates = {}
+        for event in self.events:
+            eventIds.append(event.id)
+            eventStates[event.id] = event.getState()
+        itemIds = []
+        itemStates = {}
+        for item in self.itemsOnFloor:
+            itemIds.append(item.id)
+            itemStates[item.id] = item.getState()
+        charIds = []
+        charStates = {}
+        for character in self.characters:
+            charIds.append(character.id)
+            charStates[character.id] = character.getState()
 
         try:
             toRemove = None
@@ -2485,19 +2447,6 @@ XXXXXXXXXXX
     '''
     def getState(self):
         state = super().getState()
-
-        state["quests"] = {"ids":[],"states":{}}
-        for quest in self.quests:
-            state["quests"]["ids"].append(quest.id) 
-            state["quests"]["states"][quest.id] = quest.getState()
-
-        return state
-
-    '''
-    get difference between initial and current state as dictionary
-    '''
-    def getDiffState(self):
-        state = super().getDiffState()
 
         state["quests"] = {"ids":[],"states":{}}
         for quest in self.quests:

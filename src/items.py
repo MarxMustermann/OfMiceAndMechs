@@ -74,7 +74,6 @@ class Item(src.saveing.Saveable):
         self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
 
         # store state and register self
-        self.initialState = self.getState()
         loadingRegistry.register(self)
 
     def fetchSpecialRegisterInformation(self):
@@ -416,14 +415,6 @@ class Item(src.saveing.Saveable):
         state["yPosition"] = self.yPosition
         return state
 
-    def getDiffState(self):
-        state = super().getDiffState()
-        state["id"] = self.id
-        state["type"] = self.type
-        state["xPosition"] = self.xPosition
-        state["yPosition"] = self.yPosition
-        return state
-
     def getLongInfo(self):
         return None
 
@@ -449,8 +440,6 @@ class Scrap(Item):
         self.attributesToStore.extend([
                "amount"])
         
-        self.initialState = self.getState()
-
         self.bolted = False
 
         self.amount = amount
@@ -620,9 +609,6 @@ class Corpse(Item):
         self.walkable = True
         self.bolted = False
 
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
-
     def getLongInfo(self):
         text = """
 item: Corpse
@@ -661,9 +647,6 @@ class ItemUpgrader(Item):
 
         self.attributesToStore.extend([
                "charges","level"])
-
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
 
     def apply(self,character):
         if not self.room:
@@ -829,9 +812,6 @@ class GrowthTank(Item):
         self.attributesToStore.extend([
                "filled",])
 
-        # bad code: repetetive and easy to forget
-        self.initialState = self.getState()
-
     '''
     manually eject character
     '''
@@ -950,9 +930,6 @@ class Hutch(Item):
         self.attributesToStore.extend([
                "activated"])
 
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
-
     '''
     render the hutch
     '''
@@ -1015,9 +992,6 @@ class Lever(Item):
         # set metadata for saving
         self.attributesToStore.extend([
                "activated"])
-
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
 
     '''
     pull the lever!
@@ -1085,9 +1059,6 @@ class Furnace(Item):
         # set metadata for saving
         self.attributesToStore.extend([
                "activated"])
-
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
 
     '''
     fire the furnace
@@ -1605,9 +1576,6 @@ class Coal(Item):
         self.walkable = True
         self.bolted = False
 
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
-
     def getLongInfo(self):
         text = """
 item: Coal
@@ -1667,9 +1635,6 @@ class Door(Item):
         # bad code: set metadata for saving
         self.attributesToStore.extend([
                "bio","walkable"])
-
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
 
     '''
     set state from dict
@@ -1785,9 +1750,6 @@ class Pile(Item):
         self.attributesToStore.extend([
                "numContained"])
 
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
-
     '''
     take from the pile
     '''
@@ -1851,9 +1813,6 @@ class Acid(Item):
         self.type = "Acid"
         super().__init__(displayChars.acid,xPosition,yPosition,name=name,creator=creator)
 
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
-
     def getLongInfo(self):
         text = """
 item: Acid
@@ -1877,9 +1836,6 @@ class Chain(Item):
         super().__init__(displayChars.chains,xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
         self.bolted = False
-
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
 
         self.chainedTo = []
         self.fixed = False
@@ -2023,9 +1979,6 @@ class Boiler(Item):
         self.objectsToStore.append("startBoilingEvent")
         self.objectsToStore.append("stopBoilingEvent")
 
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
-
     '''
     start producing steam after a delay
     '''
@@ -2115,9 +2068,6 @@ class Spray(Item):
         self.attributesToStore.extend([
                "direction"])
 
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
-
     '''
     set appearance depending on energy supply
     bad code: energy supply is directly taken from the machine room
@@ -2172,9 +2122,6 @@ class MarkerBean(Item):
         self.attributesToStore.extend([
                "activated"])
 
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
-
     '''
     render the marker
     '''
@@ -2226,9 +2173,6 @@ class GooDispenser(Item):
         self.maxCharges = 100
 
         self.description = self.baseName + " (%s charges)"%(self.charges)
-
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
 
     def setDescription(self):
         self.description = self.baseName + " (%s charges)"%(self.charges)
@@ -2301,9 +2245,6 @@ class BloomShredder(Item):
         self.activated = False
         super().__init__(displayChars.bloomShredder,xPosition,yPosition,name=name,creator=creator)
 
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
-    
     '''
     '''
     def apply(self,character):
@@ -2370,9 +2311,6 @@ class CorpseShredder(Item):
         self.activated = False
         super().__init__(displayChars.corpseShredder,xPosition,yPosition,name=name,creator=creator)
 
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
-    
     '''
     '''
     def apply(self,character):
@@ -2448,9 +2386,6 @@ class SporeExtractor(Item):
         self.activated = False
         super().__init__(displayChars.sporeExtractor,xPosition,yPosition,name=name,creator=creator)
 
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
-    
     '''
     '''
     def apply(self,character):
@@ -2519,9 +2454,6 @@ class MaggotFermenter(Item):
         self.activated = False
         super().__init__(displayChars.maggotFermenter,xPosition,yPosition,name=name,creator=creator)
 
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
-    
     '''
     '''
     def apply(self,character):
@@ -2598,7 +2530,6 @@ class GooProducer(Item):
         # bad code: repetetive and easy to forgett
         self.attributesToStore.extend([
                "level"])
-        self.initialState = self.getState()
     
     '''
     '''
@@ -2674,9 +2605,6 @@ class BioPress(Item):
         self.activated = False
         super().__init__(displayChars.bioPress,xPosition,yPosition,name=name,creator=creator)
 
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
-    
     '''
     '''
     def apply(self,character):
@@ -2760,9 +2688,6 @@ class GooFlask(Item):
         self.attributesToStore.extend([
                "uses","level","maxUses"])
 
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
-
     '''
     drink from flask
     '''
@@ -2845,9 +2770,6 @@ class OjectDispenser(Item):
         while counter < 5:
             self.storage.append(GooFlask(creator=self))
             counter += 1
-
-        # bad code: repetetive and easy to forgett
-        self.initialState = self.getState()
 
     '''
     drop goo flask
@@ -3253,11 +3175,6 @@ thie is a level %s item
 
     def getState(self):
         state = super().getState()
-        state["commands"] = self.commands
-        return state
-
-    def getDiffState(self):
-        state = super().getDiffState()
         state["commands"] = self.commands
         return state
 
@@ -3728,7 +3645,6 @@ class Sheet(Item):
 
         self.attributesToStore.extend([
                 "recording","level"])
-        self.initialState = self.getState()
 
     def getLongInfo(self):
         text = """
@@ -3949,7 +3865,6 @@ class Note(Item):
 
         self.attributesToStore.extend([
                 "text"])
-        self.initialState = self.getState()
 
     def getLongInfo(self):
 
@@ -3995,7 +3910,6 @@ class Map(Item):
 
         self.attributesToStore.extend([
                 "text","recording"])
-        self.initialState = self.getState()
 
     def apply(self,character):
         super().apply(character,silent=True)
@@ -4117,7 +4031,6 @@ class Command(Item):
 
         self.attributesToStore.extend([
                 "command","extraName","level","description"])
-        self.initialState = self.getState()
 
     def getLongInfo(self):
         compressedMacro = ""
@@ -4252,7 +4165,6 @@ class CommandBook(Item):
 
         self.attributesToStore.extend([
                 "contents"])
-        self.initialState = self.getState()
 
     def getState(self):
         state = super().getState()
@@ -4284,7 +4196,6 @@ class JobOrder(Item):
 
         self.attributesToStore.extend([
                 "done"])
-        self.initialState = self.getState()
 
     def getLongInfo(self):
         import json
@@ -4368,11 +4279,6 @@ done: %s
 
     def getState(self):
         state = super().getState()
-        state["tasks"] = self.tasks
-        return state
-
-    def getDiffState(self):
-        state = super().getDiffState()
         state["tasks"] = self.tasks
         return state
 
@@ -4516,15 +4422,6 @@ job order can be inserted and commands can be run depending on the item the job 
         state["jobOrders"] = jobOrderStates
         return state
 
-    def getDiffState(self):
-        state = super().getDiffState()
-        state["commands"] = self.commands
-        jobOrderStates = []
-        for item in self.jobOrders:
-            jobOrderStates.append(item.getState())
-        state["jobOrders"] = jobOrderStates
-        return state
-
     def setState(self,state):
         super().setState(state)
         if "commands" in state:
@@ -4656,15 +4553,6 @@ job order can be inserted and commands can be run depending on the item the job 
 
     def getState(self):
         state = super().getState()
-        state["commands"] = self.commands
-        jobOrderStates = []
-        for item in self.jobOrders:
-            jobOrderStates.append(item.getState())
-        state["jobOrders"] = jobOrderStates
-        return state
-
-    def getDiffState(self):
-        state = super().getDiffState()
         state["commands"] = self.commands
         jobOrderStates = []
         for item in self.jobOrders:
@@ -4883,7 +4771,6 @@ class UniformStockpileManager(Item):
 
         self.attributesToStore.extend([
                 "numItemsStored","storedItemType"])
-        self.initialState = self.getState()
 
     def getLongInfo(self):
 
@@ -5437,11 +5324,6 @@ needs to be placed in the center of a tile. The tile should be emtpy and mold fr
         state["slotsByItemtype"] = self.slotsByItemtype
         return state
 
-    def getDiffState(self):
-        state = super().getDiffState()
-        state["slotsByItemtype"] = self.slotsByItemtype
-        return state
-
     def setState(self,state):
         super().setState(state)
         if "slotsByItemtype" in state:
@@ -5576,15 +5458,6 @@ job order can be inserted and commands can be run depending on the item the job 
 
     def getState(self):
         state = super().getState()
-        state["commands"] = self.commands
-        jobOrderStates = []
-        for item in self.jobOrders:
-            jobOrderStates.append(item.getState())
-        state["jobOrders"] = jobOrderStates
-        return state
-
-    def getDiffState(self):
-        state = super().getDiffState()
         state["commands"] = self.commands
         jobOrderStates = []
         for item in self.jobOrders:
@@ -6079,7 +5952,6 @@ class GameTestingProducer(Item):
 
         self.attributesToStore.extend([
                "coolDown","coolDownTimer"])
-        self.initialState = self.getState()
 
     def apply(self,character,resultType=None):
 
@@ -6192,8 +6064,6 @@ class MachineMachine(Item):
 
         self.attributesToStore.extend([
                "coolDown","coolDownTimer","endProducts","charges","level"])
-
-        self.initialState = self.getState()
 
     '''
     trigger production of a player selected item
@@ -6332,12 +6202,6 @@ class MachineMachine(Item):
         state["blueprintLevels"] = self.blueprintLevels
         return state
 
-    def getDiffState(self):
-        state = super().getDiffState()
-        state["endProducts"] = self.endProducts
-        state["blueprintLevels"] = self.blueprintLevels
-        return state
-
     def setState(self,state):
         super().setState(state)
         self.endProducts = state["endProducts"]
@@ -6429,8 +6293,6 @@ class Machine(Item):
                "coolDown","coolDownTimer","charges"])
 
         self.setDescription()
-
-        self.initialState = self.getState()
 
         self.rawMaterialLookup = {
             "Sheet":["MetalBars"],
@@ -6744,11 +6606,6 @@ Currently the machine has no charges
         state["commands"] = self.commands
         return state
 
-    def getDiffState(self):
-        state = super().getDiffState()
-        state["commands"] = self.commands
-        return state
-
     def setState(self,state):
         super().setState(state)
         if "commands" in state:
@@ -6778,8 +6635,6 @@ class Drill(Item):
                 "isBroken","isCleaned"])
 
         self.setDescription()
-
-        self.initialState = self.getState()
 
     def setDescription(self):
         addition = ""
@@ -6937,8 +6792,6 @@ class MemoryDump(Item):
 
         self.setDescription()
 
-        self.initialState = self.getState()
-
     def setDescription(self):
         addition = ""
         if self.macros:
@@ -6998,8 +6851,6 @@ class MemoryBank(Item):
 
         self.setDescription()
 
-        self.initialState = self.getState()
-
     def setDescription(self):
         addition = ""
         if self.macros:
@@ -7050,8 +6901,6 @@ class MemoryStack(Item):
 
         self.attributesToStore.extend([
                 "macros"])
-
-        self.initialState = self.getState()
 
     '''
     trigger production of a player selected item
@@ -7198,7 +7047,6 @@ class AutoTutor(Item):
                "commandChallengeDone","challengeRun2Done","challengeRun3Done","challengeRun4Done","challengeRun5Done","initialChallengeDone",
                "activateChallenge","wallChallenge","autoScribeChallenge",
                "knownBlueprints","availableChallenges","knownInfos","challengeInfo"])
-        self.initialState = self.getState()
 
     def addScraps(self,amount=1):
         
@@ -8905,13 +8753,6 @@ class AutoTutor(Item):
         state["knownInfos"] = self.knownInfos
         return state
 
-    def getDiffState(self):
-        state = super().getDiffState()
-        state["availableChallenges"] = self.availableChallenges
-        state["knownBlueprints"] = self.knownBlueprints
-        state["knownInfos"] = self.knownInfos
-        return state
-
     def setState(self,state):
         super().setState(state)
         self.availableChallenges = state["availableChallenges"]
@@ -8941,7 +8782,6 @@ class PortableChallenger(Item):
 
         self.attributesToStore.extend([
                 "challenges","done","secret"])
-        self.initialState = self.getState()
 
     def apply(self,character):
         super().apply(character,silent=True)
@@ -9079,7 +8919,6 @@ class SimpleRunner(Item):
 
         self.attributesToStore.extend([
                 "command"])
-        self.initialState = self.getState()
 
     def apply(self,character):
         super().apply(character,silent=True)
@@ -9132,7 +8971,6 @@ class MacroRunner(Item):
 
         self.attributesToStore.extend([
                 "command"])
-        self.initialState = self.getState()
 
     def apply(self,character):
         super().apply(character,silent=True)
@@ -9370,8 +9208,6 @@ class BluePrint(Item):
 
         self.setDescription()
 
-        self.initialState = self.getState()
-
     def setDescription(self):
         if not self.endProduct:
             self.description = self.baseName
@@ -9507,16 +9343,6 @@ class StasisTank(Item):
         else:
             self.character.messages.append("you do not enter the stasis tank")
 
-    def getDiffState(self):
-        state = super().getDiffState()
-
-        if self.character:
-            state["character"] = self.character.getState()
-        else:
-            state["character"] = None
-
-        return state
-
     def getState(self):
         state = super().getState()
 
@@ -9611,8 +9437,6 @@ class Watch(Item):
         self.attributesToStore.extend([
                "creationTime"])
 
-        self.initialState = self.getState()
-
         self.bolted = False
         self.walkable = True
         try:
@@ -9651,8 +9475,6 @@ class BackTracker(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None, name="back tracker",creator=None,noId=False):
         super().__init__(displayChars.backTracker,xPosition,yPosition,name=name,creator=creator)
-
-        self.initialState = self.getState()
 
         self.attributesToStore.extend([
                "command"])
@@ -9735,8 +9557,6 @@ class Tumbler(Item):
     def __init__(self,xPosition=None,yPosition=None, name="tumbler",creator=None,noId=False):
         super().__init__(displayChars.tumbler,xPosition,yPosition,name=name,creator=creator)
 
-        self.initialState = self.getState()
-
         self.strength = 7
         self.tracking = False
         self.tracked = None
@@ -9777,8 +9597,6 @@ class GlobalMacroStorage(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None, name="global macro storage",creator=None,noId=False):
         super().__init__(displayChars.globalMacroStorage,xPosition,yPosition,name=name,creator=creator)
-
-        self.initialState = self.getState()
 
     def apply(self,character):
 
@@ -9888,7 +9706,6 @@ class Case(Item):
     '''
     def __init__(self,xPosition=None,yPosition=None, name="case",creator=None,noId=False):
         super().__init__(displayChars.case,xPosition,yPosition,name=name,creator=creator)
-        self.initialState = self.getState()
 
     def getLongInfo(self):
         text = """
@@ -9909,7 +9726,6 @@ class PocketFrame(Item):
     def __init__(self,xPosition=None,yPosition=None, name="pocket frame",creator=None,noId=False):
         super().__init__(displayChars.pocketFrame,xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
-        self.initialState = self.getState()
 
     def getLongInfo(self):
         text = """
@@ -9931,8 +9747,6 @@ class MemoryCell(Item):
         super().__init__(displayChars.memoryCell,xPosition,yPosition,name=name,creator=creator)
         self.walkable = True
 
-        self.initialState = self.getState()
-
     def getLongInfo(self):
         text = """
 
@@ -9953,8 +9767,6 @@ class Bomb(Item):
         
         self.bolted = False
         self.walkable = True
-
-        self.initialState = self.getState()
 
     def getLongInfo(self):
 
@@ -10048,8 +9860,6 @@ class Explosive(Item):
         self.bolted = False
         self.walkable = True
 
-        self.initialState = self.getState()
-
     def getLongInfo(self):
 
         text = """
@@ -10075,8 +9885,6 @@ class Mortar(Item):
 
         self.attributesToStore.extend([
                "loaded","precision"])
-
-        self.initialState = self.getState()
 
     def apply(self,character):
         if not self.loaded:
@@ -10552,8 +10360,6 @@ class Mold(Item):
         self.walkable = True
         self.attributesToStore.extend([
                "charges"])
-        self.initialState = self.getState()
-
 
     def apply(self,character):
         character.satiation += 2
@@ -10833,7 +10639,6 @@ class Bloom(Item):
         self.dead = False
         self.attributesToStore.extend([
                "dead"])
-        self.initialState = self.getState()
 
     def apply(self,character):
         if self.dead:
@@ -10913,7 +10718,6 @@ class SickBloom(Item):
         self.dead = False
         self.attributesToStore.extend([
                "charges","dead"])
-        self.initialState = self.getState()
 
     def apply(self,character):
         if self.charges and not self.dead:
@@ -11075,7 +10879,6 @@ class PoisonBush(Item):
         self.charges = 0
         self.attributesToStore.extend([
                "charges"])
-        self.initialState = self.getState()
 
     def apply(self,character):
         self.charges += 1
@@ -11264,7 +11067,6 @@ class Bush(Item):
         self.charges = 10
         self.attributesToStore.extend([
                "charges"])
-        self.initialState = self.getState()
 
     def apply(self,character):
         if self.charges > 10:
@@ -11541,7 +11343,6 @@ class BloomContainer(Item):
 
         self.attributesToStore.extend([
                "charges","maxCharges","level"])
-        self.initialState = self.getState()
 
     def getLongInfo(self):
         return """
@@ -11645,7 +11446,6 @@ class Container(Item):
 
         self.attributesToStore.extend([
                "charges","maxCharges","level"])
-        self.initialState = self.getState()
 
     def getLongInfo(self):
         text = """
@@ -11686,13 +11486,6 @@ Activate the container and select the option "unload items" to unload the items.
             
     def getState(self):
         state = super().getState()
-        state["contained"] = []
-        for item in self.contained:
-            state["contained"].append(item.getState())
-        return state
-
-    def getDiffState(self):
-        state = super().getDiffState()
         state["contained"] = []
         for item in self.contained:
             state["contained"].append(item.getState())
@@ -11940,7 +11733,6 @@ class HiveMind(Item):
 
         self.attributesToStore.extend([
                "lastMoldClear","charges"])
-        self.initialState = self.getState()
 
     def apply(self,character):
         # get the path from the creature
@@ -11983,7 +11775,7 @@ class HiveMind(Item):
            
             command += 13*(random.choice(["w","a","s","d"])+"k")+"kkj"
 
-        elif gamestate.tick-self.lastMoldClear > 10000:
+        elif gamestate.tick-self.lastMoldClear > 10000: # clear tile from mold
             self.lastMoldClear = gamestate.tick
             command = ""
             length = 1
@@ -12022,7 +11814,8 @@ class HiveMind(Item):
             command += "6s6dk"
             command = 2*command+"j"
             done = True
-        elif not self.charges and self.territory:
+        elif not self.charges and self.territory: # send creature somewhere
+            import random
             command = ""
 
             target = random.choice(self.territory)
@@ -12031,7 +11824,18 @@ class HiveMind(Item):
             if movementCommand:
                 command += movementCommand
             
-            command += "kkj"
+                
+            choice = random.randint(1,2)
+            if choice == 1:
+                command += "kkj"
+            else:
+                extraCommand = ""
+                for i in range(0,2):
+                    direction = random.choice(["w","a","s","d"])
+                    extraCommand = 13*(direction+"k")
+
+                command += "kk"+20*extraCommand
+                
         elif self.territory and (len(self.territory) < 10 or (broughtBloom and random.randint(0,1) == 1)):
             command = ""
             anchor = random.choice(self.territory)
@@ -12179,17 +11983,6 @@ paths:
         state["territory"] = self.territory
         return state
 
-    def getDiffState(self):
-        state = super().getDiffState()
-        state["paths"] = []
-        for (key,value) in self.paths.items():
-            step = {}
-            step["key"] = key
-            step["value"] = value
-            state["paths"].append(step)
-        state["territory"] = self.territory
-        return state
-
     def setState(self,state):
         super().setState(state)
         if "paths" in state:
@@ -12229,7 +12022,6 @@ class CommandBloom(Item):
 
         self.attributesToStore.extend([
                "charges","numCoal","numSick","numCorpses","lastFeeding","faction","numCommandBlooms","masterCommand","expectedNext"])
-        self.initialState = self.getState()
 
     def apply(self,character):
         if not self.terrain:

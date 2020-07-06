@@ -201,6 +201,9 @@ bad code: there are way too much lines of code in this function
 '''
 def processInput(key,charState=None,noAdvanceGame=False,char=None):
 
+    if char.dead:
+        return
+
     char.timeTaken += 1
     
     if charState == None:

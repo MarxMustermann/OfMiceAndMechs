@@ -345,19 +345,6 @@ class Quest(src.saveing.Saveable):
         self.changed()
 
     '''
-    get the difference between original state and current state as dict
-    bad code: doesn't actually calculate a difference
-    '''
-    def getDiffState(self):
-        state = super().getDiffState()
-        if self.endTrigger:
-            if not isinstance(self.endTrigger,dict):
-                state["endTrigger"] = str(self.endTrigger)
-            else:
-                state["endTrigger"] = {"container":self.endTrigger["container"].id,"method":self.endTrigger["method"]}
-        return state
-
-    '''
     get the current state
     '''
     def getState(self):
@@ -399,28 +386,6 @@ class MetaQuestSequence(Quest):
         self.type = "MetaQuestSequence"
         self.initialState = self.getState()
         loadingRegistry.register(self)
-
-    '''
-    get difference in state since creation
-    '''
-    def getDiffState(self):
-        state = super().getDiffState()
-
-        # store quests
-        (questStates,changedQuests,newQuests,removedQuests) = self.getDiffList(self.subQuests,self.initialState["subQuests"]["ids"])
-        quests = {}
-        if changedQuests:
-            quests["changed"] = changedQuests
-        if newQuests:
-            quests["new"] = newQuests
-        if removedQuests:
-            quests["removed"] = removedQuests
-        if questStates:
-            quests["states"] = questStates
-        if questStates or removedQuests:
-            state["subQuests"] = quests
-
-        return state
 
     '''
     get state as dict
@@ -708,28 +673,6 @@ class MetaQuestParralel(Quest):
         self.type = "MetaQuestParralel"
         self.initialState = self.getState()
         loadingRegistry.register(self)
-
-    '''
-    get difference in state since creation
-    '''
-    def getDiffState(self):
-        state = super().getDiffState()
-
-        # store quests
-        (questStates,changedQuests,newQuests,removedQuests) = self.getDiffList(self.subQuests,self.initialState["subQuests"]["ids"])
-        quests = {}
-        if changedQuests:
-            quests["changed"] = changedQuests
-        if newQuests:
-            quests["new"] = newQuests
-        if removedQuests:
-            quests["removed"] = removedQuests
-        if questStates:
-            quests["states"] = questStates
-        if questStates or removedQuests:
-            state["subQuests"] = quests
-
-        return state
 
     '''
     get state as dict
@@ -3039,19 +2982,6 @@ class TransportQuest(MetaQuestSequence):
 
         return state
     
-
-    '''
-    get difference in state since creation
-    '''
-    def getDiffState(self):
-        state = super().getDiffState()
-
-        if self.dropOff:
-            state["dropOff"] = []
-            state["dropOff"].append(self.dropOff[0].id)
-            state["dropOff"].append(self.dropOff[1])
-            state["dropOff"].append(self.dropOff[2])
-
 '''
 move items from permanent storage to accesible storage
 '''

@@ -6,6 +6,7 @@
 
 # load basic libs
 import json
+import random
 
 # load basic internal libs
 import src.saveing
@@ -62,13 +63,8 @@ class Item(src.saveing.Saveable):
 
         # set id
         if not noId:
-            self.id = {
-                       "other":"item",
-                       "xPosition":xPosition,
-                       "yPosition":yPosition,
-                       "counter":creator.getCreationCounter()
-                      }
-            self.id["creator"] = creator.id
+            import uuid
+            self.id = uuid.uuid4().hex
         else:
             self.id = None
         self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
@@ -516,7 +512,7 @@ class Scrap(Item):
         # get list of scrap on same location
         # bad code: should be handled in the container
         foundScraps = []
-        for item in self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]:
+        for item in self.container.itemByCoordinates[(self.xPosition,self.yPosition)]:
             if type(item) == Scrap:
                 foundScraps.append(item)
         
@@ -527,7 +523,7 @@ class Scrap(Item):
                     continue
                 self.amount += item.amount
                 # bad code: direct manipulation of terrain state
-                self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].remove(item)
+                self.container.itemByCoordinates[(self.xPosition,self.yPosition)].remove(item)
 
     def getLongInfo(self):
         text = """
@@ -1590,16 +1586,22 @@ Coal is used as an energy source. It can be used to fire furnaces.
         super().destroy(generateSrcap=False)
 
     def apply(self,character):
+        if not self.xPosition:
+            return
+
         if isinstance(character,src.characters.Monster) and character.phase == 1 and ((gamestate.tick+self.xPosition)%10 == 5):
             newChar = characters.Exploder(creator=self)
             import copy
-            newChar.macroState = copy.deepcopy(character.macroState)
+            newChar.macroState = character.macroState
+            character.macroState = {}
             newChar.satiation = character.satiation
             newChar.explode = False
             
             newChar.solvers = [
                       "NaiveActivateQuest",
                       "ActivateQuestMeta",
+                      "NaiveExamineQuest",
+                      "ExamineQuestMeta",
                       "NaivePickupQuest",
                       "NaiveMurderQuest",
                       "DrinkQuest",
@@ -2250,15 +2252,15 @@ class BloomShredder(Item):
     def apply(self,character):
         super().apply(character,silent=True)
 
+        if not self.room:
+            character.messages.append("this machine can only be used within rooms")
+            return
+
         items = []
         if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
             for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
                 if isinstance(item,Bloom):
                     items.append(item)
-
-        if not self.room:
-            character.messages.append("this machine can only be used within rooms")
-            return
 
         # refuse to produce without ressources
         if len(items) < 1:
@@ -4264,6 +4266,8 @@ done: %s
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.configureJobOrder2
         elif self.submenue.selection == "setCommand":
+            if not "a" in self.character.macroState["macros"]:
+                return
             self.tasks[-1]["command"] = self.character.macroState["macros"]["a"]
             self.tasks[-1]["macro"] = None
 
@@ -4795,6 +4799,10 @@ needs to be placed in the center of a tile. The tile should be emtpy and mold fr
 
     def apply2(self):
         if self.submenue.selection == "storeItem":
+            if not self.character.inventory:
+                self.character.messages.append("nothing in inventory")
+                return
+
             if (self.xPosition%15 == 7 and self.yPosition%15 == 7):
                 if self.numItemsStored >= 140:
                     self.character.messages.append("stockpile full")
@@ -5530,7 +5538,10 @@ Used as building material and can be used to mark paths
 
     def apply(self, character):
         self.character = character
-        self.addText()
+        #self.addText()
+        if not self.bolted:
+            character.messages.append("you fix the floor plate int the ground")
+            self.bolted = True
 
     def addText(self):
         self.submenue = interaction.InputMenu("Enter the name")
@@ -6191,7 +6202,6 @@ class MachineMachine(Item):
         new.bolted = False
 
         if hasattr(new,"coolDown"):
-            import random
             new.coolDown = random.randint(new.coolDown,int(new.coolDown*1.25))
 
         self.room.addItems([new])
@@ -6470,7 +6480,6 @@ class Machine(Item):
         if hasattr(new,"coolDown"):
             new.coolDown = round(new.coolDown*(1-(0.05*(self.productionLevel-1))))
 
-            import random
             new.coolDown = random.randint(new.coolDown,int(new.coolDown*1.25))
 
         self.container.addItems([new])
@@ -7522,7 +7531,6 @@ class AutoTutor(Item):
             self.challengeInfo["mainQueue"] = []
             for i in range(0,25):
 
-                import random
                 selected = random.choice(["Wall","Door","FloorPlate"])
 
                 if selected == "Wall":
@@ -8579,7 +8587,7 @@ class AutoTutor(Item):
                 text += " * goo producer    <= press cake\n"
                 shownText = True
             if "GrowthTank" in self.knownBlueprints:
-                text += " * growth tank     <= goo flask\n"
+                text += " * growth tank     <= goo flask + tank\n"
                 shownText = True
             if "FireCrystals" in self.knownBlueprints:
                 text += " * fire crystals   <= coal + sick bloom\n"
@@ -9984,6 +9992,8 @@ class FireCrystals(Item):
         self.startExploding()
 
     def startExploding(self):
+        if not self.xPosition:
+            return
         event = src.events.RunCallbackEvent(gamestate.tick+2+(2*self.xPosition+3*self.yPosition+gamestate.tick)%10,creator=self)
         event.setCallback({"container":self,"method":"explode"})
         self.container.addEvent(event)
@@ -10185,8 +10195,6 @@ class Chemical(Item):
         results = []
         counter = 0
 
-        import random
-
         while 1:
 
             tmp = random.choice(["mix","shift"])
@@ -10381,7 +10389,6 @@ class Mold(Item):
             if not (self.xPosition and self.yPosition):
                 return
             direction = (2*self.xPosition+3*self.yPosition+gamestate.tick)%4
-            import random
             direction = random.choice([0,1,2,3])
             if direction == 0:
                 newPos = (self.xPosition,self.yPosition+1)
@@ -10670,7 +10677,6 @@ class Bloom(Item):
         if not (self.xPosition and self.yPosition):
             return
         direction = (2*self.xPosition+3*self.yPosition+gamestate.tick)%4
-        import random
         direction = (random.randint(1,13),random.randint(1,13))
         newPos = (self.xPosition-self.xPosition%15+direction[0],self.yPosition-self.yPosition%15+direction[1])
 
@@ -10771,6 +10777,10 @@ class SickBloom(Item):
         character.solvers = [
                   "NaiveActivateQuest",
                   "ActivateQuestMeta",
+                  "NaiveExamineQuest",
+                  "ExamineQuestMeta",
+                  "NaivePickupQuest",
+                  "PickupQuestMeta",
                   "NaiveMurderQuest",
                   "NaiveDropQuest",
                 ]
@@ -10790,10 +10800,9 @@ class SickBloom(Item):
 
         counter = 1
         command = ""
-        import random
         directions =["w","a","s","d"]
         while counter < 8:
-            command += "j%s_%s"%(random.randint(1,counter*4),directions[random.randint(0,3)])
+            command += "j%s_%sk"%(random.randint(1,counter*4),directions[random.randint(0,3)])
             counter += 1
         character.macroState["macros"]["m"] = splitCommand(command+"_m")
 
@@ -10834,6 +10843,7 @@ class PoisonBloom(Item):
         super().__init__(displayChars.poisonBloom,xPosition,yPosition,creator=creator,name="poison bloom")
         self.walkable = True
         self.dead = False
+        self.bolted = False
         self.attributesToStore.extend([
                "dead"])
 
@@ -10852,7 +10862,6 @@ class PoisonBloom(Item):
         self.destroy(generateSrcap=False)
 
     def pickUp(self,character):
-        self.bolted = False
         self.dead = True
         self.charges = 0
         super().pickUp(character)
@@ -10865,7 +10874,7 @@ description:
 This is a mold bloom. Its spore sacks shriveled and are covered in green slime.
 
 You can eat it to die.
-"""%(satiation)
+"""
 
     def destroy(self, generateSrcap=True):
         super().destroy(generateSrcap=False)
@@ -10902,7 +10911,6 @@ class PoisonBush(Item):
         if not (self.xPosition and self.yPosition):
             return
         direction = (2*self.xPosition+3*self.yPosition+gamestate.tick)%4
-        import random
         direction = (random.randint(1,distance+1),random.randint(1,distance+1))
         newPos = (self.xPosition+direction[0]-5,self.yPosition+direction[1]-5)
 
@@ -10927,7 +10935,7 @@ This a cluster of blooms with a network veins connecting them. Its spore sacks s
 
 actions:
 You can use it to loose 100 satiation.
-"""%(satiation)
+"""
 
     def destroy(self, generateSrcap=True):
         new = itemMap["FireCrystals"](creator=self)
@@ -10940,9 +10948,13 @@ You can use it to loose 100 satiation.
         character.solvers = [
                   "NaiveActivateQuest",
                   "ActivateQuestMeta",
+                  "NaiveExamineQuest",
+                  "ExamineQuestMeta",
                   "NaivePickupQuest",
                   "NaiveMurderQuest",
                   "DrinkQuest",
+                  "NaiveExamineQuest",
+                  "ExamineQuestMeta",
                 ]
 
         character.faction = "monster"
@@ -11014,7 +11026,7 @@ Its spore sacks shriveled and are covered in green slime.
 
 actions:
 You can use it to loose 100 satiation.
-"""%(satiation)
+"""
 
     def destroy(self, generateSrcap=True):
         new = itemMap["FireCrystals"](creator=self)
@@ -11028,7 +11040,10 @@ You can use it to loose 100 satiation.
         character.solvers = [
                   "NaiveActivateQuest",
                   "ActivateQuestMeta",
+                  "NaiveExamineQuest",
+                  "ExamineQuestMeta",
                   "NaivePickupQuest",
+                  "PickupQuestMeta",
                   "NaiveMurderQuest",
                   "NaiveDropQuest",
                 ]
@@ -11134,7 +11149,10 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
         character.solvers = [
                   "NaiveActivateQuest",
                   "ActivateQuestMeta",
+                  "NaiveExamineQuest",
+                  "ExamineQuestMeta",
                   "NaivePickupQuest",
+                  "PickupQuestMeta",
                   "NaiveMurderQuest",
                   "NaiveDropQuest",
                 ]
@@ -11154,7 +11172,6 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
 
         counter = 1
         command = ""
-        import random
         directions =["w","a","s","d"]
         while counter < 8:
             command += "j%s_%sk"%(random.randint(1,counter*4),directions[random.randint(0,3)])
@@ -11168,6 +11185,7 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
         super().destroy(generateSrcap=False)
 
     def tryToGrowRoom(self, spawnPoint, character=None):
+        return
         if not self.terrain:
             return
         if not self.container:
@@ -11247,7 +11265,6 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
             return
 
         keepItems = []
-        import random
         doorPos = ()
         for x in range(0,sizeX):
             for y in range(0,sizeY):
@@ -11256,6 +11273,8 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
                         item = Door(creator=self,bio=True)
                     else:
                         items = self.container.getItemByPosition((upperLeftEdge[0]+x,upperLeftEdge[1]+y))
+                        if not items:
+                            return
                         item = items[0]
                         item.container.removeItem(item)
                     item.xPosition = x
@@ -11619,10 +11638,24 @@ class AutoFarmer(Item):
 
     def apply(self,character):
         if not self.terrain:
+            character.messages.append("the auto farmer cannot be used within rooms")
             return
 
-        if len(character.inventory) > 5:
-            character.inventory = character.inventory[:4]
+        if not (self.xPosition%15 == 7 and self.yPosition%15 == 7):
+            character.messages.append("the auto farmer needs to be placed in the middle of a tile")
+            return
+        
+        if not self.bolted:
+            character.messages.append("the auto farmer digs into the ground and is now ready for use")
+            self.bolted = True
+
+        if isinstance(character,src.characters.Monster):
+            character.die()
+            return
+
+        if len(character.inventory) > 9:
+            character.messages.append("inventory full")
+            return
 
         command = ""
         length = 1
@@ -11655,7 +11688,8 @@ class AutoFarmer(Item):
             items = self.container.getItemByPosition(pos)
             if not items:
                 continue
-            if items[-1].type in ("Sprout","Bloom","SickBloom"):
+            item = items[0]
+            if item.type in ("Sprout","Bloom","SickBloom","Coal") or (item.type in ("Mold","Sprout2",) and (item.xPosition%15 == 7 or item.yPosition%15 == 7 or (item.xPosition%15,item.yPosition%15) in ((6,8),(8,6),(6,6),(8,8)))):
                 if lastCharacterPosition[0] > pos[0]:
                     command += str(lastCharacterPosition[0]-pos[0])+"a"
                 if lastCharacterPosition[0] < pos[0]:
@@ -11665,17 +11699,19 @@ class AutoFarmer(Item):
                 if lastCharacterPosition[1] < pos[1]:
                     command += str(pos[1]-lastCharacterPosition[1])+"s"
 
-                if items[-1].type == "Sprout":
+                if items[0].type in ("Sprout","Sprout2","Mold"):
                     command += "j"
-                if items[-1].type == "Bloom":
+                if items[0].type == "Bloom":
                     command += "k"
-                if items[-1].type == "SickBloom":
+                if items[0].type == "SickBloom":
+                    command += "k"
+                if items[0].type == "Coal":
                     command += "k"
                 foundSomething = True
 
                 lastCharacterPosition = pos
 
-            if items[-1].type in ("Bush"):
+            if items[0].type in ("Bush"):
                 if lastCharacterPosition[0] > pos[0]:
                     command += str(lastCharacterPosition[0]-pos[0])+"a"
                     lastDirection = "a"
@@ -11689,11 +11725,11 @@ class AutoFarmer(Item):
                     command += str(pos[1]-lastCharacterPosition[1])+"s"
                     lastDirection = "s"
                 command += "j"
-                for i in range(0,9):
+                for i in range(0,11):
                     command += "J"+lastDirection
                 command += lastDirection+"k"
 
-            if items[-1].type in ("EncrustedBush"):
+            if items[0].type in ("EncrustedBush"):
                 break
 
         found = False
@@ -11710,7 +11746,10 @@ class AutoFarmer(Item):
 
         if not foundSomething:
             command += "100."
-        command += "opx$=aa$=ww$=ss$=dd"
+        command += "opx$=ww$=aa$=ss$=dd"
+        command += "opx$=ss$=aa$=ww$=dd"
+        command += "opx$=ww$=dd$=ss$=aa"
+        command += "opx$=ss$=dd$=ww$=aa"
 
         convertedCommand = []
         for item in command:
@@ -11729,12 +11768,22 @@ class HiveMind(Item):
         self.bolted = True
         self.lastMoldClear = 0
         self.charges = 0
-        
+        self.toCheck = []
+        self.cluttered = []
+        self.blocked = []
+        self.needSick = []
+        self.needCoal = []
+        self.lastBlocked = (7,7)
+        self.lastCluttered = (7,7)
+        self.lastExpansion = None
 
         self.attributesToStore.extend([
-               "lastMoldClear","charges"])
+               "lastMoldClear","charges","lastExpansion"])
 
     def apply(self,character):
+        command = None
+        done = False
+
         # get the path from the creature
         path = []
         pos = None
@@ -11742,12 +11791,32 @@ class HiveMind(Item):
             if not character.registers["PATHx"]:
                 del character.registers["PATHx"]
                 del character.registers["PATHy"]
+                del character.registers["CLUTTERED"]
+                del character.registers["BLOCKED"]
+                del character.registers["NUM SICK"]
+                del character.registers["NUM COAL"]
                 break
 
             pos = (character.registers["PATHx"].pop(),character.registers["PATHy"].pop())
+
+            if character.registers["CLUTTERED"].pop():
+                if not pos in self.cluttered:
+                    character.messages.append("added cluttered")
+                    self.cluttered.append(pos)
+            if character.registers["BLOCKED"].pop():
+                if not pos in self.blocked:
+                    self.blocked.append(pos)
+            if character.registers["NUM SICK"].pop() < 4:
+                if not pos in self.needSick:
+                    self.needSick.append(pos)
+            if character.registers["NUM COAL"].pop() < 4:
+                if not pos in self.needCoal:
+                    self.needCoal.append(pos)
+
             path.append(pos)
             if not pos in self.territory:
                 self.territory.append(pos)
+                self.lastExpansion = gamestate.tick
         if pos:
             self.paths[pos] = path
 
@@ -11758,16 +11827,92 @@ class HiveMind(Item):
                 character.inventory.remove(item)
                 broughtBloom = True
 
-        done = False
-        import random
-        if isinstance(character, src.characters.Exploder):
+        if character.inventory and character.inventory[-1].type == "Scrap":
+            character.inventory.pop()
+            character.inventory.append(Coal(creator=self))
+
+        numItems = 0
+        for item in reversed(character.inventory):
+            if not item.walkable and item.type in ("SickBloom","Bloom","Coal","CommandBloom","Corpse"):
+                break
+
+        """
+        if numItems:
+            command = ""
+            dropPoints = [] 
+            for x in range(self.xPosition%15+1,self.xPosition%15+13):
+                for y in range(self.yPosition%15+1,self.yPosition%15+13):
+                    if x == 6 and y == 6:
+                        continue
+                    dropPoints.append((x,y))
+
+            if not dropPoints:
+                dropPoints = [(random.randint(
+
+            pos = (self.xPosition,self.yPosition):
+            while i in numItems:
+                if not dropPoints:
+                    break
+                newPos = random.choice(dropPoints)
+                dropPoints.remove(newPos)
+
+                if pos[0] > newPos[0]:
+                    command
+                command = "6a6w"+str(numItems)+"lopx$=ww$=aa$=ss$=ddj"
+            command = "6a6w"+str(numItems)+"lopx$=ww$=aa$=ss$=ddj"
+        """
+
+        if self.lastExpansion == None:
+            self.lastExpansion = gamestate.tick
+        selfReplace = False
+        if gamestate.tick - self.lastExpansion > len(self.territory)*1000:
+                self.lastExpansion = None
+        else:
+            if not (self.xPosition//15 == 7 and self.yPosition//15 == 7):
+                selfReplace = True
+
+        if selfReplace:
+            new = CommandBloom(creator=self)
+            new.xPosition = self.xPosition
+            new.yPosition = self.yPosition
+
+            directions = []
+            if self.xPosition//15 > 7:
+                directions.append("a")
+            if self.yPosition//15 > 7:
+                directions.append("w")
+            if self.xPosition//15 < 7:
+                directions.append("d")
+            if self.yPosition//15 < 7:
+                directions.append("s")
+            direction = random.choice(directions)
+            new.masterCommand = "13"+direction+"9kkj"
+
+            self.destroy(generateSrcap=False)
+            self.container.addItems([new])
+
+            command = "j"
+
+        elif hasattr(character,"phase") and character.phase == 1 and character.inventory and character.inventory[-1].type == "Coal":
+            command = "l20j"
+        elif hasattr(character,"phase") and character.phase == 2 and character.inventory and character.inventory[-1].type == "SickBloom":
+            command = "ljj"
+        elif isinstance(character, src.characters.Exploder):
             character.explode = True
-            if self.charges and character.satiation < 500:
-                character.satiation = 1000
+            if self.charges and character.satiation < 100:
+                character.satiation += 100
 
             command = ""
 
-            target = random.choice(self.territory)
+            if self.blocked:
+                target = self.blocked.pop()
+                self.lastBlocked = target
+                if not target in self.toCheck:
+                    self.toCheck.append(target)
+            elif random.randint(1,2) == 1:
+                target = self.lastBlocked
+            else:
+                target = random.choice(self.territory)
 
             (movementCommand,lastNode) = self.calculateMovementUsingPaths(target)
             if movementCommand:
@@ -11815,28 +11960,46 @@ class HiveMind(Item):
             command = 2*command+"j"
             done = True
         elif not self.charges and self.territory: # send creature somewhere
-            import random
             command = ""
 
-            target = random.choice(self.territory)
+            supplyRun = False
+            if character.inventory and self.needCoal and character.inventory[-1].type == "Coal":
+                target = self.needCoal.pop()
+                if not target in self.toCheck:
+                    self.toCheck.append(target)
+                supplyRun = True
+            elif character.inventory and self.needSick and character.inventory[-1].type == "SickBloom":
+                target = self.needSick.pop()
+                if not target in self.toCheck:
+                    self.toCheck.append(target)
+                supplyRun = True
+            elif self.cluttered:
+                target = self.cluttered.pop()
+                if not target in self.toCheck:
+                    self.toCheck.append(target)
+                self.lastCluttered = target
+                supplyRun = True
+            elif random.randint(1,2) == 1:
+                target = self.lastCluttered
+            else:
+                target = random.choice(self.territory)
 
             (movementCommand,lastNode) = self.calculateMovementUsingPaths(target)
             if movementCommand:
                 command += movementCommand
-            
                 
             choice = random.randint(1,2)
-            if choice == 1:
+            if choice == 1 or supplyRun:
                 command += "kkj"
             else:
                 extraCommand = ""
                 for i in range(0,2):
                     direction = random.choice(["w","a","s","d"])
-                    extraCommand = 13*(direction+"k")
+                    extraCommand += 13*(direction+"k")
 
                 command += "kk"+20*extraCommand
                 
-        elif self.territory and (len(self.territory) < 10 or (broughtBloom and random.randint(0,1) == 1)):
+        elif self.territory and (len(self.territory) < 10 or (broughtBloom and random.randint(0,1) == 1)): # expand the territory
             command = ""
             anchor = random.choice(self.territory)
 
@@ -11844,7 +12007,7 @@ class HiveMind(Item):
             if movementCommand:
                 command += movementCommand
 
-            targetPos = self.territory[0]
+            targetPos = random.choice([self.territory[0],[7,7]])
             while targetPos in self.territory:
                 targetPos = [random.randint(1,12),random.randint(1,12)]
             neighbourPos = targetPos[:]
@@ -11867,59 +12030,96 @@ class HiveMind(Item):
             character.messages.append("targetPos: %s"%(targetPos))
             new = CommandBloom(creator=self)
             self.charges -= 1
+
             character.inventory.append(new)
             character.registers["PATHx"] = []
             character.registers["PATHy"] = []
+            character.registers["NUM COAL"] = []
+            character.registers["NUM SICK"] = []
+            character.registers["BLOCKED"] = []
+            character.registers["CLUTTERED"] = []
             if targetPos[0] > neighbourPos[0]:
-                command += 13*"dk"+"kjjlj"
-                new.masterCommand = 13*"a"+"kj"
+                command += 13*"dk"
+                new.masterCommand = 13*"a"+"9kj"
             if targetPos[0] < neighbourPos[0]:
-                command += 13*"ak"+"kjjlj"
-                new.masterCommand = 13*"d"+"kj"
+                command += 13*"ak"
+                new.masterCommand = 13*"d"+"9kj"
             if targetPos[1] > neighbourPos[1]:
-                command += 13*"sk"+"kjjlj"
-                new.masterCommand = 13*"w"+"kj"
+                command += 13*"sk"
+                new.masterCommand = 13*"w"+"9kj"
             if targetPos[1] < neighbourPos[1]:
-                command += 13*"wk"+"kjjlj"
-                new.masterCommand = 13*"s"+"kj"
-        elif ((not broughtBloom and self.charges < 20) or random.randint(0,1) == 1) and self.territory:
+                command += 13*"wk"
+                new.masterCommand = 13*"s"+"9kj"
+            command += "kjjlj.j"
+            
+            if self.charges > 10:
+                new2 = CommandBloom(creator=self)
+                new2.masterCommand = new.masterCommand
+                character.inventory.append(new2)
+                self.charges -= 1
+        elif ((not broughtBloom and self.charges < 20) or random.randint(0,1) == 1) and self.territory: # move the character somewhere to help/supply
             command = ""
 
-            target = random.choice(self.territory)
+            if character.inventory and self.needCoal and character.inventory[-1].type == "Coal":
+                target = self.needCoal.pop()
+                if not target in self.toCheck:
+                    self.toCheck.append(target)
+            elif character.inventory and self.needSick and character.inventory[-1].type == "SickBloom":
+                target = self.needSick.pop()
+                if not target in self.toCheck:
+                    self.toCheck.append(target)
+            elif self.cluttered:
+                target = self.cluttered.pop()
+                if not target in self.toCheck:
+                    self.toCheck.append(target)
+                self.lastCluttered = target
+            elif random.randint(1,2) == 1:
+                target = self.lastCluttered
+            else:
+                target = random.choice(self.territory)
 
             (movementCommand,lastNode) = self.calculateMovementUsingPaths(target)
             command += movementCommand
             
             command += "kkj"
-        elif self.territory:
+        elif self.territory: # do a heath check/rebuild of territory
             command = ""
+
+            if not self.toCheck:
+                self.toCheck = self.territory[:]
+
             target = (self.xPosition//15,self.yPosition//15)
-            while target == (self.xPosition//15,self.yPosition//15) or not target in self.paths:
-                target = random.choice(self.territory)
+            while self.toCheck and (target == (self.xPosition//15,self.yPosition//15) or not target in self.paths):
+                target = self.toCheck.pop()
 
-            (movementCommand,secondToLastNode) = self.calculateMovementUsingPaths(target)
-            command += movementCommand
+            if target == (self.xPosition//15,self.yPosition//15):
+                command = "100.j"
+            else:
+                (movementCommand,secondToLastNode) = self.calculateMovementUsingPaths(target)
+                command += movementCommand
 
-            new = CommandBloom(creator=self)
-            character.inventory.append(new)
-            self.charges -= 1
-            command += "kkjlj"
+                new = CommandBloom(creator=self)
+                character.inventory.append(new)
+                self.charges -= 1
+                command += "kkjlj.lj"
 
-            direction = ""
-            if target[1] == secondToLastNode[1]:
-                if target[0] == secondToLastNode[0]-1:
-                    direction = "d"
-                if target[0] == secondToLastNode[0]+1:
-                    direction = "a"
-            elif target[0] == secondToLastNode[0]:
-                if target[1] == secondToLastNode[1]-1:
-                    direction = "s"
-                if target[1] == secondToLastNode[1]+1:
-                    direction = "w"
+                direction = ""
+                if not secondToLastNode:
+                    return
+                if target[1] == secondToLastNode[1]:
+                    if target[0] == secondToLastNode[0]-1:
+                        direction = "d"
+                    if target[0] == secondToLastNode[0]+1:
+                        direction = "a"
+                elif target[0] == secondToLastNode[0]:
+                    if target[1] == secondToLastNode[1]-1:
+                        direction = "s"
+                    if target[1] == secondToLastNode[1]+1:
+                        direction = "w"
 
-            new.masterCommand = 13*direction+"kj"
+                new.masterCommand = 13*direction+"9kj"
 
-        else:
+        else: # stand around, look confused
             command = "100.j"
             
         convertedCommand = []
@@ -11964,9 +12164,19 @@ description:
 
 charges: %s
 territory: %s
+len(territory): %s
 lastMoldClear: %s
+blocked: %s
+lastBlocked: %s
+lastCluttered: %s
+lastExpansion: %s
+cluttered: %s
+needCoal: %s
+needSick: %s
+len(needSick): %s
+toCheck: %s
 paths: 
-"""%(self.charges,self.territory,self.lastMoldClear)
+"""%(self.charges,self.territory,len(self.territory),self.lastMoldClear,self.blocked,self.lastBlocked,self.lastCluttered,self.lastExpansion,self.cluttered,self.needCoal,self.needSick,len(self.needSick),self.toCheck)
 
         for path,value in self.paths.items():
             text += " * %s - %s\n"%(path,value)
@@ -11981,6 +12191,15 @@ paths:
             step["value"] = value
             state["paths"].append(step)
         state["territory"] = self.territory
+
+        state["toCheck"] = self.toCheck
+        state["cluttered"] = self.cluttered
+        state["blocked"] = self.blocked
+        state["needSick"] = self.needSick
+        state["needCoal"] = self.needCoal
+        state["lastCluttered"] = self.lastCluttered
+        state["lastBlocked"] = self.lastBlocked
+
         return state
 
     def setState(self,state):
@@ -11995,8 +12214,30 @@ paths:
             self.territory = []
             for item in state["territory"]:
                 self.territory.append(tuple(item))
-
-
+        if "toCheck" in state:
+            self.toCheck = []
+            for item in state["toCheck"]:
+                self.toCheck.append(tuple(item))
+        if "cluttered" in state:
+            self.cluttered = []
+            for item in state["cluttered"]:
+                self.cluttered.append(tuple(item))
+        if "blocked" in state:
+            self.blocked = []
+            for item in state["blocked"]:
+                self.blocked.append(tuple(item))
+        if "needSick" in state:
+            self.needSick = []
+            for item in state["needSick"]:
+                self.needSick.append(tuple(item))
+        if "needCoal" in state:
+            self.needCoal = []
+            for item in state["needCoal"]:
+                self.needCoal.append(tuple(item))
+        if "lastCluttered" in state:
+            self.lastCluttered = tuple(state["lastCluttered"])
+        if "lastBlocked" in state:
+            self.lastBlocked = tuple(state["lastBlocked"])
 
 class CommandBloom(Item):
     type = "CommandBloom"
@@ -12008,32 +12249,56 @@ class CommandBloom(Item):
         self.charges = 0
         self.numCoal = 0
         self.numSick = 0
-        self.numCorpses = 0
         self.numCommandBlooms = 0
         self.lastFeeding = 0
         self.masterCommand = None
         self.expectedNext = 0
+        self.blocked = False
+        self.cluttered = False
+        self.lastExplosion = 0
         
-        import random
         self.faction = ""
         for i in range(0,5):
             char = random.choice("abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
             self.faction += char
 
         self.attributesToStore.extend([
-               "charges","numCoal","numSick","numCorpses","lastFeeding","faction","numCommandBlooms","masterCommand","expectedNext"])
+               "charges","numCoal","numSick","lastFeeding","faction","numCommandBlooms","masterCommand","expectedNext","blocked","cluttered","lastExplosion"])
 
     def apply(self,character):
-        if not self.terrain:
+        if not hasattr(self,"terrain") or not self.terrain:
+            if not self.room:
+                return
+            self.destroy = True
+            self.room.damage()
+        if not self.xPosition:
             return
 
+        selfDestroy = False
+
+        items = self.container.getItemByPosition((self.xPosition-self.xPosition%15+7,self.yPosition-self.yPosition%15+7))
+        centralBloom = None
+        if items and (items[0].type == "CommandBloom" or items[-1].type == "CommandBloom"):
+            centralBloom = items[0]
+
+        if self.xPosition//15 == 7 and self.yPosition//15:
+            self.masterCommand = None
+
         if self.xPosition%15 == 1 and self.yPosition%15 == 7:
+            if not centralBloom:
+                selfDestroy = True
             command = "6dj"
         elif self.xPosition%15 == 13 and self.yPosition%15 == 7:
+            if not centralBloom:
+                selfDestroy = True
             command = "6aj"
         elif self.xPosition%15 == 7 and self.yPosition%15 == 13:
+            if not centralBloom:
+                selfDestroy = True
             command = "6wj"
         elif self.xPosition%15 == 7 and self.yPosition%15 == 1:
+            if not centralBloom:
+                selfDestroy = True
             command = "6sj"
         elif self.xPosition%15 == 7 and self.yPosition%15 == 7:
             command = None
@@ -12049,11 +12314,8 @@ class CommandBloom(Item):
                 elif self.numCoal < 5 and item.type == "Coal":
                     removeItems.append(item)
                     self.numCoal += 1
-                elif self.numCorpses < 1 and item.type == "Corpse":
-                    removeItems.append(item)
-                    self.numCorpses += 1
                 elif item.type == "CommandBloom":
-                    if "PATHx" in character.registers and len(character.registers["PATHx"]) > 10:
+                    if "PATHx" in character.registers and len(character.registers["PATHx"]) > 10 and random.randint(1,10) == 1:
                         numIncluded = 0
                         for i in range(1,len(character.registers["PATHx"])):
                             if character.registers["PATHx"][i] == self.xPosition//15 and character.registers["PATHy"][i] == self.yPosition//15:
@@ -12067,6 +12329,10 @@ class CommandBloom(Item):
                         if "PATHx" in character.registers:
                             character.registers["PATHx"].append(self.xPosition//15)
                             character.registers["PATHy"].append(self.yPosition//15)
+                            character.registers["NUM COAL"].append(self.numCoal)
+                            character.registers["NUM SICK"].append(self.numSick)
+                            character.registers["BLOCKED"].append(self.blocked)
+                            character.registers["CLUTTERED"].append(self.cluttered)
                     else:
                         removeItems.append(item)
                         self.numCommandBlooms += 1
@@ -12083,19 +12349,126 @@ class CommandBloom(Item):
             for item in removeItems:
                 character.inventory.remove(item)
 
-            if isinstance(character,src.characters.Exploder):
-                import random
-                command = "13"+random.choice(["w","a","s","d"])+"kkj"
-                if self.charges and character.satiation < 100:
-                    self.charges -= 1
-                    character.satiation += 100
+            self.beganCluttered = True
+            if len(character.inventory) > 7:
+                if not self.numSick:
+                    self.cluttered = True
+                if self.masterCommand and self.numSick:
+                    command = self.masterCommand
+                    if self.numSick:
+                        items = []
+                        for i in range(0,2):
+                            items.append(character.inventory.pop())
+                        crawler = self.runCommandOnNewCrawler("j")
+                        crawler.inventory.extend(items)
+                else:
+                    command = random.choice(["W","A","S","D"])
 
-            if self.expectedNext and self.expectedNext > gamestate.tick:
-                if self.masterCommand:
+            if character.inventory and character.inventory[-1].type == "Coal" and hasattr(character,"phase") and character.phase == 1:
+                if self.numSick > 4:
+                    command = "wal20jsdj"
+                    self.runCommandOnNewCrawler("j")
+
+            if isinstance(character,src.characters.Exploder):
+                if self.blocked:
+                    foundItem = None
+                    length = 1
+                    pos = [self.xPosition,self.yPosition]
+                    path = []
+                    path.append((pos[0],pos[1]))
+                    while length < 13:
+                        if length%2 == 1:
+                            for i in range(0,length):
+                                pos[1] -= 1
+                                path.append((pos[0],pos[1]))
+                            for i in range(0,length):
+                                pos[0] -= 1
+                                path.append((pos[0],pos[1]))
+                        else:
+                            for i in range(0,length):
+                                pos[1] += 1
+                                path.append((pos[0],pos[1]))
+                            for i in range(0,length):
+                                pos[0] += 1
+                                path.append((pos[0],pos[1]))
+                        length += 1
+                    for i in range(0,length-1):
+                        pos[1] -= 1
+                        path.append((pos[0],pos[1]))
+
+                    targets = []
+                    for pos in path:
+                        items = self.container.getItemByPosition(pos)
+                        if items and (items[0].bolted or not items[0].walkable) and not items[0].type in ("Scrap","Mold","Bush","Sprout","Sprout2","CommandBloom","PoisonBloom"):
+                            if items[0].xPosition%15 == 7 and items[0].yPosition%15 == 7:
+                                continue
+                            targets.append(items[0])
+
+                    foundItem = random.choice(targets)
+
+                    if not foundItem:
+                        directions = []
+                        if not self.xPosition//15 == 0:
+                            directions.append("a")
+                            if self.xPosition//15 > 7:
+                                directions.append("a")
+                        if not self.xPosition//15 == 14:
+                            directions.append("d")
+                            if self.xPosition//15 < 7:
+                                directions.append("d")
+                        if not self.yPosition//15 == 0:
+                            directions.append("w")
+                            if self.yPosition//15 > 7:
+                                directions.append("w")
+                        if not self.yPosition//15 == 14:
+                            directions.append("s")
+                            if self.yPosition//15 > 7:
+                                directions.append("s")
+                        command = "13"+random.choice(directions)+"9kkj"
+                        self.blocked = False
+                    else:
+                        command = ""
+                        if foundItem.yPosition and self.yPosition > foundItem.yPosition:
+                            command += str(self.yPosition-foundItem.yPosition)+"w"
+                        if self.xPosition > foundItem.xPosition:
+                            command += str(self.xPosition-foundItem.xPosition)+"a"
+                        if self.yPosition < foundItem.yPosition:
+                            command += str(foundItem.yPosition-self.yPosition)+"s"
+                        if self.xPosition < foundItem.xPosition:
+                            command += str(foundItem.xPosition-self.xPosition)+"d"
+                        character.explode = True
+                        command += "2000."
+                else:
+                    if self.masterCommand and not random.randint(1,3) == 1:
+                        command = self.masterCommand
+                    else:
+                        directions = []
+                        if not self.xPosition//15 == 0:
+                            directions.append("a")
+                            if self.xPosition//15 > 7:
+                                directions.append("a")
+                        if not self.xPosition//15 == 14:
+                            directions.append("d")
+                            if self.xPosition//15 < 7:
+                                directions.append("d")
+                        if not self.yPosition//15 == 0:
+                            directions.append("w")
+                            if self.yPosition//15 > 7:
+                                directions.append("w")
+                        if not self.yPosition//15 == 14:
+                            directions.append("s")
+                            if self.yPosition//15 > 7:
+                                directions.append("s")
+                        command = "13"+random.choice(directions)+"9kkj"
+                        if self.charges and character.satiation < 500:
+                            self.charges -= 1
+                            character.satiation += 100
+
+            if not command and self.expectedNext and self.expectedNext > gamestate.tick and not self.cluttered:
+                if self.masterCommand and not random.randint(1,3) == 1:
                     command = self.masterCommand
                 else:
-                    import random
-                    command = 13*random.choice(["w","a","s","d"])+"kkj"
+                    command = 13*random.choice(["w","a","s","d"])+"9kkj"
 
             if self.charges < 25 and not command:
                 command = ""
@@ -12103,20 +12476,23 @@ class CommandBloom(Item):
                 pos = [self.xPosition,self.yPosition]
                 path = []
                 path.append((pos[0],pos[1]))
+
+                bloomsSkipped = 0
+
                 while length < 13:
                     if length%2 == 1:
                         for i in range(0,length):
                             pos[1] -= 1
                             path.append((pos[0],pos[1]))
                         for i in range(0,length):
-                            pos[0] += 1
+                            pos[0] -= 1
                             path.append((pos[0],pos[1]))
                     else:
                         for i in range(0,length):
                             pos[1] += 1
                             path.append((pos[0],pos[1]))
                         for i in range(0,length):
-                            pos[0] -= 1
+                            pos[0] += 1
                             path.append((pos[0],pos[1]))
                     length += 1
                 for i in range(0,length-1):
@@ -12126,12 +12502,10 @@ class CommandBloom(Item):
                 if character.satiation < 300 and self.charges:
                     if gamestate.tick-self.lastFeeding < 60:
                         if self.charges < 15:
-                            import random
                             direction = random.choice(["w","a","s","d"])
                             command += 10*(13*direction+"j")
                         else:
                             command = ""
-                            import random
                             direction = random.choice(["w","a","s","d"])
                             command += 10*(13*direction+"opx$=aa$=ww$=ss$=ddwjajsjsjdjdjwjwjas")
                     else:
@@ -12144,35 +12518,62 @@ class CommandBloom(Item):
                 lastCharacterPosition = path[0]
                 explode = False
                 lastpos = None
+                count = 0
                 for pos in path[1:]:
+                    count += 1
                     items = self.container.getItemByPosition(pos)
                     if not items:
                         continue
-                    if items[0].type in ("Mold","Sprout2","CommandBloom"):
+                    elif items[0].type in ("CommandBloom",):
                         continue
-                    elif items[0].type in ("Sprout","SickBloom","Bloom","FireCrystals","Coal"):
+                    elif items[0].type in ("Mold","Sprout2") and not (items[0].xPosition%15 == 7 or items[0].yPosition%15 == 7 or (items[0].xPosition%15,items[0].yPosition%15) in ((6,6),(6,8),(8,6),(8,8))):
+                        continue
+                    elif items[0].type in ("Sprout","SickBloom","Bloom","FireCrystals","Coal","Mold","Sprout2"):
+                        if items[0].type == "Mold" and (pos[0]%15,pos[1]%15) in ((1,7),(7,1),(7,13),(13,7)):
+                            continue
                         if items[0].type == "Sprout" and (pos[0]%15,pos[1]%15) in ((1,7),(7,1),(7,13),(13,7)):
                             continue
-                        if lastCharacterPosition[0] > pos[0]:
-                            command += str(lastCharacterPosition[0]-pos[0])+"a"
-                        if lastCharacterPosition[0] < pos[0]:
-                            command += str(pos[0]-lastCharacterPosition[0])+"d"
+                        if not bloomsSkipped > 1 and (not pos[0]%15 == 7 and not pos[1]%15 == 7) and items[0].type == "Bloom" and self.masterCommand and self.charges > 5:
+                            bloomsSkipped += 1
+                            continue
+                        if not bloomsSkipped > 1 and (not pos[0]%15 == 7 and not pos[1]%15 == 7) and items[0].type == "SickBloom" and self.masterCommand and self.numSick > 4:
+                            bloomsSkipped += 1
+                            continue
                         if lastCharacterPosition[1] > pos[1]:
                             command += str(lastCharacterPosition[1]-pos[1])+"w"
+                        if lastCharacterPosition[0] > pos[0]:
+                            command += str(lastCharacterPosition[0]-pos[0])+"a"
                         if lastCharacterPosition[1] < pos[1]:
                             command += str(pos[1]-lastCharacterPosition[1])+"s"
+                        if lastCharacterPosition[0] < pos[0]:
+                            command += str(pos[0]-lastCharacterPosition[0])+"d"
 
                         foundSomething = True
 
-                        lastCharacterPosition = pos
-
                         if items[0].type in ("Coal"):
-                            if ((self.container.getItemByPosition((pos[0]-1,pos[1])) and self.container.getItemByPosition((pos[0]-1,pos[1]))[0].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or 
-                                (self.container.getItemByPosition((pos[0]+1,pos[1])) and self.container.getItemByPosition((pos[0]+1,pos[1]))[0].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
-                                (self.container.getItemByPosition((pos[0],pos[1]-1)) and self.container.getItemByPosition((pos[0],pos[1]-1))[0].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
-                                (self.container.getItemByPosition((pos[0],pos[1]+1)) and self.container.getItemByPosition((pos[0],pos[1]+1))[0].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"))):
+                            east = self.container.getItemByPosition((pos[0]+1,pos[1]))
+                            west = self.container.getItemByPosition((pos[0]-1,pos[1]))
+                            south = self.container.getItemByPosition((pos[0],pos[1]+1))
+                            north = self.container.getItemByPosition((pos[0],pos[1]-1))
+                            if ((west and west[0].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or 
+                                (east and east[0].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
+                                (north and north[0].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
+                                (south and south[0].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
+                                (west and (not west[0].walkable or west[0].bolted) and not west[0].type in ("Scrap","PoisonBloom","Mold","Sprout","Sprout2","Bloom","SickBloom")) or
+                                (east and (not east[0].walkable or east[0].bolted) and not east[0].type in ("Scrap","PoisonBloom","Mold","Sprout","Sprout2","Bloom","SickBloom")) or
+                                (north and (not north[0].walkable or north[0].bolted) and not north[0].type in ("Scrap","PoisonBloom","Mold","Sprout","Sprout2","Bloom","SickBloom")) or
+                                (south and (not south[0].walkable or south[0].bolted) and not south[0].type in ("Scrap","PoisonBloom","Mold","Sprout","Sprout2","Bloom","SickBloom"))):
                                 if not self.numSick:
+                                    self.lastExplosion = gamestate.tick
                                     if hasattr(character,"phase") and character.phase == 1:
+                                        if lastCharacterPosition[1] > pos[1]:
+                                            command += "JwJwJwJwJw"
+                                        if lastCharacterPosition[0] > pos[0]:
+                                            command += "JaJaJaJaJa"
+                                        if lastCharacterPosition[1] < pos[1]:
+                                            command += "JsJsJsJsJs"
+                                        if lastCharacterPosition[0] < pos[0]:
+                                            command += "JdJdJdJdJd"
                                         command += "20j2000."
                                         explode = True
                                         break
@@ -12181,35 +12582,38 @@ class CommandBloom(Item):
                                 else:
                                     newCommand = ""
                                     direction = (items[-1].xPosition-self.xPosition,items[-1].yPosition-self.yPosition)
-                                    if (direction[0] > 0):
-                                        newCommand += str(direction[0])+"d"
-                                    if (direction[0] < 0):
-                                        newCommand += str(-direction[0])+"a"
-                                    if (direction[1] > 0):
-                                        newCommand += str(direction[1])+"s"
                                     if (direction[1] < 0):
-                                        newCommand += str(-direction[1])+"w"
+                                        newCommand += str(-direction[1])+"wJwJwJwJw"
+                                    if (direction[0] < 0):
+                                        newCommand += str(-direction[0])+"aJaJaJaJa"
+                                    if (direction[1] > 0):
+                                        newCommand += str(direction[1])+"sJsJsJsJs"
+                                    if (direction[0] > 0):
+                                        newCommand += str(direction[0])+"dJdJdJdJd"
                                     newCommand += "20j2000."
                                     self.runCommandOnNewCrawler(newCommand)
                                     break
+
+                        lastCharacterPosition = pos
+
                         if items[0].type in ("Bloom","SickBloom","Coal"):
                             command += "k"
                         else:
                             command += "j"
                     elif items[0].type in ("Bush"):
                         foundSomething = True
-                        if lastCharacterPosition[0] > pos[0]:
-                            command += str(lastCharacterPosition[0]-pos[0])+"a"
-                            lastDirection = "a"
-                        if lastCharacterPosition[0] < pos[0]:
-                            command += str(pos[0]-lastCharacterPosition[0])+"d"
-                            lastDirection = "d"
                         if lastCharacterPosition[1] > pos[1]:
                             command += str(lastCharacterPosition[1]-pos[1])+"w"
                             lastDirection = "w"
+                        if lastCharacterPosition[0] > pos[0]:
+                            command += str(lastCharacterPosition[0]-pos[0])+"a"
+                            lastDirection = "a"
                         if lastCharacterPosition[1] < pos[1]:
                             command += str(pos[1]-lastCharacterPosition[1])+"s"
                             lastDirection = "s"
+                        if lastCharacterPosition[0] < pos[0]:
+                            command += str(pos[0]-lastCharacterPosition[0])+"d"
+                            lastDirection = "d"
                         command += "j"
                         for i in range(0,11):
                             command += "J"+lastDirection
@@ -12217,9 +12621,13 @@ class CommandBloom(Item):
                         lastCharacterPosition = pos
                         break
 
-                    elif items[0].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush"):
-                        if not self.numCoal or not self.numSick:
+                    elif (not items[0].walkable or items[0].bolted) and not items[0].type in ("Scrap","PoisonBloom",):
+                        self.blocked = True
+
+                        if not self.numCoal or not self.numSick or gamestate.tick-self.lastExplosion < 1000:
                             break
+
+                        self.lastExplosion = gamestate.tick
 
                         lowestIndex = None
                         for pos in ((items[0].xPosition-1,items[0].yPosition),(items[0].xPosition+1,items[0].yPosition),(items[0].xPosition,items[0].yPosition+1),(items[0].xPosition,items[0].yPosition+1)):
@@ -12233,14 +12641,14 @@ class CommandBloom(Item):
 
                         newCommand = ""
                         direction = (targetPos[0]-self.xPosition,targetPos[1]-self.yPosition)
-                        if (direction[0] > 0):
-                            newCommand += str(direction[0])+"d"
+                        if (direction[1] < 0):
+                            newCommand += str(-direction[1])+"w"
                         if (direction[0] < 0):
                             newCommand += str(-direction[0])+"a"
                         if (direction[1] > 0):
                             newCommand += str(direction[1])+"s"
-                        if (direction[1] < 0):
-                            newCommand += str(-direction[1])+"w"
+                        if (direction[0] > 0):
+                            newCommand += str(direction[0])+"d"
                         newCommand += "l20j2000."
                         newChar = self.runCommandOnNewCrawler(newCommand)
                         newChar.inventory.append(Coal(creator=self))
@@ -12248,70 +12656,83 @@ class CommandBloom(Item):
                         break
                     else:
                         foundSomething = True
-                        if lastCharacterPosition[0] > pos[0]:
-                            command += str(lastCharacterPosition[0]-pos[0])+"a"
-                        if lastCharacterPosition[0] < pos[0]:
-                            command += str(pos[0]-lastCharacterPosition[0])+"d"
                         if lastCharacterPosition[1] > pos[1]:
-                            command += str(lastCharacterPosition[1]-pos[1])+"w"
+                            command += str(lastCharacterPosition[1]-pos[1])+"wk"
+                        if lastCharacterPosition[0] > pos[0]:
+                            command += str(lastCharacterPosition[0]-pos[0])+"ak"
                         if lastCharacterPosition[1] < pos[1]:
-                            command += str(pos[1]-lastCharacterPosition[1])+"s"
+                            command += str(pos[1]-lastCharacterPosition[1])+"sk"
+                        if lastCharacterPosition[0] < pos[0]:
+                            command += str(pos[0]-lastCharacterPosition[0])+"dk"
                         command += "k"
+                        break
 
                 if not explode:
                     pos = (self.xPosition,self.yPosition)
-                    if lastCharacterPosition[0] > pos[0]:
-                        command += str(lastCharacterPosition[0]-pos[0])+"a"
-                    if lastCharacterPosition[0] < pos[0]:
-                        command += str(pos[0]-lastCharacterPosition[0])+"d"
                     if lastCharacterPosition[1] > pos[1]:
                         command += str(lastCharacterPosition[1]-pos[1])+"w"
+                    if lastCharacterPosition[0] > pos[0]:
+                        command += str(lastCharacterPosition[0]-pos[0])+"a"
                     if lastCharacterPosition[1] < pos[1]:
                         command += str(pos[1]-lastCharacterPosition[1])+"s"
+                    if lastCharacterPosition[0] < pos[0]:
+                        command += str(pos[0]-lastCharacterPosition[0])+"d"
 
                     command += "opx$=aa$=ww$=ss$=ddk"
                     if foundSomething:
                         command += "j"
                     if not foundSomething:
                         if character.satiation > 100:
-                            import random
                             command += str(min(character.satiation-30,random.randint(100,200)))+".j"
                         else:
-                            import random
                             command = random.choice(["W","A","S","D"])
 
                     self.expectedNext = gamestate.tick+len(command)-25
 
+                if count == 168:
+                    self.cluttered = False
 
             elif not command:
                 command = ""
                 new = CommandBloom(creator=self)
 
-                import random
                 directions = []
                 if not self.xPosition//15 == 0:
                     directions.append("a")
+                    if self.xPosition//15 > 7:
+                        directions.append("a")
                 if not self.xPosition//15 == 14:
                     directions.append("d")
+                    if self.xPosition//15 < 7:
+                        directions.append("d")
                 if not self.yPosition//15 == 0:
                     directions.append("w")
+                    if self.yPosition//15 > 7:
+                        directions.append("w")
                 if not self.yPosition//15 == 14:
                     directions.append("s")
+                    if self.yPosition//15 > 7:
+                        directions.append("s")
                 direction = random.choice(directions)
                 reversedDirection = {"w":"s","s":"w","a":"d","d":"a"}
-                command += 13*direction+"kkkkkkkjjlj"
-                new.masterCommand = 13*reversedDirection[direction]+"kj"
+                command += 13*direction+"9kkjjilj.j"
+                new.masterCommand = 13*reversedDirection[direction]+"9kj"
                 new.faction = self.faction
 
-                if self.numSick:
-                    self.runCommandOnNewCrawler("j")
 
                 walker = character
-                walker.inventory.append(new)
+                walker.inventory.insert(0,new)
                 walker.registers["SOURCEx"] = [self.xPosition//15]
                 walker.registers["SOURCEy"] = [self.yPosition//15]
                 walker.registers["PATHx"] = [self.xPosition//15]
                 walker.registers["PATHy"] = [self.yPosition//15]
+                walker.registers["NUM COAL"] = [self.numCoal]
+                walker.registers["NUM SICK"] = [self.numSick]
+                walker.registers["BLOCKED"] = [self.blocked]
+                walker.registers["CLUTTERED"] = [self.beganCluttered]
+
+                if self.numSick:
+                    self.runCommandOnNewCrawler("j")
 
                 if not "NaiveDropQuest" in walker.solvers:
                     walker.solvers.append("NaiveDropQuest")
@@ -12322,12 +12743,14 @@ class CommandBloom(Item):
 
                 self.charges -= 10
         else:
+            selfDestroy = True
+
+        if selfDestroy:
             new = FireCrystals(creator=self)
             new.xPosition = self.xPosition
             new.yPosition = self.yPosition
             self.container.addItems([new])
             self.container.removeItem(self)
-            import random
             direction = random.choice(["w","a","s","d"])
             reverseDirection = {"a":"d","w":"s","d":"a","s":"w"}
             command = "j"+3*direction+"40."+3*reverseDirection[direction]+"KaKwKsKd"
@@ -12342,12 +12765,17 @@ class CommandBloom(Item):
         character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
 
     def runCommandOnNewCrawler(self,newCommand):
+        if not self.numSick:
+            return
         newCharacter = characters.Monster(creator=self)
 
         newCharacter.solvers = [
                   "NaiveActivateQuest",
+                  "NaiveExamineQuest",
+                  "ExamineQuestMeta",
                   "ActivateQuestMeta",
                   "NaivePickupQuest",
+                  "PickupQuestMeta",
                   "NaiveMurderQuest",
                   "NaiveDropQuest",
                 ]
@@ -12379,10 +12807,11 @@ runs commands on any creature activating this item.
 charges: %s
 numCoal: %s
 numSick: %s
-numCorpses: %s
 masterCommand: %s
 numCommandBlooms: %s
-"""%(self.charges,self.numCoal,self.numSick,self.numCorpses,self.masterCommand,self.numCommandBlooms)
+blocked: %s
+cluttered: %s
+"""%(self.charges,self.numCoal,self.numSick,self.masterCommand,self.numCommandBlooms,self.blocked,self.cluttered)
 
 # maping from strings to all items
 # should be extendable

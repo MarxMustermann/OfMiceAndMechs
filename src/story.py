@@ -3023,14 +3023,8 @@ class BuildBase(BasicPhase):
         showText("build a base.\n\npress space to continue")
         showText("\n\n * press ? for help\n\n * press a to move left/west\n * press w to move up/north\n * press s to move down/south\n * press d to move right/east\n\npress space to continue\n\n")
 
-        # place character in wakeup room
-        if terrain.wakeUpRoom:
-            self.mainCharRoom = terrain.wakeUpRoom
-            self.mainCharRoom.addCharacter(mainChar,2,4)
-        # place character on terrain
-        else:
-            mainChar.terrain = terrain
-            terrain.addCharacter(mainChar,65,126)
+        mainChar.terrain = terrain
+        terrain.addCharacter(mainChar,124,109)
 
         self.miniBase = terrain.rooms[0]
 
@@ -3079,12 +3073,38 @@ class BuildBase(BasicPhase):
         for bigX in range(1,14):
             for bigY in range(1,14):
                 import random
+                if bigX > 3 and bigX < 11 and bigY > 3 and bigY < 11:
+                    continue
                 if random.randint(1,1) == 1:
                     molds.append(src.items.Mold(bigX*15+random.randint(1,13),bigY*15+random.randint(1,13),creator=self))
+
+        for pos in ((187,37),(37,37),(37,187),(187,187),(202,112),(187,112),(172,112),(157,112),(142,112)):
+            commandBloom = src.items.CommandBloom(pos[0],pos[1],creator=self)
+            terrain.addItems([commandBloom])
+            if pos in ((187,112),(172,112),(157,112),(142,112)):
+                commandBloom.masterCommand = "13a9kj"
+            molds.append(src.items.Mold(pos[0]+4,pos[1]+4,creator=self))
+            molds.append(src.items.Mold(pos[0]-4,pos[1]+4,creator=self))
+            molds.append(src.items.Mold(pos[0]+4,pos[1]-4,creator=self))
+            molds.append(src.items.Mold(pos[0]-4,pos[1]-4,creator=self))
+            molds.append(src.items.Bloom(pos[0]+2,pos[1]+2,creator=self))
+            molds.append(src.items.Bloom(pos[0]-2,pos[1]+2,creator=self))
+            molds.append(src.items.Bloom(pos[0]+2,pos[1]-2,creator=self))
+            molds.append(src.items.Bloom(pos[0]-2,pos[1]-2,creator=self))
+            terrain.addItems([src.items.CommandBloom(pos[0]-6,pos[1],creator=self)])
+            terrain.addItems([src.items.CommandBloom(pos[0]-6,pos[1],creator=self)])
+            terrain.addItems([src.items.CommandBloom(pos[0]+6,pos[1],creator=self)])
+            terrain.addItems([src.items.CommandBloom(pos[0],pos[1]-6,creator=self)])
+            terrain.addItems([src.items.CommandBloom(pos[0],pos[1]+6,creator=self)])
+            molds.append(src.items.Mold(pos[0]+6,pos[1]+6,creator=self))
+            molds.append(src.items.Mold(pos[0]-6,pos[1]-6,creator=self))
+            molds.append(src.items.Mold(pos[0]+6,pos[1]-6,creator=self))
+            molds.append(src.items.Mold(pos[0]-6,pos[1]+6,creator=self))
+        
         terrain.addItems(molds)
         for mold in molds:
             mold.startSpawn()
-        
+
         mainChar.addListener(self.checkRoomEnteredMain)
         mainChar.macroState["macros"]["j"] = ["J","f"]
 
@@ -3103,6 +3123,7 @@ class BuildBase(BasicPhase):
                   "NaiveDropQuest",
                   "DropQuestMeta",
                   "LeaveRoomQuest",
+                  "NaiveMurderQuest",
               ]
 
         mainChar.solvers = [

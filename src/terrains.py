@@ -55,6 +55,7 @@ class Terrain(src.saveing.Saveable):
         self.initialSeed = seed
         self.seed = seed
         self.events = []
+        self.biomeInfo = {"wet":2}
 
         # set id
         self.id = {
@@ -1008,28 +1009,32 @@ class Terrain(src.saveing.Saveable):
                 elif position[1]%15 > 7:
                     position = (position[0]+1,position[1]-1)
                 else:
-                    continue
+                    if not item.type in ("Explosion","FireCrystals","Bomb","CommandBloom"):
+                        continue
             if position[0]%15 == 14:
                 if position[1]%15 < 7:
                     position = (position[0]-1,position[1]+1)
                 elif position[1]%15 > 7:
                     position = (position[0]-1,position[1]-1)
                 else:
-                    continue
+                    if not item.type in ("Explosion","FireCrystals","Bomb","CommandBloom"):
+                        continue
             if position[1]%15 == 0:
                 if position[0]%15 < 7:
                     position = (position[0]+1,position[1]+1)
                 elif position[0]%15 > 7:
                     position = (position[0]-1,position[1]+1)
                 else:
-                    continue
+                    if not item.type in ("Explosion","FireCrystals","Bomb","CommandBloom"):
+                        continue
             if position[1]%15 == 14:
                 if position[0]%15 < 7:
                     position = (position[0]+1,position[1]-1)
                 elif position[0]%15 > 7:
                     position = (position[0]-1,position[1]-1)
                 else:
-                    continue
+                    if not item.type in ("Explosion","FireCrystals","Bomb","CommandBloom"):
+                        continue
 
             item.xPosition = position[0]
             item.yPosition = position[1]
@@ -1650,6 +1655,8 @@ class GameplayTest(Terrain):
                 for (key,thickness) in excludes.items():
                     noScrap = False
                     if counter%5 == 0:
+                        if key[0]//15 >= 7 and key[1]//15 == 7 or (key[0]//15,key[1]//15) in ((7,7),(7,6),(7,8),(8,7),(8,6),(8,8)):
+                            continue
                         if key[0]%15 in (0,14) or key[1]%15 in (0,14):
                             continue
                         if not counter%(5*3) == 0:
@@ -1683,6 +1690,8 @@ class GameplayTest(Terrain):
                         # skip pseudorandomly
                         if x%modulos[0] and y%modulos[1] or (not x%modulos[2] and not x%modulos[3]) or x%modulos[4] or not y%modulos[5]:
                             continue
+                        if (x//15,y//15) in ((6,6),(6,7),(6,8),(7,7),(7,6),(7,8),(8,7),(8,6),(8,8),(11,7),(10,7),(9,7)):
+                            continue
 
                         # add scrap
                         self.scrapItems.append(itemType(x,y,creator=creator))
@@ -1691,15 +1700,15 @@ class GameplayTest(Terrain):
 
             # add scrap
             fieldThickness = seed//3%20
-            x = 75
+            x = 45
             while x < 180:
-                y = 75
+                y = 45
                 while y < 180:
                     seed += seed%35
-                    if x in (75,165) or y in (75,165):
+                    if x in (45,165) or y in (45,165) or ((x,y) in ((90,90),(90,105),(90,120))):
                         maxItems = (8*8)-seed%10-fieldThickness
-                    elif x in (90,180) or y in (90,180):
-                        maxItems = (11*11)-seed%20-fieldThickness
+                    elif x >= 75 and x <= 135 and y >= 75 and y <= 135:
+                        maxItems = (12*12)-seed%20-fieldThickness
                     else:
                         maxItems = (15*15)-seed%30-fieldThickness
                     addPseudoRandomScrap(maxItems,(x,x+15),(y,y+15),seed)
@@ -1711,9 +1720,9 @@ class GameplayTest(Terrain):
             self.scrapItems = []
 
             # add other objects
-            addPseudoRandomThing((90,170),(90,170),(23,7,2,3,2,4),src.items.Wall)
+            addPseudoRandomThing((45,170),(45,170),(23,7,2,3,2,4),src.items.Wall)
             seed += seed%35
-            addPseudoRandomThing((90,170),(90,170),(13,15,3,5,3,2),src.items.Pipe)
+            addPseudoRandomThing((45,170),(45,170),(13,15,3,5,3,2),src.items.Pipe)
 
             toRemove = []
             for item in self.scrapItems:
@@ -1722,6 +1731,10 @@ class GameplayTest(Terrain):
                         toRemove.append(subItem)
 
             self.addItems(self.scrapItems)
+
+            x = 157
+            for y in range(97,129):
+                toRemove.extend(self.getItemByPosition((x,y)))
             
             for item in toRemove:
                 self.removeItem(item, recalculate=False)
@@ -1740,8 +1753,9 @@ class GameplayTest(Terrain):
 
             # add base of operations
             # add base of operations
-            self.miniBase = src.rooms.MiniBase(3,8,1,1,creator=self,seed=seed)
+            self.miniBase = src.rooms.MiniBase(7,7,1,1,creator=self,seed=seed)
             self.addRooms([self.miniBase])
+            #3,8
 
             extraItems = []
 

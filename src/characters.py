@@ -117,14 +117,8 @@ class Character(src.saveing.Saveable):
         if characterId:
             self.id = characterId
         else:
-            self.id = {
-                   "other":"character",
-                   "xPosition":xPosition,
-                   "yPosition":yPosition,
-                   "counter":creator.getCreationCounter()
-                  }
-            self.id["creator"] = creator.id
-            self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
+            import uuid
+            self.id = uuid.uuid4().hex
 
         # mark attributes for saving
         self.attributesToStore.extend([

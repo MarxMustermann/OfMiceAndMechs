@@ -1663,7 +1663,7 @@ current registers
                     def enterLocalised(room,localisedEntry):
 
                         # get the entry point in room coordinates
-                        if localisedEntry in room.walkingAccess:
+                        if localisedEntry in room.walkingAccess and localisedEntry in room.itemByCoordinates:
                             # check if the entry point is blocked (by a door)
                             for item in room.itemByCoordinates[localisedEntry]:
 
@@ -1795,6 +1795,9 @@ current registers
 
                                 # remember the item for interaction and abort
                                 foundItem = foundItems[0]
+
+                        if foundItem:
+                            foundItem = foundItems[0]
 
                         # move the character
                         if not foundItem:
@@ -1960,7 +1963,7 @@ current registers
             # drop first item from inventory
             # bad pattern: the user has to have the choice for what item to drop
             if key in (commandChars.drop):
-                if not "NaiveDropQuest" in char.solvers:
+                if 1==0 and not "NaiveDropQuest" in char.solvers:
                     char.messages.append("you do not have the nessecary solver yet")
                 else:
                     if len(char.inventory):
@@ -2717,13 +2720,14 @@ class InventoryMenu(SubMenu):
                 self.drop = True
                 return False
 
-        header.set_text((urwid.AttrSpec("default","default"),"\ninventory overview\n\n"))
+        if not noRender:
+            header.set_text((urwid.AttrSpec("default","default"),"\ninventory overview\n\n"))
 
-        # bad code: uses global function
-        self.persistentText = (urwid.AttrSpec("default","default"),renderInventory())
+            # bad code: uses global function
+            self.persistentText = (urwid.AttrSpec("default","default"),renderInventory())
 
-        # show the render
-        main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+            # show the render
+            main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
 
         return False
 

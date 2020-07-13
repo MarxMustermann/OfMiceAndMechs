@@ -34,6 +34,7 @@ class Room(src.saveing.Saveable):
         super().__init__()
 
         # initialize attributes
+        self.health = 1 
         self.desiredPosition = desiredPosition
         self.desiredSteamGeneration = None
         self.layout = layout
@@ -283,6 +284,26 @@ class Room(src.saveing.Saveable):
 
         self.initialState = self.getState()
         loadingRegistry.register(self)
+
+    def damage(self):
+        self.health -= 1
+        if self.health < 1:
+            self.terrain.removeRoom(self)
+
+            toAdd = []
+            for item in self.itemsOnFloor:
+                item.xPosition += self.xPosition*15+self.offsetX
+                item.yPosition += self.yPosition*15+self.offsetY
+                item.bolted = False
+                toAdd.append(item)
+            for character in self.characters:
+                character.xPosition += self.xPosition*15+self.offsetX
+                character.yPosition += self.yPosition*15+self.offsetY
+                self.terrain.addCharacter(character,character.xPosition,character.yPosition)
+            self.terrain.addItems(toAdd)
+
+            self.xPosition = 0
+            self.yPosition = 0
 
     '''
     registering for notifications

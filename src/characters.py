@@ -23,44 +23,49 @@ this is the class for characters meaning both npc and pcs.
 all characters except the pcs always have automated = True to
 make them to things on their own
 """
+
+
 class Character(src.saveing.Saveable):
     charType = "Character"
 
     def setDefaultMacroState(self):
         import time
         self.macroState = {
-            "commandKeyQueue":[],
-            "state":[],
-            "recording":False,
-            "recordingTo":None,
-            "replay":[],
-            "loop":[],
-            "number":None,
-            "doNumber":False,
-            "macros":{},
-            "shownStarvationWarning":False,
-            "lastLagDetection":time.time(),
-            "lastRedraw":time.time(),
-            "idleCounter":0,
-            "submenue":None,
+            "commandKeyQueue": [],
+            "state": [],
+            "recording": False,
+            "recordingTo": None,
+            "replay": [],
+            "loop": [],
+            "number": None,
+            "doNumber": False,
+            "macros": {},
+            "shownStarvationWarning": False,
+            "lastLagDetection": time.time(),
+            "lastRedraw": time.time(),
+            "idleCounter": 0,
+            "submenue": None,
             "ignoreNextAutomated": False,
             "ticksSinceDeath": None,
-            "footerPosition":0,
-            #"footerLength":len(footerText),
-            "footerSkipCounter":20,
-            "itemMarkedLast":None,
-            "lastMoveAutomated":False,
-            "stealKey":{},
-                }
+            "footerPosition": 0,
+            # "footerLength":len(footerText),
+            "footerSkipCounter": 20,
+            "itemMarkedLast": None,
+            "lastMoveAutomated": False,
+            "stealKey": {},
+        }
 
     '''
     sets basic info AND adds default behaviour/items
     '''
-    def __init__(self,display=None,xPosition=0,yPosition=0,quests=[],automated=True,name=None,creator=None,characterId=None,seed=None):
+
+    def __init__(self, display=None, xPosition=0, yPosition=0, quests=[], automated=True, name=None, creator=None,
+                 characterId=None, seed=None):
         super().__init__()
 
         if name == None and seed:
-            name = names.characterFirstNames[(seed)%len(names.characterFirstNames)]+" "+names.characterLastNames[(seed*10)%len(names.characterLastNames)]
+            name = names.characterFirstNames[(seed) % len(names.characterFirstNames)] + " " + names.characterLastNames[
+                (seed * 10) % len(names.characterLastNames)]
 
         if display == None and not name == None:
             display = displayChars.staffCharactersByLetter[name[0].lower()]
@@ -81,7 +86,7 @@ class Character(src.saveing.Saveable):
         self.name = name
         self.inventory = []
         self.watched = False
-        self.listeners = {"default":[]}
+        self.listeners = {"default": []}
         self.path = []
         self.subordinates = []
         self.reputation = 0
@@ -122,10 +127,10 @@ class Character(src.saveing.Saveable):
 
         # mark attributes for saving
         self.attributesToStore.extend([
-               "gotBasicSchooling","gotMovementSchooling","gotInteractionSchooling","gotExamineSchooling",
-               "xPosition","yPosition","name","satiation","unconcious","reputation","tutorialStart",
-               "isMilitary","hasFloorPermit","dead","deathReason","automated","watched","solvers","questsDone",
-               "stasis","registers","doStackPop","doStackPush","timeTaken","personality"])
+            "gotBasicSchooling", "gotMovementSchooling", "gotInteractionSchooling", "gotExamineSchooling",
+            "xPosition", "yPosition", "name", "satiation", "unconcious", "reputation", "tutorialStart",
+            "isMilitary", "hasFloorPermit", "dead", "deathReason", "automated", "watched", "solvers", "questsDone",
+            "stasis", "registers", "doStackPop", "doStackPush", "timeTaken", "personality"])
         self.objectsToStore.append("serveQuest")
         self.objectsToStore.append("room")
 
@@ -157,7 +162,7 @@ class Character(src.saveing.Saveable):
         self.xPosition = xPosition
         self.yPosition = yPosition
 
-    def setRegisterValue(self,key,value):
+    def setRegisterValue(self, key, value):
         if not key in self.registers:
             self.registers[key] = [0]
         self.registers[key][-1] = value
@@ -165,6 +170,7 @@ class Character(src.saveing.Saveable):
     """
     proxy render method to display attribute
     """
+
     @property
     def display(self):
         return self.render()
@@ -172,6 +178,7 @@ class Character(src.saveing.Saveable):
     """
     render the character
     """
+
     def render(self):
         if self.unconcious:
             return displayChars.unconciousBody
@@ -181,6 +188,7 @@ class Character(src.saveing.Saveable):
     """
     the object the character is in. Either room or terrain
     """
+
     @property
     def container(self):
         if self.room:
@@ -191,6 +199,7 @@ class Character(src.saveing.Saveable):
     '''
     get a quest from the character (proxies room quest queue)
     '''
+
     def getQuest(self):
         if self.room and self.room.quests:
             return self.room.quests.pop()
@@ -201,7 +210,8 @@ class Character(src.saveing.Saveable):
     almost straightforward adding of events to the characters event queue
     ensures that the events are added in proper order
     '''
-    def addEvent(self,event):
+
+    def addEvent(self, event):
         # get the position for this event
         index = 0
         for existingEvent in self.events:
@@ -210,12 +220,13 @@ class Character(src.saveing.Saveable):
             index += 1
 
         # add event at proper position
-        self.events.insert(index,event)
+        self.events.insert(index, event)
 
     '''
     reset the path to the current quest
     bad code: is only needed because path is contained in character instead of quest
     '''
+
     def recalculatePath(self):
         # log impossible state
         if not self.quests:
@@ -229,14 +240,16 @@ class Character(src.saveing.Saveable):
     '''
     straightforward removing of events from the characters event queue
     '''
-    def removeEvent(self,event):
+
+    def removeEvent(self, event):
         self.events.remove(event)
 
     '''
     almost straightforward getter for chat options
     # bad code: adds default chat options
     '''
-    def getChatOptions(self,partner):
+
+    def getChatOptions(self, partner):
         # get the usual chat options
         chatOptions = self.basicChatOptions[:]
 
@@ -246,40 +259,44 @@ class Character(src.saveing.Saveable):
                 chatOptions.append(src.chats.RecruitChat)
                 pass
             if not partner in self.subordinates:
-                chatOptions.append({"dialogName":"may i serve you?","chat":chats.RoomDutyChat,"params":{
-                "superior":self
+                chatOptions.append({"dialogName": "may i serve you?", "chat": chats.RoomDutyChat, "params": {
+                    "superior": self
                 }})
             else:
-                chatOptions.append({"dialogName":"can i do something for you?","chat":chats.RoomDutyChat2,"params":{
-                "superior":self
-                }})
+                chatOptions.append(
+                    {"dialogName": "can i do something for you?", "chat": chats.RoomDutyChat2, "params": {
+                        "superior": self
+                    }})
             if self.isMilitary:
-                chatOptions.append({"dialogName":"I want to join the military","chat":chats.JoinMilitaryChat,"params":{
-                "superior":self
-                }})
+                chatOptions.append(
+                    {"dialogName": "I want to join the military", "chat": chats.JoinMilitaryChat, "params": {
+                        "superior": self
+                    }})
 
         return chatOptions
 
     '''
     getter for the players state
     '''
+
     def getState(self):
         # fetch base state
         state = super().getState()
 
         state["macroState"] = self.macroState
-        if not state["macroState"]["itemMarkedLast"] == None and not isinstance(state["macroState"]["itemMarkedLast"],str):
+        if not state["macroState"]["itemMarkedLast"] == None and not isinstance(state["macroState"]["itemMarkedLast"],
+                                                                                str):
             state["macroState"]["itemMarkedLast"] = state["macroState"]["itemMarkedLast"].id
 
         state["registers"] = self.registers
 
         # add simple structures
-        state.update({ 
-                 "inventory": {},
-                 "quests": {},
-                 "path":self.path,
-               })
-                 
+        state.update({
+            "inventory": {},
+            "quests": {},
+            "path": self.path,
+        })
+
         # store inventory
         inventoryIds = []
         inventoryStates = {}
@@ -312,7 +329,7 @@ class Character(src.saveing.Saveable):
         # bad code: probably broken
         chatOptions = []
         for chat in self.basicChatOptions:
-            if not isinstance(chat,dict):
+            if not isinstance(chat, dict):
                 chatOptions.append(chat.id)
             else:
                 option = {}
@@ -330,7 +347,8 @@ class Character(src.saveing.Saveable):
     '''
     setter for the players state
     '''
-    def setState(self,state):
+
+    def setState(self, state):
         # set basic state
         super().setState(state)
 
@@ -342,7 +360,8 @@ class Character(src.saveing.Saveable):
         if not self.macroState["itemMarkedLast"] == None:
             def setParam(instance):
                 self.macroState["itemMarkedLast"] = instance
-            loadingRegistry.callWhenAvailable(self.macroState["itemMarkedLast"],setParam)
+
+            loadingRegistry.callWhenAvailable(self.macroState["itemMarkedLast"], setParam)
 
         if "registers" in state:
             self.registers = state["registers"]
@@ -355,7 +374,7 @@ class Character(src.saveing.Saveable):
         # set path
         if "path" in state:
             self.path = state["path"]
-        
+
         # set inventory
         if "inventory" in state:
             if "inventoryIds" in state["inventory"]:
@@ -363,7 +382,7 @@ class Character(src.saveing.Saveable):
                     item = src.items.getItemFromState(state["inventory"]["states"][inventoryId])
                     self.inventory.append(item)
             else:
-                self.loadFromList(state["inventory"],self.inventory,src.items.getItemFromState)
+                self.loadFromList(state["inventory"], self.inventory, src.items.getItemFromState)
 
         # set quests
         if "quests" in state:
@@ -374,9 +393,9 @@ class Character(src.saveing.Saveable):
                     if quest.id in state["quests"]["removed"]:
                         quest.deactivate()
                         quest.completed = True
-                
+
             # load quests using the saving class
-            self.loadFromList(state["quests"],self.quests,src.quests.getQuestFromState)
+            self.loadFromList(state["quests"], self.quests, src.quests.getQuestFromState)
 
             # load a fixed set of quests
             if "questIds" in state["quests"]:
@@ -398,7 +417,7 @@ class Character(src.saveing.Saveable):
         if "chatOptions" in state:
             chatOptions = []
             for chatType in state["chatOptions"]:
-                if not isinstance(chatType,dict):
+                if not isinstance(chatType, dict):
                     chatOptions.append(chats.chatMap[chatType])
                 else:
                     option = {}
@@ -406,13 +425,15 @@ class Character(src.saveing.Saveable):
                     option["dialogName"] = chatType["dialogName"]
                     if "params" in chatType:
                         params = {}
-                        for (key,value) in chatType["params"].items():
+                        for (key, value) in chatType["params"].items():
                             '''
                             set value
                             '''
+
                             def setParam(instance):
                                 params[key] = instance
-                            loadingRegistry.callWhenAvailable(value,setParam)
+
+                            loadingRegistry.callWhenAvailable(value, setParam)
                         option["params"] = params
                     chatOptions.append(option)
             self.basicChatOptions = chatOptions
@@ -426,32 +447,33 @@ class Character(src.saveing.Saveable):
 
         return state
 
-    def awardReputation(self,amount=0,fraction=0, reason=None):
+    def awardReputation(self, amount=0, fraction=0, reason=None):
         totalAmount = amount
         if fraction and self.reputation:
-            totalAmount += self.reputation//fraction
+            totalAmount += self.reputation // fraction
         self.reputation += totalAmount
         if self.watched:
-            text = "you were rewarded %i reputation"%totalAmount
+            text = "you were rewarded %i reputation" % totalAmount
             if reason:
-                text += " for "+reason
+                text += " for " + reason
             self.messages.append(text)
 
-    def revokeReputation(self,amount=0,fraction=0, reason=None):
+    def revokeReputation(self, amount=0, fraction=0, reason=None):
         totalAmount = amount
         if fraction and self.reputation:
-            totalAmount += self.reputation//fraction
+            totalAmount += self.reputation // fraction
         self.reputation -= totalAmount
         if self.watched:
-            text = "you lost %i reputation"%totalAmount
+            text = "you lost %i reputation" % totalAmount
             if reason:
-                text += " for "+reason
+                text += " for " + reason
             self.messages.append(text)
 
     '''
     starts the next quest in the quest list
     bad code: this is kind of incompatible with the meta quests
     '''
+
     def startNextQuest(self):
         if len(self.quests):
             self.quests[0].recalculate()
@@ -464,75 +486,86 @@ class Character(src.saveing.Saveable):
     '''
     straightforward getting a string with detailed info about the character
     '''
+
     def getDetailedInfo(self):
-        return "\nname: "+str(self.name)+"\nroom: "+str(self.room)+"\ncoordinate: "+str(self.xPosition)+" "+str(self.yPosition)+"\nsubordinates: "+str(self.subordinates)+"\nsat: "+str(self.satiation)+"\nreputation: "+str(self.reputation)+"\ntick: "+str(gamestate.tick)+"\nfaction: "+str(self.faction)
+        return "\nname: " + str(self.name) + "\nroom: " + str(self.room) + "\ncoordinate: " + str(
+            self.xPosition) + " " + str(self.yPosition) + "\nsubordinates: " + str(self.subordinates) + "\nsat: " + str(
+            self.satiation) + "\nreputation: " + str(self.reputation) + "\ntick: " + str(
+            gamestate.tick) + "\nfaction: " + str(self.faction)
 
     '''
     adds a quest to the characters quest list
     bad code: this is kind of incompatible with the meta quests
     '''
-    def assignQuest(self,quest,active=False):
-            if active:
-                self.quests.insert(0,quest)
-            else:
-                self.quests.append(quest)
-            quest.assignToCharacter(self)
-            quest.activate()
-            if (active or len(self.quests) == 1):
-                try:
-                    if self.quests[0] == quest:
-                        self.setPathToQuest(quest)
-                except:
-                    # bad pattern: exceptions should be logged
-                    pass
+
+    def assignQuest(self, quest, active=False):
+        if active:
+            self.quests.insert(0, quest)
+        else:
+            self.quests.append(quest)
+        quest.assignToCharacter(self)
+        quest.activate()
+        if active or len(self.quests) == 1:
+            try:
+                if self.quests[0] == quest:
+                    self.setPathToQuest(quest)
+            except:
+                # bad pattern: exceptions should be logged
+                pass
 
     '''
     set the path to a quest
     bad pattern: path should be determined by a quests solver
     bad pattern: the walking should be done in a quest solver so this method should removed on the long run
     '''
-    def setPathToQuest(self,quest):
-        if hasattr(quest,"dstX") and hasattr(quest,"dstY") and self.container:
-            self.path = self.container.findPath((self.xPosition,self.yPosition),(quest.dstX,quest.dstY))
+
+    def setPathToQuest(self, quest):
+        if hasattr(quest, "dstX") and hasattr(quest, "dstY") and self.container:
+            self.path = self.container.findPath((self.xPosition, self.yPosition), (quest.dstX, quest.dstY))
         else:
             self.path = []
 
     '''
     straightforward adding to inventory
     '''
-    def addToInventory(self,item):
+
+    def addToInventory(self, item):
         self.inventory.append(item)
 
     '''
     this wrapper converts a character centered call to a solver centered call
     bad code: should be handled in quest
     '''
-    def applysolver(self,solver):
+
+    def applysolver(self, solver):
         if not self.unconcious and not self.dead:
             solver(self)
 
     '''
     set state and display to unconcious
     '''
+
     def fallUnconcious(self):
         self.unconcious = True
         if self.watched:
             self.messages.append("*thump,snort*")
-        self.changed("fallen unconcious",self)
+        self.changed("fallen unconcious", self)
 
     '''
     set state and display to not unconcious
     '''
+
     def wakeUp(self):
         self.unconcious = False
         if self.watched:
             self.messages.append("*grown*")
-        self.changed("woke up",self)
+        self.changed("woke up", self)
 
     '''
     kill the character and do a bit of extra stuff like placing corpses
     '''
-    def die(self,reason=None,addCorpse=True):
+
+    def die(self, reason=None, addCorpse=True):
         self.lastRoom = self.room
         self.lastTerrain = self.terrain
 
@@ -541,11 +574,11 @@ class Character(src.saveing.Saveable):
             container = self.container
             container.removeCharacter(self)
             if addCorpse:
-                corpse = src.items.Corpse(self.xPosition,self.yPosition,creator=self)
+                corpse = src.items.Corpse(self.xPosition, self.yPosition, creator=self)
                 container.addItems([corpse])
         # log impossible state
         else:
-            debugMessages.append("this should not happen, character died without beeing somewhere ("+str(self)+")")
+            debugMessages.append("this should not happen, character died without beeing somewhere (" + str(self) + ")")
 
         self.macroState["commandKeyQueue"] = []
 
@@ -556,7 +589,7 @@ class Character(src.saveing.Saveable):
         self.path = []
 
         # notify listeners
-        self.changed("died",{"character":self,"reason":reason})
+        self.changed("died", {"character": self, "reason": reason})
 
         # notify listeners
         self.changed()
@@ -569,6 +602,7 @@ class Character(src.saveing.Saveable):
 
     bad pattern: should be contained in quest solver
     '''
+
     def walkPath(self):
         # smooth over impossible state
         if self.dead:
@@ -579,7 +613,7 @@ class Character(src.saveing.Saveable):
             debugMessages.append("walking without path")
 
         # move along the predetermined path
-        currentPosition = (self.xPosition,self.yPosition)
+        currentPosition = (self.xPosition, self.yPosition)
         if not (self.path and not self.path == [currentPosition]):
             return True
 
@@ -590,14 +624,14 @@ class Character(src.saveing.Saveable):
         # try to move within a room
         if self.room:
             # move naively within a room
-            if (nextPosition[0] == currentPosition[0] and nextPosition[1] == currentPosition[1]-1):
-                item = self.room.moveCharacterDirection(self,"north")
-            if (nextPosition[0] == currentPosition[0] and nextPosition[1] == currentPosition[1]+1):
-                item = self.room.moveCharacterDirection(self,"south")
-            elif nextPosition[0] == currentPosition[0]-1 and nextPosition[1] == currentPosition[1]:
-                item = self.room.moveCharacterDirection(self,"west")
-            elif nextPosition[0] == currentPosition[0]+1 and nextPosition[1] == currentPosition[1]:
-                item = self.room.moveCharacterDirection(self,"east")
+            if (nextPosition[0] == currentPosition[0] and nextPosition[1] == currentPosition[1] - 1):
+                item = self.room.moveCharacterDirection(self, "north")
+            if (nextPosition[0] == currentPosition[0] and nextPosition[1] == currentPosition[1] + 1):
+                item = self.room.moveCharacterDirection(self, "south")
+            elif nextPosition[0] == currentPosition[0] - 1 and nextPosition[1] == currentPosition[1]:
+                item = self.room.moveCharacterDirection(self, "west")
+            elif nextPosition[0] == currentPosition[0] + 1 and nextPosition[1] == currentPosition[1]:
+                item = self.room.moveCharacterDirection(self, "east")
             else:
                 # smooth over impossible state
                 if not debug:
@@ -617,7 +651,8 @@ class Character(src.saveing.Saveable):
                 """
                 helper function to move a character into a direction
                 """
-                def moveCharacter(localisedEntry,direction):
+
+                def moveCharacter(localisedEntry, direction):
                     if localisedEntry in room.walkingAccess:
 
                         # check whether the character walked into something
@@ -627,7 +662,7 @@ class Character(src.saveing.Saveable):
                                     return listItem
 
                         # teleport the chracter into the room
-                        room.addCharacter(self,localisedEntry[0],localisedEntry[1])
+                        room.addCharacter(self, localisedEntry[0], localisedEntry[1])
                         self.terrain.characters.remove(self)
                         self.terrain = None
                         self.changed()
@@ -635,50 +670,50 @@ class Character(src.saveing.Saveable):
                     else:
                         # show message the character bumped into a wall
                         # bad pattern: why restrict the player to standard entry points?
-                        self.messages.append("you cannot move there ("+direction+")")
+                        self.messages.append("you cannot move there (" + direction + ")")
                         return
 
                 # handle the character moving into the rooms boundaries
                 # bad code: repetitive, confusing code
                 # check north
-                if room.yPosition*15+room.offsetY+room.sizeY == nextPosition[1]+1:
-                    if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+room.sizeX > self.xPosition:
+                if room.yPosition * 15 + room.offsetY + room.sizeY == nextPosition[1] + 1:
+                    if room.xPosition * 15 + room.offsetX < self.xPosition and room.xPosition * 15 + room.offsetX + room.sizeX > self.xPosition:
                         # try to move character
-                        localisedEntry = (self.xPosition%15-room.offsetX,nextPosition[1]%15-room.offsetY)
-                        item = moveCharacter(localisedEntry,"north")
+                        localisedEntry = (self.xPosition % 15 - room.offsetX, nextPosition[1] % 15 - room.offsetY)
+                        item = moveCharacter(localisedEntry, "north")
                         break
                 # check south
-                if room.yPosition*15+room.offsetY == nextPosition[1]:
-                    if room.xPosition*15+room.offsetX < self.xPosition and room.xPosition*15+room.offsetX+room.sizeX > self.xPosition:
+                if room.yPosition * 15 + room.offsetY == nextPosition[1]:
+                    if room.xPosition * 15 + room.offsetX < self.xPosition and room.xPosition * 15 + room.offsetX + room.sizeX > self.xPosition:
                         # try to move character
-                        localisedEntry = ((self.xPosition-room.offsetX)%15,((nextPosition[1]-room.offsetY)%15))
-                        item = moveCharacter(localisedEntry,"south")
+                        localisedEntry = ((self.xPosition - room.offsetX) % 15, ((nextPosition[1] - room.offsetY) % 15))
+                        item = moveCharacter(localisedEntry, "south")
                         break
                 # check east
-                if room.xPosition*15+room.offsetX+room.sizeX == nextPosition[0]+1:
-                    if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+room.sizeY > self.yPosition:
+                if room.xPosition * 15 + room.offsetX + room.sizeX == nextPosition[0] + 1:
+                    if room.yPosition * 15 + room.offsetY < self.yPosition and room.yPosition * 15 + room.offsetY + room.sizeY > self.yPosition:
                         # try to move character
-                        localisedEntry = ((nextPosition[0]-room.offsetX)%15,(self.yPosition-room.offsetY)%15)
-                        item = moveCharacter(localisedEntry,"east")
+                        localisedEntry = ((nextPosition[0] - room.offsetX) % 15, (self.yPosition - room.offsetY) % 15)
+                        item = moveCharacter(localisedEntry, "east")
                         break
                 # check west
-                if room.xPosition*15+room.offsetX == nextPosition[0]:
-                    if room.yPosition*15+room.offsetY < self.yPosition and room.yPosition*15+room.offsetY+room.sizeY > self.yPosition:
+                if room.xPosition * 15 + room.offsetX == nextPosition[0]:
+                    if room.yPosition * 15 + room.offsetY < self.yPosition and room.yPosition * 15 + room.offsetY + room.sizeY > self.yPosition:
                         # try to move character
-                        localisedEntry = ((nextPosition[0]-room.offsetX)%15,(self.yPosition-room.offsetY)%15)
-                        item = moveCharacter(localisedEntry,"west")
+                        localisedEntry = ((nextPosition[0] - room.offsetX) % 15, (self.yPosition - room.offsetY) % 15)
+                        item = moveCharacter(localisedEntry, "west")
                         break
             else:
                 # move the char to the next position on path
                 self.xPosition = nextPosition[0]
                 self.yPosition = nextPosition[1]
                 self.changed()
-            
+
         # handle bumping into an item
         if item:
             # open doors
             # bad pattern: this should not happen here
-            if isinstance(item,src.items.Door):
+            if isinstance(item, src.items.Door):
                 item.apply(self)
             return False
 
@@ -696,11 +731,12 @@ class Character(src.saveing.Saveable):
     """
     almost straightforward dropping of items
     """
-    def drop(self,item,position=None):
+
+    def drop(self, item, position=None):
         foundScrap = None
 
         if not position:
-            position = (self.xPosition,self.yPosition)
+            position = (self.xPosition, self.yPosition)
         if position in self.container.itemByCoordinates:
 
             itemList = self.container.itemByCoordinates[position]
@@ -722,11 +758,15 @@ class Character(src.saveing.Saveable):
                 self.messages.append("there is no space to drop the item")
                 return
 
-        self.messages.append("you drop a %s"%(item.type))
+        self.messages.append("you drop a %s" % (item.type))
 
         for jobOrderCandidate in self.inventory:
-            if jobOrderCandidate.type == "JobOrder" and not jobOrderCandidate.done and jobOrderCandidate.tasks[-1]["task"] == "place":
-                if item.type == jobOrderCandidate.tasks[-1]["toPlace"] and self.xPosition == jobOrderCandidate.tasks[-1]["placeBigX"]*15+jobOrderCandidate.tasks[-1]["placeX"] and self.yPosition == jobOrderCandidate.tasks[-1]["placeBigY"]*15+jobOrderCandidate.tasks[-1]["placeY"]:
+            if jobOrderCandidate.type == "JobOrder" and not jobOrderCandidate.done and jobOrderCandidate.tasks[-1][
+                "task"] == "place":
+                if item.type == jobOrderCandidate.tasks[-1]["toPlace"] and self.xPosition == \
+                        jobOrderCandidate.tasks[-1]["placeBigX"] * 15 + jobOrderCandidate.tasks[-1][
+                    "placeX"] and self.yPosition == jobOrderCandidate.tasks[-1]["placeBigY"] * 15 + \
+                        jobOrderCandidate.tasks[-1]["placeY"]:
                     if len(jobOrderCandidate.tasks) > 1:
                         jobOrderCandidate.tasks.pop()
                     else:
@@ -748,13 +788,14 @@ class Character(src.saveing.Saveable):
 
             # notify listener
             item.changed()
-            item.changed("dropped",self)
+            item.changed("dropped", self)
         self.changed()
 
     """
     examine an item
     """
-    def examine(self,item):
+
+    def examine(self, item):
         # print info
         if item.description != item.getDetailedInfo():
             self.messages.append(item.getDetailedInfo())
@@ -763,35 +804,37 @@ class Character(src.saveing.Saveable):
             self.macroState["submenue"] = self.submenue
 
         # notify listeners
-        self.changed("examine",item)
+        self.changed("examine", item)
+
     """
     examine an item
     """
-    def examineRegisters(self,item):
+
+    def examineRegisters(self, item):
         text = ""
 
-        def addRegister(key,value):
-            self.setRegisterValue(key,value)
-            return "%s - %s\n"%(key,value)
+        def addRegister(key, value):
+            self.setRegisterValue(key, value)
+            return "%s - %s\n" % (key, value)
 
-        if hasattr(item,"charges"):
-            text += addRegister("CHARGEs",item.charges)
-        if hasattr(item,"uses"):
-            text += addRegister("USEs",item.uses)
-        if hasattr(item,"level"):
-            text += addRegister("LEVEl",item.level)
-        if hasattr(item,"coolDown"):
-            text += addRegister("COOLDOWN",item.coolDown)
-            text += addRegister("COOLDOWN REMAININg",item.coolDown-(gamestate.tick-item.coolDownTimer))
-        if hasattr(item,"amount"):
-            text += addRegister("AMOUNt",item.amount)
-        if hasattr(item,"walkable"):
-            text += addRegister("WALKABLe",int(item.walkable))
-        if hasattr(item,"bolted"):
-            text += addRegister("BOLTEd",int(item.bolted))
+        if hasattr(item, "charges"):
+            text += addRegister("CHARGEs", item.charges)
+        if hasattr(item, "uses"):
+            text += addRegister("USEs", item.uses)
+        if hasattr(item, "level"):
+            text += addRegister("LEVEl", item.level)
+        if hasattr(item, "coolDown"):
+            text += addRegister("COOLDOWN", item.coolDown)
+            text += addRegister("COOLDOWN REMAININg", item.coolDown - (gamestate.tick - item.coolDownTimer))
+        if hasattr(item, "amount"):
+            text += addRegister("AMOUNt", item.amount)
+        if hasattr(item, "walkable"):
+            text += addRegister("WALKABLe", int(item.walkable))
+        if hasattr(item, "bolted"):
+            text += addRegister("BOLTEd", int(item.bolted))
 
-        for (key,value) in item.fetchSpecialRegisterInformation().items():
-            text += addRegister(key,value)
+        for (key, value) in item.fetchSpecialRegisterInformation().items():
+            text += addRegister(key, value)
 
         self.submenue = interaction.TextMenu(text)
         self.macroState["submenue"] = self.submenue
@@ -799,6 +842,7 @@ class Character(src.saveing.Saveable):
     """
     advance the character one tick
     """
+
     def advance(self):
         if self.stasis or self.dead:
             return
@@ -806,7 +850,7 @@ class Character(src.saveing.Saveable):
         # smooth over impossible state
         while self.events and gamestate.tick > self.events[0].tick:
             event = self.events[0]
-            debugMessages.append("something went wrong and event"+str(event)+"was skipped")
+            debugMessages.append("something went wrong and event" + str(event) + "was skipped")
             self.events.remove(event)
 
         # handle events
@@ -822,18 +866,21 @@ class Character(src.saveing.Saveable):
         self.satiation -= 1
         self.changed()
         if self.satiation < 0:
-            self.die(reason="you starved. This happens when your satiation falls below 0\nPrevent this by drinking using the "+commandChars.drink+" key")
+            self.die(
+                reason="you starved. This happens when your satiation falls below 0\nPrevent this by drinking using the " + commandChars.drink + " key")
             return
 
-        if self.satiation in (300-1,200-1,100-1,30-1):
+        if self.satiation in (300 - 1, 200 - 1, 100 - 1, 30 - 1):
             self.changed("thirst")
-            self.macroState["commandKeyQueue"] = [("|",["norecord"]),(">",["norecord"]),("_",["norecord"]),("j",["norecord"]),("|",["norecord"]),("<",["norecord"])] + self.macroState["commandKeyQueue"]
+            self.macroState["commandKeyQueue"] = [("|", ["norecord"]), (">", ["norecord"]), ("_", ["norecord"]),
+                                                  ("j", ["norecord"]), ("|", ["norecord"]), ("<", ["norecord"])] + \
+                                                 self.macroState["commandKeyQueue"]
 
-        if self.satiation == 30-1:
+        if self.satiation == 30 - 1:
             self.changed("severeThirst")
 
         if self == mainChar and self.satiation < 30 and self.satiation > -1:
-            self.messages.append("you'll starve in "+str(mainChar.satiation)+" ticks!")
+            self.messages.append("you'll starve in " + str(mainChar.satiation) + " ticks!")
 
         # call the autosolver
         if self.automated:
@@ -844,7 +891,8 @@ class Character(src.saveing.Saveable):
     '''
     register for notifications
     '''
-    def addListener(self,listenFunction,tag="default"):
+
+    def addListener(self, listenFunction, tag="default"):
         # create container if container doesn't exist
         # bad performace: string comparison, should use enums. Is this slow in python?
         if not tag in self.listeners:
@@ -857,7 +905,8 @@ class Character(src.saveing.Saveable):
     '''
     deregister for notifications
     '''
-    def delListener(self,listenFunction,tag="default"):
+
+    def delListener(self, listenFunction, tag="default"):
         # remove listener
         if listenFunction in self.listeners[tag]:
             self.listeners[tag].remove(listenFunction)
@@ -871,7 +920,8 @@ class Character(src.saveing.Saveable):
     sending notifications
     bad code: probably misnamed
     '''
-    def changed(self,tag="default",info=None):
+
+    def changed(self, tag="default", info=None):
         # do nothing if nobody listens
         if not tag in self.listeners:
             return
@@ -885,91 +935,105 @@ class Character(src.saveing.Saveable):
 
     def startIdling(self):
         import random
-        waitString = str(random.randint(1,self.personality["idleWaitTime"]))+"."
+        waitString = str(random.randint(1, self.personality["idleWaitTime"])) + "."
         waitChance = self.personality["idleWaitChance"]
 
-        if not random.randint(1,waitChance) == 1: # real idle
+        if not random.randint(1, waitChance) == 1:  # real idle
             command = waitString
-        elif not random.randint(1,waitChance) == 1: # do mainly harmless stuff
-            command = random.choice(["w"+waitString+"s",
-                                     "a"+waitString+"d",
-                                     "d"+waitString+"a",
-                                     "s"+waitString+"w",
-                                     "w"+waitString+"a"+waitString+"s"+waitString+"d",
-                                     "d"+waitString+"s"+waitString+"a"+waitString+"w",
-                                    ])
-        elif not random.randint(1,waitChance) == 1: # do not so harmless stuff
-            command = random.choice(["ls"+waitString+"wk",
+        elif not random.randint(1, waitChance) == 1:  # do mainly harmless stuff
+            command = random.choice(["w" + waitString + "s",
+                                     "a" + waitString + "d",
+                                     "d" + waitString + "a",
+                                     "s" + waitString + "w",
+                                     "w" + waitString + "a" + waitString + "s" + waitString + "d",
+                                     "d" + waitString + "s" + waitString + "a" + waitString + "w",
+                                     ])
+        elif not random.randint(1, waitChance) == 1:  # do not so harmless stuff
+            command = random.choice(["ls" + waitString + "wk",
                                      "opf$=aa$=ww$=ss$=ddj$=da$=sw$=ws$=ad",
-                                     "j","ajd","wjs","dja","sjw",
-                                     "Ja","Jw","Js","Jd","J.",
+                                     "j", "ajd", "wjs", "dja", "sjw",
+                                     "Ja", "Jw", "Js", "Jd", "J.",
                                      "opn$=aaj$=wwj$=ssj$=ddj",
                                      "opx$=aa$=ww$=ss$=dd",
-                                    ])
-        else: #do dangerous stuff
+                                     ])
+        else:  # do dangerous stuff
             command = random.choice(["opk$=aa$=ww$=ss$=ddj",
-                                    ])
+                                     ])
 
         parsedCommand = []
         for char in command:
-            parsedCommand.append((char,["norecord"]))
+            parsedCommand.append((char, ["norecord"]))
 
         self.macroState["commandKeyQueue"] = parsedCommand
+
 
 """
 the class for mice. Intended to be used for manipulating the gamestate used for example to attack the player
 bad code: animals should not be characters. This means it is possible to chat with a mouse 
 """
+
+
 class Mouse(Character):
     charType = "Mouse"
 
     '''
     basic state setting
     '''
-    def __init__(self,display="🝆 ",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None,characterId=None):
-        super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator,characterId=characterId)
+
+    def __init__(self, display="🝆 ", xPosition=0, yPosition=0, quests=[], automated=True, name="Mouse", creator=None,
+                 characterId=None):
+        super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator,
+                         characterId=characterId)
         self.vanished = False
         self.attributesToStore.extend([
-               "vanished",
-               ])
+            "vanished",
+        ])
         self.initialState = self.getState()
 
     '''
     disapear
     '''
+
     def vanish(self):
         # remove self from map
         self.container.removeCharacter(self)
         self.vanished = True
 
+
 """
 """
+
+
 class Monster(Character):
     charType = "Monster"
 
     '''
     basic state setting
     '''
-    def __init__(self,display="🝆~",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None,characterId=None):
-        super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator,characterId=characterId)
+
+    def __init__(self, display="🝆~", xPosition=0, yPosition=0, quests=[], automated=True, name="Mouse", creator=None,
+                 characterId=None):
+        super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator,
+                         characterId=characterId)
         self.phase = 1
         self.attributesToStore.extend([
-               "phase",
-               ])
+            "phase",
+        ])
         self.initialState = self.getState()
 
-    def die(self,reason=None,addCorpse=True):
+    def die(self, reason=None, addCorpse=True):
         if self.phase == 1:
-            if self.xPosition and self.yPosition and (not self.container.getItemByPosition((self.xPosition,self.yPosition))):
+            if self.xPosition and self.yPosition and (
+                    not self.container.getItemByPosition((self.xPosition, self.yPosition))):
                 new = src.items.itemMap["Mold"](creator=self)
                 new.xPosition = self.xPosition
                 new.yPosition = self.yPosition
                 self.container.addItems([new])
                 new.startSpawn()
 
-            super().die(reason,addCorpse=False)
+            super().die(reason, addCorpse=False)
         else:
-            super().die(reason,addCorpse)
+            super().die(reason, addCorpse)
 
     def enterPhase2(self):
         self.phase = 2
@@ -978,51 +1042,55 @@ class Monster(Character):
 
     def enterPhase3(self):
         self.phase = 3
-        self.macroState["macros"] = {"s":["o","p","f","$","=","a","a","$","=","s","s","$","=","w","w","$","=","d","d","j"]}
+        self.macroState["macros"] = {
+            "s": ["o", "p", "f", "$", "=", "a", "a", "$", "=", "s", "s", "$", "=", "w", "w", "$", "=", "d", "d", "j"]}
         self.macroState["macros"]["m"] = []
         import random
-        for i in range(0,8):
-            self.macroState["macros"]["m"].extend(["_","s"])
-            self.macroState["macros"]["m"].append(str(random.randint(0,9)))
-            self.macroState["macros"]["m"].append(random.choice(["a","w","s","d"]))
-        self.macroState["macros"]["m"].extend(["_","m"])
-        self.macroState["commandKeyQueue"] = [("_",[]),("m",[])]
+        for i in range(0, 8):
+            self.macroState["macros"]["m"].extend(["_", "s"])
+            self.macroState["macros"]["m"].append(str(random.randint(0, 9)))
+            self.macroState["macros"]["m"].append(random.choice(["a", "w", "s", "d"]))
+        self.macroState["macros"]["m"].extend(["_", "m"])
+        self.macroState["commandKeyQueue"] = [("_", []), ("m", [])]
 
     def enterPhase4(self):
         self.phase = 4
         self.macroState["macros"] = {
-                                      "e":["1","0","j","m"],
-                                      "s":["o","p","M","$","=","a","a","$","=","w","w","$","=","d","d","$","=","s","s","_","e"],
-                                      "w":[],
-                                      "f":["%","c","_","s","_","w","_","f"],
-                                    }
+            "e": ["1", "0", "j", "m"],
+            "s": ["o", "p", "M", "$", "=", "a", "a", "$", "=", "w", "w", "$", "=", "d", "d", "$", "=", "s", "s", "_",
+                  "e"],
+            "w": [],
+            "f": ["%", "c", "_", "s", "_", "w", "_", "f"],
+        }
         import random
-        for i in range(0,4):
-            self.macroState["macros"]["w"].append(str(random.randint(0,9)))
-            self.macroState["macros"]["w"].append(random.choice(["a","w","s","d"]))
-        self.macroState["commandKeyQueue"] = [("_",[]),("f",[])]
+        for i in range(0, 4):
+            self.macroState["macros"]["w"].append(str(random.randint(0, 9)))
+            self.macroState["macros"]["w"].append(random.choice(["a", "w", "s", "d"]))
+        self.macroState["commandKeyQueue"] = [("_", []), ("f", [])]
 
     def enterPhase5(self):
         self.phase = 5
         import random
         self.faction = ""
-        for i in range(0,5):
+        for i in range(0, 5):
             self.faction += random.choice("abcdefghiasjlkasfhoiuoijpqwei10934009138402")
         self.macroState["macros"] = {
-                                      "j":70*["J","f"]+["m"],
-                                      "s":["o","p","M","$","=","a","a","$","=","w","w","$","=","d","d","$","=","s","s","k","j","j","j","k"],
-                                      "w":[],
-                                      "k":["o","p","e","$","=","a","a","m","$","=","w","w","m","$","=","d","d","m","$","=","s","s","m"],
-                                      "f":["%","c","_","s","_","w","_","k","_","f"],
-                                    }
+            "j": 70 * ["J", "f"] + ["m"],
+            "s": ["o", "p", "M", "$", "=", "a", "a", "$", "=", "w", "w", "$", "=", "d", "d", "$", "=", "s", "s", "k",
+                  "j", "j", "j", "k"],
+            "w": [],
+            "k": ["o", "p", "e", "$", "=", "a", "a", "m", "$", "=", "w", "w", "m", "$", "=", "d", "d", "m", "$", "=",
+                  "s", "s", "m"],
+            "f": ["%", "c", "_", "s", "_", "w", "_", "k", "_", "f"],
+        }
         import random
-        for i in range(0,8):
-            self.macroState["macros"]["w"].append(str(random.randint(0,9)))
-            self.macroState["macros"]["w"].append(random.choice(["a","w","s","d"]))
+        for i in range(0, 8):
+            self.macroState["macros"]["w"].append(str(random.randint(0, 9)))
+            self.macroState["macros"]["w"].append(random.choice(["a", "w", "s", "d"]))
             self.macroState["macros"]["w"].append("m")
-        self.macroState["commandKeyQueue"] = [("_",[]),("f",[])]
+        self.macroState["commandKeyQueue"] = [("_", []), ("f", [])]
 
-    def changed(self,tag="default",info=None):
+    def changed(self, tag="default", info=None):
         if self.phase == 1 and self.satiation > 900:
             self.enterPhase2()
         if len(self.inventory) == 10:
@@ -1035,11 +1103,11 @@ class Monster(Character):
                 newChar = Monster(creator=self)
 
                 newChar.solvers = [
-                          "NaiveActivateQuest",
-                          "ActivateQuestMeta",
-                          "NaivePickupQuest",
-                          "NaiveMurderQuest",
-                        ]
+                    "NaiveActivateQuest",
+                    "ActivateQuestMeta",
+                    "NaivePickupQuest",
+                    "NaiveMurderQuest",
+                ]
 
                 newChar.faction = self.faction
                 newChar.enterPhase5()
@@ -1048,9 +1116,9 @@ class Monster(Character):
                 for item in toDestroy:
                     item.destroy()
                     self.inventory.remove(item)
-                self.container.addCharacter(newChar,self.xPosition,self.yPosition)
+                self.container.addCharacter(newChar, self.xPosition, self.yPosition)
 
-        super().changed(tag,info)
+        super().changed(tag, info)
 
     def render(self):
         if self.phase == 2:
@@ -1063,20 +1131,23 @@ class Monster(Character):
             return displayChars.monster_hunter
         return displayChars.monster_spore
 
+
 class Exploder(Monster):
     charType = "Exploder"
 
-    def __init__(self,display="🝆~",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None,characterId=None):
-        super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator,characterId=characterId)
+    def __init__(self, display="🝆~", xPosition=0, yPosition=0, quests=[], automated=True, name="Mouse", creator=None,
+                 characterId=None):
+        super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator,
+                         characterId=characterId)
 
         self.explode = True
         self.attributesToStore.extend([
-               "explode"])
+            "explode"])
 
     def render(self):
         return displayChars.monster_exploder
 
-    def die(self,reason=None,addCorpse=True):
+    def die(self, reason=None, addCorpse=True):
         new = src.items.itemMap["FireCrystals"](creator=self)
         new.xPosition = self.xPosition
         new.yPosition = self.yPosition
@@ -1086,19 +1157,21 @@ class Exploder(Monster):
 
         super().die(reason=reason, addCorpse=False)
 
+
 characterMap = {
-        "Character":Character,
-        "Monster":Monster,
-        "Exploder":Exploder,
-        "Mouse":Mouse,
-        }
+    "Character": Character,
+    "Monster": Monster,
+    "Exploder": Exploder,
+    "Mouse": Mouse,
+}
 
 '''
 get item instances from dict state
 '''
+
+
 def getCharacterFromState(state):
-    character = characterMap[state["type"]](creator=void,characterId=state["id"])
+    character = characterMap[state["type"]](creator=void, characterId=state["id"])
     loadingRegistry.register(character)
     character.setState(state)
     return character
-

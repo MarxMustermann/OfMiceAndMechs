@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 #####################################################################################################################
-###
-##      load environment and start the games main loop
+#
+#      load environment and start the games main loop
 #       basically nothing to see here
 #       if you are a first time visitor, interaction.py, story.py and gamestate.py are probably better files to start with
 #
@@ -34,6 +34,9 @@ import config.names as names
 
 # parse arguments
 import argparse
+
+import src.canvas as canvas
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--phase", type=str, help="the phase to start in")
 parser.add_argument("--unicode", action="store_true", help="force fallback encoding")
@@ -49,7 +52,6 @@ parser.add_argument("--load", action="store_true", help="load")
 parser.add_argument("-S", "--speed", type=int, help="set the speed of the game to a fixed speed")
 args = parser.parse_args()
 
-import src.canvas as canvas
 
 # set rendering mode
 if not args.nourwid:
@@ -67,12 +69,14 @@ if args.seed:
     seed = int(args.seed)
 else:
     import random
-    seed = random.randint(1,100000)
+
+    seed = random.randint(1, 100000)
 
 if args.nourwid:
     interaction.nourwid = True
 
     import src.pseudoUrwid
+
     interaction.urwid = src.pseudoUrwid
     items.urwid = src.pseudoUrwid
     chats.urwid = src.pseudoUrwid
@@ -85,6 +89,7 @@ else:
     interaction.nourwid = False
 
     import urwid
+
     interaction.urwid = urwid
     items.urwid = urwid
     chats.urwid = urwid
@@ -152,21 +157,27 @@ if args.debug:
     '''
     logger object for logging to file
     '''
+
+
     class debugToFile(object):
-        '''
+        """
         clear file
-        '''
+        """
+
         def __init__(self):
-            logfile = open("debug.log","w")
+            logfile = open("debug.log", "w")
             logfile.close()
+
         '''
         add log message to file
         '''
-        def append(self,message):
-            logfile = open("debug.log","a")
-            logfile.write(str(message)+"\n")
+
+        def append(self, message):
+            logfile = open("debug.log", "a")
+            logfile.write(str(message) + "\n")
             logfile.close()
-    
+
+
     # set debug mode
     debugMessages = debugToFile()
     interaction.debug = True
@@ -180,12 +191,16 @@ else:
     '''
     dummy logger
     '''
+
+
     class FakeLogger(object):
-        '''
+        """
         discard input
-        '''
-        def append(self,message):
+        """
+
+        def append(self, message):
             pass
+
 
     # set debug mode
     debugMessages = FakeLogger()
@@ -252,14 +267,14 @@ if shouldLoad:
             raise e
 mainChar = gameStateObj.mainChar
 
-##################################################################################################################################
-###
-##        background music
+########################################################################################################################
 #
-#################################################################################################################################
+#        background music
+#
+########################################################################################################################
 
 # play music
-if args.music :
+if args.music:
     def playMusic():
         import threading
         thread = threading.currentThread()
@@ -267,34 +282,45 @@ if args.music :
         import os.path
 
         # download music
-        # bad pattern: I didn't ask the people at freemusicarchive about the position on traffic leeching. If you know they don't like it please create an issue
+        # bad pattern: I didn't ask the people at freemusicarchive about the position on traffic leeching.
+        # If you know they don't like it please create an issue
         # bad code: it obviously is an issue, since they knowingly broke this mechanism
         if not os.path.isfile("music/Diezel_Tea_-_01_-_Arzni_Part_1_ft_Sam_Khachatourian.mp3"):
-            subprocess.call(["wget","-q","https://freemusicarchive.org/music/download/ece1b96c8f23874bda6ffdda2dd6cf9cd2fcb582","-O","music/Diezel_Tea_-_01_-_Arzni_Part_1_ft_Sam_Khachatourian.mp3"],stdout=subprocess.PIPE,stderr=subprocess.PIPE,stdin=subprocess.PIPE)
+            subprocess.call(
+                ["wget", "-q", "https://freemusicarchive.org/music/download/ece1b96c8f23874bda6ffdda2dd6cf9cd2fcb582",
+                 "-O", "music/Diezel_Tea_-_01_-_Arzni_Part_1_ft_Sam_Khachatourian.mp3"], stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE, stdin=subprocess.PIPE)
         if not os.path.isfile("music/Diezel_Tea_-_01_-_Kilikia_Original_Mix.mp3"):
-            subprocess.call(["wget","-q","https://freemusicarchive.org/music/download/c1a7a0cd0e262469607e26935e69ed1e5bfed538","-O","music/Diezel_Tea_-_01_-_Kilikia_Original_Mix.mp3"],stdout=subprocess.PIPE,stderr=subprocess.PIPE,stdin=subprocess.PIPE)
-        mplayer = subprocess.Popen(["mplayer","music/Diezel_Tea_-_01_-_Kilikia_Original_Mix.mp3","music/Diezel_Tea_-_01_-_Arzni_Part_1_ft_Sam_Khachatourian.mp3"],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        
+            subprocess.call(
+                ["wget", "-q", "https://freemusicarchive.org/music/download/c1a7a0cd0e262469607e26935e69ed1e5bfed538",
+                 "-O", "music/Diezel_Tea_-_01_-_Kilikia_Original_Mix.mp3"], stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+        mplayer = subprocess.Popen(["mplayer", "music/Diezel_Tea_-_01_-_Kilikia_Original_Mix.mp3",
+                                    "music/Diezel_Tea_-_01_-_Arzni_Part_1_ft_Sam_Khachatourian.mp3"],
+                                   stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
         # play music
         while mplayer.stdout.read1(100):
-           if thread.stop:
-               mplayer.terminate()
-               mplayer.kill()
-               return
-        
+            if thread.stop:
+                mplayer.terminate()
+                mplayer.kill()
+                return
+
+
     # start music as subprocess
     from threading import Thread
+
     musicThread = Thread(target=playMusic)
     musicThread.stop = False
     musicThread.start()
 else:
     musicThread = None
 
-##################################################################################################################################
-###
-##        some stuff that is somehow needed but slated for removal
+########################################################################################################################
 #
-#################################################################################################################################
+#         some stuff that is somehow needed but slated for removal
+#
+########################################################################################################################
 
 # bad code: common variables with modules
 rooms.story = story
@@ -362,7 +388,7 @@ terrains.calculatePath = gameMath.calculatePath
 
 # bad code: common variables with modules
 rooms.Character = characters.Character
-        
+
 # bad code: common variables with modules
 messages = []
 items.messages = messages
@@ -390,8 +416,8 @@ chats.interaction = interaction
 quests.showCinematic = cinematics.showCinematic
 
 ##########################################
-###
-## set up the terrain
+#
+#  set up the terrain
 #
 ##########################################
 
@@ -438,11 +464,11 @@ quests.terrain = terrain
 chats.terrain = terrain
 characters.terrain = terrain
 
-##################################################################################################################################
-###
-##        setup the game
+########################################################################################################################
 #
-#################################################################################################################################
+#        setup the game
+#
+########################################################################################################################
 
 # bad code: common variables with modules
 story.gamestate = gameStateObj
@@ -464,17 +490,19 @@ quests.mainChar = gameStateObj.mainChar
 chats.mainChar = gameStateObj.mainChar
 characters.mainChar = gameStateObj.mainChar
 
-##################################################################################################################################
-###
-##        the main loop
+########################################################################################################################
 #
-#################################################################################################################################
+#         the main loop
+#
+########################################################################################################################
 
 # the game loop
 # bad code: either unused or should be contained in terrain
 '''
 advance the game
 '''
+
+
 def advanceGame():
     for row in gameStateObj.terrainMap:
         for specificTerrain in row:
@@ -523,13 +551,13 @@ if not args.debug and not interaction.submenue and not loaded:
     press space to continue
 
 """
-    openingCinematic = cinematics.TextCinematic(text,rusty=True,scrolling=True,creator=void)
-    cinematics.cinematicQueue.insert(0,openingCinematic)
+    openingCinematic = cinematics.TextCinematic(text, rusty=True, scrolling=True, creator=void)
+    cinematics.cinematicQueue.insert(0, openingCinematic)
     gameStateObj.openingCinematic = openingCinematic
-    gameStateObj.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
-    gameStateObj.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
-    gameStateObj.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
-    gameStateObj.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
+    gameStateObj.mainChar.macroState["commandKeyQueue"].insert(0, (".", ["norecord"]))
+    gameStateObj.mainChar.macroState["commandKeyQueue"].insert(0, (".", ["norecord"]))
+    gameStateObj.mainChar.macroState["commandKeyQueue"].insert(0, (".", ["norecord"]))
+    gameStateObj.mainChar.macroState["commandKeyQueue"].insert(0, (".", ["norecord"]))
 else:
     gameStateObj.openingCinematic = None
 
@@ -543,13 +571,14 @@ if not loaded:
 if args.tiles:
     # spawn tile based rendered window
     import pygame
+
     pygame.init()
-    pygame.key.set_repeat(200,20)
+    pygame.key.set_repeat(200, 20)
     if args.tileSize:
         interaction.tileSize = args.tileSize
     else:
         interaction.tileSize = 10
-    pydisplay = pygame.display.set_mode((1200, 700),pygame.RESIZABLE)
+    pydisplay = pygame.display.set_mode((1200, 700), pygame.RESIZABLE)
     pygame.display.set_caption('Of Mice and Mechs')
     pygame.display.update()
     interaction.pygame = pygame
@@ -561,8 +590,8 @@ else:
     interaction.tileMapping = None
 
 ######################################################################################################
-###
-##    main loop is started here
+#
+#     main loop is started here
 #
 ######################################################################################################
 
@@ -589,10 +618,10 @@ if musicThread:
 
 if args.nourwid:
     while 1:
-        interaction.gameLoop(None,None)
+        interaction.gameLoop(None, None)
 
 # print death messages
 if gameStateObj.mainChar.dead:
     print("you died.")
     if gameStateObj.mainChar.deathReason:
-        print("Cause of death:\n"+gameStateObj.mainChar.deathReason)
+        print("Cause of death:\n" + gameStateObj.mainChar.deathReason)

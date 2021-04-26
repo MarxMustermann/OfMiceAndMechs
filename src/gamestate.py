@@ -26,6 +26,7 @@ class GameState(src.saveing.Saveable):
         self.id = "gamestate"
         self.mainChar = None
         self.successSeed = 0
+        self.tick = 0
         pass
 
     def setup(self,phase=None, seed=0):
@@ -172,7 +173,8 @@ class GameState(src.saveing.Saveable):
         # load the main character
         # bad code: should be simplified
         if not self.mainChar:
-            self.mainChar = src.characters.Character(displayChars.main_char,3,3,automated=False,name=names.characterFirstNames[self.tick%len(names.characterFirstNames)]+" "+names.characterLastNames[self.tick%len(names.characterLastNames)],creator=void)
+            self.mainChar = src.characters.Character(displayChars.main_char,3,3,automated=False,name=names.characterFirstNames[self.tick%len(names.characterFirstNames)]+" "+names.characterLastNames[self.tick%len(names.characterLastNames)],creator=void,characterId=state["mainChar"]["id"])
+            loadingRegistry.register(self.mainChar)
         xPosition = self.mainChar.xPosition
         if "xPosition" in state["mainChar"]:
             xPosition = state["mainChar"]["xPosition"]

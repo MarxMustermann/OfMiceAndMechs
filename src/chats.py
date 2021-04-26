@@ -585,17 +585,7 @@ class JobChatFirst(Chat):
         # handle chat termination
         if key == "esc":
 
-           # quit dialog
-           if self.partner.reputation < 2*mainChar.reputation:
-               return True
-
-           # refuse to quit dialog
-           else:
-               self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
-               mainChar.revokeReputation(amount=2,reason="beeing impolite")
-               self.set_text((urwid.AttrSpec("default","default"),self.persistentText))
-               self.skipTurn = True
-               return False
+           return True
                              
         # handle chat termination
         if subSelf.firstRun:
@@ -672,15 +662,7 @@ class JobChatSecond(Chat):
         # handle termination of this chat
         if key == "esc":
            # quit dialog
-           if self.partner.reputation < 2*mainChar.reputation:
-               return True
-           # refuse to quit dialog
-           else:
-               self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
-               mainChar.revokeReputation(amount=2,reason="beeing impolite")
-               self.set_text((urwid.AttrSpec("default","default"),self.persistentText))
-               self.skipTurn = True
-               return False
+           return True
                              
         # let the superclass do the selection
         if self.submenue:
@@ -833,15 +815,7 @@ class JobChatThird(Chat):
         # handle termination of this chat
         if key == "esc":
            # quit dialog
-           if self.partner.reputation < 2*mainChar.reputation:
-               return True
-           # refuse to quit dialog
-           else:
-               self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
-               mainChar.revokeReputation(amount=2,reason="beeing impolite")
-               self.set_text((urwid.AttrSpec("default","default"),self.persistentText))
-               self.skipTurn = True
-               return False
+           return True
                              
         # let the superclass do the selection
         if self.submenue:
@@ -1420,15 +1394,7 @@ class ChatMenu(Chat):
         # maybe exit the submenu
         if key == "esc" and not self.subMenu:
            # abort the chat
-           if self.partner.reputation < 2*mainChar.reputation:
-               return True
-           # refuse to abort the chat
-           else:
-               self.persistentText = self.partner.name+": \""+mainChar.name+" improper termination of conversion is not compliant with the communication protocol IV. \nProper behaviour is expected.\"\n"
-               mainChar.revokeReputation(amount=1,reason="beeing impolite")
-               self.set_text((urwid.AttrSpec("default","default"),self.persistentText))
-               self.skipTurn = True
-               return False
+           return True
                              
         # skip a turn
         if self.skipTurn:
@@ -1466,6 +1432,7 @@ class ChatMenu(Chat):
             if not self.options and not self.getSelection():
                 # add the chat partners special dialog options
                 options = []
+                options.append(("showFrustration","are you frustrated?"))
                 options.append(("goToChar","go to my position"))
                 options.append(("activate","activate item on Floor"))
                 options.append(("pickUp","pick up items"))
@@ -1517,8 +1484,11 @@ class ChatMenu(Chat):
                     return False
                 elif self.selection == "copyMacros":
                     self.partner.macroState["macros"] = mainChar.macroState["macros"]
-                    mainChar.messages.append("copy macros")
+                    mainChar.addMessage("copy macros")
                     return True
+                elif self.selection == "showFrustration":
+                    submenue = src.interaction.OneKeystrokeMenu(text = "my frustration is: %s"%(self.partner.frustration))
+                    self.subMenu = submenue
                 elif self.selection == "goToChar":
                     xDiff = mainChar.xPosition-self.partner.xPosition
                     yDiff = mainChar.yPosition-self.partner.yPosition
@@ -1589,7 +1559,7 @@ class ChatMenu(Chat):
 
                     return True
                 elif self.selection == "runMacro":
-                    submenue = src.interaction.OneKeystokeMenu(text = "press key for the macro to run")
+                    submenue = src.interaction.OneKeystrokeMenu(text = "press key for the macro to run")
                     self.subMenu = submenue
                     self.subMenu.followUp = self.runMacro
                     submenue.handleKey(key, noRender=noRender)
@@ -1620,7 +1590,7 @@ class ChatMenu(Chat):
     def runMacro(self):
 
         if not self.subMenu.keyPressed in self.partner.macroState["macros"]:
-            mainChar.messages.append("no macro found")
+            mainChar.addMessage("no macro found")
             return
 
         commands = []
@@ -1628,7 +1598,7 @@ class ChatMenu(Chat):
             commands.append((command,[]))
         self.partner.macroState["commandKeyQueue"] = commands
 
-        mainChar.messages.append("run macros - "+self.subMenu.keyPressed)
+        mainChar.addMessage("run macros - "+self.subMenu.keyPressed)
 
 # a map alowing to get classes from strings
 chatMap = {

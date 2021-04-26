@@ -1,5 +1,14 @@
 import urwid
 
+sunScreen = (urwid.AttrSpec("#420","black"),"oo")
+healingStation = (urwid.AttrSpec("#f00","black"),"HS")
+forceField2 = (urwid.AttrSpec("#373","black"),"##")
+staticCrystal = (urwid.AttrSpec("#aaf",'black'),"/\\")
+staticSpark = (urwid.AttrSpec("#aaf",'black'),"*-")
+sparkPlug = (urwid.AttrSpec("#aaf",'black'),"O-")
+ripInReality = (urwid.AttrSpec("#aaf",'black'),"|#")
+productionManager = (urwid.AttrSpec("#aaa",'black'),"PM")
+autoFarmer = (urwid.AttrSpec("#446",'#252'),"::")
 portableChallenger = (urwid.AttrSpec("#aaa",'black'),"pc")
 typedStockpileManager = (urwid.AttrSpec("#aaa",'black'),"ST")
 uniformStockpileManager = (urwid.AttrSpec("#aaa",'black'),"SU")

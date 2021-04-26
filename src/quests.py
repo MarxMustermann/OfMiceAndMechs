@@ -75,10 +75,6 @@ class Quest(src.saveing.Saveable):
         self.id["creator"] = creator.id
         self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
 
-        # save initial state and register
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
-
     '''
     register callback
     '''
@@ -384,8 +380,6 @@ class MetaQuestSequence(Quest):
 
         # save state and register
         self.type = "MetaQuestSequence"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     '''
     get state as dict
@@ -671,8 +665,6 @@ class MetaQuestParralel(Quest):
 
         # store initial state and register
         self.type = "MetaQuestParralel"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     '''
     get state as dict
@@ -981,8 +973,6 @@ class NaiveMoveQuest(Quest):
 
         # save initial state and register
         self.type = "NaiveMoveQuest"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     '''
     check if character is in the right place
@@ -1155,8 +1145,6 @@ class NaivePickupQuest(Quest):
 
         # save initial state and register
         self.type = "NaivePickupQuest"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
    
     '''
     check whether item is in characters inventory
@@ -1222,8 +1210,6 @@ class NaiveGetQuest(Quest):
 
         # save initial state and register
         self.type = "NaiveGetQuest"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     '''
     check whether the character has gotten a quest
@@ -1888,8 +1874,6 @@ class MoveQuestMeta(MetaQuestSequence):
 
         # save initial state and register
         self.type = "MoveQuestMeta"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     '''
     move to correct room if nesseccary
@@ -2026,8 +2010,6 @@ class PickupQuestMeta(MetaQuestSequence):
 
         # save initial state and register
         self.type = "PickupQuestMeta"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     '''
     re-add the movement quest if neccessary
@@ -2285,8 +2267,6 @@ class GetQuest(MetaQuestSequence):
 
         # save initial state and register
         self.type = "GetQuest"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     '''
     check if a quest was aquired
@@ -2938,8 +2918,6 @@ class TransportQuest(MetaQuestSequence):
 
         # save initial state and register
         self.type = "TransportQuest"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     '''
     drop the item after picking it up
@@ -3051,8 +3029,6 @@ class MoveToStorage(MetaQuestSequence):
 
         # save initial state and register
         self.type = "MoveToStorage"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
 '''
 handle a delivery
@@ -3073,8 +3049,6 @@ class HandleDelivery(MetaQuestSequence):
 
         # save initial state and register
         self.type = "HandleDelivery"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     '''
     listen to subordinates
@@ -3146,8 +3120,6 @@ class KeepFurnacesFiredMeta(MetaQuestParralel):
 
         # save initial state and register
         self.type = "KeepFurnacesFiredMeta"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
 '''
 fire a furnace an keep it fired
@@ -3171,8 +3143,6 @@ class KeepFurnaceFiredMeta(MetaQuestSequence):
 
         # save initial state and register
         self.type = "KeepFurnaceFiredMeta"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     '''
     add sub quests
@@ -3230,8 +3200,6 @@ class FireFurnaceMeta(MetaQuestSequence):
 
         # save initial state and register
         self.type = "FireFurnaceMeta"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     '''
     collect coal and fire furnace
@@ -3341,8 +3309,6 @@ class FillGrowthTankMeta(MetaQuestSequence):
 
         # save initial state and register
         self.type = "FillGrowthTankMeta"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     '''
     fetch goo and refill the machine
@@ -3444,8 +3410,6 @@ class HopperDuty(MetaQuestSequence):
 
         # save initial state and register
         self.type = "HopperDuty"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     '''
     get quest, do it, collect reward - repeat
@@ -3509,8 +3473,6 @@ class ClearRubble(MetaQuestParralel):
 
         # save initial state and register
         self.type = "ClearRubble"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
 '''
 dummy quest for doing the room duty
@@ -3526,8 +3488,6 @@ class RoomDuty(MetaQuestParralel):
 
         # save initial state and register
         self.type = "RoomDuty"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     '''
     never complete
@@ -3553,8 +3513,6 @@ class Serve(MetaQuestParralel):
 
         # save initial state and register
         self.type = "Serve"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
         if superior:
             self.metaDescription += " "+superior.name
@@ -3579,8 +3537,6 @@ class DummyQuest(Quest):
 
         # save initial state and register
         self.type = "DummyQuest"
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     '''
     never complete

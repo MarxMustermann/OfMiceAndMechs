@@ -2446,7 +2446,7 @@ class Tutorial(BasicPhase):
 
     def startMetalBarChecking(self):
 
-        showText("I seems like this is a simple ressource gathering job. Metal bars are used to produce most of the materials needed in a mech.\n\nThe scrap is compacted to metal bars in a machine called scrap compactor\nThe machine is represented by the U\\ character. It processes scrap on the tile to its east and outputs the bars on the tile to its west.\n\nstart by dropping the scrap on the tile east of the machine.\nMove onto the tile and press l to drop items.")
+        showText("I seems like this is a simple resource gathering job. Metal bars are used to produce most of the materials needed in a mech.\n\nThe scrap is compacted to metal bars in a machine called scrap compactor\nThe machine is represented by the U\\ character. It processes scrap on the tile to its east and outputs the bars on the tile to its west.\n\nstart by dropping the scrap on the tile east of the machine.\nMove onto the tile and press l to drop items.")
 
         self.scrapQuest.postHandler()
         self.scrapQuest.completed = True
@@ -2525,7 +2525,7 @@ class Tutorial(BasicPhase):
             lastLength = len(producableStuff)
             for item in self.miniBase.itemsOnFloor:
                 if isinstance(item,src.items.GameTestingProducer):
-                    if item.ressource in producableStuff and not item.product in producableStuff:
+                    if item.resource in producableStuff and not item.product in producableStuff:
                         producableStuff.append(item.product)
         return producableStuff
 
@@ -2552,7 +2552,7 @@ class Tutorial(BasicPhase):
                 self.batchGrowthTankProcing = True
 
             elif not self.batchFurnaceProducing and not self.batchHutchProducing and self.batchGrowthTankProcing:
-                showText("The first order is completed and will be shipped out to the main base. Your supervisor did not get praised for this.\nYou did get a small supply drop. A goo dispenser is supplied for easier survival.\n\nIt seemes the delivery was overdue. There are only few ressources spent on this outpost, but productivity is a must.\nRegular deliveries will ensure this output will stay supplied, but nothing more.\n\nSince your supervisor has no ambition to overachieve, this will only ensure your survival.\nIgnore your supervisor and pace up production. As soon this outpost achives noticeable output, we will have more options.\n\nProduce 3 successive deliveries with a production time under 100 ticks each.") 
+                showText("The first order is completed and will be shipped out to the main base. Your supervisor did not get praised for this.\nYou did get a small supply drop. A goo dispenser is supplied for easier survival.\n\nIt seemes the delivery was overdue. There are only few resources spent on this outpost, but productivity is a must.\nRegular deliveries will ensure this output will stay supplied, but nothing more.\n\nSince your supervisor has no ambition to overachieve, this will only ensure your survival.\nIgnore your supervisor and pace up production. As soon this outpost achives noticeable output, we will have more options.\n\nProduce 3 successive deliveries with a production time under 100 ticks each.") 
                 self.batchGrowthTankProcing = False
                 self.fastProduction = True
                 self.fastProductionStart = 0
@@ -2600,7 +2600,7 @@ class Tutorial(BasicPhase):
         self.mainChar.assignQuest(self.produceQuest, active=True)
         if self.product in producableStuff:
             if self.firstRegularCraft: 
-                showText("produce a "+self.product.type+". use the machines below to produce it.\n\nexamine the machines by walking into it and pressing the e key.\nIt will show what the machine produces and what ressource is needed to produce.\n\nstart from a metal bar and create interstage products until you produce a "+self.product.type)
+                showText("produce a "+self.product.type+". use the machines below to produce it.\n\nexamine the machines by walking into it and pressing the e key.\nIt will show what the machine produces and what resource is needed to produce.\n\nstart from a metal bar and create interstage products until you produce a "+self.product.type)
                 self.firstRegularCraft = False
         elif self.firstTimeImpossibleCraft:
             showText("you should produce a "+self.product.type+" now, but you can not do this directly.\n\nThe machines here are not actually able to produce a "+self.product.type+" from metal bars. You need to get creative here.\n\nUsually you tried to bend the rules a bit. Try searching the scrap field for a working "+self.product.type)
@@ -2817,7 +2817,7 @@ class Testing_1(BasicPhase):
 
     def startMetalBarChecking(self):
 
-        showText("I seems like this is a simple ressource gathering job. Metal bars are used to produce most of the materials needed in a mech.\n\nThe scrap is compacted to metal bars in a machine called scrap compactor\nThe machine is represented by the U\\ character. It processes scrap on the tile to its east and outputs the bars on the tile to its west.\n\nstart by dropping the scrap on the tile east of the machine.\nMove onto the tile and press l to drop items.")
+        showText("I seems like this is a simple resource gathering job. Metal bars are used to produce most of the materials needed in a mech.\n\nThe scrap is compacted to metal bars in a machine called scrap compactor\nThe machine is represented by the U\\ character. It processes scrap on the tile to its east and outputs the bars on the tile to its west.\n\nstart by dropping the scrap on the tile east of the machine.\nMove onto the tile and press l to drop items.")
 
         self.scrapQuest.postHandler()
         self.scrapQuest.completed = True
@@ -2896,7 +2896,7 @@ class Testing_1(BasicPhase):
             lastLength = len(producableStuff)
             for item in self.miniBase.itemsOnFloor:
                 if isinstance(item,src.items.GameTestingProducer):
-                    if item.ressource in producableStuff and not item.product in producableStuff:
+                    if item.resource in producableStuff and not item.product in producableStuff:
                         producableStuff.append(item.product)
         return producableStuff
 
@@ -2923,7 +2923,7 @@ class Testing_1(BasicPhase):
                 self.batchGrowthTankProcing = True
 
             elif not self.batchFurnaceProducing and not self.batchHutchProducing and self.batchGrowthTankProcing:
-                showText("The first order is completed and will be shipped out to the main base. Your supervisor did not get praised for this.\nYou did get a small supply drop. A goo dispenser is supplied for easier survival.\n\nIt seemes the delivery was overdue. There are only few ressources spent on this outpost, but productivity is a must.\nRegular deliveries will ensure this output will stay supplied, but nothing more.\n\nSince your supervisor has no ambition to overachieve, this will only ensure your survival.\nIgnore your supervisor and pace up production. As soon this outpost achives noticeable output, we will have more options.\n\nProduce 3 successive deliveries with a production time under 100 ticks each.") 
+                showText("The first order is completed and will be shipped out to the main base. Your supervisor did not get praised for this.\nYou did get a small supply drop. A goo dispenser is supplied for easier survival.\n\nIt seemes the delivery was overdue. There are only few resources spent on this outpost, but productivity is a must.\nRegular deliveries will ensure this output will stay supplied, but nothing more.\n\nSince your supervisor has no ambition to overachieve, this will only ensure your survival.\nIgnore your supervisor and pace up production. As soon this outpost achives noticeable output, we will have more options.\n\nProduce 3 successive deliveries with a production time under 100 ticks each.") 
                 self.batchGrowthTankProcing = False
                 self.fastProduction = True
                 self.fastProductionStart = 0
@@ -2971,7 +2971,7 @@ class Testing_1(BasicPhase):
         self.mainChar.assignQuest(self.produceQuest, active=True)
         if self.product in producableStuff:
             if self.firstRegularCraft: 
-                showText("produce a "+self.product.type+". use the machines below to produce it.\n\nexamine the machines by walking into it and pressing the e key.\nIt will show what the machine produces and what ressource is needed to produce.\n\nstart from a metal bar and create interstage products until you produce a "+self.product.type)
+                showText("produce a "+self.product.type+". use the machines below to produce it.\n\nexamine the machines by walking into it and pressing the e key.\nIt will show what the machine produces and what resource is needed to produce.\n\nstart from a metal bar and create interstage products until you produce a "+self.product.type)
                 self.firstRegularCraft = False
         elif self.firstTimeImpossibleCraft:
             showText("you should produce a "+self.product.type+" now, but you can not do this directly.\n\nThe machines here are not actually able to produce a "+self.product.type+" from metal bars. You need to get creative here.\n\nUsually you tried to bend the rules a bit. Try searching the scrap field for a working "+self.product.type)
@@ -3076,9 +3076,37 @@ class BuildBase(BasicPhase):
                 if bigX > 3 and bigX < 11 and bigY > 3 and bigY < 11:
                     continue
                 if random.randint(1,1) == 1:
-                    molds.append(src.items.Mold(bigX*15+random.randint(1,13),bigY*15+random.randint(1,13),creator=self))
+                    for i in range(0,30):
+                        molds.append(src.items.Mold(bigX*15+random.randint(1,13),bigY*15+random.randint(1,13),creator=self))
+        molds.append(src.items.Mold(155,108,creator=self))
+        molds.append(src.items.Mold(159,116,creator=self))
+        molds.append(src.items.Mold(138,108,creator=self))
+        molds.append(src.items.Mold(145,115,creator=self))
 
-        for pos in ((187,37),(37,37),(37,187),(187,187),(202,112),(187,112),(172,112),(157,112),(142,112)):
+        positions = [(187,37),(37,37),(37,187),(187,187),(202,112),(187,112),(172,112),]
+        counter = 0
+        for x in range(1,14):
+            for y in (1,2,12,13):
+                counter += 1
+                if not counter%3 == 0:
+                    continue
+                pos = (x*15+7,y*15+7)
+                if not pos in positions:
+                   positions.append(pos) 
+
+        for y in range(1,14):
+            for x in (1,2,12,13):
+                counter += 1
+                if not counter%3 == 0:
+                    continue
+                pos = (x*15+7,y*15+7)
+                if not pos in positions:
+                   positions.append(pos) 
+
+        ripInReality = src.items.RipInReality(131,93,creator=self)
+        terrain.addItems([ripInReality])
+
+        for pos in positions:
             commandBloom = src.items.CommandBloom(pos[0],pos[1],creator=self)
             terrain.addItems([commandBloom])
             if pos in ((187,112),(172,112),(157,112),(142,112)):
@@ -3105,6 +3133,28 @@ class BuildBase(BasicPhase):
         for mold in molds:
             mold.startSpawn()
 
+        for pos in positions:
+            crawler = src.characters.Monster(xPosition=pos[0],yPosition=pos[1],creator=void)
+
+            crawler.solvers = [
+                      "SurviveQuest",
+                      "Serve",
+                      "NaiveMoveQuest",
+                      "NaiveMurderQuest",
+                      "MoveQuestMeta",
+                      "NaiveActivateQuest",
+                      "ActivateQuestMeta",
+                      "NaivePickupQuest",
+                      "PickupQuestMeta",
+                      "DrinkQuest",
+                      "ExamineQuest",
+                      "FireFurnaceMeta",
+                      "CollectQuestMeta",
+                      "WaitQuest"
+                      ]
+            crawler.macroState["commandKeyQueue"] = [("j",[]),("j",[])]
+            terrain.addCharacter(crawler,pos[0],pos[1])
+
         mainChar.addListener(self.checkRoomEnteredMain)
         mainChar.macroState["macros"]["j"] = ["J","f"]
 
@@ -3130,6 +3180,7 @@ class BuildBase(BasicPhase):
                   "SurviveQuest",
                   "Serve",
                   "NaiveMoveQuest",
+                  "NaiveMurderQuest",
                   "MoveQuestMeta",
                   "NaiveActivateQuest",
                   "ActivateQuestMeta",
@@ -3153,6 +3204,336 @@ class BuildBase(BasicPhase):
         if self.mainChar.room and self.mainChar.room == self.miniBase:
             showText("\n\nUse the auto tutor for more information. The autotutor is represented by iD\n\n * press j to activate \n * press k to pick up\n * press l to pick up\n * press i to view inventory\n * press @ to view your stats\n * press e to examine\n * press ? for help\n\nMove onto an item and press the key to interact with it. Move against big items and press the key to interact with it\n\npress space to continue\n\n")
             mainChar.delListener(self.checkRoomEnteredMain)
+
+"""
+"""
+class DesertSurvival(BasicPhase):
+    def __init__(self,seed=0):
+        super().__init__("DesertSurvival",seed=seed)
+    '''
+    place main char
+    bad code: superclass call should not be prevented
+    '''
+    def start(self,seed=0):
+        import random
+
+        cinematics.showCinematic("staring desert survival Scenario.")
+
+        terrain.heatmap[3][7] = 1
+        terrain.heatmap[4][7] = 1
+        terrain.heatmap[5][7] = 1
+        terrain.heatmap[6][7] = 1
+
+        # place character in wakeup room
+        if terrain.wakeUpRoom:
+            self.mainCharRoom = terrain.wakeUpRoom
+            self.mainCharRoom.addCharacter(mainChar,2,4)
+        # place character on terrain
+        else:
+            mainChar.xPosition = 65
+            mainChar.yPosition = 111
+            mainChar.reputation = 100
+            mainChar.terrain = terrain
+            terrain.addCharacter(mainChar,65,111)
+
+        # add basic set of abilities in openworld phase
+        mainChar.questsDone = [
+                  "NaiveMoveQuest",
+                  "MoveQuestMeta",
+                  "NaiveActivateQuest",
+                  "ActivateQuestMeta",
+                  "NaivePickupQuest",
+                  "PickupQuestMeta",
+                  "DrinkQuest",
+                  "CollectQuestMeta",
+                  "FireFurnaceMeta",
+                  "ExamineQuest",
+                  "NaiveDropQuest",
+                  "DropQuestMeta",
+                  "LeaveRoomQuest",
+              ]
+
+        mainChar.solvers = [
+                  "SurviveQuest",
+                  "Serve",
+                  "NaiveMoveQuest",
+                  "MoveQuestMeta",
+                  "NaiveActivateQuest",
+                  "ActivateQuestMeta",
+                  "NaivePickupQuest",
+                  "PickupQuestMeta",
+                  "DrinkQuest",
+                  "ExamineQuest",
+                  "FireFurnaceMeta",
+                  "CollectQuestMeta",
+                  "WaitQuest"
+                  "NaiveDropQuest",
+                  "NaiveDropQuest",
+                  "DropQuestMeta",
+                ]
+
+        reservedTiles = [
+                            (2,6),(3,6),(4,6),(5,6),(6,6),(7,6),
+                            (2,7),(3,7),(4,7),(5,7),(6,7),(7,7),
+                            (2,8),(3,8),(4,8),(5,8),(6,8),(7,8),
+                        ]
+
+        while 1:
+            x = random.randint(1,14)
+            y = random.randint(1,14)
+            if (x,y) in reservedTiles:
+                continue
+
+            reservedTiles.append((x,y))
+
+            self.workshop = src.rooms.EmptyRoom(x,y,2,3,creator=self)
+            self.workshop.reconfigure(11,8)
+            break
+
+
+        scrap = src.items.Scrap(2,5,creator=self,amount=10) 
+        self.workshop.addItems([scrap])
+        sunscreen = src.items.SunScreen(9,4,creator=self) 
+        self.workshop.addItems([sunscreen])
+        scrapCompactor = src.items.ScrapCompactor(3,5,creator=self) 
+        self.workshop.addItems([scrapCompactor])
+        rodMachine = src.items.Machine(5,5,creator=self) 
+        rodMachine.setToProduce("Rod")
+        self.workshop.addItems([rodMachine])
+        waterCondenserMachine = src.items.Machine(7,2,creator=self) 
+        waterCondenserMachine.setToProduce("WaterCondenser")
+        self.workshop.addItems([waterCondenserMachine])
+        scrapper = src.items.Scraper(7,5,creator=self) 
+        self.workshop.addItems([scrapper])
+        case = src.items.Case(1,1,creator=self) 
+        case.bolted = False
+        self.workshop.addItems([case])
+        case = src.items.Case(2,1,creator=self) 
+        case.bolted = False
+        self.workshop.addItems([case])
+        case = src.items.Case(3,1,creator=self) 
+        case.bolted = False
+        self.workshop.addItems([case])
+        case = src.items.Case(4,1,creator=self) 
+        case.bolted = False
+        self.workshop.addItems([case])
+        sheet = src.items.Sheet(7,1,creator=self) 
+        sheet.bolted = False
+        self.workshop.addItems([sheet])
+        terrain.addRooms([self.workshop])
+
+        while 1:
+            x = random.randint(1,14)
+            y = random.randint(1,14)
+            if (x,y) in reservedTiles:
+                continue
+
+            reservedTiles.append((x,y))
+
+            self.workshop = src.rooms.EmptyRoom(x,y,2,4,creator=self)
+            self.workshop.reconfigure(8,8)
+            break
+
+        terrain.doSandStorm()
+
+
+"""
+"""
+class FactoryDream(BasicPhase):
+    def __init__(self,seed=0):
+        super().__init__("FactoryDream",seed=seed)
+    '''
+    place main char
+    bad code: superclass call should not be prevented
+    '''
+    def start(self,seed=0):
+        import random
+
+        cinematics.showCinematic("just look at my pretty factory")
+
+        mainChar.terrain = terrain
+        terrain.addCharacter(mainChar,7*15+7,7*15+7)
+
+        # add basic set of abilities in openworld phase
+        mainChar.questsDone = [
+                  "NaiveMoveQuest",
+                  "MoveQuestMeta",
+                  "NaiveActivateQuest",
+                  "ActivateQuestMeta",
+                  "NaivePickupQuest",
+                  "PickupQuestMeta",
+                  "DrinkQuest",
+                  "CollectQuestMeta",
+                  "FireFurnaceMeta",
+                  "ExamineQuest",
+                  "NaiveDropQuest",
+                  "DropQuestMeta",
+                  "LeaveRoomQuest",
+              ]
+
+        mainChar.solvers = [
+                  "SurviveQuest",
+                  "Serve",
+                  "NaiveMoveQuest",
+                  "MoveQuestMeta",
+                  "NaiveActivateQuest",
+                  "ActivateQuestMeta",
+                  "NaivePickupQuest",
+                  "PickupQuestMeta",
+                  "DrinkQuest",
+                  "ExamineQuest",
+                  "FireFurnaceMeta",
+                  "CollectQuestMeta",
+                  "WaitQuest"
+                  "NaiveDropQuest",
+                  "NaiveDropQuest",
+                  "DropQuestMeta",
+                ]
+
+        # fill one cargo pod with scrap
+        cargoPod = src.rooms.EmptyRoom(5,6,2,3,creator=self)
+        cargoPod.reconfigure(11,8)
+        items = []
+        for x in range(1,9):
+            for y in range(1,6):
+                scrap = src.items.Scrap(x,y,amount=10,creator=self)
+                items.append(scrap)
+        cargoPod.addItems(items)
+        terrain.addRooms([cargoPod])
+
+        cargoPod = src.rooms.ScrapStorage(6,6,1,1,creator=self)
+        terrain.addRooms([cargoPod])
+
+        # fill other cargo pod with flasks
+        cargoPod = src.rooms.EmptyRoom(6,5,2,3,creator=self)
+        cargoPod.reconfigure(11,8)
+        items = []
+        for x in range(1,9):
+            for y in range(1,6):
+                flask = src.items.GooFlask(x,y)
+                flask.uses = 100
+                items.append(flask)
+        cargoPod.addItems(items)
+        terrain.addRooms([cargoPod])
+
+        # place processing scrap into metal bars
+        workshopMetal = src.rooms.EmptyRoom(6,7,1,1,creator=self)
+        items = []
+        scrapCompactor = src.items.ScrapCompactor(4,8)
+        items.append(scrapCompactor)
+        scrapCompactor = src.items.ScrapCompactor(8,8)
+        items.append(scrapCompactor)
+        scrapCompactor = src.items.ScrapCompactor(7,10)
+        items.append(scrapCompactor)
+        machine = src.items.Machine(3,4)
+        machine.setToProduce("Rod")
+        items.append(machine)
+        machine = src.items.Machine(5,4)
+        machine.setToProduce("Frame")
+        items.append(machine)
+        machine = src.items.Machine(7,4)
+        machine.setToProduce("Case")
+        items.append(machine)
+        machine = src.items.Machine(9,4)
+        machine.setToProduce("Wall")
+        items.append(machine)
+        machine = src.items.Machine(10,8)
+        machine.setToProduce("Sheet")
+        items.append(machine)
+        machine = src.items.Machine(9,10)
+        machine.setToProduce("FloorPlate")
+        items.append(machine)
+        stasisTank = src.items.StasisTank(9,1)# lets add the stasis tank to hold the local npc
+        items.append(stasisTank)
+        command = src.items.Command(6,6)# add a command for producing walls
+        command.setPayload(list("13dwwasjsjsjsjdss13aaaasslwdsjdddslwdsjdskwaaaakskwwwaaawlwdddddddlaaaaaaassdwjddwjddwjddwjdwksddddddddsjj12a"))
+        items.append(command)
+        command = src.items.Command(5,10)# add a command for producing floors
+        command.setPayload(list(""))
+        items.append(command)
+        command = src.items.Command(5,10)# add roombuilder
+        command.setPayload(list(""))
+        items.append(command)
+        workshopMetal.reconfigure(13,13)
+        workshopMetal.addItems(items)
+        terrain.addRooms([workshopMetal])
+
+        items = []
+        stockPile = src.items.UniformStockpileManager(15*7+7,15*6+7)
+        items.append(stockPile)
+        stockPile = src.items.UniformStockpileManager(15*8+7,15*6+7)
+        items.append(stockPile)
+        stockPile = src.items.UniformStockpileManager(15*9+7,15*6+7)
+        items.append(stockPile)
+        stockPile = src.items.UniformStockpileManager(15*10+7,15*6+7)
+        items.append(stockPile)
+        terrain.addItems(items)
+
+
+"""
+"""
+class CreativeMode(BasicPhase):
+    def __init__(self,seed=0):
+        super().__init__("CreativeMode",seed=seed)
+    '''
+    place main char
+    bad code: superclass call should not be prevented
+    '''
+    def start(self,seed=0):
+        import random
+
+        mainChar.terrain = terrain
+        mainChar.godMode = True
+        terrain.addCharacter(mainChar,7*15+7,7*15+7)
+
+        # add basic set of abilities in openworld phase
+        mainChar.questsDone = [
+                  "NaiveMoveQuest",
+                  "MoveQuestMeta",
+                  "NaiveActivateQuest",
+                  "ActivateQuestMeta",
+                  "NaivePickupQuest",
+                  "PickupQuestMeta",
+                  "DrinkQuest",
+                  "CollectQuestMeta",
+                  "FireFurnaceMeta",
+                  "ExamineQuest",
+                  "NaiveDropQuest",
+                  "DropQuestMeta",
+                  "LeaveRoomQuest",
+              ]
+
+        mainChar.solvers = [
+                  "SurviveQuest",
+                  "Serve",
+                  "NaiveMoveQuest",
+                  "MoveQuestMeta",
+                  "NaiveActivateQuest",
+                  "ActivateQuestMeta",
+                  "NaivePickupQuest",
+                  "PickupQuestMeta",
+                  "DrinkQuest",
+                  "ExamineQuest",
+                  "FireFurnaceMeta",
+                  "CollectQuestMeta",
+                  "WaitQuest"
+                  "NaiveDropQuest",
+                  "NaiveDropQuest",
+                  "DropQuestMeta",
+                ]
+
+        items = []
+        item = src.items.ArchitectArtwork(15*7+8,15*7+7)
+        item.bolted = False
+        item.godMode = True
+        items.append(item)
+        item = src.items.ProductionArtwork(15*7+8,15*7+8)
+        item.bolted = False
+        item.godMode = True
+        items.append(item)
+        terrain.addItems(items)
+
+
 
 ###############################################################
 ###
@@ -3184,3 +3565,6 @@ def registerPhases():
     phasesByName["Testing_1"] = Testing_1
     phasesByName["BuildBase"] = BuildBase
     phasesByName["Tutorial"] = Tutorial
+    phasesByName["DesertSurvival"] = DesertSurvival
+    phasesByName["FactoryDream"] = FactoryDream
+    phasesByName["CreativeMode"] = CreativeMode

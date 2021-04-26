@@ -30,11 +30,11 @@ class Room(src.saveing.Saveable):
     state initialization
     bad code: too many attributes
     '''
-    def __init__(self,layout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None,seed=0):
+    def __init__(self,layout="",xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None,seed=0):
         super().__init__()
 
         # initialize attributes
-        self.health = 1 
+        self.health = 40
         self.desiredPosition = desiredPosition
         self.desiredSteamGeneration = None
         self.layout = layout
@@ -76,14 +76,8 @@ class Room(src.saveing.Saveable):
         self.seed = seed
 
         # set id
-        self.id = {
-                   "other":"room",
-                   "xPosition":xPosition,
-                   "yPosition":yPosition,
-                   "counter":creator.getCreationCounter()
-                  }
-        self.id["creator"] = creator.id
-        self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
+        import uuid
+        self.id = uuid.uuid4().hex
             
         self.itemByCoordinates = {}
 
@@ -103,7 +97,7 @@ class Room(src.saveing.Saveable):
                     if (not self.firstOfficer) or (not self.secondOfficer):
                         if not self.firstOfficer:
                             # add first officer
-                            npc = characters.Character(xPosition=5,yPosition=3,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
+                            npc = src.characters.Character(xPosition=5,yPosition=3,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.firstOfficer = npc
@@ -111,7 +105,7 @@ class Room(src.saveing.Saveable):
                             npc.assignQuest(quest,active=True)
                         else:
                             # add second officer
-                            npc = characters.Character(xPosition=6,yPosition=4,creator=self,seed=self.yPosition+2*self.offsetX+self.offsetY+2*self.xPosition)
+                            npc = src.characters.Character(xPosition=6,yPosition=4,creator=self,seed=self.yPosition+2*self.offsetX+self.offsetY+2*self.xPosition)
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.secondOfficer = npc
@@ -119,10 +113,10 @@ class Room(src.saveing.Saveable):
                             npc.assignQuest(quest,active=True)
                 elif char in ("X","&"):
                     # add wall
-                    itemsOnFloor.append(src.items.Wall(rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.itemMap["Wall"](rowCounter,lineCounter,creator=self))
                 elif char == "$":
                     # add door and mark position as entry point
-                    door = src.items.Door(rowCounter,lineCounter,creator=self)
+                    door = src.items.itemMap["Door"](rowCounter,lineCounter,creator=self)
                     itemsOnFloor.append(door)
                     self.walkingAccess.append((rowCounter,lineCounter))
                     self.doors.append(door)
@@ -282,11 +276,15 @@ class Room(src.saveing.Saveable):
               "yPosition","xPosition","offsetX","offsetY","objType","sizeX","sizeY","walkingAccess","open","engineStrength","steamGeneration","isContainment","timeIndex",
                 ])
 
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
-
     def damage(self):
         self.health -= 1
+        if self.itemsOnFloor:
+            import random
+            item = random.choice(self.itemsOnFloor)
+            if (item.yPosition == 0 or item.yPosition == 0 or item.xPosition == self.sizeX or item.yPosition == self.sizeY) and not (item.xPosition,item.yPosition) in self.walkingAccess:
+                self.open = True
+                self.walkingAccess.append((item.xPosition,item.yPosition))
+            random.choice(self.itemsOnFloor).destroy()
         if self.health < 1:
             self.terrain.removeRoom(self)
 
@@ -548,7 +546,7 @@ class Room(src.saveing.Saveable):
         #    return self.lastRender
         
         # render room
-        if not self.hidden:
+        if not self.hidden or mainChar.room == self:
             # fill the area with floor tiles
             chars = []
             fixedChar = None
@@ -565,7 +563,10 @@ class Room(src.saveing.Saveable):
             
             # draw items
             for item in self.itemsOnFloor:
-                chars[item.yPosition][item.xPosition] = item.display
+                try:
+                    chars[item.yPosition][item.xPosition] = item.render()
+                except:
+                    debugMessages.append("room drawing failed")
 
             # draw characters
             for character in self.characters:
@@ -710,7 +711,6 @@ class Room(src.saveing.Saveable):
 
     '''
     remove item from internal structure
-    bad pattern: should be removeItems
     '''
     def removeItem(self,item):
         # remove items from easy access map
@@ -722,6 +722,13 @@ class Room(src.saveing.Saveable):
         # remove item from the list of items
         if item in self.itemsOnFloor:
             self.itemsOnFloor.remove(item)
+
+    def removeItems(self,items):
+        for item in items:
+            self.removeItem(item)
+
+    def clearCoordinate(self,position):
+        self.removeItems(self.getItemByPosition(position))
 
     '''
     move the room a step into some direction
@@ -803,6 +810,10 @@ class Room(src.saveing.Saveable):
             return self.moveCharacter(character,tuple(newPosition))
         
         # move onto terrain
+        if not character.room.yPosition:
+            character.addMessage("you cannot move through the static")
+            return
+
         newYPos = character.yPosition+character.room.yPosition*15+character.room.offsetY
         newXPos = character.xPosition+character.room.xPosition*15+character.room.offsetX
         if direction == "south":
@@ -816,14 +827,15 @@ class Room(src.saveing.Saveable):
         else:
             debugMessages.append("invalid movement direction")
 
-        newPosition = (newXPos,newYPos)
-        if newPosition in self.terrain.itemByCoordinates:
-            for item in self.terrain.itemByCoordinates[newPosition]:
-                if not item.walkable:
-                    return item
+        newPosition = (newXPos,newYPos,0)
 
-            if len(self.terrain.itemByCoordinates[newPosition]) > 15:
-                return self.terrain.itemByCoordinates[newPosition][0]
+        itemList = self.terrain.getItemByPosition(newPosition)
+        for item in itemList:
+            if not item.walkable:
+                return item
+
+        if len(itemList) > 15:
+            return itemList[0]
 
         self.removeCharacter(character)
         self.terrain.addCharacter(character,newXPos,newYPos)
@@ -966,10 +978,6 @@ XXXXXXXXXX
 
         self.furnaceQuest = None
 
-        # save initial state and register
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
-
     '''
     move from training to mocked up day to day activity
     bad code: this should happen in story
@@ -1047,7 +1055,7 @@ class CpuWasterRoom(Room):
     '''
     create room and add patroling npcs
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,creator=None):
         self.roomLayout = """
 XX$XXXXXXX
 Xv vD????X
@@ -1078,7 +1086,7 @@ XXXXXXXXXX
             quest3.followUp = quest4
 
             # add npc
-            npc = characters.Character(xPosition=x,yPosition=y,creator=self,seed=self.yPosition+3*x+self.offsetY+4*y)
+            npc = src.characters.Character(xPosition=x,yPosition=y,creator=self,seed=self.yPosition+3*x+self.offsetY+4*y)
             self.addCharacter(npc,x,y)
             npc.room = self
             npc.assignQuest(quest1)
@@ -1096,9 +1104,6 @@ XXXXXXXXXX
         addNPC(7,5)
         addNPC(7,6)
         
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
-
 '''
 the living space for soldiers
 '''
@@ -1108,7 +1113,7 @@ class InfanteryQuarters(Room):
     '''
     create room
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
         self.roomLayout = """
 XX$X&&XXXXX
 XX PPPPPPXX
@@ -1257,7 +1262,7 @@ class VatProcessing(Room):
     '''
     create room and add special item
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXX
 XaaaaaaaaX
@@ -1277,17 +1282,13 @@ XXXXX$XXXX
         self.addItems([self.gooDispenser])
         self.name = "vat processing"
 
-        firstOfficerDialog = {"dialogName":"Do you need some help?","chat":chats.ConfigurableChat,"params":{
+        firstOfficerDialog = {"dialogName":"Do you need some help?","chat":src.chats.ConfigurableChat,"params":{
                 "text":"yes. I regulary have to request new goo Flasks, since the workers sometimes drop them. Collect them for me.",
                 "info":[
                     ]
             }}
         firstOfficerDialog["params"]["info"].append({"name":"I have a goo flask for you","text":"gret. Give it to me","type":"text","trigger":{"container":self,"method":"removeGooFlask"}})
         self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
-
-        # save initial state and register
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     def removeGooFlask(self):
         toRemove = None
@@ -1316,7 +1317,7 @@ class VatFermenting(Room):
     '''
     create room and set some state
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXX
 X  Mb jjjX
@@ -1334,10 +1335,6 @@ XXXXX$XXXX
         self.floorDisplay = displayChars.acids
         self.name = "Vat fermenting"
 
-        # save initial state and register
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
-
 '''
 the armor plates of a mech
 '''
@@ -1347,7 +1344,7 @@ class MechArmor(Room):
     '''
     create room
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXXXXXXX
 XX X X X X X XX
@@ -1378,7 +1375,7 @@ class MiniMech(Room):
     '''
     create the room and add the npc
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
         self.roomLayout = """
 XX$XXX
 XD..@X
@@ -1393,16 +1390,14 @@ XXXXXX
         self.name = "MiniMech"
 
         # add npc
-        self.npc = characters.Character(xPosition=3,yPosition=3,creator=self,seed=self.yPosition+3*3+self.offsetY+4*12)
+        self.npc = src.characters.Character(xPosition=3,yPosition=3,creator=self,seed=self.yPosition+3*3+self.offsetY+4*12)
         self.addCharacter(self.npc,3,3)
         self.npc.room = self
 
         quest = None
 
         # add dialog options
-        self.npc.basicChatOptions.append({"dialogName":"fire the furnaces","chat":chats.StartChat})
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
+        self.npc.basicChatOptions.append({"dialogName":"fire the furnaces","chat":src.chats.StartChat})
 
     '''
     recalculate engine strength
@@ -1422,7 +1417,7 @@ class MiniBase(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None,seed=0):
+    def __init__(self,xPosition=None,yPosition=None,offsetX=None,offsetY=None,desiredPosition=None,creator=None,seed=0):
         self.roomLayout = """
 XXXXXXXXXXXXX
 X           X
@@ -1460,34 +1455,68 @@ XXXXXXXXXXXXX
 
         self.addItems([self.artwork,self.compactor,flask1,flask2,flask3,self.infoScreen,self.bluePrinter,self.machinemachine,self.machine])
 
-        metalbars = src.items.MetalBars(3,1,creator=creator)
-        metalbars2 = src.items.MetalBars(7,9,creator=creator)
-        metalbars3 = src.items.MetalBars(9,1,creator=creator)
-        metalbars4 = src.items.MetalBars(3,4,creator=creator)
-        scrap = src.items.Scrap(7,1,creator=creator)
-        connector = src.items.Connector(7,9,creator=creator)
-        blueprint1 = src.items.BluePrint(9,9,creator=creator)
+        metalbars = src.items.itemMap["MetalBars"](3,1,creator=creator)
+        metalbars2 = src.items.itemMap["MetalBars"](7,9,creator=creator)
+        metalbars3 = src.items.itemMap["MetalBars"](9,1,creator=creator)
+        metalbars4 = src.items.itemMap["MetalBars"](3,4,creator=creator)
+        scrap = src.items.itemMap["Scrap"](7,1,creator=creator)
+        connector = src.items.itemMap["Connector"](7,9,creator=creator)
+        blueprint1 = src.items.itemMap["BluePrint"](9,9,creator=creator)
         blueprint1.setToProduce("Sheet")
         blueprint1.bolted = False
-        blueprint2 = src.items.BluePrint(9,9,creator=creator)
+        blueprint2 = src.items.itemMap["BluePrint"](9,9,creator=creator)
         blueprint2.setToProduce("Radiator")
         blueprint2.bolted = False
-        blueprint3 = src.items.BluePrint(9,9,creator=creator)
+        blueprint3 = src.items.itemMap["BluePrint"](9,9,creator=creator)
         blueprint3.setToProduce("Mount")
         blueprint3.bolted = False
-        blueprint4 = src.items.BluePrint(9,9,creator=creator)
+        blueprint4 = src.items.itemMap["BluePrint"](9,9,creator=creator)
         blueprint4.setToProduce("Stripe")
         blueprint4.bolted = False
-        blueprint5 = src.items.BluePrint(9,9,creator=creator)
+        blueprint5 = src.items.itemMap["BluePrint"](9,9,creator=creator)
         blueprint5.setToProduce("Bolt")
         blueprint5.bolted = False
-        blueprint6 = src.items.BluePrint(4,3,creator=creator)
+        blueprint6 = src.items.itemMap["BluePrint"](4,3,creator=creator)
         blueprint6.setToProduce("Rod")
         blueprint6.bolted = False
         self.addItems([metalbars,metalbars2,metalbars3,metalbars4,scrap,connector,blueprint1,blueprint2,blueprint3,blueprint4,blueprint5,blueprint6])
 
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
+'''
+a room sized base for small off mech missions
+bad code: serves no real function yet
+'''
+class MiniBase2(Room):
+    objType = "MiniBase2"
+
+    '''
+    create room and add special items
+    '''
+    def __init__(self,xPosition=None,yPosition=None,offsetX=None,offsetY=None,desiredPosition=None,creator=None,seed=0):
+        self.roomLayout = """
+XXXXXXXXXXX
+X         X
+X         X
+X         X
+X         X
+X  .......$
+X         X
+X         X
+X         X
+X         X
+XXXXXXXXXXX
+"""
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        self.doors[0].walkable = True
+
+        healingstation = src.items.HealingStation(4,1,creator=creator)
+        corpseShredder = src.items.CorpseShredder(4,8,creator=creator)
+        corpse = src.items.Corpse(3,8,creator=creator)
+        corpse.charges = 300
+        sunScreen = src.items.SunScreen(5,5,creator=creator)
+        vial = src.items.Vial(7,3,creator=creator)
+        import random
+        vial.uses = random.randint(0,10)
+        self.addItems([healingstation,sunScreen,vial,corpseShredder,corpse])
 
 '''
 a room to test gameplay concepts
@@ -1499,7 +1528,7 @@ class TutorialMiniBase(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None, seed=0):
+    def __init__(self,xPosition=None,yPosition=None,offsetX=None,offsetY=None,desiredPosition=None,creator=None, seed=0):
         self.roomLayout = """
 XXXXXXXXXXXXX
 X           X
@@ -1606,7 +1635,7 @@ class GameTestingRoom(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None, seed=0):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None, seed=0):
         self.roomLayout = """
 XXXXXXXXXXXXX
 X           X
@@ -1673,8 +1702,6 @@ XXXXXXXXXXXXX
             seed += seed%7
 
         self.addItems(itemList)
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
 '''
 a lab for behaviour testing
@@ -1687,7 +1714,7 @@ class ChallengeRoom(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None,seed=0):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None,seed=0):
         self.roomLayout = """
 XXXXXXXXXX
 X XX  @  X
@@ -1721,15 +1748,15 @@ XXXXXXXXXX
                continue
             item.bolted = False
 
-        self.firstOfficer.basicChatOptions.append({"dialogName":"I need to leave this room, can you help?","chat":chats.ConfigurableChat,"params":{
+        self.firstOfficer.basicChatOptions.append({"dialogName":"I need to leave this room, can you help?","chat":src.chats.ConfigurableChat,"params":{
                 "text":"yes",
                 "info":[]}})
-        self.secondOfficer.basicChatOptions.append({"dialogName":"I need to leave this room, can you help?","chat":chats.ConfigurableChat,"params":{
+        self.secondOfficer.basicChatOptions.append({"dialogName":"I need to leave this room, can you help?","chat":src.chats.ConfigurableChat,"params":{
                 "text":"I dont know how to help you with this",
                 "info":[]
             }})
 
-        firstOfficerDialog = {"dialogName":"Do you need more equipment?","chat":chats.ConfigurableChat,"params":{
+        firstOfficerDialog = {"dialogName":"Do you need more equipment?","chat":src.chats.ConfigurableChat,"params":{
                 "text":"yes",
                 "info":[
                     ]
@@ -1737,7 +1764,7 @@ XXXXXXXXXX
         firstOfficerDialog["params"]["info"].append({"name":"I want to use my tokens","text":"Done","type":"text","trigger":{"container":self,"method":"removeTokensFirstOfficer"}})
         self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
 
-        secondOfficerDialog = {"dialogName":"Do you need more equipment?","chat":chats.ConfigurableChat,"params":{
+        secondOfficerDialog = {"dialogName":"Do you need more equipment?","chat":src.chats.ConfigurableChat,"params":{
                 "text":"yes",
                 "info":[
                     ]
@@ -1824,10 +1851,6 @@ XXXXXXXXXX
             self.secondOfficer.inventory.append(item)
             counter += 1
 
-        # save initial state and register
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
-
     def removePipesSecondOfficer(self):
         toRemove = []
         for item in mainChar.inventory:
@@ -1897,7 +1920,7 @@ class LabRoom(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXX
 X     @@ X
@@ -1931,10 +1954,6 @@ XXXXXXXXXX
                continue
             item.bolted = False
 
-        # save initial state and register
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
-
 '''
 cargo storage for tightly packing items
 '''
@@ -1944,7 +1963,7 @@ class CargoRoom(Room):
     '''
     create room, set storage order and fill with items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,itemTypes=[src.items.Pipe,src.items.Wall,src.items.Furnace,src.items.Boiler],amount=80,creator=None,seed=0):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,itemTypes=[],amount=80,creator=None,seed=0):
         self.roomLayout = """
 XXXXXXXXXX
 X        X
@@ -2004,7 +2023,7 @@ XXXXXXXXXX
             item.yPosition = yPosition
             self.addItems([item])
 
-        npc = self.fetchThroughRegistry(characters.Character(xPosition=4,yPosition=4,creator=self,seed=self.yPosition+self.offsetY+4*12))
+        npc = self.fetchThroughRegistry(src.characters.Character(xPosition=4,yPosition=4,creator=self,seed=self.yPosition+self.offsetY+4*12))
 
         # determine in what order storage space should be used
         counter = 0
@@ -2033,7 +2052,7 @@ XXXXXXXXXX
             mice = []
             mousePositions = [(2,2),(2,4),(4,2),(4,4),(7,3)]
             for mousePosition in mousePositions:
-                mouse = characters.Mouse(creator=self)
+                mouse = src.characters.Mouse(creator=self)
                 self.addCharacter(mouse,mousePosition[0],mousePosition[1])
                 mice.append(mouse)
 
@@ -2089,10 +2108,6 @@ XXXXXXXXXX
         # actually add the items
         self.addItems(self.storedItems)
 
-        # save initial state and register
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
-
 '''
 storage for storing items in an accessible way
 '''
@@ -2102,7 +2117,7 @@ class StorageRoom(Room):
     '''
     create room, set storage order 
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=None,yPosition=None,offsetX=None,offsetY=None,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXX
 X        X
@@ -2153,8 +2168,6 @@ XXXXXXXXXX
 
         # actually add the items
         self.addItems(self.storedItems)
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     '''
     use specialised pathfinding
@@ -2246,7 +2259,7 @@ class WakeUpRoom(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXX
 Xö    vX
@@ -2295,11 +2308,7 @@ XXXXXXXX
                 item.addListener(self.handleDoorOpening,"activated")
 
         # start spawning hoppers periodically
-        self.addEvent(events.EndQuestEvent(8000,{"container":self,"method":"spawnNewHopper"},creator=self))
-
-        # save initial state and register
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
+        self.addEvent(src.events.EndQuestEvent(8000,{"container":self,"method":"spawnNewHopper"},creator=self))
 
     '''
     warn character about leaving the room
@@ -2383,7 +2392,7 @@ class WaitingRoom(Room):
     '''
     create room and add hoppers
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXXX
 X         X
@@ -2402,10 +2411,10 @@ XXXXXXXXXXX
         self.hoppers = []
 
         # add hoppers
-        npc = self.fetchThroughRegistry(characters.Character(xPosition=4,yPosition=4,creator=self,seed=self.yPosition+self.offsetY+4*12))
+        npc = self.fetchThroughRegistry(src.characters.Character(xPosition=4,yPosition=4,creator=self,seed=self.yPosition+self.offsetY+4*12))
         self.hoppers.append(npc)
         self.addCharacter(npc,2,2)
-        npc = self.fetchThroughRegistry(characters.Character(xPosition=4,yPosition=5,creator=self,seed=self.yPosition+self.offsetY+4*23+30))
+        npc = self.fetchThroughRegistry(src.characters.Character(xPosition=4,yPosition=5,creator=self,seed=self.yPosition+self.offsetY+4*23+30))
         self.hoppers.append(npc)
         self.addCharacter(npc,2,3)
 
@@ -2422,10 +2431,6 @@ XXXXXXXXXXX
         for hopper in self.hoppers:
             self.addAsHopper(hopper)
             hopper.initialState = hopper.getState()
-
-        # save initial state and register
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     '''
     add a character as hopper
@@ -2486,7 +2491,7 @@ class MechCommand(Room):
     '''
     set basic attributes
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXX$XXXXX
 XI        X
@@ -2504,24 +2509,24 @@ XXXXXXXXXXX
 
         self.firstOfficer.name = "Cpt. "+self.firstOfficer.name
 
-        firstOfficerDialog = {"dialogName":"Tell me more about the Commandchain","chat":chats.ConfigurableChat,"params":{
+        firstOfficerDialog = {"dialogName":"Tell me more about the Commandchain","chat":src.chats.ConfigurableChat,"params":{
                 "text":"I am the Captain and control everything that happens on this mech.\n%s is my second in command\n%s is handling logistics\n%s is coordinating the hopper\n%s is head of the military"%("","","",""),
                 "info":[
                     ]
             }}
         self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
-        self.firstOfficer.basicChatOptions.append({"dialogName":"I want to be captain","chat":chats.CaptainChat})
-        self.firstOfficer.basicChatOptions.append({"dialogName":"I want to be your second in command","chat":chats.CaptainChat2})
+        self.firstOfficer.basicChatOptions.append({"dialogName":"I want to be captain","chat":src.chats.CaptainChat})
+        self.firstOfficer.basicChatOptions.append({"dialogName":"I want to be your second in command","chat":src.chats.CaptainChat2})
                             
-        npcA = characters.Character(name="A",xPosition=3,yPosition=9,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
+        npcA = src.characters.Character(name="A",xPosition=3,yPosition=9,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
         self.addCharacter(npcA,2,8)
-        npcB = characters.Character(name="B",xPosition=4,yPosition=9,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
+        npcB = src.characters.Character(name="B",xPosition=4,yPosition=9,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
         self.addCharacter(npcB,3,8)
-        npcC = characters.Character(name="C",xPosition=5,yPosition=3,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
+        npcC = src.characters.Character(name="C",xPosition=5,yPosition=3,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
         self.addCharacter(npcC,4,8)
-        npcD = characters.Character(name="D",xPosition=5,yPosition=3,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
+        npcD = src.characters.Character(name="D",xPosition=5,yPosition=3,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
         self.addCharacter(npcD,5,8)
-        npcE = characters.Character(name="E",xPosition=5,yPosition=3,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
+        npcE = src.characters.Character(name="E",xPosition=5,yPosition=3,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
         self.addCharacter(npcE,6,8)
 
         import random
@@ -2539,8 +2544,8 @@ XXXXXXXXXXX
                 factionCopy.remove(chosen)
                 faction.excludes.append(chosen)
 
-            faction.basicChatOptions.append({"dialogName":"what are the requirements for an aliance?","chat":chats.FactionChat1})
-            faction.basicChatOptions.append({"dialogName":"Let us form an aliance","chat":chats.FactionChat2})
+            faction.basicChatOptions.append({"dialogName":"what are the requirements for an aliance?","chat":src.chats.FactionChat1})
+            faction.basicChatOptions.append({"dialogName":"Let us form an aliance","chat":src.chats.FactionChat2})
 
 '''
 the place for production of tools and items
@@ -2551,7 +2556,7 @@ class MetalWorkshop(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None,seed=0):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None,seed=0):
         self.roomLayout = """
 XXXXXXXXXXX
 XP        X
@@ -2595,7 +2600,7 @@ XXXXX$XXXXX
         self.producedItems.append(item)
         self.addItems(self.producedItems)
 
-        firstOfficerDialog = {"dialogName":"Do you need some help?","chat":chats.ConfigurableChat,"params":{
+        firstOfficerDialog = {"dialogName":"Do you need some help?","chat":src.chats.ConfigurableChat,"params":{
                 "text":"no",
                 "info":[
                     ]
@@ -2605,10 +2610,6 @@ XXXXX$XXXXX
         else:
             firstOfficerDialog["params"]["info"].append({"name":"Please give me reputation anyway.","text":"no","type":"text"})
         self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
-
-        # save initial state and register
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     def dispenseFreeReputation(self):
         mainChar.reputation += 100
@@ -2621,7 +2622,7 @@ class HuntersLodge(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None,seed=0):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None,seed=0):
         self.roomLayout = """
 XXXXXXXXXXX
 X         X
@@ -2638,16 +2639,12 @@ XXXXX$XXXXX
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator,seed=seed)
         self.name = "HuntersLodge"
 
-        firstOfficerDialog = {"dialogName":"Do you need some help?","chat":chats.ConfigurableChat,"params":{
+        firstOfficerDialog = {"dialogName":"Do you need some help?","chat":src.chats.ConfigurableChat,"params":{
                 "text":"indeed. Anybody reporting mice nests will be rewarded",
                 "info":[
                     ]
             }}
         self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
-
-        # save initial state and register
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
 
     def rewardNestFind(self,params):
         mainChar.awardReputation(amount=10,reason="reporting a nest")
@@ -2673,7 +2670,7 @@ a empty room
 class EmptyRoom(Room):
     objType = "EmptyRoom"
 
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None,bio=False):
+    def __init__(self,xPosition=None,yPosition=None,offsetX=None,offsetY=None,desiredPosition=None,creator=None,bio=False):
         self.roomLayout = """
 XXX
 X.$
@@ -2691,10 +2688,30 @@ XXX
                "bio"])
         self.initialState = self.getState()
 
-    def reconfigure(self,sizeX=3,sizeY=3,items=[],bio=False):
+    def reconfigure(self,sizeX=3,sizeY=3,items=[],bio=False,doorPos=[]):
         self.sizeX = sizeX
         self.sizeY = sizeY
 
+        if not items:
+            if not doorPos:
+                doorPos.append([(sizeX-1,sizeY//2)])
+
+            for x in (0,sizeX-1):
+                for y in range(0,sizeY):
+                    if (x,y) in doorPos:
+                        items.append(src.items.itemMap["Door"](x,y))
+                    else:
+                        items.append(src.items.itemMap["Wall"](x,y))
+
+            for x in range(1,sizeX-1):
+                for y in (0,sizeY-1):
+                    if (x,y) in doorPos:
+                        items.append(src.items.itemMap["Door"](x,y))
+                    else:
+                        items.append(src.items.itemMap["Wall"](x,y))
+                
+        self.itemsOnFloor = []
+        self.itemByCoordinates = {}
         self.addItems(items)
 
         self.walkingAccess = []
@@ -2705,7 +2722,12 @@ XXX
     def setState(self,state):
         super().setState(state)
 
-        self.walkingAccess = [(state["walkingAccess"][0][0],state["walkingAccess"][0][1])]
+        try:
+            self.walkingAccess = []
+            for access in state["walkingAccess"]:
+                self.walkingAccess.append((access[0],access[1]))
+        except:
+            self.walkingAccess = []
 
 '''
 a room in the process of beeing constructed. The room itself exists but no items within
@@ -2716,7 +2738,7 @@ class ConstructionSite(Room):
     '''
     create room and plan construction
     '''
-    def __init__(self,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
         self.roomLayout = """
 XXXXXXXXXXX
 X         X
@@ -2817,9 +2839,151 @@ XXXXX$XXXXX
                 self.itemsInBuildOrder.append((position,itemsToPlace[position]))
         self.itemsInBuildOrder.reverse()
 
-        # save initial state and register
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
+class StaticRoom(EmptyRoom):
+    def __init__(self,xPosition=None,yPosition=None,offsetX=None,offsetY=None,desiredPosition=None,creator=None,depth=1):
+        super().__init__(xPosition=xPosition,yPosition=yPosition,offsetX=offsetX,offsetY=offsetY,desiredPosition=desiredPosition,creator=creator,bio=False)
+
+        self.depth = depth
+        import urwid
+
+        self.floorDisplay = [(urwid.AttrSpec("#00"+str(10-depth),"black"),[".",",",":",";"][depth//4%4]+[".",",",":",";"][depth%4])]
+
+    def moveCharacterDirection(self,character,direction):
+        super().moveCharacterDirection(character=character,direction=direction)
+
+        self.evolve(character)
+
+        for other in self.characters:
+            if other == character:
+                continue
+
+            if not (character.xPosition == other.xPosition and character.yPosition == other.yPosition and character.zPosition == other.zPosition):
+                continue
+
+            character.collidedWith(other)
+            other.collidedWith(character)
+    
+    def evolve(self,character):
+        for character in self.characters:
+            character.satiation -= self.depth
+            if character.satiation < 1 and not character.godMode:
+                character.die()
+
+        for item in self.itemsOnFloor[:]:
+            if isinstance(item,src.items.StaticMover):
+                if item.energy > 1:
+                    newPos = [item.xPosition,item.yPosition]
+                    skip = False
+                    if character.xPosition < item.xPosition:
+                        newPos[0] -= 1
+                        skip = True
+                    if character.xPosition > item.xPosition:
+                        newPos[0] += 1
+                        skip = True
+
+                    blocked = False
+                    if (newPos[0],newPos[1]) in self.itemByCoordinates and self.itemByCoordinates[(newPos[0],newPos[1])]:
+                        blocked = True
+                    for character in self.characters:
+                        if character.xPosition == newPos[0] and character.yPosition == newPos[1]:
+                            blocked = True
+                            character.satiation -= 50
+                            item.energy += 5
+                            if character.satiation < 1 and not character.godMode:
+                                character.die()
+
+                    if blocked:
+                        newPos = [item.xPosition,item.yPosition]
+                        skip = False
+                        blocked = False
+
+                    if not skip:
+                        if character.yPosition < item.yPosition:
+                            newPos[1] -= 1
+                        if character.yPosition > item.yPosition:
+                            newPos[1] += 1
+
+                    blocked = False
+                    if (newPos[0],newPos[1]) in self.itemByCoordinates and self.itemByCoordinates[(newPos[0],newPos[1])]:
+                        blocked = True
+                    for character in self.characters:
+                        if character.xPosition == newPos[0] and character.yPosition == newPos[1]:
+                            blocked = True
+                            character.satiation -= 50
+                            item.energy += 5
+                            if character.satiation < 1 and not character.godMode:
+                                character.die()
+
+                    if not blocked:
+                        if item.energy:
+                            item.energy -= 2
+                            self.removeItem(item)
+                            item.xPosition = newPos[0]
+                            item.yPosition = newPos[1]
+                            self.addItems([item])
+
+                if (character.yPosition == item.yPosition and abs(character.xPosition - item.xPosition) == 1) or (character.xPosition == item.xPosition and abs(character.yPosition - item.yPosition) == 1):
+                    character.satiation -= 10
+                    item.energy += 2
+                    if character.satiation < 1 and not character.godMode:
+                        character.die()
+
+                if (character.yPosition == item.yPosition and abs(character.xPosition - item.xPosition) == 2) or (character.xPosition == item.xPosition and abs(character.yPosition - item.yPosition) == 2):
+                    character.satiation -= 5
+                    item.energy += 1
+                    if character.satiation < 1 and not character.godMode:
+                        character.die()
+        pass
+
+'''
+smart scrap storage
+'''
+class ScrapStorage(Room):
+    objType = "ScrapStorage"
+
+    '''
+    create room
+    '''
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,creator=None,seed=0):
+        self.roomLayout = """
+XXXXXXXXXXXXX
+X           X
+X           X
+X           X
+X           X
+X           X
+X          .$
+X           X
+X           X
+X           X
+X           X
+X           X
+XXXXXXXXXXXXX
+"""
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,creator=creator)
+        self.floorDisplay = [displayChars.nonWalkableUnkown]
+        self.name = "ScrapStorage"
+        self.scrapStored = 0
+
+        # add markers for items
+        item = src.items.ScrapCommander(11,6,creator=self)
+        self.scrapCommander = item
+        self.addItems([item])
+
+        self.setScrapAmount(1678)
+
+    def setScrapAmount(self,amount):
+        numFields = amount//20 
+        fullRows = numFields//11
+
+        scrapPiles = []
+        for x in range(1,fullRows+1):
+            for y in range(1,12):
+                item = src.items.itemMap["Scrap"](x,y,creator=self,amount=20)
+                scrapPiles.append(item)
+        self.scrapCommander.numScrapStored = 20*11*fullRows
+        self.addItems(scrapPiles)
+            
 
 # maping from strings to all rooms
 # should be extendable
@@ -2834,6 +2998,7 @@ roomMap = {
             "MechArmor":MechArmor,
             "MiniMech":MiniMech,
             "MiniBase":MiniBase,
+            "MiniBase2":MiniBase2,
             "CargoRoom":CargoRoom,
             "StorageRoom":StorageRoom,
             "WakeUpRoom":WakeUpRoom,
@@ -2844,6 +3009,7 @@ roomMap = {
             "EmptyRoom":EmptyRoom,
             "ConstructionSite":ConstructionSite,
             "GameTestingRoom":GameTestingRoom,
+            "ScrapStorage":ScrapStorage,
 }
 
 '''

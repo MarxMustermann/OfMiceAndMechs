@@ -28,13 +28,8 @@ class Event(src.saveing.Saveable):
         super().__init__()
         self.type = "Event"
 
-        # set id
-        self.id = {
-                    "counter":creator.getCreationCounter(),
-                    "type": self.type,
-                  }
-        self.id["creator"] = creator.id
-        self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
+        import uuid
+        self.id = uuid.uuid4().hex
 
         # set meta information for saving
         self.attributesToStore.extend(["tick","type"])
@@ -105,7 +100,7 @@ class ShowMessageEvent(Event):
     '''
     basic state setting
     '''
-    def __init__(self,tick,message,creator=None):
+    def __init__(self,tick,message="",creator=None):
         super().__init__(tick,creator=creator)
         self.type = "ShowMessageEvent"
         self.message = message
@@ -123,7 +118,7 @@ class ShowCinematicEvent(Event):
     '''
     basic state setting
     '''
-    def __init__(self,tick,cinematic,creator=None):
+    def __init__(self,tick,cinematic=None,creator=None):
         super().__init__(tick,creator=creator)
         self.type = "ShowCinematicEvent"
         self.cinematic = cinematic

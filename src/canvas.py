@@ -193,7 +193,7 @@ class Canvas(object):
     set up state AND fill the canvas with the (default) chars
     bad code: should be split into 3 methods
     """
-    def __init__(self,size=(41,41),chars=None,defaultChar=None,coordinateOffset=(0,0),shift=(0,0),displayChars=None,tileMapping=None,tileMapping2=None):
+    def __init__(self,size=(81,81),chars=None,defaultChar=None,coordinateOffset=(0,0),shift=(0,0),displayChars=None,tileMapping=None,tileMapping2=None):
 
         if defaultChar == None:
             defaultChar = displayChars.void
@@ -209,9 +209,9 @@ class Canvas(object):
 
         # fill the canvas with the default char
         self.chars = []
-        for x in range(0,41):
+        for x in range(0,size[0]):
             line = []
-            for y in range(0,41):
+            for y in range(0,size[1]):
                 line.append(defaultChar)
             self.chars.append(line)
 
@@ -219,7 +219,10 @@ class Canvas(object):
         for x in range(self.coordinateOffset[0],self.coordinateOffset[0]+self.size[0]):
             for y in range(self.coordinateOffset[1],self.coordinateOffset[1]+self.size[1]):
                 if x >= 0 and y >= 0 and x <= 224 and y <= 224:
-                    self.setPseudoPixel(x,y,chars[x][y])
+                    try:
+                        self.setPseudoPixel(x,y,chars[x][y])
+                    except:
+                        pass
 
     """
     plain and simple pseudo pixel setting
@@ -241,9 +244,14 @@ class Canvas(object):
     this basically returns urwid.AttrSpecs
     bad code: urwid specific code should be in one place not everywhere
     """
-    def getUrwirdCompatible(self):
+    def getUrwirdCompatible(self,warning=False):
         # the to be result
         out = []
+
+        if warning:
+            blank = (urwid.AttrSpec("default","#f00"),"  ")
+        else:
+            blank = (urwid.AttrSpec("default","default"),"  ")
 
         # add newlines over the drawing area
         if self.shift[0] > 0:
@@ -256,7 +264,7 @@ class Canvas(object):
             # add spaces to the left of the drawing area
             if self.shift[1] > 0:
                 for x in range(0,self.shift[1]):
-                    out.append((urwid.AttrSpec("default","default"),"  "))
+                    out.append(blank)
 
             # add this lines content
             for char in line:

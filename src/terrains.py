@@ -39,7 +39,7 @@ class Terrain(src.saveing.Saveable):
     '''
     straightforward state initialization
     '''
-    def __init__(self,layout,detailedLayout,creator=None,seed=None, noPaths=False, noContent=False):
+    def __init__(self,layout="",detailedLayout="",creator=None,seed=0, noPaths=False, noContent=False):
         super().__init__()
 
         self.noPaths = noPaths
@@ -49,7 +49,7 @@ class Terrain(src.saveing.Saveable):
         self.characters = []
         self.rooms = []
         self.floordisplay = displayChars.floor
-        self.itemByCoordinates = {}
+        self.itemsByCoordinate = {}
         self.roomByCoordinates = {}
         self.listeners = {"default":[]}
         self.initialSeed = seed
@@ -58,12 +58,8 @@ class Terrain(src.saveing.Saveable):
         self.biomeInfo = {"wet":2}
 
         # set id
-        self.id = {
-                   "other":"terrain",
-                   "counter":creator.getCreationCounter()
-                  }
-        self.id["creator"] = creator.id
-        self.id = json.dumps(self.id, sort_keys=True)
+        import uuid
+        self.id = uuid.uuid4().hex
             
         # misc state
         self.overlay = None
@@ -273,51 +269,38 @@ class Terrain(src.saveing.Saveable):
             # actually add the rooms to the map
             self.addRooms(roomsOnMap)
 
-        # precalculate paths to make pathfinding faster
-        self.calculatePathMap()
-
-        # save initial state and register
-        self.initialState = self.getState()
-        loadingRegistry.register(self)
-
-        #npc = characters.Character(21,50,creator=self,seed=seed,name="atest")
-        #self.addCharacter(npc,21,50)
-        #self.runner = npc
-        #self.runner1()
-
-        
-
         # set meta information for saving
         self.attributesToStore.extend([
               "yPosition","xPosition",
                 ])
 
     def getItemByPosition(self,position):
+        position[2]
 
         if position[0]%15 == 0:
             if position[1]%15 < 7:
-                position = (position[0]+1,position[1]+1)
+                position = (position[0]+1,position[1]+1,position[2])
             elif position[1]%15 > 7:
-                position = (position[0]+1,position[1]-1)
+                position = (position[0]+1,position[1]-1,position[2])
         if position[0]%15 == 14:
             if position[1]%15 < 7:
-                position = (position[0]-1,position[1]+1)
+                position = (position[0]-1,position[1]+1,position[2])
             elif position[1]%15 > 7:
-                position = (position[0]-1,position[1]-1)
+                position = (position[0]-1,position[1]-1,position[2])
         if position[1]%15 == 0:
             if position[0]%15 < 7:
-                position = (position[0]+1,position[1]+1)
+                position = (position[0]+1,position[1]+1,position[2])
             elif position[0]%15 > 7:
-                position = (position[0]-1,position[1]+1)
+                position = (position[0]-1,position[1]+1,position[2])
         if position[1]%15 == 14:
             if position[0]%15 < 7:
-                position = (position[0]+1,position[1]-1)
+                position = (position[0]+1,position[1]-1,position[2])
             elif position[0]%15 > 7:
-                position = (position[0]-1,position[1]-1)
+                position = (position[0]-1,position[1]-1,position[2])
 
         try:
-            return self.itemByCoordinates[(position[0],position[1])]
-        except:
+            return self.itemsByCoordinate[(position[0],position[1],position[2])]
+        except KeyError:
             return []
 
     def runner1(self):
@@ -685,6 +668,258 @@ class Terrain(src.saveing.Saveable):
         character.room = None
         character.terrain = None
 
+    def moveCharacterDirection(self,char,direction):
+        if not char.terrain:
+            return
+        if not (char.xPosition and char.yPosition):
+            return
+
+        if direction == "west":
+            if char.xPosition%15 == 1:
+                if (char.yPosition%15 < 7):
+                    direction = "south"
+                elif (char.yPosition%15 > 7):
+                    direction = "north"
+                else:
+                    if char.xPosition == 16:
+                        return
+                    else:
+                        #char.stasis = True
+                        char.macroState["commandKeyQueue"].insert(0,("a",["norecord"]))
+                        char.macroState["commandKeyQueue"].insert(0,("a",["norecord"]))
+                        pass
+                char.addMessage("a force field pushes you")
+        elif direction == "east":
+            if char.xPosition%15 == 13:
+                if (char.yPosition%15 < 7):
+                    direction = "south"
+                elif (char.yPosition%15 > 7):
+                    direction = "north"
+                else:
+                    if char.xPosition == 15*14-2:
+                        return
+                    else:
+                        #char.stasis = True
+                        char.macroState["commandKeyQueue"].insert(0,("d",["norecord"]))
+                        char.macroState["commandKeyQueue"].insert(0,("d",["norecord"]))
+                        pass
+                char.addMessage("a force field pushes you")
+        elif direction == "north":
+            if char.yPosition%15 == 1:
+                if (char.xPosition%15 < 7):
+                    direction = "east"
+                elif (char.xPosition%15 > 7):
+                    direction = "west"
+                else:
+                    if char.yPosition == 16:
+                        return
+                    else:
+                        #char.stasis = True
+                        char.macroState["commandKeyQueue"].insert(0,("w",["norecord"]))
+                        char.macroState["commandKeyQueue"].insert(0,("w",["norecord"]))
+                        pass
+                char.addMessage("a force field pushes you")
+        elif direction == "south":
+            if char.yPosition%15 == 13:
+                if (char.xPosition%15 < 7):
+                    direction = "east"
+                elif (char.xPosition%15 > 7):
+                    direction = "west"
+                else:
+                    if char.yPosition == 15*14-2:
+                        return
+                    else:
+                        #char.stasis = True
+                        char.macroState["commandKeyQueue"].insert(0,("s",["norecord"]))
+                        char.macroState["commandKeyQueue"].insert(0,("s",["norecord"]))
+                        pass
+                char.addMessage("a force field pushes you")
+        if char.xPosition%15 in (0,14) and direction in ("north","south"):
+            return
+        if char.yPosition%15 in (0,14) and direction in ("east","west"):
+            return
+
+
+        # gather the rooms the character might have entered
+        if direction == "north":
+            bigX = (char.xPosition)//15
+            bigY = (char.yPosition-1)//15
+        elif direction == "south":
+            bigX = (char.xPosition)//15
+            bigY = (char.yPosition+1)//15
+        elif direction == "east":
+            bigX = (char.xPosition+1)//15
+            bigY = (char.yPosition)//15
+        elif direction == "west":
+            bigX = (char.xPosition)//15
+            bigY = (char.yPosition-1)//15
+
+        # gather the rooms the player might step into
+        roomCandidates = []
+        for coordinate in [(bigX,bigY),
+                           (bigX,bigY+1),(bigX+1,bigY+1),(bigX+1,bigY),(bigX+1,bigY-1),(bigX,bigY-1),(bigX-1,bigY-1),(bigX-1,bigY),(bigX-1,bigY+1),
+                           (bigX-2,bigY),(bigX-2,bigY-1),(bigX-2,bigY-2),(bigX-1,bigY-2),(bigX,bigY-2),(bigX+1,bigY-2),(bigX+2,bigY-2),(bigX+2,bigY-1),
+                           (bigX+2,bigY),(bigX+2,bigY-1),(bigX+2,bigY-2),(bigX+1,bigY-2),(bigX,bigY-2),(bigX-1,bigY-2),(bigX-2,bigY-2),(bigX-1,bigY-2),
+                          ]:
+            if coordinate in char.terrain.roomByCoordinates:
+                for room in char.terrain.roomByCoordinates[coordinate]:
+                    if not room in roomCandidates:
+                        roomCandidates.append(room)
+
+        '''
+        move a player into a room
+        bad code: inline function within inline function
+        '''
+        def enterLocalised(room,localisedEntry):
+
+            # get the entry point in room coordinates
+            if localisedEntry in room.walkingAccess:
+                if localisedEntry in room.itemByCoordinates:
+                    # check if the entry point is blocked (by a door)
+                    for item in room.itemByCoordinates[localisedEntry]:
+
+                        # handle collisions
+                        if not item.walkable:
+                            # print some info
+                            if isinstance(item,src.items.itemMap["Door"]):
+                                char.addMessage("you need to open the door first")
+                            else:
+                                char.addMessage("the entry is blocked")
+                            #char.addMessage("press "+commandChars.activate+" to apply")
+                            #if noAdvanceGame == False:
+                            #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
+
+                            # remember the item for interaction and abort
+                            return item
+
+                    if len(room.itemByCoordinates[localisedEntry]) >= 15:
+                        char.addMessage("the entry is blocked by items.")
+                        #char.addMessage("press "+commandChars.activate+" to apply")
+                        #if noAdvanceGame == False:
+                        #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
+                        return room.itemByCoordinates[localisedEntry][0]
+
+                char.changed("moved",direction)
+
+                # teleport the character into the room
+                room.addCharacter(char,localisedEntry[0],localisedEntry[1])
+                try:
+                    char.terrain.characters.remove(char)
+                except:
+                    char.addMessage("fail,fail,fail")
+
+                return
+
+            # do not move player into the room
+            else:
+                char.addMessage("you cannot move there")
+
+        # check if character has entered a room
+        hadRoomInteraction = False
+        for room in roomCandidates:
+            # check north
+            if direction == "north":
+                # check if the character crossed the edge of the room
+                if room.yPosition*15+room.offsetY+room.sizeY == char.yPosition:
+                    if room.xPosition*15+room.offsetX-1 < char.xPosition and room.xPosition*15+room.offsetX+room.sizeX > char.xPosition:
+                        # get the entry point in room coordinates
+                        hadRoomInteraction = True
+                        localisedEntry = (char.xPosition%15-room.offsetX,char.yPosition%15-room.offsetY-1)
+                        if localisedEntry[1] == -1:
+                            localisedEntry = (localisedEntry[0],room.sizeY-1)
+
+            # check south
+            elif direction == "south":
+                # check if the character crossed the edge of the room
+                if room.yPosition*15+room.offsetY == char.yPosition+1:
+                    if room.xPosition*15+room.offsetX-1 < char.xPosition and room.xPosition*15+room.offsetX+room.sizeX > char.xPosition:
+                        # get the entry point in room coordinates
+                        hadRoomInteraction = True
+                        localisedEntry = ((char.xPosition-room.offsetX)%15,(char.yPosition-room.offsetY+1)%15)
+
+            # check east
+            elif direction == "east":
+                # check if the character crossed the edge of the room
+                if room.xPosition*15+room.offsetX == char.xPosition+1:
+                    if room.yPosition*15+room.offsetY < char.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > char.yPosition:
+                        # get the entry point in room coordinates
+                        hadRoomInteraction = True
+                        localisedEntry = ((char.xPosition-room.offsetX+1)%15,(char.yPosition-room.offsetY)%15)
+
+            # check west
+            elif direction == "west":
+                # check if the character crossed the edge of the room
+                if room.xPosition*15+room.offsetX+room.sizeX == char.xPosition:
+                    if room.yPosition*15+room.offsetY < char.yPosition+1 and room.yPosition*15+room.offsetY+room.sizeY > char.yPosition:
+                        # get the entry point in room coordinates
+                        hadRoomInteraction = True
+                        localisedEntry = ((char.xPosition-room.offsetX-1)%15,(char.yPosition-room.offsetY)%15)
+
+            # move player into the room
+            if hadRoomInteraction:
+                item = enterLocalised(room,localisedEntry)
+                if item:
+                    return item
+
+                break
+
+        # handle walking without room interaction
+        if not hadRoomInteraction:
+            # get the items on the destination coordinate 
+            if direction == "north":
+                destCoord = (char.xPosition,char.yPosition-1,char.zPosition)
+            elif direction == "south":
+                destCoord = (char.xPosition,char.yPosition+1,char.zPosition)
+            elif direction == "east":
+                destCoord = (char.xPosition+1,char.yPosition,char.zPosition)
+            elif direction == "west":
+                destCoord = (char.xPosition-1,char.yPosition,char.zPosition)
+
+            foundItems = char.terrain.getItemByPosition(destCoord)
+
+            # check for items blocking the move to the destination coordinate
+            foundItem = None
+            item = None
+            for item in foundItems:
+                if item and not item.walkable:
+                    # print some info
+                    char.addMessage("You cannot walk there")
+                    #char.addMessage("press "+commandChars.activate+" to apply")
+                    #if noAdvanceGame == False:
+                    #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
+
+                    # remember the item for interaction and abort
+                    foundItem = item
+                    break
+            if not foundItem:
+                if len(foundItems) >= 15:
+                    char.addMessage("the floor is too full to walk there")
+                    #char.addMessage("press "+commandChars.activate+" to apply")
+                    #if noAdvanceGame == False:
+                    #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
+
+                    # remember the item for interaction and abort
+                    foundItem = foundItems[0]
+
+            if foundItem:
+                foundItem = foundItems[0]
+
+            # move the character
+            if not foundItem:
+                if direction == "north":
+                    char.yPosition -= 1
+                elif direction == "south":
+                    char.yPosition += 1
+                elif direction == "east":
+                    char.xPosition += 1
+                elif direction == "west":
+                    char.xPosition -= 1
+                char.changed()
+                char.changed("moved",direction)
+
+            return foundItem
+
+
     '''
     add a character to the terrain
     '''
@@ -977,14 +1212,19 @@ class Terrain(src.saveing.Saveable):
     '''
     def removeItem(self,item,recalculate=True):
         #self.itemsOnFloor.remove(item)
-        pos = (item.xPosition,item.yPosition)
-        if pos in self.itemByCoordinates:
-            try:
-                self.itemByCoordinates[pos].remove(item)
-            except:
-                pass
-        if not item.walkable and hasattr(self,"watershedStart") and recalculate: # nontrivial: prevents crashes in constructor
-            self.calculatePathMap()
+        pos = (item.xPosition,item.yPosition,item.zPosition)
+        itemList = self.getItemByPosition(pos)
+        try:
+            itemList.remove(item)
+        except:
+            pass
+
+    def removeItems(self,items,recalcuate=True):
+        for item in items:
+            self.removeItem(item,recalculate=False)
+
+    def addItem(self,item):
+        self.addItems([item])
 
     '''
     add items to terrain and add them to internal datastructures
@@ -1002,7 +1242,7 @@ class Terrain(src.saveing.Saveable):
             if not (item.xPosition or item.xPosition):
                 return 
 
-            position = (item.xPosition,item.yPosition)
+            position = (item.xPosition,item.yPosition,item.zPosition)
             if position[0]%15 == 0:
                 if position[1]%15 < 7:
                     position = (position[0]+1,position[1]+1)
@@ -1038,11 +1278,12 @@ class Terrain(src.saveing.Saveable):
 
             item.xPosition = position[0]
             item.yPosition = position[1]
+            item.zPosition = position[2]
 
-            if position in self.itemByCoordinates:
-                self.itemByCoordinates[position].insert(0,item)
+            if position in self.itemsByCoordinate:
+                self.itemsByCoordinate[position].insert(0,item)
             else:
-                self.itemByCoordinates[position] = [item]
+                self.itemsByCoordinate[position] = [item]
         if recalc and hasattr(self,"watershedStart") and recalculate: # nontrivial: prevents crashes in constructor
             self.calculatePathMap()
 
@@ -1063,6 +1304,7 @@ class Terrain(src.saveing.Saveable):
 
     '''
     get nearby rooms
+
     '''
     def getNearbyRooms(self, pos):
         roomCandidates = []
@@ -1075,6 +1317,15 @@ class Terrain(src.saveing.Saveable):
                 roomCandidates.extend(self.roomByCoordinates[coordinate])
 
         return roomCandidates
+
+    def getRoomsOnFineCoordinate(self, pos):
+        rooms = []
+        for room in self.getNearbyRooms((pos[0]//15,pos[1]//15)):
+            if (room.xPosition*15+room.offsetX < pos[0] and room.xPosition*15+room.offsetX+room.sizeX > pos[0] and
+                room.yPosition*15+room.offsetY < pos[1] and room.yPosition*15+room.offsetY+room.sizeY > pos[1]):
+                
+                rooms.append(room)
+        return rooms
 
     '''
     render the terrain and its contents
@@ -1150,14 +1401,17 @@ class Terrain(src.saveing.Saveable):
             #    if not (item.yPosition and item.xPosition):
             #        continue
             #    chars[item.yPosition][item.xPosition] = item.display
-            for entry in self.itemByCoordinates.values():
+            for entry in self.itemsByCoordinate.values():
                 if not entry:
                     continue
                 item = entry[0]
                 if not (item.yPosition and item.xPosition):
                     continue
+                if not (item.zPosition == mainChar.zPosition):
+                    continue
+
                 try:
-                    chars[item.yPosition][item.xPosition] = item.display
+                    chars[item.yPosition][item.xPosition] = item.render()
                 except:
                     pass
 
@@ -1331,28 +1585,28 @@ class Terrain(src.saveing.Saveable):
                 self.addRoom(room)
 
         if room.xPosition < 0:
-            mainChar.messages.append("switch to")
+            mainChar.addMessage("switch to")
             terrain = gamestate.terrainMap[self.yPosition][self.xPosition-1]
             room.terrain = terrain
             self.removeRoom(room)
             terrain.addRoom(room)
             room.xPosition = 15
         if room.yPosition < 0:
-            mainChar.messages.append("switch to")
+            mainChar.addMessage("switch to")
             terrain = gamestate.terrainMap[self.yPosition-1][self.xPosition]
             room.terrain = terrain
             self.removeRoom(room)
             terrain.addRoom(room)
             room.yPosition = 15
         if room.xPosition > 15:
-            mainChar.messages.append("switch to")
+            mainChar.addMessage("switch to")
             terrain = gamestate.terrainMap[self.yPosition][self.xPosition+1]
             room.terrain = terrain
             self.removeRoom(room)
             terrain.addRoom(room)
             room.xPosition = 0
         if room.yPosition > 15:
-            mainChar.messages.append("switch to")
+            mainChar.addMessage("switch to")
             terrain = gamestate.terrainMap[self.yPosition+1][self.xPosition]
             room.terrain = terrain
             self.removeRoom(room)
@@ -1465,7 +1719,7 @@ class Terrain(src.saveing.Saveable):
             roomStates[room.id] = room.getState()
 
         itemsOnFloor = []
-        for entry in self.itemByCoordinates.values():
+        for entry in self.itemsByCoordinate.values():
             itemsOnFloor.extend(reversed(entry))
         itemIds = []
         itemStates = {}
@@ -1529,6 +1783,12 @@ class Terrain(src.saveing.Saveable):
         self.events.insert(start,event)
 
 '''
+a empty terrain
+'''
+class EmptyTerrain(Terrain):
+    objType = "EmptyTerrain"
+
+'''
 a almost empty terrain
 '''
 class Nothingness(Terrain):
@@ -1538,6 +1798,12 @@ class Nothingness(Terrain):
     paint floor with minimal variation to ease perception of movement
     '''
     def paintFloor(self):
+        displayChar = self.floordisplay
+        if mainChar.zPosition < 0:
+            displayChar = "%s"%(mainChar.zPosition,)
+        if mainChar.zPosition > 0:
+            displayChar = "+%s"%(mainChar.zPosition,)
+
         chars = []
         for i in range(0,250):
             line = []
@@ -1547,7 +1813,7 @@ class Nothingness(Terrain):
                         # paint grass at pseudo random location
                         line.append(displayChars.grass)
                     else:
-                        line.append(self.floordisplay)
+                        line.append(displayChar)
                 else:
                     line.append(displayChars.void)
             chars.append(line)
@@ -1556,7 +1822,7 @@ class Nothingness(Terrain):
     '''
     state initialization
     '''
-    def __init__(self,creator=None,seed=None, noContent=False):
+    def __init__(self,creator=None,seed=0, noContent=False):
 
         # leave layout empty
         layout = """
@@ -1588,9 +1854,6 @@ class Nothingness(Terrain):
             self.addItems(self.dekoItems)
 
         self.floordisplay = displayChars.dirt
-
-        # save internal state
-        self.initialState = self.getState()
 
 '''
 a gameplay test
@@ -1732,9 +1995,11 @@ class GameplayTest(Terrain):
 
             self.addItems(self.scrapItems)
 
+            """
             x = 157
             for y in range(97,129):
                 toRemove.extend(self.getItemByPosition((x,y)))
+            """
             
             for item in toRemove:
                 self.removeItem(item, recalculate=False)
@@ -1804,6 +2069,216 @@ class GameplayTest(Terrain):
         return chars
 
 '''
+a test for desert map
+'''
+class Desert(Terrain):
+    objType = "Desert"
+
+    '''
+    state initialization
+    '''
+    def __init__(self,creator=None,seed=0, noContent=False):
+
+        import random
+
+        # add only a few scattered intact rooms
+        layout = """
+             
+             
+             
+             
+             
+             
+             
+             
+     .       
+    C.       
+             
+             
+             
+             
+             
+        """
+        layout = """
+        """
+        detailedLayout = """
+        """
+
+        super().__init__(layout,detailedLayout,creator=creator,seed=seed, noContent=noContent)
+
+        self.itemPool = []
+        self.itemPool.append(src.items.SunScreen(None,None,creator=self))
+        self.itemPool.append(src.items.SunScreen(None,None,creator=self))
+        self.itemPool.append(src.items.SunScreen(None,None,creator=self))
+        machine = src.items.Machine(None,None,creator=self) 
+        machine.setToProduce("Rod")
+        machine.bolted = False
+        self.itemPool.append(machine)
+        machine = src.items.Machine(None,None,creator=self) 
+        machine.setToProduce("Rod")
+        machine.bolted = False
+        self.itemPool.append(machine)
+        machine = src.items.Machine(None,None,creator=self) 
+        machine.setToProduce("Rod")
+        machine.bolted = False
+        self.itemPool.append(machine)
+        machine = src.items.Machine(None,None,creator=self) 
+        machine.setToProduce("Rod")
+        machine.bolted = False
+        self.itemPool.append(machine)
+        machine = src.items.Machine(None,None,creator=self) 
+        machine.setToProduce("Rod")
+        machine.bolted = False
+        self.itemPool.append(machine)
+        machine = src.items.Machine(None,None,creator=self) 
+        machine.setToProduce("Sheet")
+        machine.bolted = False
+        self.itemPool.append(machine)
+        machine = src.items.Machine(None,None,creator=self) 
+        machine.setToProduce("Sheet")
+        machine.bolted = False
+        self.itemPool.append(machine)
+        machine = src.items.Machine(None,None,creator=self) 
+        for i in range(1,30):
+            self.itemPool.append(src.items.Sheet(None,None,creator=self))
+            case = src.items.Case(None,None,creator=self)
+            case.bolted = False
+            self.itemPool.append(case)
+            self.itemPool.append(src.items.Vial(None,None,creator=self))
+            corpse = src.items.Corpse(None,None,creator=self)
+            corpse.charges = random.randint(100,300)
+            self.itemPool.append(corpse)
+        for i in range(1,200):
+            self.itemPool.append(src.items.Coal(None,None,creator=self))
+            self.itemPool.append(src.items.MetalBars(None,None,creator=self))
+            self.itemPool.append(src.items.Rod(None,None,creator=self))
+            self.itemPool.append(src.items.Scrap(None,None,creator=self,amount=1))
+            self.itemPool.append(src.items.Scrap(None,None,creator=self,amount=1))
+            self.itemPool.append(src.items.Scrap(None,None,creator=self,amount=1))
+
+        import random
+        random.shuffle(self.itemPool)
+        for item in self.itemPool:
+            while 1:
+                x = random.randint(1,225)
+                y = random.randint(1,225)
+
+                if x%15 in (0,14) or y%15 in (0,14):
+                    continue
+
+                item.xPosition = x
+                item.yPosition = y
+                break
+
+        waterCondenser = src.items.WaterCondenser(6*15+6,7*15+6,creator=self)
+        waterCondenser.lastUsage = -10000
+        self.addItems([waterCondenser])
+        waterCondenser = src.items.WaterCondenser(6*15+6,7*15+8,creator=self)
+        waterCondenser.lastUsage = -10000
+        self.addItems([waterCondenser])
+        waterCondenser = src.items.WaterCondenser(6*15+8,7*15+6,creator=self)
+        waterCondenser.lastUsage = -10000
+        self.addItems([waterCondenser])
+        waterCondenser = src.items.WaterCondenser(6*15+8,7*15+8,creator=self)
+        waterCondenser.lastUsage = -10000
+        self.addItems([waterCondenser])
+
+        # add base of operations
+        self.miniBase = src.rooms.MiniBase2(3,7,2,2,creator=self,seed=seed)
+        self.addRooms([self.miniBase])
+
+        # save internal state
+        self.initialState = self.getState()
+
+        self.doSandStorm()
+        self.randomizeHeatmap()
+
+    def randomizeHeatmap(self):
+        # save heatmap for tiles
+        import random
+
+        self.heatmap = []
+        for x in range(0,15):
+            self.heatmap.append([])
+            for y in range(0,15):
+                self.heatmap[x].append(0)
+                self.heatmap[x][y] = random.randint(1,5)
+
+    def doSandStorm(self):
+        import random
+
+        counter = 0
+        toMove = []
+        for (position,items) in self.itemByCoordinates.items():
+            for item in items:
+                if item.bolted:
+                    continue
+                self.removeItem(item)
+                if counter%2 == 0:
+                    toMove.append(item)
+                else:
+                    self.itemPool.append(item)
+                counter += 1
+        
+        cutOff = len(self.itemPool)//10
+        toAdd = self.itemPool[:cutOff]
+        self.itemPool = self.itemPool[cutOff:]
+
+        for item in toMove:
+            x = item.xPosition+random.randint(-1,1)
+            y = item.yPosition+random.randint(-1,1)
+            if not x%15 in (0,14) and not y%15 in (0,14):
+                    self.removeItem(item)
+                    item.xPosition = x
+                    item.yPosition = y
+                    self.addItems([item])
+
+        for item in toAdd[:len(toAdd)//2]:
+            x = random.randint(16,209)
+            if not x%15 in (0,14):
+                item.xPosition = x
+            y = random.randint(16,209)
+            if not y%15 in (0,14):
+                item.yPosition = y
+        self.addItems(toAdd)
+
+    '''
+    paint floor with minimal variation to ease perception of movement
+    '''
+    def paintFloor(self):
+        import urwid
+        desertTiles = [
+                        (urwid.AttrSpec("#0c2","black"),"::"),
+                        (urwid.AttrSpec("#2c2","black"),"::"),
+                        (urwid.AttrSpec("#4c2","black"),"::"),
+                        (urwid.AttrSpec("#8c2","black"),"::"),
+                        (urwid.AttrSpec("#ac2","black"),"::"),
+                        (urwid.AttrSpec("#cc2","black"),"::"),
+                        (urwid.AttrSpec("#fc2","black"),"::"),
+                    ]
+
+        chars = []
+        for i in range(0,250):
+            line = []
+            for j in range(0,250):
+                if not self.hidden:
+                    try:
+                        line.append(desertTiles[self.heatmap[j//15][i//15]])
+                    except:
+                        line.append(displayChars.void)
+                else:
+                    line.append(displayChars.void)
+            chars.append(line)
+        return chars
+
+    def moveCharacterDirection(self,char,direction):
+        heatDamage = self.heatmap[char.xPosition//15][char.yPosition//15]-char.heatResistance
+        if heatDamage > 0:
+            char.addMessage("The sun burns your skin")
+            char.hurt(heatDamage,reason="sunburn")
+        return super().moveCharacterDirection(char,direction)
+
+'''
 a wrecked mech
 '''
 class ScrapField(Terrain):
@@ -1812,7 +2287,7 @@ class ScrapField(Terrain):
     '''
     state initialization
     '''
-    def __init__(self,creator=None,seed=None, noContent=False):
+    def __init__(self,creator=None,seed=0, noContent=False):
         # add only a few scattered intact rooms
         layout = """
 
@@ -1893,7 +2368,7 @@ the tutorial mech
 class TutorialTerrain(Terrain):
     objType = "TutorialTerrain"
 
-    def __init__(self,creator=None,seed=None, noContent=False):
+    def __init__(self,creator=None,seed=0, noContent=False):
         self.toTransport = []
 
         # the layout for the mech
@@ -2099,7 +2574,7 @@ XXXCCCCCXXX """
         self.addItems(self.scrapItems)
 
         # move roadblock periodically
-        self.waitingRoom.addEvent(events.EndQuestEvent(4000,{"container":self,"method":"addRoadblock"},creator=self))
+        self.waitingRoom.addEvent(src.events.EndQuestEvent(4000,{"container":self,"method":"addRoadblock"},creator=self))
 
         # save internal state
         self.initialState = self.getState()
@@ -2124,7 +2599,7 @@ XXXCCCCCXXX """
             return
 
         # add quest to waiting room
-        quest = quests.MoveToStorage([task[0].itemByCoordinates[task[1]][0]],room,creator=self,lifetime=400)
+        quest = src.quests.MoveToStorage([task[0].itemByCoordinates[task[1]][0]],room,creator=self,lifetime=400)
         quest.reputationReward = 1
         quest.endTrigger = {"container":self,"method":"addStorageQuest"}
         self.waitingRoom.quests.append(quest)
@@ -2148,7 +2623,7 @@ XXXCCCCCXXX """
         innerQuest.endTrigger = moveAway
         outerQuest.addQuest(innerQuest)
         self.waitingRoom.quests.append(outerQuest)
-        self.waitingRoom.addEvent(events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToLeft"},creator=self))
+        self.waitingRoom.addEvent(src.events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToLeft"},creator=self))
 
     '''
     move roadblock
@@ -2173,7 +2648,7 @@ XXXCCCCCXXX """
         innerQuest.endTrigger = moveAway
         outerQuest.addQuest(innerQuest)
         self.waitingRoom.quests.append(outerQuest)
-        self.waitingRoom.addEvent(events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToRight"},creator=self))
+        self.waitingRoom.addEvent(src.events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToRight"},creator=self))
 
     '''
     move roadblock
@@ -2198,7 +2673,7 @@ XXXCCCCCXXX """
         innerQuest.endTrigger = moveAway
         outerQuest.addQuest(innerQuest)
         self.waitingRoom.quests.append(outerQuest)
-        self.waitingRoom.addEvent(events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToLeft"},creator=self))
+        self.waitingRoom.addEvent(src.events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToLeft"},creator=self))
 
 # maping from strings to all items
 # should be extendable
@@ -2207,6 +2682,7 @@ terrainMap = {
         "Nothingness":Nothingness,
         "GameplayTest":GameplayTest,
         "ScrapField":ScrapField,
+        "Desert":Desert,
 }
 
 '''

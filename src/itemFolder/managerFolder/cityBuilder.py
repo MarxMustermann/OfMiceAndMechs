@@ -7,8 +7,6 @@ class CityBuilder(src.items.ItemNew):
         super().__init__("CB",xPosition,yPosition,name=name,creator=creator)
         self.commands = {}
         self.tasks = []
-        #self.tasks.append({"task":"build mine"})
-        #self.tasks.append({"task":"set up internal storage"})
         self.internalRooms = []
         self.architects = []
         self.roadManagers = []
@@ -31,6 +29,11 @@ class CityBuilder(src.items.ItemNew):
         self.pathsOnAxis = False
         self.idleExtend = False
         self.hasStockpileMetaManager = False
+
+        self.attributesToStore.extend([
+           "tasks",
+           ])
+
 
     def addTasksToLocalRoom(self,tasks):
         jobOrder = src.items.itemMap["JobOrder"]()
@@ -60,6 +63,9 @@ class CityBuilder(src.items.ItemNew):
         self.character.runCommandString("Jj.j")
 
     def apply(self,character):
+        self.tasks.append({"task":"expand",})
+
+    def doMaintenance(self,character):
         if not self.tasks:
             if self.idleExtend:
                 if len(self.plotPool) < self.numReservedPathPlots + self.numBufferPlots:
@@ -321,11 +327,12 @@ class CityBuilder(src.items.ItemNew):
         self.lastAction = "configure"
 
         self.submenue = src.interaction.OneKeystrokeMenu("""
-a: addCommand
+c: addCommand
 s: machine settings
 j: run job order
 r: reset
-m: show map
+x: show map
+m: do maintenance
 """)
         character.macroState["submenue"] = self.submenue
         character.macroState["submenue"].followUp = self.configure2
@@ -372,41 +379,46 @@ m: show map
                 if plot in self.plotPool:
                     self.expandFromPlot(plot)
 
+    def showMap(self,character):
+        mapContent = []
+        for x in range(0,15):
+            mapContent.append([])
+            for y in range(0,15):
+                if not x in (0,14) and not y in (0,14):
+                    char = "  "
+                elif not x == 7 and not y == 7:
+                    char = "##"
+                else:
+                    char = "  "
+                mapContent[x].append(char)
+
+        for plot in self.plotPool:
+            mapContent[plot[1]][plot[0]] = "__"
+        for plot in self.usedPlots:
+            mapContent[plot[1]][plot[0]] = "xx"
+        for plot in self.stockPiles:
+            mapContent[plot[1]][plot[0]] = "pp"
+        for plot in self.scrapFields:
+            mapContent[plot[0][1]][plot[0][0]] = "*#"
+        for plot in self.unfinishedRoadTiles:
+            mapContent[plot[1]][plot[0]] = ".."
+        for plot in self.roadTiles:
+            mapContent[plot[1]][plot[0]] = "::"
+        mapContent[self.room.yPosition][self.room.xPosition] = "CB"
+
+        mapText = ""
+        for x in range(0,15):
+           mapText += "".join(mapContent[x])+"\n"
+        self.submenue = src.interaction.TextMenu(text=mapText)
+        character.macroState["submenue"] = self.submenue
+
     def configure2(self):
         self.lastAction = "configure2"
 
         if self.submenue.keyPressed == "m":
-            mapContent = []
-            for x in range(0,15):
-                mapContent.append([])
-                for y in range(0,15):
-                    if not x in (0,14) and not y in (0,14):
-                        char = "  "
-                    elif not x == 7 and not y == 7:
-                        char = "##"
-                    else:
-                        char = "  "
-                    mapContent[x].append(char)
-
-            for plot in self.plotPool:
-                mapContent[plot[1]][plot[0]] = "__"
-            for plot in self.usedPlots:
-                mapContent[plot[1]][plot[0]] = "xx"
-            for plot in self.stockPiles:
-                mapContent[plot[1]][plot[0]] = "pp"
-            for plot in self.scrapFields:
-                mapContent[plot[0][1]][plot[0][0]] = "*#"
-            for plot in self.unfinishedRoadTiles:
-                mapContent[plot[1]][plot[0]] = ".."
-            for plot in self.roadTiles:
-                mapContent[plot[1]][plot[0]] = "::"
-            mapContent[self.room.yPosition][self.room.xPosition] = "CB"
-
-            mapText = ""
-            for x in range(0,15):
-               mapText += "".join(mapContent[x])+"\n"
-            self.submenue = src.interaction.TextMenu(text=mapText)
-            self.character.macroState["submenue"] = self.submenue
+            self.doMaintenance(self.character)
+        elif self.submenue.keyPressed == "x":
+            self.showMap(self.character)
         elif self.submenue.keyPressed == "j":
             if not self.character.jobOrders:
                 self.character.addMessage("no job order")

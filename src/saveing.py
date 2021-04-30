@@ -72,6 +72,7 @@ class Saveable(object):
         self.attributesToStore = ["id","creationCounter"]
         self.callbacksToStore = []
         self.objectsToStore = []
+        self.tupleDictsToStore = []
 
     '''
     exposes a fetcher from th loading registry
@@ -126,6 +127,16 @@ class Saveable(object):
     '''
     def getState(self):
         state = {}
+
+        # store tuple dicts
+        for tupleDictName in self.tupleDictsToStore:
+            if hasattr(self,tupleDictName):
+                tupleDict = getattr(self,tupleDictName)
+                convertedDict = []
+                for (key,value) in tupleDict.items():
+                    convertedDict.append([list(key),value])
+
+                state[tupleDictName] = convertedDict
 
         # store attributes
         for attribute in self.attributesToStore:
@@ -182,6 +193,16 @@ class Saveable(object):
     set state as dict
     '''
     def setState(self,state):
+        # set tuple dicts
+        for tupleDictName in self.tupleDictsToStore:
+            if tupleDictName in state:
+                convertedDict = {}
+
+                for pair in state[tupleDictName]:
+                    convertedDict[tuple(pair[0])] = pair[1]
+
+                setattr(self,tupleDictName,convertedDict)
+
         # set attributes
         for attribute in self.attributesToStore:
             if attribute in state:

@@ -34,6 +34,15 @@ class RoomManager(src.items.ItemNew):
         self.roomName = None
         self.managerName = "comandCenter"
 
+        self.attributesToStore.extend([
+               "cityBuilderPos","machineMachinePos","bluePrintingArtworkPos","tasks","managerName","roomName",
+               "resourceTerminalPositions","stuck","stuckReason","machinePositions","freeItemSlots",
+               ])
+
+        self.tupleDictsToStore.extend([
+               "itemSlotUsage","dependencies",
+               ])
+
     def generatePathFromTo(self,start,end):
         path = ""
         path += "a"*(start[0]-6)+"d"*(6-start[0])
@@ -143,7 +152,7 @@ class RoomManager(src.items.ItemNew):
                     character.runCommandString("Js.j")
                     command = ""
                     command += self.generatePathFromTo([character.xPosition,character.yPosition],[self.cityBuilderPos[0],self.cityBuilderPos[1]-1])
-                    command += "Js"
+                    command += "scm"
                     command += self.generatePathFromTo([self.cityBuilderPos[0],self.cityBuilderPos[1]-1],[character.xPosition,character.yPosition])
                     character.runCommandString(command)
                     return
@@ -597,11 +606,11 @@ class RoomManager(src.items.ItemNew):
         result["num free item slots"] = len(self.freeItemSlots)
         result["stuck"] = self.stuck
         result["stuckReason"] = self.stuckReason
+        result["city builder position"] = self.cityBuilderPos
         result["machine machine position"] = self.machineMachinePos
         result["blue printing artwork position"] = self.bluePrintingArtworkPos
         result["resource terminal positions"] = self.resourceTerminalPositions
         result["machine positions"] = self.machinePositions
-        result["dependencies"] = self.dependencies
         
         return result
 
@@ -663,9 +672,15 @@ r: reset
     def getLongInfo(self):
         text = """
 
+dependencies:
+%s
+
+itemSlotUsage:
+%s
+
 machines:
 
-"""
+"""%(self.dependencies,self.itemSlotUsage,)
         for (key,value) in self.machinePositions.items():
             text += "\n%s: %s"%(key,value,)
 

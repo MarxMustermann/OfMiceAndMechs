@@ -7,11 +7,8 @@ class CityBuilder(src.items.ItemNew):
         super().__init__("CB",xPosition,yPosition,name=name,creator=creator)
         self.commands = {}
         self.tasks = []
-        self.tasks.append({"task":"build mine"})
-        self.tasks.append({"task":"extend storage"})
-        self.tasks.append({"task":"extend storage"})
-        self.tasks.append({"task":"set up internal storage"})
-        self.tasks.append({"task":"set up basic production"})
+        #self.tasks.append({"task":"build mine"})
+        #self.tasks.append({"task":"set up internal storage"})
         self.internalRooms = []
         self.architects = []
         self.roadManagers = []
@@ -21,6 +18,8 @@ class CityBuilder(src.items.ItemNew):
         self.usedPlots = []
         self.stockPiles = []
         self.roadTiles = []
+        self.unusedRoadTiles = []
+        self.unusedTiles = []
         self.unfinishedRoadTiles = []
         self.plotPool = []
         self.stuck = False
@@ -97,6 +96,7 @@ class CityBuilder(src.items.ItemNew):
                     {"task":"set up","type":"road","coordinate":plot,"command":None},
                     ],"ArchitectArtwork")
                 self.roadTiles.append(plot)
+                self.unusedRoadTiles.append(plot)
         if task["task"] == "set up basic production":
             self.addTasksToLocalRoom([
                 {"task":"add machine","type":"FloorPlate"},
@@ -141,12 +141,12 @@ class CityBuilder(src.items.ItemNew):
                 return
 
             if not "stockPileCoordinate" in task:
-                if len(self.plotPool) < self.numReservedPathPlots:
+                if not self.unusedRoadTiles:
                     self.tasks.append(task)
                     newTask = {"task":"expand"}
                     self.tasks.append(newTask)
                     return
-                task["stockPileCoordinate"] = self.plotPool.pop()
+                task["stockPileCoordinate"] = self.unusedRoadTiles.pop()
                 self.usedPlots.append(task["stockPileCoordinate"])
                 self.stockPiles.append(task["stockPileCoordinate"])
                 self.tasks.append(task)
@@ -155,7 +155,7 @@ class CityBuilder(src.items.ItemNew):
             task["stockPileName"] = "storage_%s_%s"%(task["stockPileCoordinate"][0],task["stockPileCoordinate"][1])
             self.useJoborderRelayToLocalRoom(character,[
                 {"task":"set up","type":"stockPile","name":task["stockPileName"],"coordinate":task["stockPileCoordinate"],"command":None},
-                {"task":"connect stockpile","stockPile":task["stockPileName"],"stocKPileCoordinate":task["stockPileCoordinate"],"command":None},
+                {"task":"connect stockpile","type":"add to storage","stockPile":task["stockPileName"],"stockPileCoordinate":task["stockPileCoordinate"],"command":None},
                 ],"ArchitectArtwork")
 
         if task["task"] == "set up internal storage":
@@ -177,6 +177,12 @@ class CityBuilder(src.items.ItemNew):
                 self.tasks.append(newTask)
                 return
 
+            if not self.hasStockpileMetaManager:
+                self.tasks.append(task)
+                newTask = {"task":"set up internal storage"}
+                self.tasks.append(newTask)
+                return
+
             if not self.scrapFields:
                 self.tasks.append(task)
                 newTask = {"task":"expand"}
@@ -191,9 +197,124 @@ class CityBuilder(src.items.ItemNew):
                 self.tasks.append(newTask)
                 return
 
+            if not task.get("stockPileCoordinate"):
+                directions = [(0,1),(0,-1),(1,0),(-1,0)]
+                neighbourRoad = None
+                neighbourPlot = None
+                neighbourUndiscovered = None
+                for direction in directions:
+                    position = (task["scrapField"][0][0]+direction[0],task["scrapField"][0][1]+direction[1],)
+                    if position in self.unusedRoadTiles:
+                        neighbourRoad = position
+                        continue
+                    if position in self.plotPool:
+                        neighbourPlot = position
+                        continue
+                    if not position in self.usedPlots and not position in self.stockPiles:
+                        neighbourUndiscovered = position
+                        continue
+
+                if neighbourRoad:
+                    self.tasks.append(task)
+                    task["stockPileCoordinate"] = neighbourRoad
+                    self.unusedRoadTiles.remove(neighbourRoad)
+                    self.character.addMessage("expand done")
+                    task["undiscoveredCounter"] = 0
+                    task["scrapRetryCounter"] = 0
+                    return
+                elif neighbourPlot:
+                    self.tasks.append(task)
+                    newTask = {"task":"expand","target":neighbourPlot}
+                    self.tasks.append(newTask)
+                    self.character.addMessage("expand plot")
+                    return
+                elif neighbourUndiscovered:
+                    if not "undiscoveredCounter" in task:
+                        task["undiscoveredCounter"] = 0
+                    task["undiscoveredCounter"] += 1
+                    if task["undiscoveredCounter"] > 5:
+                        if not "scrapRetryCounter" in task:
+                            task["scrapRetryCounter"] = 0
+
+                        if task["scrapRetryCounter"] > 5:
+                            return
+
+                        self.tasks.append(task)
+                        del task["scrapField"]
+                        task["undiscoveredCounter"] = 0
+                        return
+
+                    self.tasks.append(task)
+                    newTask = {"task":"expand","target":neighbourPlot}
+                    self.tasks.append(newTask)
+                    self.character.addMessage("expand undiscovered")
+                    return
+                else:
+                    self.character.addMessage("no way to place")
+                    return
+
+            if not task.get("oreProcessingCoordinate"):
+                directions = [(0,1),(0,-1),(1,0),(-1,0)]
+                neighbourRoad = None
+                neighbourPlot = None
+                neighbourUndiscovered = None
+                for direction in directions:
+                    position = (task["stockPileCoordinate"][0]+direction[0],task["stockPileCoordinate"][1]+direction[1],)
+                    if position in self.unusedRoadTiles:
+                        neighbourRoad = position
+                        continue
+                    if position in self.plotPool:
+                        neighbourPlot = position
+                        continue
+                    if not position in self.usedPlots and not position in self.stockPiles:
+                        neighbourUndiscovered = position
+                        continue
+
+                if neighbourRoad:
+                    self.tasks.append(task)
+                    task["oreProcessingCoordinate"] = neighbourRoad
+                    self.unusedRoadTiles.remove(neighbourRoad)
+                    self.character.addMessage("expand done")
+                    return
+                elif neighbourPlot:
+                    self.tasks.append(task)
+                    newTask = {"task":"expand","target":neighbourPlot}
+                    self.tasks.append(newTask)
+                    self.character.addMessage("expand plot")
+                    return
+                elif neighbourUndiscovered:
+                    if not "undiscoveredCounter" in task:
+                        task["undiscoveredCounter"] = 0
+                    task["undiscoveredCounter"] += 1
+                    if task["undiscoveredCounter"] > 5:
+                        if not "scrapRetryCounter" in task:
+                            task["scrapRetryCounter"] = 0
+
+                        if task["scrapRetryCounter"] > 5:
+                            return
+
+                        self.tasks.append(task)
+                        del task["scrapField"]
+                        task["undiscoveredCounter"] = 0
+                        return
+
+                    self.tasks.append(task)
+                    newTask = {"task":"expand","target":neighbourPlot}
+                    self.tasks.append(newTask)
+                    self.character.addMessage("expand undiscovered")
+                    return
+                else:
+                    self.character.addMessage("no way to place")
+                    return
+
+
+            task["stockPileName"] = "miningStockPile_%s_%s"%(task["stockPileCoordinate"][0],task["stockPileCoordinate"][1])
             self.useJoborderRelayToLocalRoom(character,[
-                {"task":"do maintanence","command":None},
-                ],"MiningManager")
+                {"task":"set up","type":"oreProcessing","coordinate":task["oreProcessingCoordinate"],"command":None},
+                {"task":"set up","type":"stockPile","name":task["stockPileName"],"coordinate":task["stockPileCoordinate"],"command":None,"StockpileType":"UniformStockpileManager"},
+                {"task":"connect stockpile","type":"set wrong item to storage","stockPile":task["stockPileName"],"stockPileCoordinate":task["stockPileCoordinate"],"command":None},
+                {"task":"set up","type":"mine","stockPile":task["stockPileName"],"stocKPileCoordinate":task["stockPileCoordinate"],"scrapField":task["scrapField"],"command":None},
+                ],"ArchitectArtwork")
 
     def configure(self,character):
 
@@ -204,7 +325,7 @@ a: addCommand
 s: machine settings
 j: run job order
 r: reset
-s: show map
+m: show map
 """)
         character.macroState["submenue"] = self.submenue
         character.macroState["submenue"].followUp = self.configure2
@@ -254,7 +375,7 @@ s: show map
     def configure2(self):
         self.lastAction = "configure2"
 
-        if self.submenue.keyPressed == "s":
+        if self.submenue.keyPressed == "m":
             mapContent = []
             for x in range(0,15):
                 mapContent.append([])
@@ -300,6 +421,10 @@ s: show map
             if task["task"] == "configure machine":
                 for (commandName,command) in task["commands"].items():
                     self.commands[commandName] = command
+
+            if task["task"] == "add task":
+                self.tasks.extend(task["tasks"])
+
             self.blocked = False
             return
 

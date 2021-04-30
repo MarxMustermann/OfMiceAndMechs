@@ -23,8 +23,15 @@ class StockpileMetaManager(src.items.ItemNew):
         self.walkable = False
         self.blocked = False
 
+        #settings
+        self.autoExpand = True
+
         self.attributesToStore.extend([
                "stockPiles","stockPileInfo","assignedPlots","assignedPlotsInfo"])
+
+    def addTask(self):
+        self.tasks.append({"task":"extend storage"})
+
 
     def apply(self,character):
         if not (character.xPosition == self.xPosition and character.yPosition == self.yPosition-1):
@@ -38,15 +45,11 @@ class StockpileMetaManager(src.items.ItemNew):
         self.lastAction = "apply"
 
         self.blocked = True
-        options = [("clearInventory","clear inventory"),("addItem","add item"),("doMaintanance","do maintanance"),("test","test")]
+        options = [("clearInventory","clear inventory"),("addItem","add item"),("addTask","add Task"),("doMaintanance","do maintanance"),("test","test")]
         self.submenue = src.interaction.SelectionMenu("what do you want to do?",options)
         character.macroState["submenue"] = self.submenue
         character.macroState["submenue"].followUp = self.apply2
         self.character = character
-
-    def autoFillTasks(self):
-        if self.assignedPlots:
-            self.tasks.append()
 
     def test(self):
         self.character.addMessage("test")
@@ -60,8 +63,19 @@ class StockpileMetaManager(src.items.ItemNew):
             return
 
         if self.submenue.selection == "doMaintanance":
+            """
+            if self.tasks:
+                task = self.tasks.pop()
+                if task["task"] == "extend storage":
+                    self.useJoborderRelayToLocalRoom(context["character"],[
+                            {"task":"add task","tasks":[{"task":"extend storage"},],}
+                        ],"CityBuilder")
+                return
+            """
+
             self.lastAction = "doMaintanance"
             if self.assignedPlots:
+
                 self.lastAction = "addStockPileItem"
                 self.character.addMessage("add stockpile item "+stockpile)
                 self.character.inventory.append(src.items.TypedStockpileManager())
@@ -345,6 +359,14 @@ class StockpileMetaManager(src.items.ItemNew):
 
             if not stockPileFound:
                 self.character.addMessage("full")
+                if self.autoExpand:
+                    self.useJoborderRelayToLocalRoom(self.character,[
+                        {"task":"add task","tasks":[
+                            {"task":"extend storage"},
+                            ]},
+                        ],"CityBuilder")
+                    self.character.runCommandString("2000.")
+
                 self.blocked = False
                 return
 
@@ -414,7 +436,10 @@ class StockpileMetaManager(src.items.ItemNew):
             if jobOrder.getTask()["task"] == "add stockpile":
                 self.doAddStockpile(jobOrder.popTask())
             if jobOrder.getTask()["task"] == "do maintanence":
-                self.character.runCommandString("Js.ssj")
+                self.character.runCommandString("Js.sssj")
+            if jobOrder.getTask()["task"] == "store item":
+                self.character.runCommandString("Js.sj")
+                jobOrder.popTask()
             if jobOrder.getTask()["task"] == "clear inventory":
                 amount = len(self.character.inventory)
                 command = "Js.s.j"*amount
@@ -719,6 +744,9 @@ class StockpileMetaManager(src.items.ItemNew):
         text = """
 item: StockpileMetaManager
 
+tasks:
+%s
+
 stockpiles:
 %s
 
@@ -742,5 +770,5 @@ managerName:
 
 description:
 
-"""%(self.stockPiles,stockPileInfo,self.assignedPlots,self.assignedPlotsInfo,self.lastAction,self.commands,self.managerName)
+"""%(self.tasks,self.stockPiles,stockPileInfo,self.assignedPlots,self.assignedPlotsInfo,self.lastAction,self.commands,self.managerName)
         return text

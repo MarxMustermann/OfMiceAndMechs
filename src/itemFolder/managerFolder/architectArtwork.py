@@ -31,7 +31,7 @@ class ArchitectArtwork(src.items.ItemNew):
                     {"task":"go to room manager","command":self.commands["go to room manager"]},
                     {"task":"insert job order","command":"scj"},
                     {"task":"relay job order","command":None,"ItemType":"RoadManager",},
-                    {"task":"print paths","command":None,"to":task["stocKPileCoordinate"]},
+                    {"task":"print paths","command":None,"to":task["stockPileCoordinate"]},
                     {"task":"return from room manager","command":self.commands["return from room manager"]},
                     {"task":"reactivate architect","command":"scj"},
                     task,
@@ -39,15 +39,34 @@ class ArchitectArtwork(src.items.ItemNew):
             context["jobOrder"].tasks.extend(list(reversed(tasks)))
             return
 
-        self.useJoborderRelayToLocalRoom(context["character"],[
-            {"task":"add stockpile","nodeName":task["stockPile"],"pathFrom":jobOrder.information["pathFrom"],"pathTo":jobOrder.information["pathTo"]},
-            {"task":"do maintanence"},
-            ],"StockpileMetaManager")
+        if task["type"] == "add to storage":
+            self.useJoborderRelayToLocalRoom(context["character"],[
+                {"task":"add stockpile","nodeName":task["stockPile"],"pathFrom":jobOrder.information["pathFrom"],"pathTo":jobOrder.information["pathTo"]},
+                {"task":"do maintanence"},
+                ],"StockpileMetaManager")
+
+        if task["type"] == "set wrong item to storage":
+            newJobOrder = src.items.itemMap["JobOrder"]()
+            newJobOrder.taskName = "configure stockpile"
+
+            storageCommand = jobOrder.information["pathFrom"]+"Js.sjj"+jobOrder.information["pathTo"]
+
+            tasks = [
+                    {"task":"go to room manager","command":self.commands["go to room manager"]},
+                    {"task":"go to stockPile","command":jobOrder.information["pathTo"]},
+                    {"task":"insert job order","command":"scj"},
+                    {"task":"configure machine","command":None, "commands":{"wrong":storageCommand}},
+                    {"task":"return from stockPile","command":jobOrder.information["pathFrom"]},
+                    {"task":"return from room manager","command":self.commands["return from room manager"]},
+                    ]
+            newJobOrder.tasks = list(reversed(tasks))
+            context["character"].addJobOrder(newJobOrder)
+
 
         """
         self.useJoborderRelayToLocalRoom(context["character"],[
             {"task":"add stockpile","nodeName":task["stockPile"],"pathFrom":paths[task["stockPile"]]["pathFrom"],"pathTo":paths[task["stockPile"]]["pathTo"]},
-            ],"StockpileMetaManager")
+        ],"StockpileMetaManager")
         """
 
     def jobOrderAddScrapField(self,task,character):
@@ -55,12 +74,48 @@ class ArchitectArtwork(src.items.ItemNew):
 
     def doSetUp(self,task,context):
         if task["type"] == "stockPile":
-            self.doClearField(task["coordinate"][0],task["coordinate"][1])
             self.useJoborderRelayToLocalRoom(context["character"],[
                 {"task":"add pathing node","nodeName":task["name"],"coordinate":task["coordinate"],"command":None,"offset":[7,6]},
                 ],"RoadManager")
             items = []
-            items.append(src.items.itemMap["TypedStockpileManager"](task["coordinate"][0]*15+7,task["coordinate"][1]*15+7))
+            if task.get("StockpileType") == "UniformStockpileManager":
+                item = src.items.itemMap["UniformStockpileManager"](task["coordinate"][0]*15+7,task["coordinate"][1]*15+7)
+                item.storedItemType = "Scrap"
+                item.storedItemWalkable = None
+                item.restrictStoredItemType = True
+                item.restrictStoredItemWalkable = False
+                items.append(item)
+            else:
+                items.append(src.items.itemMap["TypedStockpileManager"](task["coordinate"][0]*15+7,task["coordinate"][1]*15+7))
+            self.getTerrain().addItems(items)
+
+        if task["type"] == "oreProcessing":
+            items = []
+            positions = [(2,2),(2,4),(2,6),(5,4),(5,2),(9,4),(9,2),(12,2),(12,4),(12,6),(12,9),(12,11),(12,13),(9,11),(9,13),(5,13),(5,11),(2,9),(2,11),(2,13)]
+            for position in positions:
+                items.append(src.items.itemMap["ScrapCompactor"](task["coordinate"][0]*15+position[0],task["coordinate"][1]*15+position[1]))
+            self.getTerrain().addItems(items)
+        if task["type"] == "mine":
+            """
+            self.useJoborderRelayToLocalRoom(context["character"],[
+                {"task":"clear paths","coordinate":task["scrapField"],},
+                ],"RoadManager")
+            """
+            items = []
+            item = src.items.itemMap["ItemCollector"](task["scrapField"][0][0]*15+7,task["scrapField"][0][1]*15+7)
+
+            stockPileCoordinate = task["stocKPileCoordinate"]
+            if stockPileCoordinate:
+                clearInventoryCommand = "Js.j"*10
+                if stockPileCoordinate[0] > task["scrapField"][0][0]:
+                    item.commands["fullInventory"] = "12dwd"+clearInventoryCommand+"as12a"
+                if stockPileCoordinate[0] < task["scrapField"][0][0]:
+                    item.commands["fullInventory"] = "12awa"+clearInventoryCommand+"ds12d"
+                if stockPileCoordinate[1] < task["scrapField"][0][1]:
+                    item.commands["fullInventory"] = "12wawwd"+clearInventoryCommand+"assd12s"
+                if stockPileCoordinate[1] > task["scrapField"][0][1]:
+                    item.commands["fullInventory"] = "12s"+clearInventoryCommand+"12w"
+            items.append(item)
             self.getTerrain().addItems(items)
 
         if task["type"] == "road":
@@ -132,10 +187,6 @@ class ArchitectArtwork(src.items.ItemNew):
         targetX = int(self.submenue.text.split(",")[0])
         targetY = int(self.submenue.text.split(",")[1])
 
-        if not terrain:
-            self.character.addMessage("no terrain found")
-            return
-
         self.doClearField(targetX,targetY)
 
     def doClearField(self,x,y):
@@ -176,7 +227,7 @@ class ArchitectArtwork(src.items.ItemNew):
             self.character.macroState["submenue"].followUp = self.addScrapField
             return
 
-        self.targetAmount = int(self.submenue.text)
+        amount = int(self.submenue.text)
 
         if self.room:
             terrain = self.room.terrain

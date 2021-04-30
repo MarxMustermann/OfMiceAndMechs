@@ -129,8 +129,6 @@ class RoadManager(src.items.ItemNew):
         context["jobOrder"].information["pathTo"] = self.getCommandStringForPath(self.center,task["to"])
         context["jobOrder"].information["pathFrom"] = self.getCommandStringForPath(task["to"],self.center) 
 
-        context["character"].runCommandString("200.")
-
     def jobOrderAddPathingNode(self,task,context):
         if not self.center:
             self.center = (self.room.xPosition,self.room.yPosition)
@@ -244,10 +242,6 @@ class RoadManager(src.items.ItemNew):
             changePerStep = 1
             if foundNeighbourSlot[index] < slotCoordinate[index]:
                 changePerStep = -1
-
-            direction = [0,0]
-            direction[index] = changePerStep
-            self.centerDirection[(bigX,bigY)] = tuple(direction)
 
             startPos = [7,7]
             startPos[index] += changePerStep

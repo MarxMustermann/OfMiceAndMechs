@@ -1,5 +1,7 @@
 import src
 
+import random
+
 class RoomManager(src.items.ItemNew):
     type = "RoomManager"
 
@@ -59,7 +61,7 @@ class RoomManager(src.items.ItemNew):
         character.runCommandString(command)
 
     def apply(self,character):
-        options = [("doMaintance","do maintanance"),("addTask","add task"),("clearTasks","clear tasks")]
+        options = [("doMaintance","do maintanance"),("do action","do action"),("addTask","add task"),("clearTasks","clear tasks")]
         self.submenue = src.interaction.SelectionMenu("what do you want to do?",options)
         character.macroState["submenue"] = self.submenue
         character.macroState["submenue"].followUp = self.apply2
@@ -98,6 +100,24 @@ class RoomManager(src.items.ItemNew):
 
         del self.tasksType 
 
+    def doAction(self):
+        if self.submenue.selection == "storeItem":
+            jobOrder = src.items.itemMap["JobOrder"]()
+            jobOrder.taskName = "add item to storage"
+
+            itemSlot = random.choice(self.itemPositions["StockpileMetaManager"])
+
+            newTasks = [
+                    {"task":"go to item","command":self.generatePathFromTo([self.character.xPosition,self.character.yPosition],[itemSlot[0],itemSlot[1]-1])},
+                    {"task":"insert job order","command":"scj"},
+                    {"task":"store item","command":None},
+                    {"task":"go back","command":self.generatePathFromTo([itemSlot[0],itemSlot[1]-1],[self.character.xPosition,self.character.yPosition])},
+                ]
+            jobOrder.tasks.extend(list(reversed(newTasks)))
+            self.character.addJobOrder(jobOrder)
+
+        self.character.addMessage("unkown action")
+
     def apply2(self):
         if self.submenue.selection == "clearTasks":
             self.tasks = []
@@ -107,6 +127,12 @@ class RoomManager(src.items.ItemNew):
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.addTask
             self.tasksType = None
+        if self.submenue.selection == "do action":
+            options = [("storeItem","add item to storage"),]
+            self.submenue = src.interaction.SelectionMenu("what action do you want to do?",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.doAction
+            self.actionType = None
         if self.submenue.selection == "doMaintance":
             character = self.character
             if self.stuck:
@@ -613,12 +639,15 @@ r: reset
             if task["task"] == "relay job order":
                 relayedTask = jobOrder.popTask()
                 
-                if not task["ItemType"] in self.itemPositions:
+                if not task["ItemType"] in self.itemPositions and not task["ItemType"] == "CityBuilder":
                     self.character.addMessage("no such item found")
                     return
                 
-                import random
-                itemSlot = random.choice(self.itemPositions[task["ItemType"]])
+                if task["ItemType"] == "CityBuilder":
+                    itemSlot = self.cityBuilderPos
+                else:
+                    import random
+                    itemSlot = random.choice(self.itemPositions[task["ItemType"]])
                 
                 newTasks = [
                         {"task":"go to item","command":self.generatePathFromTo([self.character.xPosition,self.character.yPosition],[itemSlot[0],itemSlot[1]-1])},

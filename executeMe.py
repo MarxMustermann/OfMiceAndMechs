@@ -16,7 +16,6 @@ import time
 # import basic internal libs
 import src.items as items
 items.setup()
-print(len(items.itemMap))
 import src.quests as quests
 import src.rooms as rooms
 import src.characters as characters
@@ -49,7 +48,67 @@ parser.add_argument("-s", "--seed", type=str, help="select the seed of a new gam
 parser.add_argument("--multiplayer", action="store_true", help="activate multiplayer")
 parser.add_argument("--load", action="store_true", help="load")
 parser.add_argument("-S", "--speed", type=int, help="set the speed of the game to a fixed speed")
+parser.add_argument("-sc", "--scenario", type=str, help="set the scenario to run")
 args = parser.parse_args()
+
+##################################################################################################################################
+###
+##        switch scenarios
+#
+##################################################################################################################################
+
+# load the gamestate
+loaded = False
+if not args.nourwid:
+    if args.load:
+        shouldLoad = True
+    else:
+        load = input("load saved game? (Y/n)")
+        if load.lower() == "n":
+            shouldLoad = False
+        else:
+            shouldLoad = True
+else:
+    shouldLoad = True
+
+if not shouldLoad:
+    if not args.scenario:
+        scenarios = [
+                        ("story1","story mode (old+broken)",),
+                        ("story2","story mode (new)",),
+                        ("siege","siege",),
+                        ("survival","survival",),
+                        ("creative","creative mode",),
+                        ("dungeon","dungeon",),
+                    ]
+
+        text = "\n"
+        counter = 0
+        for scenario in scenarios:
+            text += "%s: %s\n"%(counter,scenario[1],)
+            counter += 1
+
+        scenarioNum = input("select scenario (type number)\n\n%s\n\n"%(text,))
+        scenario = scenarios[int(scenarioNum)][0]
+    else:
+        scenario = args.scenario
+
+    print(scenario)
+
+    if scenario == "siege":
+        args.terrain = "test"
+        args.phase = "BuildBase"
+    elif scenario == "survival":
+        args.terrain = "desert"
+        args.phase = "DesertSurvival"
+    elif scenario == "creative":
+        args.terrain = "nothingness"
+        args.phase = "CreativeMode"
+    elif scenario == "dungeon":
+        args.terrain = "nothingness"
+        args.phase = "Dungeon"
+
+print(args.terrain)
 
 import src.canvas as canvas
 
@@ -230,20 +289,6 @@ interaction.cinematics = cinematics
 events.cinematics = cinematics
 rooms.cinematics = cinematics
 gamestate.cinematics = cinematics
-
-# load the gamestate
-loaded = False
-if not args.nourwid:
-    if args.load:
-        shouldLoad = True
-    else:
-        load = input("load saved game? (Y/n)")
-        if load.lower() == "n":
-            shouldLoad = False
-        else:
-            shouldLoad = True
-else:
-    shouldLoad = True
 
 if shouldLoad:
     try:
@@ -469,6 +514,7 @@ cinematics.mainChar = gameStateObj.mainChar
 quests.mainChar = gameStateObj.mainChar
 chats.mainChar = gameStateObj.mainChar
 characters.mainChar = gameStateObj.mainChar
+
 
 ##################################################################################################################################
 ###

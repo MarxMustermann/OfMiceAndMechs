@@ -584,7 +584,7 @@ class Item(src.saveing.Saveable):
 
         # generatate scrap
         if generateSrcap:
-            newItem = Scrap(pos[0],pos[1],1,creator=self)
+            newItem = src.items.itemMap["Scrap"](pos[0],pos[1],1,creator=self)
             newItem.room = self.room
             newItem.terrain = self.terrain
 
@@ -2947,7 +2947,7 @@ thie is a level %s item
         itemType = self.submenue.selection
         
         commandItem = None
-        for item in self.container.getItemByPosition((self.xPosition,self.yPosition-1)):
+        for item in self.container.getItemByPosition((self.xPosition,self.yPosition-1,self.zPosition)):
             if item.type == "Command":
                 commandItem = item
 
@@ -4021,8 +4021,11 @@ class CommandBook(Item):
 
     def getState(self):
         state = super().getState()
-        state["contents"] = self.availableChallenges
-        state["knownBlueprints"] = self.knownBlueprints
+        try:
+            state["contents"] = self.availableChallenges
+            state["knownBlueprints"] = self.knownBlueprints
+        except:
+            pass
         return state
 
 class ProductionManager(Item):
@@ -4548,12 +4551,14 @@ needs to be placed in the center of a tile. The tile should be emtpy and mold fr
 
 lastAction: %s
 
+commands: %s
+
 storedItemType: %s
 storedItemWalkable: %s
 restrictStoredItemType: %s
 restrictStoredItemWalkable: %s
 
-"""%(self.lastAction,self.storedItemType,self.storedItemWalkable,self.restrictStoredItemType,self.restrictStoredItemWalkable)
+"""%(self.lastAction,self.commands,self.storedItemType,self.storedItemWalkable,self.restrictStoredItemType,self.restrictStoredItemWalkable)
         return text
 
     def apply(self,character):
@@ -4601,10 +4606,18 @@ r: reset
                 self.character.addMessage("no job order")
                 self.blocked = False
                 return
+
+            self.character.addMessage("do job order stuff")
             jobOrder = self.character.jobOrders[-1]
+            self.character.addMessage(jobOrder.getTask())
             if jobOrder.getTask()["task"] == "generateStatusReport":
                 self.character.runCommandString("se.")
                 jobOrder.popTask()
+            self.character.addMessage(jobOrder.getTask())
+            if jobOrder.getTask()["task"] == "configure machine":
+                self.character.addMessage("configured machine")
+                task = jobOrder.popTask()
+                self.commands.update(task["commands"])
             self.blocked = False
             return
 
@@ -6317,13 +6330,13 @@ class Machine(Item):
         itemList = self.container.getItemByPosition((self.xPosition+1,self.yPosition,self.zPosition))
         if itemList:
             if new.walkable:
-                if len(self.container.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+                if len(self.container.positionByCoordinate((self.xPosition+1,self.yPosition,self.zPosition))) > 15:
                     targetFull = True
-                for item in self.container.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                for item in self.container.positionByCoordinate((self.xPosition+1,self.yPosition,self.zPosition)):
                     if item.walkable == False:
                         targetFull = True
             else:
-                if len(self.container.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 0:
+                if len(self.container.positionByCoordinate((self.xPosition+1,self.yPosition,self.zPosition))) > 0:
                     targetFull = True
 
         if targetFull:
@@ -6446,7 +6459,7 @@ Currently the machine has no charges
         itemType = self.submenue.selection
         
         commandItem = None
-        for item in self.container.getItemByPosition((self.xPosition,self.yPosition-1)):
+        for item in self.container.getItemByPosition((self.xPosition,self.yPosition-1,self.zPosition)):
             if item.type == "Command":
                 commandItem = item
 
@@ -9929,7 +9942,7 @@ class Explosion(Item):
                 if (character.xPosition == self.xPosition and character.yPosition == self.yPosition):
                     character.die()
 
-            for item in self.container.getItemByPosition((self.xPosition,self.yPosition)):
+            for item in self.container.getItemByPosition((self.xPosition,self.yPosition,self.zPosition)):
                 if item == self:
                     continue
                 if item.type == "Explosion":
@@ -10155,13 +10168,13 @@ class Mold(Item):
             direction = (2*self.xPosition+3*self.yPosition+gamestate.tick)%4
             direction = random.choice([0,1,2,3])
             if direction == 0:
-                newPos = (self.xPosition,self.yPosition+1)
+                newPos = (self.xPosition,self.yPosition+1,self.zPosition)
             if direction == 1:
-                newPos = (self.xPosition+1,self.yPosition)
+                newPos = (self.xPosition+1,self.yPosition,self.zPosition)
             if direction == 2:
-                newPos = (self.xPosition,self.yPosition-1)
+                newPos = (self.xPosition,self.yPosition-1,self.zPosition)
             if direction == 3:
-                newPos = (self.xPosition-1,self.yPosition)
+                newPos = (self.xPosition-1,self.yPosition,self.zPosition)
 
             #if (((newPos[0]%15 == 0 or newPos[0]%15 == 14) and not (newPos[1]%15 in (8,))) or
             #    ((newPos[1]%15 == 0 or newPos[1]%15 == 14) and not (newPos[0]%15 in (8,)))):
@@ -10203,12 +10216,12 @@ class Mold(Item):
                     item.xPosition = None
                     item.yPosition = None
 
-                    if (newPos[0]%15,newPos[1]%15) in ((7,7),):
+                    if (newPos[0]%15,newPos[1]%15) in ((7,7,0),):
                         new = itemMap["CommandBloom"](creator=self)
                         new.xPosition = newPos[0]
                         new.yPosition = newPos[1]
                         self.container.addItems([new])
-                    elif (newPos[0]%15,newPos[1]%15) in ((1,7),(7,1),(13,7),(7,13)) and self.container.getItemByPosition((newPos[0]-newPos[0]%15+7,newPos[1]-newPos[1]%15+7)) and self.container.getItemByPosition((newPos[0]-newPos[0]%15+7,newPos[1]-newPos[1]%15+7))[-1].type == "CommandBloom":
+                    elif (newPos[0]%15,newPos[1]%15) in ((1,7,0),(7,1,0),(13,7,0),(7,13,0)) and self.container.getItemByPosition((newPos[0]-newPos[0]%15+7,newPos[1]-newPos[1]%15+7,0)) and self.container.getItemByPosition((newPos[0]-newPos[0]%15+7,newPos[1]-newPos[1]%15+7,0))[-1].type == "CommandBloom":
                         new = itemMap["CommandBloom"](creator=self)
                         new.xPosition = newPos[0]
                         new.yPosition = newPos[1]
@@ -10456,9 +10469,9 @@ class Bloom(Item):
             return
         direction = (2*self.xPosition+3*self.yPosition+gamestate.tick)%4
         direction = (random.randint(1,13),random.randint(1,13))
-        newPos = (self.xPosition-self.xPosition%15+direction[0],self.yPosition-self.yPosition%15+direction[1])
+        newPos = (self.xPosition-self.xPosition%15+direction[0],self.yPosition-self.yPosition%15+direction[1],self.zPosition)
 
-        if not (newPos in self.container.itemByCoordinates and len(self.container.itemByCoordinates[newPos])):
+        if self.container.getItemByPosition(newPos):
             new = itemMap["Mold"](creator=self)
             new.xPosition = newPos[0]
             new.yPosition = newPos[1]
@@ -12109,12 +12122,12 @@ class CommandBloom(Item):
         if not self.xPosition:
             return
 
-        items = self.container.getItemByPosition((self.xPosition-self.xPosition%15+7,self.yPosition-self.yPosition%15+7))
+        items = self.container.getItemByPosition((self.xPosition-self.xPosition%15+7,self.yPosition-self.yPosition%15+7,self.zPosition))
         centralBloom = None
         if items and (items[0].type == "CommandBloom" or items[-1].type == "CommandBloom"):
             centralBloom = items[0]
 
-        if len(self.container.getItemByPosition((self.xPosition,self.yPosition))) > 1:
+        if len(self.container.getItemByPosition((self.xPosition,self.yPosition,self.zPosition))) > 1:
             selfDestroy = True
 
         if self.xPosition%15 == 1 and self.yPosition%15 == 7:
@@ -12338,21 +12351,21 @@ class CommandBloom(Item):
                     if length%2 == 1:
                         for i in range(0,length):
                             pos[1] -= 1
-                            path.append((pos[0],pos[1]))
+                            path.append((pos[0],pos[1],0))
                         for i in range(0,length):
                             pos[0] -= 1
-                            path.append((pos[0],pos[1]))
+                            path.append((pos[0],pos[1],0))
                     else:
                         for i in range(0,length):
                             pos[1] += 1
-                            path.append((pos[0],pos[1]))
+                            path.append((pos[0],pos[1],0))
                         for i in range(0,length):
                             pos[0] += 1
-                            path.append((pos[0],pos[1]))
+                            path.append((pos[0],pos[1],0))
                     length += 1
                 for i in range(0,length-1):
                     pos[1] -= 1
-                    path.append((pos[0],pos[1]))
+                    path.append((pos[0],pos[1],0))
 
                 if character.satiation < 300 and self.charges:
                     if gamestate.tick-self.lastFeeding < 60:
@@ -12406,10 +12419,10 @@ class CommandBloom(Item):
                         foundSomething = True
 
                         if items[0].type in ("Coal"):
-                            east = self.container.getItemByPosition((pos[0]+1,pos[1]))
-                            west = self.container.getItemByPosition((pos[0]-1,pos[1]))
-                            south = self.container.getItemByPosition((pos[0],pos[1]+1))
-                            north = self.container.getItemByPosition((pos[0],pos[1]-1))
+                            east = self.container.getItemByPosition((pos[0]+1,pos[1],0))
+                            west = self.container.getItemByPosition((pos[0]-1,pos[1],0))
+                            south = self.container.getItemByPosition((pos[0],pos[1]+1,0))
+                            north = self.container.getItemByPosition((pos[0],pos[1]-1,0))
                             if ((west and west[0].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or 
                                 (east and east[0].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
                                 (north and north[0].type in ("EncrustedBush","PoisonBush","EncrustedPoisonBush")) or
@@ -14622,6 +14635,8 @@ itemMap = {
             "Stripe":Stripe,
             "puller":Puller,
             "pusher":Pusher,
+            "Puller":Puller,
+            "Pusher":Pusher,
             "Stripe":Stripe,
             "Rod":Rod,
             "Heater":Heater,

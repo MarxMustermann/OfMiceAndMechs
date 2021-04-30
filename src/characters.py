@@ -192,6 +192,10 @@ class Character(src.saveing.Saveable):
 
         self.macroState["commandKeyQueue"] = convertedCommand + self.macroState["commandKeyQueue"]
 
+    def addJobOrder(self,jobOrder):
+        self.jobOrders.append(jobOrder)
+        self.runCommandString("Jj.j")
+
     def clearCommandString(self):
         self.macroState["commandKeyQueue"] = []
 

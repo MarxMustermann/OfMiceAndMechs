@@ -275,7 +275,6 @@ class Terrain(src.saveing.Saveable):
                 ])
 
     def getItemByPosition(self,position):
-        position[2]
 
         if position[0]%15 == 0:
             if position[1]%15 < 7:
@@ -1245,33 +1244,33 @@ class Terrain(src.saveing.Saveable):
             position = (item.xPosition,item.yPosition,item.zPosition)
             if position[0]%15 == 0:
                 if position[1]%15 < 7:
-                    position = (position[0]+1,position[1]+1)
+                    position = (position[0]+1,position[1]+1,position[2])
                 elif position[1]%15 > 7:
-                    position = (position[0]+1,position[1]-1)
+                    position = (position[0]+1,position[1]-1,position[2])
                 else:
                     if not item.type in ("Explosion","FireCrystals","Bomb","CommandBloom"):
                         continue
             if position[0]%15 == 14:
                 if position[1]%15 < 7:
-                    position = (position[0]-1,position[1]+1)
+                    position = (position[0]-1,position[1]+1,position[2])
                 elif position[1]%15 > 7:
-                    position = (position[0]-1,position[1]-1)
+                    position = (position[0]-1,position[1]-1,position[2])
                 else:
                     if not item.type in ("Explosion","FireCrystals","Bomb","CommandBloom"):
                         continue
             if position[1]%15 == 0:
                 if position[0]%15 < 7:
-                    position = (position[0]+1,position[1]+1)
+                    position = (position[0]+1,position[1]+1,position[2])
                 elif position[0]%15 > 7:
-                    position = (position[0]-1,position[1]+1)
+                    position = (position[0]-1,position[1]+1,position[2])
                 else:
                     if not item.type in ("Explosion","FireCrystals","Bomb","CommandBloom"):
                         continue
             if position[1]%15 == 14:
                 if position[0]%15 < 7:
-                    position = (position[0]+1,position[1]-1)
+                    position = (position[0]+1,position[1]-1,position[2])
                 elif position[0]%15 > 7:
-                    position = (position[0]-1,position[1]-1)
+                    position = (position[0]-1,position[1]-1,position[2])
                 else:
                     if not item.type in ("Explosion","FireCrystals","Bomb","CommandBloom"):
                         continue
@@ -1839,14 +1838,14 @@ class Nothingness(Terrain):
                 for y in range(1,224):
                     item = None
                     if not x%23 and not y%35 and not (x+y)%5:
-                        item = src.items.Scrap(x,y,1,creator=creator)
+                        item = src.items.itemMap["Scrap"](x,y,1,creator=creator)
                         item.bolted = False
                     if not x%57 and not y%22 and not (x+y)%3:
-                        item = src.items.Item(displayChars.foodStuffs[((2*x)+y)%6],x,y,creator=creator)
+                        item = src.items.itemMap["Item"](displayChars.foodStuffs[((2*x)+y)%6],x,y,creator=creator)
                         item.walkable = True
                         item.bolted = False
                     if not x%19 and not y%27 and not (x+y)%4:
-                        item = src.items.Item(displayChars.foodStuffs[((2*x)+y)%6],x,y,creator=creator)
+                        item = src.items.itemMap["Item"](displayChars.foodStuffs[((2*x)+y)%6],x,y,creator=creator)
                         item.walkable = True
                         item.bolted = False
                     if item:
@@ -1923,10 +1922,10 @@ class GameplayTest(Terrain):
                         if key[0]%15 in (0,14) or key[1]%15 in (0,14):
                             continue
                         if not counter%(5*3) == 0:
-                            l1types = [src.items.Sheet,src.items.Rod,src.items.Sheet,src.items.Mount,src.items.Stripe,src.items.Bolt,src.items.Radiator]
+                            l1types = [src.items.itemMap["Sheet"],src.items.itemMap["Rod"],src.items.itemMap["Sheet"],src.items.itemMap["Mount"],src.items.itemMap["Stripe"],src.items.itemMap["Bolt"],src.items.itemMap["Radiator"]]
                             self.scrapItems.append(l1types[seed%len(l1types)](key[0],key[1],creator=self))
                         else:
-                            l2types = [src.items.Tank,src.items.Heater,src.items.Connector,src.items.Pusher,src.items.Puller,src.items.GooFlask,src.items.Frame]
+                            l2types = [src.items.itemMap["Tank"],src.items.itemMap["Heater"],src.items.itemMap["Connector"],src.items.itemMap["Pusher"],src.items.itemMap["Puller"],src.items.itemMap["GooFlask"],src.items.itemMap["Frame"]]
                             self.scrapItems.append(l2types[seed%len(l2types)](key[0],key[1],creator=self))
 
                         if seed%15:
@@ -1937,7 +1936,7 @@ class GameplayTest(Terrain):
                         seed += seed%37
 
                     if not noScrap:
-                        item = src.items.Scrap(key[0],key[1],thickness,creator=self)
+                        item = src.items.itemMap["Scrap"](key[0],key[1],thickness,creator=self)
                         item.mayContainMice = False
                         self.scrapItems.append(item)
 
@@ -1983,15 +1982,15 @@ class GameplayTest(Terrain):
             self.scrapItems = []
 
             # add other objects
-            addPseudoRandomThing((45,170),(45,170),(23,7,2,3,2,4),src.items.Wall)
+            addPseudoRandomThing((45,170),(45,170),(23,7,2,3,2,4),src.items.itemMap["Wall"])
             seed += seed%35
-            addPseudoRandomThing((45,170),(45,170),(13,15,3,5,3,2),src.items.Pipe)
+            addPseudoRandomThing((45,170),(45,170),(13,15,3,5,3,2),src.items.itemMap["Pipe"])
 
             toRemove = []
             for item in self.scrapItems:
-                if (item.xPosition,item.yPosition) in self.itemByCoordinates:
-                    for subItem in self.itemByCoordinates[(item.xPosition,item.yPosition)]:
-                        toRemove.append(subItem)
+                subItems = self.getItemByPosition((item.xPosition,item.yPosition,item.zPosition))
+                for subItem in subItems:
+                    toRemove.append(subItem)
 
             self.addItems(self.scrapItems)
 
@@ -2005,13 +2004,13 @@ class GameplayTest(Terrain):
                 self.removeItem(item, recalculate=False)
 
             seed += seed%23
-            furnace = src.items.Furnace(90+seed%78,90+(seed*5)%78,creator=self)
+            furnace = src.items.itemMap["Furnace"](90+seed%78,90+(seed*5)%78,creator=self)
             furnace.bolted = False
             seed += seed%42
-            hutch = src.items.Hutch(90+seed%78,90+(seed*5)%78,creator=self)
+            hutch = src.items.itemMap["Hutch"](90+seed%78,90+(seed*5)%78,creator=self)
             hutch.bolted = False
             seed += seed%65
-            growthTank = src.items.GrowthTank(90+seed%78,90+(seed*5)%78,creator=self)
+            growthTank = src.items.itemMap["GrowthTank"](90+seed%78,90+(seed*5)%78,creator=self)
             growthTank.bolted = False
             extraItems = [furnace,hutch,growthTank]
             self.addItems(extraItems)
@@ -2043,9 +2042,9 @@ class GameplayTest(Terrain):
             toRemove = []
             for x in range(124,131):
                 for y in range(124,131):
-                    if (x,y) in self.itemByCoordinates:
-                        for subItem in self.itemByCoordinates[(x,y)]:
-                            toRemove.append(subItem)
+                    subItems = self.getItemByPosition((x,y,0))
+                    for subItem in subItems:
+                        toRemove.append(subItem)
 
             for item in toRemove:
                 self.removeItem(item, recalculate=False)
@@ -2107,54 +2106,54 @@ class Desert(Terrain):
         super().__init__(layout,detailedLayout,creator=creator,seed=seed, noContent=noContent)
 
         self.itemPool = []
-        self.itemPool.append(src.items.SunScreen(None,None,creator=self))
-        self.itemPool.append(src.items.SunScreen(None,None,creator=self))
-        self.itemPool.append(src.items.SunScreen(None,None,creator=self))
-        machine = src.items.Machine(None,None,creator=self) 
+        self.itemPool.append(src.items.itemMap["SunScreen"](None,None,creator=self))
+        self.itemPool.append(src.items.itemMap["SunScreen"](None,None,creator=self))
+        self.itemPool.append(src.items.itemMap["SunScreen"](None,None,creator=self))
+        machine = src.items.itemMap["Machine"](None,None,creator=self) 
         machine.setToProduce("Rod")
         machine.bolted = False
         self.itemPool.append(machine)
-        machine = src.items.Machine(None,None,creator=self) 
+        machine = src.items.itemMap["Machine"](None,None,creator=self) 
         machine.setToProduce("Rod")
         machine.bolted = False
         self.itemPool.append(machine)
-        machine = src.items.Machine(None,None,creator=self) 
+        machine = src.items.itemMap["Machine"](None,None,creator=self) 
         machine.setToProduce("Rod")
         machine.bolted = False
         self.itemPool.append(machine)
-        machine = src.items.Machine(None,None,creator=self) 
+        machine = src.items.itemMap["Machine"](None,None,creator=self) 
         machine.setToProduce("Rod")
         machine.bolted = False
         self.itemPool.append(machine)
-        machine = src.items.Machine(None,None,creator=self) 
+        machine = src.items.itemMap["Machine"](None,None,creator=self) 
         machine.setToProduce("Rod")
         machine.bolted = False
         self.itemPool.append(machine)
-        machine = src.items.Machine(None,None,creator=self) 
+        machine = src.items.itemMap["Machine"](None,None,creator=self) 
         machine.setToProduce("Sheet")
         machine.bolted = False
         self.itemPool.append(machine)
-        machine = src.items.Machine(None,None,creator=self) 
+        machine = src.items.itemMap["Machine"](None,None,creator=self) 
         machine.setToProduce("Sheet")
         machine.bolted = False
         self.itemPool.append(machine)
-        machine = src.items.Machine(None,None,creator=self) 
+        machine = src.items.itemMap["Machine"](None,None,creator=self) 
         for i in range(1,30):
-            self.itemPool.append(src.items.Sheet(None,None,creator=self))
-            case = src.items.Case(None,None,creator=self)
+            self.itemPool.append(src.items.itemMap["Sheet"](None,None,creator=self))
+            case = src.items.itemMap["Case"](None,None,creator=self)
             case.bolted = False
             self.itemPool.append(case)
-            self.itemPool.append(src.items.Vial(None,None,creator=self))
-            corpse = src.items.Corpse(None,None,creator=self)
+            self.itemPool.append(src.items.itemMap["Vial"](None,None,creator=self))
+            corpse = src.items.itemMap["Corpse"](None,None,creator=self)
             corpse.charges = random.randint(100,300)
             self.itemPool.append(corpse)
         for i in range(1,200):
-            self.itemPool.append(src.items.Coal(None,None,creator=self))
-            self.itemPool.append(src.items.MetalBars(None,None,creator=self))
-            self.itemPool.append(src.items.Rod(None,None,creator=self))
-            self.itemPool.append(src.items.Scrap(None,None,creator=self,amount=1))
-            self.itemPool.append(src.items.Scrap(None,None,creator=self,amount=1))
-            self.itemPool.append(src.items.Scrap(None,None,creator=self,amount=1))
+            self.itemPool.append(src.items.itemMap["Coal"](None,None,creator=self))
+            self.itemPool.append(src.items.itemMap["MetalBars"](None,None,creator=self))
+            self.itemPool.append(src.items.itemMap["Rod"](None,None,creator=self))
+            self.itemPool.append(src.items.itemMap["Scrap"](None,None,creator=self,amount=1))
+            self.itemPool.append(src.items.itemMap["Scrap"](None,None,creator=self,amount=1))
+            self.itemPool.append(src.items.itemMap["Scrap"](None,None,creator=self,amount=1))
 
         import random
         random.shuffle(self.itemPool)
@@ -2170,16 +2169,16 @@ class Desert(Terrain):
                 item.yPosition = y
                 break
 
-        waterCondenser = src.items.WaterCondenser(6*15+6,7*15+6,creator=self)
+        waterCondenser = src.items.itemMap["WaterCondenser"](6*15+6,7*15+6,creator=self)
         waterCondenser.lastUsage = -10000
         self.addItems([waterCondenser])
-        waterCondenser = src.items.WaterCondenser(6*15+6,7*15+8,creator=self)
+        waterCondenser = src.items.itemMap["WaterCondenser"](6*15+6,7*15+8,creator=self)
         waterCondenser.lastUsage = -10000
         self.addItems([waterCondenser])
-        waterCondenser = src.items.WaterCondenser(6*15+8,7*15+6,creator=self)
+        waterCondenser = src.items.itemMap["WaterCondenser"](6*15+8,7*15+6,creator=self)
         waterCondenser.lastUsage = -10000
         self.addItems([waterCondenser])
-        waterCondenser = src.items.WaterCondenser(6*15+8,7*15+8,creator=self)
+        waterCondenser = src.items.itemMap["WaterCondenser"](6*15+8,7*15+8,creator=self)
         waterCondenser.lastUsage = -10000
         self.addItems([waterCondenser])
 
@@ -2209,7 +2208,7 @@ class Desert(Terrain):
 
         counter = 0
         toMove = []
-        for (position,items) in self.itemByCoordinates.items():
+        for (position,items) in self.itemsByCoordinate.items():
             for item in items:
                 if item.bolted:
                     continue

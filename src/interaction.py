@@ -1879,9 +1879,7 @@ press key for advanced drop
                         item = charState["itemMarkedLast"]
 
                         if not item:
-                            char.addMessage((char.xPosition,char.yPosition,char.zPosition))
                             itemList = char.container.getItemByPosition((char.xPosition,char.yPosition,char.zPosition))
-                            char.addMessage(itemList)
 
                             if len(itemList):
                                 item = itemList[0]

@@ -365,6 +365,62 @@ class OpenWorld(BasicPhase):
 
         gamestate.save()
 
+"""
+"""
+class Dungeon(BasicPhase):
+    def __init__(self,seed=0):
+        super().__init__("Dungeon",seed=seed)
+    '''
+    place main char
+    bad code: superclass call should not be prevented
+    '''
+    def start(self,seed=0):
+        cinematics.showCinematic("staring open world Scenario.")
+
+        mainChar.xPosition = 65
+        mainChar.yPosition = 111
+        mainChar.terrain = terrain
+        terrain.addCharacter(mainChar,65,111)
+
+        item = src.items.itemMap["RipInReality"](67,113)
+        terrain.addItem(item)
+
+        # add basic set of abilities in openworld phase
+        mainChar.questsDone = [
+                  "NaiveMoveQuest",
+                  "MoveQuestMeta",
+                  "NaiveActivateQuest",
+                  "ActivateQuestMeta",
+                  "NaivePickupQuest",
+                  "PickupQuestMeta",
+                  "DrinkQuest",
+                  "CollectQuestMeta",
+                  "FireFurnaceMeta",
+                  "ExamineQuest",
+                  "NaiveDropQuest",
+                  "DropQuestMeta",
+                  "LeaveRoomQuest",
+              ]
+
+        mainChar.solvers = [
+                  "SurviveQuest",
+                  "Serve",
+                  "NaiveMoveQuest",
+                  "MoveQuestMeta",
+                  "NaiveActivateQuest",
+                  "ActivateQuestMeta",
+                  "NaivePickupQuest",
+                  "PickupQuestMeta",
+                  "DrinkQuest",
+                  "ExamineQuest",
+                  "FireFurnaceMeta",
+                  "CollectQuestMeta",
+                  "WaitQuest"
+                  "NaiveDropQuest",
+                  "NaiveDropQuest",
+                  "DropQuestMeta",
+                ]
+
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 #XX
 #X   these are the tutorial phases. The story phases are tweeked heavily regarding to cutscenes and timing
@@ -3103,9 +3159,6 @@ class BuildBase(BasicPhase):
                 if not pos in positions:
                    positions.append(pos) 
 
-        ripInReality = src.items.RipInReality(131,93,creator=self)
-        terrain.addItems([ripInReality])
-
         for pos in positions:
             commandBloom = src.items.CommandBloom(pos[0],pos[1],creator=self)
             terrain.addItems([commandBloom])
@@ -3291,33 +3344,33 @@ class DesertSurvival(BasicPhase):
             break
 
 
-        scrap = src.items.Scrap(2,5,creator=self,amount=10) 
+        scrap = src.items.itemMap["Scrap"](2,5,creator=self,amount=10) 
         self.workshop.addItems([scrap])
-        sunscreen = src.items.SunScreen(9,4,creator=self) 
+        sunscreen = src.items.itemMap["SunScreen"](9,4,creator=self) 
         self.workshop.addItems([sunscreen])
-        scrapCompactor = src.items.ScrapCompactor(3,5,creator=self) 
+        scrapCompactor = src.items.itemMap["ScrapCompactor"](3,5,creator=self) 
         self.workshop.addItems([scrapCompactor])
-        rodMachine = src.items.Machine(5,5,creator=self) 
+        rodMachine = src.items.itemMap["Machine"](5,5,creator=self) 
         rodMachine.setToProduce("Rod")
         self.workshop.addItems([rodMachine])
-        waterCondenserMachine = src.items.Machine(7,2,creator=self) 
+        waterCondenserMachine = src.items.itemMap["Machine"](7,2,creator=self) 
         waterCondenserMachine.setToProduce("WaterCondenser")
         self.workshop.addItems([waterCondenserMachine])
-        scrapper = src.items.Scraper(7,5,creator=self) 
+        scrapper = src.items.itemMap["Scraper"](7,5,creator=self) 
         self.workshop.addItems([scrapper])
-        case = src.items.Case(1,1,creator=self) 
+        case = src.items.itemMap["Case"](1,1,creator=self) 
         case.bolted = False
         self.workshop.addItems([case])
-        case = src.items.Case(2,1,creator=self) 
+        case = src.items.itemMap["Case"](2,1,creator=self) 
         case.bolted = False
         self.workshop.addItems([case])
-        case = src.items.Case(3,1,creator=self) 
+        case = src.items.itemMap["Case"](3,1,creator=self) 
         case.bolted = False
         self.workshop.addItems([case])
-        case = src.items.Case(4,1,creator=self) 
+        case = src.items.itemMap["Case"](4,1,creator=self) 
         case.bolted = False
         self.workshop.addItems([case])
-        sheet = src.items.Sheet(7,1,creator=self) 
+        sheet = src.items.itemMap["Sheet"](7,1,creator=self) 
         sheet.bolted = False
         self.workshop.addItems([sheet])
         terrain.addRooms([self.workshop])
@@ -3568,3 +3621,4 @@ def registerPhases():
     phasesByName["DesertSurvival"] = DesertSurvival
     phasesByName["FactoryDream"] = FactoryDream
     phasesByName["CreativeMode"] = CreativeMode
+    phasesByName["Dungeon"] = Dungeon

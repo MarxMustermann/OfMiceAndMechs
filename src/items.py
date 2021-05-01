@@ -96,7 +96,7 @@ class ItemNew(src.saveing.Saveable):
         import uuid
         self.id = uuid.uuid4().hex
 
-    def useJoborderRelayToLocalRoom(self,character,tasks,itemType):
+    def useJoborderRelayToLocalRoom(self,character,tasks,itemType,information={}):
         newTasks = [
                 {
                     "task":"go to room manager",
@@ -121,11 +121,22 @@ class ItemNew(src.saveing.Saveable):
                 "task":"return from room manager",
                 "command":self.commands["return from room manager"]
             })
+        newTasks.append(
+            {
+                "task":"insert job order",
+                "command":"scj",
+            })
+        newTasks.append(
+            {
+                "task":"register result",
+                "command":None,
+            })
 
         character.addMessage("running job order local room relay")
         jobOrder = src.items.itemMap["JobOrder"]()
         jobOrder.tasks = list(reversed(newTasks))
         jobOrder.taskName = "relay job Order"
+        jobOrder.information = information
 
         character.jobOrders.append(jobOrder)
         character.runCommandString("Jj.j")
@@ -265,7 +276,13 @@ class ItemNew(src.saveing.Saveable):
         triggerList.append(function)
 
     def getJobOrderTriggers(self):
-        return {"configure machine":[self.jobOrderConfigure]}
+        result = {}
+        self.addTriggerToTriggerMap(result,"configure machine",self.jobOrderConfigure)
+        self.addTriggerToTriggerMap(result,"register result",self.doRegisterResult)
+        return result
+
+    def doRegisterResult(self,task,context):
+        pass
 
     def configureSwitch(self,params):
         self.lastAction = "configureSwitch"
@@ -295,7 +312,7 @@ class ItemNew(src.saveing.Saveable):
         triggerMap = self.getJobOrderTriggers()
         triggers = triggerMap.get(task["task"])
         if not triggers:
-            character.addMessage("unknown trigger")
+            character.addMessage("unknown trigger: %s %s"%(self,task,))
             return
 
         for trigger in triggers:

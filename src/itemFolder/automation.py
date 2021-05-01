@@ -17,6 +17,7 @@ class JobOrder(src.items.ItemNew):
         self.done = False
         self.autoRun = autoRun
         self.information = {}
+        self.error = {}
         self.taskName = ""
 
         self.attributesToStore.extend([
@@ -69,9 +70,12 @@ done: %s
 information:
 %s
 
+error:
+%s
+
 tasks:
 %s
-"""%(self.information,taskStr,))
+"""%(self.information,self.error,taskStr,))
             self.character.macroState["submenue"] = submenue
             return
             

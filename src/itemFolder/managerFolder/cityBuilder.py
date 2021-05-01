@@ -22,6 +22,7 @@ class CityBuilder(src.items.ItemNew):
         self.plotPool = []
         self.stuck = False
         self.stuckReason = None
+        self.runningTasks = []
 
         #config options
         self.numReservedPathPlots = 5
@@ -30,12 +31,15 @@ class CityBuilder(src.items.ItemNew):
         self.idleExtend = False
         self.hasStockpileMetaManager = False
         self.hasMaintenance = True
+        self.runsJobOrders = True
+
+        self.error = {}
 
         self.attributesToStore.extend([
-           "tasks",
+           "tasks","runningTasks","error",
            ])
 
-    def addTasksToLocalRoom(self,tasks):
+    def addTasksToLocalRoom(self,tasks,character):
         jobOrder = src.items.itemMap["JobOrder"]()
         jobOrder.tasks = list(reversed([
             {
@@ -58,17 +62,40 @@ class CityBuilder(src.items.ItemNew):
             ]))
         jobOrder.taskName = "install city builder"
 
-        self.character.addMessage("running job order to add local room task")
-        self.character.jobOrders.append(jobOrder)
-        self.character.runCommandString("Jj.j")
+        character.addMessage("running job order to add local room task")
+        character.jobOrders.append(jobOrder)
+        character.runCommandString("Jj.j")
 
     def apply(self,character):
         self.tasks.append({"task":"expand",})
 
-    def getJobOrderTriggers(self):
-        result = super().getJobOrderTriggers()
-        self.addTriggerToTriggerMap(result,"le",self.doConnectStockpile)
-        return result
+    def doRegisterResult(self,task,context):
+        error = context["jobOrder"].error
+        if error:
+            context["character"].addMessage("got error")
+            if context["jobOrder"].error["type"] == "item not found":
+                task = self.runningTasks.pop()
+                self.tasks.append(task)
+                self.addTasksToLocalRoom([
+                    {"task":"add item","type":error["itemType"]},
+                    ],context["character"])
+                context["character"].addMessage("handled error")
+            else:
+                self.registerError(error)
+        else:
+            task = self.runningTasks[-1]
+            if task == "build roads":
+                plot = context["jobOrder"].information["plot"]
+                self.unfinishedRoadTiles.remove(plot)
+                self.roadTiles.append(plot)
+                self.unusedRoadTiles.append(plot)
+        
+        self.runningTasks = []
+
+    def registerError(self,error):
+        task = self.runningTasks.pop()
+        self.tasks.append(task)
+        self.error = error
     
     def doIdleExtend(self,character):
         if self.idleExtend:
@@ -96,7 +123,7 @@ class CityBuilder(src.items.ItemNew):
         if not self.hasStockpileMetaManager:
             self.addTasksToLocalRoom([
                 {"task":"add item","type":"StockpileMetaManager"},
-                ])
+                ],character)
             self.hasStockpileMetaManager = True
             self.tasks.append({"task":"extend storage"})
 
@@ -138,19 +165,19 @@ class CityBuilder(src.items.ItemNew):
     def doAddRoadManager(self,character):
         self.addTasksToLocalRoom([
             {"task":"add item","type":"RoadManager"},
-            ])
+            ],character)
         self.roadManagers.append("")
 
     def doAddMiningManager(self,character):
         self.addTasksToLocalRoom([
             {"task":"add item","type":"MiningManager"},
-            ])
+            ],character)
         self.miningManagers.append("")
 
     def doAddArchitect(self,character):
         self.addTasksToLocalRoom([
             {"task":"add item","type":"ArchitectArtwork"},
-            ])
+            ],character)
         self.architects.append("")
 
     def doSetUpBasicProduction(self,character):
@@ -162,12 +189,12 @@ class CityBuilder(src.items.ItemNew):
 
     def doBuildRoads(self,character):
         if self.unfinishedRoadTiles:
-            plot = self.unfinishedRoadTiles.pop()
+            plot = self.unfinishedRoadTiles[-1]
             self.useJoborderRelayToLocalRoom(character,[
                 {"task":"set up","type":"road","coordinate":plot,"command":None},
-                ],"ArchitectArtwork")
-            self.roadTiles.append(plot)
-            self.unusedRoadTiles.append(plot)
+                ],"ArchitectArtwork",information={"plot":plot})
+        else:
+            character.addMessage("no road tile found to build")
 
     def doExpand(self,character):
         if not self.plotPool:
@@ -176,11 +203,20 @@ class CityBuilder(src.items.ItemNew):
         self.expandFromPlot(plot)
         newTask = {"task":"build roads"}
         self.tasks.append(newTask)
+        self.runningTasks = []
         return
 
     def doMaintenance(self,character):
         if not "go to room manager" in self.commands and "return from room manager" in self.commands:
             character.addMessage("no room manager")
+            return
+
+        if self.error:
+            character.addMessage("Error while running task")
+            return
+
+        if self.runningTasks:
+            character.addMessage("item blocked tasks running")
             return
 
         if not self.tasks:
@@ -194,6 +230,7 @@ class CityBuilder(src.items.ItemNew):
             self.expandFromPlot(plot)
 
         task = self.tasks.pop()
+        self.runningTasks.append(task)
 
         resolverMap = self.getTaskResolvers()
         if task["task"] in resolverMap:
@@ -429,11 +466,21 @@ class CityBuilder(src.items.ItemNew):
     def getConfigurationOptions(self,character):
         options = super().getConfigurationOptions(character)
         options["x"] = ("show map",self.showMap)
+        options["e"] = ("retry task",self.retryTask)
         return options
+
+    def retryTask(self,character):
+        self.error = {}
 
     def getLongInfo(self):
         text = """
 commands:
+%s
+
+error:
+%s
+
+runningTasks:
 %s
 
 tasks:
@@ -453,5 +500,5 @@ plotPool:
 
 scrapFields:
 %s
-"""%(self.commands,self.tasks,self.usedPlots,self.roadTiles,self.unfinishedRoadTiles,self.plotPool,self.scrapFields)
+"""%(self.commands,self.error,self.runningTasks,self.tasks,self.usedPlots,self.roadTiles,self.unfinishedRoadTiles,self.plotPool,self.scrapFields)
         return text

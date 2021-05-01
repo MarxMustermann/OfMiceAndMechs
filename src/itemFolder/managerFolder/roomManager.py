@@ -649,6 +649,7 @@ r: reset
                 relayedTask = jobOrder.popTask()
                 
                 if not task["ItemType"] in self.itemPositions and not task["ItemType"] == "CityBuilder":
+                    jobOrder.error = {"message":"tried to relay task, but item %s was not found"%task["ItemType"],"itemType":task["ItemType"],"task":task,"type":"item not found"}
                     self.character.addMessage("no such item found")
                     return
                 

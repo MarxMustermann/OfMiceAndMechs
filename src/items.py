@@ -73,12 +73,14 @@ class ItemNew(src.saveing.Saveable):
         self.walkable = False
         self.bolted = True
         self.description = "a "+self.name
+        self.tasks = []
 
         # flags for traits
         self.runsJobOrders = runsJobOrders
         self.hasSettings = hasSettings
         self.runsCommands = runCommands
         self.canReset = canReset
+        self.hasMaintenance = False
 
         # properties for traits
         self.commands = {}
@@ -220,22 +222,36 @@ class ItemNew(src.saveing.Saveable):
             result["blocked"] = self.blocked
         return result
 
+    def getConfigurationOptions(self,character):
+        options = {}
+        if self.runsCommands:
+            options["c"] = ("commands",None)#self.setCommands)
+        if self.hasSettings:
+            options["s"] = ("machine settings",None)#self.setMachineSettings)
+        if self.runsJobOrders:
+            options["j"] = ("run job order",self.runJobOrder)
+        if self.canReset:
+            options["r"] = ("reset",None)#self.reset)
+        if self.hasMaintenance:
+            options["m"] = ("do maintenance",self.doMaintenance)
+        return options
+
+    def doMaintenance(self,character):
+        character.addMessage("no maintenance action set")
+
     def configure(self,character):
 
         self.lastAction = "configure"
 
-        text = ""
-        if self.runsCommands:
-            text += """\nc: commands"""
-        if self.hasSettings:
-            text += """\ns: machine settings"""
-        if self.runsJobOrders:
-            text += """\nj: run job order"""
-        if self.canReset:
-            text += """\nr: reset"""
-        if text == "":
-            text += "this machine cannot be configured, press any key to continue"
+        options = self.getConfigurationOptions(character)
 
+        text = ""
+        if not options:
+            text += "this machine cannot be configured, press any key to continue"
+        else:
+            for (key,value) in options.items():
+                text += "%s: %s\n"%(key,value[0])
+            
         self.submenue = src.interaction.OneKeystrokeMenu(text)
 
         character.macroState["submenue"] = self.submenue
@@ -256,28 +272,34 @@ class ItemNew(src.saveing.Saveable):
 
         character = params["character"]
 
-        if self.submenue.keyPressed == "j":
-            if not character.jobOrders:
-                character.addMessage("no job order")
-                return
+        options = self.getConfigurationOptions(character)
+        if self.submenue.keyPressed in options:
+            option = options[self.submenue.keyPressed][1](character)
+        else:
+            character.addMessage("no configure action found for this key")
 
-            jobOrder = character.jobOrders[-1]
-            task = jobOrder.popTask()
+    def runJobOrder(self,character):
+        self.lastAction = "runJobOrder"
 
-            if not task:
-                character.addMessage("no tasks left")
-                return
-
-            triggerMap = self.getJobOrderTriggers()
-            triggers = triggerMap.get(task["task"])
-            if not triggers:
-                character.addMessage("unknown trigger")
-                return
-
-            for trigger in triggers:
-                trigger(task,{"character":character,"jobOrder":jobOrder})
-
+        if not character.jobOrders:
+            character.addMessage("no job order")
             return
+
+        jobOrder = character.jobOrders[-1]
+        task = jobOrder.popTask()
+
+        if not task:
+            character.addMessage("no tasks left")
+            return
+
+        triggerMap = self.getJobOrderTriggers()
+        triggers = triggerMap.get(task["task"])
+        if not triggers:
+            character.addMessage("unknown trigger")
+            return
+
+        for trigger in triggers:
+            trigger(task,{"character":character,"jobOrder":jobOrder})
 
     def jobOrderConfigure(self,task,context):
         for (commandName,command) in task["commands"].items():

@@ -47,6 +47,7 @@ done: %s
         character.macroState["submenue"] = self.submenue
         character.macroState["submenue"].followUp = self.apply2
         self.character = character
+        character.lastJobOrder = self.taskName
 
     def getTask(self):
         if self.tasks:
@@ -67,6 +68,9 @@ done: %s
             for task in self.tasks:
                 taskStr += "%s \n"%(task,)
             submenue = src.interaction.TextMenu("""
+taskName:
+%s
+
 information:
 %s
 
@@ -75,7 +79,7 @@ error:
 
 tasks:
 %s
-"""%(self.information,self.error,taskStr,))
+"""%(self.taskName,self.information,self.error,taskStr,))
             self.character.macroState["submenue"] = submenue
             return
             

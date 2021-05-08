@@ -1696,8 +1696,8 @@ current registers
                     char.combatMode = None
                 char.addMessage("switched combatMode to: %s"%(char.combatMode,))
             if key in (commandChars.attack):
-                if 1==0 and not "NaiveMurderQuest" in char.solvers: # disabled
-                    char.addMessage("you do not have the nessecary solver yet")
+                if not "NaiveMurderQuest" in char.solvers and not char.godMode: # disabled
+                    char.addMessage("you do not have the nessecary solver yet (murder)")
                 else:
                     # bad code: should be part of a position object
                     adjascentFields = [(char.xPosition,char.yPosition),
@@ -1721,8 +1721,8 @@ current registers
 
             # activate an item 
             if key in ("c",):
-                if not "NaiveActivateQuest" in char.solvers:
-                    char.addMessage("you do not have the nessecary solver yet")
+                if not "NaiveActivateQuest" in char.solvers and not char.godMode:
+                    char.addMessage("you do not have the nessecary solver yet (activate)")
                 else:
                     # activate the marked item
                     if charState["itemMarkedLast"]:
@@ -1746,8 +1746,8 @@ current registers
 
             # activate an item 
             if key in (commandChars.activate):
-                if not "NaiveActivateQuest" in char.solvers:
-                    char.addMessage("you do not have the nessecary solver yet")
+                if not "NaiveActivateQuest" in char.solvers and not char.godMode:
+                    char.addMessage("you do not have the nessecary solver yet (activate)")
                 else:
                     # activate the marked item
                     if charState["itemMarkedLast"]:
@@ -1772,8 +1772,8 @@ current registers
 
             # examine an item 
             if key in (commandChars.examine):
-                if not "ExamineQuest" in char.solvers:
-                    char.addMessage("you do not have the nessecary solver yet")
+                if not "ExamineQuest" in char.solvers and not char.godMode:
+                    char.addMessage("you do not have the nessecary solver yet (examine)")
                 else:
                     # examine the marked item
                     if charState["itemMarkedLast"]:
@@ -1789,8 +1789,8 @@ current registers
             # drop first item from inventory
             # bad pattern: the user has to have the choice for what item to drop
             if key in (commandChars.drop):
-                if 1==0 and not "NaiveDropQuest" in char.solvers:
-                    char.addMessage("you do not have the nessecary solver yet")
+                if not "NaiveDropQuest" in char.solvers and not char.godMode:
+                    char.addMessage("you do not have the nessecary solver yet (drop)")
                 else:
                     if len(char.inventory):
                         char.drop(char.inventory[-1])
@@ -1870,8 +1870,8 @@ press key for advanced drop
             # pick up items
             # bad code: picking up should happen in character
             if key in (commandChars.pickUp):
-                if not "NaivePickupQuest" in char.solvers:
-                    char.addMessage("you do not have the nessecary solver yet")
+                if not "NaivePickupQuest" in char.solvers and not char.godMode:
+                    char.addMessage("you do not have the nessecary solver yet (pickup)")
                 else:
                     if len(char.inventory) >= 10:
                         char.addMessage("you cannot carry more items")
@@ -2477,8 +2477,8 @@ class InventoryMenu(SubMenu):
             self.subMenu.handleKey(key, noRender=noRender)
             if not self.subMenu.getSelection() == None:
                 if self.activate:
-                    if not "NaiveActivateQuest" in self.char.solvers:
-                        self.persistentText = (urwid.AttrSpec("default","default"),"you do not have the nessecary solver yet")
+                    if not "NaiveActivateQuest" in self.char.solvers and not char.godMode:
+                        self.persistentText = (urwid.AttrSpec("default","default"),"you do not have the nessecary solver yet (activate)")
                         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
                     else:
                         text = "you activate the "+self.char.inventory[self.subMenu.getSelection()].name
@@ -2491,8 +2491,8 @@ class InventoryMenu(SubMenu):
                     self.subMenu = None
                     return True
                 if self.drop:
-                    if not "NaiveDropQuest" in self.char.solvers:
-                        self.persistentText = (urwid.AttrSpec("default","default"),"you do not have the nessecary solver yet")
+                    if not "NaiveDropQuest" in self.char.solvers and not char.godMode:
+                        self.persistentText = (urwid.AttrSpec("default","default"),"you do not have the nessecary solver yet (acivate)")
                         main.set_text((urwid.AttrSpec("default","default"),self.persistentText))
                     else:
                         text = "you drop the "+self.char.inventory[self.subMenu.getSelection()].name
@@ -2653,9 +2653,10 @@ class CharacterInfoMenu(SubMenu):
         text = char.getDetailedInfo()+"\n\n"
 
         for jobOrder in char.jobOrders:
-            text += str(jobOrder.tasks)
+            text += str(jobOrder.taskName)
         
         text += "numChars: %s\n"%(len(char.container.characters))
+        text += "lastJobOrder: %s\n"%(char.lastJobOrder)
         text += "weapon: %s\n"%(char.weapon)
         text += "armor: %s\n"%(char.armor)
         text += "numAttackedWithoutResponse: %s\n"%(char.numAttackedWithoutResponse)

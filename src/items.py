@@ -53,7 +53,7 @@ class ItemNew(src.saveing.Saveable):
     type = "Item"
 
     def __init__(self,display=None,xPosition=0,yPosition=0,zPosition=0,creator=None,name="unkown",seed=0,noId=False,
-                      runsJobOrders=False,hasSettings=False,runCommands=False,canReset=False):
+                      runsJobOrders=False,hasSettings=False,runsCommands=False,canReset=False):
         super().__init__()
         
         if not display:
@@ -74,16 +74,18 @@ class ItemNew(src.saveing.Saveable):
         self.bolted = True
         self.description = "a "+self.name
         self.tasks = []
+        self.blocked = False
 
         # flags for traits
         self.runsJobOrders = runsJobOrders
         self.hasSettings = hasSettings
-        self.runsCommands = runCommands
+        self.runsCommands = runsCommands
         self.canReset = canReset
         self.hasMaintenance = False
 
         # properties for traits
         self.commands = {}
+        self.applyOptions = []
 
         # set up metadata for saving
         self.attributesToStore.extend([
@@ -142,7 +144,28 @@ class ItemNew(src.saveing.Saveable):
         character.runCommandString("Jj.j")
 
     def gatherApplyActions(self,character=None):
-        return []
+        result = []
+        if self.applyOptions:
+           result.append(self.spawnApplyMenu) 
+        return result
+
+    def spawnApplyMenu(self,character):
+        options = []
+        for option in self.applyOptions:
+            options.append(option)
+        self.submenue = src.interaction.SelectionMenu("what do you want to do?",options)
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = {"method":"handleApplyMenu","container":self,"params":{"character":character}}
+
+    def handleApplyMenu(self,params):
+        character = params["character"]
+
+        selection = character.macroState["submenue"].selection
+
+        if not selection:
+            return
+
+        self.applyMap[selection](character)
 
     def getTerrain(self):
         if self.room:
@@ -150,7 +173,6 @@ class ItemNew(src.saveing.Saveable):
         if self.terrain:
             terrain = self.terrain
         return terrain
-
 
     def apply(self,character):
         actions = self.gatherApplyActions(character)
@@ -242,10 +264,14 @@ class ItemNew(src.saveing.Saveable):
         if self.runsJobOrders:
             options["j"] = ("run job order",self.runJobOrder)
         if self.canReset:
-            options["r"] = ("reset",None)#self.reset)
+            options["r"] = ("reset",self.reset)
         if self.hasMaintenance:
             options["m"] = ("do maintenance",self.doMaintenance)
         return options
+
+    def reset(self,character):
+        character.addMessage("nothing to reset")
+        pass
 
     def doMaintenance(self,character):
         character.addMessage("no maintenance action set")
@@ -3816,7 +3842,7 @@ class Map(Item):
             self.character = None
 
     def addRoute(self):
-        pos = (self.character.xPosition,self.character.yPosition)
+        pos = (self.character.xPosition,self.character.yPosition,self.character.zPosition)
         items = self.character.container.getItemByPosition(pos)
 
         node = None
@@ -4096,7 +4122,10 @@ job order can be inserted and commands can be run depending on the item the job 
 
 %s
 
-"""%(commandsString,)
+commands:
+%s
+
+"""%(commandsString,self.commands)
         return text
 
     def apply(self,character):
@@ -4620,7 +4649,7 @@ restrictStoredItemWalkable: %s
 
     def configure(self,character):
         if self.blocked:
-            character.runCommandString("Js")
+            character.runCommandString("sc")
             character.addMessage("item blocked - auto retry")
             return
         self.blocked = True

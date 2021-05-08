@@ -40,10 +40,20 @@ class ArchitectArtwork(src.items.ItemNew):
             return
 
         if task["type"] == "add to storage":
+            newTask = {"task":"add stockpile","nodeName":task["stockPile"],"pathFrom":jobOrder.information["pathFrom"],"pathTo":jobOrder.information["pathTo"]}
+
+            context["character"].addMessage(task)
+
+            if task.get("function"):
+                newTask["function"] = task["function"]
+
             self.useJoborderRelayToLocalRoom(context["character"],[
-                {"task":"add stockpile","nodeName":task["stockPile"],"pathFrom":jobOrder.information["pathFrom"],"pathTo":jobOrder.information["pathTo"]},
+                newTask,
                 {"task":"do maintanence"},
                 ],"StockpileMetaManager")
+            
+            del jobOrder.information["pathFrom"]
+            del jobOrder.information["pathTo"]
 
         if task["type"] == "set wrong item to storage":
             newJobOrder = src.items.itemMap["JobOrder"]()
@@ -59,15 +69,32 @@ class ArchitectArtwork(src.items.ItemNew):
                     {"task":"return from stockPile","command":jobOrder.information["pathFrom"]},
                     {"task":"return from room manager","command":self.commands["return from room manager"]},
                     ]
+
             newJobOrder.tasks = list(reversed(tasks))
             context["character"].addJobOrder(newJobOrder)
+            del jobOrder.information["pathFrom"]
+            del jobOrder.information["pathTo"]
 
+        if task["type"] == "set source":
+            if "sourceCommand" in task:
+                newJobOrder = src.items.itemMap["JobOrder"]()
+                newJobOrder.taskName = "configure stockpile"
 
-        """
-        self.useJoborderRelayToLocalRoom(context["character"],[
-            {"task":"add stockpile","nodeName":task["stockPile"],"pathFrom":paths[task["stockPile"]]["pathFrom"],"pathTo":paths[task["stockPile"]]["pathTo"]},
-        ],"StockpileMetaManager")
-        """
+                storageCommand = jobOrder.information["pathFrom"]+"Js.sjj"+jobOrder.information["pathTo"]
+
+                tasks = [
+                        {"task":"go to room manager","command":self.commands["go to room manager"]},
+                        {"task":"go to stockPile","command":jobOrder.information["pathTo"]},
+                        {"task":"insert job order","command":"scj"},
+                        {"task":"configure machine","command":None, "commands":{"empty":task["sourceCommand"]}},
+                        {"task":"return from stockPile","command":jobOrder.information["pathFrom"]},
+                        {"task":"return from room manager","command":self.commands["return from room manager"]},
+                        ]
+
+                newJobOrder.tasks = list(reversed(tasks))
+                context["character"].addJobOrder(newJobOrder)
+                del jobOrder.information["pathFrom"]
+                del jobOrder.information["pathTo"]
 
     def jobOrderAddScrapField(self,task,character):
         self.doAddScrapfield(task["coordinate"][0],task["coordinate"][1],task["amount"])
@@ -80,7 +107,8 @@ class ArchitectArtwork(src.items.ItemNew):
             items = []
             if task.get("StockpileType") == "UniformStockpileManager":
                 item = src.items.itemMap["UniformStockpileManager"](task["coordinate"][0]*15+7,task["coordinate"][1]*15+7)
-                item.storedItemType = "Scrap"
+                if task.get("ItemType"):
+                    item.storedItemType = task.get("ItemType")
                 item.storedItemWalkable = None
                 item.restrictStoredItemType = True
                 item.restrictStoredItemWalkable = False
@@ -89,18 +117,23 @@ class ArchitectArtwork(src.items.ItemNew):
                 items.append(src.items.itemMap["TypedStockpileManager"](task["coordinate"][0]*15+7,task["coordinate"][1]*15+7))
             self.getTerrain().addItems(items)
 
+        if task["type"] == "factory":
+            self.doAddRoom({"coordinate":task["coordinate"],"roomType":"EmptyRoom","doors":"0,6 6,0 12,6 6,12","offset":[1,1],"size":[13,13]},context)
         if task["type"] == "oreProcessing":
             items = []
-            positions = [(2,2),(2,4),(2,6),(5,4),(5,2),(9,4),(9,2),(12,2),(12,4),(12,6),(12,9),(12,11),(12,13),(9,11),(9,13),(5,13),(5,11),(2,9),(2,11),(2,13)]
+            positions = [(2,2),(2,4),(2,6),(5,4),(5,2),(5,13),(5,11),(2,9),(2,11),(2,13)]
             for position in positions:
                 items.append(src.items.itemMap["ScrapCompactor"](task["coordinate"][0]*15+position[0],task["coordinate"][1]*15+position[1]))
             self.getTerrain().addItems(items)
         if task["type"] == "mine":
-            """
-            self.useJoborderRelayToLocalRoom(context["character"],[
-                {"task":"clear paths","coordinate":task["scrapField"],},
-                ],"RoadManager")
-            """
+            if not task.get("cleared"):
+                self.useJoborderRelayToLocalRoom(context["character"],[
+                    {"task":"clear paths","coordinate":task["scrapField"][0],},
+                    ],"RoadManager")
+                task["cleared"] = True
+                context["jobOrder"].tasks.append(task)
+                context["jobOrder"].tasks.append({"task":"insert job order","command":"scj"})
+                return
             items = []
             item = src.items.itemMap["ItemCollector"](task["scrapField"][0][0]*15+7,task["scrapField"][0][1]*15+7)
 
@@ -331,26 +364,27 @@ class ArchitectArtwork(src.items.ItemNew):
                 self.character.macroState["submenue"].followUp = self.addRoom
                 return
 
-        if self.room:
-            terrain = self.room.terrain
-        if self.terrain:
-            terrain = self.terrain
+        self.doAddRoom({"doors":self.submenue.text,"size":[self.emptyRoomSizeX,self.emptyRoomSizeY],"coordinate":[self.targetX,self.targetY],"offset":[self.targetOffsetX,self.targetOffsetY],"roomType":self.targetRoomType},{"character":self.character})
 
-        if not terrain:
-            self.character.addMessage("no terrain found")
-            return
-
-        room = src.rooms.roomMap[self.targetRoomType](self.targetX,self.targetY,self.targetOffsetX,self.targetOffsetY)
-        if self.targetRoomType == "EmptyRoom":
+    def doAddRoom(self,task,context):
+        room = src.rooms.roomMap[task["roomType"]](task["coordinate"][0],task["coordinate"][1],task["offset"][0],task["offset"][1])
+        if task["roomType"] == "EmptyRoom":
             entryPoints = []
-            for part in self.submenue.text.split(" "): 
+            for part in task["doors"].split(" "): 
                 entryPointX = int(part.split(",")[0])
                 entryPointY = int(part.split(",")[1])
                 entryPoint = (entryPointX,entryPointY,)
 
                 entryPoints.append(entryPoint)
 
-            self.character.addMessage(entryPoints)
+            context["character"].addMessage(entryPoints)
 
-            room.reconfigure(self.emptyRoomSizeX,self.emptyRoomSizeY,doorPos=entryPoints)
+            room.reconfigure(task["size"][0],task["size"][1],doorPos=entryPoints)
+
+        terrain = self.getTerrain()
+
+        if not terrain:
+            context["character"].addMessage("no terrain found")
+            return
+
         terrain.addRooms([room])

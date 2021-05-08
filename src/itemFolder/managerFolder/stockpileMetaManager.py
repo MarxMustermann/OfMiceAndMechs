@@ -27,7 +27,7 @@ class StockpileMetaManager(src.items.ItemNew):
         self.autoExpand = True
 
         self.attributesToStore.extend([
-               "stockPiles","stockPileInfo","assignedPlots","assignedPlotsInfo"])
+               "stockPiles","stockPileInfo","assignedPlots","assignedPlotsInfo","roomManagerName"])
 
     def addTask(self):
         self.tasks.append({"task":"extend storage"})
@@ -52,8 +52,16 @@ class StockpileMetaManager(src.items.ItemNew):
         self.character = character
 
     def test(self):
-        self.character.addMessage("test")
-        pass
+        character = src.characters.Character(name="logistics npc")
+        character.godMode = True
+        character.xPosition = self.xPosition
+        character.yPosition = self.yPosition-1
+        self.container.addCharacter(character,self.xPosition,self.yPosition-1)
+        character.macroState["macros"] = {
+                              "a":["J","s",".","s","s","s","j","_","a"],
+                            }
+        character.runCommandString("_a")
+
 
     def apply2(self):
         self.lastAction = "apply2"
@@ -110,7 +118,7 @@ class StockpileMetaManager(src.items.ItemNew):
                             "task":"insert completed job order into stockpile manager",
                             "command":"scj",
                         },]
-                    if self.managerName:
+                    if self.roomManagerName:
                         jobOrder.tasks.append(
                             {
                                 "task":"move to stockpile manager",
@@ -133,7 +141,7 @@ class StockpileMetaManager(src.items.ItemNew):
                             "task":"go to stockpile",
                             "command":self.stockPileInfo[stockpile]["pathTo"],
                         },])
-                    if self.managerName:
+                    if self.roomManagerName:
                         jobOrder.tasks.append(
                             {
                                 "task":"move to room manager",
@@ -145,7 +153,7 @@ class StockpileMetaManager(src.items.ItemNew):
                             "command":".zclear ", 
                         },
                         ])
-                    jobOrder.taskName = "getStatusReport"
+                    jobOrder.taskName = "get statusreport initial"
                     jobOrder.information["stockPile"] = stockpile
 
                     self.character.addMessage("running job order to check stockpile")
@@ -158,7 +166,7 @@ class StockpileMetaManager(src.items.ItemNew):
             for stockpile in self.stockPiles:
                 if self.stockPileInfo[stockpile].get("sink") == True and self.stockPileInfo[stockpile]["amount"] >= self.stockPileInfo[stockpile]["desiredAmount"]:
                     self.lastAction = "check sinks"
-                    jobOrder = src.items.JobOrder()
+                    jobOrder = src.items.itemMap["JobOrder"]()
                     jobOrder.tasks = [
                         {
                             "task":"processStatusReport",
@@ -168,10 +176,10 @@ class StockpileMetaManager(src.items.ItemNew):
                             "task":"insert completed job order into stockpile manager",
                             "command":"scwj",
                         },]
-                    if self.managerName:
+                    if self.roomManagerName:
                         jobOrder.tasks.append(
                             {
-                                "task":"move to stockpile manager",
+                                "task":"return from stockpile manager",
                                 "command":self.commands["return from room manager"],
                             })
                     jobOrder.tasks.extend([
@@ -184,10 +192,15 @@ class StockpileMetaManager(src.items.ItemNew):
                             "command":None
                         },
                         {
-                            "task":"insert job order into stockpile",
-                            "command":self.stockPileInfo[stockpile]["pathTo"]+["s","c","j"],
-                        },])
-                    if self.managerName:
+                            "task":"insert job order",
+                            "command":["s","c","j"],
+                        },
+                        {
+                            "task":"go to stockpile",
+                            "command":self.stockPileInfo[stockpile]["pathTo"],
+                        },
+                        ])
+                    if self.roomManagerName:
                         jobOrder.tasks.append(
                             {
                                 "task":"move to room manager",
@@ -198,7 +211,7 @@ class StockpileMetaManager(src.items.ItemNew):
                             "task":"clear head",
                             "command":"zclear ",
                         })
-                    jobOrder.taskName = "getStatusReport"
+                    jobOrder.taskName = "get statusreport sink"
                     jobOrder.information["stockPile"] = stockpile
 
                     self.character.addMessage("running job order to check sink stockpile")
@@ -211,7 +224,7 @@ class StockpileMetaManager(src.items.ItemNew):
             for stockpile in self.stockPiles:
                 if self.stockPileInfo[stockpile].get("source") == True and (self.stockPileInfo[stockpile]["amount"] == 0 or ("desiredAmount" in self.stockPileInfo[stockpile] and self.stockPileInfo[stockpile]["amount"] <= self.stockPileInfo[stockpile]["desiredAmount"])):
                     self.lastAction = "check sources"
-                    jobOrder = src.items.JobOrder()
+                    jobOrder = src.items.itemMap["JobOrder"]()
                     jobOrder.tasks = [
                         {
                             "task":"processStatusReport",
@@ -219,28 +232,32 @@ class StockpileMetaManager(src.items.ItemNew):
                         },
                         {
                             "task":"insert completed job order into stockpile manager",
-                            "command":"scwj",
+                            "command":"scj",
                         },]
-                    if self.managerName:
+                    if self.roomManagerName:
                         jobOrder.tasks.append(
                             {
-                                "task":"move to stockpile manager",
+                                "task":"return from room manager",
                                 "command":self.commands["return from room manager"],
                             })
                     jobOrder.tasks.extend([
                         {
                             "task":"walk back to stockpile manager",
-                            "command":self.stockPileInfo[stockpile]["pathFrom"]+["J","j",".","j"],
+                            "command":self.stockPileInfo[stockpile]["pathFrom"]
                         },
                         {
                             "task":"generateStatusReport",
                             "command":None
                         },
                         {
-                            "task":"insert job order into stockpile",
-                            "command":self.stockPileInfo[stockpile]["pathTo"]+["s","c","j","J","j",".","j"],
+                            "task":"insert job order",
+                            "command":"scj",
+                        },
+                        {
+                            "task":"go to stockpile",
+                            "command":self.stockPileInfo[stockpile]["pathTo"],
                         },])
-                    if self.managerName:
+                    if self.roomManagerName:
                         jobOrder.tasks.append(
                             {
                                 "task":"move to room manager",
@@ -251,7 +268,7 @@ class StockpileMetaManager(src.items.ItemNew):
                             "task":"clear head",
                             "command":"zclear ",
                         })
-                    jobOrder.taskName = "getStatusReport"
+                    jobOrder.taskName = "get statusreport source"
                     jobOrder.information["stockPile"] = stockpile
 
                     self.character.addMessage("running job order to check source stockpile")
@@ -300,21 +317,57 @@ class StockpileMetaManager(src.items.ItemNew):
                 targetStockPileInfo = self.stockPileInfo[targetStockPile]
                 amount = min(10-len(self.character.inventory),targetStockPileInfo["maxAmount"]-targetStockPileInfo["amount"],sourceStockPileInfo["amount"])
 
-                command.extend(sourceStockPileInfo["pathTo"])
-                command.extend(["J","s",".","s",".","j"]*amount)
-                command.extend(sourceStockPileInfo["pathFrom"])
+                tasks = []
+                tasks.append(
+                    {
+                        "task":"move to room manager",
+                        "command":self.commands["go to room manager"],
+                    })
+                tasks.extend([
+                        {
+                            "task":"go to source stockpile",
+                            "command":sourceStockPileInfo["pathTo"],
+                        },
+                        {
+                            "task":"fetch resources",
+                            "command":"Js.sj"*amount,
+                        },
+                        {
+                            "task":"return to room manager",
+                            "command":sourceStockPileInfo["pathFrom"],
+                        },
+                        ])
                 sourceStockPileInfo["amount"] -= amount
 
-                command.extend(targetStockPileInfo["pathTo"])
-                command.extend(["J","s",".","j"]*amount)
-                command.extend(targetStockPileInfo["pathFrom"])
+                tasks.extend([
+                        {
+                            "task":"go to target stockpile",
+                            "command":targetStockPileInfo["pathTo"],
+                        },
+                        {
+                            "task":"store resources",
+                            "command":"Js.j"*amount,
+                        },
+                        {
+                            "task":"return to room manager",
+                            "command":targetStockPileInfo["pathFrom"],
+                        },
+                        ])
+
+                tasks.append(
+                    {
+                        "task":"return from room manager",
+                        "command":self.commands["return from room manager"],
+                    })
+
                 targetStockPileInfo["amount"] += amount
 
-                convertedCommand = []
-                for char in command:
-                    convertedCommand.append((char,"norecord"))
+                jobOrder = src.items.itemMap["JobOrder"]()
+                jobOrder.tasks = list(reversed(tasks))
+                jobOrder.taskName = "transfer resources"
 
-                self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+                self.character.addJobOrder(jobOrder)
+
                 self.blocked = False
                 return
             self.blocked = False
@@ -365,18 +418,17 @@ class StockpileMetaManager(src.items.ItemNew):
                             {"task":"extend storage"},
                             ]},
                         ],"CityBuilder")
-                    self.character.runCommandString("2000.")
 
                 self.blocked = False
                 return
 
             command = []
-            if self.managerName:
+            if self.roomManagerName:
                 command.extend(self.commands["go to room manager"])
             command.extend(stockPileInfo["pathTo"])
             command.extend(["J","s",".","j"])
             command.extend(stockPileInfo["pathFrom"])
-            if self.managerName:
+            if self.roomManagerName:
                 command.extend(self.commands["return from room manager"])
             stockPileInfo["amount"] += 1
 
@@ -421,6 +473,10 @@ class StockpileMetaManager(src.items.ItemNew):
         self.stockPileInfo[task["nodeName"]] = {}
         self.stockPileInfo[task["nodeName"]]["pathTo"] = task["pathTo"]
         self.stockPileInfo[task["nodeName"]]["pathFrom"] = task["pathFrom"] 
+        if task.get("function") == "source":
+            self.stockPileInfo[task["nodeName"]]["source"] = True
+        if task.get("function") == "sink":
+            self.stockPileInfo[task["nodeName"]]["sink"] = True
         self.stockPileInfo[task["nodeName"]]["active"] = False
 
     def configure2(self):
@@ -450,7 +506,7 @@ class StockpileMetaManager(src.items.ItemNew):
                 if "commands" in task:
                     self.commands.update(task["commands"])
                 if "managerName" in task:
-                    self.managerName = task["managerName"]
+                    self.roomManagerName = task["managerName"]
             if jobOrder.getTask()["task"] == "processStatusReport":
                 stockPile = jobOrder.information["stockPile"]
                 stockPileInfo = self.stockPileInfo[stockPile]
@@ -463,6 +519,10 @@ class StockpileMetaManager(src.items.ItemNew):
                     stockPileInfo["stockPileType"] = self.character.getRegisterValue("type")
                     stockPileInfo["maxAmount"] = self.character.getRegisterValue("max amount")
                     stockPileInfo["amount"] = self.character.getRegisterValue("num free slots")-stockPileInfo["maxAmount"]
+                if stockPileInfo.get("source"):
+                    stockPileInfo["desiredAmount"] = 0
+                if stockPileInfo.get("sink"):
+                    stockPileInfo["desiredAmount"] = stockPileInfo["maxAmount"]
                 stockPileInfo["active"] = True
                 jobOrder.popTask()
                 self.character.jobOrders.pop()
@@ -765,10 +825,10 @@ lastAction:
 commands:
 %s
 
-managerName:
+roomManagerName:
 %s
 
 description:
 
-"""%(self.tasks,self.stockPiles,stockPileInfo,self.assignedPlots,self.assignedPlotsInfo,self.lastAction,self.commands,self.managerName)
+"""%(self.tasks,self.stockPiles,stockPileInfo,self.assignedPlots,self.assignedPlotsInfo,self.lastAction,self.commands,self.roomManagerName)
         return text

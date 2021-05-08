@@ -20,30 +20,39 @@ class RoadManager(src.items.ItemNew):
         self.pathsToCenter = {}
         self.pathsFromCenter = {}
 
+        self.attributesToStore.extend([
+               "center","connections",
+               ])
+
+        self.tupleDictsToStore.extend([
+               "roadNetwork","centerDirection","pathsToCenter","pathsFromCenter",
+               ])
+
+
     def generatePaths(self,character):
         text = ""
         for (key,value,) in self.pathingNodes.items():
             text += "%s: %s  => center\n"%(key,value["coordinate"],)
             text += "  "
-            node = value["coordinate"]
+            node = tuple(value["coordinate"])
             counter = 0
             backPath = []
-            while not node == self.center:
+            while not node == tuple(self.center):
                 counter += 1
                 if counter == 100:
                     break
                     raise Exception #pathfining loop
 
-                if node == self.center or not node in self.centerDirection:
+                if node == tuple(self.center) or not node in self.centerDirection:
                     break
 
-                backPath.append(node)
+                backPath.append(list(node))
                 direction = self.centerDirection[node]
                 node = (node[0]+direction[0],node[1]+direction[1])
             backPath.append(self.center)
 
-            self.pathsFromCenter[value["coordinate"]] = list(reversed(backPath))
-            self.pathsToCenter[value["coordinate"]] = backPath
+            self.pathsFromCenter[tuple(value["coordinate"])] = list(reversed(backPath))
+            self.pathsToCenter[tuple(value["coordinate"])] = backPath
 
             text += "  %s\n"%(list(reversed(backPath)),)
             text += "  %s\n"%(backPath,)
@@ -51,7 +60,7 @@ class RoadManager(src.items.ItemNew):
             commandItem = src.items.itemMap["Command"](value["coordinate"][0]*15+7,value["coordinate"][1]*15+6)
             command = ""
             lastNode = None
-            for node in self.pathsToCenter[value["coordinate"]]:
+            for node in self.pathsToCenter[tuple(value["coordinate"])]:
                 if lastNode == None:
                     lastNode = node
                     continue
@@ -84,13 +93,13 @@ class RoadManager(src.items.ItemNew):
         return result
 
     def getCommandStringForPath(self,start,end):
-        if not (start == self.center or end == self.center):
+        if not (start == tuple(self.center) or end == tuple(self.center)):
             raise Exception # invalid path
             return "invalid"
 
         command = ""
 
-        if start == self.center:
+        if start == tuple(self.center):
             basePath = self.pathsFromCenter[end]
             if basePath[0][1] < basePath[1][1]:
                 command += "assd13s"
@@ -126,13 +135,13 @@ class RoadManager(src.items.ItemNew):
     def doPrintPaths(self,task,context):
         self.generatePaths(context["character"])
         self.character = context["character"]
-        context["jobOrder"].information["pathTo"] = self.getCommandStringForPath(self.center,task["to"])
-        context["jobOrder"].information["pathFrom"] = self.getCommandStringForPath(task["to"],self.center) 
+        context["jobOrder"].information["pathTo"] = self.getCommandStringForPath(tuple(self.center),task["to"])
+        context["jobOrder"].information["pathFrom"] = self.getCommandStringForPath(task["to"],tuple(self.center)) 
 
     def jobOrderAddPathingNode(self,task,context):
         if not self.center:
-            self.center = (self.room.xPosition,self.room.yPosition)
-            self.roadNetwork[self.center] = {"type":"roomCenterBlocked"}
+            self.center = [self.room.xPosition,self.room.yPosition]
+            self.roadNetwork[tuple(self.center)] = {"type":"roomCenterBlocked"}
             
         if not "offset" in task:
             task["offset"] = [7,7]
@@ -194,7 +203,7 @@ class RoadManager(src.items.ItemNew):
 
         direction = [0,0]
         direction[index] = changePerStep
-        self.centerDirection[(bigX,bigY)] = tuple(direction)
+        self.centerDirection[(bigX,bigY)] = list(direction)
 
         startPos = [7,7]
         startPos[index] += changePerStep
@@ -215,8 +224,8 @@ class RoadManager(src.items.ItemNew):
         offsetY = task["offset"][1]
 
         if not self.center:
-            self.center == (bigX,bigY)
-            self.roadNetwork[self.center] = {"type":"centerBlocked"}
+            self.center == [bigX,bigY]
+            self.roadNetwork[tuple(self.center)] = {"type":"centerBlocked"}
         else:
             neighbours = [(bigX+1,bigY),(bigX-1,bigY),(bigX,bigY-1),(bigX,bigY+1)]
             import random
@@ -259,7 +268,7 @@ class RoadManager(src.items.ItemNew):
         pathingNode = src.items.itemMap["PathingNode"](bigX*15+offsetX,bigY*15+offsetY)
         pathingNode.nodeName = nodeName
 
-        self.pathingNodes[nodeName] = {"coordinate":(bigX,bigY)}
+        self.pathingNodes[nodeName] = {"coordinate":[bigX,bigY]}
         terrain.addItem(pathingNode)
 
     def doClearPaths(self,x,y):
@@ -274,7 +283,7 @@ class RoadManager(src.items.ItemNew):
             for y in range(minY,maxY):
                 if (not x%15 == 7) and (not y%15 == 7):
                     continue
-                toRemove.extend(terrain.getItemByPosition((x,y)))
+                toRemove.extend(terrain.getItemByPosition((x,y,0)))
         terrain.removeItems(toRemove)
 
     def getLongInfo(self):
@@ -288,6 +297,18 @@ centerDirection:
 pathingNodes:
 %s
 
-"""%(self.roadNetwork,self.centerDirection,self.pathingNodes)
+center:
+%s
+
+pathsFromCenter:
+%s
+
+pathsToCenter:
+%s
+
+connections:
+%s
+
+"""%(self.roadNetwork,self.centerDirection,self.pathingNodes,self.center,self.pathsFromCenter,self.pathsToCenter,self.connections,)
         return text
 

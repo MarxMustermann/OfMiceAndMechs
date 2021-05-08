@@ -73,6 +73,7 @@ class Saveable(object):
         self.callbacksToStore = []
         self.objectsToStore = []
         self.tupleDictsToStore = []
+        self.tupleListsToStore = []
 
     '''
     exposes a fetcher from th loading registry
@@ -138,6 +139,16 @@ class Saveable(object):
 
                 state[tupleDictName] = convertedDict
 
+        # store tuple dicts
+        for tupleListName in self.tupleListsToStore:
+            if hasattr(self,tupleListName):
+                tupleList = getattr(self,tupleListName)
+                convertedList = []
+                for item in tupleList:
+                    convertedList.append(list(item))
+
+                state[tupleListName] = convertedList
+
         # store attributes
         for attribute in self.attributesToStore:
             if hasattr(self,attribute):
@@ -202,6 +213,14 @@ class Saveable(object):
                     convertedDict[tuple(pair[0])] = pair[1]
 
                 setattr(self,tupleDictName,convertedDict)
+
+        for tupleListName in self.tupleListsToStore:
+            if tupleListName in state:
+                convertedList = []
+                for item in state[tupleListName]:
+                    convertedList.append(tuple(item))
+
+                setattr(self,tupleListName,convertedList)
 
         # set attributes
         for attribute in self.attributesToStore:

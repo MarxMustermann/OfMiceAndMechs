@@ -137,6 +137,8 @@ class Character(src.saveing.Saveable):
         self.staggered = 0
         self.staggerResistant = False
 
+        self.lastJobOrder = ""
+
         # generate the id for this object
         if characterId:
             self.id = characterId
@@ -151,7 +153,7 @@ class Character(src.saveing.Saveable):
                "isMilitary","hasFloorPermit","dead","deathReason","automated","watched","solvers","questsDone",
                "stasis","registers","doStackPop","doStackPush","timeTaken","personality","health","heatResistance","godMode","frustration",
                "combatMode","numAttackedWithoutResponse","baseDamage","randomBonus","bonusMultiplier","staggered",
-               "staggerResistant",])
+               "staggerResistant","lastJobOrder",])
         self.objectsToStore.append("serveQuest")
         self.objectsToStore.append("room")
 

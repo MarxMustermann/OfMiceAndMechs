@@ -119,6 +119,8 @@ class ArchitectArtwork(src.items.ItemNew):
 
         if task["type"] == "factory":
             self.doAddRoom({"coordinate":task["coordinate"],"roomType":"EmptyRoom","doors":"0,6 6,0 12,6 6,12","offset":[1,1],"size":[13,13]},context)
+        if task["type"] == "room":
+            self.doAddRoom({"coordinate":task["coordinate"],"roomType":"EmptyRoom","doors":"0,6 6,0 12,6 6,12","offset":[1,1],"size":[13,13]},context)
         if task["type"] == "oreProcessing":
             items = []
             positions = [(2,2),(2,4),(2,6),(5,4),(5,2),(5,13),(5,11),(2,9),(2,11),(2,13)]

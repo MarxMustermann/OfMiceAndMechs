@@ -73,6 +73,7 @@ class CityBuilder(src.items.ItemNew):
                    ("reservePlot","reserve plot"),
                    ("addTaskExpandStorage","add task expand storage"),
                    ("addTaskExpandStorageSpecific","add task expand storage specific"),
+                   ("addRoom","add room"),
                    ("addBuildMine","add build mine"),
                    ("addBuildFactory","add build factory"),
                    ("clearTasks","clear tasks"),
@@ -92,6 +93,13 @@ class CityBuilder(src.items.ItemNew):
         elif selection == "addBuildFactory":
             newTask = {"task":"build factory"}
             self.tasks.append(newTask)
+        elif selection == "addRoom":
+            options = []
+            for plot in self.plotPool:
+                options.append((plot,"%s"%(plot,)))
+            self.submenue = src.interaction.SelectionMenu("Where do you want to build the room?",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.triggerAddRoom
         elif selection == "reservePlot":
             options = []
             for plot in self.plotPool:
@@ -168,6 +176,19 @@ class CityBuilder(src.items.ItemNew):
             newTask["itemType"] = self.stockPileItemType
         self.tasks.append(newTask)
 
+    def triggerAddRoom(self):
+        plot = self.submenue.selection
+        if not plot:
+            self.character.addMessage("no selection")
+            return
+
+        if not plot in self.plotPool:
+            self.character.addMessage("not in plot pool")
+            return
+
+        newTask = {"task":"build room","plot":list(plot)}
+        self.tasks.append(newTask)
+
     def reservePlot(self):
         plot = self.submenue.selection
         if not plot:
@@ -239,9 +260,21 @@ class CityBuilder(src.items.ItemNew):
         self.addTriggerToTriggerMap(taskDict,"prepare scrap field",self.doPrepareScrapField) # should be somewhere else?
         self.addTriggerToTriggerMap(taskDict,"extend storage",self.doExtendStorage)
         self.addTriggerToTriggerMap(taskDict,"set up internal storage",self.doSetUpInternalStorage)
+        self.addTriggerToTriggerMap(taskDict,"build room",self.doSetUpRoom)
         self.addTriggerToTriggerMap(taskDict,"build mine",self.doSetUpMine)
         self.addTriggerToTriggerMap(taskDict,"build factory",self.doSetUpFactory)
         return taskDict
+
+    def doSetUpRoom(self,context):
+        character = context["character"]
+        task = context["task"]
+        plot = task["plot"]
+
+        self.useJoborderRelayToLocalRoom(character,[
+            {"task":"set up","type":"room","coordinate":plot,"command":None},
+            ],"ArchitectArtwork",information={"plot":plot})
+        self.plotPool.remove(tuple(plot))
+        self.usedPlots.append(tuple(plot))
 
     def doSetUpInternalStorage(self,context):
         self.tasks.append({"task":"extend storage"})

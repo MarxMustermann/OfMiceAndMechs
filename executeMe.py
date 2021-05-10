@@ -459,10 +459,6 @@ if not args.nourwid:
     input("game ready. press enter to start")
     interaction.loop.run()
 
-# stop the music
-if musicThread:
-    musicThread.stop = True
-
 if args.nourwid:
     while 1:
         interaction.gameLoop(None,None)

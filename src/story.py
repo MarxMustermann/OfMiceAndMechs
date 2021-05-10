@@ -11,7 +11,6 @@ import src.rooms
 phasesByName = None
 gamestate = None
 names = None
-characters = None
 events = None
 
 #####################################

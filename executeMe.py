@@ -151,12 +151,6 @@ else:
     interaction.setUpUrwid()
 
 # bad code: common variables with modules
-items.characters = characters
-rooms.characters = characters
-story.characters = characters
-terrains.characters = characters
-
-# bad code: common variables with modules
 story.names = names
 characters.names = names
 gamestate.names = names

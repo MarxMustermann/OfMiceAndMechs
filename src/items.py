@@ -49,7 +49,6 @@ import config
 
 # bad code: global state
 messages = None
-characters = None
 commandChars = None
 terrain = None
 urwid = None

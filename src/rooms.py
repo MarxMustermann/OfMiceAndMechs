@@ -16,7 +16,6 @@ import src.events
 # bad code: global state
 Character = None
 mainChar = None
-characters = None
 messages = None
 debugMessages = None
 calculatePath = None

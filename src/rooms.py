@@ -2383,7 +2383,7 @@ XXXXXXXX
         self.terrain.waitingRoom.addAsHopper(character)
 
         # shedule next spawn
-        self.addEvent(events.EndQuestEvent(gamestate.tick+10000,{"container":self,"method":"spawnNewHopper"},creator=self))
+        self.addEvent(src.events.EndQuestEvent(gamestate.tick+10000,{"container":self,"method":"spawnNewHopper"},creator=self))
 
 '''
 the room where hoppers wait for jobs

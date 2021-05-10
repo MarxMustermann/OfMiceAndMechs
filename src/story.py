@@ -13,11 +13,11 @@ import src.chats
 import src.quests
 import src.items
 import src.interaction
+import src.events
 import config
 
 phasesByName = None
 gamestate = None
-events = None
 
 #####################################
 ###
@@ -780,7 +780,7 @@ class WakeUpPhase(BasicPhase):
         mainChar.wakeUp()
 
         # redraw
-        src.interaction.loop.set_alarm_in(0.1, callShow_or_exit, '.')
+        src.interaction.loop.set_alarm_in(0.1, src.interaction.callShow_or_exit, '.')
 
         # wrap up
         self.end()
@@ -1326,7 +1326,7 @@ class BoilerRoomWelcome(BasicPhase):
     advance the game
     '''
     def advance(self):
-        src.interaction.loop.set_alarm_in(0.1, callShow_or_exit, '.')
+        src.interaction.loop.set_alarm_in(0.1, src.interaction.callShow_or_exit, '.')
 
     '''
     start next sub phase
@@ -1347,7 +1347,7 @@ class BoilerRoomWelcome(BasicPhase):
         the event for faking a coal delivery
         bad code: should be gone or in events.py
         '''
-        class CoalRefillEvent(events.Event):
+        class CoalRefillEvent(src.events.Event):
             '''
             basic state initialization
             '''
@@ -1419,7 +1419,7 @@ class BoilerRoomWelcome(BasicPhase):
         '''
         add the quests for firering a furnace
         '''
-        class AddQuestEvent(events.Event):
+        class AddQuestEvent(src.events.Event):
             '''
             straightforward state initialization
             '''
@@ -1438,7 +1438,7 @@ class BoilerRoomWelcome(BasicPhase):
         event for showing a message
         bad code: should be abstracted
         '''
-        class ShowMessageEvent(events.Event):
+        class ShowMessageEvent(src.events.Event):
             '''
             straightforward state initialization
             '''
@@ -1471,7 +1471,7 @@ class BoilerRoomWelcome(BasicPhase):
         '''
         event for starting the next phase
         '''
-        class StartNextPhaseEvent(events.Event):
+        class StartNextPhaseEvent(src.events.Event):
             '''
             straightforward state initialization
             '''
@@ -1635,7 +1635,7 @@ class FurnaceCompetition(BasicPhase):
             '''
             event to make the npc fire another furnace
             '''
-            class AnotherOneNpc(events.Event):
+            class AnotherOneNpc(src.events.Event):
                 '''
                 straightforward state initialization
                 '''
@@ -1661,7 +1661,7 @@ class FurnaceCompetition(BasicPhase):
             '''
             the event for waiting for a clean start and making the npc start
             '''
-            class WaitForClearStartNpc(events.Event):
+            class WaitForClearStartNpc(src.events.Event):
                 '''
                 straightforward state initialization
                 '''
@@ -1700,7 +1700,7 @@ class FurnaceCompetition(BasicPhase):
         '''
         event to make the player fire another furnace
         '''
-        class AnotherOne(events.Event):
+        class AnotherOne(src.events.Event):
             '''
             straightforward state initialization
             '''
@@ -1723,7 +1723,7 @@ class FurnaceCompetition(BasicPhase):
         '''
         the event for waiting for a clean start and making the player start
         '''
-        class WaitForClearStart(events.Event):
+        class WaitForClearStart(src.events.Event):
             '''
             straightforward state initialization
             '''
@@ -2009,7 +2009,7 @@ class FindWork(BasicPhase):
         '''
         check reputation and punish/reward player
         '''
-        class ProofOfWorth(events.Event):
+        class ProofOfWorth(src.events.Event):
             '''
             basic state initialization
             '''

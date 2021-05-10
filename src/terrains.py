@@ -16,6 +16,7 @@ import src.saveing
 import src.canvas
 import src.logger
 import src.quests
+import src.events
 
 # bad code: global varaibles
 mainChar = None

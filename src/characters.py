@@ -12,6 +12,7 @@ import src.items
 import src.saveing
 import src.quests
 import src.chats
+import src.events
 import src.canvas
 import src.interaction
 import config
@@ -621,7 +622,7 @@ class Character(src.saveing.Saveable):
         if "newEvents" in state:
             for eventId in state["newEvents"]:
                 eventState = state["eventStates"][eventId]
-                event = events.getEventFromState(eventState)
+                event = src.events.getEventFromState(eventState)
                 self.addEvent(event)
 
         if "submenue" in state:

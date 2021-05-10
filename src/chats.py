@@ -382,7 +382,7 @@ class FurnaceChat(Chat):
                 # clear submenue
                 # bad code: direct state setting
                 src.interaction.submenue = None
-                src.interaction.loop.set_alarm_in(0.0, callShow_or_exit, '~')
+                src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, '~')
 
                 # do the selected action
                 self.submenue.selection()

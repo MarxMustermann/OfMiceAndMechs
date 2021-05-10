@@ -238,21 +238,6 @@ mainChar = gameStateObj.mainChar
 interaction.setFooter()
 
 # bad code: common variables with modules
-story.events = events
-items.events = events
-rooms.events = events
-quests.events = events
-characters.events = events
-terrains.events = events
-
-# bad code: common variables with modules
-cinematics.callShow_or_exit = interaction.callShow_or_exit
-quests.callShow_or_exit = interaction.callShow_or_exit
-story.callShow_or_exit = interaction.callShow_or_exit
-events.callShow_or_exit = interaction.callShow_or_exit
-chats.callShow_or_exit = interaction.callShow_or_exit
-
-# bad code: common variables with modules
 rooms.calculatePath = gameMath.calculatePath
 quests.calculatePath = gameMath.calculatePath
 characters.calculatePath = gameMath.calculatePath

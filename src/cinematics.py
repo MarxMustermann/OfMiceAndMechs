@@ -19,7 +19,6 @@ urwid = None
 bad code: containers for global state
 """
 cinematicQueue = []
-callShow_or_exit = None
 messages = None
 advanceGame = None
 
@@ -106,7 +105,7 @@ class InformationTransfer(BasicCinematic):
 
             # trigger showing the next information
             self.position += 1
-            self.alarm = src.interaction.loop.set_alarm_in(0.2, callShow_or_exit, '~')
+            self.alarm = src.interaction.loop.set_alarm_in(0.2, src.interaction.callShow_or_exit, '~')
             return False
 
         # show the information
@@ -172,7 +171,7 @@ class MessageZoomCinematic(BasicCinematic):
             self.turnOnCounter -= 1
             src.interaction.header.set_text("\n"+"\n".join(self.text))
             src.interaction.main.set_text("")
-            self.alarm = src.interaction.loop.set_alarm_in(0.2, callShow_or_exit, '~')
+            self.alarm = src.interaction.loop.set_alarm_in(0.2, src.interaction.callShow_or_exit, '~')
             return False
 
         # add borders to the text
@@ -211,12 +210,12 @@ class MessageZoomCinematic(BasicCinematic):
                 self.turnOffCounter -= 1
             # stop the cinematic
             else:
-                self.alarm = src.interaction.loop.set_alarm_in(0.2, callShow_or_exit, ' ')
+                self.alarm = src.interaction.loop.set_alarm_in(0.2, src.interaction.callShow_or_exit, ' ')
                 self.skipable = True
                 return False
 
         # trigger the next movement
-        self.alarm = src.interaction.loop.set_alarm_in(0.2, callShow_or_exit, '~')
+        self.alarm = src.interaction.loop.set_alarm_in(0.2, src.interaction.callShow_or_exit, '~')
 
     """
     stop rendering
@@ -291,9 +290,9 @@ class TextCinematic(BasicCinematic):
             baseText = self.text[0:self.position]
             if src.interaction.loop:
                 if isinstance(self.text[self.position],str) and self.text[self.position] in ("\n"):
-                    self.alarm = src.interaction.loop.set_alarm_in(0.5, callShow_or_exit, '~')
+                    self.alarm = src.interaction.loop.set_alarm_in(0.5, src.interaction.callShow_or_exit, '~')
                 else:
-                    self.alarm = src.interaction.loop.set_alarm_in(0.05, callShow_or_exit, '~')
+                    self.alarm = src.interaction.loop.set_alarm_in(0.05, src.interaction.callShow_or_exit, '~')
             addition = ""
 
         # show the complete text
@@ -303,10 +302,10 @@ class TextCinematic(BasicCinematic):
             if not self.autocontinue:
                 self.footerText = "press space to proceed"
                 if src.interaction.loop:
-                    self.alarm = src.interaction.loop.set_alarm_in(0, callShow_or_exit, '~')
+                    self.alarm = src.interaction.loop.set_alarm_in(0, src.interaction.callShow_or_exit, '~')
             else:
                 if src.interaction.loop:
-                    self.alarm = src.interaction.loop.set_alarm_in(0, callShow_or_exit, ' ')
+                    self.alarm = src.interaction.loop.set_alarm_in(0, src.interaction.callShow_or_exit, ' ')
 
         # set or not set rusty colors
         if self.rusty:
@@ -436,7 +435,7 @@ class ShowQuestExecution(BasicCinematic):
 
         # abort if quest is done
         if self.quest.completed:
-            src.interaction.loop.set_alarm_in(0.0, callShow_or_exit, ' ')
+            src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, ' ')
             self.skipable = True
             return True
 
@@ -447,9 +446,9 @@ class ShowQuestExecution(BasicCinematic):
         if self.alarm:
             src.interaction.loop.remove_alarm(self.alarm)
         if self.tickSpan and self.active:
-            self.alarm = src.interaction.loop.set_alarm_in(self.tickSpan, callShow_or_exit, '.')
+            self.alarm = src.interaction.loop.set_alarm_in(self.tickSpan, src.interaction.callShow_or_exit, '.')
         else:
-            self.alarm = src.interaction.loop.set_alarm_in(0.5, callShow_or_exit, '~')
+            self.alarm = src.interaction.loop.set_alarm_in(0.5, src.interaction.callShow_or_exit, '~')
         return True
 
     '''
@@ -503,7 +502,7 @@ class ShowGameCinematic(BasicCinematic):
 
         # abort when done
         if not self.turns:
-            src.interaction.loop.set_alarm_in(0.0, callShow_or_exit, ' ')
+            src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, ' ')
             self.skipable = True
             return
                 
@@ -513,7 +512,7 @@ class ShowGameCinematic(BasicCinematic):
         # trigger next step
         self.turns -= 1
         if self.tickSpan:
-            src.interaction.loop.set_alarm_in(self.tickSpan, callShow_or_exit, '.')
+            src.interaction.loop.set_alarm_in(self.tickSpan, src.interaction.callShow_or_exit, '.')
 
         return True
 
@@ -561,7 +560,7 @@ class ChatCinematic(BasicCinematic):
             self.followUp()
         if cinematicQueue:
             cinematicQueue[0].advance()
-        src.interaction.loop.set_alarm_in(0.0, callShow_or_exit, '~')
+        src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, '~')
         return True
 
 '''
@@ -657,7 +656,7 @@ class SelectionCinematic(BasicCinematic):
             if self.followUp:
                 self.followUp()
 
-        src.interaction.loop.set_alarm_in(0.0, callShow_or_exit, '~')
+        src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, '~')
 
 '''
 this cutscenes shows some message 
@@ -683,13 +682,13 @@ class ShowMessageCinematic(BasicCinematic):
 
         # abort
         if self.breakCinematic:
-            src.interaction.loop.set_alarm_in(0.0, callShow_or_exit, ' ')
+            src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, ' ')
             self.skipable = True
             return False
 
         # add message
         messages.append(self.message)
-        src.interaction.loop.set_alarm_in(0.0, callShow_or_exit, '~')
+        src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, '~')
         self.breakCinematic = True
         return True
     

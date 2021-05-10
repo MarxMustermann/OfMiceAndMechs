@@ -5,11 +5,8 @@
 #
 ##########################################################################
 
-import src.logger
-                        
 # import basic libs
-# bad code: should not be imported when using tile based display only
-urwid = None
+import src.logger
 
 """
 maps things to abstrect representation and back
@@ -251,9 +248,9 @@ class Canvas(object):
         out = []
 
         if warning:
-            blank = (urwid.AttrSpec("default","#f00"),"  ")
+            blank = (src.interaction.urwid.AttrSpec("default","#f00"),"  ")
         else:
-            blank = (urwid.AttrSpec("default","default"),"  ")
+            blank = (src.interaction.urwid.AttrSpec("default","default"),"  ")
 
         # add newlines over the drawing area
         if self.shift[0] > 0:
@@ -333,7 +330,7 @@ class Canvas(object):
                             # render image
                             pydisplay.blit(image,(250+counterX*(tileSize+1), 110+counterY*(tileSize+1)))
                         except:
-                            if debug:
+                            if src.interaction.debug:
                                 raise Exception("unable to scale image")
                     else:
                         try:

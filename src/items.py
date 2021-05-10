@@ -7,6 +7,7 @@
 import config
 import src.logger
 import src.gamestate
+import src.interaction
 
 def setup():
     import src.itemFolder.includeTest
@@ -50,9 +51,6 @@ import random
 import src.saveing
 import src.events
 import config
-
-# bad code: global state
-urwid = None
 
 class ItemNew(src.saveing.Saveable):
     type = "Item"
@@ -6220,9 +6218,8 @@ class Machine(Item):
         self.description = self.baseName+" MetalBar -> %s"%(self.toProduce,)
 
     def resetDisplay(self):
-        import urwid
         chars = "X\\"
-        display = (urwid.AttrSpec("#aaa","black"),chars)
+        display = (src.interaction.urwid.AttrSpec("#aaa","black"),chars)
         toProduce = self.toProduce
         colorMap2_1 = { 
                     "Wall":"#f88",
@@ -6264,7 +6261,7 @@ class Machine(Item):
                     }
 
         if toProduce in colorMap2_1:
-            display = [(urwid.AttrSpec(colorMap2_1[toProduce],"black"),"X"),(urwid.AttrSpec(colorMap2_2[toProduce],"black"),"\\")]
+            display = [(src.interaction.urwid.AttrSpec(colorMap2_1[toProduce],"black"),"X"),(src.interaction.urwid.AttrSpec(colorMap2_2[toProduce],"black"),"\\")]
         self.display = display
 
     def setToProduce(self,toProduce):
@@ -14249,13 +14246,12 @@ class SaccrificialCircle(Item):
         self.uses -= 1
 
     def render(self):
-        import urwid
         if self.uses == 2:
-            return (urwid.AttrSpec("#aaf","black"),"&°")
+            return (src.interaction.urwid.AttrSpec("#aaf","black"),"&°")
         elif self.uses == 1:
-            return [(urwid.AttrSpec("#aaf","black"),"&"),(urwid.AttrSpec("#f00","black"),"°")]
+            return [(src.interaction.urwid.AttrSpec("#aaf","black"),"&"),(src.interaction.urwid.AttrSpec("#f00","black"),"°")]
         else:
-            return (urwid.AttrSpec("#f00","black"),"&°")
+            return (src.interaction.urwid.AttrSpec("#f00","black"),"&°")
 
 class BluePrintingArtwork(Item):
     type = "BluePrintingArtwork"

@@ -14,11 +14,6 @@ import src.logger
 import src.interaction
 import src.gamestate
 
-urwid = None
-
-"""
-bad code: containers for global state
-"""
 cinematicQueue = []
 
 """

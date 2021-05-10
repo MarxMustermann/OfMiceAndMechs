@@ -3607,6 +3607,10 @@ reference the phases to be able to call them easier
 bad code: registering here is easy to forget when adding a phase
 '''
 def registerPhases():
+    import src.gamestate
+
+    phasesByName = src.gamestate.phasesByName
+
     phasesByName["OpenWorld"] = OpenWorld
 
     phasesByName["VatPhase"] = VatPhase

@@ -129,93 +129,25 @@ else:
     import random
     seed = random.randint(1,100000)
 
-# bad code: common variables with modules
 if args.nourwid:
     interaction.nourwid = True
 
     import src.pseudoUrwid
     interaction.urwid = src.pseudoUrwid
-    items.urwid = src.pseudoUrwid
-    chats.urwid = src.pseudoUrwid
-    canvas.urwid = src.pseudoUrwid
-    cinematics.urwid = src.pseudoUrwid
-
     interaction.setUpNoUrwid()
-
 else:
     interaction.nourwid = False
-
     import urwid
     interaction.urwid = urwid
-    items.urwid = urwid
-    chats.urwid = urwid
-    canvas.urwid = urwid
-    cinematics.urwid = urwid
-
     interaction.setUpUrwid()
 
-# bad code: common variables with modules
-phasesByName = {}
-gamestate.phasesByName = phasesByName
-story.phasesByName = phasesByName
 story.registerPhases()
 
 # create and load the gamestate
 gamestate.setup()
 
-terrain = None
-gamestate.terrain = terrain
-
-# set up debugging
-if args.debug:
-    '''
-    logger object for logging to file
-    '''
-    class debugToFile(object):
-        '''
-        clear file
-        '''
-        def __init__(self):
-            logfile = open("debug.log","w")
-            logfile.close()
-        '''
-        add log message to file
-        '''
-        def append(self,message):
-            logfile = open("debug.log","a")
-            logfile.write(str(message)+"\n")
-            logfile.close()
-    
-    # set debug mode
-    debugMessages = debugToFile()
-    interaction.debug = True
-    characters.debug = True
-    quests.debug = True
-    canvas.debug = True
-    gameMath.debug = True
-
-# set dummies to replace dummy objects
-else:
-    '''
-    dummy logger
-    '''
-    class FakeLogger(object):
-        '''
-        discard input
-        '''
-        def append(self,message):
-            pass
-
-    # set debug mode
-    debugMessages = FakeLogger()
-    interaction.debug = False
-    characters.debug = False
-    quests.debug = False
-    canvas.debug = False
-    gameMath.debug = False
-
-# bad code: common variables with modules
-logger.debugMessages = debugMessages
+interaction.debug = args.debug
+logger.setup(interaction.debug)
 
 if shouldLoad:
     try:

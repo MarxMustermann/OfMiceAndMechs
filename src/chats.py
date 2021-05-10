@@ -5,8 +5,6 @@
 #
 ####################################################################################################################
 
-urwid = None
-
 # import the other internal libs
 import src.interaction
 import src.canvas
@@ -1043,7 +1041,7 @@ class RecruitChat(Chat):
 
             # show dialog
             text = self.persistentText+"\n\n-- press any key --"
-            self.set_text((urwid.AttrSpec("default","default"),text))
+            self.set_text((src.interaction.urwid.AttrSpec("default","default"),text))
             self.firstRun = False
             return True
         # continue after the first keypress
@@ -1097,7 +1095,7 @@ class JoinMilitaryChat(Chat):
 
             # show dialog
             text = self.persistentText+"\n\n-- press any key --"
-            self.set_text((urwid.AttrSpec("default","default"),text))
+            self.set_text((src.interaction.urwid.AttrSpec("default","default"),text))
             self.firstRun = False
             return True
         # continue after the first keypress
@@ -1155,7 +1153,7 @@ class CaptainChat(Chat):
 
             # show dialog
             text = self.persistentText+"\n\n-- press any key --"
-            self.set_text((urwid.AttrSpec("default","default"),text))
+            self.set_text((src.interaction.urwid.AttrSpec("default","default"),text))
             self.firstRun = False
             return True
         # continue after the first keypress
@@ -1205,7 +1203,7 @@ class FactionChat1(Chat):
 
             # show dialog
             text = self.persistentText+"\n\n-- press any key --"
-            self.set_text((urwid.AttrSpec("default","default"),text))
+            self.set_text((src.interaction.urwid.AttrSpec("default","default"),text))
             self.firstRun = False
             return True
         # continue after the first keypress
@@ -1266,7 +1264,7 @@ class FactionChat2(Chat):
 
             # show dialog
             text = self.persistentText+"\n\n-- press any key --"
-            self.set_text((urwid.AttrSpec("default","default"),text))
+            self.set_text((src.interaction.urwid.AttrSpec("default","default"),text))
             self.firstRun = False
             return True
         # continue after the first keypress
@@ -1328,7 +1326,7 @@ class CaptainChat2(Chat):
 
             # show dialog
             text = self.persistentText+"\n\n-- press any key --"
-            self.set_text((urwid.AttrSpec("default","default"),text))
+            self.set_text((src.interaction.urwid.AttrSpec("default","default"),text))
             self.firstRun = False
             return True
         # continue after the first keypress
@@ -1588,7 +1586,7 @@ class ChatMenu(Chat):
         # show redered text via urwid
         # bad code: urwid code should be somewere else
         if not self.subMenu:
-            self.set_text((urwid.AttrSpec("default","default"),self.persistentText))
+            self.set_text((src.interaction.urwid.AttrSpec("default","default"),self.persistentText))
 
         return False
 

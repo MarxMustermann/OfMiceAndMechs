@@ -930,7 +930,7 @@ class MetaQuestParralel(Quest):
                 if quest.active:
                     out += "  ->"+questDescription
                 else:
-                    if debug:
+                    if src.interaction.debug:
                         out += "YYYY"+questDescription
                         src.interaction.debugMessages.append(" impossible quest state")
             elif quest.paused:
@@ -938,7 +938,7 @@ class MetaQuestParralel(Quest):
             elif quest.active:
                 out += "  * "+questDescription
             else:
-                if debug:
+                if src.interaction.debug:
                     out += "XXXX"+questDescription
                     src.interaction.debugMessages.append(" impossible quest state")
         return out

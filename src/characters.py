@@ -821,7 +821,7 @@ class Character(src.saveing.Saveable):
                 item = self.room.moveCharacterDirection(self,"east")
             else:
                 # smooth over impossible state
-                if not debug:
+                if not src.interaction.debug:
                     # resorting to teleport
                     self.xPosition = nextPosition[0]
                     self.yPosition = nextPosition[1]
@@ -905,7 +905,7 @@ class Character(src.saveing.Saveable):
 
         # smooth over impossible state
         else:
-            if not debug:
+            if not src.interaction.debug:
                 if not self.path or not nextPosition == self.path[0]:
                     return False
 

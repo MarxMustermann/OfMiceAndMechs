@@ -6,6 +6,7 @@
 #
 #########################################################################################
 
+import src.interaction
 
 '''
 remove loops from a path
@@ -72,7 +73,7 @@ def calculatePathRaw(startX,startY,endX,endY,walkingPath):
     path = []
 
     if None in (startX,startY,endX,endY):
-        if debug:
+        if src.interaction.debug:
             raise Exception("calculating path with broken start or endpoints")
         return []
 

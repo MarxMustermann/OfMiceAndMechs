@@ -18,6 +18,7 @@ import src.cinematics
 import config
 
 gamestate = None
+phasesByName = {}
 
 '''
 the container for the gamestate

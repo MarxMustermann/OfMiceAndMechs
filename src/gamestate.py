@@ -17,6 +17,8 @@ import src.logger
 import src.cinematics
 import config
 
+gamestate = None
+
 '''
 the container for the gamestate
 bad code: all game state should be reachable from here
@@ -260,3 +262,7 @@ class GameState(src.saveing.Saveable):
         state["submenu"] = submenueState
 
         return state
+
+def setup():
+    global gamestate
+    gamestate = GameState()

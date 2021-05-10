@@ -19,6 +19,7 @@ import src.chats
 import src.terrains
 import config.commandChars as commandChars
 import src.cinematics as cinematics
+import src.gamestate
 
 ##################################################################################################################################
 ###
@@ -658,7 +659,7 @@ get position for what thing
 
             found = None
             if len(foundItems):
-                found = foundItems[gamestate.tick%len(foundItems)]
+                found = foundItems[src.gamestate.gamestate.tick%len(foundItems)]
 
             if not found:
                 char.addMessage("no "+",".join(char.interactionState["enumerateState"][-1]["target"])+" found")
@@ -1321,12 +1322,12 @@ current macros:
 
     # save and quit
     if key in (commandChars.quit_normal, commandChars.quit_instant):
-        gamestate.save()
+        src.gamestate.gamestate.save()
         raise urwid.ExitMainLoop()
 
     '''
     if key in ('S',):
-        gamestate.save()
+        src.gamestate.gamestate.save()
         return
     '''
 
@@ -1482,11 +1483,11 @@ current registers
                 if selection == "save":
                     tmp = char.macroState["submenue"]
                     char.macroState["submenue"] = None
-                    gamestate.save()
+                    src.gamestate.gamestate.save()
                     char.macroState["submenue"] = tmp
                 elif selection == "quit":
                     char.macroState["submenue"] = None
-                    gamestate.save()
+                    src.gamestate.gamestate.save()
                     raise urwid.ExitMainLoop()
                 elif selection == "actions":
                     pass
@@ -1546,7 +1547,7 @@ current registers
 
             # allow to quit even within a cutscene
             if key in (commandChars.quit_normal, commandChars.quit_instant):
-                gamestate.save()
+                src.gamestate.gamestate.save()
                 # bad code: directly calls urwid
                 raise urwid.ExitMainLoop()
 
@@ -1580,9 +1581,9 @@ current registers
         # show a few rounds after death and exit
         if char.dead:
             if not ticksSinceDeath:
-                ticksSinceDeath = gamestate.tick
+                ticksSinceDeath = src.gamestate.gamestate.tick
             key = commandChars.wait
-            if gamestate.tick == ticksSinceDeath+5:
+            if src.gamestate.gamestate.tick == ticksSinceDeath+5:
                 char.macroState["commandKeyQueue"] = []
                 char.macroState["submenue"] = TextMenu("You died. press ctrl-c and reload to start from last save")
                 # destroy the gamestate
@@ -3335,7 +3336,7 @@ def keyboardListener(key):
             mainChar.macroStateBackup = None
 
     elif key == "ctrl x":
-        gamestate.save()
+        src.gamestate.gamestate.save()
         raise urwid.ExitMainLoop()
 
     elif key == "ctrl o":
@@ -3447,10 +3448,10 @@ def gameLoop(loop,user_data=None):
     while not loop or firstRun:
 
         if lastAutosave == 0:
-            lastAutosave = gamestate.tick
-        if gamestate.tick-lastAutosave > 1000:
-            #gamestate.save()
-            lastAutosave = gamestate.tick
+            lastAutosave = src.gamestate.gamestate.tick
+        if src.gamestate.gamestate.tick-lastAutosave > 1000:
+            #src.gamestate.gamestate.save()
+            lastAutosave = src.gamestate.gamestate.tick
 
         firstRun = False
 
@@ -3464,7 +3465,7 @@ def gameLoop(loop,user_data=None):
             import pygame
             for item in pygame.event.get():
                 if item.type == pygame.QUIT:
-                    gamestate.save()
+                    src.gamestate.gamestate.save()
                     pygame.quit()
                 if not hasattr(item,"unicode"):
                     continue
@@ -3579,7 +3580,7 @@ def gameLoop(loop,user_data=None):
                 for threshold in thresholds:
                     if continousOperation > threshold:
                         skipper += 1
-                if skipper == 0 or gamestate.tick%skipper == 0:
+                if skipper == 0 or src.gamestate.gamestate.tick%skipper == 0:
                     skipRender = False
 
                 if len(mainChar.macroState["commandKeyQueue"]) == 0:

@@ -129,6 +129,7 @@ else:
     import random
     seed = random.randint(1,100000)
 
+# bad code: common variables with modules
 if args.nourwid:
     interaction.nourwid = True
 
@@ -153,8 +154,6 @@ else:
 
     interaction.setUpUrwid()
 
-gamestate.macros = interaction.macros
-
 # bad code: common variables with modules
 phasesByName = {}
 gamestate.phasesByName = phasesByName
@@ -162,7 +161,7 @@ story.phasesByName = phasesByName
 story.registerPhases()
 
 # create and load the gamestate
-gameStateObj = gamestate.GameState()
+gamestate.setup()
 
 terrain = None
 gamestate.terrain = terrain
@@ -221,13 +220,13 @@ logger.debugMessages = debugMessages
 if shouldLoad:
     try:
         # load the game
-        loaded = gameStateObj.load()
-        seed = gameStateObj.initialSeed
+        loaded = gamestate.gamestate.load()
+        seed = gamestate.gamestate.initialSeed
     except Exception as e:
         ignore = input("error in gamestate, could not load gamestate completely. Abort and show error message? (Y/n)")
         if not ignore.lower() == "n":
             raise e
-mainChar = gameStateObj.mainChar
+mainChar = gamestate.gamestate.mainChar
 
 ##################################################################################################################################
 ###
@@ -246,19 +245,19 @@ interaction.setFooter()
 if not loaded:
     # spawn selected terrain
     if args.terrain and args.terrain == "scrapField":
-        gameStateObj.terrainType = terrains.ScrapField
+        gamestate.gamestate.terrainType = terrains.ScrapField
     elif args.terrain and args.terrain == "nothingness":
-        gameStateObj.terrainType = terrains.Nothingness
+        gamestate.gamestate.terrainType = terrains.Nothingness
     elif args.terrain and args.terrain == "test":
-        gameStateObj.terrainType = terrains.GameplayTest
+        gamestate.gamestate.terrainType = terrains.GameplayTest
     elif args.terrain and args.terrain == "tutorial":
-        gameStateObj.terrainType = terrains.TutorialTerrain
+        gamestate.gamestate.terrainType = terrains.TutorialTerrain
     elif args.terrain and args.terrain == "desert":
-        gameStateObj.terrainType = terrains.Desert
+        gamestate.gamestate.terrainType = terrains.Desert
     else:
-        gameStateObj.terrainType = terrains.GameplayTest
+        gamestate.gamestate.terrainType = terrains.GameplayTest
 else:
-    terrain = gameStateObj.terrain
+    terrain = gamestate.gamestate.terrain
     interaction.lastTerrain = terrain
 
 # state that should be contained in the gamestate
@@ -266,13 +265,14 @@ mapHidden = True
 mainChar = None
 
 if not loaded:
-    gameStateObj.setup(phase=args.phase, seed=seed)
-    terrain = gameStateObj.terrain
+    gamestate.gamestate.setup(phase=args.phase, seed=seed)
+    terrain = gamestate.gamestate.terrain
     interaction.lastTerrain = terrain
 
 # bad code: common variables with modules
-items.terrain = terrain
 story.terrain = terrain
+
+items.terrain = terrain
 interaction.terrain = terrain
 terrains.terrain = terrain
 gamestate.terrain = terrain
@@ -287,24 +287,14 @@ characters.terrain = terrain
 #################################################################################################################################
 
 # bad code: common variables with modules
-story.gamestate = gameStateObj
-interaction.gamestate = gameStateObj
-quests.gamestate = gameStateObj
-characters.gamestate = gameStateObj
-items.gamestate = gameStateObj
-terrains.gamestate = gameStateObj
-rooms.gamestate = gameStateObj
-chats.gamestate = gameStateObj
-
-# bad code: common variables with modules
-rooms.mainChar = gameStateObj.mainChar
-terrains.mainChar = gameStateObj.mainChar
-story.mainChar = gameStateObj.mainChar
-interaction.mainChar = gameStateObj.mainChar
-cinematics.mainChar = gameStateObj.mainChar
-quests.mainChar = gameStateObj.mainChar
-chats.mainChar = gameStateObj.mainChar
-characters.mainChar = gameStateObj.mainChar
+rooms.mainChar = gamestate.gamestate.mainChar
+terrains.mainChar = gamestate.gamestate.mainChar
+story.mainChar = gamestate.gamestate.mainChar
+interaction.mainChar = gamestate.gamestate.mainChar
+cinematics.mainChar = gamestate.gamestate.mainChar
+quests.mainChar = gamestate.gamestate.mainChar
+chats.mainChar = gamestate.gamestate.mainChar
+characters.mainChar = gamestate.gamestate.mainChar
 
 
 ##################################################################################################################################
@@ -319,7 +309,7 @@ characters.mainChar = gameStateObj.mainChar
 advance the game
 '''
 def advanceGame():
-    for row in gameStateObj.terrainMap:
+    for row in gamestate.gamestate.terrainMap:
         for specificTerrain in row:
             for character in specificTerrain.characters:
                 character.advance()
@@ -327,14 +317,14 @@ def advanceGame():
             for room in specificTerrain.rooms:
                 room.advance()
 
-            while specificTerrain.events and specificTerrain.events[0].tick <= gameStateObj.tick:
+            while specificTerrain.events and specificTerrain.events[0].tick <= gamestate.gamestate.tick:
                 event = specificTerrain.events[0]
-                if event.tick < gameStateObj.tick:
+                if event.tick < gamestate.gamestate.tick:
                     continue
                 event.handleEvent()
                 specificTerrain.events.remove(event)
 
-    gameStateObj.tick += 1
+    gamestate.gamestate.tick += 1
 
 
 # bad code: common variables with modules
@@ -368,17 +358,17 @@ if not args.debug and not interaction.submenue and not loaded:
 """
     openingCinematic = cinematics.TextCinematic(text,rusty=True,scrolling=True)
     cinematics.cinematicQueue.insert(0,openingCinematic)
-    gameStateObj.openingCinematic = openingCinematic
-    gameStateObj.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
-    gameStateObj.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
-    gameStateObj.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
-    gameStateObj.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
+    gamestate.gamestate.openingCinematic = openingCinematic
+    gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
+    gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
+    gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
+    gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
 else:
-    gameStateObj.openingCinematic = None
+    gamestate.gamestate.openingCinematic = None
 
 # set up the current phase
 if not loaded:
-    gameStateObj.currentPhase.start(seed=seed)
+    gamestate.gamestate.currentPhase.start(seed=seed)
 
 # bad code: loading registry should be cleared
 
@@ -426,7 +416,7 @@ if args.nourwid:
         interaction.gameLoop(None,None)
 
 # print death messages
-if gameStateObj.mainChar.dead:
+if gamestate.gamestate.mainChar.dead:
     print("you died.")
-    if gameStateObj.mainChar.deathReason:
-        print("Cause of death:\n"+gameStateObj.mainChar.deathReason)
+    if gamestate.gamestate.mainChar.deathReason:
+        print("Cause of death:\n"+gamestate.gamestate.mainChar.deathReason)

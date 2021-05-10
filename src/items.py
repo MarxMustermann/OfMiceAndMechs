@@ -6,6 +6,7 @@
 
 import config
 import src.logger
+import src.gamestate
 
 def setup():
     import src.itemFolder.includeTest
@@ -51,7 +52,6 @@ import src.events
 import config
 
 # bad code: global state
-terrain = None
 urwid = None
 
 class ItemNew(src.saveing.Saveable):
@@ -251,7 +251,7 @@ class ItemNew(src.saveing.Saveable):
             result["level"] = self.level
         if hasattr(self,"coolDown"):
             result["coolDown"] = self.coolDown
-            result["coolDownRemaining"] = self.coolDown-(gamestate.tick-self.coolDownTimer)
+            result["coolDownRemaining"] = self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer)
         if hasattr(self,"amount"):
             result["amount"] = self.amount
         if hasattr(self,"walkable"):
@@ -484,9 +484,6 @@ class Item(src.saveing.Saveable):
             self.container = self.terrain
             self.container.removeItem(self)
 
-            if not self.walkable:
-                terrain.calculatePathMap()
-
         # remove position information to place item in the void
         self.xPosition = None
         self.yPosition = None
@@ -507,7 +504,7 @@ class Item(src.saveing.Saveable):
             result["level"] = self.level
         if hasattr(self,"coolDown"):
             result["coolDown"] = self.coolDown
-            result["coolDownRemaining"] = self.coolDown-(gamestate.tick-self.coolDownTimer)
+            result["coolDownRemaining"] = self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer)
         if hasattr(self,"amount"):
             result["amount"] = self.amount
         if hasattr(self,"walkable"):
@@ -795,7 +792,7 @@ class ItemUpgrader(Item):
             chance = 100
 
         success = False
-        if gamestate.tick % (self.charges+1) > chance:
+        if src.gamestate.gamestate.tick % (self.charges+1) > chance:
             success = True
 
         targetFull = False
@@ -1803,22 +1800,22 @@ class Spray(Item):
     @property
     def display(self):
         if self.direction == "left":
-            if terrain.tutorialMachineRoom.steamGeneration == 0:
+            if self.terrain.tutorialMachineRoom.steamGeneration == 0:
                 return src.canvas.displayChars.spray_left_inactive
-            elif terrain.tutorialMachineRoom.steamGeneration == 1:
+            elif self.terrain.tutorialMachineRoom.steamGeneration == 1:
                 return src.canvas.displayChars.spray_left_stage1
-            elif terrain.tutorialMachineRoom.steamGeneration == 2:
+            elif self.terrain.tutorialMachineRoom.steamGeneration == 2:
                 return src.canvas.displayChars.spray_left_stage2
-            elif terrain.tutorialMachineRoom.steamGeneration == 3:
+            elif self.terrain.tutorialMachineRoom.steamGeneration == 3:
                 return src.canvas.displayChars.spray_left_stage3
         else:
-            if terrain.tutorialMachineRoom.steamGeneration == 0:
+            if self.terrain.tutorialMachineRoom.steamGeneration == 0:
                 return src.canvas.displayChars.spray_right_inactive
-            elif terrain.tutorialMachineRoom.steamGeneration == 1:
+            elif self.terrain.tutorialMachineRoom.steamGeneration == 1:
                 return src.canvas.displayChars.spray_right_stage1
-            elif terrain.tutorialMachineRoom.steamGeneration == 2:
+            elif self.terrain.tutorialMachineRoom.steamGeneration == 2:
                 return src.canvas.displayChars.spray_right_stage2
-            elif terrain.tutorialMachineRoom.steamGeneration == 3:
+            elif self.terrain.tutorialMachineRoom.steamGeneration == 3:
                 return src.canvas.displayChars.spray_right_stage3
 
     def getLongInfo(self):
@@ -2669,8 +2666,8 @@ class ProductionArtwork(Item):
                 character.addMessage("no metal bars on the left/west")
                 return
             
-            if gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
-                character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            if src.gamestate.gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
+                character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer),))
                 return
 
         self.character = character
@@ -2754,7 +2751,7 @@ class ProductionArtwork(Item):
             if self.charges:
                 self.charges -= 1
             else:
-                self.coolDownTimer = gamestate.tick
+                self.coolDownTimer = src.gamestate.gamestate.tick
 
             self.character.addMessage("you produce a %s"%(itemType.type,))
 
@@ -2786,7 +2783,7 @@ class ProductionArtwork(Item):
         self.container.addItems([new])
 
     def getRemainingCooldown(self):
-        return self.coolDown-(gamestate.tick-self.coolDownTimer)
+        return self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer)
 
     def getLongInfo(self):
         text = """
@@ -2890,8 +2887,8 @@ class ScrapCompactor(Item):
                         scrap = item
                         break
 
-        if gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
-            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+        if src.gamestate.gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
+            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer),))
             self.runCommand("cooldown",character)
             return
 
@@ -2919,7 +2916,7 @@ class ScrapCompactor(Item):
         if self.charges:
             self.charges -= 1
         else:
-            self.coolDownTimer = gamestate.tick
+            self.coolDownTimer = src.gamestate.gamestate.tick
 
         character.addMessage("you produce a metal bar")
 
@@ -2961,7 +2958,7 @@ Place scrap to the %s of the machine and activate it
 After using this machine you need to wait %s ticks till you can use this machine again.
 """%(directions,self.coolDown,)
 
-        coolDownLeft = self.coolDown-(gamestate.tick-self.coolDownTimer)
+        coolDownLeft = self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer)
         if coolDownLeft > 0:
             text += """
 Currently you need to wait %s ticks to use this machine again.
@@ -3109,8 +3106,8 @@ class PavingGenerator(Item):
                         scrap = item
                         break
 
-        if gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
-            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+        if src.gamestate.gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
+            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer),))
             self.runCommand("cooldown",character)
             return
 
@@ -3138,7 +3135,7 @@ class PavingGenerator(Item):
         if self.charges:
             self.charges -= 1
         else:
-            self.coolDownTimer = gamestate.tick
+            self.coolDownTimer = src.gamestate.gamestate.tick
 
         character.addMessage("you produce a paving")
 
@@ -3175,7 +3172,7 @@ Place scrap to the %s of the machine and activate it
 After using this machine you need to wait %s ticks till you can use this machine again.
 """%(directions,self.coolDown,)
 
-        coolDownLeft = self.coolDown-(gamestate.tick-self.coolDownTimer)
+        coolDownLeft = self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer)
         if coolDownLeft > 0:
             text += """
 Currently you need to wait %s ticks to use this machine again.
@@ -3305,14 +3302,14 @@ class Scraper(Item):
                 itemFound = item
                 break
 
-        if gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
-            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+        if src.gamestate.gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
+            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer),))
             return
 
         if self.charges:
             self.charges -= 1
         else:
-            self.coolDownTimer = gamestate.tick
+            self.coolDownTimer = src.gamestate.gamestate.tick
 
         # refuse to produce without resources
         if not itemFound:
@@ -3461,10 +3458,10 @@ class Sorter(Item):
                 compareItemFound = item
                 break
 
-        if gamestate.tick < self.coolDownTimer+self.coolDown:
-            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+        if src.gamestate.gamestate.tick < self.coolDownTimer+self.coolDown:
+            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer),))
             return
-        self.coolDownTimer = gamestate.tick
+        self.coolDownTimer = src.gamestate.gamestate.tick
 
         # refuse to produce without resources
         if not itemFound:
@@ -3562,10 +3559,10 @@ class AutoScribe(Item):
                     sheetFound = item
                     break
 
-        if gamestate.tick < self.coolDownTimer+self.coolDown:
-            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+        if src.gamestate.gamestate.tick < self.coolDownTimer+self.coolDown:
+            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer),))
             return
-        self.coolDownTimer = gamestate.tick
+        self.coolDownTimer = src.gamestate.gamestate.tick
 
         # refuse to produce without resources
         if not itemFound:
@@ -3702,7 +3699,7 @@ class VatMaggot(Item):
         else:
             if self in character.inventory:
                 character.inventory.remove(self)
-        if (gamestate.tick%5 == 0):
+        if (src.gamestate.gamestate.tick%5 == 0):
             character.addMessage("you wretch")
             character.satiation -= 25
             character.frustration += 75
@@ -5699,7 +5696,7 @@ class Tree(Item):
         self.numMaggots = 0
 
         try:
-            self.lastUse = gamestate.tick
+            self.lastUse = src.gamestate.gamestate.tick
         except:
             self.lastUse = -100000
 
@@ -5707,7 +5704,7 @@ class Tree(Item):
                "maggot","maxMaggot","lastUse"])
 
     def regenerateMaggots(self):
-        self.numMaggots += (gamestate.tick-self.lastUse)//100
+        self.numMaggots += (src.gamestate.gamestate.tick-self.lastUse)//100
         self.numMaggots = min(self.numMaggots,self.maxMaggot)
 
     def apply(self,character):
@@ -5717,7 +5714,7 @@ class Tree(Item):
             return
 
         self.regenerateMaggots()
-        self.lastUse = gamestate.tick
+        self.lastUse = src.gamestate.gamestate.tick
 
         character.addMessage("you harvest a vat maggot")
         character.frustration += 1
@@ -5749,7 +5746,7 @@ class Tree(Item):
 
     def getLongInfo(self):
         self.regenerateMaggots()
-        self.lastUse = gamestate.tick
+        self.lastUse = src.gamestate.gamestate.tick
 
         text = """
 item: Tree
@@ -5869,10 +5866,10 @@ class GameTestingProducer(Item):
             if isinstance(item,src.items.Token):
                 token = item
 
-        if gamestate.tick < self.coolDownTimer+self.coolDown:
-            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+        if src.gamestate.gamestate.tick < self.coolDownTimer+self.coolDown:
+            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer),))
             return
-        self.coolDownTimer = gamestate.tick
+        self.coolDownTimer = src.gamestate.gamestate.tick
 
         if token:
             self.change_apply_1(character,token)
@@ -6042,8 +6039,8 @@ class MachineMachine(Item):
             self.character.addMessage("no blueprints available.")
             return
 
-        if gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
-            self.character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+        if src.gamestate.gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
+            self.character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer),))
             return
 
         options = []
@@ -6099,7 +6096,7 @@ class MachineMachine(Item):
         if self.charges:
             self.charges -= 1
         else:
-            self.coolDownTimer = gamestate.tick
+            self.coolDownTimer = src.gamestate.gamestate.tick
 
         self.character.addMessage("you produce a machine that produces %s"%(itemType,))
 
@@ -6150,7 +6147,7 @@ Select the thing to produce and confirm.
 After using this machine you need to wait %s ticks till you can use this machine again.
 """%(self.coolDown,)
 
-        coolDownLeft = self.coolDown-(gamestate.tick-self.coolDownTimer)
+        coolDownLeft = self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer)
         if coolDownLeft > 0:
             text += """
 Currently you need to wait %s ticks to use this machine again.
@@ -6295,8 +6292,8 @@ class Machine(Item):
         #    character.addMessage("this machine can only be used within rooms")
         #    return
 
-        if gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
-            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+        if src.gamestate.gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
+            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer),))
             self.runCommand("cooldown",character)
             return
 
@@ -6346,7 +6343,7 @@ class Machine(Item):
         if self.charges:
             self.charges -= 1
         else:
-            self.coolDownTimer = gamestate.tick
+            self.coolDownTimer = src.gamestate.gamestate.tick
 
         character.addMessage("you produce a %s"%(self.toProduce,))
 
@@ -6373,7 +6370,7 @@ class Machine(Item):
         self.runCommand("success",character)
 
     def getLongInfo(self):
-        coolDownLeft = self.coolDown-(gamestate.tick-self.coolDownTimer)
+        coolDownLeft = self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer)
 
         text = """
 item: Machine
@@ -6603,14 +6600,14 @@ class Drill(Item):
             self.setDescription()
             return
 
-        if gamestate.tick < self.coolDownTimer+self.coolDown:
-            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+        if src.gamestate.gamestate.tick < self.coolDownTimer+self.coolDown:
+            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer),))
             return
-        self.coolDownTimer = gamestate.tick
+        self.coolDownTimer = src.gamestate.gamestate.tick
 
         # spawn new item
         possibleProducts = [src.items.itemMap["Scrap"],src.items.itemMap["Coal"],src.items.itemMap["Scrap"],src.items.itemMap["Radiator"],src.items.itemMap["Scrap"],src.items.itemMap["Mount"],src.items.itemMap["Scrap"],src.items.itemMap["Sheet"],src.items.itemMap["Scrap"],src.items.itemMap["Rod"],src.items.itemMap["Scrap"],src.items.itemMap["Bolt"],src.items.itemMap["Scrap"],src.items.itemMap["Stripe"],src.items.itemMap["Scrap"],]
-        productIndex = gamestate.tick%len(possibleProducts)
+        productIndex = src.gamestate.gamestate.tick%len(possibleProducts)
         new = possibleProducts[productIndex](self.xPosition,self.yPosition,creator=self)
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
@@ -9122,14 +9119,14 @@ class StasisTank(Item):
             self.character.stasis = True
             self.room.removeCharacter(self.character)
             self.character.addMessage("you entered the stasis tank. You will not be able to move until somebody activates it")
-            self.characterTimeEntered = gamestate.tick
+            self.characterTimeEntered = src.gamestate.gamestate.tick
         else:
             self.character.addMessage("you do not enter the stasis tank")
 
     def configure(self,character):
-        character.addMessage(gamestate.tick)
+        character.addMessage(src.gamestate.gamestate.tick)
         character.addMessage(self.characterTimeEntered)
-        if gamestate.tick > self.characterTimeEntered+100:
+        if src.gamestate.gamestate.tick > self.characterTimeEntered+100:
             self.eject()
         """
         options = [("addCommand","add command")]
@@ -9245,20 +9242,20 @@ class Watch(Item):
         self.bolted = False
         self.walkable = True
         try:
-            self.creationTime = gamestate.tick
+            self.creationTime = src.gamestate.gamestate.tick
         except:
             pass
 
     def apply(self,character):
 
-        time = gamestate.tick-self.creationTime
+        time = src.gamestate.gamestate.tick-self.creationTime
         while time > self.maxSize:
             self.creationTime += self.maxSize
             time -= self.maxSize
 
         if not "t" in character.registers:
             character.registers["t"] = [0]
-        character.registers["t"][-1] = gamestate.tick-self.creationTime
+        character.registers["t"][-1] = src.gamestate.gamestate.tick-self.creationTime
 
         character.addMessage("it shows %s ticks"%(character.registers["t"][-1]))
 
@@ -9370,8 +9367,8 @@ class Tumbler(Item):
 
     def apply(self,character):
 
-        direction = gamestate.tick%33%4
-        strength = gamestate.tick%self.strength+1
+        direction = src.gamestate.gamestate.tick%33%4
+        strength = src.gamestate.gamestate.tick%self.strength+1
 
         direction = ["w","a","s","d"][direction]
         convertedCommands = [(direction,["norecord"])] * strength
@@ -9560,7 +9557,7 @@ Activate it to trigger a exlosion.
             new.yPosition = self.yPosition
             new.bolted = False
             self.container.addItems([new])
-            event = src.events.RunCallbackEvent(gamestate.tick+1,creator=self)
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+1,creator=self)
             event.setCallback({"container":new,"method":"explode"})
             self.container.addEvent(event)
 
@@ -9569,7 +9566,7 @@ Activate it to trigger a exlosion.
             new.yPosition = self.yPosition
             new.bolted = False
             self.container.addItems([new])
-            event = src.events.RunCallbackEvent(gamestate.tick+1,creator=self)
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+1,creator=self)
             event.setCallback({"container":new,"method":"explode"})
             self.container.addEvent(event)
 
@@ -9578,7 +9575,7 @@ Activate it to trigger a exlosion.
             new.yPosition = self.yPosition-1
             new.bolted = False
             self.container.addItems([new])
-            event = src.events.RunCallbackEvent(gamestate.tick+1,creator=self)
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+1,creator=self)
             event.setCallback({"container":new,"method":"explode"})
             self.container.addEvent(event)
 
@@ -9587,7 +9584,7 @@ Activate it to trigger a exlosion.
             new.yPosition = self.yPosition
             new.bolted = False
             self.container.addItems([new])
-            event = src.events.RunCallbackEvent(gamestate.tick+1,creator=self)
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+1,creator=self)
             event.setCallback({"container":new,"method":"explode"})
             self.container.addEvent(event)
 
@@ -9596,7 +9593,7 @@ Activate it to trigger a exlosion.
             new.yPosition = self.yPosition+1
             new.bolted = False
             self.container.addItems([new])
-            event = src.events.RunCallbackEvent(gamestate.tick+1,creator=self)
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+1,creator=self)
             event.setCallback({"container":new,"method":"explode"})
             self.container.addEvent(event)
 
@@ -9683,26 +9680,26 @@ class Mortar(Item):
             bomb.bolted = False
 
             distance = 10
-            if (gamestate.tick+self.yPosition+self.xPosition)%self.precision == 0:
+            if (src.gamestate.gamestate.tick+self.yPosition+self.xPosition)%self.precision == 0:
                 character.addMessage("you missfire (0)")
                 self.precision += 10
-                distance -= gamestate.tick%10-10//2
-                character.addMessage((distance,gamestate.tick%10,10//2))
-            elif (gamestate.tick+self.yPosition+self.xPosition)%self.precision == 1:
+                distance -= src.gamestate.gamestate.tick%10-10//2
+                character.addMessage((distance,src.gamestate.gamestate.tick%10,10//2))
+            elif (src.gamestate.gamestate.tick+self.yPosition+self.xPosition)%self.precision == 1:
                 character.addMessage("you missfire (1)")
                 self.precision += 5
-                distance -= gamestate.tick%7-7//2
-                character.addMessage((distance,gamestate.tick%7,7//2))
-            elif (gamestate.tick+self.yPosition+self.xPosition)%self.precision < 10:
+                distance -= src.gamestate.gamestate.tick%7-7//2
+                character.addMessage((distance,src.gamestate.gamestate.tick%7,7//2))
+            elif (src.gamestate.gamestate.tick+self.yPosition+self.xPosition)%self.precision < 10:
                 character.addMessage("you missfire (10)")
                 self.precision += 2
-                distance -= gamestate.tick%3-3//2
-                character.addMessage((distance,gamestate.tick%3,3//2))
-            elif (gamestate.tick+self.yPosition+self.xPosition)%self.precision < 100:
+                distance -= src.gamestate.gamestate.tick%3-3//2
+                character.addMessage((distance,src.gamestate.gamestate.tick%3,3//2))
+            elif (src.gamestate.gamestate.tick+self.yPosition+self.xPosition)%self.precision < 100:
                 character.addMessage("you missfire (100)")
                 self.precision += 1
-                distance -= gamestate.tick%2-2//2
-                character.addMessage((distance,gamestate.tick%2,2//2))
+                distance -= src.gamestate.gamestate.tick%2-2//2
+                character.addMessage((distance,src.gamestate.gamestate.tick%2,2//2))
 
             bomb.yPosition += distance
 
@@ -9756,7 +9753,7 @@ class FireCrystals(Item):
     def startExploding(self):
         if not self.xPosition:
             return
-        event = src.events.RunCallbackEvent(gamestate.tick+2+(2*self.xPosition+3*self.yPosition+gamestate.tick)%10,creator=self)
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+2+(2*self.xPosition+3*self.yPosition+src.gamestate.gamestate.tick)%10,creator=self)
         event.setCallback({"container":self,"method":"explode"})
         self.container.addEvent(event)
 
@@ -9771,7 +9768,7 @@ class FireCrystals(Item):
         new.xPosition = self.xPosition
         new.yPosition = self.yPosition
         self.container.addItems([new])
-        event = src.events.RunCallbackEvent(gamestate.tick+1,creator=self)
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+1,creator=self)
         event.setCallback({"container":new,"method":"explode"})
         self.container.addEvent(event)
 
@@ -9779,7 +9776,7 @@ class FireCrystals(Item):
         new.xPosition = self.xPosition-1
         new.yPosition = self.yPosition
         self.container.addItems([new])
-        event = src.events.RunCallbackEvent(gamestate.tick+1,creator=self)
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+1,creator=self)
         event.setCallback({"container":new,"method":"explode"})
         self.container.addEvent(event)
 
@@ -9787,7 +9784,7 @@ class FireCrystals(Item):
         new.xPosition = self.xPosition
         new.yPosition = self.yPosition-1
         self.container.addItems([new])
-        event = src.events.RunCallbackEvent(gamestate.tick+1,creator=self)
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+1,creator=self)
         event.setCallback({"container":new,"method":"explode"})
         self.container.addEvent(event)
 
@@ -9795,7 +9792,7 @@ class FireCrystals(Item):
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
         self.container.addItems([new])
-        event = src.events.RunCallbackEvent(gamestate.tick+1,creator=self)
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+1,creator=self)
         event.setCallback({"container":new,"method":"explode"})
         self.container.addEvent(event)
 
@@ -9803,7 +9800,7 @@ class FireCrystals(Item):
         new.xPosition = self.xPosition
         new.yPosition = self.yPosition+1
         self.container.addItems([new])
-        event = src.events.RunCallbackEvent(gamestate.tick+1,creator=self)
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+1,creator=self)
         event.setCallback({"container":new,"method":"explode"})
         self.container.addEvent(event)
 
@@ -10021,7 +10018,7 @@ class Spawner(Item):
             character.inventory.remove(corpse)
 
         if self.charges:
-            event = src.events.RunCallbackEvent(gamestate.tick+100,creator=self)
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+100,creator=self)
             event.setCallback({"container":self,"method":"spawn"})
             self.terrain.addEvent(event)
 
@@ -10083,7 +10080,7 @@ class Spawner(Item):
         character.satiation = 100000
         self.container.addCharacter(character,self.xPosition+1,self.yPosition)
 
-        event = src.events.RunCallbackEvent(gamestate.tick+100,creator=self)
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+100,creator=self)
         event.setCallback({"container":self,"method":"spawn"})
         self.terrain.addEvent(event)
 
@@ -10113,7 +10110,7 @@ class MoldSpore(Item):
         character.addMessage("you activate the mold spore")
 
     def startSpawn(self):
-        event = src.events.RunCallbackEvent(gamestate.tick+(2*self.xPosition+3*self.yPosition+gamestate.tick)%10,creator=self)
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+(2*self.xPosition+3*self.yPosition+src.gamestate.gamestate.tick)%10,creator=self)
         event.setCallback({"container":self,"method":"spawn"})
         self.terrain.addEvent(event)
 
@@ -10156,7 +10153,7 @@ class Mold(Item):
         if self.charges and self.container:
             if not (self.xPosition and self.yPosition and self.terrain):
                 return
-            event = src.events.RunCallbackEvent(gamestate.tick+(2*self.xPosition+3*self.yPosition+gamestate.tick)%1000,creator=self)
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+(2*self.xPosition+3*self.yPosition+src.gamestate.gamestate.tick)%1000,creator=self)
             event.setCallback({"container":self,"method":"spawn"})
             self.terrain.addEvent(event)
 
@@ -10164,7 +10161,7 @@ class Mold(Item):
         if self.charges and self.container:
             if not (self.xPosition and self.yPosition):
                 return
-            direction = (2*self.xPosition+3*self.yPosition+gamestate.tick)%4
+            direction = (2*self.xPosition+3*self.yPosition+src.gamestate.gamestate.tick)%4
             direction = random.choice([0,1,2,3])
             if direction == 0:
                 newPos = (self.xPosition,self.yPosition+1,self.zPosition)
@@ -10449,7 +10446,7 @@ class Bloom(Item):
 
     def startSpawn(self):
         if not self.dead:
-            event = src.events.RunCallbackEvent(gamestate.tick+(2*self.xPosition+3*self.yPosition+gamestate.tick)%10000,creator=self)
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+(2*self.xPosition+3*self.yPosition+src.gamestate.gamestate.tick)%10000,creator=self)
             event.setCallback({"container":self,"method":"spawn"})
             self.terrain.addEvent(event)
 
@@ -10466,7 +10463,7 @@ class Bloom(Item):
             return
         if not self.container:
             return
-        direction = (2*self.xPosition+3*self.yPosition+gamestate.tick)%4
+        direction = (2*self.xPosition+3*self.yPosition+src.gamestate.gamestate.tick)%4
         direction = (random.randint(1,13),random.randint(1,13))
         newPos = (self.xPosition-self.xPosition%15+direction[0],self.yPosition-self.yPosition%15+direction[1],self.zPosition)
 
@@ -10551,7 +10548,7 @@ class SickBloom(Item):
         super().pickUp(character)
 
     def startSpawn(self):
-        event = src.events.RunCallbackEvent(gamestate.tick+(2*self.xPosition+3*self.yPosition+gamestate.tick)%2500,creator=self)
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+(2*self.xPosition+3*self.yPosition+src.gamestate.gamestate.tick)%2500,creator=self)
         event.setCallback({"container":self,"method":"spawn"})
         self.terrain.addEvent(event)
 
@@ -10704,7 +10701,7 @@ class PoisonBush(Item):
     def spawn(self,distance=1):
         if not (self.xPosition and self.yPosition):
             return
-        direction = (2*self.xPosition+3*self.yPosition+gamestate.tick)%4
+        direction = (2*self.xPosition+3*self.yPosition+src.gamestate.gamestate.tick)%4
         direction = (random.randint(1,distance+1),random.randint(1,distance+1))
         newPos = (self.xPosition+direction[0]-5,self.yPosition+direction[1]-5)
 
@@ -10760,13 +10757,13 @@ You can use it to loose 100 satiation.
             return splittedCommand
 
         command = ""
-        if gamestate.tick%4 == 0:
+        if src.gamestate.gamestate.tick%4 == 0:
             command += "A"
-        if gamestate.tick%4 == 1:
+        if src.gamestate.gamestate.tick%4 == 1:
             command += "W"
-        if gamestate.tick%4 == 2:
+        if src.gamestate.gamestate.tick%4 == 2:
             command += "S"
-        if gamestate.tick%4 == 3:
+        if src.gamestate.gamestate.tick%4 == 3:
             command += "D"
 
         if self.xPosition%4 == 0:
@@ -10851,7 +10848,7 @@ You can use it to loose 100 satiation.
             return splittedCommand
 
         command = "opc"
-        if gamestate.tick%2:
+        if src.gamestate.gamestate.tick%2:
             command += "$=aam$=ddm"
             command += "$=wwm$=ssm"
         else:
@@ -11124,7 +11121,7 @@ class SeededMoldFeed(Item):
         character.addMessage("you activate the seeded mold feed")
 
     def startSpawn(self):
-        event = src.events.RunCallbackEvent(gamestate.tick+(2*self.xPosition+3*self.yPosition+gamestate.tick)%10,creator=self)
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+(2*self.xPosition+3*self.yPosition+src.gamestate.gamestate.tick)%10,creator=self)
         event.setCallback({"container":self,"method":"spawn"})
         self.terrain.addEvent(event)
 
@@ -11628,7 +11625,7 @@ class HiveMind(Item):
             if not pos in self.territory:
                 self.territory.append(pos)
                 self.toCheck.append(pos)
-                self.lastExpansion = gamestate.tick
+                self.lastExpansion = src.gamestate.gamestate.tick
         if pos:
             self.paths[pos] = path
 
@@ -11659,9 +11656,9 @@ class HiveMind(Item):
                 break
 
         if self.lastExpansion == None:
-            self.lastExpansion = gamestate.tick
+            self.lastExpansion = src.gamestate.gamestate.tick
         selfReplace = False
-        if (gamestate.tick - self.lastExpansion) > len(self.territory)*1000:
+        if (src.gamestate.gamestate.tick - self.lastExpansion) > len(self.territory)*1000:
             if (self.xPosition//15 == 7 and self.yPosition//15 == 7):
                 self.lastExpansion = None
             else:
@@ -11717,9 +11714,9 @@ class HiveMind(Item):
             else:
                 command = random.choice(["W","A","S","D"])
 
-        elif gamestate.tick-self.lastMoldClear > 1000: # clear tile from mold
+        elif src.gamestate.gamestate.tick-self.lastMoldClear > 1000: # clear tile from mold
             command = 6*"wjjkkk"+"opx$=ss"+ 6*"sjjkkk"+"opx$=ww"+6*"ajjkkk"+"opx$=dd"+ 6*"djjkkk"+"opx$=aaj"
-            self.lastMoldClear = gamestate.tick
+            self.lastMoldClear = src.gamestate.gamestate.tick
             done = True
         elif not self.charges and self.territory: # send creature somewhere
             command = ""
@@ -12199,7 +12196,7 @@ class CommandBloom(Item):
 
                     if self.numCommandBlooms > 2:
                         new = HiveMind(creator=self)
-                        new.createdAt = gamestate.tick
+                        new.createdAt = src.gamestate.gamestate.tick
                         new.xPosition = self.xPosition
                         new.yPosition = self.yPosition
                         new.territory.append((new.xPosition//15,new.yPosition//15))
@@ -12331,7 +12328,7 @@ class CommandBloom(Item):
                                 directions.append("s")
                         command = "13"+random.choice(directions)+"9kkj"
 
-            if not command and self.expectedNext and self.expectedNext > gamestate.tick and not self.cluttered:
+            if not command and self.expectedNext and self.expectedNext > src.gamestate.gamestate.tick and not self.cluttered:
                 if self.masterCommand and not random.randint(1,3) == 1:
                     command = self.masterCommand
                 else:
@@ -12367,7 +12364,7 @@ class CommandBloom(Item):
                     path.append((pos[0],pos[1],0))
 
                 if character.satiation < 300 and self.charges:
-                    if gamestate.tick-self.lastFeeding < 60:
+                    if src.gamestate.gamestate.tick-self.lastFeeding < 60:
                         if self.charges < 15:
                             direction = random.choice(["w","a","s","d"])
                             command += 10*(13*direction+"j")
@@ -12379,7 +12376,7 @@ class CommandBloom(Item):
                         while character.satiation < 500 and self.charges:
                             character.satiation += 100
                             self.charges -= 1
-                        self.lastFeeding = gamestate.tick
+                        self.lastFeeding = src.gamestate.gamestate.tick
 
                 foundSomething = False
                 lastCharacterPosition = path[0]
@@ -12431,7 +12428,7 @@ class CommandBloom(Item):
                                 (north and (not north[0].walkable or north[0].bolted) and not north[0].type in ("Scrap","PoisonBloom","Mold","Sprout","Sprout2","Bloom","SickBloom")) or
                                 (south and (not south[0].walkable or south[0].bolted) and not south[0].type in ("Scrap","PoisonBloom","Mold","Sprout","Sprout2","Bloom","SickBloom"))):
                                 if not self.numSick:
-                                    self.lastExplosion = gamestate.tick
+                                    self.lastExplosion = src.gamestate.gamestate.tick
                                     if hasattr(character,"phase") and character.phase == 1:
                                         if lastCharacterPosition[1] > pos[1]:
                                             command += "JwJwJwJwJw"
@@ -12491,10 +12488,10 @@ class CommandBloom(Item):
                     elif (not items[0].walkable or items[0].bolted) and not items[0].type in ("Scrap","PoisonBloom","Corpse",):
                         self.blocked = True
 
-                        if not self.numCoal or not self.numSick or gamestate.tick-self.lastExplosion < 1000:
+                        if not self.numCoal or not self.numSick or src.gamestate.gamestate.tick-self.lastExplosion < 1000:
                             break
 
-                        self.lastExplosion = gamestate.tick
+                        self.lastExplosion = src.gamestate.gamestate.tick
 
                         lowestIndex = None
                         for pos in ((items[0].xPosition-1,items[0].yPosition),(items[0].xPosition+1,items[0].yPosition),(items[0].xPosition,items[0].yPosition+1),(items[0].xPosition,items[0].yPosition+1)):
@@ -12560,7 +12557,7 @@ class CommandBloom(Item):
                         else:
                             command = random.choice(["W","A","S","D"])
 
-                    self.expectedNext = gamestate.tick+len(command)-25
+                    self.expectedNext = src.gamestate.gamestate.tick+len(command)-25
 
                 if count == 168:
                     self.cluttered = False
@@ -12731,7 +12728,7 @@ class RipInReality(Item):
         character.staggered += 1
         character.addMessage("the reality shift staggers you")
 
-        if not self.stable and gamestate.tick-self.lastUse > 100 * self.depth:
+        if not self.stable and src.gamestate.gamestate.tick-self.lastUse > 100 * self.depth:
             self.target = None
             self.targetPos = None
         if not self.target:
@@ -12957,7 +12954,7 @@ class RipInReality(Item):
         if self.killInventory:
             character.inventory = []
 
-        self.lastUse = gamestate.tick
+        self.lastUse = src.gamestate.gamestate.tick
 
     def configure(self,character):
         options = [("destabilize","destabilize"),("stablize","stablize")]
@@ -13310,7 +13307,7 @@ class WaterCondenser(Item):
         self.bolted = True
         self.rods = 0
         try:
-            self.lastUsage = gamestate.tick
+            self.lastUsage = src.gamestate.gamestate.tick
         except:
             self.lastUsage = 0
 
@@ -13333,14 +13330,14 @@ class WaterCondenser(Item):
                 self.character.addMessage("there is no water left")
                 return
 
-            amount = (gamestate.tick-self.lastUsage)//100*(self.rods+1+5)
+            amount = (src.gamestate.gamestate.tick-self.lastUsage)//100*(self.rods+1+5)
             self.character.addMessage("you drink from the water condenser. You gain %s satiation, but are poisoned"%(amount,)) 
             self.character.satiation += amount
             if self.character.satiation > 1000:
                 self.character.satiation = 1000
             self.character.hurt(amount//100+1,reason="poisoned")
 
-            self.lastUsage = gamestate.tick
+            self.lastUsage = src.gamestate.gamestate.tick
 
         if self.submenue.selection == "rod":
             if self.rods > 9:
@@ -13353,7 +13350,7 @@ class WaterCondenser(Item):
                     self.character.addMessage("you insert a rod into the water condenser increasing its output to %s per 100 ticks"%(self.rods+1+5,))
                     self.rods += 1
                     self.character.inventory.remove(item)
-                    self.lastUsage = gamestate.tick
+                    self.lastUsage = src.gamestate.gamestate.tick
                     return
             self.character.addMessage("you have no rods in your inventory")
 

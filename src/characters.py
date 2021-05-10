@@ -18,6 +18,7 @@ import src.interaction
 import config
 import random
 import src.logger
+import src.gamestate
 
 # bad code: containers for global state
 characters = None
@@ -679,7 +680,7 @@ class Character(src.saveing.Saveable):
     straightforward getting a string with detailed info about the character
     '''
     def getDetailedInfo(self):
-        return "\nname: "+str(self.name)+"\nroom: "+str(self.room)+"\ncoordinate: "+str(self.xPosition)+" "+str(self.yPosition)+"\nsubordinates: "+str(self.subordinates)+"\nsat: "+str(self.satiation)+"\nreputation: "+str(self.reputation)+"\ntick: "+str(gamestate.tick)+"\nfaction: "+str(self.faction)
+        return "\nname: "+str(self.name)+"\nroom: "+str(self.room)+"\ncoordinate: "+str(self.xPosition)+" "+str(self.yPosition)+"\nsubordinates: "+str(self.subordinates)+"\nsat: "+str(self.satiation)+"\nreputation: "+str(self.reputation)+"\ntick: "+str(src.gamestate.gamestate.tick)+"\nfaction: "+str(self.faction)
 
     '''
     adds a quest to the characters quest list
@@ -987,13 +988,13 @@ class Character(src.saveing.Saveable):
             return
 
         # smooth over impossible state
-        while self.events and gamestate.tick > self.events[0].tick:
+        while self.events and src.gamestate.gamestate.tick > self.events[0].tick:
             event = self.events[0]
             src.logger.debugMessages.append("something went wrong and event"+str(event)+"was skipped")
             self.events.remove(event)
 
         # handle events
-        while self.events and gamestate.tick == self.events[0].tick:
+        while self.events and src.gamestate.gamestate.tick == self.events[0].tick:
             event = self.events[0]
             event.handleEvent()
             if not event in self.events:

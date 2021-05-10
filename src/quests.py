@@ -14,6 +14,7 @@ import src.chats
 import src.events
 import src.interaction
 import src.cinematics
+import src.gamestate
 
 # HACK: common variables with modules
 mainChar = None
@@ -227,7 +228,7 @@ class Quest(src.saveing.Saveable):
                     color = "#090"
                 description = self.description
                 if self.lifetimeEvent:
-                    description += " ("+str(self.lifetimeEvent.tick-gamestate.tick)+" / "+str(self.lifetime)+")"
+                    description += " ("+str(self.lifetimeEvent.tick-src.gamestate.gamestate.tick)+" / "+str(self.lifetime)+")"
                 return [[(urwid.AttrSpec(color,"default"),description),"\n"]]
             else:
                 return [[self.description,"\n"]]
@@ -396,7 +397,7 @@ class Quest(src.saveing.Saveable):
 
         # add automatic termination
         if self.lifetime and not self.lifetimeEvent:
-            self.lifetimeEvent = src.events.EndQuestEvent(gamestate.tick+self.lifetime,callback={"container":self,"method":"timeOut"},creator=self)
+            self.lifetimeEvent = src.events.EndQuestEvent(src.gamestate.gamestate.tick+self.lifetime,callback={"container":self,"method":"timeOut"},creator=self)
             self.character.addEvent(self.lifetimeEvent)
 
         # recalculate and notify listeners
@@ -545,7 +546,7 @@ class MetaQuestSequence(Quest):
         # add name of the actual quest
         out =  self.metaDescription+":\n"
         if self.lifetimeEvent:
-            out += " ("+str(self.lifetimeEvent.tick-gamestate.tick)+" / "+str(self.lifetime)+")"
+            out += " ("+str(self.lifetimeEvent.tick-src.gamestate.gamestate.tick)+" / "+str(self.lifetime)+")"
         for quest in self.subQuests:
             # add quests
             if quest.active:
@@ -576,7 +577,7 @@ class MetaQuestSequence(Quest):
 
         # add remaining time
         if self.lifetimeEvent:
-            out += " ("+str(self.lifetimeEvent.tick-gamestate.tick)+" / "+str(self.lifetime)+")"
+            out += " ("+str(self.lifetimeEvent.tick-src.gamestate.gamestate.tick)+" / "+str(self.lifetime)+")"
 
         # add quests
         for quest in self.subQuests:
@@ -847,7 +848,7 @@ class MetaQuestParralel(Quest):
         else:
             out = ""+self.metaDescription+":\n"
         if self.lifetimeEvent:
-            out += " ("+str(self.lifetimeEvent.tick-gamestate.tick)+" / "+str(self.lifetime)+")"
+            out += " ("+str(self.lifetimeEvent.tick-src.gamestate.gamestate.tick)+" / "+str(self.lifetime)+")"
 
         # add subquest
         counter = 0
@@ -917,7 +918,7 @@ class MetaQuestParralel(Quest):
         
         # add the reaining lifetime
         if self.lifetimeEvent:
-            out += " ("+str(self.lifetimeEvent.tick-gamestate.tick)+" / "+str(self.lifetime)+")"
+            out += " ("+str(self.lifetimeEvent.tick-src.gamestate.gamestate.tick)+" / "+str(self.lifetime)+")"
 
         # add subquests
         for quest in self.subQuests:

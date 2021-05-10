@@ -17,6 +17,7 @@ import src.logger
 import src.chats
 import src.gameMath
 import src.characters
+import src.gamestate
 
 # bad code: global state
 mainChar = None
@@ -2382,7 +2383,7 @@ XXXXXXXX
         self.terrain.waitingRoom.addAsHopper(character)
 
         # shedule next spawn
-        self.addEvent(src.events.EndQuestEvent(gamestate.tick+10000,{"container":self,"method":"spawnNewHopper"},creator=self))
+        self.addEvent(src.events.EndQuestEvent(src.gamestate.gamestate.tick+10000,{"container":self,"method":"spawnNewHopper"},creator=self))
 
 '''
 the room where hoppers wait for jobs

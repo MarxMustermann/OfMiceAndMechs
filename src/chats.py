@@ -13,6 +13,7 @@ import src.canvas
 import src.logger
 import src.quests
 import config
+import src.gamestate
 
 '''
 the main class for chats
@@ -743,7 +744,7 @@ class RoomDutyChat(Chat):
         
     def handleKey(self, key, noRender=False):
 
-        if gamestate.tick%2:
+        if src.gamestate.gamestate.tick%2:
             self.persistentText = "yes, you may."
             quest = src.quests.Serve(superior=self.superior,creator=self)
             mainChar.assignQuest(quest,active=True)
@@ -1031,7 +1032,7 @@ class RecruitChat(Chat):
             else:
 
                 # reject player
-                if gamestate.tick%2:
+                if src.gamestate.gamestate.tick%2:
                     self.persistentText += self.partner.name+": \"sorry, too busy.\"\n"
                     mainChar.revokeReputation(amount=1,reason="getting service refused")
 
@@ -1135,7 +1136,7 @@ class CaptainChat(Chat):
         
         if self.wait:
             self.wait = False
-            gamestate.gameWon = True
+            src.gamestate.gamestate.gameWon = True
             return False
 
         # show dialog

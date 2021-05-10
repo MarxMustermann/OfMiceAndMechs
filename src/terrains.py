@@ -17,6 +17,7 @@ import src.canvas
 import src.logger
 import src.quests
 import src.events
+import src.gamestate
 
 # bad code: global varaibles
 mainChar = None
@@ -1587,28 +1588,28 @@ class Terrain(src.saveing.Saveable):
 
         if room.xPosition < 0:
             mainChar.addMessage("switch to")
-            terrain = gamestate.terrainMap[self.yPosition][self.xPosition-1]
+            terrain = src.gamestate.gamestate.terrainMap[self.yPosition][self.xPosition-1]
             room.terrain = terrain
             self.removeRoom(room)
             terrain.addRoom(room)
             room.xPosition = 15
         if room.yPosition < 0:
             mainChar.addMessage("switch to")
-            terrain = gamestate.terrainMap[self.yPosition-1][self.xPosition]
+            terrain = src.gamestate.gamestate.terrainMap[self.yPosition-1][self.xPosition]
             room.terrain = terrain
             self.removeRoom(room)
             terrain.addRoom(room)
             room.yPosition = 15
         if room.xPosition > 15:
             mainChar.addMessage("switch to")
-            terrain = gamestate.terrainMap[self.yPosition][self.xPosition+1]
+            terrain = src.gamestate.gamestate.terrainMap[self.yPosition][self.xPosition+1]
             room.terrain = terrain
             self.removeRoom(room)
             terrain.addRoom(room)
             room.xPosition = 0
         if room.yPosition > 15:
             mainChar.addMessage("switch to")
-            terrain = gamestate.terrainMap[self.yPosition+1][self.xPosition]
+            terrain = src.gamestate.gamestate.terrainMap[self.yPosition+1][self.xPosition]
             room.terrain = terrain
             self.removeRoom(room)
             terrain.addRoom(room)
@@ -2624,7 +2625,7 @@ XXXCCCCCXXX """
         innerQuest.endTrigger = moveAway
         outerQuest.addQuest(innerQuest)
         self.waitingRoom.quests.append(outerQuest)
-        self.waitingRoom.addEvent(src.events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToLeft"},creator=self))
+        self.waitingRoom.addEvent(src.events.EndQuestEvent(src.gamestate.gamestate.tick+4000,{"container":self,"method":"moveRoadblockToLeft"},creator=self))
 
     '''
     move roadblock
@@ -2649,7 +2650,7 @@ XXXCCCCCXXX """
         innerQuest.endTrigger = moveAway
         outerQuest.addQuest(innerQuest)
         self.waitingRoom.quests.append(outerQuest)
-        self.waitingRoom.addEvent(src.events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToRight"},creator=self))
+        self.waitingRoom.addEvent(src.events.EndQuestEvent(src.gamestate.gamestate.tick+4000,{"container":self,"method":"moveRoadblockToRight"},creator=self))
 
     '''
     move roadblock
@@ -2674,7 +2675,7 @@ XXXCCCCCXXX """
         innerQuest.endTrigger = moveAway
         outerQuest.addQuest(innerQuest)
         self.waitingRoom.quests.append(outerQuest)
-        self.waitingRoom.addEvent(src.events.EndQuestEvent(gamestate.tick+4000,{"container":self,"method":"moveRoadblockToLeft"},creator=self))
+        self.waitingRoom.addEvent(src.events.EndQuestEvent(src.gamestate.gamestate.tick+4000,{"container":self,"method":"moveRoadblockToLeft"},creator=self))
 
 # maping from strings to all items
 # should be extendable

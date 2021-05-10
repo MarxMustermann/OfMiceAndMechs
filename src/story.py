@@ -15,9 +15,9 @@ import src.items
 import src.interaction
 import src.events
 import config
+import src.gamestate
 
 phasesByName = None
-gamestate = None
 
 #####################################
 ###
@@ -120,8 +120,8 @@ class BasicPhase(src.saveing.Saveable):
     '''
     def start(self,seed=0):
         # set state
-        gamestate.currentPhase = self
-        self.tick = gamestate.tick
+        src.gamestate.gamestate.currentPhase = self
+        self.tick = src.gamestate.gamestate.tick
         self.seed = seed
 
         # place main character
@@ -136,19 +136,19 @@ class BasicPhase(src.saveing.Saveable):
         # create first officer
         if self.requiresMainCharRoomFirstOfficer:
             if not self.mainCharRoom.firstOfficer:
-                self.mainCharRoom.firstOfficer = characters.Character(xPosition=4,yPosition=3,seed=gamestate.tick+2)
+                self.mainCharRoom.firstOfficer = characters.Character(xPosition=4,yPosition=3,seed=src.gamestate.gamestate.tick+2)
                 self.mainCharRoom.addCharacter(self.mainCharRoom.firstOfficer,self.firstOfficerXPosition,self.firstOfficerYPosition)
             self.mainCharRoom.firstOfficer.reputation = 1000
 
         # create second officer
         if self.requiresMainCharRoomSecondOfficer:
             if not self.mainCharRoom.secondOfficer:
-                self.mainCharRoom.secondOfficer = characters.Character(xPosition=4,yPosition=3,seed=gamestate.tick+4)
+                self.mainCharRoom.secondOfficer = characters.Character(xPosition=4,yPosition=3,seed=src.gamestate.gamestate.tick+4)
                 self.mainCharRoom.addCharacter(self.mainCharRoom.secondOfficer,self.secondOfficerXPosition,self.secondOfficerYPosition)
             self.mainCharRoom.secondOfficer.reputation = 100
 
         # save initial state
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     '''
     helper function to properly hook player quests
@@ -306,7 +306,7 @@ class OpenWorld(BasicPhase):
             mainChar.terrain = terrain
             terrain.addCharacter(mainChar,65,111)
 
-            #npc1 = characters.Character(xPosition=4,yPosition=3,creator=void,seed=gamestate.tick+2)
+            #npc1 = characters.Character(xPosition=4,yPosition=3,creator=void,seed=src.gamestate.gamestate.tick+2)
             #npc1.xPosition = 10
             #npc1.yPosition = 10
             #npc1.terrain = terrain
@@ -368,7 +368,7 @@ class OpenWorld(BasicPhase):
         #        ]
 
 
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
 """
 """
@@ -459,7 +459,7 @@ class BrainTestingPhase(BasicPhase):
     bad code: closely married to urwid
     '''
     def start(self,seed=0):
-        if gamestate.successSeed > 0:
+        if src.gamestate.gamestate.successSeed > 0:
             self.end()
             return
         import urwid
@@ -520,7 +520,7 @@ class BrainTestingPhase(BasicPhase):
         cinematic.followUps = {"ok":{"container":self,"method":"askSecondQuestion"},"nok":{"container":self,"method":"infoFail"}}
         self.cinematic = cinematic
         src.cinematics.cinematicQueue.append(cinematic)
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     '''
     show fluff and fail phase
@@ -639,8 +639,8 @@ class BrainTestingPhase(BasicPhase):
     '''
     def end(self):
         nextPhase = WakeUpPhase()
-        if gamestate.successSeed < 1:
-            gamestate.successSeed += 1
+        if src.gamestate.gamestate.successSeed < 1:
+            src.gamestate.gamestate.successSeed += 1
         nextPhase.start()
 
     '''
@@ -650,7 +650,7 @@ class BrainTestingPhase(BasicPhase):
         # kill player
         mainChar.dead = True
         mainChar.deathReason = "reset of neural network due to inability to store information\nPrevent this by answering the questions correctly"
-        gamestate.successSeed = 0
+        src.gamestate.gamestate.successSeed = 0
 
         # show fluff
         showText("""
@@ -688,7 +688,7 @@ class WakeUpPhase(BasicPhase):
         self.requiresMainCharRoomSecondOfficer = False
 
         # start timer for tracking performance
-        mainChar.tutorialStart = gamestate.tick
+        mainChar.tutorialStart = src.gamestate.gamestate.tick
 
         # make main char hungry and naked
         mainChar.satiation = 400
@@ -733,7 +733,7 @@ class WakeUpPhase(BasicPhase):
         # add trigger
         showGame(1,trigger={"container":self,"method":"playerEject"})
 
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     '''
     spawn players body and place trigger
@@ -791,7 +791,7 @@ class WakeUpPhase(BasicPhase):
     def end(self):
         phase = BasicMovementTraining()
         phase.start(seed=self.seed)
-        gamestate.successSeed += 1
+        src.gamestate.gamestate.successSeed += 1
 
     '''
     set internal state from dictionary
@@ -846,7 +846,7 @@ class BasicMovementTraining(BasicPhase):
         # smooth over missing info
         # bad code: should not be nessecarry
         if not hasattr(mainChar,"tutorialStart"):
-            mainChar.tutorialStart = gamestate.tick - 100
+            mainChar.tutorialStart = src.gamestate.gamestate.tick - 100
 
         # smooth over missing info
         # bad code: should not be nessecarry
@@ -948,7 +948,7 @@ class BasicMovementTraining(BasicPhase):
         quest = src.quests.ActivateQuestMeta(terrain.wakeUpRoom.lever1)
         showQuest(quest,mainChar,trigger={"container":self,"method":"fetchDrink"},container=mainChar.serveQuest)
 
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     '''
     make the main char fetch the bottle
@@ -1164,7 +1164,7 @@ In this case you still have to press """+config.commandChars.move_west+""" to wa
         # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
 
-        timeTaken = gamestate.tick-mainChar.tutorialStart
+        timeTaken = src.gamestate.gamestate.tick-mainChar.tutorialStart
         normTime = 500
 
         # make the player wait till norm completion time
@@ -1283,7 +1283,7 @@ class BoilerRoomWelcome(BasicPhase):
     def wrapUpBasicSchooling(self):
         mainChar.gotBasicSchooling = True
         self.doSteamengineExplaination()
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     '''
     greet player and trigger next function
@@ -1304,7 +1304,7 @@ class BoilerRoomWelcome(BasicPhase):
     '''
     def wrapUpSteamengineExplaination(self):
         self.doCoalDelivery()
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     '''
     explain how the steam engine work and continue
@@ -1320,7 +1320,7 @@ class BoilerRoomWelcome(BasicPhase):
         cinematic = src.cinematics.ShowGameCinematic(0) # bad code: this cinamatic is a hack
         cinematic.endTrigger = self.wrapUpSteamengineExplaination
         src.cinematics.cinematicQueue.append(cinematic)
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     '''
     advance the game
@@ -1333,7 +1333,7 @@ class BoilerRoomWelcome(BasicPhase):
     '''
     def wrapUpCoalDelivery(self):
         self.doFurnaceFirering()
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     '''
     fake a coal delivery
@@ -1371,7 +1371,7 @@ class BoilerRoomWelcome(BasicPhase):
                 self.mainCharRoom.addCharacter(characters.Mouse(),6,5)
 
         # add the coal delivery
-        self.mainCharRoom.addEvent(CoalRefillEvent(gamestate.tick+11,))
+        self.mainCharRoom.addEvent(CoalRefillEvent(src.gamestate.gamestate.tick+11,))
 
         # count down to the coal delivery
         src.cinematics.cinematicQueue.append(src.cinematics.ShowGameCinematic(1,tickSpan=1))
@@ -1405,7 +1405,7 @@ class BoilerRoomWelcome(BasicPhase):
     '''
     def wrapUpFurnaceFirering(self):
         self.doWrapUp()
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     '''
     make a npc fire a furnace 
@@ -1453,8 +1453,8 @@ class BoilerRoomWelcome(BasicPhase):
                 mainChar.addMessage("*"+self.mainCharRoom.secondOfficer.name+", please fire the Furnace now*")
 
         # set up the events
-        self.mainCharRoom.addEvent(ShowMessageEvent(gamestate.tick+1))
-        self.mainCharRoom.addEvent(AddQuestEvent(gamestate.tick+2))
+        self.mainCharRoom.addEvent(ShowMessageEvent(src.gamestate.gamestate.tick+1))
+        self.mainCharRoom.addEvent(AddQuestEvent(src.gamestate.gamestate.tick+2))
         cinematic = src.cinematics.ShowGameCinematic(22,tickSpan=1) #bad code: should be showQuest to prevent having a fixed timing
 
         cinematic.endTrigger = self.wrapUpFurnaceFirering
@@ -1486,10 +1486,10 @@ class BoilerRoomWelcome(BasicPhase):
                 self.end()
 
         # schedule the wrap up
-        self.mainCharRoom.addEvent(StartNextPhaseEvent(gamestate.tick+1))
+        self.mainCharRoom.addEvent(StartNextPhaseEvent(src.gamestate.gamestate.tick+1))
 
         # save the game
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     '''
     start next phase
@@ -1547,7 +1547,7 @@ class BoilerRoomInteractionTraining(BasicPhase):
             '''
             def setPlayerState():
                 mainChar.gotInteractionSchooling = True
-                gamestate.save()
+                src.gamestate.gamestate.save()
             quest.endTrigger = setPlayerState
             questList.append(quest)
         else:
@@ -1570,7 +1570,7 @@ class BoilerRoomInteractionTraining(BasicPhase):
 
         # assign first quest
         mainChar.assignQuest(questList[0],active=True)
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     '''
     start next phase
@@ -1653,7 +1653,7 @@ class FurnaceCompetition(BasicPhase):
                     self.npcFurnaceIndex = subself.furnaceIndex
                     if newIndex < 8:
                         self.mainCharRoom.secondOfficer.assignQuest(src.quests.FireFurnaceMeta(self.mainCharRoom.furnaces[newIndex]),active=True)
-                        self.mainCharRoom.addEvent(AnotherOneNpc(gamestate.tick+gamestate.tick%20+10,newIndex,creator=self))
+                        self.mainCharRoom.addEvent(AnotherOneNpc(src.gamestate.gamestate.tick+src.gamestate.gamestate.tick%20+10,newIndex,creator=self))
 
             # remember event type to be able to remove it later
             self.anotherOneNpc = AnotherOneNpc
@@ -1681,18 +1681,18 @@ class FurnaceCompetition(BasicPhase):
 
                     if boilerStillBoiling:
                         # wait some more
-                        self.mainCharRoom.addEvent(WaitForClearStartNpc(gamestate.tick+2,0,creator=self))
+                        self.mainCharRoom.addEvent(WaitForClearStartNpc(src.gamestate.gamestate.tick+2,0,creator=self))
                     else:
                         # make the npc start
                         src.cinematics.showCinematic("Liebweg start now.")
                         self.mainCharRoom.secondOfficer.assignQuest(src.quests.FireFurnaceMeta(self.mainCharRoom.furnaces[0]),active=True)
-                        self.mainCharRoom.addEvent(AnotherOneNpc(gamestate.tick+10,0,creator=self))
+                        self.mainCharRoom.addEvent(AnotherOneNpc(src.gamestate.gamestate.tick+10,0,creator=self))
 
             '''
             kickstart the npcs part of the competition
             '''
             def startCompetitionNpc():
-                self.mainCharRoom.addEvent(WaitForClearStartNpc(gamestate.tick+2,0,creator=self))
+                self.mainCharRoom.addEvent(WaitForClearStartNpc(src.gamestate.gamestate.tick+2,0,creator=self))
 
             questList[-1].endTrigger = startCompetitionNpc
             self.mainCharRoom.secondOfficer.assignQuest(questList[0],active=True)
@@ -1718,7 +1718,7 @@ class FurnaceCompetition(BasicPhase):
                 self.mainCharFurnaceIndex = subself.furnaceIndex
                 if newIndex < 8:
                     mainChar.assignQuest(src.quests.FireFurnaceMeta(self.mainCharRoom.furnaces[newIndex]))
-                    self.mainCharRoom.addEvent(AnotherOne(gamestate.tick+gamestate.tick%20+5,newIndex))
+                    self.mainCharRoom.addEvent(AnotherOne(src.gamestate.gamestate.tick+src.gamestate.gamestate.tick%20+5,newIndex))
 
         '''
         the event for waiting for a clean start and making the player start
@@ -1744,23 +1744,23 @@ class FurnaceCompetition(BasicPhase):
 
                 # wait some more
                 if boilerStillBoiling:
-                    self.mainCharRoom.addEvent(WaitForClearStart(gamestate.tick+2,0))
+                    self.mainCharRoom.addEvent(WaitForClearStart(src.gamestate.gamestate.tick+2,0))
 
                 # make the player start
                 else:
                     src.cinematics.showCinematic("start now.")
                     mainChar.assignQuest(src.quests.FireFurnaceMeta(self.mainCharRoom.furnaces[0]))
-                    self.mainCharRoom.addEvent(AnotherOne(gamestate.tick+10,0))
+                    self.mainCharRoom.addEvent(AnotherOne(src.gamestate.gamestate.tick+10,0))
 
         '''
         kickstart the players part of the competition
         '''
         def startCompetitionPlayer():
             src.cinematics.showCinematic("wait for the furnaces to burn out.")
-            self.mainCharRoom.addEvent(WaitForClearStart(gamestate.tick+2,0))
+            self.mainCharRoom.addEvent(WaitForClearStart(src.gamestate.gamestate.tick+2,0))
 
         startCompetitionPlayer()
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     '''
     evaluate results and branch phases
@@ -1829,7 +1829,7 @@ class FindWork(BasicPhase):
         cinematic.followUps = {"yes":{"container":self,"method":"getIntroInstant"},"no":{"container":self,"method":"tmpFail"}}
         self.cinematic = cinematic
         src.cinematics.cinematicQueue.append(cinematic)
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     '''
     show fluff and show intro
@@ -2074,7 +2074,7 @@ class FindWork(BasicPhase):
 
                     # decrease reputation so the player will be forced to work continiously or to save up reputation
                     mainChar.revokeReputation(amount=3+(2*len(mainChar.subordinates)),reason="failing to show up for evaluation")
-                    self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),subself.char))
+                    self.mainCharRoom.addEvent(ProofOfWorth(src.gamestate.gamestate.tick+(15*15*15),subself.char))
 
                 # assign a special quest
                 else:
@@ -2130,7 +2130,7 @@ class FindWork(BasicPhase):
             mainChar.assignQuest(quest,active=True)
 
         # add events to keep loose control
-        self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),mainChar))
+        self.mainCharRoom.addEvent(ProofOfWorth(src.gamestate.gamestate.tick+(15*15*15),mainChar))
 
         # add quest to pool
         quest = src.quests.ClearRubble()
@@ -2215,7 +2215,7 @@ class LabPhase(BasicPhase):
 
         # assign player quest
         mainChar.assignQuest(questList[0])
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     '''
     move on to next phase
@@ -2266,7 +2266,7 @@ class VatPhase(BasicPhase):
 
         # assign player quest
         mainChar.assignQuest(quest,active=True)
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     '''
     take away floor permit to make escape harder
@@ -2320,13 +2320,13 @@ class MachineRoomPhase(BasicPhase):
         # assign player quest
         mainChar.assignQuest(questList[0])
 
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     '''
     win the game
     '''
     def end(self):
-        gamestate.gameWon = True
+        src.gamestate.gamestate.gameWon = True
 
 """
 the phase is intended to give the player access to the true gameworld without manipulations
@@ -2434,7 +2434,7 @@ class Tutorial(BasicPhase):
 
         self.dupPrevention = False
 
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     def scrapTest1(self):
         if self.dupPrevention:
@@ -2630,13 +2630,13 @@ class Tutorial(BasicPhase):
                 self.productionQueue.append(src.items.itemMap["Furnace"])
             """
             if not self.fastProductionStart == 0:
-                if gamestate.tick-self.fastProductionStart > 100:
+                if src.gamestate.gamestate.tick-self.fastProductionStart > 100:
                     showText("it took you %s ticks to complete the order.")
                 else:
-                    gamestate.gameWon = True
+                    src.gamestate.gamestate.gameWon = True
                     return
 
-            self.fastProductionStart = gamestate.tick
+            self.fastProductionStart = src.gamestate.gamestate.tick
             for x in range(0,10):
                 self.productionQueue.append(src.items.itemMap["Hutch"])
 
@@ -2805,7 +2805,7 @@ class Testing_1(BasicPhase):
 
         self.dupPrevention = False
 
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     def scrapTest1(self):
         if self.dupPrevention:
@@ -3001,13 +3001,13 @@ class Testing_1(BasicPhase):
                 self.productionQueue.append(src.items.itemMap["Furnace"])
             """
             if not self.fastProductionStart == 0:
-                if gamestate.tick-self.fastProductionStart > 100:
+                if src.gamestate.gamestate.tick-self.fastProductionStart > 100:
                     showText("it took you %s ticks to complete the order.")
                 else:
-                    gamestate.gameWon = True
+                    src.gamestate.gamestate.gameWon = True
                     return
 
-            self.fastProductionStart = gamestate.tick
+            self.fastProductionStart = src.gamestate.gamestate.tick
             for x in range(0,10):
                 self.productionQueue.append(src.items.itemMap["Hutch"])
 
@@ -3257,7 +3257,7 @@ class BuildBase(BasicPhase):
 
         self.mainChar = mainChar
 
-        gamestate.save()
+        src.gamestate.gamestate.save()
 
     def checkRoomEnteredMain(self):
         if self.mainChar.room and self.mainChar.room == self.miniBase:

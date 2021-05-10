@@ -53,7 +53,7 @@ def advanceGame():
 
             while specificTerrain.events and specificTerrain.events[0].tick <= src.gamestate.gamestate.tick:
                 event = specificTerrain.events[0]
-                if event.tick < gamestate.gamestate.tick:
+                if event.tick < src.gamestate.gamestate.tick:
                     continue
                 event.handleEvent()
                 specificTerrain.events.remove(event)

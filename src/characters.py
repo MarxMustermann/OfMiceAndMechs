@@ -541,7 +541,7 @@ class Character(src.saveing.Saveable):
         if not self.macroState["itemMarkedLast"] == None:
             def setParam(instance):
                 self.macroState["itemMarkedLast"] = instance
-            loadingRegistry.callWhenAvailable(self.macroState["itemMarkedLast"],setParam)
+            src.saveing.loadingRegistry.callWhenAvailable(self.macroState["itemMarkedLast"],setParam)
         if "submenue" in self.macroState and self.macroState["submenue"]:
             self.macroState["submenue"] =  src.interaction.getSubmenuFromState(self.macroState["submenue"])
 

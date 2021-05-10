@@ -256,7 +256,6 @@ class GameState(src.saveing.Saveable):
         state["cinematics"] = cinematicStorage
 
         # generate state dict
-        import src.interaction
         submenueState = None
         if src.interaction.submenue:
             submenueState = src.interaction.submenue.getState()

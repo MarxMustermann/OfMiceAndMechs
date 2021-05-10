@@ -19,9 +19,6 @@ import src.quests
 import src.events
 import src.gamestate
 
-# bad code: global varaibles
-mainChar = None
-
 '''
 a abstracted coordinate.
 bad code: is not used in all places
@@ -948,8 +945,8 @@ class Terrain(src.saveing.Saveable):
 
         # determine the section the player is in
         mainCharPair = None
-        if mainChar.terrain:
-            mainCharPair = self.watershedCoordinates[(mainChar.xPosition,mainChar.yPosition)][0]
+        if src.gamestate.gamestate.mainChar.terrain:
+            mainCharPair = self.watershedCoordinates[(src.gamestate.gamestate.mainChar.xPosition,src.gamestate.gamestate.mainChar.yPosition)][0]
 
         # assign the colors to the sections
         counter = 0
@@ -987,7 +984,7 @@ class Terrain(src.saveing.Saveable):
                 display = str(counter)
             chars[newCoordinate[1]][newCoordinate[0]] =  (urwid.AttrSpec("#888","default"),display)
 
-        chars[mainChar.yPosition][mainChar.xPosition] =  mainChar.display
+        chars[src.gamestate.gamestate.mainChar.yPosition][src.gamestate.gamestate.mainChar.xPosition] =  src.gamestate.gamestate.mainChar.display
 
     '''
     find path between start and end coordinates
@@ -1335,10 +1332,10 @@ class Terrain(src.saveing.Saveable):
     def render(self):
         # hide/show map
         global mapHidden
-        if mainChar.room == None:
+        if src.gamestate.gamestate.mainChar.room == None:
             mapHidden = False
         else:
-            if mainChar.room.open:
+            if src.gamestate.gamestate.mainChar.room.open:
                 mapHidden = False
             else:
                 mapHidden = True
@@ -1359,7 +1356,7 @@ class Terrain(src.saveing.Saveable):
 
         # show/hide rooms
         for room in self.rooms:
-            if mainChar.room == room:
+            if src.gamestate.gamestate.mainChar.room == room:
                 room.hidden = False
             else:
                 if not mapHidden and room.open and room.hidden:
@@ -1383,10 +1380,10 @@ class Terrain(src.saveing.Saveable):
         if not mapHidden:
             # get players position in tiles (15*15 segments)
             pos = None
-            if mainChar.room == None:
-                pos = (mainChar.xPosition//15,mainChar.yPosition//15)
+            if src.gamestate.gamestate.mainChar.room == None:
+                pos = (src.gamestate.gamestate.mainChar.xPosition//15,src.gamestate.gamestate.mainChar.yPosition//15)
             else:
-                pos = (mainChar.room.xPosition,mainChar.yPosition)
+                pos = (src.gamestate.gamestate.mainChar.room.xPosition,src.gamestate.gamestate.mainChar.yPosition)
 
             # get rooms near the player
             roomCandidates = self.getNearbyRooms(pos)
@@ -1409,7 +1406,7 @@ class Terrain(src.saveing.Saveable):
                 item = entry[0]
                 if not (item.yPosition and item.xPosition):
                     continue
-                if not (item.zPosition == mainChar.zPosition):
+                if not (item.zPosition == src.gamestate.gamestate.mainChar.zPosition):
                     continue
 
                 try:
@@ -1424,7 +1421,7 @@ class Terrain(src.saveing.Saveable):
             # skip hidden rooms
             #if mapHidden and room.hidden:
             #    continue
-            if not mainChar in room.characters:
+            if not src.gamestate.gamestate.mainChar in room.characters:
                 room.hidden = True
 
             # get the render for the room
@@ -1443,9 +1440,9 @@ class Terrain(src.saveing.Saveable):
 
         # add overlays
         if not mapHidden:
-            #src.overlays.QuestMarkerOverlay().apply(chars,mainChar,src.canvas.displayChars)
+            #src.overlays.QuestMarkerOverlay().apply(chars,src.gamestate.gamestate.mainChar,src.canvas.displayChars)
             src.overlays.NPCsOverlay().apply(chars,self)
-            src.overlays.MainCharOverlay().apply(chars,mainChar)
+            src.overlays.MainCharOverlay().apply(chars,src.gamestate.gamestate.mainChar)
 
         # cache rendering
         self.lastRender = chars
@@ -1587,28 +1584,28 @@ class Terrain(src.saveing.Saveable):
                 self.addRoom(room)
 
         if room.xPosition < 0:
-            mainChar.addMessage("switch to")
+            src.gamestate.gamestate.mainChar.addMessage("switch to")
             terrain = src.gamestate.gamestate.terrainMap[self.yPosition][self.xPosition-1]
             room.terrain = terrain
             self.removeRoom(room)
             terrain.addRoom(room)
             room.xPosition = 15
         if room.yPosition < 0:
-            mainChar.addMessage("switch to")
+            src.gamestate.gamestate.mainChar.addMessage("switch to")
             terrain = src.gamestate.gamestate.terrainMap[self.yPosition-1][self.xPosition]
             room.terrain = terrain
             self.removeRoom(room)
             terrain.addRoom(room)
             room.yPosition = 15
         if room.xPosition > 15:
-            mainChar.addMessage("switch to")
+            src.gamestate.gamestate.mainChar.addMessage("switch to")
             terrain = src.gamestate.gamestate.terrainMap[self.yPosition][self.xPosition+1]
             room.terrain = terrain
             self.removeRoom(room)
             terrain.addRoom(room)
             room.xPosition = 0
         if room.yPosition > 15:
-            mainChar.addMessage("switch to")
+            src.gamestate.gamestate.mainChar.addMessage("switch to")
             terrain = src.gamestate.gamestate.terrainMap[self.yPosition+1][self.xPosition]
             room.terrain = terrain
             self.removeRoom(room)
@@ -1730,12 +1727,12 @@ class Terrain(src.saveing.Saveable):
             itemStates[item.id] = item.getState()
 
         exclude = []
-        if mainChar:
-            exclude.append(mainChar.id)
+        if src.gamestate.gamestate.mainChar:
+            exclude.append(src.gamestate.gamestate.mainChar.id)
         characterIds = []
         characterStates = {}
         for character in self.characters:
-            if character == mainChar:
+            if character == src.gamestate.gamestate.mainChar:
                 continue
             characterIds.append(character.id)
             characterStates[character.id] = character.getState()
@@ -1801,10 +1798,10 @@ class Nothingness(Terrain):
     '''
     def paintFloor(self):
         displayChar = self.floordisplay
-        if mainChar.zPosition < 0:
-            displayChar = "%s"%(mainChar.zPosition,)
-        if mainChar.zPosition > 0:
-            displayChar = "+%s"%(mainChar.zPosition,)
+        if src.gamestate.gamestate.mainChar.zPosition < 0:
+            displayChar = "%s"%(src.gamestate.gamestate.mainChar.zPosition,)
+        if src.gamestate.gamestate.mainChar.zPosition > 0:
+            displayChar = "+%s"%(src.gamestate.gamestate.mainChar.zPosition,)
 
         chars = []
         for i in range(0,250):

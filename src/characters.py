@@ -1020,8 +1020,8 @@ class Character(src.saveing.Saveable):
         if self.satiation == 30-1:
             self.changed("severeThirst")
 
-        if self == mainChar and self.satiation < 30 and self.satiation > -1:
-            self.addMessage("you'll starve in "+str(mainChar.satiation)+" ticks!")
+        if self == src.gamestate.gamestate.mainChar and self.satiation < 30 and self.satiation > -1:
+            self.addMessage("you'll starve in "+str(src.gamestate.gamestate.mainChar.satiation)+" ticks!")
 
         # call the autosolver
         if self.automated:

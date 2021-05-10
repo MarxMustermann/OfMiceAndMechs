@@ -19,9 +19,6 @@ import src.gameMath
 import src.characters
 import src.gamestate
 
-# bad code: global state
-mainChar = None
-
 '''
 the base class for all rooms
 '''
@@ -375,7 +372,7 @@ class Room(src.saveing.Saveable):
         try:
             toRemove = None
             for charId in charIds:
-                if charId == mainChar.id:
+                if charId == src.gamestate.gamestate.mainChar.id:
                     toRemove = charId
             if toRemove:
                 charIds.remove(toRemove)
@@ -546,7 +543,7 @@ class Room(src.saveing.Saveable):
         #    return self.lastRender
         
         # render room
-        if not self.hidden or mainChar.room == self:
+        if not self.hidden or src.gamestate.gamestate.mainChar.room == self:
             # fill the area with floor tiles
             chars = []
             fixedChar = None
@@ -577,15 +574,15 @@ class Room(src.saveing.Saveable):
 
             # draw quest markers
             # bad code: should be an overlay
-            if mainChar.room == self:
-                if len(mainChar.quests):
+            if src.gamestate.gamestate.mainChar.room == self:
+                if len(src.gamestate.gamestate.mainChar.quests):
                         # show the questmarker every second turn for blinking effect
                         if not self.shownQuestmarkerLastRender:
                             self.shownQuestmarkerLastRender = True
 
                             # mark the target of each quest
                             # bad code: does not work with meta quests
-                            for quest in mainChar.quests:
+                            for quest in src.gamestate.gamestate.mainChar.quests:
                                 if not quest.active:
                                     continue
 
@@ -604,13 +601,13 @@ class Room(src.saveing.Saveable):
 
                                 # mark primary quest target with the target marker
                                 try:
-                                    chars[mainChar.quests[0].dstY][mainChar.quests[0].dstX] = src.canvas.displayChars.questTargetMarker
+                                    chars[src.gamestate.gamestate.mainChar.quests[0].dstY][src.gamestate.gamestate.mainChar.quests[0].dstX] = src.canvas.displayChars.questTargetMarker
                                 except:
                                     pass
 
                             # highlight the path to the quest target using background color
                             try:
-                                path = self.calculatePath(mainChar.xPosition,mainChar.yPosition,mainChar.quests[0].dstX,mainChar.quests[0].dstY,self.walkingPath)
+                                path = self.calculatePath(src.gamestate.gamestate.mainChar.xPosition,src.gamestate.gamestate.mainChar.yPosition,src.gamestate.gamestate.mainChar.quests[0].dstX,src.gamestate.gamestate.mainChar.quests[0].dstY,self.walkingPath)
                                 for item in path:
                                     import urwid
                                     display = chars[item[1]][item[0]]
@@ -626,9 +623,9 @@ class Room(src.saveing.Saveable):
                             self.shownQuestmarkerLastRender = False
 
             # draw main char
-            if mainChar in self.characters:
-                if mainChar.yPosition < len(chars) and mainChar.xPosition < len(chars[mainChar.yPosition]):
-                    chars[mainChar.yPosition][mainChar.xPosition] = mainChar.display
+            if src.gamestate.gamestate.mainChar in self.characters:
+                if src.gamestate.gamestate.mainChar.yPosition < len(chars) and src.gamestate.gamestate.mainChar.xPosition < len(chars[src.gamestate.gamestate.mainChar.yPosition]):
+                    chars[src.gamestate.gamestate.mainChar.yPosition][src.gamestate.gamestate.mainChar.xPosition] = src.gamestate.gamestate.mainChar.display
                 else:
                     src.logger.debugMessages.append("chracter is rendered outside of room")
 
@@ -1158,9 +1155,9 @@ XXXXXXXXXXX
 
                 # scold/punish the player
                 # bad code: assumes the player opened the door
-                mainChar.addMessage(self.firstOfficer.name+"@"+self.secondOfficer.name+": close the door")
-                mainChar.revokeReputation(amount=5,reason="disturbing a military area")
-                mainChar.addMessage(self.firstOfficer.name+": military area. Do not enter.")
+                src.gamestate.gamestate.mainChar.addMessage(self.firstOfficer.name+"@"+self.secondOfficer.name+": close the door")
+                src.gamestate.gamestate.mainChar.revokeReputation(amount=5,reason="disturbing a military area")
+                src.gamestate.gamestate.mainChar.addMessage(self.firstOfficer.name+": military area. Do not enter.")
 
                 # make second officer close the door and return to start position
                 quest = src.quests.MoveQuestMeta(self,5,3,creator=self)
@@ -1292,12 +1289,12 @@ XXXXX$XXXX
 
     def removeGooFlask(self):
         toRemove = None
-        for item in mainChar.inventory:
+        for item in src.gamestate.gamestate.mainChar.inventory:
             if isinstance(item,src.items.GooFlask):
                 toRemove = item
         if toRemove:
-            mainChar.inventory.remove(toRemove)
-            mainChar.awardReputation(amount=1,reason="supplying a Goo Flask")
+            src.gamestate.gamestate.mainChar.inventory.remove(toRemove)
+            src.gamestate.gamestate.mainChar.awardReputation(amount=1,reason="supplying a Goo Flask")
 
     '''
     recalculate sprayer state
@@ -1853,44 +1850,44 @@ XXXXXXXXXX
 
     def removePipesSecondOfficer(self):
         toRemove = []
-        for item in mainChar.inventory:
+        for item in src.gamestate.gamestate.mainChar.inventory:
             if isinstance(item,src.items.Pipe):
                 toRemove.append(item)
         for item in toRemove:
             if len(self.secondOfficer.inventory) < 10:
-                mainChar.inventory.remove(item)
+                src.gamestate.gamestate.mainChar.inventory.remove(item)
                 self.secondOfficer.inventory.append(item)
 
     def removeGooFlaskSecondOfficer(self):
         toRemove = []
-        for item in mainChar.inventory:
+        for item in src.gamestate.gamestate.mainChar.inventory:
             if isinstance(item,src.items.GooFlask):
                 toRemove.append(item)
         for item in toRemove:
             if len(self.secondOfficer.inventory) < 10:
-                mainChar.inventory.remove(item)
+                src.gamestate.gamestate.mainChar.inventory.remove(item)
                 self.secondOfficer.inventory.append(item)
 
     def removeTokensFirstOfficer(self):
         toRemove = []
         numTokens = 0
-        for item in mainChar.inventory:
+        for item in src.gamestate.gamestate.mainChar.inventory:
             if isinstance(item,src.items.Token):
                 toRemove.append(item)
                 numTokens += 1
         for item in toRemove:
             if len(self.firstOfficer.inventory) < 10:
-                mainChar.inventory.remove(item)
+                src.gamestate.gamestate.mainChar.inventory.remove(item)
                 self.firstOfficer.inventory.append(item)
 
     def removeTokensSecondOfficer(self):
         toRemove = []
         numTokens = 0
-        for item in mainChar.inventory:
+        for item in src.gamestate.gamestate.mainChar.inventory:
             if isinstance(item,src.items.Token):
                 toRemove.append(item)
                 numTokens += 1
-        for item in mainChar.inventory:
+        for item in src.gamestate.gamestate.mainChar.inventory:
             if numTokens == 0:
                 break
             if isinstance(item,src.items.Wall):
@@ -1898,7 +1895,7 @@ XXXXXXXXXX
                 numTokens -= 1
         for item in toRemove:
             if len(self.secondOfficer.inventory) < 10:
-                mainChar.inventory.remove(item)
+                src.gamestate.gamestate.mainChar.inventory.remove(item)
                 self.secondOfficer.inventory.append(item)
 
     def removeEverythingSecondOfficer(self):
@@ -2091,7 +2088,7 @@ XXXXXXXXXX
             self.addListener(killInvader,"entered room")
 
             def foundNest(character):
-                if not character == mainChar:
+                if not character == src.gamestate.gamestate.mainChar:
                     return
                 if not self.discovered:
                     self.terrain.huntersLodge.firstOfficer.basicChatOptions[-1]["params"]["info"].append({"name":"i discovered a nest in a cargo room.","text":"thanks for the report","type":"text","trigger":{"container":self.terrain.huntersLodge,"method":"rewardNestFind","params":{"room":self}}})
@@ -2324,7 +2321,7 @@ XXXXXXXX
     '''
     def handleUnexpectedGrowthTankActivation(self,character,item):
         # bad pattern; player only function
-        if not character == mainChar:
+        if not character == src.gamestate.gamestate.mainChar:
             return
 
         # only act if there is somebody to act
@@ -2339,9 +2336,9 @@ XXXXXXXX
         character.addMessage(self.firstOfficer.name+": Please move on to your next assignment immediatly.")
 
         # remove all quests
-        for quest in mainChar.quests:
+        for quest in src.gamestate.gamestate.mainChar.quests:
             quest.deactivate()
-        mainChar.quests = []
+        src.gamestate.gamestate.mainChar.quests = []
 
         # cancel cinematics
         # bad code: should happen in a more structured way
@@ -2614,7 +2611,7 @@ XXXXX$XXXXX
         self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
 
     def dispenseFreeReputation(self):
-        mainChar.reputation += 100
+        src.gamestate.gamestate.mainChar.reputation += 100
 
 '''
 '''
@@ -2649,7 +2646,7 @@ XXXXX$XXXXX
         self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
 
     def rewardNestFind(self,params):
-        mainChar.awardReputation(amount=10,reason="reporting a nest")
+        src.gamestate.gamestate.mainChar.awardReputation(amount=10,reason="reporting a nest")
         toRemove = None
         for option in self.firstOfficer.basicChatOptions[-1]["params"]["info"]:
             if "trigger" in option and option["trigger"]["method"] == "rewardNestFind" and  option["trigger"]["params"] == params:
@@ -2663,8 +2660,8 @@ XXXXX$XXXXX
     def killMiceNest(self,params):
         for mouse in params["room"].characters:
             quest = src.quests.MurderQuest(toKill=mouse,creator=self)
-            mainChar.assignQuest(quest,active=True)
-        mainChar.revokeReputation(amount=20,reason=" for balancing")
+            src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+        src.gamestate.gamestate.mainChar.revokeReputation(amount=20,reason=" for balancing")
 
 '''
 a empty room

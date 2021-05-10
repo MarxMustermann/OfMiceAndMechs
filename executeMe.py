@@ -282,23 +282,6 @@ characters.terrain = terrain
 
 ##################################################################################################################################
 ###
-##        setup the game
-#
-#################################################################################################################################
-
-# bad code: common variables with modules
-rooms.mainChar = gamestate.gamestate.mainChar
-terrains.mainChar = gamestate.gamestate.mainChar
-story.mainChar = gamestate.gamestate.mainChar
-interaction.mainChar = gamestate.gamestate.mainChar
-cinematics.mainChar = gamestate.gamestate.mainChar
-quests.mainChar = gamestate.gamestate.mainChar
-chats.mainChar = gamestate.gamestate.mainChar
-characters.mainChar = gamestate.gamestate.mainChar
-
-
-##################################################################################################################################
-###
 ##        the main loop
 #
 #################################################################################################################################

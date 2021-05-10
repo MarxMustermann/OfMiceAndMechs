@@ -12,6 +12,7 @@ import src.chats
 import src.saveing
 import src.logger
 import src.interaction
+import src.gamestate
 
 urwid = None
 
@@ -159,7 +160,7 @@ class MessageZoomCinematic(BasicCinematic):
     """
     def advance(self):
         super().advance()
-        mainChar.terrain = None
+        src.gamestate.gamestate.mainChar.terrain = None
 
         # get the text of the message window if it wasn't retrieved yet
         if not self.text:
@@ -686,7 +687,7 @@ class ShowMessageCinematic(BasicCinematic):
             return False
 
         # add message
-        mainChar.addMessage(self.message)
+        src.gamestate.gamestate.mainChar.addMessage(self.message)
         src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, '~')
         self.breakCinematic = True
         return True

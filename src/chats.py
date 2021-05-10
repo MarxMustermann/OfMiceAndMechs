@@ -222,7 +222,7 @@ class GrowthTankRefillChat(Chat):
     Empty growthtanks look like this: """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.growthTank_unfilled],""" full ones look like this: """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.growthTank_filled],"""
     
 Activate these, while having a full bottle in your inventory, but leave the full ones alone"""]
-            mainChar.addMessage("please refill your flask and use it to refill the growthtanks")
+            src.gamestate.gamestate.mainChar.addMessage("please refill your flask and use it to refill the growthtanks")
             src.interaction.submenue = None
             self.set_text(self.persistentText)
             # remove chat option
@@ -287,7 +287,7 @@ class TutorialSpeechTest(Chat):
         if self.firstRun:
             # show fluffed up information
             self.persistentText = "indeed. There are some things that need to be done.\n\nFirst exmaine the room a bit and find your way around, but try not activate anything important.\n\nYour implant will store the orders given. When you press q you will get a list of your current orders.\nTry to get familiar with the implant, it is an important tool for keeping things in order.\n\n"
-            mainChar.addMessage("press q to see your questlist")
+            src.gamestate.gamestate.mainChar.addMessage("press q to see your questlist")
             src.interaction.submenue = None
             self.set_text(self.persistentText)
 
@@ -431,13 +431,13 @@ You can do so by pressing """+config.commandChars.autoAdvance+"""
 
 It is of limited practability though. It is mainly useful for stupid manual labor and often does not 
 do things the most efficent way. It will even try to handle conversion, wich does not allways lead to optimal results"""
-            mainChar.addMessage("press "+config.commandChars.autoAdvance+" to let the implant take control ")
+            src.gamestate.gamestate.mainChar.addMessage("press "+config.commandChars.autoAdvance+" to let the implant take control ")
             self.set_text(self.persistentText)
             self.firstRun = False
 
             # punish / reward player
-            mainChar.revokeReputation(fraction=2,reason="asking a question")
-            mainChar.awardReputation(amount=2,reason="gaining knowledge")
+            src.gamestate.gamestate.mainChar.revokeReputation(fraction=2,reason="asking a question")
+            src.gamestate.gamestate.mainChar.awardReputation(amount=2,reason="gaining knowledge")
             return False
         
         # tear down on second run
@@ -492,8 +492,8 @@ for a brain.\n\n"""
             self.firstRun = False
 
             # punish / reward player
-            mainChar.revokeReputation(fraction=2,reason="asking a question")
-            mainChar.awardReputation(amount=2,reason="gaining knowledge")
+            src.gamestate.gamestate.mainChar.revokeReputation(fraction=2,reason="asking a question")
+            src.gamestate.gamestate.mainChar.awardReputation(amount=2,reason="gaining knowledge")
             return False
 
         # tear down on second run
@@ -543,7 +543,7 @@ class ReReport(src.interaction.SubMenu):
             self.firstRun = False
 
             # punish player
-            mainChar.revokeReputation(amount=1,reason="not reporting for duty in timely manner")
+            src.gamestate.gamestate.mainChar.revokeReputation(amount=1,reason="not reporting for duty in timely manner")
 
             # remove chat option
             self.removeFromChatOptions(terrain.waitingRoom.firstOfficer)
@@ -747,8 +747,8 @@ class RoomDutyChat(Chat):
         if src.gamestate.gamestate.tick%2:
             self.persistentText = "yes, you may."
             quest = src.quests.Serve(superior=self.superior,creator=self)
-            mainChar.assignQuest(quest,active=True)
-            self.superior.subordinates.append(mainChar)
+            src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+            self.superior.subordinates.append(src.gamestate.gamestate.mainChar)
             self.set_text(self.persistentText)
             self.done = True
 
@@ -776,9 +776,9 @@ class RoomDutyChat2(Chat):
         self.persistentText = "Drink something"
 
         quest = src.quests.PickupQuestMeta(self.partner.room.bean)
-        mainChar.assignQuest(quest,active=True)
+        src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
         quest = src.quests.ActivateQuestMeta(self.partner.room.bean)
-        mainChar.assignQuest(quest,active=True)
+        src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
 
         self.set_text(self.persistentText)
         self.done = True
@@ -1011,35 +1011,35 @@ class RecruitChat(Chat):
         if self.firstRun:
 
             # add player text
-            self.persistentText += mainChar.name+": \"come and help me.\"\n"
+            self.persistentText += src.gamestate.gamestate.mainChar.name+": \"come and help me.\"\n"
 
             # reject player request
-            if self.partner.reputation > mainChar.reputation:
-                if mainChar.reputation <= 0:
+            if self.partner.reputation > src.gamestate.gamestate.mainChar.reputation:
+                if src.gamestate.gamestate.mainChar.reputation <= 0:
                     # reject player very harshly
                     self.persistentText += self.partner.name+": \"No.\""
-                    mainChar.revokeReputation(amount=5,reason="asking a superior for service")
+                    src.gamestate.gamestate.mainChar.revokeReputation(amount=5,reason="asking a superior for service")
                 else:
                     # reject player harshly
-                    if self.partner.reputation//mainChar.reputation:
-                        self.persistentText += self.partner.name+": \"you will need at least have to have "+str(self.partner.reputation//mainChar.reputation)+" times as much reputation to have me consider that\"\n"
-                        mainChar.revokeReputation(amount=2*(self.partner.reputation//mainChar.reputation),reason="asking a superior for service")
+                    if self.partner.reputation//src.gamestate.gamestate.mainChar.reputation:
+                        self.persistentText += self.partner.name+": \"you will need at least have to have "+str(self.partner.reputation//src.gamestate.gamestate.mainChar.reputation)+" times as much reputation to have me consider that\"\n"
+                        src.gamestate.gamestate.mainChar.revokeReputation(amount=2*(self.partner.reputation//src.gamestate.gamestate.mainChar.reputation),reason="asking a superior for service")
                     # reject player somewhat nicely
                     else:
                         self.persistentText += self.partner.name+": \"maybe if you come back later\""
-                        mainChar.revokeReputation(amount=2,reason="asking a superior for service")
+                        src.gamestate.gamestate.mainChar.revokeReputation(amount=2,reason="asking a superior for service")
             # consider player request
             else:
 
                 # reject player
                 if src.gamestate.gamestate.tick%2:
                     self.persistentText += self.partner.name+": \"sorry, too busy.\"\n"
-                    mainChar.revokeReputation(amount=1,reason="getting service refused")
+                    src.gamestate.gamestate.mainChar.revokeReputation(amount=1,reason="getting service refused")
 
                 # allow the recruitment
                 else:
                     self.persistentText += self.partner.name+": \"on it!\"\n"
-                    mainChar.subordinates.append(self.partner)
+                    src.gamestate.gamestate.mainChar.subordinates.append(self.partner)
 
             # show dialog
             text = self.persistentText+"\n\n-- press any key --"
@@ -1084,14 +1084,14 @@ class JoinMilitaryChat(Chat):
         if self.firstRun:
 
             # add player text
-            self.persistentText += mainChar.name+": \"i want to join the military.\"\n"
+            self.persistentText += src.gamestate.gamestate.mainChar.name+": \"i want to join the military.\"\n"
 
             # reject player request
-            if mainChar.reputation < 10:
+            if src.gamestate.gamestate.mainChar.reputation < 10:
                 self.persistentText += self.partner.name+": \"No. Go kill yourself\""
 
-                quest = src.quests.MurderQuest(toKill=mainChar,creator=self)
-                mainChar.assignQuest(quest,active=True)
+                quest = src.quests.MurderQuest(toKill=src.gamestate.gamestate.mainChar,creator=self)
+                src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
             else:
                 self.persistentText += self.partner.name+": \"No.\""
 
@@ -1143,10 +1143,10 @@ class CaptainChat(Chat):
         if self.firstRun:
 
             # add player text
-            self.persistentText += mainChar.name+": \"i want to be captain.\"\n"
+            self.persistentText += src.gamestate.gamestate.mainChar.name+": \"i want to be captain.\"\n"
 
             # reject player request
-            if not mainChar == self.partner.room.secondOfficer:
+            if not src.gamestate.gamestate.mainChar == self.partner.room.secondOfficer:
                 self.persistentText += self.partner.name+": \"Only my second in command could possibly succeed me\""
             # consider player request
             else:
@@ -1193,7 +1193,7 @@ class FactionChat1(Chat):
         if self.firstRun:
 
             # add player text
-            self.persistentText += mainChar.name+": \"the requirements for an alliance are:.\"\n"
+            self.persistentText += src.gamestate.gamestate.mainChar.name+": \"the requirements for an alliance are:.\"\n"
             self.persistentText += "\n\n"
             self.persistentText += "minRep: %s\n"%(self.partner.minRep,)
             self.persistentText += "maxAliance: %s\n"%(self.partner.maxAliance,)
@@ -1242,27 +1242,27 @@ class FactionChat2(Chat):
         # show dialog
         if self.firstRun:
 
-            if not self.partner in mainChar.aliances:
-                if mainChar.reputation < self.partner.minRep:
-                    self.persistentText += mainChar.name+": \"not enough rep.\"\n"
-                elif len(mainChar.aliances) > self.partner.maxAliance:
-                    self.persistentText += mainChar.name+": \"too many aliances.\"\n"
+            if not self.partner in src.gamestate.gamestate.mainChar.aliances:
+                if src.gamestate.gamestate.mainChar.reputation < self.partner.minRep:
+                    self.persistentText += src.gamestate.gamestate.mainChar.name+": \"not enough rep.\"\n"
+                elif len(src.gamestate.gamestate.mainChar.aliances) > self.partner.maxAliance:
+                    self.persistentText += src.gamestate.gamestate.mainChar.name+": \"too many aliances.\"\n"
                 else:
                     found = False
                     for exclude in self.partner.excludes:
-                        if exclude in mainChar.aliances:
+                        if exclude in src.gamestate.gamestate.mainChar.aliances:
                             found = True
 
                     if found:
-                        self.persistentText += mainChar.name+": \"bad aliance.\"\n"
+                        self.persistentText += src.gamestate.gamestate.mainChar.name+": \"bad aliance.\"\n"
                     else:
-                        self.persistentText += mainChar.name+": \"OK\"\n"
-                        mainChar.awardReputation(amount=self.partner.repGain,reason="forging an aliance")
-                        mainChar.aliances.append(self.partner)
+                        self.persistentText += src.gamestate.gamestate.mainChar.name+": \"OK\"\n"
+                        src.gamestate.gamestate.mainChar.awardReputation(amount=self.partner.repGain,reason="forging an aliance")
+                        src.gamestate.gamestate.mainChar.aliances.append(self.partner)
 
             else:
                 # add player text
-                self.persistentText += mainChar.name+": \"we are already alianced.\"\n"
+                self.persistentText += src.gamestate.gamestate.mainChar.name+": \"we are already alianced.\"\n"
 
             # show dialog
             text = self.persistentText+"\n\n-- press any key --"
@@ -1307,19 +1307,19 @@ class CaptainChat2(Chat):
         
         if self.wait:
             self.wait = False
-            self.partner.room.secondOfficer = mainChar
+            self.partner.room.secondOfficer = src.gamestate.gamestate.mainChar
             return False
 
         # show dialog
         if self.firstRun:
 
             # add player text
-            self.persistentText += mainChar.name+": \"i want to be your second in command.\"\n"
+            self.persistentText += src.gamestate.gamestate.mainChar.name+": \"i want to be your second in command.\"\n"
 
             if not self.partner.room.secondOfficer.dead:
                 self.persistentText += self.partner.name+": \"No. i have a second in command\""
             else:
-                if mainChar.reputation < 100:
+                if src.gamestate.gamestate.mainChar.reputation < 100:
                     self.persistentText += self.partner.name+": \"No. I do not trust you\""
                 # consider player request
                 else:
@@ -1392,7 +1392,7 @@ class ChatMenu(Chat):
 
         # wake up character instead of speaking
         if self.partner.unconcious:
-            mainChar.addMessage("wake up!")
+            src.gamestate.gamestate.mainChar.addMessage("wake up!")
             self.partner.wakeUp()
             return True
 
@@ -1428,8 +1428,8 @@ class ChatMenu(Chat):
         # display greetings
         if self.state == None:
             self.state = "mainOptions"
-            self.persistentText += self.partner.name+": \"Everything in Order, "+mainChar.name+"?\"\n"
-            self.persistentText += mainChar.name+": \"All sorted, "+self.partner.name+"!\"\n"
+            self.persistentText += self.partner.name+": \"Everything in Order, "+src.gamestate.gamestate.mainChar.name+"?\"\n"
+            self.persistentText += src.gamestate.gamestate.mainChar.name+": \"All sorted, "+self.partner.name+"!\"\n"
 
         # show selection of sub chats
         if self.state == "mainOptions":
@@ -1448,7 +1448,7 @@ class ChatMenu(Chat):
                 options.append(("moveSouth","move south"))
                 options.append(("moveEast","move east"))
                 """
-                for option in self.partner.getChatOptions(mainChar):
+                for option in self.partner.getChatOptions(src.gamestate.gamestate.mainChar):
                     if not isinstance(option,dict):
                         options.append((option,option.dialogName))
                     else:
@@ -1488,15 +1488,15 @@ class ChatMenu(Chat):
                     submenue.handleKey(key, noRender=noRender)
                     return False
                 elif self.selection == "copyMacros":
-                    self.partner.macroState["macros"] = mainChar.macroState["macros"]
-                    mainChar.addMessage("copy macros")
+                    self.partner.macroState["macros"] = src.gamestate.gamestate.mainChar.macroState["macros"]
+                    src.gamestate.gamestate.mainChar.addMessage("copy macros")
                     return True
                 elif self.selection == "showFrustration":
                     submenue = src.interaction.OneKeystrokeMenu(text = "my frustration is: %s"%(self.partner.frustration))
                     self.subMenu = submenue
                 elif self.selection == "goToChar":
-                    xDiff = mainChar.xPosition-self.partner.xPosition
-                    yDiff = mainChar.yPosition-self.partner.yPosition
+                    xDiff = src.gamestate.gamestate.mainChar.xPosition-self.partner.xPosition
+                    yDiff = src.gamestate.gamestate.mainChar.yPosition-self.partner.yPosition
 
                     moveCommand = []
 
@@ -1579,8 +1579,8 @@ class ChatMenu(Chat):
         # say goodbye
         if self.state == "done":
             if self.lockOptions:
-                self.persistentText += self.partner.name+": \"let us proceed, "+mainChar.name+".\"\n"
-                self.persistentText += mainChar.name+": \"let us proceed, "+self.partner.name+".\"\n"
+                self.persistentText += self.partner.name+": \"let us proceed, "+src.gamestate.gamestate.mainChar.name+".\"\n"
+                self.persistentText += src.gamestate.gamestate.mainChar.name+": \"let us proceed, "+self.partner.name+".\"\n"
                 self.lockOptions = False
             else:
                 return True
@@ -1595,7 +1595,7 @@ class ChatMenu(Chat):
     def runMacro(self):
 
         if not self.subMenu.keyPressed in self.partner.macroState["macros"]:
-            mainChar.addMessage("no macro found")
+            src.gamestate.gamestate.mainChar.addMessage("no macro found")
             return
 
         commands = []
@@ -1603,7 +1603,7 @@ class ChatMenu(Chat):
             commands.append((command,[]))
         self.partner.macroState["commandKeyQueue"] = commands
 
-        mainChar.addMessage("run macros - "+self.subMenu.keyPressed)
+        src.gamestate.gamestate.mainChar.addMessage("run macros - "+self.subMenu.keyPressed)
 
 # a map alowing to get classes from strings
 chatMap = {

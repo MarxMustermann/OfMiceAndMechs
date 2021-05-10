@@ -12,6 +12,7 @@ import src.interaction
 import src.canvas
 import src.logger
 import src.quests
+import config
 
 '''
 the main class for chats
@@ -425,11 +426,11 @@ But that is concerning the artworks, thats nothing you need to know.
 
 You need to know however that Sterns modification enhanced the implants guidance, control and communication abilities.
 If you stop thinking and allow the implant to take control, it will do so and continue your task.
-You can do so by pressing """+commandChars.autoAdvance+"""
+You can do so by pressing """+config.commandChars.autoAdvance+"""
 
 It is of limited practability though. It is mainly useful for stupid manual labor and often does not 
 do things the most efficent way. It will even try to handle conversion, wich does not allways lead to optimal results"""
-            messages.append("press "+commandChars.autoAdvance+" to let the implant take control ")
+            messages.append("press "+config.commandChars.autoAdvance+" to let the implant take control ")
             self.set_text(self.persistentText)
             self.firstRun = False
 
@@ -1414,7 +1415,7 @@ class ChatMenu(Chat):
                 self.subMenu.handleKey(key, noRender=noRender)
                 if not self.subMenu.done:
                     return False
-                self.handleKey(commandChars.wait, noRender=noRender)
+                self.handleKey(config.commandChars.wait, noRender=noRender)
 
             # return to main dialog menu
             self.subMenu = None

@@ -11,6 +11,8 @@ import src.canvas
 import src.cinematics
 import src.chats
 import src.quests
+import src.items
+import config
 
 phasesByName = None
 gamestate = None
@@ -225,27 +227,27 @@ class Challenge(BasicPhase):
         counter = 0
         while counter < 10:
             if (self.seed+counter)%2 == 0:
-                item = src.items.Coal(None,None,creator=self)
+                item = src.items.itemMap["Coal"](None,None,creator=self)
                 mainChar.inventory.append(item)
                 counter += 1
                 continue
             if (self.seed+counter)%5 == 0:
-                item = src.items.Wall(None,None,creator=self)
+                item = src.items.itemMap["Wall"](None,None,creator=self)
                 mainChar.inventory.append(item)
                 counter += 1
                 continue
             if (self.seed+counter)%3 == 0:
-                item = src.items.Coal(None,None,creator=self)
+                item = src.items.itemMap["Coal"](None,None,creator=self)
                 mainChar.inventory.append(item)
                 counter += 1
                 continue
             if (self.seed+counter)%7 == 0:
-                item = src.items.Pipe(None,None,creator=self)
+                item = src.items.itemMap["Pipe"](None,None,creator=self)
                 mainChar.inventory.append(item)
                 counter += 1
                 continue
             if (self.seed+counter)%13 == 0:
-                item = src.items.GooFlask(None,None,creator=self)
+                item = src.items.itemMap["GooFlask"](None,None,creator=self)
                 item.charges = 1
                 mainChar.inventory.append(item)
                 counter += 1
@@ -712,10 +714,10 @@ class WakeUpPhase(BasicPhase):
         # show fluff
         showGame(2)
         showMessage("implant has taken control")
-        showMessage("please press %s"%commandChars.wait)
+        showMessage("please press %s"%config.commandChars.wait)
         src.cinematics.cinematicQueue.append(src.cinematics.ShowGameCinematic(1,tickSpan=None))
         showMessage("""you will be represented by the """+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.main_char]+" Character,  "+self.npc.name+" is represented by the "+src.canvas.displayChars.indexedMapping[self.npc.display]+""" Character.""")
-        showMessage("please press %s"%commandChars.wait)
+        showMessage("please press %s"%config.commandChars.wait)
         src.cinematics.cinematicQueue.append(src.cinematics.ShowGameCinematic(1,tickSpan=None))
         showMessage("please prepare to be ejected")
         showGame(2)
@@ -873,10 +875,10 @@ class BasicMovementTraining(BasicPhase):
 
  you can move using the keyboard. 
 
- * press """,commandChars.move_north,""" to move up/north
- * press """,commandChars.move_west,""" to move left/west
- * press """,commandChars.move_south,""" to move down/south
- * press """,commandChars.move_east,""" to move right/east
+ * press """,config.commandChars.move_north,""" to move up/north
+ * press """,config.commandChars.move_west,""" to move left/west
+ * press """,config.commandChars.move_south,""" to move down/south
+ * press """,config.commandChars.move_east,""" to move right/east
 
  Your target is marked by """+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.questTargetMarker][1]+""" and a path to your target is highlighted. You may follow this path or find your own way"""])
         showGame(1)
@@ -922,14 +924,14 @@ class BasicMovementTraining(BasicPhase):
         import urwid
         # show instructions
         showText(["""
-    you can activate levers by moving onto the lever and then pressing """+commandChars.activate+"""\n
+    you can activate levers by moving onto the lever and then pressing """+config.commandChars.activate+"""\n
     Here is how to do this:\n\nImagine you are standing next to a lever
 
     """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],"""
     """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.lever_notPulled],"U\\",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],"""
     """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.main_char],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],"""
 
-   press """+commandChars.move_north+""" to move onto the lever and press """+commandChars.activate+""" to activate the lever.
+   press """+config.commandChars.move_north+""" to move onto the lever and press """+config.commandChars.activate+""" to activate the lever.
    After pulling the lever a flask should apear like this:
 
    """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],"""
@@ -938,7 +940,7 @@ class BasicMovementTraining(BasicPhase):
 
    now, go and pull the lever
 """])
-        showMessage("you can activate levers by moving onto the lever and then pressing "+commandChars.activate)
+        showMessage("you can activate levers by moving onto the lever and then pressing "+config.commandChars.activate)
 
         # ask player to pull the lever and add trigger
         say("activate the lever",firstOfficer)
@@ -960,15 +962,15 @@ class BasicMovementTraining(BasicPhase):
         msg = """
     you produced yourself a goo flask. It looks like this: ò= when full and like this: ò- when half empty. You may pick up your flask now. The machine should have dumped it on the floor near you.
         
-    you can pick up items by moving onto them and pressing """+commandChars.pickUp+""". 
+    you can pick up items by moving onto them and pressing """+config.commandChars.pickUp+""". 
 
-    your inventory can hold 10 items and can be accessed by pressing """+commandChars.show_inventory+""".
+    your inventory can hold 10 items and can be accessed by pressing """+config.commandChars.show_inventory+""".
 
-    usually everyone carries at least a flask of goo. You need to drink at least every 1000 ticks by pressing """+commandChars.drink+""" 
+    usually everyone carries at least a flask of goo. You need to drink at least every 1000 ticks by pressing """+config.commandChars.drink+""" 
 
     """
         showText(msg)
-        showMessage("""you can pick up items by moving onto them and pressing """+commandChars.pickUp+""".""")
+        showMessage("""you can pick up items by moving onto them and pressing """+config.commandChars.pickUp+""".""")
         say("well done, go and fetch your drink",firstOfficer)
 
         # ask the player to pick up the flask
@@ -985,7 +987,7 @@ class BasicMovementTraining(BasicPhase):
 
         # show instructions
         say("great. Drink from the flask you just fetched and come over for a quick talk.",firstOfficer)
-        msg = "you can drink using "+commandChars.drink+". If you do not drink for 1000 ticks you will starve"
+        msg = "you can drink using "+config.commandChars.drink+". If you do not drink for 1000 ticks you will starve"
         showMessage(msg)
 
         # ask the player to drink and return
@@ -1034,7 +1036,7 @@ class BasicMovementTraining(BasicPhase):
     def chatter(self):
         firstOfficer = terrain.wakeUpRoom.firstOfficer
 
-        msg = "you can talk to people by pressing "+commandChars.hail+" and selecting the person to talk to."
+        msg = "you can talk to people by pressing "+config.commandChars.hail+" and selecting the person to talk to."
         showMessage(msg)
         showText("""
 
@@ -1070,11 +1072,11 @@ class BasicMovementTraining(BasicPhase):
 """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pile],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],"""
 """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],"""
 
-take a piece of coal by pressing """+commandChars.move_south+""" to walk against the pile and activating it by pressing """+commandChars.activate+""" immediatly afterwards.
+take a piece of coal by pressing """+config.commandChars.move_south+""" to walk against the pile and activating it by pressing """+config.commandChars.activate+""" immediatly afterwards.
 
-You may press """+commandChars.show_inventory+""" to confirm you have a piece of coal in your inventory.
+You may press """+config.commandChars.show_inventory+""" to confirm you have a piece of coal in your inventory.
 
-To activate the furnace press """+commandChars.move_west+""" to move next to it, press s to walk against it and press """+commandChars.activate+""" immediatly afterwards to activate it.
+To activate the furnace press """+config.commandChars.move_west+""" to move next to it, press s to walk against it and press """+config.commandChars.activate+""" immediatly afterwards to activate it.
 
 The furnace should be fired now and if you check your inventory afterwards you will see that
 you have on piece of coal less than before."""]) 
@@ -1114,7 +1116,7 @@ you have on piece of coal less than before."""])
 """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.lever_notPulled],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.main_char],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],"""
 """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],"""
 
-To examine the lever you have to press """+commandChars.move_west+""" to move onto the lever and then press """+commandChars.examine+""" to examine it.
+To examine the lever you have to press """+config.commandChars.move_west+""" to move onto the lever and then press """+config.commandChars.examine+""" to examine it.
 
 Imagine a situation where you want to examine an object you can not walk onto something:
 
@@ -1122,7 +1124,7 @@ Imagine a situation where you want to examine an object you can not walk onto so
 """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.main_char],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],"""
 """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],"""
 
-In this case you still have to press """+commandChars.move_west+""" to walk against the object and the press """+commandChars.examine+""" directly afterwards to examine it.
+In this case you still have to press """+config.commandChars.move_west+""" to walk against the object and the press """+config.commandChars.examine+""" directly afterwards to examine it.
 """])
         showMessage("walk onto or into something and press e directly afterwards to examine something")
 
@@ -1308,7 +1310,7 @@ class BoilerRoomWelcome(BasicPhase):
     '''
     def doSteamengineExplaination(self):
         # explain how the room works
-        src.cinematics.showCinematic("on the southern Side of the Room you see the Steamgenerators. A Steamgenerator might look like this:\n\n"+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.void][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_inactive][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+"\n"+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_inactive][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+"\n"+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.void][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_active][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_active][1]+"\n\nit consist of Furnaces marked by "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+" or "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_active][1]+" that heat the Water in the Boilers "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_inactive][1]+" till it boils. a Boiler with boiling Water will be shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_active][1]+".\n\nthe Steam is transfered to the Pipes marked with "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+" and used to power the Ships Mechanics and Weapons\n\nDesign of Generators are often quite unique. try to recognize the Genrators in this Room and press "+commandChars.wait+"")
+        src.cinematics.showCinematic("on the southern Side of the Room you see the Steamgenerators. A Steamgenerator might look like this:\n\n"+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.void][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_inactive][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+"\n"+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_inactive][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+"\n"+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.void][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_active][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_active][1]+"\n\nit consist of Furnaces marked by "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+" or "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_active][1]+" that heat the Water in the Boilers "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_inactive][1]+" till it boils. a Boiler with boiling Water will be shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_active][1]+".\n\nthe Steam is transfered to the Pipes marked with "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+" and used to power the Ships Mechanics and Weapons\n\nDesign of Generators are often quite unique. try to recognize the Genrators in this Room and press "+config.commandChars.wait+"")
 
         src.cinematics.cinematicQueue.append(src.cinematics.ShowGameCinematic(1))
         src.cinematics.showCinematic("the Furnaces burn Coal shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.coal][1]+" . if a Furnace is burning Coal, it is shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_active][1]+" and shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+" if not.\n\nthe Coal is stored in Piles shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pile][1]+". the Coalpiles are on the right Side of the Room and are filled through the Pipes when needed.")
@@ -1364,7 +1366,7 @@ class BoilerRoomWelcome(BasicPhase):
                 messages.append("*smoke clears*")
 
                 # add delivered items (incuding mouse)
-                self.mainCharRoom.addItems([items.Coal(7,5)])
+                self.mainCharRoom.addItems([src.items.itemMap["Coal"](7,5)])
                 self.mainCharRoom.addCharacter(characters.Mouse(),6,5)
 
         # add the coal delivery
@@ -1409,7 +1411,7 @@ class BoilerRoomWelcome(BasicPhase):
     '''
     def doFurnaceFirering(self):
         # show fluff
-        src.cinematics.showCinematic("your cohabitants in this Room are:\n '"+self.mainCharRoom.firstOfficer.name+"' ("+src.canvas.displayChars.indexedMapping[self.mainCharRoom.firstOfficer.display][1]+") is this Rooms 'Raumleiter' and therefore responsible for proper Steamgeneration in this Room\n '"+self.mainCharRoom.secondOfficer.name+"' ("+src.canvas.displayChars.indexedMapping[self.mainCharRoom.secondOfficer.display][1]+") was dispatched to support '"+self.mainCharRoom.firstOfficer.name+"' and is his Subordinate\n\nyou will likely report to '"+self.mainCharRoom.firstOfficer.name+"' later. please try to find them on the display and press "+commandChars.wait)
+        src.cinematics.showCinematic("your cohabitants in this Room are:\n '"+self.mainCharRoom.firstOfficer.name+"' ("+src.canvas.displayChars.indexedMapping[self.mainCharRoom.firstOfficer.display][1]+") is this Rooms 'Raumleiter' and therefore responsible for proper Steamgeneration in this Room\n '"+self.mainCharRoom.secondOfficer.name+"' ("+src.canvas.displayChars.indexedMapping[self.mainCharRoom.secondOfficer.display][1]+") was dispatched to support '"+self.mainCharRoom.firstOfficer.name+"' and is his Subordinate\n\nyou will likely report to '"+self.mainCharRoom.firstOfficer.name+"' later. please try to find them on the display and press "+config.commandChars.wait)
         src.cinematics.cinematicQueue.append(src.cinematics.ShowGameCinematic(1))
         src.cinematics.showCinematic(self.mainCharRoom.secondOfficer.name+" will demonstrate how to fire a furnace now.\n\nwatch and learn.")
 
@@ -1516,7 +1518,7 @@ class BoilerRoomInteractionTraining(BasicPhase):
 
         # make the player make a simple move
         questList = []
-        questList.append(src.quests.MoveQuestMeta(self.mainCharRoom,5,5,startCinematics="Movement can be tricky sometimes so please make yourself comfortable with the controls.\n\nyou can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.\n\nthe basic Movementcommands are:\n "+commandChars.move_north+"=up\n "+commandChars.move_east+"=right\n "+commandChars.move_south+"=down\n "+commandChars.move_west+"=right\n\nplease move to the designated Target. the Implant will mark your Way"))
+        questList.append(src.quests.MoveQuestMeta(self.mainCharRoom,5,5,startCinematics="Movement can be tricky sometimes so please make yourself comfortable with the controls.\n\nyou can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.\n\nthe basic Movementcommands are:\n "+config.commandChars.move_north+"=up\n "+config.commandChars.move_east+"=right\n "+config.commandChars.move_south+"=down\n "+config.commandChars.move_west+"=right\n\nplease move to the designated Target. the Implant will mark your Way"))
 
         # make the player move around
         if not mainChar.gotMovementSchooling:
@@ -1538,7 +1540,7 @@ class BoilerRoomInteractionTraining(BasicPhase):
 
         # explain interaction
         if not mainChar.gotInteractionSchooling:
-            quest = src.quests.CollectQuestMeta(startCinematics="next on my Checklist is to explain the Interaction with your Environment.\n\nthe basic Interationcommands are:\n\n "+commandChars.activate+"=activate/apply\n "+commandChars.examine+"=examine\n "+commandChars.pickUp+"=pick up\n "+commandChars.drop+"=drop\n\nsee this Piles of Coal marked with ӫ on the right Side and left Side of the Room.\n\nwhenever you bump into an Item that is to big to be walked on, you will promted for giving an extra Interactioncommand. i'll give you an Example:\n\n ΩΩ＠ӫӫ\n\n pressing "+commandChars.move_west+" and "+commandChars.activate+" would result in Activation of the Furnace\n pressing "+commandChars.move_east+" and "+commandChars.activate+" would result in Activation of the Pile\n pressing "+commandChars.move_west+" and "+commandChars.examine+" would result make you examine the Furnace\n pressing "+commandChars.move_east+" and "+commandChars.examine+" would result make you examine the Pile\n\nplease grab yourself some Coal from a pile by bumping into it and pressing j afterwards.")
+            quest = src.quests.CollectQuestMeta(startCinematics="next on my Checklist is to explain the Interaction with your Environment.\n\nthe basic Interationcommands are:\n\n "+config.commandChars.activate+"=activate/apply\n "+config.commandChars.examine+"=examine\n "+config.commandChars.pickUp+"=pick up\n "+config.commandChars.drop+"=drop\n\nsee this Piles of Coal marked with ӫ on the right Side and left Side of the Room.\n\nwhenever you bump into an Item that is to big to be walked on, you will promted for giving an extra Interactioncommand. i'll give you an Example:\n\n ΩΩ＠ӫӫ\n\n pressing "+config.commandChars.move_west+" and "+config.commandChars.activate+" would result in Activation of the Furnace\n pressing "+config.commandChars.move_east+" and "+config.commandChars.activate+" would result in Activation of the Pile\n pressing "+config.commandChars.move_west+" and "+config.commandChars.examine+" would result make you examine the Furnace\n pressing "+config.commandChars.move_east+" and "+config.commandChars.examine+" would result make you examine the Pile\n\nplease grab yourself some Coal from a pile by bumping into it and pressing j afterwards.")
             '''
             start new sub phase
             '''
@@ -1549,7 +1551,7 @@ class BoilerRoomInteractionTraining(BasicPhase):
             questList.append(quest)
         else:
             # bad code: assumtion of the player having failed the test is not always true
-            quest = src.quests.CollectQuestMeta(startCinematics="Since you failed the Test last time i will quickly reiterate the interaction commands.\n\nthe basic Interationcommands are:\n\n "+commandChars.activate+"=activate/apply\n "+commandChars.examine+"=examine\n "+commandChars.pickUp+"=pick up\n "+commandChars.drop+"=drop\n\nmove over or walk into items and then press the interaction button to be able to interact with it.")
+            quest = src.quests.CollectQuestMeta(startCinematics="Since you failed the Test last time i will quickly reiterate the interaction commands.\n\nthe basic Interationcommands are:\n\n "+config.commandChars.activate+"=activate/apply\n "+config.commandChars.examine+"=examine\n "+config.commandChars.pickUp+"=pick up\n "+config.commandChars.drop+"=drop\n\nmove over or walk into items and then press the interaction button to be able to interact with it.")
             questList.append(quest)
             
         # make the character fire the furnace
@@ -1885,7 +1887,7 @@ class FindWork(BasicPhase):
         mainChar.assignQuest(quest,active=True)
 
     def completeSimpeReputationGathering(self):
-        mainChar.inventory.append(src.items.Token(creator=self))
+        mainChar.inventory.append(src.items.itemMap["Token"](creator=self))
         messages.append("you recieved 1 token for completing a trainings task")
         numTokens = 0
         for item in mainChar.inventory:
@@ -1952,7 +1954,7 @@ class FindWork(BasicPhase):
         mainChar.assignQuest(quest,active=True)
  
     def completeSelectiveReputationGatheringUsefull(self):
-        mainChar.inventory.append(src.items.Token(creator=self))
+        mainChar.inventory.append(src.items.itemMap["Token"](creator=self))
         messages.append("you recieved 1 token for completing a task")
         numTokens = 0
         for item in mainChar.inventory:
@@ -2379,7 +2381,7 @@ class Tutorial(BasicPhase):
 
         self.reportQuest = None
 
-        desiredProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
+        desiredProducts = [src.items.itemMap["GrowthTank"],src.items.itemMap["Hutch"],src.items.itemMap["Furnace"]]
 
         numProducts = 0
         while not len(self.helper_getFilteredProducables()) in (1,) or not numProducts == 3:
@@ -2391,7 +2393,7 @@ class Tutorial(BasicPhase):
 
             itemsFound = []
             for item in self.miniBase.itemsOnFloor:
-                if isinstance(item,src.items.GameTestingProducer):
+                if isinstance(item,src.items.itemMap["GameTestingProducer"]):
                     if item.product in desiredProducts and not item.product in itemsFound:
                         itemsFound.append(item.product)                        
 
@@ -2440,14 +2442,14 @@ class Tutorial(BasicPhase):
 
         toRemove = []
         for item in mainChar.inventory:
-            if isinstance(item,src.items.Scrap):
+            if isinstance(item,src.items.itemMap["Scrap"]):
                 toRemove.append(item)
         for item in toRemove:
              mainChar.inventory.remove(item)
 
         itemCount = 0
         for item in terrain.itemsOnFloor:
-            if isinstance(item,src.items.Scrap):
+            if isinstance(item,src.items.itemMap["Scrap"]):
                 if (item.xPosition-1,item.yPosition) in terrain.watershedCoordinates or (item.xPosition+1,item.yPosition) in terrain.watershedCoordinates or (item.xPosition,item.yPosition-1) in terrain.watershedCoordinates or (item.xPosition,item.yPosition+1) in terrain.watershedCoordinates:
                     quest = src.quests.PickupQuestMeta(toPickup=item)
                     if len(mainChar.inventory) < 9:
@@ -2494,7 +2496,7 @@ class Tutorial(BasicPhase):
     def checkScrapCollected(self):
         numScrapCollected = 0
         for item in self.mainChar.inventory:
-            if isinstance(item,src.items.Scrap):
+            if isinstance(item,src.items.itemMap["Scrap"]):
                 numScrapCollected += 1
 
         if numScrapCollected >= 1:
@@ -2523,7 +2525,7 @@ class Tutorial(BasicPhase):
         coordinate = (11,1)
         if coordinate in self.miniBase.itemByCoordinates:
             for item in self.miniBase.itemByCoordinates[coordinate]:
-                if isinstance(item,src.items.Scrap):
+                if isinstance(item,src.items.itemMap["Scrap"]):
                     showText("That should work. Now activate the scrap compactor to produce a metal bar")
                     self.mainChar.delListener(self.checkScrapDropped)
                     self.mainChar.addListener(self.checkFirstMetalBar)
@@ -2533,14 +2535,14 @@ class Tutorial(BasicPhase):
         coordinate = (9,1)
         if coordinate in self.miniBase.itemByCoordinates:
             for item in self.miniBase.itemByCoordinates[coordinate]:
-                if isinstance(item,src.items.MetalBars):
+                if isinstance(item,src.items.itemMap["MetalBars"]):
                     showText("now go and grab the metal bar you produced")
                     self.mainChar.delListener(self.checkFirstMetalBar)
                     self.mainChar.addListener(self.checkFirstMetalBarFirstPickedUp)
 
     def checkFirstMetalBarFirstPickedUp(self):
         for item in self.mainChar.inventory:
-            if isinstance(item,src.items.MetalBars):
+            if isinstance(item,src.items.itemMap["MetalBars"]):
                 showText("You got that figgured out. Now produce 4 more metal bars and pick them up")
                 self.mainChar.delListener(self.checkFirstMetalBarFirstPickedUp)
                 break
@@ -2548,7 +2550,7 @@ class Tutorial(BasicPhase):
     def checkMetalBars(self):
         numMetalBars = 0
         for item in self.mainChar.inventory:
-            if isinstance(item,src.items.MetalBars):
+            if isinstance(item,src.items.itemMap["MetalBars"]):
                 numMetalBars += 1
 
         if numMetalBars >= 5:
@@ -2570,7 +2572,7 @@ class Tutorial(BasicPhase):
             self.fastProduction = False
 
     def helper_getFilteredProducables(self):
-        desiredProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
+        desiredProducts = [src.items.itemMap["GrowthTank"],src.items.itemMap["Hutch"],src.items.itemMap["Furnace"]]
         filteredProducables = []
         for item in self.helper_getProducables():
             if item in desiredProducts:
@@ -2578,12 +2580,12 @@ class Tutorial(BasicPhase):
         return filteredProducables
 
     def helper_getProducables(self):
-        producableStuff = [src.items.MetalBars]
+        producableStuff = [src.items.itemMap["MetalBars"]]
         lastLength = 0
         while lastLength < len(producableStuff):
             lastLength = len(producableStuff)
             for item in self.miniBase.itemsOnFloor:
-                if isinstance(item,src.items.GameTestingProducer):
+                if isinstance(item,src.items.itemMap["GameTestingProducer"]):
                     if item.resource in producableStuff and not item.product in producableStuff:
                         producableStuff.append(item.product)
         return producableStuff
@@ -2599,14 +2601,14 @@ class Tutorial(BasicPhase):
             if self.batchFurnaceProducing and not self.batchHutchProducing and not self.batchGrowthTankProcing:
                 showText("The first batch is ready. You can optimise your macros in many ways.\nYou can record your macros to buffers from a-z. This way you can store marcos for different actions.\n\nI recommend recording the macro for producing furnaces to f, the macro for producing hutches to h and the macro for producing the growthtanks to g\n\nproduce 10 hutches now.")
                 for x in range(0,10):
-                    self.productionQueue.append(src.items.Hutch)
+                    self.productionQueue.append(src.items.itemMap["Hutch"])
                 self.batchFurnaceProducing = False
                 self.batchHutchProducing = True
 
             elif not self.batchFurnaceProducing and self.batchHutchProducing and not self.batchGrowthTankProcing:
                 showText("The second batch is ready. Another trick that may be useful for you is the multiplier. It allows to repeat commmands\n\nYou can use this for example to drop 7 items by pressing 7l . This will be translated to lllllll .\nYou can use this within macros and when calling macros. Press 5_f to run the macro f 5 times.\n\nUse this the produce 10 growth tanks with one macro.")
                 for x in range(0,10):
-                    self.productionQueue.append(src.items.GrowthTank)
+                    self.productionQueue.append(src.items.itemMap["GrowthTank"])
                 self.batchHutchProducing = False
                 self.batchGrowthTankProcing = True
 
@@ -2622,9 +2624,9 @@ class Tutorial(BasicPhase):
         if not len(self.productionQueue) and self.fastProduction:
             """
             for x in range(0,10):
-                self.productionQueue.append(src.items.GrowthTank)
+                self.productionQueue.append(src.items.itemMap["GrowthTank"])
             for x in range(0,10):
-                self.productionQueue.append(src.items.Furnace)
+                self.productionQueue.append(src.items.itemMap["Furnace"])
             """
             if not self.fastProductionStart == 0:
                 if gamestate.tick-self.fastProductionStart > 100:
@@ -2635,11 +2637,11 @@ class Tutorial(BasicPhase):
 
             self.fastProductionStart = gamestate.tick
             for x in range(0,10):
-                self.productionQueue.append(src.items.Hutch)
+                self.productionQueue.append(src.items.itemMap["Hutch"])
 
         self.seed += self.seed%43
         
-        possibleProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
+        possibleProducts = [src.items.itemMap["GrowthTank"],src.items.itemMap["Hutch"],src.items.itemMap["Furnace"]]
         if self.queueProduction or self.batchProducing or self.fastProduction:
             self.product = self.productionQueue[0]
             self.productionQueue.remove(self.product)
@@ -2648,7 +2650,7 @@ class Tutorial(BasicPhase):
             self.product = possibleProducts[self.seed%len(possibleProducts)]
             self.seed += self.seed%37
 
-            mainChar.inventory.append(src.items.Token(creator=self))
+            mainChar.inventory.append(src.items.itemMap["Token"](creator=self))
 
         producableStuff = self.helper_getProducables()
 
@@ -2673,7 +2675,7 @@ class Tutorial(BasicPhase):
 
             self.batchProducing = True
             for x in range(0,10):
-                self.productionQueue.append(src.items.Furnace)
+                self.productionQueue.append(src.items.itemMap["Furnace"])
             self.batchFurnaceProducing = True
             self.mainChar.delListener(self.checkProductionLine)
 
@@ -2750,7 +2752,7 @@ class Testing_1(BasicPhase):
 
         self.reportQuest = None
 
-        desiredProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
+        desiredProducts = [src.items.itemMap["GrowthTank"],src.items.itemMap["Hutch"],src.items.itemMap["Furnace"]]
 
         numProducts = 0
         while not len(self.helper_getFilteredProducables()) in (1,) or not numProducts == 3:
@@ -2762,7 +2764,7 @@ class Testing_1(BasicPhase):
 
             itemsFound = []
             for item in self.miniBase.itemsOnFloor:
-                if isinstance(item,src.items.GameTestingProducer):
+                if isinstance(item,src.items.itemMap["GameTestingProducer"]):
                     if item.product in desiredProducts and not item.product in itemsFound:
                         itemsFound.append(item.product)                        
 
@@ -2811,14 +2813,14 @@ class Testing_1(BasicPhase):
 
         toRemove = []
         for item in mainChar.inventory:
-            if isinstance(item,src.items.Scrap):
+            if isinstance(item,src.items.itemMap["Scrap"]):
                 toRemove.append(item)
         for item in toRemove:
              mainChar.inventory.remove(item)
 
         itemCount = 0
         for item in terrain.itemsOnFloor:
-            if isinstance(item,src.items.Scrap):
+            if isinstance(item,src.items.itemMap["Scrap"]):
                 if (item.xPosition-1,item.yPosition) in terrain.watershedCoordinates or (item.xPosition+1,item.yPosition) in terrain.watershedCoordinates or (item.xPosition,item.yPosition-1) in terrain.watershedCoordinates or (item.xPosition,item.yPosition+1) in terrain.watershedCoordinates:
                     quest = src.quests.PickupQuestMeta(toPickup=item)
                     if len(mainChar.inventory) < 9:
@@ -2865,7 +2867,7 @@ class Testing_1(BasicPhase):
     def checkScrapCollected(self):
         numScrapCollected = 0
         for item in self.mainChar.inventory:
-            if isinstance(item,src.items.Scrap):
+            if isinstance(item,src.items.itemMap["Scrap"]):
                 numScrapCollected += 1
 
         if numScrapCollected >= 1:
@@ -2894,7 +2896,7 @@ class Testing_1(BasicPhase):
         coordinate = (11,1)
         if coordinate in self.miniBase.itemByCoordinates:
             for item in self.miniBase.itemByCoordinates[coordinate]:
-                if isinstance(item,src.items.Scrap):
+                if isinstance(item,src.items.itemMap["Scrap"]):
                     showText("That should work. Now activate the scrap compactor to produce a metal bar")
                     self.mainChar.delListener(self.checkScrapDropped)
                     self.mainChar.addListener(self.checkFirstMetalBar)
@@ -2904,14 +2906,14 @@ class Testing_1(BasicPhase):
         coordinate = (9,1)
         if coordinate in self.miniBase.itemByCoordinates:
             for item in self.miniBase.itemByCoordinates[coordinate]:
-                if isinstance(item,src.items.MetalBars):
+                if isinstance(item,src.items.itemMap["MetalBars"]):
                     showText("now go and grab the metal bar you produced")
                     self.mainChar.delListener(self.checkFirstMetalBar)
                     self.mainChar.addListener(self.checkFirstMetalBarFirstPickedUp)
 
     def checkFirstMetalBarFirstPickedUp(self):
         for item in self.mainChar.inventory:
-            if isinstance(item,src.items.MetalBars):
+            if isinstance(item,src.items.itemMap["MetalBars"]):
                 showText("You got that figgured out. Now produce 4 more metal bars and pick them up")
                 self.mainChar.delListener(self.checkFirstMetalBarFirstPickedUp)
                 break
@@ -2919,7 +2921,7 @@ class Testing_1(BasicPhase):
     def checkMetalBars(self):
         numMetalBars = 0
         for item in self.mainChar.inventory:
-            if isinstance(item,src.items.MetalBars):
+            if isinstance(item,src.items.itemMap["MetalBars"]):
                 numMetalBars += 1
 
         if numMetalBars >= 5:
@@ -2941,7 +2943,7 @@ class Testing_1(BasicPhase):
             self.fastProduction = False
 
     def helper_getFilteredProducables(self):
-        desiredProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
+        desiredProducts = [src.items.itemMap["GrowthTank"],src.items.itemMap["Hutch"],src.items.itemMap["Furnace"]]
         filteredProducables = []
         for item in self.helper_getProducables():
             if item in desiredProducts:
@@ -2949,12 +2951,12 @@ class Testing_1(BasicPhase):
         return filteredProducables
 
     def helper_getProducables(self):
-        producableStuff = [src.items.MetalBars]
+        producableStuff = [src.items.itemMap["MetalBars"]]
         lastLength = 0
         while lastLength < len(producableStuff):
             lastLength = len(producableStuff)
             for item in self.miniBase.itemsOnFloor:
-                if isinstance(item,src.items.GameTestingProducer):
+                if isinstance(item,src.items.itemMap["GameTestingProducer"]):
                     if item.resource in producableStuff and not item.product in producableStuff:
                         producableStuff.append(item.product)
         return producableStuff
@@ -2970,14 +2972,14 @@ class Testing_1(BasicPhase):
             if self.batchFurnaceProducing and not self.batchHutchProducing and not self.batchGrowthTankProcing:
                 showText("The first batch is ready. You can optimise your macros in many ways.\nYou can record your macros to buffers from a-z. This way you can store marcos for different actions.\n\nI recommend recording the macro for producing furnaces to f, the macro for producing hutches to h and the macro for producing the growthtanks to g\n\nproduce 10 hutches now.")
                 for x in range(0,10):
-                    self.productionQueue.append(src.items.Hutch)
+                    self.productionQueue.append(src.items.itemMap["Hutch"])
                 self.batchFurnaceProducing = False
                 self.batchHutchProducing = True
 
             elif not self.batchFurnaceProducing and self.batchHutchProducing and not self.batchGrowthTankProcing:
                 showText("The second batch is ready. Another trick that may be useful for you is the multiplier. It allows to repeat commmands\n\nYou can use this for example to drop 7 items by pressing 7l . This will be translated to lllllll .\nYou can use this within macros and when calling macros. Press 5_f to run the macro f 5 times.\n\nUse this the produce 10 growth tanks with one macro.")
                 for x in range(0,10):
-                    self.productionQueue.append(src.items.GrowthTank)
+                    self.productionQueue.append(src.items.itemMap["GrowthTank"])
                 self.batchHutchProducing = False
                 self.batchGrowthTankProcing = True
 
@@ -2993,9 +2995,9 @@ class Testing_1(BasicPhase):
         if not len(self.productionQueue) and self.fastProduction:
             """
             for x in range(0,10):
-                self.productionQueue.append(src.items.GrowthTank)
+                self.productionQueue.append(src.items.itemMap["GrowthTank"])
             for x in range(0,10):
-                self.productionQueue.append(src.items.Furnace)
+                self.productionQueue.append(src.items.itemMap["Furnace"])
             """
             if not self.fastProductionStart == 0:
                 if gamestate.tick-self.fastProductionStart > 100:
@@ -3006,11 +3008,11 @@ class Testing_1(BasicPhase):
 
             self.fastProductionStart = gamestate.tick
             for x in range(0,10):
-                self.productionQueue.append(src.items.Hutch)
+                self.productionQueue.append(src.items.itemMap["Hutch"])
 
         self.seed += self.seed%43
         
-        possibleProducts = [src.items.GrowthTank,src.items.Hutch,src.items.Furnace]
+        possibleProducts = [src.items.itemMap["GrowthTank"],src.items.itemMap["Hutch"],src.items.itemMap["Furnace"]]
         if self.queueProduction or self.batchProducing or self.fastProduction:
             self.product = self.productionQueue[0]
             self.productionQueue.remove(self.product)
@@ -3019,7 +3021,7 @@ class Testing_1(BasicPhase):
             self.product = possibleProducts[self.seed%len(possibleProducts)]
             self.seed += self.seed%37
 
-            mainChar.inventory.append(src.items.Token(creator=self))
+            mainChar.inventory.append(src.items.itemMap["Token"](creator=self))
 
         producableStuff = self.helper_getProducables()
 
@@ -3044,7 +3046,7 @@ class Testing_1(BasicPhase):
 
             self.batchProducing = True
             for x in range(0,10):
-                self.productionQueue.append(src.items.Furnace)
+                self.productionQueue.append(src.items.itemMap["Furnace"])
             self.batchFurnaceProducing = True
             self.mainChar.delListener(self.checkProductionLine)
 
@@ -3136,11 +3138,11 @@ class BuildBase(BasicPhase):
                     continue
                 if random.randint(1,1) == 1:
                     for i in range(0,30):
-                        molds.append(src.items.Mold(bigX*15+random.randint(1,13),bigY*15+random.randint(1,13),creator=self))
-        molds.append(src.items.Mold(155,108,creator=self))
-        molds.append(src.items.Mold(159,116,creator=self))
-        molds.append(src.items.Mold(138,108,creator=self))
-        molds.append(src.items.Mold(145,115,creator=self))
+                        molds.append(src.items.itemMap["Mold"](bigX*15+random.randint(1,13),bigY*15+random.randint(1,13),creator=self))
+        molds.append(src.items.itemMap["Mold"](155,108,creator=self))
+        molds.append(src.items.itemMap["Mold"](159,116,creator=self))
+        molds.append(src.items.itemMap["Mold"](138,108,creator=self))
+        molds.append(src.items.itemMap["Mold"](145,115,creator=self))
 
         positions = [(187,37),(37,37),(37,187),(187,187),(202,112),(187,112),(172,112),]
         counter = 0
@@ -3163,27 +3165,27 @@ class BuildBase(BasicPhase):
                    positions.append(pos) 
 
         for pos in positions:
-            commandBloom = src.items.CommandBloom(pos[0],pos[1],creator=self)
+            commandBloom = src.items.itemMap["CommandBloom"](pos[0],pos[1],creator=self)
             terrain.addItems([commandBloom])
             if pos in ((187,112),(172,112),(157,112),(142,112)):
                 commandBloom.masterCommand = "13a9kj"
-            molds.append(src.items.Mold(pos[0]+4,pos[1]+4,creator=self))
-            molds.append(src.items.Mold(pos[0]-4,pos[1]+4,creator=self))
-            molds.append(src.items.Mold(pos[0]+4,pos[1]-4,creator=self))
-            molds.append(src.items.Mold(pos[0]-4,pos[1]-4,creator=self))
-            molds.append(src.items.Bloom(pos[0]+2,pos[1]+2,creator=self))
-            molds.append(src.items.Bloom(pos[0]-2,pos[1]+2,creator=self))
-            molds.append(src.items.Bloom(pos[0]+2,pos[1]-2,creator=self))
-            molds.append(src.items.Bloom(pos[0]-2,pos[1]-2,creator=self))
-            terrain.addItems([src.items.CommandBloom(pos[0]-6,pos[1],creator=self)])
-            terrain.addItems([src.items.CommandBloom(pos[0]-6,pos[1],creator=self)])
-            terrain.addItems([src.items.CommandBloom(pos[0]+6,pos[1],creator=self)])
-            terrain.addItems([src.items.CommandBloom(pos[0],pos[1]-6,creator=self)])
-            terrain.addItems([src.items.CommandBloom(pos[0],pos[1]+6,creator=self)])
-            molds.append(src.items.Mold(pos[0]+6,pos[1]+6,creator=self))
-            molds.append(src.items.Mold(pos[0]-6,pos[1]-6,creator=self))
-            molds.append(src.items.Mold(pos[0]+6,pos[1]-6,creator=self))
-            molds.append(src.items.Mold(pos[0]-6,pos[1]+6,creator=self))
+            molds.append(src.items.itemMap["Mold"](pos[0]+4,pos[1]+4,creator=self))
+            molds.append(src.items.itemMap["Mold"](pos[0]-4,pos[1]+4,creator=self))
+            molds.append(src.items.itemMap["Mold"](pos[0]+4,pos[1]-4,creator=self))
+            molds.append(src.items.itemMap["Mold"](pos[0]-4,pos[1]-4,creator=self))
+            molds.append(src.items.itemMap["Bloom"](pos[0]+2,pos[1]+2,creator=self))
+            molds.append(src.items.itemMap["Bloom"](pos[0]-2,pos[1]+2,creator=self))
+            molds.append(src.items.itemMap["Bloom"](pos[0]+2,pos[1]-2,creator=self))
+            molds.append(src.items.itemMap["Bloom"](pos[0]-2,pos[1]-2,creator=self))
+            terrain.addItems([src.items.itemMap["CommandBloom"](pos[0]-6,pos[1],creator=self)])
+            terrain.addItems([src.items.itemMap["CommandBloom"](pos[0]-6,pos[1],creator=self)])
+            terrain.addItems([src.items.itemMap["CommandBloom"](pos[0]+6,pos[1],creator=self)])
+            terrain.addItems([src.items.itemMap["CommandBloom"](pos[0],pos[1]-6,creator=self)])
+            terrain.addItems([src.items.itemMap["CommandBloom"](pos[0],pos[1]+6,creator=self)])
+            molds.append(src.items.itemMap["Mold"](pos[0]+6,pos[1]+6,creator=self))
+            molds.append(src.items.itemMap["Mold"](pos[0]-6,pos[1]-6,creator=self))
+            molds.append(src.items.itemMap["Mold"](pos[0]+6,pos[1]-6,creator=self))
+            molds.append(src.items.itemMap["Mold"](pos[0]-6,pos[1]+6,creator=self))
         
         terrain.addItems(molds)
         for mold in molds:
@@ -3452,7 +3454,7 @@ class FactoryDream(BasicPhase):
         items = []
         for x in range(1,9):
             for y in range(1,6):
-                scrap = src.items.Scrap(x,y,amount=10,creator=self)
+                scrap = src.items.itemMap["Scrap"](x,y,amount=10,creator=self)
                 items.append(scrap)
         cargoPod.addItems(items)
         terrain.addRooms([cargoPod])
@@ -3466,7 +3468,7 @@ class FactoryDream(BasicPhase):
         items = []
         for x in range(1,9):
             for y in range(1,6):
-                flask = src.items.GooFlask(x,y)
+                flask = src.items.itemMap["GooFlask"](x,y)
                 flask.uses = 100
                 items.append(flask)
         cargoPod.addItems(items)
@@ -3475,39 +3477,39 @@ class FactoryDream(BasicPhase):
         # place processing scrap into metal bars
         workshopMetal = src.rooms.EmptyRoom(6,7,1,1,creator=self)
         items = []
-        scrapCompactor = src.items.ScrapCompactor(4,8)
+        scrapCompactor = src.items.itemMap["ScrapCompactor"](4,8)
         items.append(scrapCompactor)
-        scrapCompactor = src.items.ScrapCompactor(8,8)
+        scrapCompactor = src.items.itemMap["ScrapCompactor"](8,8)
         items.append(scrapCompactor)
-        scrapCompactor = src.items.ScrapCompactor(7,10)
+        scrapCompactor = src.items.itemMap["ScrapCompactor"](7,10)
         items.append(scrapCompactor)
-        machine = src.items.Machine(3,4)
+        machine = src.items.itemMap["Machine"](3,4)
         machine.setToProduce("Rod")
         items.append(machine)
-        machine = src.items.Machine(5,4)
+        machine = src.items.itemMap["Machine"](5,4)
         machine.setToProduce("Frame")
         items.append(machine)
-        machine = src.items.Machine(7,4)
+        machine = src.items.itemMap["Machine"](7,4)
         machine.setToProduce("Case")
         items.append(machine)
-        machine = src.items.Machine(9,4)
+        machine = src.items.itemMap["Machine"](9,4)
         machine.setToProduce("Wall")
         items.append(machine)
-        machine = src.items.Machine(10,8)
+        machine = src.items.itemMap["Machine"](10,8)
         machine.setToProduce("Sheet")
         items.append(machine)
-        machine = src.items.Machine(9,10)
+        machine = src.items.itemMap["Machine"](9,10)
         machine.setToProduce("FloorPlate")
         items.append(machine)
-        stasisTank = src.items.StasisTank(9,1)# lets add the stasis tank to hold the local npc
+        stasisTank = src.items.itemMap["StasisTank"](9,1)# lets add the stasis tank to hold the local npc
         items.append(stasisTank)
-        command = src.items.Command(6,6)# add a command for producing walls
+        command = src.items.itemMap["Command"](6,6)# add a command for producing walls
         command.setPayload(list("13dwwasjsjsjsjdss13aaaasslwdsjdddslwdsjdskwaaaakskwwwaaawlwdddddddlaaaaaaassdwjddwjddwjddwjdwksddddddddsjj12a"))
         items.append(command)
-        command = src.items.Command(5,10)# add a command for producing floors
+        command = src.items.itemMap["Command"](5,10)# add a command for producing floors
         command.setPayload(list(""))
         items.append(command)
-        command = src.items.Command(5,10)# add roombuilder
+        command = src.items.itemMap["Command"](5,10)# add roombuilder
         command.setPayload(list(""))
         items.append(command)
         workshopMetal.reconfigure(13,13)
@@ -3515,13 +3517,13 @@ class FactoryDream(BasicPhase):
         terrain.addRooms([workshopMetal])
 
         items = []
-        stockPile = src.items.UniformStockpileManager(15*7+7,15*6+7)
+        stockPile = src.items.itemMap["UniformStockpileManager"](15*7+7,15*6+7)
         items.append(stockPile)
-        stockPile = src.items.UniformStockpileManager(15*8+7,15*6+7)
+        stockPile = src.items.itemMap["UniformStockpileManager"](15*8+7,15*6+7)
         items.append(stockPile)
-        stockPile = src.items.UniformStockpileManager(15*9+7,15*6+7)
+        stockPile = src.items.itemMap["UniformStockpileManager"](15*9+7,15*6+7)
         items.append(stockPile)
-        stockPile = src.items.UniformStockpileManager(15*10+7,15*6+7)
+        stockPile = src.items.itemMap["UniformStockpileManager"](15*10+7,15*6+7)
         items.append(stockPile)
         terrain.addItems(items)
 

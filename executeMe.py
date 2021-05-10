@@ -235,20 +235,7 @@ mainChar = gameStateObj.mainChar
 #
 #################################################################################################################################
 
-# bad code: common variables with modules
-story.rooms = rooms
-
-# bad code: common variables with modules
-items.commandChars = commandChars
-story.commandChars = commandChars
-characters.commandChars = commandChars
-interaction.commandChars = commandChars
-chats.commandChars = commandChars
-
 interaction.setFooter()
-
-# bad code: common variables with modules
-story.items = items
 
 # bad code: common variables with modules
 cinematics.main = interaction.main

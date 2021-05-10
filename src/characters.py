@@ -18,7 +18,6 @@ import random
 # bad code: containers for global state
 characters = None
 calculatePath = None
-roomsOnMap = None
 
 """
 this is the class for characters meaning both npc and pcs. 

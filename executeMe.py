@@ -463,9 +463,6 @@ if not loaded:
 interaction.macros = gameStateObj.macros
 
 # bad code: common variables with modules
-characters.roomsOnMap = terrain.rooms
-
-# bad code: common variables with modules
 items.terrain = terrain
 story.terrain = terrain
 interaction.terrain = terrain

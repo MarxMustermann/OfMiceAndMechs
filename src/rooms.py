@@ -2351,7 +2351,8 @@ XXXXXXXX
         character.hasFloorPermit = True
 
         # start vat phase
-        phase = story.VatPhase()
+        import src.story
+        phase = src.story.VatPhase()
         phase.start()
 
     '''

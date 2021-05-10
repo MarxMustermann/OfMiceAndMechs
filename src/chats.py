@@ -11,6 +11,7 @@ urwid = None
 import src.interaction
 import src.canvas
 import src.logger
+import src.quests
 
 '''
 the main class for chats
@@ -743,7 +744,7 @@ class RoomDutyChat(Chat):
 
         if gamestate.tick%2:
             self.persistentText = "yes, you may."
-            quest = quests.Serve(superior=self.superior,creator=self)
+            quest = src.quests.Serve(superior=self.superior,creator=self)
             mainChar.assignQuest(quest,active=True)
             self.superior.subordinates.append(mainChar)
             self.set_text(self.persistentText)
@@ -772,9 +773,9 @@ class RoomDutyChat2(Chat):
     def handleKey(self, key, noRender=False):
         self.persistentText = "Drink something"
 
-        quest = quests.PickupQuestMeta(self.partner.room.bean)
+        quest = src.quests.PickupQuestMeta(self.partner.room.bean)
         mainChar.assignQuest(quest,active=True)
-        quest = quests.ActivateQuestMeta(self.partner.room.bean)
+        quest = src.quests.ActivateQuestMeta(self.partner.room.bean)
         mainChar.assignQuest(quest,active=True)
 
         self.set_text(self.persistentText)
@@ -958,7 +959,7 @@ class StartChat(Chat):
             self.set_text(self.persistentText)
             self.done = True
             global quest
-            quest = quests.KeepFurnaceFiredMeta(self.partner.room.furnaces[0])
+            quest = src.quests.KeepFurnaceFiredMeta(self.partner.room.furnaces[0])
             self.partner.assignQuest(quest,active=True)
 
             # replace dialog option
@@ -1087,7 +1088,7 @@ class JoinMilitaryChat(Chat):
             if mainChar.reputation < 10:
                 self.persistentText += self.partner.name+": \"No. Go kill yourself\""
 
-                quest = quests.MurderQuest(toKill=mainChar,creator=self)
+                quest = src.quests.MurderQuest(toKill=mainChar,creator=self)
                 mainChar.assignQuest(quest,active=True)
             else:
                 self.persistentText += self.partner.name+": \"No.\""

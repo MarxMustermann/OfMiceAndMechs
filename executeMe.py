@@ -236,14 +236,6 @@ mainChar = gameStateObj.mainChar
 #################################################################################################################################
 
 # bad code: common variables with modules
-cinematics.quests = quests
-story.quests = quests
-terrains.quests = quests
-characters.quests = quests
-items.quests = quests
-chats.quests = quests
-
-# bad code: common variables with modules
 story.rooms = rooms
 
 # bad code: common variables with modules

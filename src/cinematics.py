@@ -18,7 +18,6 @@ urwid = None
 bad code: containers for global state
 """
 cinematicQueue = []
-quests = None
 main = None
 loop = None
 callShow_or_exit = None
@@ -394,7 +393,8 @@ class ShowQuestExecution(BasicCinematic):
                     self.quest = quest
                 loadingRegistry.callWhenAvailable(state["quest"],setQuest)
             else:
-                self.quest = quests.getQuestFromState(state["quest"])
+                import src.quest
+                self.quest = src.quests.getQuestFromState(state["quest"])
         else:
             self.quest = None
 

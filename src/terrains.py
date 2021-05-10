@@ -15,6 +15,7 @@ import src.gameMath
 import src.saveing
 import src.canvas
 import src.logger
+import src.quests
 
 # bad code: global varaibles
 mainChar = None
@@ -2610,8 +2611,8 @@ XXXCCCCCXXX """
     def addRoadblock(self):
         room = self.tutorialCargoRooms[8]
         item = room.storedItems[-1]
-        outerQuest = quests.MetaQuestSequence([],creator=self)
-        innerQuest = quests.TransportQuest(item,(None,127,81),creator=self)
+        outerQuest = src.quests.MetaQuestSequence([],creator=self)
+        innerQuest = src.quests.TransportQuest(item,(None,127,81),creator=self)
 
         '''
         move character off the placed item
@@ -2635,8 +2636,8 @@ XXXCCCCCXXX """
             return
 
         item = self.itemByCoordinates[(127,81)][0]
-        outerQuest = quests.MetaQuestSequence([],creator=self)
-        innerQuest = quests.TransportQuest(item,(None,37,81),creator=self)
+        outerQuest = src.quests.MetaQuestSequence([],creator=self)
+        innerQuest = src.quests.TransportQuest(item,(None,37,81),creator=self)
 
         '''
         move character off the placed item
@@ -2660,8 +2661,8 @@ XXXCCCCCXXX """
             return
 
         item = self.itemByCoordinates[(37,81)][0]
-        outerQuest = quests.MetaQuestSequence([],creator=self)
-        innerQuest = quests.TransportQuest(item,(None,127,81),creator=self)
+        outerQuest = src.quests.MetaQuestSequence([],creator=self)
+        innerQuest = src.quests.TransportQuest(item,(None,127,81),creator=self)
 
         '''
         move character off the placed item

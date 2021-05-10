@@ -7020,28 +7020,28 @@ class AutoTutor(Item):
 
         if not self.activateChallengeDone:
             if not self.initialChallengeDone:
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: find the challenges\nstatus:challenge completed.\n\nReturn to this menu item and you will find more challenges.\nNew challenge \"pick up goo flask\"\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: find the challenges\nstatus:challenge completed.\n\nReturn to this menu item and you will find more challenges.\nNew challenge \"pick up goo flask\"\n\n")
                 self.initialChallengeDone = True
                 self.character.macroState["submenue"] = self.submenue
             elif not self.gooChallengeDone:
                 if not self.checkInInventory(src.items.GooFlask):
-                    self.submenue = src.src.interaction.TextMenu("\n\nchallenge: pick up goo flask\nstatus: challenge in progress - Try again with a goo flask in your inventory.\n\ncomment:\nA goo flask is represnted by ò=. There should be some flasks in the room.\n\n")
+                    self.submenue = src.interaction.TextMenu("\n\nchallenge: pick up goo flask\nstatus: challenge in progress - Try again with a goo flask in your inventory.\n\ncomment:\nA goo flask is represnted by ò=. There should be some flasks in the room.\n\n")
                 else:
-                    self.submenue = src.src.interaction.TextMenu("\n\nchallenge: pick up goo flask\nstatus: challenge completed.\n\ncomment:\nTry to always keep a goo flask with some charges in your inventory.\nIf you are hungry you will drink from it automatically.\nIf you do not drink regulary you will die.\n\nreward:\nNew information option on \"information->machines\"\nNew Information option on \"information->food\"\nNew challenge \"gather metal bars\"\n\n")
+                    self.submenue = src.interaction.TextMenu("\n\nchallenge: pick up goo flask\nstatus: challenge completed.\n\ncomment:\nTry to always keep a goo flask with some charges in your inventory.\nIf you are hungry you will drink from it automatically.\nIf you do not drink regulary you will die.\n\nreward:\nNew information option on \"information->machines\"\nNew Information option on \"information->food\"\nNew challenge \"gather metal bars\"\n\n")
                     self.gooChallengeDone = True
                 self.character.macroState["submenue"] = self.submenue
             elif not self.metalbarChallengeDone:
                 if not self.checkInInventory(src.items.MetalBars):
-                    self.submenue = src.src.interaction.TextMenu("\n\nchallenge: gather metal bars\nstatus: challenge in progress - Try again with a metal bar in your inventory.\n\ncomment: \nMetal bars are represented by ==\ncheck \"information->machines->metal bar production\" on how to produce metal bars.\n\n")
+                    self.submenue = src.interaction.TextMenu("\n\nchallenge: gather metal bars\nstatus: challenge in progress - Try again with a metal bar in your inventory.\n\ncomment: \nMetal bars are represented by ==\ncheck \"information->machines->metal bar production\" on how to produce metal bars.\n\n")
                 else:
-                    self.submenue = src.src.interaction.TextMenu("\n\nchallenge: gather metal bars\nstatus: challenge completed.\n\nreward:\nNew information option on \"information->machines->simple item production\"\nNew challenge \"produce sheet\"\n\n")
+                    self.submenue = src.interaction.TextMenu("\n\nchallenge: gather metal bars\nstatus: challenge completed.\n\nreward:\nNew information option on \"information->machines->simple item production\"\nNew challenge \"produce sheet\"\n\n")
                     self.metalbarChallengeDone = True
                 self.character.macroState["submenue"] = self.submenue
             elif not self.sheetChallengeDone:
                 if not self.checkInInventoryOrInRoom(src.items.Sheet):
-                    self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce sheet\nstatus: challenge in progress - Try again with a sheet in your inventory.\n\ncomment: \ncheck \"information->machines->simple item production\" on how to produce simple items.\nA sheet machine should be within this room.\n\n")
+                    self.submenue = src.interaction.TextMenu("\n\nchallenge: produce sheet\nstatus: challenge in progress - Try again with a sheet in your inventory.\n\ncomment: \ncheck \"information->machines->simple item production\" on how to produce simple items.\nA sheet machine should be within this room.\n\n")
                 else:
-                    self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce sheet\nstatus: challenge completed.\n\nreward:\nNew information option on \"information->machines->machine production\"\nNew challenge \"produce rod machine\"\n\n")
+                    self.submenue = src.interaction.TextMenu("\n\nchallenge: produce sheet\nstatus: challenge completed.\n\nreward:\nNew information option on \"information->machines->machine production\"\nNew challenge \"produce rod machine\"\n\n")
                     self.sheetChallengeDone = True
                 self.character.macroState["submenue"] = self.submenue
             elif not self.machineChallengeDone:
@@ -7050,11 +7050,11 @@ class AutoTutor(Item):
                     if isinstance(item,src.items.Machine) and item.toProduce == "Rod":
                         foundMachine = True
                 if not foundMachine:
-                    self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce rod machine\nstatus: challenge in progress - Try again with a machine that produces rods in your inventory.\n\ncomment:\n\ncheck \"information->machines->machine production\" on how to produce machines.\nBlueprints for the basic materials including rods should be in this room.\nblueprints are represented by bb\n\n")
+                    self.submenue = src.interaction.TextMenu("\n\nchallenge: produce rod machine\nstatus: challenge in progress - Try again with a machine that produces rods in your inventory.\n\ncomment:\n\ncheck \"information->machines->machine production\" on how to produce machines.\nBlueprints for the basic materials including rods should be in this room.\nblueprints are represented by bb\n\n")
                 else:
                     self.knownBlueprints.append("Frame")
                     self.knownBlueprints.append("Rod")
-                    self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce rod machine\nstatus: challenge completed.\n\nreward:\nNew information option on \"information->machines->blueprint production\"\nNew information option on \"information->blueprint reciepes\"\nNew challenge \"produce blueprint for frame\"\n\n")
+                    self.submenue = src.interaction.TextMenu("\n\nchallenge: produce rod machine\nstatus: challenge completed.\n\nreward:\nNew information option on \"information->machines->blueprint production\"\nNew information option on \"information->blueprint reciepes\"\nNew challenge \"produce blueprint for frame\"\n\n")
                     self.machineChallengeDone = True
                 self.character.macroState["submenue"] = self.submenue
             elif not self.blueprintChallengeDone:
@@ -7063,35 +7063,35 @@ class AutoTutor(Item):
                     if isinstance(item,src.items.BluePrint) and item.endProduct == "Frame":
                         foundBluePrint = True
                 if not foundBluePrint:
-                    self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce blueprint for frame\nstatus: challenge in progress - Try again with a blueprint for frame in your inventory.\n\ncomment: \ncheck \"information->machines->blueprint production\" on how to produce blueprints.\nThe reciepe for Frame is rod+metalbar\n\n")
+                    self.submenue = src.interaction.TextMenu("\n\nchallenge: produce blueprint for frame\nstatus: challenge in progress - Try again with a blueprint for frame in your inventory.\n\ncomment: \ncheck \"information->machines->blueprint production\" on how to produce blueprints.\nThe reciepe for Frame is rod+metalbar\n\n")
                 else:
                     self.knownBlueprints.append("Bolt")
                     self.knownBlueprints.append("Sheet")
-                    self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce blueprint for frame\nstatus: challenge completed.\n\nreward:\nNew information option on \"information->automation\"\nNew blueprint reciepe for bolt\nNew blueprint reciepe for sheet\nNew challenge \"create command\"\n\n")
+                    self.submenue = src.interaction.TextMenu("\n\nchallenge: produce blueprint for frame\nstatus: challenge completed.\n\nreward:\nNew information option on \"information->automation\"\nNew blueprint reciepe for bolt\nNew blueprint reciepe for sheet\nNew challenge \"create command\"\n\n")
                     self.blueprintChallengeDone = True
                 self.character.macroState["submenue"] = self.submenue
             elif not self.commandChallengeDone:
                 if not self.checkInInventoryOrInRoom(src.items.Command):
-                    self.submenue = src.src.interaction.TextMenu("\n\nchallenge: create command\nstatus: challenge in progress - Try again with a command in your inventory.\n\ncomment: \ncheck \"information->automation->command creation\" on how to record commands.\n\n")
+                    self.submenue = src.interaction.TextMenu("\n\nchallenge: create command\nstatus: challenge in progress - Try again with a command in your inventory.\n\ncomment: \ncheck \"information->automation->command creation\" on how to record commands.\n\n")
                 else:
                     self.knownBlueprints.append("Stripe")
                     self.knownBlueprints.append("Mount")
                     self.knownBlueprints.append("Radiator")
-                    self.submenue = src.src.interaction.TextMenu("\n\nchallenge completed.\n\nreward:\nNew information option on \"information->automation->multiplier\"\n\nreward:\nNew blueprint reciepe for stripe.\nNew blueprint reciepe for mount.\nNew blueprint reciepe for radiator.\nNew challenge \"repeat challenge\"\n\n")
+                    self.submenue = src.interaction.TextMenu("\n\nchallenge completed.\n\nreward:\nNew information option on \"information->automation->multiplier\"\n\nreward:\nNew blueprint reciepe for stripe.\nNew blueprint reciepe for mount.\nNew blueprint reciepe for radiator.\nNew challenge \"repeat challenge\"\n\n")
                     self.commandChallengeDone = True
                 self.character.macroState["submenue"] = self.submenue
             elif not self.activateChallengeDone:
                 if self.activateChallenge:
                     self.activateChallenge -= 1
                     if self.activateChallenge == 100:
-                        self.submenue = src.src.interaction.TextMenu("\n\nchallenge: repeat challenge\n\nstatus: challenge in progress - Use this menu item a 100 times. The first step is done. Activations remaining %s\n\ncomment: use a command to activate the menu item and multipliers to do this often.\n check \"information->automation\" on how to do this."%(self.activateChallenge,))
+                        self.submenue = src.interaction.TextMenu("\n\nchallenge: repeat challenge\n\nstatus: challenge in progress - Use this menu item a 100 times. The first step is done. Activations remaining %s\n\ncomment: use a command to activate the menu item and multipliers to do this often.\n check \"information->automation\" on how to do this."%(self.activateChallenge,))
                     else:
-                        self.submenue = src.src.interaction.TextMenu("\n\nchallenge: repeat challenge\nstatus: challenge in progress - Use this menu item a 100 times. Activations remaining %s\n\ncomment: use a command to activate the menu item and multipliers to do this often"%(self.activateChallenge,))
+                        self.submenue = src.interaction.TextMenu("\n\nchallenge: repeat challenge\nstatus: challenge in progress - Use this menu item a 100 times. Activations remaining %s\n\ncomment: use a command to activate the menu item and multipliers to do this often"%(self.activateChallenge,))
                 else:
                     if len(self.character.inventory):
-                        self.submenue = src.src.interaction.TextMenu("\n\nchallenge: repeat challenge\nstatus: in progress. Try again with empty inventory to complete.\n\n")
+                        self.submenue = src.interaction.TextMenu("\n\nchallenge: repeat challenge\nstatus: in progress. Try again with empty inventory to complete.\n\n")
                     else:
-                        self.submenue = src.src.interaction.TextMenu("\n\nchallenge: repeat challenge\nstatus: challenge completed.\n\ncomment:\nyou completed the first set of challenges\ncome back for more\n\nreward:\nNew blueprint reciepe for scrap compactor\nNew challenge \"produce scrap compactor\"\nNew challenge \"gather bloom\"\nNew challenge \"create note\"\n\n")
+                        self.submenue = src.interaction.TextMenu("\n\nchallenge: repeat challenge\nstatus: challenge completed.\n\ncomment:\nyou completed the first set of challenges\ncome back for more\n\nreward:\nNew blueprint reciepe for scrap compactor\nNew challenge \"produce scrap compactor\"\nNew challenge \"gather bloom\"\nNew challenge \"create note\"\n\n")
                         self.activateChallengeDone = True
                         self.knownBlueprints.append("ScrapCompactor")
                         self.availableChallenges = {
@@ -7119,25 +7119,25 @@ class AutoTutor(Item):
                                 break
 
                         if not metalBarFound:
-                            self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce 100 metal bars\nstatus: no progress - Try again with metal bars in your inventory\nMetal bars remaining %s\n\n"%(self.metalbarChallenge,))
+                            self.submenue = src.interaction.TextMenu("\n\nchallenge: produce 100 metal bars\nstatus: no progress - Try again with metal bars in your inventory\nMetal bars remaining %s\n\n"%(self.metalbarChallenge,))
                             self.character.macroState["submenue"] = self.submenue
                             return
 
                         didAdd = self.addScraps(amount=1)
                         if not didAdd:
-                            self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce 100 metal bars\nstatus: no progress - no space to drop scrap\nMetal bars remaining %s\n\n"%(self.metalbarChallenge,))
+                            self.submenue = src.interaction.TextMenu("\n\nchallenge: produce 100 metal bars\nstatus: no progress - no space to drop scrap\nMetal bars remaining %s\n\n"%(self.metalbarChallenge,))
                             self.character.macroState["submenue"] = self.submenue
                             return
 
-                        self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce 100 metal bars\nstatus: challenge in progress.\nMetal bars remaining %s\n\ncomment: \nscrap ejected to the south/below\nuse commands and multipliers to do this.\n\n"%(self.metalbarChallenge,))
+                        self.submenue = src.interaction.TextMenu("\n\nchallenge: produce 100 metal bars\nstatus: challenge in progress.\nMetal bars remaining %s\n\ncomment: \nscrap ejected to the south/below\nuse commands and multipliers to do this.\n\n"%(self.metalbarChallenge,))
                         self.character.inventory.remove(metalBarFound)
                         self.metalbarChallenge -= 1
 
                     else:
                         if len(self.character.inventory):
-                            self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce 100 metal bars\nstatus: challenge in progress. Try again with empty inventory to complete.\n\n")
+                            self.submenue = src.interaction.TextMenu("\n\nchallenge: produce 100 metal bars\nstatus: challenge in progress. Try again with empty inventory to complete.\n\n")
                         else:
-                            self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce 100 metal bars\nstatus: challenge completed.\n\nreward:\nNew challenges added\nnew reciepes for Connector Pusher\n\n")
+                            self.submenue = src.interaction.TextMenu("\n\nchallenge: produce 100 metal bars\nstatus: challenge completed.\n\nreward:\nNew challenges added\nnew reciepes for Connector Pusher\n\n")
                             self.availableChallenges["differentBlueprints"] = {"text":"9 different blueprints"}
                             self.availableChallenges["9blooms"] = {"text":"9 blooms"}
                             self.availableChallenges["produceAdvanced"] = {"text":"produce items"}
@@ -7164,26 +7164,26 @@ class AutoTutor(Item):
                             break
 
                     if not wallFound:
-                        self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce 25 walls\nstatus: challenge in progress.\nno progress - try again with walls in inventory\nWalls remaining: %s\n\ncomment:\nuse commands and multipliers to do this.\n\n"%(self.wallChallenge,))
+                        self.submenue = src.interaction.TextMenu("\n\nchallenge: produce 25 walls\nstatus: challenge in progress.\nno progress - try again with walls in inventory\nWalls remaining: %s\n\ncomment:\nuse commands and multipliers to do this.\n\n"%(self.wallChallenge,))
                         self.character.macroState["submenue"] = self.submenue
                         return
 
                     didAdd = self.addScraps(amount=2)
                     if not didAdd:
-                        self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce 25 walls\nstatus: challenge in progress.\nno progress - no space to drop scrap\nWalls remaining: %s\n\ncomment:\nuse commands and multipliers to do this.\n\n"%(self.wallChallenge,))
+                        self.submenue = src.interaction.TextMenu("\n\nchallenge: produce 25 walls\nstatus: challenge in progress.\nno progress - no space to drop scrap\nWalls remaining: %s\n\ncomment:\nuse commands and multipliers to do this.\n\n"%(self.wallChallenge,))
                         self.character.macroState["submenue"] = self.submenue
                         return
 
-                    self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce 25 walls\nstatus: challenge in progress.\nWalls remaining: %s\n\ncomment:\nuse commands and multipliers to do this.\n\n"%(self.wallChallenge,))
+                    self.submenue = src.interaction.TextMenu("\n\nchallenge: produce 25 walls\nstatus: challenge in progress.\nWalls remaining: %s\n\ncomment:\nuse commands and multipliers to do this.\n\n"%(self.wallChallenge,))
                     self.character.inventory.remove(wallFound)
                     self.wallChallenge -= 1
                     self.character.macroState["submenue"] = self.submenue
 
                 else:
                     if len(self.character.inventory):
-                        self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce 25 walls\nstatus: challenge in progress. Try again with empty inventory to complete.\n\n")
+                        self.submenue = src.interaction.TextMenu("\n\nchallenge: produce 25 walls\nstatus: challenge in progress. Try again with empty inventory to complete.\n\n")
                     else:
-                        self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce 25 walls\nstatus: challenge completed\n\n")
+                        self.submenue = src.interaction.TextMenu("\n\nchallenge: produce 25 walls\nstatus: challenge completed\n\n")
                         self.availableChallenges["produceBioMasses"] = {"text":"produce 9 bio mass"}
                         self.availableChallenges["createMap"] = {"text":"create map"}
                         self.availableChallenges["produceProductionManager"] = {"text":"produce production manager"}
@@ -7209,10 +7209,10 @@ class AutoTutor(Item):
 
                 if self.challengeInfo["numSucesses"] >= 25:
                     if self.character.inventory:
-                        self.submenue = src.src.interaction.TextMenu("\n\nactivate with empty inventory to complete challenge.\n\n")
+                        self.submenue = src.interaction.TextMenu("\n\nactivate with empty inventory to complete challenge.\n\n")
                         self.character.macroState["submenue"] = self.submenue
                     else:
-                        self.submenue = src.src.interaction.TextMenu("\n\nchallenge completed.\n\n")
+                        self.submenue = src.interaction.TextMenu("\n\nchallenge completed.\n\n")
                         self.character.macroState["submenue"] = self.submenue
                         self.challengeRun4Done = True
 
@@ -7270,7 +7270,7 @@ comment:
 * use commands and multipliers to do this multiple times"""
 
 
-                    self.submenue = src.src.interaction.TextMenu("\n\n"+text+"\n\n")
+                    self.submenue = src.interaction.TextMenu("\n\n"+text+"\n\n")
                     self.character.macroState["submenue"] = self.submenue
 
         elif not self.challengeRun5Done:
@@ -7289,10 +7289,10 @@ comment:
                         numFlasksFound += 1
 
                 if not numFlasksFound > 3:
-                    self.submenue = src.src.interaction.TextMenu("\n\nchallenge: Produce 4 filled goo flasks. \nchallenge in progress. Try again with 4 goo flasks with 100 uses left in each in your inventory.\n\n")
+                    self.submenue = src.interaction.TextMenu("\n\nchallenge: Produce 4 filled goo flasks. \nchallenge in progress. Try again with 4 goo flasks with 100 uses left in each in your inventory.\n\n")
                     self.character.macroState["submenue"] = self.submenue
                 else:
-                    self.submenue = src.src.interaction.TextMenu("\n\nchallenge: Produce 4 filled goo flasks. \nchallenge completed.\n\nreward: Character spawned. Talk to it by pressing h and command it.\n\n")
+                    self.submenue = src.interaction.TextMenu("\n\nchallenge: Produce 4 filled goo flasks. \nchallenge completed.\n\nreward: Character spawned. Talk to it by pressing h and command it.\n\n")
                     self.character.macroState["submenue"] = self.submenue
                     gooFlask1 = None
                     gooFlask2 = None
@@ -7337,7 +7337,7 @@ comment:
                     newCharacter.inventory.append(gooFlask2)
 
         else:
-            self.submenue = src.src.interaction.TextMenu("\n\nTBD\n\n")
+            self.submenue = src.interaction.TextMenu("\n\nTBD\n\n")
             self.character.macroState["submenue"] = self.submenue
 
     def checkForOtherItem(self,itemType):
@@ -7385,14 +7385,14 @@ comment:
 
         if selection == "note": # from root
             if not self.checkInInventoryOrInRoom(src.items.Note):
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: write note\nstatus: challenge in progress - Try again with a note in your inventory.\n\ncomment:\n check \"information->items->notes\" on how to create notes.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: write note\nstatus: challenge in progress - Try again with a note in your inventory.\n\ncomment:\n check \"information->items->notes\" on how to create notes.\n\n")
             else:
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: write note\nstatus: challenge completed.\n\nreward:\nnew Information option on \"Information->automation->maps\"\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: write note\nstatus: challenge completed.\n\nreward:\nnew Information option on \"Information->automation->maps\"\n\n")
                 del self.availableChallenges["note"]
 
         elif selection == "gatherBloom": # from root
             if not self.checkInInventoryOrInRoom(src.items.Bloom):
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: gather bloom\nstatus: challenge in progress - Try again with a bloom in your inventory.\n\ncomment: \nBlooms are represented by ** and are white.\nYou should be able to collect some outside of the wall, the exit is on the east.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: gather bloom\nstatus: challenge in progress - Try again with a bloom in your inventory.\n\ncomment: \nBlooms are represented by ** and are white.\nYou should be able to collect some outside of the wall, the exit is on the east.\n\n")
             else:
                 del self.availableChallenges["gatherBloom"]
                 self.availableChallenges["produceSporeExtractor"] = {"text":"produce a Spore Extractor"}
@@ -7406,40 +7406,40 @@ comment:
                     new.yPosition = self.yPosition+1
                     blooms.append(new)
                 self.container.addItems(blooms)
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: gather bloom\nstatus: challenge completed.\n\nreward:\nchallenge \"produce a Spore Extractor\" added\nmold spores added to south/below\nnew Information option on \"information->food->mold farming\"\nNew blueprint reciepes for Tank + Puller\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: gather bloom\nstatus: challenge completed.\n\nreward:\nchallenge \"produce a Spore Extractor\" added\nmold spores added to south/below\nnew Information option on \"information->food->mold farming\"\nNew blueprint reciepes for Tank + Puller\n\n")
 
         elif selection == "produceSporeExtractor": # from gatherBloom
             if not self.checkInInventoryOrInRoom(src.items.SporeExtractor):
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce spore extractor\nstatus: challenge in progress - try again with spore extractor in your inventory.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce spore extractor\nstatus: challenge in progress - try again with spore extractor in your inventory.\n\n")
             else:
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce spore extractor\nstatus: challenge completed.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce spore extractor\nstatus: challenge completed.\n\n")
                 del self.availableChallenges["produceSporeExtractor"]
 
         elif selection == "produceScrapCompactors": # from root
             if not self.checkInInventory(src.items.ScrapCompactor):
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce scrap compactor\nstatus: challenge in progress - try again with scrap compactor in your inventory.\n\ncomment:\n * check \"information->blueprint reciepes\" and \"information -> machines -> machine production\" on how to do this.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce scrap compactor\nstatus: challenge in progress - try again with scrap compactor in your inventory.\n\ncomment:\n * check \"information->blueprint reciepes\" and \"information -> machines -> machine production\" on how to do this.\n\n")
             else:
                 self.knownBlueprints.append("Tank")
                 self.knownBlueprints.append("Scraper")
                 self.availableChallenges["produceBasics"] = {"text":"produce basics"}
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce scrap compactor\nstatus: challenge completed.\n\nreward:\nchallenge \"%s\" added\nNew blueprint reciepes for Tank, Scraper\n\n"%(self.availableChallenges["produceBasics"]["text"]))
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce scrap compactor\nstatus: challenge completed.\n\nreward:\nchallenge \"%s\" added\nNew blueprint reciepes for Tank, Scraper\n\n"%(self.availableChallenges["produceBasics"]["text"]))
                 del self.availableChallenges["produceScrapCompactors"]
 
         elif selection == "produceBasics": # from produceScrapCompactors
             if self.checkListAgainstInventoryOrIsRoom(["Rod","Bolt","Stripe","Mount","Radiator","Sheet"]):
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce basics\nstatus: challenge in progress. Try again with rod + bolt + stripe + mount + radiator + sheet in your inventory.\n\ncomment:\nThe blueprints required should be in this room.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce basics\nstatus: challenge in progress. Try again with rod + bolt + stripe + mount + radiator + sheet in your inventory.\n\ncomment:\nThe blueprints required should be in this room.\n\n")
             else:
                 del self.availableChallenges["produceBasics"]
                 self.knownBlueprints.append("Case")
                 self.knownBlueprints.append("Wall")
                 self.availableChallenges["prodCase"] = {"text":"produce case"}
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce basics\nstatus: challenge completed.\n\nreward:\nchallenge \"%s\" added\nNew blueprint reciepes for Case, Wall\n"%(self.availableChallenges["prodCase"]["text"]))
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce basics\nstatus: challenge completed.\n\nreward:\nchallenge \"%s\" added\nNew blueprint reciepes for Case, Wall\n"%(self.availableChallenges["prodCase"]["text"]))
 
         elif selection == "prodCase": # from produceBasics
             if not self.checkInInventoryOrInRoom(src.items.Case):
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce case\nstatus: challenge in progress - Try again with a case in your inventory.\n\ncomment:\nCases are produced from Frames\n which are produced from rods\n which are produced from metal bars\n which are produced from scrap\ncheck \"information -> blueprint reciepes\" for the reciepes\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce case\nstatus: challenge in progress - Try again with a case in your inventory.\n\ncomment:\nCases are produced from Frames\n which are produced from rods\n which are produced from metal bars\n which are produced from scrap\ncheck \"information -> blueprint reciepes\" for the reciepes\n\n")
             else:
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce case\nstatus: challenge completed.\n\nreward:\nNew blueprint reciepes for Heater, Door\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce case\nstatus: challenge completed.\n\nreward:\nNew blueprint reciepes for Heater, Door\n\n")
                 self.knownBlueprints.append("Heater")
                 self.knownBlueprints.append("Door")
                 del self.availableChallenges["prodCase"]
@@ -7468,62 +7468,62 @@ comment:
                 if isinstance(item,src.items.BluePrint) and not item.endProduct in blueprints:
                     blueprints.append(item.endProduct)
             if not len(blueprints) > 8:
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce 9 different blueprint\nstatus: challenge in progress - try again with 9 different blueprints in your inventory.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce 9 different blueprint\nstatus: challenge in progress - try again with 9 different blueprints in your inventory.\n\n")
             else:
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce 9 different blueprint\nstatus: challenge completed.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce 9 different blueprint\nstatus: challenge completed.\n\n")
                 del self.availableChallenges["differentBlueprints"]
 
         elif selection == "9blooms": # from root2
             if self.countInInventoryOrRoom(src.items.Bloom) < 9:
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: gather 9 blooms\nstatus: failed. Try with 9 bloom in your inventory.\n\n\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: gather 9 blooms\nstatus: failed. Try with 9 bloom in your inventory.\n\n\n\n")
             else:
                 self.availableChallenges["processedBloom"] = {"text":"process bloom"}
                 self.knownBlueprints.append("BloomShredder")
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge completed.\n\nreward:\n* new blueprint reciepe for bloom shredder\n* challenge %s added\n\n"%(self.availableChallenges["processedBloom"]["text"]))
+                self.submenue = src.interaction.TextMenu("\n\nchallenge completed.\n\nreward:\n* new blueprint reciepe for bloom shredder\n* challenge %s added\n\n"%(self.availableChallenges["processedBloom"]["text"]))
                 del self.availableChallenges["9blooms"]
 
         elif selection == "processedBloom": # from 9blooms
             if not self.checkInInventoryOrInRoom(src.items.BioMass):
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: process bloom\nstatus: challenge in progress - try with bio mass in your inventory.\n\ncomment:\n* use a bloom shreder to produce bio mass\n* check \"information->food->mold farming\" for more information\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: process bloom\nstatus: challenge in progress - try with bio mass in your inventory.\n\ncomment:\n* use a bloom shreder to produce bio mass\n* check \"information->food->mold farming\" for more information\n\n")
             else:
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: process bloom\nstatus: challenge completed.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: process bloom\nstatus: challenge completed.\n\n")
                 del self.availableChallenges["processedBloom"]
 
         elif selection == "produceAdvanced": # from root2
             if self.checkListAgainstInventoryOrIsRoom(["Tank","Heater","Connector","pusher","puller","Frame"]):
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge in progress - try again with tank + heater + connector + pusher + puller + frame in your inventory.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge in progress - try again with tank + heater + connector + pusher + puller + frame in your inventory.\n\n")
             else:
                 del self.availableChallenges["produceAdvanced"]
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge completed.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge completed.\n\n")
 
         elif selection == "produceWall": # from produceAdvanced
             if not self.checkInInventoryOrInRoom(src.items.Wall):
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge in progress - try again with wall in your inventory.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge in progress - try again with wall in your inventory.\n\n")
             else:
                 del self.availableChallenges["produceWall"]
                 self.knownBlueprints.append("Door")
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge completed.\n\nreward:\n* new blueprint reciepe for door\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge completed.\n\nreward:\n* new blueprint reciepe for door\n\n")
 
         elif selection == "produceDoor": # from produceWall
             if not self.checkInInventoryOrInRoom(src.items.Door):
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge in progress - try again with door in your inventory.\n\nreward:\n* new blueprint reciepe for floor plate\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge in progress - try again with door in your inventory.\n\nreward:\n* new blueprint reciepe for floor plate\n\n")
             else:
                 del self.availableChallenges["produceDoor"]
                 self.knownBlueprints.append("FloorPlate")
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge completed.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge completed.\n\n")
 
         elif selection == "produceFloorPlate": # from produceDoor
             if not self.checkInInventoryOrInRoom(src.items.FloorPlate):
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge in progress - try again with floor plate in your inventory.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge in progress - try again with floor plate in your inventory.\n\n")
             else:
                 del self.availableChallenges["produceFloorPlate"]
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge completed.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce items\nstatus: challenge completed.\n\n")
 
         elif selection == "produceScraper": # from root2
             if not self.checkInInventoryOrInRoom(src.items.Scraper):
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce scraper\nstatus: challenge in progress. Try with scraper in your inventory.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce scraper\nstatus: challenge in progress. Try with scraper in your inventory.\n\n")
             else:
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce scraper\nstatus: challenge completed.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce scraper\nstatus: challenge completed.\n\n")
                 del self.availableChallenges["produceScraper"]
 
 
@@ -7552,9 +7552,9 @@ comment:
 
         elif selection == "produceBioMasses": # from root3
             if self.countInInventoryOrRoom(src.items.BioMass) < 9:
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce 9 Biomass\nstatus: challenge in progress. Try with 9 BioMass in your inventory.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce 9 Biomass\nstatus: challenge in progress. Try with 9 BioMass in your inventory.\n\n")
             else:
-                self.submenue = src.src.interaction.TextMenu("\n\nchallenge: produce 9 Biomass\nstatus: challenge completed.\n\n")
+                self.submenue = src.interaction.TextMenu("\n\nchallenge: produce 9 Biomass\nstatus: challenge completed.\n\n")
                 self.availableChallenges["processBioMass"] = {"text":"process bio mass"}
                 self.knownBlueprints.append("BioPress")
                 del self.availableChallenges["produceBioMasses"]
@@ -9434,7 +9434,7 @@ class GlobalMacroStorage(Item):
             self.character.macroState["submenue"].followUp = self.load
 
         if selection == "store":
-            self.submenue = interaction.InputMenu("supply a name/description for the macro")
+            self.submenue = src.interaction.InputMenu("supply a name/description for the macro")
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.store
 

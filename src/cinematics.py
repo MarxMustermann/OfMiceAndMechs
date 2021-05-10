@@ -69,8 +69,8 @@ class BasicCinematic(src.saveing.Saveable):
     '''
     def addSubmenuToCinematicQueue(self):
         # bad code: hooks the submenue directly into the interaction
-        interaction.submenue = self.submenue
-        interaction.submenue.followUp = self.abort
+        src.interaction.submenue = self.submenue
+        src.interaction.submenue.followUp = self.abort
 """
 this is a single use cinematic basically. It flashes some info too fast to read in order to symbolise information transfer to the implant
 bad code: should be abstracted and called with a parameter instead of single use special class
@@ -163,7 +163,7 @@ class MessageZoomCinematic(BasicCinematic):
 
         # get the text of the message window if it wasn't retrieved yet
         if not self.text:
-            self.text = interaction.renderMessages().split("\n")
+            self.text = src.interaction.renderMessages().split("\n")
 
         # wait for some time till actually doing something
         if self.turnOnCounter:
@@ -627,7 +627,7 @@ class SelectionCinematic(BasicCinematic):
     show the selection menue
     '''
     def setUp(self):
-        self.submenue = interaction.SelectionMenu(self.text, self.options, default=self.default)
+        self.submenue = src.interaction.SelectionMenu(self.text, self.options, default=self.default)
         self.addSubmenuToCinematicQueue()
 
     '''

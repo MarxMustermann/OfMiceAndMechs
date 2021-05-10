@@ -13,9 +13,9 @@ import src.saveing
 import src.chats
 import src.events
 import src.interaction
+import src.cinematics
 
 # HACK: common variables with modules
-showCinematic = None
 mainChar = None
 
 ############################################################
@@ -254,7 +254,7 @@ class Quest(src.saveing.Saveable):
             if self.endTrigger:
                 self.callIndirect(self.endTrigger)
             if self.endCinematics:
-                showCinematic(self.endCinematics)            
+                src.cinematics.showCinematic(self.endCinematics)            
                 src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, '.')
             
             # deactivate
@@ -304,7 +304,7 @@ class Quest(src.saveing.Saveable):
         if self.endTrigger:
             self.callIndirect(self.endTrigger)
         if self.endCinematics:
-            showCinematic(self.endCinematics)            
+            src.cinematics.showCinematic(self.endCinematics)            
             src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, '.')
 
         # deactivate
@@ -391,7 +391,7 @@ class Quest(src.saveing.Saveable):
         if self.startTrigger:
             self.startTrigger()
         if self.startCinematics:
-            showCinematic(self.startCinematics)            
+            src.cinematics.showCinematic(self.startCinematics)            
             src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, '.')
 
         # add automatic termination

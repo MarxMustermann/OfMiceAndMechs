@@ -237,18 +237,6 @@ mainChar = gameStateObj.mainChar
 
 interaction.setFooter()
 
-# bad code: common variables with modules
-cinematics.interaction = interaction
-characters.interaction = interaction
-story.interaction = interaction
-rooms.interaction = interaction
-items.interaction = interaction
-quests.interaction = interaction
-chats.interaction = interaction
-
-# bad code: common variables with modules
-quests.showCinematic = cinematics.showCinematic
-
 ##########################################
 ###
 ## set up the terrain

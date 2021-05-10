@@ -10,6 +10,7 @@ import json
 
 # import basic internal libs
 import src.saveing
+import src.canvas
 
 #bad code: global state
 cinematics = None
@@ -233,7 +234,7 @@ class StopBoilingEvent(Event):
         messages.append("*unboil*")
 
         # set own state
-        self.boiler.display = displayChars.boiler_inactive
+        self.boiler.display = src.canvas.displayChars.boiler_inactive
         self.boiler.isBoiling = False
         self.boiler.stopBoilingEvent = None
         self.boiler.changed()
@@ -273,7 +274,7 @@ class StartBoilingEvent(Event):
         messages.append("*boil*")
 
         # set own state
-        self.boiler.display = displayChars.boiler_active
+        self.boiler.display = src.canvas.displayChars.boiler_active
         self.boiler.isBoiling = True
         self.boiler.startBoilingEvent = None
         self.boiler.changed()

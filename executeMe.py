@@ -116,6 +116,7 @@ if not args.nourwid:
         displayChars = canvas.DisplayMapping("pureASCII")
 else:
     displayChars = canvas.TileMapping("testTiles")
+canvas.displayChars = displayChars
 
 if args.speed:
     interaction.speed = args.speed
@@ -211,19 +212,6 @@ else:
     quests.debug = False
     canvas.debug = False
     gameMath.debug = False
-
-# bad code: common variables with modules
-items.displayChars = displayChars
-rooms.displayChars = displayChars
-terrains.displayChars = displayChars
-story.displayChars = displayChars
-gamestate.displayChars = displayChars
-interaction.displayChars = displayChars
-cinematics.displayChars = displayChars
-characters.displayChars = displayChars
-events.displayChars = displayChars
-chats.displayChars = displayChars
-canvas.displayChars = displayChars
 
 # bad code: common variables with modules
 items.debugMessages = debugMessages
@@ -428,8 +416,6 @@ if not loaded:
     gameStateObj.setup(phase=args.phase, seed=seed)
     terrain = gameStateObj.terrain
     interaction.lastTerrain = terrain
-
-interaction.macros = gameStateObj.macros
 
 # bad code: common variables with modules
 items.terrain = terrain

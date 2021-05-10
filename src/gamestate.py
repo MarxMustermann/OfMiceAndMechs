@@ -12,7 +12,7 @@ import src.characters
 import src.terrains
 import src.saveing
 import src.terrains
-import src.interaction
+import src.canvas
 import config
 
 '''
@@ -54,7 +54,7 @@ class GameState(src.saveing.Saveable):
             self.currentPhase = phasesByName["BuildBase"](seed=seed)
 
         # add the main char
-        self.mainChar = src.characters.Character(displayChars.main_char,3,3,automated=False,name=config.names.characterFirstNames[self.tick%len(config.names.characterFirstNames)]+" "+config.names.characterLastNames[self.tick%len(config.names.characterLastNames)])
+        self.mainChar = src.characters.Character(src.canvas.displayChars.main_char,3,3,automated=False,name=config.names.characterFirstNames[self.tick%len(config.names.characterFirstNames)]+" "+config.names.characterLastNames[self.tick%len(config.names.characterLastNames)])
         self.mainChar.watched = True
         self.mainChar.terrain = None
         mainChar = self.mainChar
@@ -174,7 +174,7 @@ class GameState(src.saveing.Saveable):
         # load the main character
         # bad code: should be simplified
         if not self.mainChar:
-            self.mainChar = src.characters.Character(displayChars.main_char,3,3,automated=False,name=config.names.characterFirstNames[self.tick%len(config.names.characterFirstNames)]+" "+config.names.characterLastNames[self.tick%len(config.names.characterLastNames)],characterId=state["mainChar"]["id"])
+            self.mainChar = src.characters.Character(src.canvas.displayChars.main_char,3,3,automated=False,name=config.names.characterFirstNames[self.tick%len(config.names.characterFirstNames)]+" "+config.names.characterLastNames[self.tick%len(config.names.characterLastNames)],characterId=state["mainChar"]["id"])
             src.saveing.loadingRegistry.register(self.mainChar)
         xPosition = self.mainChar.xPosition
         if "xPosition" in state["mainChar"]:

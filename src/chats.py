@@ -9,6 +9,7 @@ urwid = None
 
 # import the other internal libs
 import src.interaction
+import src.canvas
 
 '''
 the main class for chats
@@ -214,7 +215,7 @@ class GrowthTankRefillChat(Chat):
             self.persistentText = ["""
     please refill your flask and use it to refill the growthtanks. 
 
-    Empty growthtanks look like this: """,displayChars.indexedMapping[displayChars.growthTank_unfilled],""" full ones look like this: """,displayChars.indexedMapping[displayChars.growthTank_filled],"""
+    Empty growthtanks look like this: """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.growthTank_unfilled],""" full ones look like this: """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.growthTank_filled],"""
     
 Activate these, while having a full bottle in your inventory, but leave the full ones alone"""]
             messages.append("please refill your flask and use it to refill the growthtanks")
@@ -351,7 +352,7 @@ class FurnaceChat(Chat):
         if self.firstRun:
 
             # show information
-            self.persistentText = ["There are some growth tanks (",displayChars.indexedMapping[displayChars.growthTank_filled],"/",displayChars.indexedMapping[displayChars.growthTank_unfilled],"), walls (",displayChars.indexedMapping[displayChars.wall],"), a pile of coal (",displayChars.indexedMapping[displayChars.pile],") and a furnace (",displayChars.indexedMapping[displayChars.furnace_inactive],"/",displayChars.indexedMapping[displayChars.furnace_active],")."]
+            self.persistentText = ["There are some growth tanks (",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.growthTank_filled],"/",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.growthTank_unfilled],"), walls (",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],"), a pile of coal (",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pile],") and a furnace (",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive],"/",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_active],")."]
             self.set_text(self.persistentText)
 
             # add new chat option

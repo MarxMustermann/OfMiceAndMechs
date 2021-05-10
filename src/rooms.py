@@ -12,6 +12,7 @@ import src.items
 import src.quests
 import src.saveing
 import src.events
+import src.canvas
 
 # bad code: global state
 Character = None
@@ -19,7 +20,6 @@ mainChar = None
 messages = None
 debugMessages = None
 calculatePath = None
-displayChars = None
 
 '''
 the base class for all rooms
@@ -52,7 +52,7 @@ class Room(src.saveing.Saveable):
         self.timeIndex = 0
         self.delayedTicks = 0
         self.events = []
-        self.floorDisplay = [displayChars.floor]
+        self.floorDisplay = [src.canvas.displayChars.floor]
         self.lastMovementToken = None
         self.chainedTo = []
         self.engineStrength = 0
@@ -139,7 +139,7 @@ class Room(src.saveing.Saveable):
                     itemsOnFloor.append(src.items.RoomControls(rowCounter,lineCounter,creator=self))
                 elif char == "v":
                     # to be bin
-                    itemsOnFloor.append(src.items.Item(displayChars.binStorage,rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.binStorage,rowCounter,lineCounter,creator=self))
                 elif char == "O":
                     # add pressure Tank
                     item = src.items.Boiler(rowCounter,lineCounter,creator=self)
@@ -147,7 +147,7 @@ class Room(src.saveing.Saveable):
                     self.boilers.append(item)
                 elif char == "8":
                     # to be chains
-                    itemsOnFloor.append(src.items.Item(displayChars.chains,rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.chains,rowCounter,lineCounter,creator=self))
                 elif char == "I":
                      #to be commlink
                     itemsOnFloor.append(src.items.Commlink(rowCounter,lineCounter,creator=self))
@@ -158,30 +158,30 @@ class Room(src.saveing.Saveable):
                     itemsOnFloor.append(src.items.Hutch(rowCounter,lineCounter,creator=self,activated=mapping[char]))
                 elif char == "o":
                     #to be grid
-                    itemsOnFloor.append(src.items.Item(displayChars.grid,rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.grid,rowCounter,lineCounter,creator=self))
                 elif char == "a":
                     #to be acid
-                    item = src.items.Item(displayChars.acids[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter,creator=self)
+                    item = src.items.Item(src.canvas.displayChars.acids[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter,creator=self)
                     item.walkable = True
                     itemsOnFloor.append(item)
                 elif char == "b":
                     # to be foodstuffs
-                    itemsOnFloor.append(src.items.Item(displayChars.foodStuffs[((2*rowCounter)+lineCounter)%6],rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.foodStuffs[((2*rowCounter)+lineCounter)%6],rowCounter,lineCounter,creator=self))
                 elif char == "m":
                     # to be machinery
-                    itemsOnFloor.append(src.items.Item(displayChars.machineries[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.machineries[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter,creator=self))
                 elif char == "M":
                     itemsOnFloor.append(src.items.VatMaggot(rowCounter,lineCounter,creator=self))
                 elif char == "h":
                     # add steam hub
-                    itemsOnFloor.append(src.items.Item(displayChars.hub,rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.hub,rowCounter,lineCounter,creator=self))
                 elif char == "i":
                     # add ramp
-                    itemsOnFloor.append(src.items.Item(displayChars.ramp,rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.ramp,rowCounter,lineCounter,creator=self))
                 elif char in ["q","r","s","t","u","z"]:
                     # add special pipe
                     # bad code: pipe connection should be done some other way
-                    mapping = {"q":displayChars.pipe_lr,"r":displayChars.pipe_lrd,"s":displayChars.pipe_ld,"t":displayChars.pipe_lu,"u":displayChars.pipe_ru,"z":displayChars.pipe_ud}
+                    mapping = {"q":src.canvas.displayChars.pipe_lr,"r":src.canvas.displayChars.pipe_lrd,"s":src.canvas.displayChars.pipe_ld,"t":src.canvas.displayChars.pipe_lu,"u":sr.canvas.displayChars.pipe_ru,"z":src.canvas.displayChars.pipe_ud}
                     item = src.items.Item(mapping[char],rowCounter,lineCounter,creator=self)
                     item.walkable = True
                     itemsOnFloor.append(item)
@@ -194,10 +194,10 @@ class Room(src.saveing.Saveable):
                     self.sprays.append(item)
                 elif char == "y":
                     # to be outlet
-                    itemsOnFloor.append(src.items.Item(displayChars.outlet,rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.outlet,rowCounter,lineCounter,creator=self))
                 elif char == "j":
                     # to be vat snake
-                    itemsOnFloor.append(src.items.Item(displayChars.vatSnake,rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.vatSnake,rowCounter,lineCounter,creator=self))
                 elif char == "c":
                     # add corpse
                     item = src.items.Corpse(rowCounter,lineCounter,creator=self)
@@ -212,12 +212,12 @@ class Room(src.saveing.Saveable):
                     itemsOnFloor.append(item)
                 elif char == "B":
                     # add to be barricade
-                    item = src.items.Item(displayChars.barricade,rowCounter,lineCounter,creator=self)
+                    item = src.items.Item(src.canvas.displayChars.barricade,rowCounter,lineCounter,creator=self)
                     item.walkable = True
                     itemsOnFloor.append(item)
                 else:
                     # add undefined stuff
-                    itemsOnFloor.append(src.items.Item(displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter,creator=self))
                 rowCounter += 1
                 self.sizeX = rowCounter
             lineCounter += 1
@@ -592,9 +592,9 @@ class Room(src.saveing.Saveable):
                                 try:
                                     import urwid
                                     display = chars[quest.dstY][quest.dstX]
-                                    chars[quest.dstY][quest.dstX] = displayChars.questTargetMarker
+                                    chars[quest.dstY][quest.dstX] = src.canvas.displayChars.questTargetMarker
                                     if isinstance(display, int):
-                                        display = displayChars.indexedMapping[display]
+                                        display = src.canvas.displayChars.indexedMapping[display]
                                     if isinstance(display, str):
                                         display = (urwid.AttrSpec("default","black"),display)
                                     chars[quest.dstY][quest.dstX] = (urwid.AttrSpec(display[0].foreground,"#323"),display[1])
@@ -603,7 +603,7 @@ class Room(src.saveing.Saveable):
 
                                 # mark primary quest target with the target marker
                                 try:
-                                    chars[mainChar.quests[0].dstY][mainChar.quests[0].dstX] = displayChars.questTargetMarker
+                                    chars[mainChar.quests[0].dstY][mainChar.quests[0].dstX] = src.canvas.displayChars.questTargetMarker
                                 except:
                                     pass
 
@@ -614,7 +614,7 @@ class Room(src.saveing.Saveable):
                                     import urwid
                                     display = chars[item[1]][item[0]]
                                     if isinstance(display, int):
-                                        display = displayChars.indexedMapping[display]
+                                        display = src.canvas.displayChars.indexedMapping[display]
                                     if isinstance(display, str):
                                         display = (urwid.AttrSpec("default","black"),display)
                                     chars[item[1]][item[0]] = (urwid.AttrSpec(display[0].foreground,"#333"),display[1])
@@ -638,7 +638,7 @@ class Room(src.saveing.Saveable):
             for i in range(0,self.sizeY):
                 subChars = []
                 for j in range(0,self.sizeX):
-                    subChars.append(displayChars.invisibleRoom)
+                    subChars.append(src.canvas.displayChars.invisibleRoom)
                 chars.append(subChars)
 
             # render rooms outline
@@ -1331,7 +1331,7 @@ XXXXX$XXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
         self.isContainment = True
-        self.floorDisplay = displayChars.acids
+        self.floorDisplay = src.canvas.displayChars.acids
         self.name = "Vat fermenting"
 
 '''
@@ -1362,7 +1362,7 @@ X X X X.X X X.X
 XXXXXXX$XXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
-        self.floorDisplay = [displayChars.nonWalkableUnkown]
+        self.floorDisplay = [src.canvas.displayChars.nonWalkableUnkown]
         self.name = "MechArmor"
 
 '''
@@ -1384,7 +1384,7 @@ Xmm.PX
 XXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
-        self.floorDisplay = [displayChars.nonWalkableUnkown]
+        self.floorDisplay = [src.canvas.displayChars.nonWalkableUnkown]
         self.engineStrength = 0
         self.name = "MiniMech"
 
@@ -1980,7 +1980,7 @@ X        X
 XXXXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
-        self.floorDisplay = [displayChars.nonWalkableUnkown]
+        self.floorDisplay = [src.canvas.displayChars.nonWalkableUnkown]
         self.name = "CargoRoom"
         self.discovered = False
 
@@ -2137,7 +2137,7 @@ XXXXXXXXXX
         self.storageSpace = []
 
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
-        self.floorDisplay = [displayChars.nonWalkableUnkown]
+        self.floorDisplay = [src.canvas.displayChars.nonWalkableUnkown]
         self.name = "StorageRoom"
 
         # determine what positions should be used for storage
@@ -2679,7 +2679,7 @@ XXX
         self.bio = bio
 
         if self.bio:
-            self.floorDisplay = [displayChars.moss,displayChars.moss,displayChars.sprout,displayChars.moss,displayChars.moss,displayChars.sprout2]
+            self.floorDisplay = [src.canvas.displayChars.moss,src.canvas.displayChars.moss,src.canvas.displayChars.sprout,src.canvas.displayChars.moss,src.canvas.displayChars.moss,src.canvas.displayChars.sprout2]
 
         self.name = "room"
 
@@ -2960,7 +2960,7 @@ X           X
 XXXXXXXXXXXXX
 """
         super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,creator=creator)
-        self.floorDisplay = [displayChars.nonWalkableUnkown]
+        self.floorDisplay = [src.canvas.displayChars.nonWalkableUnkown]
         self.name = "ScrapStorage"
         self.scrapStored = 0
 

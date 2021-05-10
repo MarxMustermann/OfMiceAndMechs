@@ -13,11 +13,11 @@ import src.rooms
 import src.overlays
 import src.gameMath
 import src.saveing
+import src.canvas
 
 # bad code: global varaibles
 mainChar = None
 messages = None
-displayChars = None
 
 '''
 a abstracted coordinate.
@@ -48,7 +48,7 @@ class Terrain(src.saveing.Saveable):
         #self.itemsOnFloor = []
         self.characters = []
         self.rooms = []
-        self.floordisplay = displayChars.floor
+        self.floordisplay = src.canvas.displayChars.floor
         self.itemsByCoordinate = {}
         self.roomByCoordinates = {}
         self.listeners = {"default":[]}
@@ -83,9 +83,9 @@ class Terrain(src.saveing.Saveable):
                     elif char == "R":
                         pass
                     elif char == "O":
-                        mapItems.append(src.items.Item(displayChars.clamp_active,rowCounter,lineCounter,creator=self))
+                        mapItems.append(src.items.Item(src.canvas.displayChars.clamp_active,rowCounter,lineCounter,creator=self))
                     elif char == "0":
-                        mapItems.append(src.items.Item(displayChars.clamp_inactive,rowCounter,lineCounter,creator=self))
+                        mapItems.append(src.items.Item(src.canvas.displayChars.clamp_inactive,rowCounter,lineCounter,creator=self))
                     elif char == "8":
                         mapItems.append(src.items.Chain(rowCounter,lineCounter,creator=self))
                     elif char == "C":
@@ -93,7 +93,7 @@ class Terrain(src.saveing.Saveable):
                     elif char == "P":
                         mapItems.append(src.items.Pile(rowCounter,lineCounter,creator=self))
                     else:
-                        mapItems.append(src.items.Item(displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter,creator=self))
+                        mapItems.append(src.items.Item(src.canvas.displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter,creator=self))
                     rowCounter += 1
                 lineCounter += 1
             self.addItems(mapItems)
@@ -1297,7 +1297,7 @@ class Terrain(src.saveing.Saveable):
                 if not self.hidden:
                     line.append(self.floordisplay)
                 else:
-                    line.append(displayChars.void)
+                    line.append(src.canvas.displayChars.void)
             chars.append(line)
         return chars
 
@@ -1346,13 +1346,13 @@ class Terrain(src.saveing.Saveable):
         chars = self.paintFloor()
         for x in range (0,225):
             for y in range (0,16):
-                chars[x][y] = displayChars.forceField
-                chars[x][y+14*15-1] = displayChars.forceField
+                chars[x][y] = src.canvas.displayChars.forceField
+                chars[x][y+14*15-1] = src.canvas.displayChars.forceField
 
         for y in range (0,225):
             for x in range (0,16):
-                chars[x][y] = displayChars.forceField
-                chars[x+14*15-1][y] = displayChars.forceField
+                chars[x][y] = src.canvas.displayChars.forceField
+                chars[x+14*15-1][y] = src.canvas.displayChars.forceField
 
         # show/hide rooms
         for room in self.rooms:
@@ -1371,10 +1371,10 @@ class Terrain(src.saveing.Saveable):
                     for y in range(0,15):
                         if x == 7 or y == 7:
                             continue 
-                        chars[bigX*15+x][bigY*15+0] = displayChars.forceField
-                        chars[bigX*15+x][bigY*15+14] = displayChars.forceField
-                        chars[bigX*15+0][bigY*15+y] = displayChars.forceField
-                        chars[bigX*15+14][bigY*15+y] = displayChars.forceField
+                        chars[bigX*15+x][bigY*15+0] = src.canvas.displayChars.forceField
+                        chars[bigX*15+x][bigY*15+14] = src.canvas.displayChars.forceField
+                        chars[bigX*15+0][bigY*15+y] = src.canvas.displayChars.forceField
+                        chars[bigX*15+14][bigY*15+y] = src.canvas.displayChars.forceField
                 
         # calculate room visibility
         if not mapHidden:
@@ -1440,7 +1440,7 @@ class Terrain(src.saveing.Saveable):
 
         # add overlays
         if not mapHidden:
-            #src.overlays.QuestMarkerOverlay().apply(chars,mainChar,displayChars)
+            #src.overlays.QuestMarkerOverlay().apply(chars,mainChar,src.canvas.displayChars)
             src.overlays.NPCsOverlay().apply(chars,self)
             src.overlays.MainCharOverlay().apply(chars,mainChar)
 
@@ -1454,10 +1454,10 @@ class Terrain(src.saveing.Saveable):
         for bigX in range(1,15):
             for bigY in range(1,15):
                 for x in range(1,8):
-                    chars[bigX*15+x][1] = displayChars.void
+                    chars[bigX*15+x][1] = src.canvas.displayChars.void
 
-        chars[127][42] = displayChars.void
-        chars[42][127] = displayChars.void
+        chars[127][42] = src.canvas.displayChars.void
+        chars[42][127] = src.canvas.displayChars.void
         return chars
 
     '''
@@ -1810,11 +1810,11 @@ class Nothingness(Terrain):
                 if not self.hidden:
                     if not i%7 and not j%12 and not (i+j)%3:
                         # paint grass at pseudo random location
-                        line.append(displayChars.grass)
+                        line.append(src.canvas.displayChars.grass)
                     else:
                         line.append(displayChar)
                 else:
-                    line.append(displayChars.void)
+                    line.append(src.canvas.displayChars.void)
             chars.append(line)
         return chars
 
@@ -1841,18 +1841,18 @@ class Nothingness(Terrain):
                         item = src.items.itemMap["Scrap"](x,y,1,creator=creator)
                         item.bolted = False
                     if not x%57 and not y%22 and not (x+y)%3:
-                        item = src.items.itemMap["Item"](displayChars.foodStuffs[((2*x)+y)%6],x,y,creator=creator)
+                        item = src.items.itemMap["Item"](src.canvas.displayChars.foodStuffs[((2*x)+y)%6],x,y,creator=creator)
                         item.walkable = True
                         item.bolted = False
                     if not x%19 and not y%27 and not (x+y)%4:
-                        item = src.items.itemMap["Item"](displayChars.foodStuffs[((2*x)+y)%6],x,y,creator=creator)
+                        item = src.items.itemMap["Item"](src.canvas.displayChars.foodStuffs[((2*x)+y)%6],x,y,creator=creator)
                         item.walkable = True
                         item.bolted = False
                     if item:
                         self.dekoItems.append(item)
             self.addItems(self.dekoItems)
 
-        self.floordisplay = displayChars.dirt
+        self.floordisplay = src.canvas.displayChars.dirt
 
 '''
 a gameplay test
@@ -1889,7 +1889,7 @@ class GameplayTest(Terrain):
 
         super().__init__(layout,detailedLayout,creator=creator,seed=seed, noContent=noContent)
 
-        self.floordisplay = displayChars.dirt
+        self.floordisplay = src.camvas.displayChars.dirt
 
         if not noContent:
             '''
@@ -2063,7 +2063,7 @@ class GameplayTest(Terrain):
                 if not self.hidden:
                     line.append(self.floordisplay)
                 else:
-                    line.append(displayChars.void)
+                    line.append(src.canvas.displayChars.void)
             chars.append(line)
         return chars
 
@@ -2264,9 +2264,9 @@ class Desert(Terrain):
                     try:
                         line.append(desertTiles[self.heatmap[j//15][i//15]])
                     except:
-                        line.append(displayChars.void)
+                        line.append(src.canvas.displayChars.void)
                 else:
-                    line.append(displayChars.void)
+                    line.append(src.canvas.displayChars.void)
             chars.append(line)
         return chars
 
@@ -2301,7 +2301,7 @@ U  U
         """
         super().__init__(layout,detailedLayout,creator=creator,seed=seed,noContent=noContent)
 
-        self.floordisplay = displayChars.dirt
+        self.floordisplay = src.canvas.displayChars.dirt
 
         '''
         add field of thick scrap

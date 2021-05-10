@@ -12,6 +12,7 @@ import src.items
 import src.saveing
 import src.quests
 import src.chats
+import src.canvas
 import config
 import random
 
@@ -64,12 +65,12 @@ class Character(src.saveing.Saveable):
             name = config.names.characterFirstNames[(seed)%len(config.names.characterFirstNames)]+" "+config.names.characterLastNames[(seed*10)%len(config.names.characterLastNames)]
 
         if display == None and not name == None:
-            display = displayChars.staffCharactersByLetter[name[0].lower()]
+            display = src.canvas.displayChars.staffCharactersByLetter[name[0].lower()]
 
         if name == None:
             name = "Person"
         if display == None:
-            display = displayChars.staffCharacters[0]
+            display = src.canvas.displayChars.staffCharacters[0]
 
         self.setDefaultMacroState()
 
@@ -321,7 +322,7 @@ class Character(src.saveing.Saveable):
     """
     def render(self):
         if self.unconcious:
-            return displayChars.unconciousBody
+            return src.canvas.displayChars.unconciousBody
         else:
             return self.displayOriginal
 
@@ -1281,14 +1282,14 @@ class Monster(Character):
 
     def render(self):
         if self.phase == 2:
-            return displayChars.monster_feeder
+            return src.canvas.displayChars.monster_feeder
         elif self.phase == 3:
-            return displayChars.monster_grazer
+            return src.canvas.displayChars.monster_grazer
         elif self.phase == 4:
-            return displayChars.monster_corpseGrazer
+            return src.canvas.displayChars.monster_corpseGrazer
         elif self.phase == 5:
-            return displayChars.monster_hunter
-        return displayChars.monster_spore
+            return src.canvas.displayChars.monster_hunter
+        return src.canvas.displayChars.monster_spore
 
 class Exploder(Monster):
     charType = "Exploder"
@@ -1301,7 +1302,7 @@ class Exploder(Monster):
                "explode"])
 
     def render(self):
-        return displayChars.monster_exploder
+        return src.canvas.displayChars.monster_exploder
 
     def die(self,reason=None,addCorpse=True):
         if self.xPosition and self.container:

@@ -1921,10 +1921,10 @@ press key for advanced drop
         # doesn't open the dev menu and toggles rendering mode instead
         # bad code: code should act as advertised
         if key in (commandChars.devMenu):
-            if displayChars.mode == "unicode":
-                displayChars.setRenderingMode("pureASCII")
+            if src.canvas.displayChars.mode == "unicode":
+                src.canvas.displayChars.setRenderingMode("pureASCII")
             else:
-                displayChars.setRenderingMode("unicode")
+                src.canvas.displayChars.setRenderingMode("unicode")
 
         # open quest menu
         if key in (commandChars.show_quests):
@@ -3098,7 +3098,7 @@ def renderInventory():
         for item in char.inventory:
             counter += 1
             if isinstance(item.display,int):
-                txt.extend([str(counter)," - ",displayChars.indexedMapping[item.display]," - ",item.name,"\n     ",item.getDetailedInfo(),"\n"])
+                txt.extend([str(counter)," - ",src.canvas.displayChars.indexedMapping[item.display]," - ",item.name,"\n     ",item.getDetailedInfo(),"\n"])
             else:
                 txt.extend([str(counter)," - ",item.display," - ",item.name,"\n     ",item.getDetailedInfo(),"\n"])
     else:
@@ -3285,7 +3285,7 @@ def render(char):
     shift = (screensize[1]//2-(viewsize-1)//2,screensize[0]//4-(viewsize-1)//2)
 
     # place rendering in screen
-    canvas = src.canvas.Canvas(size=(viewsize,viewsize),chars=chars,coordinateOffset=(centerY-halfviewsite,centerX-halfviewsite),shift=shift,displayChars=displayChars,tileMapping=tileMapping)
+    canvas = src.canvas.Canvas(size=(viewsize,viewsize),chars=chars,coordinateOffset=(centerY-halfviewsite,centerX-halfviewsite),shift=shift,displayChars=src.canvas.displayChars,tileMapping=tileMapping)
 
     return canvas
 

@@ -7,6 +7,7 @@
 
 import src.saveing
 import src.rooms
+import src.canvas
 
 phasesByName = None
 gamestate = None
@@ -61,7 +62,7 @@ def say(text,speaker=None,trigger=None):
         if isinstance(display,str):
             prefix = display
         elif isinstance(display,int):
-            display = displayChars.indexedMapping[speaker.display]
+            display = src.canvas.displayChars.indexedMapping[speaker.display]
             if isinstance(display,str):
                 prefix = display
             else:
@@ -710,7 +711,7 @@ class WakeUpPhase(BasicPhase):
         showMessage("implant has taken control")
         showMessage("please press %s"%commandChars.wait)
         cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=None))
-        showMessage("""you will be represented by the """+displayChars.indexedMapping[displayChars.main_char]+" Character,  "+self.npc.name+" is represented by the "+displayChars.indexedMapping[self.npc.display]+""" Character.""")
+        showMessage("""you will be represented by the """+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.main_char]+" Character,  "+self.npc.name+" is represented by the "+src.canvas.displayChars.indexedMapping[self.npc.display]+""" Character.""")
         showMessage("please press %s"%commandChars.wait)
         cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=None))
         showMessage("please prepare to be ejected")
@@ -861,11 +862,11 @@ class BasicMovementTraining(BasicPhase):
 
  dialog and other information are shown in the infobox on the top right like this:
 
-     """+displayChars.indexedMapping[firstOfficer.display]+""": you are not missing no big parts and passed the first checks
-     """+displayChars.indexedMapping[firstOfficer.display]+""": next you need to prove you are able to follow orders
-     """+displayChars.indexedMapping[firstOfficer.display]+""": follow me, please
+     """+src.canvas.displayChars.indexedMapping[firstOfficer.display]+""": you are not missing no big parts and passed the first checks
+     """+src.canvas.displayChars.indexedMapping[firstOfficer.display]+""": next you need to prove you are able to follow orders
+     """+src.canvas.displayChars.indexedMapping[firstOfficer.display]+""": follow me, please
      
- you are represented by the """,displayChars.indexedMapping[displayChars.main_char]," Character,  ",firstOfficer.name," is represented by the ",displayChars.indexedMapping[firstOfficer.display],""" Character. 
+ you are represented by the """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.main_char]," Character,  ",firstOfficer.name," is represented by the ",src.canvas.displayChars.indexedMapping[firstOfficer.display],""" Character. 
 
  you can move using the keyboard. 
 
@@ -874,13 +875,13 @@ class BasicMovementTraining(BasicPhase):
  * press """,commandChars.move_south,""" to move down/south
  * press """,commandChars.move_east,""" to move right/east
 
- Your target is marked by """+displayChars.indexedMapping[displayChars.questTargetMarker][1]+""" and a path to your target is highlighted. You may follow this path or find your own way"""])
+ Your target is marked by """+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.questTargetMarker][1]+""" and a path to your target is highlighted. You may follow this path or find your own way"""])
         showGame(1)
 
         # ask the player to follow npc
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,4,4)
         showQuest(quest,firstOfficer)
-        showMessage("the current quest destination is shown as: "+displayChars.indexedMapping[displayChars.questTargetMarker][1])
+        showMessage("the current quest destination is shown as: "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.questTargetMarker][1])
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,3,4)
         showQuest(quest,mainChar,container=mainChar.serveQuest)
         quest = quests.MoveQuestMeta(terrain.wakeUpRoom,5,4)
@@ -921,16 +922,16 @@ class BasicMovementTraining(BasicPhase):
     you can activate levers by moving onto the lever and then pressing """+commandChars.activate+"""\n
     Here is how to do this:\n\nImagine you are standing next to a lever
 
-    """,displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],"""
-    """,displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.lever_notPulled],"U\\",displayChars.indexedMapping[displayChars.floor],"""
-    """,displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.main_char],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],"""
+    """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],"""
+    """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.lever_notPulled],"U\\",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],"""
+    """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.main_char],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],"""
 
    press """+commandChars.move_north+""" to move onto the lever and press """+commandChars.activate+""" to activate the lever.
    After pulling the lever a flask should apear like this:
 
-   """,displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],"""
-   """,displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.main_char],"U\\",displayChars.indexedMapping[displayChars.floor],"""
-   """,displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],(urwid.AttrSpec("#3f3","black"),"ò="),displayChars.indexedMapping[displayChars.floor],"""
+   """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],"""
+   """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.main_char],"U\\",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],"""
+   """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],(urwid.AttrSpec("#3f3","black"),"ò="),src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],"""
 
    now, go and pull the lever
 """])
@@ -1061,10 +1062,10 @@ class BasicMovementTraining(BasicPhase):
         # show instructions
         showText(["""Here is an example on how to do this:\n\nImagine you are standing next to a pile of coal
 
-""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],"""
-""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.main_char],displayChars.indexedMapping[displayChars.floor],"""
-""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.furnace_inactive],displayChars.indexedMapping[displayChars.pile],displayChars.indexedMapping[displayChars.floor],"""
-""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],"""
+""",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canavs.displayChars.indexedMapping[src.canvas.displayChars.floor],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],"""
+""",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.main_char],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],"""
+""",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pile],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],"""
+""",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],"""
 
 take a piece of coal by pressing """+commandChars.move_south+""" to walk against the pile and activating it by pressing """+commandChars.activate+""" immediatly afterwards.
 
@@ -1106,17 +1107,17 @@ you have on piece of coal less than before."""])
 
     Here is an example on how to do this:\n\nWalk onto or against the items you want to examine and press e directly afterwards to examine something.\nImagine you are standing next to a lever:
 
-""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],"""
-""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.lever_notPulled],displayChars.indexedMapping[displayChars.main_char],displayChars.indexedMapping[displayChars.floor],"""
-""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],"""
+""",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],"""
+""",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.lever_notPulled],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.main_char],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],"""
+""",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],"""
 
 To examine the lever you have to press """+commandChars.move_west+""" to move onto the lever and then press """+commandChars.examine+""" to examine it.
 
 Imagine a situation where you want to examine an object you can not walk onto something:
 
-""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],displayChars.indexedMapping[displayChars.floor],"""
-""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.furnace_inactive],displayChars.indexedMapping[displayChars.main_char],displayChars.indexedMapping[displayChars.floor],"""
-""",displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],displayChars.indexedMapping[displayChars.wall],"""
+""",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],"""
+""",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.main_char],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.floor],"""
+""",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],"""
 
 In this case you still have to press """+commandChars.move_west+""" to walk against the object and the press """+commandChars.examine+""" directly afterwards to examine it.
 """])
@@ -1304,9 +1305,10 @@ class BoilerRoomWelcome(BasicPhase):
     '''
     def doSteamengineExplaination(self):
         # explain how the room works
-        cinematics.showCinematic("on the southern Side of the Room you see the Steamgenerators. A Steamgenerator might look like this:\n\n"+displayChars.indexedMapping[displayChars.void][1]+displayChars.indexedMapping[displayChars.pipe][1]+displayChars.indexedMapping[displayChars.boiler_inactive][1]+displayChars.indexedMapping[displayChars.furnace_inactive][1]+"\n"+displayChars.indexedMapping[displayChars.pipe][1]+displayChars.indexedMapping[displayChars.pipe][1]+displayChars.indexedMapping[displayChars.boiler_inactive][1]+displayChars.indexedMapping[displayChars.furnace_inactive][1]+"\n"+displayChars.indexedMapping[displayChars.void][1]+displayChars.indexedMapping[displayChars.pipe][1]+displayChars.indexedMapping[displayChars.boiler_active][1]+displayChars.indexedMapping[displayChars.furnace_active][1]+"\n\nit consist of Furnaces marked by "+displayChars.indexedMapping[displayChars.furnace_inactive][1]+" or "+displayChars.indexedMapping[displayChars.furnace_active][1]+" that heat the Water in the Boilers "+displayChars.indexedMapping[displayChars.boiler_inactive][1]+" till it boils. a Boiler with boiling Water will be shown as "+displayChars.indexedMapping[displayChars.boiler_active][1]+".\n\nthe Steam is transfered to the Pipes marked with "+displayChars.indexedMapping[displayChars.pipe][1]+" and used to power the Ships Mechanics and Weapons\n\nDesign of Generators are often quite unique. try to recognize the Genrators in this Room and press "+commandChars.wait+"")
+        cinematics.showCinematic("on the southern Side of the Room you see the Steamgenerators. A Steamgenerator might look like this:\n\n"+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.void][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_inactive][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+"\n"+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_inactive][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+"\n"+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.void][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_active][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_active][1]+"\n\nit consist of Furnaces marked by "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+" or "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_active][1]+" that heat the Water in the Boilers "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_inactive][1]+" till it boils. a Boiler with boiling Water will be shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_active][1]+".\n\nthe Steam is transfered to the Pipes marked with "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+" and used to power the Ships Mechanics and Weapons\n\nDesign of Generators are often quite unique. try to recognize the Genrators in this Room and press "+commandChars.wait+"")
+
         cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-        cinematics.showCinematic("the Furnaces burn Coal shown as "+displayChars.indexedMapping[displayChars.coal][1]+" . if a Furnace is burning Coal, it is shown as "+displayChars.indexedMapping[displayChars.furnace_active][1]+" and shown as "+displayChars.indexedMapping[displayChars.furnace_inactive][1]+" if not.\n\nthe Coal is stored in Piles shown as "+displayChars.indexedMapping[displayChars.pile][1]+". the Coalpiles are on the right Side of the Room and are filled through the Pipes when needed.")
+        cinematics.showCinematic("the Furnaces burn Coal shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.coal][1]+" . if a Furnace is burning Coal, it is shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_active][1]+" and shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+" if not.\n\nthe Coal is stored in Piles shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pile][1]+". the Coalpiles are on the right Side of the Room and are filled through the Pipes when needed.")
             
         # start next step
         cinematic = cinematics.ShowGameCinematic(0) # bad code: this cinamatic is a hack
@@ -1370,7 +1372,7 @@ class BoilerRoomWelcome(BasicPhase):
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("8"))
         cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("7"))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("by the Way: the Piles on the lower End of the Room are Storage for Replacementparts and you can sleep in the Hutches n the middle of the Room shown as "+displayChars.indexedMapping[displayChars.hutch_free][1]+" or "+displayChars.indexedMapping[displayChars.hutch_occupied][1]))
+        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("by the Way: the Piles on the lower End of the Room are Storage for Replacementparts and you can sleep in the Hutches n the middle of the Room shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.hutch_free][1]+" or "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.hutch_occupied][1]))
         cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
         cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("6"))
         cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
@@ -1404,7 +1406,7 @@ class BoilerRoomWelcome(BasicPhase):
     '''
     def doFurnaceFirering(self):
         # show fluff
-        cinematics.showCinematic("your cohabitants in this Room are:\n '"+self.mainCharRoom.firstOfficer.name+"' ("+displayChars.indexedMapping[self.mainCharRoom.firstOfficer.display][1]+") is this Rooms 'Raumleiter' and therefore responsible for proper Steamgeneration in this Room\n '"+self.mainCharRoom.secondOfficer.name+"' ("+displayChars.indexedMapping[self.mainCharRoom.secondOfficer.display][1]+") was dispatched to support '"+self.mainCharRoom.firstOfficer.name+"' and is his Subordinate\n\nyou will likely report to '"+self.mainCharRoom.firstOfficer.name+"' later. please try to find them on the display and press "+commandChars.wait)
+        cinematics.showCinematic("your cohabitants in this Room are:\n '"+self.mainCharRoom.firstOfficer.name+"' ("+src.canvas.displayChars.indexedMapping[self.mainCharRoom.firstOfficer.display][1]+") is this Rooms 'Raumleiter' and therefore responsible for proper Steamgeneration in this Room\n '"+self.mainCharRoom.secondOfficer.name+"' ("+src.canvas.displayChars.indexedMapping[self.mainCharRoom.secondOfficer.display][1]+") was dispatched to support '"+self.mainCharRoom.firstOfficer.name+"' and is his Subordinate\n\nyou will likely report to '"+self.mainCharRoom.firstOfficer.name+"' later. please try to find them on the display and press "+commandChars.wait)
         cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
         cinematics.showCinematic(self.mainCharRoom.secondOfficer.name+" will demonstrate how to fire a furnace now.\n\nwatch and learn.")
 
@@ -1458,7 +1460,7 @@ class BoilerRoomWelcome(BasicPhase):
     def doWrapUp(self):
 
         # show some information
-        cinematics.showCinematic("there are other Items in the Room that may or may not be important for you. Here is the full List for you to review:\n\n Bin ("+displayChars.indexedMapping[displayChars.binStorage][1]+"): Used for storing Things intended to be transported further\n Pile ("+displayChars.indexedMapping[displayChars.pile][1]+"): a Pile of Things\n Door ("+displayChars.indexedMapping[displayChars.door_opened][1]+" or "+displayChars.indexedMapping[displayChars.door_closed][1]+"): you can move through it when open\n Lever ("+displayChars.indexedMapping[displayChars.lever_notPulled][1]+" or "+displayChars.indexedMapping[displayChars.lever_pulled][1]+"): a simple Man-Machineinterface\n Furnace ("+displayChars.indexedMapping[displayChars.furnace_inactive][1]+"): used to generate heat burning Things\n Display ("+displayChars.indexedMapping[displayChars.display][1]+"): a complicated Machine-Maninterface\n Wall ("+displayChars.indexedMapping[displayChars.wall][1]+"): ensures the structural Integrity of basically any Structure\n Pipe ("+displayChars.indexedMapping[displayChars.pipe][1]+"): transports Liquids, Pseudoliquids and Gasses\n Coal ("+displayChars.indexedMapping[displayChars.coal][1]+"): a piece of Coal, quite usefull actually\n Boiler ("+displayChars.indexedMapping[displayChars.boiler_inactive][1]+" or "+displayChars.indexedMapping[displayChars.boiler_active][1]+"): generates Steam using Water and and Heat\n Chains ("+displayChars.indexedMapping[displayChars.chains][1]+"): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing\n Comlink ("+displayChars.indexedMapping[displayChars.commLink][1]+"): a Pipe based Voicetransportationsystem that allows Communication with other Rooms\n Hutch ("+displayChars.indexedMapping[displayChars.hutch_free][1]+"): a comfy and safe Place to sleep and eat")
+        cinematics.showCinematic("there are other Items in the Room that may or may not be important for you. Here is the full List for you to review:\n\n Bin ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.binStorage][1]+"): Used for storing Things intended to be transported further\n Pile ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pile][1]+"): a Pile of Things\n Door ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.door_opened][1]+" or "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.door_closed][1]+"): you can move through it when open\n Lever ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.lever_notPulled][1]+" or "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.lever_pulled][1]+"): a simple Man-Machineinterface\n Furnace ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+"): used to generate heat burning Things\n Display ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.display][1]+"): a complicated Machine-Maninterface\n Wall ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall][1]+"): ensures the structural Integrity of basically any Structure\n Pipe ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+"): transports Liquids, Pseudoliquids and Gasses\n Coal ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.coal][1]+"): a piece of Coal, quite usefull actually\n Boiler ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_inactive][1]+" or "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_active][1]+"): generates Steam using Water and and Heat\n Chains ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.chains][1]+"): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing\n Comlink ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.commLink][1]+"): a Pipe based Voicetransportationsystem that allows Communication with other Rooms\n Hutch ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.hutch_free][1]+"): a comfy and safe Place to sleep and eat")
 
         '''
         event for starting the next phase

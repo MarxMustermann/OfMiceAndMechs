@@ -238,12 +238,6 @@ mainChar = gameStateObj.mainChar
 interaction.setFooter()
 
 # bad code: common variables with modules
-rooms.calculatePath = gameMath.calculatePath
-quests.calculatePath = gameMath.calculatePath
-characters.calculatePath = gameMath.calculatePath
-terrains.calculatePath = gameMath.calculatePath
-
-# bad code: common variables with modules
 rooms.Character = characters.Character
         
 # bad code: common variables with modules

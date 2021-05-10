@@ -15,12 +15,12 @@ import src.events
 import src.canvas
 import src.logger
 import src.chats
+import src.gameMath
 
 # bad code: global state
 Character = None
 mainChar = None
 messages = None
-calculatePath = None
 
 '''
 the base class for all rooms
@@ -534,7 +534,7 @@ class Room(src.saveing.Saveable):
     bad code: should have proper pathfinding
     '''
     def calculatePath(self,x,y,dstX,dstY,walkingPath):
-        path = calculatePath(x,y,dstX,dstY,walkingPath)
+        path = src.gameMath.calculatePath(x,y,dstX,dstY,walkingPath)
         return path
 
     '''

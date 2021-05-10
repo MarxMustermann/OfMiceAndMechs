@@ -21,7 +21,6 @@ import src.logger
 
 # bad code: containers for global state
 characters = None
-calculatePath = None
 
 """
 this is the class for characters meaning both npc and pcs. 

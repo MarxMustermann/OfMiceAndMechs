@@ -50,11 +50,9 @@ class BasicCinematic(src.saveing.Saveable):
         self.callbacksToStore.append("endTrigger")
 
         # generate unique id
-        self.id = {
-                    "counter":creator.getCreationCounter()
-                  }
-        self.id["creator"] = creator.id
-        self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
+        import uuid
+        self.id = uuid.uuid4().hex
+
 
     '''
     do nothing

@@ -107,7 +107,7 @@ class BasicPhase(src.saveing.Saveable):
 
         # register with dummy id
         self.id = name
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
         self.initialState = self.getState()
 
     '''

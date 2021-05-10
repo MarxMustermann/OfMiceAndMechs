@@ -2690,6 +2690,6 @@ get item instances from dict state
 def getTerrainFromState(state, creator=None):
     terrain = terrainMap[state["objType"]](creator=creator,seed=state["initialSeed"],noContent=True)
     terrain.setState(state)
-    loadingRegistry.register(terrain)
+    src.saveing.loadingRegistry.register(terrain)
     return terrain
 

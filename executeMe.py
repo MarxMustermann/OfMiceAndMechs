@@ -169,20 +169,6 @@ events.void = void
 chats.void = void
 
 # bad code: common variables with modules
-loadingRegistry = saveing.LoadingRegistry()
-characters.loadingRegistry = loadingRegistry
-gamestate.loadingRegistry = loadingRegistry
-quests.loadingRegistry = loadingRegistry
-rooms.loadingRegistry = loadingRegistry
-cinematics.loadingRegistry = loadingRegistry
-items.loadingRegistry = loadingRegistry
-story.loadingRegistry = loadingRegistry
-events.loadingRegistry = loadingRegistry
-terrains.loadingRegistry = loadingRegistry
-saveing.loadingRegistry = loadingRegistry
-interaction.loadingRegistry = loadingRegistry
-
-# bad code: common variables with modules
 items.characters = characters
 rooms.characters = characters
 story.characters = characters

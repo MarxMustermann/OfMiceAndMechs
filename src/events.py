@@ -301,6 +301,6 @@ create an event from a state dict
 def getEventFromState(state):
     event = eventMap[state["type"]](state["tick"],creator=void)
     event.setState(state)
-    loadingRegistry.register(event)
+    src.saveing.loadingRegistry.register(event)
     return event
 

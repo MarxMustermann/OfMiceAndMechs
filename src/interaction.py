@@ -3721,6 +3721,6 @@ def getSubmenuFromState(state):
     print(state)
     subMenu = subMenuMap[state["type"]]()
     subMenu.setState(state)
-    loadingRegistry.register(subMenu)
+    src.saveing.loadingRegistry.register(subMenu)
     return subMenu
 

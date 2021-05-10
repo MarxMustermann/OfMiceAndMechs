@@ -59,7 +59,7 @@ class MurderQuest2(src.saveing.Saveable):
            '''
            def watchCharacter(character):
                self.setTarget(character)
-           loadingRegistry.callWhenAvailable(state["toKill"],watchCharacter)
+           src.saveing.loadingRegistry.callWhenAvailable(state["toKill"],watchCharacter)
 
 
     '''
@@ -1109,7 +1109,7 @@ class NaiveMoveQuest(Quest):
            '''
            def watchCharacter(character):
                self.startWatching(character,self.recalculate)
-           loadingRegistry.callWhenAvailable(state["character"],watchCharacter)
+           src.saveing.loadingRegistry.callWhenAvailable(state["character"],watchCharacter)
 
 '''
 quest to enter a room. It assumes nothing goes wrong. 
@@ -1138,7 +1138,7 @@ class NaiveEnterRoomQuest(Quest):
         # save initial state and register
         self.type = "NaiveEnterRoomQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
         if room:
             self.description = "please enter the room: "+room.name+" "+str(room.xPosition)+" "+str(room.yPosition)
@@ -1190,7 +1190,7 @@ class NaiveEnterRoomQuest(Quest):
            '''
            def watchCharacter(character):
                self.startWatching(character,self.recalculate)
-           loadingRegistry.callWhenAvailable(state["character"],watchCharacter)
+           src.saveing.loadingRegistry.callWhenAvailable(state["character"],watchCharacter)
 
 '''
 The naive pickup quest. It assumes nothing goes wrong. 
@@ -1260,7 +1260,7 @@ class NaivePickupQuest(Quest):
            def watchThing(thing):
                self.startWatching(thing,self.recalculate)
                self.startWatching(thing,self.triggerCompletionCheck)
-           loadingRegistry.callWhenAvailable(state["toPickup"],watchThing)
+           src.saveing.loadingRegistry.callWhenAvailable(state["toPickup"],watchThing)
 
 '''
 The naive quest to get a quest from somebody. It assumes nothing goes wrong. 
@@ -1332,7 +1332,7 @@ class NaiveGetReward(Quest):
         # save initial state and register
         self.type = "NaiveGetReward"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     check for a done flag
@@ -1373,7 +1373,7 @@ class NaiveMurderQuest(Quest):
         # save initial state and register
         self.type = "NaiveMurderQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
         self.toKill.addListener(self.triggerCompletionCheck,"died")
 
@@ -1410,7 +1410,7 @@ class NaiveKnockOutQuest(Quest):
         # save initial state and register
         self.type = "NaiveKnockOutQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     check whether target is dead
@@ -1444,7 +1444,7 @@ class NaiveWakeUpQuest(Quest):
         # save initial state and register
         self.type = "NaiveWakeUpQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     check whether target is dead
@@ -1492,7 +1492,7 @@ class NaiveActivateQuest(Quest):
         # save initial state and register
         self.type = "NaiveActivateQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
         if self.toActivate:
             self.description = "naive activate "+str(self.toActivate.name)
@@ -1571,7 +1571,7 @@ class NaiveDropQuest(Quest):
         # save initial state and register
         self.type = "NaiveDropQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     check whether item was dropped
@@ -1619,7 +1619,7 @@ class NaiveDelegateQuest(Quest):
         # save initial state and register
         self.type = "NaiveDelegateQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     check if the quest has a character assigned
@@ -1659,7 +1659,7 @@ class WaitQuest(Quest):
         # save initial state and register
         self.type = "WaitQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     do nothing
@@ -1687,7 +1687,7 @@ class WaitForDeactivationQuest(Quest):
         # save initial state and register
         self.type = "WaitForDeactivationQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     check if item is inactive
@@ -1718,7 +1718,7 @@ class WaitForQuestCompletion(Quest):
         # save initial state and register
         self.type = "WaitForQuestCompletion"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     check if the quest was completed
@@ -1754,7 +1754,7 @@ class DrinkQuest(Quest):
         # save initial state and register
         self.type = "DrinkQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     assign to character and listen to character
@@ -1809,7 +1809,7 @@ class SurviveQuest(Quest):
         # save initial state and register
         self.type = "SurviveQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     assign to character and listen to the character
@@ -1879,7 +1879,7 @@ class EnterRoomQuestMeta(MetaQuestSequence):
         # save initial state and register
         self.type = "EnterRoomQuestMeta"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     add quest to leave room if needed
@@ -1917,7 +1917,7 @@ class EnterRoomQuestMeta(MetaQuestSequence):
            '''
            def watchCharacter(character):
                self.startWatching(character,self.recalculate)
-           loadingRegistry.callWhenAvailable(state["character"],watchCharacter)
+           src.saveing.loadingRegistry.callWhenAvailable(state["character"],watchCharacter)
 
 '''
 move to a position
@@ -1993,7 +1993,7 @@ class MoveQuestMeta(MetaQuestSequence):
            '''
            def watchCharacter(character):
                self.startWatching(character,self.recalculate)
-           loadingRegistry.callWhenAvailable(state["character"],watchCharacter)
+           src.saveing.loadingRegistry.callWhenAvailable(state["character"],watchCharacter)
 
 '''
 drop a item somewhere
@@ -2026,7 +2026,7 @@ class DropQuestMeta(MetaQuestSequence):
         # save initial state and register
         self.type = "DropQuestMeta"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     re-add the movement quest if neccessary
@@ -2144,7 +2144,7 @@ class PickupQuestMeta(MetaQuestSequence):
            '''
            def watchCharacter(character):
                self.startWatching(character,self.recalculate)
-           loadingRegistry.callWhenAvailable(state["character"],watchCharacter)
+           src.saveing.loadingRegistry.callWhenAvailable(state["character"],watchCharacter)
 
 '''
 activate an item
@@ -2176,7 +2176,7 @@ class ActivateQuestMeta(MetaQuestSequence):
         # save initial state and register
         self.type = "ActivateQuestMeta"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     re-add the movement quest if neccessary
@@ -2243,7 +2243,7 @@ class RefillDrinkQuest(ActivateQuestMeta):
         # save initial state and register
         self.type = "RefillDrinkQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     check whether the character has a filled goo flask
@@ -2275,7 +2275,7 @@ class CollectQuestMeta(MetaQuestSequence):
         # save initial state and register
         self.type = "CollectQuestMeta"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
     
     '''
     assign to character and add the quest to fetch from a pile
@@ -2396,7 +2396,7 @@ class GetReward(MetaQuestSequence):
         # save initial state and register
         self.type = "GetReward"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     assign to character and spawn a chat option to collect reward
@@ -2464,7 +2464,7 @@ class MurderQuest(MetaQuestSequence):
         # save initial state and register
         self.type = "MurderQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     adjust movement to follow target
@@ -2510,7 +2510,7 @@ class KnockOutQuest(MetaQuestSequence):
         # save initial state and register
         self.type = "KnockOutQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     adjust movement to follow target
@@ -2555,7 +2555,7 @@ class WakeUpQuest(MetaQuestSequence):
         # save initial state and register
         self.type = "WakeUpQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     adjust movement to follow target
@@ -2596,7 +2596,7 @@ class FillPocketsQuest(MetaQuestSequence):
         # save initial state and register
         self.type = "FillPocketsQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     add collect quest till inventory is full
@@ -2650,7 +2650,7 @@ class LeaveRoomQuest(Quest):
         # save initial state and register
         self.type = "LeaveRoomQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     move to door and step out of the room
@@ -2728,7 +2728,7 @@ class PatrolQuest(MetaQuestSequence):
         # save initial state and register
         self.type = "PatrolQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
 '''
 quest to examine the environment
@@ -2748,7 +2748,7 @@ class ExamineQuest(Quest):
         # save initial state and register
         self.type = "ExamineQuest"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     check if some items were observed
@@ -2865,7 +2865,7 @@ class FetchFurniture(MetaQuestParralel):
         # save initial state and register
         self.type = "FetchFurniture"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
 '''
 place furniture within a contruction site
@@ -2902,7 +2902,7 @@ class PlaceFurniture(MetaQuestParralel):
         # save initial state and register
         self.type = "PlaceFurniture"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
           
 '''
 construct a room
@@ -2929,7 +2929,7 @@ class ConstructRoom(MetaQuestParralel):
         # save initial state and register
         self.type = "ConstructRoom"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
     '''
     add quests to fetch and place furniture
@@ -3017,7 +3017,7 @@ class TransportQuest(MetaQuestSequence):
         '''
         def addRoom(room):
             self.dropOff[0] = room
-        loadingRegistry.callWhenAvailable(state["dropOff"][0],addRoom)
+        src.saveing.loadingRegistry.callWhenAvailable(state["dropOff"][0],addRoom)
 
     '''
     get state as dictionary
@@ -3068,7 +3068,7 @@ class StoreCargo(MetaQuestSequence):
         # save initial state and register
         self.type = "StoreCargo"
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
 '''
 move items to accessible storage
@@ -3344,7 +3344,7 @@ class FireFurnaceMeta(MetaQuestSequence):
            '''
            def watch(thing):
                self.startWatching(thing,self.triggerCompletionCheck)
-           loadingRegistry.callWhenAvailable(state["furnace"],watch)
+           src.saveing.loadingRegistry.callWhenAvailable(state["furnace"],watch)
 
 
     '''
@@ -3429,7 +3429,7 @@ class FillGrowthTankMeta(MetaQuestSequence):
            '''
            def watch(thing):
                self.startWatching(thing,self.triggerCompletionCheck)
-           loadingRegistry.callWhenAvailable(state["growthTank"],watch)
+           src.saveing.loadingRegistry.callWhenAvailable(state["growthTank"],watch)
 
 
     '''
@@ -3677,5 +3677,5 @@ get quest instance from state dict
 def getQuestFromState(state):
     quest = questMap[state["type"]](creator=void)
     quest.setState(state)
-    loadingRegistry.register(quest)
+    src.saveing.loadingRegistry.register(quest)
     return quest

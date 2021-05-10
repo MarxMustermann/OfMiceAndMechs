@@ -9164,7 +9164,7 @@ class StasisTank(Item):
         if "character" in state and state["character"]:
             char = characters.Character(creator=void)
             char.setState(state["character"])
-            loadingRegistry.register(char)
+            src.saveing.loadingRegistry.register(char)
 
             self.character = char
         else:
@@ -14636,6 +14636,6 @@ def getItemFromState(state):
     item.setState(state)
     if "id" in state:
         item.id = state["id"]
-    loadingRegistry.register(item)
+    src.saveing.loadingRegistry.register(item)
     return item
 

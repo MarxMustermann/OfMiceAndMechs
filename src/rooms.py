@@ -474,7 +474,7 @@ class Room(src.saveing.Saveable):
                 charState = state["charStates"][charId]
                 char = characters.Character(creator=void)
                 char.setState(charState)
-                loadingRegistry.register(char)
+                src.saveing.loadingRegistry.register(char)
                 self.addCharacter(char,charState["xPosition"],charState["yPosition"])
 
         # add new events
@@ -497,7 +497,7 @@ class Room(src.saveing.Saveable):
                     continue
                 char = characters.Character(creator=void)
                 char.setState(charState)
-                loadingRegistry.register(char)
+                src.saveing.loadingRegistry.register(char)
                 self.addCharacter(char,charState["xPosition"],charState["yPosition"])
 
         self.forceRedraw()
@@ -1622,7 +1622,7 @@ XXXXXXXXXXXXX
 
         self.addItems(itemList)
         self.initialState = self.getState()
-        loadingRegistry.register(self)
+        src.saveing.loadingRegistry.register(self)
 
 
 '''
@@ -3019,6 +3019,6 @@ def getRoomFromState(state,terrain=None):
     room = roomMap[state["objType"]](state["xPosition"],state["yPosition"],state["offsetX"],state["offsetY"],creator=void)
     room.terrain = terrain
     room.setState(state)
-    loadingRegistry.register(room)
+    src.saveing.loadingRegistry.register(room)
     return room
 

@@ -10,7 +10,6 @@ import src.rooms
 
 phasesByName = None
 gamestate = None
-names = None
 events = None
 
 #####################################

@@ -4,6 +4,8 @@
 #
 ####################################################################################
 
+import config
+
 def setup():
     import src.itemFolder.includeTest
     itemMap["TestItem"] = src.itemFolder.includeTest.TestItem
@@ -1033,7 +1035,7 @@ class GrowthTank(Item):
         def getRandomName(seed1=0,seed2=None):
             if seed2 == None:
                 seed2 = seed1+(seed1//5)
-            return names.characterFirstNames[seed1%len(names.characterFirstNames)]+" "+names.characterLastNames[seed2%len(names.characterLastNames)]
+            return config.names.characterFirstNames[seed1%len(config.names.characterFirstNames)]+" "+config.names.characterLastNames[seed2%len(config.names.characterLastNames)]
 
         # add character
         if not character:

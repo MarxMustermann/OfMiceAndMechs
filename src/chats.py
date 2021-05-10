@@ -770,9 +770,9 @@ class RoomDutyChat2(Chat):
     def handleKey(self, key, noRender=False):
         self.persistentText = "Drink something"
 
-        quest = quests.PickupQuestMeta(self.partner.room.bean,creator=void)
+        quest = quests.PickupQuestMeta(self.partner.room.bean)
         mainChar.assignQuest(quest,active=True)
-        quest = quests.ActivateQuestMeta(self.partner.room.bean,creator=void)
+        quest = quests.ActivateQuestMeta(self.partner.room.bean)
         mainChar.assignQuest(quest,active=True)
 
         self.set_text(self.persistentText)
@@ -956,7 +956,7 @@ class StartChat(Chat):
             self.set_text(self.persistentText)
             self.done = True
             global quest
-            quest = quests.KeepFurnaceFiredMeta(self.partner.room.furnaces[0],creator=void)
+            quest = quests.KeepFurnaceFiredMeta(self.partner.room.furnaces[0])
             self.partner.assignQuest(quest,active=True)
 
             # replace dialog option

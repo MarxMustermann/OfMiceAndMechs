@@ -299,7 +299,7 @@ eventMap = {
 create an event from a state dict
 '''
 def getEventFromState(state):
-    event = eventMap[state["type"]](state["tick"],creator=void)
+    event = eventMap[state["type"]](state["tick"])
     event.setState(state)
     src.saveing.loadingRegistry.register(event)
     return event

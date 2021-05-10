@@ -700,7 +700,7 @@ shortcut for adding a textcinematic
 bad code: this should be a generalised wrapper for adding cinematics
 '''
 def showCinematic(text,rusty=False,autocontinue=False,scrolling=False):
-    cinematicQueue.append(TextCinematic(text,rusty,autocontinue,scrolling,creator=void))
+    cinematicQueue.append(TextCinematic(text,rusty,autocontinue,scrolling))
 
 # map of string the cinematic classes
 cinematicMap = {
@@ -719,7 +719,7 @@ cinematicMap = {
 spawner for cinematics from dicts
 '''
 def getCinematicFromState(state):
-    cinematic = cinematicMap[state["type"]](creator=void)
+    cinematic = cinematicMap[state["type"]]()
     cinematic.setState(state)
     return cinematic
 

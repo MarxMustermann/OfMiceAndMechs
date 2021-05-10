@@ -2888,41 +2888,41 @@ class AdvancedQuestMenu(SubMenu):
                 # bad code: repetetive code
                 if self.selection == "yes":
                     if self.quest == src.quests.MoveQuestMeta:
-                       questInstance = self.quest(mainChar.room,2,2,creator=void)
+                       questInstance = self.quest(mainChar.room,2,2)
                     elif self.quest == src.quests.ActivateQuestMeta:
-                       questInstance = self.quest(terrain.tutorialMachineRoom.furnaces[0],creator=void)
+                       questInstance = self.quest(terrain.tutorialMachineRoom.furnaces[0])
                     elif self.quest == src.quests.EnterRoomQuestMeta:
-                       questInstance = self.quest(self.questParams["room"],creator=void)
+                       questInstance = self.quest(self.questParams["room"])
                     elif self.quest == src.quests.FireFurnaceMeta:
-                       questInstance = self.quest(terrain.tutorialMachineRoom.furnaces[0],creator=void)
+                       questInstance = self.quest(terrain.tutorialMachineRoom.furnaces[0])
                     elif self.quest == src.quests.WaitQuest:
-                       questInstance = self.quest(creator=void)
+                       questInstance = self.quest()
                     elif self.quest == src.quests.LeaveRoomQuest:
                        try:
-                           questInstance = self.quest(self.character.room,creator=void)
+                           questInstance = self.quest(self.character.room)
                        except:
                            pass
                     elif self.quest == src.quests.ClearRubble:
-                       questInstance = self.quest(creator=void)
+                       questInstance = self.quest()
                     elif self.quest == src.quests.RoomDuty:
-                       questInstance = self.quest(creator=void)
+                       questInstance = self.quest()
                     elif self.quest == src.quests.ConstructRoom:
                        for room in terrain.rooms:
                            if isinstance(room,src.rooms.ConstructionSite):
                                constructionSite = room
                                break
-                       questInstance = self.quest(constructionSite,terrain.tutorialStorageRooms,creator=void)
+                       questInstance = self.quest(constructionSite,terrain.tutorialStorageRooms)
                     elif self.quest == src.quests.StoreCargo:
                        for room in terrain.rooms:
                            if isinstance(room,src.rooms.StorageRoom):
                                storageRoom = room
-                       questInstance = self.quest(self.questParams["cargoRoom"],self.questParams["storageRoom"],creator=void)
+                       questInstance = self.quest(self.questParams["cargoRoom"],self.questParams["storageRoom"])
                     elif self.quest == src.quests.MoveToStorage:
-                       questInstance = self.quest([terrain.tutorialLab.itemByCoordinates[(1,9)][0],terrain.tutorialLab.itemByCoordinates[(2,9)][0]],terrain.tutorialStorageRooms[1],creator=void)
+                       questInstance = self.quest([terrain.tutorialLab.itemByCoordinates[(1,9)][0],terrain.tutorialLab.itemByCoordinates[(2,9)][0]],terrain.tutorialStorageRooms[1])
                     elif self.quest == "special_furnace":
-                        questInstance = src.quests.KeepFurnaceFiredMeta(self.character.room.furnaces[0],creator=void)
+                        questInstance = src.quests.KeepFurnaceFiredMeta(self.character.room.furnaces[0])
                     else:
-                       questInstance = self.quest(creator=void)
+                       questInstance = self.quest()
 
                     # show some fluff
                     if not self.character == mainChar:

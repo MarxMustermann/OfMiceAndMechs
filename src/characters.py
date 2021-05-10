@@ -1325,7 +1325,7 @@ characterMap = {
 get item instances from dict state
 '''
 def getCharacterFromState(state):
-    character = characterMap[state["type"]](creator=void,characterId=state["id"])
+    character = characterMap[state["type"]](characterId=state["id"])
     src.saveing.loadingRegistry.register(character)
     character.setState(state)
     return character

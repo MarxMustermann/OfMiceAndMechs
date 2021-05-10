@@ -277,11 +277,3 @@ class Saveable(object):
     def getCreationCounter(self):
         self.creationCounter += 1
         return self.creationCounter
-
-'''
-the creator that should be used if there is no valid creator object
-basically supply ids for unique ids
-'''
-class Void(Saveable):
-    id = "void"
-

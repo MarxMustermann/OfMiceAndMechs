@@ -9162,7 +9162,7 @@ class StasisTank(Item):
         super().setState(state)
 
         if "character" in state and state["character"]:
-            char = characters.Character(creator=void)
+            char = characters.Character()
             char.setState(state["character"])
             src.saveing.loadingRegistry.register(char)
 
@@ -14632,7 +14632,7 @@ rawMaterialLookup = {
 get item instances from dict state
 '''
 def getItemFromState(state):
-    item = itemMap[state["type"]](creator=void,noId=True)
+    item = itemMap[state["type"]](noId=True)
     item.setState(state)
     if "id" in state:
         item.id = state["id"]

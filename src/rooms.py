@@ -472,7 +472,7 @@ class Room(src.saveing.Saveable):
         if "newChars" in state:
             for charId in state["newChars"]:
                 charState = state["charStates"][charId]
-                char = characters.Character(creator=void)
+                char = characters.Character()
                 char.setState(charState)
                 src.saveing.loadingRegistry.register(char)
                 self.addCharacter(char,charState["xPosition"],charState["yPosition"])
@@ -495,7 +495,7 @@ class Room(src.saveing.Saveable):
                 charState = state["characterStates"][charId]
                 if not "xPosition" in charState or not "yPosition" in charState:
                     continue
-                char = characters.Character(creator=void)
+                char = characters.Character()
                 char.setState(charState)
                 src.saveing.loadingRegistry.register(char)
                 self.addCharacter(char,charState["xPosition"],charState["yPosition"])
@@ -3016,7 +3016,7 @@ roomMap = {
 get item instances from dict state
 '''
 def getRoomFromState(state,terrain=None):
-    room = roomMap[state["objType"]](state["xPosition"],state["yPosition"],state["offsetX"],state["offsetY"],creator=void)
+    room = roomMap[state["objType"]](state["xPosition"],state["yPosition"],state["offsetX"],state["offsetY"])
     room.terrain = terrain
     room.setState(state)
     src.saveing.loadingRegistry.register(room)

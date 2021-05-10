@@ -151,20 +151,6 @@ else:
     interaction.setUpUrwid()
 
 # bad code: common variables with modules
-void = saveing.Void()
-characters.void = void
-rooms.void = void
-items.void = void
-terrains.void = void
-gamestate.void = void
-story.void = void
-interaction.void = void
-quests.void = void
-cinematics.void = void
-events.void = void
-chats.void = void
-
-# bad code: common variables with modules
 items.characters = characters
 rooms.characters = characters
 story.characters = characters
@@ -554,7 +540,7 @@ if not args.debug and not interaction.submenue and not loaded:
     press space to continue
 
 """
-    openingCinematic = cinematics.TextCinematic(text,rusty=True,scrolling=True,creator=void)
+    openingCinematic = cinematics.TextCinematic(text,rusty=True,scrolling=True)
     cinematics.cinematicQueue.insert(0,openingCinematic)
     gameStateObj.openingCinematic = openingCinematic
     gameStateObj.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))

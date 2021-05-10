@@ -24,7 +24,7 @@ events = None
 helper to add message cinematic
 '''
 def showMessage(message,trigger=None):
-    cinematic = cinematics.ShowMessageCinematic(message,creator=void)
+    cinematic = cinematics.ShowMessageCinematic(message)
     cinematics.cinematicQueue.append(cinematic)
     cinematic.endTrigger = trigger
 
@@ -32,7 +32,7 @@ def showMessage(message,trigger=None):
 helper to add show game cinematic
 '''
 def showGame(duration,trigger=None):
-    cinematic = cinematics.ShowGameCinematic(duration,tickSpan=1,creator=void)
+    cinematic = cinematics.ShowGameCinematic(duration,tickSpan=1)
     cinematics.cinematicQueue.append(cinematic)
     cinematic.endTrigger = trigger
 
@@ -40,7 +40,7 @@ def showGame(duration,trigger=None):
 helper to add show quest cinematic
 '''
 def showQuest(quest,assignTo=None,trigger=None,container=None):
-    cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=assignTo,container=container,creator=void)
+    cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=assignTo,container=container)
     cinematics.cinematicQueue.append(cinematic)
     cinematic.endTrigger = trigger
 
@@ -48,7 +48,7 @@ def showQuest(quest,assignTo=None,trigger=None,container=None):
 helper to add text cinematic
 '''
 def showText(text,rusty=False,autocontinue=False,trigger=None,scrolling=False):
-    cinematic = cinematics.TextCinematic(text,rusty=rusty,autocontinue=autocontinue,scrolling=scrolling,creator=void)
+    cinematic = cinematics.TextCinematic(text,rusty=rusty,autocontinue=autocontinue,scrolling=scrolling)
     cinematics.cinematicQueue.append(cinematic)
     cinematic.endTrigger = trigger
 
@@ -131,14 +131,14 @@ class BasicPhase(src.saveing.Saveable):
         # create first officer
         if self.requiresMainCharRoomFirstOfficer:
             if not self.mainCharRoom.firstOfficer:
-                self.mainCharRoom.firstOfficer = characters.Character(xPosition=4,yPosition=3,creator=void,seed=gamestate.tick+2)
+                self.mainCharRoom.firstOfficer = characters.Character(xPosition=4,yPosition=3,seed=gamestate.tick+2)
                 self.mainCharRoom.addCharacter(self.mainCharRoom.firstOfficer,self.firstOfficerXPosition,self.firstOfficerYPosition)
             self.mainCharRoom.firstOfficer.reputation = 1000
 
         # create second officer
         if self.requiresMainCharRoomSecondOfficer:
             if not self.mainCharRoom.secondOfficer:
-                self.mainCharRoom.secondOfficer = characters.Character(xPosition=4,yPosition=3,creator=void,seed=gamestate.tick+4)
+                self.mainCharRoom.secondOfficer = characters.Character(xPosition=4,yPosition=3,seed=gamestate.tick+4)
                 self.mainCharRoom.addCharacter(self.mainCharRoom.secondOfficer,self.secondOfficerXPosition,self.secondOfficerYPosition)
             self.mainCharRoom.secondOfficer.reputation = 100
 
@@ -260,7 +260,7 @@ class Challenge(BasicPhase):
             quest.completed = True
         mainChar.quests = []
 
-        quest = quests.LeaveRoomQuest(challengeRoom,creator=void)
+        quest = quests.LeaveRoomQuest(challengeRoom)
         quest.endTrigger = {"container":self,"method":"restart"}
         quest.failTrigger = {"container":self,"method":"fail"}
         mainChar.serveQuest = quest
@@ -511,7 +511,7 @@ class BrainTestingPhase(BasicPhase):
                      ("nok","Susanne Kreismann")
                   ]
         text = "\nplease answer the question:\n\nwhat is your name?"
-        cinematic = cinematics.SelectionCinematic(text,options,default="ok",creator=void)
+        cinematic = cinematics.SelectionCinematic(text,options,default="ok")
         cinematic.followUps = {"ok":{"container":self,"method":"askSecondQuestion"},"nok":{"container":self,"method":"infoFail"}}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
@@ -535,7 +535,7 @@ class BrainTestingPhase(BasicPhase):
                     ("nok","A Hutch is used to transfer fluids"),
                   ]
         text = "\nplease select the true statement:\n\n"
-        cinematic = cinematics.SelectionCinematic(text,options,creator=void)
+        cinematic = cinematics.SelectionCinematic(text,options)
         cinematic.followUps = {"ok":{"container":self,"method":"askThirdQuestion"},"nok":{"container":self,"method":"infoFail"}}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
@@ -550,7 +550,7 @@ class BrainTestingPhase(BasicPhase):
                      ("nok","*deny answer*"),
                   ]
         text = "\nplease repeat the definition of rust\n\n"
-        cinematic = cinematics.SelectionCinematic(text,options,creator=void)
+        cinematic = cinematics.SelectionCinematic(text,options)
         cinematic.followUps = {"ok":{"container":self,"method":"flashInformation"},"nok":{"container":self,"method":"infoFail"}}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
@@ -608,7 +608,7 @@ class BrainTestingPhase(BasicPhase):
 
 """] ,autocontinue=True,scrolling=True)
 
-        cinematic = cinematics.InformationTransfer(definitions,creator=void)
+        cinematic = cinematics.InformationTransfer(definitions)
         cinematics.cinematicQueue.append(cinematic)
         
         # show fluff (write copy to messages to have this show up during zoom)
@@ -625,7 +625,7 @@ class BrainTestingPhase(BasicPhase):
      transfer control to implant"""],autocontinue=True,scrolling=True)
 
         # zooom out and end phase
-        cinematic = cinematics.MessageZoomCinematic(creator=void)
+        cinematic = cinematics.MessageZoomCinematic()
         cinematic.endTrigger = {"container":self,"method":"end"}
         cinematics.cinematicQueue.append(cinematic)
 
@@ -711,10 +711,10 @@ class WakeUpPhase(BasicPhase):
         showGame(2)
         showMessage("implant has taken control")
         showMessage("please press %s"%commandChars.wait)
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=None,creator=void))
+        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=None))
         showMessage("""you will be represented by the """+displayChars.indexedMapping[displayChars.main_char]+" Character,  "+self.npc.name+" is represented by the "+displayChars.indexedMapping[self.npc.display]+""" Character.""")
         showMessage("please press %s"%commandChars.wait)
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=None,creator=void))
+        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=None))
         showMessage("please prepare to be ejected")
         showGame(2)
         showMessage("note that you will be unable to move until implant imprinting")
@@ -745,12 +745,12 @@ class WakeUpPhase(BasicPhase):
         showGame(2)
         showMessage("please wait for assistance")
         showGame(2)
-        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,3,4,creator=void)
+        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,3,4)
         showQuest(quest,firstOfficer)
         say("I AM "+firstOfficer.name.upper()+" AND I DEMAND YOUR SERVICE.",firstOfficer)
 
         # add serve quest
-        quest = quests.Serve(firstOfficer,creator=void)
+        quest = quests.Serve(firstOfficer)
         mainChar.serveQuest = quest
         mainChar.assignQuest(quest,active=True)
 
@@ -846,7 +846,7 @@ class BasicMovementTraining(BasicPhase):
         # smooth over missing info
         # bad code: should not be nessecarry
         if not hasattr(mainChar,"serveQuest"):
-            quest = quests.Serve(firstOfficer,creator=void)
+            quest = quests.Serve(firstOfficer)
             mainChar.serveQuest = quest
             mainChar.assignQuest(quest,active=True)
 
@@ -880,32 +880,32 @@ class BasicMovementTraining(BasicPhase):
         showGame(1)
 
         # ask the player to follow npc
-        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,4,4,creator=void)
+        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,4,4)
         showQuest(quest,firstOfficer)
         showMessage("the current quest destination is shown as: "+displayChars.indexedMapping[displayChars.questTargetMarker][1])
-        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,3,4,creator=void)
+        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,3,4)
         showQuest(quest,mainChar,container=mainChar.serveQuest)
-        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,5,4,creator=void)
+        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,5,4)
         showQuest(quest,firstOfficer)
         say("follow me, please",firstOfficer)
-        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,4,4,creator=void)
+        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,4,4)
         showQuest(quest,mainChar,container=mainChar.serveQuest)
-        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,6,7,creator=void)
+        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,6,7)
         showQuest(quest,firstOfficer)
         say("follow me, please",firstOfficer)
-        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,5,7,creator=void)
+        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,5,7)
         showQuest(quest,mainChar,container=mainChar.serveQuest)
 
         # ask player to move around
         say("now prove that you are able to walk on your own",firstOfficer)
         say("move to the designated target, please",firstOfficer)
-        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,2,7,creator=void)
+        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,2,7)
         showQuest(quest,mainChar,container=mainChar.serveQuest)
         say("move to the designated target, please",firstOfficer)
-        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,4,3,creator=void)
+        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,4,3)
         showQuest(quest,mainChar,container=mainChar.serveQuest)
         say("move to the designated target, please",firstOfficer)
-        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,6,6,creator=void)
+        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,6,6)
         showQuest(quest,mainChar,container=mainChar.serveQuest)
         say("great. You seemed be able to coordinate yourself",firstOfficer)
         showGame(1)
@@ -914,7 +914,7 @@ class BasicMovementTraining(BasicPhase):
         # ask player to move to the lever
         showGame(2)
         say("move over to the lever now",firstOfficer)
-        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,3,2,creator=void)
+        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,3,2)
         showQuest(quest,mainChar,container=mainChar.serveQuest)
         
         import urwid
@@ -940,7 +940,7 @@ class BasicMovementTraining(BasicPhase):
 
         # ask player to pull the lever and add trigger
         say("activate the lever",firstOfficer)
-        quest = quests.ActivateQuestMeta(terrain.wakeUpRoom.lever1,creator=void)
+        quest = quests.ActivateQuestMeta(terrain.wakeUpRoom.lever1)
         showQuest(quest,mainChar,trigger={"container":self,"method":"fetchDrink"},container=mainChar.serveQuest)
 
         gamestate.save()
@@ -970,7 +970,7 @@ class BasicMovementTraining(BasicPhase):
         say("well done, go and fetch your drink",firstOfficer)
 
         # ask the player to pick up the flask
-        quest = quests.PickupQuestMeta(drink,creator=void)
+        quest = quests.PickupQuestMeta(drink)
         showQuest(quest,mainChar,trigger={"container":self,"method":"drinkStuff"},container=mainChar.serveQuest)
     
     '''
@@ -979,7 +979,7 @@ class BasicMovementTraining(BasicPhase):
     def drinkStuff(self):
         # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
-        mainChar.assignQuest(quests.SurviveQuest(creator=void))
+        mainChar.assignQuest(quests.SurviveQuest())
 
         # show instructions
         say("great. Drink from the flask you just fetched and come over for a quick talk.",firstOfficer)
@@ -987,15 +987,15 @@ class BasicMovementTraining(BasicPhase):
         showMessage(msg)
 
         # ask the player to drink and return
-        quest = quests.DrinkQuest(creator=void)
+        quest = quests.DrinkQuest()
         showQuest(quest,mainChar,container=mainChar.serveQuest)
-        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,6,6,creator=void)
+        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,6,6)
         showQuest(quest,mainChar,container=mainChar.serveQuest)
 
         say(msg,firstOfficer)
         text = "I see you are in working order. Do you have any injuries?"
         options = [("no","No"),("yes","Yes")]
-        cinematic = cinematics.SelectionCinematic(text,options,creator=void)
+        cinematic = cinematics.SelectionCinematic(text,options)
         cinematic.followUps = {"no":{"container":self,"method":"notinjured"},"yes":{"container":self,"method":"injured2Question"}}
         cinematics.cinematicQueue.append(cinematic)
 
@@ -1005,7 +1005,7 @@ class BasicMovementTraining(BasicPhase):
 
         text = "I will issue a complaint to have the growth tank fixed.\n\nDo you think you will be able to work?"
         options = [("yes","Yes"),("no","No")]
-        cinematic = cinematics.SelectionCinematic(text,options,creator=void)
+        cinematic = cinematics.SelectionCinematic(text,options)
         cinematic.followUps = {"yes":{"container":self,"method":"notinjured"},"no":{"container":self,"method":"injuredToVat"}}
         cinematics.cinematicQueue.append(cinematic)
 
@@ -1026,7 +1026,7 @@ class BasicMovementTraining(BasicPhase):
         say(msg2,firstOfficer)
         say(msg3,firstOfficer)
         showText("     "+msg+"\n\n     "+msg2+"\n\n     "+msg3)
-        quest = quests.ActivateQuestMeta(terrain.wakeUpRoom.lever1,creator=void)
+        quest = quests.ActivateQuestMeta(terrain.wakeUpRoom.lever1)
         showQuest(quest,mainChar,trigger={"container":self,"method":"chatter"},container=mainChar.serveQuest)
 
     def chatter(self):
@@ -1080,7 +1080,7 @@ you have on piece of coal less than before."""])
         # ask the player to fire a furnace
         self.didFurnaces = True
         say("go on and fire the furnace",firstOfficer)
-        quest = quests.FireFurnaceMeta(furnace,creator=void)
+        quest = quests.FireFurnaceMeta(furnace)
         showQuest(quest,mainChar,container=mainChar.serveQuest)
 
     '''
@@ -1125,7 +1125,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
         showMessage("walk onto or into something and press e directly afterwards to examine something")
 
         # add examine quest
-        quest = quests.ExamineQuest(creator=void)
+        quest = quests.ExamineQuest()
         quest.endTrigger = {"container":self,"method":"addGrowthTankRefill"}
         mainChar.serveQuest.addQuest(quest)
 
@@ -1139,7 +1139,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
         # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
 
-        quest = quests.FillGrowthTankMeta(growthTank=terrain.wakeUpRoom.growthTanks[0], creator=void)
+        quest = quests.FillGrowthTankMeta(growthTank=terrain.wakeUpRoom.growthTanks[0])
         quest.endTrigger = {"container":self,"method":"doTask2"}
         mainChar.serveQuest.addQuest(quest)
         
@@ -1147,7 +1147,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
         # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
 
-        quest = quests.FillGrowthTankMeta(growthTank=terrain.wakeUpRoom.growthTanks[3], creator=void)
+        quest = quests.FillGrowthTankMeta(growthTank=terrain.wakeUpRoom.growthTanks[3])
         quest.endTrigger = {"container":self,"method":"iamready"}
         mainChar.serveQuest.addQuest(quest)
 
@@ -1200,7 +1200,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
             mainChar.revokeReputation(amount=2,reason="not completing test in time")
         else:
             text += "We are "+str(normTime-timeTaken)+" ticks ahead of plan. This means your floor permit is not valid yet. Please wait for "+str(normTime-timeTaken)+" ticks.\n\nNoncompliance will result in a kill order to the military. Military zones and movement restrictions are security and therefore high priority.\n\nIn order to not waste time, feel free to ask questions in the meantime.\n"
-            quest = quests.WaitQuest(lifetime=normTime-timeTaken,creator=void)
+            quest = quests.WaitQuest(lifetime=normTime-timeTaken)
             showText(text)
             quest.endTrigger = {"container":self,"method":"trainingCompleted"}
             mainChar.serveQuest.addQuest(quest)
@@ -1218,11 +1218,11 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
 
         # make player mode to the next room
         # bad pattern: this should be part of the next phase
-        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,5,1,creator=void)
+        quest = quests.MoveQuestMeta(terrain.wakeUpRoom,5,1)
         firstOfficer.assignQuest(quest,active=True)
 
         # move npc to default position
-        quest = quests.MoveQuestMeta(terrain.waitingRoom,9,4,creator=void)
+        quest = quests.MoveQuestMeta(terrain.waitingRoom,9,4)
         mainChar.assignQuest(quest,active=True)
         mainChar.hasFloorPermit = True
 
@@ -1264,7 +1264,7 @@ class BoilerRoomWelcome(BasicPhase):
 
         # move player to machine room if the player isn't there yet
         if not (mainChar.room and mainChar.room == terrain.tutorialMachineRoom):
-            self.mainCharQuestList.append(quests.EnterRoomQuestMeta(terrain.tutorialMachineRoom,startCinematics="please goto the Machineroom",creator=void))
+            self.mainCharQuestList.append(quests.EnterRoomQuestMeta(terrain.tutorialMachineRoom,startCinematics="please goto the Machineroom"))
 
         # properly hook the players quests
         self.assignPlayerQuests()
@@ -1287,7 +1287,7 @@ class BoilerRoomWelcome(BasicPhase):
         if not mainChar.gotBasicSchooling:
             # show greeting one time
             cinematics.showCinematic("welcome to the boiler room\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
-            cinematic = cinematics.ShowGameCinematic(1,creator=void)
+            cinematic = cinematics.ShowGameCinematic(1)
             cinematic.endTrigger = self.wrapUpBasicSchooling
             cinematics.cinematicQueue.append(cinematic)
         else:
@@ -1307,11 +1307,11 @@ class BoilerRoomWelcome(BasicPhase):
     def doSteamengineExplaination(self):
         # explain how the room works
         cinematics.showCinematic("on the southern Side of the Room you see the Steamgenerators. A Steamgenerator might look like this:\n\n"+displayChars.indexedMapping[displayChars.void][1]+displayChars.indexedMapping[displayChars.pipe][1]+displayChars.indexedMapping[displayChars.boiler_inactive][1]+displayChars.indexedMapping[displayChars.furnace_inactive][1]+"\n"+displayChars.indexedMapping[displayChars.pipe][1]+displayChars.indexedMapping[displayChars.pipe][1]+displayChars.indexedMapping[displayChars.boiler_inactive][1]+displayChars.indexedMapping[displayChars.furnace_inactive][1]+"\n"+displayChars.indexedMapping[displayChars.void][1]+displayChars.indexedMapping[displayChars.pipe][1]+displayChars.indexedMapping[displayChars.boiler_active][1]+displayChars.indexedMapping[displayChars.furnace_active][1]+"\n\nit consist of Furnaces marked by "+displayChars.indexedMapping[displayChars.furnace_inactive][1]+" or "+displayChars.indexedMapping[displayChars.furnace_active][1]+" that heat the Water in the Boilers "+displayChars.indexedMapping[displayChars.boiler_inactive][1]+" till it boils. a Boiler with boiling Water will be shown as "+displayChars.indexedMapping[displayChars.boiler_active][1]+".\n\nthe Steam is transfered to the Pipes marked with "+displayChars.indexedMapping[displayChars.pipe][1]+" and used to power the Ships Mechanics and Weapons\n\nDesign of Generators are often quite unique. try to recognize the Genrators in this Room and press "+commandChars.wait+"")
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,creator=void))
+        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
         cinematics.showCinematic("the Furnaces burn Coal shown as "+displayChars.indexedMapping[displayChars.coal][1]+" . if a Furnace is burning Coal, it is shown as "+displayChars.indexedMapping[displayChars.furnace_active][1]+" and shown as "+displayChars.indexedMapping[displayChars.furnace_inactive][1]+" if not.\n\nthe Coal is stored in Piles shown as "+displayChars.indexedMapping[displayChars.pile][1]+". the Coalpiles are on the right Side of the Room and are filled through the Pipes when needed.")
             
         # start next step
-        cinematic = cinematics.ShowGameCinematic(0,creator=void) # bad code: this cinamatic is a hack
+        cinematic = cinematics.ShowGameCinematic(0) # bad code: this cinamatic is a hack
         cinematic.endTrigger = self.wrapUpSteamengineExplaination
         cinematics.cinematicQueue.append(cinematic)
         gamestate.save()
@@ -1361,36 +1361,36 @@ class BoilerRoomWelcome(BasicPhase):
                 messages.append("*smoke clears*")
 
                 # add delivered items (incuding mouse)
-                self.mainCharRoom.addItems([items.Coal(7,5,creator=void)])
-                self.mainCharRoom.addCharacter(characters.Mouse(creator=void),6,5)
+                self.mainCharRoom.addItems([items.Coal(7,5)])
+                self.mainCharRoom.addCharacter(characters.Mouse(),6,5)
 
         # add the coal delivery
-        self.mainCharRoom.addEvent(CoalRefillEvent(gamestate.tick+11,creator=void))
+        self.mainCharRoom.addEvent(CoalRefillEvent(gamestate.tick+11,))
 
         # count down to the coal delivery
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1,creator=void))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("8",creator=void))
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1,creator=void))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("7",creator=void))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("by the Way: the Piles on the lower End of the Room are Storage for Replacementparts and you can sleep in the Hutches n the middle of the Room shown as "+displayChars.indexedMapping[displayChars.hutch_free][1]+" or "+displayChars.indexedMapping[displayChars.hutch_occupied][1],creator=void))
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1,creator=void))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("6",creator=void))
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1,creator=void))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("5",creator=void))
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1,creator=void))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("4",creator=void))
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1,creator=void))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("3",creator=void))
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1,creator=void))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("2",creator=void))
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1,creator=void))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("1",creator=void))
-        cinematic = cinematics.ShowGameCinematic(1,tickSpan=1,creator=void)
+        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
+        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("8"))
+        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
+        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("7"))
+        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("by the Way: the Piles on the lower End of the Room are Storage for Replacementparts and you can sleep in the Hutches n the middle of the Room shown as "+displayChars.indexedMapping[displayChars.hutch_free][1]+" or "+displayChars.indexedMapping[displayChars.hutch_occupied][1]))
+        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
+        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("6"))
+        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
+        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("5"))
+        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
+        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("4"))
+        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
+        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("3"))
+        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
+        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("2"))
+        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
+        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("1"))
+        cinematic = cinematics.ShowGameCinematic(1,tickSpan=1)
 
         cinematic.endTrigger = self.advance
         cinematics.cinematicQueue.append(cinematic)
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("Coaldelivery now",creator=void))
-        cinematic = cinematics.ShowGameCinematic(2,creator=void)
+        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("Coaldelivery now"))
+        cinematic = cinematics.ShowGameCinematic(2)
         cinematic.endTrigger = self.wrapUpCoalDelivery
         cinematics.cinematicQueue.append(cinematic)
 
@@ -1407,7 +1407,7 @@ class BoilerRoomWelcome(BasicPhase):
     def doFurnaceFirering(self):
         # show fluff
         cinematics.showCinematic("your cohabitants in this Room are:\n '"+self.mainCharRoom.firstOfficer.name+"' ("+displayChars.indexedMapping[self.mainCharRoom.firstOfficer.display][1]+") is this Rooms 'Raumleiter' and therefore responsible for proper Steamgeneration in this Room\n '"+self.mainCharRoom.secondOfficer.name+"' ("+displayChars.indexedMapping[self.mainCharRoom.secondOfficer.display][1]+") was dispatched to support '"+self.mainCharRoom.firstOfficer.name+"' and is his Subordinate\n\nyou will likely report to '"+self.mainCharRoom.firstOfficer.name+"' later. please try to find them on the display and press "+commandChars.wait)
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,creator=void))
+        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
         cinematics.showCinematic(self.mainCharRoom.secondOfficer.name+" will demonstrate how to fire a furnace now.\n\nwatch and learn.")
 
         '''
@@ -1425,7 +1425,7 @@ class BoilerRoomWelcome(BasicPhase):
             add quests for firing a furnace
             '''
             def handleEvent(subself):
-                quest = quests.FireFurnaceMeta(self.mainCharRoom.furnaces[2],creator=void)
+                quest = quests.FireFurnaceMeta(self.mainCharRoom.furnaces[2])
                 self.mainCharRoom.secondOfficer.assignQuest(quest,active=True)
 
         '''
@@ -1447,9 +1447,9 @@ class BoilerRoomWelcome(BasicPhase):
                 messages.append("*"+self.mainCharRoom.secondOfficer.name+", please fire the Furnace now*")
 
         # set up the events
-        self.mainCharRoom.addEvent(ShowMessageEvent(gamestate.tick+1,creator=void))
-        self.mainCharRoom.addEvent(AddQuestEvent(gamestate.tick+2,creator=void))
-        cinematic = cinematics.ShowGameCinematic(22,tickSpan=1,creator=void) #bad code: should be showQuest to prevent having a fixed timing
+        self.mainCharRoom.addEvent(ShowMessageEvent(gamestate.tick+1))
+        self.mainCharRoom.addEvent(AddQuestEvent(gamestate.tick+2))
+        cinematic = cinematics.ShowGameCinematic(22,tickSpan=1) #bad code: should be showQuest to prevent having a fixed timing
 
         cinematic.endTrigger = self.wrapUpFurnaceFirering
         cinematics.cinematicQueue.append(cinematic)
@@ -1480,7 +1480,7 @@ class BoilerRoomWelcome(BasicPhase):
                 self.end()
 
         # schedule the wrap up
-        self.mainCharRoom.addEvent(StartNextPhaseEvent(gamestate.tick+1,creator=void))
+        self.mainCharRoom.addEvent(StartNextPhaseEvent(gamestate.tick+1))
 
         # save the game
         gamestate.save()
@@ -1513,29 +1513,29 @@ class BoilerRoomInteractionTraining(BasicPhase):
 
         # make the player make a simple move
         questList = []
-        questList.append(quests.MoveQuestMeta(self.mainCharRoom,5,5,startCinematics="Movement can be tricky sometimes so please make yourself comfortable with the controls.\n\nyou can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.\n\nthe basic Movementcommands are:\n "+commandChars.move_north+"=up\n "+commandChars.move_east+"=right\n "+commandChars.move_south+"=down\n "+commandChars.move_west+"=right\n\nplease move to the designated Target. the Implant will mark your Way",creator=void))
+        questList.append(quests.MoveQuestMeta(self.mainCharRoom,5,5,startCinematics="Movement can be tricky sometimes so please make yourself comfortable with the controls.\n\nyou can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.\n\nthe basic Movementcommands are:\n "+commandChars.move_north+"=up\n "+commandChars.move_east+"=right\n "+commandChars.move_south+"=down\n "+commandChars.move_west+"=right\n\nplease move to the designated Target. the Implant will mark your Way"))
 
         # make the player move around
         if not mainChar.gotMovementSchooling:
-            quest = quests.MoveQuestMeta(self.mainCharRoom,4,3,creator=void)
+            quest = quests.MoveQuestMeta(self.mainCharRoom,4,3)
             def setPlayerState():
                 mainChar.gotMovementSchooling = True
             quest.endTrigger = setPlayerState
             questList.append(quest)
-            questList.append(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="thats enough. move back to waiting position",creator=void))
+            questList.append(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="thats enough. move back to waiting position"))
 
         # make the player examine the map
         if not mainChar.gotExamineSchooling:
-            quest = quests.MoveQuestMeta(self.mainCharRoom,4,3,creator=void)
+            quest = quests.MoveQuestMeta(self.mainCharRoom,4,3)
             def setPlayerState():
                 mainChar.gotExamineSchooling = True
             quest.endTrigger = setPlayerState
             questList.append(quest)
-            questList.append(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="Move back to Waitingposition",creator=void))
+            questList.append(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="Move back to Waitingposition"))
 
         # explain interaction
         if not mainChar.gotInteractionSchooling:
-            quest = quests.CollectQuestMeta(startCinematics="next on my Checklist is to explain the Interaction with your Environment.\n\nthe basic Interationcommands are:\n\n "+commandChars.activate+"=activate/apply\n "+commandChars.examine+"=examine\n "+commandChars.pickUp+"=pick up\n "+commandChars.drop+"=drop\n\nsee this Piles of Coal marked with ӫ on the right Side and left Side of the Room.\n\nwhenever you bump into an Item that is to big to be walked on, you will promted for giving an extra Interactioncommand. i'll give you an Example:\n\n ΩΩ＠ӫӫ\n\n pressing "+commandChars.move_west+" and "+commandChars.activate+" would result in Activation of the Furnace\n pressing "+commandChars.move_east+" and "+commandChars.activate+" would result in Activation of the Pile\n pressing "+commandChars.move_west+" and "+commandChars.examine+" would result make you examine the Furnace\n pressing "+commandChars.move_east+" and "+commandChars.examine+" would result make you examine the Pile\n\nplease grab yourself some Coal from a pile by bumping into it and pressing j afterwards.",creator=void)
+            quest = quests.CollectQuestMeta(startCinematics="next on my Checklist is to explain the Interaction with your Environment.\n\nthe basic Interationcommands are:\n\n "+commandChars.activate+"=activate/apply\n "+commandChars.examine+"=examine\n "+commandChars.pickUp+"=pick up\n "+commandChars.drop+"=drop\n\nsee this Piles of Coal marked with ӫ on the right Side and left Side of the Room.\n\nwhenever you bump into an Item that is to big to be walked on, you will promted for giving an extra Interactioncommand. i'll give you an Example:\n\n ΩΩ＠ӫӫ\n\n pressing "+commandChars.move_west+" and "+commandChars.activate+" would result in Activation of the Furnace\n pressing "+commandChars.move_east+" and "+commandChars.activate+" would result in Activation of the Pile\n pressing "+commandChars.move_west+" and "+commandChars.examine+" would result make you examine the Furnace\n pressing "+commandChars.move_east+" and "+commandChars.examine+" would result make you examine the Pile\n\nplease grab yourself some Coal from a pile by bumping into it and pressing j afterwards.")
             '''
             start new sub phase
             '''
@@ -1546,13 +1546,13 @@ class BoilerRoomInteractionTraining(BasicPhase):
             questList.append(quest)
         else:
             # bad code: assumtion of the player having failed the test is not always true
-            quest = quests.CollectQuestMeta(startCinematics="Since you failed the Test last time i will quickly reiterate the interaction commands.\n\nthe basic Interationcommands are:\n\n "+commandChars.activate+"=activate/apply\n "+commandChars.examine+"=examine\n "+commandChars.pickUp+"=pick up\n "+commandChars.drop+"=drop\n\nmove over or walk into items and then press the interaction button to be able to interact with it.",creator=void)
+            quest = quests.CollectQuestMeta(startCinematics="Since you failed the Test last time i will quickly reiterate the interaction commands.\n\nthe basic Interationcommands are:\n\n "+commandChars.activate+"=activate/apply\n "+commandChars.examine+"=examine\n "+commandChars.pickUp+"=pick up\n "+commandChars.drop+"=drop\n\nmove over or walk into items and then press the interaction button to be able to interact with it.")
             questList.append(quest)
             
         # make the character fire the furnace
-        questList.append(quests.ActivateQuestMeta(self.mainCharRoom.furnaces[0],startCinematics="now go and fire the top most Furnace.",creator=void))
-        questList.append(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="please pick up the Coal on the Floor. \n\nyou won't see a whole Year of Service leaving burnable Material next to a Furnace",creator=void))
-        questList.append(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="please move back to the waiting position",creator=void))
+        questList.append(quests.ActivateQuestMeta(self.mainCharRoom.furnaces[0],startCinematics="now go and fire the top most Furnace."))
+        questList.append(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="please pick up the Coal on the Floor. \n\nyou won't see a whole Year of Service leaving burnable Material next to a Furnace"))
+        questList.append(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="please move back to the waiting position"))
 
         # chain quests
         lastQuest = questList[0]
@@ -1612,12 +1612,12 @@ class FurnaceCompetition(BasicPhase):
 
             # clear state
             self.mainCharRoom.removeEventsByType(AnotherOne)
-            mainChar.assignQuest(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="please move back to the waiting position",creator=void))
+            mainChar.assignQuest(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="please move back to the waiting position"))
 
             # let the npc prepare itself
             messages.append("your turn Ludwig")
             questList = []
-            questList.append(quests.FillPocketsQuest(creator=void))
+            questList.append(quests.FillPocketsQuest())
 
             # chain quests
             lastQuest = questList[0]
@@ -1642,11 +1642,11 @@ class FurnaceCompetition(BasicPhase):
                 add another furnace for the npc to fire
                 '''
                 def handleEvent(subself):
-                    self.mainCharRoom.secondOfficer.assignQuest(quests.KeepFurnaceFiredMeta(self.mainCharRoom.furnaces[subself.furnaceIndex],failTrigger=self.end,creator=void),active=True)
+                    self.mainCharRoom.secondOfficer.assignQuest(quests.KeepFurnaceFiredMeta(self.mainCharRoom.furnaces[subself.furnaceIndex],failTrigger=self.end),active=True)
                     newIndex = subself.furnaceIndex+1
                     self.npcFurnaceIndex = subself.furnaceIndex
                     if newIndex < 8:
-                        self.mainCharRoom.secondOfficer.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[newIndex],creator=void),active=True)
+                        self.mainCharRoom.secondOfficer.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[newIndex]),active=True)
                         self.mainCharRoom.addEvent(AnotherOneNpc(gamestate.tick+gamestate.tick%20+10,newIndex,creator=self))
 
             # remember event type to be able to remove it later
@@ -1679,7 +1679,7 @@ class FurnaceCompetition(BasicPhase):
                     else:
                         # make the npc start
                         cinematics.showCinematic("Liebweg start now.")
-                        self.mainCharRoom.secondOfficer.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[0],creator=void),active=True)
+                        self.mainCharRoom.secondOfficer.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[0]),active=True)
                         self.mainCharRoom.addEvent(AnotherOneNpc(gamestate.tick+10,0,creator=self))
 
             '''
@@ -1707,12 +1707,12 @@ class FurnaceCompetition(BasicPhase):
             add another furnace for the player to fire
             '''
             def handleEvent(subself):
-                mainChar.assignQuest(quests.KeepFurnaceFiredMeta(self.mainCharRoom.furnaces[subself.furnaceIndex],failTrigger=endMainChar,creator=void))
+                mainChar.assignQuest(quests.KeepFurnaceFiredMeta(self.mainCharRoom.furnaces[subself.furnaceIndex],failTrigger=endMainChar))
                 newIndex = subself.furnaceIndex+1
                 self.mainCharFurnaceIndex = subself.furnaceIndex
                 if newIndex < 8:
-                    mainChar.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[newIndex],creator=void))
-                    self.mainCharRoom.addEvent(AnotherOne(gamestate.tick+gamestate.tick%20+5,newIndex,creator=void))
+                    mainChar.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[newIndex]))
+                    self.mainCharRoom.addEvent(AnotherOne(gamestate.tick+gamestate.tick%20+5,newIndex))
 
         '''
         the event for waiting for a clean start and making the player start
@@ -1738,20 +1738,20 @@ class FurnaceCompetition(BasicPhase):
 
                 # wait some more
                 if boilerStillBoiling:
-                    self.mainCharRoom.addEvent(WaitForClearStart(gamestate.tick+2,0,creator=void))
+                    self.mainCharRoom.addEvent(WaitForClearStart(gamestate.tick+2,0))
 
                 # make the player start
                 else:
                     cinematics.showCinematic("start now.")
-                    mainChar.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[0],creator=void))
-                    self.mainCharRoom.addEvent(AnotherOne(gamestate.tick+10,0,creator=void))
+                    mainChar.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[0]))
+                    self.mainCharRoom.addEvent(AnotherOne(gamestate.tick+10,0))
 
         '''
         kickstart the players part of the competition
         '''
         def startCompetitionPlayer():
             cinematics.showCinematic("wait for the furnaces to burn out.")
-            self.mainCharRoom.addEvent(WaitForClearStart(gamestate.tick+2,0,creator=void))
+            self.mainCharRoom.addEvent(WaitForClearStart(gamestate.tick+2,0))
 
         startCompetitionPlayer()
         gamestate.save()
@@ -1769,7 +1769,7 @@ class FurnaceCompetition(BasicPhase):
             quest.deactivate()
         self.mainCharRoom.secondOfficer.quests = []
         self.mainCharRoom.removeEventsByType(self.anotherOneNpc)
-        mainChar.assignQuest(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="please move back to the waiting position",creator=void))
+        mainChar.assignQuest(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="please move back to the waiting position"))
 
         # start appropriate phase
         if self.npcFurnaceIndex >= self.mainCharFurnaceIndex:
@@ -1819,7 +1819,7 @@ class FindWork(BasicPhase):
         # create selection
         options = [("yes","Yes"),("no","No")]
         text = "you look like a fresh one. Were you sent to report for duty?"
-        cinematic = cinematics.SelectionCinematic(text,options,creator=void)
+        cinematic = cinematics.SelectionCinematic(text,options)
         cinematic.followUps = {"yes":{"container":self,"method":"getIntroInstant"},"no":{"container":self,"method":"tmpFail"}}
         self.cinematic = cinematic
         cinematics.cinematicQueue.append(cinematic)
@@ -1841,7 +1841,7 @@ class FindWork(BasicPhase):
                      ("yes","yes"),
                      ("no","no"),
                   ]
-        cinematic = cinematics.SelectionCinematic("Do you understand these instructions?",options,creator=void)
+        cinematic = cinematics.SelectionCinematic("Do you understand these instructions?",options)
         cinematic.followUps = {"yes":{"container":self,"method":"skipInto"},"no":{"container":self,"method":"getIntro"}}
         cinematics.cinematicQueue.append(cinematic)
 
@@ -2024,7 +2024,7 @@ class FindWork(BasicPhase):
                      mainChar.quests.remove(quest)
 
                 # call the player for the speech
-                quest = quests.MoveQuestMeta(self.mainCharRoom,6,5,creator=void,lifetime=300)
+                quest = quests.MoveQuestMeta(self.mainCharRoom,6,5,lifetime=300)
                 quest.endTrigger = {"container":subself,"method":"meeting"}
                 '''
                 kill player failing to apear for performance evaluation
@@ -2034,7 +2034,7 @@ class FindWork(BasicPhase):
 
                     # send out death squads
                     for room in terrain.militaryRooms:
-                        quest = quests.MurderQuest(mainChar,creator=void)
+                        quest = quests.MurderQuest(mainChar)
                         mainChar.revokeReputation(amount=1000,reason="failing to show up for evaluation")
                         room.secondOfficer.assignQuest(quest,active=True)
                         room.onMission = True
@@ -2068,14 +2068,14 @@ class FindWork(BasicPhase):
 
                     # decrease reputation so the player will be forced to work continiously or to save up reputation
                     mainChar.revokeReputation(amount=3+(2*len(mainChar.subordinates)),reason="failing to show up for evaluation")
-                    self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),subself.char,creator=void))
+                    self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),subself.char))
 
                 # assign a special quest
                 else:
                     mainChar.awardReputation(amount=5,reason="getting a special order")
                     # add the quest
                     showText("logistics command orders us to move some of the cargo in the long term store to accesible storage.\n3 rooms are to be cleared. One room needs to be cleared within 150 ticks\nThis requires the coordinated effort of the hoppers here. Since "+subself.char.name+" did well to far, "+subself.char.name+" will be given the lead.\nThis will be extra to the current workload")
-                    quest = quests.HandleDelivery([terrain.tutorialCargoRooms[4]],[terrain.tutorialStorageRooms[1],terrain.tutorialStorageRooms[3],terrain.tutorialStorageRooms[5]],creator=void)
+                    quest = quests.HandleDelivery([terrain.tutorialCargoRooms[4]],[terrain.tutorialStorageRooms[1],terrain.tutorialStorageRooms[3],terrain.tutorialStorageRooms[5]])
                     quest.endTrigger = {"container":self,"method":"subordinateHandover"}
                     mainChar.assignQuest(quest,active=True)
 
@@ -2120,14 +2120,14 @@ class FindWork(BasicPhase):
                 if isinstance(room,rooms.ConstructionSite):
                     constructionSite = room
                     break
-            quest = quests.ConstructRoom(constructionSite,terrain.tutorialStorageRooms,creator=void)
+            quest = quests.ConstructRoom(constructionSite,terrain.tutorialStorageRooms)
             mainChar.assignQuest(quest,active=True)
 
         # add events to keep loose control
-        self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),mainChar,creator=void))
+        self.mainCharRoom.addEvent(ProofOfWorth(gamestate.tick+(15*15*15),mainChar))
 
         # add quest to pool
-        quest = quests.ClearRubble(creator=void)
+        quest = quests.ClearRubble()
         quest.reputationReward = 3
         terrain.waitingRoom.quests.append(quest)
 
@@ -2168,7 +2168,7 @@ class FindWork(BasicPhase):
             index = -(self.cycleQuestIndex-len(terrain.metalWorkshop.producedItems))-1
             
         # add the quest to queue
-        quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[index],(room,pos[0],pos[1]),creator=void)
+        quest = quests.TransportQuest(terrain.metalWorkshop.producedItems[index],(room,pos[0],pos[1]))
         quest.endTrigger = {"container":self,"method":"addNewCircleQuest"}
         quest.reputationReward = 0
         terrain.waitingRoom.quests.append(quest)
@@ -2197,7 +2197,7 @@ class LabPhase(BasicPhase):
 
         # do a dummy action
         questList = []
-        questList.append(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="please move to the waiting position",creator=void))
+        questList.append(quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="please move to the waiting position"))
 
         # chain quests
         lastQuest = questList[0]
@@ -2243,7 +2243,7 @@ class VatPhase(BasicPhase):
             quest.deactivate()
         mainChar.quests = []
 
-        quest = quests.MoveQuestMeta(terrain.tutorialVat,3,3,creator=void,lifetime=500)
+        quest = quests.MoveQuestMeta(terrain.tutorialVat,3,3,lifetime=500)
 
         '''
         kill characters not moving into the vat
@@ -2251,7 +2251,7 @@ class VatPhase(BasicPhase):
         def fail():
             messages.append("*alarm* refusal to honour vat assignemnt detected. likely artisan. Dispatch kill squads *alarm*")
             for room in terrain.militaryRooms:
-                quest = quests.MurderQuest(mainChar,creator=void)
+                quest = quests.MurderQuest(mainChar)
                 mainChar.revokeReputation(amount=1000,reason="not starting vat duty")
                 room.secondOfficer.assignQuest(quest,active=True)
                 room.onMission = True
@@ -2302,7 +2302,7 @@ class MachineRoomPhase(BasicPhase):
 
         # do a dummy action
         questList = []
-        questList.append(quests.MoveQuestMeta(terrain.tutorialMachineRoom,3,3,startCinematics="time to do some actual work. report to "+terrain.tutorialMachineRoom.firstOfficer.name,creator=void))
+        questList.append(quests.MoveQuestMeta(terrain.tutorialMachineRoom,3,3,startCinematics="time to do some actual work. report to "+terrain.tutorialMachineRoom.firstOfficer.name))
 
         # chain quests
         lastQuest = questList[0]
@@ -2383,7 +2383,7 @@ class Tutorial(BasicPhase):
             seed += seed%42
             terrain.removeRoom(self.miniBase)
 
-            self.miniBase = src.rooms.TutorialMiniBase(4,8,0,0,creator=void,seed=seed)
+            self.miniBase = src.rooms.TutorialMiniBase(4,8,0,0,seed=seed)
             terrain.addRoom(self.miniBase)
 
             itemsFound = []
@@ -2394,7 +2394,7 @@ class Tutorial(BasicPhase):
 
             numProducts = len(itemsFound)
 
-        quest = quests.EnterRoomQuestMeta(self.miniBase,3,3,creator=void)
+        quest = quests.EnterRoomQuestMeta(self.miniBase,3,3)
         quest.endTrigger = {"container":self,"method":"reportForDuty"}
         #quest.endTrigger = {"container":self,"method":"scrapTest1"}
         self.mainChar.assignQuest(quest,active=True)
@@ -2446,7 +2446,7 @@ class Tutorial(BasicPhase):
         for item in terrain.itemsOnFloor:
             if isinstance(item,src.items.Scrap):
                 if (item.xPosition-1,item.yPosition) in terrain.watershedCoordinates or (item.xPosition+1,item.yPosition) in terrain.watershedCoordinates or (item.xPosition,item.yPosition-1) in terrain.watershedCoordinates or (item.xPosition,item.yPosition+1) in terrain.watershedCoordinates:
-                    quest = quests.PickupQuestMeta(toPickup=item,creator=void)
+                    quest = quests.PickupQuestMeta(toPickup=item)
                     if len(mainChar.inventory) < 9:
                         method = "scrapTest1"
                     else:
@@ -2458,7 +2458,7 @@ class Tutorial(BasicPhase):
         self.dupPrevention = False
 
     def scrapTest2(self):
-        quest = quests.EnterRoomQuestMeta(self.miniBase,3,3,creator=void)
+        quest = quests.EnterRoomQuestMeta(self.miniBase,3,3)
         quest.endTrigger = {"container":self,"method":"scrapTest1"}
         self.mainChar.assignQuest(quest,active=True)
 
@@ -2754,7 +2754,7 @@ class Testing_1(BasicPhase):
             seed += seed%42
             terrain.removeRoom(self.miniBase)
 
-            self.miniBase = src.rooms.GameTestingRoom(4,8,0,0,creator=void,seed=seed)
+            self.miniBase = src.rooms.GameTestingRoom(4,8,0,0,seed=seed)
             terrain.addRoom(self.miniBase)
 
             itemsFound = []
@@ -2765,7 +2765,7 @@ class Testing_1(BasicPhase):
 
             numProducts = len(itemsFound)
 
-        quest = quests.EnterRoomQuestMeta(self.miniBase,3,3,creator=void)
+        quest = quests.EnterRoomQuestMeta(self.miniBase,3,3)
         quest.endTrigger = {"container":self,"method":"reportForDuty"}
         #quest.endTrigger = {"container":self,"method":"scrapTest1"}
         self.mainChar.assignQuest(quest,active=True)
@@ -2817,7 +2817,7 @@ class Testing_1(BasicPhase):
         for item in terrain.itemsOnFloor:
             if isinstance(item,src.items.Scrap):
                 if (item.xPosition-1,item.yPosition) in terrain.watershedCoordinates or (item.xPosition+1,item.yPosition) in terrain.watershedCoordinates or (item.xPosition,item.yPosition-1) in terrain.watershedCoordinates or (item.xPosition,item.yPosition+1) in terrain.watershedCoordinates:
-                    quest = quests.PickupQuestMeta(toPickup=item,creator=void)
+                    quest = quests.PickupQuestMeta(toPickup=item)
                     if len(mainChar.inventory) < 9:
                         method = "scrapTest1"
                     else:
@@ -2829,7 +2829,7 @@ class Testing_1(BasicPhase):
         self.dupPrevention = False
 
     def scrapTest2(self):
-        quest = quests.EnterRoomQuestMeta(self.miniBase,3,3,creator=void)
+        quest = quests.EnterRoomQuestMeta(self.miniBase,3,3)
         quest.endTrigger = {"container":self,"method":"scrapTest1"}
         self.mainChar.assignQuest(quest,active=True)
 
@@ -3187,7 +3187,7 @@ class BuildBase(BasicPhase):
             mold.startSpawn()
 
         for pos in positions:
-            crawler = src.characters.Monster(xPosition=pos[0],yPosition=pos[1],creator=void)
+            crawler = src.characters.Monster(xPosition=pos[0],yPosition=pos[1])
 
             crawler.solvers = [
                       "SurviveQuest",

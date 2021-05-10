@@ -3675,7 +3675,7 @@ questMap = {
 get quest instance from state dict
 '''
 def getQuestFromState(state):
-    quest = questMap[state["type"]](creator=void)
+    quest = questMap[state["type"]]()
     quest.setState(state)
     src.saveing.loadingRegistry.register(quest)
     return quest

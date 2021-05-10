@@ -11,6 +11,8 @@ import json
 import src.characters
 import src.terrains
 import src.saveing
+import src.terrains
+import src.interaction
 
 '''
 the container for the gamestate
@@ -51,7 +53,7 @@ class GameState(src.saveing.Saveable):
             self.currentPhase = phasesByName["BuildBase"](seed=seed)
 
         # add the main char
-        self.mainChar = src.characters.Character(displayChars.main_char,3,3,automated=False,name=names.characterFirstNames[self.tick%len(names.characterFirstNames)]+" "+names.characterLastNames[self.tick%len(names.characterLastNames)],creator=void)
+        self.mainChar = src.characters.Character(displayChars.main_char,3,3,automated=False,name=names.characterFirstNames[self.tick%len(names.characterFirstNames)]+" "+names.characterLastNames[self.tick%len(names.characterLastNames)])
         self.mainChar.watched = True
         self.mainChar.terrain = None
         mainChar = self.mainChar
@@ -124,7 +126,9 @@ class GameState(src.saveing.Saveable):
 
         # set state
         self.setState(state)
-        print(src.saveing.loadingRegistry.delayedCalls)
+        if src.saveing.loadingRegistry.delayedCalls:
+            print("unresolved delayed calls")
+            print(src.saveing.loadingRegistry.delayedCalls)
         return True
 
     '''
@@ -140,10 +144,6 @@ class GameState(src.saveing.Saveable):
 
         self.macros = state["macros"]
 
-        # update void
-        void.setState(state["void"])
-
-        import src.terrains
         self.terrainMap = []
         y = 0
         for line in state["terrainMap"]:
@@ -173,7 +173,7 @@ class GameState(src.saveing.Saveable):
         # load the main character
         # bad code: should be simplified
         if not self.mainChar:
-            self.mainChar = src.characters.Character(displayChars.main_char,3,3,automated=False,name=names.characterFirstNames[self.tick%len(names.characterFirstNames)]+" "+names.characterLastNames[self.tick%len(names.characterLastNames)],creator=void,characterId=state["mainChar"]["id"])
+            self.mainChar = src.characters.Character(displayChars.main_char,3,3,automated=False,name=names.characterFirstNames[self.tick%len(names.characterFirstNames)]+" "+names.characterLastNames[self.tick%len(names.characterLastNames)],characterId=state["mainChar"]["id"])
             src.saveing.loadingRegistry.register(self.mainChar)
         xPosition = self.mainChar.xPosition
         if "xPosition" in state["mainChar"]:
@@ -196,7 +196,6 @@ class GameState(src.saveing.Saveable):
             cinematics.cinematicQueue.append(cinematic)
 
         # load submenu
-        import src.interaction
         if "submenu" in state:
             if state["submenu"]:
                 src.interaction.submenue = src.interaction.getSubmenuFromState(state["submenu"])
@@ -212,7 +211,6 @@ class GameState(src.saveing.Saveable):
         state["currentPhase"] = self.currentPhase.getState()
         state["tick"] = self.tick
         state["gameWon"] = self.gameWon
-        state["void"] = void.getState()
         state["initialSeed"] = self.initialSeed
         state["macros"] = self.macros
 

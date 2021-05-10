@@ -209,7 +209,7 @@ class Challenge(BasicPhase):
 
     def restart(self):
         self.seed = ((self.seed % 317)+(self.seed // 317))*321+self.seed % 300
-        challengeRoom = terrain.challengeRooms[self.roomCounter]
+        challengeRoom = src.gamestate.gamestate.terrain.challengeRooms[self.roomCounter]
         if src.gamestate.gamestate.mainChar.room:
              src.gamestate.gamestate.mainChar.room.removeCharacter(src.gamestate.gamestate.mainChar)
              src.gamestate.gamestate.mainChar.room = None
@@ -295,22 +295,22 @@ class OpenWorld(BasicPhase):
         src.cinematics.showCinematic("staring open world Scenario.")
 
         # place character in wakeup room
-        if terrain.wakeUpRoom:
-            self.mainCharRoom = terrain.wakeUpRoom
+        if src.gamestate.gamestate.terrain.wakeUpRoom:
+            self.mainCharRoom = src.gamestate.gamestate.terrain.wakeUpRoom
             self.mainCharRoom.addCharacter(src.gamestate.gamestate.mainChar,2,4)
         # place character on terrain
         else:
             src.gamestate.gamestate.mainChar.xPosition = 65
             src.gamestate.gamestate.mainChar.yPosition = 111
             src.gamestate.gamestate.mainChar.reputation = 100
-            src.gamestate.gamestate.mainChar.terrain = terrain
-            terrain.addCharacter(src.gamestate.gamestate.mainChar,65,111)
+            src.gamestate.gamestate.mainChar.terrain = src.gamestate.gamestate.terrain
+            src.gamestate.gamestate.terrain.addCharacter(src.gamestate.gamestate.mainChar,65,111)
 
             #npc1 = characters.Character(xPosition=4,yPosition=3,creator=void,seed=src.gamestate.gamestate.tick+2)
             #npc1.xPosition = 10
             #npc1.yPosition = 10
-            #npc1.terrain = terrain
-            #terrain.addCharacter(npc1,10,10)
+            #npc1.terrain = src.gamestate.gamestate.terrain
+            #src.gamestate.gamestate.terrain.addCharacter(npc1,10,10)
 
         # add basic set of abilities in openworld phase
         src.gamestate.gamestate.mainChar.questsDone = [
@@ -384,11 +384,11 @@ class Dungeon(BasicPhase):
 
         src.gamestate.gamestate.mainChar.xPosition = 65
         src.gamestate.gamestate.mainChar.yPosition = 111
-        src.gamestate.gamestate.mainChar.terrain = terrain
-        terrain.addCharacter(src.gamestate.gamestate.mainChar,65,111)
+        src.gamestate.gamestate.mainChar.terrain = src.gamestate.gamestate.terrain
+        src.gamestate.gamestate.terrain.addCharacter(src.gamestate.gamestate.mainChar,65,111)
 
         item = src.items.itemMap["RipInReality"](67,113)
-        terrain.addItem(item)
+        src.gamestate.gamestate.terrain.addItem(item)
 
         # add basic set of abilities in openworld phase
         src.gamestate.gamestate.mainChar.questsDone = [
@@ -700,7 +700,7 @@ class WakeUpPhase(BasicPhase):
 
         # set the wake up room as play area
         # bad code: should be set elsewhere
-        self.mainCharRoom = terrain.wakeUpRoom
+        self.mainCharRoom = src.gamestate.gamestate.terrain.wakeUpRoom
 
         super().start(seed=seed)
 
@@ -740,17 +740,17 @@ class WakeUpPhase(BasicPhase):
     '''
     def playerEject(self):
         # add players body
-        terrain.wakeUpRoom.itemByCoordinates[(1,4)][0].eject(src.gamestate.gamestate.mainChar)
+        src.gamestate.gamestate.terrain.wakeUpRoom.itemByCoordinates[(1,4)][0].eject(src.gamestate.gamestate.mainChar)
 
         # alias attributes
-        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        firstOfficer = src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer
 
         # show fluff
         showMessage("*schurp**splat*")
         showGame(2)
         showMessage("please wait for assistance")
         showGame(2)
-        quest = src.quests.MoveQuestMeta(terrain.wakeUpRoom,3,4)
+        quest = src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.wakeUpRoom,3,4)
         showQuest(quest,firstOfficer)
         say("I AM "+firstOfficer.name.upper()+" AND I DEMAND YOUR SERVICE.",firstOfficer)
 
@@ -801,10 +801,10 @@ class WakeUpPhase(BasicPhase):
 
         # bad code: knowingly breaking state instead of setting a camera focus
         if not src.gamestate.gamestate.mainChar.room and not src.gamestate.gamestate.mainChar.terrain:
-            terrain.wakeUpRoom.addCharacter(src.gamestate.gamestate.mainChar,3,3)
+            src.gamestate.gamestate.terrain.wakeUpRoom.addCharacter(src.gamestate.gamestate.mainChar,3,3)
 
-            if src.gamestate.gamestate.mainChar in terrain.wakeUpRoom.characters:
-                terrain.wakeUpRoom.characters.remove(src.gamestate.gamestate.mainChar)
+            if src.gamestate.gamestate.mainChar in src.gamestate.gamestate.terrain.wakeUpRoom.characters:
+                src.gamestate.gamestate.terrain.wakeUpRoom.characters.remove(src.gamestate.gamestate.mainChar)
             src.gamestate.gamestate.mainChar.terrain = None
 
 #######################################################################################
@@ -838,10 +838,10 @@ class BasicMovementTraining(BasicPhase):
         self.mainCharYPosition = 4
         self.requiresMainCharRoomFirstOfficer = True
         self.requiresMainCharRoomSecondOfficer = False
-        self.mainCharRoom = terrain.wakeUpRoom
+        self.mainCharRoom = src.gamestate.gamestate.terrain.wakeUpRoom
 
         # alias attributes
-        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        firstOfficer = src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer
 
         # smooth over missing info
         # bad code: should not be nessecarry
@@ -885,32 +885,32 @@ class BasicMovementTraining(BasicPhase):
         showGame(1)
 
         # ask the player to follow npc
-        quest = src.quests.MoveQuestMeta(terrain.wakeUpRoom,4,4)
+        quest = src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.wakeUpRoom,4,4)
         showQuest(quest,firstOfficer)
         showMessage("the current quest destination is shown as: "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.questTargetMarker][1])
-        quest = src.quests.MoveQuestMeta(terrain.wakeUpRoom,3,4)
+        quest = src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.wakeUpRoom,3,4)
         showQuest(quest,src.gamestate.gamestate.mainChar,container=src.gamestate.gamestate.mainChar.serveQuest)
-        quest = src.quests.MoveQuestMeta(terrain.wakeUpRoom,5,4)
+        quest = src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.wakeUpRoom,5,4)
         showQuest(quest,firstOfficer)
         say("follow me, please",firstOfficer)
-        quest = src.quests.MoveQuestMeta(terrain.wakeUpRoom,4,4)
+        quest = src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.wakeUpRoom,4,4)
         showQuest(quest,src.gamestate.gamestate.mainChar,container=src.gamestate.gamestate.mainChar.serveQuest)
-        quest = src.quests.MoveQuestMeta(terrain.wakeUpRoom,6,7)
+        quest = src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.wakeUpRoom,6,7)
         showQuest(quest,firstOfficer)
         say("follow me, please",firstOfficer)
-        quest = src.quests.MoveQuestMeta(terrain.wakeUpRoom,5,7)
+        quest = src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.wakeUpRoom,5,7)
         showQuest(quest,src.gamestate.gamestate.mainChar,container=src.gamestate.gamestate.mainChar.serveQuest)
 
         # ask player to move around
         say("now prove that you are able to walk on your own",firstOfficer)
         say("move to the designated target, please",firstOfficer)
-        quest = src.quests.MoveQuestMeta(terrain.wakeUpRoom,2,7)
+        quest = src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.wakeUpRoom,2,7)
         showQuest(quest,src.gamestate.gamestate.mainChar,container=src.gamestate.gamestate.mainChar.serveQuest)
         say("move to the designated target, please",firstOfficer)
-        quest = src.quests.MoveQuestMeta(terrain.wakeUpRoom,4,3)
+        quest = src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.wakeUpRoom,4,3)
         showQuest(quest,src.gamestate.gamestate.mainChar,container=src.gamestate.gamestate.mainChar.serveQuest)
         say("move to the designated target, please",firstOfficer)
-        quest = src.quests.MoveQuestMeta(terrain.wakeUpRoom,6,6)
+        quest = src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.wakeUpRoom,6,6)
         showQuest(quest,src.gamestate.gamestate.mainChar,container=src.gamestate.gamestate.mainChar.serveQuest)
         say("great. You seemed be able to coordinate yourself",firstOfficer)
         showGame(1)
@@ -919,7 +919,7 @@ class BasicMovementTraining(BasicPhase):
         # ask player to move to the lever
         showGame(2)
         say("move over to the lever now",firstOfficer)
-        quest = src.quests.MoveQuestMeta(terrain.wakeUpRoom,3,2)
+        quest = src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.wakeUpRoom,3,2)
         showQuest(quest,src.gamestate.gamestate.mainChar,container=src.gamestate.gamestate.mainChar.serveQuest)
         
         import urwid
@@ -945,7 +945,7 @@ class BasicMovementTraining(BasicPhase):
 
         # ask player to pull the lever and add trigger
         say("activate the lever",firstOfficer)
-        quest = src.quests.ActivateQuestMeta(terrain.wakeUpRoom.lever1)
+        quest = src.quests.ActivateQuestMeta(src.gamestate.gamestate.terrain.wakeUpRoom.lever1)
         showQuest(quest,src.gamestate.gamestate.mainChar,trigger={"container":self,"method":"fetchDrink"},container=src.gamestate.gamestate.mainChar.serveQuest)
 
         src.gamestate.gamestate.save()
@@ -955,11 +955,11 @@ class BasicMovementTraining(BasicPhase):
     '''
     def fetchDrink(self):
         # alias attributes
-        firstOfficer = terrain.wakeUpRoom.firstOfficer
-        drink = terrain.wakeUpRoom.itemsOnFloor[-1]
+        firstOfficer = src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer
+        drink = src.gamestate.gamestate.terrain.wakeUpRoom.itemsOnFloor[-1]
 
         # show instructions
-        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        firstOfficer = src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer
         msg = """
     you produced yourself a goo flask. It looks like this: ò= when full and like this: ò- when half empty. You may pick up your flask now. The machine should have dumped it on the floor near you.
         
@@ -983,7 +983,7 @@ class BasicMovementTraining(BasicPhase):
     '''
     def drinkStuff(self):
         # alias attributes
-        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        firstOfficer = src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer
         src.gamestate.gamestate.mainChar.assignQuest(src.quests.SurviveQuest())
 
         # show instructions
@@ -994,7 +994,7 @@ class BasicMovementTraining(BasicPhase):
         # ask the player to drink and return
         quest = src.quests.DrinkQuest()
         showQuest(quest,src.gamestate.gamestate.mainChar,container=src.gamestate.gamestate.mainChar.serveQuest)
-        quest = src.quests.MoveQuestMeta(terrain.wakeUpRoom,6,6)
+        quest = src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.wakeUpRoom,6,6)
         showQuest(quest,src.gamestate.gamestate.mainChar,container=src.gamestate.gamestate.mainChar.serveQuest)
 
         say(msg,firstOfficer)
@@ -1006,7 +1006,7 @@ class BasicMovementTraining(BasicPhase):
 
     def injured2Question(self):
         # alias attributes
-        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        firstOfficer = src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer
 
         text = "I will issue a complaint to have the growth tank fixed.\n\nDo you think you will be able to work?"
         options = [("yes","Yes"),("no","No")]
@@ -1015,7 +1015,7 @@ class BasicMovementTraining(BasicPhase):
         src.cinematics.cinematicQueue.append(cinematic)
 
     def injuredToVat(self):
-        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        firstOfficer = src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer
         msg = "Then it is best to dispose of you sooner than later. Thanks for the honesty, please start vat duty now"
         say(msg,firstOfficer)
         showText("     "+msg)
@@ -1023,7 +1023,7 @@ class BasicMovementTraining(BasicPhase):
         VatPhase().start(seed=self.seed)
 
     def notinjured(self):
-        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        firstOfficer = src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer
         msg = "great. You passed the basic tests. You are a candidate for the hopper duty."
         msg2 = "Until the selection process is completed, your duty is to assist me."
         msg3 = "Reset the lever first and then talk to me for more jobs"
@@ -1031,11 +1031,11 @@ class BasicMovementTraining(BasicPhase):
         say(msg2,firstOfficer)
         say(msg3,firstOfficer)
         showText("     "+msg+"\n\n     "+msg2+"\n\n     "+msg3)
-        quest = src.quests.ActivateQuestMeta(terrain.wakeUpRoom.lever1)
+        quest = src.quests.ActivateQuestMeta(src.gamestate.gamestate.terrain.wakeUpRoom.lever1)
         showQuest(quest,src.gamestate.gamestate.mainChar,trigger={"container":self,"method":"chatter"},container=src.gamestate.gamestate.mainChar.serveQuest)
 
     def chatter(self):
-        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        firstOfficer = src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer
 
         msg = "you can talk to people by pressing "+config.commandChars.hail+" and selecting the person to talk to."
         showMessage(msg)
@@ -1048,7 +1048,7 @@ class BasicMovementTraining(BasicPhase):
                    
         # add chat options
         firstOfficer.basicChatOptions.append({"dialogName":"I did the task. Are there more things to do?","chat":src.chats.TutorialSpeechTest,"params":{"firstOfficer":firstOfficer,"phase":self}})
-        firstOfficer.basicChatOptions.append({"dialogName":"What are these machines in this room?","chat":src.chats.FurnaceChat,"params":{"firstOfficer":firstOfficer,"phase":self,"terrain":terrain}})
+        firstOfficer.basicChatOptions.append({"dialogName":"What are these machines in this room?","chat":src.chats.FurnaceChat,"params":{"firstOfficer":firstOfficer,"phase":self,"terrain":src.gamestate.gamestate.terrain}})
 
     '''
     make the player fire a furnace. no triggers placed
@@ -1056,8 +1056,8 @@ class BasicMovementTraining(BasicPhase):
     def fireFurnaces(self):
 
         # alias attributes
-        firstOfficer = terrain.wakeUpRoom.firstOfficer
-        furnace = terrain.wakeUpRoom.furnace
+        firstOfficer = src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer
+        furnace = src.gamestate.gamestate.terrain.wakeUpRoom.furnace
 
         # reward player
         src.gamestate.gamestate.mainChar.awardReputation(amount=2,reason="getting extra training")
@@ -1094,7 +1094,7 @@ you have on piece of coal less than before."""])
     def noFurnaceFirering(self):
 
         # alias attributes
-        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        firstOfficer = src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer
         src.gamestate.gamestate.mainChar.revokeReputation(amount=1,reason="not getting extra training")
 
         # place trigger
@@ -1105,7 +1105,7 @@ you have on piece of coal less than before."""])
     '''
     def examineStuff(self):
         # alias attributes
-        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        firstOfficer = src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer
 
         # show fluff
         showText(["""
@@ -1136,23 +1136,23 @@ In this case you still have to press """+config.commandChars.move_west+""" to wa
 
     def addGrowthTankRefill(self):
         # alias attributes
-        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        firstOfficer = src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer
 
         firstOfficer.basicChatOptions.append({"dialogName":"I did the task. Are there more things to do?","chat":src.chats.GrowthTankRefillChat,"params":{"firstOfficer":firstOfficer,"phase":self}})
         
     def doTask1(self):
         # alias attributes
-        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        firstOfficer = src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer
 
-        quest = src.quests.FillGrowthTankMeta(growthTank=terrain.wakeUpRoom.growthTanks[0])
+        quest = src.quests.FillGrowthTankMeta(growthTank=src.gamestate.gamestate.terrain.wakeUpRoom.growthTanks[0])
         quest.endTrigger = {"container":self,"method":"doTask2"}
         src.gamestate.gamestate.mainChar.serveQuest.addQuest(quest)
         
     def doTask2(self):
         # alias attributes
-        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        firstOfficer = src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer
 
-        quest = src.quests.FillGrowthTankMeta(growthTank=terrain.wakeUpRoom.growthTanks[3])
+        quest = src.quests.FillGrowthTankMeta(growthTank=src.gamestate.gamestate.terrain.wakeUpRoom.growthTanks[3])
         quest.endTrigger = {"container":self,"method":"iamready"}
         src.gamestate.gamestate.mainChar.serveQuest.addQuest(quest)
 
@@ -1162,7 +1162,7 @@ In this case you still have to press """+config.commandChars.move_west+""" to wa
     def iamready(self):
 
         # alias attributes
-        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        firstOfficer = src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer
 
         timeTaken = src.gamestate.gamestate.tick-src.gamestate.gamestate.mainChar.tutorialStart
         normTime = 500
@@ -1185,7 +1185,7 @@ In this case you still have to press """+config.commandChars.move_west+""" to wa
         #    return
 
         # show evaluation
-        text = "you completed the tests and it is time to take on your duty. You will no longer server under my command, but under "+terrain.wakeUpRoom.firstOfficer.name+" as a hopper.\n\nSo please go to the waiting room and report for room duty.\n\nThe waiting room is the next room to the north. Simply go there speak to "+terrain.wakeUpRoom.firstOfficer.name+" and confirm that you are reporting for duty.\nYou will get instruction on how to proceed afterwards.\n\n"
+        text = "you completed the tests and it is time to take on your duty. You will no longer server under my command, but under "+src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer.name+" as a hopper.\n\nSo please go to the waiting room and report for room duty.\n\nThe waiting room is the next room to the north. Simply go there speak to "+src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer.name+" and confirm that you are reporting for duty.\nYou will get instruction on how to proceed afterwards.\n\n"
         if (self.didFurnaces):
             text += "A word of advice from my part:\nYou are able to just not report for duty, but you have to expect to die alone.\nAlso staying on a mech with expired permit will get the guards attention pretty fast.\nSo just follow your orders and work hard, so you will be giving the orders."
         showText(text,rusty=True)
@@ -1219,15 +1219,15 @@ In this case you still have to press """+config.commandChars.move_west+""" to wa
     def trainingCompleted(self):
 
         # alias attributes
-        firstOfficer = terrain.wakeUpRoom.firstOfficer
+        firstOfficer = src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer
 
         # make player mode to the next room
         # bad pattern: this should be part of the next phase
-        quest = src.quests.MoveQuestMeta(terrain.wakeUpRoom,5,1)
+        quest = src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.wakeUpRoom,5,1)
         firstOfficer.assignQuest(quest,active=True)
 
         # move npc to default position
-        quest = src.quests.MoveQuestMeta(terrain.waitingRoom,9,4)
+        quest = src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.waitingRoom,9,4)
         src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
         src.gamestate.gamestate.mainChar.hasFloorPermit = True
 
@@ -1263,13 +1263,13 @@ class BoilerRoomWelcome(BasicPhase):
     '''
     def start(self,seed=0):
         # alias attributes
-        self.mainCharRoom = terrain.tutorialMachineRoom
+        self.mainCharRoom = src.gamestate.gamestate.terrain.tutorialMachineRoom
 
         super().start(seed=seed)
 
         # move player to machine room if the player isn't there yet
-        if not (src.gamestate.gamestate.mainChar.room and src.gamestate.gamestate.mainChar.room == terrain.tutorialMachineRoom):
-            self.mainCharQuestList.append(src.quests.EnterRoomQuestMeta(terrain.tutorialMachineRoom,startCinematics="please goto the Machineroom"))
+        if not (src.gamestate.gamestate.mainChar.room and src.gamestate.gamestate.mainChar.room == src.gamestate.gamestate.terrain.tutorialMachineRoom):
+            self.mainCharQuestList.append(src.quests.EnterRoomQuestMeta(src.gamestate.gamestate.terrain.tutorialMachineRoom,startCinematics="please goto the Machineroom"))
 
         # properly hook the players quests
         self.assignPlayerQuests()
@@ -1513,7 +1513,7 @@ class BoilerRoomInteractionTraining(BasicPhase):
     explain interaction and make the player apply lessons
     '''
     def start(self,seed=0):
-        self.mainCharRoom = terrain.tutorialMachineRoom
+        self.mainCharRoom = src.gamestate.gamestate.terrain.tutorialMachineRoom
 
         super().start(seed=seed)
 
@@ -1594,7 +1594,7 @@ class FurnaceCompetition(BasicPhase):
     run the competition
     '''
     def start(self,seed=0):
-        self.mainCharRoom = terrain.tutorialMachineRoom
+        self.mainCharRoom = src.gamestate.gamestate.terrain.tutorialMachineRoom
 
         super().start(seed=seed)
 
@@ -1812,13 +1812,13 @@ class FindWork(BasicPhase):
         self.attributesToStore.extend(["cycleQuestIndex"])
         loadingRegistry.register(self)
         self.initialState = self.getState()
-        self.mainCharRoom = terrain.waitingRoom
+        self.mainCharRoom = src.gamestate.gamestate.terrain.waitingRoom
 
     '''
     create selection and place triggers
     '''
     def start(self,seed=0):
-        self.mainCharRoom = terrain.waitingRoom
+        self.mainCharRoom = src.gamestate.gamestate.terrain.waitingRoom
 
         super().start(seed=seed)
 
@@ -1855,7 +1855,7 @@ class FindWork(BasicPhase):
         showText("Remeber to report back, your worth will be counted in a mtick.",trigger={"container":self,"method":"end"})
 
     def getIntro(self):
-        showText("Admiting fault is no fault in itself. Here is a quick rundown of you duties:\n\n\n*) talk to my subordinate "+terrain.waitingRoom.secondOfficer.name+" and ask if you can do something. Usually you will be tasked with carrying things from one place to another.\n\n*) carry out the task given to you. The task are mundane, but you need to proof yourself before you can be trusted with more valuable tasks.\n\n*) report back to my subordinate "+terrain.waitingRoom.secondOfficer.name+" and collect your reward. Your reward consists of reputation.\n\n*) repeat until you will be called to proof your worth. If you proven yourself worthwhile you may continue or recieve special tasks. If you loose all your reputation you will be disposed of")
+        showText("Admiting fault is no fault in itself. Here is a quick rundown of you duties:\n\n\n*) talk to my subordinate "+src.gamestate.gamestate.terrain.waitingRoom.secondOfficer.name+" and ask if you can do something. Usually you will be tasked with carrying things from one place to another.\n\n*) carry out the task given to you. The task are mundane, but you need to proof yourself before you can be trusted with more valuable tasks.\n\n*) report back to my subordinate "+src.gamestate.gamestate.terrain.waitingRoom.secondOfficer.name+" and collect your reward. Your reward consists of reputation.\n\n*) repeat until you will be called to proof your worth. If you proven yourself worthwhile you may continue or recieve special tasks. If you loose all your reputation you will be disposed of")
         mainChar.awardReputation(amount=1,reason="admitting fault")
         showText("You are invited to ask me for more information, if you need more instructions. I usually coordinate the hoppers from here.\n\nRemeber to report back, your worth will be counted in a mtick.",trigger={"container":self,"method":"end"})
         self.firstOfficersDialog = [
@@ -1869,7 +1869,7 @@ class FindWork(BasicPhase):
                                   {"type":"text","text":"The Falkenbaum is a training mech after all. Completing tasks for training does not gain you reputation, so it is preferable to complete actual work","name":"Why transport furniture back and forth?","delete":True},
                          ],"name":"Please explain how the hopper job works in detail."},
                          {"type":"text","text":"I will assign simple training tasks to you. You will recieve a token each time you complete a training task.\n\nCollect 4 tokens by completing 4 tasks\n\nTalk to me when you are ready to start a trainings task","name":"Please train me","delete":True,"trigger":{"container":self,"method":"getSimpleReputationGathering"}}]
-        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I need more information about the hopper duty","chat":src.chats.ConfigurableChat,"params":{
+        src.gamestate.gamestate.terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I need more information about the hopper duty","chat":src.chats.ConfigurableChat,"params":{
                 "text":"what do you need to know more about?",
                 "info":self.firstOfficersDialog,
             }})
@@ -1879,10 +1879,10 @@ class FindWork(BasicPhase):
                          {"type":"text","text":"please move the wall section in the west of the room and return to me\n\nYou will be rewarded one token for completing the task\n\nThe implant will show you the path to the wall section and where to place it\n\ntalk to me again after completing your task to get another task","name":"give me the task to train me","delete":True,"trigger":{"container":self,"method":"doSimpleReputationGathering"}})
 
     def doSimpleReputationGathering(self):
-        item = terrain.waitingRoom.trainingItems[0]
-        newPosition = (terrain.waitingRoom,1,8)
+        item = src.gamestate.gamestate.terrain.waitingRoom.trainingItems[0]
+        newPosition = (src.gamestate.gamestate.terrain.waitingRoom,1,8)
         if item.xPosition == 1 and item.yPosition == 8:
-            newPosition = (terrain.waitingRoom,1,1)
+            newPosition = (src.gamestate.gamestate.terrain.waitingRoom,1,1)
         quest = src.quests.TransportQuest(item,newPosition,creator=self)
         quest.endTrigger = {"container":self,"method":"completeSimpeReputationGathering"}
         src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
@@ -1896,7 +1896,7 @@ class FindWork(BasicPhase):
                 numTokens += 1
 
         if numTokens < 4:
-            quest = src.quests.MoveQuestMeta(terrain.waitingRoom,6,4,creator=self)
+            quest = src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.waitingRoom,6,4,creator=self)
             quest.endTrigger = {"container":self,"method":"getSimpleReputationGathering"}
             src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
             return
@@ -1931,26 +1931,26 @@ class FindWork(BasicPhase):
                          {"type":"text","text":"please move the pipe section in the east of the room to the south-east of the room.\n\nYou will not be rewarded for completing the task","name":"give me the task to move the pipe","delete":True,"trigger":{"container":self,"method":"doSelectiveReputationGatheringUseless"}})
 
     def doSelectiveReputationGatheringUsefull(self):
-        item = terrain.waitingRoom.trainingItems[1]
-        newPosition = (terrain.waitingRoom,7,8)
+        item = src.gamestate.gamestate.terrain.waitingRoom.trainingItems[1]
+        newPosition = (src.gamestate.gamestate.terrain.waitingRoom,7,8)
         if item.xPosition == 7 and item.yPosition == 8:
-            newPosition = (terrain.waitingRoom,8,1)
+            newPosition = (src.gamestate.gamestate.terrain.waitingRoom,8,1)
         quest = src.quests.TransportQuest(item,newPosition,creator=self)
         quest.endTrigger = {"container":self,"method":"completeSelectiveReputationGatheringUsefull"}
         src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
  
     def doSelectiveReputationGatheringUseless(self):
-        item = terrain.waitingRoom.trainingItems[0]
-        newPosition = (terrain.waitingRoom,1,8)
+        item = src.gamestate.gamestate.terrain.waitingRoom.trainingItems[0]
+        newPosition = (src.gamestate.gamestate.terrain.waitingRoom,1,8)
         if item.xPosition == 1 and item.yPosition == 8:
-            newPosition = (terrain.waitingRoom,1,1)
+            newPosition = (src.gamestate.gamestate.terrain.waitingRoom,1,1)
         quest = src.quests.TransportQuest(item,newPosition,creator=self)
         quest.endTrigger = {"container":self,"method":"completeSelectiveReputationGatheringUseless"}
         src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
 
     def completeSelectiveReputationGatheringUseless(self):
         src.gamestate.gamestate.mainChar.addMessage("you recieved no tokens for completing a task")
-        quest = src.quests.MoveQuestMeta(terrain.waitingRoom,6,4,creator=self)
+        quest = src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.waitingRoom,6,4,creator=self)
         quest.endTrigger = {"container":self,"method":"getSelectiveReputationGatheringUseless"}
         src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
  
@@ -1963,7 +1963,7 @@ class FindWork(BasicPhase):
                 numTokens += 1
 
         if numTokens < 6:
-            quest = src.quests.MoveQuestMeta(terrain.waitingRoom,6,4,creator=self)
+            quest = src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.waitingRoom,6,4,creator=self)
             quest.endTrigger = {"container":self,"method":"getSelectiveReputationGatheringUsefull"}
             src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
             return
@@ -1994,7 +1994,7 @@ class FindWork(BasicPhase):
         showText("go on then.")
 
         # add option to reenter the command chain
-        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I want to report for duty","chat":src.chats.ReReport,"params":{"phase":self}})
+        src.gamestate.gamestate.terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I want to report for duty","chat":src.chats.ReReport,"params":{"phase":self}})
 
     '''
     make the player do some tasks until allowing advancement elsewhere
@@ -2002,7 +2002,7 @@ class FindWork(BasicPhase):
     bad pattern: mostly player only code
     '''
     def end(self):
-        terrain.waitingRoom.addAsHopper(src.gamestate.gamestate.mainChar)
+        src.gamestate.gamestate.terrain.waitingRoom.addAsHopper(src.gamestate.gamestate.mainChar)
 
         self.didStoreCargo = False
 
@@ -2039,7 +2039,7 @@ class FindWork(BasicPhase):
                     src.gamestate.gamestate.mainChar.addMessage("*alarm* non rensponsive personal detected. possible artisan. dispatch kill squads *alarm*")
 
                     # send out death squads
-                    for room in terrain.militaryRooms:
+                    for room in src.gamestate.gamestate.terrain.militaryRooms:
                         quest = src.quests.MurderQuest(src.gamestate.gamestate.mainChar)
                         src.gamestate.gamestate.mainChar.revokeReputation(amount=1000,reason="failing to show up for evaluation")
                         room.secondOfficer.assignQuest(quest,active=True)
@@ -2055,7 +2055,7 @@ class FindWork(BasicPhase):
                 if src.gamestate.gamestate.mainChar.reputation < 15 or self.didStoreCargo:
                     # check if player has the lowest reputation
                     lowestReputation = True
-                    for hopper in terrain.waitingRoom.hoppers:
+                    for hopper in src.gamestate.gamestate.terrain.waitingRoom.hoppers:
                        if hopper.reputation < src.gamestate.gamestate.mainChar.reputation:
                            lowestReputation = False
 
@@ -2063,7 +2063,7 @@ class FindWork(BasicPhase):
                     if src.gamestate.gamestate.mainChar.reputation <= 0:
                         # punish player for low performance near to killing player
                         showText("You currently have no recieps on you. Please report to vat duty.",trigger={"container":subself,"method":"startVatPhase"})
-                    elif lowestReputation and len(terrain.waitingRoom.hoppers) > 3:
+                    elif lowestReputation and len(src.gamestate.gamestate.terrain.waitingRoom.hoppers) > 3:
                         showText("I have too many hoppers working here and you do the least work. Please report to vat duty.",trigger={"container":subself,"method":"startVatPhase"})
                     elif src.gamestate.gamestate.mainChar.reputation > 5:
                         # do nothing on ok performance
@@ -2081,12 +2081,12 @@ class FindWork(BasicPhase):
                     src.gamestate.gamestate.mainChar.awardReputation(amount=5,reason="getting a special order")
                     # add the quest
                     showText("logistics command orders us to move some of the cargo in the long term store to accesible storage.\n3 rooms are to be cleared. One room needs to be cleared within 150 ticks\nThis requires the coordinated effort of the hoppers here. Since "+subself.char.name+" did well to far, "+subself.char.name+" will be given the lead.\nThis will be extra to the current workload")
-                    quest = src.quests.HandleDelivery([terrain.tutorialCargoRooms[4]],[terrain.tutorialStorageRooms[1],terrain.tutorialStorageRooms[3],terrain.tutorialStorageRooms[5]])
+                    quest = src.quests.HandleDelivery([src.gamestate.gamestate.terrain.tutorialCargoRooms[4]],[src.gamestate.gamestate.terrain.tutorialStorageRooms[1],src.gamestate.gamestate.terrain.tutorialStorageRooms[3],src.gamestate.gamestate.terrain.tutorialStorageRooms[5]])
                     quest.endTrigger = {"container":self,"method":"subordinateHandover"}
                     src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
 
                     # add subordinates
-                    for hopper in terrain.waitingRoom.hoppers:
+                    for hopper in src.gamestate.gamestate.terrain.waitingRoom.hoppers:
                         # ignore bad candidates
                         if hopper == subself.char:
                             continue
@@ -2109,7 +2109,7 @@ class FindWork(BasicPhase):
         return subordinates to waiting room
         '''
         def subordinateHandover(self):
-            for hopper in terrain.waitingRoom.hoppers:
+            for hopper in src.gamestate.gamestate.terrain.waitingRoom.hoppers:
                 if hopper in src.gamestate.gamestate.mainChar.subordinates:
                     if hopper.dead:
                         # punish player if subordinate is returned dead
@@ -2122,11 +2122,11 @@ class FindWork(BasicPhase):
         helper function to make the main char build a room
         '''
         def addRoomConstruction(self):
-            for room in terrain.rooms:
+            for room in src.gamestate.gamestate.terrain.rooms:
                 if isinstance(room,rooms.ConstructionSite):
                     constructionSite = room
                     break
-            quest = src.quests.ConstructRoom(constructionSite,terrain.tutorialStorageRooms)
+            quest = src.quests.ConstructRoom(constructionSite,src.gamestate.gamestate.terrain.tutorialStorageRooms)
             src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
 
         # add events to keep loose control
@@ -2135,7 +2135,7 @@ class FindWork(BasicPhase):
         # add quest to pool
         quest = src.quests.ClearRubble()
         quest.reputationReward = 3
-        terrain.waitingRoom.quests.append(quest)
+        src.gamestate.gamestate.terrain.waitingRoom.quests.append(quest)
 
         self.cycleQuestIndex = 0
 
@@ -2143,10 +2143,10 @@ class FindWork(BasicPhase):
         self.addNewCircleQuest()
 
         # add the dialog for getting a job
-        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":src.chats.JobChatFirst,"params":{"mainChar":src.gamestate.gamestate.mainChar,"terrain":terrain,"hopperDutyQuest":src.gamestate.gamestate.mainChar.quests[0]}})
-        terrain.waitingRoom.secondOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":src.chats.JobChatSecond,"params":{"mainChar":src.gamestate.gamestate.mainChar,"terrain":terrain,"hopperDutyQuest":src.gamestate.gamestate.mainChar.quests[0]}})
-        terrain.wakeUpRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":src.chats.JobChatFirst,"params":{"mainChar":src.gamestate.gamestate.mainChar,"terrain":terrain,"hopperDutyQuest":src.gamestate.gamestate.mainChar.quests[0]}})
-        terrain.tutorialMachineRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":src.chats.JobChatFirst,"params":{"mainChar":src.gamestate.gamestate.mainChar,"terrain":terrain,"hopperDutyQuest":src.gamestate.gamestate.mainChar.quests[0]}})
+        src.gamestate.gamestate.terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":src.chats.JobChatFirst,"params":{"mainChar":src.gamestate.gamestate.mainChar,"terrain":src.gamestate.gamestate.terrain,"hopperDutyQuest":src.gamestate.gamestate.mainChar.quests[0]}})
+        src.gamestate.gamestate.terrain.waitingRoom.secondOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":src.chats.JobChatSecond,"params":{"mainChar":src.gamestate.gamestate.mainChar,"terrain":src.gamestate.gamestate.terrain,"hopperDutyQuest":src.gamestate.gamestate.mainChar.quests[0]}})
+        src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":src.chats.JobChatFirst,"params":{"mainChar":src.gamestate.gamestate.mainChar,"terrain":src.gamestate.gamestate.terrain,"hopperDutyQuest":src.gamestate.gamestate.mainChar.quests[0]}})
+        src.gamestate.gamestate.terrain.tutorialMachineRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":src.chats.JobChatFirst,"params":{"mainChar":src.gamestate.gamestate.mainChar,"terrain":src.gamestate.gamestate.terrain,"hopperDutyQuest":src.gamestate.gamestate.mainChar.quests[0]}})
 
     '''
     quest to carry stuff and trigger adding a new quest afterwards
@@ -2158,26 +2158,26 @@ class FindWork(BasicPhase):
         shopCoordinateList = [(9,2),(9,7),(9,3),(9,6),(9,4),(9,5)]
 
         # reset counter when at the end
-        if self.cycleQuestIndex > 2*len(terrain.metalWorkshop.producedItems)-2:
+        if self.cycleQuestIndex > 2*len(src.gamestate.gamestate.terrain.metalWorkshop.producedItems)-2:
             self.cycleQuestIndex = 0
 
         # move items to the lab
-        if self.cycleQuestIndex < len(terrain.metalWorkshop.producedItems):
+        if self.cycleQuestIndex < len(src.gamestate.gamestate.terrain.metalWorkshop.producedItems):
             pos = labCoordinateList[self.cycleQuestIndex]
-            room = terrain.tutorialLab
+            room = src.gamestate.gamestate.terrain.tutorialLab
             index = self.cycleQuestIndex
 
         # move items to the metal workshop
         else:
-            pos = shopCoordinateList[self.cycleQuestIndex-len(terrain.metalWorkshop.producedItems)]
-            room = terrain.metalWorkshop
-            index = -(self.cycleQuestIndex-len(terrain.metalWorkshop.producedItems))-1
+            pos = shopCoordinateList[self.cycleQuestIndex-len(src.gamestate.gamestate.terrain.metalWorkshop.producedItems)]
+            room = src.gamestate.gamestate.terrain.metalWorkshop
+            index = -(self.cycleQuestIndex-len(src.gamestate.gamestate.terrain.metalWorkshop.producedItems))-1
             
         # add the quest to queue
-        quest = src.quests.TransportQuest(terrain.metalWorkshop.producedItems[index],(room,pos[0],pos[1]))
+        quest = src.quests.TransportQuest(src.gamestate.gamestate.terrain.metalWorkshop.producedItems[index],(room,pos[0],pos[1]))
         quest.endTrigger = {"container":self,"method":"addNewCircleQuest"}
         quest.reputationReward = 0
-        terrain.waitingRoom.quests.append(quest)
+        src.gamestate.gamestate.terrain.waitingRoom.quests.append(quest)
 
         # increase the quest counter
         self.cycleQuestIndex += 1
@@ -2197,7 +2197,7 @@ class LabPhase(BasicPhase):
     make a dummy movement and switch phase
     '''
     def start(self,seed=0):
-        self.mainCharRoom = terrain.tutorialLab
+        self.mainCharRoom = src.gamestate.gamestate.terrain.tutorialLab
 
         super().start(seed=seed)
 
@@ -2240,7 +2240,7 @@ class VatPhase(BasicPhase):
     do a dummy action and switch phase
     '''
     def start(self,seed=0):
-        self.mainCharRoom = terrain.tutorialVat
+        self.mainCharRoom = src.gamestate.gamestate.terrain.tutorialVat
 
         super().start(seed=seed)
 
@@ -2249,14 +2249,14 @@ class VatPhase(BasicPhase):
             quest.deactivate()
         src.gamestate.gamestate.mainChar.quests = []
 
-        quest = src.quests.MoveQuestMeta(terrain.tutorialVat,3,3,lifetime=500)
+        quest = src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.tutorialVat,3,3,lifetime=500)
 
         '''
         kill characters not moving into the vat
         '''
         def fail():
             src.gamestate.gamestate.mainChar.addMessage("*alarm* refusal to honour vat assignemnt detected. likely artisan. Dispatch kill squads *alarm*")
-            for room in terrain.militaryRooms:
+            for room in src.gamestate.gamestate.terrain.militaryRooms:
                 quest = src.quests.MurderQuest(src.gamestate.gamestate.mainChar)
                 src.gamestate.gamestate.mainChar.revokeReputation(amount=1000,reason="not starting vat duty")
                 room.secondOfficer.assignQuest(quest,active=True)
@@ -2296,19 +2296,19 @@ class MachineRoomPhase(BasicPhase):
     switch completely to free play
     '''
     def start(self,seed=0):
-        self.mainCharRoom = terrain.tutorialMachineRoom
+        self.mainCharRoom = src.gamestate.gamestate.terrain.tutorialMachineRoom
         self.requiresMainCharRoomSecondOfficer = False
 
         super().start(seed=seed)
 
-        terrain.tutorialMachineRoom.secondOfficer = src.gamestate.gamestate.mainChar
+        src.gamestate.gamestate.terrain.tutorialMachineRoom.secondOfficer = src.gamestate.gamestate.mainChar
 
         # assign task and hand over
-        terrain.tutorialMachineRoom.endTraining()
+        src.gamestate.gamestate.terrain.tutorialMachineRoom.endTraining()
 
         # do a dummy action
         questList = []
-        questList.append(src.quests.MoveQuestMeta(terrain.tutorialMachineRoom,3,3,startCinematics="time to do some actual work. report to "+terrain.tutorialMachineRoom.firstOfficer.name))
+        questList.append(src.quests.MoveQuestMeta(src.gamestate.gamestate.terrain.tutorialMachineRoom,3,3,startCinematics="time to do some actual work. report to "+src.gamestate.gamestate.terrain.tutorialMachineRoom.firstOfficer.name))
 
         # chain quests
         lastQuest = questList[0]
@@ -2348,8 +2348,8 @@ class Tutorial(BasicPhase):
         self.mainChar = src.gamestate.gamestate.mainChar
         self.mainChar.xPosition = 70
         self.mainChar.yPosition = 74
-        self.mainChar.terrain = terrain
-        terrain.addCharacter(self.mainChar,self.mainChar.xPosition,self.mainChar.yPosition)
+        self.mainChar.terrain = src.gamestate.gamestate.terrain
+        src.gamestate.gamestate.terrain.addCharacter(self.mainChar,self.mainChar.xPosition,self.mainChar.yPosition)
 
         self.seed = seed
 
@@ -2378,7 +2378,7 @@ class Tutorial(BasicPhase):
                   "DropQuestMeta",
                 ]
 
-        self.miniBase = terrain.miniBase
+        self.miniBase = src.gamestate.gamestate.terrain.miniBase
 
         self.reportQuest = None
 
@@ -2387,10 +2387,10 @@ class Tutorial(BasicPhase):
         numProducts = 0
         while not len(self.helper_getFilteredProducables()) in (1,) or not numProducts == 3:
             seed += seed%42
-            terrain.removeRoom(self.miniBase)
+            src.gamestate.gamestate.terrain.removeRoom(self.miniBase)
 
             self.miniBase = src.rooms.TutorialMiniBase(4,8,0,0,seed=seed)
-            terrain.addRoom(self.miniBase)
+            src.gamestate.gamestate.terrain.addRoom(self.miniBase)
 
             itemsFound = []
             for item in self.miniBase.itemsOnFloor:
@@ -2449,9 +2449,9 @@ class Tutorial(BasicPhase):
              mainChar.inventory.remove(item)
 
         itemCount = 0
-        for item in terrain.itemsOnFloor:
+        for item in src.gamestate.gamestate.terrain.itemsOnFloor:
             if isinstance(item,src.items.itemMap["Scrap"]):
-                if (item.xPosition-1,item.yPosition) in terrain.watershedCoordinates or (item.xPosition+1,item.yPosition) in terrain.watershedCoordinates or (item.xPosition,item.yPosition-1) in terrain.watershedCoordinates or (item.xPosition,item.yPosition+1) in terrain.watershedCoordinates:
+                if (item.xPosition-1,item.yPosition) in src.gamestate.gamestate.terrain.watershedCoordinates or (item.xPosition+1,item.yPosition) in src.gamestate.gamestate.terrain.watershedCoordinates or (item.xPosition,item.yPosition-1) in src.gamestate.gamestate.terrain.watershedCoordinates or (item.xPosition,item.yPosition+1) in src.gamestate.gamestate.terrain.watershedCoordinates:
                     quest = src.quests.PickupQuestMeta(toPickup=item)
                     if len(mainChar.inventory) < 9:
                         method = "scrapTest1"
@@ -2719,8 +2719,8 @@ class Testing_1(BasicPhase):
         self.mainChar = src.gamestate.gamestate.mainChar
         self.mainChar.xPosition = 70
         self.mainChar.yPosition = 74
-        self.mainChar.terrain = terrain
-        terrain.addCharacter(self.mainChar,self.mainChar.xPosition,self.mainChar.yPosition)
+        self.mainChar.terrain = src.gamestate.gamestate.terrain
+        src.gamestate.gamestate.terrain.addCharacter(self.mainChar,self.mainChar.xPosition,self.mainChar.yPosition)
 
         self.seed = seed
 
@@ -2749,7 +2749,7 @@ class Testing_1(BasicPhase):
                   "DropQuestMeta",
                 ]
 
-        self.miniBase = terrain.miniBase
+        self.miniBase = src.gamestate.gamestate.terrain.miniBase
 
         self.reportQuest = None
 
@@ -2758,10 +2758,10 @@ class Testing_1(BasicPhase):
         numProducts = 0
         while not len(self.helper_getFilteredProducables()) in (1,) or not numProducts == 3:
             seed += seed%42
-            terrain.removeRoom(self.miniBase)
+            src.gamestate.gamestate.terrain.removeRoom(self.miniBase)
 
             self.miniBase = src.rooms.GameTestingRoom(4,8,0,0,seed=seed)
-            terrain.addRoom(self.miniBase)
+            src.gamestate.gamestate.terrain.addRoom(self.miniBase)
 
             itemsFound = []
             for item in self.miniBase.itemsOnFloor:
@@ -2820,9 +2820,9 @@ class Testing_1(BasicPhase):
              src.gamestate.gamestate.mainChar.inventory.remove(item)
 
         itemCount = 0
-        for item in terrain.itemsOnFloor:
+        for item in src.gamestate.gamestate.terrain.itemsOnFloor:
             if isinstance(item,src.items.itemMap["Scrap"]):
-                if (item.xPosition-1,item.yPosition) in terrain.watershedCoordinates or (item.xPosition+1,item.yPosition) in terrain.watershedCoordinates or (item.xPosition,item.yPosition-1) in terrain.watershedCoordinates or (item.xPosition,item.yPosition+1) in terrain.watershedCoordinates:
+                if (item.xPosition-1,item.yPosition) in src.gamestate.gamestate.terrain.watershedCoordinates or (item.xPosition+1,item.yPosition) in src.gamestate.gamestate.terrain.watershedCoordinates or (item.xPosition,item.yPosition-1) in src.gamestate.gamestate.terrain.watershedCoordinates or (item.xPosition,item.yPosition+1) in src.gamestate.gamestate.terrain.watershedCoordinates:
                     quest = src.quests.PickupQuestMeta(toPickup=item)
                     if len(src.gamestate.gamestate.mainChar.inventory) < 9:
                         method = "scrapTest1"
@@ -3085,29 +3085,29 @@ class BuildBase(BasicPhase):
         showText("build a base.\n\npress space to continue")
         showText("\n\n * press ? for help\n\n * press a to move left/west\n * press w to move up/north\n * press s to move down/south\n * press d to move right/east\n\npress space to continue\n\n")
 
-        src.gamestate.gamestate.mainChar.terrain = terrain
-        terrain.addCharacter(src.gamestate.gamestate.mainChar,124,109)
+        src.gamestate.gamestate.mainChar.terrain = src.gamestate.gamestate.terrain
+        src.gamestate.gamestate.terrain.addCharacter(src.gamestate.gamestate.mainChar,124,109)
 
-        self.miniBase = terrain.rooms[0]
+        self.miniBase = src.gamestate.gamestate.terrain.rooms[0]
 
         """
         import json
         if seed%2==0:
             with open("states/theftBase1.json","r") as stateFile:
                 room = json.loads(stateFile.read())
-            terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
+            src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
         if seed%3==1:
             with open("states/theftBase2.json","r") as stateFile:
                 room = json.loads(stateFile.read())
-            terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
+            src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
         if seed%2==1:
             with open("states/caseStorage.json","r") as stateFile:
                 room = json.loads(stateFile.read())
-            terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
+            src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
         else:
             with open("states/emptyRoom1.json","r") as stateFile:
                 room = json.loads(stateFile.read())
-            terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
+            src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
         if seed%4:
             with open("states/emptyRoom2.json","r") as stateFile:
                 room = json.loads(stateFile.read())
@@ -3116,19 +3116,19 @@ class BuildBase(BasicPhase):
             wallRoom = wallRooms[seed%5%len(wallRooms)]
             with open(wallRoom,"r") as stateFile:
                 room = json.loads(stateFile.read())
-        terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
+        src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
         with open("states/miniMech.json","r") as stateFile:
             room = json.loads(stateFile.read())
-        terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
+        src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
         #room = src.rooms.EmptyRoom(1,1,2,2,creator=self)
         #room.reconfigure(sizeX=seed%12+3,sizeY=(seed+seed%236)%12+3,doorPos=(0,1))
-        #terrain.addRoom(room)
+        #src.gamestate.gamestate.terrain.addRoom(room)
         #room = src.rooms.EmptyRoom(4,9,-1,0,creator=self)
         #room.reconfigure(sizeX=14,sizeY=14,doorPos=(13,6))
-        #terrain.addRoom(room)
+        #src.gamestate.gamestate.terrain.addRoom(room)
         with open("states/globalMacroStorage.json","r") as stateFile:
             room = json.loads(stateFile.read())
-        terrain.addRoom(src.rooms.getRoomFromState(room,terrain))
+        src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
         """
 
         molds = []
@@ -3167,7 +3167,7 @@ class BuildBase(BasicPhase):
 
         for pos in positions:
             commandBloom = src.items.itemMap["CommandBloom"](pos[0],pos[1],creator=self)
-            terrain.addItems([commandBloom])
+            src.gamestate.gamestate.terrain.addItems([commandBloom])
             if pos in ((187,112),(172,112),(157,112),(142,112)):
                 commandBloom.masterCommand = "13a9kj"
             molds.append(src.items.itemMap["Mold"](pos[0]+4,pos[1]+4,creator=self))
@@ -3178,17 +3178,17 @@ class BuildBase(BasicPhase):
             molds.append(src.items.itemMap["Bloom"](pos[0]-2,pos[1]+2,creator=self))
             molds.append(src.items.itemMap["Bloom"](pos[0]+2,pos[1]-2,creator=self))
             molds.append(src.items.itemMap["Bloom"](pos[0]-2,pos[1]-2,creator=self))
-            terrain.addItems([src.items.itemMap["CommandBloom"](pos[0]-6,pos[1],creator=self)])
-            terrain.addItems([src.items.itemMap["CommandBloom"](pos[0]-6,pos[1],creator=self)])
-            terrain.addItems([src.items.itemMap["CommandBloom"](pos[0]+6,pos[1],creator=self)])
-            terrain.addItems([src.items.itemMap["CommandBloom"](pos[0],pos[1]-6,creator=self)])
-            terrain.addItems([src.items.itemMap["CommandBloom"](pos[0],pos[1]+6,creator=self)])
+            src.gamestate.gamestate.terrain.addItems([src.items.itemMap["CommandBloom"](pos[0]-6,pos[1],creator=self)])
+            src.gamestate.gamestate.terrain.addItems([src.items.itemMap["CommandBloom"](pos[0]-6,pos[1],creator=self)])
+            src.gamestate.gamestate.terrain.addItems([src.items.itemMap["CommandBloom"](pos[0]+6,pos[1],creator=self)])
+            src.gamestate.gamestate.terrain.addItems([src.items.itemMap["CommandBloom"](pos[0],pos[1]-6,creator=self)])
+            src.gamestate.gamestate.terrain.addItems([src.items.itemMap["CommandBloom"](pos[0],pos[1]+6,creator=self)])
             molds.append(src.items.itemMap["Mold"](pos[0]+6,pos[1]+6,creator=self))
             molds.append(src.items.itemMap["Mold"](pos[0]-6,pos[1]-6,creator=self))
             molds.append(src.items.itemMap["Mold"](pos[0]+6,pos[1]-6,creator=self))
             molds.append(src.items.itemMap["Mold"](pos[0]-6,pos[1]+6,creator=self))
         
-        terrain.addItems(molds)
+        src.gamestate.gamestate.terrain.addItems(molds)
         for mold in molds:
             mold.startSpawn()
 
@@ -3212,7 +3212,7 @@ class BuildBase(BasicPhase):
                       "WaitQuest"
                       ]
             crawler.macroState["commandKeyQueue"] = [("j",[]),("j",[])]
-            terrain.addCharacter(crawler,pos[0],pos[1])
+            src.gamestate.gamestate.terrain.addCharacter(crawler,pos[0],pos[1])
 
         src.gamestate.gamestate.mainChar.addListener(self.checkRoomEnteredMain)
         src.gamestate.gamestate.mainChar.macroState["macros"]["j"] = ["J","f"]
@@ -3278,22 +3278,22 @@ class DesertSurvival(BasicPhase):
 
         src.cinematics.showCinematic("staring desert survival Scenario.")
 
-        terrain.heatmap[3][7] = 1
-        terrain.heatmap[4][7] = 1
-        terrain.heatmap[5][7] = 1
-        terrain.heatmap[6][7] = 1
+        src.gamestate.gamestate.terrain.heatmap[3][7] = 1
+        src.gamestate.gamestate.terrain.heatmap[4][7] = 1
+        src.gamestate.gamestate.terrain.heatmap[5][7] = 1
+        src.gamestate.gamestate.terrain.heatmap[6][7] = 1
 
         # place character in wakeup room
-        if terrain.wakeUpRoom:
-            self.mainCharRoom = terrain.wakeUpRoom
+        if src.gamestate.gamestate.terrain.wakeUpRoom:
+            self.mainCharRoom = src.gamestate.gamestate.terrain.wakeUpRoom
             self.mainCharRoom.addCharacter(src.gamestate.gamestate.mainChar,2,4)
         # place character on terrain
         else:
             src.gamestate.gamestate.mainChar.xPosition = 65
             src.gamestate.gamestate.mainChar.yPosition = 111
             src.gamestate.gamestate.mainChar.reputation = 100
-            src.gamestate.gamestate.mainChar.terrain = terrain
-            terrain.addCharacter(src.gamestate.gamestate.mainChar,65,111)
+            src.gamestate.gamestate.mainChar.terrain = src.gamestate.gamestate.terrain
+            src.gamestate.gamestate.terrain.addCharacter(src.gamestate.gamestate.mainChar,65,111)
 
         # add basic set of abilities in openworld phase
         src.gamestate.gamestate.mainChar.questsDone = [
@@ -3379,7 +3379,7 @@ class DesertSurvival(BasicPhase):
         sheet = src.items.itemMap["Sheet"](7,1,creator=self) 
         sheet.bolted = False
         self.workshop.addItems([sheet])
-        terrain.addRooms([self.workshop])
+        src.gamestate.gamestate.terrain.addRooms([self.workshop])
 
         while 1:
             x = random.randint(1,14)
@@ -3393,7 +3393,7 @@ class DesertSurvival(BasicPhase):
             self.workshop.reconfigure(8,8)
             break
 
-        terrain.doSandStorm()
+        src.gamestate.gamestate.terrain.doSandStorm()
 
 
 """
@@ -3410,8 +3410,8 @@ class FactoryDream(BasicPhase):
 
         src.cinematics.showCinematic("just look at my pretty factory")
 
-        src.gamestate.gamestate.mainChar.terrain = terrain
-        terrain.addCharacter(src.gamestate.gamestate.mainChar,7*15+7,7*15+7)
+        src.gamestate.gamestate.mainChar.terrain = src.gamestate.gamestate.terrain
+        src.gamestate.gamestate.terrain.addCharacter(src.gamestate.gamestate.mainChar,7*15+7,7*15+7)
 
         # add basic set of abilities in openworld phase
         src.gamestate.gamestate.mainChar.questsDone = [
@@ -3458,10 +3458,10 @@ class FactoryDream(BasicPhase):
                 scrap = src.items.itemMap["Scrap"](x,y,amount=10,creator=self)
                 items.append(scrap)
         cargoPod.addItems(items)
-        terrain.addRooms([cargoPod])
+        src.gamestate.gamestate.terrain.addRooms([cargoPod])
 
         cargoPod = src.rooms.ScrapStorage(6,6,1,1,creator=self)
-        terrain.addRooms([cargoPod])
+        src.gamestate.gamestate.terrain.addRooms([cargoPod])
 
         # fill other cargo pod with flasks
         cargoPod = src.rooms.EmptyRoom(6,5,2,3,creator=self)
@@ -3473,7 +3473,7 @@ class FactoryDream(BasicPhase):
                 flask.uses = 100
                 items.append(flask)
         cargoPod.addItems(items)
-        terrain.addRooms([cargoPod])
+        src.gamestate.gamestate.terrain.addRooms([cargoPod])
 
         # place processing scrap into metal bars
         workshopMetal = src.rooms.EmptyRoom(6,7,1,1,creator=self)
@@ -3515,7 +3515,7 @@ class FactoryDream(BasicPhase):
         items.append(command)
         workshopMetal.reconfigure(13,13)
         workshopMetal.addItems(items)
-        terrain.addRooms([workshopMetal])
+        src.gamestate.gamestate.terrain.addRooms([workshopMetal])
 
         items = []
         stockPile = src.items.itemMap["UniformStockpileManager"](15*7+7,15*6+7)
@@ -3526,7 +3526,7 @@ class FactoryDream(BasicPhase):
         items.append(stockPile)
         stockPile = src.items.itemMap["UniformStockpileManager"](15*10+7,15*6+7)
         items.append(stockPile)
-        terrain.addItems(items)
+        src.gamestate.gamestate.terrain.addItems(items)
 
 
 """
@@ -3541,9 +3541,9 @@ class CreativeMode(BasicPhase):
     def start(self,seed=0):
         import random
 
-        src.gamestate.gamestate.mainChar.terrain = terrain
+        src.gamestate.gamestate.mainChar.terrain = src.gamestate.gamestate.terrain
         src.gamestate.gamestate.mainChar.godMode = True
-        terrain.addCharacter(src.gamestate.gamestate.mainChar,7*15+7,7*15+7)
+        src.gamestate.gamestate.terrain.addCharacter(src.gamestate.gamestate.mainChar,7*15+7,7*15+7)
 
         # add basic set of abilities in openworld phase
         src.gamestate.gamestate.mainChar.questsDone = [
@@ -3590,7 +3590,7 @@ class CreativeMode(BasicPhase):
         item.bolted = False
         item.godMode = True
         items.append(item)
-        terrain.addItems(items)
+        src.gamestate.gamestate.terrain.addItems(items)
 
 
 

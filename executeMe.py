@@ -269,52 +269,6 @@ if not loaded:
     terrain = gamestate.gamestate.terrain
     interaction.lastTerrain = terrain
 
-# bad code: common variables with modules
-story.terrain = terrain
-
-items.terrain = terrain
-interaction.terrain = terrain
-terrains.terrain = terrain
-gamestate.terrain = terrain
-quests.terrain = terrain
-chats.terrain = terrain
-characters.terrain = terrain
-
-##################################################################################################################################
-###
-##        the main loop
-#
-#################################################################################################################################
-
-# the game loop
-# bad code: either unused or should be contained in terrain
-'''
-advance the game
-'''
-def advanceGame():
-    for row in gamestate.gamestate.terrainMap:
-        for specificTerrain in row:
-            for character in specificTerrain.characters:
-                character.advance()
-
-            for room in specificTerrain.rooms:
-                room.advance()
-
-            while specificTerrain.events and specificTerrain.events[0].tick <= gamestate.gamestate.tick:
-                event = specificTerrain.events[0]
-                if event.tick < gamestate.gamestate.tick:
-                    continue
-                event.handleEvent()
-                specificTerrain.events.remove(event)
-
-    gamestate.gamestate.tick += 1
-
-
-# bad code: common variables with modules
-cinematics.advanceGame = advanceGame
-interaction.advanceGame = advanceGame
-story.advanceGame = advanceGame
-
 # set up the splash screen
 if not args.debug and not interaction.submenue and not loaded:
     text = """
@@ -355,6 +309,8 @@ if not loaded:
 
 # bad code: loading registry should be cleared
 
+# bad code: common variables with modules
+
 # set up tile based mode
 if args.tiles:
     # spawn tile based rendered window
@@ -376,18 +332,20 @@ else:
     interaction.useTiles = False
     interaction.tileMapping = None
 
-######################################################################################################
-###
-##    main loop is started here
-#
-######################################################################################################
-
 if args.multiplayer:
     interaction.multiplayer = True
     interaction.fixedTicks = 0.1
 else:
     interaction.multiplayer = False
     interaction.fixesTicks = False
+
+######################################################################################################
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
+######################################################################################################
+###
+##    main loop is started here
+#
+######################################################################################################
 
 # start the interaction loop of the underlying library
 if not args.nourwid:

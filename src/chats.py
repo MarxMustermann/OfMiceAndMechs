@@ -444,7 +444,7 @@ do things the most efficent way. It will even try to handle conversion, wich doe
         else:
             # remove chat option
             self.removeFromChatOptions(self.firstOfficer)
-            self.removeFromChatOptions(terrain.waitingRoom.firstOfficer)
+            self.removeFromChatOptions(src.gamestate.gamestate.terrain.waitingRoom.firstOfficer)
 
             # finish
             self.done = True
@@ -503,7 +503,7 @@ for a brain.\n\n"""
 
             # add follow up chat
             self.firstOfficer.basicChatOptions.append({"dialogName":"What did Stern modify on the implant?","chat":SternChat,"params":{"firstOfficer":self.firstOfficer}})
-            terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"What did Stern modify on the implant?","chat":SternChat,"params":{"firstOfficer":self.firstOfficer}})
+            src.gamestate.gamestate.terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"What did Stern modify on the implant?","chat":SternChat,"params":{"firstOfficer":self.firstOfficer}})
 
             self.done = True
             return True
@@ -546,7 +546,7 @@ class ReReport(src.interaction.SubMenu):
             src.gamestate.gamestate.mainChar.revokeReputation(amount=1,reason="not reporting for duty in timely manner")
 
             # remove chat option
-            self.removeFromChatOptions(terrain.waitingRoom.firstOfficer)
+            self.removeFromChatOptions(src.gamestate.gamestate.terrain.waitingRoom.firstOfficer)
 
             # start intro
             self.phase.acknowledgeTransfer()

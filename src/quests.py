@@ -1844,7 +1844,7 @@ class SurviveQuest(Quest):
         for item in self.character.inventory:
             if isinstance(item,src.items.GooFlask):
                 if item.uses < 10 and not self.refillQuest:
-                    if not terrain.wakeUpRoom or not terrain.wakeUpRoom.gooDispenser:
+                    if not src.gamestate.gamestate.terrain.wakeUpRoom or not src.gamestate.gamestate.terrain.wakeUpRoom.gooDispenser:
                         return
                     self.refillQuest = RefillDrinkQuest(creator=self)
                     self.character.assignQuest(self.refillQuest,active=True)
@@ -2239,7 +2239,7 @@ class RefillDrinkQuest(ActivateQuestMeta):
     call superconstructor with modified parameters
     '''
     def __init__(self,startCinematics=None,creator=None):
-        super().__init__(toActivate=terrain.wakeUpRoom.gooDispenser,desiredActive=True,startCinematics=startCinematics,creator=creator) # bad code: it should select a dispenser that is nearby or something
+        super().__init__(toActivate=src.gamestate.gamestate.terrain.wakeUpRoom.gooDispenser,desiredActive=True,startCinematics=startCinematics,creator=creator) # bad code: it should select a dispenser that is nearby or something
 
         # save initial state and register
         self.type = "RefillDrinkQuest"
@@ -3539,9 +3539,9 @@ class ClearRubble(MetaQuestParralel):
     def __init__(self,followUp=None,startCinematics=None,failTrigger=None,lifetime=None,creator=None):
         super().__init__([],creator=creator)
         questList = []
-        for item in terrain.itemsOnFloor:
+        for item in src.gamestate.gamestate.terrain.itemsOnFloor:
             if isinstance(item,src.items.Scrap):
-                self.addQuest(TransportQuest(item,(terrain.metalWorkshop,7,1),creator=self))
+                self.addQuest(TransportQuest(item,(src.gamestate.gamestate.terrain.metalWorkshop,7,1),creator=self))
         self.metaDescription = "clear rubble"
 
         # save initial state and register

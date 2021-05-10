@@ -20,7 +20,6 @@ urwid = None
 bad code: containers for global state
 """
 cinematicQueue = []
-advanceGame = None
 
 """
 the base class for all Cinamatics
@@ -440,7 +439,7 @@ class ShowQuestExecution(BasicCinematic):
             return True
 
         # do one step
-        advanceGame()
+        src.interaction.advanceGame()
 
         # trigger next state
         if self.alarm:

@@ -37,6 +37,29 @@ urwid = None
 fixedTicks = False
 speed = None
 
+# the game loop
+# bad code: either unused or should be contained in terrain
+'''
+advance the game
+'''
+def advanceGame():
+    for row in src.gamestate.gamestate.terrainMap:
+        for specificTerrain in row:
+            for character in specificTerrain.characters:
+                character.advance()
+
+            for room in specificTerrain.rooms:
+                room.advance()
+
+            while specificTerrain.events and specificTerrain.events[0].tick <= src.gamestate.gamestate.tick:
+                event = specificTerrain.events[0]
+                if event.tick < gamestate.gamestate.tick:
+                    continue
+                event.handleEvent()
+                specificTerrain.events.remove(event)
+
+    src.gamestate.gamestate.tick += 1
+
 class abstractedDisplay(object):
     def __init__(self,urwidInstance):
         self.urwidInstance = urwidInstance
@@ -2795,7 +2818,7 @@ class AdvancedQuestMenu(SubMenu):
 
                     # add a list of of rooms
                     options = []
-                    for room in terrain.rooms:
+                    for room in src.gamestate.gamestate.terrain.rooms:
                         # do not show unimportant rooms
                         if isinstance(room,src.rooms.MechArmor) or isinstance(room,src.rooms.CpuWasterRoom):
                             continue
@@ -2822,7 +2845,7 @@ class AdvancedQuestMenu(SubMenu):
                     if not self.options and not self.getSelection():
                         # add a list of of rooms
                         options = []
-                        for room in terrain.rooms:
+                        for room in src.gamestate.gamestate.terrain.rooms:
                             # show only cargo rooms
                             if not isinstance(room,src.rooms.CargoRoom):
                                 continue
@@ -2845,7 +2868,7 @@ class AdvancedQuestMenu(SubMenu):
                     if not self.options and not self.getSelection():
                         # add a list of of rooms
                         options = []
-                        for room in terrain.rooms:
+                        for room in src.gamestate.gamestate.terrain.rooms:
                             # show only storage rooms
                             if not isinstance(room,src.rooms.StorageRoom):
                                 continue
@@ -2890,11 +2913,11 @@ class AdvancedQuestMenu(SubMenu):
                     if self.quest == src.quests.MoveQuestMeta:
                        questInstance = self.quest(src.gamestate.gamestate.mainChar.room,2,2)
                     elif self.quest == src.quests.ActivateQuestMeta:
-                       questInstance = self.quest(terrain.tutorialMachineRoom.furnaces[0])
+                       questInstance = self.quest(src.gamestate.gamestate.terrain.tutorialMachineRoom.furnaces[0])
                     elif self.quest == src.quests.EnterRoomQuestMeta:
                        questInstance = self.quest(self.questParams["room"])
                     elif self.quest == src.quests.FireFurnaceMeta:
-                       questInstance = self.quest(terrain.tutorialMachineRoom.furnaces[0])
+                       questInstance = self.quest(src.gamestate.gamestate.terrain.tutorialMachineRoom.furnaces[0])
                     elif self.quest == src.quests.WaitQuest:
                        questInstance = self.quest()
                     elif self.quest == src.quests.LeaveRoomQuest:
@@ -2907,18 +2930,18 @@ class AdvancedQuestMenu(SubMenu):
                     elif self.quest == src.quests.RoomDuty:
                        questInstance = self.quest()
                     elif self.quest == src.quests.ConstructRoom:
-                       for room in terrain.rooms:
+                       for room in src.gamestate.gamestate.terrain.rooms:
                            if isinstance(room,src.rooms.ConstructionSite):
                                constructionSite = room
                                break
-                       questInstance = self.quest(constructionSite,terrain.tutorialStorageRooms)
+                       questInstance = self.quest(constructionSite,src.gamestate.gamestate.terrain.tutorialStorageRooms)
                     elif self.quest == src.quests.StoreCargo:
-                       for room in terrain.rooms:
+                       for room in src.gamestate.gamestate.terrain.rooms:
                            if isinstance(room,src.rooms.StorageRoom):
                                storageRoom = room
                        questInstance = self.quest(self.questParams["cargoRoom"],self.questParams["storageRoom"])
                     elif self.quest == src.quests.MoveToStorage:
-                       questInstance = self.quest([terrain.tutorialLab.itemByCoordinates[(1,9)][0],terrain.tutorialLab.itemByCoordinates[(2,9)][0]],terrain.tutorialStorageRooms[1])
+                       questInstance = self.quest([src.gamestate.gamestate.terrain.tutorialLab.itemByCoordinates[(1,9)][0],src.gamestate.gamestate.terrain.tutorialLab.itemByCoordinates[(2,9)][0]],src.gamestate.gamestate.terrain.tutorialStorageRooms[1])
                     elif self.quest == "special_furnace":
                         questInstance = src.quests.KeepFurnaceFiredMeta(self.character.room.furnaces[0])
                     else:
@@ -3304,8 +3327,8 @@ def keyboardListener(key):
     if not multi_currentChar:
         multi_currentChar = src.gamestate.gamestate.mainChar
     if multi_chars == None:
-        multi_chars = terrain.characters[:]
-        for room in terrain.rooms:
+        multi_chars = src.gamestate.gamestate.terrain.characters[:]
+        for room in src.gamestate.gamestate.terrain.rooms:
             for character in room.characters[:]:
                 if not character in multi_chars:
                     multi_chars.append(character)
@@ -3380,10 +3403,10 @@ def keyboardListener(key):
             macroFile.write(json.dumps(compressedMacros,indent = 10, sort_keys = True))
 
     elif key == "ctrl a":
-        for character in terrain.characters:
+        for character in src.gamestate.gamestate.terrain.characters:
             if not character in multi_chars:
                 multi_chars.append(character)
-        for room in terrain.rooms:
+        for room in src.gamestate.gamestate.terrain.rooms:
             for character in room.characters[:]:
                 if not character in multi_chars:
                     multi_chars.append(character)
@@ -3490,11 +3513,11 @@ def gameLoop(loop,user_data=None):
                     key = "enter"
                 keyboardListener(key)
 
-        for char in terrain.characters[:]:
+        for char in src.gamestate.gamestate.terrain.characters[:]:
             if not char in multi_chars:
                 multi_chars.append(char)
 
-        for room in terrain.rooms:
+        for room in src.gamestate.gamestate.terrain.rooms:
             for character in room.characters[:]:
                 if not character in multi_chars:
                     multi_chars.append(character)

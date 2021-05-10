@@ -13,7 +13,6 @@ import src.saveing
 import src.canvas
 
 #bad code: global state
-cinematics = None
 messages = None
 callShow_or_exit = None
 loop = None
@@ -129,7 +128,8 @@ class ShowCinematicEvent(Event):
     '''
     def handleEvent(self):
         # bad code: a wrapper should be called here
-        cinematics.cinematicQueue.append(self.cinematic)
+        import src.cinematics
+        src.cinematics.cinematicQueue.append(self.cinematic)
         loop.set_alarm_in(0.0, callShow_or_exit, '~')
 
 

@@ -10,6 +10,7 @@ urwid = None
 # import the other internal libs
 import src.interaction
 import src.canvas
+import src.logger
 
 '''
 the main class for chats
@@ -37,7 +38,7 @@ class Chat(src.interaction.SubMenu):
         if toRemove:
             character.basicChatOptions.remove(toRemove)
         else:
-            debugMessages.append("removed chat option that wasn't there")
+            src.logger.debugMessages.append("removed chat option that wasn't there")
 
     def setUp(self,state):
         pass
@@ -1383,7 +1384,7 @@ class ChatMenu(Chat):
     def handleKey(self, key, noRender=False):
         # smooth over impossible state
         if self.partner == None:
-           debugMessages.append("chatmenu spawned without partner")
+           src.logger.debugMessages.append("chatmenu spawned without partner")
            return False
 
         # wake up character instead of speaking

@@ -13,8 +13,10 @@ import src.saveing
 import src.quests
 import src.chats
 import src.canvas
+import src.interaction
 import config
 import random
+import src.logger
 
 # bad code: containers for global state
 characters = None
@@ -367,7 +369,7 @@ class Character(src.saveing.Saveable):
     def recalculatePath(self):
         # log impossible state
         if not self.quests:
-            debugMessages.append("reacalculate path called without quests")
+            src.logger.debugMessages.append("reacalculate path called without quests")
             self.path = []
             return
 
@@ -670,7 +672,7 @@ class Character(src.saveing.Saveable):
             try:
                 self.setPathToQuest(self.quests[0])
             except:
-                debugMessages.append("setting path to quest failed")
+                src.logger.debugMessages.append("setting path to quest failed")
                 pass
 
     '''
@@ -761,7 +763,7 @@ class Character(src.saveing.Saveable):
                 container.addItems([corpse])
         # log impossible state
         else:
-            debugMessages.append("this should not happen, character died without beeing somewhere ("+str(self)+")")
+            src.logger.debugMessages.append("this should not happen, character died without beeing somewhere ("+str(self)+")")
 
         self.macroState["commandKeyQueue"] = []
 
@@ -790,11 +792,11 @@ class Character(src.saveing.Saveable):
     def walkPath(self):
         # smooth over impossible state
         if self.dead:
-            debugMessages.append("dead men walking")
+            src.logger.debugMessages.append("dead men walking")
             return
         if not self.path:
             self.setPathToQuest(self.quests[0])
-            debugMessages.append("walking without path")
+            src.logger.debugMessages.append("walking without path")
 
         # move along the predetermined path
         currentPosition = (self.xPosition,self.yPosition)
@@ -824,7 +826,7 @@ class Character(src.saveing.Saveable):
                     self.yPosition = nextPosition[1]
                     self.changed()
                 else:
-                    debugMessages.append("character moved on non continious path")
+                    src.logger.debugMessages.append("character moved on non continious path")
         # try to move within a terrain
         else:
             # check if a room was entered
@@ -987,7 +989,7 @@ class Character(src.saveing.Saveable):
         # smooth over impossible state
         while self.events and gamestate.tick > self.events[0].tick:
             event = self.events[0]
-            debugMessages.append("something went wrong and event"+str(event)+"was skipped")
+            src.logger.debugMessages.append("something went wrong and event"+str(event)+"was skipped")
             self.events.remove(event)
 
         # handle events
@@ -995,7 +997,7 @@ class Character(src.saveing.Saveable):
             event = self.events[0]
             event.handleEvent()
             if not event in self.events:
-                debugMessages.append("impossible state with events")
+                src.logger.debugMessages.append("impossible state with events")
                 continue
             self.events.remove(event)
 

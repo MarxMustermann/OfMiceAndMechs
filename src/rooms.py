@@ -13,12 +13,12 @@ import src.quests
 import src.saveing
 import src.events
 import src.canvas
+import src.logger
 
 # bad code: global state
 Character = None
 mainChar = None
 messages = None
-debugMessages = None
 calculatePath = None
 
 '''
@@ -565,14 +565,14 @@ class Room(src.saveing.Saveable):
                 try:
                     chars[item.yPosition][item.xPosition] = item.render()
                 except:
-                    debugMessages.append("room drawing failed")
+                    src.logger.debugMessages.append("room drawing failed")
 
             # draw characters
             for character in self.characters:
                 if character.yPosition < len(chars) and character.xPosition < len(chars[character.yPosition]):
                     chars[character.yPosition][character.xPosition] = character.display
                 else:
-                    debugMessages.append("chracter is rendered outside of room")
+                    src.logger.debugMessages.append("chracter is rendered outside of room")
 
             # draw quest markers
             # bad code: should be an overlay
@@ -629,7 +629,7 @@ class Room(src.saveing.Saveable):
                 if mainChar.yPosition < len(chars) and mainChar.xPosition < len(chars[mainChar.yPosition]):
                     chars[mainChar.yPosition][mainChar.xPosition] = mainChar.display
                 else:
-                    debugMessages.append("chracter is rendered outside of room")
+                    src.logger.debugMessages.append("chracter is rendered outside of room")
 
         # show dummy of the room
         else:
@@ -805,7 +805,7 @@ class Room(src.saveing.Saveable):
             elif direction == "east":
                 newPosition[0] += 1
             else:
-                debugMessages.append("invalid movement direction")
+                src.logger.debugMessages.append("invalid movement direction")
             return self.moveCharacter(character,tuple(newPosition))
         
         # move onto terrain
@@ -824,7 +824,7 @@ class Room(src.saveing.Saveable):
         elif direction == "east":
             newXPos += 1
         else:
-            debugMessages.append("invalid movement direction")
+            src.logger.debugMessages.append("invalid movement direction")
 
         newPosition = (newXPos,newYPos,0)
 
@@ -911,7 +911,7 @@ class Room(src.saveing.Saveable):
         # log events that were not handled properly
         while self.events and self.timeIndex >  self.events[0].tick:
             event = self.events[0]
-            debugMessages.append("something went wrong and event"+str(event)+"was skipped")
+            src.logger.debugMessages.append("something went wrong and event"+str(event)+"was skipped")
             self.events.remove(event)
 
         # handle events
@@ -2175,7 +2175,7 @@ XXXXXXXXXX
     def calculatePath(self,x,y,dstX,dstY,walkingPath):
         # handle impossible state
         if dstY == None or dstX == None:
-            debugMessages.append("pathfinding without target")
+            src.logger.debugMessages.append("pathfinding without target")
             return []
 
         path = []
@@ -2344,7 +2344,8 @@ XXXXXXXX
 
         # cancel cinematics
         # bad code: should happen in a more structured way
-        cinematics.cinematicQueue = []
+        import src.cinematics
+        src.cinematics.cinematicQueue = []
 
         # give floor permit
         character.hasFloorPermit = True

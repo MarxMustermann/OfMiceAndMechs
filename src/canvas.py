@@ -5,6 +5,8 @@
 #
 ##########################################################################
 
+import src.logger
+                        
 # import basic libs
 # bad code: should not be imported when using tile based display only
 urwid = None
@@ -271,7 +273,7 @@ class Canvas(object):
                 # render the character via the abstraction layer
                 if isinstance(char, int):
                     if self.displayChars.indexedMapping[char] == None:
-                        debugMessages.append("failed rendering "+str(char)+" "+str(self.displayChars.indexedMapping[char-10])+" "+str(self.displayChars.indexedMapping[char+10]))
+                        src.logger.debugMessages.append("failed rendering "+str(char)+" "+str(self.displayChars.indexedMapping[char-10])+" "+str(self.displayChars.indexedMapping[char+10]))
                     else:
                         out.append(self.displayChars.indexedMapping[char])
                 # render the character directly

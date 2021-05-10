@@ -28,6 +28,9 @@ import src.gamestate as gamestate
 import src.events as events
 import src.chats as chats
 import src.saveing as saveing
+import src.canvas as canvas
+import src.logger as logger
+
 
 # import configs
 import config.commandChars as commandChars
@@ -106,8 +109,6 @@ if not shouldLoad:
         args.terrain = "nothingness"
         args.phase = "Dungeon"
 
-import src.canvas as canvas
-
 # set rendering mode
 if not args.nourwid:
     if args.unicode:
@@ -116,6 +117,8 @@ if not args.nourwid:
         displayChars = canvas.DisplayMapping("pureASCII")
 else:
     displayChars = canvas.TileMapping("testTiles")
+
+# bad code: common variables with modules
 canvas.displayChars = displayChars
 
 if args.speed:
@@ -214,24 +217,7 @@ else:
     gameMath.debug = False
 
 # bad code: common variables with modules
-items.debugMessages = debugMessages
-quests.debugMessages = debugMessages
-rooms.debugMessages = debugMessages
-characters.debugMessages = debugMessages
-terrains.debugMessages = debugMessages
-cinematics.debugMessages = debugMessages
-story.debugMessages = debugMessages
-interaction.debugMessages = debugMessages
-events.debugMessages = debugMessages
-canvas.debugMessages = debugMessages
-gamestate.debugMessages = debugMessages
-
-# bad code: common variables with modules
-story.cinematics = cinematics
-interaction.cinematics = cinematics
-events.cinematics = cinematics
-rooms.cinematics = cinematics
-gamestate.cinematics = cinematics
+logger.debugMessages = debugMessages
 
 if shouldLoad:
     try:

@@ -8,6 +8,7 @@
 import src.saveing
 import src.rooms
 import src.canvas
+import src.cinematics
 
 phasesByName = None
 gamestate = None
@@ -23,32 +24,32 @@ events = None
 helper to add message cinematic
 '''
 def showMessage(message,trigger=None):
-    cinematic = cinematics.ShowMessageCinematic(message)
-    cinematics.cinematicQueue.append(cinematic)
+    cinematic = src.cinematics.ShowMessageCinematic(message)
+    src.cinematics.cinematicQueue.append(cinematic)
     cinematic.endTrigger = trigger
 
 '''
 helper to add show game cinematic
 '''
 def showGame(duration,trigger=None):
-    cinematic = cinematics.ShowGameCinematic(duration,tickSpan=1)
-    cinematics.cinematicQueue.append(cinematic)
+    cinematic = src.cinematics.ShowGameCinematic(duration,tickSpan=1)
+    src.cinematics.cinematicQueue.append(cinematic)
     cinematic.endTrigger = trigger
 
 '''
 helper to add show quest cinematic
 '''
 def showQuest(quest,assignTo=None,trigger=None,container=None):
-    cinematic = cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=assignTo,container=container)
-    cinematics.cinematicQueue.append(cinematic)
+    cinematic = src.cinematics.ShowQuestExecution(quest,tickSpan=1,assignTo=assignTo,container=container)
+    src.cinematics.cinematicQueue.append(cinematic)
     cinematic.endTrigger = trigger
 
 '''
 helper to add text cinematic
 '''
 def showText(text,rusty=False,autocontinue=False,trigger=None,scrolling=False):
-    cinematic = cinematics.TextCinematic(text,rusty=rusty,autocontinue=autocontinue,scrolling=scrolling)
-    cinematics.cinematicQueue.append(cinematic)
+    cinematic = src.cinematics.TextCinematic(text,rusty=rusty,autocontinue=autocontinue,scrolling=scrolling)
+    src.cinematics.cinematicQueue.append(cinematic)
     cinematic.endTrigger = trigger
 
 '''
@@ -286,7 +287,7 @@ class OpenWorld(BasicPhase):
     bad code: superclass call should not be prevented
     '''
     def start(self,seed=0):
-        cinematics.showCinematic("staring open world Scenario.")
+        src.cinematics.showCinematic("staring open world Scenario.")
 
         # place character in wakeup room
         if terrain.wakeUpRoom:
@@ -374,7 +375,7 @@ class Dungeon(BasicPhase):
     bad code: superclass call should not be prevented
     '''
     def start(self,seed=0):
-        cinematics.showCinematic("staring open world Scenario.")
+        src.cinematics.showCinematic("staring open world Scenario.")
 
         mainChar.xPosition = 65
         mainChar.yPosition = 111
@@ -510,10 +511,10 @@ class BrainTestingPhase(BasicPhase):
                      ("nok","Susanne Kreismann")
                   ]
         text = "\nplease answer the question:\n\nwhat is your name?"
-        cinematic = cinematics.SelectionCinematic(text,options,default="ok")
+        cinematic = src.cinematics.SelectionCinematic(text,options,default="ok")
         cinematic.followUps = {"ok":{"container":self,"method":"askSecondQuestion"},"nok":{"container":self,"method":"infoFail"}}
         self.cinematic = cinematic
-        cinematics.cinematicQueue.append(cinematic)
+        src.cinematics.cinematicQueue.append(cinematic)
         gamestate.save()
 
     '''
@@ -534,10 +535,10 @@ class BrainTestingPhase(BasicPhase):
                     ("nok","A Hutch is used to transfer fluids"),
                   ]
         text = "\nplease select the true statement:\n\n"
-        cinematic = cinematics.SelectionCinematic(text,options)
+        cinematic = src.cinematics.SelectionCinematic(text,options)
         cinematic.followUps = {"ok":{"container":self,"method":"askThirdQuestion"},"nok":{"container":self,"method":"infoFail"}}
         self.cinematic = cinematic
-        cinematics.cinematicQueue.append(cinematic)
+        src.cinematics.cinematicQueue.append(cinematic)
 
     '''
     ask question and place trigger
@@ -549,10 +550,10 @@ class BrainTestingPhase(BasicPhase):
                      ("nok","*deny answer*"),
                   ]
         text = "\nplease repeat the definition of rust\n\n"
-        cinematic = cinematics.SelectionCinematic(text,options)
+        cinematic = src.cinematics.SelectionCinematic(text,options)
         cinematic.followUps = {"ok":{"container":self,"method":"flashInformation"},"nok":{"container":self,"method":"infoFail"}}
         self.cinematic = cinematic
-        cinematics.cinematicQueue.append(cinematic)
+        src.cinematics.cinematicQueue.append(cinematic)
 
     '''
     show fluff info with effect and place trigger
@@ -607,8 +608,8 @@ class BrainTestingPhase(BasicPhase):
 
 """] ,autocontinue=True,scrolling=True)
 
-        cinematic = cinematics.InformationTransfer(definitions)
-        cinematics.cinematicQueue.append(cinematic)
+        cinematic = src.cinematics.InformationTransfer(definitions)
+        src.cinematics.cinematicQueue.append(cinematic)
         
         # show fluff (write copy to messages to have this show up during zoom)
         messages.append("initializing metabolism ..................................... done")
@@ -624,9 +625,9 @@ class BrainTestingPhase(BasicPhase):
      transfer control to implant"""],autocontinue=True,scrolling=True)
 
         # zooom out and end phase
-        cinematic = cinematics.MessageZoomCinematic()
+        cinematic = src.cinematics.MessageZoomCinematic()
         cinematic.endTrigger = {"container":self,"method":"end"}
-        cinematics.cinematicQueue.append(cinematic)
+        src.cinematics.cinematicQueue.append(cinematic)
 
     '''
     call next phase
@@ -710,10 +711,10 @@ class WakeUpPhase(BasicPhase):
         showGame(2)
         showMessage("implant has taken control")
         showMessage("please press %s"%commandChars.wait)
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=None))
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowGameCinematic(1,tickSpan=None))
         showMessage("""you will be represented by the """+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.main_char]+" Character,  "+self.npc.name+" is represented by the "+src.canvas.displayChars.indexedMapping[self.npc.display]+""" Character.""")
         showMessage("please press %s"%commandChars.wait)
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=None))
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowGameCinematic(1,tickSpan=None))
         showMessage("please prepare to be ejected")
         showGame(2)
         showMessage("note that you will be unable to move until implant imprinting")
@@ -994,9 +995,9 @@ class BasicMovementTraining(BasicPhase):
         say(msg,firstOfficer)
         text = "I see you are in working order. Do you have any injuries?"
         options = [("no","No"),("yes","Yes")]
-        cinematic = cinematics.SelectionCinematic(text,options)
+        cinematic = src.cinematics.SelectionCinematic(text,options)
         cinematic.followUps = {"no":{"container":self,"method":"notinjured"},"yes":{"container":self,"method":"injured2Question"}}
-        cinematics.cinematicQueue.append(cinematic)
+        src.cinematics.cinematicQueue.append(cinematic)
 
     def injured2Question(self):
         # alias attributes
@@ -1004,9 +1005,9 @@ class BasicMovementTraining(BasicPhase):
 
         text = "I will issue a complaint to have the growth tank fixed.\n\nDo you think you will be able to work?"
         options = [("yes","Yes"),("no","No")]
-        cinematic = cinematics.SelectionCinematic(text,options)
+        cinematic = src.cinematics.SelectionCinematic(text,options)
         cinematic.followUps = {"yes":{"container":self,"method":"notinjured"},"no":{"container":self,"method":"injuredToVat"}}
-        cinematics.cinematicQueue.append(cinematic)
+        src.cinematics.cinematicQueue.append(cinematic)
 
     def injuredToVat(self):
         firstOfficer = terrain.wakeUpRoom.firstOfficer
@@ -1285,10 +1286,10 @@ class BoilerRoomWelcome(BasicPhase):
     def doBasicSchooling(self):
         if not mainChar.gotBasicSchooling:
             # show greeting one time
-            cinematics.showCinematic("welcome to the boiler room\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
-            cinematic = cinematics.ShowGameCinematic(1)
+            src.cinematics.showCinematic("welcome to the boiler room\n\nplease, try to learn fast.\n\nParticipants with low Evaluationscores will be given suitable Assignments in the Vats")
+            cinematic = src.cinematics.ShowGameCinematic(1)
             cinematic.endTrigger = self.wrapUpBasicSchooling
-            cinematics.cinematicQueue.append(cinematic)
+            src.cinematics.cinematicQueue.append(cinematic)
         else:
             # start next step
             self.doSteamengineExplaination()
@@ -1305,15 +1306,15 @@ class BoilerRoomWelcome(BasicPhase):
     '''
     def doSteamengineExplaination(self):
         # explain how the room works
-        cinematics.showCinematic("on the southern Side of the Room you see the Steamgenerators. A Steamgenerator might look like this:\n\n"+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.void][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_inactive][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+"\n"+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_inactive][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+"\n"+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.void][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_active][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_active][1]+"\n\nit consist of Furnaces marked by "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+" or "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_active][1]+" that heat the Water in the Boilers "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_inactive][1]+" till it boils. a Boiler with boiling Water will be shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_active][1]+".\n\nthe Steam is transfered to the Pipes marked with "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+" and used to power the Ships Mechanics and Weapons\n\nDesign of Generators are often quite unique. try to recognize the Genrators in this Room and press "+commandChars.wait+"")
+        src.cinematics.showCinematic("on the southern Side of the Room you see the Steamgenerators. A Steamgenerator might look like this:\n\n"+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.void][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_inactive][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+"\n"+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_inactive][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+"\n"+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.void][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_active][1]+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_active][1]+"\n\nit consist of Furnaces marked by "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+" or "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_active][1]+" that heat the Water in the Boilers "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_inactive][1]+" till it boils. a Boiler with boiling Water will be shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_active][1]+".\n\nthe Steam is transfered to the Pipes marked with "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+" and used to power the Ships Mechanics and Weapons\n\nDesign of Generators are often quite unique. try to recognize the Genrators in this Room and press "+commandChars.wait+"")
 
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-        cinematics.showCinematic("the Furnaces burn Coal shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.coal][1]+" . if a Furnace is burning Coal, it is shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_active][1]+" and shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+" if not.\n\nthe Coal is stored in Piles shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pile][1]+". the Coalpiles are on the right Side of the Room and are filled through the Pipes when needed.")
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowGameCinematic(1))
+        src.cinematics.showCinematic("the Furnaces burn Coal shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.coal][1]+" . if a Furnace is burning Coal, it is shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_active][1]+" and shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+" if not.\n\nthe Coal is stored in Piles shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pile][1]+". the Coalpiles are on the right Side of the Room and are filled through the Pipes when needed.")
             
         # start next step
-        cinematic = cinematics.ShowGameCinematic(0) # bad code: this cinamatic is a hack
+        cinematic = src.cinematics.ShowGameCinematic(0) # bad code: this cinamatic is a hack
         cinematic.endTrigger = self.wrapUpSteamengineExplaination
-        cinematics.cinematicQueue.append(cinematic)
+        src.cinematics.cinematicQueue.append(cinematic)
         gamestate.save()
 
     '''
@@ -1335,7 +1336,7 @@ class BoilerRoomWelcome(BasicPhase):
     def doCoalDelivery(self):
 
         # show fluff
-        cinematics.showCinematic("Since a Coaldelivery is incoming anyway. please wait and pay Attention.\n\ni will count down the Ticks in the Messagebox now")
+        src.cinematics.showCinematic("Since a Coaldelivery is incoming anyway. please wait and pay Attention.\n\ni will count down the Ticks in the Messagebox now")
             
         '''
         the event for faking a coal delivery
@@ -1368,31 +1369,31 @@ class BoilerRoomWelcome(BasicPhase):
         self.mainCharRoom.addEvent(CoalRefillEvent(gamestate.tick+11,))
 
         # count down to the coal delivery
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("8"))
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("7"))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("by the Way: the Piles on the lower End of the Room are Storage for Replacementparts and you can sleep in the Hutches n the middle of the Room shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.hutch_free][1]+" or "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.hutch_occupied][1]))
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("6"))
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("5"))
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("4"))
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("3"))
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("2"))
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1,tickSpan=1))
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("1"))
-        cinematic = cinematics.ShowGameCinematic(1,tickSpan=1)
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowGameCinematic(1,tickSpan=1))
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowMessageCinematic("8"))
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowGameCinematic(1,tickSpan=1))
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowMessageCinematic("7"))
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowMessageCinematic("by the Way: the Piles on the lower End of the Room are Storage for Replacementparts and you can sleep in the Hutches n the middle of the Room shown as "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.hutch_free][1]+" or "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.hutch_occupied][1]))
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowGameCinematic(1,tickSpan=1))
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowMessageCinematic("6"))
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowGameCinematic(1,tickSpan=1))
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowMessageCinematic("5"))
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowGameCinematic(1,tickSpan=1))
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowMessageCinematic("4"))
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowGameCinematic(1,tickSpan=1))
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowMessageCinematic("3"))
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowGameCinematic(1,tickSpan=1))
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowMessageCinematic("2"))
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowGameCinematic(1,tickSpan=1))
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowMessageCinematic("1"))
+        cinematic = src.cinematics.ShowGameCinematic(1,tickSpan=1)
 
         cinematic.endTrigger = self.advance
-        cinematics.cinematicQueue.append(cinematic)
-        cinematics.cinematicQueue.append(cinematics.ShowMessageCinematic("Coaldelivery now"))
-        cinematic = cinematics.ShowGameCinematic(2)
+        src.cinematics.cinematicQueue.append(cinematic)
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowMessageCinematic("Coaldelivery now"))
+        cinematic = src.cinematics.ShowGameCinematic(2)
         cinematic.endTrigger = self.wrapUpCoalDelivery
-        cinematics.cinematicQueue.append(cinematic)
+        src.cinematics.cinematicQueue.append(cinematic)
 
     '''
     start next step
@@ -1406,9 +1407,9 @@ class BoilerRoomWelcome(BasicPhase):
     '''
     def doFurnaceFirering(self):
         # show fluff
-        cinematics.showCinematic("your cohabitants in this Room are:\n '"+self.mainCharRoom.firstOfficer.name+"' ("+src.canvas.displayChars.indexedMapping[self.mainCharRoom.firstOfficer.display][1]+") is this Rooms 'Raumleiter' and therefore responsible for proper Steamgeneration in this Room\n '"+self.mainCharRoom.secondOfficer.name+"' ("+src.canvas.displayChars.indexedMapping[self.mainCharRoom.secondOfficer.display][1]+") was dispatched to support '"+self.mainCharRoom.firstOfficer.name+"' and is his Subordinate\n\nyou will likely report to '"+self.mainCharRoom.firstOfficer.name+"' later. please try to find them on the display and press "+commandChars.wait)
-        cinematics.cinematicQueue.append(cinematics.ShowGameCinematic(1))
-        cinematics.showCinematic(self.mainCharRoom.secondOfficer.name+" will demonstrate how to fire a furnace now.\n\nwatch and learn.")
+        src.cinematics.showCinematic("your cohabitants in this Room are:\n '"+self.mainCharRoom.firstOfficer.name+"' ("+src.canvas.displayChars.indexedMapping[self.mainCharRoom.firstOfficer.display][1]+") is this Rooms 'Raumleiter' and therefore responsible for proper Steamgeneration in this Room\n '"+self.mainCharRoom.secondOfficer.name+"' ("+src.canvas.displayChars.indexedMapping[self.mainCharRoom.secondOfficer.display][1]+") was dispatched to support '"+self.mainCharRoom.firstOfficer.name+"' and is his Subordinate\n\nyou will likely report to '"+self.mainCharRoom.firstOfficer.name+"' later. please try to find them on the display and press "+commandChars.wait)
+        src.cinematics.cinematicQueue.append(src.cinematics.ShowGameCinematic(1))
+        src.cinematics.showCinematic(self.mainCharRoom.secondOfficer.name+" will demonstrate how to fire a furnace now.\n\nwatch and learn.")
 
         '''
         add the quests for firering a furnace
@@ -1449,10 +1450,10 @@ class BoilerRoomWelcome(BasicPhase):
         # set up the events
         self.mainCharRoom.addEvent(ShowMessageEvent(gamestate.tick+1))
         self.mainCharRoom.addEvent(AddQuestEvent(gamestate.tick+2))
-        cinematic = cinematics.ShowGameCinematic(22,tickSpan=1) #bad code: should be showQuest to prevent having a fixed timing
+        cinematic = src.cinematics.ShowGameCinematic(22,tickSpan=1) #bad code: should be showQuest to prevent having a fixed timing
 
         cinematic.endTrigger = self.wrapUpFurnaceFirering
-        cinematics.cinematicQueue.append(cinematic)
+        src.cinematics.cinematicQueue.append(cinematic)
 
     '''
     show some info and start next phase
@@ -1460,7 +1461,7 @@ class BoilerRoomWelcome(BasicPhase):
     def doWrapUp(self):
 
         # show some information
-        cinematics.showCinematic("there are other Items in the Room that may or may not be important for you. Here is the full List for you to review:\n\n Bin ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.binStorage][1]+"): Used for storing Things intended to be transported further\n Pile ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pile][1]+"): a Pile of Things\n Door ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.door_opened][1]+" or "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.door_closed][1]+"): you can move through it when open\n Lever ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.lever_notPulled][1]+" or "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.lever_pulled][1]+"): a simple Man-Machineinterface\n Furnace ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+"): used to generate heat burning Things\n Display ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.display][1]+"): a complicated Machine-Maninterface\n Wall ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall][1]+"): ensures the structural Integrity of basically any Structure\n Pipe ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+"): transports Liquids, Pseudoliquids and Gasses\n Coal ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.coal][1]+"): a piece of Coal, quite usefull actually\n Boiler ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_inactive][1]+" or "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_active][1]+"): generates Steam using Water and and Heat\n Chains ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.chains][1]+"): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing\n Comlink ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.commLink][1]+"): a Pipe based Voicetransportationsystem that allows Communication with other Rooms\n Hutch ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.hutch_free][1]+"): a comfy and safe Place to sleep and eat")
+        src.cinematics.showCinematic("there are other Items in the Room that may or may not be important for you. Here is the full List for you to review:\n\n Bin ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.binStorage][1]+"): Used for storing Things intended to be transported further\n Pile ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pile][1]+"): a Pile of Things\n Door ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.door_opened][1]+" or "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.door_closed][1]+"): you can move through it when open\n Lever ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.lever_notPulled][1]+" or "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.lever_pulled][1]+"): a simple Man-Machineinterface\n Furnace ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive][1]+"): used to generate heat burning Things\n Display ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.display][1]+"): a complicated Machine-Maninterface\n Wall ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall][1]+"): ensures the structural Integrity of basically any Structure\n Pipe ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pipe][1]+"): transports Liquids, Pseudoliquids and Gasses\n Coal ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.coal][1]+"): a piece of Coal, quite usefull actually\n Boiler ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_inactive][1]+" or "+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.boiler_active][1]+"): generates Steam using Water and and Heat\n Chains ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.chains][1]+"): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing\n Comlink ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.commLink][1]+"): a Pipe based Voicetransportationsystem that allows Communication with other Rooms\n Hutch ("+src.canvas.displayChars.indexedMapping[src.canvas.displayChars.hutch_free][1]+"): a comfy and safe Place to sleep and eat")
 
         '''
         event for starting the next phase
@@ -1489,7 +1490,7 @@ class BoilerRoomWelcome(BasicPhase):
     start next phase
     '''
     def end(self):
-        cinematics.showCinematic("please try to remember the Information. The lesson will now continue with Movement.")
+        src.cinematics.showCinematic("please try to remember the Information. The lesson will now continue with Movement.")
         phase2 = BoilerRoomInteractionTraining()
         phase2.start(self.seed)
 
@@ -1570,7 +1571,7 @@ class BoilerRoomInteractionTraining(BasicPhase):
     start next phase
     '''
     def end(self):
-        cinematics.showCinematic("you recieved your Preparatorytraining. Time for the Test.")
+        src.cinematics.showCinematic("you recieved your Preparatorytraining. Time for the Test.")
         phase = FurnaceCompetition()
         phase.start(seed=self.seed)
 
@@ -1592,7 +1593,7 @@ class FurnaceCompetition(BasicPhase):
 
         super().start(seed=seed)
 
-        cinematics.showCinematic("during the Test Messages and new Task will be shown on the Buttom of the Screen. start now.")
+        src.cinematics.showCinematic("during the Test Messages and new Task will be shown on the Buttom of the Screen. start now.")
 
         # track competition results
         self.mainCharFurnaceIndex = 0
@@ -1605,7 +1606,7 @@ class FurnaceCompetition(BasicPhase):
         def endMainChar():
             # stop current quests
             # bad code: deactivating all quests is too much
-            cinematics.showCinematic("stop.")
+            src.cinematics.showCinematic("stop.")
             for quest in mainChar.quests:
                 quest.deactivate()
             mainChar.quests = []
@@ -1678,7 +1679,7 @@ class FurnaceCompetition(BasicPhase):
                         self.mainCharRoom.addEvent(WaitForClearStartNpc(gamestate.tick+2,0,creator=self))
                     else:
                         # make the npc start
-                        cinematics.showCinematic("Liebweg start now.")
+                        src.cinematics.showCinematic("Liebweg start now.")
                         self.mainCharRoom.secondOfficer.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[0]),active=True)
                         self.mainCharRoom.addEvent(AnotherOneNpc(gamestate.tick+10,0,creator=self))
 
@@ -1742,7 +1743,7 @@ class FurnaceCompetition(BasicPhase):
 
                 # make the player start
                 else:
-                    cinematics.showCinematic("start now.")
+                    src.cinematics.showCinematic("start now.")
                     mainChar.assignQuest(quests.FireFurnaceMeta(self.mainCharRoom.furnaces[0]))
                     self.mainCharRoom.addEvent(AnotherOne(gamestate.tick+10,0))
 
@@ -1750,7 +1751,7 @@ class FurnaceCompetition(BasicPhase):
         kickstart the players part of the competition
         '''
         def startCompetitionPlayer():
-            cinematics.showCinematic("wait for the furnaces to burn out.")
+            src.cinematics.showCinematic("wait for the furnaces to burn out.")
             self.mainCharRoom.addEvent(WaitForClearStart(gamestate.tick+2,0))
 
         startCompetitionPlayer()
@@ -1773,13 +1774,13 @@ class FurnaceCompetition(BasicPhase):
 
         # start appropriate phase
         if self.npcFurnaceIndex >= self.mainCharFurnaceIndex:
-            cinematics.showCinematic("considering your Score until now moving you directly to your proper assignment is the most efficent Way for you to proceed.")
+            src.cinematics.showCinematic("considering your Score until now moving you directly to your proper assignment is the most efficent Way for you to proceed.")
             nextPhase = VatPhase()
         elif self.mainCharFurnaceIndex == 7:
-            cinematics.showCinematic("you passed the Test. in fact you passed the Test with a perfect Score. you will be valuable")
+            src.cinematics.showCinematic("you passed the Test. in fact you passed the Test with a perfect Score. you will be valuable")
             nextPhase = LabPhase()
         else:
-            cinematics.showCinematic("you passed the Test. \n\nyour Score: "+str(self.mainCharFurnaceIndex)+"\nLiebwegs Score: "+str(self.npcFurnaceIndex))
+            src.cinematics.showCinematic("you passed the Test. \n\nyour Score: "+str(self.mainCharFurnaceIndex)+"\nLiebwegs Score: "+str(self.npcFurnaceIndex))
             nextPhase = MachineRoomPhase()
         nextPhase.start(self.seed)
 
@@ -1819,10 +1820,10 @@ class FindWork(BasicPhase):
         # create selection
         options = [("yes","Yes"),("no","No")]
         text = "you look like a fresh one. Were you sent to report for duty?"
-        cinematic = cinematics.SelectionCinematic(text,options)
+        cinematic = src.cinematics.SelectionCinematic(text,options)
         cinematic.followUps = {"yes":{"container":self,"method":"getIntroInstant"},"no":{"container":self,"method":"tmpFail"}}
         self.cinematic = cinematic
-        cinematics.cinematicQueue.append(cinematic)
+        src.cinematics.cinematicQueue.append(cinematic)
         gamestate.save()
 
     '''
@@ -1841,9 +1842,9 @@ class FindWork(BasicPhase):
                      ("yes","yes"),
                      ("no","no"),
                   ]
-        cinematic = cinematics.SelectionCinematic("Do you understand these instructions?",options)
+        cinematic = src.cinematics.SelectionCinematic("Do you understand these instructions?",options)
         cinematic.followUps = {"yes":{"container":self,"method":"skipInto"},"no":{"container":self,"method":"getIntro"}}
-        cinematics.cinematicQueue.append(cinematic)
+        src.cinematics.cinematicQueue.append(cinematic)
 
     def skipInto(self):
         showText("Remeber to report back, your worth will be counted in a mtick.",trigger={"container":self,"method":"end"})
@@ -2215,7 +2216,7 @@ class LabPhase(BasicPhase):
     move on to next phase
     '''
     def end(self):
-        cinematics.showCinematic("we are done with the tests. return to work")
+        src.cinematics.showCinematic("we are done with the tests. return to work")
         BoilerRoomInteractionTraining().start(self.seed)
 
 '''
@@ -2272,7 +2273,7 @@ class VatPhase(BasicPhase):
     move on to next phase
     '''
     def end(self):
-        cinematics.showCinematic("you seem to be able to follow orders after all. you may go back to your training.")
+        src.cinematics.showCinematic("you seem to be able to follow orders after all. you may go back to your training.")
         BoilerRoomInteractionTraining().start(seed=self.seed)
 
 '''
@@ -3270,7 +3271,7 @@ class DesertSurvival(BasicPhase):
     def start(self,seed=0):
         import random
 
-        cinematics.showCinematic("staring desert survival Scenario.")
+        src.cinematics.showCinematic("staring desert survival Scenario.")
 
         terrain.heatmap[3][7] = 1
         terrain.heatmap[4][7] = 1
@@ -3402,7 +3403,7 @@ class FactoryDream(BasicPhase):
     def start(self,seed=0):
         import random
 
-        cinematics.showCinematic("just look at my pretty factory")
+        src.cinematics.showCinematic("just look at my pretty factory")
 
         mainChar.terrain = terrain
         terrain.addCharacter(mainChar,7*15+7,7*15+7)

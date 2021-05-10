@@ -14,6 +14,7 @@ import src.overlays
 import src.gameMath
 import src.saveing
 import src.canvas
+import src.logger
 
 # bad code: global varaibles
 mainChar = None
@@ -1033,7 +1034,7 @@ class Terrain(src.saveing.Saveable):
                 break
 
         if not found:
-            debugMessages.append("did not find end in watershedCoordinates")
+            src.logger.debugMessages.append("did not find end in watershedCoordinates")
             return
         endPair = self.watershedCoordinates[end][0]
 
@@ -1050,7 +1051,7 @@ class Terrain(src.saveing.Saveable):
         # find path to any point an a path leading to the end node
         exitPoint = self.mark([end])
         if not exitPoint:
-            debugMessages.append("did not find exit point")
+            src.logger.debugMessages.append("did not find exit point")
             return
 
         # get path from end position to end node
@@ -1497,7 +1498,7 @@ class Terrain(src.saveing.Saveable):
                     if (room.yPosition*15+room.offsetY < roomCandidate.yPosition*15+roomCandidate.offsetY+roomCandidate.sizeY) and (room.yPosition*15+room.offsetY+room.sizeY > roomCandidate.yPosition*15+roomCandidate.offsetY):
                         roomCollisions.add(roomCandidate)
             else:
-                debugMessages.append("invalid movement direction: "+str(direction))
+                src.logger.debugMessages.append("invalid movement direction: "+str(direction))
 
         # get collisions from the pushed rooms recursively
         for roomCollision in roomCollisions:
@@ -1534,7 +1535,7 @@ class Terrain(src.saveing.Saveable):
                 if (room.xPosition*15+room.offsetX+room.sizeX,posY) in self.itemByCoordinates:
                     movementBlock.update(self.itemByCoordinates[(room.xPosition*15+room.offsetX+room.sizeX,posY)])
         else:
-            debugMessages.append("invalid movement direction: "+str(direction))
+            src.logger.debugMessages.append("invalid movement direction: "+str(direction))
 
     '''
     actually move a room trough the terrain

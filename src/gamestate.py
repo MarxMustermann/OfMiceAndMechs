@@ -13,6 +13,8 @@ import src.terrains
 import src.saveing
 import src.terrains
 import src.canvas
+import src.logger
+import src.cinematics
 import config
 
 '''
@@ -108,7 +110,7 @@ class GameState(src.saveing.Saveable):
         # handle missing savefile
         import os
         if not os.path.isfile("gamestate/gamestate.json"):
-            debugMessages.append("no gamestate found - NOT LOADING")
+            src.logger.debugMessages.append("no gamestate found - NOT LOADING")
             print("no gamestate found")
             return False
 
@@ -118,7 +120,7 @@ class GameState(src.saveing.Saveable):
 
             # handle special gamestates
             if rawstate in ["you lost","reset","Winning is no fun at all","\"Winning is no fun at all\""]:
-                debugMessages.append("special gamestate "+str(rawstate)+" found - NOT LOADING")
+                src.logger.debugMessages.append("special gamestate "+str(rawstate)+" found - NOT LOADING")
                 print("final gamestate found - resetting")
                 return False
 
@@ -193,8 +195,8 @@ class GameState(src.saveing.Saveable):
 
         # load cinematics
         for cinematicId in state["cinematics"]["ids"]:
-            cinematic = cinematics.getCinematicFromState(state["cinematics"]["states"][cinematicId])
-            cinematics.cinematicQueue.append(cinematic)
+            cinematic = src.cinematics.getCinematicFromState(state["cinematics"]["states"][cinematicId])
+            src.cinematics.cinematicQueue.append(cinematic)
 
         # load submenu
         if "submenu" in state:
@@ -241,7 +243,7 @@ class GameState(src.saveing.Saveable):
         cinematicStorage = {}
         cinematicStorage["ids"] = []
         cinematicStorage["states"] = {}
-        for cinematic in cinematics.cinematicQueue:
+        for cinematic in src.cinematics.cinematicQueue:
             if cinematic == self.openingCinematic:
                 continue
             if cinematic.aborted:

@@ -221,7 +221,7 @@ class GrowthTankRefillChat(Chat):
     Empty growthtanks look like this: """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.growthTank_unfilled],""" full ones look like this: """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.growthTank_filled],"""
     
 Activate these, while having a full bottle in your inventory, but leave the full ones alone"""]
-            messages.append("please refill your flask and use it to refill the growthtanks")
+            mainChar.addMessage("please refill your flask and use it to refill the growthtanks")
             src.interaction.submenue = None
             self.set_text(self.persistentText)
             # remove chat option
@@ -286,7 +286,7 @@ class TutorialSpeechTest(Chat):
         if self.firstRun:
             # show fluffed up information
             self.persistentText = "indeed. There are some things that need to be done.\n\nFirst exmaine the room a bit and find your way around, but try not activate anything important.\n\nYour implant will store the orders given. When you press q you will get a list of your current orders.\nTry to get familiar with the implant, it is an important tool for keeping things in order.\n\n"
-            messages.append("press q to see your questlist")
+            mainChar.addMessage("press q to see your questlist")
             src.interaction.submenue = None
             self.set_text(self.persistentText)
 
@@ -430,7 +430,7 @@ You can do so by pressing """+config.commandChars.autoAdvance+"""
 
 It is of limited practability though. It is mainly useful for stupid manual labor and often does not 
 do things the most efficent way. It will even try to handle conversion, wich does not allways lead to optimal results"""
-            messages.append("press "+config.commandChars.autoAdvance+" to let the implant take control ")
+            mainChar.addMessage("press "+config.commandChars.autoAdvance+" to let the implant take control ")
             self.set_text(self.persistentText)
             self.firstRun = False
 
@@ -1391,7 +1391,7 @@ class ChatMenu(Chat):
 
         # wake up character instead of speaking
         if self.partner.unconcious:
-            messages.append("wake up!")
+            mainChar.addMessage("wake up!")
             self.partner.wakeUp()
             return True
 

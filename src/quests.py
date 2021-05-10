@@ -1852,7 +1852,7 @@ class SurviveQuest(Quest):
         if self.character.satiation < 301:
             if not self.drinkQuest:
                 if self.character == mainChar:
-                    messages.append("you need to drink")
+                    self.addMessage("you need to drink")
                 self.drinkQuest = DrinkQuest(creator=self)
                 self.character.assignQuest(self.drinkQuest,active=True)
 

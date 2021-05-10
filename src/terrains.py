@@ -20,7 +20,6 @@ import src.events
 
 # bad code: global varaibles
 mainChar = None
-messages = None
 
 '''
 a abstracted coordinate.

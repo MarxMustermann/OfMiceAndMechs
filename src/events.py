@@ -12,9 +12,6 @@ import json
 import src.saveing
 import src.canvas
 
-#bad code: global state
-messages = None
-
 '''
 base class for events
 '''
@@ -230,7 +227,7 @@ class StopBoilingEvent(Event):
     '''
     def handleEvent(self):
         # add noises
-        messages.append("*unboil*")
+        mainChar.addMessage("*unboil*")
 
         # set own state
         self.boiler.display = src.canvas.displayChars.boiler_inactive
@@ -270,7 +267,7 @@ class StartBoilingEvent(Event):
     def handleEvent(self):
         # add noises
         # bad pattern: should only make noise for nearby things
-        messages.append("*boil*")
+        mainChar.addMessage("*boil*")
 
         # set own state
         self.boiler.display = src.canvas.displayChars.boiler_active

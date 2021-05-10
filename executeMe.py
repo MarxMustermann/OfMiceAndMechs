@@ -238,20 +238,6 @@ mainChar = gameStateObj.mainChar
 interaction.setFooter()
 
 # bad code: common variables with modules
-messages = []
-items.messages = messages
-quests.messages = messages
-rooms.messages = messages
-characters.messages = messages
-terrains.messages = messages
-cinematics.messages = messages
-story.messages = messages
-interaction.messages = messages
-events.messages = messages
-chats.messages = messages
-canvas.messages = messages
-
-# bad code: common variables with modules
 cinematics.interaction = interaction
 characters.interaction = interaction
 story.interaction = interaction

@@ -5,6 +5,7 @@
 ####################################################################################
 
 import config
+import src.logger
 
 def setup():
     import src.itemFolder.includeTest
@@ -50,7 +51,6 @@ import src.events
 import config
 
 # bad code: global state
-messages = None
 terrain = None
 urwid = None
 
@@ -2611,7 +2611,7 @@ class OjectDispenser(Item):
             new.yPosition = self.yPosition+1
             self.room.addItems([new])
         else:
-            messages.append("the object dispenser is empty")
+            src.logger.debugMessages.append("the object dispenser is empty")
 
     def getLongInfo(self):
         text = """
@@ -2739,7 +2739,7 @@ class ProductionArtwork(Item):
             
             # refuse production without resources
             if not metalBar:
-                messages.append("no metal bars available - place a metal bar to left/west")
+                self.character.addMessage("no metal bars available - place a metal bar to left/west")
                 return
 
             targetFull = False

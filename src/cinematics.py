@@ -19,7 +19,6 @@ urwid = None
 bad code: containers for global state
 """
 cinematicQueue = []
-messages = None
 advanceGame = None
 
 """
@@ -687,7 +686,7 @@ class ShowMessageCinematic(BasicCinematic):
             return False
 
         # add message
-        messages.append(self.message)
+        mainChar.addMessage(self.message)
         src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, '~')
         self.breakCinematic = True
         return True

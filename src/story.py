@@ -617,10 +617,10 @@ class BrainTestingPhase(BasicPhase):
         src.cinematics.cinematicQueue.append(cinematic)
         
         # show fluff (write copy to messages to have this show up during zoom)
-        messages.append("initializing metabolism ..................................... done")
-        messages.append("initializing motion control ................................. done")
-        messages.append("initializing sensory organs ................................. done")
-        messages.append("transfer control to implant")
+        mainChar.addMessage("initializing metabolism ..................................... done")
+        mainChar.addMessage("initializing motion control ................................. done")
+        mainChar.addMessage("initializing sensory organs ................................. done")
+        mainChar.addMessage("transfer control to implant")
 
         # show fluff
         showText(["""
@@ -1360,11 +1360,11 @@ class BoilerRoomWelcome(BasicPhase):
             '''
             def handleEvent(subself):
                 # show fluff
-                messages.append("*rumbling*")
-                messages.append("*rumbling*")
-                messages.append("*smoke and dust on Coalpiles and neighbourng Fields*")
-                messages.append("*a chunk of Coal drops onto the floor*")
-                messages.append("*smoke clears*")
+                mainChar.addMessage("*rumbling*")
+                mainChar.addMessage("*rumbling*")
+                mainChar.addMessage("*smoke and dust on Coalpiles and neighbourng Fields*")
+                mainChar.addMessage("*a chunk of Coal drops onto the floor*")
+                mainChar.addMessage("*smoke clears*")
 
                 # add delivered items (incuding mouse)
                 self.mainCharRoom.addItems([src.items.itemMap["Coal"](7,5)])
@@ -1450,7 +1450,7 @@ class BoilerRoomWelcome(BasicPhase):
             show the message
             '''
             def handleEvent(subself):
-                messages.append("*"+self.mainCharRoom.secondOfficer.name+", please fire the Furnace now*")
+                mainChar.addMessage("*"+self.mainCharRoom.secondOfficer.name+", please fire the Furnace now*")
 
         # set up the events
         self.mainCharRoom.addEvent(ShowMessageEvent(gamestate.tick+1))
@@ -1621,7 +1621,7 @@ class FurnaceCompetition(BasicPhase):
             mainChar.assignQuest(src.quests.MoveQuestMeta(self.mainCharRoom,3,3,startCinematics="please move back to the waiting position"))
 
             # let the npc prepare itself
-            messages.append("your turn Ludwig")
+            mainChar.addMessage("your turn Ludwig")
             questList = []
             questList.append(src.quests.FillPocketsQuest())
 
@@ -1767,8 +1767,8 @@ class FurnaceCompetition(BasicPhase):
     '''
     def end(self):
         # show score
-        messages.append("your Score: "+str(self.mainCharFurnaceIndex))
-        messages.append("Liebweg Score: "+str(self.npcFurnaceIndex))
+        mainChar.addMessage("your Score: "+str(self.mainCharFurnaceIndex))
+        mainChar.addMessage("Liebweg Score: "+str(self.npcFurnaceIndex))
 
         # disable npcs quest
         for quest in self.mainCharRoom.secondOfficer.quests:
@@ -1889,7 +1889,7 @@ class FindWork(BasicPhase):
 
     def completeSimpeReputationGathering(self):
         mainChar.inventory.append(src.items.itemMap["Token"](creator=self))
-        messages.append("you recieved 1 token for completing a trainings task")
+        mainChar.addMessage("you recieved 1 token for completing a trainings task")
         numTokens = 0
         for item in mainChar.inventory:
             if item.type == "Token":
@@ -1910,7 +1910,7 @@ class FindWork(BasicPhase):
                     skippedTokens += 1
                 removedTokens += 1
                 mainChar.inventory.remove(item)
-        messages.append("%i tokens were removed from you since you compled the first training")
+        mainChar.addMessage("%i tokens were removed from you since you compled the first training")
         mainChar.revokeReputation(fraction=3,reason="needing to be trained")
         mainChar.awardReputation(amount=2,reason="completing the first training")
 
@@ -1949,14 +1949,14 @@ class FindWork(BasicPhase):
         mainChar.assignQuest(quest,active=True)
 
     def completeSelectiveReputationGatheringUseless(self):
-        messages.append("you recieved no tokens for completing a task")
+        mainChar.addMessage("you recieved no tokens for completing a task")
         quest = src.quests.MoveQuestMeta(terrain.waitingRoom,6,4,creator=self)
         quest.endTrigger = {"container":self,"method":"getSelectiveReputationGatheringUseless"}
         mainChar.assignQuest(quest,active=True)
  
     def completeSelectiveReputationGatheringUsefull(self):
         mainChar.inventory.append(src.items.itemMap["Token"](creator=self))
-        messages.append("you recieved 1 token for completing a task")
+        mainChar.addMessage("you recieved 1 token for completing a task")
         numTokens = 0
         for item in mainChar.inventory:
             if item.type == "Token":
@@ -1971,7 +1971,7 @@ class FindWork(BasicPhase):
         for item in mainChar.inventory[:]:
             if item.type == "Token":
                 mainChar.inventory.remove(item)
-        messages.append("your tokens were removed from you since you compled the second training")
+        mainChar.addMessage("your tokens were removed from you since you compled the second training")
 
         mainChar.revokeReputation(fraction=3,reason="needing to be trained")
         mainChar.rewardReputation(amount=2,reason="completing the first training")
@@ -2036,7 +2036,7 @@ class FindWork(BasicPhase):
                 kill player failing to apear for performance evaluation
                 '''
                 def fail():
-                    messages.append("*alarm* non rensponsive personal detected. possible artisan. dispatch kill squads *alarm*")
+                    mainChar.addMessage("*alarm* non rensponsive personal detected. possible artisan. dispatch kill squads *alarm*")
 
                     # send out death squads
                     for room in terrain.militaryRooms:
@@ -2113,7 +2113,7 @@ class FindWork(BasicPhase):
                 if hopper in mainChar.subordinates:
                     if hopper.dead:
                         # punish player if subordinate is returned dead
-                        messages.append(hopper.name+" died. that is unfortunate")
+                        mainChar.addMessage(hopper.name+" died. that is unfortunate")
                         mainChar.revokeReputation(amount=100,reason="not returning a subordinate")
                     mainChar.subordinates.remove(hopper)
             self.addRoomConstruction()
@@ -2255,7 +2255,7 @@ class VatPhase(BasicPhase):
         kill characters not moving into the vat
         '''
         def fail():
-            messages.append("*alarm* refusal to honour vat assignemnt detected. likely artisan. Dispatch kill squads *alarm*")
+            mainChar.addMessage("*alarm* refusal to honour vat assignemnt detected. likely artisan. Dispatch kill squads *alarm*")
             for room in terrain.militaryRooms:
                 quest = src.quests.MurderQuest(mainChar)
                 mainChar.revokeReputation(amount=1000,reason="not starting vat duty")

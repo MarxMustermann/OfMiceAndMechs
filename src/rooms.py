@@ -20,7 +20,6 @@ import src.characters
 
 # bad code: global state
 mainChar = None
-messages = None
 
 '''
 the base class for all rooms
@@ -749,7 +748,7 @@ class Room(src.saveing.Saveable):
 
             # refuse to move 
             if totalResistance > force:
-                messages.append("*CLUNK*")
+                src.logger.debugMessages.append("*CLUNK*")
                 return
 
             # move affected items
@@ -759,7 +758,7 @@ class Room(src.saveing.Saveable):
         
         # actually move the room
         self.terrain.moveRoomDirection(direction,self)
-        messages.append("*RUMBLE*")
+        src.logger.debugMessages.append("*RUMBLE*")
 
     '''
     get the things that would be afftected by a room movement
@@ -1004,7 +1003,7 @@ XXXXXXXXXX
                 index = self.loop.index(self.desiredSteamGeneration)
                 index += 1
                 if index < len(self.loop):
-                    messages.append("*comlink*: changed orders. please generate "+str(self.loop[index])+" power")
+                    src.logger.debugMessages.append("*comlink*: changed orders. please generate "+str(self.loop[index])+" power")
                     self.desiredSteamGeneration = self.loop[index]
                 else:
                     self.desiredSteamGeneration = self.loop[0]
@@ -1043,7 +1042,7 @@ XXXXXXXXXX
             # acknowledge success
             else:
                 # bad pattern: tone is way too happy
-                messages.append("we did it! "+str(self.desiredSteamGeneration)+" instead of "+str(self.steamGeneration))
+                src.logger.debugMessages.append("we did it! "+str(self.desiredSteamGeneration)+" instead of "+str(self.steamGeneration))
 
 '''
 a room to waste cpu power. used for performance testing
@@ -1158,9 +1157,9 @@ XXXXXXXXXXX
 
                 # scold/punish the player
                 # bad code: assumes the player opened the door
-                messages.append(self.firstOfficer.name+"@"+self.secondOfficer.name+": close the door")
+                mainChar.addMessage(self.firstOfficer.name+"@"+self.secondOfficer.name+": close the door")
                 mainChar.revokeReputation(amount=5,reason="disturbing a military area")
-                messages.append(self.firstOfficer.name+": military area. Do not enter.")
+                mainChar.addMessage(self.firstOfficer.name+": military area. Do not enter.")
 
                 # make second officer close the door and return to start position
                 quest = src.quests.MoveQuestMeta(self,5,3,creator=self)
@@ -1184,7 +1183,7 @@ XXXXXXXXXXX
             self.secondOfficer.assignQuest(quest,active=True)
 
             # show fluff
-            messages.append(self.firstOfficer.name+"@"+self.secondOfficer.name+": perimeter breached. neutralize threat.")
+            character.addMessage(self.firstOfficer.name+"@"+self.secondOfficer.name+": perimeter breached. neutralize threat.")
 
             # punish player
             character.revokeReputation(amount=100,reason="breaching a military area")
@@ -1198,7 +1197,7 @@ XXXXXXXXXXX
                     return
 
                 # show fluff
-                messages.append(self.firstOfficer.name+"@"+self.secondOfficer.name+": stop persuit. return to position.")
+                character.addMessage(self.firstOfficer.name+"@"+self.secondOfficer.name+": stop persuit. return to position.")
 
                 # remove self from listeners
                 self.delListener(abort,"left room")
@@ -1237,7 +1236,7 @@ XXXXXXXXXXX
 
         # show fluff
         # bad code: produces an anouncment for each room
-        messages.append("O2 military please enforce floor permit")
+        character.addMessage("O2 military please enforce floor permit")
 
         # make second officer move back to position after kill
         quest = src.quests.MoveQuestMeta(self,5,3,creator=self)
@@ -2316,7 +2315,7 @@ XXXXXXXX
     def handleDoorOpening(self,character):
         # should be a guard
         if self.firstOfficer and not character.hasFloorPermit:
-            messages.append(self.firstOfficer.name+": moving through this door will be your death.")
+            character.addMessage(self.firstOfficer.name+": moving through this door will be your death.")
             character.revokeReputation(amount=1,reason="beeing impatient")
     
     '''
@@ -2335,8 +2334,8 @@ XXXXXXXX
             return
 
         # scold player
-        messages.append(self.firstOfficer.name+": Now will have to take care of this body.")
-        messages.append(self.firstOfficer.name+": Please move on to your next assignment immediatly.")
+        character.addMessage(self.firstOfficer.name+": Now will have to take care of this body.")
+        character.addMessage(self.firstOfficer.name+": Please move on to your next assignment immediatly.")
 
         # remove all quests
         for quest in mainChar.quests:

@@ -238,10 +238,6 @@ mainChar = gameStateObj.mainChar
 interaction.setFooter()
 
 # bad code: common variables with modules
-cinematics.main = interaction.main
-cinematics.header = interaction.header
-
-# bad code: common variables with modules
 cinematics.loop = interaction.loop
 quests.loop = interaction.loop
 story.loop = interaction.loop

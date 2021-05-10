@@ -11,6 +11,7 @@ import json
 import src.chats
 import src.saveing
 import src.logger
+import src.interaction
 
 urwid = None
 
@@ -18,7 +19,6 @@ urwid = None
 bad code: containers for global state
 """
 cinematicQueue = []
-main = None
 loop = None
 callShow_or_exit = None
 messages = None
@@ -102,8 +102,8 @@ class InformationTransfer(BasicCinematic):
         # show the information
         if self.position < len(self.information):
             # show the current piece of information
-            header.set_text(self.information[self.position][0])
-            main.set_text(self.information[self.position][1]) 
+            src.interaction.header.set_text(self.information[self.position][0])
+            src.interaction.main.set_text(self.information[self.position][1]) 
 
             # trigger showing the next information
             self.position += 1
@@ -114,8 +114,8 @@ class InformationTransfer(BasicCinematic):
         if not self.triggered:
             # show final message and wait for input
             self.footerText = "press space to proceed"
-            header.set_text("")
-            main.set_text("InformationTransfer done")
+            src.interaction.header.set_text("")
+            src.interaction.main.set_text("InformationTransfer done")
             self.triggered = True
             self.skipable = True
             return False
@@ -171,8 +171,8 @@ class MessageZoomCinematic(BasicCinematic):
         # wait for some time till actually doing something
         if self.turnOnCounter:
             self.turnOnCounter -= 1
-            header.set_text("\n"+"\n".join(self.text))
-            main.set_text("")
+            src.interaction.header.set_text("\n"+"\n".join(self.text))
+            src.interaction.main.set_text("")
             self.alarm = loop.set_alarm_in(0.2, callShow_or_exit, '~')
             return False
 
@@ -187,8 +187,8 @@ class MessageZoomCinematic(BasicCinematic):
 
         # reduce the size till the border fits the message boxes borders
         # bad code: the dimension of the message box is calculated based on assumptions. Size should be asked from the message box
-        header.set_text(textWithDeco)
-        main.set_text("")
+        src.interaction.header.set_text(textWithDeco)
+        src.interaction.main.set_text("")
         questWidth = (self.screensize[0]//3)*2+4
         # shrink X axis
         if self.right > questWidth:
@@ -321,8 +321,8 @@ class TextCinematic(BasicCinematic):
 
         # actually display
         base.append("")
-        main.set_text(base)
-        header.set_text("")
+        src.interaction.main.set_text(base)
+        src.interaction.header.set_text("")
 
         # scroll further
         self.position += 1

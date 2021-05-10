@@ -1,4 +1,5 @@
 import src
+import random
 
 '''
 gomode item for terraforming and things
@@ -172,6 +173,7 @@ class ArchitectArtwork(src.items.ItemNew):
     def apply(self,character):
         options = [("showMap","shop map of the area"),
                    ("addScrapField","add scrap field"),
+                   ("shapeTerrain","shape terrain"),
                    ("addRoom","add room"),
                    ("clearField","clear coordinate"),
                    ("test","test"),
@@ -187,6 +189,43 @@ class ArchitectArtwork(src.items.ItemNew):
     def apply2(self):
         if self.submenue.selection == "test":
             self.test()
+        if self.submenue.selection == "shapeTerrain":
+            terrain = self.getTerrain()
+            for i in range(1,10):
+                self.doAddScrapfield(random.randint(1,13),random.randint(1,13),random.randint(200,400))
+            for i in range(1,30):
+                self.doAddScrapfield(random.randint(1,13),random.randint(1,13),random.randint(20,40))
+            for i in range(1,5):
+                item = src.items.itemMap["Rod"](random.randint(1,13)*15+random.randint(1,13),random.randint(1,13)*15+random.randint(1,13))
+                item.baseDamage = i
+                terrain.addItem(item)
+            for i in range(1,5):
+                item = src.items.itemMap["Armor"](random.randint(1,13)*15+random.randint(1,13),random.randint(1,13)*15+random.randint(1,13))
+                item.armorValue = i
+                terrain.addItem(item)
+            """
+            for i in range(1,20):
+                enemy = src.characters.Monster()
+                terrain.addCharacter(enemy,random.randint(1,13)*15+random.randint(1,13),random.randint(1,13)*15+random.randint(1,13))
+                enemy.godMode = True
+            for i in range(1,5):
+                enemy = src.characters.Exploder()
+                terrain.addCharacter(enemy,random.randint(1,13)*15+random.randint(1,13),random.randint(1,13)*15+random.randint(1,13))
+                enemy.godMode = True
+            for i in range(1,5):
+                enemy = src.characters.Character()
+                enemy.faction = "enemy"
+                terrain.addCharacter(enemy,random.randint(1,13)*15+random.randint(1,13),random.randint(1,13)*15+random.randint(1,13))
+                enemy.godMode = True
+            """
+            for i in range(1,2):
+                item = src.items.itemMap["GooFlask"](random.randint(1,13)*15+random.randint(1,13),random.randint(1,13)*15+random.randint(1,13))
+                item.uses = 100
+                terrain.addItem(item)
+            for i in range(1,30):
+                item = src.items.itemMap["Mold"](random.randint(1,13)*15+random.randint(1,13),random.randint(1,13)*15+random.randint(1,13))
+                terrain.addItem(item)
+                item.startSpawn()
         if self.submenue.selection == "showMap":
             mapContent = []
             for x in range(0,15):
@@ -298,11 +337,22 @@ class ArchitectArtwork(src.items.ItemNew):
         maxItems = amount
         items = []
         while counter < maxItems:
-            if not random.randint(1,30) == 10:
+            if not random.randint(1,15) == 10:
                 item = src.items.itemMap["Scrap"](random.randint(minX,maxX),random.randint(minY,maxY),amount=random.randint(1,20))
             else:
-                item = src.items.itemMap[random.choice(list(src.items.itemMap.keys()))](random.randint(minX,maxX),random.randint(minY,maxY))
+                if not random.randint(1,10) == 2:
+                    item = src.items.itemMap[random.choice(src.items.commons)](random.randint(minX,maxX),random.randint(minY,maxY))
+                else:
+                    item = src.items.itemMap[random.choice(src.items.semiCommons)](random.randint(minX,maxX),random.randint(minY,maxY))
+                
                 item.bolted = False
+                if item.type == "Machine":
+                    if not random.randint(1,10) == 2:
+                        item.setToProduce(random.choice(src.items.commons))
+                    else:
+                        item.setToProduce(random.choice(src.items.semiCommons))
+                if item.type == "HealingStation":
+                    item.charges = random.randint(0,10)
             items.append(item)
             counter += 1
         terrain.addItems(items)

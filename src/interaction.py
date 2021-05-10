@@ -1709,7 +1709,7 @@ current registers
                     for enemy in char.container.characters:
                         if enemy == char:
                             continue
-                        if enemy.faction == char.faction:
+                        if not char.combatMode == "agressive" and enemy.faction == char.faction:
                             continue
                         if not (enemy.xPosition,enemy.yPosition) in adjascentFields:
                             continue
@@ -2654,11 +2654,18 @@ class CharacterInfoMenu(SubMenu):
 
         for jobOrder in char.jobOrders:
             text += str(jobOrder.taskName)
+
+        armorValue = None
+        if char.armor:
+            armorValue = char.armor.armorValue
+        baseDamage = None
+        if char.weapon:
+            baseDamage = char.weapon.baseDamage
         
         text += "numChars: %s\n"%(len(char.container.characters))
         text += "lastJobOrder: %s\n"%(char.lastJobOrder)
-        text += "weapon: %s\n"%(char.weapon)
-        text += "armor: %s\n"%(char.armor)
+        text += "weapon: %s\n"%(baseDamage)
+        text += "armor: %s\n"%(armorValue)
         text += "numAttackedWithoutResponse: %s\n"%(char.numAttackedWithoutResponse)
 
         char.setRegisterValue("HEALTh",char.health)

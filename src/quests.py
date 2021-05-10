@@ -25,6 +25,82 @@ chats = None
 #
 ############################################################
 
+class MurderQuest2(src.saveing.Saveable):
+    '''
+    straightforward state initialization
+    '''
+    def __init__(self,followUp=None,startCinematics=None,lifetime=None,creator=None,failTrigger=None):
+        super().__init__()
+        self.completed = False 
+        self.active = False 
+        self.toKill = None
+        self.type = "murder"
+        self.character = None
+        self.information = None
+        self.watched = []
+
+        # set id
+        import uuid
+        self.id = uuid.uuid4().hex
+
+        self.attributesToStore.extend(["completed","active","information","type"])
+        self.objectsToStore.extend(["character","toKill"])
+
+    '''
+    set state as dict
+    '''
+    def setState(self,state):
+        super().setState(state)
+
+        # set character
+        if "toKill" in state and state["toKill"]:
+           '''
+           set value
+           '''
+           def watchCharacter(character):
+               self.setTarget(character)
+           loadingRegistry.callWhenAvailable(state["toKill"],watchCharacter)
+
+
+    '''
+    register callback
+    '''
+    def startWatching(self, target, callback, tag=""):
+        target.addListener(callback,tag)
+        self.watched.append((target,callback))
+
+    '''
+    unregister callback
+    '''
+    def stopWatching(self, target, callback, tag=""):
+        target.delListener(callback,tag)
+        self.watched.remove((target,callback))
+
+    def setTarget(self,target):
+        self.toKill = target
+        self.startWatching(target,self.handleKill,"died")
+
+    def handleKill(self,info):
+        self.completed = True
+        self.character.addMessage("handle kill")
+
+    def assignToCharacter(self,character):
+        self.character = character
+
+    def activate(self):
+        pass
+
+    def getDescription(self,asList=False,colored=False,active=False):
+        text = "%s %s"%(self.type,self.toKill.charType,)
+        if self.completed:
+            text += " (completed)"
+        else:
+            text += " (not completed)"
+
+        if self.information:
+            text += " %s"%(self.information,)
+        return text
+
 '''
 the base class for all quests
 '''
@@ -69,11 +145,8 @@ class Quest(src.saveing.Saveable):
         self.lifetimeEvent = None
 
         # set id
-        self.id = {
-                    "counter":creator.getCreationCounter()
-                  }
-        self.id["creator"] = creator.id
-        self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
+        import uuid
+        self.id = uuid.uuid4().hex
 
     '''
     register callback
@@ -3574,6 +3647,8 @@ questMap = {
               "GetQuest":GetQuest,
               "GetReward":GetReward,
               "MurderQuest":MurderQuest,
+              "MurderQuest2":MurderQuest2,
+              "murder":MurderQuest2,
               "FillPocketsQuest":FillPocketsQuest,
               "LeaveRoomQuest":LeaveRoomQuest,
               "PatrolQuest":PatrolQuest,

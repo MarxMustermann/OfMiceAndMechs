@@ -22,6 +22,8 @@ class CityBuilder(src.items.ItemNew):
         self.stuckReason = None
         self.runningTasks = []
 
+        self.resources = {}
+
         #config options
         self.numReservedPathPlots = 5
         self.numBufferPlots = 3
@@ -33,7 +35,7 @@ class CityBuilder(src.items.ItemNew):
         self.error = {}
 
         self.attributesToStore.extend([
-           "tasks","runningTasks","error","commands","error","scrapFields",
+           "tasks","runningTasks","error","commands","error","scrapFields","resources",
            ])
 
         self.tupleListsToStore.extend([
@@ -76,6 +78,7 @@ class CityBuilder(src.items.ItemNew):
                    ("addRoom","add room"),
                    ("addBuildMine","add build mine"),
                    ("addBuildFactory","add build factory"),
+                   ("addResource","add resource"),
                    ("clearTasks","clear tasks"),
                    ("clearError","clear error")]
         self.submenue = src.interaction.SelectionMenu("what do you want to do?",options)
@@ -83,47 +86,80 @@ class CityBuilder(src.items.ItemNew):
         character.macroState["submenue"].followUp = self.apply2
         self.character = character
 
+    def costGuard(self,cost,character):
+        for (resourceType,amount) in cost.items():
+            availableAmount = self.resources.get(resourceType)
+               
+            if availableAmount == None:
+                character.addMessage("need resource %s"%(resourceType,))
+                return False
+            elif availableAmount < amount:
+                character.addMessage("need %s more %s"%(amount-availableAmount,resourceType,))
+                return False
+
+        for (resourceType,amount) in cost.items():
+            self.resources[resourceType] -= amount
+            return True
+
     def apply2(self):
+        character = self.character
+
         selection = self.submenue.selection
         if selection == "showMap":
-            self.showMap(self.character)
+            self.showMap(character)
         elif selection == "addBuildMine":
             newTask = {"task":"build mine"}
             self.tasks.append(newTask)
+        elif selection == "addResource":
+            foundItems = []
+            for item in character.inventory:
+                foundItems.append(item)
+
+                if not item.type in self.resources:
+                    self.resources[item.type] = 0
+                self.resources[item.type] += 1
+
+            for item in foundItems:
+                character.inventory.remove(item)
+
         elif selection == "addBuildFactory":
             newTask = {"task":"build factory"}
             self.tasks.append(newTask)
         elif selection == "addRoom":
+
             options = []
             for plot in self.plotPool:
                 options.append((plot,"%s"%(plot,)))
             self.submenue = src.interaction.SelectionMenu("Where do you want to build the room?",options)
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.triggerAddRoom
+            character.macroState["submenue"] = self.submenue
+            character.macroState["submenue"].followUp = self.triggerAddRoom
         elif selection == "reservePlot":
             options = []
             for plot in self.plotPool:
                 options.append((plot,"%s"%(plot,)))
             self.submenue = src.interaction.SelectionMenu("Where do you want to expand from?",options)
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.reservePlot
+            character.macroState["submenue"] = self.submenue
+            character.macroState["submenue"].followUp = self.reservePlot
         elif selection == "addTaskExpand":
             options = [("random","random")]
             for plot in self.plotPool:
                 options.append((plot,"%s"%(plot,)))
             self.submenue = src.interaction.SelectionMenu("Where do you want to expand from?",options)
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.triggerExpand
+            character.macroState["submenue"] = self.submenue
+            character.macroState["submenue"].followUp = self.triggerExpand
         elif selection == "addTaskExpandStorageSpecific":
+            if not self.costGuard({"MetalBars":3},character):
+                return
+
             options = []
             if not self.unusedRoadTiles:
-                self.character.addMessage("no unused road tiles")
+                character.addMessage("no unused road tiles")
                 return
             for plot in self.unusedRoadTiles:
                 options.append((plot,"%s"%(plot,)))
             self.submenue = src.interaction.SelectionMenu("Where do you want to expand from?",options)
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.triggerExpandStorage
+            character.macroState["submenue"] = self.submenue
+            character.macroState["submenue"].followUp = self.triggerExpandStorage
             self.storageCoordinate = None
         elif selection == "addTaskExpandStorage":
             newTask = {"task":"extend storage"}
@@ -134,7 +170,7 @@ class CityBuilder(src.items.ItemNew):
         elif selection == "clearError":
             self.error = {}
         else:
-            self.character.addMessage("unknown selection")
+            character.addMessage("unknown selection")
 
     def triggerExpandStorage(self):
         if not self.storageCoordinate:
@@ -306,11 +342,20 @@ class CityBuilder(src.items.ItemNew):
 
         task["stockPileName"] = "storage_%s_%s"%(task["stockPileCoordinate"][0],task["stockPileCoordinate"][1])
 
+        if not task.get("stockPileType"):
+            task["stockPileType"] = "TypedStockpileManager"
+
+        if not task.get("payed"):
+            if not self.costGuard({task["stockPileType"]:1},character): #actual costs happen here
+                self.abortTask()
+                return
+            task["payed"] = True
+
         setupTask = {"task":"set up","type":"stockPile","name":task["stockPileName"],"coordinate":task["stockPileCoordinate"],"command":None,}
-        if task.get("stockPileType"):
-            setupTask["StockpileType"] = task["stockPileType"]
-            if task["stockPileType"] == "UniformStockpileManager":
-                setupTask["ItemType"] = task["itemType"]
+
+        setupTask["StockpileType"] = task["stockPileType"]
+        if task["stockPileType"] == "UniformStockpileManager":
+            setupTask["ItemType"] = task["itemType"]
 
         tasks = [
                 setupTask,
@@ -338,9 +383,33 @@ class CityBuilder(src.items.ItemNew):
             ])
 
     def doBuildRoads(self,context):
+
         character = context["character"]
+        task = context["task"]
         if self.unfinishedRoadTiles:
             plot = self.unfinishedRoadTiles[-1]
+            if plot == (self.room.xPosition,self.room.yPosition):
+                self.unfinishedRoadTiles.pop()
+                self.abortTask()
+                return
+
+            terrain = self.getTerrain()
+            for x in range(plot[0]*15,plot[0]*15+15):
+                for y in range(plot[1]*15,plot[1]*15+15):
+                    items = terrain.getItemByPosition((x,y,0))
+                    if items:
+                        if x%15==7 and y%15==7 and len(items) == 1 and items[0].type == "MarkerBean":
+                            continue
+                        character.addMessage("building site %s blocked on %s/%s"%(plot,x,y,))
+                        self.abortTask()
+                        return
+
+            if not task.get("payed"):
+                if not self.costGuard({"Paving":30},character): #actual costs happen here
+                    self.abortTask()
+                    return
+                task["payed"] = True
+
             self.useJoborderRelayToLocalRoom(character,[
                 {"task":"set up","type":"road","coordinate":plot,"command":None},
                 ],"ArchitectArtwork",information={"plot":plot})
@@ -348,18 +417,23 @@ class CityBuilder(src.items.ItemNew):
             character.addMessage("no road tile found to build")
             self.runningTasks = []
 
+    def abortTask(self):
+        self.tasks.append(self.runningTasks.pop())
+
     def doExpand(self,context):
         if not self.plotPool:
             return
         
         task = context["task"]
+        character = context["character"]
 
         if not "from" in task:
             plot = random.choice(self.plotPool)
         else:
-            plot = task["from"]
+            plot = tuple(task["from"])
 
         if not plot in self.plotPool:
+            self.abortTask()
             return
 
         self.expandFromPlot(plot)
@@ -723,6 +797,9 @@ class CityBuilder(src.items.ItemNew):
 
     def getLongInfo(self):
         text = """
+resources:
+%s
+
 commands:
 %s
 
@@ -755,5 +832,5 @@ unusedRoadTiles:
 
 scrapFields:
 %s
-"""%(self.commands,self.error,self.runningTasks,self.tasks,self.reservedPlots,self.usedPlots,self.roadTiles,self.unfinishedRoadTiles,self.plotPool,self.unusedRoadTiles,self.scrapFields)
+"""%(self.resources,self.commands,self.error,self.runningTasks,self.tasks,self.reservedPlots,self.usedPlots,self.roadTiles,self.unfinishedRoadTiles,self.plotPool,self.unusedRoadTiles,self.scrapFields)
         return text

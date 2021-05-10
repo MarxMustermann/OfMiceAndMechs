@@ -24,6 +24,10 @@ def setup():
     itemMap["Winch"] = src.itemFolder.obsolete.Winch
     import src.itemFolder.automation
     itemMap["JobOrder"] = src.itemFolder.automation.JobOrder
+    import src.itemFolder.tradingArtwork
+    itemMap["TradingArtwork"] = src.itemFolder.tradingArtwork.TradingArtwork
+    import src.itemFolder.questArtwork
+    itemMap["QuestArtwork"] = src.itemFolder.questArtwork.QuestArtwork
     import src.itemFolder.managers
     itemMap["RoomManager"] = src.itemFolder.managers.RoomManager
     itemMap["CityBuilder"] = src.itemFolder.managers.CityBuilder
@@ -32,6 +36,7 @@ def setup():
     itemMap["RoadManager"] = src.itemFolder.managers.RoadManager
     itemMap["MiningManager"] = src.itemFolder.managers.MiningManager
     itemMap["StockpileMetaManager"] = src.itemFolder.managers.StockpileMetaManager
+    itemMap["ProductionManager"] = src.itemFolder.managers.ProductionManager
 
 # load basic libs
 import json
@@ -161,6 +166,8 @@ class ItemNew(src.saveing.Saveable):
         character = params["character"]
 
         selection = character.macroState["submenue"].selection
+
+        character.addMessage("index %s"%(selection,))
 
         if not selection:
             return
@@ -3049,6 +3056,220 @@ thie is a level %s item
         if "commands" in state:
             self.commands = state["commands"]
 
+class PavingGenerator(Item):
+    type = "PavingGenerator"
+
+    '''
+    call superclass constructor with modified parameters
+    '''
+    def __init__(self,xPosition=None,yPosition=None, name="paving generator",creator=None,noId=False):
+        self.coolDown = 100
+        self.coolDownTimer = -self.coolDown
+        self.charges = 3
+        self.level = 1
+        self.commands = {}
+        
+        super().__init__("PG",xPosition,yPosition,name=name,creator=creator)
+
+        self.attributesToStore.extend([
+               "coolDown","coolDownTimer","charges","level"])
+
+    '''
+    produce a paving
+    '''
+    def apply(self,character,resultType=None):
+        super().apply(character,silent=True)
+
+        if not self.container:
+            character.addMessage("this machine has be somewhere to be used")
+            return
+
+        # fetch input scrap
+        scrap = None
+        if not hasattr(self,"container"):
+            if self.room:
+                self.container = self.room
+            else:
+                self.container = self.terrain
+
+        for item in self.container.getItemByPosition((self.xPosition-1,self.yPosition,self.zPosition)):
+            if isinstance(item,itemMap["Scrap"]):
+                scrap = item
+                break
+        if self.level > 1:
+            if not scrap:
+                for item in self.container.getItemByPosition((self.xPosition,self.yPosition+1,self.zPosition)):
+                    if isinstance(item,itemMap["Scrap"]):
+                        scrap = item
+                        break
+        if self.level > 2:
+            if not scrap:
+                for item in self.container.getItemByPosition((self.xPosition,self.yPosition-1,self.zPosition)):
+                    if isinstance(item,itemMap["Scrap"]):
+                        scrap = item
+                        break
+
+        if gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
+            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(gamestate.tick-self.coolDownTimer),))
+            self.runCommand("cooldown",character)
+            return
+
+        # refuse to produce without resources
+        if not scrap:
+            character.addMessage("no scraps available")
+            self.runCommand("material Scrap",character)
+            return
+
+        targetPos = (self.xPosition+1,self.yPosition,self.zPosition)
+        targetFull = False
+        itemList = self.container.getItemByPosition(targetPos)
+
+        if len(itemList) > 15:
+            targetFull = True
+        for item in itemList:
+            if item.walkable == False:
+                targetFull = True
+
+        if targetFull:
+            character.addMessage("the target area is full, the machine does not produce anything")
+            self.runCommand("targetFull",character)
+            return
+
+        if self.charges:
+            self.charges -= 1
+        else:
+            self.coolDownTimer = gamestate.tick
+
+        character.addMessage("you produce a paving")
+
+        # remove resources
+        if scrap.amount <= 1:
+            self.container.removeItem(scrap)
+        else:
+            scrap.amount -= 1
+            scrap.setWalkable()
+
+        for i in range(1,4):
+            # spawn the metal bar
+            new = src.items.itemMap["Paving"](creator=self)
+            new.xPosition = self.xPosition+1
+            new.yPosition = self.yPosition
+            self.container.addItems([new])
+
+        self.runCommand("success",character)
+
+    def getLongInfo(self):
+        directions = "west"
+        if self.level > 1:
+            directions += "/south"
+        if self.level > 2:
+            directions += "/north"
+        text = """
+item: ScrapCompactor
+
+description:
+This machine converts scrap into metal bars. Metal bars are a form of metal that can be used to produce other things.
+
+Place scrap to the %s of the machine and activate it 
+
+After using this machine you need to wait %s ticks till you can use this machine again.
+"""%(directions,self.coolDown,)
+
+        coolDownLeft = self.coolDown-(gamestate.tick-self.coolDownTimer)
+        if coolDownLeft > 0:
+            text += """
+Currently you need to wait %s ticks to use this machine again.
+
+"""%(coolDownLeft,)
+        else:
+            text += """
+Currently you do not have to wait to use this machine.
+
+"""
+
+        if self.charges:
+            text += """
+Currently the machine has %s charges
+
+"""%(self.charges)
+        else:
+            text += """
+Currently the machine has no charges
+
+"""
+
+        text += """
+thie is a level %s item
+
+"""%(self.level)
+        return text
+
+    def configure(self,character):
+        options = [("addCommand","add command")]
+        self.submenue = src.interaction.SelectionMenu("what do you want to do?",options)
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.apply2
+        self.character = character
+
+    def apply2(self):
+        if self.submenue.selection == "runCommand":
+            options = []
+            for itemType in self.commands:
+                options.append((itemType,itemType))
+            self.submenue = src.interaction.SelectionMenu("Run command for producing item. select item to produce.",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.runCommand
+        elif self.submenue.selection == "addCommand":
+            options = []
+            options.append(("success","set success command"))
+            options.append(("cooldown","set cooldown command"))
+            options.append(("targetFull","set target full command"))
+            options.append(("material Scrap","set Scrap fetching command"))
+            self.submenue = src.interaction.SelectionMenu("Setting command for handling triggers.",options)
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.setCommand
+
+    def setCommand(self):
+        itemType = self.submenue.selection
+        
+        commandItem = None
+        for item in self.container.getItemByPosition((self.xPosition,self.yPosition-1,self.zPosition)):
+            if item.type == "Command":
+                commandItem = item
+
+        if not commandItem:
+            self.character.addMessage("no command found - place command to the north")
+            return
+
+        self.commands[itemType] = commandItem.command
+        self.container.removeItem(commandItem)
+
+        self.character.addMessage("added command for %s - %s"%(itemType,commandItem.command))
+        return
+
+    def runCommand(self,trigger,character):
+        if not trigger in self.commands:
+            return
+
+        command = self.commands[trigger]
+
+        convertedCommand = []
+        for char in command:
+            convertedCommand.append((char,"norecord"))
+
+        character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
+        character.addMessage("running command to handle trigger %s - %s"%(trigger,command))
+
+    def getState(self):
+        state = super().getState()
+        state["commands"] = self.commands
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+        if "commands" in state:
+            self.commands = state["commands"]
+
 
 '''
 '''
@@ -4093,306 +4314,6 @@ class CommandBook(Item):
             pass
         return state
 
-class ProductionManager(Item):
-    type = "ProductionManager"
-
-    '''
-    call superclass constructor with modified parameters
-    '''
-    def __init__(self,xPosition=None,yPosition=None, name="production manager",creator=None,noId=False):
-        self.commands = {}
-
-        super().__init__(src.canvas.displayChars.productionManager,xPosition,yPosition,name=name,creator=creator)
-
-        self.bolted = False
-        self.walkable = False
-
-    def getLongInfo(self):
-
-        commandsString = ""
-        for (itemType,command) in self.commands.items():
-            commandsString += "* "+itemType+" "+str(command)+"\n"
-
-        text = """
-item: ProductionManager
-
-description:
-allows to set commands for production of items.
-job order can be inserted and commands can be run depending on the item the job order is for.
-
-%s
-
-commands:
-%s
-
-"""%(commandsString,self.commands)
-        return text
-
-    def apply(self,character):
-        if not (character.xPosition == self.xPosition and character.yPosition == self.yPosition-1):
-            character.addMessage("this item can only be used from north")
-            return
-
-        if character.macroState["recording"] and "auto" in character.macroState["macros"]:
-            optionText = "set recorded command"
-        else:
-            optionText = "start recording command"
-        options = [("runJobOrder","run job order"),("runCommand","run command"),("recordCommand",optionText),("addCommand","add command")]
-        self.submenue = src.interaction.SelectionMenu("what do you want to do?",options)
-        character.macroState["submenue"] = self.submenue
-        character.macroState["submenue"].followUp = self.apply2
-        self.character = character
-
-        if "auto" in self.character.macroState["macros"]:
-            self.macroSafe = self.character.macroState["macros"]["auto"][:]
-        else:
-            self.macroSafe = None
-
-    def apply2(self):
-        self.character.addMessage("self.submenue.selection")
-        self.character.addMessage(self.submenue.selection)
-        if self.submenue.selection == "runJobOrder":
-            jobOrder = None
-            for item in reversed(self.character.inventory):
-                if item.type == "JobOrder" and not item.done and item.tasks[-1]["task"] == "produce":
-                    jobOrder = item
-                    break
-
-            if not jobOrder:
-                self.character.addMessage("no production job order found")
-                return
-
-            if not jobOrder.tasks[-1]["toProduce"] in self.commands:
-                self.character.addMessage("no command for job order found")
-                return
-
-            itemType = jobOrder.tasks[-1]["toProduce"]
-            command = self.commands[itemType]
-
-            convertedCommand = []
-            for char in command:
-                convertedCommand.append((char,"norecord"))
-
-            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
-            self.character.addMessage("running command to produce %s - %s"%(itemType,command))
-
-        elif self.submenue.selection == "recordCommand":
-            if self.character.macroState["recording"] and "auto" in self.character.macroState["macros"]:
-                self.character.macroState["recording"] = False
-                self.character.macroState["recordingTo"] = None
-                del self.character.macroState["macros"]["auto"]
-                options = []
-                for key in itemMap.keys():
-                    options.append((key,key))
-                self.submenue = src.interaction.SelectionMenu("Setting command for producing item. What item do you want to set the command for?",options)
-                self.character.macroState["submenue"] = self.submenue
-                self.character.macroState["submenue"].followUp = self.setCommand2
-            else:
-                self.character.macroState["recording"] = True
-                self.character.macroState["recordingTo"] = "auto"
-                self.character.macroState["macros"]["auto"] = []
-        elif self.submenue.selection == "runCommand":
-            options = []
-            for itemType in self.commands:
-                options.append((itemType,itemType))
-
-            if not options:
-                self.character.addMessage("there are no commands set")
-                return
-
-            self.submenue = src.interaction.SelectionMenu("Run command for producing item. select item to produce.",options)
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.runCommand
-        elif self.submenue.selection == "addCommand":
-            options = []
-            for key in itemMap.keys():
-                options.append((key,key))
-            self.submenue = src.interaction.SelectionMenu("Setting command for producing item. What item do you want to set the command for?",options)
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.setCommand
-
-    def setCommand(self):
-        itemType = self.submenue.selection
-        
-        commandItem = None
-        for item in self.container.getItemByPosition((self.xPosition,self.yPosition-1)):
-            if item.type == "Command":
-                commandItem = item
-
-        if not commandItem:
-            self.character.addMessage("no command found - place command to the north")
-            return
-
-        self.commands[itemType] = commandItem.command
-        self.container.removeItem(commandItem)
-
-        self.character.addMessage("added command for %s - %s"%(itemType,commandItem.command))
-        return
-
-    def setCommand2(self):
-        itemType = self.submenue.selection
-
-        if not len(self.macroSafe) > 1:
-            return
-        self.commands[itemType] = self.macroSafe[:-2]
-
-        self.character.addMessage("added command for %s - %s"%(itemType,self.commands[itemType]))
-
-    def runCommand(self):
-        itemType = self.submenue.selection
-        command = self.commands[itemType]
-
-        convertedCommand = []
-        for char in command:
-            convertedCommand.append((char,"norecord"))
-
-        self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
-        self.character.addMessage("running command to produce %s - %s"%(itemType,command))
-
-    def getState(self):
-        state = super().getState()
-        state["commands"] = self.commands
-        return state
-
-    def setState(self,state):
-        super().setState(state)
-        if "commands" in state:
-            self.commands = state["commands"]
-
-class ProductionManager2(Item):
-    type = "ProductionManager2"
-
-    '''
-    call superclass constructor with modified parameters
-    '''
-    def __init__(self,xPosition=None,yPosition=None, name="production manager2",creator=None,noId=False):
-        self.jobOrders = []
-        self.commands = {}
-        self.machineMap =  {}
-
-        super().__init__(src.canvas.displayChars.wall,xPosition,yPosition,name=name,creator=creator)
-
-        self.bolted = False
-        self.walkable = False
-
-    def getLongInfo(self):
-
-        displayJobOrders = []
-        for jobOrder in self.jobOrders:
-            displayJobOrders.append(jobOrder.toProduce)
-
-        text = """
-item: ProductionManager2
-
-description:
-allows to set commands for production of items.
-job order can be inserted and commands can be run depending on the item the job order is for.
-
-%s
-
-%s
-"""%(self.commands,displayJobOrders)
-        return text
-
-    def apply(self,character):
-        if not (character.xPosition == self.xPosition and character.yPosition == self.yPosition-1):
-            character.addMessage("this item can only be used from north")
-            return
-
-        options = [("runJobOrder","run job order"),("runCommand","run command"),("addJobOrder","add job order"),("addCommand","add command")]
-        self.submenue = src.interaction.SelectionMenu("what do you want to do?",options)
-        character.macroState["submenue"] = self.submenue
-        character.macroState["submenue"].followUp = self.apply2
-        self.character = character
-
-    def apply2(self):
-        if self.submenue.selection == "runJobOrder":
-            if not self.jobOrders:
-                self.character.addMessage("no job orders found")
-                return
-            jobOrder = self.jobOrders.pop()
-            if not jobOrder.toProduce in self.commands:
-                self.character.addMessage("no command for job order found")
-                return
-
-            itemType = jobOrder.toProduce
-            command = self.commands[itemType]
-
-            convertedCommand = []
-            for char in command:
-                convertedCommand.append((char,"norecord"))
-
-            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
-            self.character.addMessage("running command to produce %s - %s"%(itemType,command))
-
-        elif self.submenue.selection == "runCommand":
-            options = []
-            for itemType in self.commands:
-                options.append((itemType,itemType))
-            self.submenue = src.interaction.SelectionMenu("Run command for producing item. select item to produce.",options)
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.runCommand
-        elif self.submenue.selection == "addCommand":
-            options = [("Wall","wall"),("Door","door"),("FloorPlate","floorplate")]
-            self.submenue = src.interaction.SelectionMenu("Setting command for producing item. What item do you want to set the command for?",options)
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.setCommand
-        elif self.submenue.selection == "addJobOrder":
-            itemFound = None
-            for item in self.character.inventory:
-                if item.type == "JobOrder":
-                    itemFound = item
-                    break
-            self.jobOrders.append(itemFound)
-            self.character.inventory.remove(itemFound)
-
-    def setCommand(self):
-        itemType = self.submenue.selection
-        
-        commandItem = None
-        for item in self.container.getItemByPosition((self.xPosition,self.yPosition-1)):
-            if item.type == "Command":
-                commandItem = item
-
-        if not commandItem:
-            self.character.addMessage("no command found - place command to the north")
-            return
-
-        self.commands[itemType] = commandItem.command
-        self.container.removeItem(commandItem)
-
-        self.character.addMessage("added command for %s - %s"%(itemType,commandItem.command))
-        return
-
-    def runCommand(self):
-        itemType = self.submenue.selection
-        command = self.commands[itemType]
-
-        convertedCommand = []
-        for char in command:
-            convertedCommand.append((char,"norecord"))
-
-        self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
-        self.character.addMessage("running command to produce %s - %s"%(itemType,command))
-
-    def getState(self):
-        state = super().getState()
-        state["commands"] = self.commands
-        jobOrderStates = []
-        for item in self.jobOrders:
-            jobOrderStates.append(item.getState())
-        state["jobOrders"] = jobOrderStates
-        return state
-
-    def setState(self,state):
-        super().setState(state)
-        if "commands" in state:
-            self.commands = state["commands"]
-
-        if "jobOrders" in state:
-            for jobOrderState in state["jobOrders"]:
-                self.jobOrders.append(getItemFromState(jobOrderState))
-
 class JobBoard(Item):
     type = "JobBoard"
 
@@ -5135,7 +5056,10 @@ item: TypedStockpileManager
 
 description:
 needs to be placed in the center of a tile. The tile should be emtpy and mold free for proper function.
-"""
+
+slotsByItemtype
+%s
+"""%(self.slotsByItemtype,)
         return text
 
     def apply(self,character):
@@ -5375,24 +5299,24 @@ needs to be placed in the center of a tile. The tile should be emtpy and mold fr
 
 '''
 '''
-class FloorPlate_real(Item):
-    type = "FloorPlate"
+class Paving(Item):
+    type = "Paving"
 
     '''
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="floor plate",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.floor,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(";;",xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
         self.walkable = True
 
     def getLongInfo(self):
         text = """
-item: FloorPlate
+item: Paving
 
 description:
-Used as building material and can be used to mark paths
+Used as building material for roads
 
 """
         return text
@@ -5461,6 +5385,10 @@ class Rod(Item):
 
         self.bolted = False
         self.walkable = True
+        self.baseDamage = 6
+        self.attributesToStore.extend([
+               "baseDamage",
+               ])
 
     def getLongInfo(self):
         text = """
@@ -5469,7 +5397,10 @@ item: Rod
 description:
 A rod. Simple building material.
 
-"""
+baseDamage:
+%s
+
+"""%(self.baseDamage,)
         return text
 
     def apply(self,character):
@@ -5484,7 +5415,7 @@ class Armor(Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="rod",creator=None,noId=False):
+    def __init__(self,xPosition=None,yPosition=None, name="armor",creator=None,noId=False):
         super().__init__("ar",xPosition,yPosition,name=name,creator=creator)
 
         self.bolted = False
@@ -6398,13 +6329,13 @@ class Machine(Item):
         itemList = self.container.getItemByPosition((self.xPosition+1,self.yPosition,self.zPosition))
         if itemList:
             if new.walkable:
-                if len(self.container.positionByCoordinate((self.xPosition+1,self.yPosition,self.zPosition))) > 15:
+                if len(self.container.getItemByPosition((self.xPosition+1,self.yPosition,self.zPosition))) > 15:
                     targetFull = True
-                for item in self.container.positionByCoordinate((self.xPosition+1,self.yPosition,self.zPosition)):
+                for item in self.container.getItemByPosition((self.xPosition+1,self.yPosition,self.zPosition)):
                     if item.walkable == False:
                         targetFull = True
             else:
-                if len(self.container.positionByCoordinate((self.xPosition+1,self.yPosition,self.zPosition))) > 0:
+                if len(self.container.getItemByPosition((self.xPosition+1,self.yPosition,self.zPosition))) > 0:
                     targetFull = True
 
         if targetFull:
@@ -7685,7 +7616,7 @@ comment:
                 del self.availableChallenges["createMapWithPaths"]
 
         elif selection == "produceProductionManager": # from root 3
-            if not self.checkInInventoryOrInRoom(src.items.ProductionManager):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["ProductionManager"]):
                 self.submenue = src.interaction.TextMenu("\n\nchallenge: build production manager\nstatus: challenge in progress. Try with production manager in your inventory.\n\n")
             else:
                 self.submenue = src.interaction.TextMenu("\n\nchallenge: build production manager\nstatus: challenge completed.\n\n")
@@ -13229,7 +13160,7 @@ class HealingStation(Item):
 
         self.walkable = False
         self.bolted = True
-        self.charges = 100
+        self.charges = 0
 
     def apply(self,character):
         options = [("heal","heal me"),("vial","fill vial")]
@@ -13436,276 +13367,6 @@ you can drink condensed water from it, but the water is poisoned
 it generates %s satiation for every 100 ticks left alone
 
 """%(self.rods+1+5,)
-
-'''
-scrap to metal bar converter
-'''
-class ArchitectArtwork(Item):
-    type = "ArchitectArtwork"
-
-    '''
-    call superclass constructor with modified parameters
-    '''
-    def __init__(self,xPosition=None,yPosition=None, name="scrap compactor",creator=None,noId=False):
-        super().__init__("AA",xPosition,yPosition,name=name,creator=creator)
-
-        self.godMode = False
-        self.attributesToStore.extend([
-               "godMode"])
-
-    '''
-    '''
-    def apply(self,character):
-        options = [("showMap","shop map of the area"),
-                   ("addScrapField","add scrap field"),
-                   ("addRoom","add room"),
-                   ("clearField","clear coordinate"),
-                   ("clearPaths","clear paths"),
-                 ]
-        self.submenue = src.interaction.SelectionMenu("what do you want to do?",options)
-        character.macroState["submenue"] = self.submenue
-        character.macroState["submenue"].followUp = self.apply2
-        self.character = character
-
-    def apply2(self):
-        if self.submenue.selection == "showMap":
-            self.submenue = src.interaction.TextMenu(text="""
-%%%%%%$%%%%%%%
-%            %
-%            %
-%            %
-%            %
-%            %
-$            $
-%            %
-%            %
-%            %
-%            %
-%            %
-%            %
-%%%%%%$%%%%%%%
-"""
-)
-            self.character.macroState["submenue"] = self.submenue
-        elif self.submenue.selection == "addScrapField":
-            self.submenue = None
-            self.addScrapField(wipe=True)
-        elif self.submenue.selection == "addRoom":
-            self.submenue = None
-            self.addRoom(wipe=True)
-        elif self.submenue.selection == "clearField":
-            self.submenue = None
-            self.clearField(wipe=True)
-        elif self.submenue.selection == "clearPaths":
-            self.submenue = None
-            self.clearPaths(wipe=True)
-
-    def clearPaths(self,wipe=False):
-        if wipe:
-            self.targetX = None
-            self.targetY = None
-            self.targetAmount = None
-
-        if not self.submenue:
-            self.submenue = src.interaction.InputMenu("enter the coordinate ( x,y ) current: %s,%s"%(self.character.xPosition//15,self.character.yPosition//15))
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.clearPaths
-            return
-
-        self.targetX = int(self.submenue.text.split(",")[0])
-        self.targetY = int(self.submenue.text.split(",")[1])
-
-        if self.room:
-            terrain = self.room.terrain
-        if self.terrain:
-            terrain = self.terrain
-
-        if not terrain:
-            self.character.addMessage("no terrain found")
-            return
-
-        minX = 15*self.targetX
-        minY = 15*self.targetY
-        maxX = minX+15
-        maxY = minY+15
-        toRemove = []
-        for x in range(minX,maxX):
-            for y in range(minY,maxY):
-                if (not x%15 == 7) and (not y%15 == 7):
-                    continue
-                toRemove.extend(terrain.getItemByPosition((x,y)))
-        terrain.removeItems(toRemove)
-
-    def clearField(self,wipe=False):
-        if wipe:
-            self.targetX = None
-            self.targetY = None
-            self.targetAmount = None
-
-        if not self.submenue:
-            self.submenue = src.interaction.InputMenu("enter the coordinate ( x,y ) current: %s,%s"%(self.character.xPosition//15,self.character.yPosition//15))
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.clearField
-            return
-
-        self.targetX = int(self.submenue.text.split(",")[0])
-        self.targetY = int(self.submenue.text.split(",")[1])
-
-        if self.room:
-            terrain = self.room.terrain
-        if self.terrain:
-            terrain = self.terrain
-
-        if not terrain:
-            self.character.addMessage("no terrain found")
-            return
-
-        minX = 15*self.targetX
-        minY = 15*self.targetY
-        maxX = minX+15
-        maxY = minY+15
-        toRemove = []
-        for x in range(minX,maxX):
-            for y in range(minY,maxY):
-                toRemove.extend(terrain.getItemByPosition((x,y)))
-        terrain.removeItems(toRemove)
-
-        if (self.targetX,self.targetY) in terrain.roomByCoordinates:
-            for room in terrain.roomByCoordinates[(self.targetX,self.targetY)]:
-                terrain.removeRoom(room)
-
-    def addScrapField(self,wipe=False):
-        if wipe:
-            self.targetX = None
-            self.targetY = None
-            self.targetAmount = None
-
-        if not self.submenue:
-            self.submenue = src.interaction.InputMenu("enter the coordinate ( x,y ) current: %s,%s"%(self.character.xPosition//15,self.character.yPosition//15))
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.addScrapField
-            return
-
-        if not self.targetY:
-            self.targetX = int(self.submenue.text.split(",")[0])
-            self.targetY = int(self.submenue.text.split(",")[1])
-
-            self.submenue = src.interaction.InputMenu("enter the amount of scrap piles (AMOUNt)")
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.addScrapField
-            return
-
-        self.targetAmount = int(self.submenue.text)
-
-        if self.room:
-            terrain = self.room.terrain
-        if self.terrain:
-            terrain = self.terrain
-
-        if not terrain:
-            self.character.addMessage("no terrain found")
-            return
-
-        import random
-        counter = 0
-        minX = 15*self.targetX
-        minY = 15*self.targetY
-        maxX = minX+13
-        maxY = minY+13
-        maxItems = self.targetAmount
-        items = []
-        while counter < maxItems:
-            if not random.randint(1,30) == 10:
-                item = src.items.itemMap["Scrap"](random.randint(minX,maxX),random.randint(minY,maxY),amount=random.randint(1,20))
-            else:
-                item = src.items.itemMap[random.choice(list(src.items.itemMap.keys()))](random.randint(minX,maxX),random.randint(minY,maxY))
-                item.bolted = False
-            items.append(item)
-            counter += 1
-        terrain.addItems(items)
-
-    def addRoom(self,wipe=False):
-        if wipe:
-            self.targetX = None
-            self.targetY = None
-            self.targetOffsetX = None
-            self.targetOffsetY = None
-            self.targetRoomType = None
-
-        if not self.submenue:
-            self.submenue = src.interaction.InputMenu("enter the coordinate ( x,y ) current: %s,%s"%(self.character.xPosition//15,self.character.yPosition//15))
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.addRoom
-            return
-
-        if not self.targetY:
-            self.targetX = int(self.submenue.text.split(",")[0])
-            self.targetY = int(self.submenue.text.split(",")[1])
-
-            self.submenue = src.interaction.InputMenu("enter the offset ( x,y )")
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.addRoom
-            return
-
-        if not self.targetOffsetY:
-            self.targetOffsetX = int(self.submenue.text.split(",")[0])
-            self.targetOffsetY = int(self.submenue.text.split(",")[1])
-
-            options = []
-            for key,value in src.rooms.roomMap.items():
-                options.append((key,key))
-            self.submenue = src.interaction.SelectionMenu("select the room to produce",options)
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.addRoom
-            return
-
-        if not self.targetRoomType:
-            self.targetRoomType = self.submenue.selection
-            if self.targetRoomType == "EmptyRoom":
-                self.emptyRoomSizeX = None
-                self.emptyRoomSizeY = None
-                self.entryPointX = None
-                self.entryPointY = None
-
-                self.submenue = src.interaction.InputMenu("enter the rooms size ( x,y )")
-                self.character.macroState["submenue"] = self.submenue
-                self.character.macroState["submenue"].followUp = self.addRoom
-                return
-
-        if self.targetRoomType == "EmptyRoom":
-
-            if not self.emptyRoomSizeY:
-                self.emptyRoomSizeX = int(self.submenue.text.split(",")[0])
-                self.emptyRoomSizeY = int(self.submenue.text.split(",")[1])
-
-                self.submenue = src.interaction.InputMenu("enter the doors positions ( x,y x,y x,y )")
-                self.character.macroState["submenue"] = self.submenue
-                self.character.macroState["submenue"].followUp = self.addRoom
-                return
-
-        if self.room:
-            terrain = self.room.terrain
-        if self.terrain:
-            terrain = self.terrain
-
-        if not terrain:
-            self.character.addMessage("no terrain found")
-            return
-
-        room = src.rooms.roomMap[self.targetRoomType](self.targetX,self.targetY,self.targetOffsetX,self.targetOffsetY)
-        if self.targetRoomType == "EmptyRoom":
-            entryPoints = []
-            for part in self.submenue.text.split(" "): 
-                entryPointX = int(part.split(",")[0])
-                entryPointY = int(part.split(",")[1])
-                entryPoint = (entryPointX,entryPointY,)
-
-                entryPoints.append(entryPoint)
-
-            self.character.addMessage(entryPoints)
-
-            room.reconfigure(self.emptyRoomSizeX,self.emptyRoomSizeY,doorPos=entryPoints)
-        terrain.addRooms([room])
 
 '''
 a dummy for an interface with the mech communication network
@@ -14693,6 +14354,68 @@ class ScrapCommander(Item):
             self.runCommandString(move,self.character)
 
 
+commons = [
+            "MarkerBean",
+            "MetalBars",
+            "Connector",
+            "Bolt",
+            "Stripe",
+            "puller",
+            "pusher",
+            "Puller",
+            "Pusher",
+            "Stripe",
+            "Rod",
+            "Case",
+            "Heater",
+            "Mount",
+            "Tank",
+            "Frame",
+            "Radiator",
+            "Sheet",
+            "GooFlask",
+            "Vial",
+            "Wall",
+            "Door",
+            "MarkerBean",
+            "MemoryCell",
+            "Paving",
+            "GooFlask",
+            "Vial",
+            "ScrapCompactor",
+            "PavingGenerator",
+            "Machine",
+            "Sheet",
+        ]
+
+semiCommons = [
+        "UniformStockpileManager",
+        "TypedStockpileManager",
+        "GrowthTank",
+        "GooDispenser",
+        "MaggotFermenter",
+        "BioPress",
+        "GooProducer",
+        "ItemUpgrader",
+        "Scraper",
+        "Sorter",
+        "StasisTank",
+        "BluePrinter",
+        "BloomShredder",
+        "SporeExtractor",
+        "BloomContainer",
+        "Container",
+        "SanitaryStation",
+        "AutoScribe",
+        "ItemCollector",
+        "HealingStation",
+        ]
+
+rare = [
+        "MachineMachine",
+        "ProductionArtwork",
+        ]
+
 # maping from strings to all items
 # should be extendable
 itemMap = {
@@ -14718,6 +14441,7 @@ itemMap = {
             "Explosive":Explosive,
             "FloorPlate":FloorPlate,
             "Chemical":Chemical,
+            "Paving":Paving,
 
             "Furnace":Furnace,
             "SuicideBooth":SuicideBooth,
@@ -14731,6 +14455,7 @@ itemMap = {
             "Tree":Tree,
             "MachineMachine":MachineMachine,
             "ScrapCompactor":ScrapCompactor,
+            "PavingGenerator":PavingGenerator,
             "Token":Token,
             "MaggotFermenter":MaggotFermenter,
             "BioPress":BioPress,
@@ -14806,8 +14531,6 @@ itemMap = {
             "TransportInNode":TransportInNode,
             "UniformStockpileManager":UniformStockpileManager,
             "TypedStockpileManager":TypedStockpileManager,
-            "ProductionManager":ProductionManager,
-            "ProductionManager2":ProductionManager2,
             "RipInReality":RipInReality,
             "AutoScribe":AutoScribe,
             "ItemCollector":ItemCollector,
@@ -14902,6 +14625,7 @@ rawMaterialLookup = {
     "ProductionManager":["Case","MemoryCell","Connector"],
     "AutoFarmer":["FloorPlate","MemoryCell","Connector"],
     "UniformStockpileManager":["Case","MemoryCell","Connector"],
+    "TypedStockpileManager":["Case","MemoryCell","Connector"],
 }
 
 '''

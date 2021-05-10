@@ -155,7 +155,7 @@ class MiningManager(src.items.ItemNew):
 
         #mockup for ore processing
         items = []
-        item = src.items.ProductionManager(setupInfo["oreProcessing"][0]*15+7,setupInfo["oreProcessing"][1]*15+7)
+        item = src.items.itemMap["ProductionManager"](setupInfo["oreProcessing"][0]*15+7,setupInfo["oreProcessing"][1]*15+7)
 
         command = ""
         commandTo = ""

@@ -29,11 +29,19 @@ class StockpileMetaManager(src.items.ItemNew):
         self.attributesToStore.extend([
                "stockPiles","stockPileInfo","assignedPlots","assignedPlotsInfo","roomManagerName"])
 
-    def addTask(self):
+        self.applyOptions.extend([("clearInventory","clear inventory"),("addItem","add item"),("addTask","add task"),("doMaintenance","do maintenance"),("test","test")])
+        self.applyMap = {
+                            "clearInventory":self.doClearInventory,
+                            "addItem":self.doAddItem,
+                            "addTask":self.addTask,
+                            "doMaintenance":self.doMaintenance,
+                            "test":self.test,
+                        }
+
+    def addTask(self,character):
         self.tasks.append({"task":"extend storage"})
 
-
-    def apply(self,character):
+    def applyOld(self,character):
         if not (character.xPosition == self.xPosition and character.yPosition == self.yPosition-1):
             character.addMessage("this item can only be used from north")
             return
@@ -51,7 +59,7 @@ class StockpileMetaManager(src.items.ItemNew):
         character.macroState["submenue"].followUp = self.apply2
         self.character = character
 
-    def test(self):
+    def test(self,character):
         character = src.characters.Character(name="logistics npc")
         character.godMode = True
         character.xPosition = self.xPosition
@@ -62,386 +70,372 @@ class StockpileMetaManager(src.items.ItemNew):
                             }
         character.runCommandString("_a")
 
-
-    def apply2(self):
-        self.lastAction = "apply2"
-        if self.submenue.selection == "test":
-            self.test()
-            self.blocked = False
+    def doMaintenance(self,character):
+        """
+        if self.tasks:
+            task = self.tasks.pop()
+            if task["task"] == "extend storage":
+                self.useJoborderRelayToLocalRoom(context["character"],[
+                        {"task":"add task","tasks":[{"task":"extend storage"},],}
+                    ],"CityBuilder")
             return
+        """
 
-        if self.submenue.selection == "doMaintanance":
-            """
-            if self.tasks:
-                task = self.tasks.pop()
-                if task["task"] == "extend storage":
-                    self.useJoborderRelayToLocalRoom(context["character"],[
-                            {"task":"add task","tasks":[{"task":"extend storage"},],}
-                        ],"CityBuilder")
-                return
-            """
+        self.lastAction = "doMaintanance"
+        if self.assignedPlots:
 
-            self.lastAction = "doMaintanance"
-            if self.assignedPlots:
-
-                self.lastAction = "addStockPileItem"
-                self.character.addMessage("add stockpile item "+stockpile)
-                self.character.inventory.append(src.items.TypedStockpileManager())
-                plot = self.assignedPlots.pop()
-                command = []
-                command.extend(self.assignedPlotsInfo[plot]["pathTo"])
-                command.extend(["L","s"])
-                command.extend(self.assignedPlotsInfo[plot]["pathFrom"])
-                self.stockPileInfo[plot] = self.assignedPlotsInfo[plot]
-                self.stockPiles.append(plot)
-                del self.assignedPlotsInfo[plot]
-
-                convertedCommand = []
-                for char in command:
-                    convertedCommand.append((char,"norecord"))
-
-                self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
-                self.blocked = False
-                return
-
-            #check stockpiles
-            for stockpile in self.stockPiles:
-                if not "stockPileType" in self.stockPileInfo[stockpile]:
-                    self.lastAction = "initialCheckStockpile"
-                    jobOrder = src.items.itemMap["JobOrder"]()
-                    jobOrder.tasks = [
-                        {
-                            "task":"processStatusReport",
-                            "command":None
-                        },
-                        {
-                            "task":"insert completed job order into stockpile manager",
-                            "command":"scj",
-                        },]
-                    if self.roomManagerName:
-                        jobOrder.tasks.append(
-                            {
-                                "task":"move to stockpile manager",
-                                "command":self.commands["return from room manager"],
-                            })
-                    jobOrder.tasks.extend([
-                        {
-                            "task":"walk back to stockpile manager",
-                            "command":self.stockPileInfo[stockpile]["pathFrom"]
-                        },
-                        {
-                            "task":"generateStatusReport",
-                            "command":None
-                        },
-                        {
-                            "task":"insert job order",
-                            "command":["s","c","j"],
-                        },
-                        {
-                            "task":"go to stockpile",
-                            "command":self.stockPileInfo[stockpile]["pathTo"],
-                        },])
-                    if self.roomManagerName:
-                        jobOrder.tasks.append(
-                            {
-                                "task":"move to room manager",
-                                "command":self.commands["go to room manager"],
-                            })
-                    jobOrder.tasks.extend([
-                        {
-                            "task":"clear head",
-                            "command":".zclear ", 
-                        },
-                        ])
-                    jobOrder.taskName = "get statusreport initial"
-                    jobOrder.information["stockPile"] = stockpile
-
-                    self.character.addMessage("running job order to check stockpile")
-                    self.character.jobOrders.append(jobOrder)
-                    self.character.runCommandString("Jj.j")
-                    self.blocked = False
-                    return
-
-            #check sinks
-            for stockpile in self.stockPiles:
-                if self.stockPileInfo[stockpile].get("sink") == True and self.stockPileInfo[stockpile]["amount"] >= self.stockPileInfo[stockpile]["desiredAmount"]:
-                    self.lastAction = "check sinks"
-                    jobOrder = src.items.itemMap["JobOrder"]()
-                    jobOrder.tasks = [
-                        {
-                            "task":"processStatusReport",
-                            "command":None
-                        },
-                        {
-                            "task":"insert completed job order into stockpile manager",
-                            "command":"scwj",
-                        },]
-                    if self.roomManagerName:
-                        jobOrder.tasks.append(
-                            {
-                                "task":"return from stockpile manager",
-                                "command":self.commands["return from room manager"],
-                            })
-                    jobOrder.tasks.extend([
-                        {
-                            "task":"walk back to stockpile manager",
-                            "command":self.stockPileInfo[stockpile]["pathFrom"],
-                        },
-                        {
-                            "task":"generateStatusReport",
-                            "command":None
-                        },
-                        {
-                            "task":"insert job order",
-                            "command":["s","c","j"],
-                        },
-                        {
-                            "task":"go to stockpile",
-                            "command":self.stockPileInfo[stockpile]["pathTo"],
-                        },
-                        ])
-                    if self.roomManagerName:
-                        jobOrder.tasks.append(
-                            {
-                                "task":"move to room manager",
-                                "command":self.commands["go to room manager"],
-                            })
-                    jobOrder.tasks.append(
-                        {
-                            "task":"clear head",
-                            "command":"zclear ",
-                        })
-                    jobOrder.taskName = "get statusreport sink"
-                    jobOrder.information["stockPile"] = stockpile
-
-                    self.character.addMessage("running job order to check sink stockpile")
-                    self.character.jobOrders.append(jobOrder)
-                    self.character.runCommandString("Jj.j")
-                    self.blocked = False
-                    return
-
-            #check sinks
-            for stockpile in self.stockPiles:
-                if self.stockPileInfo[stockpile].get("source") == True and (self.stockPileInfo[stockpile]["amount"] == 0 or ("desiredAmount" in self.stockPileInfo[stockpile] and self.stockPileInfo[stockpile]["amount"] <= self.stockPileInfo[stockpile]["desiredAmount"])):
-                    self.lastAction = "check sources"
-                    jobOrder = src.items.itemMap["JobOrder"]()
-                    jobOrder.tasks = [
-                        {
-                            "task":"processStatusReport",
-                            "command":None
-                        },
-                        {
-                            "task":"insert completed job order into stockpile manager",
-                            "command":"scj",
-                        },]
-                    if self.roomManagerName:
-                        jobOrder.tasks.append(
-                            {
-                                "task":"return from room manager",
-                                "command":self.commands["return from room manager"],
-                            })
-                    jobOrder.tasks.extend([
-                        {
-                            "task":"walk back to stockpile manager",
-                            "command":self.stockPileInfo[stockpile]["pathFrom"]
-                        },
-                        {
-                            "task":"generateStatusReport",
-                            "command":None
-                        },
-                        {
-                            "task":"insert job order",
-                            "command":"scj",
-                        },
-                        {
-                            "task":"go to stockpile",
-                            "command":self.stockPileInfo[stockpile]["pathTo"],
-                        },])
-                    if self.roomManagerName:
-                        jobOrder.tasks.append(
-                            {
-                                "task":"move to room manager",
-                                "command":self.commands["go to room manager"],
-                            })
-                    jobOrder.tasks.append(
-                        {
-                            "task":"clear head",
-                            "command":"zclear ",
-                        })
-                    jobOrder.taskName = "get statusreport source"
-                    jobOrder.information["stockPile"] = stockpile
-
-                    self.character.addMessage("running job order to check source stockpile")
-                    self.character.jobOrders.append(jobOrder)
-                    self.character.runCommandString("Jj.j")
-                    self.blocked = False
-                    return
-
-            # fill stockpile
-            needyStockpiles = {}
-            sources = {}
-            for stockPile in self.stockPiles:
-                stockPileInfo = self.stockPileInfo[stockPile]
-                if "desiredAmount" in stockPileInfo:
-                    if stockPileInfo["desiredAmount"] > stockPileInfo["amount"]:
-                        itemType = stockPileInfo.get("itemType")
-                        if itemType == None:
-                            itemType = "all"
-                        if not needyStockpiles.get(itemType):
-                            needyStockpiles[itemType] = []
-                        needyStockpiles[itemType].append(stockPile)
-
-                if stockPileInfo.get("source") == True:
-                    itemType = stockPileInfo.get("itemType")
-                    if itemType == None:
-                        itemType = "all"
-                    if not sources.get(itemType):
-                        sources[itemType] = []
-                    sources[itemType].append(stockPile)
-
-            stockPileFound = None
-            for itemType in needyStockpiles.keys():
-                if not itemType in sources:
-                    continue
-                stockPile = sources[itemType][0]
-                stockPileFound = stockPile
-                targetStockPile = needyStockpiles[itemType][0]
-                break
-
-            if stockPileFound:
-                self.lastAction = "fill sink"
-                self.character.addMessage("fill desired stockpile amount"+stockPileFound)
-                command = []
-
-                sourceStockPileInfo = self.stockPileInfo[stockPile]
-                targetStockPileInfo = self.stockPileInfo[targetStockPile]
-                amount = min(10-len(self.character.inventory),targetStockPileInfo["maxAmount"]-targetStockPileInfo["amount"],sourceStockPileInfo["amount"])
-
-                tasks = []
-                tasks.append(
-                    {
-                        "task":"move to room manager",
-                        "command":self.commands["go to room manager"],
-                    })
-                tasks.extend([
-                        {
-                            "task":"go to source stockpile",
-                            "command":sourceStockPileInfo["pathTo"],
-                        },
-                        {
-                            "task":"fetch resources",
-                            "command":"Js.sj"*amount,
-                        },
-                        {
-                            "task":"return to room manager",
-                            "command":sourceStockPileInfo["pathFrom"],
-                        },
-                        ])
-                sourceStockPileInfo["amount"] -= amount
-
-                tasks.extend([
-                        {
-                            "task":"go to target stockpile",
-                            "command":targetStockPileInfo["pathTo"],
-                        },
-                        {
-                            "task":"store resources",
-                            "command":"Js.j"*amount,
-                        },
-                        {
-                            "task":"return to room manager",
-                            "command":targetStockPileInfo["pathFrom"],
-                        },
-                        ])
-
-                tasks.append(
-                    {
-                        "task":"return from room manager",
-                        "command":self.commands["return from room manager"],
-                    })
-
-                targetStockPileInfo["amount"] += amount
-
-                jobOrder = src.items.itemMap["JobOrder"]()
-                jobOrder.tasks = list(reversed(tasks))
-                jobOrder.taskName = "transfer resources"
-
-                self.character.addJobOrder(jobOrder)
-
-                self.blocked = False
-                return
-            self.blocked = False
-            return
-
-        if self.submenue.selection == "clearInventory":
-            self.lastAction = "clearInventory"
-
-            amount = len(self.character.inventory)
-            command = "Js.s.j"*amount
-            self.character.runCommandString(command)
-            self.blocked = False
-            return
-
-        if self.submenue.selection == "addItem":
-            self.lastAction = "addItem"
-
-            if not self.character.inventory:
-                self.character.addMessage("empty inventory")
-                self.blocked = False
-                return
-            item = self.character.inventory[-1]
-
-            stockPileFound = None
-            for stockPile in self.stockPiles:
-                stockPileInfo = self.stockPileInfo[stockPile]
-
-                if not stockPileInfo["active"] == True:
-                    continue
-
-                if stockPileInfo.get("source") == True:
-                    continue
-
-                if not stockPileInfo["amount"] < stockPileInfo["maxAmount"]:
-                    continue
-
-                if not stockPileInfo.get("itemType") in (None,"",item.type):
-                    continue
-
-                stockPileFound = stockPile
-                break
-
-            if not stockPileFound:
-                self.character.addMessage("full")
-                if self.autoExpand:
-                    self.useJoborderRelayToLocalRoom(self.character,[
-                        {"task":"add task","tasks":[
-                            {"task":"extend storage"},
-                            ]},
-                        ],"CityBuilder")
-
-                self.blocked = False
-                return
-
+            self.lastAction = "addStockPileItem"
+            character.addMessage("add stockpile item "+stockpile)
+            character.inventory.append(src.items.TypedStockpileManager())
+            plot = self.assignedPlots.pop()
             command = []
-            if self.roomManagerName:
-                command.extend(self.commands["go to room manager"])
-            command.extend(stockPileInfo["pathTo"])
-            command.extend(["J","s",".","j"])
-            command.extend(stockPileInfo["pathFrom"])
-            if self.roomManagerName:
-                command.extend(self.commands["return from room manager"])
-            stockPileInfo["amount"] += 1
+            command.extend(self.assignedPlotsInfo[plot]["pathTo"])
+            command.extend(["L","s"])
+            command.extend(self.assignedPlotsInfo[plot]["pathFrom"])
+            self.stockPileInfo[plot] = self.assignedPlotsInfo[plot]
+            self.stockPiles.append(plot)
+            del self.assignedPlotsInfo[plot]
 
             convertedCommand = []
             for char in command:
                 convertedCommand.append((char,"norecord"))
 
-            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+            character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
             self.blocked = False
             return
 
+        #check stockpiles
+        for stockpile in self.stockPiles:
+            if not "stockPileType" in self.stockPileInfo[stockpile]:
+                self.lastAction = "initialCheckStockpile"
+                jobOrder = src.items.itemMap["JobOrder"]()
+                jobOrder.tasks = [
+                    {
+                        "task":"processStatusReport",
+                        "command":None
+                    },
+                    {
+                        "task":"insert completed job order into stockpile manager",
+                        "command":"scj",
+                    },]
+                if self.roomManagerName:
+                    jobOrder.tasks.append(
+                        {
+                            "task":"move to stockpile manager",
+                            "command":self.commands["return from room manager"],
+                        })
+                jobOrder.tasks.extend([
+                    {
+                        "task":"walk back to stockpile manager",
+                        "command":self.stockPileInfo[stockpile]["pathFrom"]
+                    },
+                    {
+                        "task":"generateStatusReport",
+                        "command":None
+                    },
+                    {
+                        "task":"insert job order",
+                        "command":["s","c","j"],
+                    },
+                    {
+                        "task":"go to stockpile",
+                        "command":self.stockPileInfo[stockpile]["pathTo"],
+                    },])
+                if self.roomManagerName:
+                    jobOrder.tasks.append(
+                        {
+                            "task":"move to room manager",
+                            "command":self.commands["go to room manager"],
+                        })
+                jobOrder.tasks.extend([
+                    {
+                        "task":"clear head",
+                        "command":".zclear ", 
+                    },
+                    ])
+                jobOrder.taskName = "get statusreport initial"
+                jobOrder.information["stockPile"] = stockpile
+
+                character.addMessage("running job order to check stockpile")
+                character.jobOrders.append(jobOrder)
+                character.runCommandString("Jj.j")
+                self.blocked = False
+                return
+
+        #check sinks
+        for stockpile in self.stockPiles:
+            if self.stockPileInfo[stockpile].get("sink") == True and self.stockPileInfo[stockpile]["amount"] >= self.stockPileInfo[stockpile]["desiredAmount"]:
+                self.lastAction = "check sinks"
+                jobOrder = src.items.itemMap["JobOrder"]()
+                jobOrder.tasks = [
+                    {
+                        "task":"processStatusReport",
+                        "command":None
+                    },
+                    {
+                        "task":"insert completed job order into stockpile manager",
+                        "command":"scwj",
+                    },]
+                if self.roomManagerName:
+                    jobOrder.tasks.append(
+                        {
+                            "task":"return from stockpile manager",
+                            "command":self.commands["return from room manager"],
+                        })
+                jobOrder.tasks.extend([
+                    {
+                        "task":"walk back to stockpile manager",
+                        "command":self.stockPileInfo[stockpile]["pathFrom"],
+                    },
+                    {
+                        "task":"generateStatusReport",
+                        "command":None
+                    },
+                    {
+                        "task":"insert job order",
+                        "command":["s","c","j"],
+                    },
+                    {
+                        "task":"go to stockpile",
+                        "command":self.stockPileInfo[stockpile]["pathTo"],
+                    },
+                    ])
+                if self.roomManagerName:
+                    jobOrder.tasks.append(
+                        {
+                            "task":"move to room manager",
+                            "command":self.commands["go to room manager"],
+                        })
+                jobOrder.tasks.append(
+                    {
+                        "task":"clear head",
+                        "command":"zclear ",
+                    })
+                jobOrder.taskName = "get statusreport sink"
+                jobOrder.information["stockPile"] = stockpile
+
+                character.addMessage("running job order to check sink stockpile")
+                character.jobOrders.append(jobOrder)
+                character.runCommandString("Jj.j")
+                self.blocked = False
+                return
+
+        #check sinks
+        for stockpile in self.stockPiles:
+            if self.stockPileInfo[stockpile].get("source") == True and (self.stockPileInfo[stockpile]["amount"] == 0 or ("desiredAmount" in self.stockPileInfo[stockpile] and self.stockPileInfo[stockpile]["amount"] <= self.stockPileInfo[stockpile]["desiredAmount"])):
+                self.lastAction = "check sources"
+                jobOrder = src.items.itemMap["JobOrder"]()
+                jobOrder.tasks = [
+                    {
+                        "task":"processStatusReport",
+                        "command":None
+                    },
+                    {
+                        "task":"insert completed job order into stockpile manager",
+                        "command":"scj",
+                    },]
+                if self.roomManagerName:
+                    jobOrder.tasks.append(
+                        {
+                            "task":"return from room manager",
+                            "command":self.commands["return from room manager"],
+                        })
+                jobOrder.tasks.extend([
+                    {
+                        "task":"walk back to stockpile manager",
+                        "command":self.stockPileInfo[stockpile]["pathFrom"]
+                    },
+                    {
+                        "task":"generateStatusReport",
+                        "command":None
+                    },
+                    {
+                        "task":"insert job order",
+                        "command":"scj",
+                    },
+                    {
+                        "task":"go to stockpile",
+                        "command":self.stockPileInfo[stockpile]["pathTo"],
+                    },])
+                if self.roomManagerName:
+                    jobOrder.tasks.append(
+                        {
+                            "task":"move to room manager",
+                            "command":self.commands["go to room manager"],
+                        })
+                jobOrder.tasks.append(
+                    {
+                        "task":"clear head",
+                        "command":"zclear ",
+                    })
+                jobOrder.taskName = "get statusreport source"
+                jobOrder.information["stockPile"] = stockpile
+
+                character.addMessage("running job order to check source stockpile")
+                character.jobOrders.append(jobOrder)
+                character.runCommandString("Jj.j")
+                self.blocked = False
+                return
+
+        # fill stockpile
+        needyStockpiles = {}
+        sources = {}
+        for stockPile in self.stockPiles:
+            stockPileInfo = self.stockPileInfo[stockPile]
+            if "desiredAmount" in stockPileInfo:
+                if stockPileInfo["desiredAmount"] > stockPileInfo["amount"]:
+                    itemType = stockPileInfo.get("itemType")
+                    if itemType == None:
+                        itemType = "all"
+                    if not needyStockpiles.get(itemType):
+                        needyStockpiles[itemType] = []
+                    needyStockpiles[itemType].append(stockPile)
+
+            if stockPileInfo.get("source") == True:
+                itemType = stockPileInfo.get("itemType")
+                if itemType == None:
+                    itemType = "all"
+                if not sources.get(itemType):
+                    sources[itemType] = []
+                sources[itemType].append(stockPile)
+
+        stockPileFound = None
+        for itemType in needyStockpiles.keys():
+            if not itemType in sources:
+                continue
+            stockPile = sources[itemType][0]
+            stockPileFound = stockPile
+            targetStockPile = needyStockpiles[itemType][0]
+            break
+
+        if stockPileFound:
+            self.lastAction = "fill sink"
+            character.addMessage("fill desired stockpile amount"+stockPileFound)
+            command = []
+
+            sourceStockPileInfo = self.stockPileInfo[stockPile]
+            targetStockPileInfo = self.stockPileInfo[targetStockPile]
+            amount = min(10-len(character.inventory),targetStockPileInfo["maxAmount"]-targetStockPileInfo["amount"],sourceStockPileInfo["amount"])
+
+            tasks = []
+            tasks.append(
+                {
+                    "task":"move to room manager",
+                    "command":self.commands["go to room manager"],
+                })
+            tasks.extend([
+                    {
+                        "task":"go to source stockpile",
+                        "command":sourceStockPileInfo["pathTo"],
+                    },
+                    {
+                        "task":"fetch resources",
+                        "command":"Js.sj"*amount,
+                    },
+                    {
+                        "task":"return to room manager",
+                        "command":sourceStockPileInfo["pathFrom"],
+                    },
+                    ])
+            sourceStockPileInfo["amount"] -= amount
+
+            tasks.extend([
+                    {
+                        "task":"go to target stockpile",
+                        "command":targetStockPileInfo["pathTo"],
+                    },
+                    {
+                        "task":"store resources",
+                        "command":"Js.j"*amount,
+                    },
+                    {
+                        "task":"return to room manager",
+                        "command":targetStockPileInfo["pathFrom"],
+                    },
+                    ])
+
+            tasks.append(
+                {
+                    "task":"return from room manager",
+                    "command":self.commands["return from room manager"],
+                })
+
+            targetStockPileInfo["amount"] += amount
+
+            jobOrder = src.items.itemMap["JobOrder"]()
+            jobOrder.tasks = list(reversed(tasks))
+            jobOrder.taskName = "transfer resources"
+
+            character.addJobOrder(jobOrder)
+
+            self.blocked = False
+            return
         self.blocked = False
-        return
+
+    def doClearInventory(self,character):
+        self.lastAction = "clearInventory"
+
+        amount = len(character.inventory)
+        command = "Js.s.j"*amount
+        character.runCommandString(command)
+        self.blocked = False
+
+    def doAddItem(self,character):
+        self.lastAction = "addItem"
+
+        if not character.inventory:
+            character.addMessage("empty inventory")
+            self.blocked = False
+            return
+        item = character.inventory[-1]
+
+        stockPileFound = None
+        for stockPile in self.stockPiles:
+            stockPileInfo = self.stockPileInfo[stockPile]
+
+            if not stockPileInfo["active"] == True:
+                continue
+
+            if stockPileInfo.get("source") == True:
+                continue
+
+            if not stockPileInfo["amount"] < stockPileInfo["maxAmount"]:
+                continue
+
+            if not stockPileInfo.get("itemType") in (None,"",item.type):
+                continue
+
+            stockPileFound = stockPile
+            break
+
+        if not stockPileFound:
+            character.addMessage("full")
+            if self.autoExpand:
+                self.useJoborderRelayToLocalRoom(character,[
+                    {"task":"add task","tasks":[
+                        {"task":"extend storage"},
+                        ]},
+                    ],"CityBuilder")
+
+            self.blocked = False
+            return
+
+        command = []
+        if self.roomManagerName:
+            command.extend(self.commands["go to room manager"])
+        command.extend(stockPileInfo["pathTo"])
+        command.extend(["J","s",".","j"])
+        command.extend(stockPileInfo["pathFrom"])
+        if self.roomManagerName:
+            command.extend(self.commands["return from room manager"])
+        stockPileInfo["amount"] += 1
+
+        convertedCommand = []
+        for char in command:
+            convertedCommand.append((char,"norecord"))
+
+        character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
+        self.blocked = False
 
     def configure(self,character):
         if self.blocked:

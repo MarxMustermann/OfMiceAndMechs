@@ -3576,11 +3576,11 @@ class CreativeMode(BasicPhase):
                 ]
 
         items = []
-        item = src.items.ArchitectArtwork(15*7+8,15*7+7)
+        item = src.items.itemMap["ArchitectArtwork"](15*7+8,15*7+7)
         item.bolted = False
         item.godMode = True
         items.append(item)
-        item = src.items.ProductionArtwork(15*7+8,15*7+8)
+        item = src.items.itemMap["ProductionArtwork"](15*7+8,15*7+8)
         item.bolted = False
         item.godMode = True
         items.append(item)

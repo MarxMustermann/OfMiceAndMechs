@@ -299,30 +299,46 @@ class Canvas(object):
             for char in line:
 
                 def renderText(text,colour):
-                    image = pygame.image.load('config/Images/perspectiveTry/textChar.png')
-                    pydisplay.blit(image,(250+counterX*(tileSize+1), 110+counterY*(tileSize+1)))
+                    if text[0].isupper():
+                        image = pygame.image.load('config/Images/perspectiveTry/textChar.png')
+                        pydisplay.blit(image,(250+counterX*(tileSize+1), 110+counterY*(tileSize+1)))
+                        textOffset = (2,8)
+                    else:
+                        textOffset = (3,tileSize+1)
 
                     font = pygame.font.Font("config/DejaVuSansMono.ttf",10)
                     text = font.render(text, True, colour)
-                    pydisplay.blit(text,(250+(counterX*(tileSize+1))+2, 110+(counterY*(tileSize+1))+8))
+                    pydisplay.blit(text,(250+(counterX*(tileSize+1))+textOffset[0], 110+(counterY*(tileSize+1))+textOffset[1]))
 
                 # bad code: colour information is lost
                 if isinstance(char, int):
                     # scale the tile
                     # bad code: rescales each tile individually and on each render
                     try:
-                        # fetch image
                         image = self.tileMapping.indexedMapping[char]
-
-                        # scale image
-                        if not tileSize == 10:
-                            image = pygame.transform.scale(image,(int(tileSize*(image.get_width()/10)),int(tileSize*(image.get_height()/10))))
-
-                        # render image
-                        pydisplay.blit(image,(250+counterX*(tileSize+1), 110+counterY*(tileSize+1)))
                     except:
-                        if debug:
-                            raise Exception("unable to scale image")
+                        image = None
+
+                    if image:
+                        try:
+                            # fetch image
+                            image = self.tileMapping.indexedMapping[char]
+
+                            # scale image
+                            if not tileSize == 10:
+                                image = pygame.transform.scale(image,(int(tileSize*(image.get_width()/10)),int(tileSize*(image.get_height()/10))))
+
+                            # render image
+                            pydisplay.blit(image,(250+counterX*(tileSize+1), 110+counterY*(tileSize+1)))
+                        except:
+                            if debug:
+                                raise Exception("unable to scale image")
+                    else:
+                        try:
+                            char = self.displayChars.indexedMapping[char]
+                            renderText(char[1],char[0].get_rgb_values()[0:3])
+                        except:
+                            print(char)
                 elif isinstance(char, str):
                     renderText(char,(255, 255, 255))
                 else:

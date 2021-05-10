@@ -17,3 +17,6 @@ MiningManager = src.itemFolder.managerFolder.miningManager.MiningManager
 
 import src.itemFolder.managerFolder.stockpileMetaManager
 StockpileMetaManager = src.itemFolder.managerFolder.stockpileMetaManager.StockpileMetaManager
+
+import src.itemFolder.managerFolder.productionManager
+ProductionManager = src.itemFolder.managerFolder.productionManager.ProductionManager

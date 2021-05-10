@@ -93,6 +93,9 @@ class RoadManager(src.items.ItemNew):
         return result
 
     def getCommandStringForPath(self,start,end):
+        start = tuple(start)
+        end = tuple(end)
+
         if not (start == tuple(self.center) or end == tuple(self.center)):
             raise Exception # invalid path
             return "invalid"
@@ -157,7 +160,7 @@ class RoadManager(src.items.ItemNew):
         bigY = task["coordinate"][1]
 
         for pos in [(6,6),(6,7),(6,8),(7,8),(8,8),(8,7),(8,6),(7,6)]:
-            floorPlate = src.items.itemMap["FloorPlate"](bigX*15+pos[0],bigY*15+pos[1])
+            floorPlate = src.items.itemMap["Paving"](bigX*15+pos[0],bigY*15+pos[1])
             terrain.addItem(floorPlate)
         commandItem = src.items.itemMap["Command"](bigX*15+7,bigY*15+6)
         terrain.addItem(commandItem)
@@ -211,7 +214,7 @@ class RoadManager(src.items.ItemNew):
             startPos[index] += changePerStep
             if i in (5,6,):
                 continue
-            floorPlate = src.items.itemMap["FloorPlate"](bigX*15+startPos[0],bigY*15+startPos[1])
+            floorPlate = src.items.itemMap["Paving"](bigX*15+startPos[0],bigY*15+startPos[1])
             terrain.addItem(floorPlate)
 
     def doAddPathingNode(self,task):
@@ -252,19 +255,6 @@ class RoadManager(src.items.ItemNew):
             if foundNeighbourSlot[index] < slotCoordinate[index]:
                 changePerStep = -1
 
-            startPos = [7,7]
-            startPos[index] += changePerStep
-            for i in range(0,12):
-                startPos[index] += changePerStep
-                if i in (5,6,):
-                    continue
-                floorPlate = src.items.itemMap["FloorPlate"](bigX*15+startPos[0],bigY*15+startPos[1])
-                terrain.addItem(floorPlate)
-
-
-        for pos in [(6,6),(6,7),(6,8),(7,8),(8,8),(8,7),(8,6),(7,6)]:
-            floorPlate = src.items.itemMap["FloorPlate"](bigX*15+pos[0],bigY*15+pos[1])
-            terrain.addItem(floorPlate)
         pathingNode = src.items.itemMap["PathingNode"](bigX*15+offsetX,bigY*15+offsetY)
         pathingNode.nodeName = nodeName
 

@@ -184,6 +184,18 @@ class Character(src.saveing.Saveable):
         self.xPosition = xPosition
         self.yPosition = yPosition
 
+    def searchInventory(self,itemType,extra={}):
+        foundItems = []
+        for item in self.inventory:
+            if not item.type == itemType:
+                continue
+
+            if extra.get("uses") and not item.uses >= extra.get("uses"):
+                continue
+            foundItems.append(item)
+        return foundItems
+                
+
     def addMessage(self,message):
         self.messages.append(message)
 
@@ -258,7 +270,7 @@ class Character(src.saveing.Saveable):
         bonusMultiplier = self.bonusMultiplier
 
         if self.weapon:
-            baseDamage = 6
+            baseDamage = self.weapon.baseDamage
             randomBonus = 7
 
         if self.combatMode == "agressive":
@@ -419,6 +431,12 @@ class Character(src.saveing.Saveable):
                  "quests": {},
                  "path":self.path,
                })
+
+        # store equipment
+        if self.weapon:
+            state["weapon"] = self.weapon.getState()
+        if self.armor:
+            state["armor"] = self.armor.getState()
                  
         # store inventory
         inventoryIds = []
@@ -506,6 +524,11 @@ class Character(src.saveing.Saveable):
             if not "attacksEnemiesOnContact" in personality:
                 self.personality["attacksEnemiesOnContact"] = True
 
+        # store equipment
+        if state.get("weapon"):
+            self.weapon = src.items.getItemFromState(state["weapon"])
+        if state.get("armor"):
+            self.armor = src.items.getItemFromState(state["armor"])
 
         if not "loop" in state["macroState"]:
             state["macroState"]["loop"] = []
@@ -691,6 +714,10 @@ class Character(src.saveing.Saveable):
     '''
     def addToInventory(self,item):
         self.inventory.append(item)
+
+    def removeItemsFromInventory(self,items):
+        for item in items:
+            self.inventory.remove(item)
 
     '''
     this wrapper converts a character centered call to a solver centered call
@@ -1125,6 +1152,8 @@ class Mouse(Character):
         self.health = 10
         self.faction = "mice"
 
+        self.solvers.extend(["NaiveMurderQuest"])
+
         self.baseDamage = 1
         self.randomBonus = 0
         self.bonusMultiplier = 0
@@ -1153,10 +1182,13 @@ class Monster(Character):
                "phase",
                ])
         self.initialState = self.getState()
+        self.faction = "monster"
+
+        self.solvers.extend(["NaiveMurderQuest"])
 
     def die(self,reason=None,addCorpse=True):
         if self.phase == 1:
-            if self.xPosition and self.yPosition and (not self.container.getItemByPosition((self.xPosition,self.yPosition))):
+            if self.xPosition and self.yPosition and (not self.container.getItemByPosition((self.xPosition,self.yPosition,self.zPosition))):
                 new = src.items.itemMap["Mold"](creator=self)
                 new.xPosition = self.xPosition
                 new.yPosition = self.yPosition

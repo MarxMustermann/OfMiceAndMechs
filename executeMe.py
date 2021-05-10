@@ -93,8 +93,6 @@ if not shouldLoad:
     else:
         scenario = args.scenario
 
-    print(scenario)
-
     if scenario == "siege":
         args.terrain = "test"
         args.phase = "BuildBase"
@@ -107,8 +105,6 @@ if not shouldLoad:
     elif scenario == "dungeon":
         args.terrain = "nothingness"
         args.phase = "Dungeon"
-
-print(args.terrain)
 
 import src.canvas as canvas
 

@@ -12,6 +12,7 @@ import src.cinematics
 import src.chats
 import src.quests
 import src.items
+import src.interaction
 import config
 
 phasesByName = None
@@ -779,7 +780,7 @@ class WakeUpPhase(BasicPhase):
         mainChar.wakeUp()
 
         # redraw
-        loop.set_alarm_in(0.1, callShow_or_exit, '.')
+        src.interaction.loop.set_alarm_in(0.1, callShow_or_exit, '.')
 
         # wrap up
         self.end()
@@ -1325,7 +1326,7 @@ class BoilerRoomWelcome(BasicPhase):
     advance the game
     '''
     def advance(self):
-        loop.set_alarm_in(0.1, callShow_or_exit, '.')
+        src.interaction.loop.set_alarm_in(0.1, callShow_or_exit, '.')
 
     '''
     start next sub phase

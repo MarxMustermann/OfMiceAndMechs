@@ -11,10 +11,10 @@ import json
 import src.items
 import src.saveing
 import src.chats
+import src.interaction
 
 # HACK: common variables with modules
 showCinematic = None
-loop = None
 callShow_or_exit = None
 mainChar = None
 
@@ -255,7 +255,7 @@ class Quest(src.saveing.Saveable):
                 self.callIndirect(self.endTrigger)
             if self.endCinematics:
                 showCinematic(self.endCinematics)            
-                loop.set_alarm_in(0.0, callShow_or_exit, '.')
+                src.interaction.loop.set_alarm_in(0.0, callShow_or_exit, '.')
             
             # deactivate
             self.deactivate()
@@ -305,7 +305,7 @@ class Quest(src.saveing.Saveable):
             self.callIndirect(self.endTrigger)
         if self.endCinematics:
             showCinematic(self.endCinematics)            
-            loop.set_alarm_in(0.0, callShow_or_exit, '.')
+            src.interaction.loop.set_alarm_in(0.0, callShow_or_exit, '.')
 
         # deactivate
         self.deactivate()
@@ -392,7 +392,7 @@ class Quest(src.saveing.Saveable):
             self.startTrigger()
         if self.startCinematics:
             showCinematic(self.startCinematics)            
-            loop.set_alarm_in(0.0, callShow_or_exit, '.')
+            src.interaction.loop.set_alarm_in(0.0, callShow_or_exit, '.')
 
         # add automatic termination
         if self.lifetime and not self.lifetimeEvent:

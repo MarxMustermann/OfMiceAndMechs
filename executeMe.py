@@ -238,9 +238,6 @@ mainChar = gameStateObj.mainChar
 interaction.setFooter()
 
 # bad code: common variables with modules
-rooms.Character = characters.Character
-        
-# bad code: common variables with modules
 messages = []
 items.messages = messages
 quests.messages = messages

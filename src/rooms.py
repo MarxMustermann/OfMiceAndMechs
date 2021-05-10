@@ -16,9 +16,9 @@ import src.canvas
 import src.logger
 import src.chats
 import src.gameMath
+import src.characters
 
 # bad code: global state
-Character = None
 mainChar = None
 messages = None
 

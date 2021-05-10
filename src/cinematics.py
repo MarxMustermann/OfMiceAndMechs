@@ -13,6 +13,7 @@ import src.saveing
 import src.logger
 import src.interaction
 import src.gamestate
+import src.urwidSpecials
 
 cinematicQueue = []
 
@@ -304,7 +305,6 @@ class TextCinematic(BasicCinematic):
         # set or not set rusty colors
         if self.rusty:
             try:
-                import src.urwidSpecials
                 base = src.urwidSpecials.makeRusty(baseText)
             except:
                 base = [baseText]

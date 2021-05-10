@@ -39,8 +39,10 @@ class TradingArtwork(src.items.ItemNew):
         while len(self.availableTrades) < 15:
             if len(self.availableTrades) < 10:
                 item = random.choice(src.items.commons)
-            else:
+            if len(self.availableTrades) < 13:
                 item = random.choice(src.items.semiCommons)
+            else:
+                item = "Machine"
             dependencies = []
             
             rawMaterials = src.items.rawMaterialLookup.get(item)

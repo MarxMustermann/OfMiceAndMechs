@@ -236,12 +236,6 @@ mainChar = gameStateObj.mainChar
 #################################################################################################################################
 
 # bad code: common variables with modules
-story.chats = chats
-characters.chats = chats
-rooms.chats = chats
-quests.chats = chats
-
-# bad code: common variables with modules
 cinematics.quests = quests
 story.quests = quests
 terrains.quests = quests
@@ -507,14 +501,9 @@ else:
     interaction.fixesTicks = False
 
 # start the interaction loop of the underlying library
-try:
-    if not args.nourwid:
-        input("game ready. press enter to start")
-        interaction.loop.run()
-except:
-    if musicThread:
-        musicThread.stop = True
-    raise
+if not args.nourwid:
+    input("game ready. press enter to start")
+    interaction.loop.run()
 
 # stop the music
 if musicThread:

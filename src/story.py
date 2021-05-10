@@ -9,6 +9,7 @@ import src.saveing
 import src.rooms
 import src.canvas
 import src.cinematics
+import src.chats
 
 phasesByName = None
 gamestate = None
@@ -1042,8 +1043,8 @@ class BasicMovementTraining(BasicPhase):
     """)
                    
         # add chat options
-        firstOfficer.basicChatOptions.append({"dialogName":"I did the task. Are there more things to do?","chat":chats.TutorialSpeechTest,"params":{"firstOfficer":firstOfficer,"phase":self}})
-        firstOfficer.basicChatOptions.append({"dialogName":"What are these machines in this room?","chat":chats.FurnaceChat,"params":{"firstOfficer":firstOfficer,"phase":self,"terrain":terrain}})
+        firstOfficer.basicChatOptions.append({"dialogName":"I did the task. Are there more things to do?","chat":src.chats.TutorialSpeechTest,"params":{"firstOfficer":firstOfficer,"phase":self}})
+        firstOfficer.basicChatOptions.append({"dialogName":"What are these machines in this room?","chat":src.chats.FurnaceChat,"params":{"firstOfficer":firstOfficer,"phase":self,"terrain":terrain}})
 
     '''
     make the player fire a furnace. no triggers placed
@@ -1133,7 +1134,7 @@ In this case you still have to press """+commandChars.move_west+""" to walk agai
         # alias attributes
         firstOfficer = terrain.wakeUpRoom.firstOfficer
 
-        firstOfficer.basicChatOptions.append({"dialogName":"I did the task. Are there more things to do?","chat":chats.GrowthTankRefillChat,"params":{"firstOfficer":firstOfficer,"phase":self}})
+        firstOfficer.basicChatOptions.append({"dialogName":"I did the task. Are there more things to do?","chat":src.chats.GrowthTankRefillChat,"params":{"firstOfficer":firstOfficer,"phase":self}})
         
     def doTask1(self):
         # alias attributes
@@ -1864,7 +1865,7 @@ class FindWork(BasicPhase):
                                   {"type":"text","text":"The Falkenbaum is a training mech after all. Completing tasks for training does not gain you reputation, so it is preferable to complete actual work","name":"Why transport furniture back and forth?","delete":True},
                          ],"name":"Please explain how the hopper job works in detail."},
                          {"type":"text","text":"I will assign simple training tasks to you. You will recieve a token each time you complete a training task.\n\nCollect 4 tokens by completing 4 tasks\n\nTalk to me when you are ready to start a trainings task","name":"Please train me","delete":True,"trigger":{"container":self,"method":"getSimpleReputationGathering"}}]
-        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I need more information about the hopper duty","chat":chats.ConfigurableChat,"params":{
+        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I need more information about the hopper duty","chat":src.chats.ConfigurableChat,"params":{
                 "text":"what do you need to know more about?",
                 "info":self.firstOfficersDialog,
             }})
@@ -1989,7 +1990,7 @@ class FindWork(BasicPhase):
         showText("go on then.")
 
         # add option to reenter the command chain
-        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I want to report for duty","chat":chats.ReReport,"params":{"phase":self}})
+        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"I want to report for duty","chat":src.chats.ReReport,"params":{"phase":self}})
 
     '''
     make the player do some tasks until allowing advancement elsewhere
@@ -2138,10 +2139,10 @@ class FindWork(BasicPhase):
         self.addNewCircleQuest()
 
         # add the dialog for getting a job
-        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChatFirst,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":mainChar.quests[0]}})
-        terrain.waitingRoom.secondOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChatSecond,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":mainChar.quests[0]}})
-        terrain.wakeUpRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChatFirst,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":mainChar.quests[0]}})
-        terrain.tutorialMachineRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":chats.JobChatFirst,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":mainChar.quests[0]}})
+        terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":src.chats.JobChatFirst,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":mainChar.quests[0]}})
+        terrain.waitingRoom.secondOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":src.chats.JobChatSecond,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":mainChar.quests[0]}})
+        terrain.wakeUpRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":src.chats.JobChatFirst,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":mainChar.quests[0]}})
+        terrain.tutorialMachineRoom.firstOfficer.basicChatOptions.append({"dialogName":"Can you use some help?","chat":src.chats.JobChatFirst,"params":{"mainChar":mainChar,"terrain":terrain,"hopperDutyQuest":mainChar.quests[0]}})
 
     '''
     quest to carry stuff and trigger adding a new quest afterwards

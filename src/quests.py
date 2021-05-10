@@ -10,13 +10,13 @@ import json
 # import basic internal libs
 import src.items
 import src.saveing
+import src.chats
 
 # HACK: common variables with modules
 showCinematic = None
 loop = None
 callShow_or_exit = None
 mainChar = None
-chats = None
 
 ############################################################
 ###
@@ -2410,8 +2410,8 @@ class GetReward(MetaQuestSequence):
         # add chat option
         if character == mainChar and not self.addedRewardChat:
             self.addedRewardChat = True
-            self.rewardChat = chats.RewardChat
-            self.questDispenser.basicChatOptions.append({"dialogName":"i did the task: "+self.actualQuest.description.split("\n")[0],"chat":chats.RewardChat,"params":{"quest":self,"character":self.character}})
+            self.rewardChat = src.chats.RewardChat
+            self.questDispenser.basicChatOptions.append({"dialogName":"i did the task: "+self.actualQuest.description.split("\n")[0],"chat":src.chats.RewardChat,"params":{"quest":self,"character":self.character}})
 
         super().assignToCharacter(character)
 
@@ -2426,9 +2426,8 @@ class GetReward(MetaQuestSequence):
             toRemove = None
             for chat in self.questDispenser.basicChatOptions:
                 if isinstance(chat,dict):
-                    if chats:
-                        if chat["chat"] == chats.RewardChat and chat["params"]["quest"] == self:
-                            toRemove = chat
+                    if chat["chat"] == src.chats.RewardChat and chat["params"]["quest"] == self:
+                        toRemove = chat
                         
             if toRemove:
                 self.questDispenser.basicChatOptions.remove(toRemove)

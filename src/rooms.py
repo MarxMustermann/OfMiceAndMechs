@@ -14,6 +14,7 @@ import src.saveing
 import src.events
 import src.canvas
 import src.logger
+import src.chats
 
 # bad code: global state
 Character = None

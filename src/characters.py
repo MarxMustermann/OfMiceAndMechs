@@ -396,15 +396,15 @@ class Character(src.saveing.Saveable):
                 chatOptions.append(src.chats.RecruitChat)
                 pass
             if not partner in self.subordinates:
-                chatOptions.append({"dialogName":"may i serve you?","chat":chats.RoomDutyChat,"params":{
+                chatOptions.append({"dialogName":"may i serve you?","chat":src.chats.RoomDutyChat,"params":{
                 "superior":self
                 }})
             else:
-                chatOptions.append({"dialogName":"can i do something for you?","chat":chats.RoomDutyChat2,"params":{
+                chatOptions.append({"dialogName":"can i do something for you?","chat":src.chats.RoomDutyChat2,"params":{
                 "superior":self
                 }})
             if self.isMilitary:
-                chatOptions.append({"dialogName":"I want to join the military","chat":chats.JoinMilitaryChat,"params":{
+                chatOptions.append({"dialogName":"I want to join the military","chat":src.chats.JoinMilitaryChat,"params":{
                 "superior":self
                 }})
 
@@ -599,10 +599,10 @@ class Character(src.saveing.Saveable):
             chatOptions = []
             for chatType in state["chatOptions"]:
                 if not isinstance(chatType,dict):
-                    chatOptions.append(chats.chatMap[chatType])
+                    chatOptions.append(src.chats.chatMap[chatType])
                 else:
                     option = {}
-                    option["chat"] = chats.chatMap[chatType["chat"]]
+                    option["chat"] = src.chats.chatMap[chatType["chat"]]
                     option["dialogName"] = chatType["dialogName"]
                     if "params" in chatType:
                         params = {}

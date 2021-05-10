@@ -261,9 +261,6 @@ else:
     terrain = gameStateObj.terrain
     interaction.lastTerrain = terrain
 
-# bad code: common variables with modules
-cinematics.interaction = interaction
-
 # state that should be contained in the gamestate
 mapHidden = True
 mainChar = None

@@ -15,6 +15,7 @@ def setup():
 # load basic libs
 import json
 import random
+import uuid
 
 # load basic internal libs
 import src.saveing
@@ -24,12 +25,29 @@ import config
 class ItemNew(src.saveing.Saveable):
     """
     This is the base class for ingame items. It is intended to hold the common behaviour of items.
+    Since i'm in the middle of refactoring things there are two base classes for items at the moment.
+    This is the class stuff should be migrated to.
 
+    Attributes:
+        seed (int): rng seed intended to have predictable randomness
+        container: references where the item is placed currently
+    
     """
     type = "Item"
 
-    def __init__(self,display=None,xPosition=0,yPosition=0,zPosition=0,creator=None,name="unkown",seed=0,noId=False,
-                      runsJobOrders=False,hasSettings=False,runsCommands=False,canReset=False):
+    def __init__(self,display=None,xPosition=0,yPosition=0,zPosition=0,name="unkown",seed=0,noId=False)
+            """
+            the constructor
+
+            Parameters:
+                display: information on how the item is shown, can be a string  
+                xPosition: position information
+                yPosition: position information
+                zPosition: position information
+                name: name shown to the user
+                seed: rng seed
+                noId: flag to prevent generating useless ids (obsolete?)
+            """
         super().__init__()
         
         if not display:
@@ -40,6 +58,7 @@ class ItemNew(src.saveing.Saveable):
             except:
                 pass
 
+        # basic information
         self.seed = seed
         self.name = name
         self.xPosition = xPosition
@@ -71,15 +90,35 @@ class ItemNew(src.saveing.Saveable):
                "commands",
                ])
 
-        import uuid
-        self.id = uuid.uuid4().hex
+        if not noId:
+            self.id = uuid.uuid4().hex
+        else:
+            self.id = None
 
     def useJoborderRelayToLocalRoom(self,character,tasks,itemType,information={}):
+            """
+            delegate a task to another item using a room manager
+
+            Parameters:
+                character: the character used for running the job order
+                tasks: the tasks to delegate
+                itemType: the type of item the task should be delegated to
+                information: optional information block on the job order
+            """
+
+        # set up job order
+        jobOrder = src.items.itemMap["JobOrder"]()
+        jobOrder.taskName = "relay job Order"
+        jobOrder.information = information
+
+        # prepare the task for gooing to the roommanager
         newTasks = [
                 {
                     "task":"go to room manager",
                     "command":self.commands["go to room manager"]
                 },]
+
+        # prepare the tasks for delegating the given tasks
         for task in tasks:
             newTasks.append(
                 {
@@ -94,11 +133,15 @@ class ItemNew(src.saveing.Saveable):
                         "ItemType":itemType,
                     })
             newTasks.append(task)
+
+        # prepare the task for returning from the roommanager
         newTasks.append(
             {
                 "task":"return from room manager",
                 "command":self.commands["return from room manager"]
             })
+
+        # prepare the task for gooing to the roommanager
         newTasks.append(
             {
                 "task":"insert job order",
@@ -110,22 +153,42 @@ class ItemNew(src.saveing.Saveable):
                 "command":None,
             })
 
-        character.addMessage("running job order local room relay")
-        jobOrder = src.items.itemMap["JobOrder"]()
+        # add prepared tasks to job order
         jobOrder.tasks = list(reversed(newTasks))
-        jobOrder.taskName = "relay job Order"
-        jobOrder.information = information
 
+        # run job order
+        character.addMessage("running job order local room relay")
         character.jobOrders.append(jobOrder)
         character.runCommandString("Jj.j")
 
     def gatherApplyActions(self,character=None):
+            """
+            returns a list of actions that should be run when using this item
+            this is intended to be overwritten to add actions
+
+            Parameters:
+                character: the character using the item
+            Returns:
+                a list of function calls to run
+            """
+
         result = []
+
+        # add spawning menus if applicable
         if self.applyOptions:
-           result.append(self.spawnApplyMenu) 
+           result.append(self.__spawnApplyMenu) 
+
         return result
 
-    def spawnApplyMenu(self,character):
+    def __spawnApplyMenu(self,character):
+            """
+            spawns a selection menu and registers a callback for when the selection is ready
+            this is intended to by used by setting self.applyOptions
+
+            Parameters:
+                character: the character getting the menu
+            """
+
         options = []
         for option in self.applyOptions:
             options.append(option)
@@ -134,18 +197,29 @@ class ItemNew(src.saveing.Saveable):
         character.macroState["submenue"].followUp = {"method":"handleApplyMenu","container":self,"params":{"character":character}}
 
     def handleApplyMenu(self,params):
+            """
+            calls a function depending on user selection
+            
+            Parameters:
+                params: context for the selection
+            """
         character = params["character"]
 
         selection = character.macroState["submenue"].selection
 
-        character.addMessage("index %s"%(selection,))
-
         if not selection:
             return
 
+        # call the function set for the selection
         self.applyMap[selection](character)
 
     def getTerrain(self):
+            """
+            gets the terrain the item is placed on directly or indirectly
+
+            Return:
+                the terrain
+            """
         if self.room:
             terrain = self.room.terrain
         if self.terrain:
@@ -153,8 +227,17 @@ class ItemNew(src.saveing.Saveable):
         return terrain
 
     def apply(self,character):
+            """
+            handles usage by a character
+            
+            Parameters:
+                character: the character using the item
+            """
+
+        # gather actions
         actions = self.gatherApplyActions(character)
 
+        # run actions
         if actions:
             for action in actions:
                 action(character)
@@ -162,6 +245,14 @@ class ItemNew(src.saveing.Saveable):
             character.addMessage("i can not do anything useful with this")
 
     def __vanillaPickUp(self,character):
+            """
+            basic behaviour for getting picked up
+
+            Parameters:
+                character: the character using the item
+            """
+
+        # prevent crashes
         if self.xPosition == None or self.yPosition == None:
             return
 
@@ -170,23 +261,35 @@ class ItemNew(src.saveing.Saveable):
             character.addMessage("you cannot pick up bolted items")
             return
 
+        # do the pick up
         character.addMessage("you pick up a %s"%(self.type))
-
         self.container.removeItem(self)
-
-        # remove position information to place item in the void
-        self.xPosition = None
-        self.yPosition = None
-
-        # add item to characters inventory
-        character.inventory.append(self)
+        character.addItemToInventory(self)
 
     def gatherPickupActions(self,character=None):
+            """
+            returns a list of actions that should be run when picking up this item
+            this is intended to be overwritten to add actions
+
+            Parameters:
+                character: the character picking up the item
+            Returns:
+                a list of functions
+            """
         return [self.__vanillaPickUp]
 
     def pickUp(self,character):
+            """
+            handles getting picked up by a character
+            
+            Parameters:
+                character: the character picking up the item
+            """
+
+        # gather the actions
         actions = self.gatherPickupActions()
 
+        # run the actions
         if actions:
             for action in actions:
                 action(character)
@@ -194,6 +297,13 @@ class ItemNew(src.saveing.Saveable):
             character.addMessage("no pickup action found")
 
     def getLongInfo(self):
+            """
+            returns a long text description to show to the player
+            
+            Returns:
+                string: the description text
+            """
+
         text = "item: "+self.type+" \n\n"
         if hasattr(self,"descriptionText"):
             text += "description: \n"+self.description+"\n\n"
@@ -205,12 +315,31 @@ class ItemNew(src.saveing.Saveable):
         return text
 
     def render(self):
+            """
+            returns the rendered item
+            
+            Returns:
+                the display information
+            """
         return self.display
 
     def getDetailedInfo(self):
+            """
+            returns a short text description to show to the player
+
+            Returns:
+                str: the description text
+            """
         return self.description
 
     def fetchSpecialRegisterInformation(self):
+            """
+            returns some of the objects state to be stored ingame in a characters registers
+            this is intended to be overwritten to add more information
+
+            Returns:
+                a dictionary containing the information
+            """
         result = {}
         if hasattr(self,"type"):
             result["type"] = self.type
@@ -234,6 +363,13 @@ class ItemNew(src.saveing.Saveable):
         return result
 
     def getConfigurationOptions(self,character):
+            """
+            returns a list of configuration options for the item
+            this is intended to be overwritten to add more options
+
+            Returns:
+                a dictionary containing function calls with description
+            """
         options = {}
         if self.runsCommands:
             options["c"] = ("commands",None)#self.setCommands)
@@ -248,18 +384,38 @@ class ItemNew(src.saveing.Saveable):
         return options
 
     def reset(self,character):
+            """
+            dummy for handling a character trying to reset the machine
+
+            Parameters:
+                character: the character triggering the reset request
+            """
         character.addMessage("nothing to reset")
-        pass
 
     def doMaintenance(self,character):
+            """
+            dummy for handling a character trying to do maintenance
+
+            Parameters:
+                character: the character triggering the maintenance offer
+            """
         character.addMessage("no maintenance action set")
 
     def configure(self,character):
+            """
+            handle a character trying to configure this item by spawning a submenu
 
+            Parameters:
+                character: the character configuring this item
+            """
+
+        # store last action for debug purposes
         self.lastAction = "configure"
 
+        # fetch the option
         options = self.getConfigurationOptions(character)
 
+        # reformat options for menu
         text = ""
         if not options:
             text += "this machine cannot be configured, press any key to continue"
@@ -267,12 +423,42 @@ class ItemNew(src.saveing.Saveable):
             for (key,value) in options.items():
                 text += "%s: %s\n"%(key,value[0])
             
+        # spawn menu
         self.submenue = src.interaction.OneKeystrokeMenu(text)
-
         character.macroState["submenue"] = self.submenue
+
+        # register callback
         character.macroState["submenue"].followUp = {"container":self,"method":"configureSwitch","params":{"character":character}}
 
+    def configureSwitch(self,params):
+            """
+            handle the selection of a configuration option by a character
+            Parameters:
+                params: context for the selection
+            """
+
+        # save last action for debug
+        self.lastAction = "configureSwitch"
+
+        # fetch configuration options
+        character = params["character"]
+        options = self.getConfigurationOptions(character)
+        
+        # call selected function
+        if self.submenue.keyPressed in options:
+            option = options[self.submenue.keyPressed][1](character)
+        else:
+            character.addMessage("no configure action found for this key")
+
     def addTriggerToTriggerMap(self,result,name,function):
+            """
+            helper function to handle annoying data structure.
+
+            Parameters:
+                result: a dict of lists containing callbacks that should be extended
+                name: the name or key the callback should trigger on
+                function: the callback
+            """
         triggerList = result.get(name)
         if not triggerList:
            triggerList = []
@@ -280,32 +466,52 @@ class ItemNew(src.saveing.Saveable):
         triggerList.append(function)
 
     def getJobOrderTriggers(self):
+            """
+            returns a dict of lists containing callbacks to be triggered by a job order
+            Returns:
+                a dict of lists 
+            """
         result = {}
         self.addTriggerToTriggerMap(result,"configure machine",self.jobOrderConfigure)
         self.addTriggerToTriggerMap(result,"register result",self.doRegisterResult)
         return result
 
     def doRegisterResult(self,task,context):
+            """
+            dummy callback for registering success or failure of a job order
+            Parameters:
+                task: the task details
+                context: the context of the task
+            """
         pass
 
-    def configureSwitch(self,params):
-        self.lastAction = "configureSwitch"
+    def jobOrderConfigure(self,task,context):
+            """
+            callback for configuring the item throug a job order
+            Parameters:
+                task: the task details
+                context: the context of the task
+            """
 
-        character = params["character"]
-
-        options = self.getConfigurationOptions(character)
-        if self.submenue.keyPressed in options:
-            option = options[self.submenue.keyPressed][1](character)
-        else:
-            character.addMessage("no configure action found for this key")
+        # configure commands
+        for (commandName,command) in task["commands"].items():
+            self.commands[commandName] = command
 
     def runJobOrder(self,character):
+            """
+            handle a job order run on this item
+            Parameters:
+                character: the character running the job order on the item
+            """
+
+        # save last action for debug
         self.lastAction = "runJobOrder"
 
         if not character.jobOrders:
             character.addMessage("no job order")
             return
 
+        # get task
         jobOrder = character.jobOrders[-1]
         task = jobOrder.popTask()
 
@@ -313,24 +519,31 @@ class ItemNew(src.saveing.Saveable):
             character.addMessage("no tasks left")
             return
 
+        # select callback to trigger
         triggerMap = self.getJobOrderTriggers()
         triggers = triggerMap.get(task["task"])
         if not triggers:
             character.addMessage("unknown trigger: %s %s"%(self,task,))
             return
 
+        # trigger callbacks
         for trigger in triggers:
             trigger(task,{"character":character,"jobOrder":jobOrder})
 
-    def jobOrderConfigure(self,task,context):
-        for (commandName,command) in task["commands"].items():
-            self.commands[commandName] = command
-
     def runCommand(self,commandName,character):
+            """
+            runs a preconfigured command on a character
+            Parameters:
+                commandName: the kind/name of command to run
+                character: the character to run the command on
+            """
+
+        # select the command from the list of preconfigured commands
         command = self.commands.get(commandName)
         if not command:
             return
 
+        # run the selected command on the character
         character.runCommandString(command)
         character.addMessage("running command for trigger: %s - %s"%(commandName,command))
 

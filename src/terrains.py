@@ -1210,13 +1210,17 @@ class Terrain(src.saveing.Saveable):
     remove item from terrain
     '''
     def removeItem(self,item,recalculate=True):
-        #self.itemsOnFloor.remove(item)
         pos = (item.xPosition,item.yPosition,item.zPosition)
         itemList = self.getItemByPosition(pos)
+
         try:
             itemList.remove(item)
         except:
             pass
+
+        item.xPosition = None
+        item.zPosition = None
+        item.yPosition = None
 
     def removeItems(self,items,recalcuate=True):
         for item in items:

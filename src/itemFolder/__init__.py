@@ -1,1 +1,17 @@
-
+import src.itemFolder.resources
+import src.itemFolder.industry
+import src.itemFolder.health
+import src.itemFolder.foodProcessing
+import src.itemFolder.functional
+import src.itemFolder.artworks
+import src.itemFolder.logistics
+import src.itemFolder.plants
+import src.itemFolder.story
+import src.itemFolder.automation
+import src.itemFolder.functional
+import src.itemFolder.obsolete
+import src.itemFolder.experimental
+import src.itemFolder.manager
+import src.itemFolder.dungeon
+import src.itemFolder.hacks
+import src.itemFolder.military

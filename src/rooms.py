@@ -693,9 +693,9 @@ class Room(src.saveing.Saveable):
         # add the items to the easy access map
         for item in items:
 
-            if isinstance(item,src.items.Boiler):
+            if isinstance(item,src.items.itemMap["Boiler"]):
                 self.boilers.append(item)
-            if isinstance(item,src.items.Furnace):
+            if isinstance(item,src.items.itemMap["Furnace"]):
                 self.furnaces.append(item)
 
             item.room = self

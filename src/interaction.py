@@ -1788,10 +1788,11 @@ current registers
                         #    if item.xPosition == char.xPosition and item.yPosition == char.yPosition:
                         #        item.apply(char)
                         #        break
-                        entry = char.container.getItemByPosition((char.xPosition,char.yPosition,char.zPosition))
+                        if not (char.xPosition == None or char.yPosition == None or char.zPosition == None):
+                            entry = char.container.getItemByPosition((char.xPosition,char.yPosition,char.zPosition))
 
-                        if entry:
-                            entry[0].apply(char)
+                            if entry:
+                                entry[0].apply(char)
 
             # examine an item 
             if key in (commandChars.examine):

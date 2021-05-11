@@ -719,7 +719,7 @@ class CityBuilder(src.items.ItemNew):
                         (plot[0],plot[1]+1),
                        ]
 
-        self.getTerrain().addItem(src.items.MarkerBean(plot[0]*15+7,plot[1]*15+7))
+        self.getTerrain().addItem(src.items.itemMap["MarkerBean"](plot[0]*15+7,plot[1]*15+7))
         self.unfinishedRoadTiles.append(plot)
 
         axisPlots = []

@@ -71,7 +71,7 @@ class Mold(src.items.Item):
                     item.xPosition = None
                     item.yPosition = None
 
-                    new = itemMap["Sprout2"](creator=self)
+                    new = src.items.itemMap["Sprout2"](creator=self)
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])
@@ -92,7 +92,7 @@ class Mold(src.items.Item):
                         new.yPosition = newPos[1]
                         self.container.addItems([new])
                     else:
-                        new = itemMap["Bloom"](creator=self)
+                        new = src.items.itemMap["Bloom"](creator=self)
                         new.xPosition = newPos[0]
                         new.yPosition = newPos[1]
                         self.container.addItems([new])
@@ -103,7 +103,7 @@ class Mold(src.items.Item):
                     item.xPosition = None
                     item.yPosition = None
 
-                    new = itemMap["SickBloom"](creator=self)
+                    new = src.items.itemMap["SickBloom"](creator=self)
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])
@@ -114,7 +114,7 @@ class Mold(src.items.Item):
                     item.xPosition = None
                     item.yPosition = None
 
-                    new = itemMap["PoisonBloom"](creator=self)
+                    new = src.items.itemMap["PoisonBloom"](creator=self)
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])
@@ -125,7 +125,7 @@ class Mold(src.items.Item):
                     item.xPosition = None
                     item.yPosition = None
 
-                    new = itemMap["Bush"](creator=self)
+                    new = src.items.itemMap["Bush"](creator=self)
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])
@@ -136,7 +136,7 @@ class Mold(src.items.Item):
                     item.xPosition = None
                     item.yPosition = None
 
-                    new = itemMap["PoisonBush"](creator=self)
+                    new = src.items.itemMap["PoisonBush"](creator=self)
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])
@@ -147,19 +147,19 @@ class Mold(src.items.Item):
                     item.xPosition = None
                     item.yPosition = None
 
-                    new = itemMap["EncrustedBush"](creator=self)
+                    new = src.items.itemMap["EncrustedBush"](creator=self)
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])
 
-                    new = itemMap["Bush"](creator=self)
+                    new = src.items.itemMap["Bush"](creator=self)
                     new.xPosition = self.xPosition
                     new.yPosition = self.yPosition
                     self.container.addItems([new])
                     self.container.removeItem(self)
 
                 elif itemList[-1].type == "EncrustedBush":
-                    new = itemMap["Bush"](creator=self)
+                    new = src.items.itemMap["Bush"](creator=self)
                     new.xPosition = self.xPosition
                     new.yPosition = self.yPosition
                     self.container.addItems([new])
@@ -168,7 +168,7 @@ class Mold(src.items.Item):
                     itemList[-1].tryToGrowRoom(new)
 
                 elif itemList[-1].type in ["PoisonBush","EncrustedPoisonBush"]:
-                    new = itemMap["PoisonBloom"](creator=self)
+                    new = src.items.itemMap["PoisonBloom"](creator=self)
                     new.xPosition = self.xPosition
                     new.yPosition = self.yPosition
                     self.container.addItems([new])
@@ -177,7 +177,7 @@ class Mold(src.items.Item):
                 elif itemList[-1].type in ["Coal"]:
                     itemList[-1].destroy(generateSrcap=False)
 
-                    new = itemMap["Bush"](creator=self)
+                    new = src.items.itemMap["Bush"](creator=self)
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])
@@ -185,7 +185,7 @@ class Mold(src.items.Item):
                 elif itemList[-1].type in ["MoldFeed"]:
                     itemList[-1].destroy(generateSrcap=False)
 
-                    new = itemMap["Bloom"](creator=self)
+                    new = src.items.itemMap["Bloom"](creator=self)
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])

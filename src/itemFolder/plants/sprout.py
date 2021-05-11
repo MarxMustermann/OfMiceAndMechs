@@ -30,7 +30,7 @@ you can eat it to gain 10 satiation.
 
     def destroy(self, generateSrcap=True):
 
-        new = itemMap["Mold"](creator=self)
+        new = src.items.itemMap["Mold"](creator=self)
         new.xPosition = self.xPosition
         new.yPosition = self.yPosition
         self.container.addItems([new])

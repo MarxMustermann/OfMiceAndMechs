@@ -22,6 +22,10 @@ import src.events
 import config
 
 class ItemNew(src.saveing.Saveable):
+    """
+    This is the base class for ingame items. It is intended to hold the common behaviour of items.
+
+    """
     type = "Item"
 
     def __init__(self,display=None,xPosition=0,yPosition=0,zPosition=0,creator=None,name="unkown",seed=0,noId=False,

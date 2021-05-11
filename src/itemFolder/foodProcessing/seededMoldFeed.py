@@ -1,6 +1,6 @@
 import src
 
-class SeededMoldFeed(src.item.Item):
+class SeededMoldFeed(src.items.Item):
     type = "SeededMoldFeed"
 
     def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):

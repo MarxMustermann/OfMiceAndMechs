@@ -1,6 +1,6 @@
 import src
 
-class CommandBook(Item):
+class CommandBook(src.items.Item):
     type = "CommandBook"
 
     '''

@@ -1,6 +1,6 @@
 import src
 
-class TransportOutNode(Item):
+class TransportOutNode(src.items.Item):
     type = "TransportOutNode"
 
     '''

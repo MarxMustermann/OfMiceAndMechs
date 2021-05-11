@@ -4,7 +4,7 @@ import src
 a vending machine basically
 bad code: currently only dispenses goo flasks
 '''
-class OjectDispenser(src.items.Item):
+class ObjectDispenser(src.items.Item):
     type = "ObjectDispenser"
 
     '''

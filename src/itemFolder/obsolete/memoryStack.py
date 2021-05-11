@@ -2,7 +2,7 @@ import src
 
 '''
 '''
-class MemoryStack(Item):
+class MemoryStack(src.items.Item):
     type = "MemoryStack"
 
     '''

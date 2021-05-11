@@ -1,6 +1,6 @@
 import src
 
-class TransportInNode(Item):
+class TransportInNode(src.items.Item):
     type = "TransportInNode"
 
     '''

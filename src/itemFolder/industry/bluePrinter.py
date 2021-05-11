@@ -174,4 +174,4 @@ The items from the blueprint reciepe need to be added to the west or south.
 """
         return text
 
-src.items.addType(Blueprinter)
+src.items.addType(BluePrinter)

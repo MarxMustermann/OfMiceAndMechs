@@ -10,34 +10,7 @@ import src.gamestate
 import src.interaction
 
 def setup():
-    import src.itemFolder.includeTest
-    itemMap["TestItem"] = src.itemFolder.includeTest.TestItem
-    import src.itemFolder.furniture
-    itemMap["Wall"] = src.itemFolder.furniture.Wall
-    itemMap["Door"] = src.itemFolder.furniture.Door
-    import src.itemFolder.obsolete
-    itemMap["Pipe"] = src.itemFolder.obsolete.Pipe
-    itemMap["Pile"] = src.itemFolder.obsolete.Pile
-    itemMap["Acid"] = src.itemFolder.obsolete.Acid
-    itemMap["Chain"] = src.itemFolder.obsolete.Chain
-    itemMap["Winch"] = src.itemFolder.obsolete.Winch
-    import src.itemFolder.automation
-    itemMap["JobOrder"] = src.itemFolder.automation.JobOrder
-    import src.itemFolder.tradingArtwork
-    itemMap["TradingArtwork"] = src.itemFolder.tradingArtwork.TradingArtwork
-    import src.itemFolder.questArtwork
-    itemMap["QuestArtwork"] = src.itemFolder.questArtwork.QuestArtwork
-    import src.itemFolder.managers
-    itemMap["RoomManager"] = src.itemFolder.managers.RoomManager
-    itemMap["CityBuilder"] = src.itemFolder.managers.CityBuilder
-    itemMap["ArchitectArtwork"] = src.itemFolder.managers.ArchitectArtwork
-    itemMap["AchitectArtwork"] = src.itemFolder.managers.ArchitectArtwork
-    itemMap["RoadManager"] = src.itemFolder.managers.RoadManager
-    itemMap["MiningManager"] = src.itemFolder.managers.MiningManager
-    itemMap["StockpileMetaManager"] = src.itemFolder.managers.StockpileMetaManager
-    itemMap["ProductionManager"] = src.itemFolder.managers.ProductionManager
-
-    import src.itemFolder.experimental.miningShaft
+    import src.itemFolder
 
 # load basic libs
 import json
@@ -748,122 +721,8 @@ def addType(toRegister):
 # maping from strings to all items
 # should be extendable
 itemMap = {
-            "Item":Item,
-            "Connector":Connector,
-            "Bolt":Bolt,
-            "Stripe":Stripe,
-            "puller":Puller,
-            "pusher":Pusher,
-            "Puller":Puller,
-            "Pusher":Pusher,
-            "Stripe":Stripe,
-            "Rod":Rod,
-            "Heater":Heater,
-            "Mount":Mount,
-            "Tank":Tank,
-            "Frame":Frame,
-            "Radiator":Radiator,
-            "PressCake":PressCake,
-            "BioMass":BioMass,
-            "MemoryCell":MemoryCell,
-            "Explosive":Explosive,
-            "FloorPlate":FloorPlate,
-            "Chemical":Chemical,
-            "Paving":Paving,
-
-            "SuicideBooth":SuicideBooth,
-            "Tree":Tree,
-            "MachineMachine":MachineMachine,
-            "PavingGenerator":PavingGenerator,
-            "Token":Token,
-            "VatMaggot":VatMaggot,
-            "Machine":Machine,
-            "Scraper":Scraper,
-            "Sorter":Sorter,
-            "Drill":Drill,
-            "BluePrint":BluePrint,
-            "StasisTank":StasisTank,
-            "BluePrinter":BluePrinter,
-            "PositioningDevice":PositioningDevice,
-            "Watch":Watch,
-            "Note":Note,
-            "Bomb":Bomb,
-            "Command":Command,
-            "Mortar":Mortar,
-            "GlobalMacroStorage":GlobalMacroStorage,
-            "BloomContainer":BloomContainer,
-            "Container":Container,
-            "SunScreen":SunScreen,
-            "Spawner":Spawner,
-            "FireCrystals":FireCrystals,
-            "Mover":Mover,
-            "MoldFeed":MoldFeed,
-            "SeededMoldFeed":SeededMoldFeed,
-            "BluePrintingArtwork":BluePrintingArtwork,
-            "WaterCondenser":WaterCondenser,
-            "GooFaucet":GooFaucet,
-            "ResourceTerminal":ResourceTerminal,
-            "RessourceTerminal":ResourceTerminal,
-
-            "Engraver":Engraver,
-            "CoalMine":CoalMine,
-            "GameTestingProducer":GameTestingProducer,
-            "ReactionChamber":ReactionChamber,
-            "Chute":Chute,
-            "CommandBook":CommandBook,
-            "PortableChallenger":PortableChallenger,
-
-            "PathingNode":PathingNode,
-            "MemoryBank":MemoryBank,
-            "MemoryDump":MemoryDump,
-            "MemoryStack":MemoryStack,
-            "MemoryReset":MemoryReset,
-            "BackTracker":BackTracker,
-            "SimpleRunner":SimpleRunner,
-            "Tumbler":Tumbler,
-            "MacroRunner":MacroRunner,
-            "Sheet":Sheet,
-            "Map":Map,
-            "SanitaryStation":SanitaryStation,
-
-            "ScrapCommander":ScrapCommander,
-            "InfoScreen":AutoTutor,
-            "AutoTutor":AutoTutor,
-            "TransportOutNode":TransportOutNode,
-            "TransportInNode":TransportInNode,
-            "UniformStockpileManager":UniformStockpileManager,
-            "TypedStockpileManager":TypedStockpileManager,
-            "RipInReality":RipInReality,
-            "AutoScribe":AutoScribe,
-            "ItemCollector":ItemCollector,
-            "HealingStation":HealingStation,
-            "JobBoard":JobBoard,
-            "AutoFarmer":AutoFarmer,
-
-            "Explosion":Explosion,
-
-            "Moss":Mold,
-            "Mold":Mold,
-            "MossSeed":MoldSpore,
-            "MoldSpore":MoldSpore,
-            "Bloom":Bloom,
-            "Sprout":Sprout,
-            "Sprout2":Sprout2,
-            "SickBloom":SickBloom,
-            "CommandBloom":CommandBloom,
-            "PoisonBloom":PoisonBloom,
-            "Bush":Bush,
-            "PoisonBush":PoisonBush,
-            "EncrustedBush":EncrustedBush,
-            "Test":EncrustedPoisonBush,
-            "EncrustedPoisonBush":EncrustedPoisonBush,
-            "HiveMind":HiveMind,
-            "SwarmIntegrator":SwarmIntegrator,
-            "SaccrificialCircle":SaccrificialCircle,
-
-            "Armor":Armor,
-            "StaticSpark":StaticSpark,
-            "SparcRewardLock":SparcRewardLock,
+        "Item":Item,
+        "ItemNew":ItemNew,
 }
 
 rawMaterialLookup = {

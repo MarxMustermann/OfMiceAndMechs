@@ -675,3 +675,5 @@ commands:
 
 """%(self.commands,)
         return text
+
+src.items.addType(RoomManager)

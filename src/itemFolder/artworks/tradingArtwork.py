@@ -246,3 +246,4 @@ tradingHistory:
 """%(self.tradingHistory,)
         return text
 
+src.items.addType(TradingArtwork)

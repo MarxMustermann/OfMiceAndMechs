@@ -1,6 +1,6 @@
 import src
 
-class PavingGenerator(Item):
+class PavingGenerator(src.items.Item):
     type = "PavingGenerator"
 
     '''

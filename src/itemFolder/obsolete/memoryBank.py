@@ -2,7 +2,7 @@ import src
 
 '''
 '''
-class MemoryBank(Item):
+class MemoryBank(src.items.Item):
     type = "MemoryBank"
 
     '''

@@ -440,3 +440,5 @@ class ArchitectArtwork(src.items.ItemNew):
             return
 
         terrain.addRooms([room])
+
+src.items.addType(ArchitectArtwork)

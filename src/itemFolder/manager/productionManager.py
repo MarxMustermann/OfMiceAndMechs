@@ -166,3 +166,4 @@ commands:
         if "commands" in state:
             self.commands = state["commands"]
 
+src.items.addType(ProductionManager)

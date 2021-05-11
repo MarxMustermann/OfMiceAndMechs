@@ -2,7 +2,7 @@ import src
 
 '''
 '''
-class Scraper(Item):
+class Scraper(src.items.Item):
     type = "Scraper"
 
     '''

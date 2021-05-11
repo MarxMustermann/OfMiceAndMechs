@@ -1,4 +1,5 @@
 import src
+import random
 
 class Mold(src.items.Item):
     type = "Mold"
@@ -46,7 +47,7 @@ class Mold(src.items.Item):
 
             itemList = self.container.getItemByPosition(newPos)
             if not len(itemList):
-                new = itemMap["Mold"](creator=self)
+                new = src.items.itemMap["Mold"](creator=self)
                 new.xPosition = newPos[0]
                 new.yPosition = newPos[1]
                 self.container.addItems([new])
@@ -59,7 +60,7 @@ class Mold(src.items.Item):
                     item.xPosition = None
                     item.yPosition = None
 
-                    new = itemMap["Sprout"](creator=self)
+                    new = src.items.itemMap["Sprout"](creator=self)
                     new.xPosition = newPos[0]
                     new.yPosition = newPos[1]
                     self.container.addItems([new])

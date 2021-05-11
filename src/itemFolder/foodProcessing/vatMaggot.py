@@ -2,7 +2,7 @@ import src
 
 '''
 '''
-class VatMaggot(Item):
+class VatMaggot(src.items.Item):
     type = "VatMaggot"
 
     '''

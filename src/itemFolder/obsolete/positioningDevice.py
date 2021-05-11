@@ -2,7 +2,7 @@ import src
 
 '''
 '''
-class PositioningDevice(Item):
+class PositioningDevice(src.items.Item):
     type = "PositioningDevice"
 
     '''

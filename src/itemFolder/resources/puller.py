@@ -2,7 +2,7 @@ import src
 
 '''
 '''
-class Puller(Item):
+class Puller(src.items.Item):
     type = "puller"
 
     '''

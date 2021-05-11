@@ -1,6 +1,6 @@
 import src
 
-class Sprout(src.item.Item):
+class Sprout(src.items.Item):
     type = "Sprout"
 
     def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):

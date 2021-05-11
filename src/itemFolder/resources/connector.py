@@ -2,7 +2,7 @@ import src
 
 '''
 '''
-class Connector(Item):
+class Connector(src.items.Item):
     type = "Connector"
 
     '''
@@ -23,3 +23,5 @@ A connector. Building material.
 
 """
         return text
+
+src.items.addType(Connector)

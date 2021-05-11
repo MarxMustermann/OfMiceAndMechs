@@ -15,4 +15,4 @@ class StaticSpark(src.items.Item):
         character.addMessage("you gained "+str(self.strength*50)+" satiation from consuming the spark")
         self.destroy(generateSrcap=False)
 
-src.items.addType(TypedStockpileManager)
+src.items.addType(StaticSpark)

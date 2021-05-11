@@ -826,3 +826,5 @@ description:
 
 """%(self.tasks,self.stockPiles,stockPileInfo,self.assignedPlots,self.assignedPlotsInfo,self.lastAction,self.commands,self.roomManagerName)
         return text
+
+src.items.addType(StockpileMetaManager)

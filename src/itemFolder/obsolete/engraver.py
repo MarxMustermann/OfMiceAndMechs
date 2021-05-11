@@ -2,7 +2,7 @@ import src
 
 '''
 '''
-class Engraver(Item):
+class Engraver(src.items.Item):
     type = "Engraver"
 
     '''

@@ -2,7 +2,7 @@ import src
 
 '''
 '''
-class Map(Item):
+class Map(src.items.Item):
     type = "Map"
 
     '''

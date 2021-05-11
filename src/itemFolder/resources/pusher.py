@@ -2,7 +2,7 @@ import src
 
 '''
 '''
-class Pusher(Item):
+class Pusher(src.items.Item):
     type = "pusher"
 
     '''

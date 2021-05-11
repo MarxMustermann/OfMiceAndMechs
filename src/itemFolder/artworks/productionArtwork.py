@@ -70,7 +70,7 @@ class ProductionArtwork(src.items.Item):
     def produceSelection(self):
         if not self.targetItemType:
             self.targetItemType = self.submenue.selection
-            if self.targetItemType == src.items.Machine:
+            if self.targetItemType == src.items.itemMap["Machine"]:
                 options = []
                 for key,value in itemMap.items():
                     options.append((key,key))
@@ -79,7 +79,7 @@ class ProductionArtwork(src.items.Item):
                 self.character.macroState["submenue"].followUp = self.produceSelection
                 self.targetMachineItemType = None
                 return
-            if self.targetItemType == src.items.ResourceTerminal:
+            if self.targetItemType == src.items.itemMap["ResourceTerminal"]:
                 options = []
                 for key,value in itemMap.items():
                     options.append((key,key))
@@ -89,9 +89,9 @@ class ProductionArtwork(src.items.Item):
                 self.targetMachineItemType = None
                 return
 
-        if self.targetItemType == src.items.Machine:
+        if self.targetItemType == src.items.itemMap["Machine"]:
             self.targetMachineItemType = self.submenue.selection
-        if self.targetItemType == src.items.ResourceTerminal:
+        if self.targetItemType == src.items.itemMap["ResourceTerminal"]:
             self.targetResourceType = self.submenue.selection
 
         if self.targetItemType:

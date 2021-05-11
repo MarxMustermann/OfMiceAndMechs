@@ -2,7 +2,7 @@ import src
 
 '''
 '''
-class Token(Item):
+class Token(src.items.Item):
     type = "Token"
 
     '''

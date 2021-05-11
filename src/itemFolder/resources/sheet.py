@@ -2,7 +2,7 @@ import src
 
 '''
 '''
-class Sheet(Item):
+class Sheet(src.items.Item):
     type = "Sheet"
 
     '''

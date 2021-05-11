@@ -250,3 +250,4 @@ commands:
 """%(self.commands,)
         return text
 
+src.items.addType(MiningManager)

@@ -24,3 +24,4 @@ A heater. Building material.
 """
         return text
 
+src.items.addType(Heater)

@@ -1,6 +1,6 @@
 import src
 
-class Bolt(Item):
+class Bolt(src.items.Item):
     type = "Bolt"
 
     '''

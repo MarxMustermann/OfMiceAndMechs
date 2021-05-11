@@ -1,6 +1,6 @@
 import src
 
-class TransportContainer(Item):
+class TransportContainer(src.items.Item):
     type = "TransportContainer"
 
     '''

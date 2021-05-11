@@ -2,7 +2,7 @@ import src
 
 '''
 '''
-class AutoTutor(isrc.items.Item):
+class AutoTutor(src.items.Item):
     type = "AutoTutor"
 
     '''

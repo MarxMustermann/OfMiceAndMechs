@@ -834,3 +834,5 @@ scrapFields:
 %s
 """%(self.resources,self.commands,self.error,self.runningTasks,self.tasks,self.reservedPlots,self.usedPlots,self.roadTiles,self.unfinishedRoadTiles,self.plotPool,self.unusedRoadTiles,self.scrapFields)
         return text
+
+src.items.addType(CityBuilder)

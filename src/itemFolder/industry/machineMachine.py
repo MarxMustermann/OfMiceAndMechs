@@ -2,7 +2,7 @@ import src
 
 '''
 '''
-class MachineMachine(Item):
+class MachineMachine(src.items.Item):
     type = "MachineMachine"
 
     '''

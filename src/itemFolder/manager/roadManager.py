@@ -302,3 +302,4 @@ connections:
 """%(self.roadNetwork,self.centerDirection,self.pathingNodes,self.center,self.pathsFromCenter,self.pathsToCenter,self.connections,)
         return text
 
+src.items.addType(RoadManager)

@@ -1,6 +1,6 @@
 import src
 
-class PortableChallenger(Item):
+class PortableChallenger(src.items.Item):
     type = "PortableChallenger"
 
     def __init__(self,xPosition=None,yPosition=None, name="PortableChallenger",creator=None,noId=False):

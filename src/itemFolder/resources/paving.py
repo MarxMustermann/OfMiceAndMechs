@@ -2,7 +2,7 @@ import src
 
 '''
 '''
-class Paving(Item):
+class Paving(src.items.Item):
     type = "Paving"
 
     '''

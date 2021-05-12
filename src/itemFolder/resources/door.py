@@ -1,40 +1,48 @@
 import src
 
-'''
-a door for opening/closing and locking people in/out
-# bad code: should use a rendering method
-'''
 class Door(src.items.Item):
+    '''
+    a door for opening/closing and locking people in/out
+    '''
+
     type = "Door"
 
-    '''
-    call superclass constructor with modified paramters and set some state
-    '''
-    def __init__(self,xPosition=0,yPosition=0,name="Door",creator=None,noId=False,bio=False):
-        if bio:
-            displayChar = src.canvas.displayChars.bioDoor_closed
-        else:
-            displayChar = src.canvas.displayChars.door_closed
+    def __init__(self,xPosition=0,yPosition=0,zPosition=0,name="Door",noId=False,bio=False):
+        '''
+        call superclass constructor with modified paramters and set some state
+        '''
 
-        super().__init__(displayChar,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(displayChar,xPosition,yPosition,zPosition=zPosition,name=name,noId=noId)
         self.walkable = False
         self.bio = bio
 
-        # bad code: set metadata for saving
+        # set metadata for saving
         self.attributesToStore.extend([
-               "bio","walkable","type"])
+               "bio",])
+
         self.description = "Used to enter and leave rooms."
 
-    '''
-    set state from dict
-    bad code: should have a open attribute
-    '''
-    def setState(self,state):
-        super().setState(state)
-        if self.walkable:
-            self.open(None)
+    def render(self):
+        '''
+        render depending on state
+        '''
+
+        if self.bio:
+            if self.walkable:
+                displayChar = src.canvas.displayChars.bioDoor_open
+            else:
+                displayChar = src.canvas.displayChars.bioDoor_closed
+        else:
+            if self.walkable:
+                displayChar = src.canvas.displayChars.door_open
+            else:
+                displayChar = src.canvas.displayChars.door_closed
+        return displayChar
 
     def gatherApplyActions(self,character):
+        """
+        add open or close action depending on state
+        """
         applyActions = super().gatherApplyActions()
         if self.walkable:
             applyActions.append(self.close)
@@ -42,10 +50,14 @@ class Door(src.items.Item):
             applyActions.append(self.open)
         return applyActions
 
-    '''
-    open door
-    '''
     def open(self,character):
+        '''
+        open door
+
+        Parameters:
+            character: the character opening the door
+        '''
+
         if not isinstance(self.container,src.rooms.Room):
             if character:
                 character.addMessage("you can only use doors within rooms")
@@ -53,23 +65,15 @@ class Door(src.items.Item):
 
         # open the door
         self.walkable = True
-        if self.bio:
-            self.display = src.canvas.displayChars.bioDoor_opened
-        else:
-            self.display = src.canvas.displayChars.door_opened
-        self.room.open = True
 
-    '''
-    close the door
-    '''
     def close(self,character=None):
+        '''
+        close the door
+        
+        Parameters:
+            character: the character closing the door
+        '''
+
         self.walkable = False
-        if self.bio:
-            self.display = src.canvas.displayChars.bioDoor_closed
-        else:
-            self.display = src.canvas.displayChars.door_closed
-        if self.room:
-            self.room.open = False
-            self.room.forceRedraw()
 
 src.items.addType(Door)

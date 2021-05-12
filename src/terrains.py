@@ -1226,7 +1226,11 @@ class Terrain(src.saveing.Saveable):
         for item in items:
             self.removeItem(item,recalculate=False)
 
-    def addItem(self,item):
+    def addItem(self,item,pos=None):
+        if pos:
+            item.xPosition = pos[0]
+            item.yPosition = pos[1]
+            item.zPosition = pos[2]
         self.addItems([item])
 
     '''

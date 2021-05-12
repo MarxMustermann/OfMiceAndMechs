@@ -3,7 +3,7 @@ import src
 '''
 basically refined scrap and the default resource
 '''
-class MetalBars(src.items.ItemNew):
+class MetalBars(src.items.Item):
     type = "MetalBars"
 
     def __init__(self,xPosition=0,yPosition=0,name="metal bar",creator=None,noId=False):

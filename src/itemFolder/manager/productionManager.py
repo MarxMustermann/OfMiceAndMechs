@@ -1,6 +1,6 @@
 import src
 
-class ProductionManager(src.items.ItemNew):
+class ProductionManager(src.items.Item):
     type = "ProductionManager"
 
     '''

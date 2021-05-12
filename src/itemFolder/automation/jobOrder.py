@@ -1,6 +1,6 @@
 import src
 
-class JobOrder(src.items.ItemNew):
+class JobOrder(src.items.Item):
     type = "JobOrder"
 
     '''

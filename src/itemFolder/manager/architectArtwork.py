@@ -4,14 +4,16 @@ import random
 '''
 gomode item for terraforming and things
 '''
-class ArchitectArtwork(src.items.ItemNew):
+class ArchitectArtwork(src.items.Item):
     type = "ArchitectArtwork"
 
     '''
     call superclass constructor with modified parameters
     '''
     def __init__(self,xPosition=None,yPosition=None, name="scrap compactor",creator=None,noId=False):
-        super().__init__("AA",xPosition,yPosition,name=name,creator=creator,runsJobOrders=True)
+        super().__init__("AA",xPosition,yPosition,name=name,creator=creator)
+
+        self.runsJobOrders = True
 
         self.godMode = False
         self.attributesToStore.extend([

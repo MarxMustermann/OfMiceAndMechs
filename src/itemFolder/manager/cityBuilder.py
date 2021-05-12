@@ -1,7 +1,7 @@
 import src
 import random
 
-class CityBuilder(src.items.ItemNew):
+class CityBuilder(src.items.Item):
     type = "CityBuilder"
     def __init__(self,xPosition=0,yPosition=0,name="CityBuilder",creator=None,noId=False):
         super().__init__("CB",xPosition,yPosition,name=name,creator=creator)

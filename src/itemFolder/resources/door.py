@@ -4,7 +4,7 @@ import src
 a door for opening/closing and locking people in/out
 # bad code: should use a rendering method
 '''
-class Door(src.items.ItemNew):
+class Door(src.items.Item):
     type = "Door"
 
     '''

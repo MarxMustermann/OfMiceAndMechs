@@ -1,7 +1,7 @@
 import src
 import random
 
-class TradingArtwork(src.items.ItemNew):
+class TradingArtwork(src.items.Item):
     type = "TradingArtwork"
 
     '''

@@ -3,17 +3,17 @@ import src
 '''
 crushed something, basically raw metal
 '''
-class Scrap(src.items.ItemNew):
+class Scrap(src.items.Item):
     type = "Scrap"
         
     '''
     almost straightforward state initialization
     '''
-    def __init__(self,xPosition=0,yPosition=0,amount=1,name="scrap",creator=None,noId=False):
+    def __init__(self,xPosition=0,yPosition=0,amount=1,name="scrap",noId=False):
 
         self.amount = 1
 
-        super().__init__(src.canvas.displayChars.scrap_light,xPosition,yPosition,creator=creator,name=name)
+        super().__init__(src.canvas.displayChars.scrap_light,xPosition,yPosition,name=name)
         
         # set up metadata for saveing
         self.attributesToStore.extend([

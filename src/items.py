@@ -10,6 +10,9 @@ import src.gamestate
 import src.interaction
 
 def setup():
+    """
+    load the item modules
+    """
     import src.itemFolder
 
 # load basic libs
@@ -22,11 +25,9 @@ import src.saveing
 import src.events
 import config
 
-class ItemNew(src.saveing.Saveable):
+class Item(src.saveing.Saveable):
     """
     This is the base class for ingame items. It is intended to hold the common behaviour of items.
-    Since i'm in the middle of refactoring things there are two base classes for items at the moment.
-    This is the class stuff should be migrated to.
 
     Attributes:
         seed (int): rng seed intended to have predictable randomness
@@ -35,19 +36,19 @@ class ItemNew(src.saveing.Saveable):
     """
     type = "Item"
 
-    def __init__(self,display=None,xPosition=0,yPosition=0,zPosition=0,name="unkown",seed=0,noId=False)
-            """
-            the constructor
+    def __init__(self,display=None,xPosition=0,yPosition=0,zPosition=0,name="unkown",seed=0,noId=False,creator=None):
+        """
+        the constructor
 
-            Parameters:
-                display: information on how the item is shown, can be a string  
-                xPosition: position information
-                yPosition: position information
-                zPosition: position information
-                name: name shown to the user
-                seed: rng seed
-                noId: flag to prevent generating useless ids (obsolete?)
-            """
+        Parameters:
+            display: information on how the item is shown, can be a string  
+            xPosition: position information
+            yPosition: position information
+            zPosition: position information
+            name: name shown to the user
+            seed: rng seed
+            noId: flag to prevent generating useless ids (obsolete?)
+        """
         super().__init__()
         
         if not display:
@@ -71,16 +72,24 @@ class ItemNew(src.saveing.Saveable):
         self.tasks = []
         self.blocked = False
 
+        # storage for other entities listening to changes
+        self.listeners = {"default":[]}
+
+        # management for movement
+        self.lastMovementToken = None
+        self.chainedTo = []
+
         # flags for traits
-        self.runsJobOrders = runsJobOrders
-        self.hasSettings = hasSettings
-        self.runsCommands = runsCommands
-        self.canReset = canReset
+        self.runsJobOrders = False
+        self.hasSettings = False
+        self.runsCommands = False
+        self.canReset = False
         self.hasMaintenance = False
 
         # properties for traits
         self.commands = {}
         self.applyOptions = []
+        self.level = 1
 
         # set up metadata for saving
         self.attributesToStore.extend([
@@ -96,15 +105,15 @@ class ItemNew(src.saveing.Saveable):
             self.id = None
 
     def useJoborderRelayToLocalRoom(self,character,tasks,itemType,information={}):
-            """
-            delegate a task to another item using a room manager
+        """
+        delegate a task to another item using a room manager
 
-            Parameters:
-                character: the character used for running the job order
-                tasks: the tasks to delegate
-                itemType: the type of item the task should be delegated to
-                information: optional information block on the job order
-            """
+        Parameters:
+            character: the character used for running the job order
+            tasks: the tasks to delegate
+            itemType: the type of item the task should be delegated to
+            information: optional information block on the job order
+        """
 
         # set up job order
         jobOrder = src.items.itemMap["JobOrder"]()
@@ -162,15 +171,15 @@ class ItemNew(src.saveing.Saveable):
         character.runCommandString("Jj.j")
 
     def gatherApplyActions(self,character=None):
-            """
-            returns a list of actions that should be run when using this item
-            this is intended to be overwritten to add actions
+        """
+        returns a list of actions that should be run when using this item
+        this is intended to be overwritten to add actions
 
-            Parameters:
-                character: the character using the item
-            Returns:
-                a list of function calls to run
-            """
+        Parameters:
+            character: the character using the item
+        Returns:
+            a list of function calls to run
+        """
 
         result = []
 
@@ -181,13 +190,13 @@ class ItemNew(src.saveing.Saveable):
         return result
 
     def __spawnApplyMenu(self,character):
-            """
-            spawns a selection menu and registers a callback for when the selection is ready
-            this is intended to by used by setting self.applyOptions
+        """
+        spawns a selection menu and registers a callback for when the selection is ready
+        this is intended to by used by setting self.applyOptions
 
-            Parameters:
-                character: the character getting the menu
-            """
+        Parameters:
+            character: the character getting the menu
+        """
 
         options = []
         for option in self.applyOptions:
@@ -197,12 +206,13 @@ class ItemNew(src.saveing.Saveable):
         character.macroState["submenue"].followUp = {"method":"handleApplyMenu","container":self,"params":{"character":character}}
 
     def handleApplyMenu(self,params):
-            """
-            calls a function depending on user selection
-            
-            Parameters:
-                params: context for the selection
-            """
+        """
+        calls a function depending on user selection
+        
+        Parameters:
+            params: context for the selection
+        """
+
         character = params["character"]
 
         selection = character.macroState["submenue"].selection
@@ -214,12 +224,13 @@ class ItemNew(src.saveing.Saveable):
         self.applyMap[selection](character)
 
     def getTerrain(self):
-            """
-            gets the terrain the item is placed on directly or indirectly
+        """
+        gets the terrain the item is placed on directly or indirectly
 
-            Return:
-                the terrain
-            """
+        Return:
+            the terrain
+        """
+
         if self.room:
             terrain = self.room.terrain
         if self.terrain:
@@ -227,12 +238,12 @@ class ItemNew(src.saveing.Saveable):
         return terrain
 
     def apply(self,character):
-            """
-            handles usage by a character
-            
-            Parameters:
-                character: the character using the item
-            """
+        """
+        handles usage by a character
+        
+        Parameters:
+            character: the character using the item
+        """
 
         # gather actions
         actions = self.gatherApplyActions(character)
@@ -245,12 +256,12 @@ class ItemNew(src.saveing.Saveable):
             character.addMessage("i can not do anything useful with this")
 
     def __vanillaPickUp(self,character):
-            """
-            basic behaviour for getting picked up
+        """
+        basic behaviour for getting picked up
 
-            Parameters:
-                character: the character using the item
-            """
+        Parameters:
+            character: the character using the item
+        """
 
         # prevent crashes
         if self.xPosition == None or self.yPosition == None:
@@ -267,24 +278,25 @@ class ItemNew(src.saveing.Saveable):
         character.addItemToInventory(self)
 
     def gatherPickupActions(self,character=None):
-            """
-            returns a list of actions that should be run when picking up this item
-            this is intended to be overwritten to add actions
+        """
+        returns a list of actions that should be run when picking up this item
+        this is intended to be overwritten to add actions
 
-            Parameters:
-                character: the character picking up the item
-            Returns:
-                a list of functions
-            """
+        Parameters:
+            character: the character picking up the item
+        Returns:
+            a list of functions
+        """
+
         return [self.__vanillaPickUp]
 
     def pickUp(self,character):
-            """
-            handles getting picked up by a character
-            
-            Parameters:
-                character: the character picking up the item
-            """
+        """
+        handles getting picked up by a character
+        
+        Parameters:
+            character: the character picking up the item
+        """
 
         # gather the actions
         actions = self.gatherPickupActions()
@@ -297,12 +309,12 @@ class ItemNew(src.saveing.Saveable):
             character.addMessage("no pickup action found")
 
     def getLongInfo(self):
-            """
-            returns a long text description to show to the player
-            
-            Returns:
-                string: the description text
-            """
+        """
+        returns a long text description to show to the player
+        
+        Returns:
+            string: the description text
+        """
 
         text = "item: "+self.type+" \n\n"
         if hasattr(self,"descriptionText"):
@@ -315,31 +327,34 @@ class ItemNew(src.saveing.Saveable):
         return text
 
     def render(self):
-            """
-            returns the rendered item
-            
-            Returns:
-                the display information
-            """
+        """
+        returns the rendered item
+        
+        Returns:
+            the display information
+        """
+
         return self.display
 
     def getDetailedInfo(self):
-            """
-            returns a short text description to show to the player
+        """
+        returns a short text description to show to the player
 
-            Returns:
-                str: the description text
-            """
+        Returns:
+            str: the description text
+        """
+
         return self.description
 
     def fetchSpecialRegisterInformation(self):
-            """
-            returns some of the objects state to be stored ingame in a characters registers
-            this is intended to be overwritten to add more information
+        """
+        returns some of the objects state to be stored ingame in a characters registers
+        this is intended to be overwritten to add more information
 
-            Returns:
-                a dictionary containing the information
-            """
+        Returns:
+            a dictionary containing the information
+        """
+
         result = {}
         if hasattr(self,"type"):
             result["type"] = self.type
@@ -363,13 +378,14 @@ class ItemNew(src.saveing.Saveable):
         return result
 
     def getConfigurationOptions(self,character):
-            """
-            returns a list of configuration options for the item
-            this is intended to be overwritten to add more options
+        """
+        returns a list of configuration options for the item
+        this is intended to be overwritten to add more options
 
-            Returns:
-                a dictionary containing function calls with description
-            """
+        Returns:
+            a dictionary containing function calls with description
+        """
+
         options = {}
         if self.runsCommands:
             options["c"] = ("commands",None)#self.setCommands)
@@ -384,30 +400,32 @@ class ItemNew(src.saveing.Saveable):
         return options
 
     def reset(self,character):
-            """
-            dummy for handling a character trying to reset the machine
+        """
+        dummy for handling a character trying to reset the machine
 
-            Parameters:
-                character: the character triggering the reset request
-            """
+        Parameters:
+            character: the character triggering the reset request
+        """
+
         character.addMessage("nothing to reset")
 
     def doMaintenance(self,character):
-            """
-            dummy for handling a character trying to do maintenance
+        """
+        dummy for handling a character trying to do maintenance
 
-            Parameters:
-                character: the character triggering the maintenance offer
-            """
+        Parameters:
+            character: the character triggering the maintenance offer
+        """
+
         character.addMessage("no maintenance action set")
 
     def configure(self,character):
-            """
-            handle a character trying to configure this item by spawning a submenu
+        """
+        handle a character trying to configure this item by spawning a submenu
 
-            Parameters:
-                character: the character configuring this item
-            """
+        Parameters:
+            character: the character configuring this item
+        """
 
         # store last action for debug purposes
         self.lastAction = "configure"
@@ -431,11 +449,11 @@ class ItemNew(src.saveing.Saveable):
         character.macroState["submenue"].followUp = {"container":self,"method":"configureSwitch","params":{"character":character}}
 
     def configureSwitch(self,params):
-            """
-            handle the selection of a configuration option by a character
-            Parameters:
-                params: context for the selection
-            """
+        """
+        handle the selection of a configuration option by a character
+        Parameters:
+            params: context for the selection
+        """
 
         # save last action for debug
         self.lastAction = "configureSwitch"
@@ -451,14 +469,15 @@ class ItemNew(src.saveing.Saveable):
             character.addMessage("no configure action found for this key")
 
     def addTriggerToTriggerMap(self,result,name,function):
-            """
-            helper function to handle annoying data structure.
+        """
+        helper function to handle annoying data structure.
 
-            Parameters:
-                result: a dict of lists containing callbacks that should be extended
-                name: the name or key the callback should trigger on
+        Parameters:
+            result: a dict of lists containing callbacks that should be extended
+            name: the name or key the callback should trigger on
                 function: the callback
-            """
+        """
+
         triggerList = result.get(name)
         if not triggerList:
            triggerList = []
@@ -466,43 +485,45 @@ class ItemNew(src.saveing.Saveable):
         triggerList.append(function)
 
     def getJobOrderTriggers(self):
-            """
-            returns a dict of lists containing callbacks to be triggered by a job order
-            Returns:
-                a dict of lists 
-            """
+        """
+        returns a dict of lists containing callbacks to be triggered by a job order
+        Returns:
+            a dict of lists 
+        """
+
         result = {}
         self.addTriggerToTriggerMap(result,"configure machine",self.jobOrderConfigure)
         self.addTriggerToTriggerMap(result,"register result",self.doRegisterResult)
         return result
 
     def doRegisterResult(self,task,context):
-            """
-            dummy callback for registering success or failure of a job order
-            Parameters:
-                task: the task details
-                context: the context of the task
-            """
+        """
+        dummy callback for registering success or failure of a job order
+        Parameters:
+            task: the task details
+            context: the context of the task
+        """
+
         pass
 
     def jobOrderConfigure(self,task,context):
-            """
-            callback for configuring the item throug a job order
-            Parameters:
-                task: the task details
-                context: the context of the task
-            """
+        """
+        callback for configuring the item throug a job order
+        Parameters:
+            task: the task details
+            context: the context of the task
+        """
 
         # configure commands
         for (commandName,command) in task["commands"].items():
             self.commands[commandName] = command
 
     def runJobOrder(self,character):
-            """
-            handle a job order run on this item
-            Parameters:
-                character: the character running the job order on the item
-            """
+        """
+        handle a job order run on this item
+        Parameters:
+            character: the character running the job order on the item
+        """
 
         # save last action for debug
         self.lastAction = "runJobOrder"
@@ -531,12 +552,12 @@ class ItemNew(src.saveing.Saveable):
             trigger(task,{"character":character,"jobOrder":jobOrder})
 
     def runCommand(self,commandName,character):
-            """
-            runs a preconfigured command on a character
-            Parameters:
-                commandName: the kind/name of command to run
-                character: the character to run the command on
-            """
+        """
+        runs a preconfigured command on a character
+        Parameters:
+            commandName: the kind/name of command to run
+            character: the character to run the command on
+        """
 
         # select the command from the list of preconfigured commands
         command = self.commands.get(commandName)
@@ -547,190 +568,63 @@ class ItemNew(src.saveing.Saveable):
         character.runCommandString(command)
         character.addMessage("running command for trigger: %s - %s"%(commandName,command))
 
-'''
-the base class for all items.
-'''
-class Item(src.saveing.Saveable):
-    '''
-    state initialization and id generation
-    '''
-    def __init__(self,display=None,xPosition=0,yPosition=0,zPosition=0,creator=None,name="item",seed=0,noId=False):
-        super().__init__()
-
-        self.seed = seed
-
-        # set attributes
-        if not hasattr(self,"type"):
-            self.type = "Item"
-        if not display:
-            self.display = src.canvas.displayChars.notImplentedYet
-        else:
-            try:
-                self.display = display
-            except:
-                pass
-        self.xPosition = xPosition
-        self.yPosition = yPosition
-        self.zPosition = zPosition
-        self.room = None
-        self.terrain = None
-        self.listeners = {"default":[]}
-        self.walkable = False
-        self.lastMovementToken = None
-        self.chainedTo = []
-        self.name = name
-        self.description = "a "+self.name
-        self.mayContainMice = False
-        self.bolted = not self.walkable
-        self.container = None
-
-        self.customDescription = None
-
-        # set up metadata for saving
-        self.attributesToStore.extend([
-               "mayContainMice","name","type","walkable","xPosition","yPosition","zPosition","bolted"])
-
-        # set id
-        if not noId:
-            import uuid
-            self.id = uuid.uuid4().hex
-        else:
-            self.id = None
-        self.id = json.dumps(self.id, sort_keys=True).replace("\\","")
-
-    def render(self):
-        return self.display
-
     def upgrade(self):
+        """
+        upgrade item
+        """
+
         self.level += 1
 
     def downgrade(self):
+        """
+        downgrade item
+        """
+
         self.level += 1
 
-    '''
-    generate a text with a detailed description of the items state
-    bad code: casting a dict to string is not really enough
-    '''
-    def getDetailedInfo(self):
-        return str(self.getDetailedState())
-
-    '''
-    get a short description
-    bad code: name and function say different things
-    '''
-    def getDetailedState(self):
-        return self.description
-
-    '''
-    no operation when applying a base item
-    '''
-    def apply(self,character,silent=False):
-        character.changed("activate",self)
-        self.changed("activated",character)
-        if not silent:
-            character.addMessage("i can not do anything useful with this")
-
-    '''
-    get picked up by the supplied character
-    '''
-    def pickUp(self,character):
-        if self.xPosition == None or self.yPosition == None:
-            return
-
-        # apply restrictions
-        if self.bolted and not character.godMode:
-            character.addMessage("you cannot pick up bolted items")
-            return
-
-        character.addMessage("you pick up a %s"%(self.type))
-        """
-        foundBig = False
-        for item in character.inventory:
-            if item.walkable == False:
-                foundBig = True
-                break
-
-        if foundBig and self.walkable == False:
-            character.addMessage("you cannot carry more big items")
-            return
-
-        character.addMessage("you pick up a "+self.type)
-        """
-
-        # bad code: should be a simple self.container.removeItem(self)
-        if self.room:
-            # remove item from room
-            self.container = self.room
-            self.container.removeItem(self)
-        else:
-            # remove item from terrain
-            # bad code: should be handled by the terrain
-            self.container = self.terrain
-            self.container.removeItem(self)
-
-        # remove position information to place item in the void
-        self.xPosition = None
-        self.yPosition = None
-
-        # add item to characters inventory
-        character.inventory.append(self)
-        self.changed()
-
-    def fetchSpecialRegisterInformation(self):
-        result = {}
-        if hasattr(self,"type"):
-            result["type"] = self.type
-        if hasattr(self,"charges"):
-            result["charges"] = self.charges
-        if hasattr(self,"uses"):
-            result["uses"] = self.uses
-        if hasattr(self,"level"):
-            result["level"] = self.level
-        if hasattr(self,"coolDown"):
-            result["coolDown"] = self.coolDown
-            result["coolDownRemaining"] = self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer)
-        if hasattr(self,"amount"):
-            result["amount"] = self.amount
-        if hasattr(self,"walkable"):
-            result["walkable"] = self.walkable
-        if hasattr(self,"bolted"):
-            result["bolted"] = self.bolted
-        if hasattr(self,"blocked"):
-            result["blocked"] = self.blocked
-        return result
-
-    '''
-    registering for notifications
-    bad code: should be extra class
-    '''
+    # bad code: should be extra class
     def addListener(self,listenFunction,tag="default"):
+        '''
+        register a callback for notifications
+
+        Parameters:
+            listenFunction: the callback to call if the item needs to notify something
+            tag: a tag to restrict notifications to
+        '''
+
         # create bucket if it does not exist yet
         if not tag in self.listeners:
             self.listeners[tag] = []
 
+        # store the callback to call when applicable
         if not listenFunction in self.listeners[tag]:
             self.listeners[tag].append(listenFunction)
 
-    '''
-    deregistering for notifications
-    bad code: should be extra class
-    '''
+    # bad code: should be extra class
     def delListener(self,listenFunction,tag="default"):
-        # remove listener
+        '''
+        deregistering a callback for notifications
+        '''
+
+        # remove callback from internal list
         if listenFunction in self.listeners[tag]:
             self.listeners[tag].remove(listenFunction)
 
         # clean up empty buckets
-        # bad performance: probably better to not clear and recreate buckets
         if not self.listeners[tag] and not tag == "default":
             del self.listeners[tag]
 
-    '''
-    sending notifications
-    bad code: probably misnamed
-    bad code: should be extra class
-    '''
+    # bad code: probably misnamed
+    # bad code: should be extra class
     def changed(self,tag="default",info=None):
+        '''
+        send notifications about changes to registered listeners
+
+        Parameters:
+            tag: the tag for filtering the listeners to notify
+            info: additional information
+        '''
+
         if not tag in self.listeners:
             return
 
@@ -740,10 +634,16 @@ class Item(src.saveing.Saveable):
             else:
                 listenFunction(info)
 
-    '''
-    get a list of items that is affected if the item would move into some direction
-    '''
     def getAffectedByMovementDirection(self,direction,force=1,movementBlock=set()):
+        '''
+        extend the list of things that would be affected if this item would move
+
+        Parameters:
+            direction: the direction the item should move in
+            force: force movement even if something breaks
+            movementBlock: the collection of things that are moving and should be extended
+        '''
+
         # add self
         movementBlock.add(self)
         
@@ -755,120 +655,89 @@ class Item(src.saveing.Saveable):
 
         return movementBlock
 
-    '''
-    move the item
-    '''
     def moveDirection(self,direction,force=1,initialMovement=True):
+        '''
+        move the item into a direction
+
+        Parameters:
+            direction: the direction the item should move in
+            force: force movement even if something breaks
+            movementBlock: a flag if this initates the movement
+        '''
+
         if self.walkable:
             # destroy small items instead of moving it
             self.destroy()
         else:
-            oldPosition = (self.xPosition,self.yPosition)
+            oldPosition = (self.xPosition,self.yPosition,self.zPosition)
             if direction == "north":
-                newPosition = (self.xPosition,self.yPosition-1)
+                newPosition = (self.xPosition,self.yPosition-1,self.zPosition)
             elif direction == "south":
-                newPosition = (self.xPosition,self.yPosition+1)
+                newPosition = (self.xPosition,self.yPosition+1,self.zPosition)
             elif direction == "west":
-                newPosition = (self.xPosition-1,self.yPosition)
+                newPosition = (self.xPosition-1,self.yPosition,self.zPosition)
             elif direction == "east":
-                newPosition = (self.xPosition+1,self.yPosition)
+                newPosition = (self.xPosition+1,self.yPosition,self.zPosition)
 
             # remove self from current position
-            if self in self.terrain.itemByCoordinates[oldPosition]:
-                self.terrain.itemByCoordinates[oldPosition].remove(self)
-            if len(self.terrain.itemByCoordinates) == 0:
-                del self.terrain.itemByCoordinates[oldPosition]
+            container = self.container
+            self.container.remove(self)
 
             # destroy everything on target position
-            if newPosition in self.terrain.itemByCoordinates:
-                for item in self.terrain.itemByCoordinates[newPosition]:
-                    item.destroy()
+            for item in self.container.getItemByPosition(newPosition):
+                item.destroy()
 
             # place self on new position
-            self.xPosition = newPosition[0]
-            self.yPosition = newPosition[1]
-            if newPosition in self.terrain.itemByCoordinates:
-                self.terrain.itemByCoordinates[newPosition].append(self)
-            else:
-                self.terrain.itemByCoordinates[newPosition] = [self]
+            container.addItem(self,newPosition)
 
             # destroy yourself if anything is left on target position
             # bad code: this cannot happen since everything on the target position was destroyed already
-            if len(self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)]) > 1:
+            if len(self.container.getItemByPosition(newPosition)) > 1:
                 self.destroy()
 
-    '''
-    get the physical resistance to beeing moved
-    '''
     def getResistance(self):
+        '''
+        get the physical resistance to beeing moved
+        
+        Returns:
+            int: a indicator of the resistance against beeing moved
+        '''
+
         if (self.walkable):
             return 1
         else:
             return 50
 
-    '''
-    do nothing
-    '''
-    def recalculate(self):
-        pass
-
-    '''
-    destroy the item and leave scrap
-    bad code: only works on terrain
-    '''
     def destroy(self,generateSrcap=True):
+        '''
+        destroy the item and leave scrap
+        
+        Parameters:
+            generateSrcap: a flag indication wether scrap should be left by the destruction
+        '''
 
-        if not hasattr(self,"terrain"):
-            self.terrain = None
-        if self.room:
-            container = self.room
-        elif self.terrain:
-            container = self.terrain
-        else:
-            return
+        container = self.container
+        pos = (self.xPosition,self.yPosition,self.zPosition) 
 
-        pos = (self.xPosition,self.yPosition) 
-
-        if pos == (None,None):
-            return
-
-        # remove item from terrain
+        # remove item 
         container.removeItem(self)
 
         # generatate scrap
         if generateSrcap:
-            newItem = src.items.itemMap["Scrap"](pos[0],pos[1],1,creator=self)
-            newItem.room = self.room
-            newItem.terrain = self.terrain
+            newItem = src.items.itemMap["Scrap"](amount=1)
 
-            if pos in container.itemByCoordinates:
-                for item in container.itemByCoordinates[pos]:
-                    container.removeItem(item)
-                    if not item.type == "Scrap":
-                        newItem.amount += 1
-                    else:
-                        newItem.amount += item.amount
+            toRemove = []
+            for item in container.getItemByPosition(pos):
+                toRemove.append(item)
+                if not item.type == "Scrap":
+                    newItem.amount += 1
+                else:
+                    newItem.amount += item.amount
+            container.removeItems(toRemove)
             newItem.setWalkable()
 
             # place scrap
             container.addItems([newItem])
-
-        self.xPosition = None
-        self.yPosition = None
-            
-    def getState(self):
-        state = super().getState()
-        state["id"] = self.id
-        state["type"] = self.type
-        state["xPosition"] = self.xPosition
-        state["yPosition"] = self.yPosition
-        return state
-
-    def getLongInfo(self):
-        return None
-
-    def configure(self,character):
-        character.addMessage("nothing to configure")
 
 commons = [
             "MarkerBean",
@@ -939,7 +808,6 @@ def addType(toRegister):
 # should be extendable
 itemMap = {
         "Item":Item,
-        "ItemNew":ItemNew,
 }
 
 rawMaterialLookup = {
@@ -1005,14 +873,28 @@ rawMaterialLookup = {
     "TypedStockpileManager":["Case","MemoryCell","Connector"],
 }
 
-'''
-get item instances from dict state
-'''
 def getItemFromState(state):
+    '''
+    get item instances from dict state
+
+    Parameters:
+        state: the state to build the item from
+    Returns:
+        the create the item
+    '''
+
+    # create blank item
     item = itemMap[state["type"]](noId=True)
+
+    # load state into item
     item.setState(state)
+
+    # set id
     if "id" in state:
         item.id = state["id"]
+
+    # register the item
     src.saveing.loadingRegistry.register(item)
+
     return item
 

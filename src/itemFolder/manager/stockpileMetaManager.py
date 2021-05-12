@@ -1,6 +1,6 @@
 import src
 
-class StockpileMetaManager(src.items.ItemNew):
+class StockpileMetaManager(src.items.Item):
     type = "StockpileMetaManager"
 
     '''

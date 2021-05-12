@@ -3,7 +3,7 @@ import src
 '''
 basic item with different appearance
 '''
-class Pipe(src.items.ItemNew):
+class Pipe(src.items.Item):
     type = "Pipe"
 
     '''

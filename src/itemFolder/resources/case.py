@@ -2,7 +2,7 @@ import src
 
 '''
 '''
-class Case(src.items.ItemNew):
+class Case(src.items.Item):
     type = "Case"
 
     '''

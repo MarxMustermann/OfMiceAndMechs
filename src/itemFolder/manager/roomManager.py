@@ -2,7 +2,7 @@ import src
 
 import random
 
-class RoomManager(src.items.ItemNew):
+class RoomManager(src.items.Item):
     type = "RoomManager"
 
     def __init__(self,xPosition=0,yPosition=0,name="RoomManager",creator=None,noId=False):

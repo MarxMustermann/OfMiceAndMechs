@@ -3,7 +3,7 @@ import src
 '''
 gomode item for terraforming and things
 '''
-class RoadManager(src.items.ItemNew):
+class RoadManager(src.items.Item):
     type = "RoadManager"
 
     '''

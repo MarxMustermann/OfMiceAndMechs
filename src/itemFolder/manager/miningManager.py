@@ -3,7 +3,7 @@ import random
 
 '''
 '''
-class MiningManager(src.items.ItemNew):
+class MiningManager(src.items.Item):
     type = "MiningManager"
 
     '''

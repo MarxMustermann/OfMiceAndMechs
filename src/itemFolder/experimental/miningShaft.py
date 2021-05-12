@@ -1,6 +1,6 @@
 import src
 
-class MiningShaft(src.items.ItemNew):
+class MiningShaft(src.items.Item):
     type = "MiningShaft"
 
     def apply(self,character):

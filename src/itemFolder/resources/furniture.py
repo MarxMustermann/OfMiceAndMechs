@@ -3,7 +3,7 @@ import src
 '''
 basic item with different appearance
 '''
-class Wall(src.items.ItemNew):
+class Wall(src.items.Item):
     type = "Wall"
 
     '''

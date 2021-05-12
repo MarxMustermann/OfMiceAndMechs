@@ -1,7 +1,7 @@
 import src
 import random
 
-class QuestArtwork(src.items.ItemNew):
+class QuestArtwork(src.items.Item):
     type = "QuestArtwork"
 
     '''

@@ -760,8 +760,8 @@ class Character(src.saveing.Saveable):
             container = self.container
             container.removeCharacter(self)
             if addCorpse:
-                corpse = src.items.Corpse(self.xPosition,self.yPosition,creator=self)
-                container.addItems([corpse])
+                corpse = src.items.itemMap["Corpse"]()
+                container.addItem(corpse,self.getPosition())
         # log impossible state
         else:
             src.logger.debugMessages.append("this should not happen, character died without beeing somewhere ("+str(self)+")")

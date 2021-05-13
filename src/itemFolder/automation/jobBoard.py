@@ -27,7 +27,7 @@ Stores a collection of job board. Serving as a todo list.
         return text
 
     def apply(self,character):
-        options = [("addJobOrder","add job order"),("getSolvableJobOrder","get solvable job order"),("getJobOrder","get job order")]
+        options = [("addCommand","add command"),("addJobOrder","add job order"),("getSolvableJobOrder","get solvable job order"),("getJobOrder","get job order")]
         self.submenue = src.interaction.SelectionMenu("what do you want to do?",options)
         character.macroState["submenue"] = self.submenue
         character.macroState["submenue"].followUp = self.apply2

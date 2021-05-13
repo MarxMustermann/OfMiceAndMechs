@@ -8,8 +8,9 @@ class Pusher(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="pusher",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.pusher,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self,noId=False):
+        super().__init__(display=src.canvas.displayChars.pusher,noId=noId)
+        name = "pusher"
 
         self.bolted = False
         self.walkable = True
@@ -25,3 +26,4 @@ A pusher. Building material.
         return text
 
 src.items.addType(Pusher)
+src.items.itemMap["Pusher"] = Pusher

@@ -36,39 +36,32 @@ class Item(src.saveing.Saveable):
     """
     type = "Item"
 
-    def __init__(self,display=None,xPosition=0,yPosition=0,zPosition=0,name="unkown",seed=0,noId=False,creator=None):
+    def __init__(self,display=None,name="unkown",seed=0,noId=False):
         """
         the constructor
 
         Parameters:
             display: information on how the item is shown, can be a string  
-            xPosition: position information
-            yPosition: position information
-            zPosition: position information
             name: name shown to the user
             seed: rng seed
             noId: flag to prevent generating useless ids (obsolete?)
         """
         super().__init__()
         
-        if not display:
-            self.display = src.canvas.displayChars.notImplentedYet
-        else:
-            try:
-                self.display = display
-            except:
-                pass
+        if display:
+            self.display = display
 
         # basic information
         self.seed = seed
         self.name = name
-        self.xPosition = xPosition
-        self.yPosition = yPosition
-        self.zPosition = zPosition
+        self.description = None
+        self.xPosition = None
+        self.yPosition = None
+        self.zPosition = None
         self.container = None
         self.walkable = False
         self.bolted = True
-        self.description = "a "+self.name
+        self.usageInfo = None
         self.tasks = []
         self.blocked = False
 
@@ -90,6 +83,8 @@ class Item(src.saveing.Saveable):
         self.commands = {}
         self.applyOptions = []
         self.level = 1
+        self.isFood = False
+        self.nutrition = 0
 
         # set up metadata for saving
         self.attributesToStore.extend([
@@ -103,6 +98,27 @@ class Item(src.saveing.Saveable):
             self.id = uuid.uuid4().hex
         else:
             self.id = None
+
+    def setPosition(self,pos):
+        """
+        set the position
+
+        Parameters:
+            the position
+        """
+
+        self.xPosition = pos[0]
+        self.yPosition = pos[1]
+        self.zPosition = pos[2]
+
+    def getPosition(self):
+        """
+        get the position
+
+        Returns:
+            the position
+        """
+        return (self.xPosition,self.yPosition,self.zPosition)
 
     def useJoborderRelayToLocalRoom(self,character,tasks,itemType,information={}):
         """
@@ -187,6 +203,10 @@ class Item(src.saveing.Saveable):
         if self.applyOptions:
            result.append(self.__spawnApplyMenu) 
 
+        # eat food on activation
+        if self.isFood:
+           result.append(self.getEaten)
+
         return result
 
     def __spawnApplyMenu(self,character):
@@ -231,10 +251,10 @@ class Item(src.saveing.Saveable):
             the terrain
         """
 
-        if self.room:
-            terrain = self.room.terrain
-        if self.terrain:
-            terrain = self.terrain
+        if isinstance(self.container,src.rooms.Room):
+            terrain = self.container.terrain
+        elif self.container:
+            terrain = self.container
         return terrain
 
     def apply(self,character):
@@ -275,7 +295,7 @@ class Item(src.saveing.Saveable):
         # do the pick up
         character.addMessage("you pick up a %s"%(self.type))
         self.container.removeItem(self)
-        character.addItemToInventory(self)
+        character.addToInventory(self)
 
     def gatherPickupActions(self,character=None):
         """
@@ -317,8 +337,10 @@ class Item(src.saveing.Saveable):
         """
 
         text = "item: "+self.type+" \n\n"
-        if hasattr(self,"descriptionText"):
+        if self.description:
             text += "description: \n"+self.description+"\n\n"
+        if self.usageInfo:
+            text += "usage: \n%s\n"%(self.usageInfo,)
         if self.commands:
             text += "commands: \n"
             for (key,value,) in self.commands.items():
@@ -343,8 +365,10 @@ class Item(src.saveing.Saveable):
         Returns:
             str: the description text
         """
-
-        return self.description
+        if self.description:
+            return self.description
+        else:
+            return ""
 
     def fetchSpecialRegisterInformation(self):
         """
@@ -388,7 +412,7 @@ class Item(src.saveing.Saveable):
 
         options = {}
         if self.runsCommands:
-            options["c"] = ("commands",None)#self.setCommands)
+            options["c"] = ("commands",None)#,self.spawnSetCommands)
         if self.hasSettings:
             options["s"] = ("machine settings",None)#self.setMachineSettings)
         if self.runsJobOrders:
@@ -399,6 +423,18 @@ class Item(src.saveing.Saveable):
             options["m"] = ("do maintenance",self.doMaintenance)
         return options
 
+    def getEaten(self,character):
+        """
+        get eaten by a character
+
+        Parameters:
+            character: the character eating the item
+        """
+
+        character.addMessage("you eat the %s"%(self.name,))
+        character.addSatiation(self.nutrition)
+        self.destroy(generateSrcap=False)
+
     def reset(self,character):
         """
         dummy for handling a character trying to reset the machine
@@ -407,7 +443,8 @@ class Item(src.saveing.Saveable):
             character: the character triggering the reset request
         """
 
-        character.addMessage("nothing to reset")
+        if character:
+            character.addMessage("you reset the machine")
 
     def doMaintenance(self,character):
         """
@@ -884,7 +921,7 @@ def getItemFromState(state):
     '''
 
     # create blank item
-    item = itemMap[state["type"]](noId=True)
+    item = itemMap[state["type"]]()
 
     # load state into item
     item.setState(state)

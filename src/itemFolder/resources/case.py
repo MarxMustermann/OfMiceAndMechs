@@ -8,8 +8,10 @@ class Case(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="case",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.case,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__()
+        self.display = src.canvas.displayChars.case
+        self.name = "case"
 
     def getLongInfo(self):
         text = """

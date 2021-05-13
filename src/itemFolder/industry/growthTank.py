@@ -9,16 +9,20 @@ class GrowthTank(src.items.Item):
     '''
     almost straightforward state initialization
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="growth tank",filled=False,creator=None,noId=False):
-        self.filled = filled
-        if filled:
-            super().__init__(src.canvas.displayChars.growthTank_filled,xPosition,yPosition,name=name,creator=creator)
-        else:
-            super().__init__(src.canvas.displayChars.growthTank_unfilled,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self,filled=False):
+        super().__init__()
 
+        name="growth tank"
+        self.filled = filled
         self.commands = {}
         self.attributesToStore.extend([
                "filled","commands"])
+
+    def render(self):
+        if self.filled:
+            return src.canvas.displayChars.growthTank_filled
+        else:
+            return src.canvas.displayChars.growthTank_unfilled
 
     '''
     manually eject character

@@ -1211,9 +1211,9 @@ class Terrain(src.saveing.Saveable):
     '''
     def removeItem(self,item,recalculate=True):
         pos = (item.xPosition,item.yPosition,item.zPosition)
-        itemList = self.getItemByPosition(pos)
 
         try:
+            itemList = self.getItemByPosition(pos)
             itemList.remove(item)
         except:
             pass
@@ -1226,30 +1226,22 @@ class Terrain(src.saveing.Saveable):
         for item in items:
             self.removeItem(item,recalculate=False)
 
-    def addItem(self,item,pos=None):
-        if pos:
-            item.xPosition = pos[0]
-            item.yPosition = pos[1]
-            item.zPosition = pos[2]
-        self.addItems([item])
+    def addItem(self,item,pos):
+        self.addItems([(item,pos)])
 
     '''
     add items to terrain and add them to internal datastructures
     '''
     def addItems(self,items,recalculate=True):
-        #self.itemsOnFloor.extend(items)
         recalc = False
-        for item in items:
-            item.terrain = self
-            item.room = None
+        for itemPair in items:
+            item = itemPair[0]
             item.container = self
+
             if not item.walkable:
                 recalc = True
 
-            if not (item.xPosition or item.xPosition):
-                return 
-
-            position = (item.xPosition,item.yPosition,item.zPosition)
+            position = itemPair[1]
             if position[0]%15 == 0:
                 if position[1]%15 < 7:
                     position = (position[0]+1,position[1]+1,position[2])
@@ -1291,8 +1283,6 @@ class Terrain(src.saveing.Saveable):
                 self.itemsByCoordinate[position].insert(0,item)
             else:
                 self.itemsByCoordinate[position] = [item]
-        if recalc and hasattr(self,"watershedStart") and recalculate: # nontrivial: prevents crashes in constructor
-            self.calculatePathMap()
 
     '''
     draw the floor
@@ -1711,7 +1701,7 @@ class Terrain(src.saveing.Saveable):
         for itemId in state["itemIds"]:
             itemState = state["itemStates"][itemId]
             item = src.items.getItemFromState(itemState)
-            addItems.append(item)
+            addItems.append((item,item.getPosition()))
         self.addItems(addItems)
 
     '''
@@ -1846,18 +1836,18 @@ class Nothingness(Terrain):
                 for y in range(1,224):
                     item = None
                     if not x%23 and not y%35 and not (x+y)%5:
-                        item = src.items.itemMap["Scrap"](x,y,1,creator=creator)
+                        item = src.items.itemMap["Scrap"](amount=1)
                         item.bolted = False
                     if not x%57 and not y%22 and not (x+y)%3:
-                        item = src.items.itemMap["Item"](src.canvas.displayChars.foodStuffs[((2*x)+y)%6],x,y,creator=creator)
+                        item = src.items.itemMap["Item"](display=src.canvas.displayChars.foodStuffs[((2*x)+y)%6])
                         item.walkable = True
                         item.bolted = False
                     if not x%19 and not y%27 and not (x+y)%4:
-                        item = src.items.itemMap["Item"](src.canvas.displayChars.foodStuffs[((2*x)+y)%6],x,y,creator=creator)
+                        item = src.items.itemMap["Item"](display=src.canvas.displayChars.foodStuffs[((2*x)+y)%6])
                         item.walkable = True
                         item.bolted = False
                     if item:
-                        self.dekoItems.append(item)
+                        self.dekoItems.append((item,(x,y,0)))
             self.addItems(self.dekoItems)
 
         self.floordisplay = src.canvas.displayChars.dirt

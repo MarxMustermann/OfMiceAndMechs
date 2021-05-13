@@ -9,25 +9,24 @@ class Spray(src.items.Item):
     '''
     call superclass constructor with modified parameters and set some state
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="spray",direction=None,creator=None,noId=False):
+    def __init__(self,direction=None):
         # skin acording to spray direction
         if direction == None:
             direction = "left"
 
         self.direction = direction
 
-        super().__init__(src.canvas.displayChars.spray_left_inactive,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(display=src.canvas.displayChars.spray_left_inactive)
+        self.name = "spray"
 
         # set up meta information for saveing
         self.attributesToStore.extend([
                "direction"])
 
-    '''
-    set appearance depending on energy supply
-    bad code: energy supply is directly taken from the machine room
-    '''
-    @property
-    def display(self):
+    def render(self):
+        '''
+        set appearance depending on energy supply
+        '''
         if self.direction == "left":
             if self.terrain.tutorialMachineRoom.steamGeneration == 0:
                 return src.canvas.displayChars.spray_left_inactive

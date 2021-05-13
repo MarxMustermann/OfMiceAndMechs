@@ -3,8 +3,9 @@ import src
 class SparkPlug(src.items.Item):
     type = "SparkPlug"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.sparkPlug,xPosition,yPosition,creator=creator,name="static spark")
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.sparkPlug)
+        self.name = "spark plug"
 
         self.walkable = True
         self.bolted = True

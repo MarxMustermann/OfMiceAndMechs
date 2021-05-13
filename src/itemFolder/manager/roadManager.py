@@ -9,8 +9,11 @@ class RoadManager(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="road manager",creator=None,noId=False):
-        super().__init__("RM",xPosition,yPosition,name=name,creator=creator,runsJobOrders=True)
+    def __init__(self):
+        super().__init__(display="RM")
+        
+        self.name = "road manager"
+        self.runsJobOrders = True
 
         self.roadNetwork = {}
         self.centerDirection = {}
@@ -160,14 +163,14 @@ class RoadManager(src.items.Item):
         bigY = task["coordinate"][1]
 
         for pos in [(6,6),(6,7),(6,8),(7,8),(8,8),(8,7),(8,6),(7,6)]:
-            floorPlate = src.items.itemMap["Paving"](bigX*15+pos[0],bigY*15+pos[1])
-            terrain.addItem(floorPlate)
-        commandItem = src.items.itemMap["Command"](bigX*15+7,bigY*15+6)
-        terrain.addItem(commandItem)
+            context["character"].addMessage("adding paving %s"%(terrain,))
+            floorPlate = src.items.itemMap["Paving"]()
+            terrain.addItem(floorPlate,(bigX*15+pos[0],bigY*15+pos[1],0))
+        commandItem = src.items.itemMap["Command"]()
+        terrain.addItem(commandItem,(bigX*15+7,bigY*15+6,0))
 
         if not self.roadNetwork:
-            self.roadNetwork[(self.room.xPosition,self.room.yPosition)] = {"type":"centerBlocked"}
-            #self.roadNetwork[(bigX,bigY)] = {"type":"centerBlocked"}
+            self.roadNetwork[(self.container.xPosition,self.container.yPosition)] = {"type":"centerBlocked"}
         
         neighbours = [(bigX+1,bigY),(bigX-1,bigY),(bigX,bigY-1),(bigX,bigY+1)]
         import random
@@ -214,8 +217,8 @@ class RoadManager(src.items.Item):
             startPos[index] += changePerStep
             if i in (5,6,):
                 continue
-            floorPlate = src.items.itemMap["Paving"](bigX*15+startPos[0],bigY*15+startPos[1])
-            terrain.addItem(floorPlate)
+            floorPlate = src.items.itemMap["Paving"]()
+            terrain.addItem(floorPlate,(bigX*15+startPos[0],bigY*15+startPos[1],0))
 
     def doAddPathingNode(self,task):
         terrain = self.getTerrain()

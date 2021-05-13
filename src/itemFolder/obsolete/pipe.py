@@ -9,8 +9,9 @@ class Pipe(src.items.Item):
     '''
     call superclass constructor with modified paramters
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="Pipe",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.pipe,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.pipe)
+        self.name = "pipe"
 
     def getLongInfo(self):
         text = """

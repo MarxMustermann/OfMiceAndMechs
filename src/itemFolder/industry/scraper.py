@@ -8,12 +8,12 @@ class Scraper(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="scraper",creator=None,noId=False):
+    def __init__(self,name="scraper",noId=False):
         self.coolDown = 10
         self.coolDownTimer = -self.coolDown
         self.charges = 3
         
-        super().__init__(src.canvas.displayChars.scraper,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(display=src.canvas.displayChars.scraper,name=name)
 
         self.attributesToStore.extend([
                "coolDown","coolDownTimer","charges"])

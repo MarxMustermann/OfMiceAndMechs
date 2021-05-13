@@ -1,27 +1,31 @@
 import src
 
-'''
-a dummy for an interface with the mech communication network
-'''
 class ItemCollector(src.items.Item):
+    '''
+    a helper item to offer the player the ability to gather items without progamming too much
+    '''
+
     type = "ItemCollector"
 
-    '''
-    call superclass constructor with modified paramters
-    '''
-    def __init__(self,xPosition=0,yPosition=0,name="ItemCollector",creator=None,noId=False):
-        super().__init__("ic",xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        '''
+        simple superclass configuration
+        '''
+        super().__init__(display="ic")
+                
+        self.name = "item collector"
+        self.description = "use it to collect items."
 
         self.bolted = False
         self.walkable = True
-        self.commands = {}
-        self.attributesToStore.extend([
-               "balance"])
 
-    '''
-    collect items
-    '''
     def apply(self,character):
+        '''
+        collect items
+
+        Parameters:
+            character: the character trying to collect items
+        '''
         super().apply(character,silent=True)
 
         if not self.terrain:
@@ -186,36 +190,5 @@ class ItemCollector(src.items.Item):
 
         self.character.addMessage("added command for %s - %s"%(itemType,commandItem.command))
         return
-
-    def runCommand(self,trigger,character):
-        if not trigger in self.commands:
-            return
-
-        command = self.commands[trigger]
-
-        convertedCommand = []
-        for char in command:
-            convertedCommand.append((char,"norecord"))
-
-        character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
-        character.addMessage("running command to handle trigger %s - %s"%(trigger,command))
-
-    def getState(self):
-        state = super().getState()
-        state["commands"] = self.commands
-        return state
-
-    def setState(self,state):
-        super().setState(state)
-        if "commands" in state:
-            self.commands = state["commands"]
-
-    def getLongInfo(self):
-        text = """
-item: ItemCollector
-
-description:
-use it to collect items
-"""
 
 src.items.addType(ItemCollector)

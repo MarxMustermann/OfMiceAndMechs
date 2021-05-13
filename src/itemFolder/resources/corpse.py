@@ -8,8 +8,10 @@ class Corpse(src.items.Item):
     '''
     almost straightforward state initialization
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="corpse",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.corpse,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.corpse)
+
+        self.name = "corpse"
         self.charges = 1000
         self.attributesToStore.extend([
                "activated","charges"])

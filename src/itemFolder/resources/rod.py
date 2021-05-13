@@ -8,8 +8,8 @@ class Rod(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="rod",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.rod,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self,name="rod",noId=False):
+        super().__init__(display=src.canvas.displayChars.rod,name=name)
 
         self.bolted = False
         self.walkable = True

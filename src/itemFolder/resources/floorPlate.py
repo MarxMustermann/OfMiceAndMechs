@@ -8,12 +8,12 @@ class FloorPlate(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="floor plate",creator=None,noId=False):
-        super().__init__("::",xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display="::")
 
         self.bolted = False
         self.walkable = True
-        self.name = "test"
+        self.name = "floor plate"
 
     def getLongInfo(self):
         text = """

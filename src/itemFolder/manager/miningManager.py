@@ -9,8 +9,11 @@ class MiningManager(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="mining manager",creator=None,noId=False):
-        super().__init__("MM",xPosition,yPosition,name=name,creator=creator,runsJobOrders=True)
+    def __init__(self):
+        super().__init__(display="MM")
+        
+        self.name = "mining manager"
+        self.runsJobOrders = True
 
     def apply(self,character):
         options = [

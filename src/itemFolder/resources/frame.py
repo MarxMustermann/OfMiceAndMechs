@@ -8,8 +8,8 @@ class Frame(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="Frame",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.frame,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self,name="Frame",noId=False):
+        super().__init__(display=src.canvas.displayChars.frame,name=name)
 
         self.bolted = False
         self.walkable = True

@@ -6,11 +6,13 @@ class Sorter(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="sorter",creator=None,noId=False):
+    def __init__(self):
+        super().__init__()
+        
+        self.display = src.canvas.displayChars.sorter
+        self.name = "sorter"
         self.coolDown = 10
         self.coolDownTimer = -self.coolDown
-
-        super().__init__(src.canvas.displayChars.sorter,xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
                "coolDown","coolDownTimer"])

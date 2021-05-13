@@ -8,8 +8,8 @@ class Tank(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="tank",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.tank,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self, name="tank",noId=False):
+        super().__init__(display=src.canvas.displayChars.tank,name=name)
 
         self.bolted = False
         self.walkable = True

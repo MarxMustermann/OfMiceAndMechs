@@ -8,13 +8,15 @@ class MemoryBank(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="MemoryBank",creator=None,noId=False):
+    def __init__(self):
 
         self.macros = {}
 
-        self.baseName = name
+        super().__init__(display=src.canvas.displayChars.memoryBank)
 
-        super().__init__(src.canvas.displayChars.memoryBank,xPosition,yPosition,name=name,creator=creator)
+        self.name = "memory bank"
+        self.baseName = self.name
+
 
         self.attributesToStore.extend([
                 "macros"])

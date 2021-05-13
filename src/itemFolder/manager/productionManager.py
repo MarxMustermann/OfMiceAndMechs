@@ -6,10 +6,12 @@ class ProductionManager(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="production manager",creator=None,noId=False):
+    def __init__(self):
         self.commands = {}
 
-        super().__init__(src.canvas.displayChars.productionManager,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(display=src.canvas.displayChars.productionManager)
+
+        self.name = "production manager"
 
         self.bolted = False
         self.walkable = False

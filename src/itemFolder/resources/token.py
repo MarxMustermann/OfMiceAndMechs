@@ -5,11 +5,16 @@ import src
 class Token(src.items.Item):
     type = "Token"
 
-    '''
-    call superclass constructor with modified parameters
-    '''
-    def __init__(self,xPosition=None,yPosition=None, name="token",creator=None,noId=False,tokenType="generic",payload=None):
-        super().__init__(src.canvas.displayChars.token,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self,tokenType="generic",payload=None):
+        '''
+        simple superclass configuration
+        '''
+        super().__init__(display=src.canvas.displayChars.token)
+
+        self.name = "token"
+        self.description = """
+A token. Only has value in the eyes of the beholder.
+"""
 
         self.bolted = False
         self.walkable = True
@@ -18,12 +23,5 @@ class Token(src.items.Item):
 
         self.attributesToStore.extend([
                 "tokenType","payload"])
-
-    def getLongInfo(self):
-        text = """
-A token. Only has value in the eyes of the beholder.
-
-"""
-        return text
 
 src.items.addType(Token)

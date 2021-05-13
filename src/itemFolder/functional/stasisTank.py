@@ -8,10 +8,13 @@ class StasisTank(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="stasis tank",creator=None,noId=False):
-        self.character = None
-        super().__init__(src.canvas.displayChars.stasisTank,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__()
+                
+        self.display = src.canvas.displayChars.stasisTank
 
+        self.name="stasis tank"
+        self.character = None
         self.bolted = True
         self.walkable = False
         self.character = None

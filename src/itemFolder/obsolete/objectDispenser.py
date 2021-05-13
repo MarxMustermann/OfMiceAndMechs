@@ -9,13 +9,14 @@ class ObjectDispenser(src.items.Item):
 
     '''
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="object dispenser",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.objectDispenser,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.objectDispenser)
+        self.name = "object dispenser"
 
         self.storage = []
         counter = 0
         while counter < 5:
-            self.storage.append(GooFlask(creator=self))
+            self.storage.append(src.items.itemMap["GooFlask"]())
             counter += 1
 
     '''

@@ -5,9 +5,10 @@ class Mortar(src.items.Item):
     '''
     almost straightforward state initialization
     '''
-    def __init__(self,xPosition=0,yPosition=0,amount=1,name="mortar",creator=None,noId=False):
+    def __init__(self):
 
-        super().__init__(src.canvas.displayChars.mortar,xPosition,yPosition,creator=creator,name=name)
+        super().__init__(display=src.canvas.displayChars.mortar)
+        self.name = "mortar"
         
         self.bolted = False
         self.loaded = False

@@ -3,9 +3,12 @@ import src
 class Container(src.items.Item):
     type = "Container"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+    def __init__(self):
+        super().__init__()
+                
         self.contained = []
-        super().__init__(src.canvas.displayChars.container,xPosition,yPosition,creator=creator,name="container")
+        self.display = src.canvas.displayChars.container
+        self.name="container"
 
         self.charges = 0
         self.maxItems = 10

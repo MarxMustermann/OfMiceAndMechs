@@ -6,9 +6,11 @@ class Bomb(src.items.Item):
     '''
     almost straightforward state initialization
     '''
-    def __init__(self,xPosition=0,yPosition=0,amount=1,name="bomb",creator=None,noId=False):
+    def __init__(self):
 
-        super().__init__(src.canvas.displayChars.bomb,xPosition,yPosition,creator=creator,name=name)
+        super().__init__(display=src.canvas.displayChars.bomb)
+
+        self.name = "bomb"
         
         self.bolted = False
         self.walkable = True

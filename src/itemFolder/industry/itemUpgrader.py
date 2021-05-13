@@ -3,8 +3,10 @@ import src
 class ItemUpgrader(src.items.Item):
     type = "ItemUpgrader"
 
-    def __init__(self,xPosition=0,yPosition=0,name="item upgrader",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.itemUpgrader,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__()
+        self.display = src.canvas.displayChars.itemUpgrader
+        self.name="item upgrader"
         self.charges = 3
         self.level = 1
 

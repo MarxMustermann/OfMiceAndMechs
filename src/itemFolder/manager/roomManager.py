@@ -1,20 +1,33 @@
+import random
 import src
 
-import random
-
 class RoomManager(src.items.Item):
+    """
+    is supposed to handle the task that concern a room by sending npc around
+    """
     type = "RoomManager"
 
-    def __init__(self,xPosition=0,yPosition=0,name="RoomManager",creator=None,noId=False):
-        super().__init__("##",xPosition,yPosition,name=name,creator=creator)
+    def __init__(self,name="RoomManager",noId=False):
+        """
+        configures the superclass and resets
+        """
 
+        super().__init__(display="##",name=name,noId=noId)
+
+        # set item config options
         self.runsJobOrders = True
         self.hasSettings = True
         self.runCommands = True
         self.canReset = True
         self.hasMaintenance = True
 
-        self.applyOptions.extend([("doMaintance","do maintanance"),("do action","do action"),("addTaskSelection","add task"),("clearTasks","clear tasks")])
+        # set up interaction menu
+        self.applyOptions.extend([
+                    ("doMaintance","do maintanance"),
+                    ("do action","do action"),
+                    ("addTaskSelection","add task"),
+                    ("clearTasks","clear tasks")
+                    ])
         self.applyMap = {
                             "doMaintance":self.doMaintance,
                             "do action":self.actionSelection,
@@ -22,40 +35,57 @@ class RoomManager(src.items.Item):
                             "clearTasks":self.clearTasks,
                         }
 
+        # set up saving information
         self.attributesToStore.extend([
-               "cityBuilderPos","machineMachinePos","bluePrintingArtworkPos","tasks","managerName","roomName",
+               "cityBuilderPos","machineMachinePos","bluePrintingArtworkPos","tasks","managerName",
                "resourceTerminalPositions","stuck","stuckReason","machinePositions","freeItemSlots","itemPositions",
                ])
-
         self.tupleDictsToStore.extend([
                "itemSlotUsage","dependencies",
                ])
 
+        # set state by resetting
         self.reset()
 
-    def reset(self,extra=None):
-        self.itemSlotUsage = {}
-        self.freeItemSlots = [[2,2],[2,4],[4,2],[4,4],[8,2],[10,2],[8,4],[10,4],[8,8],[10,8],[8,10],[10,10],[2,8],[4,8],[2,10],[4,10]]
+    def reset(self,character=None):
+        """
+        configures the superclass and resets
+        
+        Parameters:
+            character: the character dooing the reset
+        """
 
-        import random
+        super().reset(character)
+
+        # the storage for how things are used
+        self.itemSlotUsage = {}
+
+        # the slots where items can be placed
+        self.freeItemSlots = [[2,2],[2,4],[4,2],[4,4],[8,2],[10,2],[8,4],[10,4],[8,8],[10,8],[8,10],[10,10],[2,8],[4,8],[2,10],[4,10]]
         random.shuffle(self.freeItemSlots)
 
+        # the queue of tasks to do
         self.tasks = [
                 {"task":"add CityBuilder"},
                 ]
 
+        # store information about error state
         self.stuck = False
         self.stuckReason = None
 
+        # positions of special items
         self.machineMachinePos = None
         self.bluePrintingArtworkPos = None
         self.cityBuilderPos = None
         self.resourceTerminalPositions = {}
         self.machinePositions = {}
         self.itemPositions = {}
-        self.dependencies = {}
         self.itemPositions = {}
-        self.roomName = None
+
+        # storage for information on what items depend on each other
+        self.dependencies = {}
+
+        # the name of the manager used for pathing
         self.managerName = "comandCenter"
 
     def actionSelection(self,character):
@@ -336,8 +366,6 @@ class RoomManager(src.items.Item):
             character.inventory.append(machine)
             self.characterDropMachine(character,itemSlot)
             self.itemSlotUsage[tuple(itemSlot)] = task
-            if not self.roomName:
-                self.roomName = "CityBuilderRoom_"+self.id
 
             commands = {}
             commands["go to room manager"] = self.generatePathFromTo([self.cityBuilderPos[0],self.cityBuilderPos[1]-1],[character.xPosition,character.yPosition])

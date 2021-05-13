@@ -8,9 +8,10 @@ class PositioningDevice(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="positioning device",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.positioningDevice,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.positioningDevice)
 
+        self.name = "positioning device"
         self.bolted = False
         self.walkable = True
 

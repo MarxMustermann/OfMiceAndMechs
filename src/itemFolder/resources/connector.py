@@ -8,8 +8,8 @@ class Connector(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="connector",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.connector,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self, name="connector",noId=False):
+        super().__init__(display=src.canvas.displayChars.connector,name=name)
 
         self.bolted = False
         self.walkable = True

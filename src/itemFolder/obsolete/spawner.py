@@ -3,8 +3,10 @@ import src
 class Spawner(src.items.Item):
     type = "Spawner"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.fireCrystals,xPosition,yPosition,creator=creator,name="spawner")
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.fireCrystals)
+
+        self.name = "spawner"
         self.charges = 1
 
     def apply(self,character):

@@ -8,9 +8,11 @@ class Radiator(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="radiator",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.coil,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__()
 
+        self.display = src.canvas.displayChars.coil
+        self.name="radiator"
         self.bolted = False
         self.walkable = True
 

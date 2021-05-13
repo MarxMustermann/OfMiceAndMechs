@@ -9,8 +9,11 @@ class Armor(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="armor",creator=None,noId=False):
-        super().__init__("ar",xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__()
+
+        self.name = "armor"
+        self.display = "ar"
 
         self.bolted = False
         self.walkable = True

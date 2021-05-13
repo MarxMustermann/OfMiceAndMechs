@@ -9,11 +9,15 @@ class GooDispenser(src.items.Item):
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=None,yPosition=None,name="goo dispenser",creator=None,noId=False):
+    def __init__(self):
+        super().__init__()
+                
+        self.display = src.canvas.displayChars.gooDispenser
+
+        self.name="goo dispenser"
         self.activated = False
-        self.baseName = name
+        self.baseName = self.name
         self.level = 1
-        super().__init__(src.canvas.displayChars.gooDispenser,xPosition,yPosition,name=name,creator=creator)
 
         # set up meta information for saveing
         self.attributesToStore.extend([

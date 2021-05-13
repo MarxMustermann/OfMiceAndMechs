@@ -8,8 +8,8 @@ class Puller(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="puller",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.puller,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self,name="puller",noId=False):
+        super().__init__(display=src.canvas.displayChars.puller,name=name)
 
         self.bolted = False
         self.walkable = True
@@ -22,3 +22,4 @@ A puller. Building material.
         return text
 
 src.items.addType(Puller)
+src.items.itemMap["Puller"] = Puller

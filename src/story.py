@@ -3582,15 +3582,24 @@ class CreativeMode(BasicPhase):
                 ]
 
         items = []
-        item = src.items.itemMap["ArchitectArtwork"](15*7+8,15*7+7)
+        item = src.items.itemMap["ArchitectArtwork"]()
         item.bolted = False
         item.godMode = True
-        items.append(item)
-        item = src.items.itemMap["ProductionArtwork"](15*7+8,15*7+8)
+        items.append((item,(15*7+8,15*7+7,0)))
+        item = src.items.itemMap["ProductionArtwork"]()
         item.bolted = False
         item.godMode = True
-        items.append(item)
+        items.append((item,(15*7+8,15*7+8,0)))
         src.gamestate.gamestate.terrain.addItems(items)
+
+        item = src.items.itemMap["ArchitectArtwork"]()
+        item.bolted = False
+        item.godMode = True
+        src.gamestate.gamestate.mainChar.inventory.append(item)
+        item = src.items.itemMap["ProductionArtwork"]()
+        item.bolted = False
+        item.godMode = True
+        src.gamestate.gamestate.mainChar.inventory.append(item)
 
 
 

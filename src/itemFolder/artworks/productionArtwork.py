@@ -10,13 +10,14 @@ class ProductionArtwork(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="production artwork",creator=None,noId=False):
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.productionArtwork)
+
         self.coolDown = 10000
         self.coolDownTimer = -self.coolDown
         self.charges = 10
         self.godMode = False
-
-        super().__init__(src.canvas.displayChars.productionArtwork,xPosition,yPosition,name=name,creator=creator)
+        self.name = "production artwork"
 
         self.attributesToStore.extend([
                "coolDown","coolDownTimer","charges","godMode"])
@@ -25,7 +26,6 @@ class ProductionArtwork(src.items.Item):
     trigger production of a player selected item
     '''
     def apply(self,character,resultType=None):
-        super().apply(character,silent=True)
 
         if not self.godMode:
             if not self.room:
@@ -72,7 +72,7 @@ class ProductionArtwork(src.items.Item):
             self.targetItemType = self.submenue.selection
             if self.targetItemType == src.items.itemMap["Machine"]:
                 options = []
-                for key,value in itemMap.items():
+                for key,value in src.items.itemMap.items():
                     options.append((key,key))
                 self.submenue = src.interaction.SelectionMenu("select the item the machine should produce",options)
                 self.character.macroState["submenue"] = self.submenue
@@ -136,9 +136,10 @@ class ProductionArtwork(src.items.Item):
             self.room.removeItem(item)
 
         # spawn new item
-        new = itemType(creator=self)
+        new = itemType()
         new.xPosition = self.xPosition+1
         new.yPosition = self.yPosition
+        new.zPosition = self.zPosition
         new.bolted = False
 
         if self.godMode:
@@ -157,7 +158,7 @@ class ProductionArtwork(src.items.Item):
             if itemType == src.items.itemMap["ResourceTerminal"]:
                 new.balance = 1000
 
-        self.container.addItems([new])
+        self.container.addItem(new,new.getPosition())
 
     def getRemainingCooldown(self):
         return self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer)

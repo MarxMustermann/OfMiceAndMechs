@@ -8,12 +8,12 @@ class AutoScribe(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="auto scribe",creator=None,noId=False):
+    def __init__(self, name="auto scribe",noId=False):
         self.coolDown = 10
         self.coolDownTimer = -self.coolDown
         self.level = 1
         
-        super().__init__(src.canvas.displayChars.sorter,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(display=src.canvas.displayChars.sorter,name=name)
 
         self.attributesToStore.extend([
                "coolDown","coolDownTimer","level"])

@@ -6,14 +6,14 @@ class PavingGenerator(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="paving generator",creator=None,noId=False):
+    def __init__(self,name="paving generator",creator=None,noId=False):
         self.coolDown = 100
         self.coolDownTimer = -self.coolDown
         self.charges = 3
         self.level = 1
         self.commands = {}
         
-        super().__init__("PG",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(display="PG",name=name)
 
         self.attributesToStore.extend([
                "coolDown","coolDownTimer","charges","level"])
@@ -22,8 +22,6 @@ class PavingGenerator(src.items.Item):
     produce a paving
     '''
     def apply(self,character,resultType=None):
-        super().apply(character,silent=True)
-
         if not self.container:
             character.addMessage("this machine has be somewhere to be used")
             return
@@ -37,7 +35,7 @@ class PavingGenerator(src.items.Item):
                 self.container = self.terrain
 
         for item in self.container.getItemByPosition((self.xPosition-1,self.yPosition,self.zPosition)):
-            if isinstance(item,itemMap["Scrap"]):
+            if item.type == "Scrap":
                 scrap = item
                 break
         if self.level > 1:
@@ -95,10 +93,8 @@ class PavingGenerator(src.items.Item):
 
         for i in range(1,4):
             # spawn the metal bar
-            new = src.items.itemMap["Paving"](creator=self)
-            new.xPosition = self.xPosition+1
-            new.yPosition = self.yPosition
-            self.container.addItems([new])
+            new = src.items.itemMap["Paving"]()
+            self.container.addItem(new,(self.xPosition+1,self.yPosition,self.zPosition))
 
         self.runCommand("success",character)
 

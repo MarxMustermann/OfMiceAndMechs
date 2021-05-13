@@ -8,16 +8,17 @@ class Drill(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="Drill",creator=None,noId=False):
+    def __init__(self):
 
         self.coolDown = 100
         self.coolDownTimer = -self.coolDown
         self.isBroken = False
         self.isCleaned = True
 
-        self.baseName = name
+        super().__init__(display=src.canvas.displayChars.drill)
+        self.name = "drill"
+        self.baseName = self.name
 
-        super().__init__(src.canvas.displayChars.drill,xPosition,yPosition,name=name,creator=creator)
 
         self.attributesToStore.extend([
                 "coolDown","coolDownTimer",

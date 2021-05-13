@@ -8,10 +8,11 @@ class GooProducer(src.items.Item):
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=None,yPosition=None,name="goo producer",creator=None,noId=False):
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.gooProducer)
+        self.name = "goo producer"
         self.activated = False
         self.level = 1
-        super().__init__(src.canvas.displayChars.gooProducer,xPosition,yPosition,name=name,creator=creator)
 
         # bad code: repetetive and easy to forgett
         self.attributesToStore.extend([

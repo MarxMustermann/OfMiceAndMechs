@@ -3,10 +3,11 @@ import src
 class FireCrystals(src.items.Item):
     type = "FireCrystals"
 
-    def __init__(self,xPosition=0,yPosition=0,amount=1,name="fireCrystals",creator=None,noId=False):
+    def __init__(self):
 
-        super().__init__(src.canvas.displayChars.fireCrystals,xPosition,yPosition,creator=creator,name=name)
+        super().__init__(display=src.canvas.displayChars.fireCrystals)
         self.walkable = True
+        self.name = "fireCrystals"
 
     def apply(self,character):
         character.addMessage("The fire crystals start sparkling")

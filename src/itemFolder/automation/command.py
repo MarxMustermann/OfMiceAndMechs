@@ -8,8 +8,10 @@ class Command(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="Command",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.command,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.command)
+
+        self.name = "command"
 
         self.bolted = False
         self.walkable = True
@@ -58,7 +60,6 @@ it holds the command:
         return text
 
     def apply(self,character):
-        super().apply(character,silent=True)
 
         if isinstance(character,src.characters.Monster):
             return

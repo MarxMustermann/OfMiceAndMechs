@@ -56,7 +56,8 @@ class TypedStockpileManager(src.items.Item):
                 self.freeItemSlots[4].append((x,y))
 
         self.slotsByItemtype = {}
-        super().__init__(src.canvas.displayChars.typedStockpileManager,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(display=src.canvas.displayChars.typedStockpileManager)
+        self.name = "typed stockpile manager"
 
         self.bolted = False
         self.walkable = False

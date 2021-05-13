@@ -3,8 +3,10 @@ import src
 class StaticMover(src.items.Item):
     type = "StaticMover"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.forceField2,xPosition,yPosition,creator=creator,name="static spark")
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.forceField2)
+        
+        self.name = "static spark"
 
         self.walkable = False
         self.bolted = True

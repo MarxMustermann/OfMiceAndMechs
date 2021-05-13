@@ -3,8 +3,9 @@ import src
 class ItemDowngrader(src.items.Item):
     type = "ItemDowngrader"
 
-    def __init__(self,xPosition=0,yPosition=0,name="item downgrader",creator=None,noId=False):
-        super().__init__(xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display="ID")
+        self.name = "item downgrader"
 
     def apply(self,character):
         if not self.room:

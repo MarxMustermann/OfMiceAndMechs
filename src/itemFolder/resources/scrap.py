@@ -1,43 +1,43 @@
 import src
 
-'''
-crushed something, basically raw metal
-'''
 class Scrap(src.items.Item):
+    '''
+    crushed something, basically raw metal
+    '''
+
     type = "Scrap"
         
-    '''
-    almost straightforward state initialization
-    '''
-    def __init__(self,xPosition=0,yPosition=0,amount=1,name="scrap",noId=False):
+    def __init__(self,amount=1,name="scrap",noId=False):
+        '''
+        almost straightforward state initialization
+        '''
 
-        self.amount = 1
-
-        super().__init__(src.canvas.displayChars.scrap_light,xPosition,yPosition,name=name)
+        super().__init__(display=src.canvas.displayChars.scrap_light,name=name)
         
-        # set up metadata for saveing
+        # set up metadata for saving
         self.attributesToStore.extend([
                "amount"])
         
         self.bolted = False
 
+        # how many scraps this pile consists of
         self.amount = amount
 
+        # reset walkable
         self.setWalkable()
 
-    '''
-    move the item and leave residue
-    '''
     def moveDirection(self,direction,force=1,initialMovement=True):
+        '''
+        move the item and leave residue
+        '''
         self.dropStuff()
         super().moveDirection(direction,force,initialMovement)
 
-    '''
-    leave a trail of pieces
-    bad code: only works on terrain
-    '''
+    #bad code: only works on terrain
     def dropStuff(self):
-        self.setWalkable()
+        '''
+        leave a trail of pieces
+        '''
 
         # only drop something if there is something left to drop
         if self.amount <= 1:
@@ -52,29 +52,24 @@ class Scrap(src.items.Item):
         self.amount -= fallOffAmount
 
         # generate the fallen off scrap
-        newItem = Scrap(self.xPosition,self.yPosition,fallOffAmount,creator=self)
-        newItem.room = self.room
-        newItem.terrain = self.terrain
+        newItem = Scrap(amount=fallOffAmount)
+        self.container.addItem(newItem,self.xPosition,self.yPosition)
 
-        # place the fallen off parts on map
-        # bad code: should be handled by terrain
-        self.terrain.itemByCoordinates[(self.xPosition,self.yPosition)].append(newItem)
-        self.terrain.itemsOnFloor.append(newItem)
+        self.setWalkable()
 
-    '''
-    recalculate the walkable attribute
-    '''
     def setWalkable(self):
+        '''
+        recalculate the walkable attribute
+        '''
         if self.amount < 5:
             self.walkable = True
         else:
             self.walkable = False
       
-    '''
-    recalculate the display char
-    '''
-    @property
-    def display(self):
+    def render(self):
+        '''
+        render the scrap depending on amount
+        '''
         if self.amount < 5:
             return src.canvas.displayChars.scrap_light
         elif self.amount < 15:
@@ -82,33 +77,40 @@ class Scrap(src.items.Item):
         else:
             return src.canvas.displayChars.scrap_heavy
                 
-    '''
-    get resistance to beeing moved depending on size
-    '''
     def getResistance(self):
+        '''
+        get resistance to beeing moved depending on size
+        '''
         return self.amount*2
 
-    '''
-    destroying scrap means to merge the scrap 
-    '''
     def destroy(self, generateSrcap=True):
+        '''
+        destroying scrap means to merge the scrap 
+        '''
+
         # get list of scrap on same location
         # bad code: should be handled in the container
         foundScraps = []
-        for item in self.container.itemByCoordinates[(self.xPosition,self.yPosition)]:
-            if type(item) == Scrap:
+        for item in self.container.getItembyPosition((self.xPosition,self.yPosition,self.zPosition)):
+            if item.type == "Scrap":
                 foundScraps.append(item)
         
         # merge existing and new scrap
+        toRemove = []
         if len(foundScraps) > 1:
             for item in foundScraps:
                 if item == self:
                     continue
                 self.amount += item.amount
-                # bad code: direct manipulation of terrain state
-                self.container.itemByCoordinates[(self.xPosition,self.yPosition)].remove(item)
+                toRemove.append(item)
+        
+        self.container.removeItems(toRemove)
 
     def getLongInfo(self):
+        """
+        generate simple text description
+        """
+
         text = """
 item: Scrap
 
@@ -120,33 +122,31 @@ There is %s in this pile
 
         return text
 
-    '''
-    get picked up by the supplied character
-    '''
     def pickUp(self,character):
+        '''
+        get picked up by the supplied character
+        '''
+
+        # get picked up completely
         if self.amount <= 1:
             super().pickUp(character)
             return
 
+        # prevents crashes
         if self.xPosition == None or self.yPosition == None:
             return
 
-        foundBig = False
-        for item in character.inventory:
-            if item.walkable == False:
-                foundBig = True
-                break
+        # remove a singe piece of scrap
         self.amount -= 1
-
         character.addMessage("you pick up a piece of scrap, there is %s left"%(self.amount,))
 
         # add item to characters inventory
-        character.inventory.append(Scrap(amount=1,creator=self))
+        character.addToInventory(Scrap(amount=1))
 
-    '''
-    get picked up by the supplied character
-    '''
     def apply(self,character):
+        '''
+        add more scrap to a scrap pile if available
+        '''
         scrapFound = []
         for item in character.inventory:
             if item.type == "Scrap":

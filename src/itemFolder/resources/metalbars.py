@@ -6,8 +6,10 @@ basically refined scrap and the default resource
 class MetalBars(src.items.Item):
     type = "MetalBars"
 
-    def __init__(self,xPosition=0,yPosition=0,name="metal bar",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.metalBars,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__()
+        self.display = src.canvas.displayChars.metalBars
+        self.name ="metal bar"
         self.walkable = True
         self.bolted = False 
 

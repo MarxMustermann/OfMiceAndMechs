@@ -3,8 +3,9 @@ import src
 class Explosion(src.items.Item):
     type = "Explosion"
 
-    def __init__(self,xPosition=0,yPosition=0,amount=1,name="explosion",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.explosion,xPosition,yPosition,creator=creator,name=name)
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.explosion)
+        self.name = "explosion"
 
     def pickUp(self,character):
         pass

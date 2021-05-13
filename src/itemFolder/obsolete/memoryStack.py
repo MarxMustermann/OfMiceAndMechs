@@ -8,11 +8,13 @@ class MemoryStack(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="MemoryStack",creator=None,noId=False):
+    def __init__(self):
 
         self.macros = []
 
-        super().__init__(src.canvas.displayChars.memoryStack,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(display=src.canvas.displayChars.memoryStack)
+
+        self.name = "memory stack"
 
         self.attributesToStore.extend([
                 "macros"])

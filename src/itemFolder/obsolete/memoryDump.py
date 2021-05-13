@@ -6,13 +6,14 @@ class MemoryDump(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="MemoryDump",creator=None,noId=False):
+    def __init__(self):
 
         self.macros = None
 
-        self.baseName = name
+        super().__init__(display=src.canvas.displayChars.memoryDump)
 
-        super().__init__(src.canvas.displayChars.memoryDump,xPosition,yPosition,name=name,creator=creator)
+        self.name = "memory dump"
+        self.baseName = self.name
 
         self.attributesToStore.extend([
                 "macros"])

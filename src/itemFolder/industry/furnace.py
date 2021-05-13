@@ -9,10 +9,11 @@ class Furnace(src.items.Item):
     '''
     straightforward state initialization
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="Furnace",creator=None,noId=False):
+    def __init__(self):
         self.activated = False
         self.boilers = []
-        super().__init__(src.canvas.displayChars.furnace_inactive,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(display=src.canvas.displayChars.furnace_inactive)
+        self.name = "Furnace"
 
         # set metadata for saving
         self.attributesToStore.extend([
@@ -84,11 +85,10 @@ class Furnace(src.items.Item):
                 # notify listeners
                 self.changed()
 
-    '''
-    render the furnace
-    '''
-    @property
-    def display(self):
+    def render(self):
+        '''
+        render the furnace
+        '''
         if self.activated:
             return src.canvas.displayChars.furnace_active
         else:

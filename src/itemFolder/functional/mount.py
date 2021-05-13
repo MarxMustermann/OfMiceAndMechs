@@ -8,8 +8,8 @@ class Mount(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="mount",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.nook,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self, name="mount",noId=False):
+        super().__init__(display=src.canvas.displayChars.nook,name=name)
 
         self.bolted = False
         self.walkable = True

@@ -1,14 +1,29 @@
 import src
 
 class AutoFarmer(src.items.Item):
+    """
+    helper item to allow the player to harvest blooms without coding too much
+    """
     type = "AutoFarmer"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.autoFarmer,xPosition,yPosition,creator=creator,name="auto farmer")
+    def __init__(self):
+        """
+        simple configuration of superclass
+        """
+        super().__init__()
+        self.display=src.canvas.displayChars.autoFarmer
+        self.name = "auto farmer"
         self.walkable = True
         self.bolted = True
 
     def apply(self,character):
+        """
+        use the autofarmer to gather nearby blooms
+
+        Parameters:
+            character: the character using the item
+        """
+
         if not self.terrain:
             character.addMessage("the auto farmer cannot be used within rooms")
             return

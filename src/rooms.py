@@ -27,7 +27,7 @@ class Room(src.saveing.Saveable):
     state initialization
     bad code: too many attributes
     '''
-    def __init__(self,layout="",xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None,seed=0):
+    def __init__(self,layout="",xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,seed=0):
         super().__init__()
 
         # initialize attributes
@@ -86,6 +86,7 @@ class Room(src.saveing.Saveable):
         for line in self.layout[1:].split("\n"):
             rowCounter = 0
             for char in line:
+                pos = (rowCounter,lineCounter,0)
                 if char in (" ","."):
                     # skip non items
                     pass
@@ -94,128 +95,142 @@ class Room(src.saveing.Saveable):
                     if (not self.firstOfficer) or (not self.secondOfficer):
                         if not self.firstOfficer:
                             # add first officer
-                            npc = src.characters.Character(xPosition=5,yPosition=3,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
+                            npc = src.characters.Character(xPosition=5,yPosition=3,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.firstOfficer = npc
-                            quest = src.quests.RoomDuty(creator=self)
+                            quest = src.quests.RoomDuty()
                             npc.assignQuest(quest,active=True)
                         else:
                             # add second officer
-                            npc = src.characters.Character(xPosition=6,yPosition=4,creator=self,seed=self.yPosition+2*self.offsetX+self.offsetY+2*self.xPosition)
+                            npc = src.characters.Character(xPosition=6,yPosition=4,seed=self.yPosition+2*self.offsetX+self.offsetY+2*self.xPosition)
                             self.addCharacter(npc,rowCounter,lineCounter)
                             npc.terrain = self.terrain
                             self.secondOfficer = npc
-                            quest = src.quests.RoomDuty(creator=self)
+                            quest = src.quests.RoomDuty()
                             npc.assignQuest(quest,active=True)
                 elif char in ("X","&"):
                     # add wall
-                    itemsOnFloor.append(src.items.itemMap["Wall"](rowCounter,lineCounter,creator=self))
+                    itemsOnFloor.append((src.items.itemMap["Wall"](),pos))
                 elif char == "$":
                     # add door and mark position as entry point
-                    door = src.items.itemMap["Door"](rowCounter,lineCounter,creator=self)
-                    itemsOnFloor.append(door)
-                    self.walkingAccess.append((rowCounter,lineCounter))
+                    door = src.items.itemMap["Door"]()
+                    itemsOnFloor.append((door,pos))
+                    self.walkingAccess.append(pos)
                     self.doors.append(door)
                 elif char == "P":
                     # add pile and save to list
-                    item = src.items.Pile(rowCounter,lineCounter,creator=self)
-                    itemsOnFloor.append(item)
+                    item = src.items.Pile()
+                    itemsOnFloor.append((item,pos))
                     self.piles.append(item)
                 elif char == "F":
                     # add furnace and save to list
-                    item = src.items.Furnace(rowCounter,lineCounter,creator=self)
-                    itemsOnFloor.append(item)
+                    item = src.items.Furnace()
+                    itemsOnFloor.append((item,pos))
                     self.furnaces.append(item)
                 elif char == "#":
                     # add pipe and save to list
-                    item = src.items.Pipe(rowCounter,lineCounter,creator=self)
-                    itemsOnFloor.append(item)
+                    item = src.items.Pipe()
+                    itemsOnFloor.append((item,pos))
                     self.pipes.append(item)
                 elif char == "D":
                     # add display
-                    itemsOnFloor.append(src.items.RoomControls(rowCounter,lineCounter,creator=self))
+                    item = src.items.RoomControls()
+                    itemsOnFloor.append((item,pos))
                 elif char == "v":
                     # to be bin
-                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.binStorage,rowCounter,lineCounter,creator=self))
+                    item = src.items.Item(display=src.canvas.displayChars.binStorage)
+                    itemsOnFloor.append((item,pos))
                 elif char == "O":
                     # add pressure Tank
-                    item = src.items.Boiler(rowCounter,lineCounter,creator=self)
-                    itemsOnFloor.append(item)
+                    item = src.items.Boiler()
+                    itemsOnFloor.append((item,pos))
                     self.boilers.append(item)
                 elif char == "8":
                     # to be chains
-                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.chains,rowCounter,lineCounter,creator=self))
+                    item = src.items.Item(display=src.canvas.displayChars.chains)
+                    itemsOnFloor.append((item,pos))
                 elif char == "I":
                      #to be commlink
-                    itemsOnFloor.append(src.items.Commlink(rowCounter,lineCounter,creator=self))
+                    item = src.items.Commlink()
+                    itemsOnFloor.append((item,pos))
                 elif char in ["H","'"]:
                     # add hutch
                     # bad code: handle state some other way
                     mapping = {"H":False,"'":True}
-                    itemsOnFloor.append(src.items.Hutch(rowCounter,lineCounter,creator=self,activated=mapping[char]))
+                    src.items.Hutch(activated=mapping[char])
+                    itemsOnFloor.append((item,pos))
                 elif char == "o":
                     #to be grid
-                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.grid,rowCounter,lineCounter,creator=self))
+                    item = src.items.Item(display=src.canvas.displayChars.grid)
+                    itemsOnFloor.append((item,pos))
                 elif char == "a":
                     #to be acid
-                    item = src.items.Item(src.canvas.displayChars.acids[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter,creator=self)
+                    item = src.items.Item(display=src.canvas.displayChars.acids[((2*rowCounter)+lineCounter)%5])
                     item.walkable = True
-                    itemsOnFloor.append(item)
+                    itemsOnFloor.append((item,pos))
                 elif char == "b":
                     # to be foodstuffs
-                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.foodStuffs[((2*rowCounter)+lineCounter)%6],rowCounter,lineCounter,creator=self))
+                    item = src.items.Item(display=src.canvas.displayChars.foodStuffs[((2*rowCounter)+lineCounter)%6])
+                    itemsOnFloor.append((item,pos))
                 elif char == "m":
                     # to be machinery
-                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.machineries[((2*rowCounter)+lineCounter)%5],rowCounter,lineCounter,creator=self))
+                    item = src.items.Item(display=src.canvas.displayChars.machineries[((2*rowCounter)+lineCounter)%5])
+                    itemsOnFloor.append((item,pos))
                 elif char == "M":
-                    itemsOnFloor.append(src.items.VatMaggot(rowCounter,lineCounter,creator=self))
+                    item = src.items.VatMaggot()
+                    itemsOnFloor.append((item,pos))
                 elif char == "h":
                     # add steam hub
-                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.hub,rowCounter,lineCounter,creator=self))
+                    item = src.items.Item(display=src.canvas.displayChars.hub)
+                    itemsOnFloor.append((item,pos))
                 elif char == "i":
                     # add ramp
-                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.ramp,rowCounter,lineCounter,creator=self))
+                    item = src.items.Item(display=src.canvas.displayChars.ramp)
+                    itemsOnFloor.append((item,pos))
                 elif char in ["q","r","s","t","u","z"]:
                     # add special pipe
                     # bad code: pipe connection should be done some other way
                     mapping = {"q":src.canvas.displayChars.pipe_lr,"r":src.canvas.displayChars.pipe_lrd,"s":src.canvas.displayChars.pipe_ld,"t":src.canvas.displayChars.pipe_lu,"u":sr.canvas.displayChars.pipe_ru,"z":src.canvas.displayChars.pipe_ud}
-                    item = src.items.Item(mapping[char],rowCounter,lineCounter,creator=self)
+                    item = src.items.Item(display=mapping[char])
                     item.walkable = True
-                    itemsOnFloor.append(item)
+                    itemsOnFloor.append((item,pos))
                 elif char in ["w","x"]:
                     # add spray
                     # bad code: handle orientation some other way
                     mapping = {"w":"right","x":"left"}
-                    item = src.items.Spray(rowCounter,lineCounter,direction=mapping[char],creator=self)
-                    itemsOnFloor.append(item)
+                    item = src.items.Spray(direction=mapping[char])
+                    itemsOnFloor.append((item,pos))
                     self.sprays.append(item)
                 elif char == "y":
                     # to be outlet
-                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.outlet,rowCounter,lineCounter,creator=self))
+                    item = src.items.Item(display=src.canvas.displayChars.outlet)
+                    itemsOnFloor.append((item,pos))
                 elif char == "j":
                     # to be vat snake
-                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.vatSnake,rowCounter,lineCounter,creator=self))
+                    item = src.items.Item(display=src.canvas.displayChars.vatSnake)
+                    itemsOnFloor.append((item,pos))
                 elif char == "c":
                     # add corpse
-                    item = src.items.Corpse(rowCounter,lineCounter,creator=self)
-                    itemsOnFloor.append(item)
+                    item = src.items.Corpse()
+                    itemsOnFloor.append((item,pos))
                 elif char in ["Ö","ö"]:
                     # add growth tank
                     # bad code: specal chars should not be used in code
                     # bad code: handle state some other way
                     mapping = {"Ö":True,"ö":False}
-                    item = src.items.GrowthTank(rowCounter,lineCounter,filled=mapping[char],creator=self)
+                    item = src.items.GrowthTank(filled=mapping[char])
                     self.growthTanks.append(item)
-                    itemsOnFloor.append(item)
+                    itemsOnFloor.append((item,pos))
                 elif char == "B":
                     # add to be barricade
-                    item = src.items.Item(src.canvas.displayChars.barricade,rowCounter,lineCounter,creator=self)
+                    item = src.items.Item(display=src.canvas.displayChars.barricade)
                     item.walkable = True
-                    itemsOnFloor.append(item)
+                    itemsOnFloor.append((item,pos))
                 else:
                     # add undefined stuff
-                    itemsOnFloor.append(src.items.Item(src.canvas.displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10],rowCounter,lineCounter,creator=self))
+                    item = src.items.Item(display=src.canvas.displayChars.randomStuff2[((2*rowCounter)+lineCounter)%10])
+                    itemsOnFloor.append((item,pos))
                 rowCounter += 1
                 self.sizeX = rowCounter
             lineCounter += 1
@@ -324,7 +339,7 @@ class Room(src.saveing.Saveable):
 
     def getItemByPosition(self,position):
         try:
-            return self.itemByCoordinates[(position[0],position[1])]
+            return self.itemByCoordinates[position]
         except:
             return []
 
@@ -443,7 +458,7 @@ class Room(src.saveing.Saveable):
             for itemId in state["newItems"]:
                 itemState = state["itemStates"][itemId]
                 item = src.items.getItemFromState(itemState)
-                self.addItems([item])
+                self.addItem(item,item.getPosition())
 
         if "itemIds" in state:
             for item in self.itemsOnFloor[:]:
@@ -451,7 +466,7 @@ class Room(src.saveing.Saveable):
             for itemId in state["itemIds"]:
                 itemState = state["itemStates"][itemId]
                 item = src.items.getItemFromState(itemState)
-                self.addItems([item])
+                self.addItem(item,item.getPosition())
 
         # update changed chars
         if "changedChars" in state:
@@ -642,7 +657,7 @@ class Room(src.saveing.Saveable):
             # render rooms outline
             for item in self.itemsOnFloor:
                 if item.xPosition == 0 or item.xPosition == self.sizeX-1 or item.yPosition == 0 or item.yPosition == self.sizeY-1:
-                    chars[item.yPosition][item.xPosition] = item.display
+                    chars[item.yPosition][item.xPosition] = item.render()
 
         # cache rendering result
         self.lastRender = chars
@@ -683,38 +698,45 @@ class Room(src.saveing.Saveable):
         self.characters.remove(character)
         character.room = None
 
+    def addItem(self,item,pos):
+        self.addItems([(item,pos)])
     '''
     add items to internal structure
     '''
     def addItems(self,items):
         # add the items to the item list
-        self.itemsOnFloor.extend(items)
+        for itemPair in items:
+            self.itemsOnFloor.append(itemPair[0])
 
         # add the items to the easy access map
-        for item in items:
+        for itemPair in items:
+            item = itemPair[0]
+            pos = tuple(itemPair[1])
 
-            if isinstance(item,src.items.itemMap["Boiler"]):
+            if item.type == "Boiler":
                 self.boilers.append(item)
-            if isinstance(item,src.items.itemMap["Furnace"]):
+            if item.type == "Furnace":
                 self.furnaces.append(item)
 
-            item.room = self
             item.container = self
-            item.terrain = None
-            if (item.xPosition,item.yPosition) in self.itemByCoordinates:
-                self.itemByCoordinates[(item.xPosition,item.yPosition)].insert(0,item)
+            item.setPosition(pos)
+
+            if pos in self.itemByCoordinates:
+                self.itemByCoordinates[pos].insert(0,item)
             else:
-                self.itemByCoordinates[(item.xPosition,item.yPosition)] = [item]
+                self.itemByCoordinates[pos] = [item]
 
     '''
     remove item from internal structure
     '''
     def removeItem(self,item):
         # remove items from easy access map
-        if (item.xPosition,item.yPosition) in self.itemByCoordinates and item in self.itemByCoordinates[(item.xPosition,item.yPosition)]:
-            self.itemByCoordinates[(item.xPosition,item.yPosition)].remove(item)
-            if not self.itemByCoordinates[(item.xPosition,item.yPosition)]:
-                del self.itemByCoordinates[(item.xPosition,item.yPosition)]
+        itemList = self.getItemByPosition(item.getPosition())
+        if item in itemList:
+            itemList.remove(item)
+
+            if not itemList:
+                del self.itemByCoordinates[item.getPosition()]
 
         # remove item from the list of items
         if item in self.itemsOnFloor:
@@ -793,7 +815,7 @@ class Room(src.saveing.Saveable):
         # move inside the room
         if innerRoomMovement:
             # move character
-            newPosition = [character.xPosition,character.yPosition]
+            newPosition = [character.xPosition,character.yPosition,character.zPosition]
             if direction == "south":
                 newPosition[1] += 1
             elif direction == "north":
@@ -946,7 +968,7 @@ class TutorialMachineRoom(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition=0,yPosition=1,offsetX=4,offsetY=0,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=1,offsetX=4,offsetY=0,desiredPosition=None):
         roomLayout = """
 X#XX$XXX#X
 X#Pv vID#X
@@ -959,16 +981,16 @@ XOOOOOOOOX
 X#########
 XXXXXXXXXX
 """
-        super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.name = "Boilerroom"
 
         # generate special items
-        self.lever1 = src.items.Lever(1,5,"engine control",creator=self)
-        self.lever2 = src.items.Lever(8,5,"boarding alarm",creator=self)
-        coalPile1 = src.items.Pile(8,3,"coal Pile1",src.items.Coal,creator=self)
-        coalPile2 = src.items.Pile(8,4,"coal Pile2",src.items.Coal,creator=self)
-        coalPile3 = src.items.Pile(1,3,"coal Pile1",src.items.Coal,creator=self)
-        coalPile4 = src.items.Pile(1,4,"coal Pile2",src.items.Coal,creator=self)
+        self.lever1 = src.items.Lever(1,5,"engine control")
+        self.lever2 = src.items.Lever(8,5,"boarding alarm")
+        coalPile1 = src.items.Pile(8,3,"coal Pile1",src.items.Coal)
+        coalPile2 = src.items.Pile(8,4,"coal Pile2",src.items.Coal)
+        coalPile3 = src.items.Pile(1,3,"coal Pile1",src.items.Coal)
+        coalPile4 = src.items.Pile(1,4,"coal Pile2",src.items.Coal)
 
         # actually add items
         self.addItems([self.lever1,self.lever2,coalPile1,coalPile2,coalPile3,coalPile4])
@@ -1052,7 +1074,7 @@ class CpuWasterRoom(Room):
     '''
     create room and add patroling npcs
     '''
-    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0):
         self.roomLayout = """
 XX$XXXXXXX
 Xv vD????X
@@ -1065,7 +1087,7 @@ X?......#X
 X? XXXXX#X
 XXXXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition=None)
         self.name = "CpuWasterRoom"
 
         '''
@@ -1074,16 +1096,16 @@ XXXXXXXXXX
         def addNPC(x,y):
             # generate quests
             # bad code: replace with patrol quest since it's actually bugging
-            quest1 = src.quests.MoveQuestMeta(self,2,2,creator=self)
-            quest2 = src.quests.MoveQuestMeta(self,2,7,creator=self)
-            quest3 = src.quests.MoveQuestMeta(self,7,7,creator=self)
-            quest4 = src.quests.MoveQuestMeta(self,7,2,creator=self)
+            quest1 = src.quests.MoveQuestMeta(self,2,2)
+            quest2 = src.quests.MoveQuestMeta(self,2,7)
+            quest3 = src.quests.MoveQuestMeta(self,7,7)
+            quest4 = src.quests.MoveQuestMeta(self,7,2)
             quest1.followUp = quest2
             quest2.followUp = quest3
             quest3.followUp = quest4
 
             # add npc
-            npc = src.characters.Character(xPosition=x,yPosition=y,creator=self,seed=self.yPosition+3*x+self.offsetY+4*y)
+            npc = src.characters.Character(xPosition=x,yPosition=y,seed=self.yPosition+3*x+self.offsetY+4*y)
             self.addCharacter(npc,x,y)
             npc.room = self
             npc.assignQuest(quest1)
@@ -1110,7 +1132,7 @@ class InfanteryQuarters(Room):
     '''
     create room
     '''
-    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None):
         self.roomLayout = """
 XX$X&&XXXXX
 XX PPPPPPXX
@@ -1122,7 +1144,7 @@ X'.'' ''.IX
 X .......DX
 XXXXXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.name = "Infanteryquarters"
 
         # make personal military personal
@@ -1160,9 +1182,9 @@ XXXXXXXXXXX
                 src.gamestate.gamestate.mainChar.addMessage(self.firstOfficer.name+": military area. Do not enter.")
 
                 # make second officer close the door and return to start position
-                quest = src.quests.MoveQuestMeta(self,5,3,creator=self)
+                quest = src.quests.MoveQuestMeta(self,5,3)
                 self.secondOfficer.assignQuest(quest,active=True)
-                quest = src.quests.ActivateQuestMeta(thisRoundsItem,creator=self)
+                quest = src.quests.ActivateQuestMeta(thisRoundsItem)
                 self.secondOfficer.assignQuest(quest,active=True)
 
             # start watching door
@@ -1177,7 +1199,7 @@ XXXXXXXXXXX
                 return
 
             # make senćond officer kill the intruder
-            quest = src.quests.MurderQuest(character,creator=self)
+            quest = src.quests.MurderQuest(character)
             self.secondOfficer.assignQuest(quest,active=True)
 
             # show fluff
@@ -1207,15 +1229,15 @@ XXXXXXXXXXX
                 self.secondOfficer.quests.remove(quest)
 
                 # make officer move back to position
-                quest = src.quests.MoveQuestMeta(self,5,3,creator=self)
+                quest = src.quests.MoveQuestMeta(self,5,3)
                 self.secondOfficer.assignQuest(quest,active=True)
 
             # make second officer kill character
-            quest = src.quests.MurderQuest(character,creator=self)
+            quest = src.quests.MurderQuest(character)
             self.secondOfficer.assignQuest(quest,active=True)
 
             # try make character kill self
-            quest = src.quests.MurderQuest(character,creator=self)
+            quest = src.quests.MurderQuest(character)
             character.assignQuest(quest,active=True)
 
             # watch for character leaving the room
@@ -1237,15 +1259,15 @@ XXXXXXXXXXX
         character.addMessage("O2 military please enforce floor permit")
 
         # make second officer move back to position after kill
-        quest = src.quests.MoveQuestMeta(self,5,3,creator=self)
+        quest = src.quests.MoveQuestMeta(self,5,3)
         self.secondOfficer.assignQuest(quest,active=True)
 
         # make second officer kill character
-        quest = src.quests.MurderQuest(character,creator=self)
+        quest = src.quests.MurderQuest(character)
         self.secondOfficer.assignQuest(quest,active=True)
 
         # try to make second kill self
-        quest = src.quests.MurderQuest(character,creator=self)
+        quest = src.quests.MurderQuest(character)
         character.assignQuest(quest,active=True)
         self.onMission = True
 
@@ -1259,7 +1281,7 @@ class VatProcessing(Room):
     '''
     create room and add special item
     '''
-    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None):
         self.roomLayout = """
 XXXXXXXXXX
 XaaaaaaaaX
@@ -1272,10 +1294,10 @@ Xmhm@...DX
 Xmmmv.v.IX
 XXXXX$XXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 
         # add special items
-        self.gooDispenser = src.items.GooDispenser(6,7,creator=self)
+        self.gooDispenser = src.items.GooDispenser(6,7)
         self.addItems([self.gooDispenser])
         self.name = "vat processing"
 
@@ -1314,7 +1336,7 @@ class VatFermenting(Room):
     '''
     create room and set some state
     '''
-    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None):
         self.roomLayout = """
 XXXXXXXXXX
 X  Mb jjjX
@@ -1327,7 +1349,7 @@ X@b......X
 ## ..Mv ##
 XXXXX$XXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.isContainment = True
         self.floorDisplay = src.canvas.displayChars.acids
         self.name = "Vat fermenting"
@@ -1341,7 +1363,7 @@ class MechArmor(Room):
     '''
     create room
     '''
-    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None):
         self.roomLayout = """
 XXXXXXXXXXXXXXX
 XX X X X X X XX
@@ -1359,7 +1381,7 @@ XX X X X X X XX
 X X X X.X X X.X
 XXXXXXX$XXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.floorDisplay = [src.canvas.displayChars.nonWalkableUnkown]
         self.name = "MechArmor"
 
@@ -1372,7 +1394,7 @@ class MiniMech(Room):
     '''
     create the room and add the npc
     '''
-    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None):
         self.roomLayout = """
 XX$XXX
 XD..@X
@@ -1381,13 +1403,13 @@ XOF.PX
 Xmm.PX
 XXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.floorDisplay = [src.canvas.displayChars.nonWalkableUnkown]
         self.engineStrength = 0
         self.name = "MiniMech"
 
         # add npc
-        self.npc = src.characters.Character(xPosition=3,yPosition=3,creator=self,seed=self.yPosition+3*3+self.offsetY+4*12)
+        self.npc = src.characters.Character(xPosition=3,yPosition=3,seed=self.yPosition+3*3+self.offsetY+4*12)
         self.addCharacter(self.npc,3,3)
         self.npc.room = self
 
@@ -1414,7 +1436,7 @@ class MiniBase(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition=None,yPosition=None,offsetX=None,offsetY=None,desiredPosition=None,creator=None,seed=0):
+    def __init__(self,xPosition=None,yPosition=None,offsetX=None,offsetY=None,desiredPosition=None,seed=0):
         self.roomLayout = """
 XXXXXXXXXXXXX
 X           X
@@ -1430,50 +1452,50 @@ X           X
 X           X
 XXXXXXXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
-        self.artwork = src.items.ProductionArtwork(4,1,creator=creator)
-        self.compactor = src.items.ScrapCompactor(8,1,creator=creator)
-        flask1 = src.items.GooFlask(10,2,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
+        self.artwork = src.items.ProductionArtwork(4,1)
+        self.compactor = src.items.ScrapCompactor(8,1)
+        flask1 = src.items.GooFlask(10,2)
         flask1.uses = 100
-        flask2 = src.items.GooFlask(10,3,creator=creator)
+        flask2 = src.items.GooFlask(10,3)
         flask2.uses = 100
-        flask3 = src.items.GooFlask(10,4,creator=creator)
+        flask3 = src.items.GooFlask(10,4)
         flask3.uses = 100
         self.doors[0].walkable = True
 
-        self.machinemachine = src.items.MachineMachine(4,4,creator=creator)
+        self.machinemachine = src.items.MachineMachine(4,4)
 
-        self.infoScreen = src.items.AutoTutor(4,9,creator=creator)
+        self.infoScreen = src.items.AutoTutor(4,9)
 
-        self.bluePrinter = src.items.BluePrinter(8,9,creator=creator)
+        self.bluePrinter = src.items.BluePrinter(8,9)
 
-        self.machine = src.items.Machine(7,8,creator=creator)
+        self.machine = src.items.Machine(7,8)
         self.machine.setToProduce("Sheet")
 
         self.addItems([self.artwork,self.compactor,flask1,flask2,flask3,self.infoScreen,self.bluePrinter,self.machinemachine,self.machine])
 
-        metalbars = src.items.itemMap["MetalBars"](3,1,creator=creator)
-        metalbars2 = src.items.itemMap["MetalBars"](7,9,creator=creator)
-        metalbars3 = src.items.itemMap["MetalBars"](9,1,creator=creator)
-        metalbars4 = src.items.itemMap["MetalBars"](3,4,creator=creator)
-        scrap = src.items.itemMap["Scrap"](7,1,creator=creator)
-        connector = src.items.itemMap["Connector"](7,9,creator=creator)
-        blueprint1 = src.items.itemMap["BluePrint"](9,9,creator=creator)
+        metalbars = src.items.itemMap["MetalBars"](3,1)
+        metalbars2 = src.items.itemMap["MetalBars"](7,9)
+        metalbars3 = src.items.itemMap["MetalBars"](9,1)
+        metalbars4 = src.items.itemMap["MetalBars"](3,4)
+        scrap = src.items.itemMap["Scrap"](7,1)
+        connector = src.items.itemMap["Connector"](7,9)
+        blueprint1 = src.items.itemMap["BluePrint"](9,9)
         blueprint1.setToProduce("Sheet")
         blueprint1.bolted = False
-        blueprint2 = src.items.itemMap["BluePrint"](9,9,creator=creator)
+        blueprint2 = src.items.itemMap["BluePrint"](9,9)
         blueprint2.setToProduce("Radiator")
         blueprint2.bolted = False
-        blueprint3 = src.items.itemMap["BluePrint"](9,9,creator=creator)
+        blueprint3 = src.items.itemMap["BluePrint"](9,9)
         blueprint3.setToProduce("Mount")
         blueprint3.bolted = False
-        blueprint4 = src.items.itemMap["BluePrint"](9,9,creator=creator)
+        blueprint4 = src.items.itemMap["BluePrint"](9,9)
         blueprint4.setToProduce("Stripe")
         blueprint4.bolted = False
-        blueprint5 = src.items.itemMap["BluePrint"](9,9,creator=creator)
+        blueprint5 = src.items.itemMap["BluePrint"](9,9)
         blueprint5.setToProduce("Bolt")
         blueprint5.bolted = False
-        blueprint6 = src.items.itemMap["BluePrint"](4,3,creator=creator)
+        blueprint6 = src.items.itemMap["BluePrint"](4,3)
         blueprint6.setToProduce("Rod")
         blueprint6.bolted = False
         self.addItems([metalbars,metalbars2,metalbars3,metalbars4,scrap,connector,blueprint1,blueprint2,blueprint3,blueprint4,blueprint5,blueprint6])
@@ -1488,7 +1510,7 @@ class MiniBase2(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition=None,yPosition=None,offsetX=None,offsetY=None,desiredPosition=None,creator=None,seed=0):
+    def __init__(self,xPosition=None,yPosition=None,offsetX=None,offsetY=None,desiredPosition=None,seed=0):
         self.roomLayout = """
 XXXXXXXXXXX
 X         X
@@ -1502,15 +1524,15 @@ X         X
 X         X
 XXXXXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.doors[0].walkable = True
 
-        healingstation = src.items.HealingStation(4,1,creator=creator)
-        corpseShredder = src.items.CorpseShredder(4,8,creator=creator)
-        corpse = src.items.Corpse(3,8,creator=creator)
+        healingstation = src.items.HealingStation(4,1)
+        corpseShredder = src.items.CorpseShredder(4,8)
+        corpse = src.items.Corpse(3,8)
         corpse.charges = 300
-        sunScreen = src.items.SunScreen(5,5,creator=creator)
-        vial = src.items.Vial(7,3,creator=creator)
+        sunScreen = src.items.SunScreen(5,5)
+        vial = src.items.Vial(7,3)
         import random
         vial.uses = random.randint(0,10)
         self.addItems([healingstation,sunScreen,vial,corpseShredder,corpse])
@@ -1525,7 +1547,7 @@ class TutorialMiniBase(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition=None,yPosition=None,offsetX=None,offsetY=None,desiredPosition=None,creator=None, seed=0):
+    def __init__(self,xPosition=None,yPosition=None,offsetX=None,offsetY=None,desiredPosition=None,seed=0):
         self.roomLayout = """
 XXXXXXXXXXXXX
 X           X
@@ -1544,51 +1566,51 @@ X           X
 X           X
 XXXXXXXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         itemList = []
         exclude1 = [src.items.Scrap]
         exclude2 = [src.items.Corpse]
-        itemList.append(src.items.ScrapCompactor(10,1,creator=creator))
+        itemList.append(src.items.ScrapCompactor(10,1))
 
-        machine = src.items.Machine(3,2,creator=creator,seed=seed)
+        machine = src.items.Machine(3,2,seed=seed)
         machine.setToProduce("Sheet")
         itemList.append(machine)
 
-        machine = src.items.Machine(6,2,creator=creator,seed=seed)
+        machine = src.items.Machine(6,2,seed=seed)
         machine.setToProduce("Radiator")
         itemList.append(machine)
 
-        machine = src.items.Machine(9,2,creator=creator,seed=seed)
+        machine = src.items.Machine(9,2,seed=seed)
         machine.setToProduce("Mount")
         itemList.append(machine)
 
-        machine = src.items.Machine(3,4,creator=creator,seed=seed)
+        machine = src.items.Machine(3,4,seed=seed)
         machine.setToProduce("Stripe")
         itemList.append(machine)
 
-        machine = src.items.Machine(3,4,creator=creator,seed=seed)
+        machine = src.items.Machine(3,4,seed=seed)
         machine.setToProduce("Bolt")
         itemList.append(machine)
 
-        machine = src.items.Machine(3,4,creator=creator,seed=seed)
+        machine = src.items.Machine(3,4,seed=seed)
         machine.setToProduce("Rod")
         itemList.append(machine)
 
         """
-        itemList.append(src.items.GameTestingProducer(3,12,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Wall]))
-        itemList.append(src.items.GameTestingProducer(6,12,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Door]))
-        itemList.append(src.items.GameTestingProducer(9,12,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.RoomControls]))
+        itemList.append(src.items.GameTestingProducer(3,12,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Wall]))
+        itemList.append(src.items.GameTestingProducer(6,12,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Door]))
+        itemList.append(src.items.GameTestingProducer(9,12,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.RoomControls]))
 
-        itemList.append(src.items.GameTestingProducer(3,13,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Boiler]))
-        itemList.append(src.items.GameTestingProducer(6,13,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Pile]))
-        itemList.append(src.items.GameTestingProducer(9,13,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Furnace]))
+        itemList.append(src.items.GameTestingProducer(3,13,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Boiler]))
+        itemList.append(src.items.GameTestingProducer(6,13,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Pile]))
+        itemList.append(src.items.GameTestingProducer(9,13,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Furnace]))
 
         l1Items = [src.items.Sheet,src.items.Rod,src.items.Sheet,src.items.Mount,src.items.Stripe,src.items.Bolt,src.items.Radiator]
         y = 0
         while y < 2:
             x = 0
             while x < 3:
-                itemList.append(src.items.GameTestingProducer(3+x*3,2+y,creator=creator,seed=seed, possibleSources=[src.items.MetalBars]*5+l1Items,possibleResults=l1Items))
+                itemList.append(src.items.GameTestingProducer(3+x*3,2+y,seed=seed, possibleSources=[src.items.MetalBars]*5+l1Items,possibleResults=l1Items))
                 x += 1
                 seed += 13
             y += 1
@@ -1599,7 +1621,7 @@ XXXXXXXXXXXXX
         while y < 3:
             x = 0
             while x < 3:
-                itemList.append(src.items.GameTestingProducer(3+x*3,5+y,creator=creator,seed=seed, possibleSources=l1Items+l2Items, possibleResults=l2Items))
+                itemList.append(src.items.GameTestingProducer(3+x*3,5+y,seed=seed, possibleSources=l1Items+l2Items, possibleResults=l2Items))
                 x += 1
                 seed += 13
             y += 1
@@ -1610,7 +1632,7 @@ XXXXXXXXXXXXX
         while y < 2:
             x = 0
             while x < 3:
-                itemList.append(src.items.GameTestingProducer(3+x*3,9+y,creator=creator,seed=seed, possibleSources=l2Items, possibleResults=l3Items))
+                itemList.append(src.items.GameTestingProducer(3+x*3,9+y,seed=seed, possibleSources=l2Items, possibleResults=l3Items))
                 x += 1
                 seed += 13
             y += 1
@@ -1632,7 +1654,7 @@ class GameTestingRoom(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None, seed=0):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,seed=0):
         self.roomLayout = """
 XXXXXXXXXXXXX
 X           X
@@ -1651,26 +1673,26 @@ X           X
 X           X
 XXXXXXXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         itemList = []
         exclude1 = [src.items.Scrap]
         exclude2 = [src.items.Corpse]
-        itemList.append(src.items.ScrapCompactor(10,1,creator=creator))
+        itemList.append(src.items.ScrapCompactor(10,1))
 
-        itemList.append(src.items.GameTestingProducer(3,12,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Wall]))
-        itemList.append(src.items.GameTestingProducer(6,12,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Door]))
-        itemList.append(src.items.GameTestingProducer(9,12,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.RoomControls]))
+        itemList.append(src.items.GameTestingProducer(3,12,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Wall]))
+        itemList.append(src.items.GameTestingProducer(6,12,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Door]))
+        itemList.append(src.items.GameTestingProducer(9,12,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.RoomControls]))
 
-        itemList.append(src.items.GameTestingProducer(3,13,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Boiler]))
-        itemList.append(src.items.GameTestingProducer(6,13,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Pile]))
-        itemList.append(src.items.GameTestingProducer(9,13,creator=creator,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Furnace]))
+        itemList.append(src.items.GameTestingProducer(3,13,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Boiler]))
+        itemList.append(src.items.GameTestingProducer(6,13,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Pile]))
+        itemList.append(src.items.GameTestingProducer(9,13,seed=seed, possibleSources=[src.items.MetalBars],possibleResults=[src.items.Furnace]))
 
         l1Items = [src.items.Sheet,src.items.Rod,src.items.Sheet,src.items.Mount,src.items.Stripe,src.items.Bolt,src.items.Radiator]
         y = 0
         while y < 2:
             x = 0
             while x < 3:
-                itemList.append(src.items.GameTestingProducer(3+x*3,2+y,creator=creator,seed=seed, possibleSources=[src.items.MetalBars]*5+l1Items,possibleResults=l1Items))
+                itemList.append(src.items.GameTestingProducer(3+x*3,2+y,seed=seed, possibleSources=[src.items.MetalBars]*5+l1Items,possibleResults=l1Items))
                 x += 1
                 seed += 13
             y += 1
@@ -1681,7 +1703,7 @@ XXXXXXXXXXXXX
         while y < 3:
             x = 0
             while x < 3:
-                itemList.append(src.items.GameTestingProducer(3+x*3,5+y,creator=creator,seed=seed, possibleSources=l1Items+l2Items, possibleResults=l2Items))
+                itemList.append(src.items.GameTestingProducer(3+x*3,5+y,seed=seed, possibleSources=l1Items+l2Items, possibleResults=l2Items))
                 x += 1
                 seed += 13
             y += 1
@@ -1692,7 +1714,7 @@ XXXXXXXXXXXXX
         while y < 2:
             x = 0
             while x < 3:
-                itemList.append(src.items.GameTestingProducer(3+x*3,9+y,creator=creator,seed=seed, possibleSources=l2Items, possibleResults=l3Items))
+                itemList.append(src.items.GameTestingProducer(3+x*3,9+y,seed=seed, possibleSources=l2Items, possibleResults=l3Items))
                 x += 1
                 seed += 13
             y += 1
@@ -1711,7 +1733,7 @@ class ChallengeRoom(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None,seed=0):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,seed=0):
         self.roomLayout = """
 XXXXXXXXXX
 X XX  @  X
@@ -1728,11 +1750,11 @@ X        X
 $        X
 XXXXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator,seed=seed)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,seed=seed)
 
         # bad code: the markers are not used anywhere
-        self.bean = src.items.MarkerBean(4,2,creator=self)
-        beanPile = src.items.Pile(4,1,"markerPile",src.items.MarkerBean,creator=self)
+        self.bean = src.items.MarkerBean(4,2)
+        beanPile = src.items.Pile(4,1,"markerPile",src.items.MarkerBean)
         self.addItems([self.bean,beanPile])
 
         self.name = "Challenge"
@@ -1788,19 +1810,19 @@ XXXXXXXXXX
 
         items = []
         yPosition = 1
-        item = src.items.Furnace(1,yPosition,creator=self)
+        item = src.items.Furnace(1,yPosition)
         items.append(item)
         yPosition += 2
         if seed%5 == 3:
-            item = src.items.Furnace(1,yPosition,creator=self)
+            item = src.items.Furnace(1,yPosition)
             items.append(item)
             yPosition += 2
         if seed%3 == 1:
-            item = src.items.Furnace(1,yPosition,creator=self)
+            item = src.items.Furnace(1,yPosition)
             items.append(item)
             yPosition += 2
         if seed%2 == 1:
-            item = src.items.Furnace(1,yPosition,creator=self)
+            item = src.items.Furnace(1,yPosition)
             items.append(item)
             yPosition += 2
         self.addItems(items)
@@ -1816,7 +1838,7 @@ XXXXXXXXXX
             yPosition = 9+(counter+seed+xPosition)%17%4
 
             if counter in [2,5]:
-                item = src.items.GooFlask(xPosition,yPosition,creator=self)
+                item = src.items.GooFlask(xPosition,yPosition)
                 item.charges = 1
             if (xPosition,yPosition) in positions:
                 seed = seed+1
@@ -1824,18 +1846,18 @@ XXXXXXXXXX
             else:
                 positions.append((xPosition,yPosition))
             if counter in [1]:
-                item = src.items.GooFlask(xPosition,yPosition,creator=self)
+                item = src.items.GooFlask(xPosition,yPosition)
                 item.charges = 1
             elif counter%5 == 1:
                 if counter%3 == 0:
-                    token = src.items.Token(xPosition,yPosition,creator=self)
+                    token = src.items.Token(xPosition,yPosition)
                     self.addItems([token])
-                item = src.items.Pipe(xPosition,yPosition,creator=self)
+                item = src.items.Pipe(xPosition,yPosition)
             else:
                 if counter%7 == 5:
-                    token = src.items.Token(xPosition,yPosition,creator=self)
+                    token = src.items.Token(xPosition,yPosition)
                     self.addItems([token])
-                item = src.items.Wall(xPosition,yPosition,creator=self)
+                item = src.items.Wall(xPosition,yPosition)
             item.bolted = False
             self.labyrinthWalls.append(item)
             counter += 1
@@ -1844,7 +1866,7 @@ XXXXXXXXXX
         numItems = seed%9
         counter = 0
         while (counter < numItems):
-            item = src.items.GooFlask(None,None,creator=self)
+            item = src.items.GooFlask(None,None)
             self.secondOfficer.inventory.append(item)
             counter += 1
 
@@ -1917,7 +1939,7 @@ class LabRoom(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None):
         self.roomLayout = """
 XXXXXXXXXX
 X     @@ X
@@ -1934,11 +1956,11 @@ XOOOOOOOOX
 XFFFFFFFFX
 XXXXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
 
         # bad code: the markers are not used anywhere
-        bean = src.items.MarkerBean(1,2,creator=self)
-        beanPile = src.items.Pile(1,1,"markerPile",src.items.MarkerBean,creator=self)
+        bean = src.items.MarkerBean(1,2)
+        beanPile = src.items.Pile(1,1,"markerPile",src.items.MarkerBean)
         self.addItems([bean,beanPile])
 
         self.name = "Lab"
@@ -1960,7 +1982,7 @@ class CargoRoom(Room):
     '''
     create room, set storage order and fill with items
     '''
-    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,itemTypes=[],amount=80,creator=None,seed=0):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,itemTypes=[],amount=80,seed=0):
         self.roomLayout = """
 XXXXXXXXXX
 X        X
@@ -1977,7 +1999,7 @@ X        X
 X        X
 XXXXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.floorDisplay = [src.canvas.displayChars.nonWalkableUnkown]
         self.name = "CargoRoom"
         self.discovered = False
@@ -1996,31 +2018,31 @@ XXXXXXXXXX
                 counter += 3
             else:
                 counter += 4
-            self.storedItems.append(itemTypes[counter%length](creator=self))
+            self.storedItems.append(itemTypes[counter%length]())
 
         if seed%5 == 3:
             xPosition = 1+seed//3%(self.sizeX-2)
             yPosition = 1+seed//3%(self.sizeY-2)
-            item = src.items.GooFlask(creator=self)
+            item = src.items.GooFlask()
             item.xPosition = xPosition
             item.yPosition = yPosition
             self.addItems([item])
         if seed%5 == 3:
             xPosition = 1+seed//6%(self.sizeX-2)
             yPosition = 1+seed//6%(self.sizeY-2)
-            item = src.items.GooFlask(creator=self)
+            item = src.items.GooFlask()
             item.xPosition = xPosition
             item.yPosition = yPosition
             self.addItems([item])
         if seed%2 == 1:
             xPosition = 1+seed//1%(self.sizeX-2)
             yPosition = 1+seed//1%(self.sizeY-2)
-            item = src.items.GooFlask(creator=self)
+            item = src.items.GooFlask()
             item.xPosition = xPosition
             item.yPosition = yPosition
             self.addItems([item])
 
-        npc = self.fetchThroughRegistry(src.characters.Character(xPosition=4,yPosition=4,creator=self,seed=self.yPosition+self.offsetY+4*12))
+        npc = self.fetchThroughRegistry(src.characters.Character(xPosition=4,yPosition=4,seed=self.yPosition+self.offsetY+4*12))
 
         # determine in what order storage space should be used
         counter = 0
@@ -2049,7 +2071,7 @@ XXXXXXXXXX
             mice = []
             mousePositions = [(2,2),(2,4),(4,2),(4,4),(7,3)]
             for mousePosition in mousePositions:
-                mouse = src.characters.Mouse(creator=self)
+                mouse = src.characters.Mouse()
                 self.addCharacter(mouse,mousePosition[0],mousePosition[1])
                 mice.append(mouse)
 
@@ -2059,7 +2081,7 @@ XXXXXXXXXX
             '''
             def killInvader(character):
                 for mouse in mice:
-                    quest = src.quests.MurderQuest(character,creator=self)
+                    quest = src.quests.MurderQuest(character)
                     mouse.assignQuest(quest,active=True)
                 '''
                 stop hunting characters that left the room
@@ -2077,7 +2099,7 @@ XXXXXXXXXX
                         mouse.quests.remove(mouse.quests[0])
                         
                         # move back to position
-                        quest = src.quests.MoveQuestMeta(self,mousePositions[counter][0],mousePositions[counter][1],creator=self)
+                        quest = src.quests.MoveQuestMeta(self,mousePositions[counter][0],mousePositions[counter][1])
                         mouse.assignQuest(quest,active=True)
                         counter += 1
 
@@ -2114,7 +2136,7 @@ class StorageRoom(Room):
     '''
     create room, set storage order 
     '''
-    def __init__(self,xPosition=None,yPosition=None,offsetX=None,offsetY=None,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=None,yPosition=None,offsetX=None,offsetY=None,desiredPosition=None):
         self.roomLayout = """
 XXXXXXXXXX
 X        X
@@ -2134,7 +2156,7 @@ XXXXXXXXXX
         self.storedItems = []
         self.storageSpace = []
 
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.floorDisplay = [src.canvas.displayChars.nonWalkableUnkown]
         self.name = "StorageRoom"
 
@@ -2256,7 +2278,7 @@ class WakeUpRoom(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None):
         self.roomLayout = """
 XXXXXXXX
 Xö    vX
@@ -2270,15 +2292,15 @@ XÖ ... X
 XÖ     X
 XXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.name = "WakeUpRoom"
 
         # generate special items
-        self.lever1 = src.items.Lever(3,1,"training lever",creator=self)
-        self.objectDispenser = src.items.OjectDispenser(4,1,creator=self)
-        self.gooDispenser = src.items.GooDispenser(5,9,creator=self)
-        self.furnace = src.items.Furnace(4,9,creator=self)
-        self.pile = src.items.Pile(6,9,creator=self)
+        self.lever1 = src.items.Lever(3,1,"training lever")
+        self.objectDispenser = src.items.OjectDispenser(4,1)
+        self.gooDispenser = src.items.GooDispenser(5,9)
+        self.furnace = src.items.Furnace(4,9)
+        self.pile = src.items.Pile(6,9)
 
         '''
         create goo flask
@@ -2305,7 +2327,7 @@ XXXXXXXX
                 item.addListener(self.handleDoorOpening,"activated")
 
         # start spawning hoppers periodically
-        self.addEvent(src.events.EndQuestEvent(8000,{"container":self,"method":"spawnNewHopper"},creator=self))
+        self.addEvent(src.events.EndQuestEvent(8000,{"container":self,"method":"spawnNewHopper"}))
 
     '''
     warn character about leaving the room
@@ -2380,7 +2402,7 @@ XXXXXXXX
         self.terrain.waitingRoom.addAsHopper(character)
 
         # shedule next spawn
-        self.addEvent(src.events.EndQuestEvent(src.gamestate.gamestate.tick+10000,{"container":self,"method":"spawnNewHopper"},creator=self))
+        self.addEvent(src.events.EndQuestEvent(src.gamestate.gamestate.tick+10000,{"container":self,"method":"spawnNewHopper"}))
 
 '''
 the room where hoppers wait for jobs
@@ -2391,7 +2413,7 @@ class WaitingRoom(Room):
     '''
     create room and add hoppers
     '''
-    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None):
         self.roomLayout = """
 XXXXXXXXXXX
 X         X
@@ -2405,23 +2427,23 @@ X         X
 XXXXXXXXXXX
 """
         self.quests = []
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.name = "WaitingRoom"
         self.hoppers = []
 
         # add hoppers
-        npc = self.fetchThroughRegistry(src.characters.Character(xPosition=4,yPosition=4,creator=self,seed=self.yPosition+self.offsetY+4*12))
+        npc = self.fetchThroughRegistry(src.characters.Character(xPosition=4,yPosition=4,seed=self.yPosition+self.offsetY+4*12))
         self.hoppers.append(npc)
         self.addCharacter(npc,2,2)
-        npc = self.fetchThroughRegistry(src.characters.Character(xPosition=4,yPosition=5,creator=self,seed=self.yPosition+self.offsetY+4*23+30))
+        npc = self.fetchThroughRegistry(src.characters.Character(xPosition=4,yPosition=5,seed=self.yPosition+self.offsetY+4*23+30))
         self.hoppers.append(npc)
         self.addCharacter(npc,2,3)
 
         self.trainingItems = []
-        item = src.items.Wall(1,1,creator=self)
+        item = src.items.Wall(1,1)
         item.bolted = False
         self.trainingItems.append(item)
-        item = src.items.Pipe(9,1,creator=self)
+        item = src.items.Pipe(9,1)
         item.bolted = False
         self.trainingItems.append(item)
         self.addItems(self.trainingItems)
@@ -2435,7 +2457,7 @@ XXXXXXXXXXX
     add a character as hopper
     '''
     def addAsHopper(self,hopper):
-        quest = src.quests.HopperDuty(self,creator=self)
+        quest = src.quests.HopperDuty(self)
         hopper.assignQuest(quest,active=True)
         hopper.addListener(self.addRescueQuest,"fallen unconcious")
         hopper.addListener(self.disposeOfCorpse,"died")
@@ -2444,7 +2466,7 @@ XXXXXXXXXXX
     rescue an unconcious hopper
     '''
     def addRescueQuest(self,character):
-        quest = src.quests.WakeUpQuest(character,creator=self)
+        quest = src.quests.WakeUpQuest(character)
         quest.reputationReward = 2
         self.quests.append(quest)
 
@@ -2453,7 +2475,7 @@ XXXXXXXXXXX
     bad pattern: picking the corpse up and pretending nothing happend is not enough
     '''
     def disposeOfCorpse(self,info):
-        quest = src.quests.PickupQuestMeta(info["corpse"],creator=self)
+        quest = src.quests.PickupQuestMeta(info["corpse"])
         quest.reputationReward = 1
         self.quests.append(quest)
 
@@ -2490,7 +2512,7 @@ class MechCommand(Room):
     '''
     set basic attributes
     '''
-    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None):
         self.roomLayout = """
 XXXXX$XXXXX
 XI        X
@@ -2503,7 +2525,7 @@ XI .....  X
 XI        X
 XXXXXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.name = "Mech Command Centre"
 
         self.firstOfficer.name = "Cpt. "+self.firstOfficer.name
@@ -2517,15 +2539,15 @@ XXXXXXXXXXX
         self.firstOfficer.basicChatOptions.append({"dialogName":"I want to be captain","chat":src.chats.CaptainChat})
         self.firstOfficer.basicChatOptions.append({"dialogName":"I want to be your second in command","chat":src.chats.CaptainChat2})
                             
-        npcA = src.characters.Character(name="A",xPosition=3,yPosition=9,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
+        npcA = src.characters.Character(name="A",xPosition=3,yPosition=9,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
         self.addCharacter(npcA,2,8)
-        npcB = src.characters.Character(name="B",xPosition=4,yPosition=9,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
+        npcB = src.characters.Character(name="B",xPosition=4,yPosition=9,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
         self.addCharacter(npcB,3,8)
-        npcC = src.characters.Character(name="C",xPosition=5,yPosition=3,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
+        npcC = src.characters.Character(name="C",xPosition=5,yPosition=3,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
         self.addCharacter(npcC,4,8)
-        npcD = src.characters.Character(name="D",xPosition=5,yPosition=3,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
+        npcD = src.characters.Character(name="D",xPosition=5,yPosition=3,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
         self.addCharacter(npcD,5,8)
-        npcE = src.characters.Character(name="E",xPosition=5,yPosition=3,creator=self,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
+        npcE = src.characters.Character(name="E",xPosition=5,yPosition=3,seed=self.xPosition+2*self.offsetY+self.offsetX+2*self.yPosition)
         self.addCharacter(npcE,6,8)
 
         import random
@@ -2555,7 +2577,7 @@ class MetalWorkshop(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None,seed=0):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,seed=0):
         self.roomLayout = """
 XXXXXXXXXXX
 XP        X
@@ -2569,32 +2591,32 @@ XP        X
 XXXXX$XXXXX
 """
         self.quests = []
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator,seed=seed)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,seed=seed)
         self.name = "MetalWorkshop"
 
         # add production machines
-        self.artwork = src.items.ProductionArtwork(4,1,creator=self)
-        self.compactor = src.items.ScrapCompactor(6,1,creator=self)
+        self.artwork = src.items.ProductionArtwork(4,1)
+        self.compactor = src.items.ScrapCompactor(6,1)
         self.addItems([self.artwork,self.compactor])
 
         # add some produced items
         self.producedItems = []
-        item = src.items.Wall(9,4,creator=self)
+        item = src.items.Wall(9,4)
         item.bolted = False
         self.producedItems.append(item)
-        item = src.items.Wall(9,6,creator=self)
+        item = src.items.Wall(9,6)
         item.bolted = False
         self.producedItems.append(item)
-        item = src.items.Wall(9,3,creator=self)
+        item = src.items.Wall(9,3)
         item.bolted = False
         self.producedItems.append(item)
-        item = src.items.Wall(9,7,creator=self)
+        item = src.items.Wall(9,7)
         item.bolted = False
         self.producedItems.append(item)
-        item = src.items.Wall(9,2,creator=self)
+        item = src.items.Wall(9,2)
         item.bolted = False
         self.producedItems.append(item)
-        item = src.items.Wall(9,8,creator=self)
+        item = src.items.Wall(9,8)
         item.bolted = False
         self.producedItems.append(item)
         self.addItems(self.producedItems)
@@ -2621,7 +2643,7 @@ class HuntersLodge(Room):
     '''
     create room and add special items
     '''
-    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None,seed=0):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,seed=0):
         self.roomLayout = """
 XXXXXXXXXXX
 X         X
@@ -2635,7 +2657,7 @@ X         X
 XXXXX$XXXXX
 """
         self.quests = []
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator,seed=seed)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,seed=seed)
         self.name = "HuntersLodge"
 
         firstOfficerDialog = {"dialogName":"Do you need some help?","chat":src.chats.ConfigurableChat,"params":{
@@ -2659,7 +2681,7 @@ XXXXX$XXXXX
     
     def killMiceNest(self,params):
         for mouse in params["room"].characters:
-            quest = src.quests.MurderQuest(toKill=mouse,creator=self)
+            quest = src.quests.MurderQuest(toKill=mouse)
             src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
         src.gamestate.gamestate.mainChar.revokeReputation(amount=20,reason=" for balancing")
 
@@ -2669,13 +2691,13 @@ a empty room
 class EmptyRoom(Room):
     objType = "EmptyRoom"
 
-    def __init__(self,xPosition=None,yPosition=None,offsetX=None,offsetY=None,desiredPosition=None,creator=None,bio=False):
+    def __init__(self,xPosition=None,yPosition=None,offsetX=None,offsetY=None,desiredPosition=None,bio=False):
         self.roomLayout = """
 XXX
 X.$
 XXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.bio = bio
 
         if self.bio:
@@ -2698,23 +2720,24 @@ XXX
             for x in (0,sizeX-1):
                 for y in range(0,sizeY):
                     if (x,y) in doorPos:
-                        items.append(src.items.itemMap["Door"](x,y))
+                        items.append((src.items.itemMap["Door"](),(x,y,0)))
                     else:
-                        items.append(src.items.itemMap["Wall"](x,y))
+                        items.append((src.items.itemMap["Wall"](),(x,y,0)))
 
             for x in range(1,sizeX-1):
                 for y in (0,sizeY-1):
                     if (x,y) in doorPos:
-                        items.append(src.items.itemMap["Door"](x,y))
+                        items.append((src.items.itemMap["Door"](),(x,y,0)))
                     else:
-                        items.append(src.items.itemMap["Wall"](x,y))
+                        items.append((src.items.itemMap["Wall"](),(x,y,0)))
                 
         self.itemsOnFloor = []
         self.itemByCoordinates = {}
         self.addItems(items)
 
         self.walkingAccess = []
-        for item in items:
+        for itemPair in items:
+            item = itemPair[0]
             if item.type == "Door" or item.type == "Chute":
                 self.walkingAccess.append((item.xPosition,item.yPosition))
 
@@ -2737,7 +2760,7 @@ class ConstructionSite(Room):
     '''
     create room and plan construction
     '''
-    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None,creator=None):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,desiredPosition=None):
         self.roomLayout = """
 XXXXXXXXXXX
 X         X
@@ -2762,7 +2785,7 @@ X#XXX XXX#X
 X#### ####X
 XXXXX$XXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,desiredPosition)
         self.name = "Construction Site"
 
         # get a map of items that need to be placed
@@ -2787,7 +2810,7 @@ XXXXX$XXXXX
         # add markers for items
         itemstoAdd = []
         for (position,itemType) in itemsToPlace.items():
-            item = src.items.MarkerBean(position[1],position[0],creator=self)
+            item = src.items.MarkerBean(position[1],position[0])
             item.apply(self.firstOfficer)
             itemstoAdd.append(item)
         self.addItems(itemstoAdd)
@@ -2839,8 +2862,8 @@ XXXXX$XXXXX
         self.itemsInBuildOrder.reverse()
 
 class StaticRoom(EmptyRoom):
-    def __init__(self,xPosition=None,yPosition=None,offsetX=None,offsetY=None,desiredPosition=None,creator=None,depth=1):
-        super().__init__(xPosition=xPosition,yPosition=yPosition,offsetX=offsetX,offsetY=offsetY,desiredPosition=desiredPosition,creator=creator,bio=False)
+    def __init__(self,xPosition=None,yPosition=None,offsetX=None,offsetY=None,desiredPosition=None,depth=1):
+        super().__init__(xPosition=xPosition,yPosition=yPosition,offsetX=offsetX,offsetY=offsetY,desiredPosition=desiredPosition,bio=False)
 
         self.depth = depth
         import urwid
@@ -2943,7 +2966,7 @@ class ScrapStorage(Room):
     '''
     create room
     '''
-    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,creator=None,seed=0):
+    def __init__(self,xPosition=0,yPosition=0,offsetX=0,offsetY=0,seed=0):
         self.roomLayout = """
 XXXXXXXXXXXXX
 X           X
@@ -2959,13 +2982,13 @@ X           X
 X           X
 XXXXXXXXXXXXX
 """
-        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY,creator=creator)
+        super().__init__(self.roomLayout,xPosition,yPosition,offsetX,offsetY)
         self.floorDisplay = [src.canvas.displayChars.nonWalkableUnkown]
         self.name = "ScrapStorage"
         self.scrapStored = 0
 
         # add markers for items
-        item = src.items.ScrapCommander(11,6,creator=self)
+        item = src.items.ScrapCommander(11,6)
         self.scrapCommander = item
         self.addItems([item])
 
@@ -2978,7 +3001,7 @@ XXXXXXXXXXXXX
         scrapPiles = []
         for x in range(1,fullRows+1):
             for y in range(1,12):
-                item = src.items.itemMap["Scrap"](x,y,creator=self,amount=20)
+                item = src.items.itemMap["Scrap"](x,y,amount=20)
                 scrapPiles.append(item)
         self.scrapCommander.numScrapStored = 20*11*fullRows
         self.addItems(scrapPiles)

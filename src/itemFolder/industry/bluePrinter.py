@@ -8,8 +8,8 @@ class BluePrinter(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="BluePrinter",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.blueprinter,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self,name="BluePrinter",noId=False):
+        super().__init__(display=src.canvas.displayChars.blueprinter,name=name)
         self.submenue = None
         self.text = None
 

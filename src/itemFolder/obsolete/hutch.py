@@ -6,19 +6,20 @@ basically a bed with a activatable cover
 class Hutch(src.items.Item):
     type = "Hutch"
 
-    def __init__(self,xPosition=0,yPosition=0,name="Hutch",activated=False,creator=None,noId=False):
+    def __init__(self,activated=False):
         self.activated = activated
-        super().__init__(src.canvas.displayChars.hutch_free,xPosition,yPosition,creator=creator)
+        super().__init__()
+
+        self.name = "Hutch"
 
         # bad code: set metadata for saving
         self.attributesToStore.extend([
                "activated"])
 
-    '''
-    render the hutch
-    '''
-    @property
-    def display(self):
+    def render(self):
+        '''
+        render the hutch
+        '''
         if self.activated:
             return src.canvas.displayChars.hutch_occupied
         else:

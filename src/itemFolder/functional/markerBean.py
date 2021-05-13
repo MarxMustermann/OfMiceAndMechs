@@ -9,9 +9,9 @@ class MarkerBean(src.items.Item):
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="bean",creator=None,noId=False):
+    def __init__(self,name="bean",noId=False):
         self.activated = False
-        super().__init__(src.canvas.displayChars.markerBean_inactive,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(src.canvas.displayChars.markerBean_inactive,name=name)
         self.walkable = True
         self.bolted = False
 
@@ -19,11 +19,10 @@ class MarkerBean(src.items.Item):
         self.attributesToStore.extend([
                "activated"])
 
-    '''
-    render the marker
-    '''
-    @property
-    def display(self):
+    def render(self):
+        '''
+        render the marker
+        '''
         if self.activated:
             return src.canvas.displayChars.markerBean_active
         else:

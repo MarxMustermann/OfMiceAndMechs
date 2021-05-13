@@ -3,8 +3,10 @@ import src
 class StaticSpark(src.items.Item):
     type = "StaticSpark"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.staticSpark,xPosition,yPosition,creator=creator,name="static spark")
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.staticSpark)
+        
+        self.name = "static spark"
 
         self.walkable = True
         self.bolted = False

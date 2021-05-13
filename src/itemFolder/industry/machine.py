@@ -8,7 +8,7 @@ class Machine(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="Machine",creator=None,seed=0,noId=False):
+    def __init__(self,name="Machine",seed=0,noId=False):
         self.toProduce = "Wall"
 
         self.coolDown = 100
@@ -18,7 +18,7 @@ class Machine(src.items.Item):
         self.productionLevel = 1
         self.commands = {}
 
-        super().__init__(src.canvas.displayChars.machine,xPosition,yPosition,name=name,creator=creator,seed=seed)
+        super().__init__(display=src.canvas.displayChars.machine,name=name,seed=seed)
 
         self.attributesToStore.extend([
                "toProduce","level","productionLevel"])

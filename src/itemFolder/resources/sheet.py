@@ -8,8 +8,8 @@ class Sheet(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="sheet",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.sheet,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self,name="sheet",noId=False):
+        super().__init__(display=src.canvas.displayChars.sheet,name=name)
 
         self.bolted = False
         self.walkable = True
@@ -53,8 +53,6 @@ This is a level %s item
         return text
 
     def apply(self,character):
-        super().apply(character,silent=True)
-
         if self.recording:
             self.createCommand()
             return
@@ -209,20 +207,16 @@ This is a level %s item
             self.character.addMessage("command not found in macro")
             return
 
-        command = Command(self.xPosition,self.yPosition, creator=self)
+        command = src.items.itemMap["Command"]()
         command.setPayload(self.character.macroState["macros"][key])
 
         self.character.addMessage("you created a written command")
 
-        if self.xPosition:
-            if self.room:
-                self.room.removeItem(self)
-                self.room.addItems([command])
-            else:
-                self.container.removeItem(self)
-                self.container.addItems([command])
+        if self.container:
+            self.container.addItem(command,self.getPosition())
+            self.container.removeItem(self)
         else:
-            self.character.inventory.remove(self)
             self.character.inventory.append(command)
+            self.character.inventory.remove(self)
 
 src.items.addType(Sheet)

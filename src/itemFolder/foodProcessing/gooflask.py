@@ -6,9 +6,9 @@ class GooFlask(src.items.Item):
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=None,yPosition=None,name="goo flask",creator=None,noId=False):
+    def __init__(self,name="goo flask",noId=False):
         self.uses = 0
-        super().__init__(src.canvas.displayChars.gooflask_empty,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(display=src.canvas.displayChars.gooflask_empty,name=name)
         self.walkable = True
         self.bolted = False
         self.description = "a flask containing goo"
@@ -47,11 +47,10 @@ class GooFlask(src.items.Item):
         character.satiation = 1000
         character.changed()
 
-    '''
-    render based on fill amount
-    '''
-    @property
-    def display(self):
+    def render(self):
+        '''
+        render based on fill amount
+        '''
         displayByUses = [src.canvas.displayChars.gooflask_empty, src.canvas.displayChars.gooflask_part1, src.canvas.displayChars.gooflask_part2, src.canvas.displayChars.gooflask_part3, src.canvas.displayChars.gooflask_part4, src.canvas.displayChars.gooflask_full]
         return displayByUses[self.uses//20]
 

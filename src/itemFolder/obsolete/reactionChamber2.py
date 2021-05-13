@@ -3,9 +3,10 @@ import src
 class ReactionChamber_2(src.items.Item):
     type = "ReactionChamber_2"
 
-    def __init__(self,xPosition=0,yPosition=0,amount=1,name="reactionChamber_2",creator=None,noId=False):
+    def __init__(self):
 
-        super().__init__(src.canvas.displayChars.reactionChamber,xPosition,yPosition,creator=creator,name=name)
+        super().__init__(display=src.canvas.displayChars.reactionChamber)
+        self.name = "reactionChamber_2"
 
     def apply(self,character):
 

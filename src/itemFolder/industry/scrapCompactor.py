@@ -9,15 +9,17 @@ class ScrapCompactor(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="scrap compactor",creator=None,noId=False):
+    def __init__(self):
+        super().__init__()
+                
+        self.display = src.canvas.displayChars.scrapCompactor
+
         self.coolDown = 100
         self.coolDownTimer = -self.coolDown
         self.charges = 3
         self.level = 1
         self.commands = {}
         
-        super().__init__(src.canvas.displayChars.scrapCompactor,xPosition,yPosition,name=name,creator=creator)
-
         self.attributesToStore.extend([
                "coolDown","coolDownTimer","charges","level"])
 
@@ -25,8 +27,6 @@ class ScrapCompactor(src.items.Item):
     produce a metal bar
     '''
     def apply(self,character,resultType=None):
-        super().apply(character,silent=True)
-
         if not self.container:
             character.addMessage("this machine has be somewhere to be used")
             return
@@ -46,7 +46,7 @@ class ScrapCompactor(src.items.Item):
                 self.container = self.terrain
 
         for item in self.container.getItemByPosition((self.xPosition-1,self.yPosition,self.zPosition)):
-            if isinstance(item,itemMap["Scrap"]):
+            if item.type == "Scrap":
                 scrap = item
                 break
         if self.level > 1:
@@ -109,10 +109,8 @@ class ScrapCompactor(src.items.Item):
             scrap.setWalkable()
 
         # spawn the metal bar
-        new = src.items.itemMap["MetalBars"](creator=self)
-        new.xPosition = self.xPosition+1
-        new.yPosition = self.yPosition
-        self.container.addItems([new])
+        new = src.items.itemMap["MetalBars"]()
+        self.container.addItem(new,(self.xPosition+1,self.yPosition,self.zPosition))
 
         self.runCommand("success",character)
 

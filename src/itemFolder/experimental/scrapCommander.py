@@ -3,8 +3,9 @@ import src
 class ScrapCommander(src.items.Item):
     type = "ScrapCommander"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(";;",xPosition,yPosition,creator=creator,name="scrap commander")
+    def __init__(self):
+        super().__init__(display=";;")
+        self.name = "scrap commander"
 
         self.bolted = True
         self.walkable = True

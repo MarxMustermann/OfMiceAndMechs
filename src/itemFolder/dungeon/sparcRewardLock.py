@@ -3,8 +3,10 @@ import src
 class SparcRewardLock(src.items.Item):
     type = "SparcRewardLock"
 
-    def __init__(self,xPosition=0,yPosition=0,name="SaccrificialCircle",creator=None,noId=False):
-        super().__init__("%°",xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display="%°")
+
+        self.name = "SaccrificialCircle"
         self.walkable = True
         self.bolted = True
 

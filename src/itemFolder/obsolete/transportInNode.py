@@ -6,8 +6,10 @@ class TransportInNode(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="Transport In Node",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.wall,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display="TI")
+
+        self.name = "transport in node"
 
         self.bolted = False
         self.walkable = False

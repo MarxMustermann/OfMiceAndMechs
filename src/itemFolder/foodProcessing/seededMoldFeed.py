@@ -3,8 +3,9 @@ import src
 class SeededMoldFeed(src.items.Item):
     type = "SeededMoldFeed"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.seededMoldFeed,xPosition,yPosition,creator=creator,name="seeded mold feed")
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.seededMoldFeed)
+        self.name = "seeded mold feed"
         self.walkable = True
         self.bolted = False
 

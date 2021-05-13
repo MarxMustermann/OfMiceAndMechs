@@ -7,10 +7,10 @@ class TradingArtwork(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="trading artwork",creator=None,noId=False,autoRun=True):
+    def __init__(self, name="trading artwork",noId=False,autoRun=True):
         self.tradingHistory = {}
 
-        super().__init__("TA",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(display="TA",name=name)
 
 
         self.applyOptions.extend([

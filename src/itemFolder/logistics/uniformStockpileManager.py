@@ -6,9 +6,11 @@ class UniformStockpileManager(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="uniform stockpile manager",creator=None,noId=False):
+    def __init__(self):
 
-        super().__init__(src.canvas.displayChars.uniformStockpileManager,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(display=src.canvas.displayChars.uniformStockpileManager)
+                
+        self.name = "uniform stockpile manager"
 
         self.bolted = False
         self.walkable = False

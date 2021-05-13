@@ -6,11 +6,13 @@ class JobOrder(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="job order",creator=None,noId=False,autoRun=True):
+    def __init__(self,autoRun=True):
         self.tasks = [
                 ]
 
-        super().__init__(src.canvas.displayChars.jobOrder,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(display=src.canvas.displayChars.jobOrder)
+
+        self.name = "job order"
 
         self.bolted = False
         self.walkable = True

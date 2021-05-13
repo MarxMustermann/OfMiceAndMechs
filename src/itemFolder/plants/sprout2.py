@@ -4,12 +4,13 @@ class Sprout2(src.items.Item):
     type = "Sprout2"
 
     def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.sprout2,xPosition,yPosition,creator=creator,name="sprout2")
+        super().__init__(display=src.canvas.displayChars.sprout2)
+        self.name = "sprout2"
         self.walkable = True
 
     def apply(self,character):
-        if not self.terrain:
-            character.addMessage("this needs to be placed outside to be used")
+        if not self.container:
+            character.addMessage("this needs to be placed to be used")
             return
 
         character.satiation += 25
@@ -30,10 +31,8 @@ you can eat it to gain 25 satiation.
 
     def destroy(self, generateSrcap=True):
 
-        new = itemMap["Mold"](creator=self)
-        new.xPosition = self.xPosition
-        new.yPosition = self.yPosition
-        self.container.addItems([new])
+        new = src.items.itemMap["Mold"]()
+        self.container.addItem(new,self.getPosition())
         new.startSpawn()
 
         super().destroy(generateSrcap=False)

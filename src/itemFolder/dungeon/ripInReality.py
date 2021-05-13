@@ -3,8 +3,9 @@ import src
 class RipInReality(src.items.Item):
     type = "RipInReality"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.ripInReality,xPosition,yPosition,creator=creator,name="rip in reality")
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.ripInReality)
+        self.name = "rip in reality"
         self.target = None
         self.targetPos = None
 

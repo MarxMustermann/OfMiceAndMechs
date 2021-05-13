@@ -6,8 +6,10 @@ class CommandBook(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="command book",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.command,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display="cb")
+
+        self.name = "command book"
 
         self.bolted = False
         self.walkable = True

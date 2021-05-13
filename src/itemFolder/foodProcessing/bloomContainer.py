@@ -1,10 +1,20 @@
 import src
 
 class BloomContainer(src.items.Item):
+    """
+    a item to carry bloom items with
+    """
     type = "BloomContainer"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.bloomContainer,xPosition,yPosition,creator=creator,name="bloom container")
+    def __init__(self):
+        """
+        simple superclass configuration
+        """
+
+        super().__init__()
+        
+        self.display = src.canvas.displayChars.bloomContainer
+        self.name = "bloom container"
 
         self.charges = 0
         self.maxCharges = 15
@@ -14,6 +24,13 @@ class BloomContainer(src.items.Item):
                "charges","maxCharges","level"])
 
     def getLongInfo(self):
+        """
+        returns a log text description of the item
+
+        Returns:
+            the description
+        """
+
         return """
 item: BloomContainer
 

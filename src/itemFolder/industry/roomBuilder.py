@@ -8,8 +8,9 @@ class RoomBuilder(src.items.Item):
     '''
     call superclass constructor with modified paramters
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="RoomBuilder",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.roomBuilder,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.roomBuilder)
+        self.name = "RoomBuilder"
 
     '''
     map player controls to room movement 

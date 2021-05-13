@@ -1,10 +1,13 @@
 import src
+import random
 
 class Bloom(src.items.Item):
     type = "Bloom"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.bloom,xPosition,yPosition,creator=creator,name="bloom")
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.bloom)
+        
+        self.name = "bloom"
         self.bolted = False
         self.walkable = True
         self.dead = False
@@ -12,8 +15,8 @@ class Bloom(src.items.Item):
                "dead"])
 
     def apply(self,character):
-        if not self.terrain:
-            character.addMessage("this needs to be placed outside to be used")
+        if not self.container:
+            character.addMessage("this needs to be placed to be used")
             return
 
         if self.dead:
@@ -28,10 +31,10 @@ class Bloom(src.items.Item):
             character.addMessage("you eat the bloom and gain 115 satiation")
 
     def startSpawn(self):
-        if not self.dead:
+        if not (self.dead or self.xPosition == None or self.yPosition == None):
             event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+(2*self.xPosition+3*self.yPosition+src.gamestate.gamestate.tick)%10000,creator=self)
             event.setCallback({"container":self,"method":"spawn"})
-            self.terrain.addEvent(event)
+            self.container.addEvent(event)
 
     def pickUp(self,character):
         self.bolted = False
@@ -46,7 +49,6 @@ class Bloom(src.items.Item):
             return
         if not self.container:
             return
-        direction = (2*self.xPosition+3*self.yPosition+src.gamestate.gamestate.tick)%4
         direction = (random.randint(1,13),random.randint(1,13))
         newPos = (self.xPosition-self.xPosition%15+direction[0],self.yPosition-self.yPosition%15+direction[1],self.zPosition)
 

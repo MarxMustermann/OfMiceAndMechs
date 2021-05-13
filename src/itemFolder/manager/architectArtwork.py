@@ -10,11 +10,11 @@ class ArchitectArtwork(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="scrap compactor",creator=None,noId=False):
-        super().__init__("AA",xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display="AA")
 
+        self.name = "scrap compactor"
         self.runsJobOrders = True
-
         self.godMode = False
         self.attributesToStore.extend([
                "godMode"])
@@ -44,8 +44,6 @@ class ArchitectArtwork(src.items.Item):
 
         if task["type"] == "add to storage":
             newTask = {"task":"add stockpile","nodeName":task["stockPile"],"pathFrom":jobOrder.information["pathFrom"],"pathTo":jobOrder.information["pathTo"]}
-
-            context["character"].addMessage(task)
 
             if task.get("function"):
                 newTask["function"] = task["function"]
@@ -198,13 +196,15 @@ class ArchitectArtwork(src.items.Item):
             for i in range(1,30):
                 self.doAddScrapfield(random.randint(1,13),random.randint(1,13),random.randint(20,40))
             for i in range(1,5):
-                item = src.items.itemMap["Rod"](random.randint(1,13)*15+random.randint(1,13),random.randint(1,13)*15+random.randint(1,13))
+                item = src.items.itemMap["Rod"]()
                 item.baseDamage = i
-                terrain.addItem(item)
+                itemPos = (random.randint(1,13)*15+random.randint(1,13),random.randint(1,13)*15+random.randint(1,13),0)
+                terrain.addItem(item,itemPos)
             for i in range(1,5):
-                item = src.items.itemMap["Armor"](random.randint(1,13)*15+random.randint(1,13),random.randint(1,13)*15+random.randint(1,13))
+                item = src.items.itemMap["Armor"]()
                 item.armorValue = i
-                terrain.addItem(item)
+                itemPos = (random.randint(1,13)*15+random.randint(1,13),random.randint(1,13)*15+random.randint(1,13),0)
+                terrain.addItem(item,itemPos)
             """
             for i in range(1,20):
                 enemy = src.characters.Monster()
@@ -221,12 +221,14 @@ class ArchitectArtwork(src.items.Item):
                 enemy.godMode = True
             """
             for i in range(1,2):
-                item = src.items.itemMap["GooFlask"](random.randint(1,13)*15+random.randint(1,13),random.randint(1,13)*15+random.randint(1,13))
+                item = src.items.itemMap["GooFlask"]()
                 item.uses = 100
-                terrain.addItem(item)
+                itemPos = (random.randint(1,13)*15+random.randint(1,13),random.randint(1,13)*15+random.randint(1,13),0)
+                terrain.addItem(item,itemPos)
             for i in range(1,30):
-                item = src.items.itemMap["Mold"](random.randint(1,13)*15+random.randint(1,13),random.randint(1,13)*15+random.randint(1,13))
-                terrain.addItem(item)
+                item = src.items.itemMap["Mold"]()
+                itemPos = (random.randint(1,13)*15+random.randint(1,13),random.randint(1,13)*15+random.randint(1,13),0)
+                terrain.addItem(item,itemPos)
                 item.startSpawn()
         if self.submenue.selection == "showMap":
             mapContent = []
@@ -325,12 +327,8 @@ class ArchitectArtwork(src.items.Item):
         self.doAddScrapfield(self.targetX,self.targetY,amount)
 
     def doAddScrapfield(self,x,y,amount):
-        if self.room:
-            terrain = self.room.terrain
-        if self.terrain:
-            terrain = self.terrain
+        terrain = self.getTerrain()
 
-        import random
         counter = 0
         minX = 15*x
         minY = 15*y
@@ -340,13 +338,14 @@ class ArchitectArtwork(src.items.Item):
         items = []
         while counter < maxItems:
             if not random.randint(1,15) == 10:
-                item = src.items.itemMap["Scrap"](random.randint(minX,maxX),random.randint(minY,maxY),amount=random.randint(1,20))
+                itemPair = (src.items.itemMap["Scrap"](amount=random.randint(1,20)),(random.randint(minX,maxX),random.randint(minY,maxY),0))
             else:
                 if not random.randint(1,10) == 2:
-                    item = src.items.itemMap[random.choice(src.items.commons)](random.randint(minX,maxX),random.randint(minY,maxY))
+                    itemPair = (src.items.itemMap[random.choice(src.items.commons)](),(random.randint(minX,maxX),random.randint(minY,maxY),0))
                 else:
-                    item = src.items.itemMap[random.choice(src.items.semiCommons)](random.randint(minX,maxX),random.randint(minY,maxY))
+                    itemPair = (src.items.itemMap[random.choice(src.items.semiCommons)](),(random.randint(minX,maxX),random.randint(minY,maxY),0))
                 
+                item = itemPair[0]
                 item.bolted = False
                 if item.type == "Machine":
                     if not random.randint(1,10) == 2:
@@ -355,8 +354,9 @@ class ArchitectArtwork(src.items.Item):
                         item.setToProduce(random.choice(src.items.semiCommons))
                 if item.type == "HealingStation":
                     item.charges = random.randint(0,10)
-            items.append(item)
+            items.append(itemPair)
             counter += 1
+
         terrain.addItems(items)
 
     def addRoom(self,wipe=False):

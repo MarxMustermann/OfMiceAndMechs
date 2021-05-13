@@ -1,45 +1,55 @@
 import src
 
-'''
-'''
 class BioPress(src.items.Item):
+    '''
+    processes food by converting biomass to press cake
+    '''
+
     type = "BioPress"
 
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=None,yPosition=None,name="bio press",creator=None,noId=False):
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.bioPress)
         self.activated = False
-        super().__init__(src.canvas.displayChars.bioPress,xPosition,yPosition,name=name,creator=creator)
+        self.name = "bio press"
+        self.description = "A bio press produces press cake from bio mass."
+        self.usageInfo = """
+Place 10 bio mass to the left/west of the bio press.
+Activate the bio press to produce press cake.
+"""
 
-    '''
-    '''
+    # needs abstraction: takes x input and produces y output
     def apply(self,character):
+        '''
+        try to produce a press cake from bio mass
+        '''
         super().apply(character,silent=True)
 
         if not self.room:
             character.addMessage("this machine can only be used within rooms")
             return
 
-        # fetch input scrap
+        # fetch input bio mass
         items = []
-        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
-                if isinstance(item,BioMass):
-                    items.append(item)
+        for item in self.container.getItemByPosition((self.xPosition-1,self.yPosition,self.zPosition)):
+            if isinstance(item,BioMass):
+                items.append(item)
 
         # refuse to produce without resources
         if len(items) < 10:
             character.addMessage("not enough bio mass")
             return
 
+        # check if target area is full
         targetFull = False
-        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
-            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+        itemList = self.container.getItemByPosition((self.xPosition+1,self.yPosition,self.zPosition))
+        if len(itemList) > 15:
+            targetFull = True
+        for item in itemList:
+            if item.walkable == False:
                 targetFull = True
-            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
-                if item.walkable == False:
-                    targetFull = True
 
         if targetFull:
             character.addMessage("the target area is full, the machine does not produce anything")
@@ -51,25 +61,10 @@ class BioPress(src.items.Item):
             if counter >= 10:
                 break
             counter += 1
-            self.room.removeItem(item)
+            self.container.removeItem(item)
 
         # spawn the new item
         new = PressCake(creator=self)
-        new.xPosition = self.xPosition+1
-        new.yPosition = self.yPosition
-        self.room.addItems([new])
-
-    def getLongInfo(self):
-        text = """
-item: BioPress
-
-description:
-A bio press produces press cake from bio mass.
-
-Place 10 bio mass to the left/west of the bio press.
-Activate the bio press to produce biomass.
-
-"""
-        return text
+        self.container.addItem(new,(self.xPosition+1,self.yPosition,self.zPosition))
 
 src.items.addType(BioPress)

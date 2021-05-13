@@ -8,9 +8,11 @@ class SanitaryStation(src.items.Item):
     '''
     call superclass constructor with modified paramters
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="SanitaryStation",creator=None,noId=False):
-        super().__init__("SS",xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__()
 
+        self.name = "SanitaryStation"
+        self.display = "SS"
         self.bolted = False
         self.walkable = False
         self.commands = {}

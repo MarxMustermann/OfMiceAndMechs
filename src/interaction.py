@@ -3121,10 +3121,10 @@ def renderInventory():
         counter = 0
         for item in char.inventory:
             counter += 1
-            if isinstance(item.display,int):
-                txt.extend([str(counter)," - ",src.canvas.displayChars.indexedMapping[item.display]," - ",item.name,"\n     ",item.getDetailedInfo(),"\n"])
+            if isinstance(item.render(),int):
+                txt.extend([str(counter)," - ",src.canvas.displayChars.indexedMapping[item.render()]," - ",item.name,"\n     ",item.getDetailedInfo(),"\n"])
             else:
-                txt.extend([str(counter)," - ",item.display," - ",item.name,"\n     ",item.getDetailedInfo(),"\n"])
+                txt.extend([str(counter)," - ",item.render()," - ",item.name,"\n     ",item.getDetailedInfo(),"\n"])
     else:
         txt = "empty Inventory"
     return txt

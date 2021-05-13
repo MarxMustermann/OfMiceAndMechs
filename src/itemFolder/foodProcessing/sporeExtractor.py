@@ -8,9 +8,12 @@ class SporeExtractor(src.items.Item):
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=None,yPosition=None,name="spore extractor",creator=None,noId=False):
+    def __init__(self):
+        super().__init__()
+        
+        self.display = src.canvas.displayChars.sporeExtractor
+        self.name="spore extractor"
         self.activated = False
-        super().__init__(src.canvas.displayChars.sporeExtractor,xPosition,yPosition,name=name,creator=creator)
 
     '''
     '''

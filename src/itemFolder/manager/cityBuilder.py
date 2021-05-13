@@ -3,8 +3,8 @@ import random
 
 class CityBuilder(src.items.Item):
     type = "CityBuilder"
-    def __init__(self,xPosition=0,yPosition=0,name="CityBuilder",creator=None,noId=False):
-        super().__init__("CB",xPosition,yPosition,name=name,creator=creator)
+    def __init__(self,name="CityBuilder",noId=False):
+        super().__init__(display="CB",name=name)
         self.commands = {}
         self.tasks = [{"task":"build factory"}]
         self.tasks = []
@@ -268,7 +268,7 @@ class CityBuilder(src.items.Item):
                 character.addMessage("handle success")
                 plot = context["jobOrder"].information["plot"]
                 self.unfinishedRoadTiles.remove(plot)
-                if not (plot[0] == self.room.xPosition and plot[1] == self.room.yPosition):
+                if not (plot[0] == self.container.xPosition and plot[1] == self.container.yPosition):
                     self.roadTiles.append(plot)
                     self.unusedRoadTiles.append(plot)
         
@@ -388,7 +388,7 @@ class CityBuilder(src.items.Item):
         task = context["task"]
         if self.unfinishedRoadTiles:
             plot = self.unfinishedRoadTiles[-1]
-            if plot == (self.room.xPosition,self.room.yPosition):
+            if plot == (self.container.xPosition,self.container.yPosition):
                 self.unfinishedRoadTiles.pop()
                 self.abortTask()
                 return
@@ -719,7 +719,7 @@ class CityBuilder(src.items.Item):
                         (plot[0],plot[1]+1),
                        ]
 
-        self.getTerrain().addItem(src.items.itemMap["MarkerBean"](plot[0]*15+7,plot[1]*15+7))
+        self.getTerrain().addItem(src.items.itemMap["MarkerBean"](),(plot[0]*15+7,plot[1]*15+7,0))
         self.unfinishedRoadTiles.append(plot)
 
         axisPlots = []
@@ -774,7 +774,7 @@ class CityBuilder(src.items.Item):
             mapContent[plot[1]][plot[0]] = ".."
         for plot in self.roadTiles:
             mapContent[plot[1]][plot[0]] = "::"
-        mapContent[self.room.yPosition][self.room.xPosition] = "CB"
+        mapContent[self.container.yPosition][self.container.xPosition] = "CB"
 
         mapText = ""
         for x in range(0,15):

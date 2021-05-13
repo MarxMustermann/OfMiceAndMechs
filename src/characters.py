@@ -20,9 +20,6 @@ import random
 import src.logger
 import src.gamestate
 
-# bad code: containers for global state
-characters = None
-
 """
 this is the class for characters meaning both npc and pcs. 
 all characters except the pcs always have automated = True to
@@ -952,10 +949,7 @@ class Character(src.saveing.Saveable):
             foundScrap.setWalkable()
         else:
             # add item to floor
-            item.xPosition = position[0]
-            item.yPosition = position[1]
-            item.zPosition = position[2]
-            self.container.addItems([item])
+            self.container.addItem(item,position)
 
         self.changed()
 

@@ -8,9 +8,10 @@ class CorpseShredder(src.items.Item):
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=None,yPosition=None,name="corpse shredder",creator=None,noId=False):
+    def __init__(self):
         self.activated = False
-        super().__init__(src.canvas.displayChars.corpseShredder,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(display=src.canvas.displayChars.corpseShredder)
+        self.name = "corpse shredder"
 
     '''
     '''

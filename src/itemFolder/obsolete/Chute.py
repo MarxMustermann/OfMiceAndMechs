@@ -3,9 +3,10 @@ import src
 class Chute(src.items.Item):
     type = "Chute"
 
-    def __init__(self,xPosition=0,yPosition=0,amount=1,name="chute",creator=None,noId=False):
+    def __init__(self):
 
-        super().__init__(src.canvas.displayChars.fireCrystals,xPosition,yPosition,creator=creator,name=name)
+        super().__init__(display="CH")
+        self.name = "chute"
 
     def apply(self,character):
         if self.xPosition == None or not self.container:

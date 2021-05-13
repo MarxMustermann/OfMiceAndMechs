@@ -3,8 +3,8 @@ import src
 class HealingStation(src.items.Item):
     type = "HealingStation"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.healingStation,xPosition,yPosition,creator=creator,name="healingstation")
+    def __init__(self,noId=False):
+        super().__init__(display=src.canvas.displayChars.healingStation,name="healingstation")
 
         self.walkable = False
         self.bolted = True

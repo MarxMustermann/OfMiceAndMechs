@@ -6,7 +6,7 @@ class StockpileMetaManager(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="stockpile meta manager",creator=None,noId=False):
+    def __init__(self):
         self.jobOrders = []
         self.commands = {}
         self.stockPiles = []
@@ -17,7 +17,9 @@ class StockpileMetaManager(src.items.Item):
         self.lastAction = ""
         self.roomManagerName = ""
 
-        super().__init__("SM",xPosition,yPosition,name=name,creator=creator)
+        super().__init__(display="SM")
+
+        self.name = "stockpile meta manager"
 
         self.bolted = False
         self.walkable = False

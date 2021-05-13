@@ -10,12 +10,13 @@ class Boiler(src.items.Item):
     '''
     call superclass constructor with modified paramters and set some state
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="boiler",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.boiler_inactive,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self,name="boiler",creator=None,noId=False):
+        super().__init__(display=src.canvas.displayChars.boiler_inactive)
         self.isBoiling = False
         self.isHeated = False
         self.startBoilingEvent = None
         self.stopBoilingEvent = None
+        self.name = "boiler"
 
         # set metadata for saving
         self.attributesToStore.extend([

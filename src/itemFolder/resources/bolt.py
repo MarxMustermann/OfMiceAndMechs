@@ -6,8 +6,8 @@ class Bolt(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="bolt",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.bolt,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self, name="bolt",noId=False):
+        super().__init__(src.canvas.displayChars.bolt,name=name)
 
         self.bolted = False
         self.walkable = True

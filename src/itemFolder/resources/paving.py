@@ -8,8 +8,8 @@ class Paving(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="floor plate",creator=None,noId=False):
-        super().__init__(";;",xPosition,yPosition,name=name,creator=creator)
+    def __init__(self,name="floor plate",noId=False):
+        super().__init__(display=";;",name=name)
 
         self.bolted = False
         self.walkable = True

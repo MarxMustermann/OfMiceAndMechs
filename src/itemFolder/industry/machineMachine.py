@@ -8,7 +8,7 @@ class MachineMachine(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="machine machine",creator=None,noId=False):
+    def __init__(self):
         self.coolDown = 1000
         self.coolDownTimer = -self.coolDown
         self.charges = 3
@@ -19,7 +19,8 @@ class MachineMachine(src.items.Item):
         self.blueprintLevels = {
         }
 
-        super().__init__(src.canvas.displayChars.machineMachine,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(display=src.canvas.displayChars.machineMachine)
+        self.name = "machine machine"
 
         self.attributesToStore.extend([
                "coolDown","coolDownTimer","endProducts","charges","level"])

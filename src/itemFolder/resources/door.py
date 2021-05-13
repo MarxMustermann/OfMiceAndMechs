@@ -7,12 +7,12 @@ class Door(src.items.Item):
 
     type = "Door"
 
-    def __init__(self,xPosition=0,yPosition=0,zPosition=0,name="Door",noId=False,bio=False):
+    def __init__(self,name="Door",noId=False,bio=False):
         '''
         call superclass constructor with modified paramters and set some state
         '''
 
-        super().__init__(displayChar,xPosition,yPosition,zPosition=zPosition,name=name,noId=noId)
+        super().__init__(name=name,noId=noId)
         self.walkable = False
         self.bio = bio
 
@@ -29,12 +29,12 @@ class Door(src.items.Item):
 
         if self.bio:
             if self.walkable:
-                displayChar = src.canvas.displayChars.bioDoor_open
+                displayChar = src.canvas.displayChars.bioDoor_opened
             else:
                 displayChar = src.canvas.displayChars.bioDoor_closed
         else:
             if self.walkable:
-                displayChar = src.canvas.displayChars.door_open
+                displayChar = src.canvas.displayChars.door_opened
             else:
                 displayChar = src.canvas.displayChars.door_closed
         return displayChar

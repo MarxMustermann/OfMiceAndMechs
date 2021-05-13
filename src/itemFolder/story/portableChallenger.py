@@ -3,8 +3,10 @@ import src
 class PortableChallenger(src.items.Item):
     type = "PortableChallenger"
 
-    def __init__(self,xPosition=None,yPosition=None, name="PortableChallenger",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.portableChallenger,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.portableChallenger)
+
+        self.name = "portable challenger"
         self.challenges = []
         self.done = False
         self.walkable = True

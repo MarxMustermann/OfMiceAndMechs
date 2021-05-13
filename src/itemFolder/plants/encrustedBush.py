@@ -3,8 +3,10 @@ import src
 class EncrustedBush(src.items.Item):
     type = "EncrustedBush"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.encrustedBush,xPosition,yPosition,creator=creator,name="encrusted bush")
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.encrustedBush)
+        self.name = "encrusted bush"
+
         self.walkable = False
 
     def getLongInfo(self):

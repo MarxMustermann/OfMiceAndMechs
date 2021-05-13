@@ -3,8 +3,10 @@ import src
 class PoisonBush(src.items.Item):
     type = "PoisonBush"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.poisonBush,xPosition,yPosition,creator=creator,name="poison bush")
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.poisonBush)
+        self.name = "poison brush"
+
         self.walkable = False
         self.charges = 0
         self.attributesToStore.extend([

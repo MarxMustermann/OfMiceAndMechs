@@ -4,8 +4,10 @@ import src
 class ReactionChamber(src.items.Item):
     type = "ReactionChamber"
 
-    def __init__(self,xPosition=0,yPosition=0,amount=1,name="reactionChamber",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.reactionChamber,xPosition,yPosition,creator=creator,name=name)
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.reactionChamber)
+        
+        self.name = "reaction chamber"
         self.contains = ""
 
     def apply(self,character):

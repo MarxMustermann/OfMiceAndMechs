@@ -184,6 +184,9 @@ class Character(src.saveing.Saveable):
         self.xPosition = xPosition
         self.yPosition = yPosition
 
+    def getPosition(self):
+        return (self.xPosition,self.yPosition,self.zPosition)
+
     def searchInventory(self,itemType,extra={}):
         foundItems = []
         for item in self.inventory:
@@ -1186,10 +1189,8 @@ class Monster(Character):
     def die(self,reason=None,addCorpse=True):
         if self.phase == 1:
             if self.xPosition and self.yPosition and (not self.container.getItemByPosition((self.xPosition,self.yPosition,self.zPosition))):
-                new = src.items.itemMap["Mold"](creator=self)
-                new.xPosition = self.xPosition
-                new.yPosition = self.yPosition
-                self.container.addItems([new])
+                new = src.items.itemMap["Mold"]()
+                self.container.addItem(new,self.getPosition())
                 new.startSpawn()
 
             super().die(reason,addCorpse=False)

@@ -8,8 +8,9 @@ class Map(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="Map",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.map,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.map)
+        self.map = "map"
 
         self.routes = {
                       }

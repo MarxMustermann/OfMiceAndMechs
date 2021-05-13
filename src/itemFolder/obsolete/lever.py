@@ -9,9 +9,11 @@ class Lever(src.items.Item):
     '''
     straightforward state initialization
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="lever",activated=False,creator=None,noId=False):
+    def __init__(self,activated=False):
         self.activated = activated
-        super().__init__(src.canvas.displayChars.lever_notPulled,xPosition,yPosition,name=name,creator=creator)
+        super().__init__()
+
+        self.name = "lever"
         self.activateAction = None
         self.deactivateAction = None
         self.walkable = True
@@ -53,8 +55,7 @@ class Lever(src.items.Item):
     '''
     render the lever
     '''
-    @property
-    def display(self):
+    def render(self):
         if self.activated:
             return src.canvas.displayChars.lever_pulled
         else:

@@ -8,8 +8,10 @@ class BackTracker(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="back tracker",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.backTracker,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.backTracker)
+
+        self.name = "back tracker"
 
         self.attributesToStore.extend([
                "command"])

@@ -3,8 +3,10 @@ import src
 class PoisonBloom(src.items.Item):
     type = "PoisonBloom"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.poisonBloom,xPosition,yPosition,creator=creator,name="poison bloom")
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.poisonBloom)
+
+        self.name = "poison bloom"
         self.walkable = True
         self.dead = False
         self.bolted = False

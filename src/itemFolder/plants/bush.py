@@ -3,8 +3,11 @@ import src
 class Bush(src.items.Item):
     type = "Bush"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.bush,xPosition,yPosition,creator=creator,name="bush")
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.bush)
+
+        self.name = "bush"
+
         self.walkable = False
         self.charges = 10
         self.attributesToStore.extend([

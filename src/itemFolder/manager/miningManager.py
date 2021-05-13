@@ -157,8 +157,7 @@ class MiningManager(src.items.Item):
         terrain = self.getTerrain()
 
         #mockup for ore processing
-        items = []
-        item = src.items.itemMap["ProductionManager"](setupInfo["oreProcessing"][0]*15+7,setupInfo["oreProcessing"][1]*15+7)
+        item = src.items.itemMap["ProductionManager"]()
 
         command = ""
         commandTo = ""
@@ -233,8 +232,7 @@ class MiningManager(src.items.Item):
         metalBarSource = commandBack+"Js.sjj"+commandTo
 
         item.commands["MetalBars"] = command
-        items.append(item)
-        terrain.addItems(items)
+        terrain.addItem(item,(setupInfo["oreProcessing"][0]*15+7,setupInfo["oreProcessing"][1]*15+7,0))
  
         self.useJoborderRelayToLocalRoom(context["character"],[
                 {"task":"connect stockpile","type":"set wrong item to storage","stockPile":setupInfo["scrapStockPileName"],"stockPileCoordinate":setupInfo["scrapStockPileCoordinate"],"command":None},

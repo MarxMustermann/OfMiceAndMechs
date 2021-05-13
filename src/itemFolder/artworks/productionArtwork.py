@@ -81,7 +81,7 @@ class ProductionArtwork(src.items.Item):
                 return
             if self.targetItemType == src.items.itemMap["ResourceTerminal"]:
                 options = []
-                for key,value in itemMap.items():
+                for key,value in src.items.itemMap.items():
                     options.append((key,key))
                 self.submenue = src.interaction.SelectionMenu("select resource the terminal is for",options)
                 self.character.macroState["submenue"] = self.submenue

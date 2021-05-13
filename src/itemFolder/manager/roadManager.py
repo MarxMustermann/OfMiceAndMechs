@@ -24,11 +24,11 @@ class RoadManager(src.items.Item):
         self.pathsFromCenter = {}
 
         self.attributesToStore.extend([
-               "center","connections",
+               "center","connections","pathingNodes",
                ])
 
         self.tupleDictsToStore.extend([
-               "roadNetwork","centerDirection","pathsToCenter","pathsFromCenter",
+               "roadNetwork","centerDirection","pathsToCenter","pathsFromCenter","pathingNodes",
                ])
 
 
@@ -60,7 +60,7 @@ class RoadManager(src.items.Item):
             text += "  %s\n"%(list(reversed(backPath)),)
             text += "  %s\n"%(backPath,)
 
-            commandItem = src.items.itemMap["Command"](value["coordinate"][0]*15+7,value["coordinate"][1]*15+6)
+            commandItem = src.items.itemMap["Command"]()
             command = ""
             lastNode = None
             for node in self.pathsToCenter[tuple(value["coordinate"])]:
@@ -81,7 +81,7 @@ class RoadManager(src.items.Item):
             commandItem.setPayload(list(command))
 
             terrain = self.getTerrain()
-            terrain.addItem(commandItem)
+            terrain.addItem(commandItem,(value["coordinate"][0]*15+7,value["coordinate"][1]*15+6,0))
 
         self.submenue = src.interaction.OneKeystrokeMenu(text)
         character.macroState["submenue"] = self.submenue
@@ -146,7 +146,7 @@ class RoadManager(src.items.Item):
 
     def jobOrderAddPathingNode(self,task,context):
         if not self.center:
-            self.center = [self.room.xPosition,self.room.yPosition]
+            self.center = [self.container.xPosition,self.container.yPosition]
             self.roadNetwork[tuple(self.center)] = {"type":"roomCenterBlocked"}
             
         if not "offset" in task:
@@ -163,7 +163,6 @@ class RoadManager(src.items.Item):
         bigY = task["coordinate"][1]
 
         for pos in [(6,6),(6,7),(6,8),(7,8),(8,8),(8,7),(8,6),(7,6)]:
-            context["character"].addMessage("adding paving %s"%(terrain,))
             floorPlate = src.items.itemMap["Paving"]()
             terrain.addItem(floorPlate,(bigX*15+pos[0],bigY*15+pos[1],0))
         commandItem = src.items.itemMap["Command"]()
@@ -258,11 +257,11 @@ class RoadManager(src.items.Item):
             if foundNeighbourSlot[index] < slotCoordinate[index]:
                 changePerStep = -1
 
-        pathingNode = src.items.itemMap["PathingNode"](bigX*15+offsetX,bigY*15+offsetY)
+        pathingNode = src.items.itemMap["PathingNode"]()
         pathingNode.nodeName = nodeName
 
         self.pathingNodes[nodeName] = {"coordinate":[bigX,bigY]}
-        terrain.addItem(pathingNode)
+        terrain.addItem(pathingNode,(bigX*15+offsetX,bigY*15+offsetY,0))
 
     def doClearPaths(self,x,y):
         terrain = self.getTerrain()

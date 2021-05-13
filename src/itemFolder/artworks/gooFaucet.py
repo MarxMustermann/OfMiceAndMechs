@@ -8,8 +8,10 @@ class GooFaucet(src.items.Item):
     '''
     call superclass constructor with modified paramters
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="GooFaucet",creator=None,noId=False):
-        super().__init__("GF",xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display="GF")
+
+        self.name = "goo flask"
 
         self.bolted = False
         self.walkable = False

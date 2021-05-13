@@ -1,10 +1,13 @@
 import src
+import random
 
 class CommandBloom(src.items.Item):
     type = "CommandBloom"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.commandBloom,xPosition,yPosition,creator=creator,name="command bloom")
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.commandBloom)
+        self.name = "command bloom"
+
         self.walkable = True
         self.bolted = True
         self.charges = 0

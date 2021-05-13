@@ -8,14 +8,17 @@ class AutoTutor(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="AutoTutor",creator=None,noId=False):
+    def __init__(self):
         self.knownBlueprints = []
         self.knownInfos = []
         self.availableChallenges = {
                                    }
 
 
-        super().__init__(src.canvas.displayChars.infoscreen,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(display=src.canvas.displayChars.infoscreen)
+
+        self.name = "auto tutor"
+        
         self.submenue = None
         self.text = None
         self.blueprintFound = False

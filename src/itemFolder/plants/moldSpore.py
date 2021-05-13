@@ -3,8 +3,10 @@ import src
 class MoldSpore(src.items.Item):
     type = "MoldSpore"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.moldSpore,xPosition,yPosition,creator=creator,name="mold spore")
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.moldSpore)
+
+        self.name = "mold spore"
         self.walkable = True
         self.bolted = False
 

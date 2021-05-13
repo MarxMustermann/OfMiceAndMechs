@@ -3,8 +3,10 @@ import src
 class BluePrintingArtwork(src.items.Item):
     type = "BluePrintingArtwork"
 
-    def __init__(self,xPosition=0,yPosition=0,name="BluePrintingArtwork",creator=None,noId=False):
-        super().__init__("BA",xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display="BA")
+
+        self.name = "blueprinting artwork"
 
     def apply(self,character):
         self.character = character

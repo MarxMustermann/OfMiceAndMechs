@@ -3,8 +3,10 @@ import src
 class WaterCondenser(src.items.Item):
     type = "WaterCondenser"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__("WW",xPosition,yPosition,creator=creator,name="water condenser")
+    def __init__(self):
+        super().__init__(display="WW")
+        
+        self.name = "water condenser"
 
         self.walkable = False
         self.bolted = True

@@ -8,8 +8,9 @@ class PathingNode(src.items.Item):
     '''
     call superclass constructor with modified paramters
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="PathingNode",creator=None,noId=False):
-        super().__init__(";;",xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display=";;")
+        self.name = "pathing node"
 
         self.bolted = False
         self.walkable = True
@@ -23,8 +24,6 @@ class PathingNode(src.items.Item):
     collect items
     '''
     def apply(self,character):
-        super().apply(character,silent=True)
-
         character.addMessage("This is the pathingnode: %s"%(self.nodeName,))
         self.bolted = True
 

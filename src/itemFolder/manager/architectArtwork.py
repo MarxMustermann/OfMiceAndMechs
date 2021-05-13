@@ -107,15 +107,15 @@ class ArchitectArtwork(src.items.Item):
                 ],"RoadManager")
             items = []
             if task.get("StockpileType") == "UniformStockpileManager":
-                item = src.items.itemMap["UniformStockpileManager"](task["coordinate"][0]*15+7,task["coordinate"][1]*15+7)
+                item = src.items.itemMap["UniformStockpileManager"]()
                 if task.get("ItemType"):
                     item.storedItemType = task.get("ItemType")
                 item.storedItemWalkable = None
                 item.restrictStoredItemType = True
                 item.restrictStoredItemWalkable = False
-                items.append(item)
+                items.append((item,(task["coordinate"][0]*15+7,task["coordinate"][1]*15+7,0)))
             else:
-                items.append(src.items.itemMap["TypedStockpileManager"](task["coordinate"][0]*15+7,task["coordinate"][1]*15+7))
+                items.append((src.items.itemMap["TypedStockpileManager"](),(task["coordinate"][0]*15+7,task["coordinate"][1]*15+7,0)))
             self.getTerrain().addItems(items)
 
         if task["type"] == "factory":
@@ -126,7 +126,7 @@ class ArchitectArtwork(src.items.Item):
             items = []
             positions = [(2,2),(2,4),(2,6),(5,4),(5,2),(5,13),(5,11),(2,9),(2,11),(2,13)]
             for position in positions:
-                items.append(src.items.itemMap["ScrapCompactor"](task["coordinate"][0]*15+position[0],task["coordinate"][1]*15+position[1]))
+                items.append((src.items.itemMap["ScrapCompactor"](),(task["coordinate"][0]*15+position[0],task["coordinate"][1]*15+position[1],0)))
             self.getTerrain().addItems(items)
         if task["type"] == "mine":
             if not task.get("cleared"):
@@ -137,9 +137,8 @@ class ArchitectArtwork(src.items.Item):
                 context["jobOrder"].tasks.append(task)
                 context["jobOrder"].tasks.append({"task":"insert job order","command":"scj"})
                 return
-            items = []
-            item = src.items.itemMap["ItemCollector"](task["scrapField"][0][0]*15+7,task["scrapField"][0][1]*15+7)
 
+            item = src.items.itemMap["ItemCollector"]()
             stockPileCoordinate = task["stocKPileCoordinate"]
             if stockPileCoordinate:
                 clearInventoryCommand = "Js.j"*10
@@ -151,8 +150,7 @@ class ArchitectArtwork(src.items.Item):
                     item.commands["fullInventory"] = "12wawwd"+clearInventoryCommand+"assd12s"
                 if stockPileCoordinate[1] > task["scrapField"][0][1]:
                     item.commands["fullInventory"] = "12s"+clearInventoryCommand+"12w"
-            items.append(item)
-            self.getTerrain().addItems(items)
+            self.getTerrain().addItem(item,(task["scrapField"][0][0]*15+7,task["scrapField"][0][1]*15+7,0))
 
         if task["type"] == "road":
             self.doClearField(task["coordinate"][0],task["coordinate"][1])

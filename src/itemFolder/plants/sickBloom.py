@@ -1,10 +1,13 @@
 import src
+import random
 
 class SickBloom(src.items.Item):
     type = "SickBloom"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.sickBloom,xPosition,yPosition,creator=creator,name="sick bloom")
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.sickBloom)
+                
+        self.name = "sick bloom"
         self.walkable = True 
         self.charges = 1
         self.dead = False
@@ -49,7 +52,7 @@ class SickBloom(src.items.Item):
     def startSpawn(self):
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+(2*self.xPosition+3*self.yPosition+src.gamestate.gamestate.tick)%2500,creator=self)
         event.setCallback({"container":self,"method":"spawn"})
-        self.terrain.addEvent(event)
+        self.container.addEvent(event)
 
     def spawn(self):
         if not self.charges:
@@ -115,10 +118,8 @@ you can eat it to gain %s satiation.
     def destroy(self, generateSrcap=True):
 
         if not self.dead:
-            new = itemMap["Mold"](creator=self)
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition
-            self.container.addItems([new])
+            new = src.items.itemMap["Mold"]()
+            self.container.addItem(new,self.getPosition())
             new.startSpawn()
 
         super().destroy(generateSrcap=False)

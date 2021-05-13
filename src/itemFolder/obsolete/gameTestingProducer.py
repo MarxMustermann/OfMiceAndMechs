@@ -5,14 +5,15 @@ import src
 class GameTestingProducer(src.items.Item):
     type = "GameTestingProducer"
 
-    def __init__(self,xPosition=None,yPosition=None, name="testing producer",creator=None, seed=0, possibleSources=[], possibleResults=[],noId=False):
+    def __init__(self, seed=0, possibleSources=[], possibleResults=[]):
         self.coolDown = 20
         self.coolDownTimer = -self.coolDown
 
-        super().__init__(src.canvas.displayChars.gameTestingProducer,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(display=src.canvas.displayChars.gameTestingProducer)
 
         self.seed = seed
-        self.baseName = name
+        self.name = "testing producer"
+        self.baseName = self.name
         self.possibleResults = possibleResults
         self.possibleSources = possibleSources
         #self.change_apply_2(force=True)

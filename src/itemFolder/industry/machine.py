@@ -8,7 +8,7 @@ class Machine(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,name="Machine",seed=0,noId=False):
+    def __init__(self,name="Machine",seed=0):
         self.toProduce = "Wall"
 
         self.coolDown = 100
@@ -18,7 +18,8 @@ class Machine(src.items.Item):
         self.productionLevel = 1
         self.commands = {}
 
-        super().__init__(display=src.canvas.displayChars.machine,name=name,seed=seed)
+        super().__init__(display=src.canvas.displayChars.machine,seed=seed)
+        self.name = "machine"
 
         self.attributesToStore.extend([
                "toProduce","level","productionLevel"])
@@ -90,29 +91,18 @@ class Machine(src.items.Item):
     trigger production of a player selected item
     '''
     def apply(self,character):
-        super().apply(character,silent=True)
 
         if not self.xPosition:
             character.addMessage("this machine has to be placed to be used")
             return
-
-        if not self.container:
-            if self.room:
-                self.container = self.room
-            elif self.terrain:
-                self.container = self.terrain
-
-        #if not self.room:
-        #    character.addMessage("this machine can only be used within rooms")
-        #    return
 
         if src.gamestate.gamestate.tick < self.coolDownTimer+self.coolDown and not self.charges:
             character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer),))
             self.runCommand("cooldown",character)
             return
 
-        if self.toProduce in rawMaterialLookup:
-            resourcesNeeded = rawMaterialLookup[self.toProduce][:]
+        if self.toProduce in src.items.rawMaterialLookup:
+            resourcesNeeded = src.items.rawMaterialLookup[self.toProduce][:]
         else:
             resourcesNeeded = ["MetalBars"]
 

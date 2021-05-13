@@ -26,11 +26,6 @@ class ItemCollector(src.items.Item):
         Parameters:
             character: the character trying to collect items
         '''
-        super().apply(character,silent=True)
-
-        if not self.terrain:
-            character.addMessage("the item collector cannot be used within rooms")
-            return
 
         if not (self.xPosition%15 == 7 and self.yPosition%15 == 7):
             character.addMessage("the item collector needs to be placed in the middle of a tile")

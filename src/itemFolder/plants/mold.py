@@ -88,49 +88,37 @@ class Mold(src.items.Item):
                 elif itemList[-1].type == "Bloom":
                     item = itemList[-1]
                     item.container.removeItem(item)
-                    item.xPosition = None
-                    item.yPosition = None
 
                     new = src.items.itemMap["SickBloom"]()
-                    self.container.addItems(new,newPos)
+                    self.container.addItem(new,newPos)
                     new.startSpawn()
                 elif itemList[-1].type == "Corpse":
                     item = itemList[-1]
                     item.container.removeItem(item)
-                    item.xPosition = None
-                    item.yPosition = None
 
                     new = src.items.itemMap["PoisonBloom"]()
-                    self.container.addItems(new,newPos)
+                    self.container.addItem(new,newPos)
 
                 elif itemList[-1].type == "SickBloom":
                     item = itemList[-1]
                     item.container.removeItem(item)
-                    item.xPosition = None
-                    item.yPosition = None
 
                     new = src.items.itemMap["Bush"]()
-                    self.container.addItems(new,newPos)
+                    self.container.addItem(new,newPos)
 
                 elif itemList[-1].type == "PoisonBloom":
                     item = itemList[-1]
                     item.container.removeItem(item)
-                    item.xPosition = None
-                    item.yPosition = None
 
                     new = src.items.itemMap["PoisonBush"]()
-                    self.container.addItems(new,newPos)
+                    self.container.addItem(new,newPos)
 
                 elif itemList[-1].type == "Bush":
                     item = itemList[-1]
                     item.container.removeItem(item)
-                    item.xPosition = None
-                    item.yPosition = None
 
                     new = src.items.itemMap["EncrustedBush"]()
-                    new.xPosition = newPos[0]
-                    new.yPosition = newPos[1]
-                    self.container.addItems([new])
+                    self.container.addItems(new,newPos)
 
                     new = src.items.itemMap["Bush"]()
                     self.container.addItems(new,self.getPosition())
@@ -138,27 +126,27 @@ class Mold(src.items.Item):
 
                 elif itemList[-1].type == "EncrustedBush":
                     new = src.items.itemMap["Bush"]()
-                    self.container.addItems(new,self.getPosition())
+                    self.container.addItem(new,self.getPosition())
                     self.container.removeItem(self)
 
                     itemList[-1].tryToGrowRoom(new)
 
                 elif itemList[-1].type in ["PoisonBush","EncrustedPoisonBush"]:
                     new = src.items.itemMap["PoisonBloom"]()
-                    self.container.addItems(new,self.getPosition())
+                    self.container.addItem(new,self.getPosition())
                     self.container.removeItem(self)
 
                 elif itemList[-1].type in ["Coal"]:
                     itemList[-1].destroy(generateSrcap=False)
 
                     new = src.items.itemMap["Bush"]()
-                    self.container.addItems(new,newPos)
+                    self.container.addItem(new,newPos)
 
                 elif itemList[-1].type in ["MoldFeed"]:
                     itemList[-1].destroy(generateSrcap=False)
 
                     new = src.items.itemMap["Bloom"]()
-                    self.container.addItems(new,newPos)
+                    self.container.addItem(new,newPos)
 
                 elif itemList[-1].type in ["CommandBloom"]:
                     itemList[-1].charges += 1

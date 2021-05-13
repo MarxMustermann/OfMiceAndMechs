@@ -1,12 +1,14 @@
 import src
+import random
 
 class HiveMind(src.items.Item):
     type = "HiveMind"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
+    def __init__(self):
         self.territory = []
         self.paths = {}
-        super().__init__(src.canvas.displayChars.floor_node,xPosition,yPosition,creator=creator,name="command bloom")
+        super().__init__(display=src.canvas.displayChars.floor_node)
+        self.name = "command bloom"
         self.createdAt = 0
         self.walkable = True
         self.bolted = True

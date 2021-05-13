@@ -13,6 +13,7 @@ class ScrapCompactor(src.items.Item):
         super().__init__()
                 
         self.display = src.canvas.displayChars.scrapCompactor
+        self.name = "scrap compactor"
 
         self.coolDown = 100
         self.coolDownTimer = -self.coolDown

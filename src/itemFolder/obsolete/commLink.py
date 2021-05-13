@@ -10,8 +10,10 @@ class Commlink(src.items.Item):
     '''
     call superclass constructor with modified paramters
     '''
-    def __init__(self,xPosition=0,yPosition=0,name="Commlink",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.commLink,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.commLink)
+
+        self.name = "commlink"
 
         self.scrapToDeliver = 100
         self.attributesToStore.extend([

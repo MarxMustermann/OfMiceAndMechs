@@ -3,8 +3,9 @@ import src
 class SuicideBooth(src.items.Item):
     type = "SuicideBooth"
 
-    def __init__(self,xPosition=0,yPosition=0,name="SuicideBooth",creator=None,noId=False):
-        super().__init__("SB",xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display="SB")
+        self.name = "suicide booth"
 
     def apply(self,character):
         character.addMessage("you die")

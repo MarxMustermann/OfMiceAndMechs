@@ -50,6 +50,8 @@ class Item(src.saveing.Saveable):
         
         if display:
             self.display = display
+        else:
+            self.display = "??"
 
         # basic information
         self.seed = seed

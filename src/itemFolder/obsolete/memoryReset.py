@@ -8,9 +8,11 @@ class MemoryReset(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="MemoryStack",creator=None,noId=False):
+    def __init__(self):
 
-        super().__init__(src.canvas.displayChars.memoryReset,xPosition,yPosition,name=name,creator=creator)
+        super().__init__(display=src.canvas.displayChars.memoryReset)
+
+        self.name = "memory stack"
 
 
     '''

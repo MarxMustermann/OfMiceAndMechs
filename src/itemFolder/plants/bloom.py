@@ -53,19 +53,15 @@ class Bloom(src.items.Item):
         newPos = (self.xPosition-self.xPosition%15+direction[0],self.yPosition-self.yPosition%15+direction[1],self.zPosition)
 
         if self.container.getItemByPosition(newPos):
-            new = itemMap["Mold"](creator=self)
-            new.xPosition = newPos[0]
-            new.yPosition = newPos[1]
-            self.container.addItems([new])
+            new = src.items.itemMap["Mold"]()
+            self.container.addItem(new,newPos)
             new.startSpawn()
 
     def localSpawn(self):
         if not self.dead:
-            new = itemMap["Mold"](creator=self)
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition
+            new = src.items.itemMap["Mold"]()
             new.charges = 4
-            self.container.addItems([new])
+            self.container.addItem(new,self.getPosition())
             new.startSpawn()
 
     def getLongInfo(self):

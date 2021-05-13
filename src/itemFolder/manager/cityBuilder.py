@@ -22,7 +22,7 @@ class CityBuilder(src.items.Item):
         self.stuckReason = None
         self.runningTasks = []
 
-        self.resources = {}
+        self.resources = {"TypedStockpileManager":4,"Paving":300}
 
         #config options
         self.numReservedPathPlots = 5
@@ -148,9 +148,6 @@ class CityBuilder(src.items.Item):
             character.macroState["submenue"] = self.submenue
             character.macroState["submenue"].followUp = self.triggerExpand
         elif selection == "addTaskExpandStorageSpecific":
-            if not self.costGuard({"MetalBars":3},character):
-                return
-
             options = []
             if not self.unusedRoadTiles:
                 character.addMessage("no unused road tiles")

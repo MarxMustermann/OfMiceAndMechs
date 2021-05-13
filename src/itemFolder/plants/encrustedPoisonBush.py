@@ -3,8 +3,9 @@ import src
 class EncrustedPoisonBush(src.items.Item):
     type = "EncrustedPoisonBush"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.encrustedPoisonBush,xPosition,yPosition,creator=creator,name="test")
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.encrustedPoisonBush)
+        self.name = "encrusted poison bush"
         self.walkable = False
 
     def apply(self,character):

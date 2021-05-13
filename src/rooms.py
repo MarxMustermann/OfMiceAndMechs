@@ -42,7 +42,7 @@ class Room(src.saveing.Saveable):
         self.xPosition = None
         self.yPosition = None
         self.name = "Room"
-        self.open = False
+        self.open = True
         self.terrain = None
         self.shownQuestmarkerLastRender = False
         self.sizeX = None

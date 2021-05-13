@@ -3,8 +3,10 @@ import src
 class SunScreen(src.items.Item):
     type = "SunScreen"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.sunScreen,xPosition,yPosition,creator=creator,name="sunscreen")
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.sunScreen)
+        
+        self.name = "sun screen"
 
         self.walkable = True
         self.bolted = False

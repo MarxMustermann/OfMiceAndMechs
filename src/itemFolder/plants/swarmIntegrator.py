@@ -3,8 +3,9 @@ import src
 class SwarmIntegrator(src.items.Item):
     type = "SwarmIntegrator"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.floor_node,xPosition,yPosition,creator=creator,name="encrusted bush")
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.floor_node)
+        self.name = "swarm integrator"
         self.walkable = False
         self.faction = "swarm"
 

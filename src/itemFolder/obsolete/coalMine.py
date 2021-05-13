@@ -8,8 +8,10 @@ class CoalMine(src.items.Item):
     '''
     call superclass constructor with modified parameters
     '''
-    def __init__(self,xPosition=None,yPosition=None, name="coal mine",creator=None,noId=False):
-        super().__init__(src.canvas.displayChars.coalMine,xPosition,yPosition,name=name,creator=creator)
+    def __init__(self):
+        super().__init__(display=src.canvas.displayChars.coalMine)
+
+        self.name = "coal mine"
 
         self.bolted = True
         self.walkable = False

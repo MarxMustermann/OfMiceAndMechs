@@ -3,8 +3,10 @@ import src
 class WaterPump(src.items.Item):
     type = "WaterPump"
 
-    def __init__(self,xPosition=0,yPosition=0,creator=None,noId=False):
-        super().__init__("WP",xPosition,yPosition,creator=creator,name="water pump")
+    def __init__(self):
+        super().__init__(display="WP")
+
+        self.name = "water pump"
 
         self.walkable = False
         self.bolted = True

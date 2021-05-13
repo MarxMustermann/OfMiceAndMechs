@@ -32,8 +32,13 @@ class TradingArtwork(src.items.Item):
                         }
 
         self.availableTrades = [
-                {"name":"trade Scrap","give":[["Scrap",10],],"recieve":[["MetalBars",1],],},
-                {"name":"trade for Paving","give":[["Scrap",2],],"recieve":[["Paving",1],],},
+                {"name":"trade scrap","give":[["Scrap",10],],"recieve":[["MetalBars",1],],},
+                {"name":"trade for paving","give":[["Scrap",2],],"recieve":[["Paving",1],],},
+                {"name":"trade for sheet","give":[["MetalBars",2],],"recieve":[["Sheet",1],],},
+                {"name":"trade for Scrap compactor","give":[["MetalBars",4],],"recieve":[["ScrapCompactor",1],],},
+                {"name":"trade for paving generator","give":[["MetalBars",5],],"recieve":[["PavingGenerator",1],],},
+                {"numOffered":4,"name":"trade for typed stockpile manager","give":[["MetalBars",10],],"recieve":[["TypedStockpileManager",1],],},
+                {"numOffered":4,"name":"trade for uniform stockpile manager","give":[["MetalBars",10],],"recieve":[["UniformStockpileManager",1],],},
                 ]
 
         while len(self.availableTrades) < 15:

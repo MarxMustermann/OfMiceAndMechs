@@ -484,7 +484,7 @@ class Room(src.saveing.Saveable):
         if "newChars" in state:
             for charId in state["newChars"]:
                 charState = state["charStates"][charId]
-                char = characters.Character()
+                char = src.characters.Character()
                 char.setState(charState)
                 src.saveing.loadingRegistry.register(char)
                 self.addCharacter(char,charState["xPosition"],charState["yPosition"])
@@ -507,7 +507,7 @@ class Room(src.saveing.Saveable):
                 charState = state["characterStates"][charId]
                 if not "xPosition" in charState or not "yPosition" in charState:
                     continue
-                char = characters.Character()
+                char = src.characters.Character()
                 char.setState(charState)
                 src.saveing.loadingRegistry.register(char)
                 self.addCharacter(char,charState["xPosition"],charState["yPosition"])

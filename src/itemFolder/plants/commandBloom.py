@@ -46,10 +46,6 @@ class CommandBloom(src.items.Item):
     def apply(self, character):
         selfDestroy = False
 
-        if not hasattr(self, "terrain") or not self.terrain:
-            if not self.room:
-                return
-            selfDestroy = True
         if not self.xPosition:
             return
 
@@ -718,7 +714,7 @@ class CommandBloom(src.items.Item):
 
             elif not command:
                 command = ""
-                new = CommandBloom(creator=self)
+                new = CommandBloom()
 
                 directions = []
                 if not self.xPosition // 15 == 0:

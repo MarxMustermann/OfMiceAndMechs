@@ -11,20 +11,16 @@ class BluePrint(src.items.Item):
     call superclass constructor with modified parameters
     """
 
-    def __init__(
-        self, xPosition=None, yPosition=None, name="BluePrint", creator=None, noId=False
-    ):
+    def __init__(self):
         super().__init__(
-            src.canvas.displayChars.blueprint,
-            xPosition,
-            yPosition,
-            name=name,
-            creator=creator,
+            display=src.canvas.displayChars.blueprint,
         )
+
+        self.name = "blue print"
 
         self.endProduct = None
         self.walkable = True
-        self.baseName = name
+        self.baseName = self.name
         self.level = 1
 
         self.attributesToStore.extend(["endProduct", "level"])
@@ -75,3 +71,5 @@ This is a level %s item
             self.level,
         )
         return text
+
+src.items.addType(BluePrint)

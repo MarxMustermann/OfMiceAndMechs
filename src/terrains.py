@@ -2455,8 +2455,9 @@ class GameplayTest(Terrain):
                                 src.items.itemMap["Radiator"],
                             ]
                             self.scrapItems.append(
-                                l1types[seed % len(l1types)](
-                                    key[0], key[1], creator=self
+                                (
+                                    l1types[seed % len(l1types)](),
+                                    (key[0], key[1], 0),
                                 )
                             )
                         else:
@@ -2470,8 +2471,9 @@ class GameplayTest(Terrain):
                                 src.items.itemMap["Frame"],
                             ]
                             self.scrapItems.append(
-                                l2types[seed % len(l2types)](
-                                    key[0], key[1], creator=self
+                                (
+                                    l2types[seed % len(l2types)](),
+                                    (key[0], key[1], 0),
                                 )
                             )
 
@@ -2483,11 +2485,9 @@ class GameplayTest(Terrain):
                         seed += seed % 37
 
                     if not noScrap:
-                        item = src.items.itemMap["Scrap"](
-                            key[0], key[1], thickness, creator=self
-                        )
+                        item = src.items.itemMap["Scrap"](thickness)
                         item.mayContainMice = False
-                        self.scrapItems.append(item)
+                        self.scrapItems.append((item,( key[0], key[1], 0)))
 
                     seed += seed % 13
                     counter += 1
@@ -2525,7 +2525,7 @@ class GameplayTest(Terrain):
                             continue
 
                         # add scrap
-                        self.scrapItems.append(itemType(x, y, creator=creator))
+                        self.scrapItems.append((itemType(),(x, y, 0)))
 
             self.scrapItems = []
 
@@ -2565,9 +2565,7 @@ class GameplayTest(Terrain):
 
             toRemove = []
             for item in self.scrapItems:
-                subItems = self.getItemByPosition(
-                    (item.xPosition, item.yPosition, item.zPosition)
-                )
+                subItems = self.getItemByPosition( item[1] )
                 for subItem in subItems:
                     toRemove.append(subItem)
 
@@ -2583,26 +2581,29 @@ class GameplayTest(Terrain):
                 self.removeItem(item, recalculate=False)
 
             seed += seed % 23
-            furnace = src.items.itemMap["Furnace"](
-                90 + seed % 78, 90 + (seed * 5) % 78, creator=self
+            furnace = (
+                src.items.itemMap["Furnace"](),
+                (90 + seed % 78, 90 + (seed * 5) % 78, 0),
             )
-            furnace.bolted = False
+            furnace[0].bolted = False
             seed += seed % 42
-            hutch = src.items.itemMap["Hutch"](
-                90 + seed % 78, 90 + (seed * 5) % 78, creator=self
+            hutch = (
+                src.items.itemMap["Hutch"](),
+                (90 + seed % 78, 90 + (seed * 5) % 78, 0),
             )
-            hutch.bolted = False
+            hutch[0].bolted = False
             seed += seed % 65
-            growthTank = src.items.itemMap["GrowthTank"](
-                90 + seed % 78, 90 + (seed * 5) % 78, creator=self
+            growthTank = (
+                src.items.itemMap["GrowthTank"](),
+                (90 + seed % 78, 90 + (seed * 5) % 78, 0),
             )
-            growthTank.bolted = False
+            growthTank[0].bolted = False
             extraItems = [furnace, hutch, growthTank]
             self.addItems(extraItems)
 
             # add base of operations
             # add base of operations
-            self.miniBase = src.rooms.MiniBase(7, 7, 1, 1, creator=self, seed=seed)
+            self.miniBase = src.rooms.MiniBase(7, 7, 1, 1, seed=seed)
             self.addRooms([self.miniBase])
             # 3,8
 

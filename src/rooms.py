@@ -1755,80 +1755,69 @@ XXXXXXXXXXXXX
         super().__init__(
             self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )
-        self.artwork = src.items.ProductionArtwork(4, 1)
-        self.compactor = src.items.ScrapCompactor(8, 1)
-        flask1 = src.items.GooFlask(10, 2)
+
+        itemsToAdd = []
+        self.artwork = src.items.itemMap["ProductionArtwork"]()
+        itemsToAdd.append((self.artwork,(4,1,0)))
+        self.compactor = src.items.itemMap["ScrapCompactor"]()
+        itemsToAdd.append((self.compactor,(8,1,0)))
+        flask1 = src.items.itemMap["GooFlask"]()
         flask1.uses = 100
-        flask2 = src.items.GooFlask(10, 3)
+        itemsToAdd.append((flask1,(10,2,0)))
+        flask2 = src.items.itemMap["GooFlask"]()
         flask2.uses = 100
-        flask3 = src.items.GooFlask(10, 4)
+        itemsToAdd.append((flask2,(10,3,0)))
+        flask3 = src.items.itemMap["GooFlask"]()
         flask3.uses = 100
+        itemsToAdd.append((flask3,(10,4,0)))
         self.doors[0].walkable = True
 
-        self.machinemachine = src.items.MachineMachine(4, 4)
+        self.machinemachine = src.items.itemMap["MachineMachine"]()
+        itemsToAdd.append((self.machinemachine,(4,4,0)))
 
-        self.infoScreen = src.items.AutoTutor(4, 9)
+        self.infoScreen = src.items.itemMap["AutoTutor"]()
+        itemsToAdd.append((self.infoScreen,(4,9,0)))
 
-        self.bluePrinter = src.items.BluePrinter(8, 9)
+        self.bluePrinter = src.items.itemMap["BluePrinter"]()
+        itemsToAdd.append((self.bluePrinter,(8,9,0)))
 
-        self.machine = src.items.Machine(7, 8)
+        self.machine = src.items.itemMap["Machine"]()
         self.machine.setToProduce("Sheet")
+        itemsToAdd.append((self.machine,(7,8,0)))
 
-        self.addItems(
-            [
-                self.artwork,
-                self.compactor,
-                flask1,
-                flask2,
-                flask3,
-                self.infoScreen,
-                self.bluePrinter,
-                self.machinemachine,
-                self.machine,
-            ]
-        )
+        self.addItems(itemsToAdd)
 
-        metalbars = src.items.itemMap["MetalBars"](3, 1)
-        metalbars2 = src.items.itemMap["MetalBars"](7, 9)
-        metalbars3 = src.items.itemMap["MetalBars"](9, 1)
-        metalbars4 = src.items.itemMap["MetalBars"](3, 4)
-        scrap = src.items.itemMap["Scrap"](7, 1)
-        connector = src.items.itemMap["Connector"](7, 9)
-        blueprint1 = src.items.itemMap["BluePrint"](9, 9)
-        blueprint1.setToProduce("Sheet")
-        blueprint1.bolted = False
-        blueprint2 = src.items.itemMap["BluePrint"](9, 9)
-        blueprint2.setToProduce("Radiator")
-        blueprint2.bolted = False
-        blueprint3 = src.items.itemMap["BluePrint"](9, 9)
-        blueprint3.setToProduce("Mount")
-        blueprint3.bolted = False
-        blueprint4 = src.items.itemMap["BluePrint"](9, 9)
-        blueprint4.setToProduce("Stripe")
-        blueprint4.bolted = False
-        blueprint5 = src.items.itemMap["BluePrint"](9, 9)
-        blueprint5.setToProduce("Bolt")
-        blueprint5.bolted = False
-        blueprint6 = src.items.itemMap["BluePrint"](4, 3)
-        blueprint6.setToProduce("Rod")
-        blueprint6.bolted = False
-        self.addItems(
-            [
-                metalbars,
-                metalbars2,
-                metalbars3,
-                metalbars4,
-                scrap,
-                connector,
-                blueprint1,
-                blueprint2,
-                blueprint3,
-                blueprint4,
-                blueprint5,
-                blueprint6,
-            ]
-        )
-
+        itemsToAdd = []
+        itemsToAdd.append((src.items.itemMap["MetalBars"](),(3, 1, 0)))
+        itemsToAdd.append((src.items.itemMap["MetalBars"](),(7, 9, 0)))
+        itemsToAdd.append((src.items.itemMap["MetalBars"](),(9, 1, 0)))
+        itemsToAdd.append((src.items.itemMap["MetalBars"](),(3, 4, 0)))
+        itemsToAdd.append((src.items.itemMap["Scrap"](),(7, 1, 0)))
+        itemsToAdd.append((src.items.itemMap["Connector"](),(7, 9, 0)))
+        bluePrint = src.items.itemMap["BluePrint"]()
+        bluePrint.setToProduce("Sheet")
+        bluePrint.bolted = False
+        itemsToAdd.append((bluePrint,(9, 9, 0)))
+        bluePrint = src.items.itemMap["BluePrint"]()
+        bluePrint.setToProduce("Radiator")
+        bluePrint.bolted = False
+        itemsToAdd.append((bluePrint,(9, 9, 0)))
+        bluePrint = src.items.itemMap["BluePrint"]()
+        bluePrint.setToProduce("Mount")
+        bluePrint.bolted = False
+        itemsToAdd.append((bluePrint,(9, 9, 0)))
+        bluePrint = src.items.itemMap["BluePrint"]()
+        bluePrint.setToProduce("Stripe")
+        bluePrint.bolted = False
+        itemsToAdd.append((bluePrint,(9, 9, 0)))
+        bluePrint = src.items.itemMap["BluePrint"]()
+        bluePrint.setToProduce("Bolt")
+        bluePrint.bolted = False
+        itemsToAdd.append((bluePrint,(9, 9, 0)))
+        bluePrint = src.items.itemMap["BluePrint"]()
+        bluePrint.setToProduce("Rod")
+        bluePrint.bolted = False
+        itemsToAdd.append((bluePrint,(4, 3, 0)))
 
 """
 a room sized base for small off mech missions

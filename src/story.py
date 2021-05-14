@@ -4828,25 +4828,28 @@ class BuildBase(BasicPhase):
                 if random.randint(1, 1) == 1:
                     for i in range(0, 30):
                         molds.append(
-                            src.items.itemMap["Mold"](
-                                bigX * 15 + random.randint(1, 13),
-                                bigY * 15 + random.randint(1, 13),
-                                creator=self,
+                            (
+                                src.items.itemMap["Mold"](),
+                                (
+                                    bigX * 15 + random.randint(1, 13),
+                                    bigY * 15 + random.randint(1, 13),
+                                    0,
+                                ),
                             )
                         )
-        molds.append(src.items.itemMap["Mold"](155, 108, creator=self))
-        molds.append(src.items.itemMap["Mold"](159, 116, creator=self))
-        molds.append(src.items.itemMap["Mold"](138, 108, creator=self))
-        molds.append(src.items.itemMap["Mold"](145, 115, creator=self))
+        molds.append((src.items.itemMap["Mold"](),(155, 108, 0)))
+        molds.append((src.items.itemMap["Mold"](),(159, 116, 0)))
+        molds.append((src.items.itemMap["Mold"](),(138, 108, 0)))
+        molds.append((src.items.itemMap["Mold"](),(145, 115, 0)))
 
         positions = [
-            (187, 37),
-            (37, 37),
-            (37, 187),
-            (187, 187),
-            (202, 112),
-            (187, 112),
-            (172, 112),
+            (187, 37, 0),
+            (37, 37, 0),
+            (37, 187, 0),
+            (187, 187, 0),
+            (202, 112, 0),
+            (187, 112, 0),
+            (172, 112, 0),
         ]
         counter = 0
         for x in range(1, 14):
@@ -4854,7 +4857,7 @@ class BuildBase(BasicPhase):
                 counter += 1
                 if not counter % 3 == 0:
                     continue
-                pos = (x * 15 + 7, y * 15 + 7)
+                pos = (x * 15 + 7, y * 15 + 7, 0)
                 if pos not in positions:
                     positions.append(pos)
 
@@ -4863,72 +4866,106 @@ class BuildBase(BasicPhase):
                 counter += 1
                 if not counter % 3 == 0:
                     continue
-                pos = (x * 15 + 7, y * 15 + 7)
+                pos = (x * 15 + 7, y * 15 + 7, 0)
                 if pos not in positions:
                     positions.append(pos)
 
         for pos in positions:
-            commandBloom = src.items.itemMap["CommandBloom"](
-                pos[0], pos[1], creator=self
-            )
-            src.gamestate.gamestate.terrain.addItems([commandBloom])
-            if pos in ((187, 112), (172, 112), (157, 112), (142, 112)):
+            commandBloom = src.items.itemMap["CommandBloom"]()
+            src.gamestate.gamestate.terrain.addItem(commandBloom,pos)
+            if pos in ((187, 112, 0), (172, 112, 0), (157, 112, 0), (142, 112, 0)):
                 commandBloom.masterCommand = "13a9kj"
             molds.append(
-                src.items.itemMap["Mold"](pos[0] + 4, pos[1] + 4, creator=self)
+                (
+                    src.items.itemMap["Mold"](),
+                    (pos[0] + 4, pos[1] + 4, pos[2]),
+                )
             )
             molds.append(
-                src.items.itemMap["Mold"](pos[0] - 4, pos[1] + 4, creator=self)
+                (
+                    src.items.itemMap["Mold"](),
+                    (pos[0] - 4, pos[1] + 4, pos[2]),
+                )
             )
             molds.append(
-                src.items.itemMap["Mold"](pos[0] + 4, pos[1] - 4, creator=self)
+                (
+                    src.items.itemMap["Mold"](),
+                    (pos[0] + 4, pos[1] - 4, pos[2]),
+                )
             )
             molds.append(
-                src.items.itemMap["Mold"](pos[0] - 4, pos[1] - 4, creator=self)
+                (
+                    src.items.itemMap["Mold"](),
+                    (pos[0] - 4, pos[1] - 4, pos[2]),
+                )
             )
             molds.append(
-                src.items.itemMap["Bloom"](pos[0] + 2, pos[1] + 2, creator=self)
+                (
+                    src.items.itemMap["Bloom"](),
+                    (pos[0] + 2, pos[1] + 2, pos[2]),
+                )
             )
             molds.append(
-                src.items.itemMap["Bloom"](pos[0] - 2, pos[1] + 2, creator=self)
+                (
+                    src.items.itemMap["Bloom"](),
+                    (pos[0] - 2, pos[1] + 2, pos[2]),
+                )
             )
             molds.append(
-                src.items.itemMap["Bloom"](pos[0] + 2, pos[1] - 2, creator=self)
+                (
+                    src.items.itemMap["Bloom"](),
+                    (pos[0] + 2, pos[1] - 2, pos[2]),
+                )
             )
             molds.append(
-                src.items.itemMap["Bloom"](pos[0] - 2, pos[1] - 2, creator=self)
+                (
+                    src.items.itemMap["Bloom"](),
+                    (pos[0] - 2, pos[1] - 2, pos[2]),
+                )
             )
-            src.gamestate.gamestate.terrain.addItems(
-                [src.items.itemMap["CommandBloom"](pos[0] - 6, pos[1], creator=self)]
+            src.gamestate.gamestate.terrain.addItem(
+                src.items.itemMap["CommandBloom"](),(pos[0] - 6, pos[1], pos[2])
             )
-            src.gamestate.gamestate.terrain.addItems(
-                [src.items.itemMap["CommandBloom"](pos[0] - 6, pos[1], creator=self)]
+            src.gamestate.gamestate.terrain.addItem(
+                src.items.itemMap["CommandBloom"](),(pos[0] - 6, pos[1], pos[2])
             )
-            src.gamestate.gamestate.terrain.addItems(
-                [src.items.itemMap["CommandBloom"](pos[0] + 6, pos[1], creator=self)]
+            src.gamestate.gamestate.terrain.addItem(
+                src.items.itemMap["CommandBloom"](),(pos[0] + 6, pos[1], pos[2])
             )
-            src.gamestate.gamestate.terrain.addItems(
-                [src.items.itemMap["CommandBloom"](pos[0], pos[1] - 6, creator=self)]
+            src.gamestate.gamestate.terrain.addItem(
+                src.items.itemMap["CommandBloom"](),(pos[0], pos[1] - 6, pos[2])
             )
-            src.gamestate.gamestate.terrain.addItems(
-                [src.items.itemMap["CommandBloom"](pos[0], pos[1] + 6, creator=self)]
-            )
-            molds.append(
-                src.items.itemMap["Mold"](pos[0] + 6, pos[1] + 6, creator=self)
-            )
-            molds.append(
-                src.items.itemMap["Mold"](pos[0] - 6, pos[1] - 6, creator=self)
+            src.gamestate.gamestate.terrain.addItem(
+                src.items.itemMap["CommandBloom"](),(pos[0], pos[1] + 6, pos[2])
             )
             molds.append(
-                src.items.itemMap["Mold"](pos[0] + 6, pos[1] - 6, creator=self)
+                (
+                    src.items.itemMap["Mold"](),
+                    (pos[0] + 6, pos[1] + 6, pos[2]),
+                )
             )
             molds.append(
-                src.items.itemMap["Mold"](pos[0] - 6, pos[1] + 6, creator=self)
+                (
+                    src.items.itemMap["Mold"](),
+                    (pos[0] - 6, pos[1] - 6, pos[2]),
+                )
+            )
+            molds.append(
+                (
+                    src.items.itemMap["Mold"](),
+                    (pos[0] + 6, pos[1] - 6, pos[2]),
+                )
+            )
+            molds.append(
+                (
+                    src.items.itemMap["Mold"](),
+                    (pos[0] - 6, pos[1] + 6, pos[2]),
+                )
             )
 
         src.gamestate.gamestate.terrain.addItems(molds)
         for mold in molds:
-            mold.startSpawn()
+            mold[0].startSpawn()
 
         for pos in positions:
             crawler = src.characters.Monster(xPosition=pos[0], yPosition=pos[1])

@@ -35,7 +35,7 @@ class MarkerBean(src.items.Item):
     """
 
     def apply(self, character):
-        super().apply(character, silent=True)
+        super().apply(character)
         character.addMessage(character.name + " activates a marker bean")
         self.activated = True
 

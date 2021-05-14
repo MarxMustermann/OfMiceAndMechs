@@ -121,7 +121,7 @@ class BluePrinter(src.items.Item):
         for reciepe in self.reciepes:
             hasMaterials = True
             for requirement in reciepe[0]:
-                if not requirement in abstractedInputThings:
+                if requirement not in abstractedInputThings:
                     hasMaterials = False
 
             if hasMaterials:

@@ -349,7 +349,7 @@ type the macro name you want to record to
 
                 return
             else:
-                if not "norecord" in flags:
+                if "norecord" not in flags:
                     charState["macros"][charState["recordingTo"]].append(key)
 
     if (
@@ -414,7 +414,7 @@ type the macro name you want to record to
         char.doStackPop = False
         return
     if char.doStackPush:
-        if not key in char.registers:
+        if key not in char.registers:
             char.registers[key] = []
         char.registers[key].append(0)
         char.doStackPush = False
@@ -534,7 +534,7 @@ type the macro name you want to record to
         return
 
     if "functionCall" in char.interactionState:
-        if not key in (" ", "backspace", "enter"):
+        if key not in (" ", "backspace", "enter"):
             char.interactionState["functionCall"] += key
 
             if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
@@ -596,7 +596,7 @@ call function %s
         del char.interactionState["advancedDrop"]
         return
 
-    if not "enumerateState" in char.interactionState:
+    if "enumerateState" not in char.interactionState:
         char.interactionState["enumerateState"] = []
 
     if char.interactionState["enumerateState"]:
@@ -675,13 +675,13 @@ get position for what thing
             elif key == "R":
                 char.interactionState["enumerateState"][-1]["target"] = ["roomTile"]
             elif key == "x":
-                if not "d" in char.registers:
+                if "d" not in char.registers:
                     char.registers["d"] = [0]
-                if not "s" in char.registers:
+                if "s" not in char.registers:
                     char.registers["s"] = [0]
-                if not "a" in char.registers:
+                if "a" not in char.registers:
                     char.registers["a"] = [0]
-                if not "w" in char.registers:
+                if "w" not in char.registers:
                     char.registers["w"] = [0]
                 if char.xPosition:
                     char.registers["d"][-1] = 7 - char.xPosition % 15
@@ -718,16 +718,16 @@ get position for what thing
                 char.timeTaken -= 0.99
                 return
 
-            if not "a" in char.registers:
+            if "a" not in char.registers:
                 char.registers["a"] = [0]
             char.registers["a"][-1] = 0
-            if not "w" in char.registers:
+            if "w" not in char.registers:
                 char.registers["w"] = [0]
             char.registers["w"][-1] = 0
-            if not "s" in char.registers:
+            if "s" not in char.registers:
                 char.registers["s"] = [0]
             char.registers["s"][-1] = 0
-            if not "d" in char.registers:
+            if "d" not in char.registers:
                 char.registers["d"] = [0]
             char.registers["d"][-1] = 0
 
@@ -740,7 +740,7 @@ get position for what thing
             foundItems = []
             foundItemQuery = False
             for query in char.interactionState["enumerateState"][-1]["target"]:
-                if not query in ("character", "enemy", "roomEntry", "roomTile"):
+                if query not in ("character", "enemy", "roomEntry", "roomTile"):
                     foundItemQuery = True
                     break
             if foundItemQuery:
@@ -877,7 +877,7 @@ get position for what thing
     if key == "esc":
         charState["replay"] = []
 
-    if not "varActions" in char.interactionState:
+    if "varActions" not in char.interactionState:
         char.interactionState["varActions"] = []
 
     if key == "$":
@@ -973,7 +973,7 @@ current registers (%s):
                     key = register + key
 
                 def getValue():
-                    if not key in char.registers:
+                    if key not in char.registers:
                         char.addMessage("no value in register using %s" % (key,))
                         return 0
 
@@ -1116,7 +1116,7 @@ press any other key to finish
                 return
 
             if action == "=":
-                if not register in char.registers:
+                if register not in char.registers:
                     char.registers[register] = [0]
                 char.registers[register][-1] = int(lastVarAction["number"])
             if action == "+":
@@ -1137,11 +1137,11 @@ press any other key to finish
             char.timeTaken -= 0.99
             return
 
-    if not "ifCondition" in char.interactionState:
+    if "ifCondition" not in char.interactionState:
         char.interactionState["ifCondition"] = []
-    if not "ifParam1" in char.interactionState:
+    if "ifParam1" not in char.interactionState:
         char.interactionState["ifParam1"] = []
-    if not "ifParam2" in char.interactionState:
+    if "ifParam2" not in char.interactionState:
         char.interactionState["ifParam2"] = []
     if key in ("%",):
         char.interactionState["ifCondition"].append(None)
@@ -1824,7 +1824,7 @@ current registers
         commandChars.show_inventory_detailed,
         commandChars.show_characterInfo,
     )
-    if not key in ignoreList:
+    if key not in ignoreList:
         if lastLagDetection < time.time() - 0.4:
             pass
             # return
@@ -2170,7 +2170,7 @@ current registers
                             and enemy.faction == char.faction
                         ):
                             continue
-                        if not (enemy.xPosition, enemy.yPosition) in adjascentFields:
+                        if (enemy.xPosition, enemy.yPosition) not in adjascentFields:
                             continue
                         if isinstance(char, src.characters.Monster) and char.phase == 4:
                             char.addMessage("entered stage 5")
@@ -2180,7 +2180,7 @@ current registers
 
             # activate an item
             if key in ("c",):
-                if not "NaiveActivateQuest" in char.solvers and not char.godMode:
+                if "NaiveActivateQuest" not in char.solvers and not char.godMode:
                     char.addMessage(
                         "you do not have the nessecary solver yet (activate)"
                     )
@@ -2213,7 +2213,7 @@ current registers
 
             # activate an item
             if key in (commandChars.activate):
-                if not "NaiveActivateQuest" in char.solvers and not char.godMode:
+                if "NaiveActivateQuest" not in char.solvers and not char.godMode:
                     char.addMessage(
                         "you do not have the nessecary solver yet (activate)"
                     )
@@ -2252,7 +2252,7 @@ current registers
 
             # examine an item
             if key in (commandChars.examine):
-                if not "ExamineQuest" in char.solvers and not char.godMode:
+                if "ExamineQuest" not in char.solvers and not char.godMode:
                     char.addMessage(
                         "you do not have the nessecary solver yet (examine)"
                     )
@@ -2273,7 +2273,7 @@ current registers
             # drop first item from inventory
             # bad pattern: the user has to have the choice for what item to drop
             if key in (commandChars.drop):
-                if not "NaiveDropQuest" in char.solvers and not char.godMode:
+                if "NaiveDropQuest" not in char.solvers and not char.godMode:
                     char.addMessage("you do not have the nessecary solver yet (drop)")
                 else:
                     if len(char.inventory):
@@ -2359,7 +2359,7 @@ press key for advanced drop
             # pick up items
             # bad code: picking up should happen in character
             if key in (commandChars.pickUp):
-                if not "NaivePickupQuest" in char.solvers and not char.godMode:
+                if "NaivePickupQuest" not in char.solvers and not char.godMode:
                     char.addMessage("you do not have the nessecary solver yet (pickup)")
                 else:
                     if len(char.inventory) >= 10:
@@ -2397,14 +2397,14 @@ press key for advanced drop
                     pass
 
             # recalculate the questmarker since it could be tainted
-            elif not key in (commandChars.pause):
+            elif key not in (commandChars.pause):
                 charState["lastMoveAutomated"] = False
                 if char.quests:
                     char.setPathToQuest(char.quests[0])
 
         # drop the marker for interacting with an item after bumping into it
         # bad code: ignore autoadvance opens up an unintended exploit
-        if not key in (
+        if key not in (
             "lagdetection",
             "lagdetection_",
             commandChars.wait,
@@ -2865,7 +2865,7 @@ class ChatPartnerselection(SubMenu):
                     (bigX, bigY + 1),
                 ]
                 for coordinate in coordinates:
-                    if not coordinate in char.terrain.roomByCoordinates:
+                    if coordinate not in char.terrain.roomByCoordinates:
                         continue
                     rooms.extend(char.terrain.roomByCoordinates[coordinate])
 
@@ -3104,7 +3104,7 @@ class InventoryMenu(SubMenu):
                     self.subMenu = None
                     return True
                 if self.drop:
-                    if not "NaiveDropQuest" in self.char.solvers and not char.godMode:
+                    if "NaiveDropQuest" not in self.char.solvers and not char.godMode:
                         self.persistentText = (
                             urwid.AttrSpec("default", "default"),
                             "you do not have the nessecary solver yet (acivate)",
@@ -3423,7 +3423,7 @@ class AdvancedQuestMenu(SubMenu):
                 for key, value in src.quests.questMap.items():
 
                     # show only quests the character has done
-                    if not key in src.gamestate.gamestate.mainChar.questsDone:
+                    if key not in src.gamestate.gamestate.mainChar.questsDone:
                         continue
 
                     # do not show naive quests
@@ -3946,7 +3946,7 @@ class OneKeystrokeMenu(SubMenu):
             main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
 
         # exit the submenu
-        if not key in ("~",) and not self.firstRun:
+        if key not in ("~",) and not self.firstRun:
             self.keyPressed = key
             if self.followUp:
                 self.callIndirect(self.followUp)
@@ -4110,7 +4110,7 @@ def keyboardListener(key):
         multi_chars = src.gamestate.gamestate.terrain.characters[:]
         for room in src.gamestate.gamestate.terrain.rooms:
             for character in room.characters[:]:
-                if not character in multi_chars:
+                if character not in multi_chars:
                     multi_chars.append(character)
 
     state = src.gamestate.gamestate.mainChar.macroState
@@ -4194,11 +4194,11 @@ def keyboardListener(key):
 
     elif key == "ctrl a":
         for character in src.gamestate.gamestate.terrain.characters:
-            if not character in multi_chars:
+            if character not in multi_chars:
                 multi_chars.append(character)
         for room in src.gamestate.gamestate.terrain.rooms:
             for character in room.characters[:]:
-                if not character in multi_chars:
+                if character not in multi_chars:
                     multi_chars.append(character)
 
         toRemove = []
@@ -4308,18 +4308,18 @@ def gameLoop(loop, user_data=None):
                 keyboardListener(key)
 
         for char in src.gamestate.gamestate.terrain.characters[:]:
-            if not char in multi_chars:
+            if char not in multi_chars:
                 multi_chars.append(char)
 
         for room in src.gamestate.gamestate.terrain.rooms:
             for character in room.characters[:]:
-                if not character in multi_chars:
+                if character not in multi_chars:
                     multi_chars.append(character)
 
         for char in multi_chars:
             if char.room:
                 for other in char.room.characters:
-                    if not other in multi_chars:
+                    if other not in multi_chars:
                         multi_chars.append(other)
 
         global continousOperation

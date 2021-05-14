@@ -35,7 +35,7 @@ class ArchitectArtwork(src.items.Item):
     def doConnectStockpile(self, task, context):
         jobOrder = context["jobOrder"]
 
-        if not "pathFrom" in jobOrder.information:
+        if "pathFrom" not in jobOrder.information:
             tasks = [
                 {
                     "task": "go to room manager",
@@ -424,7 +424,7 @@ class ArchitectArtwork(src.items.Item):
             for x in range(0, 15):
                 mapContent.append([])
                 for y in range(0, 15):
-                    if not x in (0, 14) and not y in (0, 14):
+                    if x in (0, 14) and not y not in (0, 14):
                         char = "  "
                     elif not x == 7 and not y == 7:
                         char = "##"

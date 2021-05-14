@@ -195,7 +195,7 @@ r: reset
         self.blocked = False
 
     def runCommand(self, commandName):
-        if not commandName in self.commands:
+        if commandName not in self.commands:
             return
         command = self.commands[commandName]
 

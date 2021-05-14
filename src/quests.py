@@ -353,7 +353,7 @@ class Quest(src.saveing.Saveable):
         self.completed = True
 
         # add quest type to quests done
-        if not self.type in self.character.questsDone:
+        if self.type not in self.character.questsDone:
             self.character.questsDone.append(self.type)
 
         if self in self.character.quests:
@@ -394,7 +394,7 @@ class Quest(src.saveing.Saveable):
 
     def assignToCharacter(self, character):
         # extend characters solvers with this quest
-        if not self.type in character.solvers:
+        if self.type not in character.solvers:
             character.solvers.append(self.type)
 
         # set character
@@ -439,7 +439,7 @@ class Quest(src.saveing.Saveable):
     """
 
     def addListener(self, listenFunction):
-        if not listenFunction in self.listener:
+        if listenFunction not in self.listener:
             self.listener.append(listenFunction)
 
     """
@@ -1516,7 +1516,7 @@ class NaivePickupQuest(Quest):
             return
 
         # check completion condition
-        if not self.toPickup in self.character.inventory:
+        if self.toPickup not in self.character.inventory:
             return
 
         # do follow up
@@ -1955,7 +1955,7 @@ class NaiveDropQuest(Quest):
     """
 
     def solver(self, character):
-        if not self.toDrop in character.inventory:
+        if self.toDrop not in character.inventory:
             self.fail()
             src.interaction.debugMessages.append(
                 "NaiveDropQuest tried to drop item not in characters inventory"

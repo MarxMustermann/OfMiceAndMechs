@@ -470,7 +470,7 @@ class Character(src.saveing.Saveable):
             key: the name of the register to fetch
             value: the value to set in the register
         """
-        if not key in self.registers:
+        if key not in self.registers:
             self.registers[key] = [0]
         self.registers[key][-1] = value
 
@@ -570,10 +570,10 @@ class Character(src.saveing.Saveable):
 
         if not self.silent:
             # add chat for recruitment
-            if not self in partner.subordinates:
+            if self not in partner.subordinates:
                 chatOptions.append(src.chats.RecruitChat)
                 pass
-            if not partner in self.subordinates:
+            if partner not in self.subordinates:
                 chatOptions.append(
                     {
                         "dialogName": "may i serve you?",
@@ -713,23 +713,23 @@ class Character(src.saveing.Saveable):
 
         if "personality" in state:
             personality = state["personality"]
-            if not "idleWaitTime" in personality:
+            if "idleWaitTime" not in personality:
                 self.personality["idleWaitTime"] = 10
-            if not "idleWaitChance" in personality:
+            if "idleWaitChance" not in personality:
                 self.personality["idleWaitChance"] = 3
-            if not "frustrationTolerance" in personality:
+            if "frustrationTolerance" not in personality:
                 self.personality["frustrationTolerance"] = 0
-            if not "autoCounterAttack" in personality:
+            if "autoCounterAttack" not in personality:
                 self.personality["autoCounterAttack"] = True
-            if not "autoFlee" in personality:
+            if "autoFlee" not in personality:
                 self.personality["autoFlee"] = True
-            if not "abortMacrosOnAttack" in personality:
+            if "abortMacrosOnAttack" not in personality:
                 self.personality["abortMacrosOnAttack"] = True
-            if not "annoyenceByNpcCollisions" in personality:
+            if "annoyenceByNpcCollisions" not in personality:
                 self.personality["annoyenceByNpcCollisions"] = True
-            if not "autoAttackOnCombatSuccess" in personality:
+            if "autoAttackOnCombatSuccess" not in personality:
                 self.personality["autoAttackOnCombatSuccess"] = 0
-            if not "attacksEnemiesOnContact" in personality:
+            if "attacksEnemiesOnContact" not in personality:
                 self.personality["attacksEnemiesOnContact"] = True
 
         # store equipment
@@ -738,7 +738,7 @@ class Character(src.saveing.Saveable):
         if state.get("armor"):
             self.armor = src.items.getItemFromState(state["armor"])
 
-        if not "loop" in state["macroState"]:
+        if "loop" not in state["macroState"]:
             state["macroState"]["loop"] = []
 
         self.macroState = state["macroState"]
@@ -857,7 +857,7 @@ class Character(src.saveing.Saveable):
             for jobOrder in state["jobOrders"]:
                 self.jobOrders.append(src.items.getItemFromState(jobOrder))
 
-        if not "frustrationTolerance" in self.personality:
+        if "frustrationTolerance" not in self.personality:
             self.personality["frustrationTolerance"] = 0
 
         return state
@@ -1373,7 +1373,7 @@ class Character(src.saveing.Saveable):
         while self.events and src.gamestate.gamestate.tick == self.events[0].tick:
             event = self.events[0]
             event.handleEvent()
-            if not event in self.events:
+            if event not in self.events:
                 src.logger.debugMessages.append("impossible state with events")
                 continue
             self.events.remove(event)
@@ -1436,11 +1436,11 @@ class Character(src.saveing.Saveable):
         """
         # create container if container doesn't exist
         # bad performance: string comparison, should use enums. Is this slow in python?
-        if not tag in self.listeners:
+        if tag not in self.listeners:
             self.listeners[tag] = []
 
         # added listener function
-        if not listenFunction in self.listeners[tag]:
+        if listenFunction not in self.listeners[tag]:
             self.listeners[tag].append(listenFunction)
 
     # bad pattern: is repeated in items etc
@@ -1473,7 +1473,7 @@ class Character(src.saveing.Saveable):
         """
 
         # do nothing if nobody listens
-        if not tag in self.listeners:
+        if tag not in self.listeners:
             return
 
         # call each listener
@@ -1755,7 +1755,7 @@ class Monster(Character):
         """
 
         self.phase = 2
-        if not "NaivePickupQuest" in self.solvers:
+        if "NaivePickupQuest" not in self.solvers:
             self.solvers.append("NaivePickupQuest")
 
     # bad code: very specific and unclear

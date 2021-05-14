@@ -591,7 +591,7 @@ comment:
             return True
         foundOtherItem = None
         for item in self.character.inventory:
-            if not item.type in ["GooFlask", itemType]:
+            if item.type not in ["GooFlask", itemType]:
                 foundOtherItem = item
                 break
         if foundOtherItem:
@@ -1537,7 +1537,7 @@ comment:
 
         elif selection == "challengerExplore1":  # from gatherSickBloom
             secret = "epxplore1:-)"
-            if not "explore" in self.challengeInfo["challengerGiven"]:
+            if "explore" not in self.challengeInfo["challengerGiven"]:
                 new = PortableChallenger(creator=self)
                 new.xPosition = self.xPosition
                 new.yPosition = self.yPosition + 1
@@ -1570,7 +1570,7 @@ comment:
                     del self.availableChallenges["challengerExplore1"]
         elif selection == "challengerGoTo1":  # from gatherSickBloom
             secret = "goto1:-)"
-            if not "goto" in self.challengeInfo["challengerGiven"]:
+            if "goto" not in self.challengeInfo["challengerGiven"]:
                 new = PortableChallenger(creator=self)
                 new.xPosition = self.xPosition
                 new.yPosition = self.yPosition + 1

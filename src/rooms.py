@@ -391,10 +391,10 @@ class Room(src.saveing.Saveable):
     """
 
     def addListener(self, listenFunction, tag="default"):
-        if not tag in self.listeners:
+        if tag not in self.listeners:
             self.listeners[tag] = []
 
-        if not listenFunction in self.listeners[tag]:
+        if listenFunction not in self.listeners[tag]:
             self.listeners[tag].append(listenFunction)
 
     """
@@ -424,7 +424,7 @@ class Room(src.saveing.Saveable):
     def changed(self, tag="default", info=None):
         self.requestRedraw()
         if not tag == "default":
-            if not tag in self.listeners:
+            if tag not in self.listeners:
                 return
 
             for listenFunction in self.listeners[tag]:
@@ -498,7 +498,7 @@ class Room(src.saveing.Saveable):
         if "xPosition" in state and not "yPosition" in state:
             xPosition = state["xPosition"]
             yPosition = self.yPosition
-        if not "xPosition" in state and "yPosition" in state:
+        if "xPosition" in state and "yPosition" not in state:
             xPosition = self.xPosition
             yPosition = state["yPosition"]
         if "xPosition" in state and "yPosition" in state:
@@ -580,7 +580,7 @@ class Room(src.saveing.Saveable):
         if "characterIds" in state:
             for charId in state["characterIds"]:
                 charState = state["characterStates"][charId]
-                if not "xPosition" in charState or not "yPosition" in charState:
+                if "xPosition" in charState or not "yPosition" not in charState:
                     continue
                 char = src.characters.Character()
                 char.setState(charState)
@@ -2795,7 +2795,7 @@ XXXXXXXXXX
         path = []
 
         # go to secondary path
-        if not y in (1, 2) and x in (2, 5, 8, 3, 6):
+        if y in (1, 2) and x not in (2, 5, 8, 3, 6):
             if x in (2, 5, 8):
                 x = x - 1
             elif (x) in (3, 6):

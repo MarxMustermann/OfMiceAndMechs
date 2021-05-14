@@ -64,20 +64,20 @@ class HiveMind(src.items.Item):
             )
 
             if character.registers["CLUTTERED"].pop():
-                if not pos in self.cluttered:
+                if pos not in self.cluttered:
                     self.cluttered.append(pos)
             if character.registers["BLOCKED"].pop():
-                if not pos in self.blocked:
+                if pos not in self.blocked:
                     self.blocked.append(pos)
             if character.registers["NUM SICK"].pop() < 4:
-                if not pos in self.needSick:
+                if pos not in self.needSick:
                     self.needSick.append(pos)
             if character.registers["NUM COAL"].pop() < 4:
-                if not pos in self.needCoal:
+                if pos not in self.needCoal:
                     self.needCoal.append(pos)
 
             path.append(pos)
-            if not pos in self.territory:
+            if pos not in self.territory:
                 self.territory.append(pos)
                 self.toCheck.append(pos)
                 self.lastExpansion = src.gamestate.gamestate.tick
@@ -88,7 +88,7 @@ class HiveMind(src.items.Item):
             self.bolted = True
             self.paths = {(self.xPosition // 15, self.yPosition // 15): []}
             self.lastExpansion = None
-            if not (self.xPosition // 15, self.yPosition // 15) in self.territory:
+            if (self.xPosition // 15, self.yPosition // 15) not in self.territory:
                 self.territory.append((self.xPosition // 15, self.yPosition // 15))
 
         broughtBloom = False
@@ -107,7 +107,7 @@ class HiveMind(src.items.Item):
 
         numItems = 0
         for item in reversed(character.inventory):
-            if not item.walkable and item.type in (
+            if item.walkable and item.type not in (
                 "SickBloom",
                 "Bloom",
                 "Coal",
@@ -172,7 +172,7 @@ class HiveMind(src.items.Item):
                 if self.blocked:
                     target = self.blocked.pop()
                     self.lastBlocked = target
-                    if not target in self.toCheck:
+                    if target not in self.toCheck:
                         self.toCheck.append(target)
                 elif random.randint(1, 2) == 1:
                     target = self.lastBlocked
@@ -212,7 +212,7 @@ class HiveMind(src.items.Item):
                 and character.inventory[-1].type == "Coal"
             ):
                 target = self.needCoal.pop()
-                if not target in self.toCheck:
+                if target not in self.toCheck:
                     self.toCheck.append(target)
                 supplyRun = True
             elif (
@@ -221,12 +221,12 @@ class HiveMind(src.items.Item):
                 and character.inventory[-1].type == "SickBloom"
             ):
                 target = self.needSick.pop()
-                if not target in self.toCheck:
+                if target not in self.toCheck:
                     self.toCheck.append(target)
                 supplyRun = True
             elif self.cluttered:
                 target = self.cluttered.pop()
-                if not target in self.toCheck:
+                if target not in self.toCheck:
                     self.toCheck.append(target)
                 self.lastCluttered = target
                 supplyRun = True
@@ -310,10 +310,10 @@ class HiveMind(src.items.Item):
             if (self.xPosition // 15, self.yPosition // 15) == (7, 7):
                 anchor = (7, 7)
 
-            if not anchor in self.territory or not anchor in self.paths:
+            if anchor in self.territory or not anchor not in self.paths:
                 anchor = (self.xPosition // 15, self.yPosition // 15)
 
-                if not anchor in self.territory or not anchor in self.paths:
+                if anchor in self.territory or not anchor not in self.paths:
                     return
 
             character.addMessage(str(anchor) + " -> " + str(targetPos))
@@ -380,7 +380,7 @@ class HiveMind(src.items.Item):
                 and character.inventory[-1].type == "Coal"
             ):
                 target = self.needCoal.pop()
-                if not target in self.toCheck:
+                if target not in self.toCheck:
                     self.toCheck.append(target)
             elif (
                 character.inventory
@@ -388,11 +388,11 @@ class HiveMind(src.items.Item):
                 and character.inventory[-1].type == "SickBloom"
             ):
                 target = self.needSick.pop()
-                if not target in self.toCheck:
+                if target not in self.toCheck:
                     self.toCheck.append(target)
             elif self.cluttered:
                 target = self.cluttered.pop()
-                if not target in self.toCheck:
+                if target not in self.toCheck:
                     self.toCheck.append(target)
                 self.lastCluttered = target
             elif random.randint(1, 2) == 1:
@@ -487,7 +487,7 @@ class HiveMind(src.items.Item):
         return command
 
     def calculateMovementUsingPaths(self, target):
-        if not target in self.paths:
+        if target not in self.paths:
             return ("", None)
 
         command = ""

@@ -175,7 +175,7 @@ class RoadManager(src.items.Item):
             self.center = [self.container.xPosition, self.container.yPosition]
             self.roadNetwork[tuple(self.center)] = {"type": "roomCenterBlocked"}
 
-        if not "offset" in task:
+        if "offset" not in task:
             task["offset"] = [7, 7]
         self.doAddPathingNode(task)
 

@@ -138,7 +138,7 @@ class StockpileMetaManager(src.items.Item):
 
         # check stockpiles
         for stockpile in self.stockPiles:
-            if not "stockPileType" in self.stockPileInfo[stockpile]:
+            if "stockPileType" not in self.stockPileInfo[stockpile]:
                 self.lastAction = "initialCheckStockpile"
                 jobOrder = src.items.itemMap["JobOrder"]()
                 jobOrder.tasks = [
@@ -347,7 +347,7 @@ class StockpileMetaManager(src.items.Item):
 
         stockPileFound = None
         for itemType in needyStockpiles.keys():
-            if not itemType in sources:
+            if itemType not in sources:
                 continue
             stockPile = sources[itemType][0]
             stockPileFound = stockPile
@@ -458,7 +458,7 @@ class StockpileMetaManager(src.items.Item):
             if not stockPileInfo["amount"] < stockPileInfo["maxAmount"]:
                 continue
 
-            if not stockPileInfo.get("itemType") in (None, "", item.type):
+            if stockPileInfo.get("itemType") not in (None, "", item.type):
                 continue
 
             stockPileFound = stockPile
@@ -876,7 +876,7 @@ class StockpileMetaManager(src.items.Item):
         return
 
     def runCommand(self, trigger):
-        if not trigger in self.commands:
+        if trigger not in self.commands:
             return
 
         command = self.commands[trigger]

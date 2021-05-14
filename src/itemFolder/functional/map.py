@@ -54,7 +54,7 @@ class Map(src.items.Item):
         self.macroBackup = self.character.macroState["macros"].get("auto")
 
     def getReachableNodes(self, node):
-        if not node in self.routes:
+        if node not in self.routes:
             return []
 
         nodes = []
@@ -124,7 +124,7 @@ class Map(src.items.Item):
             self.recording = None
             if not self.macroBackup:
                 return
-            if not self.recordingStart in self.routes:
+            if self.recordingStart not in self.routes:
                 self.routes[self.recordingStart] = {}
             if self.xPosition:
                 counter = 2
@@ -157,7 +157,7 @@ class Map(src.items.Item):
     def walkRouteSelect(self):
         charPos = (self.character.xPosition, self.character.yPosition)
 
-        if not charPos in self.routes:
+        if charPos not in self.routes:
             self.character.addMessage("no routes found for this position")
             return
 

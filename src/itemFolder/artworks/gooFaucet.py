@@ -130,7 +130,7 @@ class GooFaucet(src.items.Item):
         if character is None:
             character = self.character
 
-        if not trigger in self.commands:
+        if trigger not in self.commands:
             return
 
         command = self.commands[trigger]

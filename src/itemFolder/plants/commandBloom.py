@@ -634,7 +634,7 @@ class CommandBloom(src.items.Item):
                             (items[0].xPosition, items[0].yPosition + 1),
                             (items[0].xPosition, items[0].yPosition + 1),
                         ):
-                            if not pos in path:
+                            if pos not in path:
                                 continue
                             if lowestIndex is None or path.index(pos) < lowestIndex:
                                 lowestIndex = path.index(pos)
@@ -773,7 +773,7 @@ class CommandBloom(src.items.Item):
                 if self.numSick:
                     self.runCommandOnNewCrawler("j")
 
-                if not "NaiveDropQuest" in walker.solvers:
+                if "NaiveDropQuest" not in walker.solvers:
                     walker.solvers.append("NaiveDropQuest")
 
                 self.charges -= 1

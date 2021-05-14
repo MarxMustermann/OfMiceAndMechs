@@ -3826,7 +3826,7 @@ class Tutorial(BasicPhase):
                 counter += 1
 
             for item in desiredProducts:
-                if not item in self.helper_getFilteredProducables():
+                if item not in self.helper_getFilteredProducables():
                     productionQueue.append(item)
                     break
 
@@ -3834,7 +3834,7 @@ class Tutorial(BasicPhase):
 
             queueOk = True
             for item in desiredProducts:
-                if not item in productionQueue:
+                if item not in productionQueue:
                     queueOk = False
 
         self.productionQueue = productionQueue
@@ -4342,7 +4342,7 @@ class Testing_1(BasicPhase):
                 counter += 1
 
             for item in desiredProducts:
-                if not item in self.helper_getFilteredProducables():
+                if item not in self.helper_getFilteredProducables():
                     productionQueue.append(item)
                     break
 
@@ -4350,7 +4350,7 @@ class Testing_1(BasicPhase):
 
             queueOk = True
             for item in desiredProducts:
-                if not item in productionQueue:
+                if item not in productionQueue:
                     queueOk = False
 
         self.productionQueue = productionQueue
@@ -4858,7 +4858,7 @@ class BuildBase(BasicPhase):
                 if not counter % 3 == 0:
                     continue
                 pos = (x * 15 + 7, y * 15 + 7)
-                if not pos in positions:
+                if pos not in positions:
                     positions.append(pos)
 
         for y in range(1, 14):
@@ -4867,7 +4867,7 @@ class BuildBase(BasicPhase):
                 if not counter % 3 == 0:
                     continue
                 pos = (x * 15 + 7, y * 15 + 7)
-                if not pos in positions:
+                if pos not in positions:
                     positions.append(pos)
 
         for pos in positions:

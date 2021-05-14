@@ -91,7 +91,7 @@ class MachineMachine(src.items.Item):
             return
 
         self.endProducts[blueprintFound.endProduct] = blueprintFound.endProduct
-        if not blueprintFound.endProduct in self.blueprintLevels:
+        if blueprintFound.endProduct not in self.blueprintLevels:
             self.blueprintLevels[blueprintFound.endProduct] = 0
         if self.blueprintLevels[blueprintFound.endProduct] < blueprintFound.level:
             self.blueprintLevels[blueprintFound.endProduct] = blueprintFound.level

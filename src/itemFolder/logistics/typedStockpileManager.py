@@ -139,7 +139,7 @@ slotsByItemtype
                     continue
 
                 slot = value.pop()
-                if not self.character.inventory[-1].type in self.slotsByItemtype:
+                if self.character.inventory[-1].type not in self.slotsByItemtype:
                     self.slotsByItemtype[self.character.inventory[-1].type] = []
                 self.slotsByItemtype[self.character.inventory[-1].type].append(
                     (slot, key)

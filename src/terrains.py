@@ -448,10 +448,10 @@ class Terrain(src.saveing.Saveable):
     """
 
     def addListener(self, listenFunction, tag="default"):
-        if not tag in self.listeners:
+        if tag not in self.listeners:
             self.listeners[tag] = []
 
-        if not listenFunction in self.listeners[tag]:
+        if listenFunction not in self.listeners[tag]:
             self.listeners[tag].append(listenFunction)
 
     """
@@ -474,7 +474,7 @@ class Terrain(src.saveing.Saveable):
 
     def changed(self, tag="default", info=None):
         if not tag == "default":
-            if not tag in self.listeners:
+            if tag not in self.listeners:
                 return
 
             for listenFunction in self.listeners[tag]:
@@ -605,7 +605,7 @@ class Terrain(src.saveing.Saveable):
         for testCoordinate in testCoordinates:
 
             # skip coordinates that were not mapped
-            if not testCoordinate in self.watershedCoordinates:
+            if testCoordinate not in self.watershedCoordinates:
                 continue
 
             # get node for coordinate
@@ -696,9 +696,9 @@ class Terrain(src.saveing.Saveable):
 
         # add found path between nodes to map
         for pair, path in self.foundPaths.items():
-            if not pair[1] in self.watershedNodeMap[pair[0]]:
+            if pair[1] not in self.watershedNodeMap[pair[0]]:
                 self.watershedNodeMap[pair[0]].append(pair[1])
-            if not pair[0] in [pair[1]]:
+            if pair[0] not in [pair[1]]:
                 self.watershedNodeMap[pair[1]].append(pair[0])
 
     """
@@ -717,7 +717,7 @@ class Terrain(src.saveing.Saveable):
         for testCoordinate in testCoordinates:
 
             # skip coordinates that were not mapped
-            if not testCoordinate in self.watershedSuperCoordinates:
+            if testCoordinate not in self.watershedSuperCoordinates:
                 continue
 
             # get supernode for node
@@ -809,10 +809,10 @@ class Terrain(src.saveing.Saveable):
 
         # add found path between supernodes to map
         for pair, path in self.foundSuperPaths.items():
-            if not pair[1] in self.watershedSuperNodeMap[pair[0]]:
+            if pair[1] not in self.watershedSuperNodeMap[pair[0]]:
                 self.watershedSuperNodeMap[pair[0]].append(pair[1])
 
-            if not pair[0] in self.watershedSuperNodeMap[pair[1]]:
+            if pair[0] not in self.watershedSuperNodeMap[pair[1]]:
                 self.watershedSuperNodeMap[pair[1]].append(pair[0])
 
         # recursively increase section
@@ -959,7 +959,7 @@ class Terrain(src.saveing.Saveable):
         ]:
             if coordinate in char.terrain.roomByCoordinates:
                 for room in char.terrain.roomByCoordinates[coordinate]:
-                    if not room in roomCandidates:
+                    if room not in roomCandidates:
                         roomCandidates.append(room)
 
         """
@@ -1260,7 +1260,7 @@ class Terrain(src.saveing.Saveable):
         self.obseveredCoordinates = {}
 
         # get start node
-        if not start in self.watershedCoordinates:
+        if start not in self.watershedCoordinates:
             return
         startPair = self.watershedCoordinates[start][0]
 
@@ -1270,7 +1270,7 @@ class Terrain(src.saveing.Saveable):
                 self.applicablePaths[dualPair] = path
 
         # get super node for start node
-        if not startPair in self.watershedSuperCoordinates:
+        if startPair not in self.watershedSuperCoordinates:
             return
         startSuper = self.watershedSuperCoordinates[startPair]
 
@@ -1316,7 +1316,7 @@ class Terrain(src.saveing.Saveable):
                 self.applicablePaths[dualPair] = path
 
         # get super node for end node
-        if not endPair in self.watershedSuperCoordinates:
+        if endPair not in self.watershedSuperCoordinates:
             return
         endSuper = self.watershedSuperCoordinates[endPair]
 
@@ -1406,7 +1406,7 @@ class Terrain(src.saveing.Saveable):
             (coordinate[0] + 1, coordinate[1]),
             (coordinate[0], coordinate[1] + 1),
         ]:
-            if not newCoordinate in obseveredCoordinates:
+            if newCoordinate not in obseveredCoordinates:
                 continue
             if obseveredCoordinates[newCoordinate] >= limit:
                 continue
@@ -1495,7 +1495,7 @@ class Terrain(src.saveing.Saveable):
             while not lastNode:
                 for neighbourNode in neighbourNodes[:]:
                     for watershedNode in self.watershedNodeMap[neighbourNode]:
-                        if not watershedNode in neighbourNodes:
+                        if watershedNode not in neighbourNodes:
                             neighbourNodes.append(watershedNode)
                             nodeMap[watershedNode] = (neighbourNode, counter)
                         if watershedNode == (end.x, end.y):
@@ -1591,7 +1591,7 @@ class Terrain(src.saveing.Saveable):
                 elif position[1] % 15 > 7:
                     position = (position[0] + 1, position[1] - 1, position[2])
                 else:
-                    if not item.type in (
+                    if item.type not in (
                         "Explosion",
                         "FireCrystals",
                         "Bomb",
@@ -1604,7 +1604,7 @@ class Terrain(src.saveing.Saveable):
                 elif position[1] % 15 > 7:
                     position = (position[0] - 1, position[1] - 1, position[2])
                 else:
-                    if not item.type in (
+                    if item.type not in (
                         "Explosion",
                         "FireCrystals",
                         "Bomb",
@@ -1617,7 +1617,7 @@ class Terrain(src.saveing.Saveable):
                 elif position[0] % 15 > 7:
                     position = (position[0] - 1, position[1] + 1, position[2])
                 else:
-                    if not item.type in (
+                    if item.type not in (
                         "Explosion",
                         "FireCrystals",
                         "Bomb",
@@ -1630,7 +1630,7 @@ class Terrain(src.saveing.Saveable):
                 elif position[0] % 15 > 7:
                     position = (position[0] - 1, position[1] - 1, position[2])
                 else:
-                    if not item.type in (
+                    if item.type not in (
                         "Explosion",
                         "FireCrystals",
                         "Bomb",
@@ -1802,7 +1802,7 @@ class Terrain(src.saveing.Saveable):
             # skip hidden rooms
             # if mapHidden and room.hidden:
             #    continue
-            if not src.gamestate.gamestate.mainChar in room.characters:
+            if src.gamestate.gamestate.mainChar not in room.characters:
                 room.hidden = True
 
             # get the render for the room
@@ -2835,7 +2835,7 @@ class Desert(Terrain):
         for item in toMove:
             x = item.xPosition + random.randint(-1, 1)
             y = item.yPosition + random.randint(-1, 1)
-            if not x % 15 in (0, 14) and not y % 15 in (0, 14):
+            if x % 15 in (0, 14) and not y % 15 not in (0, 14):
                 self.removeItem(item)
                 item.xPosition = x
                 item.yPosition = y
@@ -2843,10 +2843,10 @@ class Desert(Terrain):
 
         for item in toAdd[: len(toAdd) // 2]:
             x = random.randint(16, 209)
-            if not x % 15 in (0, 14):
+            if x % 15 not in (0, 14):
                 item.xPosition = x
             y = random.randint(16, 209)
-            if not y % 15 in (0, 14):
+            if y % 15 not in (0, 14):
                 item.yPosition = y
         self.addItems(toAdd)
 
@@ -3294,7 +3294,7 @@ XXXCCCCCXXX """
 
     def moveRoadblockToLeft(self):
         # abort if roadblock is missing
-        if not (127, 81) in self.itemByCoordinates:
+        if (127, 81) not in self.itemByCoordinates:
             return
 
         item = self.itemByCoordinates[(127, 81)][0]
@@ -3327,7 +3327,7 @@ XXXCCCCCXXX """
 
     def moveRoadblockToRight(self):
         # abort if roadblock is missing
-        if not (37, 81) in self.itemByCoordinates:
+        if (37, 81) not in self.itemByCoordinates:
             return
 
         item = self.itemByCoordinates[(37, 81)][0]

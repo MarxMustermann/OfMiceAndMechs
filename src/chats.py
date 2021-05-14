@@ -1486,7 +1486,7 @@ class FactionChat2(Chat):
         # show dialog
         if self.firstRun:
 
-            if not self.partner in src.gamestate.gamestate.mainChar.aliances:
+            if self.partner not in src.gamestate.gamestate.mainChar.aliances:
                 if src.gamestate.gamestate.mainChar.reputation < self.partner.minRep:
                     self.persistentText += (
                         src.gamestate.gamestate.mainChar.name + ': "not enough rep."\n'
@@ -1939,7 +1939,7 @@ class ChatMenu(Chat):
 
     def runMacro(self):
 
-        if not self.subMenu.keyPressed in self.partner.macroState["macros"]:
+        if self.subMenu.keyPressed not in self.partner.macroState["macros"]:
             src.gamestate.gamestate.mainChar.addMessage("no macro found")
             return
 

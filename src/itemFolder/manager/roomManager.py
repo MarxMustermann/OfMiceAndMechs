@@ -219,7 +219,7 @@ class RoomManager(src.items.Item):
             self.tasksType = "add item"
 
         if self.tasksType == "add item":
-            if not typeParameter in src.items.itemMap:
+            if typeParameter not in src.items.itemMap:
                 self.character.addMessage("item not found")
                 return
 
@@ -339,7 +339,7 @@ class RoomManager(src.items.Item):
 
         character.addMessage(task)
         if task["task"] == "add item":
-            if not task["type"] in src.items.itemMap:
+            if task["type"] not in src.items.itemMap:
                 character.addMessage("item not found")
                 return
             item = src.items.itemMap[task["type"]]()
@@ -413,7 +413,7 @@ class RoomManager(src.items.Item):
             character.runCommandString("Jj.j")
 
             self.itemSlotUsage[tuple(itemSlot)] = task
-            if not task["type"] in self.itemPositions:
+            if task["type"] not in self.itemPositions:
                 self.itemPositions[task["type"]] = []
             self.itemPositions[task["type"]].append(itemSlot)
 
@@ -442,7 +442,7 @@ class RoomManager(src.items.Item):
                     if removeSlot in dependencyList:
                         dependencyList.remove(removeSlot)
 
-                if not tuple(removeSlot) in self.itemSlotUsage:
+                if tuple(removeSlot) not in self.itemSlotUsage:
                     continue
 
                 originalTask = self.itemSlotUsage[tuple(removeSlot)]
@@ -559,7 +559,7 @@ class RoomManager(src.items.Item):
             machine = src.items.ResourceTerminal(itemSlot[0], itemSlot[1])
             machine.balance = 1000
             machine.resource = task["type"]
-            if not "MetalBars" in self.resourceTerminalPositions:
+            if "MetalBars" not in self.resourceTerminalPositions:
                 self.resourceTerminalPositions["MetalBars"] = []
             self.resourceTerminalPositions["MetalBars"].append(itemSlot)
 
@@ -581,7 +581,7 @@ class RoomManager(src.items.Item):
             missingResource = None
             needsMetalbars = False
             for resource in needResources:
-                if not resource in self.machinePositions:
+                if resource not in self.machinePositions:
                     if resource == "MetalBars":
                         needsMetalbars = True
                         continue
@@ -648,7 +648,7 @@ class RoomManager(src.items.Item):
                         else:
                             command += "lJs"
                         commands["material MetalBars"] = command
-                        if not tuple(resourceTerminalPos) in self.dependencies:
+                        if tuple(resourceTerminalPos) not in self.dependencies:
                             self.dependencies[tuple(resourceTerminalPos)] = []
                         self.dependencies[tuple(resourceTerminalPos)].append(itemSlot)
                 else:
@@ -670,7 +670,7 @@ class RoomManager(src.items.Item):
                             command += "lJs"
                         commands["material " + resource] = command
 
-                        if not tuple(targetPos) in self.dependencies:
+                        if tuple(targetPos) not in self.dependencies:
                             self.dependencies[tuple(targetPos)] = []
                         self.dependencies[tuple(targetPos)].append(itemSlot)
                 itemCount += 1
@@ -799,7 +799,7 @@ class RoomManager(src.items.Item):
             character.jobOrders.append(jobOrder)
             character.runCommandString("Jj.j")
 
-            if not task["type"] in self.machinePositions:
+            if task["type"] not in self.machinePositions:
                 self.machinePositions[task["type"]] = []
             self.machinePositions[task["type"]].append(itemSlot)
 

@@ -20,10 +20,10 @@ class PositioningDevice(src.items.Item):
 
     def apply(self, character):
 
-        if not "x" in character.registers:
+        if "x" not in character.registers:
             character.registers["x"] = [0]
         character.registers["x"][-1] = character.xPosition
-        if not "y" in character.registers:
+        if "y" not in character.registers:
             character.registers["y"] = [0]
         character.registers["y"][-1] = character.yPosition
 

@@ -64,7 +64,7 @@ class QuestMarkerOverlay(object):
         # draw path
         for item in mainChar.path:
             # highlight chars on the path
-            if not chars[item[1]][item[0]] in (displayChars.pathMarker, "!!", "??"):
+            if chars[item[1]][item[0]] not in (displayChars.pathMarker, "!!", "??"):
                 # bad code: urwid specific code
                 import urwid
 

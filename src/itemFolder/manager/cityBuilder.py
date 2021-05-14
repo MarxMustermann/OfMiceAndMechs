@@ -146,7 +146,7 @@ class CityBuilder(src.items.Item):
             for item in character.inventory:
                 foundItems.append(item)
 
-                if not item.type in self.resources:
+                if item.type not in self.resources:
                     self.resources[item.type] = 0
                 self.resources[item.type] += 1
 
@@ -268,7 +268,7 @@ class CityBuilder(src.items.Item):
             self.character.addMessage("no selection")
             return
 
-        if not plot in self.plotPool:
+        if plot not in self.plotPool:
             self.character.addMessage("not in plot pool")
             return
 
@@ -281,7 +281,7 @@ class CityBuilder(src.items.Item):
             self.character.addMessage("no selection")
             return
 
-        if not plot in self.plotPool:
+        if plot not in self.plotPool:
             self.character.addMessage("not in plot pool")
             return
 
@@ -385,7 +385,7 @@ class CityBuilder(src.items.Item):
         character = context["character"]
         task = context["task"]
 
-        if not "stockPileCoordinate" in task:
+        if "stockPileCoordinate" not in task:
             if not self.unusedRoadTiles:
                 self.tasks.append(task)
                 newTask = {"task": "build roads"}
@@ -544,12 +544,12 @@ class CityBuilder(src.items.Item):
         task = context["task"]
         character = context["character"]
 
-        if not "from" in task:
+        if "from" not in task:
             plot = random.choice(self.plotPool)
         else:
             plot = tuple(task["from"])
 
-        if not plot in self.plotPool:
+        if plot not in self.plotPool:
             self.abortTask()
             return
 
@@ -650,7 +650,7 @@ class CityBuilder(src.items.Item):
                 if position in self.plotPool:
                     neighbourPlot = position
                     continue
-                if not position in self.usedPlots and not position in self.stockPiles:
+                if position in self.usedPlots and not position not in self.stockPiles:
                     neighbourUndiscovered = position
                     continue
 
@@ -669,11 +669,11 @@ class CityBuilder(src.items.Item):
                 character.addMessage("expand plot")
                 return
             elif neighbourUndiscovered:
-                if not "undiscoveredCounter" in task:
+                if "undiscoveredCounter" not in task:
                     task["undiscoveredCounter"] = 0
                 task["undiscoveredCounter"] += 1
                 if task["undiscoveredCounter"] > 5:
-                    if not "scrapRetryCounter" in task:
+                    if "scrapRetryCounter" not in task:
                         task["scrapRetryCounter"] = 0
 
                     if task["scrapRetryCounter"] > 5:
@@ -711,7 +711,7 @@ class CityBuilder(src.items.Item):
                 if position in self.plotPool:
                     neighbourPlot = position
                     continue
-                if not position in self.usedPlots and not position in self.stockPiles:
+                if position in self.usedPlots and not position not in self.stockPiles:
                     neighbourUndiscovered = position
                     continue
 
@@ -728,11 +728,11 @@ class CityBuilder(src.items.Item):
                 character.addMessage("expand plot")
                 return
             elif neighbourUndiscovered:
-                if not "undiscoveredCounter" in task:
+                if "undiscoveredCounter" not in task:
                     task["undiscoveredCounter"] = 0
                 task["undiscoveredCounter"] += 1
                 if task["undiscoveredCounter"] > 5:
-                    if not "scrapRetryCounter" in task:
+                    if "scrapRetryCounter" not in task:
                         task["scrapRetryCounter"] = 0
 
                     if task["scrapRetryCounter"] > 5:
@@ -770,7 +770,7 @@ class CityBuilder(src.items.Item):
                 if position in self.plotPool:
                     neighbourPlot = position
                     continue
-                if not position in self.usedPlots and not position in self.stockPiles:
+                if position in self.usedPlots and not position not in self.stockPiles:
                     neighbourUndiscovered = position
                     continue
 
@@ -790,11 +790,11 @@ class CityBuilder(src.items.Item):
                 character.addMessage("expand plot")
                 return
             elif neighbourUndiscovered:
-                if not "undiscoveredCounter" in task:
+                if "undiscoveredCounter" not in task:
                     task["undiscoveredCounter"] = 0
                 task["undiscoveredCounter"] += 1
                 if task["undiscoveredCounter"] > 5:
-                    if not "scrapRetryCounter" in task:
+                    if "scrapRetryCounter" not in task:
                         task["scrapRetryCounter"] = 0
 
                     if task["scrapRetryCounter"] > 5:
@@ -914,7 +914,7 @@ class CityBuilder(src.items.Item):
 
         axisPlots = []
         for candidate in plotCandiates:
-            if not candidate in self.usedPlots and not candidate in self.plotPool:
+            if candidate in self.usedPlots and not candidate not in self.plotPool:
                 if candidate[0] in (0, 14) or candidate[1] in (0, 14):
                     continue
 
@@ -944,7 +944,7 @@ class CityBuilder(src.items.Item):
         for x in range(0, 15):
             mapContent.append([])
             for y in range(0, 15):
-                if not x in (0, 14) and not y in (0, 14):
+                if x in (0, 14) and not y not in (0, 14):
                     char = "  "
                 elif not x == 7 and not y == 7:
                     char = "##"

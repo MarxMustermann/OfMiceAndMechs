@@ -35,7 +35,7 @@ class Watch(src.items.Item):
             self.creationTime += self.maxSize
             time -= self.maxSize
 
-        if not "t" in character.registers:
+        if "t" not in character.registers:
             character.registers["t"] = [0]
         character.registers["t"][-1] = src.gamestate.gamestate.tick - self.creationTime
 

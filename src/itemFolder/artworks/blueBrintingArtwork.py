@@ -17,7 +17,7 @@ class BluePrintingArtwork(src.items.Item):
         return
 
     def createBlueprint(self):
-        if not self.submenue.text in itemMap:
+        if self.submenue.text not in itemMap:
             self.character.addMessage("item not found")
             return
         new = BluePrint()

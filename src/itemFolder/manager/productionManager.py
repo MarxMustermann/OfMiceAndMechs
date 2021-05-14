@@ -93,7 +93,7 @@ commands:
                 self.character.addMessage("no production job order found")
                 return
 
-            if not jobOrder.tasks[-1]["toProduce"] in self.commands:
+            if jobOrder.tasks[-1]["toProduce"] not in self.commands:
                 self.character.addMessage("no command for job order found")
                 return
 

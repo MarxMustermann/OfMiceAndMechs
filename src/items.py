@@ -678,11 +678,11 @@ class Item(src.saveing.Saveable):
         """
 
         # create bucket if it does not exist yet
-        if not tag in self.listeners:
+        if tag not in self.listeners:
             self.listeners[tag] = []
 
         # store the callback to call when applicable
-        if not listenFunction in self.listeners[tag]:
+        if listenFunction not in self.listeners[tag]:
             self.listeners[tag].append(listenFunction)
 
     # bad code: should be extra class
@@ -710,7 +710,7 @@ class Item(src.saveing.Saveable):
             info: additional information
         """
 
-        if not tag in self.listeners:
+        if tag not in self.listeners:
             return
 
         for listenFunction in self.listeners[tag]:

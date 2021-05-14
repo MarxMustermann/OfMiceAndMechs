@@ -15,7 +15,7 @@ class LoadingRegistry(object):
     def register(self, thing):
         self.registered[thing.id] = thing
 
-        if not thing.id in self.delayedCalls:
+        if thing.id not in self.delayedCalls:
             return
 
         length = len(self.delayedCalls[thing.id])
@@ -42,9 +42,9 @@ class LoadingRegistry(object):
             else:
                 callback(self.registered[thingId])
         else:
-            if not thingId in self.delayedCalls:
+            if thingId not in self.delayedCalls:
                 self.delayedCalls[thingId] = []
-            if not thingId in self.params:
+            if thingId not in self.params:
                 self.params[thingId] = []
             self.delayedCalls[thingId].append(callback)
             self.params[thingId].append(param)
@@ -100,7 +100,7 @@ class Saveable(object):
             if isinstance(callback, dict):
                 # serialize and store callback
                 serializedCallback = {}
-                if not "container" in callback:
+                if "container" not in callback:
                     return
                 serializedCallback["container"] = callback["container"].id
                 serializedCallback["method"] = callback["method"]
@@ -283,7 +283,7 @@ class Saveable(object):
             # bad code: direct function calls are deprecated, but not completely removed
             callback()
         else:
-            if not "container" in callback:
+            if "container" not in callback:
                 return
             container = callback["container"]
             function = getattr(container, callback["method"])

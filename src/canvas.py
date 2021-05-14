@@ -43,7 +43,7 @@ class Mapping(object):
                 counter = 0
                 for subItem in item[1]:
                     # get abstract id
-                    if not item[0] in self.mappedThings:
+                    if item[0] not in self.mappedThings:
                         self.mappedThings[item[0]] = []
                     if len(self.mappedThings[item[0]]) - 1 < counter:
                         while len(self.mappedThings[item[0]]) - 1 < counter:
@@ -65,9 +65,9 @@ class Mapping(object):
                 subDict = {}
                 for k, v in item[1].items():
                     # get abstract id
-                    if not item[0] in self.mappedThings:
+                    if item[0] not in self.mappedThings:
                         self.mappedThings[item[0]] = {}
-                    if not k in self.mappedThings[item[0]]:
+                    if k not in self.mappedThings[item[0]]:
                         self.mappedThings[item[0]][k] = self.globalCounter[0]
                         self.globalCounter[0] += 1
 
@@ -82,7 +82,7 @@ class Mapping(object):
             # add non special entries
             else:
                 # get abstract id
-                if not item[0] in self.mappedThings:
+                if item[0] not in self.mappedThings:
                     self.mappedThings[item[0]] = self.globalCounter[0]
                     self.globalCounter[0] += 1
 
@@ -174,7 +174,7 @@ class DisplayMapping(Mapping):
 
     def setRenderingMode(self, mode):
         # validate input
-        if not mode in self.modes:
+        if mode not in self.modes:
             raise Exception("tired to switch to unkown mode: " + mode)
 
         # set mode

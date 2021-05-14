@@ -58,7 +58,7 @@ class MacroRunner(src.items.Item):
     def storeMacro(self):
         key = self.submenue.selection
 
-        if not key in self.character.macroState["macros"]:
+        if key not in self.character.macroState["macros"]:
             self.character.addMessage("command not found in macro")
             return
 

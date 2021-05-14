@@ -57,7 +57,7 @@ class RoomControls(src.items.Item):
         def moveEast():
             self.room.moveDirection("east", force=self.room.engineStrength)
 
-        if not "stealKey" in character.macroState:
+        if "stealKey" not in character.macroState:
             character.macroState["stealKey"] = {}
 
         """

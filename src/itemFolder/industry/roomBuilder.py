@@ -104,10 +104,10 @@ class RoomBuilder(src.items.Item):
                         or isinstance(item, Chute)
                     ):
                         wallFound = item
-                        if not item in items:
+                        if item not in items:
                             items.append(item)
                         if isinstance(item, Door) or isinstance(item, Chute):
-                            if not item in specialItems:
+                            if item not in specialItems:
                                 specialItems.append(item)
                         break
             if not wallFound:
@@ -124,10 +124,10 @@ class RoomBuilder(src.items.Item):
                         or isinstance(item, Chute)
                     ):
                         wallFound = item
-                        if not item in items:
+                        if item not in items:
                             items.append(item)
                         if isinstance(item, Door) or isinstance(item, Chute):
-                            if not item in specialItems:
+                            if item not in specialItems:
                                 specialItems.append(item)
                         break
             if not wallFound:
@@ -144,10 +144,10 @@ class RoomBuilder(src.items.Item):
                         or isinstance(item, Chute)
                     ):
                         wallFound = item
-                        if not item in items:
+                        if item not in items:
                             items.append(item)
                         if isinstance(item, Door) or isinstance(item, Chute):
-                            if not item in specialItems:
+                            if item not in specialItems:
                                 specialItems.append(item)
                         break
             if not wallFound:
@@ -164,10 +164,10 @@ class RoomBuilder(src.items.Item):
                         or isinstance(item, Chute)
                     ):
                         wallFound = item
-                        if not item in items:
+                        if item not in items:
                             items.append(item)
                         if isinstance(item, Door) or isinstance(item, Chute):
-                            if not item in specialItems:
+                            if item not in specialItems:
                                 specialItems.append(item)
                         break
             if not wallFound:

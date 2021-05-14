@@ -158,7 +158,7 @@ This is a level %s item
                 convertedCommand + self.character.macroState["commandKeyQueue"]
             )
 
-            if not "a" in self.character.macroState["macros"]:
+            if "a" not in self.character.macroState["macros"]:
                 self.character.addMessage('no macro found in buffer "a"')
                 return
 
@@ -230,7 +230,7 @@ This is a level %s item
         if not key:
             key = self.submenue.selection
 
-        if not key in self.character.macroState["macros"]:
+        if key not in self.character.macroState["macros"]:
             self.character.addMessage("command not found in macro")
             return
 

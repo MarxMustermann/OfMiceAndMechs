@@ -338,7 +338,7 @@ Currently the machine has no charges
         return
 
     def runCommand(self, trigger, character):
-        if not trigger in self.commands:
+        if trigger not in self.commands:
             return
 
         command = self.commands[trigger]

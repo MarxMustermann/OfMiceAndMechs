@@ -2403,7 +2403,7 @@ class GameplayTest(Terrain):
             layout, detailedLayout, creator=creator, seed=seed, noContent=noContent
         )
 
-        self.floordisplay = src.camvas.displayChars.dirt
+        self.floordisplay = src.canvas.displayChars.dirt
 
         if not noContent:
             """

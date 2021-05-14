@@ -1,8 +1,8 @@
 import unittest
 import src
 
-class TestBasicTerrainFunction(unittest.TestCase):
 
+class TestBasicTerrainFunction(unittest.TestCase):
     def setUp(self):
         src.terrains.displayChars = src.canvas.DisplayMapping("pureASCII")
         src.rooms.displayChars = src.canvas.DisplayMapping("pureASCII")
@@ -16,5 +16,6 @@ class TestBasicTerrainFunction(unittest.TestCase):
         terrain = src.terrains.ScrapField()
         terrain = src.terrains.TutorialTerrain()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

@@ -1,16 +1,19 @@
 import src
 
-'''
+"""
 Vial with health to carry around and drink from
-'''
+"""
+
+
 class Vial(src.items.Item):
     type = "Vial"
 
-    '''
+    """
     call superclass constructor with modified paramters and set some state
-    '''
-    def __init__(self,name="vial",noId=False):
-        super().__init__(display=src.canvas.displayChars.gooflask_empty,name=name)
+    """
+
+    def __init__(self, name="vial", noId=False):
+        super().__init__(display=src.canvas.displayChars.gooflask_empty, name=name)
         self.walkable = True
         self.bolted = False
         self.description = "a vial containing health"
@@ -19,13 +22,13 @@ class Vial(src.items.Item):
         self.level = 1
 
         # set up meta information for saveing
-        self.attributesToStore.extend([
-               "uses","level","maxUses"])
+        self.attributesToStore.extend(["uses", "level", "maxUses"])
 
-    '''
+    """
     drink from flask
-    '''
-    def apply(self,character):
+    """
+
+    def apply(self, character):
         # handle edge case
         if self.uses <= 0:
             if character.watched:
@@ -46,17 +49,25 @@ class Vial(src.items.Item):
         character.changed()
 
     def render(self):
-        '''
+        """
         render based on fill amount
-        '''
-        displayByUses = [src.canvas.displayChars.gooflask_empty, src.canvas.displayChars.gooflask_part1, src.canvas.displayChars.gooflask_part2, src.canvas.displayChars.gooflask_part3, src.canvas.displayChars.gooflask_part4, src.canvas.displayChars.gooflask_full]
-        return displayByUses[self.uses//2]
+        """
+        displayByUses = [
+            src.canvas.displayChars.gooflask_empty,
+            src.canvas.displayChars.gooflask_part1,
+            src.canvas.displayChars.gooflask_part2,
+            src.canvas.displayChars.gooflask_part3,
+            src.canvas.displayChars.gooflask_part4,
+            src.canvas.displayChars.gooflask_full,
+        ]
+        return displayByUses[self.uses // 2]
 
-    '''
+    """
     get info including the charges on the flask
-    '''
+    """
+
     def getDetailedInfo(self):
-        return super().getDetailedInfo()+" ("+str(self.uses)+" charges)"
+        return super().getDetailedInfo() + " (" + str(self.uses) + " charges)"
 
     def getLongInfo(self):
         text = """
@@ -69,7 +80,10 @@ A goo flask can be refilled at a health station and can hold a maximum of %s cha
 
 this is a level %s item.
 
-"""%(self.maxUses,self.level)
+""" % (
+            self.maxUses,
+            self.level,
+        )
         return text
 
     def upgrade(self):
@@ -81,5 +95,6 @@ this is a level %s item.
         super().downgrade()
 
         self.maxUses -= 1
+
 
 src.items.addType(Vial)

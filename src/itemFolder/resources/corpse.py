@@ -1,20 +1,22 @@
 import src
 
-'''
-'''
+"""
+"""
+
+
 class Corpse(src.items.Item):
     type = "Corpse"
 
-    '''
+    """
     almost straightforward state initialization
-    '''
+    """
+
     def __init__(self):
         super().__init__(display=src.canvas.displayChars.corpse)
 
         self.name = "corpse"
         self.charges = 1000
-        self.attributesToStore.extend([
-               "activated","charges"])
+        self.attributesToStore.extend(["activated", "charges"])
         self.walkable = True
         self.bolted = False
 
@@ -29,16 +31,21 @@ can be processed in a corpse shredder
 
 The corpse has %s charges left.
 
-"""%(self.charges)
+""" % (
+            self.charges
+        )
         return text
 
-    def apply(self,character):
-        if isinstance(character,src.characters.Monster):
+    def apply(self, character):
+        if isinstance(character, src.characters.Monster):
             if character.phase == 3:
                 character.enterPhase4()
             else:
                 if self.container and character.satiation < 950:
-                    character.macroState["commandKeyQueue"] = [("j",[]),("m",[])] + character.macroState["commandKeyQueue"]
+                    character.macroState["commandKeyQueue"] = [
+                        ("j", []),
+                        ("m", []),
+                    ] + character.macroState["commandKeyQueue"]
             character.frustration -= 1
         else:
             character.frustration += 1
@@ -51,5 +58,6 @@ The corpse has %s charges left.
             character.addMessage("you eat from the corpse and gain 15 satiation")
         else:
             self.destroy(generateSrcap=False)
+
 
 src.items.addType(Corpse)

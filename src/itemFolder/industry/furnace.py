@@ -1,14 +1,17 @@
 import src
 
-'''
+"""
 heat source for generating steam and similar
-'''
+"""
+
+
 class Furnace(src.items.Item):
     type = "Furnace"
 
-    '''
+    """
     straightforward state initialization
-    '''
+    """
+
     def __init__(self):
         self.activated = False
         self.boilers = []
@@ -16,14 +19,14 @@ class Furnace(src.items.Item):
         self.name = "Furnace"
 
         # set metadata for saving
-        self.attributesToStore.extend([
-               "activated"])
+        self.attributesToStore.extend(["activated"])
 
-    '''
+    """
     fire the furnace
-    '''
-    def apply(self,character):
-        super().apply(character,silent=True)
+    """
+
+    def apply(self, character):
+        super().apply(character, silent=True)
 
         if not self.room:
             character.addMessage("this machine can only be used within rooms")
@@ -35,7 +38,7 @@ class Furnace(src.items.Item):
         foundItem = None
         for item in character.inventory:
             canBurn = False
-            if hasattr(item,"canBurn"):
+            if hasattr(item, "canBurn"):
                 canBurn = item.canBurn
 
             if not canBurn:
@@ -46,7 +49,9 @@ class Furnace(src.items.Item):
         if not foundItem:
             # bad code: return would be preferable to if/else
             if character.watched:
-                character.addMessage("you need coal to fire the furnace and you have no coal in your inventory")
+                character.addMessage(
+                    "you need coal to fire the furnace and you have no coal in your inventory"
+                )
         else:
             # refuse to fire burning furnace
             if self.activated:
@@ -67,10 +72,23 @@ class Furnace(src.items.Item):
 
                 # get the boilers affected
                 self.boilers = []
-                #for boiler in self.room.boilers:
+                # for boiler in self.room.boilers:
                 for boiler in self.room.itemsOnFloor:
                     if isinstance(boiler, src.items.Boiler):
-                        if ((boiler.xPosition in [self.xPosition,self.xPosition-1,self.xPosition+1] and boiler.yPosition == self.yPosition) or boiler.yPosition in [self.yPosition-1,self.yPosition+1] and boiler.xPosition == self.xPosition):
+                        if (
+                            (
+                                boiler.xPosition
+                                in [
+                                    self.xPosition,
+                                    self.xPosition - 1,
+                                    self.xPosition + 1,
+                                ]
+                                and boiler.yPosition == self.yPosition
+                            )
+                            or boiler.yPosition
+                            in [self.yPosition - 1, self.yPosition + 1]
+                            and boiler.xPosition == self.xPosition
+                        ):
                             self.boilers.append(boiler)
 
                 # heat up boilers
@@ -78,7 +96,9 @@ class Furnace(src.items.Item):
                     boiler.startHeatingUp()
 
                 # make the furnace stop burning after some time
-                event = src.events.FurnaceBurnoutEvent(self.room.timeIndex+30,creator=self)
+                event = src.events.FurnaceBurnoutEvent(
+                    self.room.timeIndex + 30, creator=self
+                )
                 event.furnace = self
                 self.room.addEvent(event)
 
@@ -86,9 +106,9 @@ class Furnace(src.items.Item):
                 self.changed()
 
     def render(self):
-        '''
+        """
         render the furnace
-        '''
+        """
         if self.activated:
             return src.canvas.displayChars.furnace_active
         else:
@@ -110,5 +130,6 @@ Place the furnace next to a boiler to be able to heat up the boiler with this fu
 
     def getLongInfo(self):
         return str(self.id)
+
 
 src.items.addType(Furnace)

@@ -1,11 +1,13 @@
 import src
 
+
 class MemoryDump(src.items.Item):
     type = "MemoryDump"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
+    """
+
     def __init__(self):
 
         self.macros = None
@@ -15,8 +17,7 @@ class MemoryDump(src.items.Item):
         self.name = "memory dump"
         self.baseName = self.name
 
-        self.attributesToStore.extend([
-                "macros"])
+        self.attributesToStore.extend(["macros"])
 
         self.setDescription()
 
@@ -24,24 +25,28 @@ class MemoryDump(src.items.Item):
         addition = ""
         if self.macros:
             addition = " (imprinted)"
-        self.description = self.baseName+addition
+        self.description = self.baseName + addition
 
-    def setToProduce(self,toProduce):
+    def setToProduce(self, toProduce):
         self.setDescription()
 
-    '''
+    """
     trigger production of a player selected item
-    '''
-    def apply(self,character):
-        super().apply(character,silent=True)
+    """
+
+    def apply(self, character):
+        super().apply(character, silent=True)
 
         if not self.room:
             character.addMessage("this machine can only be used within rooms")
             return
 
         import copy
+
         if not self.macros == None:
-            character.addMessage("you overwrite your macros with the ones in your memory dump")
+            character.addMessage(
+                "you overwrite your macros with the ones in your memory dump"
+            )
             character.macroState["macros"] = copy.deepcopy(self.macros)
             self.macros = None
         else:
@@ -50,12 +55,14 @@ class MemoryDump(src.items.Item):
 
         self.setDescription()
 
-    '''
+    """
     set state from dict
-    '''
-    def setState(self,state):
+    """
+
+    def setState(self, state):
         super().setState(state)
 
         self.setDescription()
+
 
 src.items.addType(MemoryDump)

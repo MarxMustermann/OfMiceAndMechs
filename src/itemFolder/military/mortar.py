@@ -1,24 +1,25 @@
 import src
 
+
 class Mortar(src.items.Item):
     type = "Mortar"
-    '''
+    """
     almost straightforward state initialization
-    '''
+    """
+
     def __init__(self):
 
         super().__init__(display=src.canvas.displayChars.mortar)
         self.name = "mortar"
-        
+
         self.bolted = False
         self.loaded = False
         self.loadedWith = None
         self.precision = 5
 
-        self.attributesToStore.extend([
-               "loaded","precision"])
+        self.attributesToStore.extend(["loaded", "precision"])
 
-    def apply(self,character):
+    def apply(self, character):
         if not self.loaded:
             itemFound = None
             for item in character.inventory:
@@ -49,26 +50,42 @@ class Mortar(src.items.Item):
             bomb.bolted = False
 
             distance = 10
-            if (src.gamestate.gamestate.tick+self.yPosition+self.xPosition)%self.precision == 0:
+            if (
+                src.gamestate.gamestate.tick + self.yPosition + self.xPosition
+            ) % self.precision == 0:
                 character.addMessage("you missfire (0)")
                 self.precision += 10
-                distance -= src.gamestate.gamestate.tick%10-10//2
-                character.addMessage((distance,src.gamestate.gamestate.tick%10,10//2))
-            elif (src.gamestate.gamestate.tick+self.yPosition+self.xPosition)%self.precision == 1:
+                distance -= src.gamestate.gamestate.tick % 10 - 10 // 2
+                character.addMessage(
+                    (distance, src.gamestate.gamestate.tick % 10, 10 // 2)
+                )
+            elif (
+                src.gamestate.gamestate.tick + self.yPosition + self.xPosition
+            ) % self.precision == 1:
                 character.addMessage("you missfire (1)")
                 self.precision += 5
-                distance -= src.gamestate.gamestate.tick%7-7//2
-                character.addMessage((distance,src.gamestate.gamestate.tick%7,7//2))
-            elif (src.gamestate.gamestate.tick+self.yPosition+self.xPosition)%self.precision < 10:
+                distance -= src.gamestate.gamestate.tick % 7 - 7 // 2
+                character.addMessage(
+                    (distance, src.gamestate.gamestate.tick % 7, 7 // 2)
+                )
+            elif (
+                src.gamestate.gamestate.tick + self.yPosition + self.xPosition
+            ) % self.precision < 10:
                 character.addMessage("you missfire (10)")
                 self.precision += 2
-                distance -= src.gamestate.gamestate.tick%3-3//2
-                character.addMessage((distance,src.gamestate.gamestate.tick%3,3//2))
-            elif (src.gamestate.gamestate.tick+self.yPosition+self.xPosition)%self.precision < 100:
+                distance -= src.gamestate.gamestate.tick % 3 - 3 // 2
+                character.addMessage(
+                    (distance, src.gamestate.gamestate.tick % 3, 3 // 2)
+                )
+            elif (
+                src.gamestate.gamestate.tick + self.yPosition + self.xPosition
+            ) % self.precision < 100:
                 character.addMessage("you missfire (100)")
                 self.precision += 1
-                distance -= src.gamestate.gamestate.tick%2-2//2
-                character.addMessage((distance,src.gamestate.gamestate.tick%2,2//2))
+                distance -= src.gamestate.gamestate.tick % 2 - 2 // 2
+                character.addMessage(
+                    (distance, src.gamestate.gamestate.tick % 2, 2 // 2)
+                )
 
             bomb.yPosition += distance
 
@@ -78,13 +95,18 @@ class Mortar(src.items.Item):
 
     def getLongInfo(self):
 
-        text = """
+        text = (
+            """
 
 A mortar. Load it with bombs and activate it to fire.
 
-It fires 10 steps to the south. Its current precision is """+str(self.precision)+""".
+It fires 10 steps to the south. Its current precision is """
+            + str(self.precision)
+            + """.
 
 """
+        )
         return text
+
 
 src.items.addType(Mortar)

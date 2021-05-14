@@ -1,13 +1,16 @@
 import src
 
-'''
-'''
+"""
+"""
+
+
 class Drill(src.items.Item):
     type = "Drill"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
+    """
+
     def __init__(self):
 
         self.coolDown = 100
@@ -19,10 +22,9 @@ class Drill(src.items.Item):
         self.name = "drill"
         self.baseName = self.name
 
-
-        self.attributesToStore.extend([
-                "coolDown","coolDownTimer",
-                "isBroken","isCleaned"])
+        self.attributesToStore.extend(
+            ["coolDown", "coolDownTimer", "isBroken", "isCleaned"]
+        )
 
         self.setDescription()
 
@@ -30,16 +32,17 @@ class Drill(src.items.Item):
         addition = ""
         if self.isBroken:
             addition = " (broken)"
-        self.description = self.baseName+addition
+        self.description = self.baseName + addition
 
-    def setToProduce(self,toProduce):
+    def setToProduce(self, toProduce):
         self.setDescription()
 
-    '''
+    """
     trigger production of a player selected item
-    '''
-    def apply(self,character):
-        super().apply(character,silent=True)
+    """
+
+    def apply(self, character):
+        super().apply(character, silent=True)
 
         if not self.xPosition:
             character.addMessage("this machine has to be placed to be used")
@@ -54,17 +57,31 @@ class Drill(src.items.Item):
 
                 targetFull = False
                 scrapFound = None
-                if (self.xPosition,self.yPosition+1) in self.terrain.itemByCoordinates:
-                    if len(self.terrain.itemByCoordinates[(self.xPosition,self.yPosition+1)]) > 15:
+                if (
+                    self.xPosition,
+                    self.yPosition + 1,
+                ) in self.terrain.itemByCoordinates:
+                    if (
+                        len(
+                            self.terrain.itemByCoordinates[
+                                (self.xPosition, self.yPosition + 1)
+                            ]
+                        )
+                        > 15
+                    ):
                         targetFull = True
-                    for item in self.terrain.itemByCoordinates[(self.xPosition,self.yPosition+1)]:
+                    for item in self.terrain.itemByCoordinates[
+                        (self.xPosition, self.yPosition + 1)
+                    ]:
                         if item.walkable == False:
                             targetFull = True
                         if item.type == "Scrap":
                             scrapFound = item
 
                 if targetFull:
-                    character.addMessage("the target area is full, the machine does not produce anything")
+                    character.addMessage(
+                        "the target area is full, the machine does not produce anything"
+                    )
                     return
 
                 character.addMessage("you remove the broken rod")
@@ -73,9 +90,11 @@ class Drill(src.items.Item):
                     item.amount += 1
                 else:
                     # spawn new item
-                    new = itemMap["Scrap"](self.xPosition,self.yPosition,1,creator=self)
+                    new = itemMap["Scrap"](
+                        self.xPosition, self.yPosition, 1, creator=self
+                    )
                     new.xPosition = self.xPosition
-                    new.yPosition = self.yPosition+1
+                    new.yPosition = self.yPosition + 1
                     new.bolted = False
 
                     self.terrain.addItems([new])
@@ -87,12 +106,17 @@ class Drill(src.items.Item):
                 character.addMessage("you repair the machine")
 
                 rod = None
-                if (self.xPosition-1,self.yPosition) in self.terrain.itemByCoordinates:
-                    for item in self.terrain.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
-                        if isinstance(item,Rod):
-                           rod = item
-                           break
-                
+                if (
+                    self.xPosition - 1,
+                    self.yPosition,
+                ) in self.terrain.itemByCoordinates:
+                    for item in self.terrain.itemByCoordinates[
+                        (self.xPosition - 1, self.yPosition)
+                    ]:
+                        if isinstance(item, Rod):
+                            rod = item
+                            break
+
                 # refuse production without resources
                 if not rod:
                     character.addMessage("needs repairs Rod -> repaired")
@@ -107,32 +131,62 @@ class Drill(src.items.Item):
             self.setDescription()
             return
 
-        if src.gamestate.gamestate.tick < self.coolDownTimer+self.coolDown:
-            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer),))
+        if src.gamestate.gamestate.tick < self.coolDownTimer + self.coolDown:
+            character.addMessage(
+                "cooldown not reached. Wait %s ticks"
+                % (self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer),)
+            )
             return
         self.coolDownTimer = src.gamestate.gamestate.tick
 
         # spawn new item
-        possibleProducts = [src.items.itemMap["Scrap"],src.items.itemMap["Coal"],src.items.itemMap["Scrap"],src.items.itemMap["Radiator"],src.items.itemMap["Scrap"],src.items.itemMap["Mount"],src.items.itemMap["Scrap"],src.items.itemMap["Sheet"],src.items.itemMap["Scrap"],src.items.itemMap["Rod"],src.items.itemMap["Scrap"],src.items.itemMap["Bolt"],src.items.itemMap["Scrap"],src.items.itemMap["Stripe"],src.items.itemMap["Scrap"],]
-        productIndex = src.gamestate.gamestate.tick%len(possibleProducts)
-        new = possibleProducts[productIndex](self.xPosition,self.yPosition,creator=self)
-        new.xPosition = self.xPosition+1
+        possibleProducts = [
+            src.items.itemMap["Scrap"],
+            src.items.itemMap["Coal"],
+            src.items.itemMap["Scrap"],
+            src.items.itemMap["Radiator"],
+            src.items.itemMap["Scrap"],
+            src.items.itemMap["Mount"],
+            src.items.itemMap["Scrap"],
+            src.items.itemMap["Sheet"],
+            src.items.itemMap["Scrap"],
+            src.items.itemMap["Rod"],
+            src.items.itemMap["Scrap"],
+            src.items.itemMap["Bolt"],
+            src.items.itemMap["Scrap"],
+            src.items.itemMap["Stripe"],
+            src.items.itemMap["Scrap"],
+        ]
+        productIndex = src.gamestate.gamestate.tick % len(possibleProducts)
+        new = possibleProducts[productIndex](
+            self.xPosition, self.yPosition, creator=self
+        )
+        new.xPosition = self.xPosition + 1
         new.yPosition = self.yPosition
         new.bolted = False
 
         foundScrap = None
         targetFull = False
-        if (self.xPosition+1,self.yPosition) in self.terrain.itemByCoordinates:
-            if len(self.terrain.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+        if (self.xPosition + 1, self.yPosition) in self.terrain.itemByCoordinates:
+            if (
+                len(
+                    self.terrain.itemByCoordinates[(self.xPosition + 1, self.yPosition)]
+                )
+                > 15
+            ):
                 targetFull = True
-            for item in self.terrain.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+            for item in self.terrain.itemByCoordinates[
+                (self.xPosition + 1, self.yPosition)
+            ]:
                 if item.walkable == False:
                     targetFull = True
                 if item.type == "Scrap":
                     foundScrap = item
 
         if targetFull:
-            character.addMessage("the target area is full, the machine does not produce anything")
+            character.addMessage(
+                "the target area is full, the machine does not produce anything"
+            )
             return
 
         if new.type == "Scrap" and foundScrap:
@@ -145,10 +199,11 @@ class Drill(src.items.Item):
 
         self.setDescription()
 
-    '''
+    """
     set state from dict
-    '''
-    def setState(self,state):
+    """
+
+    def setState(self, state):
         super().setState(state)
 
         self.setDescription()
@@ -166,5 +221,6 @@ place a rod to the left/west of the drill and activate the drill, to repair it
 
 """
         return text
+
 
 src.items.addType(Drill)

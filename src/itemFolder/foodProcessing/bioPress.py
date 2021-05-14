@@ -1,15 +1,17 @@
 import src
 
+
 class BioPress(src.items.Item):
-    '''
+    """
     processes food by converting biomass to press cake
-    '''
+    """
 
     type = "BioPress"
 
-    '''
+    """
     call superclass constructor with modified paramters and set some state
-    '''
+    """
+
     def __init__(self):
         super().__init__(display=src.canvas.displayChars.bioPress)
         self.activated = False
@@ -21,11 +23,11 @@ Activate the bio press to produce press cake.
 """
 
     # needs abstraction: takes x input and produces y output
-    def apply(self,character):
-        '''
+    def apply(self, character):
+        """
         try to produce a press cake from bio mass
-        '''
-        super().apply(character,silent=True)
+        """
+        super().apply(character, silent=True)
 
         if not self.room:
             character.addMessage("this machine can only be used within rooms")
@@ -33,8 +35,10 @@ Activate the bio press to produce press cake.
 
         # fetch input bio mass
         items = []
-        for item in self.container.getItemByPosition((self.xPosition-1,self.yPosition,self.zPosition)):
-            if isinstance(item,BioMass):
+        for item in self.container.getItemByPosition(
+            (self.xPosition - 1, self.yPosition, self.zPosition)
+        ):
+            if isinstance(item, BioMass):
                 items.append(item)
 
         # refuse to produce without resources
@@ -44,7 +48,9 @@ Activate the bio press to produce press cake.
 
         # check if target area is full
         targetFull = False
-        itemList = self.container.getItemByPosition((self.xPosition+1,self.yPosition,self.zPosition))
+        itemList = self.container.getItemByPosition(
+            (self.xPosition + 1, self.yPosition, self.zPosition)
+        )
         if len(itemList) > 15:
             targetFull = True
         for item in itemList:
@@ -52,9 +58,11 @@ Activate the bio press to produce press cake.
                 targetFull = True
 
         if targetFull:
-            character.addMessage("the target area is full, the machine does not produce anything")
+            character.addMessage(
+                "the target area is full, the machine does not produce anything"
+            )
             return
-       
+
         # remove resources
         counter = 0
         for item in items:
@@ -65,6 +73,9 @@ Activate the bio press to produce press cake.
 
         # spawn the new item
         new = PressCake(creator=self)
-        self.container.addItem(new,(self.xPosition+1,self.yPosition,self.zPosition))
+        self.container.addItem(
+            new, (self.xPosition + 1, self.yPosition, self.zPosition)
+        )
+
 
 src.items.addType(BioPress)

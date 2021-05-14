@@ -1,15 +1,17 @@
 import src
 
+
 class UniformStockpileManager(src.items.Item):
     type = "UniformStockpileManager"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
+    """
+
     def __init__(self):
 
         super().__init__(display=src.canvas.displayChars.uniformStockpileManager)
-                
+
         self.name = "uniform stockpile manager"
 
         self.bolted = False
@@ -22,9 +24,16 @@ class UniformStockpileManager(src.items.Item):
         self.numItemsStored = 0
         self.lastAction = ""
 
-        self.attributesToStore.extend([
-                "numItemsStored","storedItemType","storedItemWalkable","restrictStoredItemType","restrictStoredItemWalkable"])
-        self.objectsToStore.extend(["submenue","character"])
+        self.attributesToStore.extend(
+            [
+                "numItemsStored",
+                "storedItemType",
+                "storedItemWalkable",
+                "restrictStoredItemType",
+                "restrictStoredItemWalkable",
+            ]
+        )
+        self.objectsToStore.extend(["submenue", "character"])
 
         self.commands = {}
         self.submenue = None
@@ -43,11 +52,21 @@ storedItemType: %s
 storedItemWalkable: %s
 restrictStoredItemType: %s
 restrictStoredItemWalkable: %s
-"""%(self.lastAction,self.commands,self.storedItemType,self.storedItemWalkable,self.restrictStoredItemType,self.restrictStoredItemWalkable)
+""" % (
+            self.lastAction,
+            self.commands,
+            self.storedItemType,
+            self.storedItemWalkable,
+            self.restrictStoredItemType,
+            self.restrictStoredItemWalkable,
+        )
         return text
 
-    def apply(self,character):
-        if not (character.xPosition == self.xPosition and character.yPosition == self.yPosition-1):
+    def apply(self, character):
+        if not (
+            character.xPosition == self.xPosition
+            and character.yPosition == self.yPosition - 1
+        ):
             character.addMessage("this item can only be used from north")
             return
 
@@ -58,13 +77,18 @@ restrictStoredItemWalkable: %s
         self.blocked = True
         self.lastAction = "apply"
 
-        options = [("storeItem","store item"),("fetchItem","fetch item")]
-        self.submenue = src.interaction.SelectionMenu("what do you want to do?",options)
+        options = [("storeItem", "store item"), ("fetchItem", "fetch item")]
+        self.submenue = src.interaction.SelectionMenu(
+            "what do you want to do?", options
+        )
         character.macroState["submenue"] = self.submenue
-        character.macroState["submenue"].followUp = {"container":self,"method":"apply2"}
+        character.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "apply2",
+        }
         self.character = character
 
-    def configure(self,character):
+    def configure(self, character):
         if self.blocked:
             character.runCommandString("sc")
             character.addMessage("item blocked - auto retry")
@@ -73,12 +97,14 @@ restrictStoredItemWalkable: %s
 
         self.lastAction = "configure"
 
-        self.submenue = src.interaction.OneKeystrokeMenu("""
+        self.submenue = src.interaction.OneKeystrokeMenu(
+            """
 a: addCommand
 s: machine settings
 j: run job order
 r: reset
-""")
+"""
+        )
         character.macroState["submenue"] = self.submenue
         character.macroState["submenue"].followUp = self.configure2
         self.character = character
@@ -108,22 +134,26 @@ r: reset
 
         if self.submenue.keyPressed == "a":
             options = []
-            options.append(("empty","set empty command"))
-            options.append(("full","set full command"))
-            options.append(("wrong","wrong item type or item"))
+            options.append(("empty", "set empty command"))
+            options.append(("full", "set full command"))
+            options.append(("wrong", "wrong item type or item"))
 
-            self.submenue = src.interaction.SelectionMenu("Setting command for handling triggers.",options)
+            self.submenue = src.interaction.SelectionMenu(
+                "Setting command for handling triggers.", options
+            )
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setCommand
             return
         if self.submenue.keyPressed == "s":
             options = []
-            options.append(("restrictStoredItemType","restict stored item type"))
-            options.append(("storedItemType","stored item type"))
-            options.append(("restrictStoredItemWalkable","restict item size"))
-            options.append(("storedItemWalkable","stored item size"))
+            options.append(("restrictStoredItemType", "restict stored item type"))
+            options.append(("storedItemType", "stored item type"))
+            options.append(("restrictStoredItemWalkable", "restict item size"))
+            options.append(("storedItemWalkable", "stored item size"))
 
-            self.submenue = src.interaction.SelectionMenu("select setting to change.",options)
+            self.submenue = src.interaction.SelectionMenu(
+                "select setting to change.", options
+            )
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setMachineSettings
             self.settingType = None
@@ -146,7 +176,6 @@ r: reset
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setMachineSettings
 
-
         rawValue = self.submenue.text
         if self.settingType == "restrictStoredItemType":
             if rawValue == "True":
@@ -165,24 +194,30 @@ r: reset
 
         self.blocked = False
 
-    def runCommand(self,commandName):
+    def runCommand(self, commandName):
         if not commandName in self.commands:
             return
         command = self.commands[commandName]
 
         convertedCommand = []
         for char in command:
-            convertedCommand.append((char,"norecord"))
+            convertedCommand.append((char, "norecord"))
 
-        self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
-        self.character.addMessage("running command for trigger: %s - %s"%(commandName,command))
+        self.character.macroState["commandKeyQueue"] = (
+            convertedCommand + self.character.macroState["commandKeyQueue"]
+        )
+        self.character.addMessage(
+            "running command for trigger: %s - %s" % (commandName, command)
+        )
 
     def setCommand(self):
         self.lastAction = "setCommand"
         trigger = self.submenue.selection
 
         commandItem = None
-        for item in self.container.getItemByPosition((self.xPosition,self.yPosition-1)):
+        for item in self.container.getItemByPosition(
+            (self.xPosition, self.yPosition - 1)
+        ):
             if item.type == "Command":
                 commandItem = item
 
@@ -194,10 +229,11 @@ r: reset
         self.commands[trigger] = commandItem.command
         self.container.removeItem(commandItem)
 
-        self.character.addMessage("added command for %s - %s"%(trigger,commandItem.command))
+        self.character.addMessage(
+            "added command for %s - %s" % (trigger, commandItem.command)
+        )
         self.blocked = False
         return
-
 
     def apply2(self):
         self.lastAction = "apply2"
@@ -222,84 +258,93 @@ r: reset
                 if self.storedItemWalkable == None:
                     self.storedItemWalkable = self.character.inventory[-1].walkable
                 else:
-                    if not (self.storedItemWalkable == self.character.inventory[-1].walkable):
+                    if not (
+                        self.storedItemWalkable == self.character.inventory[-1].walkable
+                    ):
                         self.character.addMessage("wrong size")
                         self.runCommand("wrong")
                         self.runCommand("wrong size")
                         self.blocked = False
                         return
 
-            if (self.xPosition%15 == 7 and self.yPosition%15 == 7):
+            if self.xPosition % 15 == 7 and self.yPosition % 15 == 7:
                 if self.numItemsStored >= 140:
                     self.character.addMessage("stockpile full")
                     self.runCommand("full")
                     self.blocked = False
                     return
 
-                sector = self.numItemsStored//35
-                offsetX = 6-self.numItemsStored%35%6-1
-                offsetY = 6-self.numItemsStored%35//6-1
+                sector = self.numItemsStored // 35
+                offsetX = 6 - self.numItemsStored % 35 % 6 - 1
+                offsetY = 6 - self.numItemsStored % 35 // 6 - 1
 
                 command = ""
                 if sector == 0:
-                    command += str(offsetY)+"w"
-                    command += str(offsetX)+"a"
+                    command += str(offsetY) + "w"
+                    command += str(offsetX) + "a"
                     command += "La"
-                    command += str(offsetX)+"d"
-                    command += str(offsetY)+"s"
+                    command += str(offsetX) + "d"
+                    command += str(offsetY) + "s"
                 elif sector == 1:
-                    command += str(offsetY)+"w"
-                    command += str(offsetX)+"d"
+                    command += str(offsetY) + "w"
+                    command += str(offsetX) + "d"
                     command += "Ld"
-                    command += str(offsetX)+"a"
-                    command += str(offsetY)+"s"
+                    command += str(offsetX) + "a"
+                    command += str(offsetY) + "s"
                 elif sector == 2:
                     command += "assd"
-                    command += str(offsetY)+"s"
-                    command += str(offsetX)+"a"
+                    command += str(offsetY) + "s"
+                    command += str(offsetX) + "a"
                     command += "La"
-                    command += str(offsetX)+"d"
-                    command += str(offsetY)+"w"
+                    command += str(offsetX) + "d"
+                    command += str(offsetY) + "w"
                     command += "dwwa"
                 elif sector == 3:
                     command += "assd"
-                    command += str(offsetY)+"s"
-                    command += str(offsetX)+"d"
+                    command += str(offsetY) + "s"
+                    command += str(offsetX) + "d"
                     command += "Ld"
-                    command += str(offsetX)+"a"
-                    command += str(offsetY)+"w"
+                    command += str(offsetX) + "a"
+                    command += str(offsetY) + "w"
                     command += "dwwa"
-            elif (self.xPosition%15 in (6,8,) and self.yPosition%15 in (6,8)):
+            elif (
+                self.xPosition % 15
+                in (
+                    6,
+                    8,
+                )
+                and self.yPosition % 15 in (6, 8)
+            ):
                 if self.numItemsStored >= 32:
                     self.character.addMessage("stockpile full")
                     self.runCommand("full")
                     self.blocked = False
                     return
 
-                row = self.numItemsStored//6
+                row = self.numItemsStored // 6
 
-                if (self.xPosition%15 == 6 and self.yPosition%15 == 6):
+                if self.xPosition % 15 == 6 and self.yPosition % 15 == 6:
                     rowMovUp = "w"
                     rowMovDown = "s"
                     colMovUp = "a"
                     colMovDown = "d"
                     command = ""
                     commandEnd = ""
-                elif (self.xPosition%15 == 8 and self.yPosition%15 == 6):
+                elif self.xPosition % 15 == 8 and self.yPosition % 15 == 6:
                     rowMovUp = "w"
                     rowMovDown = "s"
                     colMovUp = "d"
                     colMovDown = "a"
                     command = ""
                     commandEnd = ""
-                elif (self.xPosition%15 == 6 and self.yPosition%15 == 8):
+                elif self.xPosition % 15 == 6 and self.yPosition % 15 == 8:
                     rowMovUp = "s"
                     rowMovDown = "w"
                     colMovUp = "a"
                     colMovDown = "d"
                     command = "dssa"
                     commandEnd = "awwd"
-                elif (self.xPosition%15 == 8 and self.yPosition%15 == 8):
+                elif self.xPosition % 15 == 8 and self.yPosition % 15 == 8:
                     rowMovUp = "s"
                     rowMovDown = "w"
                     colMovUp = "d"
@@ -308,16 +353,35 @@ r: reset
                     commandEnd = "dwwa"
 
                 if row < 4:
-                    command += str(3-row)+rowMovUp
-                    command += str(5-self.numItemsStored%6)+colMovUp+"L"+rowMovUp
-                    command += str(5-self.numItemsStored%6)+colMovDown
-                    command += str(3-row)+rowMovDown
+                    command += str(3 - row) + rowMovUp
+                    command += (
+                        str(5 - self.numItemsStored % 6) + colMovUp + "L" + rowMovUp
+                    )
+                    command += str(5 - self.numItemsStored % 6) + colMovDown
+                    command += str(3 - row) + rowMovDown
                 elif self.numItemsStored >= 24 and self.numItemsStored < 28:
-                    command += str(4-(self.numItemsStored-24)%4)+colMovUp+"L"+colMovUp
-                    command += str(4-(self.numItemsStored-24)%4)+colMovDown
+                    command += (
+                        str(4 - (self.numItemsStored - 24) % 4)
+                        + colMovUp
+                        + "L"
+                        + colMovUp
+                    )
+                    command += str(4 - (self.numItemsStored - 24) % 4) + colMovDown
                 elif self.numItemsStored >= 28 and self.numItemsStored < 32:
-                    command += colMovUp+rowMovDown+str(3-(self.numItemsStored-28)%4)+colMovUp+"L"+colMovUp
-                    command += str(3-(self.numItemsStored-28)%4)+colMovDown+rowMovUp+colMovDown
+                    command += (
+                        colMovUp
+                        + rowMovDown
+                        + str(3 - (self.numItemsStored - 28) % 4)
+                        + colMovUp
+                        + "L"
+                        + colMovUp
+                    )
+                    command += (
+                        str(3 - (self.numItemsStored - 28) % 4)
+                        + colMovDown
+                        + rowMovUp
+                        + colMovDown
+                    )
                 command += commandEnd
             else:
                 command = ""
@@ -326,7 +390,7 @@ r: reset
             self.numItemsStored += 1
 
             self.character.runCommandString(command)
-            self.character.addMessage("running command to store item %s"%(command))
+            self.character.addMessage("running command to store item %s" % (command))
             self.blocked = False
             return
 
@@ -344,72 +408,79 @@ r: reset
 
             self.numItemsStored -= 1
 
-            if (self.xPosition%15 == 7 and self.yPosition%15 == 7):
-                sector = self.numItemsStored//35
-                offsetX = 6-self.numItemsStored%35%6-1
-                offsetY = 6-self.numItemsStored%35//6-1
+            if self.xPosition % 15 == 7 and self.yPosition % 15 == 7:
+                sector = self.numItemsStored // 35
+                offsetX = 6 - self.numItemsStored % 35 % 6 - 1
+                offsetY = 6 - self.numItemsStored % 35 // 6 - 1
 
                 command = ""
                 if sector == 0:
-                    command += str(offsetY)+"w"
-                    command += str(offsetX)+"a"
+                    command += str(offsetY) + "w"
+                    command += str(offsetX) + "a"
                     command += "Ka"
-                    command += str(offsetX)+"d"
-                    command += str(offsetY)+"s"
+                    command += str(offsetX) + "d"
+                    command += str(offsetY) + "s"
                 elif sector == 1:
-                    command += str(offsetY)+"w"
-                    command += str(offsetX)+"d"
+                    command += str(offsetY) + "w"
+                    command += str(offsetX) + "d"
                     command += "Kd"
-                    command += str(offsetX)+"a"
-                    command += str(offsetY)+"s"
+                    command += str(offsetX) + "a"
+                    command += str(offsetY) + "s"
                 elif sector == 2:
                     command += "assd"
-                    command += str(offsetY)+"s"
-                    command += str(offsetX)+"a"
+                    command += str(offsetY) + "s"
+                    command += str(offsetX) + "a"
                     command += "Ka"
-                    command += str(offsetX)+"d"
-                    command += str(offsetY)+"w"
+                    command += str(offsetX) + "d"
+                    command += str(offsetY) + "w"
                     command += "dwwa"
                 elif sector == 3:
                     command += "assd"
-                    command += str(offsetY)+"s"
-                    command += str(offsetX)+"d"
+                    command += str(offsetY) + "s"
+                    command += str(offsetX) + "d"
                     command += "Kd"
-                    command += str(offsetX)+"a"
-                    command += str(offsetY)+"w"
+                    command += str(offsetX) + "a"
+                    command += str(offsetY) + "w"
                     command += "dwwa"
 
-            elif (self.xPosition%15 in (6,8,) and self.yPosition%15 in (6,8)):
+            elif (
+                self.xPosition % 15
+                in (
+                    6,
+                    8,
+                )
+                and self.yPosition % 15 in (6, 8)
+            ):
                 if self.numItemsStored >= 32:
                     self.character.addMessage("stockpile full")
                     self.runCommand("full")
                     self.blocked = False
                     return
 
-                row = self.numItemsStored//6
+                row = self.numItemsStored // 6
 
-                if (self.xPosition%15 == 6 and self.yPosition%15 == 6):
+                if self.xPosition % 15 == 6 and self.yPosition % 15 == 6:
                     rowMovUp = "w"
                     rowMovDown = "s"
                     colMovUp = "a"
                     colMovDown = "d"
                     command = ""
                     commandEnd = ""
-                elif (self.xPosition%15 == 8 and self.yPosition%15 == 6):
+                elif self.xPosition % 15 == 8 and self.yPosition % 15 == 6:
                     rowMovUp = "w"
                     rowMovDown = "s"
                     colMovUp = "d"
                     colMovDown = "a"
                     command = ""
                     commandEnd = ""
-                elif (self.xPosition%15 == 6 and self.yPosition%15 == 8):
+                elif self.xPosition % 15 == 6 and self.yPosition % 15 == 8:
                     rowMovUp = "s"
                     rowMovDown = "w"
                     colMovUp = "a"
                     colMovDown = "d"
                     command = "dssa"
                     commandEnd = "dwwa"
-                elif (self.xPosition%15 == 8 and self.yPosition%15 == 8):
+                elif self.xPosition % 15 == 8 and self.yPosition % 15 == 8:
                     rowMovUp = "s"
                     rowMovDown = "w"
                     colMovUp = "d"
@@ -418,25 +489,46 @@ r: reset
                     commandEnd = "awwd"
 
                 if row < 4:
-                    command += str(3-row)+rowMovUp
-                    command += str(5-self.numItemsStored%6)+colMovUp+"K"+rowMovUp
-                    command += str(5-self.numItemsStored%6)+colMovDown
-                    command += str(3-row)+rowMovDown
+                    command += str(3 - row) + rowMovUp
+                    command += (
+                        str(5 - self.numItemsStored % 6) + colMovUp + "K" + rowMovUp
+                    )
+                    command += str(5 - self.numItemsStored % 6) + colMovDown
+                    command += str(3 - row) + rowMovDown
                 elif self.numItemsStored >= 24 and self.numItemsStored < 28:
-                    command += str(4-(self.numItemsStored-24)%4)+colMovUp+"K"+colMovUp
-                    command += str(4-(self.numItemsStored-24)%4)+colMovDown
+                    command += (
+                        str(4 - (self.numItemsStored - 24) % 4)
+                        + colMovUp
+                        + "K"
+                        + colMovUp
+                    )
+                    command += str(4 - (self.numItemsStored - 24) % 4) + colMovDown
                 elif self.numItemsStored >= 28 and self.numItemsStored < 32:
-                    command += colMovUp+rowMovDown+str(3-(self.numItemsStored-28)%4)+colMovUp+"K"+colMovUp
-                    command += str(3-(self.numItemsStored-28)%4)+colMovDown+rowMovUp+colMovDown
+                    command += (
+                        colMovUp
+                        + rowMovDown
+                        + str(3 - (self.numItemsStored - 28) % 4)
+                        + colMovUp
+                        + "K"
+                        + colMovUp
+                    )
+                    command += (
+                        str(3 - (self.numItemsStored - 28) % 4)
+                        + colMovDown
+                        + rowMovUp
+                        + colMovDown
+                    )
                 command += commandEnd
             else:
                 pass
 
             convertedCommand = []
             for char in command:
-                convertedCommand.append((char,"norecord"))
+                convertedCommand.append((char, "norecord"))
 
-            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+            self.character.macroState["commandKeyQueue"] = (
+                convertedCommand + self.character.macroState["commandKeyQueue"]
+            )
             self.character.addMessage("running command to fetch item")
             self.blocked = False
             return
@@ -450,10 +542,17 @@ r: reset
         result["storedItemWalkable"] = self.storedItemWalkable
         result["restrictStoredItemType"] = self.restrictStoredItemType
         result["restrictStoredItemWalkable"] = self.restrictStoredItemWalkable
-        if (self.xPosition%15 == 7 and self.yPosition%15 == 7):
-            result["maxAmount"] = 6*6*4
-        elif (self.xPosition%15 in (6,8,) and self.yPosition%15 in (6,8)):
-            result["maxAmount"] = 4*6+2*4
+        if self.xPosition % 15 == 7 and self.yPosition % 15 == 7:
+            result["maxAmount"] = 6 * 6 * 4
+        elif (
+            self.xPosition % 15
+            in (
+                6,
+                8,
+            )
+            and self.yPosition % 15 in (6, 8)
+        ):
+            result["maxAmount"] = 4 * 6 + 2 * 4
         else:
             result["maxAmount"] = 0
         return result
@@ -463,9 +562,10 @@ r: reset
         state["commands"] = self.commands
         return state
 
-    def setState(self,state):
+    def setState(self, state):
         super().setState(state)
         if "commands" in state:
             self.commands = state["commands"]
+
 
 src.items.addType(UniformStockpileManager)

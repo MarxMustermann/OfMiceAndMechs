@@ -1,22 +1,27 @@
 import src
 
-'''
-'''
+"""
+"""
+
+
 class Rod(src.items.Item):
     type = "Rod"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
-    def __init__(self,name="rod",noId=False):
-        super().__init__(display=src.canvas.displayChars.rod,name=name)
+    """
+
+    def __init__(self, name="rod", noId=False):
+        super().__init__(display=src.canvas.displayChars.rod, name=name)
 
         self.bolted = False
         self.walkable = True
         self.baseDamage = 6
-        self.attributesToStore.extend([
-               "baseDamage",
-               ])
+        self.attributesToStore.extend(
+            [
+                "baseDamage",
+            ]
+        )
 
     def getLongInfo(self):
         text = """
@@ -28,11 +33,14 @@ A rod. Simple building material.
 baseDamage:
 %s
 
-"""%(self.baseDamage,)
+""" % (
+            self.baseDamage,
+        )
         return text
 
-    def apply(self,character):
+    def apply(self, character):
         character.weapon = self
         self.container.removeItem(self)
+
 
 src.items.addType(Rod)

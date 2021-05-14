@@ -1,11 +1,13 @@
 import src
 
+
 class CommandBook(src.items.Item):
     type = "CommandBook"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
+    """
+
     def __init__(self):
         super().__init__(display="cb")
 
@@ -17,8 +19,7 @@ class CommandBook(src.items.Item):
 
         self.contents = []
 
-        self.attributesToStore.extend([
-                "contents"])
+        self.attributesToStore.extend(["contents"])
 
     def getState(self):
         state = super().getState()
@@ -29,5 +30,5 @@ class CommandBook(src.items.Item):
             pass
         return state
 
-src.items.addType(CommandBook)
 
+src.items.addType(CommandBook)

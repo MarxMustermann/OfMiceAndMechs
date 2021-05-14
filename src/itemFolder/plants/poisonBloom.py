@@ -1,5 +1,6 @@
 import src
 
+
 class PoisonBloom(src.items.Item):
     type = "PoisonBloom"
 
@@ -10,10 +11,9 @@ class PoisonBloom(src.items.Item):
         self.walkable = True
         self.dead = False
         self.bolted = False
-        self.attributesToStore.extend([
-               "dead"])
+        self.attributesToStore.extend(["dead"])
 
-    def apply(self,character):
+    def apply(self, character):
 
         if not self.terrain:
             self.dead = True
@@ -30,7 +30,7 @@ class PoisonBloom(src.items.Item):
 
         self.destroy(generateSrcap=False)
 
-    def pickUp(self,character):
+    def pickUp(self, character):
         self.dead = True
         self.charges = 0
         super().pickUp(character)
@@ -47,5 +47,6 @@ You can eat it to die.
 
     def destroy(self, generateSrcap=True):
         super().destroy(generateSrcap=False)
+
 
 src.items.addType(PoisonBloom)

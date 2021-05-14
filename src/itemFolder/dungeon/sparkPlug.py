@@ -1,5 +1,6 @@
 import src
 
+
 class SparkPlug(src.items.Item):
     type = "SparkPlug"
 
@@ -11,10 +12,10 @@ class SparkPlug(src.items.Item):
         self.bolted = True
         self.strength = 1
 
-    def apply(self,character):
+    def apply(self, character):
         staticSpark = None
         for item in character.inventory:
-            if isinstance(item,StaticSpark) and item.strength >= self.strength-1:
+            if isinstance(item, StaticSpark) and item.strength >= self.strength - 1:
                 if not staticSpark or staticSpark.strength > item.strength:
                     staticSpark = item
 
@@ -30,5 +31,6 @@ class SparkPlug(src.items.Item):
         newItem.depth = self.strength
         self.container.addItems([newItem])
         self.container.removeItem(self)
+
 
 src.items.addType(SparkPlug)

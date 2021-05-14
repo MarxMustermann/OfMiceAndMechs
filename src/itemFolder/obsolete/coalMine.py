@@ -1,13 +1,16 @@
 import src
 
-'''
-'''
+"""
+"""
+
+
 class CoalMine(src.items.Item):
     type = "CoalMine"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
+    """
+
     def __init__(self):
         super().__init__(display=src.canvas.displayChars.coalMine)
 
@@ -16,7 +19,7 @@ class CoalMine(src.items.Item):
         self.bolted = True
         self.walkable = False
 
-    def apply(self,character):
+    def apply(self, character):
         if self.room:
             character.addMessage("this item cannot be used within rooms")
             return
@@ -26,22 +29,31 @@ class CoalMine(src.items.Item):
             return
 
         targetFull = False
-        if (self.xPosition+1,self.yPosition) in self.terrain.itemByCoordinates:
-            if len(self.terrain.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+        if (self.xPosition + 1, self.yPosition) in self.terrain.itemByCoordinates:
+            if (
+                len(
+                    self.terrain.itemByCoordinates[(self.xPosition + 1, self.yPosition)]
+                )
+                > 15
+            ):
                 targetFull = True
-            for item in self.terrain.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+            for item in self.terrain.itemByCoordinates[
+                (self.xPosition + 1, self.yPosition)
+            ]:
                 if item.walkable == False:
                     targetFull = True
 
         if targetFull:
-            character.addMessage("the target area is full, the machine does not produce anything")
+            character.addMessage(
+                "the target area is full, the machine does not produce anything"
+            )
             return
 
         character.addMessage("you mine a piece of coal")
 
         # spawn new item
         new = Coal(creator=self)
-        new.xPosition = self.xPosition+1
+        new.xPosition = self.xPosition + 1
         new.yPosition = self.yPosition
         new.bolted = False
         self.terrain.addItems([new])
@@ -55,5 +67,6 @@ Use it to mine coal. The coal will be dropped to the east/rigth.
 
 """
         return text
+
 
 src.items.addType(CoalMine)

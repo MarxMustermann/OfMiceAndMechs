@@ -1,9 +1,11 @@
 import src
 
+
 class BloomContainer(src.items.Item):
     """
     a item to carry bloom items with
     """
+
     type = "BloomContainer"
 
     def __init__(self):
@@ -12,7 +14,7 @@ class BloomContainer(src.items.Item):
         """
 
         super().__init__()
-        
+
         self.display = src.canvas.displayChars.bloomContainer
         self.name = "bloom container"
 
@@ -20,8 +22,7 @@ class BloomContainer(src.items.Item):
         self.maxCharges = 15
         self.level = 1
 
-        self.attributesToStore.extend([
-               "charges","maxCharges","level"])
+        self.attributesToStore.extend(["charges", "maxCharges", "level"])
 
     def getLongInfo(self):
         """
@@ -50,13 +51,19 @@ Activate the bloom container and select the option "load bloom" to load the bloo
 = unload blooms =
 prepare by placing the bloom container on the ground.
 Activate the bloom container and select the option "unload bloom" to unload the blooms to the east.
-"""%(self.charges,self.maxCharges,self.level)
+""" % (
+            self.charges,
+            self.maxCharges,
+            self.level,
+        )
 
-    def apply(self,character):
+    def apply(self, character):
         options = []
-        options.append(("load","load blooms"))
-        options.append(("unload","unload blooms"))
-        self.submenue = src.interaction.SelectionMenu("select the item to produce",options)
+        options.append(("load", "load blooms"))
+        options.append(("unload", "unload blooms"))
+        self.submenue = src.interaction.SelectionMenu(
+            "select the item to produce", options
+        )
         character.macroState["submenue"] = self.submenue
         character.macroState["submenue"].followUp = self.doSelection
         self.character = character
@@ -69,7 +76,12 @@ Activate the bloom container and select the option "unload bloom" to unload the 
                 return
 
             blooms = []
-            positions = [(self.xPosition+1,self.yPosition),(self.xPosition-1,self.yPosition),(self.xPosition,self.yPosition+1),(self.xPosition,self.yPosition-1),]
+            positions = [
+                (self.xPosition + 1, self.yPosition),
+                (self.xPosition - 1, self.yPosition),
+                (self.xPosition, self.yPosition + 1),
+                (self.xPosition, self.yPosition - 1),
+            ]
             for position in positions:
                 for item in self.container.getItemByPosition(position):
                     if item.type == "Bloom":
@@ -81,7 +93,9 @@ Activate the bloom container and select the option "unload bloom" to unload the 
 
             for bloom in blooms:
                 if self.charges >= self.maxCharges:
-                    self.character.addMessage("bloom container full. not all blooms loaded")
+                    self.character.addMessage(
+                        "bloom container full. not all blooms loaded"
+                    )
                     return
 
                 self.container.removeItem(bloom)
@@ -98,7 +112,9 @@ Activate the bloom container and select the option "unload bloom" to unload the 
 
             foundWalkable = 0
             foundNonWalkable = 0
-            for item in self.container.getItemByPosition((self.xPosition+1,self.yPosition)):
+            for item in self.container.getItemByPosition(
+                (self.xPosition + 1, self.yPosition)
+            ):
                 if item.walkable:
                     foundWalkable += 1
                 else:
@@ -111,12 +127,13 @@ Activate the bloom container and select the option "unload bloom" to unload the 
             toAdd = []
             while foundNonWalkable <= 15 and self.charges:
                 new = Bloom(creator=self)
-                new.xPosition = self.xPosition+1
+                new.xPosition = self.xPosition + 1
                 new.yPosition = self.yPosition
                 new.dead = True
 
                 toAdd.append(new)
                 self.charges -= 1
             self.container.addItems(toAdd)
+
 
 src.items.addType(BloomContainer)

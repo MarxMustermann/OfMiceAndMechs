@@ -1,5 +1,6 @@
 import src
 
+
 class SparcRewardLock(src.items.Item):
     type = "SparcRewardLock"
 
@@ -10,7 +11,7 @@ class SparcRewardLock(src.items.Item):
         self.walkable = True
         self.bolted = True
 
-    def apply(self,character):
+    def apply(self, character):
         foundItem = None
         for item in character.inventory:
             if item.type == "StaticCrystal":
@@ -18,10 +19,13 @@ class SparcRewardLock(src.items.Item):
                 break
 
         if not foundItem:
-            character.addMessage("no static crystal in inventory - insert to claim reward")
+            character.addMessage(
+                "no static crystal in inventory - insert to claim reward"
+            )
             return
 
         character.inventory.append(foundItem)
         character.addMessage("well done")
+
 
 src.items.addType(SparcRewardLock)

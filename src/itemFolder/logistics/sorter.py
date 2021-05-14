@@ -1,26 +1,28 @@
 import src
 
+
 class Sorter(src.items.Item):
     type = "Sorter"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
+    """
+
     def __init__(self):
         super().__init__()
-        
+
         self.display = src.canvas.displayChars.sorter
         self.name = "sorter"
         self.coolDown = 10
         self.coolDownTimer = -self.coolDown
 
-        self.attributesToStore.extend([
-               "coolDown","coolDownTimer"])
+        self.attributesToStore.extend(["coolDown", "coolDownTimer"])
 
-    '''
-    '''
-    def apply(self,character,resultType=None):
-        super().apply(character,silent=True)
+    """
+    """
+
+    def apply(self, character, resultType=None):
+        super().apply(character, silent=True)
 
         if not self.room:
             character.addMessage("this machine can only be used within rooms")
@@ -28,19 +30,26 @@ class Sorter(src.items.Item):
 
         # fetch input scrap
         itemFound = None
-        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+        if (self.xPosition - 1, self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[
+                (self.xPosition - 1, self.yPosition)
+            ]:
                 itemFound = item
                 break
 
         compareItemFound = None
-        if (self.xPosition,self.yPosition-1) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[(self.xPosition,self.yPosition-1)]:
+        if (self.xPosition, self.yPosition - 1) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[
+                (self.xPosition, self.yPosition - 1)
+            ]:
                 compareItemFound = item
                 break
 
-        if src.gamestate.gamestate.tick < self.coolDownTimer+self.coolDown:
-            character.addMessage("cooldown not reached. Wait %s ticks"%(self.coolDown-(src.gamestate.gamestate.tick-self.coolDownTimer),))
+        if src.gamestate.gamestate.tick < self.coolDownTimer + self.coolDown:
+            character.addMessage(
+                "cooldown not reached. Wait %s ticks"
+                % (self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer),)
+            )
             return
         self.coolDownTimer = src.gamestate.gamestate.tick
 
@@ -56,29 +65,46 @@ class Sorter(src.items.Item):
         self.room.removeItem(itemFound)
 
         if itemFound.type == compareItemFound.type:
-            targetPos = (self.xPosition,self.yPosition+1)
+            targetPos = (self.xPosition, self.yPosition + 1)
         else:
-            targetPos = (self.xPosition+1,self.yPosition)
+            targetPos = (self.xPosition + 1, self.yPosition)
 
         itemFound.xPosition = targetPos[0]
         itemFound.yPosition = targetPos[1]
 
-
         targetFull = False
         new = itemFound
-        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+        if (self.xPosition + 1, self.yPosition) in self.room.itemByCoordinates:
             if new.walkable:
-                if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+                if (
+                    len(
+                        self.room.itemByCoordinates[
+                            (self.xPosition + 1, self.yPosition)
+                        ]
+                    )
+                    > 15
+                ):
                     targetFull = True
-                for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                for item in self.room.itemByCoordinates[
+                    (self.xPosition + 1, self.yPosition)
+                ]:
                     if item.walkable == False:
                         targetFull = True
             else:
-                if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 1:
+                if (
+                    len(
+                        self.room.itemByCoordinates[
+                            (self.xPosition + 1, self.yPosition)
+                        ]
+                    )
+                    > 1
+                ):
                     targetFull = True
 
         if targetFull:
-            character.addMessage("the target area is full, the machine does not produce anything")
+            character.addMessage(
+                "the target area is full, the machine does not produce anything"
+            )
             return
 
         self.room.addItems([itemFound])
@@ -97,5 +123,6 @@ Matching items will be moved to the south and non matching items will be moved t
 
 """
         return text
+
 
 src.items.addType(Sorter)

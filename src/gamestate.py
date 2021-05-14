@@ -1,6 +1,6 @@
 ############################################################################################################
 ###
-##     the state of the game should 
+##     the state of the game should
 #
 ############################################################################################################
 
@@ -20,16 +20,19 @@ import config
 gamestate = None
 phasesByName = {}
 
-'''
+"""
 the container for the gamestate
 bad code: all game state should be reachable from here
-'''
+"""
+
+
 class GameState(src.saveing.Saveable):
-    '''
+    """
     basic state setting with some initialization
     bad code: initialization should happen in story or from loading
-    '''
-    def __init__(self,phase=None, seed=0):
+    """
+
+    def __init__(self, phase=None, seed=0):
         super().__init__()
         self.id = "gamestate"
         self.mainChar = None
@@ -37,7 +40,7 @@ class GameState(src.saveing.Saveable):
         self.tick = 0
         pass
 
-    def setup(self,phase=None, seed=0):
+    def setup(self, phase=None, seed=0):
         self.initialSeed = seed
 
         self.gameWon = False
@@ -46,7 +49,7 @@ class GameState(src.saveing.Saveable):
         self.macros = {}
 
         try:
-            with open("gamestate/successSeed.json","r") as successSeedFile:
+            with open("gamestate/successSeed.json", "r") as successSeedFile:
                 rawState = json.loads(successSeedFile.read())
                 self.successSeed = int(rawState["successSeed"])
         except:
@@ -59,18 +62,30 @@ class GameState(src.saveing.Saveable):
             self.currentPhase = phasesByName["BuildBase"](seed=seed)
 
         # add the main char
-        self.mainChar = src.characters.Character(src.canvas.displayChars.main_char,3,3,automated=False,name=config.names.characterFirstNames[self.tick%len(config.names.characterFirstNames)]+" "+config.names.characterLastNames[self.tick%len(config.names.characterLastNames)])
+        self.mainChar = src.characters.Character(
+            src.canvas.displayChars.main_char,
+            3,
+            3,
+            automated=False,
+            name=config.names.characterFirstNames[
+                self.tick % len(config.names.characterFirstNames)
+            ]
+            + " "
+            + config.names.characterLastNames[
+                self.tick % len(config.names.characterLastNames)
+            ],
+        )
         self.mainChar.watched = True
         self.mainChar.terrain = None
         mainChar = self.mainChar
         self.openingCinematic = None
 
         self.terrainMap = []
-        for y in range(0,30):
+        for y in range(0, 30):
             line = []
-            for x in range(0,30):
-                if x == 15 and y == 15: 
-                    thisTerrain = self.terrainType(creator=self,seed=seed)
+            for x in range(0, 30):
+                if x == 15 and y == 15:
+                    thisTerrain = self.terrainType(creator=self, seed=seed)
                     self.terrain = thisTerrain
                 else:
                     thisTerrain = src.terrains.Nothingness(creator=self)
@@ -79,39 +94,43 @@ class GameState(src.saveing.Saveable):
                 line.append(thisTerrain)
             self.terrainMap.append(line)
 
-    '''
+    """
     save the gamestate to disc
     bad pattern: loading and saving one massive json will break on the long run. save function should be delegated down to be able to scale json size
-    '''
+    """
+
     def save(self):
         # get state as dictionary
         state = self.getState()
 
-        with open("gamestate/successSeed.json","w") as successSeedFile:
-            successSeedFile.write(json.dumps({"successSeed":self.successSeed}))
+        with open("gamestate/successSeed.json", "w") as successSeedFile:
+            successSeedFile.write(json.dumps({"successSeed": self.successSeed}))
 
         from shutil import copyfile
+
         try:
             copyfile("gamestate/gamestate.json", "gamestate/gamestate_backup.json")
         except:
             pass
 
         if not state["gameWon"]:
-            gamedump = json.dumps(state,indent=4, sort_keys=True)
+            gamedump = json.dumps(state, indent=4, sort_keys=True)
         else:
             gamedump = json.dumps("Winning is no fun at all")
 
         # write the savefile
-        with open("gamestate/gamestate.json","w") as saveFile:
+        with open("gamestate/gamestate.json", "w") as saveFile:
             saveFile.write(gamedump)
 
-    '''
+    """
     load the gamestate from disc
     bad pattern: loading and saving one massive json will break on the long run. load function should be delegated down to be able to scale json size
-    '''
+    """
+
     def load(self):
         # handle missing savefile
         import os
+
         if not os.path.isfile("gamestate/gamestate.json"):
             src.logger.debugMessages.append("no gamestate found - NOT LOADING")
             print("no gamestate found")
@@ -122,8 +141,15 @@ class GameState(src.saveing.Saveable):
             rawstate = saveFile.read()
 
             # handle special gamestates
-            if rawstate in ["you lost","reset","Winning is no fun at all","\"Winning is no fun at all\""]:
-                src.logger.debugMessages.append("special gamestate "+str(rawstate)+" found - NOT LOADING")
+            if rawstate in [
+                "you lost",
+                "reset",
+                "Winning is no fun at all",
+                '"Winning is no fun at all"',
+            ]:
+                src.logger.debugMessages.append(
+                    "special gamestate " + str(rawstate) + " found - NOT LOADING"
+                )
                 print("final gamestate found - resetting")
                 return False
 
@@ -137,10 +163,11 @@ class GameState(src.saveing.Saveable):
             print(src.saveing.loadingRegistry.delayedCalls)
         return True
 
-    '''
+    """
     rebuild gamestate from half serialized form
-    '''
-    def setState(self,state):
+    """
+
+    def setState(self, state):
         # the object itself
         self.gameWon = state["gameWon"]
         self.currentPhase = phasesByName[state["currentPhase"]["name"]]()
@@ -156,7 +183,7 @@ class GameState(src.saveing.Saveable):
             newLine = []
             x = 0
             for item in line:
-                thisTerrain = src.terrains.getTerrainFromState(item,creator=self)
+                thisTerrain = src.terrains.getTerrainFromState(item, creator=self)
                 thisTerrain.xPosition = x
                 thisTerrain.yPosition = y
                 newLine.append(thisTerrain)
@@ -179,7 +206,20 @@ class GameState(src.saveing.Saveable):
         # load the main character
         # bad code: should be simplified
         if not self.mainChar:
-            self.mainChar = src.characters.Character(src.canvas.displayChars.main_char,3,3,automated=False,name=config.names.characterFirstNames[self.tick%len(config.names.characterFirstNames)]+" "+config.names.characterLastNames[self.tick%len(config.names.characterLastNames)],characterId=state["mainChar"]["id"])
+            self.mainChar = src.characters.Character(
+                src.canvas.displayChars.main_char,
+                3,
+                3,
+                automated=False,
+                name=config.names.characterFirstNames[
+                    self.tick % len(config.names.characterFirstNames)
+                ]
+                + " "
+                + config.names.characterLastNames[
+                    self.tick % len(config.names.characterLastNames)
+                ],
+                characterId=state["mainChar"]["id"],
+            )
             src.saveing.loadingRegistry.register(self.mainChar)
         xPosition = self.mainChar.xPosition
         if "xPosition" in state["mainChar"]:
@@ -190,27 +230,32 @@ class GameState(src.saveing.Saveable):
         if "room" in state["mainChar"] and state["mainChar"]["room"]:
             for room in terrain.rooms:
                 if room.id == state["mainChar"]["room"]:
-                    room.addCharacter(self.mainChar,xPosition,yPosition)
+                    room.addCharacter(self.mainChar, xPosition, yPosition)
                     break
         else:
-            terrain.addCharacter(self.mainChar,xPosition,yPosition)
+            terrain.addCharacter(self.mainChar, xPosition, yPosition)
         self.mainChar.setState(state["mainChar"])
 
         # load cinematics
         for cinematicId in state["cinematics"]["ids"]:
-            cinematic = src.cinematics.getCinematicFromState(state["cinematics"]["states"][cinematicId])
+            cinematic = src.cinematics.getCinematicFromState(
+                state["cinematics"]["states"][cinematicId]
+            )
             src.cinematics.cinematicQueue.append(cinematic)
 
         # load submenu
         if "submenu" in state:
             if state["submenu"]:
-                src.interaction.submenue = src.interaction.getSubmenuFromState(state["submenu"])
+                src.interaction.submenue = src.interaction.getSubmenuFromState(
+                    state["submenu"]
+                )
             else:
                 src.interaction.submenue = None
 
-    '''
+    """
     get gamestate in half serialized form
-    '''
+    """
+
     def getState(self):
         # generate simple state
         state = {}
@@ -262,6 +307,7 @@ class GameState(src.saveing.Saveable):
         state["submenu"] = submenueState
 
         return state
+
 
 def setup():
     global gamestate

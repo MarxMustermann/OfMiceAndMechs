@@ -20,11 +20,14 @@ cinematicQueue = []
 """
 the base class for all Cinamatics
 """
+
+
 class BasicCinematic(src.saveing.Saveable):
-    '''
+    """
     basic state setting and id generation
-    '''
-    def __init__(self,creator=None):
+    """
+
+    def __init__(self, creator=None):
         super().__init__()
 
         # initialize basic state
@@ -38,44 +41,53 @@ class BasicCinematic(src.saveing.Saveable):
         self.aborted = False
 
         # add save information
-        self.attributesToStore.extend([
-               "background","overwriteFooter","footerText","type","skipable"])
+        self.attributesToStore.extend(
+            ["background", "overwriteFooter", "footerText", "type", "skipable"]
+        )
         self.callbacksToStore.append("endTrigger")
 
         # generate unique id
         import uuid
+
         self.id = uuid.uuid4().hex
 
-
-    '''
+    """
     do nothing
-    '''
+    """
+
     def advance(self):
         return False
 
-    '''
+    """
     set aborted flag
-    '''
+    """
+
     def abort(self):
         self.aborted = True
         pass
 
-    '''
+    """
     adds self to the list of cinematics
-    '''
+    """
+
     def addSubmenuToCinematicQueue(self):
         # bad code: hooks the submenue directly into the interaction
         src.interaction.submenue = self.submenue
         src.interaction.submenue.followUp = self.abort
+
+
 """
 this is a single use cinematic basically. It flashes some info too fast to read in order to symbolise information transfer to the implant
 bad code: should be abstracted and called with a parameter instead of single use special class
 """
+
+
 class InformationTransfer(BasicCinematic):
     """
     almost straightforward state initilisation with the information as parameter
     """
-    def __init__(self,information={},creator=None):
+
+    def __init__(self, information={}, creator=None):
         super().__init__(creator=creator)
 
         self.position = 0
@@ -89,6 +101,7 @@ class InformationTransfer(BasicCinematic):
     """
     blink a piece of information
     """
+
     def advance(self):
         super().advance()
 
@@ -96,11 +109,13 @@ class InformationTransfer(BasicCinematic):
         if self.position < len(self.information):
             # show the current piece of information
             src.interaction.header.set_text(self.information[self.position][0])
-            src.interaction.main.set_text(self.information[self.position][1]) 
+            src.interaction.main.set_text(self.information[self.position][1])
 
             # trigger showing the next information
             self.position += 1
-            self.alarm = src.interaction.loop.set_alarm_in(0.2, src.interaction.callShow_or_exit, '~')
+            self.alarm = src.interaction.loop.set_alarm_in(
+                0.2, src.interaction.callShow_or_exit, "~"
+            )
             return False
 
         # show the information
@@ -112,30 +127,35 @@ class InformationTransfer(BasicCinematic):
             self.triggered = True
             self.skipable = True
             return False
-        
+
         return False
 
     """
     stop rendering
     """
+
     def abort(self):
         super().abort()
 
         # clean up
-        try: 
+        try:
             src.interaction.loop.remove_alarm(self.alarm)
         except:
             src.logger.debugMessages.append("removed non existant alarm")
-    
+
+
 """
 this is a single use cinematic that collapses a full screen message display into the in-game message window
 bad code: this should be abstracted to have a zoom in/out for various things like the quest menu
 """
+
+
 class MessageZoomCinematic(BasicCinematic):
     """
     almost straightforward state initialization
     """
-    def __init__(self,creator=None):
+
+    def __init__(self, creator=None):
         super().__init__(creator=creator)
 
         # bad code: the screensize can change while the cinematic is running
@@ -153,6 +173,7 @@ class MessageZoomCinematic(BasicCinematic):
     """
     render the message window smaller each step
     """
+
     def advance(self):
         super().advance()
         src.gamestate.gamestate.mainChar.terrain = None
@@ -164,29 +185,31 @@ class MessageZoomCinematic(BasicCinematic):
         # wait for some time till actually doing something
         if self.turnOnCounter:
             self.turnOnCounter -= 1
-            src.interaction.header.set_text("\n"+"\n".join(self.text))
+            src.interaction.header.set_text("\n" + "\n".join(self.text))
             src.interaction.main.set_text("")
-            self.alarm = src.interaction.loop.set_alarm_in(0.2, src.interaction.callShow_or_exit, '~')
+            self.alarm = src.interaction.loop.set_alarm_in(
+                0.2, src.interaction.callShow_or_exit, "~"
+            )
             return False
 
         # add borders to the text
         # bad code: design elements should be in config
         textWithDeco = ""
         for line in self.text:
-            textWithDeco += " "*self.left+"┃ "+line+"\n"
-        for i in range(0,self.top-2-len(self.text)):
-            textWithDeco += " "*self.left+"┃\n"
-        textWithDeco += " "*self.left+"┗"+"━"*(self.right-1)
+            textWithDeco += " " * self.left + "┃ " + line + "\n"
+        for i in range(0, self.top - 2 - len(self.text)):
+            textWithDeco += " " * self.left + "┃\n"
+        textWithDeco += " " * self.left + "┗" + "━" * (self.right - 1)
 
         # reduce the size till the border fits the message boxes borders
         # bad code: the dimension of the message box is calculated based on assumptions. Size should be asked from the message box
         src.interaction.header.set_text(textWithDeco)
         src.interaction.main.set_text("")
-        questWidth = (self.screensize[0]//3)*2+4
+        questWidth = (self.screensize[0] // 3) * 2 + 4
         # shrink X axis
         if self.right > questWidth:
             # fast shrinking
-            if self.right > questWidth+5:
+            if self.right > questWidth + 5:
                 self.left += 2
                 self.right -= 2
             # slow shrinking
@@ -205,38 +228,49 @@ class MessageZoomCinematic(BasicCinematic):
                 self.turnOffCounter -= 1
             # stop the cinematic
             else:
-                self.alarm = src.interaction.loop.set_alarm_in(0.2, src.interaction.callShow_or_exit, ' ')
+                self.alarm = src.interaction.loop.set_alarm_in(
+                    0.2, src.interaction.callShow_or_exit, " "
+                )
                 self.skipable = True
                 return False
 
         # trigger the next movement
-        self.alarm = src.interaction.loop.set_alarm_in(0.2, src.interaction.callShow_or_exit, '~')
+        self.alarm = src.interaction.loop.set_alarm_in(
+            0.2, src.interaction.callShow_or_exit, "~"
+        )
 
     """
     stop rendering
     """
+
     def abort(self):
         super().abort()
 
         # clean up
-        try: 
+        try:
             src.interaction.loop.remove_alarm(self.alarm)
         except:
             src.logger.debugMessages.append("removed non existant alarm")
-        
+
         # trigger follow up functions
         if self.endTrigger:
             self.callIndirect(self.endTrigger)
 
+
 """
 a cinematic showing a text in various ways
 """
+
+
 class TextCinematic(BasicCinematic):
     """
     almost straightforward state initialization
     options include a rusty look and scrolling
     """
-    def __init__(self,text="",rusty=False, autocontinue=False, scrolling=False,creator=None):
+
+    def __init__(
+        self, text="", rusty=False, autocontinue=False, scrolling=False, creator=None
+    ):
         super().__init__(creator=creator)
 
         self.text = text
@@ -250,24 +284,27 @@ class TextCinematic(BasicCinematic):
 
         # add interaction instructions
         if not rusty:
-           self.footerText = "press any key to speed up cutscene (not space)"
+            self.footerText = "press any key to speed up cutscene (not space)"
         else:
-           self.footerText = ""
+            self.footerText = ""
 
         # flatten text and text information
         import src.urwidSpecials
+
         self.text = src.urwidSpecials.flattenToPeseudoString(self.text)
         self.endPosition = len(self.text)
         if not scrolling:
             self.position = self.endPosition
 
         # add meta information for saving
-        self.attributesToStore.extend([
-               "text","endPosition","position","rusty","autocontinue"])
-            
-    '''
+        self.attributesToStore.extend(
+            ["text", "endPosition", "position", "rusty", "autocontinue"]
+        )
+
+    """
     render and advance the state
-    '''
+    """
+
     def advance(self):
         super().advance()
 
@@ -282,12 +319,18 @@ class TextCinematic(BasicCinematic):
 
         # scroll the text in char by char
         if self.position < self.endPosition:
-            baseText = self.text[0:self.position]
+            baseText = self.text[0 : self.position]
             if src.interaction.loop:
-                if isinstance(self.text[self.position],str) and self.text[self.position] in ("\n"):
-                    self.alarm = src.interaction.loop.set_alarm_in(0.5, src.interaction.callShow_or_exit, '~')
+                if isinstance(self.text[self.position], str) and self.text[
+                    self.position
+                ] in ("\n"):
+                    self.alarm = src.interaction.loop.set_alarm_in(
+                        0.5, src.interaction.callShow_or_exit, "~"
+                    )
                 else:
-                    self.alarm = src.interaction.loop.set_alarm_in(0.05, src.interaction.callShow_or_exit, '~')
+                    self.alarm = src.interaction.loop.set_alarm_in(
+                        0.05, src.interaction.callShow_or_exit, "~"
+                    )
             addition = ""
 
         # show the complete text
@@ -297,10 +340,14 @@ class TextCinematic(BasicCinematic):
             if not self.autocontinue:
                 self.footerText = "press space to proceed"
                 if src.interaction.loop:
-                    self.alarm = src.interaction.loop.set_alarm_in(0, src.interaction.callShow_or_exit, '~')
+                    self.alarm = src.interaction.loop.set_alarm_in(
+                        0, src.interaction.callShow_or_exit, "~"
+                    )
             else:
                 if src.interaction.loop:
-                    self.alarm = src.interaction.loop.set_alarm_in(0, src.interaction.callShow_or_exit, ' ')
+                    self.alarm = src.interaction.loop.set_alarm_in(
+                        0, src.interaction.callShow_or_exit, " "
+                    )
 
         # set or not set rusty colors
         if self.rusty:
@@ -319,14 +366,15 @@ class TextCinematic(BasicCinematic):
         # scroll further
         self.position += 1
 
-    '''
+    """
     stop the cinematic
-    '''
+    """
+
     def abort(self):
         super().abort()
 
         # clean up
-        try: 
+        try:
             src.interaction.loop.remove_alarm(self.alarm)
         except:
             src.logger.debugMessages.append("removed non existant alarm")
@@ -335,16 +383,28 @@ class TextCinematic(BasicCinematic):
         if self.endTrigger:
             self.callIndirect(self.endTrigger)
 
-'''
+
+"""
 a cinematic that shows the execution of a quest
 bad pattern: locking the players controls without ingame reason results breaking the users expectation
-'''
+"""
+
+
 class ShowQuestExecution(BasicCinematic):
-    '''
+    """
     straightforward initialization with options like a character to do the quest or making
     it run in the background. A second setup happens when the cinematic actually starts
-    '''
-    def __init__(self,quest=None,tickSpan = None, assignTo = None, background = False, container=None,creator=None):
+    """
+
+    def __init__(
+        self,
+        quest=None,
+        tickSpan=None,
+        assignTo=None,
+        background=False,
+        container=None,
+        creator=None,
+    ):
 
         super().__init__(creator=creator)
 
@@ -368,31 +428,36 @@ class ShowQuestExecution(BasicCinematic):
         self.overwriteFooter = False
         self.container = container
         self.type = "ShowQuestExecution"
-    
-    '''
+
+    """
     set state from dict
-    '''
-    def setState(self,state):
+    """
+
+    def setState(self, state):
         super().setState(state)
 
         # set quest related attributes
         if "quest" in state and state["quest"]:
-            if isinstance(state["quest"],str):
-                '''
+            if isinstance(state["quest"], str):
+                """
                 set value
-                '''
+                """
+
                 def setQuest(quest):
                     self.quest = quest
-                loadingRegistry.callWhenAvailable(state["quest"],setQuest)
+
+                loadingRegistry.callWhenAvailable(state["quest"], setQuest)
             else:
                 import src.quest
+
                 self.quest = src.quests.getQuestFromState(state["quest"])
         else:
             self.quest = None
 
-    '''
+    """
     get state from dict
-    '''
+    """
+
     def getState(self):
         state = super().getState()
 
@@ -405,21 +470,23 @@ class ShowQuestExecution(BasicCinematic):
             state["quest"] = self.quest.getState()
         return state
 
-    '''
+    """
     assign the quest
-    '''
+    """
+
     def setup(self):
         self.wasSetup = True
         if self.assignTo:
             if not self.container:
-                self.assignTo.assignQuest(self.quest,active=True)
+                self.assignTo.assignQuest(self.quest, active=True)
             else:
                 self.container.addQuest(self.quest)
                 self.container.recalculate()
 
-    '''
+    """
     advance and show game
-    '''
+    """
+
     def advance(self):
         super().advance()
 
@@ -429,7 +496,9 @@ class ShowQuestExecution(BasicCinematic):
 
         # abort if quest is done
         if self.quest.completed:
-            src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, ' ')
+            src.interaction.loop.set_alarm_in(
+                0.0, src.interaction.callShow_or_exit, " "
+            )
             self.skipable = True
             return True
 
@@ -440,14 +509,19 @@ class ShowQuestExecution(BasicCinematic):
         if self.alarm:
             src.interaction.loop.remove_alarm(self.alarm)
         if self.tickSpan and self.active:
-            self.alarm = src.interaction.loop.set_alarm_in(self.tickSpan, src.interaction.callShow_or_exit, '.')
+            self.alarm = src.interaction.loop.set_alarm_in(
+                self.tickSpan, src.interaction.callShow_or_exit, "."
+            )
         else:
-            self.alarm = src.interaction.loop.set_alarm_in(0.5, src.interaction.callShow_or_exit, '~')
+            self.alarm = src.interaction.loop.set_alarm_in(
+                0.5, src.interaction.callShow_or_exit, "~"
+            )
         return True
 
-    '''
+    """
     finish quest and clean up
-    '''
+    """
+
     def abort(self):
         super().abort()
 
@@ -465,21 +539,25 @@ class ShowQuestExecution(BasicCinematic):
 
             self.advance()
         if disableAutomated:
-                self.quest.character.automated = False
+            self.quest.character.automated = False
 
         # trigger follow up actions
         if self.endTrigger:
             self.callIndirect(self.endTrigger)
-        
-'''
+
+
+"""
 shows the game
 bad pattern: locking the players controls without ingame reason results breaking the users expectation
-'''
+"""
+
+
 class ShowGameCinematic(BasicCinematic):
-    '''
+    """
     straightforward state initialization
-    '''
-    def __init__(self,turns=0,tickSpan = None,creator=None):
+    """
+
+    def __init__(self, turns=0, tickSpan=None, creator=None):
         super().__init__(creator=creator)
 
         self.turns = turns
@@ -488,31 +566,37 @@ class ShowGameCinematic(BasicCinematic):
         self.overwriteFooter = False
         self.type = "ShowGameCinematic"
 
-    '''
+    """
     advance the game
-    '''
+    """
+
     def advance(self):
         super().advance()
 
         # abort when done
         if not self.turns:
-            src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, ' ')
+            src.interaction.loop.set_alarm_in(
+                0.0, src.interaction.callShow_or_exit, " "
+            )
             self.skipable = True
             return
-                
+
         # advance the game
         advanceGame()
 
         # trigger next step
         self.turns -= 1
         if self.tickSpan:
-            src.interaction.loop.set_alarm_in(self.tickSpan, src.interaction.callShow_or_exit, '.')
+            src.interaction.loop.set_alarm_in(
+                self.tickSpan, src.interaction.callShow_or_exit, "."
+            )
 
         return True
 
-    '''
+    """
     advance game and abort
-    '''
+    """
+
     def abort(self):
         super().abort()
 
@@ -526,22 +610,27 @@ class ShowGameCinematic(BasicCinematic):
         if self.endTrigger:
             self.callIndirect(self.endTrigger)
 
-'''
+
+"""
 triggers a chat
-'''
+"""
+
+
 class ChatCinematic(BasicCinematic):
-    '''
+    """
     create submenue
-    '''
-    def __init__(self,creator=None):
+    """
+
+    def __init__(self, creator=None):
         super().__init__(creator=creator)
 
         self.submenue = src.chats.ChatMenu()
         self.type = "ChatCinematic"
 
-    '''
+    """
     triggers a chat and aborts
-    '''
+    """
+
     def advance(self):
         super().abort()
 
@@ -554,18 +643,24 @@ class ChatCinematic(BasicCinematic):
             self.followUp()
         if cinematicQueue:
             cinematicQueue[0].advance()
-        src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, '~')
+        src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, "~")
         return True
 
-'''
+
+"""
 this cinematic offers the user a choice and calls a callback depending on this choice
 bad pattern: choices should be in game actions not magic cutscene choices
-'''
+"""
+
+
 class SelectionCinematic(BasicCinematic):
-    '''
+    """
     straightforward state initialization
-    '''
-    def __init__(self, text=None, options=None, followUps=None,creator=None, default=None):
+    """
+
+    def __init__(
+        self, text=None, options=None, followUps=None, creator=None, default=None
+    ):
         super().__init__(creator=creator)
 
         self.options = options
@@ -573,26 +668,28 @@ class SelectionCinematic(BasicCinematic):
         self.followUps = followUps
         self.text = text
         self.selected = None
-        self.submenue= None
+        self.submenue = None
         self.type = "SelectionCinematic"
 
         # add meta information for saving
         self.attributesToStore.append("text")
 
-    '''
+    """
     set up and do nothing
     bad code: this is the core function. It should do something
-    '''
+    """
+
     def advance(self):
         super().advance()
 
         self.setUp()
         return True
 
-    '''
+    """
     set state from dict
-    '''
-    def setState(self,state):
+    """
+
+    def setState(self, state):
         super().setState(state)
 
         # set quest related attributes
@@ -600,34 +697,39 @@ class SelectionCinematic(BasicCinematic):
             self.options = state["options"]
         if "followUps" in state and state["followUps"]:
             self.followUps = state["followUps"]
-            for (key,value) in state["followUps"].items():
+            for (key, value) in state["followUps"].items():
                 state["followUps"][key] = self.deserializeCallback(value)
 
-    '''
+    """
     get state from dict
-    '''
+    """
+
     def getState(self):
         state = super().getState()
 
         # get quest related attributes
         followUps = {}
-        for (key,value) in self.followUps.items():
+        for (key, value) in self.followUps.items():
             followUps[key] = self.serializeCallback(value)
 
         state["followUps"] = followUps
         state["options"] = self.options
         return state
 
-    '''
+    """
     show the selection menue
-    '''
+    """
+
     def setUp(self):
-        self.submenue = src.interaction.SelectionMenu(self.text, self.options, default=self.default)
+        self.submenue = src.interaction.SelectionMenu(
+            self.text, self.options, default=self.default
+        )
         self.addSubmenuToCinematicQueue()
 
-    '''
+    """
     get the selection and trigger the corresponding callback
-    '''
+    """
+
     def abort(self):
         super().abort()
 
@@ -650,17 +752,21 @@ class SelectionCinematic(BasicCinematic):
             if self.followUp:
                 self.followUp()
 
-        src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, '~')
+        src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, "~")
 
-'''
+
+"""
 this cutscenes shows some message 
-'''
+"""
+
+
 class ShowMessageCinematic(BasicCinematic):
 
-    '''
+    """
     basic state setting
-    '''
-    def __init__(self,message="",creator=None):
+    """
+
+    def __init__(self, message="", creator=None):
         super().__init__(creator=creator)
 
         self.message = message
@@ -668,49 +774,57 @@ class ShowMessageCinematic(BasicCinematic):
         self.overwriteFooter = False
         self.type = "ShowMessageCinematic"
 
-    '''
+    """
     show message and abort
-    '''
+    """
+
     def advance(self):
         super().advance()
 
         # abort
         if self.breakCinematic:
-            src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, ' ')
+            src.interaction.loop.set_alarm_in(
+                0.0, src.interaction.callShow_or_exit, " "
+            )
             self.skipable = True
             return False
 
         # add message
         src.gamestate.gamestate.mainChar.addMessage(self.message)
-        src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, '~')
+        src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, "~")
         self.breakCinematic = True
         return True
-    
-'''
+
+
+"""
 shortcut for adding a textcinematic
 bad code: this should be a generalised wrapper for adding cinematics
-'''
-def showCinematic(text,rusty=False,autocontinue=False,scrolling=False):
-    cinematicQueue.append(TextCinematic(text,rusty,autocontinue,scrolling))
+"""
+
+
+def showCinematic(text, rusty=False, autocontinue=False, scrolling=False):
+    cinematicQueue.append(TextCinematic(text, rusty, autocontinue, scrolling))
+
 
 # map of string the cinematic classes
 cinematicMap = {
-     "BasicCinematic":BasicCinematic,
-     "InformationTransfer":InformationTransfer,
-     "MessageZoomCinematic":MessageZoomCinematic,
-     "TextCinematic":TextCinematic,
-     "ShowQuestExecution":ShowQuestExecution,
-     "ShowGameCinematic":ShowGameCinematic,
-     "ChatCinematic":ChatCinematic,
-     "SelectionCinematic":SelectionCinematic,
-     "ShowMessageCinematic":ShowMessageCinematic,
+    "BasicCinematic": BasicCinematic,
+    "InformationTransfer": InformationTransfer,
+    "MessageZoomCinematic": MessageZoomCinematic,
+    "TextCinematic": TextCinematic,
+    "ShowQuestExecution": ShowQuestExecution,
+    "ShowGameCinematic": ShowGameCinematic,
+    "ChatCinematic": ChatCinematic,
+    "SelectionCinematic": SelectionCinematic,
+    "ShowMessageCinematic": ShowMessageCinematic,
 }
 
-'''
+"""
 spawner for cinematics from dicts
-'''
+"""
+
+
 def getCinematicFromState(state):
     cinematic = cinematicMap[state["type"]]()
     cinematic.setState(state)
     return cinematic
-

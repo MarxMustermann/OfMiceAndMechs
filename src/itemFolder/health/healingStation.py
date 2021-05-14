@@ -1,18 +1,23 @@
 import src
 
+
 class HealingStation(src.items.Item):
     type = "HealingStation"
 
-    def __init__(self,noId=False):
-        super().__init__(display=src.canvas.displayChars.healingStation,name="healingstation")
+    def __init__(self, noId=False):
+        super().__init__(
+            display=src.canvas.displayChars.healingStation, name="healingstation"
+        )
 
         self.walkable = False
         self.bolted = True
         self.charges = 0
 
-    def apply(self,character):
-        options = [("heal","heal me"),("vial","fill vial")]
-        self.submenue = src.interaction.SelectionMenu("what do you want to do?",options)
+    def apply(self, character):
+        options = [("heal", "heal me"), ("vial", "fill vial")]
+        self.submenue = src.interaction.SelectionMenu(
+            "what do you want to do?", options
+        )
         character.macroState["submenue"] = self.submenue
         character.macroState["submenue"].followUp = self.apply2
         self.character = character
@@ -23,7 +28,7 @@ class HealingStation(src.items.Item):
         if self.submenue.selection == "vial":
             self.fill(self.character)
 
-    def heal(self,character):
+    def heal(self, character):
 
         if self.charges < 1:
             character.addMessage("no charges left")
@@ -33,17 +38,17 @@ class HealingStation(src.items.Item):
         character.health = 100
         self.charges -= 1
 
-    def fill(self,character):
+    def fill(self, character):
 
         if self.charges < 1:
             character.addMessage("no charges left")
             return
 
         for item in character.inventory:
-            if not isinstance(item,src.items.Vial):
+            if not isinstance(item, src.items.Vial):
                 continue
-            if self.charges > item.maxUses-item.uses:
-                self.charges -= item.maxUses-item.uses
+            if self.charges > item.maxUses - item.uses:
+                self.charges -= item.maxUses - item.uses
                 item.uses = item.maxUses
                 character.addMessage("you fill your vial with the healing")
                 return
@@ -65,6 +70,9 @@ heals you
 charges:
 %s
 
-"""%(self.charges)
+""" % (
+            self.charges
+        )
+
 
 src.items.addType(HealingStation)

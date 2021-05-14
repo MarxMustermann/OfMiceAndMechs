@@ -1,5 +1,6 @@
 import src
 
+
 class MoldFeed(src.items.Item):
     type = "MoldFeed"
 
@@ -30,5 +31,6 @@ can be eaten
             character.satiation = 1000
         character.addMessage("you eat the mold feed and gain satiation")
         self.destroy()
+
 
 src.items.addType(MoldFeed)

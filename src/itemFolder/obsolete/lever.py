@@ -1,15 +1,18 @@
 import src
 
-'''
+"""
 item for letting characters trigger something
-'''
+"""
+
+
 class Lever(src.items.Item):
     type = "Lever"
 
-    '''
+    """
     straightforward state initialization
-    '''
-    def __init__(self,activated=False):
+    """
+
+    def __init__(self, activated=False):
         self.activated = activated
         super().__init__()
 
@@ -20,15 +23,15 @@ class Lever(src.items.Item):
         self.bolted = True
 
         # set metadata for saving
-        self.attributesToStore.extend([
-               "activated"])
+        self.attributesToStore.extend(["activated"])
 
-    '''
+    """
     pull the lever!
     bad code: activate/deactive methods would be nice
-    '''
-    def apply(self,character):
-        super().apply(character,silent=True)
+    """
+
+    def apply(self, character):
+        super().apply(character, silent=True)
 
         if not self.room:
             character.addMessage("this machine can only be used within rooms")
@@ -52,9 +55,10 @@ class Lever(src.items.Item):
         # notify listeners
         self.changed()
 
-    '''
+    """
     render the lever
-    '''
+    """
+
     def render(self):
         if self.activated:
             return src.canvas.displayChars.lever_pulled
@@ -70,5 +74,6 @@ A lever. It is not useful.
 
 """
         return text
+
 
 src.items.addType(Lever)

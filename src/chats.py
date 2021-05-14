@@ -13,18 +13,19 @@ import src.quests
 import config
 import src.gamestate
 
-'''
+"""
 the main class for chats
-'''
-class Chat(src.interaction.SubMenu):
+"""
 
-    def removeFromChatOptions(self,character):
+
+class Chat(src.interaction.SubMenu):
+    def removeFromChatOptions(self, character):
         # find self in the characters chat options
         toRemove = None
         for item in character.basicChatOptions:
 
             # handle class notation
-            if not isinstance(item,dict):
+            if not isinstance(item, dict):
                 if item == type(self):
                     toRemove = item
                     break
@@ -41,21 +42,24 @@ class Chat(src.interaction.SubMenu):
         else:
             src.logger.debugMessages.append("removed chat option that wasn't there")
 
-    def setUp(self,state):
+    def setUp(self, state):
         pass
+
 
 class OneTimeMessage(Chat):
     id = "OneTimeMessage"
 
-    '''
-    '''
-    def __init__(self,text=""):
+    """
+    """
+
+    def __init__(self, text=""):
         super().__init__()
         self.firstRun = True
         self.persistentText = text
 
-    '''
-    '''
+    """
+    """
+
     def handleKey(self, key, noRender=False):
         if self.firstRun:
             self.set_text(self.persistentText)
@@ -65,26 +69,31 @@ class OneTimeMessage(Chat):
         self.done = True
         return True
 
-'''
+
+"""
 the chat for getting a hopper duty intro
-'''
+"""
+
+
 class ConfigurableChat(Chat):
     id = "ConfigurableChat"
 
-    '''
-    '''
-    def __init__(self,discardParam = None):
+    """
+    """
+
+    def __init__(self, discardParam=None):
         super().__init__()
         self.subMenu = None
         self.allowExit = True
 
-    '''
-    '''
+    """
+    """
+
     def handleKey(self, key, noRender=False):
         if self.subMenu:
-             if not self.subMenu.handleKey(key, noRender=noRender):
-                 return False
-             self.subMenu = None
+            if not self.subMenu.handleKey(key, noRender=noRender):
+                return False
+            self.subMenu = None
 
         self.persistentText = self.text
 
@@ -92,14 +101,14 @@ class ConfigurableChat(Chat):
             # add the chat partners special dialog options
             options = []
             for option in self.info:
-                options.append((option,option["name"]))
+                options.append((option, option["name"]))
 
             # add default dialog options
             if self.allowExit:
-                options.append(("exit","let us proceed"))
+                options.append(("exit", "let us proceed"))
 
             # set the options
-            self.setOptions("answer:",options)
+            self.setOptions("answer:", options)
 
         # let the superclass handle the actual selection
         if not self.getSelection():
@@ -116,7 +125,9 @@ class ConfigurableChat(Chat):
                 self.subMenu.handleKey("~", noRender=noRender)
             elif self.selection["type"] == "sub":
                 self.subMenu = ConfigurableChat()
-                self.subMenu.setUp({"text":self.selection["text"],"info":self.selection["sub"]})
+                self.subMenu.setUp(
+                    {"text": self.selection["text"], "info": self.selection["sub"]}
+                )
                 self.subMenu.handleKey("~", noRender=noRender)
             else:
                 self.set_text("NIY")
@@ -135,36 +146,42 @@ class ConfigurableChat(Chat):
         self.done = False
         return False
 
-    '''
+    """
     add internal state
     bad pattern: chat option stored as references to class complicates this
-    '''
-    def setUp(self,state):
+    """
+
+    def setUp(self, state):
         self.text = state["text"]
         self.info = state["info"]
         if "allowExit" in state:
             self.allowExit = state["allowExit"]
-             
-'''
+
+
+"""
 the chat for collecting the reward
 bad code: subSelf
-'''
+"""
+
+
 class RewardChat(Chat):
     id = "RewardChat"
 
-    '''
+    """
     call superclass with less params
-    '''
-    def __init__(subSelf,partner):
+    """
+
+    def __init__(subSelf, partner):
         super().__init__()
-             
-    '''
+
+    """
     call the solver to assign reward
-    '''
+    """
+
     def handleKey(self, key, noRender=False):
         self.persistentText = "here is your reward"
         self.set_text(self.persistentText)
-        
+
         # bad code: calling solver directly seems like a bad idea
         self.quest.getQuest.solver(self.character)
 
@@ -175,52 +192,71 @@ class RewardChat(Chat):
         self.done = True
         return True
 
-    '''
+    """
     add internal state
     bad pattern: chat option stored as references to class complicates this
-    '''
-    def setUp(self,state):
+    """
+
+    def setUp(self, state):
         self.quest = state["quest"]
         self.character = state["character"]
 
-'''
+
+"""
 bad code: story specific
-'''
+"""
+
+
 class GrowthTankRefillChat(Chat):
     id = "GrowthTankRefillChat"
     type = "GrowthTankRefillChat"
 
-    '''
+    """
     straightforward state setting
-    '''
-    def __init__(self,partner):
+    """
+
+    def __init__(self, partner):
         self.done = False
         self.persistentText = ""
         self.firstRun = True
         super().__init__()
 
-    '''
+    """
     add internal state
     bad pattern: chat option stored as references to class complicates this
-    '''
-    def setUp(self,state):
+    """
+
+    def setUp(self, state):
         self.firstOfficer = state["firstOfficer"]
         self.phase = state["phase"]
 
-    '''
+    """
     show the dialog for one keystroke
-    '''
+    """
+
     def handleKey(self, key, noRender=False):
         # do all activity on the first run
         if self.firstRun:
             # show fluffed up information
-            self.persistentText = ["""
+            self.persistentText = [
+                """
     please refill your flask and use it to refill the growthtanks. 
 
-    Empty growthtanks look like this: """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.growthTank_unfilled],""" full ones look like this: """,src.canvas.displayChars.indexedMapping[src.canvas.displayChars.growthTank_filled],"""
+    Empty growthtanks look like this: """,
+                src.canvas.displayChars.indexedMapping[
+                    src.canvas.displayChars.growthTank_unfilled
+                ],
+                """ full ones look like this: """,
+                src.canvas.displayChars.indexedMapping[
+                    src.canvas.displayChars.growthTank_filled
+                ],
+                """
     
-Activate these, while having a full bottle in your inventory, but leave the full ones alone"""]
-            src.gamestate.gamestate.mainChar.addMessage("please refill your flask and use it to refill the growthtanks")
+Activate these, while having a full bottle in your inventory, but leave the full ones alone""",
+            ]
+            src.gamestate.gamestate.mainChar.addMessage(
+                "please refill your flask and use it to refill the growthtanks"
+            )
             src.interaction.submenue = None
             self.set_text(self.persistentText)
             # remove chat option
@@ -229,7 +265,7 @@ Activate these, while having a full bottle in your inventory, but leave the full
             for item in self.firstOfficer.basicChatOptions:
 
                 # check class notation
-                if not isinstance(item,dict):
+                if not isinstance(item, dict):
                     if item == GrowthTankRefillChat:
                         toRemove = item
                         break
@@ -252,34 +288,40 @@ Activate these, while having a full bottle in your inventory, but leave the full
             self.done = True
             return True
 
-'''
+
+"""
 the chat to proof the player is able to chat
 bad code: story specific
-'''
+"""
+
+
 class TutorialSpeechTest(Chat):
     id = "TutorialSpeechTest"
     type = "TutorialSpeechTest"
 
-    '''
+    """
     straightforward state setting
-    '''
-    def __init__(self,partner):
+    """
+
+    def __init__(self, partner):
         self.done = False
         self.persistentText = ""
         self.firstRun = True
         super().__init__()
 
-    '''
+    """
     add internal state
     bad pattern: chat option stored as references to class complicates this
-    '''
-    def setUp(self,state):
+    """
+
+    def setUp(self, state):
         self.firstOfficer = state["firstOfficer"]
         self.phase = state["phase"]
 
-    '''
+    """
     show the dialog for one keystroke
-    '''
+    """
+
     def handleKey(self, key, noRender=False):
         # do all activity on the first run
         if self.firstRun:
@@ -295,7 +337,7 @@ class TutorialSpeechTest(Chat):
             for item in self.firstOfficer.basicChatOptions:
 
                 # check class notation
-                if not isinstance(item,dict):
+                if not isinstance(item, dict):
                     if item == TutorialSpeechTest:
                         toRemove = item
                         break
@@ -318,17 +360,21 @@ class TutorialSpeechTest(Chat):
             self.done = True
             return True
 
-'''
+
+"""
 dialog to unlock a furnace firering option
-'''
+"""
+
+
 class FurnaceChat(Chat):
     id = "FurnaceChat"
     type = "FurnaceChat"
 
-    '''
+    """
     straightforward state setting
-    '''
-    def __init__(self,partner):
+    """
+
+    def __init__(self, partner):
         self.state = None
         self.partner = partner
         self.firstRun = True
@@ -337,32 +383,67 @@ class FurnaceChat(Chat):
         self.submenue = None
         super().__init__()
 
-    '''
+    """
     add internal state
     bad pattern: chat option stored as references to class complicates this
-    '''
-    def setUp(self,state):
+    """
+
+    def setUp(self, state):
         self.firstOfficer = state["firstOfficer"]
         self.terrain = state["terrain"]
         self.phase = state["phase"]
 
-    '''
+    """
     offer the player a option to go deeper
-    '''
+    """
+
     def handleKey(self, key, noRender=False):
         # set up the chat
         if self.firstRun:
 
             # show information
-            self.persistentText = ["There are some growth tanks (",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.growthTank_filled],"/",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.growthTank_unfilled],"), walls (",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],"), a pile of coal (",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pile],") and a furnace (",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_inactive],"/",src.canvas.displayChars.indexedMapping[src.canvas.displayChars.furnace_active],")."]
+            self.persistentText = [
+                "There are some growth tanks (",
+                src.canvas.displayChars.indexedMapping[
+                    src.canvas.displayChars.growthTank_filled
+                ],
+                "/",
+                src.canvas.displayChars.indexedMapping[
+                    src.canvas.displayChars.growthTank_unfilled
+                ],
+                "), walls (",
+                src.canvas.displayChars.indexedMapping[src.canvas.displayChars.wall],
+                "), a pile of coal (",
+                src.canvas.displayChars.indexedMapping[src.canvas.displayChars.pile],
+                ") and a furnace (",
+                src.canvas.displayChars.indexedMapping[
+                    src.canvas.displayChars.furnace_inactive
+                ],
+                "/",
+                src.canvas.displayChars.indexedMapping[
+                    src.canvas.displayChars.furnace_active
+                ],
+                ").",
+            ]
             self.set_text(self.persistentText)
 
             # add new chat option
-            self.firstOfficer.basicChatOptions.append({"dialogName":"Is there more i should know?","chat":InfoChat,"params":{"firstOfficer":self.firstOfficer}})
-                        
+            self.firstOfficer.basicChatOptions.append(
+                {
+                    "dialogName": "Is there more i should know?",
+                    "chat": InfoChat,
+                    "params": {"firstOfficer": self.firstOfficer},
+                }
+            )
+
             # offer a selection of different story phasses
-            options = [(self.phase.fireFurnaces,"yes"),(self.phase.noFurnaceFirering,"no")]
-            self.submenue = src.interaction.SelectionMenu("Say, do you like furnaces?",options)
+            options = [
+                (self.phase.fireFurnaces, "yes"),
+                (self.phase.noFurnaceFirering, "no"),
+            ]
+            self.submenue = src.interaction.SelectionMenu(
+                "Say, do you like furnaces?", options
+            )
             self.firstRun = False
             return False
 
@@ -377,11 +458,13 @@ class FurnaceChat(Chat):
 
                 # remove chat option
                 self.removeFromChatOptions(self.firstOfficer)
-             
+
                 # clear submenue
                 # bad code: direct state setting
                 src.interaction.submenue = None
-                src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, '~')
+                src.interaction.loop.set_alarm_in(
+                    0.0, src.interaction.callShow_or_exit, "~"
+                )
 
                 # do the selected action
                 self.submenue.selection()
@@ -389,92 +472,118 @@ class FurnaceChat(Chat):
 
         return False
 
-'''
+
+"""
 a monologe explaining automovement
 bad code: should be abstracted
-'''
+"""
+
+
 class SternChat(Chat):
     id = "SternChat"
     type = "SternChat"
 
-    '''
+    """
     straight forward state setting
-    '''
-    def __init__(self,partner):
+    """
+
+    def __init__(self, partner):
         self.submenue = None
         self.firstRun = True
         self.done = False
         super().__init__()
 
-    '''
+    """
     add internal state
     bad pattern: chat option stored as references to class complicates this
-    '''
-    def setUp(self,state):
+    """
+
+    def setUp(self, state):
         self.firstOfficer = state["firstOfficer"]
 
-    '''
+    """
     show the dialog for one keystroke
-    '''
+    """
+
     def handleKey(self, key, noRender=False):
         # show information on first run
         if self.firstRun:
             # show fluffed up information
-            self.persistentText = """Stern did not actually modify the implant. The modification was done elsewhere.
+            self.persistentText = (
+                """Stern did not actually modify the implant. The modification was done elsewhere.
 But that is concerning the artworks, thats nothing you need to know.
 
 You need to know however that Sterns modification enhanced the implants guidance, control and communication abilities.
 If you stop thinking and allow the implant to take control, it will do so and continue your task.
-You can do so by pressing """+config.commandChars.autoAdvance+"""
+You can do so by pressing """
+                + config.commandChars.autoAdvance
+                + """
 
 It is of limited practability though. It is mainly useful for stupid manual labor and often does not 
 do things the most efficent way. It will even try to handle conversion, wich does not allways lead to optimal results"""
-            src.gamestate.gamestate.mainChar.addMessage("press "+config.commandChars.autoAdvance+" to let the implant take control ")
+            )
+            src.gamestate.gamestate.mainChar.addMessage(
+                "press "
+                + config.commandChars.autoAdvance
+                + " to let the implant take control "
+            )
             self.set_text(self.persistentText)
             self.firstRun = False
 
             # punish / reward player
-            src.gamestate.gamestate.mainChar.revokeReputation(fraction=2,reason="asking a question")
-            src.gamestate.gamestate.mainChar.awardReputation(amount=2,reason="gaining knowledge")
+            src.gamestate.gamestate.mainChar.revokeReputation(
+                fraction=2, reason="asking a question"
+            )
+            src.gamestate.gamestate.mainChar.awardReputation(
+                amount=2, reason="gaining knowledge"
+            )
             return False
-        
+
         # tear down on second run
         else:
             # remove chat option
             self.removeFromChatOptions(self.firstOfficer)
-            self.removeFromChatOptions(src.gamestate.gamestate.terrain.waitingRoom.firstOfficer)
+            self.removeFromChatOptions(
+                src.gamestate.gamestate.terrain.waitingRoom.firstOfficer
+            )
 
             # finish
             self.done = True
             return True
 
-'''
+
+"""
 an instruction to ask questions and hinting at the auto mode
 bad code: should be abstracted
-'''
+"""
+
+
 class InfoChat(Chat):
     id = "InfoChat"
     type = "InfoChat"
 
-    '''
+    """
     straight forward state setting
-    '''
-    def __init__(self,partner):
+    """
+
+    def __init__(self, partner):
         self.submenue = None
         self.firstRun = True
         self.done = False
         super().__init__()
 
-    '''
+    """
     add internal state
     bad pattern: chat option stored as references to class complicates this
-    '''
-    def setUp(self,state):
+    """
+
+    def setUp(self, state):
         self.firstOfficer = state["firstOfficer"]
 
-    '''
+    """
     show the dialog for one keystroke
-    '''
+    """
+
     def handleKey(self, key, noRender=False):
         # do all activity on first run
         if self.firstRun:
@@ -490,8 +599,12 @@ for a brain.\n\n"""
             self.firstRun = False
 
             # punish / reward player
-            src.gamestate.gamestate.mainChar.revokeReputation(fraction=2,reason="asking a question")
-            src.gamestate.gamestate.mainChar.awardReputation(amount=2,reason="gaining knowledge")
+            src.gamestate.gamestate.mainChar.revokeReputation(
+                fraction=2, reason="asking a question"
+            )
+            src.gamestate.gamestate.mainChar.awardReputation(
+                amount=2, reason="gaining knowledge"
+            )
             return False
 
         # tear down on second run
@@ -500,38 +613,56 @@ for a brain.\n\n"""
             self.removeFromChatOptions(self.firstOfficer)
 
             # add follow up chat
-            self.firstOfficer.basicChatOptions.append({"dialogName":"What did Stern modify on the implant?","chat":SternChat,"params":{"firstOfficer":self.firstOfficer}})
-            src.gamestate.gamestate.terrain.waitingRoom.firstOfficer.basicChatOptions.append({"dialogName":"What did Stern modify on the implant?","chat":SternChat,"params":{"firstOfficer":self.firstOfficer}})
+            self.firstOfficer.basicChatOptions.append(
+                {
+                    "dialogName": "What did Stern modify on the implant?",
+                    "chat": SternChat,
+                    "params": {"firstOfficer": self.firstOfficer},
+                }
+            )
+            src.gamestate.gamestate.terrain.waitingRoom.firstOfficer.basicChatOptions.append(
+                {
+                    "dialogName": "What did Stern modify on the implant?",
+                    "chat": SternChat,
+                    "params": {"firstOfficer": self.firstOfficer},
+                }
+            )
 
             self.done = True
             return True
 
-'''
+
+"""
 a dialog for reentering the command chain
 bad code: story specific
-'''
+"""
+
+
 class ReReport(src.interaction.SubMenu):
     id = "ReReport"
     type = "ReReport"
 
-    '''
+    """
     state initialization
-    '''
-    def __init__(self,partner):
+    """
+
+    def __init__(self, partner):
         self.persistentText = ""
         self.firstRun = True
         super().__init__()
 
-    '''
+    """
     add internal state
     bad pattern: chat option stored as references to class complicates this
-    '''
-    def setUp(self,state):
+    """
+
+    def setUp(self, state):
         self.phase = state["phase"]
 
-    '''
+    """
     scold the player and start intro
-    '''
+    """
+
     def handleKey(self, key, noRender=False):
         if self.firstRun:
             # show message
@@ -541,10 +672,14 @@ class ReReport(src.interaction.SubMenu):
             self.firstRun = False
 
             # punish player
-            src.gamestate.gamestate.mainChar.revokeReputation(amount=1,reason="not reporting for duty in timely manner")
+            src.gamestate.gamestate.mainChar.revokeReputation(
+                amount=1, reason="not reporting for duty in timely manner"
+            )
 
             # remove chat option
-            self.removeFromChatOptions(src.gamestate.gamestate.terrain.waitingRoom.firstOfficer)
+            self.removeFromChatOptions(
+                src.gamestate.gamestate.terrain.waitingRoom.firstOfficer
+            )
 
             # start intro
             self.phase.acknowledgeTransfer()
@@ -552,26 +687,31 @@ class ReReport(src.interaction.SubMenu):
         else:
             return False
 
-'''
+
+"""
 the dialog for asking somebody somewhat important for a job
-'''
+"""
+
+
 class JobChatFirst(Chat):
     id = "JobChatFirst"
     type = "JobChatFirst"
 
-    '''
+    """
     add internal state
     bad pattern: chat option stored as references to class complicates this
-    '''
-    def setUp(self,state):
+    """
+
+    def setUp(self, state):
         self.mainChar = state["mainChar"]
         self.terrain = state["terrain"]
         self.hopperDutyQuest = state["hopperDutyQuest"]
 
-    '''
+    """
     basic state initialization
-    '''
-    def __init__(subSelf,partner):
+    """
+
+    def __init__(subSelf, partner):
         subSelf.state = None
         subSelf.partner = partner
         subSelf.firstRun = True
@@ -581,15 +721,16 @@ class JobChatFirst(Chat):
         subSelf.selectedQuest = None
         super().__init__()
 
-    '''
+    """
     show dialog and assign quest 
-    '''
+    """
+
     def handleKey(self, key, noRender=False):
         # handle chat termination
         if key == "esc":
 
-           return True
-                             
+            return True
+
         # handle chat termination
         if subSelf.firstRun:
             # job
@@ -597,14 +738,20 @@ class JobChatFirst(Chat):
 
                 # do not assign job
                 if subSelf.mainChar.reputation < 10:
-                    subSelf.persistentText = "I have some work thats needs to be done, but you will have to proof your worth some more untill you can be trusted with this work.\n\nMaybe "+subSelf.terrain.waitingRoom.secondOfficer.name+" has some work you can do"
+                    subSelf.persistentText = (
+                        "I have some work thats needs to be done, but you will have to proof your worth some more untill you can be trusted with this work.\n\nMaybe "
+                        + subSelf.terrain.waitingRoom.secondOfficer.name
+                        + " has some work you can do"
+                    )
 
                 # do not assign job
                 elif not subSelf.hopperDutyQuest.active:
                     subSelf.persistentText = "your responsibilities are elsewhere"
 
                 # do not assign job
-                elif not "FireFurnaceMeta" in subSelf.mainChar.questsDone: # bad code: is bugged
+                elif (
+                    not "FireFurnaceMeta" in subSelf.mainChar.questsDone
+                ):  # bad code: is bugged
                     subSelf.persistentText = "Several Officers requested new assistants. The boiler room would be the first target, but you need to have fired a furnace or you cannot take the job"
 
                 # assign job
@@ -629,17 +776,21 @@ class JobChatFirst(Chat):
         else:
             return False
 
-'''
+
+"""
 the dialog for asking somebody for a job
-'''
+"""
+
+
 class JobChatSecond(Chat):
     id = "JobChatSecond"
     type = "JobChatSecond"
 
-    '''
+    """
     basic state initialization
-    '''
-    def __init__(self,partner):
+    """
+
+    def __init__(self, partner):
         self.state = None
         self.partner = partner
         self.firstRun = True
@@ -649,24 +800,26 @@ class JobChatSecond(Chat):
         self.selectedQuest = None
         super().__init__()
 
-    '''
+    """
     add internal state
     bad pattern: chat option stored as references to class complicates this
-    '''
-    def setUp(self,state):
+    """
+
+    def setUp(self, state):
         self.mainChar = state["mainChar"]
         self.terrain = state["terrain"]
         self.hopperDutyQuest = state["hopperDutyQuest"]
 
-    '''
+    """
     show dialog and assign quest 
-    '''
+    """
+
     def handleKey(self, key, noRender=False):
         # handle termination of this chat
         if key == "esc":
-           # quit dialog
-           return True
-                             
+            # quit dialog
+            return True
+
         # let the superclass do the selection
         if self.submenue:
             if not self.submenue.handleKey(key, noRender=noRender):
@@ -699,7 +852,9 @@ class JobChatSecond(Chat):
         # refuse to give two quests
         if self.hopperDutyQuest.actualQuest:
             # bad pattern: should be proportional to current reputation
-            self.persistentText = "you already have a quest. Complete it and you can get a new one."
+            self.persistentText = (
+                "you already have a quest. Complete it and you can get a new one."
+            )
             self.set_text(self.persistentText)
             self.done = True
 
@@ -710,18 +865,18 @@ class JobChatSecond(Chat):
             # show fluff
             self.persistentText = "Well, yes."
             self.set_text(self.persistentText)
-                        
+
             # let the player select the quest to do
             options = []
             for quest in self.terrain.waitingRoom.quests:
                 addition = ""
                 if self.mainChar.reputation < 6:
-                    addition += " ("+str(quest.reputationReward)+")"
-                options.append((quest,quest.description.split("\n")[0]+addition))
-            self.submenue = src.interaction.SelectionMenu("select the quest",options)
+                    addition += " (" + str(quest.reputationReward) + ")"
+                options.append((quest, quest.description.split("\n")[0] + addition))
+            self.submenue = src.interaction.SelectionMenu("select the quest", options)
 
             return False
-        
+
         # refuse to give quests
         self.persistentText = "Not right now. Ask again later"
         self.set_text(self.persistentText)
@@ -729,23 +884,24 @@ class JobChatSecond(Chat):
 
         return True
 
+
 class RoomDutyChat(Chat):
     id = "RoomDutyChat"
     type = "RoomDutyChat"
 
-    def __init__(self,partner):
+    def __init__(self, partner):
         self.partner = partner
         super().__init__()
 
-    def setUp(self,state):
+    def setUp(self, state):
         self.superior = state["superior"]
-        
+
     def handleKey(self, key, noRender=False):
 
-        if src.gamestate.gamestate.tick%2:
+        if src.gamestate.gamestate.tick % 2:
             self.persistentText = "yes, you may."
-            quest = src.quests.Serve(superior=self.superior,creator=self)
-            src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+            quest = src.quests.Serve(superior=self.superior, creator=self)
+            src.gamestate.gamestate.mainChar.assignQuest(quest, active=True)
             self.superior.subordinates.append(src.gamestate.gamestate.mainChar)
             self.set_text(self.persistentText)
             self.done = True
@@ -759,40 +915,45 @@ class RoomDutyChat(Chat):
 
             return True
 
+
 class RoomDutyChat2(Chat):
     id = "RoomDutyChat2"
     type = "RoomDutyChat2"
 
-    def __init__(self,partner):
+    def __init__(self, partner):
         self.partner = partner
         super().__init__()
 
-    def setUp(self,state):
+    def setUp(self, state):
         pass
-        
+
     def handleKey(self, key, noRender=False):
         self.persistentText = "Drink something"
 
         quest = src.quests.PickupQuestMeta(self.partner.room.bean)
-        src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+        src.gamestate.gamestate.mainChar.assignQuest(quest, active=True)
         quest = src.quests.ActivateQuestMeta(self.partner.room.bean)
-        src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+        src.gamestate.gamestate.mainChar.assignQuest(quest, active=True)
 
         self.set_text(self.persistentText)
         self.done = True
         return True
 
-'''
+
+"""
 the dialog for asking somebody for a job
-'''
+"""
+
+
 class JobChatThird(Chat):
     id = "JobChatThird"
     type = "JobChatThird"
 
-    '''
+    """
     basic state initialization
-    '''
-    def __init__(self,partner):
+    """
+
+    def __init__(self, partner):
         self.state = None
         self.partner = partner
         self.firstRun = True
@@ -802,24 +963,26 @@ class JobChatThird(Chat):
         self.selectedQuest = None
         super().__init__()
 
-    '''
+    """
     add internal state
     bad pattern: chat option stored as references to class complicates this
-    '''
-    def setUp(self,state):
+    """
+
+    def setUp(self, state):
         self.mainChar = state["mainChar"]
         self.terrain = state["terrain"]
         self.containerQuest = state["hopperDutyQuest"]
 
-    '''
+    """
     show dialog and assign quest 
-    '''
+    """
+
     def handleKey(self, key, noRender=False):
         # handle termination of this chat
         if key == "esc":
-           # quit dialog
-           return True
-                             
+            # quit dialog
+            return True
+
         # let the superclass do the selection
         if self.submenue:
             if not self.submenue.handleKey(key, noRender=noRender):
@@ -852,7 +1015,9 @@ class JobChatThird(Chat):
         # refuse to give two quests
         if self.hopperDutyQuest.actualQuest:
             # bad pattern: should be proportional to current reputation
-            self.persistentText = "you already have a quest. Complete it and you can get a new one."
+            self.persistentText = (
+                "you already have a quest. Complete it and you can get a new one."
+            )
             self.set_text(self.persistentText)
             self.done = True
 
@@ -863,18 +1028,18 @@ class JobChatThird(Chat):
             # show fluff
             self.persistentText = "Well, yes."
             self.set_text(self.persistentText)
-                        
+
             # let the player select the quest to do
             options = []
             for quest in self.terrain.waitingRoom.quests:
                 addition = ""
                 if self.mainChar.reputation < 6:
-                    addition += " ("+str(quest.reputationReward)+")"
-                options.append((quest,quest.description.split("\n")[0]+addition))
-            self.submenue = src.interaction.SelectionMenu("select the quest",options)
+                    addition += " (" + str(quest.reputationReward) + ")"
+                options.append((quest, quest.description.split("\n")[0] + addition))
+            self.submenue = src.interaction.SelectionMenu("select the quest", options)
 
             return False
-        
+
         # refuse to give quests
         self.persistentText = "Not right now. Ask again later"
         self.set_text(self.persistentText)
@@ -883,17 +1048,20 @@ class JobChatThird(Chat):
         return True
 
 
-'''
+"""
 the chat for making the npc stop firing the furnace
-'''
+"""
+
+
 class StopChat(Chat):
     id = "StopChat"
     type = "StopChat"
 
-    '''
+    """
     basic state initialization
-    '''
-    def __init__(self,partner):
+    """
+
+    def __init__(self, partner):
         self.state = None
         self.partner = partner
         self.firstRun = True
@@ -901,9 +1069,10 @@ class StopChat(Chat):
         self.persistentText = ""
         super().__init__()
 
-    '''
+    """
     stop furnace quest and correct dialog
-    '''
+    """
+
     def handleKey(self, key, noRender=False):
         # show information on first run
         if self.firstRun:
@@ -916,11 +1085,13 @@ class StopChat(Chat):
 
             # replace dialog option
             for option in self.partner.basicChatOptions:
-                 if not option["chat"] == StopChat:
-                     continue
-                 self.partner.basicChatOptions.remove(option)
-                 break
-            self.partner.basicChatOptions.append({"dialogName":"fire the furnaces","chat":StartChat})
+                if not option["chat"] == StopChat:
+                    continue
+                self.partner.basicChatOptions.remove(option)
+                break
+            self.partner.basicChatOptions.append(
+                {"dialogName": "fire the furnaces", "chat": StartChat}
+            )
 
             self.firstRun = False
 
@@ -929,17 +1100,21 @@ class StopChat(Chat):
         else:
             return False
 
-'''
+
+"""
 the chat for making the npc start firering the furnace
-'''
+"""
+
+
 class StartChat(Chat):
     id = "StartChat"
     type = "StartChat"
 
-    '''
+    """
     basic state initialization
-    '''
-    def __init__(self,partner):
+    """
+
+    def __init__(self, partner):
         self.state = None
         self.partner = partner
         self.firstRun = True
@@ -947,28 +1122,33 @@ class StartChat(Chat):
         self.persistentText = ""
         super().__init__()
 
-    '''
+    """
     start furnace quest and correct dialog
-    '''
+    """
+
     def handleKey(self, key, noRender=False):
         # show information on first run
         if self.firstRun:
 
             # start firing the furnace
-            self.persistentText = "Starting now. The engines should be running in a few ticks"
+            self.persistentText = (
+                "Starting now. The engines should be running in a few ticks"
+            )
             self.set_text(self.persistentText)
             self.done = True
             global quest
             quest = src.quests.KeepFurnaceFiredMeta(self.partner.room.furnaces[0])
-            self.partner.assignQuest(quest,active=True)
+            self.partner.assignQuest(quest, active=True)
 
             # replace dialog option
             for option in self.partner.basicChatOptions:
-                 if not option["chat"] == StartChat:
-                     continue
-                 self.partner.basicChatOptions.remove(option)
-                 break
-            self.partner.basicChatOptions.append({"dialogName":"stop fireing the furnaces","chat":StopChat})
+                if not option["chat"] == StartChat:
+                    continue
+                self.partner.basicChatOptions.remove(option)
+                break
+            self.partner.basicChatOptions.append(
+                {"dialogName": "stop fireing the furnaces", "chat": StopChat}
+            )
 
             self.firstRun = False
 
@@ -977,16 +1157,22 @@ class StartChat(Chat):
         else:
             return False
 
-'''
-the chat option for recruiting a character
-'''
-class RecruitChat(Chat):
-    dialogName = "follow my orders." # the name for this chat when presented as dialog option
 
-    '''
+"""
+the chat option for recruiting a character
+"""
+
+
+class RecruitChat(Chat):
+    dialogName = (
+        "follow my orders."  # the name for this chat when presented as dialog option
+    )
+
+    """
     straightforward state initialization
-    '''
-    def __init__(self,partner):
+    """
+
+    def __init__(self, partner):
         self.type = "RecruitChat"
         self.state = None
         self.partner = partner
@@ -995,11 +1181,12 @@ class RecruitChat(Chat):
         self.persistentText = ""
         super().__init__()
 
-    '''
+    """
     show dialog and recruit character depending on success
     bad code: showing the messages should be handled in __init__ or a setup method
     bad code: the dialog and reactions should be generated within the characters
-    '''
+    """
+
     def handleKey(self, key, noRender=False):
         # exit submenu
         if key == "esc":
@@ -1009,39 +1196,67 @@ class RecruitChat(Chat):
         if self.firstRun:
 
             # add player text
-            self.persistentText += src.gamestate.gamestate.mainChar.name+": \"come and help me.\"\n"
+            self.persistentText += (
+                src.gamestate.gamestate.mainChar.name + ': "come and help me."\n'
+            )
 
             # reject player request
             if self.partner.reputation > src.gamestate.gamestate.mainChar.reputation:
                 if src.gamestate.gamestate.mainChar.reputation <= 0:
                     # reject player very harshly
-                    self.persistentText += self.partner.name+": \"No.\""
-                    src.gamestate.gamestate.mainChar.revokeReputation(amount=5,reason="asking a superior for service")
+                    self.persistentText += self.partner.name + ': "No."'
+                    src.gamestate.gamestate.mainChar.revokeReputation(
+                        amount=5, reason="asking a superior for service"
+                    )
                 else:
                     # reject player harshly
-                    if self.partner.reputation//src.gamestate.gamestate.mainChar.reputation:
-                        self.persistentText += self.partner.name+": \"you will need at least have to have "+str(self.partner.reputation//src.gamestate.gamestate.mainChar.reputation)+" times as much reputation to have me consider that\"\n"
-                        src.gamestate.gamestate.mainChar.revokeReputation(amount=2*(self.partner.reputation//src.gamestate.gamestate.mainChar.reputation),reason="asking a superior for service")
+                    if (
+                        self.partner.reputation
+                        // src.gamestate.gamestate.mainChar.reputation
+                    ):
+                        self.persistentText += (
+                            self.partner.name
+                            + ': "you will need at least have to have '
+                            + str(
+                                self.partner.reputation
+                                // src.gamestate.gamestate.mainChar.reputation
+                            )
+                            + ' times as much reputation to have me consider that"\n'
+                        )
+                        src.gamestate.gamestate.mainChar.revokeReputation(
+                            amount=2
+                            * (
+                                self.partner.reputation
+                                // src.gamestate.gamestate.mainChar.reputation
+                            ),
+                            reason="asking a superior for service",
+                        )
                     # reject player somewhat nicely
                     else:
-                        self.persistentText += self.partner.name+": \"maybe if you come back later\""
-                        src.gamestate.gamestate.mainChar.revokeReputation(amount=2,reason="asking a superior for service")
+                        self.persistentText += (
+                            self.partner.name + ': "maybe if you come back later"'
+                        )
+                        src.gamestate.gamestate.mainChar.revokeReputation(
+                            amount=2, reason="asking a superior for service"
+                        )
             # consider player request
             else:
 
                 # reject player
-                if src.gamestate.gamestate.tick%2:
-                    self.persistentText += self.partner.name+": \"sorry, too busy.\"\n"
-                    src.gamestate.gamestate.mainChar.revokeReputation(amount=1,reason="getting service refused")
+                if src.gamestate.gamestate.tick % 2:
+                    self.persistentText += self.partner.name + ': "sorry, too busy."\n'
+                    src.gamestate.gamestate.mainChar.revokeReputation(
+                        amount=1, reason="getting service refused"
+                    )
 
                 # allow the recruitment
                 else:
-                    self.persistentText += self.partner.name+": \"on it!\"\n"
+                    self.persistentText += self.partner.name + ': "on it!"\n'
                     src.gamestate.gamestate.mainChar.subordinates.append(self.partner)
 
             # show dialog
-            text = self.persistentText+"\n\n-- press any key --"
-            self.set_text((src.interaction.urwid.AttrSpec("default","default"),text))
+            text = self.persistentText + "\n\n-- press any key --"
+            self.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
             self.firstRun = False
             return True
         # continue after the first keypress
@@ -1050,15 +1265,19 @@ class RecruitChat(Chat):
             self.done = True
             return False
 
-'''
-'''
+
+"""
+"""
+
+
 class JoinMilitaryChat(Chat):
     id = "CaptainChat"
 
-    '''
+    """
     straightforward state initialization
-    '''
-    def __init__(self,partner):
+    """
+
+    def __init__(self, partner):
         self.type = "CaptainChat"
         self.state = None
         self.partner = partner
@@ -1068,34 +1287,40 @@ class JoinMilitaryChat(Chat):
         self.wait = False
         super().__init__()
 
-    '''
+    """
     show dialog and recruit character depending on success
     bad code: showing the messages should be handled in __init__ or a setup method
     bad code: the dialog and reactions should be generated within the characters
-    '''
+    """
+
     def handleKey(self, key, noRender=False):
         # exit submenu
         if key == "esc":
             return True
-        
+
         # show dialog
         if self.firstRun:
 
             # add player text
-            self.persistentText += src.gamestate.gamestate.mainChar.name+": \"i want to join the military.\"\n"
+            self.persistentText += (
+                src.gamestate.gamestate.mainChar.name
+                + ': "i want to join the military."\n'
+            )
 
             # reject player request
             if src.gamestate.gamestate.mainChar.reputation < 10:
-                self.persistentText += self.partner.name+": \"No. Go kill yourself\""
+                self.persistentText += self.partner.name + ': "No. Go kill yourself"'
 
-                quest = src.quests.MurderQuest(toKill=src.gamestate.gamestate.mainChar,creator=self)
-                src.gamestate.gamestate.mainChar.assignQuest(quest,active=True)
+                quest = src.quests.MurderQuest(
+                    toKill=src.gamestate.gamestate.mainChar, creator=self
+                )
+                src.gamestate.gamestate.mainChar.assignQuest(quest, active=True)
             else:
-                self.persistentText += self.partner.name+": \"No.\""
+                self.persistentText += self.partner.name + ': "No."'
 
             # show dialog
-            text = self.persistentText+"\n\n-- press any key --"
-            self.set_text((src.interaction.urwid.AttrSpec("default","default"),text))
+            text = self.persistentText + "\n\n-- press any key --"
+            self.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
             self.firstRun = False
             return True
         # continue after the first keypress
@@ -1104,15 +1329,19 @@ class JoinMilitaryChat(Chat):
             self.done = True
             return False
 
-'''
-'''
+
+"""
+"""
+
+
 class CaptainChat(Chat):
     id = "CaptainChat"
 
-    '''
+    """
     straightforward state initialization
-    '''
-    def __init__(self,partner):
+    """
+
+    def __init__(self, partner):
         self.type = "CaptainChat"
         self.state = None
         self.partner = partner
@@ -1122,16 +1351,17 @@ class CaptainChat(Chat):
         self.wait = False
         super().__init__()
 
-    '''
+    """
     show dialog and recruit character depending on success
     bad code: showing the messages should be handled in __init__ or a setup method
     bad code: the dialog and reactions should be generated within the characters
-    '''
+    """
+
     def handleKey(self, key, noRender=False):
         # exit submenu
         if key == "esc":
             return True
-        
+
         if self.wait:
             self.wait = False
             src.gamestate.gamestate.gameWon = True
@@ -1141,19 +1371,24 @@ class CaptainChat(Chat):
         if self.firstRun:
 
             # add player text
-            self.persistentText += src.gamestate.gamestate.mainChar.name+": \"i want to be captain.\"\n"
+            self.persistentText += (
+                src.gamestate.gamestate.mainChar.name + ': "i want to be captain."\n'
+            )
 
             # reject player request
             if not src.gamestate.gamestate.mainChar == self.partner.room.secondOfficer:
-                self.persistentText += self.partner.name+": \"Only my second in command could possibly succeed me\""
+                self.persistentText += (
+                    self.partner.name
+                    + ': "Only my second in command could possibly succeed me"'
+                )
             # consider player request
             else:
-                self.persistentText += self.partner.name+": \"Ok.\""
+                self.persistentText += self.partner.name + ': "Ok."'
                 self.wait = True
 
             # show dialog
-            text = self.persistentText+"\n\n-- press any key --"
-            self.set_text((src.interaction.urwid.AttrSpec("default","default"),text))
+            text = self.persistentText + "\n\n-- press any key --"
+            self.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
             self.firstRun = False
             return True
         # continue after the first keypress
@@ -1162,15 +1397,19 @@ class CaptainChat(Chat):
             self.done = True
             return False
 
-'''
-'''
+
+"""
+"""
+
+
 class FactionChat1(Chat):
     id = "FactionChat1"
 
-    '''
+    """
     straightforward state initialization
-    '''
-    def __init__(self,partner):
+    """
+
+    def __init__(self, partner):
         self.type = "CaptainChat"
         self.state = None
         self.partner = partner
@@ -1180,30 +1419,34 @@ class FactionChat1(Chat):
         self.wait = False
         super().__init__()
 
-    '''
-    '''
+    """
+    """
+
     def handleKey(self, key, noRender=False):
         # exit submenu
         if key == "esc":
             return True
-        
+
         # show dialog
         if self.firstRun:
 
             # add player text
-            self.persistentText += src.gamestate.gamestate.mainChar.name+": \"the requirements for an alliance are:.\"\n"
+            self.persistentText += (
+                src.gamestate.gamestate.mainChar.name
+                + ': "the requirements for an alliance are:."\n'
+            )
             self.persistentText += "\n\n"
-            self.persistentText += "minRep: %s\n"%(self.partner.minRep,)
-            self.persistentText += "maxAliance: %s\n"%(self.partner.maxAliance,)
-            self.persistentText += "repGain: %s\n"%(self.partner.repGain,)
+            self.persistentText += "minRep: %s\n" % (self.partner.minRep,)
+            self.persistentText += "maxAliance: %s\n" % (self.partner.maxAliance,)
+            self.persistentText += "repGain: %s\n" % (self.partner.repGain,)
             self.persistentText += "excludes: \n"
             for exclude in self.partner.excludes:
-                self.persistentText += "%s "%(exclude.name,)
+                self.persistentText += "%s " % (exclude.name,)
             self.persistentText += "\n\n"
 
             # show dialog
-            text = self.persistentText+"\n\n-- press any key --"
-            self.set_text((src.interaction.urwid.AttrSpec("default","default"),text))
+            text = self.persistentText + "\n\n-- press any key --"
+            self.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
             self.firstRun = False
             return True
         # continue after the first keypress
@@ -1212,15 +1455,19 @@ class FactionChat1(Chat):
             self.done = True
             return False
 
-'''
-'''
+
+"""
+"""
+
+
 class FactionChat2(Chat):
     id = "FactionChat2"
 
-    '''
+    """
     straightforward state initialization
-    '''
-    def __init__(self,partner):
+    """
+
+    def __init__(self, partner):
         self.type = "CaptainChat"
         self.state = None
         self.partner = partner
@@ -1230,21 +1477,30 @@ class FactionChat2(Chat):
         self.wait = False
         super().__init__()
 
-    '''
-    '''
+    """
+    """
+
     def handleKey(self, key, noRender=False):
         # exit submenu
         if key == "esc":
             return True
-        
+
         # show dialog
         if self.firstRun:
 
             if not self.partner in src.gamestate.gamestate.mainChar.aliances:
                 if src.gamestate.gamestate.mainChar.reputation < self.partner.minRep:
-                    self.persistentText += src.gamestate.gamestate.mainChar.name+": \"not enough rep.\"\n"
-                elif len(src.gamestate.gamestate.mainChar.aliances) > self.partner.maxAliance:
-                    self.persistentText += src.gamestate.gamestate.mainChar.name+": \"too many aliances.\"\n"
+                    self.persistentText += (
+                        src.gamestate.gamestate.mainChar.name + ': "not enough rep."\n'
+                    )
+                elif (
+                    len(src.gamestate.gamestate.mainChar.aliances)
+                    > self.partner.maxAliance
+                ):
+                    self.persistentText += (
+                        src.gamestate.gamestate.mainChar.name
+                        + ': "too many aliances."\n'
+                    )
                 else:
                     found = False
                     for exclude in self.partner.excludes:
@@ -1252,19 +1508,28 @@ class FactionChat2(Chat):
                             found = True
 
                     if found:
-                        self.persistentText += src.gamestate.gamestate.mainChar.name+": \"bad aliance.\"\n"
+                        self.persistentText += (
+                            src.gamestate.gamestate.mainChar.name + ': "bad aliance."\n'
+                        )
                     else:
-                        self.persistentText += src.gamestate.gamestate.mainChar.name+": \"OK\"\n"
-                        src.gamestate.gamestate.mainChar.awardReputation(amount=self.partner.repGain,reason="forging an aliance")
+                        self.persistentText += (
+                            src.gamestate.gamestate.mainChar.name + ': "OK"\n'
+                        )
+                        src.gamestate.gamestate.mainChar.awardReputation(
+                            amount=self.partner.repGain, reason="forging an aliance"
+                        )
                         src.gamestate.gamestate.mainChar.aliances.append(self.partner)
 
             else:
                 # add player text
-                self.persistentText += src.gamestate.gamestate.mainChar.name+": \"we are already alianced.\"\n"
+                self.persistentText += (
+                    src.gamestate.gamestate.mainChar.name
+                    + ': "we are already alianced."\n'
+                )
 
             # show dialog
-            text = self.persistentText+"\n\n-- press any key --"
-            self.set_text((src.interaction.urwid.AttrSpec("default","default"),text))
+            text = self.persistentText + "\n\n-- press any key --"
+            self.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
             self.firstRun = False
             return True
         # continue after the first keypress
@@ -1274,16 +1539,18 @@ class FactionChat2(Chat):
             return False
 
 
+"""
+"""
 
-'''
-'''
+
 class CaptainChat2(Chat):
     id = "CaptainChat2"
 
-    '''
+    """
     straightforward state initialization
-    '''
-    def __init__(self,partner):
+    """
+
+    def __init__(self, partner):
         self.type = "CaptainChat"
         self.state = None
         self.partner = partner
@@ -1293,16 +1560,17 @@ class CaptainChat2(Chat):
         self.wait = False
         super().__init__()
 
-    '''
+    """
     show dialog and recruit character depending on success
     bad code: showing the messages should be handled in __init__ or a setup method
     bad code: the dialog and reactions should be generated within the characters
-    '''
+    """
+
     def handleKey(self, key, noRender=False):
         # exit submenu
         if key == "esc":
             return True
-        
+
         if self.wait:
             self.wait = False
             self.partner.room.secondOfficer = src.gamestate.gamestate.mainChar
@@ -1312,21 +1580,28 @@ class CaptainChat2(Chat):
         if self.firstRun:
 
             # add player text
-            self.persistentText += src.gamestate.gamestate.mainChar.name+": \"i want to be your second in command.\"\n"
+            self.persistentText += (
+                src.gamestate.gamestate.mainChar.name
+                + ': "i want to be your second in command."\n'
+            )
 
             if not self.partner.room.secondOfficer.dead:
-                self.persistentText += self.partner.name+": \"No. i have a second in command\""
+                self.persistentText += (
+                    self.partner.name + ': "No. i have a second in command"'
+                )
             else:
                 if src.gamestate.gamestate.mainChar.reputation < 100:
-                    self.persistentText += self.partner.name+": \"No. I do not trust you\""
+                    self.persistentText += (
+                        self.partner.name + ': "No. I do not trust you"'
+                    )
                 # consider player request
                 else:
-                    self.persistentText += self.partner.name+": \"Ok.\""
+                    self.persistentText += self.partner.name + ': "Ok."'
                     self.wait = True
 
             # show dialog
-            text = self.persistentText+"\n\n-- press any key --"
-            self.set_text((src.interaction.urwid.AttrSpec("default","default"),text))
+            text = self.persistentText + "\n\n-- press any key --"
+            self.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
             self.firstRun = False
             return True
         # continue after the first keypress
@@ -1335,15 +1610,19 @@ class CaptainChat2(Chat):
             self.done = True
             return False
 
-'''
+
+"""
 a chat with a character, partially hardcoded partially dynamically generated 
-'''
+"""
+
+
 class ChatMenu(Chat):
 
-    '''
+    """
     straightforward state initialization
-    '''
-    def __init__(self,partner=None):
+    """
+
+    def __init__(self, partner=None):
         self.type = "ChatMenu"
         self.state = None
         self.partner = partner
@@ -1351,11 +1630,12 @@ class ChatMenu(Chat):
         self.skipTurn = False
         self.macro = None
         super().__init__()
-        self.objectsToStore.extend(["partner","macro"])
+        self.objectsToStore.extend(["partner", "macro"])
 
-    '''
+    """
     get state as dictionary
-    '''
+    """
+
     def getState(self):
         state = super().getState()
         if self.subMenu:
@@ -1364,11 +1644,12 @@ class ChatMenu(Chat):
             state["subMenu"] = None
 
         return state
-    
-    '''
+
+    """
     set internal state from state as dictionary
-    '''
-    def setState(self,state):
+    """
+
+    def setState(self, state):
         super().setState(state)
 
         if "subMenu" in state:
@@ -1377,16 +1658,17 @@ class ChatMenu(Chat):
             else:
                 self.subMenu = None
 
-    '''
+    """
     show the dialog options and wrap around the corresponding submenus
     bad code: showing the messages should be handled in __init__ or a setup method
     bad code: the dialog should be generated within the characters
-    '''
+    """
+
     def handleKey(self, key, noRender=False):
         # smooth over impossible state
         if self.partner == None:
-           src.logger.debugMessages.append("chatmenu spawned without partner")
-           return False
+            src.logger.debugMessages.append("chatmenu spawned without partner")
+            return False
 
         # wake up character instead of speaking
         if self.partner.unconcious:
@@ -1396,13 +1678,13 @@ class ChatMenu(Chat):
 
         # maybe exit the submenu
         if key == "esc" and not self.subMenu:
-           # abort the chat
-           return True
-                             
+            # abort the chat
+            return True
+
         # skip a turn
         if self.skipTurn:
-           self.skipTurn = False
-           key = "."
+            self.skipTurn = False
+            key = "."
 
         # show interaction
         out = "\n"
@@ -1426,25 +1708,35 @@ class ChatMenu(Chat):
         # display greetings
         if self.state == None:
             self.state = "mainOptions"
-            self.persistentText += self.partner.name+": \"Everything in Order, "+src.gamestate.gamestate.mainChar.name+"?\"\n"
-            self.persistentText += src.gamestate.gamestate.mainChar.name+": \"All sorted, "+self.partner.name+"!\"\n"
+            self.persistentText += (
+                self.partner.name
+                + ': "Everything in Order, '
+                + src.gamestate.gamestate.mainChar.name
+                + '?"\n'
+            )
+            self.persistentText += (
+                src.gamestate.gamestate.mainChar.name
+                + ': "All sorted, '
+                + self.partner.name
+                + '!"\n'
+            )
 
         # show selection of sub chats
         if self.state == "mainOptions":
-            # set up selection for the main dialog options 
+            # set up selection for the main dialog options
             if not self.options and not self.getSelection():
                 # add the chat partners special dialog options
                 options = []
-                options.append(("showFrustration","are you frustrated?"))
-                options.append(("goToChar","go to my position"))
-                options.append(("activate","activate item on Floor"))
-                options.append(("pickUp","pick up items"))
-                options.append(("dropAll","drop everyting"))
-                options.append(("stopCommand","stop"))
-                options.append(("moveWest","move west"))
-                options.append(("moveNorth","move north"))
-                options.append(("moveSouth","move south"))
-                options.append(("moveEast","move east"))
+                options.append(("showFrustration", "are you frustrated?"))
+                options.append(("goToChar", "go to my position"))
+                options.append(("activate", "activate item on Floor"))
+                options.append(("pickUp", "pick up items"))
+                options.append(("dropAll", "drop everyting"))
+                options.append(("stopCommand", "stop"))
+                options.append(("moveWest", "move west"))
+                options.append(("moveNorth", "move north"))
+                options.append(("moveSouth", "move south"))
+                options.append(("moveEast", "move east"))
                 """
                 for option in self.partner.getChatOptions(src.gamestate.gamestate.mainChar):
                     if not isinstance(option,dict):
@@ -1458,10 +1750,10 @@ class ChatMenu(Chat):
                 if not self.partner.silent:
                     options.append(("showQuests","what are you dooing?"))
                 """
-                options.append(("exit","let us proceed, "+self.partner.name))
+                options.append(("exit", "let us proceed, " + self.partner.name))
 
                 # set the options
-                self.setOptions("answer:",options)
+                self.setOptions("answer:", options)
 
             # let the superclass handle the actual selection
             if not self.getSelection():
@@ -1469,9 +1761,9 @@ class ChatMenu(Chat):
 
             # spawn the dialog options submenu
             if self.getSelection():
-                if not isinstance(self.selection,str):
+                if not isinstance(self.selection, str):
                     # spawn the selected dialog option
-                    if not isinstance(self.selection,dict):
+                    if not isinstance(self.selection, dict):
                         self.subMenu = self.selection(self.partner)
                     else:
                         self.subMenu = self.selection["chat"](self.partner)
@@ -1486,15 +1778,25 @@ class ChatMenu(Chat):
                     submenue.handleKey(key, noRender=noRender)
                     return False
                 elif self.selection == "copyMacros":
-                    self.partner.macroState["macros"] = src.gamestate.gamestate.mainChar.macroState["macros"]
+                    self.partner.macroState[
+                        "macros"
+                    ] = src.gamestate.gamestate.mainChar.macroState["macros"]
                     src.gamestate.gamestate.mainChar.addMessage("copy macros")
                     return True
                 elif self.selection == "showFrustration":
-                    submenue = src.interaction.OneKeystrokeMenu(text = "my frustration is: %s"%(self.partner.frustration))
+                    submenue = src.interaction.OneKeystrokeMenu(
+                        text="my frustration is: %s" % (self.partner.frustration)
+                    )
                     self.subMenu = submenue
                 elif self.selection == "goToChar":
-                    xDiff = src.gamestate.gamestate.mainChar.xPosition-self.partner.xPosition
-                    yDiff = src.gamestate.gamestate.mainChar.yPosition-self.partner.yPosition
+                    xDiff = (
+                        src.gamestate.gamestate.mainChar.xPosition
+                        - self.partner.xPosition
+                    )
+                    yDiff = (
+                        src.gamestate.gamestate.mainChar.yPosition
+                        - self.partner.yPosition
+                    )
 
                     moveCommand = []
 
@@ -1502,56 +1804,86 @@ class ChatMenu(Chat):
                         localMoveCommand = []
                         strXDiff = str(-xDiff)
                         for char in strXDiff:
-                            localMoveCommand.append((char,["norecord"]))
-                        localMoveCommand.append(("a",["norecord"]))
+                            localMoveCommand.append((char, ["norecord"]))
+                        localMoveCommand.append(("a", ["norecord"]))
                         moveCommand = localMoveCommand + moveCommand
                     if yDiff < 0:
                         localMoveCommand = []
                         strYDiff = str(-yDiff)
                         for char in strYDiff:
-                            localMoveCommand.append((char,["norecord"]))
-                        localMoveCommand.append(("w",["norecord"]))
+                            localMoveCommand.append((char, ["norecord"]))
+                        localMoveCommand.append(("w", ["norecord"]))
                         moveCommand = localMoveCommand + moveCommand
                     if yDiff > 0:
                         localMoveCommand = []
                         strYDiff = str(yDiff)
                         for char in strYDiff:
-                            localMoveCommand.append((char,["norecord"]))
-                        localMoveCommand.append(("s",["norecord"]))
+                            localMoveCommand.append((char, ["norecord"]))
+                        localMoveCommand.append(("s", ["norecord"]))
                         moveCommand = localMoveCommand + moveCommand
                     if xDiff > 0:
                         localMoveCommand = []
                         strXDiff = str(xDiff)
                         for char in strXDiff:
-                            localMoveCommand.append((char,["norecord"]))
-                        localMoveCommand.append(("d",["norecord"]))
+                            localMoveCommand.append((char, ["norecord"]))
+                        localMoveCommand.append(("d", ["norecord"]))
                         moveCommand = localMoveCommand + moveCommand
 
-                    self.partner.macroState["commandKeyQueue"] = self.partner.macroState["commandKeyQueue"]+moveCommand
+                    self.partner.macroState["commandKeyQueue"] = (
+                        self.partner.macroState["commandKeyQueue"] + moveCommand
+                    )
                     return True
                 elif self.selection == "activate":
-                    self.partner.macroState["commandKeyQueue"] = self.partner.macroState["commandKeyQueue"]+[("j",[])]
+                    self.partner.macroState[
+                        "commandKeyQueue"
+                    ] = self.partner.macroState["commandKeyQueue"] + [("j", [])]
                     return True
                 elif self.selection == "pickUp":
-                    self.partner.macroState["commandKeyQueue"] = self.partner.macroState["commandKeyQueue"]+[("1",[]),("0",[]),("k",[])]
+                    self.partner.macroState[
+                        "commandKeyQueue"
+                    ] = self.partner.macroState["commandKeyQueue"] + [
+                        ("1", []),
+                        ("0", []),
+                        ("k", []),
+                    ]
                     return True
                 elif self.selection == "dropAll":
-                    self.partner.macroState["commandKeyQueue"] = self.partner.macroState["commandKeyQueue"]+[("1",[]),("0",[]),("l",[])]
+                    self.partner.macroState[
+                        "commandKeyQueue"
+                    ] = self.partner.macroState["commandKeyQueue"] + [
+                        ("1", []),
+                        ("0", []),
+                        ("l", []),
+                    ]
                     return True
                 elif self.selection == "moveWest":
-                    self.partner.macroState["commandKeyQueue"] = self.partner.macroState["commandKeyQueue"]+[("a",[])]
+                    self.partner.macroState[
+                        "commandKeyQueue"
+                    ] = self.partner.macroState["commandKeyQueue"] + [("a", [])]
                     return True
                 elif self.selection == "moveNorth":
-                    self.partner.macroState["commandKeyQueue"] = self.partner.macroState["commandKeyQueue"]+[("w",[])]
+                    self.partner.macroState[
+                        "commandKeyQueue"
+                    ] = self.partner.macroState["commandKeyQueue"] + [("w", [])]
                     return True
                 elif self.selection == "moveSouth":
-                    self.partner.macroState["commandKeyQueue"] = self.partner.macroState["commandKeyQueue"]+[("s",[])]
+                    self.partner.macroState[
+                        "commandKeyQueue"
+                    ] = self.partner.macroState["commandKeyQueue"] + [("s", [])]
                     return True
                 elif self.selection == "moveEast":
-                    self.partner.macroState["commandKeyQueue"] = self.partner.macroState["commandKeyQueue"]+[("d",[])]
+                    self.partner.macroState[
+                        "commandKeyQueue"
+                    ] = self.partner.macroState["commandKeyQueue"] + [("d", [])]
                     return True
                 elif self.selection == "stopCommand":
-                    self.partner.macroState["commandKeyQueue"] = self.partner.macroState["commandKeyQueue"]+[("1",[]),("0",[]),("l",[])]
+                    self.partner.macroState[
+                        "commandKeyQueue"
+                    ] = self.partner.macroState["commandKeyQueue"] + [
+                        ("1", []),
+                        ("0", []),
+                        ("l", []),
+                    ]
                     self.partner.macroState["commandKeyQueue"].clear()
                     self.partner.macroState["loop"] = []
                     self.partner.macroState["replay"].clear()
@@ -1562,7 +1894,9 @@ class ChatMenu(Chat):
 
                     return True
                 elif self.selection == "runMacro":
-                    submenue = src.interaction.OneKeystrokeMenu(text = "press key for the macro to run")
+                    submenue = src.interaction.OneKeystrokeMenu(
+                        text="press key for the macro to run"
+                    )
                     self.subMenu = submenue
                     self.subMenu.followUp = self.runMacro
                     submenue.handleKey(key, noRender=noRender)
@@ -1577,8 +1911,18 @@ class ChatMenu(Chat):
         # say goodbye
         if self.state == "done":
             if self.lockOptions:
-                self.persistentText += self.partner.name+": \"let us proceed, "+src.gamestate.gamestate.mainChar.name+".\"\n"
-                self.persistentText += src.gamestate.gamestate.mainChar.name+": \"let us proceed, "+self.partner.name+".\"\n"
+                self.persistentText += (
+                    self.partner.name
+                    + ': "let us proceed, '
+                    + src.gamestate.gamestate.mainChar.name
+                    + '."\n'
+                )
+                self.persistentText += (
+                    src.gamestate.gamestate.mainChar.name
+                    + ': "let us proceed, '
+                    + self.partner.name
+                    + '."\n'
+                )
                 self.lockOptions = False
             else:
                 return True
@@ -1586,7 +1930,12 @@ class ChatMenu(Chat):
         # show redered text via urwid
         # bad code: urwid code should be somewere else
         if not self.subMenu:
-            self.set_text((src.interaction.urwid.AttrSpec("default","default"),self.persistentText))
+            self.set_text(
+                (
+                    src.interaction.urwid.AttrSpec("default", "default"),
+                    self.persistentText,
+                )
+            )
 
         return False
 
@@ -1598,25 +1947,28 @@ class ChatMenu(Chat):
 
         commands = []
         for command in self.partner.macroState["macros"][self.subMenu.keyPressed]:
-            commands.append((command,[]))
+            commands.append((command, []))
         self.partner.macroState["commandKeyQueue"] = commands
 
-        src.gamestate.gamestate.mainChar.addMessage("run macros - "+self.subMenu.keyPressed)
+        src.gamestate.gamestate.mainChar.addMessage(
+            "run macros - " + self.subMenu.keyPressed
+        )
+
 
 # a map alowing to get classes from strings
 chatMap = {
-             "TutorialSpeechTest":TutorialSpeechTest,
-             "GrowthTankRefillChat":GrowthTankRefillChat,
-             "FurnaceChat":FurnaceChat,
-             "SternChat":SternChat,
-             "StartChat":StartChat,
-             "StopChat":StopChat,
-             "InfoChat":InfoChat,
-             "ReReport":ReReport,
-             "JobChatFirst":JobChatFirst,
-             "JobChatSecond":JobChatSecond,
-             "RewardChat":RewardChat,
-             "RecruitChat":RecruitChat,
-             "ChatMenu":ChatMenu,
-             "ConfigurableChat":ConfigurableChat,
-          }
+    "TutorialSpeechTest": TutorialSpeechTest,
+    "GrowthTankRefillChat": GrowthTankRefillChat,
+    "FurnaceChat": FurnaceChat,
+    "SternChat": SternChat,
+    "StartChat": StartChat,
+    "StopChat": StopChat,
+    "InfoChat": InfoChat,
+    "ReReport": ReReport,
+    "JobChatFirst": JobChatFirst,
+    "JobChatSecond": JobChatSecond,
+    "RewardChat": RewardChat,
+    "RecruitChat": RecruitChat,
+    "ChatMenu": ChatMenu,
+    "ConfigurableChat": ConfigurableChat,
+}

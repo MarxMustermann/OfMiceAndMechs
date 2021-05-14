@@ -1,45 +1,49 @@
 import src
 
+
 class JobBoard(src.items.Item):
     """
     ingame object to hold tasks and distribute tasks to characters
     """
 
     type = "JobBoard"
+
     def __init__(self):
-        '''
+        """
         basic superclass configuration
-        '''
+        """
 
         super().__init__(display=src.canvas.displayChars.jobBoard)
 
         self.name = "job board"
         self.description = "Stores a collection of job orders. Serving as a todo list."
 
-        self.todo = [] #bug: saving is broken
+        self.todo = []  # bug: saving is broken
 
         self.bolted = False
         self.walkable = False
 
         # set up interaction menu
-        self.applyOptions.extend([
-                        ("doMaintenance","do a job order"),
-                        ("addComand","add comand"),
-                        ("addJobOrder","add job order"),
-                ])
+        self.applyOptions.extend(
+            [
+                ("doMaintenance", "do a job order"),
+                ("addComand", "add comand"),
+                ("addJobOrder", "add job order"),
+            ]
+        )
         self.applyMap = {
-                            "doMaintenance":self.doMaintenance,
-                            "addComand":self.addComand,
-                            "addJobOrder":self.addJobOrder,
-                        }
+            "doMaintenance": self.doMaintenance,
+            "addComand": self.addComand,
+            "addJobOrder": self.addJobOrder,
+        }
 
-    def addComand(self,character):
+    def addComand(self, character):
         """
         create a job order from a comand
         Paramerters:
             character: the character trying to set the comand
         """
-        
+
         # fetch comand
         comands = character.searchInventory("Command")
         if not comands:
@@ -55,13 +59,13 @@ class JobBoard(src.items.Item):
         comandName = comand.name
         if not comandName:
             comandName = "run comand"
-        jobOrder.tasks = [{"task":"run comand","command":comand.command}]
-        
+        jobOrder.tasks = [{"task": "run comand", "command": comand.command}]
+
         # add to todo list
         self.todo.append(jobOrder)
         character.addMessage("copied comand to job order and added it")
 
-    def addJobOrder(self,character):
+    def addJobOrder(self, character):
         """
         add a job order
         the intention is for the jobOrder to be run by someone else later
@@ -87,7 +91,7 @@ class JobBoard(src.items.Item):
         character.removeItemFromInventory(itemFound)
         character.addMessage("job order added")
 
-    def doMaintenance(self,character):
+    def doMaintenance(self, character):
         """
         do a maintenance job by running a job order from the todo list
 
@@ -114,7 +118,9 @@ class JobBoard(src.items.Item):
 
 todo:
 %s
-"""%(self.todo)
+""" % (
+            self.todo
+        )
         return text
 
     def getState(self):
@@ -132,7 +138,7 @@ todo:
 
         return state
 
-    def setState(self,state):
+    def setState(self, state):
         """
         load state and special handle stored job orders
 
@@ -145,5 +151,6 @@ todo:
             for jobOrderState in state["todo"]:
                 jobOrder = src.items.getItemFromState(jobOrderState)
                 self.todo.append(jobOrder)
+
 
 src.items.addType(JobBoard)

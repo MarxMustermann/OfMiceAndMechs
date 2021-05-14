@@ -1,15 +1,18 @@
 import src
 
-'''
-'''
+"""
+"""
+
+
 class Stripe(src.items.Item):
     type = "Stripe"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
-    def __init__(self, name="stripe",creator=None,noId=False):
-        super().__init__(display=src.canvas.displayChars.stripe,name=name)
+    """
+
+    def __init__(self, name="stripe", creator=None, noId=False):
+        super().__init__(display=src.canvas.displayChars.stripe, name=name)
 
         self.bolted = False
         self.walkable = True
@@ -23,5 +26,6 @@ A Stripe. Simple building material.
 
 """
         return text
+
 
 src.items.addType(Stripe)

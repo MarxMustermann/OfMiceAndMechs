@@ -1,14 +1,17 @@
 import src
 import random
 
-'''
-'''
+"""
+"""
+
+
 class Armor(src.items.Item):
     type = "Armor"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
+    """
+
     def __init__(self):
         super().__init__()
 
@@ -17,10 +20,10 @@ class Armor(src.items.Item):
 
         self.bolted = False
         self.walkable = True
-        self.armorValue = random.randint(1,5)
+        self.armorValue = random.randint(1, 5)
         self.damageType = "attacked"
 
-    def getArmorValue(self,damageType):
+    def getArmorValue(self, damageType):
         if damageType == self.damageType:
             return self.armorValue
         return 0
@@ -35,11 +38,14 @@ armorvalue:
 description:
 protects you in combat
 
-"""%(self.armorValue,)
+""" % (
+            self.armorValue,
+        )
         return text
 
-    def apply(self,character):
+    def apply(self, character):
         character.armor = self
         self.container.removeItem(self)
+
 
 src.items.addType(Armor)

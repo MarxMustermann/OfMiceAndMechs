@@ -1,14 +1,16 @@
 import src
 
+
 class GooFlask(src.items.Item):
     type = "GooFlask"
 
-    '''
+    """
     call superclass constructor with modified paramters and set some state
-    '''
-    def __init__(self,name="goo flask",noId=False):
+    """
+
+    def __init__(self, name="goo flask", noId=False):
         self.uses = 0
-        super().__init__(display=src.canvas.displayChars.gooflask_empty,name=name)
+        super().__init__(display=src.canvas.displayChars.gooflask_empty, name=name)
         self.walkable = True
         self.bolted = False
         self.description = "a flask containing goo"
@@ -16,14 +18,14 @@ class GooFlask(src.items.Item):
         self.maxUses = 100
 
         # set up meta information for saveing
-        self.attributesToStore.extend([
-               "uses","level","maxUses"])
+        self.attributesToStore.extend(["uses", "level", "maxUses"])
 
-    '''
+    """
     drink from flask
-    '''
-    def apply(self,character):
-        super().apply(character,silent=True)
+    """
+
+    def apply(self, character):
+        super().apply(character, silent=True)
 
         # handle edge case
         if self.uses <= 0:
@@ -41,24 +43,32 @@ class GooFlask(src.items.Item):
         # change state
         self.uses -= 1
         self.changed()
-        character.heal(1,reason="drank from flask")
+        character.heal(1, reason="drank from flask")
         if character.frustration > 5000:
             character.frustration -= 15
         character.satiation = 1000
         character.changed()
 
     def render(self):
-        '''
+        """
         render based on fill amount
-        '''
-        displayByUses = [src.canvas.displayChars.gooflask_empty, src.canvas.displayChars.gooflask_part1, src.canvas.displayChars.gooflask_part2, src.canvas.displayChars.gooflask_part3, src.canvas.displayChars.gooflask_part4, src.canvas.displayChars.gooflask_full]
-        return displayByUses[self.uses//20]
+        """
+        displayByUses = [
+            src.canvas.displayChars.gooflask_empty,
+            src.canvas.displayChars.gooflask_part1,
+            src.canvas.displayChars.gooflask_part2,
+            src.canvas.displayChars.gooflask_part3,
+            src.canvas.displayChars.gooflask_part4,
+            src.canvas.displayChars.gooflask_full,
+        ]
+        return displayByUses[self.uses // 20]
 
-    '''
+    """
     get info including the charges on the flask
-    '''
+    """
+
     def getDetailedInfo(self):
-        return super().getDetailedInfo()+" ("+str(self.uses)+" charges)"
+        return super().getDetailedInfo() + " (" + str(self.uses) + " charges)"
 
     def getLongInfo(self):
         text = """
@@ -73,7 +83,10 @@ A goo flask can be refilled at a goo dispenser and can hold a maximum of %s char
 
 this is a level %s item.
 
-"""%(self.maxUses,self.level)
+""" % (
+            self.maxUses,
+            self.level,
+        )
         return text
 
     def upgrade(self):
@@ -86,5 +99,5 @@ this is a level %s item.
 
         self.maxUses -= 10
 
-src.items.addType(GooFlask)
 
+src.items.addType(GooFlask)

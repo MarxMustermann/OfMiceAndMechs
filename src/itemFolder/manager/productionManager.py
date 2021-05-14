@@ -1,11 +1,13 @@
 import src
 
+
 class ProductionManager(src.items.Item):
     type = "ProductionManager"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
+    """
+
     def __init__(self):
         self.commands = {}
 
@@ -19,8 +21,8 @@ class ProductionManager(src.items.Item):
     def getLongInfo(self):
 
         commandsString = ""
-        for (itemType,command) in self.commands.items():
-            commandsString += "* "+itemType+" "+str(command)+"\n"
+        for (itemType, command) in self.commands.items():
+            commandsString += "* " + itemType + " " + str(command) + "\n"
 
         text = """
 item: ProductionManager
@@ -34,20 +36,36 @@ job order can be inserted and commands can be run depending on the item the job 
 commands:
 %s
 
-"""%(commandsString,self.commands)
+""" % (
+            commandsString,
+            self.commands,
+        )
         return text
 
-    def apply(self,character):
-        if not (character.xPosition == self.xPosition and character.yPosition == self.yPosition-1):
+    def apply(self, character):
+        if not (
+            character.xPosition == self.xPosition
+            and character.yPosition == self.yPosition - 1
+        ):
             character.addMessage("this item can only be used from north")
             return
 
-        if character.macroState["recording"] and "auto" in character.macroState["macros"]:
+        if (
+            character.macroState["recording"]
+            and "auto" in character.macroState["macros"]
+        ):
             optionText = "set recorded command"
         else:
             optionText = "start recording command"
-        options = [("runJobOrder","run job order"),("runCommand","run command"),("recordCommand",optionText),("addCommand","add command")]
-        self.submenue = src.interaction.SelectionMenu("what do you want to do?",options)
+        options = [
+            ("runJobOrder", "run job order"),
+            ("runCommand", "run command"),
+            ("recordCommand", optionText),
+            ("addCommand", "add command"),
+        ]
+        self.submenue = src.interaction.SelectionMenu(
+            "what do you want to do?", options
+        )
         character.macroState["submenue"] = self.submenue
         character.macroState["submenue"].followUp = self.apply2
         self.character = character
@@ -63,7 +81,11 @@ commands:
         if self.submenue.selection == "runJobOrder":
             jobOrder = None
             for item in reversed(self.character.inventory):
-                if item.type == "JobOrder" and not item.done and item.tasks[-1]["task"] == "produce":
+                if (
+                    item.type == "JobOrder"
+                    and not item.done
+                    and item.tasks[-1]["task"] == "produce"
+                ):
                     jobOrder = item
                     break
 
@@ -80,20 +102,30 @@ commands:
 
             convertedCommand = []
             for char in command:
-                convertedCommand.append((char,"norecord"))
+                convertedCommand.append((char, "norecord"))
 
-            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
-            self.character.addMessage("running command to produce %s - %s"%(itemType,command))
+            self.character.macroState["commandKeyQueue"] = (
+                convertedCommand + self.character.macroState["commandKeyQueue"]
+            )
+            self.character.addMessage(
+                "running command to produce %s - %s" % (itemType, command)
+            )
 
         elif self.submenue.selection == "recordCommand":
-            if self.character.macroState["recording"] and "auto" in self.character.macroState["macros"]:
+            if (
+                self.character.macroState["recording"]
+                and "auto" in self.character.macroState["macros"]
+            ):
                 self.character.macroState["recording"] = False
                 self.character.macroState["recordingTo"] = None
                 del self.character.macroState["macros"]["auto"]
                 options = []
                 for key in itemMap.keys():
-                    options.append((key,key))
-                self.submenue = src.interaction.SelectionMenu("Setting command for producing item. What item do you want to set the command for?",options)
+                    options.append((key, key))
+                self.submenue = src.interaction.SelectionMenu(
+                    "Setting command for producing item. What item do you want to set the command for?",
+                    options,
+                )
                 self.character.macroState["submenue"] = self.submenue
                 self.character.macroState["submenue"].followUp = self.setCommand2
             else:
@@ -103,28 +135,35 @@ commands:
         elif self.submenue.selection == "runCommand":
             options = []
             for itemType in self.commands:
-                options.append((itemType,itemType))
+                options.append((itemType, itemType))
 
             if not options:
                 self.character.addMessage("there are no commands set")
                 return
 
-            self.submenue = src.interaction.SelectionMenu("Run command for producing item. select item to produce.",options)
+            self.submenue = src.interaction.SelectionMenu(
+                "Run command for producing item. select item to produce.", options
+            )
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.runCommand
         elif self.submenue.selection == "addCommand":
             options = []
             for key in itemMap.keys():
-                options.append((key,key))
-            self.submenue = src.interaction.SelectionMenu("Setting command for producing item. What item do you want to set the command for?",options)
+                options.append((key, key))
+            self.submenue = src.interaction.SelectionMenu(
+                "Setting command for producing item. What item do you want to set the command for?",
+                options,
+            )
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setCommand
 
     def setCommand(self):
         itemType = self.submenue.selection
-        
+
         commandItem = None
-        for item in self.container.getItemByPosition((self.xPosition,self.yPosition-1)):
+        for item in self.container.getItemByPosition(
+            (self.xPosition, self.yPosition - 1)
+        ):
             if item.type == "Command":
                 commandItem = item
 
@@ -135,7 +174,9 @@ commands:
         self.commands[itemType] = commandItem.command
         self.container.removeItem(commandItem)
 
-        self.character.addMessage("added command for %s - %s"%(itemType,commandItem.command))
+        self.character.addMessage(
+            "added command for %s - %s" % (itemType, commandItem.command)
+        )
         return
 
     def setCommand2(self):
@@ -145,7 +186,9 @@ commands:
             return
         self.commands[itemType] = self.macroSafe[:-2]
 
-        self.character.addMessage("added command for %s - %s"%(itemType,self.commands[itemType]))
+        self.character.addMessage(
+            "added command for %s - %s" % (itemType, self.commands[itemType])
+        )
 
     def runCommand(self):
         itemType = self.submenue.selection
@@ -153,19 +196,24 @@ commands:
 
         convertedCommand = []
         for char in command:
-            convertedCommand.append((char,"norecord"))
+            convertedCommand.append((char, "norecord"))
 
-        self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
-        self.character.addMessage("running command to produce %s - %s"%(itemType,command))
+        self.character.macroState["commandKeyQueue"] = (
+            convertedCommand + self.character.macroState["commandKeyQueue"]
+        )
+        self.character.addMessage(
+            "running command to produce %s - %s" % (itemType, command)
+        )
 
     def getState(self):
         state = super().getState()
         state["commands"] = self.commands
         return state
 
-    def setState(self,state):
+    def setState(self, state):
         super().setState(state)
         if "commands" in state:
             self.commands = state["commands"]
+
 
 src.items.addType(ProductionManager)

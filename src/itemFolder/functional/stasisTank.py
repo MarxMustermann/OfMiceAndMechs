@@ -1,19 +1,22 @@
 import src
 
-'''
-'''
+"""
+"""
+
+
 class StasisTank(src.items.Item):
     type = "StasisTank"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
+    """
+
     def __init__(self):
         super().__init__()
-                
+
         self.display = src.canvas.displayChars.stasisTank
 
-        self.name="stasis tank"
+        self.name = "stasis tank"
         self.character = None
         self.bolted = True
         self.walkable = False
@@ -22,12 +25,12 @@ class StasisTank(src.items.Item):
 
     def eject(self):
         if self.character:
-            self.room.addCharacter(self.character,self.xPosition,self.yPosition+1)
+            self.room.addCharacter(self.character, self.xPosition, self.yPosition + 1)
             self.character.stasis = False
             self.character = None
             self.characterTimeEntered = None
 
-    def apply(self,character):
+    def apply(self, character):
         if not self.room:
             character.addMessage("you can not use item outside of rooms")
             return
@@ -36,9 +39,12 @@ class StasisTank(src.items.Item):
             self.eject()
         else:
             options = []
-            options.append(("enter","yes"))
-            options.append(("noEnter","no"))
-            self.submenue = src.interaction.SelectionMenu("The stasis tank is empty. You will not be able to leave it on your on.\nDo you want to enter it?",options)
+            options.append(("enter", "yes"))
+            options.append(("noEnter", "no"))
+            self.submenue = src.interaction.SelectionMenu(
+                "The stasis tank is empty. You will not be able to leave it on your on.\nDo you want to enter it?",
+                options,
+            )
             self.character = character
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.enterSelection
@@ -47,15 +53,17 @@ class StasisTank(src.items.Item):
         if self.submenue.selection == "enter":
             self.character.stasis = True
             self.room.removeCharacter(self.character)
-            self.character.addMessage("you entered the stasis tank. You will not be able to move until somebody activates it")
+            self.character.addMessage(
+                "you entered the stasis tank. You will not be able to move until somebody activates it"
+            )
             self.characterTimeEntered = src.gamestate.gamestate.tick
         else:
             self.character.addMessage("you do not enter the stasis tank")
 
-    def configure(self,character):
+    def configure(self, character):
         character.addMessage(src.gamestate.gamestate.tick)
         character.addMessage(self.characterTimeEntered)
-        if src.gamestate.gamestate.tick > self.characterTimeEntered+100:
+        if src.gamestate.gamestate.tick > self.characterTimeEntered + 100:
             self.eject()
         """
         options = [("addCommand","add command")]
@@ -68,9 +76,11 @@ class StasisTank(src.items.Item):
     def configure2(self):
         if self.submenue.selection == "addCommand":
             options = []
-            options.append(("empty","no items left"))
-            options.append(("fullInventory","inventory full"))
-            self.submenue = src.interaction.SelectionMenu("Setting command for handling triggers.",options)
+            options.append(("empty", "no items left"))
+            options.append(("fullInventory", "inventory full"))
+            self.submenue = src.interaction.SelectionMenu(
+                "Setting command for handling triggers.", options
+            )
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setCommand
 
@@ -84,7 +94,7 @@ class StasisTank(src.items.Item):
 
         return state
 
-    def setState(self,state):
+    def setState(self, state):
         super().setState(state)
 
         if "character" in state and state["character"]:
@@ -110,5 +120,6 @@ The ejected character will be placed to the south of the stasis tank and will st
 
 """
         return text
-        
+
+
 src.items.addType(StasisTank)

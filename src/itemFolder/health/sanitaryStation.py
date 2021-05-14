@@ -1,13 +1,16 @@
 import src
 
-'''
-'''
+"""
+"""
+
+
 class SanitaryStation(src.items.Item):
     type = "SanitaryStation"
 
-    '''
+    """
     call superclass constructor with modified paramters
-    '''
+    """
+
     def __init__(self):
         super().__init__()
 
@@ -20,33 +23,44 @@ class SanitaryStation(src.items.Item):
         self.satiationThreshold = 100
         self.frustrationThreshold = 10000
 
-        self.attributesToStore.extend([
-               "commands","healthThreshold","satiationThreshold",
-               ])
+        self.attributesToStore.extend(
+            [
+                "commands",
+                "healthThreshold",
+                "satiationThreshold",
+            ]
+        )
 
-    '''
+    """
     collect items
-    '''
-    def apply(self,character):
-        super().apply(character,silent=True)
+    """
+
+    def apply(self, character):
+        super().apply(character, silent=True)
 
         if character.health < self.healthThreshold:
             character.addMessage("health needed")
-            self.runCommand("healing",character)
+            self.runCommand("healing", character)
             return
         if character.frustration > self.frustrationThreshold:
             character.addMessage("depressed")
-            self.runCommand("depressed",character)
+            self.runCommand("depressed", character)
             return
         if character.satiation < self.satiationThreshold:
             character.addMessage("satiation needed")
-            self.runCommand("hungry",character)
+            self.runCommand("hungry", character)
             return
         character.addMessage("nothing needed")
 
-    def configure(self,character):
-        options = [("addCommand","add command"),("changeSetting","change settings"),("showSettings","show settings")]
-        self.submenue = src.interaction.SelectionMenu("what do you want to do?",options)
+    def configure(self, character):
+        options = [
+            ("addCommand", "add command"),
+            ("changeSetting", "change settings"),
+            ("showSettings", "show settings"),
+        ]
+        self.submenue = src.interaction.SelectionMenu(
+            "what do you want to do?", options
+        )
         character.macroState["submenue"] = self.submenue
         character.macroState["submenue"].followUp = self.configure2
         self.character = character
@@ -54,23 +68,33 @@ class SanitaryStation(src.items.Item):
     def configure2(self):
         if self.submenue.selection == "addCommand":
             options = []
-            options.append(("healing","need healing"))
-            options.append(("hungry","need satiation"))
-            options.append(("depressed","need depressed"))
-            self.submenue = src.interaction.SelectionMenu("Setting command for handling triggers.",options)
+            options.append(("healing", "need healing"))
+            options.append(("hungry", "need satiation"))
+            options.append(("depressed", "need depressed"))
+            self.submenue = src.interaction.SelectionMenu(
+                "Setting command for handling triggers.", options
+            )
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setCommand
         if self.submenue.selection == "changeSetting":
             options = []
-            options.append(("health","set health threshold"))
-            options.append(("satiation","set satiation threshold"))
-            options.append(("depressed","set depressed threshold"))
-            self.submenue = src.interaction.SelectionMenu("Choose setting to set",options)
+            options.append(("health", "set health threshold"))
+            options.append(("satiation", "set satiation threshold"))
+            options.append(("depressed", "set depressed threshold"))
+            self.submenue = src.interaction.SelectionMenu(
+                "Choose setting to set", options
+            )
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setSetting
             self.settingName = None
         if self.submenue.selection == "showSettings":
-            self.submenue = src.interaction.TextMenu("health threshold: %s\nsatiation threshold: %s"%(self.healthThreshold,self.satiationThreshold,))
+            self.submenue = src.interaction.TextMenu(
+                "health threshold: %s\nsatiation threshold: %s"
+                % (
+                    self.healthThreshold,
+                    self.satiationThreshold,
+                )
+            )
             self.character.macroState["submenue"] = self.submenue
 
     def setSetting(self):
@@ -91,9 +115,11 @@ class SanitaryStation(src.items.Item):
 
     def setCommand(self):
         itemType = self.submenue.selection
-        
+
         commandItem = None
-        for item in self.container.getItemByPosition((self.xPosition,self.yPosition-1)):
+        for item in self.container.getItemByPosition(
+            (self.xPosition, self.yPosition - 1)
+        ):
             if item.type == "Command":
                 commandItem = item
 
@@ -104,13 +130,15 @@ class SanitaryStation(src.items.Item):
         self.commands[itemType] = commandItem.command
         self.container.removeItem(commandItem)
 
-        self.character.addMessage("added command for %s - %s"%(itemType,commandItem.command))
+        self.character.addMessage(
+            "added command for %s - %s" % (itemType, commandItem.command)
+        )
         return
 
-    def runCommand(self,trigger,character=None):
-    
+    def runCommand(self, trigger, character=None):
+
         if character == None:
-            character=self.character
+            character = self.character
 
         if not trigger in self.commands:
             return
@@ -119,10 +147,14 @@ class SanitaryStation(src.items.Item):
 
         convertedCommand = []
         for char in command:
-            convertedCommand.append((char,"norecord"))
+            convertedCommand.append((char, "norecord"))
 
-        character.macroState["commandKeyQueue"] = convertedCommand + character.macroState["commandKeyQueue"]
-        character.addMessage("running command to handle trigger %s - %s"%(trigger,command))
+        character.macroState["commandKeyQueue"] = (
+            convertedCommand + character.macroState["commandKeyQueue"]
+        )
+        character.addMessage(
+            "running command to handle trigger %s - %s" % (trigger, command)
+        )
 
     def getLongInfo(self):
         text = """
@@ -139,7 +171,8 @@ use it to collect items
         result["healthThreshold"] = self.healthThreshold
         result["satiationThreshold"] = self.satiationThreshold
         result["frustrationThreshold"] = self.frustrationThreshold
-        
+
         return result
+
 
 src.items.addType(SanitaryStation)

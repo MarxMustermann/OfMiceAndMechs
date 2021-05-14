@@ -1,13 +1,16 @@
 import src
 
-'''
-'''
+"""
+"""
+
+
 class PositioningDevice(src.items.Item):
     type = "PositioningDevice"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
+    """
+
     def __init__(self):
         super().__init__(display=src.canvas.displayChars.positioningDevice)
 
@@ -15,7 +18,7 @@ class PositioningDevice(src.items.Item):
         self.bolted = False
         self.walkable = True
 
-    def apply(self,character):
+    def apply(self, character):
 
         if not "x" in character.registers:
             character.registers["x"] = [0]
@@ -24,7 +27,13 @@ class PositioningDevice(src.items.Item):
             character.registers["y"] = [0]
         character.registers["y"][-1] = character.yPosition
 
-        character.addMessage("your position is %s/%s"%(character.xPosition,character.yPosition,))
+        character.addMessage(
+            "your position is %s/%s"
+            % (
+                character.xPosition,
+                character.yPosition,
+            )
+        )
 
     def getLongInfo(self):
         text = """
@@ -39,5 +48,6 @@ The y-position will be written to the register y.
 
 """
         return text
+
 
 src.items.addType(PositioningDevice)

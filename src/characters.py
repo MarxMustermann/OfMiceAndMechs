@@ -56,15 +56,15 @@ class Character(src.saveing.Saveable):
         if name is None and seed:
             name = (
                 config.names.characterFirstNames[
-                    (seed) % len(config.names.characterFirstNames)
-                ]
+                    seed % len(config.names.characterFirstNames)
+                    ]
                 + " "
                 + config.names.characterLastNames[
                     (seed * 10) % len(config.names.characterLastNames)
-                ]
+                    ]
             )
 
-        if display is None and not name is None:
+        if display is None and name is not None:
             display = src.canvas.displayChars.staffCharactersByLetter[name[0].lower()]
 
         if name is None:
@@ -261,7 +261,7 @@ class Character(src.saveing.Saveable):
             the position
         """
 
-        return (self.xPosition, self.yPosition, self.zPosition)
+        return self.xPosition, self.yPosition, self.zPosition
 
     def searchInventory(self, itemType, extra={}):
         """
@@ -676,10 +676,7 @@ class Character(src.saveing.Saveable):
             if not isinstance(chat, dict):
                 chatOptions.append(chat.id)
             else:
-                option = {}
-                option["chat"] = chat["chat"].id
-                option["dialogName"] = chat["dialogName"]
-                option["params"] = {}
+                option = {"chat": chat["chat"].id, "dialogName": chat["dialogName"], "params": {}}
                 if "params" in chat:
                     chatOptions.append(option)
         state["chatOptions"] = chatOptions
@@ -744,7 +741,6 @@ class Character(src.saveing.Saveable):
         self.macroState = state["macroState"]
 
         if not self.macroState["itemMarkedLast"] is None:
-
             def setParam(instance):
                 self.macroState["itemMarkedLast"] = instance
 
@@ -821,9 +817,10 @@ class Character(src.saveing.Saveable):
                 if not isinstance(chatType, dict):
                     chatOptions.append(src.chats.chatMap[chatType])
                 else:
-                    option = {}
-                    option["chat"] = src.chats.chatMap[chatType["chat"]]
-                    option["dialogName"] = chatType["dialogName"]
+                    option = {
+                        "chat": src.chats.chatMap[chatType["chat"]],
+                        "dialogName": chatType["dialogName"]
+                    }
                     if "params" in chatType:
                         params = {}
                         for (key, value) in chatType["params"].items():
@@ -1312,7 +1309,7 @@ class Character(src.saveing.Saveable):
             self.addMessage("there is no space to drop the item")
             return
 
-        self.addMessage("you drop a %s" % (item.type))
+        self.addMessage("you drop a %s" % item.type)
 
         # remove item from inventory
         self.inventory.remove(item)
@@ -1388,21 +1385,21 @@ class Character(src.saveing.Saveable):
         if self.satiation < 0 and not self.godMode:
             self.die(
                 reason="you starved. This happens when your satiation falls below 0\nPrevent this by drinking using the "
-                + config.commandChars.drink
-                + " key"
+                       + config.commandChars.drink
+                       + " key"
             )
             return
 
         if self.satiation in (300 - 1, 200 - 1, 100 - 1, 30 - 1):
             self.changed("thirst")
             self.macroState["commandKeyQueue"] = [
-                ("|", ["norecord"]),
-                (">", ["norecord"]),
-                ("_", ["norecord"]),
-                ("j", ["norecord"]),
-                ("|", ["norecord"]),
-                ("<", ["norecord"]),
-            ] + self.macroState["commandKeyQueue"]
+                                                     ("|", ["norecord"]),
+                                                     (">", ["norecord"]),
+                                                     ("_", ["norecord"]),
+                                                     ("j", ["norecord"]),
+                                                     ("|", ["norecord"]),
+                                                     ("<", ["norecord"]),
+                                                 ] + self.macroState["commandKeyQueue"]
 
         if self.satiation == 30 - 1:
             self.changed("severeThirst")
@@ -1735,10 +1732,10 @@ class Monster(Character):
                 self.xPosition
                 and self.yPosition
                 and (
-                    not self.container.getItemByPosition(
-                        (self.xPosition, self.yPosition, self.zPosition)
-                    )
+                not self.container.getItemByPosition(
+                    (self.xPosition, self.yPosition, self.zPosition)
                 )
+            )
             ):
                 new = src.items.itemMap["Mold"]()
                 self.container.addItem(new, self.getPosition())

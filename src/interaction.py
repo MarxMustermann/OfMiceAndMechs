@@ -1824,7 +1824,7 @@ current registers
 
     # repeat autoadvance keystrokes
     # bad code: keystrokes are abused here, a timer would be more appropriate
-    if key in commandChars.autoAdvance:
+    if key in (commandChars.autoAdvance,):
         if not charState["ignoreNextAutomated"]:
             loop.set_alarm_in(0.2, callShow_or_exit, commandChars.autoAdvance)
         else:
@@ -1993,7 +1993,7 @@ current registers
 
         # set the flag to advance the game
         doAdvanceGame = True
-        if key in commandChars.ignore:
+        if key in (commandChars.ignore,):
             doAdvanceGame = False
 
         # invalidate input for unconscious char
@@ -2040,7 +2040,7 @@ current registers
 
             # kill one of the autoadvance keystrokes
             # bad pattern: doesn't actually pause
-            if key in commandChars.pause:
+            if key in (commandChars.pause,):
                 charState["ignoreNextAutomated"] = True
                 doAdvanceGame = False
 
@@ -2126,7 +2126,7 @@ current registers
 
             # murder the next available character
             # bad pattern: player should be able to select whom to kill if there are multiple targets
-            if key in "M":
+            if key in ("M",):
                 if char.combatMode is None:
                     char.combatMode = "agressive"
                 elif char.combatMode == "agressive":
@@ -2134,7 +2134,7 @@ current registers
                 else:
                     char.combatMode = None
                 char.addMessage("switched combatMode to: %s" % (char.combatMode,))
-            if key in commandChars.attack:
+            if key in (commandChars.attack,):
                 if (
                     "NaiveMurderQuest" not in char.solvers and not char.godMode
                 ):  # disabled
@@ -2198,7 +2198,7 @@ current registers
                             entry[0].configure(char)
 
             # activate an item
-            if key in commandChars.activate:
+            if key in (commandChars.activate,):
                 if "NaiveActivateQuest" not in char.solvers and not char.godMode:
                     char.addMessage(
                         "you do not have the nessecary solver yet (activate)"
@@ -2237,7 +2237,7 @@ current registers
                                 entry[0].apply(char)
 
             # examine an item
-            if key in commandChars.examine:
+            if key in (commandChars.examine,):
                 if "ExamineQuest" not in char.solvers and not char.godMode:
                     char.addMessage(
                         "you do not have the nessecary solver yet (examine)"
@@ -2258,7 +2258,7 @@ current registers
 
             # drop first item from inventory
             # bad pattern: the user has to have the choice for what item to drop
-            if key in commandChars.drop:
+            if key in (commandChars.drop,):
                 if "NaiveDropQuest" not in char.solvers and not char.godMode:
                     char.addMessage("you do not have the nessecary solver yet (drop)")
                 else:
@@ -2268,7 +2268,7 @@ current registers
             # drink from the first available item in inventory
             # bad pattern: the user has to have the choice from what item to drink from
             # bad code: drinking should happen in character
-            if key in "J":
+            if key in ("J",):
                 if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                     text = """
 
@@ -2294,7 +2294,7 @@ press key for the advanced interaction
                 char.interactionState["advancedInteraction"] = {}
                 return
 
-            if key in "K":
+            if key in ("K",):
                 if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                     text = """
 
@@ -2318,7 +2318,7 @@ press key for advanced pickup
                 char.interactionState["advancedPickup"] = {}
                 return
 
-            if key in "L":
+            if key in ("L",):
                 if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                     text = """
 
@@ -2344,7 +2344,7 @@ press key for advanced drop
 
             # pick up items
             # bad code: picking up should happen in character
-            if key in commandChars.pickUp:
+            if key in (commandChars.pickUp,):
                 if "NaivePickupQuest" not in char.solvers and not char.godMode:
                     char.addMessage("you do not have the nessecary solver yet (pickup)")
                 else:
@@ -2370,7 +2370,7 @@ press key for advanced drop
                             char.container.calculatePathMap()
 
             # open chat partner selection
-            if key in commandChars.hail:
+            if key in (commandChars.hail,):
                 charState["submenue"] = ChatPartnerselection()
 
             char.automated = False
@@ -2383,7 +2383,7 @@ press key for advanced drop
                     pass
 
             # recalculate the questmarker since it could be tainted
-            elif key not in commandChars.pause:
+            elif key not in (commandChars.pause,):
                 charState["lastMoveAutomated"] = False
                 if char.quests:
                     char.setPathToQuest(char.quests[0])
@@ -2402,34 +2402,34 @@ press key for advanced drop
 
         # doesn't open the dev menu and toggles rendering mode instead
         # bad code: code should act as advertised
-        if key in commandChars.devMenu:
+        if key in (commandChars.devMenu,):
             if src.canvas.displayChars.mode == "unicode":
                 src.canvas.displayChars.setRenderingMode("pureASCII")
             else:
                 src.canvas.displayChars.setRenderingMode("unicode")
 
         # open quest menu
-        if key in commandChars.show_quests:
+        if key in (commandChars.show_quests,):
             charState["submenue"] = QuestMenu()
 
         # open help menu
-        if key in commandChars.show_help:
+        if key in (commandChars.show_help,):
             charState["submenue"] = HelpMenu()
 
         # open inventory
-        if key in commandChars.show_inventory:
+        if key in (commandChars.show_inventory,):
             charState["submenue"] = InventoryMenu(char)
 
         # open the menu for giving quests
-        if key in commandChars.show_quests_detailed:
+        if key in (commandChars.show_quests_detailed,):
             charState["submenue"] = AdvancedQuestMenu()
 
         # open the character information
-        if key in commandChars.show_characterInfo:
+        if key in (commandChars.show_characterInfo,):
             charState["submenue"] = CharacterInfoMenu(char=char)
 
         # open the help screen
-        if key in commandChars.show_help:
+        if key in (commandChars.show_help,):
             char.specialRender = True
 
     # render submenus

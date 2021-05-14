@@ -424,7 +424,7 @@ class ArchitectArtwork(src.items.Item):
             for x in range(0, 15):
                 mapContent.append([])
                 for y in range(0, 15):
-                    if x in (0, 14) and y not in (0, 14):
+                    if x not in (0, 14) and y not in (0, 14):
                         char = "  "
                     elif not x == 7 and not y == 7:
                         char = "##"

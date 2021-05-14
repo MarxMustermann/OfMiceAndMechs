@@ -488,7 +488,8 @@ class Dungeon(BasicPhase):
             "ExamineQuest",
             "FireFurnaceMeta",
             "CollectQuestMeta",
-            "WaitQuest" "NaiveDropQuest",
+            "WaitQuest",
+            "NaiveDropQuest",
             "NaiveDropQuest",
             "DropQuestMeta",
         ]

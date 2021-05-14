@@ -580,7 +580,7 @@ class Room(src.saveing.Saveable):
         if "characterIds" in state:
             for charId in state["characterIds"]:
                 charState = state["characterStates"][charId]
-                if "xPosition" in charState or "yPosition" not in charState:
+                if "xPosition" not in charState or "yPosition" not in charState:
                     continue
                 char = src.characters.Character()
                 char.setState(charState)
@@ -2784,7 +2784,7 @@ XXXXXXXXXX
         path = []
 
         # go to secondary path
-        if y in (1, 2) and x not in (2, 5, 8, 3, 6):
+        if y not in (1, 2) and x not in (2, 5, 8, 3, 6):
             if x in (2, 5, 8):
                 x = x - 1
             elif x in (3, 6):

@@ -1,23 +1,43 @@
 import src
 
-
 class BluePrintingArtwork(src.items.Item):
+    """
+    ingame item that produces blueprints needed to produce stuff
+    this is a godmode item and should not be included in normal gameplay
+    """
     type = "BluePrintingArtwork"
 
     def __init__(self):
+        '''
+        superclass configuration
+        '''
+
         super().__init__(display="BA")
 
         self.name = "blueprinting artwork"
 
     def apply(self, character):
+        '''
+        start creating a blueprint
+        this at first only spawns a submenu to get parameters and then triggers createBlueprint to do something
+
+        Parameters:
+            character: the character trying to produce a blueprint
+        '''
+
         self.character = character
-        self.submenue = src.interaction.InputMenu("input menue")
-        self.character.macroState["submenue"] = self.submenue
+        self.submenu = src.interaction.InputMenu("input menue")
+        self.character.macroState["submenue"] = self.submenu
         self.character.macroState["submenue"].followUp = self.createBlueprint
         return
 
+    # bad code: is mixed with submenu internals
     def createBlueprint(self):
-        if self.submenue.text not in itemMap:
+        '''
+        create a blueprint
+        '''
+
+        if self.submenu.text not in itemMap:
             self.character.addMessage("item not found")
             return
         new = BluePrint()

@@ -107,7 +107,7 @@ class HiveMind(src.items.Item):
 
         numItems = 0
         for item in reversed(character.inventory):
-            if item.walkable and item.type not in (
+            if (not item.walkable) and item.type in (
                 "SickBloom",
                 "Bloom",
                 "Coal",
@@ -308,10 +308,10 @@ class HiveMind(src.items.Item):
             if (self.xPosition // 15, self.yPosition // 15) == (7, 7):
                 anchor = (7, 7)
 
-            if anchor in self.territory or anchor not in self.paths:
+            if anchor not in self.territory or anchor not in self.paths:
                 anchor = (self.xPosition // 15, self.yPosition // 15)
 
-                if anchor in self.territory or anchor not in self.paths:
+                if anchor not in self.territory or anchor not in self.paths:
                     return
 
             character.addMessage(str(anchor) + " -> " + str(targetPos))

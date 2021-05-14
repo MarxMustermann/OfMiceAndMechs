@@ -650,7 +650,7 @@ class CityBuilder(src.items.Item):
                 if position in self.plotPool:
                     neighbourPlot = position
                     continue
-                if position in self.usedPlots and position not in self.stockPiles:
+                if position not in self.usedPlots and position not in self.stockPiles:
                     neighbourUndiscovered = position
                     continue
 
@@ -711,7 +711,7 @@ class CityBuilder(src.items.Item):
                 if position in self.plotPool:
                     neighbourPlot = position
                     continue
-                if position in self.usedPlots and position not in self.stockPiles:
+                if position not in self.usedPlots and position not in self.stockPiles:
                     neighbourUndiscovered = position
                     continue
 
@@ -770,7 +770,7 @@ class CityBuilder(src.items.Item):
                 if position in self.plotPool:
                     neighbourPlot = position
                     continue
-                if position in self.usedPlots and position not in self.stockPiles:
+                if position not in self.usedPlots and position not in self.stockPiles:
                     neighbourUndiscovered = position
                     continue
 
@@ -914,7 +914,7 @@ class CityBuilder(src.items.Item):
 
         axisPlots = []
         for candidate in plotCandiates:
-            if candidate in self.usedPlots and candidate not in self.plotPool:
+            if candidate not in self.usedPlots and candidate not in self.plotPool:
                 if candidate[0] in (0, 14) or candidate[1] in (0, 14):
                     continue
 

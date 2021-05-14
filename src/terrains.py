@@ -916,16 +916,16 @@ class Terrain(src.saveing.Saveable):
 
         # gather the rooms the character might have entered
         if direction == "north":
-            bigX = (char.xPosition) // 15
+            bigX = char.xPosition // 15
             bigY = (char.yPosition - 1) // 15
         elif direction == "south":
-            bigX = (char.xPosition) // 15
+            bigX = char.xPosition // 15
             bigY = (char.yPosition + 1) // 15
         elif direction == "east":
             bigX = (char.xPosition + 1) // 15
-            bigY = (char.yPosition) // 15
+            bigY = char.yPosition // 15
         elif direction == "west":
-            bigX = (char.xPosition) // 15
+            bigX = char.xPosition // 15
             bigY = (char.yPosition - 1) // 15
 
         # gather the rooms the player might step into

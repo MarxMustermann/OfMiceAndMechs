@@ -2798,7 +2798,7 @@ XXXXXXXXXX
         if y in (1, 2) and x not in (2, 5, 8, 3, 6):
             if x in (2, 5, 8):
                 x = x - 1
-            elif (x) in (3, 6):
+            elif x in (3, 6):
                 x = x + 1
             path.append((x, y))
 

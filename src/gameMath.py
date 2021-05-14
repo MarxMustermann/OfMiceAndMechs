@@ -146,7 +146,7 @@ def calculatePathRaw(startX, startY, endX, endY, walkingPath):
             if circlePath:
                 if (-distance) <= len(walkingPath) / 2:
                     # use the path between start and end staying within the path
-                    return walkingPath[startIndex + 1 : endIndex + 1]
+                    return walkingPath[startIndex + 1: endIndex + 1]
                 else:
                     # use the path between start and end connecting over the ends of the path
                     result = []
@@ -155,7 +155,7 @@ def calculatePathRaw(startX, startY, endX, endY, walkingPath):
                     return result
             else:
                 # bad code: impossible to reach
-                return walkingPath[startIndex + 1 : endIndex + 1]
+                return walkingPath[startIndex + 1: endIndex + 1]
 
     # calculate movement to the default path
     elif (endX, endY) in walkingPath:

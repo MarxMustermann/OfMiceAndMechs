@@ -764,8 +764,7 @@ get position for what thing
 
                 for item in listFound:
                     if (
-                        not item.type
-                        in char.interactionState["enumerateState"][-1]["target"]
+                        item.type not in char.interactionState["enumerateState"][-1]["target"]
                     ):
                         continue
                     foundItems.append(item)
@@ -1781,7 +1780,7 @@ current registers
                     screensize = loop.screen.get_cols_rows()
                     footer.set_text(
                         doubleFooterText[
-                            footerPosition : screensize[0] - 1 + footerPosition
+                        footerPosition: screensize[0] - 1 + footerPosition
                         ]
                     )
                     if footerPosition == footerLength:
@@ -1825,30 +1824,23 @@ current registers
 
     # repeat autoadvance keystrokes
     # bad code: keystrokes are abused here, a timer would be more appropriate
-    if key in (commandChars.autoAdvance):
+    if key in commandChars.autoAdvance:
         if not charState["ignoreNextAutomated"]:
             loop.set_alarm_in(0.2, callShow_or_exit, commandChars.autoAdvance)
         else:
             charState["ignoreNextAutomated"] = False
 
-    # handle a keystroke while on map or in cinemetic
+    # handle a keystroke while on map or in cinematic
     if not charState["submenue"]:
         if key in ("u",):
             char.setInterrupt = True
             return
 
         if key in ("esc",):
-            options = []
-            options.append(("save", "save"))
-            options.append(("quit", "save and quit"))
-            options.append(("actions", "actions"))
-            options.append(("macros", "macros"))
-            options.append(("help", "help"))
-            options.append(("keybinding", "keybinding"))
-            options.append(("changeFaction", "changeFaction"))
-            options.append(
-                ("change personality settings", "change personality settings")
-            )
+            options = [("save", "save"), ("quit", "save and quit"), ("actions", "actions"),
+                       ("macros", "macros"), ("help", "help"), ("keybinding", "keybinding"),
+                       ("changeFaction", "changeFaction"),
+                       ("change personality settings", "change personality settings")]
             submenu = SelectionMenu("What do you want to do?", options)
             char.macroState["submenue"] = submenu
 
@@ -2001,7 +1993,7 @@ current registers
 
         # set the flag to advance the game
         doAdvanceGame = True
-        if key in (commandChars.ignore):
+        if key in commandChars.ignore:
             doAdvanceGame = False
 
         # invalidate input for unconscious char
@@ -2048,7 +2040,7 @@ current registers
 
             # kill one of the autoadvance keystrokes
             # bad pattern: doesn't actually pause
-            if key in (commandChars.pause):
+            if key in commandChars.pause:
                 charState["ignoreNextAutomated"] = True
                 doAdvanceGame = False
 
@@ -2067,7 +2059,7 @@ current registers
                     if item:
                         char.addMessage("You cannot walk there " + str(direction))
                         char.addMessage("press " + commandChars.activate + " to apply")
-                        if noAdvanceGame == False:
+                        if not noAdvanceGame:
                             header.set_text(
                                 (
                                     urwid.AttrSpec("default", "default"),
@@ -2142,7 +2134,7 @@ current registers
                 else:
                     char.combatMode = None
                 char.addMessage("switched combatMode to: %s" % (char.combatMode,))
-            if key in (commandChars.attack):
+            if key in commandChars.attack:
                 if (
                     "NaiveMurderQuest" not in char.solvers and not char.godMode
                 ):  # disabled
@@ -2206,7 +2198,7 @@ current registers
                             entry[0].configure(char)
 
             # activate an item
-            if key in (commandChars.activate):
+            if key in commandChars.activate:
                 if "NaiveActivateQuest" not in char.solvers and not char.godMode:
                     char.addMessage(
                         "you do not have the nessecary solver yet (activate)"
@@ -2410,18 +2402,18 @@ press key for advanced drop
 
         # doesn't open the dev menu and toggles rendering mode instead
         # bad code: code should act as advertised
-        if key in (commandChars.devMenu):
+        if key in commandChars.devMenu:
             if src.canvas.displayChars.mode == "unicode":
                 src.canvas.displayChars.setRenderingMode("pureASCII")
             else:
                 src.canvas.displayChars.setRenderingMode("unicode")
 
         # open quest menu
-        if key in (commandChars.show_quests):
+        if key in commandChars.show_quests:
             charState["submenue"] = QuestMenu()
 
         # open help menu
-        if key in (commandChars.show_help):
+        if key in commandChars.show_help:
             charState["submenue"] = HelpMenu()
 
         # open inventory
@@ -2647,7 +2639,7 @@ class SubMenu(src.saveing.Saveable):
                 counter += 1
 
         if key in (commandChars.autoAdvance, commandChars.advance):
-            if not self.default is None:
+            if self.default is not None:
                 self.selection = self.default
             else:
                 self.selection = list(self.options.values())[0]
@@ -3221,13 +3213,13 @@ class InputMenu(SubMenu):
         elif key == "backspace" and not self.escape:
             if self.position:
                 self.text = (
-                    self.text[0 : self.position - 1] + self.text[self.position :]
+                    self.text[0: self.position - 1] + self.text[self.position:]
                 )
                 self.position -= 1
         elif key == "delete" and not self.escape:
             if self.position < len(self.text):
                 self.text = (
-                    self.text[0 : self.position] + self.text[self.position + 1 :]
+                    self.text[0: self.position] + self.text[self.position + 1:]
                 )
         elif key == "~":
             pass
@@ -3240,7 +3232,7 @@ class InputMenu(SubMenu):
                 key = "\n"
             if len(self.text):
                 self.text = (
-                    self.text[0 : self.position] + key + self.text[self.position :]
+                    self.text[0: self.position] + key + self.text[self.position:]
                 )
             else:
                 self.text = key
@@ -3248,7 +3240,7 @@ class InputMenu(SubMenu):
             self.escape = False
 
         if len(self.text):
-            text = self.text[0 : self.position] + "█" + self.text[self.position :]
+            text = self.text[0: self.position] + "█" + self.text[self.position:]
         else:
             text = "█"
 
@@ -3310,7 +3302,7 @@ class CharacterInfoMenu(SubMenu):
         text += "lastJobOrder: %s\n" % char.lastJobOrder
         text += "weapon: %s\n" % baseDamage
         text += "armor: %s\n" % armorValue
-        text += "numAttackedWithoutResponse: %s\n" % (char.numAttackedWithoutResponse)
+        text += "numAttackedWithoutResponse: %s\n" % char.numAttackedWithoutResponse
 
         char.setRegisterValue("HEALTh", char.health)
         text += "HEALTh - %s" % char.health + "\n"
@@ -3323,11 +3315,11 @@ class CharacterInfoMenu(SubMenu):
         char.setRegisterValue("SELF BIG y", char.yPosition // 15)
         text += "SELF BIG y - %s" % (char.yPosition // 15) + "\n"
         char.setRegisterValue("SATIATIOn", char.satiation)
-        text += "SATIATIOn - %s" % (char.satiation) + "\n"
+        text += "SATIATIOn - %s" % char.satiation + "\n"
         char.setRegisterValue("NUM INVENTORY ITEMs", len(char.inventory))
         text += "NUM INVENTORY ITEMs - %s" % (len(char.inventory)) + "\n"
         char.setRegisterValue("frustration", char.frustration)
-        text += "frust: %s\n" % (char.frustration)
+        text += "frust: %s\n" % char.frustration
 
         # show info
         header.set_text((urwid.AttrSpec("default", "default"), "\ncharacter overview"))
@@ -3382,13 +3374,10 @@ class AdvancedQuestMenu(SubMenu):
             if not self.options and not self.getSelection():
 
                 # add the main player as target
-                options = []
-                options.append(
-                    (
-                        src.gamestate.gamestate.mainChar,
-                        src.gamestate.gamestate.mainChar.name + " (you)",
-                    )
-                )
+                options = [(
+                    src.gamestate.gamestate.mainChar,
+                    src.gamestate.gamestate.mainChar.name + " (you)",
+                )]
 
                 # add the main players subordinates as target
                 for char in src.gamestate.gamestate.mainChar.subordinates:
@@ -3740,7 +3729,7 @@ def renderMessages(character, maxMessages=5):
     txt = ""
     messages = character.messages
     if len(messages) > maxMessages:
-        for message in messages[-maxMessages + 1 :]:
+        for message in messages[-maxMessages + 1:]:
             txt += str(message) + "\n"
     else:
         for message in messages:

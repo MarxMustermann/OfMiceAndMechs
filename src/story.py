@@ -2559,8 +2559,7 @@ class FurnaceCompetition(BasicPhase):
 
             # let the npc prepare itself
             src.gamestate.gamestate.mainChar.addMessage("your turn Ludwig")
-            questList = []
-            questList.append(src.quests.FillPocketsQuest())
+            questList = [src.quests.FillPocketsQuest()]
 
             # chain quests
             lastQuest = questList[0]
@@ -3816,8 +3815,7 @@ class Tutorial(BasicPhase):
 
         queueOk = False
         while not queueOk:
-            productionQueue = []
-            productionQueue.append(self.helper_getFilteredProducables()[0])
+            productionQueue = [self.helper_getFilteredProducables()[0]]
 
             counter = 0
             while counter < 3:
@@ -4332,8 +4330,7 @@ class Testing_1(BasicPhase):
 
         queueOk = False
         while not queueOk:
-            productionQueue = []
-            productionQueue.append(self.helper_getFilteredProducables()[0])
+            productionQueue = [self.helper_getFilteredProducables()[0]]
 
             counter = 0
             while counter < 3:
@@ -4826,7 +4823,7 @@ class BuildBase(BasicPhase):
             for bigY in range(1, 14):
                 import random
 
-                if bigX > 3 and bigX < 11 and bigY > 3 and bigY < 11:
+                if 3 < bigX < 11 and 3 < bigY < 11:
                     continue
                 if random.randint(1, 1) == 1:
                     for i in range(0, 30):

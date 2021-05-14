@@ -2423,7 +2423,7 @@ class MoveQuestMeta(MetaQuestSequence):
             self.enterRoomQuest = None
         if not self.enterRoomQuest and (
             self.room
-            and ((not self.character.room) or (not self.character.room == self.room))
+            and (not self.character.room or not self.character.room == self.room)
         ):
             self.enterRoomQuest = EnterRoomQuestMeta(self.room, creator=self)
             self.addQuest(self.enterRoomQuest)
@@ -2744,7 +2744,7 @@ class ActivateQuestMeta(MetaQuestSequence):
             self.moveQuest = None
             tmp.deactivate()
         if not self.moveQuest:
-            # check whether it is neccessary to re add the movement
+            # check whether it is necessary to re add the movement
             reAddMove = False
             if (
                 hasattr(self.toActivate, "xPosition")

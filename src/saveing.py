@@ -269,7 +269,7 @@ class Saveable(object):
                         setattr(self, name, value)
 
                     loadingRegistry.callWhenAvailable(
-                        state[objectName], setValue, (objectName)
+                        state[objectName], setValue, objectName
                     )
                 else:
                     setattr(self, objectName, None)

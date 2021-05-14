@@ -134,7 +134,7 @@ class Item(src.saveing.Saveable):
         Returns:
             the position
         """
-        return (self.xPosition, self.yPosition, self.zPosition)
+        return self.xPosition, self.yPosition, self.zPosition
 
     def useJoborderRelayToLocalRoom(self, character, tasks, itemType, information={}):
         """
@@ -321,7 +321,7 @@ class Item(src.saveing.Saveable):
             return
 
         # do the pick up
-        character.addMessage("you pick up a %s" % (self.type))
+        character.addMessage("you pick up a %s" % self.type)
         self.container.removeItem(self)
         character.addToInventory(self)
 

@@ -28,7 +28,7 @@ class Scraper(src.items.Item):
 
         # fetch input scrap
         itemFound = None
-        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.xPosition):
+        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.xPosition)):
             itemFound = item
             break
 

@@ -26,12 +26,12 @@ class Sorter(src.items.Item):
 
         # fetch input scrap
         itemFound = None
-        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, 0))
+        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, 0)):
             itemFound = item
             break
 
         compareItemFound = None
-        for item in self.container.getItemByPosition((self.xPosition, self.yPosition - 1, 0))
+        for item in self.container.getItemByPosition((self.xPosition, self.yPosition - 1, 0)):
                 compareItemFound = item
                 break
 

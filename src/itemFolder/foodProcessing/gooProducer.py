@@ -28,7 +28,7 @@ class GooProducer(src.items.Item):
 
         # fetch input items
         items = []
-        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.xPosition):
+        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.xPosition)):
             if isinstance(item, PressCake):
                 items.append(item)
 
@@ -40,7 +40,7 @@ class GooProducer(src.items.Item):
         # refill goo dispenser
         dispenser = None
 
-        for item in self.container.getItemByPosition((self.xPosition + 1, self.yPosition, self.xPosition):
+        for item in self.container.getItemByPosition((self.xPosition + 1, self.yPosition, self.xPosition)):
             if isinstance(item, GooDispenser):
                 dispenser = item
         if not dispenser:

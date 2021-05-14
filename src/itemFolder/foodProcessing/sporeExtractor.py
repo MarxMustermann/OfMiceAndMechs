@@ -30,7 +30,7 @@ class SporeExtractor(src.items.Item):
             return
 
         items = []
-        for item in self.container.getItemByPositio((self.xPosition - 1, self.yPosition, self.zPosition):
+        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.zPosition)):
             if isinstance(item, Bloom):
                 items.append(item)
 

@@ -1,5 +1,6 @@
 import src
 
+# bug!: doesn't save todos
 class JobBoard(src.items.Item):
     """
     ingame object to hold tasks and distribute tasks to characters
@@ -24,22 +25,42 @@ class JobBoard(src.items.Item):
         # set up interaction menu
         self.applyOptions.extend([
                         ("doMaintenance","do a job order"),
-                        ("addCommand","add command"),
+                        ("addComand","add comand"),
                         ("addJobOrder","add job order"),
                 ])
         self.applyMap = {
                             "doMaintenance":self.doMaintenance,
-                            "addCommand":self.addCommand,
+                            "addComand":self.addComand,
                             "addJobOrder":self.addJobOrder,
                         }
 
-    def addCommand(self,character):
+    def addComand(self,character):
         """
-        create a job order from a command
+        create a job order from a comand
         Paramerters:
-            character: the character trying to set the command
+            character: the character trying to set the comand
         """
-        pass
+        
+        # fetch comand
+        comands = character.searchInventory("Command")
+        if not comands:
+            character.addMessage("no comand found")
+            return
+        comand = comands[0]
+
+        # create new job order
+        jobOrder = src.items.itemMap["JobOrder"]()
+        jobOrder.taskName = "run comand"
+
+        # add tasks
+        comandName = comand.name
+        if not comandName:
+            comandName = "run comand"
+        jobOrder.tasks = [{"task":"run comand","command":comand.command}]
+        
+        # add to todo list
+        self.todo.append(jobOrder)
+        character.addMessage("copied comand to job order and added it")
 
     def addJobOrder(self,character):
         """
@@ -71,7 +92,7 @@ class JobBoard(src.items.Item):
         """
         do a maintenance job by running a job order from the todo list
 
-        Paramerters:
+        Parameters:
             character: the character dooing maintenance
         """
 
@@ -80,5 +101,22 @@ class JobBoard(src.items.Item):
         else:
             character.addJobOrder(self.todo.pop())
             character.addMessage("you take a job order from the job board")
+
+    def getLongInfo(self):
+        """
+        return a longer than normal description text
+
+        Returns:
+            the text
+        """
+
+        text = super().getLongInfo()
+        text += """
+
+todo:
+%s
+"""%(self.todo)
+        return text
+
 
 src.items.addType(JobBoard)

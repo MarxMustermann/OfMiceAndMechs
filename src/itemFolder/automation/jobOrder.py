@@ -137,11 +137,12 @@ tasks:
         Returns:
             the text
         """
-        baseInfo = super.getLongInfo()
-        baseInfo += """
+        
+        text = super().getLongInfo()
+        text += """
 
 information:
-$s
+%s
 
 the order is:
 

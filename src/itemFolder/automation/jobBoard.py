@@ -1,86 +1,84 @@
 import src
 
 class JobBoard(src.items.Item):
-    type = "JobBoard"
+    """
+    ingame object to hold tasks and distribute tasks to characters
+    """
 
-    '''
-    call superclass constructor with modified parameters
-    '''
+    type = "JobBoard"
     def __init__(self):
+        '''
+        basic superclass configuration
+        '''
+
         super().__init__(display=src.canvas.displayChars.jobBoard)
 
         self.name = "job board"
+        self.description = "Stores a collection of job orders. Serving as a todo list."
 
-        self.todo = []
+        self.todo = [] #bug: saving is broken
 
         self.bolted = False
         self.walkable = False
 
-    def getLongInfo(self):
-        text = """
-item: JobBoard
+        # set up interaction menu
+        self.applyOptions.extend([
+                        ("doMaintenance","do a job order"),
+                        ("addCommand","add command"),
+                        ("addJobOrder","add job order"),
+                ])
+        self.applyMap = {
+                            "doMaintenance":self.doMaintenance,
+                            "addCommand":self.addCommand,
+                            "addJobOrder":self.addJobOrder,
+                        }
 
-description:
-Stores a collection of job board. Serving as a todo list.
+    def addCommand(self,character):
+        """
+        create a job order from a command
+        Paramerters:
+            character: the character trying to set the command
+        """
+        pass
 
-"""
-        return text
+    def addJobOrder(self,character):
+        """
+        add a job order
+        the intention is for the jobOrder to be run by someone else later
 
-    def apply(self,character):
-        options = [("addCommand","add command"),("addJobOrder","add job order"),("getSolvableJobOrder","get solvable job order"),("getJobOrder","get job order")]
-        self.submenue = src.interaction.SelectionMenu("what do you want to do?",options)
-        character.macroState["submenue"] = self.submenue
-        character.macroState["submenue"].followUp = self.apply2
-        self.character = character
+        Paramerters:
+            character: the character trying to set the command
+        """
 
-    def apply2(self):
-        if self.submenue.selection == "addJobOrder":
-            itemFound = None
-            for item in self.character.inventory:
-                if item.type == "JobOrder":
-                    itemFound = item
-                    break
+        # search the characters inventory for the job order to insert
+        foundItems = character.searchInventory("JobOrder")
+        if not foundItems:
+            character.addMessage("no job order found")
+            return
+        itemFound = foundItems[0]
 
-            if not itemFound:
-                self.character.addMessage("no job order found")
-                return
+        # remove completed job orders
+        if itemFound.done:
+            character.inventory.remove(itemFound)
+            return
 
-            if itemFound.done:
-                self.character.inventory.remove(itemFound)
-                return
+        # remove completed job orders
+        self.todo.append(itemFound)
+        character.removeItemFromInventory(itemFound)
+        character.addMessage("job order added")
 
-            self.todo.append(itemFound)
-            self.character.inventory.remove(itemFound)
-            self.character.addMessage("job order added")
-        elif self.submenue.selection == "getSolvableJobOrder":
+    def doMaintenance(self,character):
+        """
+        do a maintenance job by running a job order from the todo list
 
-            if len(self.character.inventory) > 9:
-                self.character.addMessage("no space in inventory")
-                return
+        Paramerters:
+            character: the character dooing maintenance
+        """
 
-            itemFound = None
-            for jobOrder in self.todo:
-                if jobOrder.macro in self.character.macroState["macros"]:
-                   itemFound = jobOrder
-                   break
-
-            if not itemFound:
-                self.character.addMessage("no fitting job order found")
-                return
-
-            self.todo.remove(jobOrder)
-            self.character.inventory.append(jobOrder)
-            self.character.addMessage("you take a job order")
-
-        elif self.submenue.selection == "getJobOrder":
-            if not self.todo:
-                self.character.addMessage("no job order on job board")
-            elif len(self.character.inventory) > 9:
-                self.character.addMessage("inventory not empty")
-            else:
-                self.character.inventory.append(self.todo.pop())
-                self.character.addMessage("you take a job order from the job board")
+        if not self.todo:
+            character.addMessage("no job order on job board")
         else:
-            self.character.addMessage("noption not found")
+            character.addJobOrder(self.todo.pop())
+            character.addMessage("you take a job order from the job board")
 
 src.items.addType(JobBoard)

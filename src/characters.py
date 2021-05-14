@@ -20,45 +20,29 @@ import random
 import src.logger
 import src.gamestate
 
-"""
-this is the class for characters meaning both npc and pcs. 
-all characters except the pcs always have automated = True to
-make them to things on their own
-"""
+
 class Character(src.saveing.Saveable):
+    """
+    this is the class for characters meaning both npc and pcs. 
+    """
+
     charType = "Character"
 
-    def setDefaultMacroState(self):
-        import time
-        self.macroState = {
-            "commandKeyQueue":[],
-            "state":[],
-            "recording":False,
-            "recordingTo":None,
-            "replay":[],
-            "loop":[],
-            "number":None,
-            "doNumber":False,
-            "macros":{},
-            "shownStarvationWarning":False,
-            "lastLagDetection":time.time(),
-            "lastRedraw":time.time(),
-            "idleCounter":0,
-            "ignoreNextAutomated": False,
-            "ticksSinceDeath": None,
-            "footerPosition":0,
-            #"footerLength":len(footerText),
-            "footerSkipCounter":20,
-            "itemMarkedLast":None,
-            "lastMoveAutomated":False,
-            "stealKey":{},
-            "submenue":None,
-                }
-
-    '''
-    sets basic info AND adds default behaviour/items
-    '''
     def __init__(self,display=None,xPosition=0,yPosition=0,quests=[],automated=True,name=None,creator=None,characterId=None,seed=None):
+        '''
+        sets basic info AND adds default behaviour/items
+
+        Parameters:
+            display: how the character is rendered
+            xPosition: obsolete, to be removed
+            yPosition: obsolete, to be removed
+            quests: obsolete, to be removed
+            automated: obsolete, to be removed
+            name: the name the character should have
+            creator: osolete, to be removed
+            characterId: osolete, to be removed
+            seed: rng seed
+        '''
         super().__init__()
 
         if name == None and seed:
@@ -184,10 +168,56 @@ class Character(src.saveing.Saveable):
         self.xPosition = xPosition
         self.yPosition = yPosition
 
+    def setDefaultMacroState(self):
+        """
+        resets the macro automation state
+        """
+
+        import time
+        self.macroState = {
+            "commandKeyQueue":[],
+            "state":[],
+            "recording":False,
+            "recordingTo":None,
+            "replay":[],
+            "loop":[],
+            "number":None,
+            "doNumber":False,
+            "macros":{},
+            "shownStarvationWarning":False,
+            "lastLagDetection":time.time(),
+            "lastRedraw":time.time(),
+            "idleCounter":0,
+            "ignoreNextAutomated": False,
+            "ticksSinceDeath": None,
+            "footerPosition":0,
+            #"footerLength":len(footerText),
+            "footerSkipCounter":20,
+            "itemMarkedLast":None,
+            "lastMoveAutomated":False,
+            "stealKey":{},
+            "submenue":None,
+                }
+
     def getPosition(self):
+        """
+        returns the characters position
+
+        Returns:
+            the position
+        """
+
         return (self.xPosition,self.yPosition,self.zPosition)
 
     def searchInventory(self,itemType,extra={}):
+        """
+        return a list of items from the characters inventory that statisfy some conditions
+
+        Parameters:
+            itemType: the item type
+            extra: extra condidtions
+        """
+
         foundItems = []
         for item in self.inventory:
             if not item.type == itemType:
@@ -200,23 +230,58 @@ class Character(src.saveing.Saveable):
                 
 
     def addMessage(self,message):
+        """
+        add a message to the characters message log
+        basically only for player UI
+
+        Parameters:
+            message: the message
+        """
+
         self.messages.append(message)
 
     def runCommandString(self,commandString):
+        """
+        run a command using the macro automation
+
+        Parameters:
+            commandString: the command
+        """
+        
+        # convert command to macro data structure
         convertedCommand = []
         for char in commandString:
             convertedCommand.append((char,"norecord"))
 
+        # add command to the characters command queue
         self.macroState["commandKeyQueue"] = convertedCommand + self.macroState["commandKeyQueue"]
 
+    def clearCommandString(self):
+        """
+        clear macro automation command queue
+        """
+        self.macroState["commandKeyQueue"] = []
+
     def addJobOrder(self,jobOrder):
+        """
+        add a job order to the characters queue of job orders and run it
+
+        Parameters:
+            jobOrder: the job order to run
+        """
+
         self.jobOrders.append(jobOrder)
         self.runCommandString("Jj.j")
 
-    def clearCommandString(self):
-        self.macroState["commandKeyQueue"] = []
-
     def hurt(self,damage, reason = None):
+        """
+        hurt the character
+
+        Parameters:
+            damage: the amout of damage dealt
+            reason: the reason damage was dealt
+        """
+
         if reason == "attacked":
             if self.aggro < 20:
                 self.aggro += 5
@@ -263,6 +328,13 @@ class Character(src.saveing.Saveable):
            self.die(reason="you died from injuries")
 
     def attack(self,target):
+        """
+        make the character attack something
+
+        Parameters:
+            target: the target to attack
+        """
+
         if self.numAttackedWithoutResponse > 2:
             self.numAttackedWithoutResponse -= 2
         else:
@@ -288,13 +360,28 @@ class Character(src.saveing.Saveable):
             self.addMessage("auto attack")
 
     def heal(self, amount, reason = None):
+        """
+        heal the character
+        
+        Parameters:
+            amount: the amount of health healed
+            reason: the reason why the character was healed
+        """
+
         if 100-self.health < amount:
             amount = 100-self.health
 
         self.health += amount
         self.addMessage("you heal for %s and have %s health"%(amount,self.health))
 
+    # bad code: only works in a certain room type
     def collidedWith(self,other):
+        """
+        handle collision with another character
+        Parameters:
+            other: the other character
+        """
+
         if not other.faction == self.faction:
             if self.personality.get("attacksEnemiesOnContact"):
                 self.runCommandString("m")
@@ -303,56 +390,76 @@ class Character(src.saveing.Saveable):
                 self.frustration += self.personality.get("annoyenceByNpcCollisions")
 
     def getRegisterValue(self,key):
+        """
+        load a value from the characters data store (register)
+
+        Parameters:
+            key: the name of the register to fetch
+        """
+
         try:
             return self.registers[key][-1]
         except KeyError:
             return None
 
     def setRegisterValue(self,key,value):
+        """
+        set a value in the characters data store (register)
+
+        Parameters:
+            key: the name of the register to fetch
+            value: the value to set in the register
+        """
         if not key in self.registers:
             self.registers[key] = [0]
         self.registers[key][-1] = value
 
-    """
-    proxy render method to display attribute
-    """
+    # bad code: should just be removed
     @property
     def display(self):
+        """
+        proxy render method to display attribute
+        """
         return self.render()
 
-    """
-    render the character
-    """
     def render(self):
+        """
+        render the character
+        """
         if self.unconcious:
             return src.canvas.displayChars.unconciousBody
         else:
             return self.displayOriginal
 
-    """
-    the object the character is in. Either room or terrain
-    """
+    # bad code: should be actual attribute
     @property
     def container(self):
+        """
+        the object the character is in. Either room or terrain
+        """
         if self.room:
             return self.room
         else:
             return self.terrain
 
-    '''
-    get a quest from the character (proxies room quest queue)
-    '''
+    # bad code: should be removed
     def getQuest(self):
+        '''
+        get a quest from the character (proxies room quest queue)
+        '''
         if self.room and self.room.quests:
             return self.room.quests.pop()
         else:
             return None
 
-    '''
-    almost straightforward adding of events to the characters event queue
-    ensures that the events are added in proper order
-    '''
     def addEvent(self,event):
+        '''
+        add an event to the characters event queue
+
+        Parameters:
+            event: the event
+        '''
+
         # get the position for this event
         index = 0
         for existingEvent in self.events:
@@ -363,11 +470,12 @@ class Character(src.saveing.Saveable):
         # add event at proper position
         self.events.insert(index,event)
 
-    '''
-    reset the path to the current quest
-    bad code: is only needed because path is contained in character instead of quest
-    '''
+    # bad code: should be removed
     def recalculatePath(self):
+        '''
+        reset the path to the current quest
+        '''
+
         # log impossible state
         if not self.quests:
             src.logger.debugMessages.append("reacalculate path called without quests")
@@ -377,17 +485,26 @@ class Character(src.saveing.Saveable):
         # reset path
         self.setPathToQuest(self.quests[0])
 
-    '''
-    straightforward removing of events from the characters event queue
-    '''
     def removeEvent(self,event):
+        '''
+        removes an event from the characters event queue
+
+        Parameters:
+            event: the event to remove
+        '''
         self.events.remove(event)
 
-    '''
-    almost straightforward getter for chat options
     # bad code: adds default chat options
-    '''
     def getChatOptions(self,partner):
+        '''
+        fetch the chat options the character offers
+
+        Parameters:
+            partner: the chat partner
+        Returns:
+            the chat options
+        '''
+
         # get the usual chat options
         chatOptions = self.basicChatOptions[:]
 
@@ -411,10 +528,14 @@ class Character(src.saveing.Saveable):
 
         return chatOptions
 
-    '''
-    getter for the players state
-    '''
     def getState(self):
+        '''
+        returns the characters state
+        used for saving things
+
+        Returns:
+            the characters state as json serialisable dictionary
+        '''
         # fetch base state
 
         state = super().getState()
@@ -499,10 +620,15 @@ class Character(src.saveing.Saveable):
 
         return state
 
-    '''
-    setter for the players state
-    '''
     def setState(self,state):
+        '''
+        setter for the players state
+        used for loading the game
+
+        Parameters:
+            state: a dictionary containing the state that should be loaded
+        '''
+
         # set basic state
         super().setState(state)
 
@@ -641,7 +767,17 @@ class Character(src.saveing.Saveable):
 
         return state
 
+    # obsolete: remove or reintegrate
     def awardReputation(self,amount=0,fraction=0, reason=None):
+        '''
+        give the character reputation (reward)
+
+        Parameters:
+            amount: how much fixed reputation was awarded
+            fraction: how much relative reputation was awarded
+            reason: the reason for awarding reputation
+        '''
+
         totalAmount = amount
         if fraction and self.reputation:
             totalAmount += self.reputation//fraction
@@ -652,7 +788,17 @@ class Character(src.saveing.Saveable):
                 text += " for "+reason
             self.addMessage(text)
 
+    # obsolete: remove or reintegrate
     def revokeReputation(self,amount=0,fraction=0, reason=None):
+        '''
+        remove some of the character reputation (punishment)
+
+        Parameters:
+            amount: how much fixed reputation was removed
+            fraction: how much relative reputation was removed
+            reason: the reason for awarding reputation
+        '''
+
         totalAmount = amount
         if fraction and self.reputation:
             totalAmount += self.reputation//fraction
@@ -663,11 +809,13 @@ class Character(src.saveing.Saveable):
                 text += " for "+reason
             self.addMessage(text)
 
-    '''
-    starts the next quest in the quest list
-    bad code: this is kind of incompatible with the meta quests
-    '''
+    # obsolete: reintegrate
+    # bad code: this is kind of incompatible with the meta quests
     def startNextQuest(self):
+        '''
+        starts the next quest in the quest list
+        '''
+
         if len(self.quests):
             self.quests[0].recalculate()
             try:
@@ -676,82 +824,127 @@ class Character(src.saveing.Saveable):
                 src.logger.debugMessages.append("setting path to quest failed")
                 pass
 
-    '''
-    straightforward getting a string with detailed info about the character
-    '''
     def getDetailedInfo(self):
+        '''
+        returns a string with detailed info about the character
+
+        Returns:
+            the string
+        '''
+
         return "\nname: "+str(self.name)+"\nroom: "+str(self.room)+"\ncoordinate: "+str(self.xPosition)+" "+str(self.yPosition)+"\nsubordinates: "+str(self.subordinates)+"\nsat: "+str(self.satiation)+"\nreputation: "+str(self.reputation)+"\ntick: "+str(src.gamestate.gamestate.tick)+"\nfaction: "+str(self.faction)
 
-    '''
-    adds a quest to the characters quest list
-    bad code: this is kind of incompatible with the meta quests
-    '''
+    # bad code: this is kind of incompatible with the meta quests
+    # obsolete: reintegrate
     def assignQuest(self,quest,active=False):
-            if active:
-                self.quests.insert(0,quest)
-            else:
-                self.quests.append(quest)
-            quest.assignToCharacter(self)
-            quest.activate()
-            if (active or len(self.quests) == 1):
-                try:
-                    if self.quests[0] == quest:
-                        self.setPathToQuest(quest)
-                except:
-                    # bad pattern: exceptions should be logged
-                    pass
+        '''
+        adds a quest to the characters quest list
 
-    '''
-    set the path to a quest
-    bad pattern: path should be determined by a quests solver
-    bad pattern: the walking should be done in a quest solver so this method should removed on the long run
-    '''
+        Parameters:
+            quest: the quest to add
+            active: a flag indication if the quest should be added as active
+        '''
+
+        if active:
+            self.quests.insert(0,quest)
+        else:
+            self.quests.append(quest)
+        quest.assignToCharacter(self)
+        quest.activate()
+        if (active or len(self.quests) == 1):
+            try:
+                if self.quests[0] == quest:
+                    self.setPathToQuest(quest)
+            except:
+                # bad pattern: exceptions should be logged
+                pass
+
+    # bad pattern: path should be determined by a quests solver
+    # bad pattern: the walking should be done in a quest solver so this method should removed on the long run
+    # obsolte: probably should be rewritten
     def setPathToQuest(self,quest):
+        '''
+        set the charactes path to a quest
+
+        Parameters:
+            quest: the quest to set the path from
+        '''
+
         if hasattr(quest,"dstX") and hasattr(quest,"dstY") and self.container:
             self.path = self.container.findPath((self.xPosition,self.yPosition),(quest.dstX,quest.dstY))
         else:
             self.path = []
 
-    '''
-    straightforward adding to inventory
-    '''
     def addToInventory(self,item):
+        '''
+        add an item to the characters inventory
+
+        Parameters:
+            item: the item
+        '''
+
         self.inventory.append(item)
 
+    def removeItemFromInventory(self,item):
+        '''
+        remove an item from the characters inventory
+
+        Parameters:
+            item: the item
+        '''
+
+        self.removeItemsFromInventory([item])
+
     def removeItemsFromInventory(self,items):
+        '''
+        remove items from the characters inventory
+
+        Parameters:
+            items: a list of items to remove
+        '''
+
         for item in items:
             self.inventory.remove(item)
 
-    '''
-    this wrapper converts a character centered call to a solver centered call
-    bad code: should be handled in quest
-    '''
+    # obsolete: should probably rewritten
+    # bad code: should be handled in quest
     def applysolver(self,solver):
+        '''
+        this wrapper converts a character centered call to a solver centered call
+        '''
+
         if not self.unconcious and not self.dead:
             solver(self)
 
-    '''
-    set state and display to unconcious
-    '''
     def fallUnconcious(self):
+        '''
+        make the character fall unconcious
+        '''
+
         self.unconcious = True
         if self.watched:
             self.addMessage("*thump,snort*")
         self.changed("fallen unconcious",self)
 
-    '''
-    set state and display to not unconcious
-    '''
     def wakeUp(self):
+        '''
+        wake the character up
+        '''
+
         self.unconcious = False
         if self.watched:
             self.addMessage("*grown*")
         self.changed("woke up",self)
 
-    '''
-    kill the character and do a bit of extra stuff like placing corpses
-    '''
     def die(self,reason=None,addCorpse=True):
+        '''
+        kill the character and do a bit of extra stuff like placing corpses
+
+        Parameters:
+            reason: the reason for dieing
+            addCorpse: flag to control adding a corpse
+        '''
+
         self.lastRoom = self.room
         self.lastTerrain = self.terrain
 
@@ -782,15 +975,16 @@ class Character(src.saveing.Saveable):
         # notify listeners
         self.changed()
 
-    '''
-    walk the predetermined path
-    return:
-        True when done
-        False when not done
-
-    bad pattern: should be contained in quest solver
-    '''
+    # obsolete: needs to be reintegrated
+    # bad pattern: should be contained in quest solver
     def walkPath(self):
+        '''
+        walk the predetermined path
+        Returns:
+            True when done
+            False when not done
+        '''
+
         # smooth over impossible state
         if self.dead:
             src.logger.debugMessages.append("dead men walking")
@@ -914,14 +1108,19 @@ class Character(src.saveing.Saveable):
                 self.path = self.path[1:]
         return False
 
-    """
-    almost straightforward dropping of items
-    """
     def drop(self,item,position=None):
+        """
+        make the character drop an item
+
+        Parameters:
+            item: the item to drop
+            position: the position to drop the item on
+        """
+
         foundScrap = None
 
         if not position:
-            position = (self.xPosition,self.yPosition,self.zPosition)
+            position = self.getPosition()
 
         itemList = self.container.getItemByPosition(position)
 
@@ -956,10 +1155,14 @@ class Character(src.saveing.Saveable):
 
         self.changed()
 
-    """
-    examine an item
-    """
     def examine(self,item):
+        """
+        make the character examine an item
+
+        Parameters:
+            item: the item to examine
+        """
+
         registerInfo = ""
         for (key,value) in item.fetchSpecialRegisterInformation().items():
             self.setRegisterValue(key,value)
@@ -977,10 +1180,11 @@ class Character(src.saveing.Saveable):
         self.changed("examine",item)
 
 
-    """
-    advance the character one tick
-    """
     def advance(self):
+        """
+        advance the character one tick
+        """
+
         if self.stasis or self.dead:
             return
 
@@ -1026,10 +1230,16 @@ class Character(src.saveing.Saveable):
                 self.applysolver(self.quests[0].solver)
                 self.changed()
 
-    '''
-    register for notifications
-    '''
+    # bad pattern: is repeated in items etc
     def addListener(self,listenFunction,tag="default"):
+        '''
+        register a callback function for notifications
+        if something wants to wait for the character to die it should register as listener
+
+        Parameters:
+            listenFunction: the function that should be called if the listener is triggered
+            tag: a tag determining what kind of event triggers the listen function. For example "died"
+        '''
         # create container if container doesn't exist
         # bad performace: string comparison, should use enums. Is this slow in python?
         if not tag in self.listeners:
@@ -1039,10 +1249,16 @@ class Character(src.saveing.Saveable):
         if not listenFunction in self.listeners[tag]:
             self.listeners[tag].append(listenFunction)
 
-    '''
-    deregister for notifications
-    '''
+    # bad pattern: is repeated in items etc
     def delListener(self,listenFunction,tag="default"):
+        '''
+        deregister a callback function for notifications
+
+        Parameters:
+            listenFunction: the function that would be called if the listener is triggered
+            tag: a tag determining what kind of event triggers the listen function. For example "died"
+        '''
+
         # remove listener
         if listenFunction in self.listeners[tag]:
             self.listeners[tag].remove(listenFunction)
@@ -1052,11 +1268,16 @@ class Character(src.saveing.Saveable):
         if not self.listeners[tag]:
             del self.listeners[tag]
 
-    '''
-    sending notifications
-    bad code: probably misnamed
-    '''
+    # bad code: probably misnamed
     def changed(self,tag="default",info=None):
+        '''
+        call callbacks functions that did register for listening to events
+
+        Parameters:
+            tag: the tag determining what kind of event triggers the listen function. For example "died"
+            info: additional information
+        '''
+
         # do nothing if nobody listens
         if not tag in self.listeners:
             return
@@ -1069,7 +1290,11 @@ class Character(src.saveing.Saveable):
                 listenFunction(info)
 
     def startIdling(self):
-        import random
+        """
+        run idle actions using the macro automation
+        should be called when the character is bored for some reason
+        """
+
         waitString = str(random.randint(1,self.personality["idleWaitTime"]))+"."
         waitChance = self.personality["idleWaitChance"]
 
@@ -1120,26 +1345,51 @@ class Character(src.saveing.Saveable):
         self.macroState["commandKeyQueue"] = parsedCommand
 
     def removeSatiation(self,amount):
+        """
+        make the character more hungry
+
+        Parameters:
+            amount: how much the character should be hungryier
+        """
+
         self.satiation -= amount
         if self.satiation < 0:
             self.die(reason="you starved")
 
     def addSatiation(self,amount):
+        """
+        make the character less hungry
+
+        Parameters:
+            amount: how less the character should be hungryier
+        """
+
         self.satiation += amount
         if self.satiation > 1000:
             self.satiation = 1000
 
-"""
-the class for mice. Intended to be used for manipulating the gamestate used for example to attack the player
-bad code: animals should not be characters. This means it is possible to chat with a mouse 
-"""
+# bad code: animals should not be characters. This means it is possible to chat with a mouse 
 class Mouse(Character):
+    """
+    the class for mice. Intended to be used for manipulating the gamestate used for example to attack the player
+    """
+
     charType = "Mouse"
 
-    '''
-    basic state setting
-    '''
     def __init__(self,display="🝆 ",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None,characterId=None):
+        '''
+        basic state setting
+
+        Parameters:
+            display: how the mouse should look like
+            xPosition: obsolete, ignore
+            yPosition: obsolete, ignore
+            quests: obsolete, ignore
+            automated: obsolete, ignore
+            name: obsolete, ignore
+            creator: obsolete, ignore
+            characterId: obsolete, ignore
+        '''
         super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator,characterId=characterId)
         self.vanished = False
         self.attributesToStore.extend([
@@ -1159,23 +1409,37 @@ class Mouse(Character):
         self.bonusMultiplier = 0
         self.staggerResistant = 0
 
-    '''
-    disapear
-    '''
     def vanish(self):
+        '''
+        make the mouse disapear
+        '''
         # remove self from map
         self.container.removeCharacter(self)
         self.vanished = True
 
-"""
-"""
+# bad code: there is very specific code in here, so it it stopped to be a generic class
 class Monster(Character):
+    """
+    a class for a generic monster
+    """
+
     charType = "Monster"
 
-    '''
-    basic state setting
-    '''
     def __init__(self,display="🝆~",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None,characterId=None):
+        '''
+        basic state setting
+
+        Parameters:
+            display: what the monster should look like
+            xPosition: obsolete, ignore
+            yPosition: obsolete, ignore
+            quests: obsolete, ignore
+            automated: obsolete, ignore
+            name: obsolete, ignore
+            creator: obsolete, ignore
+            characterId: obsolete, ignore
+        '''
+
         super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator,characterId=characterId)
         self.phase = 1
         self.attributesToStore.extend([
@@ -1186,7 +1450,16 @@ class Monster(Character):
 
         self.solvers.extend(["NaiveMurderQuest"])
 
+    # bad code: specific code in generic class
     def die(self,reason=None,addCorpse=True):
+        '''
+        kill the monster
+
+        Parameters:
+            reason: how the moster was killed
+            addCorpse: a flag determining wether or not a corpse should be added
+        '''
+
         if self.phase == 1:
             if self.xPosition and self.yPosition and (not self.container.getItemByPosition((self.xPosition,self.yPosition,self.zPosition))):
                 new = src.items.itemMap["Mold"]()
@@ -1197,16 +1470,25 @@ class Monster(Character):
         else:
             super().die(reason,addCorpse)
 
+    # bad code: very specific and unclear
     def enterPhase2(self):
+        """
+        enter a new evolution state and learn to pick up stuff
+        """
+
         self.phase = 2
         if not "NaivePickupQuest" in self.solvers:
             self.solvers.append("NaivePickupQuest")
 
+    # bad code: very specific and unclear
     def enterPhase3(self):
+        """
+        enter a new evolution state and start to kill people
+        """
+
         self.phase = 3
         self.macroState["macros"] = {"s":["o","p","f","$","=","a","a","$","=","s","s","$","=","w","w","$","=","d","d","j"]}
         self.macroState["macros"]["m"] = []
-        import random
         for i in range(0,8):
             self.macroState["macros"]["m"].extend(["_","s"])
             self.macroState["macros"]["m"].append(str(random.randint(0,9)))
@@ -1215,6 +1497,10 @@ class Monster(Character):
         self.macroState["commandKeyQueue"] = [("_",[]),("m",[])]
 
     def enterPhase4(self):
+        """
+        enter a new evolution state and start to hunt people
+        """
+
         self.phase = 4
         self.macroState["macros"] = {
                                       "e":["1","0","j","m"],
@@ -1222,15 +1508,17 @@ class Monster(Character):
                                       "w":[],
                                       "f":["%","c","_","s","_","w","_","f"],
                                     }
-        import random
         for i in range(0,4):
             self.macroState["macros"]["w"].append(str(random.randint(0,9)))
             self.macroState["macros"]["w"].append(random.choice(["a","w","s","d"]))
         self.macroState["commandKeyQueue"] = [("_",[]),("f",[])]
 
     def enterPhase5(self):
+        """
+        enter a new evolution state and start a new faction
+        """
+
         self.phase = 5
-        import random
         self.faction = ""
         for i in range(0,5):
             self.faction += random.choice("abcdefghiasjlkasfhoiuoijpqwei10934009138402")
@@ -1241,14 +1529,22 @@ class Monster(Character):
                                       "k":["o","p","e","$","=","a","a","m","$","=","w","w","m","$","=","d","d","m","$","=","s","s","m"],
                                       "f":["%","c","_","s","_","w","_","k","_","f"],
                                     }
-        import random
         for i in range(0,8):
             self.macroState["macros"]["w"].append(str(random.randint(0,9)))
             self.macroState["macros"]["w"].append(random.choice(["a","w","s","d"]))
             self.macroState["macros"]["w"].append("m")
         self.macroState["commandKeyQueue"] = [("_",[]),("f",[])]
 
+    #bad code: should listen to itself instead
     def changed(self,tag="default",info=None):
+        """
+        call callbacks for events and trigger evolutionary steps
+        
+        Parameters:
+            tag: the type of event triggered
+            info: additional information
+        """
+
         if self.phase == 1 and self.satiation > 900:
             self.enterPhase2()
         if len(self.inventory) == 10:
@@ -1279,6 +1575,13 @@ class Monster(Character):
         super().changed(tag,info)
 
     def render(self):
+        """
+        render the monster depending on the evelutionary state
+
+        Returns:
+            what the monster looks like
+        """
+
         if self.phase == 2:
             return src.canvas.displayChars.monster_feeder
         elif self.phase == 3:
@@ -1290,9 +1593,26 @@ class Monster(Character):
         return src.canvas.displayChars.monster_spore
 
 class Exploder(Monster):
+    """
+    a monster that explodes on death
+    """
+
     charType = "Exploder"
 
     def __init__(self,display="🝆~",xPosition=0,yPosition=0,quests=[],automated=True,name="Mouse",creator=None,characterId=None):
+        '''
+        basic state setting
+
+        Parameters:
+            display: what the monster should look like
+            xPosition: obsolete, ignore
+            yPosition: obsolete, ignore
+            quests: obsolete, ignore
+            automated: obsolete, ignore
+            name: obsolete, ignore
+            creator: obsolete, ignore
+            characterId: obsolete, ignore
+        '''
         super().__init__(display, xPosition, yPosition, quests, automated, name, creator=creator,characterId=characterId)
 
         self.explode = True
@@ -1300,9 +1620,23 @@ class Exploder(Monster):
                "explode"])
 
     def render(self):
+        '''
+        render the monster
+
+        Returns:
+            what the moster looks like
+        '''
         return src.canvas.displayChars.monster_exploder
 
     def die(self,reason=None,addCorpse=True):
+        '''
+        create an explosion on death
+
+        Parameters:
+            reason: the reason for dieing
+            addCorpse: flag indicating wether a corpse should be added
+        '''
+
         if self.xPosition and self.container:
             new = src.items.itemMap["FireCrystals"](creator=self)
             new.xPosition = self.xPosition
@@ -1320,10 +1654,11 @@ characterMap = {
         "Mouse":Mouse,
         }
 
-'''
-get item instances from dict state
-'''
 def getCharacterFromState(state):
+    '''
+    get item instances from dict state
+    '''
+
     character = characterMap[state["type"]](characterId=state["id"])
     src.saveing.loadingRegistry.register(character)
     character.setState(state)

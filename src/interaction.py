@@ -1,9 +1,7 @@
-##################################################################################################################################
-###
-##        code for interacation with the user belongs here
-#         bad pattern: logic should be moved somewhere else
-#
-#################################################################################################################################
+"""
+ ode for interacation with the user belongs here
+bad pattern: logic should be moved somewhere else
+"""
 
 # load libraries
 import time
@@ -21,12 +19,12 @@ import config.commandChars as commandChars
 import src.cinematics as cinematics
 import src.gamestate
 
-##################################################################################################################################
-###
-##        setting up the basic user interaction library
+################################################################################
+#
+#        setting up the basic user interaction library
 #         bad code: urwid specific code should be somewhere else
 #
-#################################################################################################################################
+################################################################################
 
 continousOperation = 0
 main = None
@@ -126,11 +124,11 @@ def setUpNoUrwid():
     header = abstractedDisplay(None)
 
 
-##################################################################################################################################
-###
-##        the main interaction loop
+################################################################################
 #
-#################################################################################################################################
+#        the main interaction loop
+#
+################################################################################
 
 # timestamps for detecting periods in inactivity etc
 lastLagDetection = time.time()

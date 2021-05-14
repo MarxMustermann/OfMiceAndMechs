@@ -1,9 +1,7 @@
-####################################################################################################################
-###
-##    chats and chat realated code belongs here
-#     bad pattern: chats should have a parent class
-#
-####################################################################################################################
+"""
+chats and chat realated code belongs here
+bad pattern: chats should have a parent class
+"""
 
 # import the other internal libs
 import src.interaction

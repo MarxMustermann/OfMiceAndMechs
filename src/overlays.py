@@ -1,8 +1,6 @@
-######################################################################################################################
-###
-##    graphical overlays for decoration on top of renderings
-#
-######################################################################################################################
+"""
+graphical overlays for decoration on top of renderings
+"""
 
 """
 Overlay showing the precalculated paths

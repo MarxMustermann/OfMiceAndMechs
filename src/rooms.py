@@ -1,8 +1,6 @@
-#############################################################################
-###
-##    rooms and room related code belong here
-#
-#############################################################################
+"""
+rooms and room related code belong here
+"""
 
 # import basic libs
 import json

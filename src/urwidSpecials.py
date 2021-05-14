@@ -1,9 +1,7 @@
-################################################################################
-###
-## urwid specific code belongs here
-#  bad code: most of the urwind code is scattered around
-#
-################################################################################
+"""
+urwid specific code belongs here
+bad code: most of the urwind code is scattered around
+"""
 
 
 """

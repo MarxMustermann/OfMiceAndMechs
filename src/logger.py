@@ -1,3 +1,7 @@
+"""
+Contains the logger.
+"""
+
 debugMessages = None
 
 

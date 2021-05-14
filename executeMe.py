@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
-#####################################################################################################################
-###
-##      load environment and start the games main loop
-#       basically nothing to see here
-#       if you are a first time visitor, interaction.py, story.py and gamestate.py are probably better files to start with
-#
-#####################################################################################################################
+"""
+load environment and start the games main loop
+basically nothing to see here
+if you are a first time visitor, interaction.py, story.py and gamestate.py are probably better files to start with
+"""
 
 # import basic libs
 import sys
@@ -62,11 +60,11 @@ parser.add_argument(
 parser.add_argument("-sc", "--scenario", type=str, help="set the scenario to run")
 args = parser.parse_args()
 
-##################################################################################################################################
-###
-##        switch scenarios
+################################################################################
 #
-##################################################################################################################################
+#         switch scenarios
+#
+################################################################################
 
 # load the gamestate
 loaded = False
@@ -195,17 +193,17 @@ if shouldLoad:
             raise e
 mainChar = gamestate.gamestate.mainChar
 
-##################################################################################################################################
-###
-##        some stuff that is somehow needed but slated for removal
+################################################################################
 #
-#################################################################################################################################
+#         some stuff that is somehow needed but slated for removal
+#
+################################################################################
 
 interaction.setFooter()
 
 ##########################################
-###
-## set up the terrain
+#
+#  set up the terrain
 #
 ##########################################
 
@@ -315,13 +313,12 @@ else:
     interaction.multiplayer = False
     interaction.fixesTicks = False
 
-######################################################################################################
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
-######################################################################################################
-###
-##    main loop is started here
+
+################################################################################
 #
-######################################################################################################
+#     main loop is started here
+#
+################################################################################
 
 # start the interaction loop of the underlying library
 if not args.nourwid:

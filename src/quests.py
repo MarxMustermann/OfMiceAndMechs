@@ -1,8 +1,6 @@
-##################################################################################
-###
-##     quests and quest related code
-#
-##################################################################################
+"""
+quests and quest related code
+"""
 
 # import basic libs
 import json
@@ -20,9 +18,9 @@ import src.gamestate
 mainChar = None
 
 ############################################################
-###
-##  building block quests
-#   not intended for direct use unless you know what you are dooing
+#
+#   building block quests
+#   not intended for direct use unless you know what you are doing
 #
 ############################################################
 
@@ -2016,8 +2014,8 @@ class NaiveDelegateQuest(Quest):
 
 
 ############################################################
-###
-##  wait quests
+#
+#   wait quests
 #
 ############################################################
 
@@ -2137,8 +2135,8 @@ class WaitForQuestCompletion(Quest):
 
 
 ###############################################################
-###
-##     common actions
+#
+#      common actions
 #
 ###############################################################
 
@@ -3587,8 +3585,8 @@ class ExamineQuest(Quest):
 
 
 ##############################################################################
-###
-## construction quests
+#
+#  construction quests
 #
 #############################################################################
 
@@ -3813,8 +3811,8 @@ class ConstructRoom(MetaQuestParralel):
 
 
 #########################################################################
-###
-##   logistics related quests
+#
+#    logistics related quests
 #
 #########################################################################
 
@@ -4083,8 +4081,8 @@ class HandleDelivery(MetaQuestSequence):
 
 
 ############################################################
-###
-##  furnace specific quests
+#
+#   furnace specific quests
 #
 ############################################################
 
@@ -4440,8 +4438,8 @@ class FillGrowthTankMeta(MetaQuestSequence):
 
 
 ##############################################################################
-###
-## actual tasks
+#
+#  actual tasks
 #
 #############################################################################
 

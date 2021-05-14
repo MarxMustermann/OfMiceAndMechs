@@ -1,8 +1,6 @@
-############################################################################################
-###
-##    terrains and terrain related code belongs here
-#
-############################################################################################
+"""
+terrains and terrain related code belongs here
+"""
 
 # import basic libs
 import json

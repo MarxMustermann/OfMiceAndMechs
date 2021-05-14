@@ -1,9 +1,7 @@
-##########################################################################
-###
-##    drawing and related code should be here
-#     bad code: drawstuff is everywhere
-#
-##########################################################################
+"""
+drawing and related code should be here
+bad code: drawstuff is everywhere
+"""
 
 # import basic libs
 import src.logger

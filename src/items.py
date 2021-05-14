@@ -1,8 +1,6 @@
-####################################################################################
-###
-##     items and item related code belongs here
-#
-####################################################################################
+"""
+items and item related code belongs here
+"""
 
 import config
 import src.logger

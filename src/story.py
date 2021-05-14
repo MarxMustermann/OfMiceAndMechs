@@ -1,9 +1,7 @@
-##############################################################################
-###
-##      story code and story related code belongs here
-#       most thing should be abstracted and converted to a game mechanism later
-#
-##############################################################################
+"""
+story code and story related code belongs here
+most thing should be abstracted and converted to a game mechanism later
+"""
 
 import src.saveing
 import src.rooms
@@ -20,8 +18,8 @@ import src.gamestate
 phasesByName = None
 
 #####################################
-###
-##   convenience functions
+#
+#    convenience functions
 #
 #####################################
 
@@ -100,8 +98,8 @@ def say(text, speaker=None, trigger=None):
 
 
 #########################################################################
-###
-##    building block phases
+#
+#     building block phases
 #
 #########################################################################
 
@@ -237,8 +235,8 @@ class BasicPhase(src.saveing.Saveable):
 
 
 #########################################################################
-###
-##    general purpose phases
+#
+#     general purpose phases
 #
 #########################################################################
 
@@ -496,22 +494,22 @@ class Dungeon(BasicPhase):
         ]
 
 
-# XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-# XX
-# X   these are the tutorial phases. The story phases are tweeked heavily regarding to cutscenes and timing
+###############################################################################
+#
+#    these are the tutorial phases. The story phases are tweeked heavily regarding to cutscenes and timing
 #
 #    no experiments here!
 #    half arsed solutions are still welcome here but that should end when this reaches prototype
 #
-# XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+################################################################################
 
-#######################################################################################
-###
-##    The interaction between the implant before until birth
+################################################################################
+#
+#     The interaction between the implant before until birth
 #
 #     this should be a lot of fluff and guide the player into the game
 #
-#######################################################################################
+################################################################################
 
 
 """
@@ -1035,15 +1033,15 @@ class WakeUpPhase(BasicPhase):
             src.gamestate.gamestate.mainChar.terrain = None
 
 
-#######################################################################################
-###
-##   The testing/tutorial phases
+################################################################################
+#
+#    The testing/tutorial phases
 #
 #    ideally these phases should force the player how rudementary use of the controls.
 #    This should be done by explaining first and then preventing progress until the
 #    player proves capability.
 #
-#######################################################################################
+################################################################################
 
 """
 explain and test basic movement and interaction
@@ -1840,8 +1838,8 @@ In this case you still have to press """
 
 
 #######################################################
-###
-##     the old turorial, needs cleanup and reintegration
+#
+#      the old turorial, needs cleanup and reintegration
 #
 #######################################################
 
@@ -2820,14 +2818,14 @@ class FurnaceCompetition(BasicPhase):
         nextPhase.start(self.seed)
 
 
-################################################################################################################
-###
-##   these are the room phases. The room phases are the midgame content of the to be prototype
+################################################################################
+#
+#    these are the room phases. The room phases are the midgame content of the to be prototype
 #
 #    ideally these phases should servre to teach the player about how the game, a mech and the hierarchy progession works.
 #    There should be some events and cutscenes thrown in to not have a sudden drop of cutscene frequency between tutorial and the actual game
 #
-################################################################################################################
+################################################################################
 
 """
 do opportunity work as hopper until a permanent position was found
@@ -5389,8 +5387,8 @@ class CreativeMode(BasicPhase):
 
 
 ###############################################################
-###
-##   the glue to be able to call the phases from configs etc
+#
+#    the glue to be able to call the phases from configs etc
 #
 #    this should be automated some time
 #

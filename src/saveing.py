@@ -60,7 +60,7 @@ class LoadingRegistry(object):
             return thing
 
 
-# instanziate the registry
+# instantiate the registry
 loadingRegistry = LoadingRegistry()
 
 """

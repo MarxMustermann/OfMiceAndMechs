@@ -18,7 +18,7 @@ class MarkerBean(src.items.Item):
         self.walkable = True
         self.bolted = False
 
-        # set up meta information for saveing
+        # set up meta information for saving
         self.attributesToStore.extend(["activated"])
 
     def render(self):

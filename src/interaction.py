@@ -1811,7 +1811,7 @@ current registers
             else:
                 footer.set_text(" " + charState["submenue"].footerText)
 
-    # discard keysstrokes, if they were not processed for too long
+    # discard key strokes, if they were not processed for too long
     ignoreList = (
         commandChars.autoAdvance,
         commandChars.quit_instant,
@@ -2010,7 +2010,7 @@ current registers
         if key in (commandChars.ignore):
             doAdvanceGame = False
 
-        # invalidate input for unconcious char
+        # invalidate input for unconscious char
         if char.unconcious:
             key = commandChars.wait
 
@@ -2446,7 +2446,7 @@ press key for advanced drop
         if key in (commandChars.show_help):
             char.specialRender = True
 
-    # render submenues
+    # render submenus
     if charState["submenue"]:
 
         # set flag to not render the game
@@ -2613,7 +2613,7 @@ class SubMenu(src.saveing.Saveable):
     """
 
     def handleKey(self, key, noRender=False):
-        # exit submenue
+        # exit submenu
         if key == "esc":
             return True
 
@@ -2714,7 +2714,7 @@ class SubMenu(src.saveing.Saveable):
                     out += str(k) + " - " + str(v) + "\n"
 
             # show the rendered options
-            # bad code: uwrid specific code
+            # bad code: urwid specific code
             main.set_text(
                 (
                     urwid.AttrSpec("default", "default"),
@@ -2755,7 +2755,7 @@ class SelectionMenu(SubMenu):
     """
 
     def handleKey(self, key, noRender=False):
-        # exit submenue
+        # exit submenu
         if key == "esc":
             self.selection = None
             if self.followUp:
@@ -3553,8 +3553,8 @@ class AdvancedQuestMenu(SubMenu):
                 super().handleKey(key, noRender=noRender)
 
             if self.getSelection():
-                # instanciate quest
-                # bad code: repetetive code
+                # instantiate quest
+                # bad code: repetitive code
                 if self.selection == "yes":
                     if self.quest == src.quests.MoveQuestMeta:
                         questInstance = self.quest(
@@ -3711,7 +3711,7 @@ def renderHeader(character):
         # pad left line
         else:
             txt += questLine + " " * (questWidth - len(questLine)) + "┃ "
-            # bug?: doen't this pop twice?
+            # bug?: doesn't this pop twice?
             if splitedQuests:
                 questLine = splitedQuests.pop(0)
             else:
@@ -3723,7 +3723,7 @@ def renderHeader(character):
             messagesLine = messagesLine[messagesWidth:]
         else:
             txt += messagesLine
-            # bug?: doen't this pop twice?
+            # bug?: doesn't this pop twice?
             if splitedMessages:
                 messagesLine = splitedMessages.pop(0)
             else:
@@ -4576,7 +4576,7 @@ def tmp2(loop, user_data):
     loop.set_alarm_in(0.1, tmp2)
 
 
-# the directory for the submenues
+# the directory for the submenus
 subMenuMap = {
     "SelectionMenu": SelectionMenu,
     "ChatPartnerselection": ChatPartnerselection,

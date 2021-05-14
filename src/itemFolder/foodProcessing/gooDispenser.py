@@ -22,7 +22,7 @@ class GooDispenser(src.items.Item):
         self.baseName = self.name
         self.level = 1
 
-        # set up meta information for saveing
+        # set up meta information for saving
         self.attributesToStore.extend(["activated", "charges"])
 
         self.charges = 0

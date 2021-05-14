@@ -14,7 +14,7 @@ bad pattern: path should be generated in such a way this is not needed
 
 
 def removeLoops(path):
-    # count the amount of occourances of each position in the path
+    # count the amount of occurrences of each position in the path
     found = {}
     for waypoint in path:
         if waypoint in found:
@@ -22,7 +22,7 @@ def removeLoops(path):
         else:
             found[waypoint] = 1
 
-    # copy path till the first position that's occours more than once
+    # copy path till the first position that's occurs more than once
     newPath = []
     brokeAt = None
     for waypoint in path:
@@ -33,7 +33,7 @@ def removeLoops(path):
             break
 
     if brokeAt:
-        # get last ocourance of the first duplicate waypoint
+        # get last occurrence of the first duplicate waypoint
         # bad code: non intuitive exception handling
         try:
             lastIndex = 0
@@ -42,7 +42,7 @@ def removeLoops(path):
         except ValueError as e:
             pass
 
-        # copy the path after the last occourance of the cutoff position
+        # copy the path after the last occurrence of the cutoff position
         # bad code: should be using extend or something
         counter = lastIndex
         pathLen = len(path)
@@ -50,7 +50,7 @@ def removeLoops(path):
             newPath.append(path[counter])
             counter += 1
 
-        # recusivly remove remaining loops
+        # recursively remove remaining loops
         newPath = removeLoops(newPath)
 
     return newPath
@@ -216,7 +216,7 @@ def calculatePathRaw(startX, startY, endX, endY, walkingPath):
             )
             return result
 
-    # split calcualtion into to - within - from default path
+    # split calculation into to - within - from default path
     else:
         path = []
         startPoint = None

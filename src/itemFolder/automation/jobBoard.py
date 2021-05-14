@@ -44,7 +44,7 @@ class JobBoard(src.items.Item):
             character: the character trying to set the comand
         """
 
-        # fetch comand
+        # fetch command
         comands = character.searchInventory("Command")
         if not comands:
             character.addMessage("no comand found")

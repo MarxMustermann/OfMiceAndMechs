@@ -260,7 +260,7 @@ class Room(src.saveing.Saveable):
                     itemsOnFloor.append((item, pos))
                 elif char in ["Ö", "ö"]:
                     # add growth tank
-                    # bad code: specal chars should not be used in code
+                    # bad code: special chars should not be used in code
                     # bad code: handle state some other way
                     mapping = {"Ö": True, "ö": False}
                     item = src.items.GrowthTank(filled=mapping[char])
@@ -902,7 +902,7 @@ class Room(src.saveing.Saveable):
                 direction, force=force, movementBlock=movementBlock
             )
 
-            # calculate total resistance against beeing moved
+            # calculate total resistance against being moved
             totalResistance = 0
             for thing in movementBlock:
                 totalResistance += thing.getResistance()
@@ -1104,7 +1104,7 @@ class Room(src.saveing.Saveable):
             self.events.remove(event)
 
         # do next step new
-        # bad code: sneakily diabled the mechanism for delaying calculations
+        # bad code: sneakily disabled the mechanism for delaying calculations
         if not self.hidden or 1 == 1:
             # redo delayed calculation
             if self.delayedTicks > 0:
@@ -1209,11 +1209,11 @@ XXXXXXXXXX
                 else:
                     self.desiredSteamGeneration = self.loop[0]
 
-                # shedule more changes
+                # schedule more changes
                 self.changed()
                 self.addEvent(ChangeRequirements(self.timeIndex + 50))
 
-        # add production requirement and shedule changes
+        # add production requirement and schedule changes
         self.desiredSteamGeneration = 0
         self.changed()
         self.addEvent(ChangeRequirements(self.timeIndex + 20))
@@ -1234,7 +1234,7 @@ XXXXXXXXXX
         if self.desiredSteamGeneration:
             # reset quest for firing the furnaces
             if not self.desiredSteamGeneration == self.steamGeneration:
-                # reset order for firering the furnaces
+                # reset order for firing the furnaces
                 if self.secondOfficer:
                     if self.furnaceQuest:
                         self.furnaceQuest.deactivate()
@@ -1422,7 +1422,7 @@ XXXXXXXXXXX
             if character.isMilitary:
                 return
 
-            # make senćond officer kill the intruder
+            # make second officer kill the intruder
             quest = src.quests.MurderQuest(character)
             self.secondOfficer.assignQuest(quest, active=True)
 
@@ -1491,7 +1491,7 @@ XXXXXXXXXXX
             return
 
         # show fluff
-        # bad code: produces an anouncment for each room
+        # bad code: produces an announcement for each room
         character.addMessage("O2 military please enforce floor permit")
 
         # make second officer move back to position after kill
@@ -3037,7 +3037,7 @@ XXXXXXXX
         character.hasFloorPermit = True
         self.terrain.waitingRoom.addAsHopper(character)
 
-        # shedule next spawn
+        # schedule next spawn
         self.addEvent(
             src.events.EndQuestEvent(
                 src.gamestate.gamestate.tick + 10000,
@@ -3672,7 +3672,7 @@ XXXXX$XXXXX
                 y -= 1
             x += 1
 
-        # bad code: buiding in the middle of the room is NIY
+        # bad code: building in the middle of the room is NIY
 
         # sort items in build order
         self.itemsInBuildOrder = []
@@ -3884,7 +3884,7 @@ XXXXXXXXXXXXX
         self.addItems(scrapPiles)
 
 
-# maping from strings to all rooms
+# mapping from strings to all rooms
 # should be extendable
 roomMap = {
     "TutorialMachineRoom": TutorialMachineRoom,

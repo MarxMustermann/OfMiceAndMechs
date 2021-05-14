@@ -183,7 +183,7 @@ class RewardChat(Chat):
         # bad code: calling solver directly seems like a bad idea
         self.quest.getQuest.solver(self.character)
 
-        # bad code: this is propably needed but this comes out of nowhere
+        # bad code: this is probably needed but this comes out of nowhere
         if self.quest.moveQuest:
             self.quest.moveQuest.postHandler()
 
@@ -434,7 +434,7 @@ class FurnaceChat(Chat):
                 }
             )
 
-            # offer a selection of different story phasses
+            # offer a selection of different story phases
             options = [
                 (self.phase.fireFurnaces, "yes"),
                 (self.phase.noFurnaceFirering, "no"),
@@ -450,14 +450,14 @@ class FurnaceChat(Chat):
             if not self.submenue.handleKey(key, noRender=noRender):
                 return False
 
-            # tear down the submenue
+            # tear down the submenu
             else:
                 self.done = True
 
                 # remove chat option
                 self.removeFromChatOptions(self.firstOfficer)
 
-                # clear submenue
+                # clear submenu
                 # bad code: direct state setting
                 src.interaction.submenue = None
                 src.interaction.loop.set_alarm_in(
@@ -1687,9 +1687,9 @@ class ChatMenu(Chat):
         # show interaction
         out = "\n"
 
-        # wrap around chat submenue
+        # wrap around chat submenu
         if self.subMenu:
-            # let the submenue handle the key
+            # let the submenu handle the key
             if not self.subMenu.done:
                 self.subMenu.handleKey(key, noRender=noRender)
                 if not self.subMenu.done:
@@ -1925,8 +1925,8 @@ class ChatMenu(Chat):
             else:
                 return True
 
-        # show redered text via urwid
-        # bad code: urwid code should be somewere else
+        # show rendered text via urwid
+        # bad code: urwid code should be somewhere else
         if not self.subMenu:
             self.set_text(
                 (
@@ -1953,7 +1953,7 @@ class ChatMenu(Chat):
         )
 
 
-# a map alowing to get classes from strings
+# a map allowing to get classes from strings
 chatMap = {
     "TutorialSpeechTest": TutorialSpeechTest,
     "GrowthTankRefillChat": GrowthTankRefillChat,

@@ -686,7 +686,7 @@ class Character(src.saveing.Saveable):
 
         state["type"] = self.charType
 
-        # store submenue
+        # store submenu
         if self.submenue is None:
             state["submenue"] = self.submenue
         else:
@@ -759,7 +759,7 @@ class Character(src.saveing.Saveable):
         if "registers" in state:
             self.registers = state["registers"]
 
-        # set unconcious state
+        # set unconscious state
         if "unconcious" in state:
             if self.unconcious:
                 self.fallUnconcious()
@@ -975,7 +975,7 @@ class Character(src.saveing.Saveable):
 
     # bad pattern: path should be determined by a quests solver
     # bad pattern: the walking should be done in a quest solver so this method should removed on the long run
-    # obsolte: probably should be rewritten
+    # obsolete: probably should be rewritten
     def setPathToQuest(self, quest):
         """
         set the charactes path to a quest
@@ -1176,7 +1176,7 @@ class Character(src.saveing.Saveable):
                                 if not listItem.walkable:
                                     return listItem
 
-                        # teleport the chracter into the room
+                        # teleport the character into the room
                         room.addCharacter(self, localisedEntry[0], localisedEntry[1])
                         self.terrain.characters.remove(self)
                         self.terrain = None
@@ -1435,7 +1435,7 @@ class Character(src.saveing.Saveable):
             tag: a tag determining what kind of event triggers the listen function. For example "died"
         """
         # create container if container doesn't exist
-        # bad performace: string comparison, should use enums. Is this slow in python?
+        # bad performance: string comparison, should use enums. Is this slow in python?
         if not tag in self.listeners:
             self.listeners[tag] = []
 

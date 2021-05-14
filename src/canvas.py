@@ -98,7 +98,7 @@ class Mapping(object):
     """
 
     def mapToIndex(self, index, value):
-        # ensure minimum lenght
+        # ensure minimum length
         while len(self.indexedMapping) - 1 < index:
             self.indexedMapping.append(None)
 
@@ -134,7 +134,7 @@ class TileMapping(Mapping):
         # set mode
         self.mode = mode
 
-        # rebiuld abstract mapping
+        # rebuild abstract mapping
         self.buildMap()
 
     """
@@ -337,7 +337,7 @@ class Canvas(object):
         pydisplay.fill((0, 0, 0))
 
         # add rendered content
-        # bad pattern: this rendering relies on strict top left to bottom right rendering with overlapping tiles to create perspective without having propper mechanism to enforce and control this
+        # bad pattern: this rendering relies on strict top left to bottom right rendering with overlapping tiles to create perspective without having a proper mechanism to enforce and control this
         counterY = 0
         for line in self.chars:
             counterX = 0

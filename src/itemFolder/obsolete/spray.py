@@ -13,7 +13,7 @@ class Spray(src.items.Item):
     """
 
     def __init__(self, direction=None):
-        # skin acording to spray direction
+        # skin according to spray direction
         if direction is None:
             direction = "left"
 
@@ -22,7 +22,7 @@ class Spray(src.items.Item):
         super().__init__(display=src.canvas.displayChars.spray_left_inactive)
         self.name = "spray"
 
-        # set up meta information for saveing
+        # set up meta information for saving
         self.attributesToStore.extend(["direction"])
 
     def render(self):

@@ -62,7 +62,7 @@ class RoadManager(src.items.Item):
                 counter += 1
                 if counter == 100:
                     break
-                    raise Exception  # pathfining loop
+                    raise Exception  # pathfinding loop
 
                 if node == tuple(self.center) or not node in self.centerDirection:
                     break

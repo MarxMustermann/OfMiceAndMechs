@@ -152,7 +152,7 @@ class Item(src.saveing.Saveable):
         jobOrder.taskName = "relay job Order"
         jobOrder.information = information
 
-        # prepare the task for gooing to the roommanager
+        # prepare the task for going to the roommanager
         newTasks = [
             {
                 "task": "go to room manager",
@@ -186,7 +186,7 @@ class Item(src.saveing.Saveable):
             }
         )
 
-        # prepare the task for gooing to the roommanager
+        # prepare the task for going to the roommanager
         newTasks.append(
             {
                 "task": "insert job order",
@@ -809,7 +809,7 @@ class Item(src.saveing.Saveable):
         # remove item
         container.removeItem(self)
 
-        # generatate scrap
+        # generate scrap
         if generateSrcap:
             newItem = src.items.itemMap["Scrap"](amount=1)
 
@@ -894,7 +894,7 @@ def addType(toRegister):
     itemMap[toRegister.type] = toRegister
 
 
-# maping from strings to all items
+# mapping from strings to all items
 # should be extendable
 itemMap = {
     "Item": Item,

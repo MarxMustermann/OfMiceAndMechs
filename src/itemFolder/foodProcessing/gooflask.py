@@ -17,7 +17,7 @@ class GooFlask(src.items.Item):
         self.level = 1
         self.maxUses = 100
 
-        # set up meta information for saveing
+        # set up meta information for saving
         self.attributesToStore.extend(["uses", "level", "maxUses"])
 
     """

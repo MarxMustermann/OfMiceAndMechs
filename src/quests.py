@@ -818,7 +818,7 @@ class MetaQuestSequence(Quest):
                     self.character.recalculatePath()
         super().recalculate()
 
-        # check for completeion
+        # check for completion
         self.triggerCompletionCheck()
 
     """
@@ -1114,7 +1114,7 @@ class MetaQuestParralel(Quest):
         # add the name of the main quest
         out = "" + self.metaDescription + ":\n"
 
-        # add the reaining lifetime
+        # add the remaining lifetime
         if self.lifetimeEvent:
             out += (
                 " ("
@@ -1611,7 +1611,7 @@ class NaiveGetQuest(Quest):
         if self.assign:
             self.character.assignQuest(self.quest, active=True)
 
-        # trigger cleanuo
+        # trigger cleanup
         self.triggerCompletionCheck()
         return True
 
@@ -2606,7 +2606,7 @@ class PickupQuestMeta(MetaQuestSequence):
         if self.moveQuest and self.moveQuest.completed:
             self.moveQuest = None
         if not self.moveQuest:
-            # check whether it is neccessary to re add the movement
+            # check whether it is necessary to re add the movement
             reAddMove = False
             if not self.sloppy:
                 if self.toPickup.xPosition is None or self.toPickup.yPosition is None:
@@ -2941,7 +2941,7 @@ class GetQuest(MetaQuestSequence):
             self.moveQuest = MoveQuestMeta(creator=self)
         self.getQuest = NaiveGetQuest(questDispenser, assign=assign, creator=self)
         questList = [self.moveQuest, self.getQuest]
-        # bad code: repetetive code
+        # bad code: repetitive code
         for quest in reversed(questList):
             self.addQuest(quest)
         self.metaDescription = "get Quest"
@@ -3017,7 +3017,7 @@ class GetReward(MetaQuestSequence):
         self.actualQuest = quest
         self.addedRewardChat = False
 
-        # bad code: repetetive code
+        # bad code: repetitive code
         for quest in reversed(questList):
             self.addQuest(quest)
 
@@ -3067,7 +3067,7 @@ class GetReward(MetaQuestSequence):
 
         # remove the quests chat option
         if self.character == mainChar:
-            # bad code: repetetive code
+            # bad code: repetitive code
             toRemove = None
             for chat in self.questDispenser.basicChatOptions:
                 if isinstance(chat, dict):
@@ -3135,7 +3135,7 @@ class MurderQuest(MetaQuestSequence):
             )
         self.metaDescription = "murder " + toKill.name
 
-        # bad code: repetetive code
+        # bad code: repetitive code
         for quest in reversed(questList):
             self.addQuest(quest)
 
@@ -3158,7 +3158,7 @@ class MurderQuest(MetaQuestSequence):
             return
 
         # reset target
-        # bad code: freezed npc while reorienting
+        # bad code: frozen npc while reorienting
         pos = (self.toKill.room, self.toKill.xPosition, self.toKill.yPosition)
         if not (pos == self.lastPos) and not self.toKill.dead:
             self.lastPos = pos
@@ -3206,7 +3206,7 @@ class KnockOutQuest(MetaQuestSequence):
         questList = [self.moveQuest, NaiveKnockOutQuest(target, creator=self)]
         self.lastPos = (self.target.room, self.target.xPosition, self.target.yPosition)
         self.metaDescription = "knock out"
-        # bad code: repetetive code
+        # bad code: repetitive code
         for quest in reversed(questList):
             self.addQuest(quest)
         self.startWatching(self.target, self.recalculate)
@@ -3277,7 +3277,7 @@ class WakeUpQuest(MetaQuestSequence):
         questList = [self.moveQuest, NaiveWakeUpQuest(target, creator=self)]
         self.lastPos = (self.target.room, self.target.xPosition, self.target.yPosition)
         self.metaDescription = "wake up somebody"
-        # bad code: repetetive code
+        # bad code: repetitive code
         for quest in reversed(questList):
             self.addQuest(quest)
         self.startWatching(self.target, self.recalculate)
@@ -3410,7 +3410,7 @@ class LeaveRoomQuest(Quest):
     """
 
     def solver(self, character):
-        # bad code: solver excecution should be splited from the rest of the logic
+        # bad code: solver execution should be split from the rest of the logic
         if super().solver(character):
             if not character.room:
                 return True
@@ -3538,7 +3538,7 @@ class ExamineQuest(Quest):
     """
 
     def triggerCompletionCheck(self):
-        # bad code: fixed threashold
+        # bad code: fixed threshold
         if len(self.examinedItems) >= 5:
             self.postHandler()
 
@@ -3665,7 +3665,7 @@ class FetchFurniture(MetaQuestParralel):
 
             counter += 1
 
-        # bad code: repetive code
+        # bad code: repetitive code
         for quest in reversed(questList):
             self.addQuest(quest)
 
@@ -3719,7 +3719,7 @@ class PlaceFurniture(MetaQuestParralel):
             self.startWatching(quest, self.recalculate)
             counter += 1
 
-        # bad code: repetive code
+        # bad code: repetitive code
         for quest in reversed(questList):
             self.addQuest(quest)
 
@@ -3950,7 +3950,7 @@ class StoreCargo(MetaQuestSequence):
             )
             counter += 1
 
-        # bad code: repetetive code
+        # bad code: repetitive code
         for quest in reversed(questList):
             self.addQuest(quest)
 
@@ -4276,7 +4276,7 @@ class FireFurnaceMeta(MetaQuestSequence):
                 if self.activateQuest:
                     self.activateQuest.pause()
 
-        # unpause quest to fire furnace if coal is avalable
+        # unpause quest to fire furnace if coal is available
         if self.activateQuest and not self.collectQuest:
             self.activateQuest.unpause()
 

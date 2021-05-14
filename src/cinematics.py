@@ -69,7 +69,7 @@ class BasicCinematic(src.saveing.Saveable):
     """
 
     def addSubmenuToCinematicQueue(self):
-        # bad code: hooks the submenue directly into the interaction
+        # bad code: hooks the submenu directly into the interaction
         src.interaction.submenue = self.submenue
         src.interaction.submenue.followUp = self.abort
 

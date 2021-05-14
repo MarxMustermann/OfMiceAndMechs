@@ -81,7 +81,7 @@ class Terrain(src.saveing.Saveable):
 
         if not noContent:
             # add items
-            # bad code: repetetive code
+            # bad code: repetitive code
             mapItems = []
             self.detailedLayout = detailedLayout
             lineCounter = 0
@@ -166,7 +166,7 @@ class Terrain(src.saveing.Saveable):
         if not noContent:
             # add rooms
             # bad code: this should be abstracted
-            # bad code: repetetive code
+            # bad code: repetitive code
             # bad code: watershed coordinates should not be set here
             lineCounter = 0
             for layoutline in layout.split("\n")[1:]:
@@ -538,7 +538,7 @@ class Terrain(src.saveing.Saveable):
             if room in self.miniMechs:
                 continue
 
-            # get the coordiate of the door
+            # get the coordinate of the door
             xCoord = room.xPosition * 15 + room.offsetX + room.walkingAccess[0][0]
             yCoord = room.yPosition * 15 + room.offsetY + room.walkingAccess[0][1]
 
@@ -571,7 +571,7 @@ class Terrain(src.saveing.Saveable):
         self.watershed(0, last)
 
         # try to connect the super nodes using the paths between the nodes
-        # bad code: redudant code with the pathfinding between nodes
+        # bad code: redundant code with the pathfinding between nodes
         last = {}
         for bigCoord, smallCoord in self.superNodes.items():
             self.watershedSuperNodeMap[smallCoord] = []
@@ -630,7 +630,7 @@ class Terrain(src.saveing.Saveable):
 
     def watershed(self, counter, lastCoordinates):
 
-        # limit size to not destroy performace/get endless loops
+        # limit size to not destroy performance/get endless loops
         counter += 1
         if counter > 60:
             return
@@ -691,7 +691,7 @@ class Terrain(src.saveing.Saveable):
             # store the coordinates visited for next interaction
             newLast[start] = newLastList
 
-        # recursivly increase section
+        # recursively increase section
         self.watershed(counter, newLast)
 
         # add found path between nodes to map
@@ -742,7 +742,7 @@ class Terrain(src.saveing.Saveable):
     """
 
     def superWatershed(self, counter, lastCoordinates):
-        # limit size to not destroy performace/get endless loops
+        # limit size to not destroy performance/get endless loops
         counter += 1
         if counter > 60:
             return
@@ -815,7 +815,7 @@ class Terrain(src.saveing.Saveable):
             if not pair[0] in self.watershedSuperNodeMap[pair[1]]:
                 self.watershedSuperNodeMap[pair[1]].append(pair[0])
 
-        # recursevly increase section
+        # recursively increase section
         self.superWatershed(counter, newLast)
 
     """
@@ -1436,7 +1436,7 @@ class Terrain(src.saveing.Saveable):
             return
 
         newCoordinates = []
-        # increse radius around current position
+        # increase radius around current position
         if not counter == 0:
             for coordinate in coordinates:
                 for newCoordinate in [
@@ -2008,7 +2008,7 @@ class Terrain(src.saveing.Saveable):
 
         # move the room
         if direction == "north":
-            # naively move the room withion current tile
+            # naively move the room within current tile
             if room.offsetY > -5:
                 room.offsetY -= 1
             # remove room from current tile
@@ -2018,7 +2018,7 @@ class Terrain(src.saveing.Saveable):
                 room.yPosition -= 1
                 self.addRoom(room)
         elif direction == "south":
-            # naively move the room withion current tile
+            # naively move the room within current tile
             if room.offsetY < 9:
                 room.offsetY += 1
             # remove room from current tile
@@ -2028,7 +2028,7 @@ class Terrain(src.saveing.Saveable):
                 room.yPosition += 1
                 self.addRoom(room)
         elif direction == "east":
-            # naively move the room withion current tile
+            # naively move the room within current tile
             if room.offsetX < 9:
                 room.offsetX += 1
             # remove room from current tile
@@ -2038,7 +2038,7 @@ class Terrain(src.saveing.Saveable):
                 room.xPosition += 1
                 self.addRoom(room)
         elif direction == "west":
-            # naively move the room withion current tile
+            # naively move the room within current tile
             if room.offsetX > -5:
                 room.offsetX -= 1
             # remove room from current tile
@@ -3354,7 +3354,7 @@ XXXCCCCCXXX """
         )
 
 
-# maping from strings to all items
+# mapping from strings to all items
 # should be extendable
 terrainMap = {
     "TutorialTerrain": TutorialTerrain,

@@ -122,7 +122,7 @@ class BasicPhase(src.saveing.Saveable):
         self.requiresMainCharRoomFirstOfficer = True
         self.requiresMainCharRoomSecondOfficer = True
         self.mainCharQuestList = []
-        # bad code: these positions were convinient but should be removed
+        # bad code: these positions were convenient but should be removed
         self.firstOfficerXPosition = 4
         self.firstOfficerYPosition = 3
         self.secondOfficerXPosition = 5
@@ -496,7 +496,7 @@ class Dungeon(BasicPhase):
 
 ###############################################################################
 #
-#    these are the tutorial phases. The story phases are tweeked heavily regarding to cutscenes and timing
+#    these are the tutorial phases. The story phases are tweaked heavily regarding to cutscenes and timing
 #
 #    no experiments here!
 #    half arsed solutions are still welcome here but that should end when this reaches prototype
@@ -807,7 +807,7 @@ class BrainTestingPhase(BasicPhase):
             scrolling=True,
         )
 
-        # zooom out and end phase
+        # zoom out and end phase
         cinematic = src.cinematics.MessageZoomCinematic()
         cinematic.endTrigger = {"container": self, "method": "end"}
         src.cinematics.cinematicQueue.append(cinematic)
@@ -1074,14 +1074,14 @@ class BasicMovementTraining(BasicPhase):
         firstOfficer = src.gamestate.gamestate.terrain.wakeUpRoom.firstOfficer
 
         # smooth over missing info
-        # bad code: should not be nessecarry
+        # bad code: should not be necessary
         if not hasattr(src.gamestate.gamestate.mainChar, "tutorialStart"):
             src.gamestate.gamestate.mainChar.tutorialStart = (
                 src.gamestate.gamestate.tick - 100
             )
 
         # smooth over missing info
-        # bad code: should not be nessecarry
+        # bad code: should not be necessary
         if not hasattr(src.gamestate.gamestate.mainChar, "serveQuest"):
             quest = src.quests.Serve(firstOfficer)
             src.gamestate.gamestate.mainChar.serveQuest = quest
@@ -1839,7 +1839,7 @@ In this case you still have to press """
 
 #######################################################
 #
-#      the old turorial, needs cleanup and reintegration
+#      the old tutorial, needs cleanup and reintegration
 #
 #######################################################
 
@@ -1997,7 +1997,7 @@ class BoilerRoomWelcome(BasicPhase):
         # start next step
         cinematic = src.cinematics.ShowGameCinematic(
             0
-        )  # bad code: this cinamatic is a hack
+        )  # bad code: this cinematic is a hack
         cinematic.endTrigger = self.wrapUpSteamengineExplaination
         src.cinematics.cinematicQueue.append(cinematic)
         src.gamestate.gamestate.save()
@@ -2058,7 +2058,7 @@ class BoilerRoomWelcome(BasicPhase):
                 )
                 src.gamestate.gamestate.mainChar.addMessage("*smoke clears*")
 
-                # add delivered items (incuding mouse)
+                # add delivered items (including mouse)
                 self.mainCharRoom.addItems([src.items.itemMap["Coal"](7, 5)])
                 self.mainCharRoom.addCharacter(characters.Mouse(), 6, 5)
 
@@ -2441,7 +2441,7 @@ class BoilerRoomInteractionTraining(BasicPhase):
             quest.endTrigger = setPlayerState
             questList.append(quest)
         else:
-            # bad code: assumtion of the player having failed the test is not always true
+            # bad code: assumption of the player having failed the test is not always true
             quest = src.quests.CollectQuestMeta(
                 startCinematics="Since you failed the Test last time i will quickly reiterate the interaction commands.\n\nthe basic Interationcommands are:\n\n "
                 + config.commandChars.activate
@@ -2822,7 +2822,7 @@ class FurnaceCompetition(BasicPhase):
 #
 #    these are the room phases. The room phases are the midgame content of the to be prototype
 #
-#    ideally these phases should servre to teach the player about how the game, a mech and the hierarchy progession works.
+#    ideally these phases should server to teach the player about how the game, a mech and the hierarchy progression works.
 #    There should be some events and cutscenes thrown in to not have a sudden drop of cutscene frequency between tutorial and the actual game
 #
 ################################################################################
@@ -3315,10 +3315,10 @@ class FindWork(BasicPhase):
                             "great work. Keep on and maybe you will be one of us officers"
                         )
                     else:
-                        # aplaud the player on good performance
+                        # applaud the player on good performance
                         showText("I see you did some work. Carry on")
 
-                    # decrease reputation so the player will be forced to work continiously or to save up reputation
+                    # decrease reputation so the player will be forced to work continuously or to save up reputation
                     src.gamestate.gamestate.mainChar.revokeReputation(
                         amount=3
                         + (2 * len(src.gamestate.gamestate.mainChar.subordinates)),

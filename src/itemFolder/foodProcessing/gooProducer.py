@@ -17,7 +17,7 @@ class GooProducer(src.items.Item):
         self.activated = False
         self.level = 1
 
-        # bad code: repetetive and easy to forgett
+        # bad code: repetitive and easy to forget
         self.attributesToStore.extend(["level"])
 
     """

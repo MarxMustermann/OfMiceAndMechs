@@ -45,9 +45,9 @@ class Boiler(src.items.Item):
             self.room.removeEvent(self.stopBoilingEvent)
             self.stopBoilingEvent = None
 
-        # shedule the steam generation
+        # schedule the steam generation
         if not self.startBoilingEvent and not self.isBoiling:
-            # shedule the event
+            # schedule the event
             event = src.events.StartBoilingEvent(self.room.timeIndex + 5, creator=self)
             event.boiler = self
             self.room.addEvent(event)

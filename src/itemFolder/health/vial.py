@@ -21,7 +21,7 @@ class Vial(src.items.Item):
         self.uses = 0
         self.level = 1
 
-        # set up meta information for saveing
+        # set up meta information for saving
         self.attributesToStore.extend(["uses", "level", "maxUses"])
 
     """

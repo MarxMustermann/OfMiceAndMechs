@@ -515,10 +515,7 @@ class ArchitectArtwork(src.items.Item):
 
         amount = int(self.submenue.text)
 
-        if self.room:
-            terrain = self.room.terrain
-        if self.terrain:
-            terrain = self.terrain
+        terrain = self.getTerrain()
 
         if not terrain:
             self.character.addMessage("no terrain found")

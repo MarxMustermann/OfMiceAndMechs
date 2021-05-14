@@ -9,18 +9,15 @@ class ItemDowngrader(src.items.Item):
         self.name = "item downgrader"
 
     def apply(self, character):
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
         if self.xPosition is None:
             character.addMessage("this machine has to be placed to be used")
             return
 
         inputItem = None
-        if (self.xPosition - 1, self.yPosition) in self.room.itemByCoordinates:
-            inputItem = self.room.itemByCoordinates[
-                (self.xPosition - 1, self.yPosition)
-            ][0]
+        
+        itemsFound = self.container.getItemByPosition((self.xPosition - 1, self.yPosition,0))
+        if itemsFound:
+            inputItem = itemsFound[0]
 
         if not inputItem:
             character.addMessage("place item to downgrade on the left")
@@ -35,18 +32,18 @@ class ItemDowngrader(src.items.Item):
             return
 
         targetFull = False
-        if (self.xPosition + 1, self.yPosition) in self.room.itemByCoordinates:
+        if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
             if inputItem.walkable:
                 if (
                     len(
-                        self.room.itemByCoordinates[
+                        self.container.itemByCoordinates[
                             (self.xPosition + 1, self.yPosition)
                         ]
                     )
                     > 15
                 ):
                     targetFull = True
-                for item in self.room.itemByCoordinates[
+                for item in self.container.itemByCoordinates[
                     (self.xPosition + 1, self.yPosition)
                 ]:
                     if item.walkable == False:
@@ -54,7 +51,7 @@ class ItemDowngrader(src.items.Item):
             else:
                 if (
                     len(
-                        self.room.itemByCoordinates[
+                        self.container.itemByCoordinates[
                             (self.xPosition + 1, self.yPosition)
                         ]
                     )
@@ -68,13 +65,13 @@ class ItemDowngrader(src.items.Item):
             )
             return
 
-        self.room.removeItem(inputItem)
+        self.container.removeItem(inputItem)
 
         inputItem.level -= 1
         character.addMessage("%s downgraded" % (inputItem.type,))
         inputItem.xPosition = self.xPosition + 1
         inputItem.yPosition = self.yPosition
-        self.room.addItems([inputItem])
+        self.container.addItems([inputItem])
 
     def getLongInfo(self):
         text = """

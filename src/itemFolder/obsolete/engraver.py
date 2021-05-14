@@ -20,10 +20,6 @@ class Engraver(src.items.Item):
     def apply(self, character):
         super().apply(character, silent=True)
 
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         self.character = character
 
         if not self.text:
@@ -32,8 +28,8 @@ class Engraver(src.items.Item):
             character.macroState["submenue"] = self.submenue
             character.macroState["submenue"].followUp = self.setText
         else:
-            if (self.xPosition + 1, self.yPosition) in self.room.itemByCoordinates:
-                self.room.itemByCoordinates[(self.xPosition + 1, self.yPosition)][
+            if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
+                self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition)][
                     0
                 ].customDescription = self.text
 

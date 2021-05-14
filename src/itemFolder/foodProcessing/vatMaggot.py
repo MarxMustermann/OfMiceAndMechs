@@ -28,10 +28,7 @@ class VatMaggot(src.items.Item):
         character.satiation += 1
         character.frustration -= 25
         if self.xPosition and self.yPosition:
-            if self.room:
-                self.room.removeItem(self)
-            elif self.terrain:
-                self.terrain.removeItem(self)
+            self.container.removeItem(self)
         else:
             if self in character.inventory:
                 character.inventory.remove(self)

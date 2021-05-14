@@ -28,10 +28,6 @@ class Commlink(src.items.Item):
     def apply(self, character):
         super().apply(character, silent=True)
 
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         if self.scrapToDeliver > 0:
             toRemove = []
             for item in character.inventory:

@@ -33,10 +33,6 @@ class Lever(src.items.Item):
     def apply(self, character):
         super().apply(character, silent=True)
 
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         if not self.activated:
             # activate the lever
             self.activated = True

@@ -48,10 +48,6 @@ class Drill(src.items.Item):
             character.addMessage("this machine has to be placed to be used")
             return
 
-        if self.room:
-            character.addMessage("this machine can not be used in rooms")
-            return
-
         if self.isBroken:
             if not self.isCleaned:
 

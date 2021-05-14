@@ -22,10 +22,6 @@ class MemoryReset(src.items.Item):
     """
 
     def apply(self, character):
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         character.addMessage("you clear your macros")
 
         character.macroState["macros"] = {}

@@ -37,10 +37,6 @@ class MemoryBank(src.items.Item):
     def apply(self, character):
         super().apply(character, silent=True)
 
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         import copy
 
         if self.macros:

@@ -24,38 +24,34 @@ class RoomControls(src.items.Item):
     def apply(self, character):
         super().apply(character, silent=True)
 
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         # handle movement keystrokes
         """
         move room to north
         """
 
         def moveNorth():
-            self.room.moveDirection("north", force=self.room.engineStrength)
+            self.container.moveDirection("north", force=self.container.engineStrength)
 
         """
         move room to south
         """
 
         def moveSouth():
-            self.room.moveDirection("south", force=self.room.engineStrength)
+            self.container.moveDirection("south", force=self.container.engineStrength)
 
         """
         move room to west
         """
 
         def moveWest():
-            self.room.moveDirection("west", force=self.room.engineStrength)
+            self.container.moveDirection("west", force=self.container.engineStrength)
 
         """
         move room to east
         """
 
         def moveEast():
-            self.room.moveDirection("east", force=self.room.engineStrength)
+            self.container.moveDirection("east", force=self.container.engineStrength)
 
         if "stealKey" not in character.macroState:
             character.macroState["stealKey"] = {}

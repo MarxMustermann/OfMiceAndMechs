@@ -33,19 +33,14 @@ class ProductionArtwork(src.items.Item):
     def apply(self, character, resultType=None):
 
         if not self.godMode:
-            if not self.room:
-                character.addMessage("this machine can only be used within rooms")
-                return
 
             # gather a metal bar
             metalBar = None
-            if (self.xPosition - 1, self.yPosition) in self.room.itemByCoordinates:
-                for item in self.room.itemByCoordinates[
-                    (self.xPosition - 1, self.yPosition)
-                ]:
-                    if isinstance(item, src.items.itemMap["MetalBars"]):
-                        metalBar = item
-                        break
+
+            for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.zPosition)):
+                if isinstance(item, src.items.itemMap["MetalBars"]):
+                    metalBar = item
+                    break
             if not metalBar:
                 character.addMessage("no metal bars on the left/west")
                 return
@@ -172,13 +167,11 @@ class ProductionArtwork(src.items.Item):
         if not self.godMode:
             # gather a metal bar
             metalBar = None
-            if (self.xPosition - 1, self.yPosition) in self.room.itemByCoordinates:
-                for item in self.room.itemByCoordinates[
-                    (self.xPosition - 1, self.yPosition)
-                ]:
-                    if isinstance(item, src.items.itemMap["MetalBars"]):
-                        metalBar = item
-                        break
+
+            for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.zPosition)):
+                if isinstance(item, src.items.itemMap["MetalBars"]):
+                    metalBar = item
+                    break
 
             # refuse production without resources
             if not metalBar:
@@ -188,10 +181,10 @@ class ProductionArtwork(src.items.Item):
                 return
 
             targetFull = False
-            if (self.xPosition + 1, self.yPosition) in self.room.itemByCoordinates:
+            if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
                 if (
                     len(
-                        self.room.itemByCoordinates[
+                        self.container.itemByCoordinates[
                             (self.xPosition + 1, self.yPosition)
                         ]
                     )
@@ -213,13 +206,10 @@ class ProductionArtwork(src.items.Item):
             self.character.addMessage("you produce a %s" % (itemType.type,))
 
             # remove resources
-            self.room.removeItem(item)
+            self.container.removeItem(item)
 
         # spawn new item
         new = itemType()
-        new.xPosition = self.xPosition + 1
-        new.yPosition = self.yPosition
-        new.zPosition = self.zPosition
         new.bolted = False
 
         if self.godMode:
@@ -238,7 +228,7 @@ class ProductionArtwork(src.items.Item):
             if itemType == src.items.itemMap["ResourceTerminal"]:
                 new.balance = 1000
 
-        self.container.addItem(new, new.getPosition())
+        self.container.addItem(new, (self.xPosition + 1, self.yPosition, self.zPosition))
 
     def getRemainingCooldown(self):
         return self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer)

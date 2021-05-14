@@ -20,10 +20,6 @@ class CoalMine(src.items.Item):
         self.walkable = False
 
     def apply(self, character):
-        if self.room:
-            character.addMessage("this item cannot be used within rooms")
-            return
-
         if not self.xPosition:
             character.addMessage("this machine has to be placed to be used")
             return

@@ -32,10 +32,6 @@ class GrowthTank(src.items.Item):
 
     def apply(self, character):
 
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         super().apply(character, silent=True)
         if self.filled:
             self.eject()
@@ -111,8 +107,8 @@ class GrowthTank(src.items.Item):
         # add character
         if not character:
             name = getRandomName(
-                self.xPosition + self.room.timeIndex,
-                self.yPosition + self.room.timeIndex,
+                self.xPosition + self.container.timeIndex,
+                self.yPosition + self.container.timeIndex,
             )
             character = characters.Character(
                 src.canvas.displayChars.staffCharactersByLetter[name[0].lower()],
@@ -139,7 +135,7 @@ class GrowthTank(src.items.Item):
         # inhabit character
         # character.fallUnconcious()
         # character.hasFloorPermit = False
-        self.room.addCharacter(character, self.xPosition + 1, self.yPosition)
+        self.container.addCharacter(character, self.xPosition + 1, self.yPosition)
         # character.revokeReputation(amount=4,reason="beeing helpless")
         # character.macroState["commandKeyQueue"] = [("j",[])]
         character.macroState["macros"]["j"] = "Jf"

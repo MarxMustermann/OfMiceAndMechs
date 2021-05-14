@@ -34,10 +34,6 @@ class MachineMachine(src.items.Item):
     def apply(self, character, resultType=None):
         super().apply(character, silent=True)
 
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         options = []
         options.append(("blueprint", "load blueprint"))
         options.append(("produce", "produce machine"))
@@ -78,8 +74,8 @@ class MachineMachine(src.items.Item):
 
     def addBlueprint(self):
         blueprintFound = None
-        if (self.xPosition, self.yPosition - 1) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[
+        if (self.xPosition, self.yPosition - 1) in self.container.itemByCoordinates:
+            for item in self.container.itemByCoordinates[
                 (self.xPosition, self.yPosition - 1)
             ]:
                 if item.type in ["BluePrint"]:
@@ -99,7 +95,7 @@ class MachineMachine(src.items.Item):
         self.character.addMessage(
             "blueprint for " + blueprintFound.endProduct + " inserted"
         )
-        self.room.removeItem(blueprintFound)
+        self.container.removeItem(blueprintFound)
 
     def productionSwitch(self):
 
@@ -139,23 +135,14 @@ class MachineMachine(src.items.Item):
 
     def produce(self, itemType, resultType=None):
 
-        if not self.container:
-            if self.room:
-                self.container = self.room
-            elif self.terrain:
-                self.container = self.terrain
-
         # gather a metal bar
         resourcesNeeded = ["MetalBars"]
 
         resourcesFound = []
-        if (self.xPosition - 1, self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[
-                (self.xPosition - 1, self.yPosition)
-            ]:
-                if item.type in resourcesNeeded:
-                    resourcesFound.append(item)
-                    resourcesNeeded.remove(item.type)
+        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition,0)):
+            if item.type in resourcesNeeded:
+                resourcesFound.append(item)
+                resourcesNeeded.remove(item.type)
 
         # refuse production without resources
         if resourcesNeeded:
@@ -165,9 +152,9 @@ class MachineMachine(src.items.Item):
             return
 
         targetFull = False
-        if (self.xPosition + 1, self.yPosition) in self.room.itemByCoordinates:
+        if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
             if (
-                len(self.room.itemByCoordinates[(self.xPosition + 1, self.yPosition)])
+                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition)])
                 > 0
             ):
                 targetFull = True
@@ -191,20 +178,18 @@ class MachineMachine(src.items.Item):
 
         # remove resources
         for item in resourcesFound:
-            self.room.removeItem(item)
+            self.container.removeItem(item)
 
         # spawn new item
         new = src.itemMap["Machine"]()
         new.productionLevel = self.blueprintLevels[itemType]
         new.setToProduce(itemType)
-        new.xPosition = self.xPosition + 1
-        new.yPosition = self.yPosition
         new.bolted = False
 
         if hasattr(new, "coolDown"):
             new.coolDown = random.randint(new.coolDown, int(new.coolDown * 1.25))
 
-        self.room.addItems([new])
+        self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
 
     def getState(self):
         state = super().getState()

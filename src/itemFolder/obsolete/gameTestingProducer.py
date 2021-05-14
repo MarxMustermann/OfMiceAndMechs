@@ -24,10 +24,6 @@ class GameTestingProducer(src.items.Item):
 
     def apply(self, character, resultType=None):
 
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         token = None
         for item in character.inventory:
             if isinstance(item, src.items.Token):
@@ -86,8 +82,8 @@ class GameTestingProducer(src.items.Item):
 
         # gather the resource
         itemFound = None
-        if (self.xPosition - 1, self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[
+        if (self.xPosition - 1, self.yPosition) in self.container.itemByCoordinates:
+            for item in self.container.itemByCoordinates[
                 (self.xPosition - 1, self.yPosition)
             ]:
                 if isinstance(item, self.resource):
@@ -100,12 +96,12 @@ class GameTestingProducer(src.items.Item):
             return
 
         # remove resources
-        self.room.removeItem(item)
+        self.container.removeItem(item)
 
         # spawn new item
         new = self.product()
         new.bolted = False
-        self.room.addItem(new,self.getPosition())
+        self.container.addItem(new,self.getPosition())
 
         super().apply(character, silent=True)
 

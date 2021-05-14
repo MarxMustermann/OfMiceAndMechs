@@ -26,18 +26,11 @@ class Scraper(src.items.Item):
     def apply(self, character, resultType=None):
         super().apply(character, silent=True)
 
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         # fetch input scrap
         itemFound = None
-        if (self.xPosition - 1, self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[
-                (self.xPosition - 1, self.yPosition)
-            ]:
-                itemFound = item
-                break
+        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.xPosition):
+            itemFound = item
+            break
 
         if (
             src.gamestate.gamestate.tick < self.coolDownTimer + self.coolDown
@@ -60,13 +53,13 @@ class Scraper(src.items.Item):
             return
 
         targetFull = False
-        if (self.xPosition + 1, self.yPosition) in self.room.itemByCoordinates:
+        if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
             if (
-                len(self.room.itemByCoordinates[(self.xPosition + 1, self.yPosition)])
+                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition)])
                 > 15
             ):
                 targetFull = True
-            for item in self.room.itemByCoordinates[
+            for item in self.container.itemByCoordinates[
                 (self.xPosition + 1, self.yPosition)
             ]:
                 if item.walkable == False:
@@ -79,11 +72,11 @@ class Scraper(src.items.Item):
             return
 
         # remove resources
-        self.room.removeItem(item)
+        self.container.removeItem(item)
 
         # spawn scrap
         new = itemMap["Scrap"](amount=1)
-        self.room.addItems(new,(self.xPosition + 1,self.yPosition,self.zPosition))
+        self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
 
     def getLongInfo(self):
         text = """

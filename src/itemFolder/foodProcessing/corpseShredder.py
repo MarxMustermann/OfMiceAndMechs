@@ -22,20 +22,14 @@ class CorpseShredder(src.items.Item):
     def apply(self, character):
         super().apply(character, silent=True)
 
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         corpse = None
         moldSpores = []
-        if (self.xPosition - 1, self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[
-                (self.xPosition - 1, self.yPosition)
-            ]:
-                if isinstance(item, Corpse):
-                    corpse = item
-                if isinstance(item, MoldSpore):
-                    moldSpores.append(item)
+
+        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.xPosition)):
+            if isinstance(item, Corpse):
+                corpse = item
+            if isinstance(item, MoldSpore):
+                moldSpores.append(item)
 
         # refuse to produce without resources
         if not corpse:
@@ -43,13 +37,13 @@ class CorpseShredder(src.items.Item):
             return
 
         targetFull = False
-        if (self.xPosition + 1, self.yPosition) in self.room.itemByCoordinates:
+        if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
             if (
-                len(self.room.itemByCoordinates[(self.xPosition + 1, self.yPosition)])
+                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition)])
                 > 15
             ):
                 targetFull = True
-            for item in self.room.itemByCoordinates[
+            for item in self.container.itemByCoordinates[
                 (self.xPosition + 1, self.yPosition)
             ]:
                 if item.walkable == False:
@@ -62,16 +56,16 @@ class CorpseShredder(src.items.Item):
             return
 
         # remove resources
-        self.room.removeItem(corpse)
+        self.container.removeItem(corpse)
 
         for i in range(0, corpse.charges // 100):
             if moldSpores:
-                self.room.removeItem(moldSpores.pop())
+                self.container.removeItem(moldSpores.pop())
                 new = src.items.itemMap["SeededMoldFeed"]()
             else:
                 # spawn the new item
                 new = src.items.itemMap["MoldFeed"]()
-            self.room.addItem(new,( self.xPosition + 1,self.yPosition,self.zPosition))
+            self.container.addItem(new,( self.xPosition + 1,self.yPosition,self.zPosition))
 
     def getLongInfo(self):
         text = """

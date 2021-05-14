@@ -82,32 +82,20 @@ class BluePrinter(src.items.Item):
     def apply(self, character):
         super().apply(character, silent=True)
 
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         sheet = None
-        if (self.xPosition, self.yPosition - 1) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[
-                (self.xPosition, self.yPosition - 1)
-            ]:
-                if item.type == "Sheet":
-                    sheet = item
-                    break
+        for item in self.container.getItemByPosition((self.xPosition, self.yPosition - 1,self.xPosition)):
+            if item.type == "Sheet":
+                sheet = item
+                break
 
         if not sheet:
             character.addMessage("no sheet - place sheet to the top/north")
             return
 
         inputThings = []
-        if (self.xPosition - 1, self.yPosition) in self.room.itemByCoordinates:
-            inputThings.extend(
-                self.room.itemByCoordinates[(self.xPosition - 1, self.yPosition)]
-            )
-        if (self.xPosition, self.yPosition + 1) in self.room.itemByCoordinates:
-            inputThings.extend(
-                self.room.itemByCoordinates[(self.xPosition, self.yPosition + 1)]
-            )
+
+        inputThings.extend(self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.zPosition)))
+        inputThings.extend(self.container.getItemByPosition((self.xPosition, self.yPosition + 1, self.zPosition)))
 
         if not inputThings:
             character.addMessage("no items - place items to the left/west")
@@ -135,17 +123,17 @@ class BluePrinter(src.items.Item):
             new.bolted = False
 
             targetFull = False
-            if (self.xPosition + 1, self.yPosition) in self.room.itemByCoordinates:
+            if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
                 if (
                     len(
-                        self.room.itemByCoordinates[
+                        self.container.itemByCoordinates[
                             (self.xPosition + 1, self.yPosition)
                         ]
                     )
                     > 15
                 ):
                     targetFull = True
-                for item in self.room.itemByCoordinates[
+                for item in self.container.itemByCoordinates[
                     (self.xPosition + 1, self.yPosition)
                 ]:
                     if item.walkable == False:

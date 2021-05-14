@@ -33,10 +33,6 @@ class Hutch(src.items.Item):
 
     def apply(self, character):
 
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         super().apply(character, silent=True)
         if not self.activated:
             self.activated = True

@@ -40,7 +40,7 @@ class Chain(src.items.Item):
         # chain to surrounding items/rooms
         # bad pattern: the user needs to be able to select to what to chain to
         if not self.fixed:
-            if self.room:
+            if self.container:
                 # bad code: NIY
                 character.addMessage("TODO")
             else:

@@ -14,14 +14,11 @@ class ReactionChamber_2(src.items.Item):
         coalFound = None
         flaskFound = None
 
-        if (self.xPosition - 1, self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[
-                (self.xPosition - 1, self.yPosition)
-            ]:
-                if item.type in "Coal":
-                    coalFound = item
-                if item.type in "GooFlask" and item.uses == 100:
-                    flaskFound = item
+        for item in self.container.getItemByPositions((self.xPosition - 1, self.yPosition,self.zPosition)):
+            if item.type in "Coal":
+                coalFound = item
+            if item.type in "GooFlask" and item.uses == 100:
+                flaskFound = item
 
         if not coalFound or not flaskFound:
             character.addMessage(
@@ -42,7 +39,7 @@ class ReactionChamber_2(src.items.Item):
         byProduct.yPosition = self.yPosition + 1
         byProduct.bolted = False
 
-        self.room.addItems([
+        self.container.addItems([
                         (byProduct,(self.xPosition + 1,self.yPosition,self.zPosition)), 
                         (explosive,(self.xPosition,self.yPosition + 1,self.zPosition)),
                         ])

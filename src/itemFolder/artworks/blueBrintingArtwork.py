@@ -22,11 +22,9 @@ class BluePrintingArtwork(src.items.Item):
             return
         new = BluePrint()
         new.setToProduce(self.submenue.text)
-        new.xPosition = self.xPosition + 1
-        new.yPosition = self.yPosition
         new.bolted = False
 
-        self.room.addItems([new])
+        self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
 
 
 src.items.addType(BluePrintingArtwork)

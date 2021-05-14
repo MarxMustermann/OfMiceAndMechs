@@ -93,15 +93,12 @@ class AutoTutor(src.items.Item):
             new = src.items.itemMap["Scrap"](
                 amount = 1
             )
-            self.room.addItem(new,(self.xPosition,self.yPosition+1,self.zPosition))
+            self.container.addItem(new,(self.xPosition,self.yPosition+1,self.zPosition))
             new.setWalkable()
 
         return True
 
     def apply(self, character):
-        if not self.room:
-            character.addMessage("can only be used within rooms")
-            return
         super().apply(character, silent=True)
 
         self.character = character
@@ -183,7 +180,7 @@ class AutoTutor(src.items.Item):
                 self.character.macroState["submenue"] = self.submenue
             elif not self.machineChallengeDone:
                 foundMachine = False
-                for item in self.character.inventory + self.room.itemsOnFloor:
+                for item in self.character.inventory + self.container.itemsOnFloor:
                     if isinstance(item, src.items.Machine) and item.toProduce == "Rod":
                         foundMachine = True
                 if not foundMachine:
@@ -200,7 +197,7 @@ class AutoTutor(src.items.Item):
                 self.character.macroState["submenue"] = self.submenue
             elif not self.blueprintChallengeDone:
                 foundBluePrint = False
-                for item in self.character.inventory + self.room.itemsOnFloor:
+                for item in self.character.inventory + self.container.itemsOnFloor:
                     if (
                         isinstance(item, src.items.BluePrint)
                         and item.endProduct == "Frame"
@@ -568,7 +565,7 @@ comment:
 
                     self.challengeRun5Done = True
 
-                    self.room.addCharacter(
+                    self.container.addCharacter(
                         newCharacter, self.xPosition, self.yPosition + 1
                     )
                     newCharacter.macroState["macros"]["j"] = "Jf"
@@ -729,7 +726,7 @@ comment:
 
         elif selection == "differentBlueprints":  # from root2
             blueprints = []
-            for item in self.character.inventory + self.room.itemsOnFloor:
+            for item in self.character.inventory + self.container.itemsOnFloor:
                 if (
                     isinstance(item, src.items.BluePrint)
                     and item.endProduct not in blueprints
@@ -941,7 +938,7 @@ comment:
 
         elif selection == "createMapWithPaths":  # from createMap
             itemFound = False
-            for item in self.character.inventory + self.room.itemsOnFloor:
+            for item in self.character.inventory + self.container.itemsOnFloor:
                 if isinstance(item, src.items.Map) and item.routes:
                     itemFound = True
                     break
@@ -1019,7 +1016,7 @@ comment:
 
         elif selection == "produceFilledGooDispenser":  # NOT ASSIGNED
             itemFound = False
-            for item in self.character.inventory + self.room.itemsOnFloor:
+            for item in self.character.inventory + self.container.itemsOnFloor:
                 if isinstance(item, src.items.GooDispenser) and item.charges > 0:
                     itemFound = True
                     break
@@ -1281,7 +1278,7 @@ comment:
 
         elif selection == "copyCommand":  # from produceAutoScribe
             itemCount = 0
-            for item in self.character.inventory + self.room.itemsOnFloor:
+            for item in self.character.inventory + self.container.itemsOnFloor:
                 if isinstance(item, src.items.itemMap["Command"]) and item.command == [
                     "o",
                     "p",
@@ -1512,7 +1509,7 @@ comment:
                 self.container.addItem(new,(self.xPosition,self.yPosition+1,self.zPosition))
             else:
                 itemFound = None
-                for item in self.character.inventory + self.room.itemsOnFloor:
+                for item in self.character.inventory + self.container.itemsOnFloor:
                     if (
                         item.type == "PortableChallenger"
                         and item.done
@@ -1549,7 +1546,7 @@ comment:
                 self.challengeInfo["challengerGiven"].append("goto")
             else:
                 itemFound = None
-                for item in self.character.inventory + self.room.itemsOnFloor:
+                for item in self.character.inventory + self.container.itemsOnFloor:
                     if (
                         item.type == "PortableChallenger"
                         and item.done
@@ -1683,7 +1680,7 @@ comment:
                 del self.availableChallenges["produceGrowthTank"]
 
         elif selection == "spawnNPC":  # from produceGrowthTank
-            if len(self.room.characters) < 2:
+            if len(self.container.characters) < 2:
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: spawn NPC\nstatus: challenge in progress. Try with a NPC in the room.\n\n"
                 )
@@ -1814,7 +1811,7 @@ comment:
 
         elif selection == "upgradeCommand4":  # from produceItemUpgrader
             itemFound = None
-            for item in self.character.inventory + self.room.itemsOnFloor:
+            for item in self.character.inventory + self.container.itemsOnFloor:
                 if item.type == "Command" and item.level >= 4:
                     itemFound = item
 
@@ -1830,7 +1827,7 @@ comment:
 
         elif selection == "upgradeBloomContainer3":  # from produceItemUpgrader
             itemFound = None
-            for item in self.character.inventory + self.room.itemsOnFloor:
+            for item in self.character.inventory + self.container.itemsOnFloor:
                 if item.type == "BloomContainer" and item.level >= 3:
                     itemFound = item
 
@@ -1846,7 +1843,7 @@ comment:
 
         elif selection == "upgradeSheet4":  # from produceItemUpgrader
             itemFound = None
-            for item in self.character.inventory + self.room.itemsOnFloor:
+            for item in self.character.inventory + self.container.itemsOnFloor:
                 if item.type == "Sheet" and item.level >= 4:
                     itemFound = item
 
@@ -1862,7 +1859,7 @@ comment:
 
         elif selection == "upgradeMachine2":  # from produceItemUpgrader
             itemFound = None
-            for item in self.character.inventory + self.room.itemsOnFloor:
+            for item in self.character.inventory + self.container.itemsOnFloor:
                 if item.type == "Machine" and item.level >= 2:
                     itemFound = item
 
@@ -1950,7 +1947,7 @@ comment:
 
     def countInInventoryOrRoom(self, itemType):
         num = self.countInInventory(itemType)
-        for item in self.room.itemsOnFloor:
+        for item in self.container.itemsOnFloor:
             if isinstance(item, itemType):
                 num += 1
         return num
@@ -1967,7 +1964,7 @@ comment:
     def checkListAgainstInventoryOrIsRoom(self, itemTypes):
         itemTypes = self.checkListAgainstInventory(itemTypes)
         if itemTypes:
-            for item in self.room.itemsOnFloor:
+            for item in self.container.itemsOnFloor:
                 if item.type in itemTypes:
                     itemTypes.remove(item.type)
         return itemTypes
@@ -1981,7 +1978,7 @@ comment:
     def checkInInventoryOrInRoom(self, itemType):
         if self.checkInInventory(itemType):
             return True
-        for item in self.room.itemsOnFloor:
+        for item in self.container.itemsOnFloor:
             if isinstance(item, itemType):
                 return True
 

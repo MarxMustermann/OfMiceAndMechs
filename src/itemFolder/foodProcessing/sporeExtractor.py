@@ -30,16 +30,9 @@ class SporeExtractor(src.items.Item):
             return
 
         items = []
-        if (self.xPosition - 1, self.yPosition) in self.container.itemByCoordinates:
-            for item in self.room.itemByCoordinates[
-                (self.xPosition - 1, self.yPosition)
-            ]:
-                if isinstance(item, Bloom):
-                    items.append(item)
-
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
+        for item in self.container.getItemByPositio((self.xPosition - 1, self.yPosition, self.zPosition):
+            if isinstance(item, Bloom):
+                items.append(item)
 
         # refuse to produce without resources
         if len(items) < 1:
@@ -47,13 +40,13 @@ class SporeExtractor(src.items.Item):
             return
 
         targetFull = False
-        if (self.xPosition + 1, self.yPosition) in self.room.itemByCoordinates:
+        if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
             if (
-                len(self.room.itemByCoordinates[(self.xPosition + 1, self.yPosition)])
+                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition)])
                 > 15
             ):
                 targetFull = True
-            for item in self.room.itemByCoordinates[
+            for item in self.container.itemByCoordinates[
                 (self.xPosition + 1, self.yPosition)
             ]:
                 if item.walkable == False:
@@ -66,12 +59,12 @@ class SporeExtractor(src.items.Item):
             return
 
         # remove resources
-        self.room.removeItem(items[0])
+        self.container.removeItem(items[0])
 
         # spawn the new item
         for i in range(1, 5):
             new = src.items.itemMap["MoldSpore"]()
-            self.room.addItem(new,(self.xPosition,self.yPosition,self.zPosition))
+            self.container.addItem(new,(self.xPosition,self.yPosition,self.zPosition))
 
     def getLongInfo(self):
         text = """

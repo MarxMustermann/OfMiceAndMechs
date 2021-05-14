@@ -29,10 +29,6 @@ Activate the bio press to produce press cake.
         """
         super().apply(character, silent=True)
 
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         # fetch input bio mass
         items = []
         for item in self.container.getItemByPosition(

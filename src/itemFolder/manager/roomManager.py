@@ -318,7 +318,7 @@ class RoomManager(src.items.Item):
             if not self.freeItemSlots:
                 self.tasks.append(task)
                 character.addMessage("no item slots left")
-                # if self.room.xPosition == 7 and self.room.yPosition == 7 and not self.cityBuilderPos:
+                # if self.container.xPosition == 7 and self.container.yPosition == 7 and not self.cityBuilderPos:
                 if not self.cityBuilderPos and 1 == 0:
                     newTask = {"task": "add CityBuilder task", "payload": ["setup"]}
                     self.tasks.append(newTask)
@@ -451,14 +451,14 @@ class RoomManager(src.items.Item):
                     if not self.machinePositions[originalTask["type"]]:
                         del self.machinePositions[originalTask["type"]]
 
-                self.room.clearCoordinate(removeSlot)
+                self.container.clearCoordinate(removeSlot)
                 self.freeItemSlots.append(removeSlot)
                 del self.itemSlotUsage[tuple(removeSlot)]
             return
 
         if task["task"] == "clear all":
             toRemove = []
-            for item in self.room.itemsOnFloor:
+            for item in self.container.itemsOnFloor:
                 if item == self:
                     continue
                 if item.xPosition in (0, 12):
@@ -466,7 +466,7 @@ class RoomManager(src.items.Item):
                 if item.yPosition in (0, 12):
                     continue
                 toRemove.append(item)
-            self.room.removeItems(toRemove)
+            self.container.removeItems(toRemove)
             self.reset()
 
         if task["task"] == "add CityBuilder":

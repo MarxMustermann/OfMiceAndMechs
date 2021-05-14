@@ -25,15 +25,12 @@ class StasisTank(src.items.Item):
 
     def eject(self):
         if self.character:
-            self.room.addCharacter(self.character, self.xPosition, self.yPosition + 1)
+            self.container.addCharacter(self.character, self.xPosition, self.yPosition + 1)
             self.character.stasis = False
             self.character = None
             self.characterTimeEntered = None
 
     def apply(self, character):
-        if not self.room:
-            character.addMessage("you can not use item outside of rooms")
-            return
 
         if self.character and self.character.stasis:
             self.eject()
@@ -52,7 +49,7 @@ class StasisTank(src.items.Item):
     def enterSelection(self):
         if self.submenue.selection == "enter":
             self.character.stasis = True
-            self.room.removeCharacter(self.character)
+            self.container.removeCharacter(self.character)
             self.character.addMessage(
                 "you entered the stasis tank. You will not be able to move until somebody activates it"
             )

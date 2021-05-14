@@ -48,11 +48,6 @@ class ScrapCompactor(src.items.Item):
 
         # fetch input scrap
         scrap = None
-        if not hasattr(self, "container"):
-            if self.room:
-                self.container = self.room
-            else:
-                self.container = self.terrain
 
         for item in self.container.getItemByPosition(
             (self.xPosition - 1, self.yPosition, self.zPosition)

@@ -14,18 +14,15 @@ class ItemUpgrader(src.items.Item):
         self.attributesToStore.extend(["charges", "level"])
 
     def apply(self, character):
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
         if self.xPosition is None:
             character.addMessage("this machine has to be placed to be used")
             return
 
         inputItem = None
-        if (self.xPosition - 1, self.yPosition) in self.room.itemByCoordinates:
-            inputItem = self.room.itemByCoordinates[
-                (self.xPosition - 1, self.yPosition)
-            ][0]
+
+        itemsFound = self.container.getItemByPosition((self.xPosition - 1, self.yPosition,0))
+        if itemsFound:
+            inputItem = itemsFound[0]
 
         if not inputItem:
             character.addMessage("place item to upgrade on the left")
@@ -57,18 +54,18 @@ class ItemUpgrader(src.items.Item):
             success = True
 
         targetFull = False
-        if (self.xPosition + 1, self.yPosition) in self.room.itemByCoordinates:
+        if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
             if inputItem.walkable:
                 if (
                     len(
-                        self.room.itemByCoordinates[
+                        self.container.itemByCoordinates[
                             (self.xPosition + 1, self.yPosition)
                         ]
                     )
                     > 15
                 ):
                     targetFull = True
-                for item in self.room.itemByCoordinates[
+                for item in self.container.itemByCoordinates[
                     (self.xPosition + 1, self.yPosition)
                 ]:
                     if item.walkable == False:
@@ -76,7 +73,7 @@ class ItemUpgrader(src.items.Item):
             else:
                 if (
                     len(
-                        self.room.itemByCoordinates[
+                        self.container.itemByCoordinates[
                             (self.xPosition + 1, self.yPosition)
                         ]
                     )
@@ -90,24 +87,20 @@ class ItemUpgrader(src.items.Item):
             )
             return
 
-        self.room.removeItem(inputItem)
+        self.container.removeItem(inputItem)
 
         if success:
             inputItem.upgrade()
             character.addMessage("%s upgraded" % (inputItem.type,))
             self.charges = 0
-            inputItem.xPosition = self.xPosition + 1
-            inputItem.yPosition = self.yPosition
-            self.room.addItems([inputItem])
+            self.container.addItem(inputItem,(self.xPosition + 1,self.yPosition,self.zPosition))
         else:
             self.charges += 1
             character.addMessage(
                 "failed to upgrade %s - has %s charges now"
                 % (inputItem.type, self.charges)
             )
-            inputItem.xPosition = self.xPosition
-            inputItem.yPosition = self.yPosition + 1
-            self.room.addItems([inputItem])
+            self.container.addItem(inputItem,(self.xPosition,self.yPosition+1,self.zPosition))
             inputItem.destroy()
 
     def getLongInfo(self):

@@ -29,9 +29,7 @@ class ObjectDispenser(src.items.Item):
     def dispenseObject(self):
         if len(self.storage):
             new = self.storage.pop()
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition + 1
-            self.room.addItems([new])
+            self.container.addItem(new,(self.xPosition,self.yPosition+1,self.zPosition))
         else:
             src.logger.debugMessages.append("the object dispenser is empty")
 

@@ -18,10 +18,6 @@ class MacroRunner(src.items.Item):
     def apply(self, character):
         super().apply(character, silent=True)
 
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         if self.command is None:
             if not len(character.macroState["macros"]):
                 character.addMessage(

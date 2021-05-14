@@ -22,22 +22,11 @@ class MaggotFermenter(src.items.Item):
             character.addMessage("This has to be placed to be used")
             return
 
-        if not self.room:
-            character.addMessage("This has to be placed in a room to be used")
-            return
-
         # fetch input scrap
         items = []
-        if (self.xPosition - 1, self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[
-                (self.xPosition - 1, self.yPosition)
-            ]:
-                if isinstance(item, VatMaggot):
-                    items.append(item)
-
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
+        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.zPosition)):
+            if isinstance(item, VatMaggot):
+                items.append(item)
 
         # refuse to produce without resources
         if len(items) < 10:
@@ -45,13 +34,13 @@ class MaggotFermenter(src.items.Item):
             return
 
         targetFull = False
-        if (self.xPosition + 1, self.yPosition) in self.room.itemByCoordinates:
+        if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
             if (
-                len(self.room.itemByCoordinates[(self.xPosition + 1, self.yPosition)])
+                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition)])
                 > 15
             ):
                 targetFull = True
-            for item in self.room.itemByCoordinates[
+            for item in self.container.itemByCoordinates[
                 (self.xPosition + 1, self.yPosition)
             ]:
                 if item.walkable == False:
@@ -69,11 +58,11 @@ class MaggotFermenter(src.items.Item):
             if counter >= 10:
                 break
             counter += 1
-            self.room.removeItem(item)
+            self.container.removeItem(item)
 
         # spawn the new item
         new = src.items.itemMap["BioMass"]()
-        self.room.addItem(new,(self.xPosition+1,self.yPosition,self.zPosition))
+        self.container.addItem(new,(self.xPosition+1,self.yPosition,self.zPosition))
 
     def getLongInfo(self):
         text = """

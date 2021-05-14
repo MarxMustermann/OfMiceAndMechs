@@ -20,8 +20,8 @@ class Explosion(src.items.Item):
 
     def explode(self):
 
-        if self.room:
-            self.room.damage()
+        if self.container:
+            self.container.damage()
         elif self.terrain:
             for room in self.terrain.getRoomsOnFineCoordinate(
                 (self.xPosition, self.yPosition)

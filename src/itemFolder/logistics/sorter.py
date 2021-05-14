@@ -24,24 +24,14 @@ class Sorter(src.items.Item):
     def apply(self, character, resultType=None):
         super().apply(character, silent=True)
 
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         # fetch input scrap
         itemFound = None
-        if (self.xPosition - 1, self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[
-                (self.xPosition - 1, self.yPosition)
-            ]:
-                itemFound = item
-                break
+        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, 0))
+            itemFound = item
+            break
 
         compareItemFound = None
-        if (self.xPosition, self.yPosition - 1) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[
-                (self.xPosition, self.yPosition - 1)
-            ]:
+        for item in self.container.getItemByPosition((self.xPosition, self.yPosition - 1, 0))
                 compareItemFound = item
                 break
 
@@ -62,30 +52,27 @@ class Sorter(src.items.Item):
             return
 
         # remove resources
-        self.room.removeItem(itemFound)
+        self.container.removeItem(itemFound)
 
         if itemFound.type == compareItemFound.type:
-            targetPos = (self.xPosition, self.yPosition + 1)
+            targetPos = (self.xPosition, self.yPosition + 1, 0)
         else:
-            targetPos = (self.xPosition + 1, self.yPosition)
-
-        itemFound.xPosition = targetPos[0]
-        itemFound.yPosition = targetPos[1]
+            targetPos = (self.xPosition + 1, self.yPosition, 0)
 
         targetFull = False
         new = itemFound
-        if (self.xPosition + 1, self.yPosition) in self.room.itemByCoordinates:
+        if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
             if new.walkable:
                 if (
                     len(
-                        self.room.itemByCoordinates[
+                        self.container.itemByCoordinates[
                             (self.xPosition + 1, self.yPosition)
                         ]
                     )
                     > 15
                 ):
                     targetFull = True
-                for item in self.room.itemByCoordinates[
+                for item in self.container.itemByCoordinates[
                     (self.xPosition + 1, self.yPosition)
                 ]:
                     if item.walkable == False:
@@ -93,7 +80,7 @@ class Sorter(src.items.Item):
             else:
                 if (
                     len(
-                        self.room.itemByCoordinates[
+                        self.container.itemByCoordinates[
                             (self.xPosition + 1, self.yPosition)
                         ]
                     )
@@ -107,7 +94,7 @@ class Sorter(src.items.Item):
             )
             return
 
-        self.room.addItems([itemFound])
+        self.container.addItem(itemFound,targetPos)
 
     def getLongInfo(self):
         text = """

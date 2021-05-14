@@ -28,10 +28,6 @@ class Furnace(src.items.Item):
     def apply(self, character):
         super().apply(character, silent=True)
 
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         # select fuel
         # bad pattern: the player should be able to select fuel
         # bad pattern: coal should be preferred
@@ -72,8 +68,7 @@ class Furnace(src.items.Item):
 
                 # get the boilers affected
                 self.boilers = []
-                # for boiler in self.room.boilers:
-                for boiler in self.room.itemsOnFloor:
+                for boiler in self.container.itemsOnFloor:
                     if isinstance(boiler, src.items.Boiler):
                         if (
                             (
@@ -97,10 +92,10 @@ class Furnace(src.items.Item):
 
                 # make the furnace stop burning after some time
                 event = src.events.FurnaceBurnoutEvent(
-                    self.room.timeIndex + 30
+                    self.container.timeIndex + 30
                 )
                 event.furnace = self
-                self.room.addEvent(event)
+                self.container.addEvent(event)
 
                 # notify listeners
                 self.changed()

@@ -1,4 +1,5 @@
 import src
+import src.rooms
 
 """
 """
@@ -20,10 +21,6 @@ class RoomBuilder(src.items.Item):
     """
 
     def apply(self, character):
-        if self.room:
-            character.addMessage("this machine can not be used within rooms")
-            return
-
         if self.xPosition is None:
             character.addMessage("this machine can not be used within rooms")
             return
@@ -195,8 +192,6 @@ class RoomBuilder(src.items.Item):
                 character.addMessage("special items to near to each other")
                 return
 
-        import src.rooms
-
         oldTerrain = self.terrain
         for item in items:
             if item == self:
@@ -228,8 +223,6 @@ class RoomBuilder(src.items.Item):
 
         self.xPosition = roomLeft
         self.yPosition = roomTop
-        self.room = None
-        self.terrain = None
         room.addItems([self])
 
     def getLongInfo(self):

@@ -26,18 +26,11 @@ class GooProducer(src.items.Item):
     def apply(self, character):
         super().apply(character, silent=True)
 
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         # fetch input items
         items = []
-        if (self.xPosition - 1, self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[
-                (self.xPosition - 1, self.yPosition)
-            ]:
-                if isinstance(item, PressCake):
-                    items.append(item)
+        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.xPosition):
+            if isinstance(item, PressCake):
+                items.append(item)
 
         # refuse to produce without resources
         if len(items) < 10 + (self.level - 1):
@@ -46,12 +39,10 @@ class GooProducer(src.items.Item):
 
         # refill goo dispenser
         dispenser = None
-        if (self.xPosition + 1, self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[
-                (self.xPosition + 1, self.yPosition)
-            ]:
-                if isinstance(item, GooDispenser):
-                    dispenser = item
+
+        for item in self.container.getItemByPosition((self.xPosition + 1, self.yPosition, self.xPosition):
+            if isinstance(item, GooDispenser):
+                dispenser = item
         if not dispenser:
             character.addMessage("no goo dispenser attached")
             return
@@ -72,7 +63,7 @@ class GooProducer(src.items.Item):
             if counter >= 10:
                 break
             counter += 1
-            self.room.removeItem(item)
+            self.container.removeItem(item)
 
         dispenser.addCharge()
 

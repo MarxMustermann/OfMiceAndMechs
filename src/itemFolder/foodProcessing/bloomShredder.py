@@ -21,17 +21,10 @@ class BloomShredder(src.items.Item):
     def apply(self, character):
         super().apply(character, silent=True)
 
-        if not self.room:
-            character.addMessage("this machine can only be used within rooms")
-            return
-
         items = []
-        if (self.xPosition - 1, self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[
-                (self.xPosition - 1, self.yPosition)
-            ]:
-                if isinstance(item, Bloom):
-                    items.append(item)
+        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.zPosition)):
+            if isinstance(item, Bloom):
+                items.append(item)
 
         # refuse to produce without resources
         if len(items) < 1:
@@ -39,13 +32,13 @@ class BloomShredder(src.items.Item):
             return
 
         targetFull = False
-        if (self.xPosition + 1, self.yPosition) in self.room.itemByCoordinates:
+        if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
             if (
-                len(self.room.itemByCoordinates[(self.xPosition + 1, self.yPosition)])
+                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition)])
                 > 15
             ):
                 targetFull = True
-            for item in self.room.itemByCoordinates[
+            for item in self.container.itemByCoordinates[
                 (self.xPosition + 1, self.yPosition)
             ]:
                 if item.walkable == False:
@@ -58,11 +51,11 @@ class BloomShredder(src.items.Item):
             return
 
         # remove resources
-        self.room.removeItem(items[0])
+        self.container.removeItem(items[0])
 
         # spawn the new item
         new = src.items.itemMap["BioMass"]()
-        self.room.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
+        self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
 
     def getLongInfo(self):
         text = """

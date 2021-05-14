@@ -42,15 +42,15 @@ class Boiler(src.items.Item):
 
         # abort cooling down
         if self.stopBoilingEvent:
-            self.room.removeEvent(self.stopBoilingEvent)
+            self.container.removeEvent(self.stopBoilingEvent)
             self.stopBoilingEvent = None
 
         # schedule the steam generation
         if not self.startBoilingEvent and not self.isBoiling:
             # schedule the event
-            event = src.events.StartBoilingEvent(self.room.timeIndex + 5)
+            event = src.events.StartBoilingEvent(self.container.timeIndex + 5)
             event.boiler = self
-            self.room.addEvent(event)
+            self.container.addEvent(event)
 
         # notify listeners
         self.changed()
@@ -69,13 +69,13 @@ class Boiler(src.items.Item):
 
         # abort any heating up
         if self.startBoilingEvent:
-            self.room.removeEvent(self.startBoilingEvent)
+            self.container.removeEvent(self.startBoilingEvent)
             self.startBoilingEvent = None
         if not self.stopBoilingEvent and self.isBoiling:
 
-            event = src.events.StopBoilingEvent(self.room.timeIndex + 5)
+            event = src.events.StopBoilingEvent(self.container.timeIndex + 5)
             event.boiler = self
-            self.room.addEvent(event)
+            self.container.addEvent(event)
 
         # notify listeners
         self.changed()

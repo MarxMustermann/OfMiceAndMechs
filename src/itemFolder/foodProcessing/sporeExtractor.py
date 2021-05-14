@@ -1,34 +1,40 @@
 import src
 
-'''
-'''
+"""
+"""
+
+
 class SporeExtractor(src.items.Item):
     type = "SporeExtractor"
 
-    '''
+    """
     call superclass constructor with modified paramters and set some state
-    '''
+    """
+
     def __init__(self):
         super().__init__()
-        
+
         self.display = src.canvas.displayChars.sporeExtractor
-        self.name="spore extractor"
+        self.name = "spore extractor"
         self.activated = False
 
-    '''
-    '''
-    def apply(self,character):
+    """
+    """
 
-        super().apply(character,silent=True)
+    def apply(self, character):
 
-        if self.xPosition == None:
+        super().apply(character, silent=True)
+
+        if self.xPosition is None:
             character.addMessage("this machine needs to be placed to be used")
             return
 
         items = []
-        if (self.xPosition-1,self.yPosition) in self.container.itemByCoordinates:
-            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
-                if isinstance(item,Bloom):
+        if (self.xPosition - 1, self.yPosition) in self.container.itemByCoordinates:
+            for item in self.room.itemByCoordinates[
+                (self.xPosition - 1, self.yPosition)
+            ]:
+                if isinstance(item, Bloom):
                     items.append(item)
 
         if not self.room:
@@ -41,24 +47,31 @@ class SporeExtractor(src.items.Item):
             return
 
         targetFull = False
-        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
-            if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+        if (self.xPosition + 1, self.yPosition) in self.room.itemByCoordinates:
+            if (
+                len(self.room.itemByCoordinates[(self.xPosition + 1, self.yPosition)])
+                > 15
+            ):
                 targetFull = True
-            for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+            for item in self.room.itemByCoordinates[
+                (self.xPosition + 1, self.yPosition)
+            ]:
                 if item.walkable == False:
                     targetFull = True
 
         if targetFull:
-            character.addMessage("the target area is full, the machine does not produce anything")
+            character.addMessage(
+                "the target area is full, the machine does not produce anything"
+            )
             return
 
         # remove resources
         self.room.removeItem(items[0])
 
         # spawn the new item
-        for i in range(1,5):
+        for i in range(1, 5):
             new = MoldSpore(creator=self)
-            new.xPosition = self.xPosition+1
+            new.xPosition = self.xPosition + 1
             new.yPosition = self.yPosition
             self.room.addItems([new])
 
@@ -74,5 +87,6 @@ The MoldSpores will be outputted to the east/right.
 
 """
         return text
+
 
 src.items.addType(SporeExtractor)

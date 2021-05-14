@@ -1,12 +1,14 @@
 import src
 import random
 
+
 class CityBuilder(src.items.Item):
     type = "CityBuilder"
-    def __init__(self,name="CityBuilder",noId=False):
-        super().__init__(display="CB",name=name)
+
+    def __init__(self, name="CityBuilder", noId=False):
+        super().__init__(display="CB", name=name)
         self.commands = {}
-        self.tasks = [{"task":"build factory"}]
+        self.tasks = [{"task": "build factory"}]
         self.tasks = []
         self.internalRooms = []
         self.scrapFields = []
@@ -22,9 +24,9 @@ class CityBuilder(src.items.Item):
         self.stuckReason = None
         self.runningTasks = []
 
-        self.resources = {"TypedStockpileManager":4,"Paving":300}
+        self.resources = {"TypedStockpileManager": 4, "Paving": 300}
 
-        #config options
+        # config options
         self.numReservedPathPlots = 5
         self.numBufferPlots = 3
         self.pathsOnAxis = False
@@ -34,70 +36,99 @@ class CityBuilder(src.items.Item):
 
         self.error = {}
 
-        self.attributesToStore.extend([
-           "tasks","runningTasks","error","commands","error","scrapFields","resources",
-           ])
+        self.attributesToStore.extend(
+            [
+                "tasks",
+                "runningTasks",
+                "error",
+                "commands",
+                "error",
+                "scrapFields",
+                "resources",
+            ]
+        )
 
-        self.tupleListsToStore.extend([
-           "unfinishedRoadTiles","usedPlots","plotPool","reseredPlots","roadTiles","unusedRoadTiles",
-           ])
+        self.tupleListsToStore.extend(
+            [
+                "unfinishedRoadTiles",
+                "usedPlots",
+                "plotPool",
+                "reseredPlots",
+                "roadTiles",
+                "unusedRoadTiles",
+            ]
+        )
 
-    def addTasksToLocalRoom(self,tasks,character):
+    def addTasksToLocalRoom(self, tasks, character):
         jobOrder = src.items.itemMap["JobOrder"]()
-        jobOrder.tasks = list(reversed([
-            {
-                "task":"go to room manager",
-                "command":self.commands["go to room manager"]
-            },
-            {
-                "task":"insert job order",
-                "command":"scj",
-            },
-            {
-                "task":"add Tasks",
-                "command":None,
-                "tasks": list(reversed(tasks)),
-            },
-            {
-                "task":"return from room manager",
-                "command":self.commands["return from room manager"]
-            },
-            ]))
+        jobOrder.tasks = list(
+            reversed(
+                [
+                    {
+                        "task": "go to room manager",
+                        "command": self.commands["go to room manager"],
+                    },
+                    {
+                        "task": "insert job order",
+                        "command": "scj",
+                    },
+                    {
+                        "task": "add Tasks",
+                        "command": None,
+                        "tasks": list(reversed(tasks)),
+                    },
+                    {
+                        "task": "return from room manager",
+                        "command": self.commands["return from room manager"],
+                    },
+                ]
+            )
+        )
         jobOrder.taskName = "install city builder"
 
         character.addMessage("running job order to add local room task")
         character.jobOrders.append(jobOrder)
         character.runCommandString("Jj.j")
 
-    def apply(self,character):
-        options = [("showMap","show map"),
-                   ("addTaskExpand","add task expand"),
-                   ("reservePlot","reserve plot"),
-                   ("addTaskExpandStorage","add task expand storage"),
-                   ("addTaskExpandStorageSpecific","add task expand storage specific"),
-                   ("addRoom","add room"),
-                   ("addBuildMine","add build mine"),
-                   ("addBuildFactory","add build factory"),
-                   ("addResource","add resource"),
-                   ("clearTasks","clear tasks"),
-                   ("clearError","clear error")]
-        self.submenue = src.interaction.SelectionMenu("what do you want to do?",options)
+    def apply(self, character):
+        options = [
+            ("showMap", "show map"),
+            ("addTaskExpand", "add task expand"),
+            ("reservePlot", "reserve plot"),
+            ("addTaskExpandStorage", "add task expand storage"),
+            ("addTaskExpandStorageSpecific", "add task expand storage specific"),
+            ("addRoom", "add room"),
+            ("addBuildMine", "add build mine"),
+            ("addBuildFactory", "add build factory"),
+            ("addResource", "add resource"),
+            ("clearTasks", "clear tasks"),
+            ("clearError", "clear error"),
+        ]
+        self.submenue = src.interaction.SelectionMenu(
+            "what do you want to do?", options
+        )
         character.macroState["submenue"] = self.submenue
         character.macroState["submenue"].followUp = self.apply2
         self.character = character
 
-    def costGuard(self,cost,character):
-        for (resourceType,amount) in cost.items():
+    def costGuard(self, cost, character):
+        for (resourceType, amount) in cost.items():
             availableAmount = self.resources.get(resourceType)
-               
-            if availableAmount == None:
-                character.addMessage("need resource %s"%(resourceType,))
+
+            if availableAmount is None:
+                character.addMessage("need resource %s" % (resourceType,))
                 return False
             elif availableAmount < amount:
-                character.addMessage("need %s more %s"%(amount-availableAmount,resourceType,))
+                character.addMessage(
+                    "need %s more %s"
+                    % (
+                        amount - availableAmount,
+                        resourceType,
+                    )
+                )
                 return False
 
-        for (resourceType,amount) in cost.items():
+        for (resourceType, amount) in cost.items():
             self.resources[resourceType] -= amount
             return True
 
@@ -108,14 +139,14 @@ class CityBuilder(src.items.Item):
         if selection == "showMap":
             self.showMap(character)
         elif selection == "addBuildMine":
-            newTask = {"task":"build mine"}
+            newTask = {"task": "build mine"}
             self.tasks.append(newTask)
         elif selection == "addResource":
             foundItems = []
             for item in character.inventory:
                 foundItems.append(item)
 
-                if not item.type in self.resources:
+                if item.type not in self.resources:
                     self.resources[item.type] = 0
                 self.resources[item.type] += 1
 
@@ -123,28 +154,34 @@ class CityBuilder(src.items.Item):
                 character.inventory.remove(item)
 
         elif selection == "addBuildFactory":
-            newTask = {"task":"build factory"}
+            newTask = {"task": "build factory"}
             self.tasks.append(newTask)
         elif selection == "addRoom":
 
             options = []
             for plot in self.plotPool:
-                options.append((plot,"%s"%(plot,)))
-            self.submenue = src.interaction.SelectionMenu("Where do you want to build the room?",options)
+                options.append((plot, "%s" % (plot,)))
+            self.submenue = src.interaction.SelectionMenu(
+                "Where do you want to build the room?", options
+            )
             character.macroState["submenue"] = self.submenue
             character.macroState["submenue"].followUp = self.triggerAddRoom
         elif selection == "reservePlot":
             options = []
             for plot in self.plotPool:
-                options.append((plot,"%s"%(plot,)))
-            self.submenue = src.interaction.SelectionMenu("Where do you want to expand from?",options)
+                options.append((plot, "%s" % (plot,)))
+            self.submenue = src.interaction.SelectionMenu(
+                "Where do you want to expand from?", options
+            )
             character.macroState["submenue"] = self.submenue
             character.macroState["submenue"].followUp = self.reservePlot
         elif selection == "addTaskExpand":
-            options = [("random","random")]
+            options = [("random", "random")]
             for plot in self.plotPool:
-                options.append((plot,"%s"%(plot,)))
-            self.submenue = src.interaction.SelectionMenu("Where do you want to expand from?",options)
+                options.append((plot, "%s" % (plot,)))
+            self.submenue = src.interaction.SelectionMenu(
+                "Where do you want to expand from?", options
+            )
             character.macroState["submenue"] = self.submenue
             character.macroState["submenue"].followUp = self.triggerExpand
         elif selection == "addTaskExpandStorageSpecific":
@@ -153,13 +190,15 @@ class CityBuilder(src.items.Item):
                 character.addMessage("no unused road tiles")
                 return
             for plot in self.unusedRoadTiles:
-                options.append((plot,"%s"%(plot,)))
-            self.submenue = src.interaction.SelectionMenu("Where do you want to expand from?",options)
+                options.append((plot, "%s" % (plot,)))
+            self.submenue = src.interaction.SelectionMenu(
+                "Where do you want to expand from?", options
+            )
             character.macroState["submenue"] = self.submenue
             character.macroState["submenue"].followUp = self.triggerExpandStorage
             self.storageCoordinate = None
         elif selection == "addTaskExpandStorage":
-            newTask = {"task":"extend storage"}
+            newTask = {"task": "extend storage"}
             self.tasks.append(newTask)
         elif selection == "clearTasks":
             self.tasks = []
@@ -173,8 +212,13 @@ class CityBuilder(src.items.Item):
         if not self.storageCoordinate:
             self.storageCoordinate = self.submenue.selection
 
-            options = [("UniformStockpileManager","UniformStockpileManager"),("TypedStockpileManager","TypedStockpileManager"),]
-            self.submenue = src.interaction.SelectionMenu("What type of stockpile should be placed?",options)
+            options = [
+                ("UniformStockpileManager", "UniformStockpileManager"),
+                ("TypedStockpileManager", "TypedStockpileManager"),
+            ]
+            self.submenue = src.interaction.SelectionMenu(
+                "What type of stockpile should be placed?", options
+            )
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.triggerExpandStorage
             self.stockPileType = None
@@ -183,8 +227,10 @@ class CityBuilder(src.items.Item):
         if not self.stockPileType:
             self.stockPileType = self.submenue.selection
 
-            options = [("storage","storage"),("source","source"),("sink","sink")]
-            self.submenue = src.interaction.SelectionMenu("what function should the stockpile have?",options)
+            options = [("storage", "storage"), ("source", "source"), ("sink", "sink")]
+            self.submenue = src.interaction.SelectionMenu(
+                "what function should the stockpile have?", options
+            )
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.triggerExpandStorage
             self.stockPileFunction = None
@@ -196,15 +242,22 @@ class CityBuilder(src.items.Item):
             if self.stockPileType == "UniformStockpileManager":
                 self.submenue = src.interaction.InputMenu("type ItemType")
                 self.character.macroState["submenue"] = self.submenue
-                self.character.macroState["submenue"].followUp = self.triggerExpandStorage
+                self.character.macroState[
+                    "submenue"
+                ].followUp = self.triggerExpandStorage
                 self.stockPileItemType = None
                 return
 
         if self.stockPileType == "UniformStockpileManager":
-            if not self.stockPileItemType: 
+            if not self.stockPileItemType:
                 self.stockPileItemType = self.submenue.text
 
-        newTask = {"task":"extend storage","coordinate":self.storageCoordinate,"stockPileType":self.stockPileType,"stockPileFunction":self.stockPileFunction}
+        newTask = {
+            "task": "extend storage",
+            "coordinate": self.storageCoordinate,
+            "stockPileType": self.stockPileType,
+            "stockPileFunction": self.stockPileFunction,
+        }
         if self.stockPileType == "UniformStockpileManager":
             newTask["itemType"] = self.stockPileItemType
         self.tasks.append(newTask)
@@ -215,11 +268,11 @@ class CityBuilder(src.items.Item):
             self.character.addMessage("no selection")
             return
 
-        if not plot in self.plotPool:
+        if plot not in self.plotPool:
             self.character.addMessage("not in plot pool")
             return
 
-        newTask = {"task":"build room","plot":list(plot)}
+        newTask = {"task": "build room", "plot": list(plot)}
         self.tasks.append(newTask)
 
     def reservePlot(self):
@@ -228,22 +281,21 @@ class CityBuilder(src.items.Item):
             self.character.addMessage("no selection")
             return
 
-        if not plot in self.plotPool:
+        if plot not in self.plotPool:
             self.character.addMessage("not in plot pool")
             return
 
         self.plotPool.remove(plot)
         self.reservedPlots.append(plot)
 
- 
     def triggerExpand(self):
-        newTask = {"task":"expand"}
+        newTask = {"task": "expand"}
         if self.submenue.selection and not self.submenue.selection == "random":
             newTask["from"] = self.submenue.selection
         self.character.addMessage(newTask)
         self.tasks.append(newTask)
 
-    def doRegisterResult(self,task,context):
+    def doRegisterResult(self, task, context):
         character = context["character"]
 
         error = context["jobOrder"].error
@@ -252,9 +304,12 @@ class CityBuilder(src.items.Item):
             if context["jobOrder"].error["type"] == "item not found":
                 task = self.runningTasks.pop()
                 self.tasks.append(task)
-                self.addTasksToLocalRoom([
-                    {"task":"add item","type":error["itemType"]},
-                    ],context["character"])
+                self.addTasksToLocalRoom(
+                    [
+                        {"task": "add item", "type": error["itemType"]},
+                    ],
+                    context["character"],
+                )
                 context["character"].addMessage("handled error")
             else:
                 self.registerError(error)
@@ -265,63 +320,77 @@ class CityBuilder(src.items.Item):
                 character.addMessage("handle success")
                 plot = context["jobOrder"].information["plot"]
                 self.unfinishedRoadTiles.remove(plot)
-                if not (plot[0] == self.container.xPosition and plot[1] == self.container.yPosition):
+                if not (
+                    plot[0] == self.container.xPosition
+                    and plot[1] == self.container.yPosition
+                ):
                     self.roadTiles.append(plot)
                     self.unusedRoadTiles.append(plot)
-        
+
         self.runningTasks = []
 
-    def registerError(self,error):
+    def registerError(self, error):
         task = self.runningTasks.pop()
         self.tasks.append(task)
         self.error = error
-    
-    def doIdleExtend(self,character):
+
+    def doIdleExtend(self, character):
         character
         if self.idleExtend:
             if len(self.plotPool) < self.numReservedPathPlots + self.numBufferPlots:
-                self.tasks.append({"task":"expand"})
+                self.tasks.append({"task": "expand"})
                 character.addMessage("idle extend")
                 return
         character.addMessage("no tasks left")
 
     def getTaskResolvers(self):
         taskDict = {}
-        self.addTriggerToTriggerMap(taskDict,"expand",self.doExpand)
-        self.addTriggerToTriggerMap(taskDict,"build roads",self.doBuildRoads)
-        self.addTriggerToTriggerMap(taskDict,"set up basic production",self.doSetUpBasicProduction)
-        self.addTriggerToTriggerMap(taskDict,"prepare scrap field",self.doPrepareScrapField) # should be somewhere else?
-        self.addTriggerToTriggerMap(taskDict,"extend storage",self.doExtendStorage)
-        self.addTriggerToTriggerMap(taskDict,"set up internal storage",self.doSetUpInternalStorage)
-        self.addTriggerToTriggerMap(taskDict,"build room",self.doSetUpRoom)
-        self.addTriggerToTriggerMap(taskDict,"build mine",self.doSetUpMine)
-        self.addTriggerToTriggerMap(taskDict,"build factory",self.doSetUpFactory)
+        self.addTriggerToTriggerMap(taskDict, "expand", self.doExpand)
+        self.addTriggerToTriggerMap(taskDict, "build roads", self.doBuildRoads)
+        self.addTriggerToTriggerMap(
+            taskDict, "set up basic production", self.doSetUpBasicProduction
+        )
+        self.addTriggerToTriggerMap(
+            taskDict, "prepare scrap field", self.doPrepareScrapField
+        )  # should be somewhere else?
+        self.addTriggerToTriggerMap(taskDict, "extend storage", self.doExtendStorage)
+        self.addTriggerToTriggerMap(
+            taskDict, "set up internal storage", self.doSetUpInternalStorage
+        )
+        self.addTriggerToTriggerMap(taskDict, "build room", self.doSetUpRoom)
+        self.addTriggerToTriggerMap(taskDict, "build mine", self.doSetUpMine)
+        self.addTriggerToTriggerMap(taskDict, "build factory", self.doSetUpFactory)
         return taskDict
 
-    def doSetUpRoom(self,context):
+    def doSetUpRoom(self, context):
         character = context["character"]
         task = context["task"]
         plot = task["plot"]
 
-        self.useJoborderRelayToLocalRoom(character,[
-            {"task":"set up","type":"room","coordinate":plot,"command":None},
-            ],"ArchitectArtwork",information={"plot":plot})
+        self.useJoborderRelayToLocalRoom(
+            character,
+            [
+                {"task": "set up", "type": "room", "coordinate": plot, "command": None},
+            ],
+            "ArchitectArtwork",
+            information={"plot": plot},
+        )
         self.plotPool.remove(tuple(plot))
         self.usedPlots.append(tuple(plot))
 
-    def doSetUpInternalStorage(self,context):
-        self.tasks.append({"task":"extend storage"})
+    def doSetUpInternalStorage(self, context):
+        self.tasks.append({"task": "extend storage"})
 
-    def doExtendStorage(self,context):
+    def doExtendStorage(self, context):
         character = context["character"]
         task = context["task"]
 
-        if not "stockPileCoordinate" in task:
+        if "stockPileCoordinate" not in task:
             if not self.unusedRoadTiles:
                 self.tasks.append(task)
-                newTask = {"task":"build roads"}
+                newTask = {"task": "build roads"}
                 self.tasks.append(newTask)
-                newTask = {"task":"expand"}
+                newTask = {"task": "expand"}
                 self.tasks.append(newTask)
                 self.runningTasks = []
                 return
@@ -337,79 +406,130 @@ class CityBuilder(src.items.Item):
             self.runningTasks = []
             return
 
-        task["stockPileName"] = "storage_%s_%s"%(task["stockPileCoordinate"][0],task["stockPileCoordinate"][1])
+        task["stockPileName"] = "storage_%s_%s" % (
+            task["stockPileCoordinate"][0],
+            task["stockPileCoordinate"][1],
+        )
 
         if not task.get("stockPileType"):
             task["stockPileType"] = "TypedStockpileManager"
 
         if not task.get("payed"):
-            if not self.costGuard({task["stockPileType"]:1},character): #actual costs happen here
+            if not self.costGuard(
+                {task["stockPileType"]: 1}, character
+            ):  # actual costs happen here
                 self.abortTask()
                 return
             task["payed"] = True
 
-        setupTask = {"task":"set up","type":"stockPile","name":task["stockPileName"],"coordinate":task["stockPileCoordinate"],"command":None,}
+        setupTask = {
+            "task": "set up",
+            "type": "stockPile",
+            "name": task["stockPileName"],
+            "coordinate": task["stockPileCoordinate"],
+            "command": None,
+        }
 
         setupTask["StockpileType"] = task["stockPileType"]
         if task["stockPileType"] == "UniformStockpileManager":
             setupTask["ItemType"] = task["itemType"]
 
         tasks = [
-                setupTask,
-            ]
+            setupTask,
+        ]
 
         stockPileFunction = task.get("stockPileFunction")
-        newTask = {"task":"connect stockpile","type":"add to storage","stockPile":task["stockPileName"],"stockPileCoordinate":task["stockPileCoordinate"],"command":None,}
+        newTask = {
+            "task": "connect stockpile",
+            "type": "add to storage",
+            "stockPile": task["stockPileName"],
+            "stockPileCoordinate": task["stockPileCoordinate"],
+            "command": None,
+        }
         if stockPileFunction:
             newTask["function"] = stockPileFunction
 
         tasks.append(newTask)
-        self.useJoborderRelayToLocalRoom(character,tasks,"ArchitectArtwork")
+        self.useJoborderRelayToLocalRoom(character, tasks, "ArchitectArtwork")
 
-    def doPrepareScrapField(self,context):
+    def doPrepareScrapField(self, context):
         character = context["character"]
-        self.useJoborderRelayToLocalRoom(character,[
-            {"task":"clear paths","coordinate":task["coordinate"],"command":None},
-            ],"RoadManager")
+        self.useJoborderRelayToLocalRoom(
+            character,
+            [
+                {
+                    "task": "clear paths",
+                    "coordinate": task["coordinate"],
+                    "command": None,
+                },
+            ],
+            "RoadManager",
+        )
 
-    def doSetUpBasicProduction(self,character):
-        self.addTasksToLocalRoom([
-            {"task":"add machine","type":"FloorPlate"},
-            {"task":"add machine","type":"ScrapCompactor"},
-            {"task":"add item","type":"ProductionManager"},
-            ])
+    def doSetUpBasicProduction(self, character):
+        self.addTasksToLocalRoom(
+            [
+                {"task": "add machine", "type": "FloorPlate"},
+                {"task": "add machine", "type": "ScrapCompactor"},
+                {"task": "add item", "type": "ProductionManager"},
+            ]
+        )
 
-    def doBuildRoads(self,context):
+    def doBuildRoads(self, context):
 
         character = context["character"]
         task = context["task"]
         if self.unfinishedRoadTiles:
             plot = self.unfinishedRoadTiles[-1]
-            if plot == (self.container.xPosition,self.container.yPosition):
+            if plot == (self.container.xPosition, self.container.yPosition):
                 self.unfinishedRoadTiles.pop()
                 self.abortTask()
                 return
 
             terrain = self.getTerrain()
-            for x in range(plot[0]*15,plot[0]*15+15):
-                for y in range(plot[1]*15,plot[1]*15+15):
-                    items = terrain.getItemByPosition((x,y,0))
+            for x in range(plot[0] * 15, plot[0] * 15 + 15):
+                for y in range(plot[1] * 15, plot[1] * 15 + 15):
+                    items = terrain.getItemByPosition((x, y, 0))
                     if items:
-                        if x%15==7 and y%15==7 and len(items) == 1 and items[0].type == "MarkerBean":
+                        if (
+                            x % 15 == 7
+                            and y % 15 == 7
+                            and len(items) == 1
+                            and items[0].type == "MarkerBean"
+                        ):
                             continue
-                        character.addMessage("building site %s blocked on %s/%s"%(plot,x,y,))
+                        character.addMessage(
+                            "building site %s blocked on %s/%s"
+                            % (
+                                plot,
+                                x,
+                                y,
+                            )
+                        )
                         self.abortTask()
                         return
 
             if not task.get("payed"):
-                if not self.costGuard({"Paving":30},character): #actual costs happen here
+                if not self.costGuard(
+                    {"Paving": 30}, character
+                ):  # actual costs happen here
                     self.abortTask()
                     return
                 task["payed"] = True
 
-            self.useJoborderRelayToLocalRoom(character,[
-                {"task":"set up","type":"road","coordinate":plot,"command":None},
-                ],"ArchitectArtwork",information={"plot":plot})
+            self.useJoborderRelayToLocalRoom(
+                character,
+                [
+                    {
+                        "task": "set up",
+                        "type": "road",
+                        "coordinate": plot,
+                        "command": None,
+                    },
+                ],
+                "ArchitectArtwork",
+                information={"plot": plot},
+            )
         else:
             character.addMessage("no road tile found to build")
             self.runningTasks = []
@@ -417,30 +537,33 @@ class CityBuilder(src.items.Item):
     def abortTask(self):
         self.tasks.append(self.runningTasks.pop())
 
-    def doExpand(self,context):
+    def doExpand(self, context):
         if not self.plotPool:
             return
-        
+
         task = context["task"]
         character = context["character"]
 
-        if not "from" in task:
+        if "from" not in task:
             plot = random.choice(self.plotPool)
         else:
             plot = tuple(task["from"])
 
-        if not plot in self.plotPool:
+        if plot not in self.plotPool:
             self.abortTask()
             return
 
         self.expandFromPlot(plot)
-        newTask = {"task":"build roads"}
+        newTask = {"task": "build roads"}
         self.tasks.append(newTask)
         self.runningTasks = []
         return
 
-    def doMaintenance(self,character):
-        if not "go to room manager" in self.commands and "return from room manager" in self.commands:
+    def doMaintenance(self, character):
+        if (
+            "go to room manager" not in self.commands
+            and "return from room manager" in self.commands
+        ):
             character.addMessage("no room manager")
             return
 
@@ -457,7 +580,7 @@ class CityBuilder(src.items.Item):
             return
 
         if not self.usedPlots:
-            plot = (self.container.xPosition,self.container.yPosition)
+            plot = (self.container.xPosition, self.container.yPosition)
             self.plotPool.append(plot)
 
             self.expandFromPlot(plot)
@@ -468,9 +591,9 @@ class CityBuilder(src.items.Item):
         resolverMap = self.getTaskResolvers()
         if task["task"] in resolverMap:
             for taskResolver in resolverMap[task["task"]]:
-                taskResolver({"character":character,"task":task})
-                
-    def doSetUpFactory(self,context):
+                taskResolver({"character": character, "task": task})
+
+    def doSetUpFactory(self, context):
         character = context["character"]
         task = context["task"]
 
@@ -478,19 +601,23 @@ class CityBuilder(src.items.Item):
             random.shuffle(self.plotPool)
             plot = self.plotPool.pop()
 
-        self.useJoborderRelayToLocalRoom(character,[
-            #{"task":"set up","type":"stockPile","name":task["metalBarStorageName"],"coordinate":task["metalBarStorageCoordinate"],"command":None,"StockpileType":"UniformStockpileManager","ItemType":"MetalBars"},
-            #{"task":"set up","type":"stockPile","name":task["stockPileName"],"coordinate":task["stockPileCoordinate"],"command":None,"StockpileType":"UniformStockpileManager","ItemType":"Scrap"},
-            {"task":"set up","type":"factory","coordinate":plot},
-            ],"ArchitectArtwork")
+        self.useJoborderRelayToLocalRoom(
+            character,
+            [
+                # {"task":"set up","type":"stockPile","name":task["metalBarStorageName"],"coordinate":task["metalBarStorageCoordinate"],"command":None,"StockpileType":"UniformStockpileManager","ItemType":"MetalBars"},
+                # {"task":"set up","type":"stockPile","name":task["stockPileName"],"coordinate":task["stockPileCoordinate"],"command":None,"StockpileType":"UniformStockpileManager","ItemType":"Scrap"},
+                {"task": "set up", "type": "factory", "coordinate": plot},
+            ],
+            "ArchitectArtwork",
+        )
 
-    def doSetUpMine(self,context):
+    def doSetUpMine(self, context):
         character = context["character"]
         task = context["task"]
 
         if not self.scrapFields:
             self.tasks.append(task)
-            newTask = {"task":"expand"}
+            newTask = {"task": "expand"}
             self.tasks.append(newTask)
             self.runningTasks = []
             return
@@ -499,7 +626,7 @@ class CityBuilder(src.items.Item):
 
         if not task.get("expanded storage"):
             self.tasks.append(task)
-            newTask = {"task":"extend storage"}
+            newTask = {"task": "extend storage"}
             self.tasks.append(newTask)
             self.runningTasks = []
             task["expanded storage"] = True
@@ -507,20 +634,23 @@ class CityBuilder(src.items.Item):
 
         if not task.get("stockPileCoordinate"):
             self.runningTasks = []
-            directions = [(0,1),(0,-1),(1,0),(-1,0)]
+            directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
             random.shuffle(directions)
             neighbourRoad = None
             neighbourPlot = None
             neighbourUndiscovered = None
             for direction in directions:
-                position = (task["scrapField"][0][0]+direction[0],task["scrapField"][0][1]+direction[1],)
+                position = (
+                    task["scrapField"][0][0] + direction[0],
+                    task["scrapField"][0][1] + direction[1],
+                )
                 if position in self.unusedRoadTiles:
                     neighbourRoad = position
                     continue
                 if position in self.plotPool:
                     neighbourPlot = position
                     continue
-                if not position in self.usedPlots and not position in self.stockPiles:
+                if position in self.usedPlots and position not in self.stockPiles:
                     neighbourUndiscovered = position
                     continue
 
@@ -534,16 +664,16 @@ class CityBuilder(src.items.Item):
                 return
             elif neighbourPlot:
                 self.tasks.append(task)
-                newTask = {"task":"expand","from":neighbourPlot}
+                newTask = {"task": "expand", "from": neighbourPlot}
                 self.tasks.append(newTask)
                 character.addMessage("expand plot")
                 return
             elif neighbourUndiscovered:
-                if not "undiscoveredCounter" in task:
+                if "undiscoveredCounter" not in task:
                     task["undiscoveredCounter"] = 0
                 task["undiscoveredCounter"] += 1
                 if task["undiscoveredCounter"] > 5:
-                    if not "scrapRetryCounter" in task:
+                    if "scrapRetryCounter" not in task:
                         task["scrapRetryCounter"] = 0
 
                     if task["scrapRetryCounter"] > 5:
@@ -555,7 +685,7 @@ class CityBuilder(src.items.Item):
                     return
 
                 self.tasks.append(task)
-                newTask = {"task":"expand","target":neighbourPlot}
+                newTask = {"task": "expand", "target": neighbourPlot}
                 self.tasks.append(newTask)
                 character.addMessage("expand undiscovered")
                 return
@@ -565,20 +695,23 @@ class CityBuilder(src.items.Item):
 
         if not task.get("oreProcessingCoordinate"):
             self.runningTasks = []
-            directions = [(0,1),(0,-1),(1,0),(-1,0)]
+            directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
             random.shuffle(directions)
             neighbourRoad = None
             neighbourPlot = None
             neighbourUndiscovered = None
             for direction in directions:
-                position = (task["stockPileCoordinate"][0]+direction[0],task["stockPileCoordinate"][1]+direction[1],)
+                position = (
+                    task["stockPileCoordinate"][0] + direction[0],
+                    task["stockPileCoordinate"][1] + direction[1],
+                )
                 if position in self.unusedRoadTiles:
                     neighbourRoad = position
                     continue
                 if position in self.plotPool:
                     neighbourPlot = position
                     continue
-                if not position in self.usedPlots and not position in self.stockPiles:
+                if position in self.usedPlots and position not in self.stockPiles:
                     neighbourUndiscovered = position
                     continue
 
@@ -590,16 +723,16 @@ class CityBuilder(src.items.Item):
                 return
             elif neighbourPlot:
                 self.tasks.append(task)
-                newTask = {"task":"expand","from":neighbourPlot}
+                newTask = {"task": "expand", "from": neighbourPlot}
                 self.tasks.append(newTask)
                 character.addMessage("expand plot")
                 return
             elif neighbourUndiscovered:
-                if not "undiscoveredCounter" in task:
+                if "undiscoveredCounter" not in task:
                     task["undiscoveredCounter"] = 0
                 task["undiscoveredCounter"] += 1
                 if task["undiscoveredCounter"] > 5:
-                    if not "scrapRetryCounter" in task:
+                    if "scrapRetryCounter" not in task:
                         task["scrapRetryCounter"] = 0
 
                     if task["scrapRetryCounter"] > 5:
@@ -611,7 +744,7 @@ class CityBuilder(src.items.Item):
                     return
 
                 self.tasks.append(task)
-                newTask = {"task":"expand","target":neighbourPlot}
+                newTask = {"task": "expand", "target": neighbourPlot}
                 self.tasks.append(newTask)
                 character.addMessage("expand undiscovered")
                 return
@@ -621,42 +754,47 @@ class CityBuilder(src.items.Item):
 
         if not task.get("metalBarStorageCoordinate"):
             self.runningTasks = []
-            directions = [(0,1),(0,-1),(1,0),(-1,0)]
+            directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
             random.shuffle(directions)
             neighbourRoad = None
             neighbourPlot = None
             neighbourUndiscovered = None
             for direction in directions:
-                position = (task["oreProcessingCoordinate"][0]+direction[0],task["oreProcessingCoordinate"][1]+direction[1],)
+                position = (
+                    task["oreProcessingCoordinate"][0] + direction[0],
+                    task["oreProcessingCoordinate"][1] + direction[1],
+                )
                 if position in self.unusedRoadTiles:
                     neighbourRoad = position
                     continue
                 if position in self.plotPool:
                     neighbourPlot = position
                     continue
-                if not position in self.usedPlots and not position in self.stockPiles:
+                if position in self.usedPlots and position not in self.stockPiles:
                     neighbourUndiscovered = position
                     continue
 
             if neighbourRoad:
                 self.tasks.append(task)
                 task["metalBarStorageCoordinate"] = neighbourRoad
-                task["metalBarStorageName"] = "bardropoff %s"%(task["metalBarStorageCoordinate"],)
+                task["metalBarStorageName"] = "bardropoff %s" % (
+                    task["metalBarStorageCoordinate"],
+                )
                 self.unusedRoadTiles.remove(neighbourRoad)
                 character.addMessage("expand done")
                 return
             elif neighbourPlot:
                 self.tasks.append(task)
-                newTask = {"task":"expand","from":neighbourPlot}
+                newTask = {"task": "expand", "from": neighbourPlot}
                 self.tasks.append(newTask)
                 character.addMessage("expand plot")
                 return
             elif neighbourUndiscovered:
-                if not "undiscoveredCounter" in task:
+                if "undiscoveredCounter" not in task:
                     task["undiscoveredCounter"] = 0
                 task["undiscoveredCounter"] += 1
                 if task["undiscoveredCounter"] > 5:
-                    if not "scrapRetryCounter" in task:
+                    if "scrapRetryCounter" not in task:
                         task["scrapRetryCounter"] = 0
 
                     if task["scrapRetryCounter"] > 5:
@@ -668,7 +806,7 @@ class CityBuilder(src.items.Item):
                     return
 
                 self.tasks.append(task)
-                newTask = {"task":"expand","target":neighbourPlot}
+                newTask = {"task": "expand", "target": neighbourPlot}
                 self.tasks.append(newTask)
                 character.addMessage("expand undiscovered")
                 return
@@ -677,63 +815,118 @@ class CityBuilder(src.items.Item):
                 return
 
         if not task.get("didBasicSetup"):
-            task["stockPileName"] = "miningStockPile_%s_%s"%(task["stockPileCoordinate"][0],task["stockPileCoordinate"][1])
-            self.useJoborderRelayToLocalRoom(character,[
-                {"task":"set up","type":"stockPile","name":task["metalBarStorageName"],"coordinate":task["metalBarStorageCoordinate"],"command":None,"StockpileType":"UniformStockpileManager","ItemType":"MetalBars"},
-                {"task":"connect stockpile","type":"add to storage","function":"source","stockPileCoordinate":task["metalBarStorageCoordinate"],"stockPile":task["metalBarStorageName"]},
-                {"task":"set up","type":"oreProcessing","coordinate":task["oreProcessingCoordinate"],"command":None},
-                {"task":"set up","type":"stockPile","name":task["stockPileName"],"coordinate":task["stockPileCoordinate"],"command":None,"StockpileType":"UniformStockpileManager","ItemType":"Scrap"},
-                {"task":"set up","type":"mine","stockPile":task["stockPileName"],"stocKPileCoordinate":task["stockPileCoordinate"],"scrapField":task["scrapField"],"command":None},
-                ],"ArchitectArtwork")
+            task["stockPileName"] = "miningStockPile_%s_%s" % (
+                task["stockPileCoordinate"][0],
+                task["stockPileCoordinate"][1],
+            )
+            self.useJoborderRelayToLocalRoom(
+                character,
+                [
+                    {
+                        "task": "set up",
+                        "type": "stockPile",
+                        "name": task["metalBarStorageName"],
+                        "coordinate": task["metalBarStorageCoordinate"],
+                        "command": None,
+                        "StockpileType": "UniformStockpileManager",
+                        "ItemType": "MetalBars",
+                    },
+                    {
+                        "task": "connect stockpile",
+                        "type": "add to storage",
+                        "function": "source",
+                        "stockPileCoordinate": task["metalBarStorageCoordinate"],
+                        "stockPile": task["metalBarStorageName"],
+                    },
+                    {
+                        "task": "set up",
+                        "type": "oreProcessing",
+                        "coordinate": task["oreProcessingCoordinate"],
+                        "command": None,
+                    },
+                    {
+                        "task": "set up",
+                        "type": "stockPile",
+                        "name": task["stockPileName"],
+                        "coordinate": task["stockPileCoordinate"],
+                        "command": None,
+                        "StockpileType": "UniformStockpileManager",
+                        "ItemType": "Scrap",
+                    },
+                    {
+                        "task": "set up",
+                        "type": "mine",
+                        "stockPile": task["stockPileName"],
+                        "stocKPileCoordinate": task["stockPileCoordinate"],
+                        "scrapField": task["scrapField"],
+                        "command": None,
+                    },
+                ],
+                "ArchitectArtwork",
+            )
             task["didBasicSetup"] = True
             self.tasks.append(task)
             return
 
         if not task.get("didExtendStorage"):
-            newTask = {"task":"extend storage"}
+            newTask = {"task": "extend storage"}
             self.tasks.append(task)
             self.tasks.append(newTask)
             self.runningTasks = []
             task["didExtendStorage"] = True
             return
 
-        self.useJoborderRelayToLocalRoom(character,[
-            {"task":"set up","setupInfo":{
-                "miningSpot":task["scrapField"],
-                "scrapStockPileName":task["stockPileName"],"scrapStockPileCoordinate":task["stockPileCoordinate"],
-                "metalBarStockPileName":task["metalBarStorageName"],"metalBarStockPileCoordinate":task["metalBarStorageCoordinate"],
-                "oreProcessing":task["oreProcessingCoordinate"]}}
-            ],"MiningManager")
+        self.useJoborderRelayToLocalRoom(
+            character,
+            [
+                {
+                    "task": "set up",
+                    "setupInfo": {
+                        "miningSpot": task["scrapField"],
+                        "scrapStockPileName": task["stockPileName"],
+                        "scrapStockPileCoordinate": task["stockPileCoordinate"],
+                        "metalBarStockPileName": task["metalBarStorageName"],
+                        "metalBarStockPileCoordinate": task[
+                            "metalBarStorageCoordinate"
+                        ],
+                        "oreProcessing": task["oreProcessingCoordinate"],
+                    },
+                }
+            ],
+            "MiningManager",
+        )
 
-    def expandFromPlot(self,plot):
+    def expandFromPlot(self, plot):
         self.usedPlots.append(plot)
         self.plotPool.remove(plot)
 
         plotCandiates = [
-                        (plot[0]-1,plot[1]),
-                        (plot[0]+1,plot[1]),
-                        (plot[0],plot[1]-1),
-                        (plot[0],plot[1]+1),
-                       ]
+            (plot[0] - 1, plot[1]),
+            (plot[0] + 1, plot[1]),
+            (plot[0], plot[1] - 1),
+            (plot[0], plot[1] + 1),
+        ]
 
-        self.getTerrain().addItem(src.items.itemMap["MarkerBean"](),(plot[0]*15+7,plot[1]*15+7,0))
+        self.getTerrain().addItem(
+            src.items.itemMap["MarkerBean"](), (plot[0] * 15 + 7, plot[1] * 15 + 7, 0)
+        )
         self.unfinishedRoadTiles.append(plot)
 
         axisPlots = []
         for candidate in plotCandiates:
-            if not candidate in self.usedPlots and not candidate in self.plotPool:
-                if candidate[0] in (0,14) or candidate[1] in (0,14):
+            if candidate in self.usedPlots and candidate not in self.plotPool:
+                if candidate[0] in (0, 14) or candidate[1] in (0, 14):
                     continue
 
                 numScrap = 0
-                for x in range(candidate[0]*15+1,candidate[0]*15+14):
-                    for y in range(candidate[1]*15+1,candidate[1]*15+14):
-                        for item in self.getTerrain().getItemByPosition((x,y,0)):
+                for x in range(candidate[0] * 15 + 1, candidate[0] * 15 + 14):
+                    for y in range(candidate[1] * 15 + 1, candidate[1] * 15 + 14):
+                        for item in self.getTerrain().getItemByPosition((x, y, 0)):
                             if item.type == "Scrap":
                                 numScrap += item.amount
 
                 if numScrap > 100:
-                    self.scrapFields.append([list(candidate),numScrap])
+                    self.scrapFields.append([list(candidate), numScrap])
                     self.usedPlots.append(candidate)
                     continue
 
@@ -746,12 +939,12 @@ class CityBuilder(src.items.Item):
                 if plot in self.plotPool:
                     self.expandFromPlot(plot)
 
-    def showMap(self,character):
+    def showMap(self, character):
         mapContent = []
-        for x in range(0,15):
+        for x in range(0, 15):
             mapContent.append([])
-            for y in range(0,15):
-                if not x in (0,14) and not y in (0,14):
+            for y in range(0, 15):
+                if x in (0, 14) and y not in (0, 14):
                     char = "  "
                 elif not x == 7 and not y == 7:
                     char = "##"
@@ -774,19 +967,18 @@ class CityBuilder(src.items.Item):
         mapContent[self.container.yPosition][self.container.xPosition] = "CB"
 
         mapText = ""
-        for x in range(0,15):
-           mapText += "".join(mapContent[x])+"\n"
+        for x in range(0, 15):
+            mapText += "".join(mapContent[x]) + "\n"
         self.submenue = src.interaction.TextMenu(text=mapText)
         character.macroState["submenue"] = self.submenue
 
-
-    def getConfigurationOptions(self,character):
+    def getConfigurationOptions(self, character):
         options = super().getConfigurationOptions(character)
-        options["x"] = ("show map",self.showMap)
-        options["e"] = ("retry task",self.retryTask)
+        options["x"] = ("show map", self.showMap)
+        options["e"] = ("retry task", self.retryTask)
         return options
 
-    def retryTask(self,character):
+    def retryTask(self, character):
         self.error = {}
         if self.runningTasks:
             self.tasks.extend(self.runningTasks)
@@ -829,7 +1021,21 @@ unusedRoadTiles:
 
 scrapFields:
 %s
-"""%(self.resources,self.commands,self.error,self.runningTasks,self.tasks,self.reservedPlots,self.usedPlots,self.roadTiles,self.unfinishedRoadTiles,self.plotPool,self.unusedRoadTiles,self.scrapFields)
+""" % (
+            self.resources,
+            self.commands,
+            self.error,
+            self.runningTasks,
+            self.tasks,
+            self.reservedPlots,
+            self.usedPlots,
+            self.roadTiles,
+            self.unfinishedRoadTiles,
+            self.plotPool,
+            self.unusedRoadTiles,
+            self.scrapFields,
+        )
         return text
+
 
 src.items.addType(CityBuilder)

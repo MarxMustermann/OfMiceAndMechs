@@ -1,14 +1,17 @@
 import src
 import random
 
-'''
-'''
+"""
+"""
+
+
 class Tree(src.items.Item):
     type = "Tree"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
+    """
+
     def __init__(self):
         super().__init__(display=src.canvas.displayChars.tree)
 
@@ -16,7 +19,7 @@ class Tree(src.items.Item):
 
         self.bolted = True
         self.walkable = False
-        self.maxMaggot = random.randint(75,150)
+        self.maxMaggot = random.randint(75, 150)
         self.numMaggots = 0
 
         try:
@@ -24,14 +27,13 @@ class Tree(src.items.Item):
         except:
             self.lastUse = -100000
 
-        self.attributesToStore.extend([
-               "maggot","maxMaggot","lastUse"])
+        self.attributesToStore.extend(["maggot", "maxMaggot", "lastUse"])
 
     def regenerateMaggots(self):
-        self.numMaggots += (src.gamestate.gamestate.tick-self.lastUse)//100
-        self.numMaggots = min(self.numMaggots,self.maxMaggot)
+        self.numMaggots += (src.gamestate.gamestate.tick - self.lastUse) // 100
+        self.numMaggots = min(self.numMaggots, self.maxMaggot)
 
-    def apply(self,character):
+    def apply(self, character):
 
         if not self.terrain:
             character.addMessage("The tree has to be on the outside to be used")
@@ -44,7 +46,7 @@ class Tree(src.items.Item):
         character.frustration += 1
 
         targetFull = False
-        targetPos = (self.xPosition+1,self.yPosition)
+        targetPos = (self.xPosition + 1, self.yPosition)
         if targetPos in self.terrain.itemByCoordinates:
             if len(self.terrain.itemByCoordinates[targetPos]) > 15:
                 targetFull = True
@@ -63,7 +65,7 @@ class Tree(src.items.Item):
         # spawn new item
         self.numMaggots -= 1
         new = VatMaggot(creator=self)
-        new.xPosition = self.xPosition+1
+        new.xPosition = self.xPosition + 1
         new.yPosition = self.yPosition
         new.bolted = False
         self.terrain.addItems([new])
@@ -82,7 +84,10 @@ A tree can be used as a source for vat maggots.
 
 Activate the tree to harvest a vat maggot.
 
-"""%(self.numMaggots,)
+""" % (
+            self.numMaggots,
+        )
         return text
+
 
 src.items.addType(Tree)

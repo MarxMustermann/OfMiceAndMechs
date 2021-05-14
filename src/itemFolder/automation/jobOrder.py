@@ -1,6 +1,7 @@
 import src
 import json
 
+
 class JobOrder(src.items.Item):
     """
     ingame object that stores information about a task to be done and can be run by characters
@@ -9,13 +10,12 @@ class JobOrder(src.items.Item):
 
     type = "JobOrder"
 
-    def __init__(self,autoRun=True):
-        '''
+    def __init__(self, autoRun=True):
+        """
         configuring the super class
-        '''
+        """
 
-        self.tasks = [
-                ]
+        self.tasks = []
 
         super().__init__(display=src.canvas.displayChars.jobOrder)
 
@@ -30,25 +30,34 @@ class JobOrder(src.items.Item):
         self.error = {}
         self.taskName = ""
 
-        self.attributesToStore.extend([
-                "done","information","taskName","autoRun","tasks",])
+        self.attributesToStore.extend(
+            [
+                "done",
+                "information",
+                "taskName",
+                "autoRun",
+                "tasks",
+            ]
+        )
 
         # set up interaction menu
-        self.applyOptions.extend([
-                    ("runJobOrder","run job order macro"),
-                    ("runSingleStep","run single step"),
-                    ("showInfo","show info"),
-                ])
+        self.applyOptions.extend(
+            [
+                ("runJobOrder", "run job order macro"),
+                ("runSingleStep", "run single step"),
+                ("showInfo", "show info"),
+            ]
+        )
         self.applyMap = {
-                            "runJobOrder":self.runJobOrder,
-                            "runSingleStep":self.runSingleStep,
-                            "showInfo":self.showInfo,
-                        }
+            "runJobOrder": self.runJobOrder,
+            "runSingleStep": self.runSingleStep,
+            "showInfo": self.showInfo,
+        }
 
     def getTask(self):
         """
         fetch current task
-        
+
         Returns:
             the task
         """
@@ -61,7 +70,7 @@ class JobOrder(src.items.Item):
     def popTask(self):
         """
         fetches and removes current task
-        
+
         Returns:
             the task
         """
@@ -71,7 +80,7 @@ class JobOrder(src.items.Item):
         else:
             return None
 
-    def showInfo(self,character):
+    def showInfo(self, character):
         """
         show information about the job orders state
         Parameters:
@@ -81,10 +90,11 @@ class JobOrder(src.items.Item):
         # format the tasks
         taskStr = ""
         for task in self.tasks:
-            taskStr += "%s \n"%(task,)
+            taskStr += "%s \n" % (task,)
 
         # spawn the submenu showing the information
-        submenue = src.interaction.TextMenu("""
+        submenue = src.interaction.TextMenu(
+            """
 taskName:
 %s
 
@@ -96,26 +106,33 @@ error:
 
 tasks:
 %s
-"""%(self.taskName,self.information,self.error,taskStr,))
+"""
+            % (
+                self.taskName,
+                self.information,
+                self.error,
+                taskStr,
+            )
+        )
         character.macroState["submenue"] = submenue
 
-    def runSingleStep(self,character):
+    def runSingleStep(self, character):
         """
         runs a single task from a job order
         Parameters:
             character: the character to run the task on
         """
 
-        self.runJobOrder(self,character,True)
+        self.runJobOrder(self, character, True)
 
-    def runJobOrder(self,character,singleStep=False):
+    def runJobOrder(self, character, singleStep=False):
         """
         runs all or a single task from a job order
         Parameters:
             character: the character to run the task on
             singleStep: flag indicating that only a singestep should be run
         """
-            
+
         command = ""
         task = self.getTask()
         if not task:
@@ -137,7 +154,7 @@ tasks:
         Returns:
             the text
         """
-        
+
         text = super().getLongInfo()
         text += """
 
@@ -149,8 +166,12 @@ the order is:
 tasks: %s
 done: %s
 
-"""%(self.information, json.dumps(list(reversed(self.tasks)),indent=4), self.done)
+""" % (
+            self.information,
+            json.dumps(list(reversed(self.tasks)), indent=4),
+            self.done,
+        )
         return text
 
-src.items.addType(JobOrder)
 
+src.items.addType(JobOrder)

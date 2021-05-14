@@ -1,5 +1,6 @@
 import src
 
+
 class Spawner(src.items.Item):
     type = "Spawner"
 
@@ -9,7 +10,7 @@ class Spawner(src.items.Item):
         self.name = "spawner"
         self.charges = 1
 
-    def apply(self,character):
+    def apply(self, character):
 
         if not self.terrain:
             character.addMessage("this has to be placed outside to be used")
@@ -24,44 +25,51 @@ class Spawner(src.items.Item):
             character.inventory.remove(corpse)
 
         if self.charges:
-            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+100,creator=self)
-            event.setCallback({"container":self,"method":"spawn"})
+            event = src.events.RunCallbackEvent(
+                src.gamestate.gamestate.tick + 100, creator=self
+            )
+            event.setCallback({"container": self, "method": "spawn"})
             self.terrain.addEvent(event)
 
     def spawn(self):
         if not self.charges:
             return
 
-        character = characters.Character(src.canvas.displayChars.staffCharactersByLetter["a".lower()],self.xPosition+1,self.yPosition,name="a",creator=self)
+        character = characters.Character(
+            src.canvas.displayChars.staffCharactersByLetter["a".lower()],
+            self.xPosition + 1,
+            self.yPosition,
+            name="a",
+            creator=self,
+        )
 
         character.solvers = [
-                  "SurviveQuest",
-                  "Serve",
-                  "NaiveMoveQuest",
-                  "MoveQuestMeta",
-                  "NaiveActivateQuest",
-                  "ActivateQuestMeta",
-                  "NaivePickupQuest",
-                  "NaiveDropQuest",
-                  "PickupQuestMeta",
-                  "DrinkQuest",
-                  "ExamineQuest",
-                  "FireFurnaceMeta",
-                  "CollectQuestMeta",
-                  "WaitQuest"
-                  "NaiveDropQuest",
-                  "DropQuestMeta",
-                  "NaiveMurderQuest",
-                ]
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "NaiveDropQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest" "NaiveDropQuest",
+            "DropQuestMeta",
+            "NaiveMurderQuest",
+        ]
 
-        character.inventory.append(Tumbler(None,None,creator=self))
-        character.inventory.append(BackTracker(None,None,creator=self))
+        character.inventory.append(Tumbler(None, None, creator=self))
+        character.inventory.append(BackTracker(None, None, creator=self))
         character.faction = "monster"
 
         def splitCommand(newCommand):
             splittedCommand = []
             for char in newCommand:
-                    splittedCommand.append(char)
+                splittedCommand.append(char)
             return splittedCommand
 
         character.macroState["macros"]["WALKTo"] = splitCommand("$=aa$=ww$=ss$=dd")
@@ -82,12 +90,14 @@ class Spawner(src.items.Item):
         character.macroState["macros"]["_a"] = splitCommand("_RANDOMWALk")
         character.macroState["macros"]["m"] = splitCommand("ijj_GOTOTREe")
 
-        character.macroState["commandKeyQueue"] = [("_",[]),("m",[])]
+        character.macroState["commandKeyQueue"] = [("_", []), ("m", [])]
         character.satiation = 100000
-        self.container.addCharacter(character,self.xPosition+1,self.yPosition)
+        self.container.addCharacter(character, self.xPosition + 1, self.yPosition)
 
-        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+100,creator=self)
-        event.setCallback({"container":self,"method":"spawn"})
+        event = src.events.RunCallbackEvent(
+            src.gamestate.gamestate.tick + 100, creator=self
+        )
+        event.setCallback({"container": self, "method": "spawn"})
         self.terrain.addEvent(event)
 
         self.charges -= 1
@@ -98,6 +108,9 @@ item: Spawner
 
 description:
 spawner with %s charges
-"""%(self.charges)
+""" % (
+            self.charges
+        )
+
 
 src.items.addType(Spawner)

@@ -1,5 +1,6 @@
 import src
 
+
 class ReactionChamber_2(src.items.Item):
     type = "ReactionChamber_2"
 
@@ -8,36 +9,40 @@ class ReactionChamber_2(src.items.Item):
         super().__init__(display=src.canvas.displayChars.reactionChamber)
         self.name = "reactionChamber_2"
 
-    def apply(self,character):
+    def apply(self, character):
 
         coalFound = None
         flaskFound = None
 
-        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
-            for item in self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)]:
+        if (self.xPosition - 1, self.yPosition) in self.room.itemByCoordinates:
+            for item in self.room.itemByCoordinates[
+                (self.xPosition - 1, self.yPosition)
+            ]:
                 if item.type in "Coal":
                     coalFound = item
                 if item.type in "GooFlask" and item.uses == 100:
                     flaskFound = item
 
         if not coalFound or not flaskFound:
-            character.addMessage("reagents not found. place coal and a full goo flask to the left/west")
+            character.addMessage(
+                "reagents not found. place coal and a full goo flask to the left/west"
+            )
             return
 
         self.room.removeItem(coalFound)
         self.room.removeItem(flaskFound)
 
         explosive = Explosive(creator=self)
-        explosive.xPosition = self.xPosition+1
+        explosive.xPosition = self.xPosition + 1
         explosive.yPosition = self.yPosition
         explosive.bolted = False
 
         byProduct = FireCrystals(creator=self)
         byProduct.xPosition = self.xPosition
-        byProduct.yPosition = self.yPosition+1
+        byProduct.yPosition = self.yPosition + 1
         byProduct.bolted = False
 
-        self.room.addItems([byProduct,explosive])
+        self.room.addItems([byProduct, explosive])
 
     def getLongInfo(self):
 
@@ -47,5 +52,6 @@ A raction chamber. It is used to mix chemicals together.
 
 """
         return text
+
 
 src.items.addType(ReactionChamber_2)

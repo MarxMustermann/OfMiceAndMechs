@@ -1,5 +1,6 @@
 import src
 
+
 class Bush(src.items.Item):
     type = "Bush"
 
@@ -10,10 +11,9 @@ class Bush(src.items.Item):
 
         self.walkable = False
         self.charges = 10
-        self.attributesToStore.extend([
-               "charges"])
+        self.attributesToStore.extend(["charges"])
 
-    def apply(self,character):
+    def apply(self, character):
         if self.charges > 10:
             new = itemMap["EncrustedBush"](creator=self)
             new.xPosition = self.xPosition
@@ -32,7 +32,7 @@ class Bush(src.items.Item):
             self.destroy()
 
     def getLongInfo(self):
-        return "charges: %s"%(self.charges)
+        return "charges: %s" % (self.charges)
 
     def getLongInfo(self):
         return """
@@ -51,5 +51,6 @@ If you can eat it to gain 5 satiation.
         new.yPosition = self.yPosition
         self.container.addItems([new])
         super().destroy(generateSrcap=False)
+
 
 src.items.addType(Bush)

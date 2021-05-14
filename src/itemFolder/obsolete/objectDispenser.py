@@ -1,14 +1,17 @@
 import src
 
-'''
+"""
 a vending machine basically
 bad code: currently only dispenses goo flasks
-'''
+"""
+
+
 class ObjectDispenser(src.items.Item):
     type = "ObjectDispenser"
 
-    '''
-    '''
+    """
+    """
+
     def __init__(self):
         super().__init__(display=src.canvas.displayChars.objectDispenser)
         self.name = "object dispenser"
@@ -19,14 +22,15 @@ class ObjectDispenser(src.items.Item):
             self.storage.append(src.items.itemMap["GooFlask"]())
             counter += 1
 
-    '''
+    """
     drop goo flask
-    '''
+    """
+
     def dispenseObject(self):
         if len(self.storage):
             new = self.storage.pop()
             new.xPosition = self.xPosition
-            new.yPosition = self.yPosition+1
+            new.yPosition = self.yPosition + 1
             self.room.addItems([new])
         else:
             src.logger.debugMessages.append("the object dispenser is empty")
@@ -42,5 +46,6 @@ You can use it to retrieve an object from the object dispenser.
 
 """
         return text
+
 
 src.items.addType(ObjectDispenser)

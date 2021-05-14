@@ -1,5 +1,6 @@
 import src
 
+
 class BluePrintingArtwork(src.items.Item):
     type = "BluePrintingArtwork"
 
@@ -8,7 +9,7 @@ class BluePrintingArtwork(src.items.Item):
 
         self.name = "blueprinting artwork"
 
-    def apply(self,character):
+    def apply(self, character):
         self.character = character
         self.submenue = src.interaction.InputMenu("input menue")
         self.character.macroState["submenue"] = self.submenue
@@ -16,15 +17,16 @@ class BluePrintingArtwork(src.items.Item):
         return
 
     def createBlueprint(self):
-        if not self.submenue.text in itemMap:
+        if self.submenue.text not in itemMap:
             self.character.addMessage("item not found")
             return
         new = BluePrint()
         new.setToProduce(self.submenue.text)
-        new.xPosition = self.xPosition+1
+        new.xPosition = self.xPosition + 1
         new.yPosition = self.yPosition
         new.bolted = False
 
         self.room.addItems([new])
+
 
 src.items.addType(BluePrintingArtwork)

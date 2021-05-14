@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
-#####################################################################################################################
-###
-##      load environment and start the games main loop
-#       basically nothing to see here
-#       if you are a first time visitor, interaction.py, story.py and gamestate.py are probably better files to start with
-#
-#####################################################################################################################
+"""
+load environment and start the games main loop
+basically nothing to see here
+if you are a first time visitor, interaction.py, story.py and gamestate.py are probably better files to start with
+"""
 
 # import basic libs
 import sys
@@ -15,6 +13,7 @@ import time
 
 # import basic internal libs
 import src.items as items
+
 items.setup()
 import src.quests as quests
 import src.rooms as rooms
@@ -38,26 +37,34 @@ import config.names as names
 
 # parse arguments
 import argparse
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--phase", type=str, help="the phase to start in")
 parser.add_argument("--unicode", action="store_true", help="force fallback encoding")
 parser.add_argument("-d", "--debug", action="store_true", help="enable debug mode")
-parser.add_argument("-t", "--tiles", action="store_true", help="spawn a tile based view of the map (requires pygame)")
+parser.add_argument(
+    "-t",
+    "--tiles",
+    action="store_true",
+    help="spawn a tile based view of the map (requires pygame)",
+)
 parser.add_argument("--nourwid", action="store_true", help="do not show shell based")
 parser.add_argument("-ts", "--tileSize", type=int, help="the base size of tiles")
 parser.add_argument("-T", "--terrain", type=str, help="select the terrain")
 parser.add_argument("-s", "--seed", type=str, help="select the seed of a new game")
 parser.add_argument("--multiplayer", action="store_true", help="activate multiplayer")
 parser.add_argument("--load", action="store_true", help="load")
-parser.add_argument("-S", "--speed", type=int, help="set the speed of the game to a fixed speed")
+parser.add_argument(
+    "-S", "--speed", type=int, help="set the speed of the game to a fixed speed"
+)
 parser.add_argument("-sc", "--scenario", type=str, help="set the scenario to run")
 args = parser.parse_args()
 
-##################################################################################################################################
-###
-##        switch scenarios
+################################################################################
 #
-##################################################################################################################################
+#         switch scenarios
+#
+################################################################################
 
 # load the gamestate
 loaded = False
@@ -76,21 +83,42 @@ else:
 if not shouldLoad:
     if not args.scenario:
         scenarios = [
-                        ("story1","story mode (old+broken)",),
-                        ("story2","story mode (new)",),
-                        ("siege","siege",),
-                        ("survival","survival",),
-                        ("creative","creative mode",),
-                        ("dungeon","dungeon",),
-                    ]
+            (
+                "story1",
+                "story mode (old+broken)",
+            ),
+            (
+                "story2",
+                "story mode (new)",
+            ),
+            (
+                "siege",
+                "siege",
+            ),
+            (
+                "survival",
+                "survival",
+            ),
+            (
+                "creative",
+                "creative mode",
+            ),
+            (
+                "dungeon",
+                "dungeon",
+            ),
+        ]
 
         text = "\n"
         counter = 0
         for scenario in scenarios:
-            text += "%s: %s\n"%(counter,scenario[1],)
+            text += "%s: %s\n" % (
+                counter,
+                scenario[1],
+            )
             counter += 1
 
-        scenarioNum = input("select scenario (type number)\n\n%s\n\n"%(text,))
+        scenarioNum = input("select scenario (type number)\n\n%s\n\n" % (text,))
         scenario = scenarios[int(scenarioNum)][0]
     else:
         scenario = args.scenario
@@ -127,17 +155,20 @@ if args.seed:
     seed = int(args.seed)
 else:
     import random
-    seed = random.randint(1,100000)
+
+    seed = random.randint(1, 100000)
 
 if args.nourwid:
     interaction.nourwid = True
 
     import src.pseudoUrwid
+
     interaction.urwid = src.pseudoUrwid
     interaction.setUpNoUrwid()
 else:
     interaction.nourwid = False
     import urwid
+
     interaction.urwid = urwid
     interaction.setUpUrwid()
 
@@ -155,22 +186,24 @@ if shouldLoad:
         loaded = gamestate.gamestate.load()
         seed = gamestate.gamestate.initialSeed
     except Exception as e:
-        ignore = input("error in gamestate, could not load gamestate completely. Abort and show error message? (Y/n)")
+        ignore = input(
+            "error in gamestate, could not load gamestate completely. Abort and show error message? (Y/n)"
+        )
         if not ignore.lower() == "n":
             raise e
 mainChar = gamestate.gamestate.mainChar
 
-##################################################################################################################################
-###
-##        some stuff that is somehow needed but slated for removal
+################################################################################
 #
-#################################################################################################################################
+#         some stuff that is somehow needed but slated for removal
+#
+################################################################################
 
 interaction.setFooter()
 
 ##########################################
-###
-## set up the terrain
+#
+#  set up the terrain
 #
 ##########################################
 
@@ -225,13 +258,21 @@ if not args.debug and not interaction.submenue and not loaded:
     press space to continue
 
 """
-    openingCinematic = cinematics.TextCinematic(text,rusty=True,scrolling=True)
-    cinematics.cinematicQueue.insert(0,openingCinematic)
+    openingCinematic = cinematics.TextCinematic(text, rusty=True, scrolling=True)
+    cinematics.cinematicQueue.insert(0, openingCinematic)
     gamestate.gamestate.openingCinematic = openingCinematic
-    gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
-    gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
-    gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
-    gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(0,(".",["norecord"]))
+    gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(
+        0, (".", ["norecord"])
+    )
+    gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(
+        0, (".", ["norecord"])
+    )
+    gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(
+        0, (".", ["norecord"])
+    )
+    gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(
+        0, (".", ["norecord"])
+    )
 else:
     gamestate.gamestate.openingCinematic = None
 
@@ -247,14 +288,15 @@ if not loaded:
 if args.tiles:
     # spawn tile based rendered window
     import pygame
+
     pygame.init()
-    pygame.key.set_repeat(200,20)
+    pygame.key.set_repeat(200, 20)
     if args.tileSize:
         interaction.tileSize = args.tileSize
     else:
         interaction.tileSize = 10
-    pydisplay = pygame.display.set_mode((1200, 700),pygame.RESIZABLE)
-    pygame.display.set_caption('Of Mice and Mechs')
+    pydisplay = pygame.display.set_mode((1200, 700), pygame.RESIZABLE)
+    pygame.display.set_caption("Of Mice and Mechs")
     pygame.display.update()
     interaction.pygame = pygame
     interaction.pydisplay = pydisplay
@@ -271,13 +313,12 @@ else:
     interaction.multiplayer = False
     interaction.fixesTicks = False
 
-######################################################################################################
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
-######################################################################################################
-###
-##    main loop is started here
+
+################################################################################
 #
-######################################################################################################
+#     main loop is started here
+#
+################################################################################
 
 # start the interaction loop of the underlying library
 if not args.nourwid:
@@ -286,10 +327,10 @@ if not args.nourwid:
 
 if args.nourwid:
     while 1:
-        interaction.gameLoop(None,None)
+        interaction.gameLoop(None, None)
 
 # print death messages
 if gamestate.gamestate.mainChar.dead:
     print("you died.")
     if gamestate.gamestate.mainChar.deathReason:
-        print("Cause of death:\n"+gamestate.gamestate.mainChar.deathReason)
+        print("Cause of death:\n" + gamestate.gamestate.mainChar.deathReason)

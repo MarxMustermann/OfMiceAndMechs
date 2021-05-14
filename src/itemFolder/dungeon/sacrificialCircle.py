@@ -1,5 +1,6 @@
 import src
 
+
 class SaccrificialCircle(src.items.Item):
     type = "SaccrificialCircle"
 
@@ -13,7 +14,7 @@ class SaccrificialCircle(src.items.Item):
         self.level = 1
         self.uses = 2
 
-    def apply(self,character):
+    def apply(self, character):
         foundItem = None
         for item in character.inventory:
             if item.type == "Corpse":
@@ -33,10 +34,14 @@ class SaccrificialCircle(src.items.Item):
 
     def render(self):
         if self.uses == 2:
-            return (src.interaction.urwid.AttrSpec("#aaf","black"),"&°")
+            return (src.interaction.urwid.AttrSpec("#aaf", "black"), "&°")
         elif self.uses == 1:
-            return [(src.interaction.urwid.AttrSpec("#aaf","black"),"&"),(src.interaction.urwid.AttrSpec("#f00","black"),"°")]
+            return [
+                (src.interaction.urwid.AttrSpec("#aaf", "black"), "&"),
+                (src.interaction.urwid.AttrSpec("#f00", "black"), "°"),
+            ]
         else:
-            return (src.interaction.urwid.AttrSpec("#f00","black"),"&°")
+            return (src.interaction.urwid.AttrSpec("#f00", "black"), "&°")
+
 
 src.items.addType(SaccrificialCircle)

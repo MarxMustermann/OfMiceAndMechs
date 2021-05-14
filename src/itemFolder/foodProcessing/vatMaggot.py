@@ -1,13 +1,16 @@
 import src
 
-'''
-'''
+"""
+"""
+
+
 class VatMaggot(src.items.Item):
     type = "VatMaggot"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
+    """
+
     def __init__(self):
         super().__init__(display=src.canvas.displayChars.vatMaggot)
         self.name = "vat maggot"
@@ -15,9 +18,10 @@ class VatMaggot(src.items.Item):
         self.bolted = False
         self.walkable = True
 
-    '''
-    '''
-    def apply(self,character,resultType=None):
+    """
+    """
+
+    def apply(self, character, resultType=None):
 
         # remove resources
         character.addMessage("you consume the vat maggot")
@@ -31,13 +35,13 @@ class VatMaggot(src.items.Item):
         else:
             if self in character.inventory:
                 character.inventory.remove(self)
-        if (src.gamestate.gamestate.tick%5 == 0):
+        if src.gamestate.gamestate.tick % 5 == 0:
             character.addMessage("you wretch")
             character.satiation -= 25
             character.frustration += 75
             character.addMessage("you wretch from eating a vat magot")
 
-        super().apply(character,silent=True)
+        super().apply(character, silent=True)
 
     def getLongInfo(self):
         text = """
@@ -50,5 +54,5 @@ Can be processed into bio mass by a maggot fermenter.
 """
         return text
 
-src.items.addType(VatMaggot)
 
+src.items.addType(VatMaggot)

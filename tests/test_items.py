@@ -1,8 +1,8 @@
 import unittest
 import src
 
-class TestBasicTerrainFunction(unittest.TestCase):
 
+class TestBasicTerrainFunction(unittest.TestCase):
     def setUp(self):
         src.items.displayChars = src.canvas.DisplayMapping("pureASCII")
         src.rooms.displayChars = src.canvas.DisplayMapping("pureASCII")
@@ -33,7 +33,7 @@ class TestBasicTerrainFunction(unittest.TestCase):
                 item.xPosition = 1
                 item.yPosition = 1
                 room.addItems([item])
-                room.addCharacter(char,2,1)
+                room.addCharacter(char, 2, 1)
 
                 item.apply(char)
 
@@ -46,7 +46,7 @@ class TestBasicTerrainFunction(unittest.TestCase):
                 item.xPosition = 127
                 item.yPosition = 112
                 terrain.addItems([item])
-                terrain.addCharacter(char,128,112)
+                terrain.addCharacter(char, 128, 112)
 
                 item.apply(char)
 
@@ -58,5 +58,6 @@ class TestBasicTerrainFunction(unittest.TestCase):
                 char.inventory.append(item)
                 item.apply(char)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

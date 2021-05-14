@@ -1,11 +1,12 @@
 import src
 
+
 class StaticMover(src.items.Item):
     type = "StaticMover"
 
     def __init__(self):
         super().__init__(display=src.canvas.displayChars.forceField2)
-        
+
         self.name = "static spark"
 
         self.walkable = False
@@ -13,10 +14,10 @@ class StaticMover(src.items.Item):
         self.strength = 1
         self.energy = 1
 
-    def apply(self,character):
+    def apply(self, character):
         staticSpark = None
         for item in character.inventory:
-            if isinstance(item,StaticSpark) and item.strength >= self.strength:
+            if isinstance(item, StaticSpark) and item.strength >= self.strength:
                 if not staticSpark or staticSpark.strength > item.strength:
                     staticSpark = item
 
@@ -27,8 +28,9 @@ class StaticMover(src.items.Item):
 
         character.inventory.remove(item)
         self.container.removeItem(self)
-        character.addMessage("you use a static spark on the static wall and it dissapears")
-
+        character.addMessage(
+            "you use a static spark on the static wall and it dissapears"
+        )
 
     def getLongInfo(self):
         return """
@@ -40,6 +42,9 @@ Moves towards you and leeches your energy
 energy:
 %s
 
-"""%(self.energy)
+""" % (
+            self.energy
+        )
+
 
 src.items.addType(StaticMover)

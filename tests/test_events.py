@@ -1,8 +1,8 @@
 import unittest
 import src
 
-class TestBasicTerrainFunction(unittest.TestCase):
 
+class TestBasicTerrainFunction(unittest.TestCase):
     def setUp(self):
         pass
 
@@ -10,5 +10,6 @@ class TestBasicTerrainFunction(unittest.TestCase):
         for eventType in src.events.eventMap.values():
             event = eventType(10)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

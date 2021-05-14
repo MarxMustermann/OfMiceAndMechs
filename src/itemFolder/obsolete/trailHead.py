@@ -1,5 +1,6 @@
 import src
 
+
 class TrailHead(src.items.Item):
     type = "TrailHead"
 
@@ -17,5 +18,6 @@ item: TrailHead
 description:
 You can use it to create paths
 """
+
 
 src.items.addType(TrailHead)

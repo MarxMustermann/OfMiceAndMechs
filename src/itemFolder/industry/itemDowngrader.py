@@ -1,5 +1,6 @@
 import src
 
+
 class ItemDowngrader(src.items.Item):
     type = "ItemDowngrader"
 
@@ -7,24 +8,26 @@ class ItemDowngrader(src.items.Item):
         super().__init__(display="ID")
         self.name = "item downgrader"
 
-    def apply(self,character):
+    def apply(self, character):
         if not self.room:
             character.addMessage("this machine can only be used within rooms")
             return
-        if self.xPosition == None:
+        if self.xPosition is None:
             character.addMessage("this machine has to be placed to be used")
             return
 
         inputItem = None
-        if (self.xPosition-1,self.yPosition) in self.room.itemByCoordinates:
-            inputItem = self.room.itemByCoordinates[(self.xPosition-1,self.yPosition)][0]
+        if (self.xPosition - 1, self.yPosition) in self.room.itemByCoordinates:
+            inputItem = self.room.itemByCoordinates[
+                (self.xPosition - 1, self.yPosition)
+            ][0]
 
         if not inputItem:
             character.addMessage("place item to downgrade on the left")
             return
 
-        if not hasattr(inputItem,"level"):
-            character.addMessage("cannot downgrade %s"%(inputItem.type))
+        if not hasattr(inputItem, "level"):
+            character.addMessage("cannot downgrade %s" % (inputItem.type))
             return
 
         if inputItem.level == 1:
@@ -32,26 +35,44 @@ class ItemDowngrader(src.items.Item):
             return
 
         targetFull = False
-        if (self.xPosition+1,self.yPosition) in self.room.itemByCoordinates:
+        if (self.xPosition + 1, self.yPosition) in self.room.itemByCoordinates:
             if inputItem.walkable:
-                if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 15:
+                if (
+                    len(
+                        self.room.itemByCoordinates[
+                            (self.xPosition + 1, self.yPosition)
+                        ]
+                    )
+                    > 15
+                ):
                     targetFull = True
-                for item in self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]:
+                for item in self.room.itemByCoordinates[
+                    (self.xPosition + 1, self.yPosition)
+                ]:
                     if item.walkable == False:
                         targetFull = True
             else:
-                if len(self.room.itemByCoordinates[(self.xPosition+1,self.yPosition)]) > 1:
+                if (
+                    len(
+                        self.room.itemByCoordinates[
+                            (self.xPosition + 1, self.yPosition)
+                        ]
+                    )
+                    > 1
+                ):
                     targetFull = True
 
         if targetFull:
-            character.addMessage("the target area is full, the machine does not produce anything")
+            character.addMessage(
+                "the target area is full, the machine does not produce anything"
+            )
             return
 
         self.room.removeItem(inputItem)
 
         inputItem.level -= 1
-        character.addMessage("%s downgraded"%(inputItem.type,))
-        inputItem.xPosition = self.xPosition+1
+        character.addMessage("%s downgraded" % (inputItem.type,))
+        inputItem.xPosition = self.xPosition + 1
         inputItem.yPosition = self.yPosition
         self.room.addItems([inputItem])
 

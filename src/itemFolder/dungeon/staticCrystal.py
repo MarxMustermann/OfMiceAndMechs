@@ -1,5 +1,6 @@
 import src
 
+
 class StaticCrystal(src.items.Item):
     type = "StaticCrystal"
 
@@ -10,8 +11,9 @@ class StaticCrystal(src.items.Item):
         self.walkable = False
         self.bolted = False
 
-    def apply(self,character):
+    def apply(self, character):
         self.character.addMessage("you break reality")
-        1/0
+        1 / 0
+
 
 src.items.addType(StaticCrystal)

@@ -1,15 +1,18 @@
 import src
 
-'''
-'''
+"""
+"""
+
+
 class Sheet(src.items.Item):
     type = "Sheet"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
-    def __init__(self,name="sheet",noId=False):
-        super().__init__(display=src.canvas.displayChars.sheet,name=name)
+    """
+
+    def __init__(self, name="sheet", noId=False):
+        super().__init__(display=src.canvas.displayChars.sheet, name=name)
 
         self.bolted = False
         self.walkable = True
@@ -18,8 +21,7 @@ class Sheet(src.items.Item):
 
         self.level = 1
 
-        self.attributesToStore.extend([
-                "recording","level"])
+        self.attributesToStore.extend(["recording", "level"])
 
     def getLongInfo(self):
         text = """
@@ -49,25 +51,30 @@ This is a level %s item
 
 %s
 
-"""%(self.level,self.type,)
+""" % (
+            self.level,
+            self.type,
+        )
         return text
 
-    def apply(self,character):
+    def apply(self, character):
         if self.recording:
             self.createCommand()
             return
 
-        if isinstance(character,src.characters.Monster):
+        if isinstance(character, src.characters.Monster):
             return
 
         self.character = character
 
         options = []
-        options.append(("createCommand","create a written command"))
-        options.append(("createNote","create a note"))
-        options.append(("createMap","create a map"))
-        options.append(("createJobOrder","create a job order"))
-        self.submenue = src.interaction.SelectionMenu("What do you want do do?",options)
+        options.append(("createCommand", "create a written command"))
+        options.append(("createNote", "create a note"))
+        options.append(("createMap", "create a map"))
+        options.append(("createJobOrder", "create a job order"))
+        self.submenue = src.interaction.SelectionMenu(
+            "What do you want do do?", options
+        )
         self.character.macroState["submenue"] = self.submenue
         self.character.macroState["submenue"].followUp = self.actionSwitch
 
@@ -82,13 +89,15 @@ This is a level %s item
             self.createJobOrder()
 
     def createNote(self):
-        self.submenue = src.interaction.InputMenu("type the text you want to write on the note")
+        self.submenue = src.interaction.InputMenu(
+            "type the text you want to write on the note"
+        )
         self.character.macroState["submenue"] = self.submenue
         self.character.macroState["submenue"].followUp = self.createNoteItem
 
     def createNoteItem(self):
 
-        note = Note(self.xPosition,self.yPosition, creator=self)
+        note = Note(self.xPosition, self.yPosition, creator=self)
         note.setText(self.submenue.text)
 
         if self.xPosition:
@@ -104,7 +113,7 @@ This is a level %s item
 
     def createMapItem(self):
 
-        mapItem = Map(self.xPosition,self.yPosition, creator=self)
+        mapItem = Map(self.xPosition, self.yPosition, creator=self)
 
         if self.xPosition:
             if self.room:
@@ -119,7 +128,7 @@ This is a level %s item
 
     def createJobOrder(self):
 
-        jobOrder = JobOrder(self.xPosition,self.yPosition, creator=self)
+        jobOrder = JobOrder(self.xPosition, self.yPosition, creator=self)
 
         if self.xPosition:
             if self.room:
@@ -138,33 +147,48 @@ This is a level %s item
             return
 
         if not len(self.character.macroState["macros"]):
-            self.character.addMessage("no macro found - record a macro to be able to write a command")
-        
+            self.character.addMessage(
+                "no macro found - record a macro to be able to write a command"
+            )
+
         if self.recording:
             convertedCommand = []
-            convertedCommand.append(("-",["norecord"]))
-            self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+            convertedCommand.append(("-", ["norecord"]))
+            self.character.macroState["commandKeyQueue"] = (
+                convertedCommand + self.character.macroState["commandKeyQueue"]
+            )
 
-            if not "a" in self.character.macroState["macros"]:
-                self.character.addMessage("no macro found in buffer \"a\"")
+            if "a" not in self.character.macroState["macros"]:
+                self.character.addMessage('no macro found in buffer "a"')
                 return
 
             if self.xPosition:
-                self.character.macroState["macros"]["a"] = self.character.macroState["macros"]["a"][:-1]
+                self.character.macroState["macros"]["a"] = self.character.macroState[
+                    "macros"
+                ]["a"][:-1]
             else:
                 counter = 1
                 while not self.character.macroState["macros"]["a"][-counter] == "i":
                     counter += 1
-                self.character.macroState["macros"]["a"] = self.character.macroState["macros"]["a"][:-counter]
+                self.character.macroState["macros"]["a"] = self.character.macroState[
+                    "macros"
+                ]["a"][:-counter]
             self.storeMacro("a")
             self.recording = False
             del self.character.macroState["macros"]["a"]
             return
 
         options = []
-        options.append(("record","start recording (records to buffer + reapply to create command)"))
-        options.append(("store","store macro from memory"))
-        self.submenue = src.interaction.SelectionMenu("select how to get the commands content",options)
+        options.append(
+            (
+                "record",
+                "start recording (records to buffer + reapply to create command)",
+            )
+        )
+        options.append(("store", "store macro from memory"))
+        self.submenue = src.interaction.SelectionMenu(
+            "select how to get the commands content", options
+        )
         self.character.macroState["submenue"] = self.submenue
         self.character.macroState["submenue"].followUp = self.storeSelect
 
@@ -177,33 +201,36 @@ This is a level %s item
     def recordAndstore(self):
         self.recording = True
         convertedCommand = []
-        convertedCommand.append(("-",["norecord"]))
-        convertedCommand.append(("a",["norecord"]))
-        self.character.macroState["commandKeyQueue"] = convertedCommand + self.character.macroState["commandKeyQueue"]
+        convertedCommand.append(("-", ["norecord"]))
+        convertedCommand.append(("a", ["norecord"]))
+        self.character.macroState["commandKeyQueue"] = (
+            convertedCommand + self.character.macroState["commandKeyQueue"]
+        )
 
     def storeFromMacro(self):
         self.recording = True
 
         options = []
-        for key,value in self.character.macroState["macros"].items():
+        for key, value in self.character.macroState["macros"].items():
             compressedMacro = ""
             for keystroke in value:
                 if len(keystroke) == 1:
                     compressedMacro += keystroke
                 else:
-                    compressedMacro += "/"+keystroke+"/"
-            options.append((key,key+" - "+compressedMacro))
+                    compressedMacro += "/" + keystroke + "/"
+            options.append((key, key + " - " + compressedMacro))
 
-        self.submenue = src.interaction.SelectionMenu("select the macro you want to store",options)
+        self.submenue = src.interaction.SelectionMenu(
+            "select the macro you want to store", options
+        )
         self.character.macroState["submenue"] = self.submenue
         self.character.macroState["submenue"].followUp = self.storeMacro
 
-
-    def storeMacro(self,key=None):
+    def storeMacro(self, key=None):
         if not key:
             key = self.submenue.selection
 
-        if not key in self.character.macroState["macros"]:
+        if key not in self.character.macroState["macros"]:
             self.character.addMessage("command not found in macro")
             return
 
@@ -213,10 +240,11 @@ This is a level %s item
         self.character.addMessage("you created a written command")
 
         if self.container:
-            self.container.addItem(command,self.getPosition())
+            self.container.addItem(command, self.getPosition())
             self.container.removeItem(self)
         else:
             self.character.inventory.append(command)
             self.character.inventory.remove(self)
+
 
 src.items.addType(Sheet)

@@ -1,19 +1,19 @@
-#########################################################################################
-###
-##      special non standard math belongs here
-#       bad code: pathfindind doesn't really belong here
-#       bad code: the whole file is obsolete probably
-#
-#########################################################################################
+"""
+special non standard math belongs here
+bad code: pathfindind doesn't really belong here
+bad code: the whole file is obsolete probably
+"""
 
 import src.interaction
 
-'''
+"""
 remove loops from a path
 bad pattern: path should be generated in such a way this is not needed
-'''
+"""
+
+
 def removeLoops(path):
-    # count the amount of occourances of each position in the path
+    # count the amount of occurrences of each position in the path
     found = {}
     for waypoint in path:
         if waypoint in found:
@@ -21,7 +21,7 @@ def removeLoops(path):
         else:
             found[waypoint] = 1
 
-    # copy path till the first position that's occours more than once
+    # copy path till the first position that's occurs more than once
     newPath = []
     brokeAt = None
     for waypoint in path:
@@ -32,16 +32,16 @@ def removeLoops(path):
             break
 
     if brokeAt:
-        # get last ocourance of the first duplicate waypoint
+        # get last occurrence of the first duplicate waypoint
         # bad code: non intuitive exception handling
         try:
             lastIndex = 0
             while True:
-                lastIndex = path.index(waypoint,lastIndex+1)
+                lastIndex = path.index(waypoint, lastIndex + 1)
         except ValueError as e:
             pass
 
-        # copy the path after the last occourance of the cutoff position
+        # copy the path after the last occurrence of the cutoff position
         # bad code: should be using extend or something
         counter = lastIndex
         pathLen = len(path)
@@ -49,79 +49,84 @@ def removeLoops(path):
             newPath.append(path[counter])
             counter += 1
 
-        # recusivly remove remaining loops
+        # recursively remove remaining loops
         newPath = removeLoops(newPath)
 
     return newPath
 
-'''
+
+"""
 naively calculate a path uses a precalcated standard path to speed up 
 bad code: this assumes no obstacles resulting in bugs and odd workarounds. So this should not be used really.
 bad code: alternative implementations exist but not everywhere yet
-'''
-def calculatePath(startX,startY,endX,endY,walkingPath):
+"""
+
+
+def calculatePath(startX, startY, endX, endY, walkingPath):
     # get path with loops
-    path = calculatePathRaw(startX,startY,endX,endY,walkingPath)
+    path = calculatePathRaw(startX, startY, endX, endY, walkingPath)
 
     # remove loops
     return removeLoops(path)
 
-'''
+
+"""
 recusively calcualate a unoptimized path
-'''
-def calculatePathRaw(startX,startY,endX,endY,walkingPath):
+"""
+
+
+def calculatePathRaw(startX, startY, endX, endY, walkingPath):
     path = []
 
-    if None in (startX,startY,endX,endY):
+    if None in (startX, startY, endX, endY):
         if src.interaction.debug:
             raise Exception("calculating path with broken start or endpoints")
         return []
 
     # stop recursion at exit condition
-    if (startX == endX and startY == endY):
+    if startX == endX and startY == endY:
         return []
 
     # add hardcoded solution to the real easy cases
-    if (startX == endX+1 and startY == endY):
-        return [(endX,endY)]
-    if (startX == endX-1 and startY == endY):
-        return [(endX,endY)]
-    if (startX == endX and startY == endY+1):
-        return [(endX,endY)]
-    if (startX == endX and startY == endY-1):
-        return [(endX,endY)]
+    if startX == endX + 1 and startY == endY:
+        return [(endX, endY)]
+    if startX == endX - 1 and startY == endY:
+        return [(endX, endY)]
+    if startX == endX and startY == endY + 1:
+        return [(endX, endY)]
+    if startX == endX and startY == endY - 1:
+        return [(endX, endY)]
 
     # bad code: this code doesn't actually do anything
     # bug: this code should select whether or not the path is looped
     circlePath = True
-    if (startY > 11 and not startX==endX):
+    if startY > 11 and not startX == endX:
         circlePath = True
-    elif (startY < 11):
+    elif startY < 11:
         circlePath = True
 
-    
     # calculate movement on the default path
-    if (startX,startY) in walkingPath and (endX,endY) in walkingPath:
+    if (startX, startY) in walkingPath and (endX, endY) in walkingPath:
         # get the start/end indices
         # bad code: should use a build in function to find indices
         startIndex = None
         index = 0
         for wayPoint in walkingPath:
-            if wayPoint == (startX,startY):
+            if wayPoint == (startX, startY):
                 startIndex = index
             index += 1
         endIndex = None
         index = 0
         for wayPoint in walkingPath:
-            if wayPoint == (endX,endY):
+            if wayPoint == (endX, endY):
                 endIndex = index
             index += 1
 
         # extract and return the correct part of the default path
-        distance = startIndex-endIndex
+        distance = startIndex - endIndex
         if distance > 0:
             if circlePath:
-                if distance < len(walkingPath)/2:
+                if distance < len(walkingPath) / 2:
                     # use the path between start and end staying within the path
                     result = []
                     result.extend(reversed(walkingPath[endIndex:startIndex]))
@@ -130,7 +135,7 @@ def calculatePathRaw(startX,startY,endX,endY,walkingPath):
                     # use the path between start and end connecting over the ends of the path
                     result = []
                     result.extend(walkingPath[startIndex:])
-                    result.extend(walkingPath[:endIndex+1])
+                    result.extend(walkingPath[: endIndex + 1])
                     return result
             else:
                 # bad code: impossible to reach
@@ -139,9 +144,9 @@ def calculatePathRaw(startX,startY,endX,endY,walkingPath):
                 return result
         else:
             if circlePath:
-                if (-distance) <= len(walkingPath)/2:
+                if (-distance) <= len(walkingPath) / 2:
                     # use the path between start and end staying within the path
-                    return walkingPath[startIndex+1:endIndex+1]
+                    return walkingPath[startIndex + 1: endIndex + 1]
                 else:
                     # use the path between start and end connecting over the ends of the path
                     result = []
@@ -150,94 +155,116 @@ def calculatePathRaw(startX,startY,endX,endY,walkingPath):
                     return result
             else:
                 # bad code: impossible to reach
-                return walkingPath[startIndex+1:endIndex+1]
+                return walkingPath[startIndex + 1: endIndex + 1]
 
     # calculate movement to the default path
-    elif (endX,endY) in walkingPath:
+    elif (endX, endY) in walkingPath:
         # select the nearest waypoint
         nearestPoint = None
         lowestDistance = None
         for waypoint in walkingPath:
-            distance = abs(waypoint[0]-startX)+abs(waypoint[1]-startY)
-            if lowestDistance == None or lowestDistance > distance:
+            distance = abs(waypoint[0] - startX) + abs(waypoint[1] - startY)
+            if lowestDistance is None or lowestDistance > distance:
                 lowestDistance = distance
                 nearestPoint = waypoint
 
-        if (endX,endY) == nearestPoint:
+        if (endX, endY) == nearestPoint:
             # break recursion if this is already shortest path
             pass
         else:
             # stitch path together from recursive calculation
             result = []
-            result.extend(calculatePathRaw(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
-            result.extend(calculatePathRaw(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
+            result.extend(
+                calculatePathRaw(
+                    startX, startY, nearestPoint[0], nearestPoint[1], walkingPath
+                )
+            )
+            result.extend(
+                calculatePathRaw(
+                    nearestPoint[0], nearestPoint[1], endX, endY, walkingPath
+                )
+            )
             return result
 
-    # calculate movement from the default path 
-    elif (startX,startY) in walkingPath:
+    # calculate movement from the default path
+    elif (startX, startY) in walkingPath:
         # select the nearest waypoint
         nearestPoint = None
         lowestDistance = None
         for waypoint in walkingPath:
-            distance = abs(waypoint[0]-endX)+abs(waypoint[1]-endY)
-            if lowestDistance == None or lowestDistance > distance:
+            distance = abs(waypoint[0] - endX) + abs(waypoint[1] - endY)
+            if lowestDistance is None or lowestDistance > distance:
                 lowestDistance = distance
                 nearestPoint = waypoint
 
-        if (startX,startY) == nearestPoint:
+        if (startX, startY) == nearestPoint:
             # break recursion if this is already shortest path
             pass
         else:
             # stitch path together from recursive calculation
             result = []
-            result.extend(calculatePathRaw(startX,startY,nearestPoint[0],nearestPoint[1],walkingPath))
-            result.extend(calculatePathRaw(nearestPoint[0],nearestPoint[1],endX,endY,walkingPath))
+            result.extend(
+                calculatePathRaw(
+                    startX, startY, nearestPoint[0], nearestPoint[1], walkingPath
+                )
+            )
+            result.extend(
+                calculatePathRaw(
+                    nearestPoint[0], nearestPoint[1], endX, endY, walkingPath
+                )
+            )
             return result
 
-    # split calcualtion into to - within - from default path
+    # split calculation into to - within - from default path
     else:
         path = []
         startPoint = None
         lowestDistance = None
         for waypoint in walkingPath:
-            distance = abs(waypoint[0]-startX)+abs(waypoint[1]-startY)
-            if lowestDistance == None or lowestDistance > distance:
+            distance = abs(waypoint[0] - startX) + abs(waypoint[1] - startY)
+            if lowestDistance is None or lowestDistance > distance:
                 lowestDistance = distance
                 startPoint = waypoint
 
         endPoint = None
         lowestDistance = None
         for waypoint in walkingPath:
-            distance = abs(waypoint[0]-endX)+abs(waypoint[1]-endY)
-            if lowestDistance == None or lowestDistance > distance:
+            distance = abs(waypoint[0] - endX) + abs(waypoint[1] - endY)
+            if lowestDistance is None or lowestDistance > distance:
                 lowestDistance = distance
                 endPoint = waypoint
 
         # stitch path together from recursive calculation
-        path.extend(calculatePathRaw(startX,startY,startPoint[0],startPoint[1],walkingPath))
-        path.extend(calculatePathRaw(startPoint[0],startPoint[1],endPoint[0],endPoint[1],walkingPath))
-        path.extend(calculatePathRaw(endPoint[0],endPoint[1],endX,endY,walkingPath))
-        
-        return path            
+        path.extend(
+            calculatePathRaw(startX, startY, startPoint[0], startPoint[1], walkingPath)
+        )
+        path.extend(
+            calculatePathRaw(
+                startPoint[0], startPoint[1], endPoint[0], endPoint[1], walkingPath
+            )
+        )
+        path.extend(calculatePathRaw(endPoint[0], endPoint[1], endX, endY, walkingPath))
+
+        return path
 
     # get the distance vector
-    diffX = startX-endX
-    diffY = startY-endY
-        
+    diffX = startX - endX
+    diffY = startY - endY
+
     # walk the distance vector
     while (not diffX == 0) or (not diffY == 0):
-            if (diffX<0):
-                startX += 1
-                diffX  += 1
-            elif (diffX>0):
-                startX -= 1
-                diffX  -= 1
-            elif (diffY<0):
-                startY += 1
-                diffY  += 1
-            elif (diffY>0):
-                startY -= 1
-                diffY  -= 1
-            path.append((startX,startY))
+        if diffX < 0:
+            startX += 1
+            diffX += 1
+        elif diffX > 0:
+            startX -= 1
+            diffX -= 1
+        elif diffY < 0:
+            startY += 1
+            diffY += 1
+        elif diffY > 0:
+            startY -= 1
+            diffY -= 1
+        path.append((startX, startY))
 
     return path

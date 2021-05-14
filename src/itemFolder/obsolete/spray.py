@@ -1,17 +1,20 @@
 import src
 
-'''
+"""
 steam sprayer used as a prop in the vat
-'''
+"""
+
+
 class Spray(src.items.Item):
     type = "Spray"
 
-    '''
+    """
     call superclass constructor with modified parameters and set some state
-    '''
-    def __init__(self,direction=None):
-        # skin acording to spray direction
-        if direction == None:
+    """
+
+    def __init__(self, direction=None):
+        # skin according to spray direction
+        if direction is None:
             direction = "left"
 
         self.direction = direction
@@ -19,14 +22,13 @@ class Spray(src.items.Item):
         super().__init__(display=src.canvas.displayChars.spray_left_inactive)
         self.name = "spray"
 
-        # set up meta information for saveing
-        self.attributesToStore.extend([
-               "direction"])
+        # set up meta information for saving
+        self.attributesToStore.extend(["direction"])
 
     def render(self):
-        '''
+        """
         set appearance depending on energy supply
-        '''
+        """
         if self.direction == "left":
             if self.terrain.tutorialMachineRoom.steamGeneration == 0:
                 return src.canvas.displayChars.spray_left_inactive
@@ -55,5 +57,6 @@ a boiler can be heated by a furnace to produce steam. Steam is the basis for ene
 
 """
         return text
+
 
 src.items.addType(Spray)

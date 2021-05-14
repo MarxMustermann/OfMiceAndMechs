@@ -1,58 +1,69 @@
 import src
 
-'''
+"""
 should be a display, but is abused as vehicle control
 bad code: use an actual vehicle control
-'''
+"""
+
+
 class RoomControls(src.items.Item):
     type = "RoomControls"
 
-    '''
+    """
     call superclass constructor with modified paramters
-    '''
+    """
+
     def __init__(self):
         super().__init__(display=src.canvas.displayChars.display)
         self.name = "room controls"
 
-    '''
+    """
     map player controls to room movement
-    '''
-    def apply(self,character):
-        super().apply(character,silent=True)
+    """
+
+    def apply(self, character):
+        super().apply(character, silent=True)
 
         if not self.room:
             character.addMessage("this machine can only be used within rooms")
             return
 
         # handle movement keystrokes
-        '''
+        """
         move room to north
-        '''
-        def moveNorth():
-            self.room.moveDirection("north",force=self.room.engineStrength)
-        '''
-        move room to south
-        '''
-        def moveSouth():
-            self.room.moveDirection("south",force=self.room.engineStrength)
-        '''
-        move room to west
-        '''
-        def moveWest():
-            self.room.moveDirection("west",force=self.room.engineStrength)
-        '''
-        move room to east
-        '''
-        def moveEast():
-            self.room.moveDirection("east",force=self.room.engineStrength)
+        """
 
-        if not "stealKey" in character.macroState:
+        def moveNorth():
+            self.room.moveDirection("north", force=self.room.engineStrength)
+
+        """
+        move room to south
+        """
+
+        def moveSouth():
+            self.room.moveDirection("south", force=self.room.engineStrength)
+
+        """
+        move room to west
+        """
+
+        def moveWest():
+            self.room.moveDirection("west", force=self.room.engineStrength)
+
+        """
+        move room to east
+        """
+
+        def moveEast():
+            self.room.moveDirection("east", force=self.room.engineStrength)
+
+        if "stealKey" not in character.macroState:
             character.macroState["stealKey"] = {}
 
-
-        '''
+        """
         reset key mapping
-        '''
+        """
+
         def disapply():
             del character.macroState["stealKey"][config.commandChars.move_north]
             del character.macroState["stealKey"][config.commandChars.move_south]
@@ -93,5 +104,6 @@ To stop using the room controls press j again.
 
 """
         return text
+
 
 src.items.addType(RoomControls)

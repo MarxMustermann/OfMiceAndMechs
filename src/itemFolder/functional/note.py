@@ -1,13 +1,16 @@
 import src
 
-'''
-'''
+"""
+"""
+
+
 class Note(src.items.Item):
     type = "Note"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
+    """
+
     def __init__(self):
         super().__init__(display=src.canvas.displayChars.note)
         self.name = "note"
@@ -16,29 +19,34 @@ class Note(src.items.Item):
         self.walkable = True
         self.text = ""
 
-        self.attributesToStore.extend([
-                "text"])
+        self.attributesToStore.extend(["text"])
 
     def getLongInfo(self):
 
-        text = """
+        text = (
+            """
 A Note. It has a text on it. You can activate it to read it.
 
 it holds the text:
 
-"""+self.text+"""
+"""
+            + self.text
+            + """
 
 """
+        )
         return text
 
-    def apply(self,character):
-        super().apply(character,silent=True)
+    def apply(self, character):
+        super().apply(character, silent=True)
 
-        submenue = src.interaction.OneKeystrokeMenu("the note has the text: \n\n\n%s"%(self.text,))
+        submenue = src.interaction.OneKeystrokeMenu(
+            "the note has the text: \n\n\n%s" % (self.text,)
+        )
         character.macroState["submenue"] = submenue
 
-    def setText(self,text):
+    def setText(self, text):
         self.text = text
 
-src.items.addType(Note)
 
+src.items.addType(Note)

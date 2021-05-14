@@ -1,5 +1,6 @@
 import src
 
+
 class EncrustedPoisonBush(src.items.Item):
     type = "EncrustedPoisonBush"
 
@@ -8,13 +9,15 @@ class EncrustedPoisonBush(src.items.Item):
         self.name = "encrusted poison bush"
         self.walkable = False
 
-    def apply(self,character):
+    def apply(self, character):
         if 100 > character.satiation:
             character.satiation = 0
         else:
             character.satiation -= 100
 
-        character.addMessage("you give your blood to the encrusted poison bush and loose 100 satiation")
+        character.addMessage(
+            "you give your blood to the encrusted poison bush and loose 100 satiation"
+        )
 
     def getLongInfo(self):
         return """
@@ -33,31 +36,31 @@ You can use it to loose 100 satiation.
         new.xPosition = self.xPosition
         new.yPosition = self.yPosition
         self.container.addItems([new])
-        #new.startExploding()
+        # new.startExploding()
 
         character = src.characters.Monster(creator=self)
 
         character.solvers = [
-                  "NaiveActivateQuest",
-                  "ActivateQuestMeta",
-                  "NaiveExamineQuest",
-                  "ExamineQuestMeta",
-                  "NaivePickupQuest",
-                  "PickupQuestMeta",
-                  "NaiveMurderQuest",
-                  "NaiveDropQuest",
-                ]
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaiveExamineQuest",
+            "ExamineQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "NaiveMurderQuest",
+            "NaiveDropQuest",
+        ]
 
         character.faction = "monster"
 
         def splitCommand(newCommand):
             splittedCommand = []
             for char in newCommand:
-                    splittedCommand.append(char)
+                splittedCommand.append(char)
             return splittedCommand
 
         command = "opc"
-        if src.gamestate.gamestate.tick%2:
+        if src.gamestate.gamestate.tick % 2:
             command += "$=aam$=ddm"
             command += "$=wwm$=ssm"
         else:
@@ -67,10 +70,11 @@ You can use it to loose 100 satiation.
         command += "_m"
         character.macroState["macros"]["m"] = splitCommand(command)
 
-        character.macroState["commandKeyQueue"] = [("_",[]),("m",[])]
+        character.macroState["commandKeyQueue"] = [("_", []), ("m", [])]
         character.satiation = 100
-        self.container.addCharacter(character,self.xPosition,self.yPosition)
+        self.container.addCharacter(character, self.xPosition, self.yPosition)
 
         super().destroy(generateSrcap=False)
+
 
 src.items.addType(EncrustedPoisonBush)

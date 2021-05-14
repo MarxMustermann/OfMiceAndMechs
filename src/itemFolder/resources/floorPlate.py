@@ -1,13 +1,16 @@
 import src
 
-'''
-'''
+"""
+"""
+
+
 class FloorPlate(src.items.Item):
     type = "FloorPlate"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
+    """
+
     def __init__(self):
         super().__init__(display="::")
 
@@ -27,7 +30,7 @@ Used as building material and can be used to mark paths
 
     def apply(self, character):
         self.character = character
-        #self.addText()
+        # self.addText()
         if not self.bolted:
             character.addMessage("you fix the floor plate int the ground")
             self.bolted = True
@@ -47,7 +50,10 @@ item: FloorPlate
 description:
 %s
 
-"""%(self.name)
+""" % (
+            self.name
+        )
         return text
+
 
 src.items.addType(FloorPlate)

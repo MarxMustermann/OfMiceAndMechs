@@ -1,5 +1,6 @@
 import src
 
+
 class SeededMoldFeed(src.items.Item):
     type = "SeededMoldFeed"
 
@@ -9,7 +10,7 @@ class SeededMoldFeed(src.items.Item):
         self.walkable = True
         self.bolted = False
 
-    def apply(self,character):
+    def apply(self, character):
         if not self.terrain:
             character.addMessage("this needs to be placed outside to be used")
             return
@@ -18,8 +19,13 @@ class SeededMoldFeed(src.items.Item):
         character.addMessage("you activate the seeded mold feed")
 
     def startSpawn(self):
-        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+(2*self.xPosition+3*self.yPosition+src.gamestate.gamestate.tick)%10,creator=self)
-        event.setCallback({"container":self,"method":"spawn"})
+        event = src.events.RunCallbackEvent(
+            src.gamestate.gamestate.tick
+            + (2 * self.xPosition + 3 * self.yPosition + src.gamestate.gamestate.tick)
+            % 10,
+            creator=self,
+        )
+        event.setCallback({"container": self, "method": "spawn"})
         self.terrain.addEvent(event)
 
     def spawn(self):
@@ -44,5 +50,6 @@ The seeded mold feed grows stronger then a mold spore on its own.
 
     def destroy(self, generateSrcap=True):
         super().destroy(generateSrcap=False)
+
 
 src.items.addType(SeededMoldFeed)

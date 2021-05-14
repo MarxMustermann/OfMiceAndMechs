@@ -1,13 +1,16 @@
 import src
 
-'''
-'''
+"""
+"""
+
+
 class MemoryStack(src.items.Item):
     type = "MemoryStack"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
+    """
+
     def __init__(self):
 
         self.macros = []
@@ -16,14 +19,14 @@ class MemoryStack(src.items.Item):
 
         self.name = "memory stack"
 
-        self.attributesToStore.extend([
-                "macros"])
+        self.attributesToStore.extend(["macros"])
 
-    '''
+    """
     trigger production of a player selected item
-    '''
-    def apply(self,character):
-        super().apply(character,silent=True)
+    """
+
+    def apply(self, character):
+        super().apply(character, silent=True)
 
         if not self.room:
             character.addMessage("this machine can only be used within rooms")
@@ -31,20 +34,24 @@ class MemoryStack(src.items.Item):
 
         options = []
 
-        options.append(("p","push macro on stack"))
-        options.append(("l","load/pop macro from stack"))
+        options.append(("p", "push macro on stack"))
+        options.append(("l", "load/pop macro from stack"))
 
-        self.submenue = src.interaction.SelectionMenu("what do you want to do?",options)
+        self.submenue = src.interaction.SelectionMenu(
+            "what do you want to do?", options
+        )
         character.macroState["submenue"] = self.submenue
         character.macroState["submenue"].followUp = self.doAction
 
         self.character = character
 
-    '''
-    '''
+    """
+    """
+
     def doAction(self):
 
         import copy
+
         if self.submenue.getSelection() == "p":
             self.character.addMessage("push your macro onto the memory stack")
             self.macros.append(copy.deepcopy(self.character.macroState["macros"]))
@@ -55,5 +62,6 @@ class MemoryStack(src.items.Item):
             self.character.addMessage(self.character.macroState["macros"])
         else:
             self.character.addMessage("invalid option")
+
 
 src.items.addType(MemoryStack)

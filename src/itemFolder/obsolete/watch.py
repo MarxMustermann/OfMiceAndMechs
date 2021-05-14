@@ -1,13 +1,16 @@
 import src
 
-'''
-'''
+"""
+"""
+
+
 class Watch(src.items.Item):
     type = "Watch"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
+    """
+
     def __init__(self):
         super().__init__(display=src.canvas.displayChars.watch)
 
@@ -16,8 +19,7 @@ class Watch(src.items.Item):
 
         self.name = "watch"
 
-        self.attributesToStore.extend([
-               "creationTime"])
+        self.attributesToStore.extend(["creationTime"])
 
         self.bolted = False
         self.walkable = True
@@ -26,18 +28,18 @@ class Watch(src.items.Item):
         except:
             pass
 
-    def apply(self,character):
+    def apply(self, character):
 
-        time = src.gamestate.gamestate.tick-self.creationTime
+        time = src.gamestate.gamestate.tick - self.creationTime
         while time > self.maxSize:
             self.creationTime += self.maxSize
             time -= self.maxSize
 
-        if not "t" in character.registers:
+        if "t" not in character.registers:
             character.registers["t"] = [0]
-        character.registers["t"][-1] = src.gamestate.gamestate.tick-self.creationTime
+        character.registers["t"][-1] = src.gamestate.gamestate.tick - self.creationTime
 
-        character.addMessage("it shows %s ticks"%(character.registers["t"][-1]))
+        character.addMessage("it shows %s ticks" % (character.registers["t"][-1]))
 
     def getLongInfo(self):
         text = """
@@ -46,5 +48,6 @@ Activate it to get a message with the number of ticks passed.
 Also the number of ticks will be written to the register t.
 """
         return text
+
 
 src.items.addType(Watch)

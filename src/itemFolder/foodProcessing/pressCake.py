@@ -1,13 +1,16 @@
 import src
 
-'''
-'''
+"""
+"""
+
+
 class PressCake(src.items.Item):
     type = "PressCake"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
+    """
+
     def __init__(self):
         super().__init__(display=src.canvas.displayChars.pressCake)
 
@@ -27,15 +30,17 @@ Can be processed into goo by a goo producer.
 """
         return text
 
-    '''
-    '''
-    def apply(self,character):
-        super().apply(character,silent=True)
+    """
+    """
+
+    def apply(self, character):
+        super().apply(character, silent=True)
 
         # change state
         character.satiation = 1000
         character.changed()
         self.destroy(generateSrcap=False)
         character.addMessage("you eat the press cake and gain 1000 satiation")
+
 
 src.items.addType(PressCake)

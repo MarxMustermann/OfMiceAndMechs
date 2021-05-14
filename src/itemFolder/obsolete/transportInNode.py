@@ -1,11 +1,13 @@
 import src
 
+
 class TransportInNode(src.items.Item):
     type = "TransportInNode"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
+    """
+
     def __init__(self):
         super().__init__(display="TI")
 
@@ -14,12 +16,15 @@ class TransportInNode(src.items.Item):
         self.bolted = False
         self.walkable = False
 
-    def apply(self,character):
-        if not (character.xPosition == self.xPosition and character.yPosition == self.yPosition+1):
+    def apply(self, character):
+        if not (
+            character.xPosition == self.xPosition
+            and character.yPosition == self.yPosition + 1
+        ):
             character.addMessage("item has to be activated from south")
             return
 
-        position = (self.xPosition,self.yPosition-1)
+        position = (self.xPosition, self.yPosition - 1)
         items = self.container.getItemByPosition(position)
         if not items:
             character.addMessage("no items to fetch")
@@ -34,9 +39,9 @@ class TransportInNode(src.items.Item):
     def fetchSpecialRegisterInformation(self):
         result = {}
 
-        position = (self.xPosition,self.yPosition-1)
+        position = (self.xPosition, self.yPosition - 1)
         result["NUM ITEMs"] = len(self.container.getItemByPosition(position))
         return result
 
-src.items.addType(TransportInNode)
 
+src.items.addType(TransportInNode)

@@ -17,22 +17,23 @@ class TestBasicCharacterFunction(unittest.TestCase):
             char = charType()
 
     def test_die(self):
-        self.assertEqual(self.character.dead,False)
+        self.assertEqual(self.character.dead, False)
         self.character.die()
-        self.assertEqual(self.character.dead,True)
+        self.assertEqual(self.character.dead, True)
 
     def test_hunger(self):
         self.character.satiation = 1000
         self.character.advance()
-        self.assertEqual(self.character.satiation,999)
+        self.assertEqual(self.character.satiation, 999)
 
         self.character.satiation = 1
         self.character.advance()
-        self.assertEqual(self.character.dead,False)
+        self.assertEqual(self.character.dead, False)
 
         self.character.satiation = 0
         self.character.advance()
-        self.assertEqual(self.character.dead,True)
+        self.assertEqual(self.character.dead, True)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

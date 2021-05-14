@@ -1,45 +1,106 @@
 import src
 import random
 
+
 class TradingArtwork(src.items.Item):
     type = "TradingArtwork"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
-    def __init__(self, name="trading artwork",noId=False,autoRun=True):
+    """
+
+    def __init__(self, name="trading artwork", noId=False, autoRun=True):
         self.tradingHistory = {}
 
-        super().__init__(display="TA",name=name)
+        super().__init__(display="TA", name=name)
 
-
-        self.applyOptions.extend([
-                                  ("tradeMetalBars","trade metal bars"),
-                                  ("tradeScrap","trade scrap"),
-                                  ("tradeExotics","trade excotics"),
-                                  ("tradeForWeapon","trade for weapon"),
-                                  ("tradeForArmor","trade for armor"),
-                                  ("tradeForVial","trade for vial"),
-                                  ("tradeForVial","trade for vial"),
-                                  ])
+        self.applyOptions.extend(
+            [
+                ("tradeMetalBars", "trade metal bars"),
+                ("tradeScrap", "trade scrap"),
+                ("tradeExotics", "trade excotics"),
+                ("tradeForWeapon", "trade for weapon"),
+                ("tradeForArmor", "trade for armor"),
+                ("tradeForVial", "trade for vial"),
+                ("tradeForVial", "trade for vial"),
+            ]
+        )
         self.applyMap = {
-                            "tradeMetalBars":self.tradeMetalBars,
-                            "tradeScrap":self.tradeScrap,
-                            "tradeExotics":self.tradeExotics,
-                            "tradeForWeapon":self.tradeForWeapon,
-                            "tradeForArmor":self.tradeForArmor,
-                            "tradeForVial":self.tradeForVial,
-                        }
+            "tradeMetalBars": self.tradeMetalBars,
+            "tradeScrap": self.tradeScrap,
+            "tradeExotics": self.tradeExotics,
+            "tradeForWeapon": self.tradeForWeapon,
+            "tradeForArmor": self.tradeForArmor,
+            "tradeForVial": self.tradeForVial,
+        }
 
         self.availableTrades = [
-                {"name":"trade scrap","give":[["Scrap",10],],"recieve":[["MetalBars",1],],},
-                {"name":"trade for paving","give":[["Scrap",2],],"recieve":[["Paving",1],],},
-                {"name":"trade for sheet","give":[["MetalBars",2],],"recieve":[["Sheet",1],],},
-                {"name":"trade for Scrap compactor","give":[["MetalBars",4],],"recieve":[["ScrapCompactor",1],],},
-                {"name":"trade for paving generator","give":[["MetalBars",5],],"recieve":[["PavingGenerator",1],],},
-                {"numOffered":4,"name":"trade for typed stockpile manager","give":[["MetalBars",10],],"recieve":[["TypedStockpileManager",1],],},
-                {"numOffered":4,"name":"trade for uniform stockpile manager","give":[["MetalBars",10],],"recieve":[["UniformStockpileManager",1],],},
-                ]
+            {
+                "name": "trade scrap",
+                "give": [
+                    ["Scrap", 10],
+                ],
+                "recieve": [
+                    ["MetalBars", 1],
+                ],
+            },
+            {
+                "name": "trade for paving",
+                "give": [
+                    ["Scrap", 2],
+                ],
+                "recieve": [
+                    ["Paving", 1],
+                ],
+            },
+            {
+                "name": "trade for sheet",
+                "give": [
+                    ["MetalBars", 2],
+                ],
+                "recieve": [
+                    ["Sheet", 1],
+                ],
+            },
+            {
+                "name": "trade for Scrap compactor",
+                "give": [
+                    ["MetalBars", 4],
+                ],
+                "recieve": [
+                    ["ScrapCompactor", 1],
+                ],
+            },
+            {
+                "name": "trade for paving generator",
+                "give": [
+                    ["MetalBars", 5],
+                ],
+                "recieve": [
+                    ["PavingGenerator", 1],
+                ],
+            },
+            {
+                "numOffered": 4,
+                "name": "trade for typed stockpile manager",
+                "give": [
+                    ["MetalBars", 10],
+                ],
+                "recieve": [
+                    ["TypedStockpileManager", 1],
+                ],
+            },
+            {
+                "numOffered": 4,
+                "name": "trade for uniform stockpile manager",
+                "give": [
+                    ["MetalBars", 10],
+                ],
+                "recieve": [
+                    ["UniformStockpileManager", 1],
+                ],
+            },
+        ]
 
         while len(self.availableTrades) < 15:
             if len(self.availableTrades) < 10:
@@ -49,7 +110,7 @@ class TradingArtwork(src.items.Item):
             else:
                 item = "Machine"
             dependencies = []
-            
+
             rawMaterials = src.items.rawMaterialLookup.get(item)
 
             if not rawMaterials:
@@ -59,28 +120,32 @@ class TradingArtwork(src.items.Item):
                     rawMaterials = ["Scrap"]
 
             for rawMaterial in rawMaterials:
-                dependencies.append([rawMaterial,random.randint(2,10)])
+                dependencies.append([rawMaterial, random.randint(2, 10)])
 
-            recieve = [item,1]
+            recieve = [item, 1]
             if item == "Machine":
-                if not random.randint(1,10) == 5:
-                    recieve = [item,1,random.choice(src.items.commons)]
+                if not random.randint(1, 10) == 5:
+                    recieve = [item, 1, random.choice(src.items.commons)]
                 else:
-                    recieve = [item,1,random.choice(src.items.semiCommons)]
-                    
+                    recieve = [item, 1, random.choice(src.items.semiCommons)]
 
             self.availableTrades.append(
-                    {"numOffered":random.randint(2,10),"name":"trade for %s"%(item,),"give":dependencies,"recieve":[recieve],},
-                    )
+                {
+                    "numOffered": random.randint(2, 10),
+                    "name": "trade for %s" % (item,),
+                    "give": dependencies,
+                    "recieve": [recieve],
+                },
+            )
 
-        self.attributesToStore.extend([
-           "tradingHistory"])
+        self.attributesToStore.extend(["tradingHistory"])
 
         self.setApplyOptions()
 
-    def wtf(self,trade,counter):
+    def wtf(self, trade, counter):
         def setStuff(character):
-            self.doTrade(character,trade,counter)
+            self.doTrade(character, trade, counter)
+
         return setStuff
 
     def setApplyOptions(self):
@@ -89,16 +154,26 @@ class TradingArtwork(src.items.Item):
         counter = 0
         for trade in self.availableTrades:
             counter += 1
-            self.applyOptions.append((str(counter),"%s : %s => %s"%(trade["name"],trade["give"],trade["recieve"],)))
-            self.applyMap[str(counter)] = self.wtf(trade,counter)
+            self.applyOptions.append(
+                (
+                    str(counter),
+                    "%s : %s => %s"
+                    % (
+                        trade["name"],
+                        trade["give"],
+                        trade["recieve"],
+                    ),
+                )
+            )
+            self.applyMap[str(counter)] = self.wtf(trade, counter)
 
-    def apply(self,character):
+    def apply(self, character):
         self.setApplyOptions()
         super().apply(character)
 
     def doTrade(self, character, trade, counter):
-        character.addMessage("%s"%(counter))
-        character.addMessage("should trade now %s"%(trade))
+        character.addMessage("%s" % (counter))
+        character.addMessage("should trade now %s" % (trade))
 
         allItemsFound = []
         for giveSpec in trade["give"]:
@@ -110,20 +185,20 @@ class TradingArtwork(src.items.Item):
                         break
             if not len(itemsFound) == giveSpec[1]:
                 character.addMessage(itemsFound)
-                character.addMessage("not enough %s"%(giveSpec[0],))
+                character.addMessage("not enough %s" % (giveSpec[0],))
                 return
             allItemsFound.extend(itemsFound)
 
         for itemSpec in trade["recieve"]:
-            for i in range(0,itemSpec[1]):
+            for i in range(0, itemSpec[1]):
                 item = src.items.itemMap[itemSpec[0]]()
                 if itemSpec[0] == "Machine":
                     item.setToProduce(itemSpec[2])
                 character.addToInventory(item)
         character.removeItemsFromInventory(allItemsFound)
-        character.addMessage("you did the trade %s"%(trade["name"],))
-        
-    def tradeForVial(self,character):
+        character.addMessage("you did the trade %s" % (trade["name"],))
+
+    def tradeForVial(self, character):
         flaskFound = None
         corpseFound = None
 
@@ -132,18 +207,20 @@ class TradingArtwork(src.items.Item):
                 corpseFound = item
             if item.type == "GooFlask" and item.uses == 100:
                 flaskFound = item
-        
+
         if not (flaskFound and corpseFound):
-            character.addMessage("you need a filled goo flask and a corpse to trade for a vial")
+            character.addMessage(
+                "you need a filled goo flask and a corpse to trade for a vial"
+            )
             return
 
-        character.removeItemsFromInventory([flaskFound,corpseFound])
+        character.removeItemsFromInventory([flaskFound, corpseFound])
         item = src.items.itemMap["Vial"]()
         item.uses = 2
         character.addToInventory(item)
         character.addMessage("you trade a goo flask and a corpse for a vial")
 
-    def tradeExotics(self,character):
+    def tradeExotics(self, character):
         itemsFound = []
         for item in character.inventory:
             if item.type in self.tradingHistory:
@@ -156,13 +233,15 @@ class TradingArtwork(src.items.Item):
             itemNew.uses = 100
             character.inventory.append(itemNew)
 
-            character.addMessage("you traded a %s for 1 filled goo flask"%(item.type,))
+            character.addMessage(
+                "you traded a %s for 1 filled goo flask" % (item.type,)
+            )
 
         character.removeItemsFromInventory(itemsFound)
 
-    def tradeForWeapon(self,character):
-        foundItems = character.searchInventory("GooFlask",{"uses":100})
-        
+    def tradeForWeapon(self, character):
+        foundItems = character.searchInventory("GooFlask", {"uses": 100})
+
         if not len(foundItems):
             character.addMessage("no filled GooFlasks in inventory")
             return
@@ -183,11 +262,17 @@ class TradingArtwork(src.items.Item):
 
         character.addToInventory(weapon)
 
-        character.addMessage("you traded %s filled goo flasks for weapon basedamage %s"%(quality,weapon.baseDamage,))
+        character.addMessage(
+            "you traded %s filled goo flasks for weapon basedamage %s"
+            % (
+                quality,
+                weapon.baseDamage,
+            )
+        )
 
-    def tradeForArmor(self,character):
-        foundItems = character.searchInventory("GooFlask",{"uses":100})
-        
+    def tradeForArmor(self, character):
+        foundItems = character.searchInventory("GooFlask", {"uses": 100})
+
         if not len(foundItems):
             character.addMessage("no filled GooFlasks in inventory")
             return
@@ -208,9 +293,15 @@ class TradingArtwork(src.items.Item):
 
         character.addToInventory(armor)
 
-        character.addMessage("you traded %s filled goo flasks for armor with armorValue %s"%(quality,armor.armorValue,))
+        character.addMessage(
+            "you traded %s filled goo flasks for armor with armorValue %s"
+            % (
+                quality,
+                armor.armorValue,
+            )
+        )
 
-    def tradeScrap(self,character):
+    def tradeScrap(self, character):
         foundItems = character.searchInventory("Scrap")
 
         if len(foundItems) < 10:
@@ -225,10 +316,10 @@ class TradingArtwork(src.items.Item):
 
         character.addMessage("you traded 10 scrap for 1 metal bar")
 
-    def tradeMetalBars(self,character):
+    def tradeMetalBars(self, character):
         foundItems = []
         for item in character.inventory:
-            if isinstance(item,src.items.itemMap["MetalBars"]):
+            if isinstance(item, src.items.itemMap["MetalBars"]):
                 foundItems.append(item)
 
         if len(foundItems) < 10:
@@ -248,7 +339,10 @@ class TradingArtwork(src.items.Item):
         text = """
 tradingHistory:
 %s
-"""%(self.tradingHistory,)
+""" % (
+            self.tradingHistory,
+        )
         return text
+
 
 src.items.addType(TradingArtwork)

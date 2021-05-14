@@ -1,31 +1,46 @@
 import src
 import random
 
+
 class QuestArtwork(src.items.Item):
     type = "QuestArtwork"
 
-    '''
+    """
     call superclass constructor with modified parameters
-    '''
-    def __init__(self,xPosition=None,yPosition=None, name="quest artwork",creator=None,noId=False,autoRun=True):
-        self.tasks = [
-                ]
+    """
 
-        super().__init__("QA",xPosition,yPosition,name=name,creator=creator)
+    def __init__(
+        self,
+        xPosition=None,
+        yPosition=None,
+        name="quest artwork",
+        creator=None,
+        noId=False,
+        autoRun=True,
+    ):
+        self.tasks = []
 
-        self.applyOptions.extend([("returnQuest","return quest"),("getQuest","get quest"),])
+        super().__init__("QA", xPosition, yPosition, name=name, creator=creator)
+
+        self.applyOptions.extend(
+            [
+                ("returnQuest", "return quest"),
+                ("getQuest", "get quest"),
+            ]
+        )
         self.applyMap = {
-                            "returnQuest":self.returnQuest,
-                            "getQuest":self.getQuest,
-                        }
+            "returnQuest": self.returnQuest,
+            "getQuest": self.getQuest,
+        }
         self.numQuestsGiven = 0
 
-        self.attributesToStore.extend([
-               "numQuestsGiven",
-               ])
+        self.attributesToStore.extend(
+            [
+                "numQuestsGiven",
+            ]
+        )
 
-
-    def returnQuest(self,character):
+    def returnQuest(self, character):
         foundQuests = []
         for quest in character.quests:
             if quest.completed:
@@ -42,25 +57,28 @@ class QuestArtwork(src.items.Item):
             character.inventory.append(item)
             character.addMessage("quest reward issued: GooFlask")
 
-    def getQuest(self,character):
+    def getQuest(self, character):
         if len(character.quests) > 2:
-            character.addMessage("too many quests") 
+            character.addMessage("too many quests")
             return
 
         self.numQuestsGiven += 1
 
-        bigX = random.randint(1,13)
-        bigY = random.randint(1,13)
-        x = bigX*15+random.randint(1,13)
-        y = bigY*15+random.randint(1,13)
-        enemy = src.characters.Monster(x,y)
-        enemy.health = 10+self.numQuestsGiven+random.randint(1,100)
-        enemy.baseDamage = self.numQuestsGiven//5+random.randint(1,10)
+        bigX = random.randint(1, 13)
+        bigY = random.randint(1, 13)
+        x = bigX * 15 + random.randint(1, 13)
+        y = bigY * 15 + random.randint(1, 13)
+        enemy = src.characters.Monster(x, y)
+        enemy.health = 10 + self.numQuestsGiven + random.randint(1, 100)
+        enemy.baseDamage = self.numQuestsGiven // 5 + random.randint(1, 10)
         enemy.godMode = True
         terrain = self.getTerrain()
-        terrain.addCharacter(enemy,x,y)
+        terrain.addCharacter(enemy, x, y)
         quest = src.quests.MurderQuest2()
         quest.setTarget(enemy)
-        quest.information = "lastSeen: %s/%s"%(bigX,bigY,)
+        quest.information = "lastSeen: %s/%s" % (
+            bigX,
+            bigY,
+        )
         character.assignQuest(quest)
         character.addMessage("quest was assigned")

@@ -26,7 +26,10 @@ class MarkerBean(src.items.Item):
         render the marker
         """
         if self.activated:
-            return src.canvas.displayChars.markerBean_active
+            if src.gamestate.gamestate.tick%2 == 1:
+                return src.canvas.displayChars.markerBean_active
+            else:
+                return src.canvas.displayChars.markerBean_inactive
         else:
             return src.canvas.displayChars.markerBean_inactive
 

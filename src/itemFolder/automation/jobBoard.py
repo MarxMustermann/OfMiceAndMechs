@@ -1,6 +1,5 @@
 import src
 
-# bug!: doesn't save todos
 class JobBoard(src.items.Item):
     """
     ingame object to hold tasks and distribute tasks to characters
@@ -118,5 +117,33 @@ todo:
 """%(self.todo)
         return text
 
+    def getState(self):
+        """
+        save state and special handle stored job orders
+
+        Returns:
+            the state as dictionary
+        """
+        state = super().getState()
+
+        state["todo"] = []
+        for jobOrder in self.todo:
+            state["todo"].append(jobOrder.getState())
+
+        return state
+
+    def setState(self,state):
+        """
+        load state and special handle stored job orders
+
+        Parameters:
+            state: the state to load
+        """
+        super().setState(state)
+
+        if "todo" in state:
+            for jobOrderState in state["todo"]:
+                jobOrder = src.items.getItemFromState(jobOrderState)
+                self.todo.append(jobOrder)
 
 src.items.addType(JobBoard)

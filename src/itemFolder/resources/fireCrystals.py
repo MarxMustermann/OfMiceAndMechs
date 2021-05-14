@@ -22,7 +22,6 @@ class FireCrystals(src.items.Item):
             + 2
             + (2 * self.xPosition + 3 * self.yPosition + src.gamestate.gamestate.tick)
             % 10,
-            creator=self,
         )
         event.setCallback({"container": self, "method": "explode"})
         self.container.addEvent(event)
@@ -34,52 +33,42 @@ class FireCrystals(src.items.Item):
         if not self.xPosition or not self.yPosition:
             return
 
-        new = Explosion(creator=self)
-        new.xPosition = self.xPosition
-        new.yPosition = self.yPosition
-        self.container.addItems([new])
+        new = Explosion()
+        self.container.addItem(new,self.getPosition())
         event = src.events.RunCallbackEvent(
-            src.gamestate.gamestate.tick + 1, creator=self
+            src.gamestate.gamestate.tick + 1
         )
         event.setCallback({"container": new, "method": "explode"})
         self.container.addEvent(event)
 
-        new = Explosion(creator=self)
-        new.xPosition = self.xPosition - 1
-        new.yPosition = self.yPosition
-        self.container.addItems([new])
+        new = Explosion()
+        self.container.addItems(new,self.getPosition())
         event = src.events.RunCallbackEvent(
-            src.gamestate.gamestate.tick + 1, creator=self
+            src.gamestate.gamestate.tick + 1
         )
         event.setCallback({"container": new, "method": "explode"})
         self.container.addEvent(event)
 
-        new = Explosion(creator=self)
-        new.xPosition = self.xPosition
-        new.yPosition = self.yPosition - 1
-        self.container.addItems([new])
+        new = Explosion()
+        self.container.addItem(new,self.getPosition())
         event = src.events.RunCallbackEvent(
-            src.gamestate.gamestate.tick + 1, creator=self
+            src.gamestate.gamestate.tick + 1
         )
         event.setCallback({"container": new, "method": "explode"})
         self.container.addEvent(event)
 
-        new = Explosion(creator=self)
-        new.xPosition = self.xPosition + 1
-        new.yPosition = self.yPosition
-        self.container.addItems([new])
+        new = Explosion()
+        self.container.addItem(new,self.getPosition())
         event = src.events.RunCallbackEvent(
-            src.gamestate.gamestate.tick + 1, creator=self
+            src.gamestate.gamestate.tick + 1
         )
         event.setCallback({"container": new, "method": "explode"})
         self.container.addEvent(event)
 
-        new = Explosion(creator=self)
-        new.xPosition = self.xPosition
-        new.yPosition = self.yPosition + 1
-        self.container.addItems([new])
+        new = Explosion()
+        self.container.addItems(new,self.getPosition())
         event = src.events.RunCallbackEvent(
-            src.gamestate.gamestate.tick + 1, creator=self
+            src.gamestate.gamestate.tick + 1
         )
         event.setCallback({"container": new, "method": "explode"})
         self.container.addEvent(event)

@@ -8,21 +8,11 @@ class SimpleRunner(src.items.Item):
     call superclass constructor with modified parameters
     """
 
-    def __init__(
-        self,
-        xPosition=None,
-        yPosition=None,
-        name="SimpleRunner",
-        creator=None,
-        noId=False,
-    ):
+    def __init__(self):
         super().__init__(
-            src.canvas.displayChars.simpleRunner,
-            xPosition,
-            yPosition,
-            name=name,
-            creator=creator,
+            display=src.canvas.displayChars.simpleRunner,
         )
+        self.name = "simple runner"
         self.command = None
 
         self.attributesToStore.extend(["command"])

@@ -67,13 +67,11 @@ class CorpseShredder(src.items.Item):
         for i in range(0, corpse.charges // 100):
             if moldSpores:
                 self.room.removeItem(moldSpores.pop())
-                new = SeededMoldFeed(creator=self)
+                new = src.items.itemMap["SeededMoldFeed"]()
             else:
                 # spawn the new item
-                new = MoldFeed(creator=self)
-            new.xPosition = self.xPosition + 1
-            new.yPosition = self.yPosition
-            self.room.addItems([new])
+                new = src.items.itemMap["MoldFeed"]()
+            self.room.addItem(new,( self.xPosition + 1,self.yPosition,self.zPosition))
 
     def getLongInfo(self):
         text = """

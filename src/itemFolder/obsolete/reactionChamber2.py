@@ -29,20 +29,23 @@ class ReactionChamber_2(src.items.Item):
             )
             return
 
-        self.room.removeItem(coalFound)
-        self.room.removeItem(flaskFound)
+        self.container.removeItem(coalFound)
+        self.container.removeItem(flaskFound)
 
-        explosive = Explosive(creator=self)
+        explosive = src.items.itemMap["Explosive"]()
         explosive.xPosition = self.xPosition + 1
         explosive.yPosition = self.yPosition
         explosive.bolted = False
 
-        byProduct = FireCrystals(creator=self)
+        byProduct = src.items.itemMap["FireCrystals"]()
         byProduct.xPosition = self.xPosition
         byProduct.yPosition = self.yPosition + 1
         byProduct.bolted = False
 
-        self.room.addItems([byProduct, explosive])
+        self.room.addItems([
+                        (byProduct,(self.xPosition + 1,self.yPosition,self.zPosition)), 
+                        (explosive,(self.xPosition,self.yPosition + 1,self.zPosition)),
+                        ])
 
     def getLongInfo(self):
 

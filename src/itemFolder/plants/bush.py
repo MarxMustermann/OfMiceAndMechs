@@ -15,10 +15,8 @@ class Bush(src.items.Item):
 
     def apply(self, character):
         if self.charges > 10:
-            new = itemMap["EncrustedBush"](creator=self)
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition
-            self.container.addItems([new])
+            new = itemMap["EncrustedBush"]()
+            self.container.addItem(new,self.getPosition())
 
             self.container.removeItem(self)
 
@@ -46,10 +44,8 @@ If you can eat it to gain 5 satiation.
 """
 
     def destroy(self, generateSrcap=True):
-        new = itemMap["Coal"](creator=self)
-        new.xPosition = self.xPosition
-        new.yPosition = self.yPosition
-        self.container.addItems([new])
+        new = itemMap["Coal"]()
+        self.container.addItem(new,self.getPosition())
         super().destroy(generateSrcap=False)
 
 

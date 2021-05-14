@@ -13,7 +13,7 @@ class Boiler(src.items.Item):
     call superclass constructor with modified paramters and set some state
     """
 
-    def __init__(self, name="boiler", creator=None, noId=False):
+    def __init__(self):
         super().__init__(display=src.canvas.displayChars.boiler_inactive)
         self.isBoiling = False
         self.isHeated = False
@@ -48,7 +48,7 @@ class Boiler(src.items.Item):
         # schedule the steam generation
         if not self.startBoilingEvent and not self.isBoiling:
             # schedule the event
-            event = src.events.StartBoilingEvent(self.room.timeIndex + 5, creator=self)
+            event = src.events.StartBoilingEvent(self.room.timeIndex + 5)
             event.boiler = self
             self.room.addEvent(event)
 
@@ -73,7 +73,7 @@ class Boiler(src.items.Item):
             self.startBoilingEvent = None
         if not self.stopBoilingEvent and self.isBoiling:
 
-            event = src.events.StopBoilingEvent(self.room.timeIndex + 5, creator=self)
+            event = src.events.StopBoilingEvent(self.room.timeIndex + 5)
             event.boiler = self
             self.room.addEvent(event)
 

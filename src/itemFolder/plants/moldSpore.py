@@ -23,16 +23,13 @@ class MoldSpore(src.items.Item):
             src.gamestate.gamestate.tick
             + (2 * self.xPosition + 3 * self.yPosition + src.gamestate.gamestate.tick)
             % 10,
-            creator=self,
         )
         event.setCallback({"container": self, "method": "spawn"})
         self.terrain.addEvent(event)
 
     def spawn(self):
-        new = itemMap["Mold"](creator=self)
-        new.xPosition = self.xPosition
-        new.yPosition = self.yPosition
-        self.container.addItems([new])
+        new = itemMap["Mold"]()
+        self.container.addItem(new,self.getPosition())
         new.startSpawn()
         self.destroy(generateSrcap=False)
 

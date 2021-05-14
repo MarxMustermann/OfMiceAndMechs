@@ -97,46 +97,31 @@ This is a level %s item
 
     def createNoteItem(self):
 
-        note = Note(self.xPosition, self.yPosition, creator=self)
+        note = src.items.itemMap["Note"]()
         note.setText(self.submenue.text)
 
         if self.xPosition:
-            if self.room:
-                self.room.removeItem(self)
-                self.room.addItems([note])
-            else:
-                self.container.removeItem(self)
-                self.container.addItems([note])
+            self.container.removeItem(self)
+            self.container.addItem(note,self.getPosition())
         else:
             self.character.inventory.remove(self)
             self.character.inventory.append(note)
 
     def createMapItem(self):
-
-        mapItem = Map(self.xPosition, self.yPosition, creator=self)
-
         if self.xPosition:
-            if self.room:
-                self.room.removeItem(self)
-                self.room.addItems([mapItem])
-            else:
-                self.container.removeItem(self)
-                self.container.addItems([mapItem])
+            self.container.removeItem(self)
+            self.container.addItem(mapItem,self.getPosition())
         else:
             self.character.inventory.remove(self)
             self.character.inventory.append(mapItem)
 
     def createJobOrder(self):
 
-        jobOrder = JobOrder(self.xPosition, self.yPosition, creator=self)
+        jobOrder = src.items.itemMap["JobOrder"]()
 
         if self.xPosition:
-            if self.room:
-                self.room.removeItem(self)
-                self.room.addItems([jobOrder])
-            else:
-                self.container.removeItem(self)
-                self.container.addItems([jobOrder])
+            self.container.removeItem(self)
+            self.container.addItem(jobOrder,self.getPosition())
         else:
             self.character.inventory.remove(self)
             self.character.inventory.append(jobOrder)

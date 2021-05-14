@@ -212,7 +212,6 @@ class RoomBuilder(src.items.Item):
             self.yPosition // 15,
             self.xPosition % 15 - roomLeft,
             self.yPosition % 15 - roomTop,
-            creator=self,
         )
         room.reconfigure(roomLeft + roomRight + 1, roomTop + roomBottom + 1, items)
 

@@ -21,10 +21,8 @@ class PoisonBush(src.items.Item):
 
         if self.charges > 10:
 
-            new = itemMap["EncrustedPoisonBush"](creator=self)
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition
-            self.container.addItems([new])
+            new = itemMap["EncrustedPoisonBush"]()
+            self.container.addItem(new,self.getPosition())
 
             self.container.removeItem(self)
 
@@ -37,7 +35,7 @@ class PoisonBush(src.items.Item):
             2 * self.xPosition + 3 * self.yPosition + src.gamestate.gamestate.tick
         ) % 4
         direction = (random.randint(1, distance + 1), random.randint(1, distance + 1))
-        newPos = (self.xPosition + direction[0] - 5, self.yPosition + direction[1] - 5)
+        newPos = (self.xPosition + direction[0] - 5, self.yPosition + direction[1] - 5, self.zPosition)
 
         if (
             newPos[0] < 1
@@ -51,10 +49,8 @@ class PoisonBush(src.items.Item):
             newPos in self.container.itemByCoordinates
             and len(self.container.itemByCoordinates[newPos])
         ):
-            new = itemMap["PoisonBloom"](creator=self)
-            new.xPosition = newPos[0]
-            new.yPosition = newPos[1]
-            self.container.addItems([new])
+            new = itemMap["PoisonBloom"]()
+            self.container.addItem(new,newPos)
 
     def getLongInfo(self):
         return "poison charges: %s" % (self.charges)
@@ -71,12 +67,10 @@ You can use it to loose 100 satiation.
 """
 
     def destroy(self, generateSrcap=True):
-        new = itemMap["FireCrystals"](creator=self)
-        new.xPosition = self.xPosition
-        new.yPosition = self.yPosition
-        self.container.addItems([new])
+        new = itemMap["FireCrystals"]()
+        self.container.addItem(new,self.getPosition())
 
-        character = characters.Exploder(creator=self)
+        character = characters.Exploder()
 
         character.solvers = [
             "NaiveActivateQuest",

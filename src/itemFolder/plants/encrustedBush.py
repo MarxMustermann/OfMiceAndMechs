@@ -20,12 +20,10 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
 """
 
     def destroy(self, generateSrcap=True):
-        new = itemMap["Coal"](creator=self)
-        new.xPosition = self.xPosition
-        new.yPosition = self.yPosition
-        self.container.addItems([new])
+        new = itemMap["Coal"]()
+        self.container.addItem(new,self.getPosition())
 
-        character = src.characters.Monster(creator=self)
+        character = src.characters.Monster()
 
         character.solvers = [
             "NaiveActivateQuest",
@@ -148,10 +146,8 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
 
         if sizeX < 3 or sizeY < 3:
             if growBlock:
-                new = itemMap["EncrustedBush"](creator=self)
-                new.xPosition = growBlock.xPosition
-                new.yPosition = growBlock.yPosition
-                self.container.addItems([new])
+                new = itemMap["EncrustedBush"]()
+                self.container.addItem(new,growBlock.getPosition())
                 growBlock.container.removeItem(growBlock)
             return
 
@@ -161,7 +157,7 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
             for y in range(0, sizeY):
                 if x == 0 or y == 0 or x == sizeX - 1 or y == sizeY - 1:
                     if x == 0 and y == 1:
-                        item = Door(creator=self, bio=True)
+                        item = Door(bio=True)
                     else:
                         items = self.container.getItemByPosition(
                             (upperLeftEdge[0] + x, upperLeftEdge[1] + y)
@@ -170,16 +166,13 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
                             return
                         item = items[0]
                         item.container.removeItem(item)
-                    item.xPosition = x
-                    item.yPosition = y
-                    keepItems.append(item)
+                    keepItems.append((item,(x,y,0)))
 
         room = src.rooms.EmptyRoom(
             upperLeftEdge[0] // 15,
             upperLeftEdge[1] // 15,
             upperLeftEdge[0] % 15,
             upperLeftEdge[1] % 15,
-            creator=self,
             bio=True,
         )
         self.terrain.addRooms([room])

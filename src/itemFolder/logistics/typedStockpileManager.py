@@ -8,15 +8,7 @@ class TypedStockpileManager(src.items.Item):
     call superclass constructor with modified parameters
     """
 
-    def __init__(
-        self,
-        xPosition=None,
-        yPosition=None,
-        name="typed stockpile manager",
-        creator=None,
-        noId=False,
-    ):
-
+    def __init__(self):
         self.freeItemSlots = {}
 
         self.freeItemSlots[1] = []

@@ -12,16 +12,13 @@ class Chain(src.items.Item):
     call superclass constructor with modified paramters and set some state
     """
 
-    def __init__(
-        self, xPosition=0, yPosition=0, name="chain", creator=None, noId=False
-    ):
+    def __init__(self):
         super().__init__(
-            src.canvas.displayChars.chains,
-            xPosition,
-            yPosition,
-            name=name,
-            creator=creator,
+            display = src.canvas.displayChars.chains,
         )
+
+        self.name = "chain"
+
         self.walkable = True
         self.bolted = False
 

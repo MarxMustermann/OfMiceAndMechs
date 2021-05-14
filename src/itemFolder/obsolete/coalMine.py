@@ -52,11 +52,9 @@ class CoalMine(src.items.Item):
         character.addMessage("you mine a piece of coal")
 
         # spawn new item
-        new = Coal(creator=self)
-        new.xPosition = self.xPosition + 1
-        new.yPosition = self.yPosition
+        new = src.items.itemMap["Coal"]()
         new.bolted = False
-        self.terrain.addItems([new])
+        self.terrain.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
 
     def getLongInfo(self):
         text = """

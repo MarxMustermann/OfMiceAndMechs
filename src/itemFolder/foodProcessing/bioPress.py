@@ -72,7 +72,7 @@ Activate the bio press to produce press cake.
             self.container.removeItem(item)
 
         # spawn the new item
-        new = PressCake(creator=self)
+        new = src.items.itemMap["PressCake"]()
         self.container.addItem(
             new, (self.xPosition + 1, self.yPosition, self.zPosition)
         )

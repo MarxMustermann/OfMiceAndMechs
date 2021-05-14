@@ -143,7 +143,7 @@ class Machine(src.items.Item):
             return
 
         targetFull = False
-        new = itemMap[self.toProduce](creator=self)
+        new = src.items.itemMap[self.toProduce]()
 
         itemList = self.container.getItemByPosition(
             (self.xPosition + 1, self.yPosition, self.zPosition)
@@ -194,9 +194,7 @@ class Machine(src.items.Item):
             self.container.removeItem(item)
 
         # spawn new item
-        new = itemMap[self.toProduce](creator=self)
-        new.xPosition = self.xPosition + 1
-        new.yPosition = self.yPosition
+        new = src.items.itemMap[self.toProduce]()
         new.bolted = False
 
         if hasattr(new, "coolDown"):
@@ -206,7 +204,7 @@ class Machine(src.items.Item):
 
             new.coolDown = random.randint(new.coolDown, int(new.coolDown * 1.25))
 
-        self.container.addItems([new])
+        self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
 
         if hasattr(new, "level"):
             new.level = self.level

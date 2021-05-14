@@ -38,57 +38,47 @@ Activate it to trigger a exlosion.
         yPosition = self.yPosition
 
         if xPosition:
-            new = Explosion(creator=self)
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition
+            new = Explosion()
             new.bolted = False
-            self.container.addItems([new])
+            self.container.addItem(new,(self.xPosition,self.yPosition,self.zPosition))
             event = src.events.RunCallbackEvent(
-                src.gamestate.gamestate.tick + 1, creator=self
+                src.gamestate.gamestate.tick + 1
             )
             event.setCallback({"container": new, "method": "explode"})
             self.container.addEvent(event)
 
-            new = Explosion(creator=self)
-            new.xPosition = self.xPosition - 1
-            new.yPosition = self.yPosition
+            new = Explosion()
             new.bolted = False
-            self.container.addItems([new])
+            self.container.addItem(new,(self.xPosition-1,self.yPosition,self.zPosition))
             event = src.events.RunCallbackEvent(
-                src.gamestate.gamestate.tick + 1, creator=self
+                src.gamestate.gamestate.tick + 1
             )
             event.setCallback({"container": new, "method": "explode"})
             self.container.addEvent(event)
 
-            new = Explosion(creator=self)
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition - 1
+            new = Explosion()
             new.bolted = False
-            self.container.addItems([new])
+            self.container.addItem(new,(self.xPosition,self.yPosition-1,self.zPosition))
             event = src.events.RunCallbackEvent(
-                src.gamestate.gamestate.tick + 1, creator=self
+                src.gamestate.gamestate.tick + 1
             )
             event.setCallback({"container": new, "method": "explode"})
             self.container.addEvent(event)
 
-            new = Explosion(creator=self)
-            new.xPosition = self.xPosition + 1
-            new.yPosition = self.yPosition
+            new = Explosion()
             new.bolted = False
-            self.container.addItems([new])
+            self.container.addItem(new,(self.xPosition+1,self.yPosition,self.zPosition))
             event = src.events.RunCallbackEvent(
-                src.gamestate.gamestate.tick + 1, creator=self
+                src.gamestate.gamestate.tick + 1 
             )
             event.setCallback({"container": new, "method": "explode"})
             self.container.addEvent(event)
 
-            new = Explosion(creator=self)
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition + 1
+            new = Explosion()
             new.bolted = False
-            self.container.addItems([new])
+            self.container.addItem(new,(self.xPosition,self.yPosition+1,self.zPosition))
             event = src.events.RunCallbackEvent(
-                src.gamestate.gamestate.tick + 1, creator=self
+                src.gamestate.gamestate.tick + 1
             )
             event.setCallback({"container": new, "method": "explode"})
             self.container.addEvent(event)

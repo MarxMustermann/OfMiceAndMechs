@@ -126,12 +126,10 @@ Activate the bloom container and select the option "unload bloom" to unload the 
 
             toAdd = []
             while foundNonWalkable <= 15 and self.charges:
-                new = Bloom(creator=self)
-                new.xPosition = self.xPosition + 1
-                new.yPosition = self.yPosition
+                new = src.items.itemMap["Bloom"]()
                 new.dead = True
 
-                toAdd.append(new)
+                toAdd.append((new,(self.xPosition+1,self.yPosition,self.zPosition)))
                 self.charges -= 1
             self.container.addItems(toAdd)
 

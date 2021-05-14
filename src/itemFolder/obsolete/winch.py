@@ -12,16 +12,12 @@ class Winch(src.items.Item):
     call superclass constructor with modified paramters 
     """
 
-    def __init__(
-        self, xPosition=0, yPosition=0, name="winch", creator=None, noId=False
-    ):
+    def __init__(self):
         super().__init__(
-            src.canvas.displayChars.winch_inactive,
-            xPosition,
-            yPosition,
-            name=name,
-            creator=creator,
+            display=src.canvas.displayChars.winch_inactive,
         )
+
+        self.name = "winch"
 
     def getLongInfo(self):
         text = """

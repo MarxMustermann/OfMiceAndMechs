@@ -82,10 +82,8 @@ class Scraper(src.items.Item):
         self.room.removeItem(item)
 
         # spawn scrap
-        new = itemMap["Scrap"](self.xPosition, self.yPosition, 1, creator=self)
-        new.xPosition = self.xPosition + 1
-        new.yPosition = self.yPosition
-        self.room.addItems([new])
+        new = itemMap["Scrap"](amount=1)
+        self.room.addItems(new,(self.xPosition + 1,self.yPosition,self.zPosition))
 
     def getLongInfo(self):
         text = """

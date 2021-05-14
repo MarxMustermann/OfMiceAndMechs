@@ -13,11 +13,9 @@ class StaticShard(src.items.Item):
         self.bolted = False
 
     def apply(self, character):
-        new = RipInReality(creator=self)
-        new.xPosition = self.xPosition
-        new.yPosition = self.yPosition
+        new = src.items.itemMap["RipInReality"]()
         new.stable = True
-        self.container.addItems([new])
+        self.container.addItem(new,self.getPosition())
         self.container.removeItem(self)
 
 

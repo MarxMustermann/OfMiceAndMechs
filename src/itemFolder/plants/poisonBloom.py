@@ -21,10 +21,8 @@ class PoisonBloom(src.items.Item):
         character.die()
 
         if not self.dead:
-            new = itemMap["PoisonBush"](creator=self)
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition
-            self.container.addItems([new])
+            new = itemMap["PoisonBush"]()
+            self.container.addItem(new,self.getPosition())
 
         character.addMessage("you eat the poison bloom and die")
 

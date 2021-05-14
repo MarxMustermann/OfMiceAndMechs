@@ -194,7 +194,7 @@ class MachineMachine(src.items.Item):
             self.room.removeItem(item)
 
         # spawn new item
-        new = Machine(creator=self)
+        new = src.itemMap["Machine"]()
         new.productionLevel = self.blueprintLevels[itemType]
         new.setToProduce(itemType)
         new.xPosition = self.xPosition + 1

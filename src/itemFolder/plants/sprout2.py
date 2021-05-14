@@ -4,7 +4,7 @@ import src
 class Sprout2(src.items.Item):
     type = "Sprout2"
 
-    def __init__(self, xPosition=0, yPosition=0, creator=None, noId=False):
+    def __init__(self):
         super().__init__(display=src.canvas.displayChars.sprout2)
         self.name = "sprout2"
         self.walkable = True

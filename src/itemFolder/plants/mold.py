@@ -146,7 +146,7 @@ class Mold(src.items.Item):
                     item.container.removeItem(item)
 
                     new = src.items.itemMap["EncrustedBush"]()
-                    self.container.addItems(new, newPos)
+                    self.container.addItem(new, newPos)
 
                     new = src.items.itemMap["Bush"]()
                     self.container.addItems(new, self.getPosition())

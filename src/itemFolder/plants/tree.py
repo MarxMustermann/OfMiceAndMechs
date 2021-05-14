@@ -64,11 +64,9 @@ class Tree(src.items.Item):
 
         # spawn new item
         self.numMaggots -= 1
-        new = VatMaggot(creator=self)
-        new.xPosition = self.xPosition + 1
-        new.yPosition = self.yPosition
+        new = src.items.itemMap["VatMaggot"]()
         new.bolted = False
-        self.terrain.addItems([new])
+        self.terrain.addItem(new,(self.xPosition+1,self.yPosition,self.zPosition))
 
     def getLongInfo(self):
         self.regenerateMaggots()

@@ -11,7 +11,7 @@ class Stripe(src.items.Item):
     call superclass constructor with modified parameters
     """
 
-    def __init__(self, name="stripe", creator=None, noId=False):
+    def __init__(self, name="stripe"):
         super().__init__(display=src.canvas.displayChars.stripe, name=name)
 
         self.bolted = False

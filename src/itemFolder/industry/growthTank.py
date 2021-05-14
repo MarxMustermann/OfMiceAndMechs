@@ -116,10 +116,7 @@ class GrowthTank(src.items.Item):
             )
             character = characters.Character(
                 src.canvas.displayChars.staffCharactersByLetter[name[0].lower()],
-                self.xPosition + 1,
-                self.yPosition,
                 name=name,
-                creator=self,
             )
 
             character.solvers = [

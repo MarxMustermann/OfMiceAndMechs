@@ -130,10 +130,8 @@ class BluePrinter(src.items.Item):
 
         if reciepeFound:
             # spawn new item
-            new = BluePrint(creator=self)
+            new = src.items.itemMap["BluePrint"]()
             new.setToProduce(reciepeFound[1])
-            new.xPosition = self.xPosition + 1
-            new.yPosition = self.yPosition
             new.bolted = False
 
             targetFull = False
@@ -159,11 +157,11 @@ class BluePrinter(src.items.Item):
                 )
                 return
 
-            self.room.addItems([new])
+            self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
 
             for itemType in reciepeFound[0]:
-                self.room.removeItem(abstractedInputThings[itemType]["item"])
-            self.room.removeItem(sheet)
+                self.container.removeItem(abstractedInputThings[itemType]["item"])
+            self.container.removeItem(sheet)
             character.addMessage("you create a blueprint for " + reciepe[1])
             character.addMessage("items used: " + ", ".join(reciepeFound[0]))
         else:

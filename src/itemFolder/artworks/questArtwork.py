@@ -9,18 +9,13 @@ class QuestArtwork(src.items.Item):
     call superclass constructor with modified parameters
     """
 
-    def __init__(
-        self,
-        xPosition=None,
-        yPosition=None,
-        name="quest artwork",
-        creator=None,
-        noId=False,
-        autoRun=True,
-    ):
+    def __init__(self):
+
         self.tasks = []
 
-        super().__init__("QA", xPosition, yPosition, name=name, creator=creator)
+        super().__init__(display="QA")
+
+        self.name = "quest artwork"
 
         self.applyOptions.extend(
             [

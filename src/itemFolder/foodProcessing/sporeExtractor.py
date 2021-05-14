@@ -70,10 +70,8 @@ class SporeExtractor(src.items.Item):
 
         # spawn the new item
         for i in range(1, 5):
-            new = MoldSpore(creator=self)
-            new.xPosition = self.xPosition + 1
-            new.yPosition = self.yPosition
-            self.room.addItems([new])
+            new = src.items.itemMap["MoldSpore"]()
+            self.room.addItem(new,(self.xPosition,self.yPosition,self.zPosition))
 
     def getLongInfo(self):
         text = """

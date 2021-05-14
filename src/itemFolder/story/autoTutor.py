@@ -91,12 +91,9 @@ class AutoTutor(src.items.Item):
         else:
             # spawn scrap
             new = src.items.itemMap["Scrap"](
-                self.xPosition, self.yPosition, 1, creator=self
+                amount = 1
             )
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition + 1
-            new.amount = amount
-            self.room.addItems([new])
+            self.room.addItem(new,(self.xPosition,self.yPosition+1,self.zPosition))
             new.setWalkable()
 
         return True
@@ -222,7 +219,7 @@ class AutoTutor(src.items.Item):
                     self.blueprintChallengeDone = True
                 self.character.macroState["submenue"] = self.submenue
             elif not self.commandChallengeDone:
-                if not self.checkInInventoryOrInRoom(src.items.Command):
+                if not self.checkInInventoryOrInRoom(src.items.itemMap["Command"]):
                     self.submenue = src.interaction.TextMenu(
                         '\n\nchallenge: create command\nstatus: challenge in progress - Try again with a command in your inventory.\n\ncomment: \ncheck "information->automation->command creation" on how to record commands.\n\n'
                     )
@@ -484,11 +481,9 @@ finish 25 round (%s remaining):
                         self.character.addMessage(itemType)
 
                         self.challengeInfo["type"] = itemType
-                        newItem = JobOrder(creator=self)
-                        newItem.xPosition = self.xPosition
-                        newItem.yPosition = self.yPosition + 1
+                        newItem = src.items.itemMap["JobOrder"]()
                         newItem.tasks[-1]["toProduce"] = itemType
-                        self.container.addItems([newItem])
+                        self.container.addItems(newItem,(self.xPosition,self.yPosition+1,self.zPosition))
 
                         text += "new job order outputted on the south of the machine"
 
@@ -550,10 +545,7 @@ comment:
                         src.canvas.displayChars.staffCharactersByLetter[
                             name[0].lower()
                         ],
-                        self.xPosition + 1,
-                        self.yPosition,
                         name=name,
-                        creator=self,
                     )
 
                     newCharacter.solvers = [
@@ -655,10 +647,8 @@ comment:
                 self.knownInfos.append("food/moldfarming")
                 blooms = []
                 for i in range(0, 4):
-                    new = itemMap["MoldSpore"](creator=self)
-                    new.xPosition = self.xPosition
-                    new.yPosition = self.yPosition + 1
-                    blooms.append(new)
+                    new = itemMap["MoldSpore"]()
+                    blooms.append((new,(self.xPosition,self.yPosition+1,self.zPosition)))
                 self.container.addItems(blooms)
                 self.submenue = src.interaction.TextMenu(
                     '\n\nchallenge: gather bloom\nstatus: challenge completed.\n\nreward:\nchallenge "produce a Spore Extractor" added\nmold spores added to south/below\nnew Information option on "information->food->mold farming"\nNew blueprint reciepes for Tank + Puller\n\n'
@@ -1046,7 +1036,7 @@ comment:
                 self.knownBlueprints.append("Container")
                 self.knownBlueprints.append("BloomContainer")
 
-                newCommand = Command(creator=self)
+                newCommand = src.items.itemMap["Command"]()
                 newCommand.setPayload(
                     [
                         "o",
@@ -1246,9 +1236,7 @@ comment:
                 )
                 newCommand.extraName = "STIMULATE MOLD GROWTh"
                 newCommand.description = "using this command will make you move around and pick mold to make it grow.\nIf there are things lying around they might be activated."
-                newCommand.xPosition = self.xPosition
-                newCommand.yPosition = self.yPosition + 1
-                self.container.addItems([newCommand])
+                self.container.addItems(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
                 del self.availableChallenges["produceFilledGooDispenser"]
 
@@ -1261,7 +1249,7 @@ comment:
                 self.submenue = src.interaction.TextMenu(
                     '\n\nchallenge: produce auto scribe\nstatus: challenge completed.\nreward: "GO TO TILE CENTEr" command dropped to south/below\n\n'
                 )
-                newCommand = Command(creator=self)
+                newCommand = src.items.itemMap["Command"]()
                 newCommand.setPayload(
                     [
                         "o",
@@ -1287,16 +1275,14 @@ comment:
                 )
                 newCommand.extraName = "GO TO TILE CENTEr"
                 newCommand.description = "using this command will make you move to the center of the tile. If the path is blocked the command will not work properly."
-                newCommand.xPosition = self.xPosition
-                newCommand.yPosition = self.yPosition + 1
-                self.container.addItems([newCommand])
+                self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
                 self.availableChallenges["copyCommand"] = {"text": "copy command"}
                 del self.availableChallenges["produceAutoScribe"]
 
         elif selection == "copyCommand":  # from produceAutoScribe
             itemCount = 0
             for item in self.character.inventory + self.room.itemsOnFloor:
-                if isinstance(item, src.items.Command) and item.command == [
+                if isinstance(item, src.items.itemMap["Command"]) and item.command == [
                     "o",
                     "p",
                     "x",
@@ -1328,69 +1314,55 @@ comment:
                     "\n\nchallenge: produce auto scribe\nstatus: challenge completed.\n\n"
                 )
 
-                newCommand = Command(creator=self)
+                newCommand = src.items.itemMap["Command"]()
                 newCommand.setPayload(["%", "i", "a", "d"])
                 newCommand.extraName = "DECIDE INVENTORY EMPTY EAST WESt"
                 newCommand.description = "using this command will make you move west in case your inventory is empty and will move you east otherwise"
-                newCommand.xPosition = self.xPosition
-                newCommand.yPosition = self.yPosition + 1
-                self.container.addItems([newCommand])
+                self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
-                newCommand = Command(creator=self)
+                newCommand = src.items.itemMap["Command"]()
                 newCommand.setPayload(["%", "I", "a", "d"])
                 newCommand.extraName = "DECIDE INVENTORY FULL EAST WESt"
                 newCommand.description = "using this command will make you move west in case your inventory is completely filled and will move you east otherwise"
-                newCommand.xPosition = self.xPosition
-                newCommand.yPosition = self.yPosition + 1
-                self.container.addItems([newCommand])
+                self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
-                newCommand = Command(creator=self)
+                newCommand = src.items.itemMap["Command"]()
                 newCommand.setPayload(["w", "%", "b", "d", "s"])
                 newCommand.extraName = "DECIDE NORTH BLOCKED EAST STAy"
                 newCommand.description = "using this command will make you move east in case the field to the north is not walkable and will make you stay in place otherwise"
-                newCommand.xPosition = self.xPosition
-                newCommand.yPosition = self.yPosition + 1
-                self.container.addItems([newCommand])
+                self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
-                newCommand = Command(creator=self)
+                newCommand = src.items.itemMap["Command"]()
                 newCommand.setPayload(["w", "j"])
                 newCommand.extraName = "ACTIVATE NORTh"
                 newCommand.description = (
                     "using this command will make you activate to the north."
                 )
-                newCommand.xPosition = self.xPosition
-                newCommand.yPosition = self.yPosition + 1
-                self.container.addItems([newCommand])
+                self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
-                newCommand = Command(creator=self)
+                newCommand = src.items.itemMap["Command"]()
                 newCommand.setPayload(["s", "j"])
                 newCommand.extraName = "ACTIVATE SOUTh"
                 newCommand.description = (
                     "using this command will make you activate to the south."
                 )
-                newCommand.xPosition = self.xPosition
-                newCommand.yPosition = self.yPosition + 1
-                self.container.addItems([newCommand])
+                self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
-                newCommand = Command(creator=self)
+                newCommand = src.items.itemMap["Command"]()
                 newCommand.setPayload(["d", "j"])
                 newCommand.extraName = "ACTIVATE EASt"
                 newCommand.description = (
                     "using this command will make you activate to the east."
                 )
-                newCommand.xPosition = self.xPosition
-                newCommand.yPosition = self.yPosition + 1
-                self.container.addItems([newCommand])
+                self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
-                newCommand = Command(creator=self)
+                newCommand = src.items.itemMap["Command"]()
                 newCommand.setPayload(["a", "j"])
                 newCommand.extraName = "ACTIVATE WESt"
                 newCommand.description = (
                     "using this command will make you activate to the west."
                 )
-                newCommand.xPosition = self.xPosition
-                newCommand.yPosition = self.yPosition + 1
-                self.container.addItems([newCommand])
+                self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
                 del self.availableChallenges["copyCommand"]
 
@@ -1415,7 +1387,7 @@ comment:
                     "text": "gather sick blooms"
                 }
 
-                newCommand = Command(creator=self)
+                newCommand = src.items.itemMap["Command"]()
                 newCommand.setPayload(
                     [
                         "o",
@@ -1443,17 +1415,13 @@ comment:
                 newCommand.description = (
                     "using this command will make you go to a food source nearby."
                 )
-                newCommand.xPosition = self.xPosition
-                newCommand.yPosition = self.yPosition + 1
-                self.container.addItems([newCommand])
+                self.container.addItem(newCommand,(self.xPosition,self.yPosition,self.zPosition))
 
-                newCommand = Command(creator=self)
+                newCommand = src.items.itemMap["Command"]()
                 newCommand.setPayload(["%", "F", "a", "d"])
                 newCommand.extraName = "DECIDE FOOD NEARBY WEST EASt"
                 newCommand.description = "using this command will make you go west in case there is a food source nearby and to the east otherwise."
-                newCommand.xPosition = self.xPosition
-                newCommand.yPosition = self.yPosition + 1
-                self.container.addItems([newCommand])
+                self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
                 del self.availableChallenges["gatherSickBloom"]
 
@@ -1471,7 +1439,7 @@ comment:
                 }
                 self.knownBlueprints.append("FireCrystals")
 
-                newCommand = Command(creator=self)
+                newCommand = src.items.itemMap["Command"]()
                 newCommand.setPayload(
                     [
                         "o",
@@ -1499,17 +1467,13 @@ comment:
                 newCommand.description = (
                     "using this command will make you go to a food source nearby."
                 )
-                newCommand.xPosition = self.xPosition
-                newCommand.yPosition = self.yPosition + 1
-                self.container.addItems([newCommand])
+                self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
-                newCommand = Command(creator=self)
+                newCommand = src.items.itemMap["Command"]()
                 newCommand.setPayload(["%", "F", "a", "d"])
                 newCommand.extraName = "DECIDE FOOD NEARBY WEST EASt"
                 newCommand.description = "using this command will make you go west in case there is a food source nearby and to the east otherwise."
-                newCommand.xPosition = self.xPosition
-                newCommand.yPosition = self.yPosition + 1
-                self.container.addItems([newCommand])
+                self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
                 del self.availableChallenges["gatherCoal"]
 
@@ -1538,16 +1502,14 @@ comment:
         elif selection == "challengerExplore1":  # from gatherSickBloom
             secret = "epxplore1:-)"
             if "explore" not in self.challengeInfo["challengerGiven"]:
-                new = PortableChallenger(creator=self)
-                new.xPosition = self.xPosition
-                new.yPosition = self.yPosition + 1
+                new = src.items.itemMap["PortableChallenger"]()
                 new.secret = secret
                 new.challenges = ["3livingSickBlooms", "9livingBlooms", "fullMoldCover"]
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: explore mold\nstatus: challenge in progress. A portable challanger was outputted to the south. \nUse it and complete its challenges. Return afterwards.\n\ncomment: do not loose or destroy the challenger\n\n"
                 )
                 self.challengeInfo["challengerGiven"].append("explore")
-                self.container.addItems([new])
+                self.container.addItem(new,(self.xPosition,self.yPosition+1,self.zPosition))
             else:
                 itemFound = None
                 for item in self.character.inventory + self.room.itemsOnFloor:
@@ -1571,9 +1533,7 @@ comment:
         elif selection == "challengerGoTo1":  # from gatherSickBloom
             secret = "goto1:-)"
             if "goto" not in self.challengeInfo["challengerGiven"]:
-                new = PortableChallenger(creator=self)
-                new.xPosition = self.xPosition
-                new.yPosition = self.yPosition + 1
+                new = src.items.itemMap["PortableChallenger"]()
                 new.secret = secret
                 new.challenges = [
                     "gotoWestSouthTile",
@@ -1581,7 +1541,7 @@ comment:
                     "gotoEastNorthTile",
                     "gotoWestNorthTile",
                 ]
-                self.container.addItems([new])
+                self.container.addItem(new,(self.xPosition,self.yPosition+1,self.zPosition))
 
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: explore terrain\nstatus: challenge in progress. A portable challanger was outputted to the south. \nUse it and complete its challenges. Return afterwards.\n\n"
@@ -1608,17 +1568,15 @@ comment:
                     self.character.inventory.remove(itemFound)
                     del self.availableChallenges["challengerGoTo1"]
 
-                    newCommand = Command(creator=self)
+                    newCommand = src.items.itemMap["Command"]()
                     newCommand.setPayload(["@", "$", "=", "S", "E", "L", "F", "x", "a"])
                     newCommand.extraName = "GOTO WEST BORDEr"
                     newCommand.description = (
                         "using this command will make you go the west tile edge."
                     )
-                    newCommand.xPosition = self.xPosition
-                    newCommand.yPosition = self.yPosition + 1
-                    self.container.addItems([newCommand])
+                    self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
-                    newCommand = Command(creator=self)
+                    newCommand = src.items.itemMap["Command"]()
                     newCommand.setPayload(
                         [
                             "$",
@@ -1650,11 +1608,9 @@ comment:
                     newCommand.description = (
                         "using this command will make you go the east tile edge."
                     )
-                    newCommand.xPosition = self.xPosition
-                    newCommand.yPosition = self.yPosition + 1
-                    self.container.addItems([newCommand])
+                    self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
-                    newCommand = Command(creator=self)
+                    newCommand = src.items.itemMap["Command"]()
                     newCommand.setPayload(["@", "$", "=", "S", "E", "L", "F", "y", "w"])
                     newCommand.extraName = "GOTO NORTH BORDEr"
                     newCommand.description = (
@@ -1662,9 +1618,9 @@ comment:
                     )
                     newCommand.xPosition = self.xPosition
                     newCommand.yPosition = self.yPosition + 1
-                    self.container.addItems([newCommand])
+                    self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
-                    newCommand = Command(creator=self)
+                    newCommand = src.items.itemMap["Command"]()
                     newCommand.setPayload(
                         [
                             "$",
@@ -1696,9 +1652,7 @@ comment:
                     newCommand.description = (
                         "using this command will make you go the south tile edge."
                     )
-                    newCommand.xPosition = self.xPosition
-                    newCommand.yPosition = self.yPosition + 1
-                    self.container.addItems([newCommand])
+                    self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
         # - build growth tank
         # - build NPC
@@ -1734,7 +1688,7 @@ comment:
                     "\n\nchallenge: spawn NPC\nstatus: challenge in progress. Try with a NPC in the room.\n\n"
                 )
 
-                newCommand = Command(creator=self)
+                newCommand = src.items.itemMap["Command"]()
                 newCommand.setPayload(
                     [
                         "o",
@@ -1762,11 +1716,9 @@ comment:
                 newCommand.description = (
                     "using this command will make you go to scrap nearby."
                 )
-                newCommand.xPosition = self.xPosition
-                newCommand.yPosition = self.yPosition + 1
-                self.container.addItems([newCommand])
+                self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
-                newCommand = Command(creator=self)
+                newCommand = src.items.itemMap["Command"]()
                 newCommand.setPayload(
                     [
                         "o",
@@ -1794,9 +1746,7 @@ comment:
                 newCommand.description = (
                     "using this command will make you go to a character nearby."
                 )
-                newCommand.xPosition = self.xPosition
-                newCommand.yPosition = self.yPosition + 1
-                self.container.addItems([newCommand])
+                self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
             else:
                 self.submenue = src.interaction.TextMenu(
@@ -1813,7 +1763,7 @@ comment:
                     "\n\nchallenge: gather corpse\nstatus: challenge completed.\n\n"
                 )
 
-                newCommand = Command(creator=self)
+                newCommand = src.items.itemMap["Command"]()
                 newCommand.setPayload(
                     [
                         "o",
@@ -1841,17 +1791,13 @@ comment:
                 newCommand.description = (
                     "using this command will make you go to a corpse nearby."
                 )
-                newCommand.xPosition = self.xPosition
-                newCommand.yPosition = self.yPosition + 1
-                self.container.addItems([newCommand])
+                self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
-                newCommand = Command(creator=self)
+                newCommand = src.items.itemMap["Command"]()
                 newCommand.setPayload(["%", "M", "a", "d"])
                 newCommand.extraName = "DECIDE CORPSE EAST WESt"
                 newCommand.description = "using this command will make you move west in case a corpse is nearby and will move you east otherwise"
-                newCommand.xPosition = self.xPosition
-                newCommand.yPosition = self.yPosition + 1
-                self.container.addItems([newCommand])
+                self.container.addItem(newCommand,(self.xPosition,self.yPosition+1,self.zPosition))
 
                 del self.availableChallenges["gatherCorpse"]
 

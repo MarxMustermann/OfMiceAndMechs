@@ -54,7 +54,6 @@ class SickBloom(src.items.Item):
             src.gamestate.gamestate.tick
             + (2 * self.xPosition + 3 * self.yPosition + src.gamestate.gamestate.tick)
             % 2500,
-            creator=self,
         )
         event.setCallback({"container": self, "method": "spawn"})
         self.container.addEvent(event)
@@ -66,7 +65,7 @@ class SickBloom(src.items.Item):
         if self.dead:
             return
 
-        character = src.characters.Monster(creator=self)
+        character = src.characters.Monster()
 
         character.solvers = [
             "NaiveActivateQuest",

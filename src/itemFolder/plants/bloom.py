@@ -40,7 +40,6 @@ class Bloom(src.items.Item):
                     + src.gamestate.gamestate.tick
                 )
                 % 10000,
-                creator=self,
             )
             event.setCallback({"container": self, "method": "spawn"})
             self.container.addEvent(event)

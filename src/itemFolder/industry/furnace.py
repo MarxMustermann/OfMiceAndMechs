@@ -97,7 +97,7 @@ class Furnace(src.items.Item):
 
                 # make the furnace stop burning after some time
                 event = src.events.FurnaceBurnoutEvent(
-                    self.room.timeIndex + 30, creator=self
+                    self.room.timeIndex + 30
                 )
                 event.furnace = self
                 self.room.addEvent(event)

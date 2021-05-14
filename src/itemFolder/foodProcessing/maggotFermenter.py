@@ -72,10 +72,8 @@ class MaggotFermenter(src.items.Item):
             self.room.removeItem(item)
 
         # spawn the new item
-        new = BioMass(creator=self)
-        new.xPosition = self.xPosition + 1
-        new.yPosition = self.yPosition
-        self.room.addItems([new])
+        new = src.items.itemMap["BioMass"]()
+        self.room.addItem(new,(self.xPosition+1,self.yPosition,self.zPosition))
 
     def getLongInfo(self):
         text = """

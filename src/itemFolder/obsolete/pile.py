@@ -15,23 +15,17 @@ class Pile(src.items.Item):
 
     def __init__(
         self,
-        xPosition=0,
-        yPosition=0,
-        name="pile",
         itemType="Coal",
-        creator=None,
-        noId=False,
     ):
+
         self.contains_canBurn = True  # bad code: should be abstracted
         self.itemType = itemType
         self.numContained = 100
         super().__init__(
-            src.canvas.displayChars.pile,
-            xPosition,
-            yPosition,
-            name=name,
-            creator=creator,
+            display=src.canvas.displayChars.pile,
         )
+
+        self.name = "pile"
 
         # set metadata for saving
         self.attributesToStore.extend(["numContained"])
@@ -54,20 +48,19 @@ class Pile(src.items.Item):
             return
 
         # spawn item to inventory
-        character.inventory.append(self.itemType(creator=self))
+        character.inventory.append(src.items.itemMap[self.itemType]())
         character.changed()
-        character.addMessage("you take a piece of " + str(self.itemType.type))
+        character.addMessage("you take a piece of " + str(self.itemType))
 
         # reduce item count
         self.numContained -= 1
 
         # morph into a single item
         if self.numContained == 1:
-            self.room.removeItem(self)
-            new = self.itemType(creator=self)
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition
-            self.room.addItems([new])
+            pos = self.getPosition()
+            self.container.removeItem(self)
+            new = src.items.itemMap[self.itemType]()
+            self.container.addItem(new,pos)
 
         super().apply(character, silent=True)
 

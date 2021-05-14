@@ -103,7 +103,7 @@ class HiveMind(src.items.Item):
 
         if character.inventory and character.inventory[-1].type == "Scrap":
             character.inventory.pop()
-            character.inventory.append(Coal(creator=self))
+            character.inventory.append(Coal())
 
         numItems = 0
         for item in reversed(character.inventory):
@@ -128,9 +128,7 @@ class HiveMind(src.items.Item):
                 selfReplace = True
 
         if selfReplace:
-            new = CommandBloom(creator=self)
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition
+            new = src.items.itemMap["CommandBloom"]()
             new.faction = self.faction
 
             directions = []
@@ -337,7 +335,7 @@ class HiveMind(src.items.Item):
             if movementCommand:
                 command += movementCommand
 
-            new = CommandBloom(creator=self)
+            new = src.items.itemMap["CommandBloom"]()
             self.charges -= 1
             new.faction = self.faction
 
@@ -363,7 +361,7 @@ class HiveMind(src.items.Item):
             command += "9kjjjilj.j"
 
             if self.charges > 10:
-                new2 = CommandBloom(creator=self)
+                new2 = src.items.itemMap["CommandBloom"]()
                 new2.masterCommand = new.masterCommand
                 new2.faction = self.faction
                 character.inventory.append(new2)
@@ -417,10 +415,8 @@ class HiveMind(src.items.Item):
             convertedCommand.append((item, ["norecord"]))
 
         if selfDestroy:
-            new = FireCrystals(creator=self)
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition
-            self.container.addItems([new])
+            new = src.items.itemMap["FireCrystals"]()
+            self.container.addItem(new,self.getPosition())
             self.container.removeItem(self)
             direction = random.choice(["w", "a", "s", "d"])
             reverseDirection = {"a": "d", "w": "s", "d": "a", "s": "w"}
@@ -461,7 +457,7 @@ class HiveMind(src.items.Item):
         (movementCommand, secondToLastNode) = self.calculateMovementUsingPaths(target)
         command = movementCommand
 
-        new = CommandBloom(creator=self)
+        new = src.items.itemMap["CommandBloom"]()
         character.inventory.insert(0, new)
         self.charges -= 1
         command += "9kjjjilj.lj"

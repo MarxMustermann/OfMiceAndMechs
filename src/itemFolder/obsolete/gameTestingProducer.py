@@ -103,11 +103,9 @@ class GameTestingProducer(src.items.Item):
         self.room.removeItem(item)
 
         # spawn new item
-        new = self.product(creator=self)
-        new.xPosition = self.xPosition + 1
-        new.yPosition = self.yPosition
+        new = self.product()
         new.bolted = False
-        self.room.addItems([new])
+        self.room.addItem(new,self.getPosition())
 
         super().apply(character, silent=True)
 

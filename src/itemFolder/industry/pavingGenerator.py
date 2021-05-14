@@ -8,14 +8,16 @@ class PavingGenerator(src.items.Item):
     call superclass constructor with modified parameters
     """
 
-    def __init__(self, name="paving generator", creator=None, noId=False):
+    def __init__(self):
         self.coolDown = 100
         self.coolDownTimer = -self.coolDown
         self.charges = 3
         self.level = 1
         self.commands = {}
 
-        super().__init__(display="PG", name=name)
+        super().__init__(display="PG")
+
+        self.name = "paving generator"
 
         self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges", "level"])
 

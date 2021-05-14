@@ -90,14 +90,10 @@ class Drill(src.items.Item):
                     item.amount += 1
                 else:
                     # spawn new item
-                    new = itemMap["Scrap"](
-                        self.xPosition, self.yPosition, 1, creator=self
-                    )
-                    new.xPosition = self.xPosition
-                    new.yPosition = self.yPosition + 1
+                    new = itemMap["Scrap"]( amount = 1)
                     new.bolted = False
 
-                    self.terrain.addItems([new])
+                    self.terrain.addItem(new,(self.xPosition,self.yPosition+1,self.zPosition))
 
                 self.isCleaned = True
 
@@ -158,9 +154,7 @@ class Drill(src.items.Item):
             src.items.itemMap["Scrap"],
         ]
         productIndex = src.gamestate.gamestate.tick % len(possibleProducts)
-        new = possibleProducts[productIndex](
-            self.xPosition, self.yPosition, creator=self
-        )
+        new = possibleProducts[productIndex]()
         new.xPosition = self.xPosition + 1
         new.yPosition = self.yPosition
         new.bolted = False
@@ -192,7 +186,7 @@ class Drill(src.items.Item):
         if new.type == "Scrap" and foundScrap:
             foundScrap.amount += new.amount
         else:
-            self.terrain.addItems([new])
+            self.terrain.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
 
         self.isBroken = True
         self.isCleaned = False

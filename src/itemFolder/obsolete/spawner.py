@@ -26,7 +26,7 @@ class Spawner(src.items.Item):
 
         if self.charges:
             event = src.events.RunCallbackEvent(
-                src.gamestate.gamestate.tick + 100, creator=self
+                src.gamestate.gamestate.tick + 100
             )
             event.setCallback({"container": self, "method": "spawn"})
             self.terrain.addEvent(event)
@@ -37,10 +37,7 @@ class Spawner(src.items.Item):
 
         character = characters.Character(
             src.canvas.displayChars.staffCharactersByLetter["a".lower()],
-            self.xPosition + 1,
-            self.yPosition,
             name="a",
-            creator=self,
         )
 
         character.solvers = [
@@ -62,8 +59,8 @@ class Spawner(src.items.Item):
             "NaiveMurderQuest",
         ]
 
-        character.inventory.append(Tumbler(None, None, creator=self))
-        character.inventory.append(BackTracker(None, None, creator=self))
+        character.inventory.append(Tumbler())
+        character.inventory.append(BackTracker())
         character.faction = "monster"
 
         def splitCommand(newCommand):
@@ -95,7 +92,7 @@ class Spawner(src.items.Item):
         self.container.addCharacter(character, self.xPosition + 1, self.yPosition)
 
         event = src.events.RunCallbackEvent(
-            src.gamestate.gamestate.tick + 100, creator=self
+            src.gamestate.gamestate.tick + 100
         )
         event.setCallback({"container": self, "method": "spawn"})
         self.terrain.addEvent(event)

@@ -151,15 +151,13 @@ class CommandBloom(src.items.Item):
                         command = "j"
 
                     if self.numCommandBlooms > 2:
-                        new = HiveMind(creator=self)
+                        new = src.items.itemMap["HiveMind"]()
                         new.createdAt = src.gamestate.gamestate.tick
-                        new.xPosition = self.xPosition
-                        new.yPosition = self.yPosition
                         new.territory.append((new.xPosition // 15, new.yPosition // 15))
                         new.paths[(new.xPosition // 15, new.yPosition // 15)] = []
                         new.faction = self.faction
                         self.container.removeItem(self)
-                        self.container.addItems([new])
+                        self.container.addItem(new,self.getPosition())
                 index += 1
             for item in removeItems:
                 character.inventory.remove(item)
@@ -653,7 +651,7 @@ class CommandBloom(src.items.Item):
                             newCommand += str(direction[0]) + "d"
                         newCommand += "l20j2000."
                         newChar = self.runCommandOnNewCrawler(newCommand)
-                        newChar.inventory.append(Coal(creator=self))
+                        newChar.inventory.append(src.items.itemMap["Coal"]())
                         self.numCoal -= 1
                         break
                     else:
@@ -781,10 +779,8 @@ class CommandBloom(src.items.Item):
             selfDestroy = True
 
         if selfDestroy:
-            new = FireCrystals(creator=self)
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition
-            self.container.addItems([new])
+            new = src.items.itemMap["FireCrystals"]()
+            self.container.addItems(new.self.getPosition())
             self.container.removeItem(self)
             direction = random.choice(["w", "a", "s", "d"])
             reverseDirection = {"a": "d", "w": "s", "d": "a", "s": "w"}
@@ -810,7 +806,7 @@ class CommandBloom(src.items.Item):
     def runCommandOnNewCrawler(self, newCommand):
         if not self.numSick:
             return
-        newCharacter = src.characters.Monster(creator=self)
+        newCharacter = src.characters.Monster()
 
         newCharacter.solvers = [
             "NaiveActivateQuest",

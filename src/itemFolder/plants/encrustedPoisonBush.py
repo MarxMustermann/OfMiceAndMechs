@@ -32,13 +32,11 @@ You can use it to loose 100 satiation.
 """
 
     def destroy(self, generateSrcap=True):
-        new = itemMap["FireCrystals"](creator=self)
-        new.xPosition = self.xPosition
-        new.yPosition = self.yPosition
-        self.container.addItems([new])
+        new = itemMap["FireCrystals"]()
+        self.container.addItem(new,self.getPosition())
         # new.startExploding()
 
-        character = src.characters.Monster(creator=self)
+        character = src.characters.Monster()
 
         character.solvers = [
             "NaiveActivateQuest",

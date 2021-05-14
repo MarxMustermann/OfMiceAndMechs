@@ -25,11 +25,9 @@ class SparkPlug(src.items.Item):
             return
 
         character.inventory.remove(item)
-        newItem = RipInReality(creator=self)
-        newItem.xPosition = self.xPosition
-        newItem.yPosition = self.yPosition
+        newItem = src.items.itemMap["RipInReality"]()
         newItem.depth = self.strength
-        self.container.addItems([newItem])
+        self.container.addItem(newItem,self.getPosition())
         self.container.removeItem(self)
 
 

@@ -71,21 +71,19 @@ class AutoScribe(src.items.Item):
 
         # spawn new item
         if itemFound.type == "Command":
-            new = Command(creator=self)
+            new = src.items.itemMap["Command"]()
             new.command = itemFound.command
         elif itemFound.type == "Note":
-            new = Note(creator=self)
+            new = src.items.itemMap["Note"]()
             new.text = itemFound.text
         elif itemFound.type == "BluePrint":
-            new = BluePrint(creator=self)
+            new = src.items.itemMap["BluePrint"]()
             new.setToProduce(itemFound.endProduct)
         elif itemFound.type == "JobOrder":
-            new = JobOrder(creator=self)
+            new = src.items.itemMap["JobOrder"]()
             new.macro = itemFound.macro
             new.command = itemFound.command
             new.toProduce = itemFound.toProduce
-        new.xPosition = self.xPosition + 1
-        new.yPosition = self.yPosition
         new.bolted = False
 
         if itemFound.type == "Command":
@@ -130,10 +128,8 @@ class AutoScribe(src.items.Item):
             )
             return
 
-        self.room.addItems([new])
-        itemFound.xPosition = self.xPosition
-        itemFound.yPosition = self.yPosition + 1
-        self.room.addItems([itemFound])
+        self.room.addItem(new,(self.xPosition+1,self.yPosition,self.zPosition))
+        self.room.addItem(itemFound,(self.xPosition,self.yPosition+1,self.zPosition))
 
     def getLongInfo(self):
         text = """

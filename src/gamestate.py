@@ -256,14 +256,15 @@ class GameState(src.saveing.Saveable):
 
     def getState(self):
         # generate simple state
-        state = {}
-        state["currentPhase"] = self.currentPhase.getState()
-        state["tick"] = self.tick
-        state["gameWon"] = self.gameWon
-        state["initialSeed"] = self.initialSeed
-        state["macros"] = self.macros
+        state = {
+            "currentPhase": self.currentPhase.getState(),
+            "tick": self.tick,
+            "gameWon": self.gameWon,
+            "initialSeed": self.initialSeed,
+            "macros": self.macros,
+            "terrainMap": [],
+        }
 
-        state["terrainMap"] = []
         for line in self.terrainMap:
             newLine = []
             for item in line:
@@ -286,9 +287,7 @@ class GameState(src.saveing.Saveable):
         state["mainChar"] = mainCharState
 
         # generate the cinematics
-        cinematicStorage = {}
-        cinematicStorage["ids"] = []
-        cinematicStorage["states"] = {}
+        cinematicStorage = {"ids": [], "states": {}}
         for cinematic in src.cinematics.cinematicQueue:
             if cinematic == self.openingCinematic:
                 continue

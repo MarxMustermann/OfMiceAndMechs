@@ -361,7 +361,7 @@ class Room(src.saveing.Saveable):
                 or item.yPosition == 0
                 or item.xPosition == self.sizeX
                 or item.yPosition == self.sizeY
-            ) and not (item.xPosition, item.yPosition) in self.walkingAccess:
+            ) and (item.xPosition, item.yPosition) not in self.walkingAccess:
                 self.open = True
                 self.walkingAccess.append((item.xPosition, item.yPosition))
             random.choice(self.itemsOnFloor).destroy()
@@ -495,7 +495,7 @@ class Room(src.saveing.Saveable):
         # move room to correct position
         xPosition = None
         yPosition = None
-        if "xPosition" in state and not "yPosition" in state:
+        if "xPosition" in state and "yPosition" not in state:
             xPosition = state["xPosition"]
             yPosition = self.yPosition
         if "xPosition" in state and "yPosition" not in state:
@@ -580,7 +580,7 @@ class Room(src.saveing.Saveable):
         if "characterIds" in state:
             for charId in state["characterIds"]:
                 charState = state["characterStates"][charId]
-                if "xPosition" in charState or not "yPosition" not in charState:
+                if "xPosition" in charState or "yPosition" not in charState:
                     continue
                 char = src.characters.Character()
                 char.setState(charState)
@@ -2812,7 +2812,7 @@ XXXXXXXXXX
 
         # go main path to secondary path
         tmpDstX = dstX
-        if dstX in (2, 5, 8, 3, 6) and not dstY in (1, 2):
+        if dstX in (2, 5, 8, 3, 6) and dstY not in (1, 2):
             if dstX in (2, 5, 8):
                 tmpDstX = dstX - 1
             elif dstX in (3, 6):

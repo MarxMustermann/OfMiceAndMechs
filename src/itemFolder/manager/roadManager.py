@@ -64,7 +64,7 @@ class RoadManager(src.items.Item):
                     break
                     raise Exception  # pathfinding loop
 
-                if node == tuple(self.center) or not node in self.centerDirection:
+                if node == tuple(self.center) or node not in self.centerDirection:
                     break
 
                 backPath.append(list(node))

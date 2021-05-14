@@ -3789,7 +3789,7 @@ class Tutorial(BasicPhase):
 
         numProducts = 0
         while (
-            not len(self.helper_getFilteredProducables()) in (1,)
+            len(self.helper_getFilteredProducables()) not in (1,)
             or not numProducts == 3
         ):
             seed += seed % 42
@@ -3803,7 +3803,7 @@ class Tutorial(BasicPhase):
                 if isinstance(item, src.items.itemMap["GameTestingProducer"]):
                     if (
                         item.product in desiredProducts
-                        and not item.product in itemsFound
+                        and item.product not in itemsFound
                     ):
                         itemsFound.append(item.product)
 
@@ -4078,7 +4078,7 @@ class Tutorial(BasicPhase):
                 if isinstance(item, src.items.itemMap["GameTestingProducer"]):
                     if (
                         item.resource in producableStuff
-                        and not item.product in producableStuff
+                        and item.product not in producableStuff
                     ):
                         producableStuff.append(item.product)
         return producableStuff
@@ -4305,7 +4305,7 @@ class Testing_1(BasicPhase):
 
         numProducts = 0
         while (
-            not len(self.helper_getFilteredProducables()) in (1,)
+            len(self.helper_getFilteredProducables()) not in (1,)
             or not numProducts == 3
         ):
             seed += seed % 42
@@ -4319,7 +4319,7 @@ class Testing_1(BasicPhase):
                 if isinstance(item, src.items.itemMap["GameTestingProducer"]):
                     if (
                         item.product in desiredProducts
-                        and not item.product in itemsFound
+                        and item.product not in itemsFound
                     ):
                         itemsFound.append(item.product)
 
@@ -4594,7 +4594,7 @@ class Testing_1(BasicPhase):
                 if isinstance(item, src.items.itemMap["GameTestingProducer"]):
                     if (
                         item.resource in producableStuff
-                        and not item.product in producableStuff
+                        and item.product not in producableStuff
                     ):
                         producableStuff.append(item.product)
         return producableStuff

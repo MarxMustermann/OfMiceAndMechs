@@ -249,7 +249,6 @@ bad code: there are way too much lines of code in this function
 
 
 def processInput(key, charState=None, noAdvanceGame=False, char=None):
-
     if char.dead:
         return
 
@@ -289,7 +288,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
 
     if charState["recording"]:
         if (
-            not key in ("lagdetection", "lagdetection_", "-")
+            key not in ("lagdetection", "lagdetection_", "-")
             or char.interactionState["varActions"]
         ):
             if (
@@ -310,7 +309,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
                 else:
                     if (
                         src.gamestate.gamestate.mainChar == char
-                        and not "norecord" in flags
+                        and "norecord" not in flags
                     ):
                         text = """
 
@@ -355,13 +354,13 @@ type the macro name you want to record to
     if (
         charState["submenue"]
         and charState["submenue"].type == "InputMenu"
-        and not (key in ("|", ">", "<") and not charState["submenue"].escape)
+        and (key not in ("|", ">", "<") and not charState["submenue"].escape)
     ):
 
         # let the submenu handle the keystroke
         lastSubmenu = charState["submenue"]
         noRender = True
-        if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
             noRender = False
         done = charState["submenue"].handleKey(key, noRender=noRender)
 
@@ -537,7 +536,7 @@ type the macro name you want to record to
         if key not in (" ", "backspace", "enter"):
             char.interactionState["functionCall"] += key
 
-            if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                 header.set_text((urwid.AttrSpec("default", "default"), "call function"))
                 main.set_text(
                     (
@@ -603,7 +602,7 @@ call function %s
 
         if char.interactionState["enumerateState"][-1]["type"] is None:
             char.interactionState["enumerateState"][-1]["type"] = key
-            if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                 header.set_text((urwid.AttrSpec("default", "default"), "observe"))
                 main.set_text(
                     (
@@ -881,7 +880,7 @@ get position for what thing
         char.interactionState["varActions"] = []
 
     if key == "$":
-        if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
             text = """
 
 press key for register to modify or press = to load value from a register
@@ -937,7 +936,7 @@ current registers:
                     lastVarAction["register"] += key
                 register = lastVarAction["register"]
 
-                if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                     text = """
 
 press key for register to load value from
@@ -1007,7 +1006,7 @@ current registers (%s):
 
                     if (
                         src.gamestate.gamestate.mainChar == char
-                        and not "norecord" in flags
+                        and "norecord" not in flags
                     ):
                         text = """
 
@@ -1044,7 +1043,7 @@ current registers (%s):
 
                     if (
                         src.gamestate.gamestate.mainChar == char
-                        and not "norecord" in flags
+                        and "norecord" not in flags
                     ):
                         text = """
 
@@ -1070,7 +1069,7 @@ press key for the action you want to do on the register
             if action is None:
                 lastVarAction["action"] = key
 
-                if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                     text = """
 
 input value for this operation ($%s%s)
@@ -1092,7 +1091,7 @@ type number or load value from register
             if key in "0123456789":
                 lastVarAction["number"] += key
 
-                if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                     text = """
 
 input value for this operation ($%s%s%s)
@@ -1148,7 +1147,7 @@ press any other key to finish
         char.interactionState["ifParam1"].append([])
         char.interactionState["ifParam2"].append([])
 
-        if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
             text = """
 
 press key for the condition you want to check against.
@@ -1177,7 +1176,7 @@ press key for the condition you want to check against.
 
         return
 
-    if len(char.interactionState["ifCondition"]) and not key in (
+    if len(char.interactionState["ifCondition"]) and key not in (
         "%",
         "lagdetection",
         "lagdetection_",
@@ -1185,7 +1184,7 @@ press key for the condition you want to check against.
         if char.interactionState["ifCondition"][-1] is None:
             char.interactionState["ifCondition"][-1] = key
 
-            if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                 text = """
 
 press key for the action to run in case the condition is true or
@@ -1209,7 +1208,7 @@ press _ to run a macro in case the condition is true
         ):
             char.interactionState["ifParam1"][-1].append((key, ["norecord"]))
 
-            if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                 if (
                     (
                         char.interactionState["ifParam1"][-1][-1][0].isupper()
@@ -1273,7 +1272,7 @@ press _ to run a macro in case the condition is false
         ):
             char.interactionState["ifParam2"][-1].append((key, ["norecord"]))
 
-            if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                 inputString = ""
                 for item in char.interactionState["ifParam2"][-1]:
                     inputString += item[0]
@@ -1470,7 +1469,7 @@ type the macro that should be run in case the condition is false
         charState["loop"].append(2)
         return
 
-    if charState["loop"] and not key in (
+    if charState["loop"] and key not in (
         "lagdetection",
         "lagdetection_",
         commandChars.ignore,
@@ -1478,23 +1477,18 @@ type the macro that should be run in case the condition is false
         "~",
     ):
         if not charState["replay"]:
-            commands = []
-            commands.append(("§", ["norecord"]))
-            commands.append((key, ["norecord"]))
+            commands = [("§", ["norecord"]), (key, ["norecord"])]
             charState["commandKeyQueue"] = commands + charState["commandKeyQueue"]
             charState["loop"].pop()
         else:
-            commands = []
-            commands.append(("§", ["norecord"]))
-            commands.append(("_", ["norecord"]))
-            commands.append((key, ["norecord"]))
+            commands = [("§", ["norecord"]), ("_", ["norecord"]), (key, ["norecord"])]
             charState["commandKeyQueue"] = commands + charState["commandKeyQueue"]
             charState["loop"].pop()
 
     if key in ("-",) and not char.interactionState["varActions"]:
         if not charState["recording"]:
             char.addMessage("press key to record to")
-            if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                 header.set_text((urwid.AttrSpec("default", "default"), "observe"))
                 text = """
 
@@ -1544,7 +1538,7 @@ current macros:
                         )
             charState["recordingTo"] = None
 
-    if charState["replay"] and not key in (
+    if charState["replay"] and key not in (
         "lagdetection",
         "lagdetection_",
         "~",
@@ -1645,7 +1639,7 @@ current macros:
 
     if key in ("_",):
 
-        if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
             text = """
 
 press key for macro to replay
@@ -1675,7 +1669,7 @@ current macros:
         charState["replay"].append("")
         return
 
-    if charState["number"] and not key in (
+    if charState["number"] and key not in (
         commandChars.ignore,
         "lagdetection",
         "lagdetection_",
@@ -1709,7 +1703,7 @@ current macros:
     """
 
     if key in ("<",):
-        if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
             text = """
 
 type key for the register to pop.
@@ -1923,7 +1917,7 @@ current registers
             key = "."
 
         if key in ("z",):
-            if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                 header.set_text((urwid.AttrSpec("default", "default"), "observe"))
                 main.set_text(
                     (
@@ -1943,7 +1937,7 @@ current registers
             char.timeTaken -= 0.99
             return
         if key in ("o",):
-            if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                 header.set_text((urwid.AttrSpec("default", "default"), "observe"))
                 main.set_text(
                     (
@@ -1965,7 +1959,7 @@ current registers
 
         # handle cinematics
         if len(cinematics.cinematicQueue):
-            if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                 char.specialRender = True
 
             # get current cinematic
@@ -2150,7 +2144,7 @@ current registers
                 char.addMessage("switched combatMode to: %s" % (char.combatMode,))
             if key in (commandChars.attack):
                 if (
-                    not "NaiveMurderQuest" in char.solvers and not char.godMode
+                    "NaiveMurderQuest" not in char.solvers and not char.godMode
                 ):  # disabled
                     char.addMessage("you do not have the nessecary solver yet (murder)")
                 else:
@@ -2251,7 +2245,7 @@ current registers
                                 entry[0].apply(char)
 
             # examine an item
-            if key in (commandChars.examine):
+            if key in commandChars.examine:
                 if "ExamineQuest" not in char.solvers and not char.godMode:
                     char.addMessage(
                         "you do not have the nessecary solver yet (examine)"
@@ -2272,7 +2266,7 @@ current registers
 
             # drop first item from inventory
             # bad pattern: the user has to have the choice for what item to drop
-            if key in (commandChars.drop):
+            if key in commandChars.drop:
                 if "NaiveDropQuest" not in char.solvers and not char.godMode:
                     char.addMessage("you do not have the nessecary solver yet (drop)")
                 else:
@@ -2282,8 +2276,8 @@ current registers
             # drink from the first available item in inventory
             # bad pattern: the user has to have the choice from what item to drink from
             # bad code: drinking should happen in character
-            if key in ("J"):
-                if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+            if key in "J":
+                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                     text = """
 
 press key for the advanced interaction
@@ -2308,8 +2302,8 @@ press key for the advanced interaction
                 char.interactionState["advancedInteraction"] = {}
                 return
 
-            if key in ("K"):
-                if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+            if key in "K":
+                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                     text = """
 
 press key for advanced pickup
@@ -2332,8 +2326,8 @@ press key for advanced pickup
                 char.interactionState["advancedPickup"] = {}
                 return
 
-            if key in ("L"):
-                if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+            if key in "L":
+                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                     text = """
 
 press key for advanced drop
@@ -2358,7 +2352,7 @@ press key for advanced drop
 
             # pick up items
             # bad code: picking up should happen in character
-            if key in (commandChars.pickUp):
+            if key in commandChars.pickUp:
                 if "NaivePickupQuest" not in char.solvers and not char.godMode:
                     char.addMessage("you do not have the nessecary solver yet (pickup)")
                 else:
@@ -2384,7 +2378,7 @@ press key for advanced drop
                             char.container.calculatePathMap()
 
             # open chat partner selection
-            if key in (commandChars.hail):
+            if key in commandChars.hail:
                 charState["submenue"] = ChatPartnerselection()
 
             char.automated = False
@@ -2397,7 +2391,7 @@ press key for advanced drop
                     pass
 
             # recalculate the questmarker since it could be tainted
-            elif key not in (commandChars.pause):
+            elif key not in commandChars.pause:
                 charState["lastMoveAutomated"] = False
                 if char.quests:
                     char.setPathToQuest(char.quests[0])
@@ -2431,30 +2425,30 @@ press key for advanced drop
             charState["submenue"] = HelpMenu()
 
         # open inventory
-        if key in (commandChars.show_inventory):
+        if key in commandChars.show_inventory:
             charState["submenue"] = InventoryMenu(char)
 
         # open the menu for giving quests
-        if key in (commandChars.show_quests_detailed):
+        if key in commandChars.show_quests_detailed:
             charState["submenue"] = AdvancedQuestMenu()
 
         # open the character information
-        if key in (commandChars.show_characterInfo):
+        if key in commandChars.show_characterInfo:
             charState["submenue"] = CharacterInfoMenu(char=char)
 
         # open the help screen
-        if key in (commandChars.show_help):
+        if key in commandChars.show_help:
             char.specialRender = True
 
     # render submenus
     if charState["submenue"]:
 
         # set flag to not render the game
-        if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
             char.specialRender = True
 
         noRender = True
-        if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
+        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
             noRender = False
 
         # let the submenu handle the keystroke
@@ -3070,7 +3064,7 @@ class InventoryMenu(SubMenu):
             if not self.subMenu.getSelection() is None:
                 if self.activate:
                     if (
-                        not "NaiveActivateQuest" in self.char.solvers
+                        "NaiveActivateQuest" not in self.char.solvers
                         and not char.godMode
                     ):
                         self.persistentText = (
@@ -3313,13 +3307,13 @@ class CharacterInfoMenu(SubMenu):
             baseDamage = char.weapon.baseDamage
 
         text += "numChars: %s\n" % (len(char.container.characters))
-        text += "lastJobOrder: %s\n" % (char.lastJobOrder)
-        text += "weapon: %s\n" % (baseDamage)
-        text += "armor: %s\n" % (armorValue)
+        text += "lastJobOrder: %s\n" % char.lastJobOrder
+        text += "weapon: %s\n" % baseDamage
+        text += "armor: %s\n" % armorValue
         text += "numAttackedWithoutResponse: %s\n" % (char.numAttackedWithoutResponse)
 
         char.setRegisterValue("HEALTh", char.health)
-        text += "HEALTh - %s" % (char.health) + "\n"
+        text += "HEALTh - %s" % char.health + "\n"
         char.setRegisterValue("SELFx", char.xPosition % 15)
         text += "SELFx - %s" % (char.xPosition % 15) + "\n"
         char.setRegisterValue("SELFy", char.yPosition % 15)
@@ -4216,7 +4210,7 @@ def keyboardListener(key):
         newChar = multi_chars[charindex]
 
         if not newChar:
-            messages.append("charindex %s" % (charindex))
+            messages.append("charindex %s" % charindex)
             return
 
         src.gamestate.gamestate.mainChar = newChar
@@ -4242,7 +4236,6 @@ lastAutosave = 0
 
 
 def gameLoop(loop, user_data=None):
-
     import time
 
     global lastAdvance

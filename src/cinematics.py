@@ -317,11 +317,12 @@ class TextCinematic(BasicCinematic):
 
         # scroll the text in char by char
         if self.position < self.endPosition:
-            baseText = self.text[0 : self.position]
+            baseText = self.text[0: self.position]
             if src.interaction.loop:
-                if isinstance(self.text[self.position], str) and self.text[
-                    self.position
-                ] in ("\n"):
+                if (
+                    isinstance(self.text[self.position], str)
+                    and self.text[self.position] in "\n"
+                ):
                     self.alarm = src.interaction.loop.set_alarm_in(
                         0.5, src.interaction.callShow_or_exit, "~"
                     )
@@ -759,7 +760,6 @@ this cutscenes shows some message
 
 
 class ShowMessageCinematic(BasicCinematic):
-
     """
     basic state setting
     """

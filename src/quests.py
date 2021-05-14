@@ -2739,7 +2739,7 @@ class ActivateQuestMeta(MetaQuestSequence):
         # add quest to move to target
         if self.moveQuest and self.moveQuest.completed:
             self.moveQuest = None
-        if self.moveQuest and not self.moveQuest in self.subQuests:
+        if self.moveQuest and self.moveQuest not in self.subQuests:
             tmp = self.moveQuest
             self.moveQuest = None
             tmp.deactivate()

@@ -4,7 +4,6 @@ bad code: pathfindind doesn't really belong here
 bad code: the whole file is obsolete probably
 """
 
-
 import src.interaction
 
 """

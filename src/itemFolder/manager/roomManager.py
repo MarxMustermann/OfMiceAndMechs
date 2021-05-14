@@ -836,7 +836,7 @@ class RoomManager(src.items.Item):
         relayedTask = jobOrder.popTask()
 
         if (
-            not task["ItemType"] in self.itemPositions
+            task["ItemType"] not in self.itemPositions
             and not task["ItemType"] == "CityBuilder"
         ):
             jobOrder.error = {

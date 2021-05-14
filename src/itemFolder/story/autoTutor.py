@@ -742,7 +742,7 @@ comment:
             for item in self.character.inventory + self.room.itemsOnFloor:
                 if (
                     isinstance(item, src.items.BluePrint)
-                    and not item.endProduct in blueprints
+                    and item.endProduct not in blueprints
                 ):
                     blueprints.append(item.endProduct)
             if not len(blueprints) > 8:

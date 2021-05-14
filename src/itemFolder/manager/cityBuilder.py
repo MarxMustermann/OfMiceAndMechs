@@ -561,7 +561,7 @@ class CityBuilder(src.items.Item):
 
     def doMaintenance(self, character):
         if (
-            not "go to room manager" in self.commands
+            "go to room manager" not in self.commands
             and "return from room manager" in self.commands
         ):
             character.addMessage("no room manager")
@@ -650,7 +650,7 @@ class CityBuilder(src.items.Item):
                 if position in self.plotPool:
                     neighbourPlot = position
                     continue
-                if position in self.usedPlots and not position not in self.stockPiles:
+                if position in self.usedPlots and position not in self.stockPiles:
                     neighbourUndiscovered = position
                     continue
 
@@ -711,7 +711,7 @@ class CityBuilder(src.items.Item):
                 if position in self.plotPool:
                     neighbourPlot = position
                     continue
-                if position in self.usedPlots and not position not in self.stockPiles:
+                if position in self.usedPlots and position not in self.stockPiles:
                     neighbourUndiscovered = position
                     continue
 
@@ -770,7 +770,7 @@ class CityBuilder(src.items.Item):
                 if position in self.plotPool:
                     neighbourPlot = position
                     continue
-                if position in self.usedPlots and not position not in self.stockPiles:
+                if position in self.usedPlots and position not in self.stockPiles:
                     neighbourUndiscovered = position
                     continue
 
@@ -914,7 +914,7 @@ class CityBuilder(src.items.Item):
 
         axisPlots = []
         for candidate in plotCandiates:
-            if candidate in self.usedPlots and not candidate not in self.plotPool:
+            if candidate in self.usedPlots and candidate not in self.plotPool:
                 if candidate[0] in (0, 14) or candidate[1] in (0, 14):
                     continue
 
@@ -944,7 +944,7 @@ class CityBuilder(src.items.Item):
         for x in range(0, 15):
             mapContent.append([])
             for y in range(0, 15):
-                if x in (0, 14) and not y not in (0, 14):
+                if x in (0, 14) and y not in (0, 14):
                     char = "  "
                 elif not x == 7 and not y == 7:
                     char = "##"

@@ -748,7 +748,7 @@ class JobChatFirst(Chat):
 
                 # do not assign job
                 elif (
-                    not "FireFurnaceMeta" in subSelf.mainChar.questsDone
+                    "FireFurnaceMeta" not in subSelf.mainChar.questsDone
                 ):  # bad code: is bugged
                     subSelf.persistentText = "Several Officers requested new assistants. The boiler room would be the first target, but you need to have fired a furnace or you cannot take the job"
 
@@ -1724,17 +1724,18 @@ class ChatMenu(Chat):
             # set up selection for the main dialog options
             if not self.options and not self.getSelection():
                 # add the chat partners special dialog options
-                options = []
-                options.append(("showFrustration", "are you frustrated?"))
-                options.append(("goToChar", "go to my position"))
-                options.append(("activate", "activate item on Floor"))
-                options.append(("pickUp", "pick up items"))
-                options.append(("dropAll", "drop everyting"))
-                options.append(("stopCommand", "stop"))
-                options.append(("moveWest", "move west"))
-                options.append(("moveNorth", "move north"))
-                options.append(("moveSouth", "move south"))
-                options.append(("moveEast", "move east"))
+                options = [
+                    ("showFrustration", "are you frustrated?"),
+                    ("goToChar", "go to my position"),
+                    ("activate", "activate item on Floor"),
+                    ("pickUp", "pick up items"),
+                    ("dropAll", "drop everyting"),
+                    ("stopCommand", "stop"),
+                    ("moveWest", "move west"),
+                    ("moveNorth", "move north"),
+                    ("moveSouth", "move south"),
+                    ("moveEast", "move east"),
+                ]
                 """
                 for option in self.partner.getChatOptions(src.gamestate.gamestate.mainChar):
                     if not isinstance(option,dict):
@@ -1783,7 +1784,7 @@ class ChatMenu(Chat):
                     return True
                 elif self.selection == "showFrustration":
                     submenue = src.interaction.OneKeystrokeMenu(
-                        text="my frustration is: %s" % (self.partner.frustration)
+                        text="my frustration is: %s" % self.partner.frustration
                     )
                     self.subMenu = submenue
                 elif self.selection == "goToChar":

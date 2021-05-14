@@ -2835,7 +2835,7 @@ class Desert(Terrain):
         for item in toMove:
             x = item.xPosition + random.randint(-1, 1)
             y = item.yPosition + random.randint(-1, 1)
-            if x % 15 in (0, 14) and not y % 15 not in (0, 14):
+            if x % 15 in (0, 14) and y % 15 not in (0, 14):
                 self.removeItem(item)
                 item.xPosition = x
                 item.yPosition = y

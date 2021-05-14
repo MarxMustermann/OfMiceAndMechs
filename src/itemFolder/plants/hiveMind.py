@@ -310,10 +310,10 @@ class HiveMind(src.items.Item):
             if (self.xPosition // 15, self.yPosition // 15) == (7, 7):
                 anchor = (7, 7)
 
-            if anchor in self.territory or not anchor not in self.paths:
+            if anchor in self.territory or anchor not in self.paths:
                 anchor = (self.xPosition // 15, self.yPosition // 15)
 
-                if anchor in self.territory or not anchor not in self.paths:
+                if anchor in self.territory or anchor not in self.paths:
                     return
 
             character.addMessage(str(anchor) + " -> " + str(targetPos))
@@ -446,7 +446,7 @@ class HiveMind(src.items.Item):
         target = (self.xPosition // 15, self.yPosition // 15)
         while self.toCheck and (
             target == (self.xPosition // 15, self.yPosition // 15)
-            or not target in self.paths
+            or target not in self.paths
         ):
             target = self.toCheck.pop()
 

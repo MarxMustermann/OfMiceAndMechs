@@ -730,45 +730,45 @@ class JobChatFirst(Chat):
             return True
 
         # handle chat termination
-        if subSelf.firstRun:
+        if self.firstRun:
             # job
-            if not subSelf.dispatchedPhase:
+            if not self.dispatchedPhase:
 
                 # do not assign job
-                if subSelf.mainChar.reputation < 10:
-                    subSelf.persistentText = (
+                if self.mainChar.reputation < 10:
+                    self.persistentText = (
                         "I have some work thats needs to be done, but you will have to proof your worth some more untill you can be trusted with this work.\n\nMaybe "
-                        + subSelf.terrain.waitingRoom.secondOfficer.name
+                        + self.terrain.waitingRoom.secondOfficer.name
                         + " has some work you can do"
                     )
 
                 # do not assign job
-                elif not subSelf.hopperDutyQuest.active:
-                    subSelf.persistentText = "your responsibilities are elsewhere"
+                elif not self.hopperDutyQuest.active:
+                    self.persistentText = "your responsibilities are elsewhere"
 
                 # do not assign job
                 elif (
-                    "FireFurnaceMeta" not in subSelf.mainChar.questsDone
+                    "FireFurnaceMeta" not in self.mainChar.questsDone
                 ):  # bad code: is bugged
-                    subSelf.persistentText = "Several Officers requested new assistants. The boiler room would be the first target, but you need to have fired a furnace or you cannot take the job"
+                    self.persistentText = "Several Officers requested new assistants. The boiler room would be the first target, but you need to have fired a furnace or you cannot take the job"
 
                 # assign job
                 else:
                     # show fluff
-                    subSelf.persistentText = "Several Officers requested new assistants. Find them and offer them your service"
+                    self.persistentText = "Several Officers requested new assistants. Find them and offer them your service"
 
-                    subSelf.hopperDutyQuest.deactivate()
-                    subSelf.mainChar.quests.remove(subSelf.hopperDutyQuest)
-                    subSelf.dispatchedPhase = True
+                    self.hopperDutyQuest.deactivate()
+                    self.mainChar.quests.remove(self.hopperDutyQuest)
+                    self.dispatchedPhase = True
 
             # do not assign job
             else:
-                subSelf.persistentText = "Not right now"
+                self.persistentText = "Not right now"
 
             # show text
-            subSelf.set_text(subSelf.persistentText)
-            subSelf.done = True
-            subSelf.firstRun = False
+            self.set_text(self.persistentText)
+            self.done = True
+            self.firstRun = False
 
             return True
         else:

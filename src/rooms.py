@@ -505,7 +505,7 @@ class Room(src.saveing.Saveable):
             xPosition = state["xPosition"]
             yPosition = state["yPosition"]
 
-        if not xPosition == None and not yPosition == None:
+        if not xPosition is None and not yPosition is None:
             self.terrain.teleportRoom(self, (xPosition, yPosition))
 
         super().setState(state)
@@ -2788,7 +2788,7 @@ XXXXXXXXXX
 
     def calculatePath(self, x, y, dstX, dstY, walkingPath):
         # handle impossible state
-        if dstY == None or dstX == None:
+        if dstY is None or dstX is None:
             src.logger.debugMessages.append("pathfinding without target")
             return []
 

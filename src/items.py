@@ -312,7 +312,7 @@ class Item(src.saveing.Saveable):
         """
 
         # prevent crashes
-        if self.xPosition == None or self.yPosition == None:
+        if self.xPosition is None or self.yPosition is None:
             return
 
         # apply restrictions
@@ -714,7 +714,7 @@ class Item(src.saveing.Saveable):
             return
 
         for listenFunction in self.listeners[tag]:
-            if info == None:
+            if info is None:
                 listenFunction()
             else:
                 listenFunction(info)

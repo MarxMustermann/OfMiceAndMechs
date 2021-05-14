@@ -14,7 +14,7 @@ class Spray(src.items.Item):
 
     def __init__(self, direction=None):
         # skin acording to spray direction
-        if direction == None:
+        if direction is None:
             direction = "left"
 
         self.direction = direction

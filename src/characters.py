@@ -53,7 +53,7 @@ class Character(src.saveing.Saveable):
         """
         super().__init__()
 
-        if name == None and seed:
+        if name is None and seed:
             name = (
                 config.names.characterFirstNames[
                     (seed) % len(config.names.characterFirstNames)
@@ -64,12 +64,12 @@ class Character(src.saveing.Saveable):
                 ]
             )
 
-        if display == None and not name == None:
+        if display is None and not name is None:
             display = src.canvas.displayChars.staffCharactersByLetter[name[0].lower()]
 
-        if name == None:
+        if name is None:
             name = "Person"
-        if display == None:
+        if display is None:
             display = src.canvas.displayChars.staffCharacters[0]
 
         self.setDefaultMacroState()
@@ -615,7 +615,7 @@ class Character(src.saveing.Saveable):
         import copy
 
         state["macroState"] = copy.deepcopy(self.macroState)
-        if not state["macroState"]["itemMarkedLast"] == None and not isinstance(
+        if not state["macroState"]["itemMarkedLast"] is None and not isinstance(
             state["macroState"]["itemMarkedLast"], str
         ):
             state["macroState"]["itemMarkedLast"] = state["macroState"][
@@ -687,7 +687,7 @@ class Character(src.saveing.Saveable):
         state["type"] = self.charType
 
         # store submenue
-        if self.submenue == None:
+        if self.submenue is None:
             state["submenue"] = self.submenue
         else:
             state["submenue"] = self.submenue.getState()
@@ -743,7 +743,7 @@ class Character(src.saveing.Saveable):
 
         self.macroState = state["macroState"]
 
-        if not self.macroState["itemMarkedLast"] == None:
+        if not self.macroState["itemMarkedLast"] is None:
 
             def setParam(instance):
                 self.macroState["itemMarkedLast"] = instance
@@ -847,7 +847,7 @@ class Character(src.saveing.Saveable):
                 self.addEvent(event)
 
         if "submenue" in state:
-            if state["submenue"] == None:
+            if state["submenue"] is None:
                 self.submenue = state["submenue"]
             else:
                 self.submenue = src.interaction.getSubmenuFromState(state["submenue"])
@@ -1478,7 +1478,7 @@ class Character(src.saveing.Saveable):
 
         # call each listener
         for listenFunction in self.listeners[tag]:
-            if info == None:
+            if info is None:
                 listenFunction()
             else:
                 listenFunction(info)

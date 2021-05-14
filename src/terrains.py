@@ -1700,7 +1700,7 @@ class Terrain(src.saveing.Saveable):
     def render(self):
         # hide/show map
         global mapHidden
-        if src.gamestate.gamestate.mainChar.room == None:
+        if src.gamestate.gamestate.mainChar.room is None:
             mapHidden = False
         else:
             if src.gamestate.gamestate.mainChar.room.open:
@@ -1756,7 +1756,7 @@ class Terrain(src.saveing.Saveable):
         if not mapHidden:
             # get players position in tiles (15*15 segments)
             pos = None
-            if src.gamestate.gamestate.mainChar.room == None:
+            if src.gamestate.gamestate.mainChar.room is None:
                 pos = (
                     src.gamestate.gamestate.mainChar.xPosition // 15,
                     src.gamestate.gamestate.mainChar.yPosition // 15,
@@ -2419,7 +2419,7 @@ class GameplayTest(Terrain):
                 while counter < maxItems:
 
                     position = None
-                    while position == None or position in excludes.keys():
+                    while position is None or position in excludes.keys():
                         position = (
                             xRange[0] + seed % maxOffsetX,
                             yRange[0] + seed // (maxItems * 2) % maxOffsetY,

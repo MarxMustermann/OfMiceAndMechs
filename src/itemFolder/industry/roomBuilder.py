@@ -24,11 +24,11 @@ class RoomBuilder(src.items.Item):
             character.addMessage("this machine can not be used within rooms")
             return
 
-        if self.xPosition == None:
+        if self.xPosition is None:
             character.addMessage("this machine can not be used within rooms")
             return
 
-        if self.terrain == None:
+        if self.terrain is None:
             character.addMessage("this machine can not be used within rooms")
             return
 

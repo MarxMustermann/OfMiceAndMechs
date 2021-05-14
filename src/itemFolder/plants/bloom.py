@@ -31,7 +31,7 @@ class Bloom(src.items.Item):
             character.addMessage("you eat the bloom and gain 115 satiation")
 
     def startSpawn(self):
-        if not (self.dead or self.xPosition == None or self.yPosition == None):
+        if not (self.dead or self.xPosition is None or self.yPosition is None):
             event = src.events.RunCallbackEvent(
                 src.gamestate.gamestate.tick
                 + (

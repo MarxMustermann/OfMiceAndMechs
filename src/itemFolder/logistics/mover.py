@@ -16,7 +16,7 @@ class Mover(src.items.Item):
     """
 
     def apply(self, character, resultType=None):
-        if self.xPosition == None:
+        if self.xPosition is None:
             character.addMessage("this machine needs to be placed to be used")
             return
 

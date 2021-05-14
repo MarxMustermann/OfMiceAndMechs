@@ -186,8 +186,8 @@ class RoomManager(src.items.Item):
         character.runCommandString(command)
 
     def addTask(self):
-        if self.tasksType == None:
-            if self.submenue.selection == None:
+        if self.tasksType is None:
+            if self.submenue.selection is None:
                 return
             self.tasksType = self.submenue.selection
 
@@ -227,7 +227,7 @@ class RoomManager(src.items.Item):
             "task": self.tasksType,
         }
 
-        if not typeParameter == None:
+        if not typeParameter is None:
             newTask["type"] = typeParameter
 
         self.tasks.append(newTask)

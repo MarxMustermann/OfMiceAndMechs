@@ -331,7 +331,7 @@ class StockpileMetaManager(src.items.Item):
             if "desiredAmount" in stockPileInfo:
                 if stockPileInfo["desiredAmount"] > stockPileInfo["amount"]:
                     itemType = stockPileInfo.get("itemType")
-                    if itemType == None:
+                    if itemType is None:
                         itemType = "all"
                     if not needyStockpiles.get(itemType):
                         needyStockpiles[itemType] = []
@@ -339,7 +339,7 @@ class StockpileMetaManager(src.items.Item):
 
             if stockPileInfo.get("source") == True:
                 itemType = stockPileInfo.get("itemType")
-                if itemType == None:
+                if itemType is None:
                     itemType = "all"
                 if not sources.get(itemType):
                     sources[itemType] = []

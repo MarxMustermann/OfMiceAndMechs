@@ -22,7 +22,7 @@ class MacroRunner(src.items.Item):
             character.addMessage("this machine can only be used within rooms")
             return
 
-        if self.command == None:
+        if self.command is None:
             if not len(character.macroState["macros"]):
                 character.addMessage(
                     "no macro found - record a macro to store it in this machine"

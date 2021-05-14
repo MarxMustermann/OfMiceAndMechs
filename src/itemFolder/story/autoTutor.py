@@ -477,7 +477,7 @@ finish 25 round (%s remaining):
                             self.challengeInfo["numSucesses"] += 1
 
                     if (
-                        self.challengeInfo["type"] == None
+                        self.challengeInfo["type"] is None
                         and not self.challengeInfo["numSucesses"] >= 25
                     ):
                         itemType = random.choice(["Wall", "Door", "FloorPlate"])
@@ -535,7 +535,7 @@ comment:
                     gooFlask2 = None
                     for item in reversed(self.character.inventory):
                         if item.type == "GooFlask" and item.uses == 100:
-                            if gooFlask1 == None:
+                            if gooFlask1 is None:
                                 gooFlask1 = item
                             else:
                                 gooFlask2 = item

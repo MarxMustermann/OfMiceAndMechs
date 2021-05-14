@@ -25,7 +25,7 @@ class SporeExtractor(src.items.Item):
 
         super().apply(character, silent=True)
 
-        if self.xPosition == None:
+        if self.xPosition is None:
             character.addMessage("this machine needs to be placed to be used")
             return
 

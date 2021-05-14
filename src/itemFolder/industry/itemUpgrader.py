@@ -17,7 +17,7 @@ class ItemUpgrader(src.items.Item):
         if not self.room:
             character.addMessage("this machine can only be used within rooms")
             return
-        if self.xPosition == None:
+        if self.xPosition is None:
             character.addMessage("this machine has to be placed to be used")
             return
 

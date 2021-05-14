@@ -222,7 +222,7 @@ bad code: this is abused as the main loop for this game
 
 
 def show_or_exit(key, charState=None):
-    if charState == None:
+    if charState is None:
         charState = src.gamestate.gamestate.mainChar.macroState
 
     # store the commands for later processing
@@ -255,10 +255,10 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
 
     char.timeTaken += 1
 
-    if charState == None:
+    if charState is None:
         charState = src.gamestate.gamestate.mainChar.macroState
 
-    if char == None:
+    if char is None:
         char = src.gamestate.gamestate.mainChar
 
     if char.room:
@@ -266,7 +266,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
     else:
         terrain = char.terrain
 
-    if terrain == None:
+    if terrain is None:
         if char.lastRoom:
             terrain = char.lastRoom.terrain
         else:
@@ -293,11 +293,11 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
             or char.interactionState["varActions"]
         ):
             if (
-                charState["recordingTo"] == None
+                charState["recordingTo"] is None
                 or charState["recordingTo"][-1].isupper()
                 or charState["recordingTo"][-1] == " "
             ):
-                if charState["recordingTo"] == None:
+                if charState["recordingTo"] is None:
                     charState["recordingTo"] = key
                 else:
                     charState["recordingTo"] += key
@@ -601,7 +601,7 @@ call function %s
 
     if char.interactionState["enumerateState"]:
 
-        if char.interactionState["enumerateState"][-1]["type"] == None:
+        if char.interactionState["enumerateState"][-1]["type"] is None:
             char.interactionState["enumerateState"][-1]["type"] = key
             if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
                 header.set_text((urwid.AttrSpec("default", "default"), "observe"))
@@ -911,7 +911,7 @@ current registers:
     if char.interactionState["varActions"]:
 
         lastVarAction = char.interactionState["varActions"][-1]
-        if lastVarAction["outOperator"] == None:
+        if lastVarAction["outOperator"] is None:
             if key in ("esc", "enter"):
                 char.interactionState["varActions"].pop()
                 return
@@ -927,11 +927,11 @@ current registers:
         register = lastVarAction["register"]
 
         if lastVarAction["outOperator"] == True:
-            if register == None or (
+            if register is None or (
                 (register == "" or register[-1].isupper() or register.endswith(" "))
                 and (key.isupper() or key == " ")
             ):
-                if register == None:
+                if register is None:
                     lastVarAction["register"] = ""
                 else:
                     lastVarAction["register"] += key
@@ -1067,7 +1067,7 @@ press key for the action you want to do on the register
                     char.timeTaken -= 0.99
                     return
             action = lastVarAction["action"]
-            if action == None:
+            if action is None:
                 lastVarAction["action"] = key
 
                 if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
@@ -1182,7 +1182,7 @@ press key for the condition you want to check against.
         "lagdetection",
         "lagdetection_",
     ):
-        if char.interactionState["ifCondition"][-1] == None:
+        if char.interactionState["ifCondition"][-1] is None:
             char.interactionState["ifCondition"][-1] = key
 
             if src.gamestate.gamestate.mainChar == char and not "norecord" in flags:
@@ -1459,7 +1459,7 @@ type the macro that should be run in case the condition is false
         return
 
     if key in "0123456789":
-        if charState["number"] == None:
+        if charState["number"] is None:
             charState["number"] = ""
         charState["number"] += key
         key = commandChars.ignore
@@ -1881,7 +1881,7 @@ current registers
                                 value = int(value)
                             char.personality[settingName] = value
 
-                        if settingName == None:
+                        if settingName is None:
                             return
                         submenu3 = InputMenu("input value")
                         char.macroState["submenue"] = submenu3
@@ -2141,7 +2141,7 @@ current registers
             # murder the next available character
             # bad pattern: player should be able to select whom to kill if there are multiple targets
             if key in "M":
-                if char.combatMode == None:
+                if char.combatMode is None:
                     char.combatMode = "agressive"
                 elif char.combatMode == "agressive":
                     char.combatMode = "defensive"
@@ -2239,9 +2239,9 @@ current registers
                         #        item.apply(char)
                         #        break
                         if not (
-                            char.xPosition == None
-                            or char.yPosition == None
-                            or char.zPosition == None
+                            char.xPosition is None
+                            or char.yPosition is None
+                            or char.zPosition is None
                         ):
                             entry = char.container.getItemByPosition(
                                 (char.xPosition, char.yPosition, char.zPosition)
@@ -2534,7 +2534,7 @@ class SubMenu(src.saveing.Saveable):
 
         # load options
         if "options" in state:
-            if state["options"] == None:
+            if state["options"] is None:
                 self.options = None
             else:
                 import collections
@@ -2544,7 +2544,7 @@ class SubMenu(src.saveing.Saveable):
                     newOptions[option[0]] = option[1]
                 self.options = newOptions
         if "niceOptions" in state:
-            if state["niceOptions"] == None:
+            if state["niceOptions"] is None:
                 self.niceOptions = None
             else:
                 import collections
@@ -2562,14 +2562,14 @@ class SubMenu(src.saveing.Saveable):
         state = super().getState()
 
         # store options
-        if self.options == None:
+        if self.options is None:
             serialisedOptions = None
         else:
             serialisedOptions = []
             for k, v in self.options.items():
                 serialisedOptions.append((k, str(v)))
         state["options"] = serialisedOptions
-        if self.niceOptions == None:
+        if self.niceOptions is None:
             serialisedOptions = None
         else:
             serialisedOptions = []
@@ -2653,7 +2653,7 @@ class SubMenu(src.saveing.Saveable):
                 counter += 1
 
         if key in (commandChars.autoAdvance, commandChars.advance):
-            if not self.default == None:
+            if not self.default is None:
                 self.selection = self.default
             else:
                 self.selection = list(self.options.values())[0]
@@ -3067,7 +3067,7 @@ class InventoryMenu(SubMenu):
     def handleKey(self, key, noRender=False):
         if self.subMenu:
             self.subMenu.handleKey(key, noRender=noRender)
-            if not self.subMenu.getSelection() == None:
+            if not self.subMenu.getSelection() is None:
                 if self.activate:
                     if (
                         not "NaiveActivateQuest" in self.char.solvers
@@ -3380,7 +3380,7 @@ class AdvancedQuestMenu(SubMenu):
         out += "\n"
 
         # let the player select the character to assign the quest to
-        if self.state == None:
+        if self.state is None:
             self.state = "participantSelection"
         if self.state == "participantSelection":
 
@@ -4106,7 +4106,7 @@ def keyboardListener(key):
 
     if not multi_currentChar:
         multi_currentChar = src.gamestate.gamestate.mainChar
-    if multi_chars == None:
+    if multi_chars is None:
         multi_chars = src.gamestate.gamestate.terrain.characters[:]
         for room in src.gamestate.gamestate.terrain.rooms:
             for character in room.characters[:]:
@@ -4271,7 +4271,7 @@ def gameLoop(loop, user_data=None):
 
         if not multi_currentChar:
             multi_currentChar = src.gamestate.gamestate.mainChar
-        if multi_chars == None:
+        if multi_chars is None:
             multi_chars = []
 
         # transform and store the keystrokes that accumulated in pygame

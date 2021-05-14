@@ -1664,7 +1664,7 @@ class ChatMenu(Chat):
 
     def handleKey(self, key, noRender=False):
         # smooth over impossible state
-        if self.partner == None:
+        if self.partner is None:
             src.logger.debugMessages.append("chatmenu spawned without partner")
             return False
 
@@ -1704,7 +1704,7 @@ class ChatMenu(Chat):
             self.chatOptions = []
 
         # display greetings
-        if self.state == None:
+        if self.state is None:
             self.state = "mainOptions"
             self.persistentText += (
                 self.partner.name

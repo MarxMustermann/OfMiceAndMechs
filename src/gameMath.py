@@ -165,7 +165,7 @@ def calculatePathRaw(startX, startY, endX, endY, walkingPath):
         lowestDistance = None
         for waypoint in walkingPath:
             distance = abs(waypoint[0] - startX) + abs(waypoint[1] - startY)
-            if lowestDistance == None or lowestDistance > distance:
+            if lowestDistance is None or lowestDistance > distance:
                 lowestDistance = distance
                 nearestPoint = waypoint
 
@@ -194,7 +194,7 @@ def calculatePathRaw(startX, startY, endX, endY, walkingPath):
         lowestDistance = None
         for waypoint in walkingPath:
             distance = abs(waypoint[0] - endX) + abs(waypoint[1] - endY)
-            if lowestDistance == None or lowestDistance > distance:
+            if lowestDistance is None or lowestDistance > distance:
                 lowestDistance = distance
                 nearestPoint = waypoint
 
@@ -223,7 +223,7 @@ def calculatePathRaw(startX, startY, endX, endY, walkingPath):
         lowestDistance = None
         for waypoint in walkingPath:
             distance = abs(waypoint[0] - startX) + abs(waypoint[1] - startY)
-            if lowestDistance == None or lowestDistance > distance:
+            if lowestDistance is None or lowestDistance > distance:
                 lowestDistance = distance
                 startPoint = waypoint
 
@@ -231,7 +231,7 @@ def calculatePathRaw(startX, startY, endX, endY, walkingPath):
         lowestDistance = None
         for waypoint in walkingPath:
             distance = abs(waypoint[0] - endX) + abs(waypoint[1] - endY)
-            if lowestDistance == None or lowestDistance > distance:
+            if lowestDistance is None or lowestDistance > distance:
                 lowestDistance = distance
                 endPoint = waypoint
 

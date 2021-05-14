@@ -159,8 +159,8 @@ class BasicPhase(src.saveing.Saveable):
                     )
                 else:
                     if (
-                        src.gamestate.gamestate.mainChar.xPosition == None
-                        or src.gamestate.gamestate.mainChar.yPosition == None
+                        src.gamestate.gamestate.mainChar.xPosition is None
+                        or src.gamestate.gamestate.mainChar.yPosition is None
                     ):
                         self.mainCharRoom.addCharacter(
                             src.gamestate.gamestate.mainChar, 3, 3
@@ -3940,7 +3940,7 @@ class Tutorial(BasicPhase):
         self.mainChar.addListener(self.checkOutside)
 
     def checkOutside(self):
-        if self.mainChar.room == None:
+        if self.mainChar.room is None:
             self.mainChar.delListener(self.checkOutside)
             showText(
                 "well that is not the most of productive task, but scrap metal is needed to produce other things.\nGo and grab some scrap.\n\nscrap is shown as *, or .; or %# . Almost the whole area in the east is composed of scrap.\n\nTo pick up items walk onto them or into them and press k. This works like activating items."
@@ -4456,7 +4456,7 @@ class Testing_1(BasicPhase):
         self.mainChar.addListener(self.checkOutside)
 
     def checkOutside(self):
-        if self.mainChar.room == None:
+        if self.mainChar.room is None:
             self.mainChar.delListener(self.checkOutside)
             showText(
                 "well that is not the most of productive task, but scrap metal is needed to produce other things.\nGo and grab some scrap.\n\nscrap is shown as *, or .; or %# . Almost the whole area in the east is composed of scrap.\n\nTo pick up items walk onto them or into them and press k. This works like activating items."

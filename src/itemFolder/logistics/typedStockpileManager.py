@@ -248,7 +248,7 @@ slotsByItemtype
 
     def fetchItem(self):
 
-        if self.submenue.selection == None:
+        if self.submenue.selection is None:
             return
 
         if not self.slotsByItemtype[self.submenue.selection]:

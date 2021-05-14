@@ -82,7 +82,7 @@ class RoadManager(src.items.Item):
             command = ""
             lastNode = None
             for node in self.pathsToCenter[tuple(value["coordinate"])]:
-                if lastNode == None:
+                if lastNode is None:
                     lastNode = node
                     continue
 
@@ -144,7 +144,7 @@ class RoadManager(src.items.Item):
 
         lastNode = None
         for node in basePath:
-            if lastNode == None:
+            if lastNode is None:
                 lastNode = node
                 continue
 

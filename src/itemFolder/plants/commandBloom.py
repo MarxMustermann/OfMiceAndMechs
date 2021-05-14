@@ -636,9 +636,9 @@ class CommandBloom(src.items.Item):
                         ):
                             if not pos in path:
                                 continue
-                            if lowestIndex == None or path.index(pos) < lowestIndex:
+                            if lowestIndex is None or path.index(pos) < lowestIndex:
                                 lowestIndex = path.index(pos)
-                        if lowestIndex == None:
+                        if lowestIndex is None:
                             break
                         targetPos = path[lowestIndex]
 

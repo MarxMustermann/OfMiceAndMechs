@@ -115,7 +115,7 @@ class CityBuilder(src.items.Item):
         for (resourceType, amount) in cost.items():
             availableAmount = self.resources.get(resourceType)
 
-            if availableAmount == None:
+            if availableAmount is None:
                 character.addMessage("need resource %s" % (resourceType,))
                 return False
             elif availableAmount < amount:

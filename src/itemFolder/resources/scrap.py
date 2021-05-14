@@ -137,7 +137,7 @@ There is %s in this pile
             return
 
         # prevents crashes
-        if self.xPosition == None or self.yPosition == None:
+        if self.xPosition is None or self.yPosition is None:
             return
 
         # remove a singe piece of scrap

@@ -127,7 +127,7 @@ class GooFaucet(src.items.Item):
         return
 
     def runCommand(self, trigger, character=None):
-        if character == None:
+        if character is None:
             character = self.character
 
         if not trigger in self.commands:

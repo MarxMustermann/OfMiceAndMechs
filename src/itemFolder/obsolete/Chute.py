@@ -10,7 +10,7 @@ class Chute(src.items.Item):
         self.name = "chute"
 
     def apply(self, character):
-        if self.xPosition == None or not self.container:
+        if self.xPosition is None or not self.container:
             character.addMessage("This has to be placed in order to be used")
             return
 

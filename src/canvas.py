@@ -224,7 +224,7 @@ class Canvas(object):
         tileMapping2=None,
     ):
 
-        if defaultChar == None:
+        if defaultChar is None:
             defaultChar = displayChars.void
 
         # set basic information
@@ -307,7 +307,7 @@ class Canvas(object):
             for char in line:
                 # render the character via the abstraction layer
                 if isinstance(char, int):
-                    if self.displayChars.indexedMapping[char] == None:
+                    if self.displayChars.indexedMapping[char] is None:
                         src.logger.debugMessages.append(
                             "failed rendering "
                             + str(char)

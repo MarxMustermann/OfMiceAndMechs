@@ -116,7 +116,7 @@ class HiveMind(src.items.Item):
             ):
                 break
 
-        if self.lastExpansion == None:
+        if self.lastExpansion is None:
             self.lastExpansion = src.gamestate.gamestate.tick
         selfReplace = False
         if (src.gamestate.gamestate.tick - self.lastExpansion) > len(

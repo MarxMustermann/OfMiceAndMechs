@@ -29,7 +29,7 @@ class PortableChallenger(src.items.Item):
         else:
             if self.challenges[-1] == "gotoEastNorthTile":
                 if not (
-                    character.room == None
+                    character.room is None
                     and character.xPosition // 15 == 13
                     and character.yPosition // 15 == 1
                 ):
@@ -45,7 +45,7 @@ class PortableChallenger(src.items.Item):
                     self.challenges.pop()
             elif self.challenges[-1] == "gotoWestNorthTile":
                 if not (
-                    character.room == None
+                    character.room is None
                     and character.xPosition // 15 == 1
                     and character.yPosition // 15 == 1
                 ):
@@ -61,7 +61,7 @@ class PortableChallenger(src.items.Item):
                     self.challenges.pop()
             elif self.challenges[-1] == "gotoWestSouthTile":
                 if not (
-                    character.room == None
+                    character.room is None
                     and character.xPosition // 15 == 1
                     and character.yPosition // 15 == 13
                 ):
@@ -77,7 +77,7 @@ class PortableChallenger(src.items.Item):
                     self.challenges.pop()
             elif self.challenges[-1] == "gotoEastSouthTile":
                 if not (
-                    character.room == None
+                    character.room is None
                     and character.xPosition // 15 == 13
                     and character.yPosition // 15 == 13
                 ):

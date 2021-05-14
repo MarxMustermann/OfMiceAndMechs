@@ -96,7 +96,7 @@ class GrowthTank(src.items.Item):
         """
 
         def getRandomName(seed1=0, seed2=None):
-            if seed2 == None:
+            if seed2 is None:
                 seed2 = seed1 + (seed1 // 5)
             return (
                 config.names.characterFirstNames[

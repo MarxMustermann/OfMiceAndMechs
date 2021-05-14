@@ -169,7 +169,7 @@ r: reset
         self.blocked = False
 
     def setMachineSettings(self):
-        if self.settingType == None:
+        if self.settingType is None:
             self.settingType = self.submenue.selection
 
             self.submenue = src.interaction.InputMenu("input the value")
@@ -245,7 +245,7 @@ r: reset
                 return
 
             if self.restrictStoredItemType:
-                if self.storedItemType == None:
+                if self.storedItemType is None:
                     self.storedItemType = self.character.inventory[-1].type
                 else:
                     if not self.storedItemType == self.character.inventory[-1].type:
@@ -255,7 +255,7 @@ r: reset
                         self.blocked = False
                         return
             if self.restrictStoredItemWalkable:
-                if self.storedItemWalkable == None:
+                if self.storedItemWalkable is None:
                     self.storedItemWalkable = self.character.inventory[-1].walkable
                 else:
                     if not (

@@ -2378,7 +2378,7 @@ class MoveQuestMeta(MetaQuestSequence):
         lifetime=None,
     ):
         super().__init__([], creator=creator, lifetime=lifetime)
-        if not (x == None and y == None):
+        if not (x is None and y is None):
             self.moveQuest = NaiveMoveQuest(room, x, y, sloppy=sloppy, creator=self)
             questList = [self.moveQuest]
         else:
@@ -2609,7 +2609,7 @@ class PickupQuestMeta(MetaQuestSequence):
             # check whether it is neccessary to re add the movement
             reAddMove = False
             if not self.sloppy:
-                if self.toPickup.xPosition == None or self.toPickup.yPosition == None:
+                if self.toPickup.xPosition is None or self.toPickup.yPosition is None:
                     reAddMove = False
                 elif not (
                     self.toPickup.room == self.character.room
@@ -2618,7 +2618,7 @@ class PickupQuestMeta(MetaQuestSequence):
                 ):
                     reAddMove = True
             else:
-                if self.toPickup.xPosition == None or self.toPickup.yPosition == None:
+                if self.toPickup.xPosition is None or self.toPickup.yPosition is None:
                     reAddMove = False
                 elif not (
                     self.toPickup.room == self.character.room
@@ -2749,8 +2749,8 @@ class ActivateQuestMeta(MetaQuestSequence):
             if (
                 hasattr(self.toActivate, "xPosition")
                 and hasattr(self.toActivate, "yPosition")
-                and not self.toActivate.xPosition == None
-                and not self.toActivate.yPosition == None
+                and not self.toActivate.xPosition is None
+                and not self.toActivate.yPosition is None
             ):
                 if not self.sloppy:
                     if not (

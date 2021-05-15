@@ -1,9 +1,6 @@
-"""
-the state of the game should
-"""
-
 # include basic libs
 import json
+import os
 
 # include basic internal libs
 import src.characters
@@ -18,27 +15,34 @@ import config
 gamestate = None
 phasesByName = {}
 
-"""
-the container for the gamestate
-bad code: all game state should be reachable from here
-"""
 
 
 class GameState(src.saveing.Saveable):
     """
-    basic state setting with some initialization
-    bad code: initialization should happen in story or from loading
+    the container for all of the gamestate
     """
 
-    def __init__(self, phase=None, seed=0):
+    def __init__(self):
+        """
+        basic state setting with some initialization
+        """
+
         super().__init__()
         self.id = "gamestate"
         self.mainChar = None
         self.successSeed = 0
         self.tick = 0
-        pass
 
+    # bad code: initialization should happen in story or from loading
     def setup(self, phase=None, seed=0):
+        """
+        sets up the game world
+
+        Parameters:
+            phase: the phase to start with
+            seed: the rng seed
+        """
+
         self.initialSeed = seed
 
         self.gameWon = False
@@ -92,12 +96,12 @@ class GameState(src.saveing.Saveable):
                 line.append(thisTerrain)
             self.terrainMap.append(line)
 
-    """
-    save the gamestate to disc
-    bad pattern: loading and saving one massive json will break on the long run. save function should be delegated down to be able to scale json size
-    """
-
+    # bad pattern: loading and saving one massive json will break on the long run. save function should be delegated down to be able to scale json size
     def save(self):
+        """
+        save the game state to disc
+        """
+
         # get state as dictionary
         state = self.getState()
 
@@ -120,15 +124,16 @@ class GameState(src.saveing.Saveable):
         with open("gamestate/gamestate.json", "w") as saveFile:
             saveFile.write(gamedump)
 
-    """
-    load the gamestate from disc
-    bad pattern: loading and saving one massive json will break on the long run. load function should be delegated down to be able to scale json size
-    """
-
+    # bad pattern: loading and saving one massive json will break on the long run. load function should be delegated down to be able to scale json size
     def load(self):
-        # handle missing savefile
-        import os
+        """
+        load the gamestate from disc
 
+        Returns:
+            bool: success indicator
+        """
+
+        # handle missing savefile
         if not os.path.isfile("gamestate/gamestate.json"):
             src.logger.debugMessages.append("no gamestate found - NOT LOADING")
             print("no gamestate found")
@@ -161,11 +166,14 @@ class GameState(src.saveing.Saveable):
             print(src.saveing.loadingRegistry.delayedCalls)
         return True
 
-    """
-    rebuild gamestate from half serialized form
-    """
-
     def setState(self, state):
+        """
+        rebuild gamestate from half serialized form
+
+        Parameters:
+            state: the gamestate to load
+        """
+
         # the object itself
         self.gameWon = state["gameWon"]
         self.currentPhase = phasesByName[state["currentPhase"]["name"]]()
@@ -250,11 +258,14 @@ class GameState(src.saveing.Saveable):
             else:
                 src.interaction.submenue = None
 
-    """
-    get gamestate in half serialized form
-    """
-
     def getState(self):
+        """
+        get game state in half serialized form
+
+        Returns:
+            the game state
+        """
+
         # generate simple state
         state = {
             "currentPhase": self.currentPhase.getState(),
@@ -305,7 +316,10 @@ class GameState(src.saveing.Saveable):
 
         return state
 
-
 def setup():
+    """
+    initialises the game state 
+    """
+
     global gamestate
     gamestate = GameState()

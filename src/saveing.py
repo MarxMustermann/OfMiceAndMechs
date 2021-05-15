@@ -1,18 +1,21 @@
-"""
-a registry to allow resolving references during loading
-"""
-
 
 class LoadingRegistry(object):
+    """
+    a registry to allow resolving references during loading
+    """
+
     registered = {}
     delayedCalls = {}
     params = {}
 
-    """
-    register a new id and call callback accumulated for this thing
-    """
-
     def register(self, thing):
+        """
+        register a new id and call callbacks accumulated for this thing
+
+        Parameters:
+            thing: the thing to register
+        """
+
         self.registered[thing.id] = thing
 
         if thing.id not in self.delayedCalls:
@@ -31,11 +34,17 @@ class LoadingRegistry(object):
             counter += 1
         del self.delayedCalls[thing.id]
 
-    """
-    trigger a call or register as backlog
-    """
-
     def callWhenAvailable(self, thingId, callback, param=None):
+        """
+        call a callback when a thing is available
+        if the thing is not available yet call it later
+
+        Parameters:
+            thingId: the id of the thing that should be available
+            callback: the callback to call
+            param: additional data passed to the callback
+        """
+
         if thingId in self.registered:
             if param:
                 callback(self.registered[thingId], param)
@@ -49,33 +58,24 @@ class LoadingRegistry(object):
             self.delayedCalls[thingId].append(callback)
             self.params[thingId].append(param)
 
-    """
-    getter that ensures only one object for an id is used
-    """
-
-    def fetchThroughRegistry(self, thing):
-        if thing.id in self.registered:
-            return self.registered[thing.id]
-        else:
-            return thing
-
-
 # instantiate the registry
 loadingRegistry = LoadingRegistry()
 
-"""
-abstract class for saving something. It is intended to keep most saving related stuff away from the game code
-"""
-
-
 class Saveable(object):
+    """
+    abstract class for something that can be saved. 
+    It is intended to keep most saving related stuff away from the game code.
+    special saving can be done by overwriting getState/setState
+    attributes that should be saved need to be registered as such
+    """
+
     creationCounter = 0
 
-    """
-    basic state setting
-    """
-
     def __init__(self):
+        """
+        basic state setting
+        """
+
         super().__init__()
         self.attributesToStore = ["id", "creationCounter"]
         self.callbacksToStore = []
@@ -83,19 +83,17 @@ class Saveable(object):
         self.tupleDictsToStore = []
         self.tupleListsToStore = []
 
-    """
-    exposes a fetcher from th loading registry
-    bad code: this doesn't belong here
-    """
-
-    def fetchThroughRegistry(self, thing):
-        return loadingRegistry.fetchThroughRegistry(thing)
-
-    """
-    helper function to serialize callbacks
-    """
 
     def serializeCallback(self, callback):
+        """
+        helper function to serialize callbacks
+
+        Parameters:
+            callback: the callback to serialize
+        Returns:
+            the serialized callback
+        """
+
         if callback:
             if isinstance(callback, dict):
                 # serialize and store callback
@@ -114,11 +112,17 @@ class Saveable(object):
 
         return serializedCallback
 
-    """
-    helper function to deserialize callbacks
-    """
-
     def deserializeCallback(self, state, callback=None):
+        """
+        helper function to deserialize callbacks
+
+        Parameters:
+            state: the state of the serialized callback
+            callback: a existing callback to integrate into
+        Returns:
+            the deserialized callback
+        """
+
         if not callback:
             callback = {}
 
@@ -136,11 +140,14 @@ class Saveable(object):
             loadingRegistry.callWhenAvailable(state["container"], setContainer)
         return callback
 
-    """
-    get state as dict
-    """
-
     def getState(self):
+        """
+        prepares writing the gamestate to disc by breaking down objects to simple data structures
+
+        Returns:
+            the objects state expressed as a dicts, lists and other simple data
+        """
+
         state = {}
 
         # store tuple dicts
@@ -190,36 +197,14 @@ class Saveable(object):
 
         return state
 
-    """
-    load list of instances from list
-    """
-
-    def loadFromList(self, info, target, creationFunction):
-        # update changed things
-        if "changed" in info:
-            for item in target:
-                if item.id in info["states"]:
-                    item.setState(info["states"][item.id])
-
-        # remove removed things
-        if "removed" in info:
-            for item in target:
-                if item.id in info["removed"]:
-                    target.remove(item)
-
-        # create missing things
-        if "new" in info:
-            for itemId in info["new"]:
-                itemState = info["states"][itemId]
-                item = creationFunction(itemState)
-                item.setState(itemState)
-                target.append(item)
-
-    """
-    set state as dict
-    """
-
     def setState(self, state):
+        """
+        set the objects state by loading a quasi serialized state
+
+        Parameters:
+            state: the state to load
+        """
+
         # set tuple dicts
         for tupleDictName in self.tupleDictsToStore:
             if tupleDictName in state:
@@ -274,11 +259,15 @@ class Saveable(object):
                 else:
                     setattr(self, objectName, None)
 
-    """
-    call a callback in savable format
-    """
-
     def callIndirect(self, callback, extraParams={}):
+        """
+        call a callback that is stored in a savable format
+
+        Parameters:
+            callback: the callback to call
+            extraParams: some additional parameters
+        """
+
         if not isinstance(callback, dict):
             # bad code: direct function calls are deprecated, but not completely removed
             callback()
@@ -296,11 +285,3 @@ class Saveable(object):
                 function(callback["params"])
             else:
                 function()
-
-    """
-    get a new creation counter
-    """
-
-    def getCreationCounter(self):
-        self.creationCounter += 1
-        return self.creationCounter

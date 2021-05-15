@@ -3,9 +3,20 @@ import random
 
 
 class CityBuilder(src.items.Item):
+    """
+    a ingame item to build and extend cities
+    is a representation of a city and holds the coresponding information
+    takes tasks and delegates tasks to other manager
+    """
+
+
     type = "CityBuilder"
 
     def __init__(self, name="CityBuilder", noId=False):
+        """
+        set up the initialstate
+        """
+
         super().__init__(display="CB", name=name)
         self.commands = {}
         self.tasks = [{"task": "build factory"}]
@@ -101,6 +112,9 @@ class CityBuilder(src.items.Item):
             ("addBuildMine", "add build mine"),
             ("addBuildFactory", "add build factory"),
             ("addResource", "add resource"),
+            ("markRoadAsUnused", "mark roadtile as unused"),
+            ("markRoadAsUsed", "mark roadtile as used"),
+            ("clearTask", "clear one task"),
             ("clearTasks", "clear tasks"),
             ("clearError", "clear error"),
         ]
@@ -152,7 +166,6 @@ class CityBuilder(src.items.Item):
 
             for item in foundItems:
                 character.inventory.remove(item)
-
         elif selection == "addBuildFactory":
             newTask = {"task": "build factory"}
             self.tasks.append(newTask)
@@ -200,13 +213,54 @@ class CityBuilder(src.items.Item):
         elif selection == "addTaskExpandStorage":
             newTask = {"task": "extend storage"}
             self.tasks.append(newTask)
+        elif selection == "markRoadAsUnused":
+            options = []
+            for plot in self.roadTiles:
+                if plot not in self.unusedRoadTiles:
+                    options.append((plot, "%s" % (plot,)))
+            self.submenu = src.interaction.SelectionMenu(
+                "Select which road tile to mark as unused", options
+            )
+            character.macroState["submenue"] = self.submenu
+            character.macroState["submenue"].followUp = self.markRoadAsUnused
+        elif selection == "markRoadAsUsed":
+            options = []
+            for plot in self.unusedRoadTiles:
+                options.append((plot, "%s" % (plot,)))
+            self.submenu = src.interaction.SelectionMenu(
+                "Select which road tile to mark as used", options
+            )
+            character.macroState["submenue"] = self.submenu
+            character.macroState["submenue"].followUp = self.markRoadAsUsed
         elif selection == "clearTasks":
             self.tasks = []
             self.runningTasks = []
+        elif selection == "clearTask":
+            if self.tasks:
+                task = self.tasks.pop()
+                character.addMessage("cleared task %s"%(task["task"]))
+            else:
+                character.addMessage("no task to clear")
         elif selection == "clearError":
             self.error = {}
         else:
             character.addMessage("unknown selection")
+
+    def markRoadAsUnused(self):
+        """
+        mark a road as unused
+        """
+
+        plot = self.submenu.selection
+        self.unusedRoadTiles.append(plot)
+
+    def markRoadAsUsed(self):
+        """
+        mark a road as used
+        """
+
+        plot = self.submenu.selection
+        self.unusedRoadTiles.remove(plot)
 
     def triggerExpandStorage(self):
         if not self.storageCoordinate:

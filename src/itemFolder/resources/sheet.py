@@ -11,22 +11,16 @@ class Sheet(src.items.Item):
     call superclass constructor with modified parameters
     """
 
-    def __init__(self, name="sheet", noId=False):
-        super().__init__(display=src.canvas.displayChars.sheet, name=name)
+    def __init__(self, noId=False):
+        super().__init__(display=src.canvas.displayChars.sheet)
 
         self.bolted = False
         self.walkable = True
         self.recording = False
         self.character = None
-
-        self.level = 1
-
-        self.attributesToStore.extend(["recording", "level"])
-
-    def getLongInfo(self):
-        text = """
-A sheet. Simple building material and use to store information.
-
+        self.name = "sheet"
+        self.description = "Simple building material and use to store information."
+        self.usageInfo = """
 Can be used to create a Note or a written command directly from the sheet.
 Activate the sheet to get a selection, whether to create a command or a note.
 
@@ -43,17 +37,21 @@ Activate the sheet again to create to command and to stop recording.
 The second option ist to store a command from an existing macro buffer.
 Activate this option and select the macro buffer to create the command.
 
-Sheets are also needed as resource to create a blueprint in the blueprinter machine.
+Sheets are also needed as resource to create a blueprint in the blueprinter machine."""
 
+        self.level = 1
+
+        self.attributesToStore.extend(["recording", "level"])
+
+    def getLongInfo(self):
+        text = super().getLongInfo()
+        text += """
 Sheets can be produced from metal bars.
 
 This is a level %s item
 
-%s
-
 """ % (
             self.level,
-            self.type,
         )
         return text
 

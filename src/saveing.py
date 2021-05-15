@@ -278,7 +278,7 @@ class Saveable(object):
     call a callback in savable format
     """
 
-    def callIndirect(self, callback):
+    def callIndirect(self, callback, extraParams={}):
         if not isinstance(callback, dict):
             # bad code: direct function calls are deprecated, but not completely removed
             callback()
@@ -287,7 +287,12 @@ class Saveable(object):
                 return
             container = callback["container"]
             function = getattr(container, callback["method"])
+
+            if "params" not in callback and extraParams:
+                callback["params"] = {}
+
             if "params" in callback:
+                callback["params"].update(extraParams)
                 function(callback["params"])
             else:
                 function()

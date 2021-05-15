@@ -1,20 +1,21 @@
 import src
 
-"""
-"""
-
-
 class GooFaucet(src.items.Item):
+    """
+    ingame item to get goo from in a convinient way
+    """
+
     type = "GooFaucet"
 
-    """
-    call superclass constructor with modified paramters
-    """
-
     def __init__(self):
+        """
+        call superclass constructor with modified paramters
+        """
+
         super().__init__(display="GF")
 
         self.name = "goo flask"
+        self.description = "use it to collect items"
 
         self.bolted = False
         self.walkable = False
@@ -35,124 +36,89 @@ class GooFaucet(src.items.Item):
             ]
         )
 
-    """
-    collect items
-    """
+        # set up interaction menu
+        self.applyOptions.extend(
+            [
+                ("drink", "drink from the faucet"),
+                ("fillFlask", "fill goo flask"),
+                ("addTokens", "add goo tokens"),
+                ("showBalance", "show balance"),
+            ]
+        )
+        self.applyMap = {
+            "drink": self.drink,
+            "fillFlask": self.fillFlask,
+            "addTokens": self.addTokens,
+            "showBalance": self.showBalance,
+        }
 
-    def apply(self, character):
-        super().apply(character, silent=True)
-
-        options = [
-            ("drink", "drink from the faucet"),
-            ("fillFlask", "fill goo flask"),
-            ("addTokens", "add goo tokens"),
-            ("showBalance", "show balance"),
+        self.runsCommands = True
+        self.commandOptions = [
+            ("balanceTooLow", "balance too low"),
         ]
-        self.submenue = src.interaction.SelectionMenu(
-            "what do you want to do?", options
-        )
-        character.macroState["submenue"] = self.submenue
-        character.macroState["submenue"].followUp = self.apply2
-        self.character = character
 
-    def apply2(self):
-        if self.submenue.selection == "drink":
-            if self.balance < 2:
-                self.character.addMessage("balance too low")
-                self.runCommand("ballanceTooLow")
-                return
-            self.character.satiation = 1000
-            self.balance -= 2
-        if self.submenue.selection == "fillFlask":
-            filled = False
-            fillAmount = 100
-            for item in self.character.inventory:
-                if isinstance(item, GooFlask) and not item.uses >= fillAmount:
-                    fillAmount = fillAmount - item.uses
-                    if fillAmount * 2 > self.balance:
-                        self.character.addMessage("balance too low")
-                        self.runCommand("ballanceTooLow")
-                        return
-                    item.uses += fillAmount
-                    filled = True
-                    self.balance -= fillAmount * 2
-                    break
-            if filled:
-                self.character.addMessage("you fill the goo flask")
-        if self.submenue.selection == "addTokens":
-            pass
-        if self.submenue.selection == "showBalance":
-            self.character.addMessage("your balance is %s" % (self.balance,))
+    def drink(self, character):
+        """
+        handle a character drinking from the goo faucet
 
-    def configure(self, character):
-        options = [("addCommand", "add command")]
-        self.submenue = src.interaction.SelectionMenu(
-            "what do you want to do?", options
-        )
-        character.macroState["submenue"] = self.submenue
-        character.macroState["submenue"].followUp = self.configure2
-        self.character = character
+        Parameters:
+            character: the character trying to drink
+        """
 
-    def configure2(self):
-        if self.submenue.selection == "addCommand":
-            options = []
-            # options.append(("empty","no items left"))
-            options.append(("fullInventory", "inventory full"))
-            self.submenue = src.interaction.SelectionMenu(
-                "Setting command for handling triggers.", options
-            )
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.setCommand
-
-    def setCommand(self):
-        itemType = self.submenue.selection
-
-        commandItem = None
-        for item in self.container.getItemByPosition(
-            (self.xPosition, self.yPosition - 1)
-        ):
-            if item.type == "Command":
-                commandItem = item
-
-        if not commandItem:
-            self.character.addMessage("no command found - place command to the north")
+        if self.balance < 2:
+            character.addMessage("balance too low")
+            self.runCommand("balanceTooLow",character)
             return
 
-        self.commands[itemType] = commandItem.command
-        self.container.removeItem(commandItem)
+        character.addSatiation(1000)
+        self.balance -= 2
 
-        self.character.addMessage(
-            "added command for %s - %s" % (itemType, commandItem.command)
-        )
-        return
+    def fillFlask(self, character):
+        """
+        handle a character trying to fill its goo flask from the faucet
 
-    def runCommand(self, trigger, character=None):
-        if character is None:
-            character = self.character
+        Parameters:
+            character: the character trying to drink
+        """
 
-        if trigger not in self.commands:
-            return
+        filled = False
+        fillAmount = 100
+        for item in self.character.inventory:
+            if isinstance(item, GooFlask) and not item.uses >= fillAmount:
+                fillAmount = fillAmount - item.uses
+                if fillAmount * 2 > self.balance:
+                    self.character.addMessage("balance too low")
+                    self.runCommand("ballanceTooLow")
+                    return
+                item.uses += fillAmount
+                filled = True
+                self.balance -= fillAmount * 2
+                break
+        if filled:
+            self.character.addMessage("you fill the goo flask")
 
-        command = self.commands[trigger]
+    # NIY: add tokens to refill
+    # abstraction opportunity: many things could accept tokens
+    def addTokens(self, character):
+        """
+        !!!Not implemented yet!!!
+        handle a character
 
-        convertedCommand = []
-        for char in command:
-            convertedCommand.append((char, "norecord"))
+        Parameters:
+            character: the character trying to drink
+        """
 
-        character.macroState["commandKeyQueue"] = (
-            convertedCommand + character.macroState["commandKeyQueue"]
-        )
-        character.addMessage(
-            "running command to handle trigger %s - %s" % (trigger, command)
-        )
+        pass
+    
+    # bad code: should be viewable with examine
+    def showBalance(self, character):
+        """
+        handle a character trying to see how much credit the machine still has
 
-    def getLongInfo(self):
-        text = """
-item: GooFaucet
+        Parameters:
+            character: the character trying to drink
+        """
 
-description:
-use it to collect items
-"""
-
+        self.character.addMessage("your balance is %s" % (self.balance,))
 
 src.items.addType(GooFaucet)

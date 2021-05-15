@@ -89,6 +89,7 @@ class Item(src.saveing.Saveable):
         self.level = 1
         self.isFood = False
         self.nutrition = 0
+        self.commandOptions = []
 
         # set up metadata for saving
         self.attributesToStore.extend(
@@ -437,28 +438,6 @@ class Item(src.saveing.Saveable):
             result["blocked"] = self.blocked
         return result
 
-    def getConfigurationOptions(self, character):
-        """
-        returns a list of configuration options for the item
-        this is intended to be overwritten to add more options
-
-        Returns:
-            a dictionary containing function calls with description
-        """
-
-        options = {}
-        if self.runsCommands:
-            options["c"] = ("commands", None)  # ,self.spawnSetCommands)
-        if self.hasSettings:
-            options["s"] = ("machine settings", None)  # self.setMachineSettings)
-        if self.runsJobOrders:
-            options["j"] = ("run job order", self.runJobOrder)
-        if self.canReset:
-            options["r"] = ("reset", self.reset)
-        if self.hasMaintenance:
-            options["m"] = ("do maintenance", self.doMaintenance)
-        return options
-
     def getEaten(self, character):
         """
         get eaten by a character
@@ -470,27 +449,6 @@ class Item(src.saveing.Saveable):
         character.addMessage("you eat the %s" % (self.name,))
         character.addSatiation(self.nutrition)
         self.destroy(generateSrcap=False)
-
-    def reset(self, character):
-        """
-        dummy for handling a character trying to reset the machine
-
-        Parameters:
-            character: the character triggering the reset request
-        """
-
-        if character:
-            character.addMessage("you reset the machine")
-
-    def doMaintenance(self, character):
-        """
-        dummy for handling a character trying to do maintenance
-
-        Parameters:
-            character: the character triggering the maintenance offer
-        """
-
-        character.addMessage("no maintenance action set")
 
     def configure(self, character):
         """
@@ -544,6 +502,106 @@ class Item(src.saveing.Saveable):
             option = options[self.submenue.keyPressed][1](character)
         else:
             character.addMessage("no configure action found for this key")
+
+    # bug: breaks saving if a npc uses this while saving
+    # it breaks because function pointers cannot be saved directly
+    # needs to be migrate to indirect call
+    def getConfigurationOptions(self, character):
+        """
+        returns a list of configuration options for the item
+        this is intended to be overwritten to add more options
+
+        Returns:
+            a dictionary containing function calls with description
+        """
+
+        options = {}
+        if self.runsCommands:
+            options["c"] = ("add command", self.spawnSetCommand)
+        if self.hasSettings:
+            options["s"] = ("machine settings", None)  # self.setMachineSettings)
+        if self.runsJobOrders:
+            options["j"] = ("run job order", self.runJobOrder)
+        if self.canReset:
+            options["r"] = ("reset", self.reset)
+        if self.hasMaintenance:
+            options["m"] = ("do maintenance", self.doMaintenance)
+        return options
+
+    def spawnSetCommand(self,character):
+        """
+        spawns a menu to set a command
+        will call setCommand eventually
+
+        Parameters:
+            character: the character trying to set a command
+        """
+
+        options = self.commandOptions
+        self.submenue = src.interaction.SelectionMenu(
+            "what command do you want to set?", options
+        )
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = {
+            "method": "handleSetCommandMenu",
+            "container": self,
+            "params": {"character": character},
+        }
+
+    def handleSetCommandMenu(self,params):
+        """
+        handle a character having selected which command to set
+
+        Parameters:
+            params: context from the interaction menu
+        """
+
+        # get command from characters inventory
+        character = params["character"]
+        commands = character.searchInventory("Command")
+        if not commands:
+            character.addMessage("no command found in inventory")
+            return
+        command = commands[0]
+        character.removeItemFromInventory(command)
+
+        character.addMessage("you set the command for %s"%params["selection"])
+        self.setCommand(command,params["selection"])
+
+    def setCommand(self,command,eventName):
+        """
+        actually set an command
+        the command set will be run by the item under certain condition
+        is intended to be used by the player to automate things
+        is used to automate prefabricated settings
+
+        Parameters:
+            command: the command to set
+            eventName: the name of the event that should trigger running the command
+        """
+        
+        self.commands[eventName] = command.command
+
+    def reset(self, character):
+        """
+        dummy for handling a character trying to reset the machine
+
+        Parameters:
+            character: the character triggering the reset request
+        """
+
+        if character:
+            character.addMessage("you reset the machine")
+
+    def doMaintenance(self, character):
+        """
+        dummy for handling a character trying to do maintenance
+
+        Parameters:
+            character: the character triggering the maintenance offer
+        """
+
+        character.addMessage("no maintenance action set")
 
     def addTriggerToTriggerMap(self, result, name, function):
         """
@@ -891,6 +949,12 @@ rare = [
 
 
 def addType(toRegister):
+    """
+    add a item type to the item map
+    This is used to be able to store the item classes without knowing where everything exactly is.
+    Each item needs to actively register here or it will not be available.
+    """
+
     itemMap[toRegister.type] = toRegister
 
 

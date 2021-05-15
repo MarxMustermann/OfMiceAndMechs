@@ -2684,7 +2684,7 @@ class SubMenu(src.saveing.Saveable):
                 self.selection = self.options[key]
                 self.options = None
                 if self.followUp:
-                    self.callIndirect(self.followUp)
+                    self.callIndirect(self.followUp,extraParams={"selection":self.selection})
                 return True
         else:
             self.lockOptions = False

@@ -14,7 +14,7 @@ import time
 # import basic internal libs
 import src.items as items
 
-items.setup()
+import src.itemFolder
 import src.quests as quests
 import src.rooms as rooms
 import src.characters as characters

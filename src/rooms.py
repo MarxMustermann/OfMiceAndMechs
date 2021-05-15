@@ -878,6 +878,11 @@ class Room(src.saveing.Saveable):
         if item in self.itemsOnFloor:
             self.itemsOnFloor.remove(item)
 
+        item.xPosition = None
+        item.zPosition = None
+        item.yPosition = None
+        item.container = None
+
     def removeItems(self, items):
         for item in items:
             self.removeItem(item)

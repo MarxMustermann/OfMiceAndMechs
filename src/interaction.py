@@ -35,14 +35,11 @@ urwid = None
 fixedTicks = False
 speed = None
 
-# the game loop
-# bad code: either unused or should be contained in terrain
-"""
-advance the game
-"""
-
-
+# bad code: should be contained in gamestate
 def advanceGame():
+    """
+    advance the game
+    """
     for row in src.gamestate.gamestate.terrainMap:
         for specificTerrain in row:
             for character in specificTerrain.characters:
@@ -64,7 +61,11 @@ def advanceGame():
     src.gamestate.gamestate.tick += 1
 
 
-class abstractedDisplay(object):
+class AbstractedDisplay(object):
+    """
+    an abstraction that allows to not only use urwid for texts
+    """
+
     def __init__(self, urwidInstance):
         self.urwidInstance = urwidInstance
 
@@ -81,6 +82,10 @@ class abstractedDisplay(object):
 
 
 def setUpUrwid():
+    """
+    initialise console based rendering
+    """
+
     import urwid
 
     # the containers for the shown text
@@ -94,9 +99,9 @@ def setUpUrwid():
     global frame
     global loop
 
-    main = abstractedDisplay(urwidMain)
-    footer = abstractedDisplay(urwidFooter)
-    header = abstractedDisplay(urwidHeader)
+    main = AbstractedDisplay(urwidMain)
+    footer = AbstractedDisplay(urwidFooter)
+    header = AbstractedDisplay(urwidHeader)
 
     urwidMain.set_layout("left", "clip")
     frame = urwid.Frame(
@@ -106,29 +111,23 @@ def setUpUrwid():
     # get the interaction loop from the library
     loop = urwid.MainLoop(frame, unhandled_input=keyboardListener)
 
-    def tmp(loop, user_data):
-        gameLoop(loop, user_data)
+    loop.set_alarm_in(0.1, gameLoop)
 
-    loop.set_alarm_in(0.1, tmp)
-
-    loop.set_alarm_in(0.1, tmp2)
+    loop.set_alarm_in(0.1, handleMultiplayerClients)
 
 
 def setUpNoUrwid():
+    """
+    initialise rendering without a console
+    """
+
     global main
     global footer
     global header
 
-    main = abstractedDisplay(None)
-    footer = abstractedDisplay(None)
-    header = abstractedDisplay(None)
-
-
-################################################################################
-#
-#        the main interaction loop
-#
-################################################################################
+    main = AbstractedDisplay(None)
+    footer = AbstractedDisplay(None)
+    header = AbstractedDisplay(None)
 
 # timestamps for detecting periods in inactivity etc
 lastLagDetection = time.time()
@@ -152,12 +151,12 @@ footerSkipCounter = 20
 
 macros = {}
 
-"""
-calculate footer text
-"""
-
-
+# obsolete: redo or delete
 def setFooter():
+    """
+    calculate and set footer text
+    """
+
     # bad code: global variables
     global footerInfo
     global footerText
@@ -204,24 +203,28 @@ def setFooter():
     footerLength = len(footerText)
     footerSkipCounter = 20
 
-
-"""
-calls show_or_exit with on param less
-bad code: keystrokes should not be injected in the first place
-"""
-
-
+# bad code: keystrokes should not be injected in the first place
 def callShow_or_exit(loop, key):
+    """
+    helper function around urwids key handling
+    is used to inject keystrokes
+
+    Parameters:
+        loop: the urwid main loop
+        key: the key pressed
+    """
+
     show_or_exit(key)
 
-
-"""
-the callback for urwid keystrokes
-bad code: this is abused as the main loop for this game
-"""
-
-
 def show_or_exit(key, charState=None):
+    """
+    add keystrokes from urwid to the players command queue
+
+    Parameters:
+        key: the key pressed
+        charState: the state of the char to add the keystroke to
+    """
+
     if charState is None:
         charState = src.gamestate.gamestate.mainChar.macroState
 
@@ -229,26 +232,22 @@ def show_or_exit(key, charState=None):
     charState["commandKeyQueue"].append((key, []))
 
 
-"""
-the abstracted processing for keystrokes.
-Takes a list of keystrokes, that have been converted to a common format
-"""
-
-
-def processAllInput(commandKeyQueue):
-    for key in commandKeyQueue:
-        processInput(key)
-
-
 shownStarvationWarning = False
 
-"""
-handle a keystroke
-bad code: there are way too much lines of code in this function
-"""
-
-
+# bad code: there are way too much lines of code in this function
+# bad code: probably only one parameter needed
 def processInput(key, charState=None, noAdvanceGame=False, char=None):
+    """
+    handle a keystroke
+
+    Parameters:
+        charState: the state of the character the input belongs to 
+                   this can probably be deduced from char
+        noAdvanceGame: flag indication whether the game should be advanced
+                       always True in practice
+        char: the character the input belongs to
+    """
+
     if char.dead:
         return
 
@@ -1683,7 +1682,6 @@ current macros:
         while counter < num:
             commands.append((key, ["norecord"]))
             counter += 1
-        # processAllInput(commands)
         charState["commandKeyQueue"] = commands + charState["commandKeyQueue"]
 
         charState["doNumber"] = False
@@ -2471,18 +2469,23 @@ press key for advanced drop
         footer.set_text((urwid.AttrSpec("default", "default"), text))
 
 
-"""
-The base class for submenues offering selections
-bad code: there is redundant code from the specific submenus that should be put here
-"""
 
 
+# bad code: there is redundant code from the specific submenus that should be put here
+# bad code: there is spcific code from the selection submenu that should NOT be here
 class SubMenu(src.saveing.Saveable):
     """
-    straightforward state initialization
+    The base class for submenus offering selections
     """
 
     def __init__(self, default=None):
+        """
+        set up basic state
+
+        Parameters:
+            default: the default selection
+        """
+
         self.state = None
         self.options = {}
         self.selection = None
@@ -2511,11 +2514,11 @@ class SubMenu(src.saveing.Saveable):
         self.initialState = self.getState()
         self.id = uuid.uuid4().hex
 
-    """
-    set internal state from state dictionary
-    """
-
     def setState(self, state):
+        """
+        set internal state from state dictionary
+        """
+
         super().setState(state)
 
         # load options
@@ -4107,6 +4110,12 @@ def keyboardListener(key):
             src.gamestate.gamestate.mainChar.interactionState["ifParam1"].clear()
             src.gamestate.gamestate.mainChar.interactionState["ifParam2"].clear()
 
+    elif key == "ctrl t":
+        if src.gamestate.gamestate.gameHalted:
+            src.gamestate.gamestate.gameHalted = False
+        else:
+            src.gamestate.gamestate.gameHalted = True
+
     elif key == "ctrl p":
         if not src.gamestate.gamestate.mainChar.macroStateBackup:
             src.gamestate.gamestate.mainChar.macroStateBackup = (
@@ -4215,7 +4224,17 @@ def keyboardListener(key):
 
         with open("roomExport.json", "w") as exportFile:
             exportFile.write(serializedState)
-
+    elif src.gamestate.gamestate.gameHalted:
+        if key == "M":
+            # 1000 moves and then stop
+            src.gamestate.gamestate.stopGameInTicks = 1000
+        if key == "D":
+            src.gamestate.gamestate.stopGameInTicks = 100
+        if key == "X":
+            src.gamestate.gamestate.stopGameInTicks = 10
+        if key == "I":
+            src.gamestate.gamestate.stopGameInTicks = 1
+        src.gamestate.gamestate.gameHalted = False
     else:
         show_or_exit(key, charState=state)
 
@@ -4225,6 +4244,17 @@ lastAutosave = 0
 
 
 def gameLoop(loop, user_data=None):
+    if not src.gamestate.gamestate.stopGameInTicks is None:
+        if src.gamestate.gamestate.stopGameInTicks == 0:
+            src.gamestate.gamestate.gameHalted = True
+            src.gamestate.gamestate.stopGameInTicks = None
+        else:
+            src.gamestate.gamestate.stopGameInTicks -= 1
+
+    if src.gamestate.gamestate.gameHalted:
+        loop.set_alarm_in(0.001, gameLoop)
+        return
+
     import time
 
     global lastAdvance
@@ -4485,7 +4515,15 @@ loop = None
 s = None
 
 
-def tmp2(loop, user_data):
+def handleMultiplayerClients(loop, user_data):
+    """
+    basically a copy of the main loop for networked multiplayer
+
+    Parameters:
+        loop: the main loop (urwids main loop)
+        user_data: parameter that needs to be there but is not used
+    """
+
     if not multiplayer:
         return
 
@@ -4508,7 +4546,7 @@ def tmp2(loop, user_data):
         data = conn.recv(1024 * 1024 * 1024)
 
         if data == b"ignore":
-            loop.set_alarm_in(0.1, tmp2)
+            loop.set_alarm_in(0.1, handleMultiplayerClients)
             return
 
         realMainChar = src.gamestate.gamestate.mainChar
@@ -4531,6 +4569,9 @@ def tmp2(loop, user_data):
         src.gamestate.gamestate.mainChar = realMainChar
 
         def serializeUrwid(inData):
+            """
+            """
+
             outData = []
             for item in inData:
                 if isinstance(item, tuple):
@@ -4555,7 +4596,7 @@ def tmp2(loop, user_data):
         data = info.encode("utf-8")
         conn.sendall(data)
 
-    loop.set_alarm_in(0.1, tmp2)
+    loop.set_alarm_in(0.1, handleMultiplayerClients)
 
 
 # the directory for the submenus
@@ -4572,13 +4613,11 @@ subMenuMap = {
     "OneKeystrokeMenu": OneKeystrokeMenu,
 }
 
-"""
-get item instances from dict state
-"""
-
-
 def getSubmenuFromState(state):
-    print(state)
+    """
+    load a submenu from a serialised state
+    """
+
     subMenu = subMenuMap[state["type"]]()
     subMenu.setState(state)
     src.saveing.loadingRegistry.register(subMenu)

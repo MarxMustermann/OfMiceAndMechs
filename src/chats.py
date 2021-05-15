@@ -158,7 +158,7 @@ class ConfigurableChat(Chat):
 
 """
 the chat for collecting the reward
-bad code: subSelf
+bad code: self
 """
 
 
@@ -709,14 +709,14 @@ class JobChatFirst(Chat):
     basic state initialization
     """
 
-    def __init__(subSelf, partner):
-        subSelf.state = None
-        subSelf.partner = partner
-        subSelf.firstRun = True
-        subSelf.done = False
-        subSelf.persistentText = ""
-        subSelf.dispatchedPhase = False
-        subSelf.selectedQuest = None
+    def __init__(self, partner):
+        self.state = None
+        self.partner = partner
+        self.firstRun = True
+        self.done = False
+        self.persistentText = ""
+        self.dispatchedPhase = False
+        self.selectedQuest = None
         super().__init__()
 
     """

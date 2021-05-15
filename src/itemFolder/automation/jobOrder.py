@@ -46,12 +46,14 @@ class JobOrder(src.items.Item):
                 ("runJobOrder", "run job order macro"),
                 ("runSingleStep", "run single step"),
                 ("showInfo", "show info"),
+                ("addBreakPoint", "add break point"),
             ]
         )
         self.applyMap = {
             "runJobOrder": self.runJobOrder,
             "runSingleStep": self.runSingleStep,
             "showInfo": self.showInfo,
+            "addBreakPoint": self.addBreakPoint,
         }
 
     def getTask(self):
@@ -116,6 +118,34 @@ tasks:
         )
         character.macroState["submenue"] = submenue
 
+    def addBreakPoint(self, character):
+        """
+        add a breakpoint to the job order
+        the joborder should stop running when reaching the breakpoint
+        this is intended to allow debugging
+
+        Parameters:
+            character: the character to set the breakpoint
+        """
+
+        options = []
+
+        index = 0
+        for task in self.tasks:
+            options.append((index, task["task"]))
+            index += 1
+
+        self.submenue = src.interaction.SelectionMenu(
+            "On what task do you want to set the breakpoint?", options
+        )
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = self.doAddBreakPoint
+        self.character = character
+
+    def doAddBreakPoint(self):
+        self.character.addMessage("breakpoint set")
+        self.tasks[2]["breakPoint"] = True
+
     def runSingleStep(self, character):
         """
         runs a single task from a job order
@@ -123,7 +153,7 @@ tasks:
             character: the character to run the task on
         """
 
-        self.runJobOrder(self, character, True)
+        self.runJobOrder(character, True)
 
     def runJobOrder(self, character, singleStep=False):
         """
@@ -139,11 +169,19 @@ tasks:
             character.addMessage("no task left")
             return
 
+        if task.get("breakPoint"):
+            character.addMessage("triggered breakpoint")
+            character.addMessage(character.getCommandString())
+            character.clearCommandString()
+            del task["breakPoint"]
+            return
+
         if task.get("command"):
             command = self.tasks[-1]["command"]
             self.popTask()
 
         if self.autoRun and not singleStep:
+            nextTask = self.getTask()
             character.runCommandString("Jj.j")
         character.runCommandString(command)
 

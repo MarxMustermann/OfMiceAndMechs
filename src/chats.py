@@ -158,7 +158,6 @@ class ConfigurableChat(Chat):
 
 """
 the chat for collecting the reward
-bad code: self
 """
 
 

@@ -6,13 +6,7 @@ import config
 import src.logger
 import src.gamestate
 import src.interaction
-
-
-def setup():
-    """
-    load the item modules
-    """
-    import src.itemFolder
+import src.itemFolder
 
 
 # load basic libs
@@ -720,7 +714,7 @@ class Item(src.saveing.Saveable):
         downgrade item
         """
 
-        self.level += 1
+        self.level -= 1
 
     # bad code: should be extra class
     def addListener(self, listenFunction, tag="default"):

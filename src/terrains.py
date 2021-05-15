@@ -1563,6 +1563,7 @@ class Terrain(src.saveing.Saveable):
         item.xPosition = None
         item.zPosition = None
         item.yPosition = None
+        item.container = None
 
     def removeItems(self, items, recalcuate=True):
         for item in items:

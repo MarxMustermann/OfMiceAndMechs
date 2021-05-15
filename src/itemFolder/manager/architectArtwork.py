@@ -77,7 +77,7 @@ class ArchitectArtwork(src.items.Item):
                 context["character"],
                 [
                     newTask,
-                    {"task": "do maintanence"},
+                    {"task": "do maintenance"},
                 ],
                 "StockpileMetaManager",
             )

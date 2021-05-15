@@ -3,13 +3,16 @@ import random
 
 
 class QuestArtwork(src.items.Item):
+    """
+
+    """
+
     type = "QuestArtwork"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        call superclass constructor with modified parameters
+        """
 
         self.tasks = []
 

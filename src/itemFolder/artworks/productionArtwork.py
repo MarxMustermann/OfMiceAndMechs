@@ -1,19 +1,19 @@
 import src
 
-"""
-token object ment to produce anything from metal bars
-bad pattern: serves as dummy for actual production lines
-"""
-
-
 class ProductionArtwork(src.items.Item):
+    """
+    godmode object producing anything from metal bars
+    is used in gameplay since it has a very heavy cooldown
+    bad pattern: serves as dummy for actual production lines
+    """
+
     type = "ProductionArtwork"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        call superclass constructor with modified parameters
+        """
+
         super().__init__(display=src.canvas.displayChars.productionArtwork)
 
         self.coolDown = 10000
@@ -21,16 +21,25 @@ class ProductionArtwork(src.items.Item):
         self.charges = 10
         self.godMode = False
         self.name = "production artwork"
+        self.description = """
+This is a one of its kind machine. It cannot be reproduced and was created by an artisan.
+This machine can build almost anything, but is very slow."""
+        self.usageInfo = """
+Prepare for production by placing metal bars to the west/left of this machine.
+Activate the machine to start producing. You will be shown a list of things to produce.
+Select the thing to produce and confirm."""
 
         self.attributesToStore.extend(
             ["coolDown", "coolDownTimer", "charges", "godMode"]
         )
 
-    """
-    trigger production of a player selected item
-    """
+    def apply(self, character):
+        """
+        trigger production of a player selected item
 
-    def apply(self, character, resultType=None):
+        Parameters:
+            character: the character producing something
+        """
 
         if not self.godMode:
 
@@ -120,11 +129,11 @@ class ProductionArtwork(src.items.Item):
         character.macroState["submenue"].followUp = self.produceSelection
         self.targetItemType = None
 
-    """
-    trigger production of the selected item
-    """
-
     def produceSelection(self):
+        """
+        handle the UI for selecting an item to produce and trigger production of the selected item
+        """
+
         if not self.targetItemType:
             self.targetItemType = self.submenue.selection
             if self.targetItemType == src.items.itemMap["Machine"]:
@@ -158,11 +167,13 @@ class ProductionArtwork(src.items.Item):
         if self.targetItemType:
             self.produce(self.targetItemType)
 
-    """
-    produce an item
-    """
+    def produce(self, itemType):
+        """
+        spawn the item to produce
 
-    def produce(self, itemType, resultType=None):
+        Parameters:
+            itemType: the type of item to produce
+        """
 
         if not self.godMode:
             # gather a metal bar
@@ -231,20 +242,23 @@ class ProductionArtwork(src.items.Item):
         self.container.addItem(new, (self.xPosition + 1, self.yPosition, self.zPosition))
 
     def getRemainingCooldown(self):
+        """
+        calculate the remaining cooldown
+
+        Returns:
+            the remaining cooldown in ticks
+        """
+
         return self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer)
 
     def getLongInfo(self):
-        text = """
-item: ProductionArtwork
+        """
+        returns a longer than normal text description
+        """
 
-description:
-This is a one of its kind machine. It cannot be reproduced and was created by an artisan.
-This machine can build almost anything, but is very slow.
+        text = super().getLongInfo()
 
-Prepare for production by placing metal bars to the west/left of this machine.
-Activate the machine to start producing. You will be shown a list of things to produce.
-Select the thing to produce and confirm.
-
+        text += """
 After using this machine you need to wait %s ticks till you can use this machine again.
 """ % (
             self.coolDown,

@@ -2587,10 +2587,8 @@ XXXXXXXXXX
             item.yPosition = yPosition
             self.addItems([item])
 
-        npc = self.fetchThroughRegistry(
-            src.characters.Character(
+        npc = src.characters.Character(
                 xPosition=4, yPosition=4, seed=self.yPosition + self.offsetY + 4 * 12
-            )
         )
 
         # determine in what order storage space should be used
@@ -3070,19 +3068,15 @@ XXXXXXXXXXX
         self.hoppers = []
 
         # add hoppers
-        npc = self.fetchThroughRegistry(
-            src.characters.Character(
+        npc = src.characters.Character(
                 xPosition=4, yPosition=4, seed=self.yPosition + self.offsetY + 4 * 12
-            )
         )
         self.hoppers.append(npc)
         self.addCharacter(npc, 2, 2)
-        npc = self.fetchThroughRegistry(
-            src.characters.Character(
+        npc = src.characters.Character(
                 xPosition=4,
                 yPosition=5,
                 seed=self.yPosition + self.offsetY + 4 * 23 + 30,
-            )
         )
         self.hoppers.append(npc)
         self.addCharacter(npc, 2, 3)

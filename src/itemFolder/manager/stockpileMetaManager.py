@@ -79,7 +79,7 @@ class StockpileMetaManager(src.items.Item):
             ("clearInventory", "clear inventory"),
             ("addItem", "add item"),
             ("addTask", "add Task"),
-            ("doMaintanance", "do maintanance"),
+            ("doMaintenance", "do maintenance"),
             ("test", "test"),
         ]
         self.submenue = src.interaction.SelectionMenu(
@@ -552,23 +552,24 @@ class StockpileMetaManager(src.items.Item):
 
             if jobOrder.getTask()["task"] == "add stockpile":
                 self.doAddStockpile(jobOrder.popTask())
-            if jobOrder.getTask()["task"] == "do maintanence":
+            elif jobOrder.getTask()["task"] == "do maintenance":
                 self.character.runCommandString("Js.sssj")
-            if jobOrder.getTask()["task"] == "store item":
+                jobOrder.popTask()
+            elif jobOrder.getTask()["task"] == "store item":
                 self.character.runCommandString("Js.sj")
                 jobOrder.popTask()
-            if jobOrder.getTask()["task"] == "clear inventory":
+            elif jobOrder.getTask()["task"] == "clear inventory":
                 amount = len(self.character.inventory)
                 command = "Js.s.j" * amount
                 self.character.runCommandString(command)
-            if jobOrder.getTask()["task"] == "configure machine":
+            elif jobOrder.getTask()["task"] == "configure machine":
                 task = jobOrder.popTask()
 
                 if "commands" in task:
                     self.commands.update(task["commands"])
                 if "managerName" in task:
                     self.roomManagerName = task["managerName"]
-            if jobOrder.getTask()["task"] == "processStatusReport":
+            elif jobOrder.getTask()["task"] == "processStatusReport":
                 stockPile = jobOrder.information["stockPile"]
                 stockPileInfo = self.stockPileInfo[stockPile]
 
@@ -598,6 +599,10 @@ class StockpileMetaManager(src.items.Item):
                 if stockPileInfo.get("sink"):
                     stockPileInfo["desiredAmount"] = stockPileInfo["maxAmount"]
                 stockPileInfo["active"] = True
+                jobOrder.popTask()
+                self.character.jobOrders.pop()
+            else:
+                self.character.addMessage("unknown task type %s"%task["task"])
                 jobOrder.popTask()
                 self.character.jobOrders.pop()
 

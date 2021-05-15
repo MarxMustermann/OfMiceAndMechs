@@ -90,6 +90,7 @@ class Item(src.saveing.Saveable):
         self.isFood = False
         self.nutrition = 0
         self.commandOptions = []
+        self.godMode = False
 
         # set up metadata for saving
         self.attributesToStore.extend(
@@ -103,10 +104,6 @@ class Item(src.saveing.Saveable):
                 "walkable",
                 "bolted",
                 "description",
-                "isConfigurable",
-                "hasSettings",
-                "runsCommands",
-                "canReset",
                 "commands",
             ]
         )

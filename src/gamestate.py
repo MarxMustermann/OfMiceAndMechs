@@ -16,7 +16,6 @@ gamestate = None
 phasesByName = {}
 
 
-
 class GameState(src.saveing.Saveable):
     """
     the container for all of the gamestate
@@ -32,6 +31,8 @@ class GameState(src.saveing.Saveable):
         self.mainChar = None
         self.successSeed = 0
         self.tick = 0
+        self.gameHalted = False
+        self.stopGameInTicks = None
 
     # bad code: initialization should happen in story or from loading
     def setup(self, phase=None, seed=0):

@@ -277,9 +277,6 @@ class Saveable(object):
             container = callback["container"]
             function = getattr(container, callback["method"])
 
-            if "params" not in callback and extraParams:
-                callback["params"] = {}
-
             if "params" in callback:
                 callback["params"].update(extraParams)
                 function(callback["params"])

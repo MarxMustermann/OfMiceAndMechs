@@ -311,6 +311,16 @@ class Character(src.saveing.Saveable):
             convertedCommand + self.macroState["commandKeyQueue"]
         )
 
+    def getCommandString(self):
+        """
+        returns the character command string
+
+        Returns:
+            the command string
+        """
+
+        return self.macroState["commandKeyQueue"]
+
     def clearCommandString(self):
         """
         clear macro automation command queue
@@ -777,10 +787,6 @@ class Character(src.saveing.Saveable):
                         state["inventory"]["states"][inventoryId]
                     )
                     self.inventory.append(item)
-            else:
-                self.loadFromList(
-                    state["inventory"], self.inventory, src.items.getItemFromState
-                )
 
         # set quests
         if "quests" in state:
@@ -791,11 +797,6 @@ class Character(src.saveing.Saveable):
                     if quest.id in state["quests"]["removed"]:
                         quest.deactivate()
                         quest.completed = True
-
-            # load quests using the saving class
-            self.loadFromList(
-                state["quests"], self.quests, src.quests.getQuestFromState
-            )
 
             # load a fixed set of quests
             if "questIds" in state["quests"]:

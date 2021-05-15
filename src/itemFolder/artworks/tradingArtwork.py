@@ -126,6 +126,9 @@ class TradingArtwork(src.items.Item):
             if item == "Machine":
                 if not random.randint(1, 10) == 5:
                     recieve = [item, 1, random.choice(src.items.commons)]
+                    # bad code: information about what can be produced in a machine should be stored and fetched
+                    if recieve[2] == "MetalBars":
+                        continue
                 else:
                     recieve = [item, 1, random.choice(src.items.semiCommons)]
 

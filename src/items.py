@@ -6,13 +6,7 @@ import config
 import src.logger
 import src.gamestate
 import src.interaction
-
-
-def setup():
-    """
-    load the item modules
-    """
-    import src.itemFolder
+import src.itemFolder
 
 
 # load basic libs

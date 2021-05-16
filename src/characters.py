@@ -1004,7 +1004,7 @@ class Character(src.saveing.Saveable):
             force: flag overriding sanity checks
         """
 
-        if len(self.inventory) < self.maxInventorySpace:
+        if force or len(self.inventory) < self.maxInventorySpace:
             self.inventory.append(item)
         else:
             self.addMessage("inventory full")

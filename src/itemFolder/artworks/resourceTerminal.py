@@ -1,32 +1,42 @@
 import src
 
-"""
-"""
-
-
 class ResourceTerminal(src.items.Item):
+    """
+    """
+
     type = "ResourceTerminal"
 
-    """
-    call superclass constructor with modified paramters
-    """
-
     def __init__(self):
-        super().__init__(display="RT")
+        """
+        configure super class
+        """
 
+        super().__init__(display="RT")
         self.name = "scrap terminal"
+        self.description = "A resource Terminal"
 
         self.balance = 0
         self.resource = "Scrap"
         self.attributesToStore.extend(["balance", "resource"])
 
     def setResource(self, resource):
+        """
+        set the ressource to hande
+
+        Parameters:
+            ressource (string): the ressource to handle 
+        """
         self.resource = resource
 
-    """
-    """
-
+    # abstraction: should use superclass ability
     def apply(self, character):
+        """
+        spawn a selection of actions that trigger apply actions
+
+        Parameters:
+            character: the character using the item
+        """
+
         super().apply(character, silent=True)
         options = [
             ("showBalance", "show balance"),
@@ -42,7 +52,12 @@ class ResourceTerminal(src.items.Item):
         character.macroState["submenue"].followUp = self.apply2
         self.character = character
 
+    # bad code: should be splited
     def apply2(self):
+        """
+        do the apply actions
+        """
+
         if self.submenue.selection == "showBalance":
             self.character.addMessage("your balance is %s" % ((self.balance,)))
 
@@ -94,14 +109,5 @@ class ResourceTerminal(src.items.Item):
                 self.character.inventory.append(src.items.itemMap[self.resource]())
 
             self.character.addMessage("your balance is now %s" % (self.balance,))
-
-    def getLongInfo(self):
-        text = """
-item: ResourceTerminal
-
-description:
-A resource Terminal.
-"""
-
 
 src.items.addType(ResourceTerminal)

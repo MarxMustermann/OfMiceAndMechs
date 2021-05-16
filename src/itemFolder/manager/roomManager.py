@@ -26,14 +26,14 @@ class RoomManager(src.items.Item):
         # set up interaction menu
         self.applyOptions.extend(
             [
-                ("doMaintance", "do maintanance"),
+                ("doMaintence", "do maintenance"),
                 ("do action", "do action"),
                 ("addTaskSelection", "add task"),
                 ("clearTasks", "clear tasks"),
             ]
         )
         self.applyMap = {
-            "doMaintance": self.doMaintance,
+            "doMaintence": self.doMaintence,
             "do action": self.actionSelection,
             "addTaskSelection": self.addTaskSelection,
             "clearTasks": self.clearTasks,
@@ -123,24 +123,48 @@ class RoomManager(src.items.Item):
         # the name of the manager used for pathing
         self.managerName = "comandCenter"
 
+    # abstraction: should use superclass ability
     def actionSelection(self, character):
+        """
+        offers a selection to run and triggers running them
+
+        Parameters:
+            character: the character to run the action on
+        """
+
         options = [
             ("storeItem", "add item to storage"),
             ("spawnMaintenanceNpc", "spawn maintenance npc"),
         ]
-        self.submenue = src.interaction.SelectionMenu(
+        submenu = src.interaction.SelectionMenu(
             "what action do you want to do?", options
         )
-        character.macroState["submenue"] = self.submenue
-        character.macroState["submenue"].followUp = self.doAction
-        self.actionType = None
-        self.character = character
+        character.macroState["submenue"] = submenu
+        character.macroState["submenue"].followUp = {
+            "method": "doAction",
+            "container": self,
+            "params": {"character":character},
+        }
 
     def clearTasks(self, character):
+        """
+        remove all tasks from this machine
+
+        Parameters:
+            character: the character triggering this action
+        """
+
         character.addMessage("cleared tasks")
         self.tasks = []
 
     def addTaskSelection(self, character):
+        """
+        offers a selection of tasks to add and triggers adding them to the machine
+
+        Parameters:
+            character: the character triggering this action
+        """
+
         options = [
             ("add item", "add item"),
             ("add manager", "add manager"),
@@ -151,15 +175,27 @@ class RoomManager(src.items.Item):
             ("clear all", "clear all"),
             ("clear item slot", "clear item slot"),
         ]
-        self.submenue = src.interaction.SelectionMenu(
+        submenu = src.interaction.SelectionMenu(
             "what task do you want to add?", options
         )
-        character.macroState["submenue"] = self.submenue
-        character.macroState["submenue"].followUp = self.addTask
-        self.character = character
-        self.tasksType = None
+        character.macroState["submenue"] = submenu
+        character.macroState["submenue"].followUp = {
+            "method": "addTask",
+            "container": self,
+            "params": {"character": character},
+        }
 
     def generatePathFromTo(self, start, end):
+        """
+        generate a path from the start postion to the en position
+
+        Parameters:
+           start: the start position
+           end: the end position
+        Returns:
+            the generated path
+        """
+
         path = ""
         path += "a" * (start[0] - 6) + "d" * (6 - start[0])
         if start[1] > 6 and end[1] < 6:
@@ -176,6 +212,14 @@ class RoomManager(src.items.Item):
         return path
 
     def characterDropMachine(self, character, itemSlot):
+        """
+        makes a character drop something at an itemSlot
+
+        Parameters:
+            character: the character to drop the machine
+            itemSlot: the position to drop the machine on
+        """
+
         characterPos = [character.xPosition, character.yPosition]
         itemSlot = itemSlot[:]
         itemSlot[1] -= 1
@@ -185,46 +229,62 @@ class RoomManager(src.items.Item):
         command += self.generatePathFromTo(itemSlot, characterPos)
         character.runCommandString(command)
 
-    def addTask(self):
-        if self.tasksType is None:
-            if self.submenue.selection is None:
-                return
-            self.tasksType = self.submenue.selection
+    def addTask(self,params):
+        """
+        add a new task to the machines task list
 
-            if self.tasksType in ("add machine", "add item", "add resource terminal"):
-                self.submenue = src.interaction.InputMenu("item type")
-                self.character.macroState["submenue"] = self.submenue
-                self.character.macroState["submenue"].followUp = self.addTask
+        Parameters:
+            params: parameters from the selection
+        """
+
+        character = params["character"]
+        character.addMessage(params)
+
+        if params.get("tasksType") is None:
+            params["tasksType"] = params["selection"]
+
+            if params["tasksType"] in ("add machine", "add item", "add resource terminal"):
+                submenu = src.interaction.InputMenu("item type")
+                character.macroState["submenue"] = submenu
+                character.macroState["submenue"].followUp = {
+                    "method": "addTask",
+                    "container": self,
+                    "params": params,
+                }
                 return
 
-            if self.tasksType in ("add manager",):
+            if params["tasksType"] in ("add manager",):
                 options = [
                     ("StockpileMetaManager", "StockpileMetaManager"),
                     ("ArchitectArtwork", "ArchitectArtwork"),
                     ("RoadManager", "RoadManager"),
                     ("MiningManager", "MiningManager"),
                 ]
-                self.submenue = src.interaction.SelectionMenu(
+                submenu = src.interaction.SelectionMenu(
                     "select manager type", options
                 )
-                self.character.macroState["submenue"] = self.submenue
-                self.character.macroState["submenue"].followUp = self.addTask
+                character.macroState["submenue"] = submenu
+                character.macroState["submenue"].followUp = {
+                    "method": "addTask",
+                    "container": self,
+                    "params": params,
+                }
                 return
 
         typeParameter = None
-        if self.tasksType in ("add machine", "add item", "add resource terminal"):
-            typeParameter = self.submenue.text
-        if self.tasksType in ("add manager",):
-            typeParameter = self.submenue.selection
+        if params["tasksType"] in ("add machine", "add item", "add resource terminal"):
+            typeParameter = params["text"]
+        if params["tasksType"] in ("add manager",):
+            typeParameter = params["selection"]
             self.tasksType = "add item"
 
-        if self.tasksType == "add item":
+        if params["tasksType"] == "add item":
             if typeParameter not in src.items.itemMap:
-                self.character.addMessage("item not found")
+                character.addMessage("item not found")
                 return
 
         newTask = {
-            "task": self.tasksType,
+            "task": params["tasksType"],
         }
 
         if not typeParameter is None:
@@ -235,12 +295,20 @@ class RoomManager(src.items.Item):
         self.stuckReason = None
         self.dependencies = {}
 
-        self.character.runCommandString("Js.j")
+        character.runCommandString("Js.j")
 
-        del self.tasksType
+    def doAction(self,params):
+        """
+        run an action on a character
 
-    def doAction(self):
-        if self.submenue.selection == "storeItem":
+        Parameters:
+            params: parameters from the selection
+        """
+
+        character = params["character"] 
+        selection = params["selection"]
+
+        if selection == "storeItem":
             jobOrder = src.items.itemMap["JobOrder"]()
             jobOrder.taskName = "add item to storage"
 
@@ -250,7 +318,7 @@ class RoomManager(src.items.Item):
                 {
                     "task": "go to item",
                     "command": self.generatePathFromTo(
-                        [self.character.xPosition, self.character.yPosition],
+                        [character.xPosition, character.yPosition],
                         [itemSlot[0], itemSlot[1] - 1],
                     ),
                 },
@@ -260,14 +328,14 @@ class RoomManager(src.items.Item):
                     "task": "go back",
                     "command": self.generatePathFromTo(
                         [itemSlot[0], itemSlot[1] - 1],
-                        [self.character.xPosition, self.character.yPosition],
+                        [character.xPosition, character.yPosition],
                     ),
                 },
             ]
             jobOrder.tasks.extend(list(reversed(newTasks)))
-            self.character.addJobOrder(jobOrder)
+            character.addJobOrder(jobOrder)
 
-        if self.submenue.selection == "spawnMaintenanceNpc":
+        if selection == "spawnMaintenanceNpc":
             character = src.characters.Character(name="roommanager npc")
             character.godMode = True
             character.xPosition = self.xPosition
@@ -275,9 +343,15 @@ class RoomManager(src.items.Item):
             self.container.addCharacter(character, self.xPosition, self.yPosition - 1)
             character.runCommandString("Js.j")
 
-        self.character.addMessage("unkown action")
+        character.addMessage("unkown action")
 
-    def doMaintance(self, character):
+    def doMaintence(self, character):
+        """
+        make a character do some maintenance
+
+        Parameters:
+            character: the character that will do the maintenance
+        """
 
         if self.stuck:
             character.addMessage(
@@ -806,6 +880,14 @@ class RoomManager(src.items.Item):
             self.itemSlotUsage[tuple(itemSlot)] = task
 
     def fetchSpecialRegisterInformation(self):
+        """
+        returns some of the objects state to be stored ingame in a characters registers
+        this is intended to be overwritten to add more information
+
+        Returns:
+            a dictionary containing the information
+        """
+
         result = super().fetchSpecialRegisterInformation()
 
         result["free item slots"] = self.freeItemSlots
@@ -821,15 +903,38 @@ class RoomManager(src.items.Item):
         return result
 
     def getJobOrderTriggers(self):
+        """
+        returns a dict of lists containing callbacks to be triggered by a job order
+
+        Returns:
+            a dict of lists
+        """
+
         result = {}
         self.addTriggerToTriggerMap(result, "relay job order", self.relayJobOrder)
         self.addTriggerToTriggerMap(result, "add Tasks", self.addTasks)
         return result
 
     def addTasks(self, task, context):
+        """
+        add new task using a job order
+
+        Parameters:
+            task: the task for setting the task. NOT the task to set
+            context: the context for this task
+        """
+
         self.tasks.extend(task["tasks"])
 
     def relayJobOrder(self, task, context):
+        """
+        make a character use the current job order on a different item
+
+        Parameters:
+            task: information about the task
+            context: the context for this task
+        """
+
         jobOrder = context["jobOrder"]
         character = context["character"]
 
@@ -877,6 +982,14 @@ class RoomManager(src.items.Item):
         jobOrder.tasks.extend(list(reversed(newTasks)))
 
     def getLongInfo(self):
+        """
+        return a longer than normal description text
+
+        Returns:
+            the description text
+        """
+
+        text = super().getLongInfo()
         text = """
 
 itemPositions:

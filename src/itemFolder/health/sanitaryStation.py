@@ -1,20 +1,23 @@
 import src
 
-"""
-"""
-
-
 class SanitaryStation(src.items.Item):
+    """
+    ingame item to check the health status and run actions depending on the result
+    this is inteded to be used as way for the player to automate the game
+    it is also intended to be used to automate the game 
+    """
+
     type = "SanitaryStation"
 
-    """
-    call superclass constructor with modified paramters
-    """
-
     def __init__(self):
+        """
+        configure super class
+        """
+
         super().__init__()
 
-        self.name = "SanitaryStation"
+        self.name = "sanitary station"
+        self.description = "use it to collect items"
         self.display = "SS"
         self.bolted = False
         self.walkable = False
@@ -31,11 +34,14 @@ class SanitaryStation(src.items.Item):
             ]
         )
 
-    """
-    collect items
-    """
-
     def apply(self, character):
+        """
+        run commands on an character depending on its health
+
+        Parameters:
+            character: the character to heathcheck
+        """
+
         super().apply(character, silent=True)
 
         if character.health < self.healthThreshold:
@@ -52,7 +58,14 @@ class SanitaryStation(src.items.Item):
             return
         character.addMessage("nothing needed")
 
+    # abstraction: should be replaced by super class function
     def configure(self, character):
+        """
+        offer an character a selection of actions to run
+        
+        Parameters:
+            character: the character trying to use the item
+        """
         options = [
             ("addCommand", "add command"),
             ("changeSetting", "change settings"),
@@ -65,7 +78,11 @@ class SanitaryStation(src.items.Item):
         character.macroState["submenue"].followUp = self.configure2
         self.character = character
 
+    # abstraction: should be replaced by super class function
     def configure2(self):
+        """
+        run the selected action
+        """
         if self.submenue.selection == "addCommand":
             options = []
             options.append(("healing", "need healing"))
@@ -98,6 +115,10 @@ class SanitaryStation(src.items.Item):
             self.character.macroState["submenue"] = self.submenue
 
     def setSetting(self):
+        """
+        set a machine setting
+        """
+
         if not self.settingName:
             self.settingName = self.submenue.selection
 
@@ -114,6 +135,10 @@ class SanitaryStation(src.items.Item):
             self.frustrationThreshold = int(self.submenue.text)
 
     def setCommand(self):
+        """
+        set a command
+        """
+
         itemType = self.submenue.selection
 
         commandItem = None
@@ -136,6 +161,12 @@ class SanitaryStation(src.items.Item):
         return
 
     def runCommand(self, trigger, character=None):
+        """
+        run a command
+
+        Parameters:
+            
+        """
 
         if character is None:
             character = self.character
@@ -156,16 +187,14 @@ class SanitaryStation(src.items.Item):
             "running command to handle trigger %s - %s" % (trigger, command)
         )
 
-    def getLongInfo(self):
-        text = """
-item: ItemCollector
-
-description:
-use it to collect items
-"""
-        return text
-
     def fetchSpecialRegisterInformation(self):
+        """
+        returns some of the objects state to be stored ingame in a characters registers
+
+        Returns:
+            a dictionary containing the information
+        """
+
         result = super().fetchSpecialRegisterInformation()
 
         result["healthThreshold"] = self.healthThreshold

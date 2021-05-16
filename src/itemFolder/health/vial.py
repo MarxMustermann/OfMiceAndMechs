@@ -1,22 +1,23 @@
 import src
 
-"""
-Vial with health to carry around and drink from
-"""
-
 
 class Vial(src.items.Item):
+    """
+    ingame item with health to carry around and drink from
+    """
+
     type = "Vial"
 
-    """
-    call superclass constructor with modified paramters and set some state
-    """
-
     def __init__(self, name="vial", noId=False):
+        """
+        configure super class
+        """
+
         super().__init__(display=src.canvas.displayChars.gooflask_empty, name=name)
         self.walkable = True
         self.bolted = False
         self.description = "a vial containing health"
+        self.usageInfo = "use the vial to heal yourself"
         self.maxUses = 10
         self.uses = 0
         self.level = 1
@@ -24,11 +25,14 @@ class Vial(src.items.Item):
         # set up meta information for saving
         self.attributesToStore.extend(["uses", "level", "maxUses"])
 
-    """
-    drink from flask
-    """
-
     def apply(self, character):
+        """
+        handle a character trying to drink from the flask
+
+        Parameters:
+            character: the character trying to use the item    
+        """
+
         # handle edge case
         if self.uses <= 0:
             if character.watched:
@@ -51,7 +55,11 @@ class Vial(src.items.Item):
     def render(self):
         """
         render based on fill amount
+
+        Returns:
+            what the item should look like
         """
+
         displayByUses = [
             src.canvas.displayChars.gooflask_empty,
             src.canvas.displayChars.gooflask_part1,
@@ -62,20 +70,28 @@ class Vial(src.items.Item):
         ]
         return displayByUses[self.uses // 2]
 
-    """
-    get info including the charges on the flask
-    """
 
     def getDetailedInfo(self):
+        """
+        get info including the charges on the flask
+
+        Returns:
+            the description text
+        """
+
         return super().getDetailedInfo() + " (" + str(self.uses) + " charges)"
 
     def getLongInfo(self):
-        text = """
-item: Vial
+        """
+        returns a longer than normal description text
 
-description:
-A vial holds health. You can heal yourself with it
+        Returns:
+            the description text
+        """
 
+        text = super().getLongInfo()
+
+        text += """
 A goo flask can be refilled at a health station and can hold a maximum of %s charges.
 
 this is a level %s item.
@@ -87,11 +103,17 @@ this is a level %s item.
         return text
 
     def upgrade(self):
+        """
+        increase max uses when upgraded
+        """
         super().upgrade()
 
         self.maxUses += 1
 
     def downgrade(self):
+        """
+        increase max uses when downgraded
+        """
         super().downgrade()
 
         self.maxUses -= 1

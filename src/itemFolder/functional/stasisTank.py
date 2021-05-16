@@ -1,22 +1,32 @@
 import src
 
-"""
-"""
-
-
 class StasisTank(src.items.Item):
+    """
+    ingame item that removes characters from the game and readds them later
+    """
+
     type = "StasisTank"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        configure super class
+        """
+
         super().__init__()
 
         self.display = src.canvas.displayChars.stasisTank
 
         self.name = "stasis tank"
+        self.description = "Allows you to enter stasis. In stasis you do not need food and can not do anything"
+        self.usageInfo = """
+Use an empty stasis tank to enter it.
+In stasis you do not need food and can not do anything.
+You cannot leave the stasis tank on your own.
+
+Use an occupied stasis tank to eject the inhabitant.
+The ejected character will be placed to the south of the stasis tank and will start to act again.
+"""
+
         self.character = None
         self.bolted = True
         self.walkable = False
@@ -24,6 +34,10 @@ class StasisTank(src.items.Item):
         self.characterTimeEntered = None
 
     def eject(self):
+        """
+        eject the current inhabitant
+        """
+
         if self.character:
             self.container.addCharacter(self.character, self.xPosition, self.yPosition + 1)
             self.character.stasis = False
@@ -31,6 +45,12 @@ class StasisTank(src.items.Item):
             self.characterTimeEntered = None
 
     def apply(self, character):
+        """
+        handle a character trying to use the stasis tank
+
+        Parameters:
+            character: the character trying to use the item
+        """
 
         if self.character and self.character.stasis:
             self.eject()
@@ -47,6 +67,11 @@ class StasisTank(src.items.Item):
             self.character.macroState["submenue"].followUp = self.enterSelection
 
     def enterSelection(self):
+        """
+        handle the character having decided to enter or not.
+        take the character in if the character decided so
+        """
+
         if self.submenue.selection == "enter":
             self.character.stasis = True
             self.container.removeCharacter(self.character)
@@ -57,31 +82,28 @@ class StasisTank(src.items.Item):
         else:
             self.character.addMessage("you do not enter the stasis tank")
 
+    # bad code: nonfunctional experimental code
     def configure(self, character):
+        """
+        handle a character trying to set a timeout for automatic reawakening
+
+        Parameters:
+            character: the character trying to use the item
+        """
+
         character.addMessage(src.gamestate.gamestate.tick)
         character.addMessage(self.characterTimeEntered)
         if src.gamestate.gamestate.tick > self.characterTimeEntered + 100:
             self.eject()
-        """
-        options = [("addCommand","add command")]
-        self.submenue = src.interaction.SelectionMenu("what do you want to do?",options)
-        character.macroState["submenue"] = self.submenue
-        character.macroState["submenue"].followUp = self.configure2
-        self.character = character
-        """
-
-    def configure2(self):
-        if self.submenue.selection == "addCommand":
-            options = []
-            options.append(("empty", "no items left"))
-            options.append(("fullInventory", "inventory full"))
-            self.submenue = src.interaction.SelectionMenu(
-                "Setting command for handling triggers.", options
-            )
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.setCommand
 
     def getState(self):
+        """
+        returns a semi serialised state containing the character in full form
+
+        Returns:
+            the state in semi serialised form
+        """
+
         state = super().getState()
 
         if self.character:
@@ -92,6 +114,14 @@ class StasisTank(src.items.Item):
         return state
 
     def setState(self, state):
+        """
+        sets its state to the semi serialised state given
+        ensures the contained character is created
+
+        Parameters:
+            state: the semi serialised state
+        """
+
         super().setState(state)
 
         if "character" in state and state["character"]:
@@ -102,21 +132,5 @@ class StasisTank(src.items.Item):
             self.character = char
         else:
             state["character"] = None
-
-    def getLongInfo(self):
-        text = """
-
-This machine allow to enter stasis. In stasis you do not need food and can not do anything.
-
-You cannot leave the stasis tank on your own.
-
-If the stasis tank is empty you can activate it to enter the stasis tank.
-
-If the stasis tank is occupied, you can activate it to eject the character from the tank.
-The ejected character will be placed to the south of the stasis tank and will start to act again.
-
-"""
-        return text
-
 
 src.items.addType(StasisTank)

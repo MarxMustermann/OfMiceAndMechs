@@ -1,18 +1,28 @@
 import src
 
-"""
-"""
-
-
 class BluePrinter(src.items.Item):
+    """
+    ingame item to create blueprints which can be used to produce machines
+    this item basically represents research in the game
+    """
+
     type = "BluePrinter"
 
-    """
-    call superclass constructor with modified parameters
-    """
+    def __init__(self):
+        """
+        configure superclass and initialise own state
+        """
 
-    def __init__(self, name="BluePrinter", noId=False):
-        super().__init__(display=src.canvas.displayChars.blueprinter, name=name)
+        super().__init__(display=src.canvas.displayChars.blueprinter)
+
+        self.name = "blueprinter"
+        self.description = "this machine creates blueprints"
+        self.usageInfo = """
+The Blueprinter has two inputs
+It needs a sheet on the north to print the blueprint onto.
+The items from the blueprint reciepe need to be added to the west or south.
+"""
+
         self.submenue = None
         self.text = None
 
@@ -80,7 +90,12 @@ class BluePrinter(src.items.Item):
         ]
 
     def apply(self, character):
-        super().apply(character, silent=True)
+        """
+        handle a character trying to research a blueprint
+        
+        Parameters:
+            character: the character trying to use the item
+        """
 
         sheet = None
         for item in self.container.getItemByPosition((self.xPosition, self.yPosition - 1,self.xPosition)):
@@ -155,18 +170,5 @@ class BluePrinter(src.items.Item):
         else:
             character.addMessage("unable to produce blueprint from given items")
             return
-
-    def getLongInfo(self):
-        text = """
-
-This machine creates Blueprints.
-
-The Blueprinter has two inputs
-It needs a sheet on the north to print the blueprint onto.
-The items from the blueprint reciepe need to be added to the west or south.
-
-"""
-        return text
-
 
 src.items.addType(BluePrinter)

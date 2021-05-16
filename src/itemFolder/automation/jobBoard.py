@@ -40,7 +40,7 @@ class JobBoard(src.items.Item):
     def addComand(self, character):
         """
         create a job order from a comand
-        Paramerters:
+        Parameters:
             character: the character trying to set the comand
         """
 

@@ -1,19 +1,23 @@
 import src
 
-"""
-"""
-
-
 class Note(src.items.Item):
+    """
+    ingame item having no other purpose that to display a text
+    """
+
     type = "Note"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        configure super class
+        """
+
         super().__init__(display=src.canvas.displayChars.note)
         self.name = "note"
+        self.description = "It has a text written on it"
+        self.usageInfo = """
+activate the note to read it.
+"""
 
         self.bolted = False
         self.walkable = True
@@ -22,31 +26,43 @@ class Note(src.items.Item):
         self.attributesToStore.extend(["text"])
 
     def getLongInfo(self):
+        """
+        return a longer than normal description text
 
-        text = (
-            """
-A Note. It has a text on it. You can activate it to read it.
+        Returns:
+            the description text
+        """
 
+        text = super().getLongInfo()
+
+        text += """
 it holds the text:
 
-"""
-            + self.text
-            + """
-
-"""
-        )
+%s
+"""%(self.text,)
         return text
 
     def apply(self, character):
-        super().apply(character, silent=True)
+        """
+        handle a character reading the note
 
+        Parameters:
+            character: the character that tries to read the note
+        """
+        
         submenue = src.interaction.OneKeystrokeMenu(
             "the note has the text: \n\n\n%s" % (self.text,)
         )
         character.macroState["submenue"] = submenue
 
     def setText(self, text):
-        self.text = text
+        """
+        set the notes text
 
+        Parameters:
+            text: the text to set
+        """
+
+        self.text = text
 
 src.items.addType(Note)

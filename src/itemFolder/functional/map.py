@@ -1,19 +1,24 @@
 import src
 
-"""
-"""
-
-
 class Map(src.items.Item):
+    """
+    ingame item for storing, handlind and running paths
+    """
+    #NIY: kind of works but is not well integrated
+
     type = "Map"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        configure the super class
+        """
+
         super().__init__(display=src.canvas.displayChars.map)
-        self.map = "map"
+        self.name = "map"
+        self.description = "A map is a collection of routes"
+        self.usageInfo = """
+You can select the routes and run the stored route.
+"""
 
         self.routes = {}
         self.nodes = []
@@ -35,7 +40,12 @@ class Map(src.items.Item):
         )
 
     def apply(self, character):
-        super().apply(character, silent=True)
+        """
+        spawn a menue offering a selection of actions to run
+
+        Parameters:
+            character: the character that is requesting the list
+        """
 
         options = []
         options.append(("walkRoute", "walk route"))
@@ -54,6 +64,13 @@ class Map(src.items.Item):
         self.macroBackup = self.character.macroState["macros"].get("auto")
 
     def getReachableNodes(self, node):
+        """
+        returns the list of reachable pathing nodes on the map
+
+        Parameters:
+            node: the start node
+        """
+
         if node not in self.routes:
             return []
 
@@ -67,7 +84,12 @@ class Map(src.items.Item):
 
         return nodes
 
+    # abstraction: should use super class function
     def selectActivity(self):
+        """
+        handle a character having selected an action and run it
+        """
+
         if self.submenue.selection == "walkRoute":
             self.walkRouteSelect()
         if self.submenue.selection == "showRoutes":
@@ -92,6 +114,12 @@ class Map(src.items.Item):
             self.character = None
 
     def addRoute(self):
+        """
+        add a new route to the map by recording it
+        this is a two step process calling this function at the beginning
+        and calling the funtion at the end
+        """
+
         pos = (
             self.character.xPosition,
             self.character.yPosition,
@@ -144,6 +172,10 @@ class Map(src.items.Item):
             self.recordingStart = None
 
     def addMarker(self):
+        """
+        add a named position to the map
+        """
+
         items = self.character.container.getItemByPosition(
             (self.character.xPosition, self.character.yPosition)
         )
@@ -155,6 +187,10 @@ class Map(src.items.Item):
                 break
 
     def walkRouteSelect(self):
+        """
+        offer a selection of walkable routes from the current position to a character
+        """
+
         charPos = (self.character.xPosition, self.character.yPosition)
 
         if charPos not in self.routes:
@@ -174,6 +210,10 @@ class Map(src.items.Item):
         self.character.macroState["submenue"].followUp = self.walkRoute
 
     def walkRoute(self):
+        """
+        make character walk a selected route
+        """
+
         if self.submenue.selection == "abort":
             return
         charPos = (self.character.xPosition, self.character.yPosition)
@@ -185,19 +225,5 @@ class Map(src.items.Item):
             convertedPath + self.character.macroState["commandKeyQueue"]
         )
         self.character.addMessage("you walk the path")
-
-    def getLongInfo(self):
-
-        text = """
-item: Map
-
-description:
-A map is a collection of routes.
-
-You can select the routes and run the stored route.
-
-"""
-        return text
-
 
 src.items.addType(Map)

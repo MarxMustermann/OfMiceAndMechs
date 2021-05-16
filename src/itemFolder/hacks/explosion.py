@@ -1,7 +1,13 @@
 import src
 
 
+# bad code: ugly hack that causes problems
+# NIY: implement a proper way of adding such effects
 class Explosion(src.items.Item):
+    """
+    technically a ingame but is only shown for 1 tick to simulate an explosion event
+    """
+
     type = "Explosion"
 
     def __init__(self):
@@ -9,22 +15,46 @@ class Explosion(src.items.Item):
         self.name = "explosion"
 
     def pickUp(self, character):
+        """
+        do nothing when picked up
+
+        Parameters:
+            the character trying to interact
+        """
+
         pass
 
+    # bad code: i don't know why this code exists
     def apply(self, character):
+        """
+        explode on activation
+
+        Parameters:
+            the character trying to interact
+        """
+
         self.explode()
         pass
 
     def drop(self, character):
+        """
+        do nothing when droped
+
+        Parameters:
+            the character trying to interact
+        """
         pass
 
     def explode(self):
+        """
+        do the actual explosion and damage things
+        """
 
         if self.container:
             self.container.damage()
         elif self.terrain:
             for room in self.terrain.getRoomsOnFineCoordinate(
-                (self.xPosition, self.yPosition)
+                self.getPosition()
             ):
                 room.damage()
 
@@ -47,6 +77,5 @@ class Explosion(src.items.Item):
 
         if self.container:
             self.container.removeItem(self)
-
 
 src.items.addType(Explosion)

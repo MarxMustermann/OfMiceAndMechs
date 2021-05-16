@@ -1,66 +1,68 @@
 import src
 
-"""
-should be a display, but is abused as vehicle control
-bad code: use an actual vehicle control
-"""
-
-
 class RoomControls(src.items.Item):
+    """
+    ingame item used to drive around rooms
+    """
+
     type = "RoomControls"
 
-    """
-    call superclass constructor with modified paramters
-    """
-
     def __init__(self):
+        """
+        configure super class
+        """
         super().__init__(display=src.canvas.displayChars.display)
         self.name = "room controls"
+        self.description = "Can be used to control vehicles"
+        self.usageInfo = """
+Use it to take control over the vehice.
 
-    """
-    map player controls to room movement
-    """
+While controlling the vehicle your movement keys will be overriden.
+The movement key will move the room instead of yourself.
+For example pressing w will not move you to the north, but will move the room to the north.
+You need enough steam generation to move
+
+To stop using the room controls press j again.
+"""
 
     def apply(self, character):
-        super().apply(character, silent=True)
+        """
+        handle a character using this item by mapping the player controls to room movement
+        """
 
         # handle movement keystrokes
-        """
-        move room to north
-        """
-
         def moveNorth():
+            """
+            move room to north
+            """
             self.container.moveDirection("north", force=self.container.engineStrength)
 
-        """
-        move room to south
-        """
-
         def moveSouth():
+            """
+            move room to south
+            """
             self.container.moveDirection("south", force=self.container.engineStrength)
 
-        """
-        move room to west
-        """
-
         def moveWest():
+            """
+            move room to west
+            """
             self.container.moveDirection("west", force=self.container.engineStrength)
 
-        """
-        move room to east
-        """
-
         def moveEast():
+            """
+            move room to east
+            """
             self.container.moveDirection("east", force=self.container.engineStrength)
 
         if "stealKey" not in character.macroState:
             character.macroState["stealKey"] = {}
 
-        """
-        reset key mapping
-        """
-
         def disapply():
+            """
+            reset key mapping
+            """
+
             del character.macroState["stealKey"][config.commandChars.move_north]
             del character.macroState["stealKey"][config.commandChars.move_south]
             del character.macroState["stealKey"][config.commandChars.move_west]
@@ -81,25 +83,5 @@ class RoomControls(src.items.Item):
         character.macroState["stealKey"]["left"] = moveWest
         character.macroState["stealKey"]["right"] = moveEast
         character.macroState["stealKey"][config.commandChars.activate] = disapply
-
-    def getLongInfo(self):
-        text = """
-item: RoomControls
-
-description:
-Room controls. Can be used to control vehicles.
-
-Use it to take control over the vehice.
-
-While controlling the vehicle your movement keys will be overriden.
-The movement key will move the room instead of yourself.
-For example pressing w will not move you to the north, but will move the room to the north.
-You need enough steam generation to move
-
-To stop using the room controls press j again.
-
-"""
-        return text
-
 
 src.items.addType(RoomControls)

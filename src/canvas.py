@@ -6,12 +6,11 @@ bad code: drawstuff is everywhere
 # import basic libs
 import src.logger
 
-"""
-maps things to abstrect representation and back
-"""
-
-
+# bad code: this is unintuitive, ugly and unnecessary it should be replaced by a simpler solution
 class Mapping(object):
+    """
+    maps things to abstrect representation and back
+    """
 
     mappedThings = {}
     globalCounter = [
@@ -122,6 +121,9 @@ class TileMapping(Mapping):
         self.modes = {"testTiles": "", "pseudeUnicode": "", "testTiles2": ""}
         self.setRenderingMode(mode)
 
+        # add fallback values for missing tiles
+        mapping = Mapping
+
     """
     set the rendering mode AND recalculate the tile map
     """
@@ -149,8 +151,29 @@ class TileMapping(Mapping):
         if self.mode == "testTiles2":
             # bad code: reimport the config as library, i don't think this is a good thing to do
             import config.tileMap2 as rawConfig
+
+        self.addFallbackChars(rawConfig)
+
         return rawConfig
 
+    def addFallbackChars(self,rawConfig):
+        # load the fallback chars
+        import config.displayChars_fallback as fallback
+
+        # add missing tiles from fallbackChars
+        import inspect
+        raw = inspect.getmembers(fallback, lambda a: not (inspect.isroutine(a)))
+        for item in raw:
+            # ignore internal state
+            if item[0].startswith("__"):
+                continue
+        
+            # skip non missing tiles
+            if hasattr(rawConfig,item[0]):
+                continue
+
+            # add placholder for missing tile
+            setattr(rawConfig,item[0],item[1])
 
 """
 this maps an abstract representation to actual chars.

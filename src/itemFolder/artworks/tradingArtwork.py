@@ -63,6 +63,15 @@ class TradingArtwork(src.items.Item):
                 ],
             },
             {
+                "name": "trade for goo token",
+                "give": [
+                    ["MetalBars", 10],
+                ],
+                "recieve": [
+                    ["Token", 1, "Goo"],
+                ],
+            },
+            {
                 "name": "trade for Scrap compactor",
                 "give": [
                     ["MetalBars", 4],
@@ -141,43 +150,47 @@ class TradingArtwork(src.items.Item):
                 },
             )
 
-        self.attributesToStore.extend(["tradingHistory"])
+        self.attributesToStore.extend([
+            "tradingHistory",
+            "availableTrades",
+        ])
 
         self.setApplyOptions()
-
-    def wtf(self, trade, counter):
-        def setStuff(character):
-            self.doTrade(character, trade, counter)
-
-        return setStuff
 
     def setApplyOptions(self):
         self.applyOptions = []
         self.applyMap = {}
+
         counter = 0
         for trade in self.availableTrades:
             counter += 1
             self.applyOptions.append(
                 (
                     str(counter),
-                    "%s : %s => %s"
+                    "%s : %sx        %s => %s\n"
                     % (
                         trade["name"],
+                        trade.get("numOffered"),
                         trade["give"],
                         trade["recieve"],
                     ),
                 )
             )
-            self.applyMap[str(counter)] = self.wtf(trade, counter)
+
+            #non trivial: need to break python namespace/scope
+            def scopeBreaker(trade, counter):
+                def setStuff(character):
+                    self.doTrade(character, trade, counter)
+
+                return setStuff
+
+            self.applyMap[str(counter)] = scopeBreaker(trade, counter)
 
     def apply(self, character):
         self.setApplyOptions()
         super().apply(character)
 
     def doTrade(self, character, trade, counter):
-        character.addMessage("%s" % (counter))
-        character.addMessage("should trade now %s" % (trade))
-
         allItemsFound = []
         for giveSpec in trade["give"]:
             itemsFound = []
@@ -187,7 +200,6 @@ class TradingArtwork(src.items.Item):
                     if len(itemsFound) == giveSpec[1]:
                         break
             if not len(itemsFound) == giveSpec[1]:
-                character.addMessage(itemsFound)
                 character.addMessage("not enough %s" % (giveSpec[0],))
                 return
             allItemsFound.extend(itemsFound)
@@ -200,6 +212,12 @@ class TradingArtwork(src.items.Item):
                 character.addToInventory(item)
         character.removeItemsFromInventory(allItemsFound)
         character.addMessage("you did the trade %s" % (trade["name"],))
+
+        if "numOffered" in trade:
+            trade["numOffered"] -= 1
+            if trade["numOffered"] == 0:
+                self.availableTrades.remove(trade)
+
 
     def tradeForVial(self, character):
         flaskFound = None

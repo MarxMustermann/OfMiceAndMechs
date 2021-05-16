@@ -3,36 +3,23 @@ import random
 
 
 class TradingArtwork(src.items.Item):
+    """
+    ingame item that allows the player the convert ressources and
+    items by trading
+    """
+
     type = "TradingArtwork"
 
-    """
-    call superclass constructor with modified parameters
-    """
+    def __init__(self):
+        """
+        configure the superclass
+        """
 
-    def __init__(self, name="trading artwork", noId=False, autoRun=True):
         self.tradingHistory = {}
 
-        super().__init__(display="TA", name=name)
+        super().__init__(display="TA")
 
-        self.applyOptions.extend(
-            [
-                ("tradeMetalBars", "trade metal bars"),
-                ("tradeScrap", "trade scrap"),
-                ("tradeExotics", "trade excotics"),
-                ("tradeForWeapon", "trade for weapon"),
-                ("tradeForArmor", "trade for armor"),
-                ("tradeForVial", "trade for vial"),
-                ("tradeForVial", "trade for vial"),
-            ]
-        )
-        self.applyMap = {
-            "tradeMetalBars": self.tradeMetalBars,
-            "tradeScrap": self.tradeScrap,
-            "tradeExotics": self.tradeExotics,
-            "tradeForWeapon": self.tradeForWeapon,
-            "tradeForArmor": self.tradeForArmor,
-            "tradeForVial": self.tradeForVial,
-        }
+        self.name = "trading artwork"
 
         self.availableTrades = [
             {
@@ -158,6 +145,11 @@ class TradingArtwork(src.items.Item):
         self.setApplyOptions()
 
     def setApplyOptions(self):
+        """
+        recalculate the option for the apply action to show a selection
+        of trades currenty available
+        """
+
         self.applyOptions = []
         self.applyMap = {}
 
@@ -178,19 +170,34 @@ class TradingArtwork(src.items.Item):
             )
 
             #non trivial: need to break python namespace/scope
-            def scopeBreaker(trade, counter):
+            def scopeBreaker(trade):
                 def setStuff(character):
-                    self.doTrade(character, trade, counter)
+                    self.doTrade(character, trade)
 
                 return setStuff
 
-            self.applyMap[str(counter)] = scopeBreaker(trade, counter)
+            self.applyMap[str(counter)] = scopeBreaker(trade)
 
     def apply(self, character):
+        """
+        reset the menu options and show an action menu
+
+        Parameters:
+            character: the character trying to use the item
+        """
+
         self.setApplyOptions()
         super().apply(character)
 
-    def doTrade(self, character, trade, counter):
+    def doTrade(self, character, trade):
+        """
+        do a exchange of ressources
+
+        Parameters:
+            character: the character exchanging the ressources
+            trade: the trade to run
+        """
+
         allItemsFound = []
         for giveSpec in trade["give"]:
             itemsFound = []
@@ -203,14 +210,14 @@ class TradingArtwork(src.items.Item):
                 character.addMessage("not enough %s" % (giveSpec[0],))
                 return
             allItemsFound.extend(itemsFound)
+        character.removeItemsFromInventory(allItemsFound)
 
         for itemSpec in trade["recieve"]:
             for i in range(0, itemSpec[1]):
                 item = src.items.itemMap[itemSpec[0]]()
                 if itemSpec[0] == "Machine":
                     item.setToProduce(itemSpec[2])
-                character.addToInventory(item)
-        character.removeItemsFromInventory(allItemsFound)
+                character.addToInventory(item,force=True)
         character.addMessage("you did the trade %s" % (trade["name"],))
 
         if "numOffered" in trade:
@@ -218,146 +225,15 @@ class TradingArtwork(src.items.Item):
             if trade["numOffered"] == 0:
                 self.availableTrades.remove(trade)
 
-
-    def tradeForVial(self, character):
-        flaskFound = None
-        corpseFound = None
-
-        for item in character.inventory:
-            if item.type == "Corpse":
-                corpseFound = item
-            if item.type == "GooFlask" and item.uses == 100:
-                flaskFound = item
-
-        if not (flaskFound and corpseFound):
-            character.addMessage(
-                "you need a filled goo flask and a corpse to trade for a vial"
-            )
-            return
-
-        character.removeItemsFromInventory([flaskFound, corpseFound])
-        item = src.items.itemMap["Vial"]()
-        item.uses = 2
-        character.addToInventory(item)
-        character.addMessage("you trade a goo flask and a corpse for a vial")
-
-    def tradeExotics(self, character):
-        itemsFound = []
-        for item in character.inventory:
-            if item.type in self.tradingHistory:
-                continue
-            itemsFound.append(item)
-            self.tradingHistory[item.type] = 1
-
-        for item in itemsFound:
-            itemNew = src.items.itemMap["GooFlask"]()
-            itemNew.uses = 100
-            character.inventory.append(itemNew)
-
-            character.addMessage(
-                "you traded a %s for 1 filled goo flask" % (item.type,)
-            )
-
-        character.removeItemsFromInventory(itemsFound)
-
-    def tradeForWeapon(self, character):
-        foundItems = character.searchInventory("GooFlask", {"uses": 100})
-
-        if not len(foundItems):
-            character.addMessage("no filled GooFlasks in inventory")
-            return
-
-        quality = len(foundItems)
-        character.removeItemsFromInventory(foundItems)
-
-        weapon = src.items.itemMap["Rod"]()
-        weapon.baseDamage = 4
-        if quality > 1:
-            armor.armorValue = 5
-        if quality > 3:
-            armor.armorValue = 6
-        if quality > 6:
-            armor.armorValue = 7
-        if quality == 10:
-            armor.armorValue = 8
-
-        character.addToInventory(weapon)
-
-        character.addMessage(
-            "you traded %s filled goo flasks for weapon basedamage %s"
-            % (
-                quality,
-                weapon.baseDamage,
-            )
-        )
-
-    def tradeForArmor(self, character):
-        foundItems = character.searchInventory("GooFlask", {"uses": 100})
-
-        if not len(foundItems):
-            character.addMessage("no filled GooFlasks in inventory")
-            return
-
-        quality = len(foundItems)
-        character.removeItemsFromInventory(foundItems)
-
-        armor = src.items.itemMap["Armor"]()
-        armor.armorValue = 1
-        if quality > 1:
-            armor.armorValue = 2
-        if quality > 3:
-            armor.armorValue = 3
-        if quality > 6:
-            armor.armorValue = 4
-        if quality == 10:
-            armor.armorValue = 5
-
-        character.addToInventory(armor)
-
-        character.addMessage(
-            "you traded %s filled goo flasks for armor with armorValue %s"
-            % (
-                quality,
-                armor.armorValue,
-            )
-        )
-
-    def tradeScrap(self, character):
-        foundItems = character.searchInventory("Scrap")
-
-        if len(foundItems) < 10:
-            character.addMessage("not enough scrap")
-            return
-
-        for item in foundItems:
-            character.inventory.remove(item)
-
-        item = src.items.itemMap["MetalBars"]()
-        character.inventory.append(item)
-
-        character.addMessage("you traded 10 scrap for 1 metal bar")
-
-    def tradeMetalBars(self, character):
-        foundItems = []
-        for item in character.inventory:
-            if isinstance(item, src.items.itemMap["MetalBars"]):
-                foundItems.append(item)
-
-        if len(foundItems) < 10:
-            character.addMessage("not enough metal bars")
-            return
-
-        for item in foundItems:
-            character.inventory.remove(item)
-
-        item = src.items.itemMap["GooFlask"]()
-        item.uses = 100
-        character.inventory.append(item)
-
-        character.addMessage("you traded 10 metal bars for 1 filled goo flask")
-
     def getLongInfo(self):
-        text = """
+        """
+        return a longer than normal description of the item
+
+        Returns:
+            the description
+        """
+        text = super().getLongInfo()
+        text += """
 tradingHistory:
 %s
 """ % (

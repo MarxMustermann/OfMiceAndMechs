@@ -54,15 +54,13 @@ class Character(src.saveing.Saveable):
         super().__init__()
 
         if name is None and seed:
-            name = (
-                config.names.characterFirstNames[
+            firstName = config.names.characterFirstNames[
                     seed % len(config.names.characterFirstNames)
                 ]
-                + " "
-                + config.names.characterLastNames[
+            lastName = config.names.characterLastNames[
                     (seed * 10) % len(config.names.characterLastNames)
                 ]
-            )
+            name = "%s %s"%(firstName,lastName,)
 
         if display is None and name is not None:
             display = src.canvas.displayChars.staffCharactersByLetter[name[0].lower()]
@@ -82,6 +80,8 @@ class Character(src.saveing.Saveable):
         self.quests = []
         self.name = name
         self.inventory = []
+        # NIY: not really used yet
+        self.maxInventorySpace = 10
         self.watched = False
         self.listeners = {"default": []}
         self.path = []
@@ -188,6 +188,7 @@ class Character(src.saveing.Saveable):
                 "staggered",
                 "staggerResistant",
                 "lastJobOrder",
+                "maxInventorySpace",
             ]
         )
         self.objectsToStore.append("serveQuest")
@@ -994,15 +995,19 @@ class Character(src.saveing.Saveable):
         else:
             self.path = []
 
-    def addToInventory(self, item):
+    def addToInventory(self, item, force=False):
         """
         add an item to the characters inventory
 
         Parameters:
             item: the item
+            force: flag overriding sanity checks
         """
 
-        self.inventory.append(item)
+        if len(self.inventory) < maxInventorySpace:
+            self.inventory.append(item)
+        else:
+            self.addMessage("inventory full")
 
     def removeItemFromInventory(self, item):
         """

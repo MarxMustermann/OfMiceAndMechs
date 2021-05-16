@@ -1,75 +1,39 @@
 import src
 
-"""
-"""
-
 
 class Command(src.items.Item):
+    """
+    ingame item that makes characters using the item run commands
+    """
+
     type = "Command"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        configure super class
+        """
+
         super().__init__(display=src.canvas.displayChars.command)
 
         self.name = "command"
+        self.description = "A command is written on it"
+        self.usageInfo = "Activate it to run command"
 
         self.bolted = False
         self.walkable = True
         self.command = ""
         self.extraName = ""
-        self.description = None
         self.level = 1
 
         self.attributesToStore.extend(["command", "extraName", "level", "description"])
 
-    def getLongInfo(self):
-        compressedMacro = ""
-        for keystroke in self.command:
-            if len(keystroke) == 1:
-                compressedMacro += keystroke
-            else:
-                compressedMacro += "/" + keystroke + "/"
-
-        text = """
-item: Command
-
-description:
-A command. A command is written on it. Activate it to run command.
-
-"""
-        text += """
-
-This is a level %s item.
-""" % (
-            self.level
-        )
-
-        if self.name:
-            text += """
-name: %s""" % (
-                self.name
-            )
-        if self.description and len(self.description) > 0:
-            text += """
-
-description:\n%s""" % (
-                self.description
-            )
-        text += """
-
-it holds the command:
-
-%s
-
-""" % (
-            compressedMacro
-        )
-        return text
-
     def apply(self, character):
+        """
+        handle a character using the command
+
+        Parameters:
+            character: the character trying to use the command
+        """
 
         if isinstance(character, src.characters.Monster):
             return
@@ -94,7 +58,12 @@ it holds the command:
             self.character = character
             pass
 
+    # bad code: should be splitted up
     def advancedActions(self):
+        """
+        do a selected action from a list of actions
+        """
+
         if self.submenue.selection == "runCommand":
             self.runPayload(self.character)
         elif self.submenue.selection == "setName":
@@ -131,14 +100,29 @@ it holds the command:
             self.character.addMessage("action not found")
 
     def setName(self):
+        """
+        set the name of the command
+        """
+
         self.name = self.submenue.text
         self.character.addMessage("set command name to %s" % (self.name))
 
     def setDescription(self):
+        """
+        set the description of the command
+        """
+
         self.description = self.submenue.text
         self.character.addMessage("set command description")
 
     def runPayload(self, character):
+        """
+        run the stored command on a character
+
+        Parameters:
+            character: the character to run the command on
+        """
+
         convertedCommand = []
         for item in self.command:
             convertedCommand.append((item, ["norecord"]))
@@ -147,15 +131,74 @@ it holds the command:
         )
 
     def setPayload(self, command):
+        """
+        set the stored command
+
+        Parameters:
+            command: the command (string,list) to set
+        """
+
         import copy
 
         self.command = copy.deepcopy(command)
 
     def getDetailedInfo(self):
+        """
+        return a longer than normal description
+
+        Returns:
+            the description
+        """
+
         if self.extraName == "":
             return super().getDetailedInfo() + " "
         else:
             return super().getDetailedInfo() + " - " + self.extraName
 
+    def getLongInfo(self):
+        """
+        returns a longer than normal description of the item
+
+        Returns:
+            the description
+        """
+
+        text = super().getLongInfo()
+
+        compressedMacro = ""
+        for keystroke in self.command:
+            if len(keystroke) == 1:
+                compressedMacro += keystroke
+            else:
+                compressedMacro += "/" + keystroke + "/"
+
+        text += """
+
+This is a level %s item.
+""" % (
+            self.level
+        )
+
+        if self.name:
+            text += """
+name: %s""" % (
+                self.name
+            )
+        if self.description and len(self.description) > 0:
+            text += """
+
+description:\n%s""" % (
+                self.description
+            )
+        text += """
+
+it holds the command:
+
+%s
+
+""" % (
+            compressedMacro
+        )
+        return text
 
 src.items.addType(Command)

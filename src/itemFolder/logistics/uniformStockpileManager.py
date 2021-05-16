@@ -2,17 +2,26 @@ import src
 
 
 class UniformStockpileManager(src.items.Item):
+    """
+    ingame item to repreent and manage a stockpile
+    items will be nearby
+    is intended to help the player with automation
+    is used with prefabs and in logistics
+    """
+
     type = "UniformStockpileManager"
 
-    """
-    call superclass constructor with modified parameters
-    """
 
     def __init__(self):
+        """
+        configure superclass
+        """
 
         super().__init__(display=src.canvas.displayChars.uniformStockpileManager)
 
         self.name = "uniform stockpile manager"
+        self.description = "stores items, but only a single item type"
+        self.usageInfo = "needs to be placed in the center of a tile. The tile should be emtpy and mold free for proper function."
 
         self.bolted = False
         self.walkable = False
@@ -26,6 +35,7 @@ class UniformStockpileManager(src.items.Item):
 
         self.attributesToStore.extend(
             [
+                "commands",
                 "numItemsStored",
                 "storedItemType",
                 "storedItemWalkable",
@@ -41,11 +51,16 @@ class UniformStockpileManager(src.items.Item):
         self.blocked = False
 
     def getLongInfo(self):
+        """
+        return a longer than normal description text
 
-        text = """
-item: UniformStockpileManager
-description:
-needs to be placed in the center of a tile. The tile should be emtpy and mold free for proper function.
+        Returns:
+            the description
+        """
+
+        text = super().getLongInfo()
+
+        text += """
 lastAction: %s
 commands: %s
 storedItemType: %s
@@ -62,7 +77,15 @@ restrictStoredItemWalkable: %s
         )
         return text
 
+    # bug: this form of using interaction menus causes mixups when used by multiple characters at once
     def apply(self, character):
+        """
+        spwan an interaction menu offering a selection of actions and run them
+
+        Parameters:
+            character: the character using this item
+        """
+
         if not (
             character.xPosition == self.xPosition
             and character.yPosition == self.yPosition - 1
@@ -77,7 +100,12 @@ restrictStoredItemWalkable: %s
         self.blocked = True
         self.lastAction = "apply"
 
-        options = [("storeItem", "store item"), ("fetchItem", "fetch item")]
+        options = [
+                ("storeItem", "store item"),
+                ("fetchItem", "fetch item"),
+                ("clearInventory", "clear inventory"),
+                ("fillInventory", "fill inventory"),
+        ]
         self.submenue = src.interaction.SelectionMenu(
             "what do you want to do?", options
         )
@@ -89,6 +117,13 @@ restrictStoredItemWalkable: %s
         self.character = character
 
     def configure(self, character):
+        """
+        spaw a interaction meu to trigger complex/configuration actions
+
+        Parameters:
+            character: the character using the item
+        """
+
         if self.blocked:
             character.runCommandString("sc")
             character.addMessage("item blocked - auto retry")
@@ -109,7 +144,13 @@ r: reset
         character.macroState["submenue"].followUp = self.configure2
         self.character = character
 
+    # bad code: should be split up
+    # bad code: should use new way of spawning interaction menus
     def configure2(self):
+        """
+        actually do the complex/configuration action
+        """
+
         self.lastAction = "configure2"
 
         if self.submenue.keyPressed == "j":
@@ -168,7 +209,12 @@ r: reset
             return
         self.blocked = False
 
+    # abstraction: should use generalised code
     def setMachineSettings(self):
+        """
+        set the settings for the machine 
+        """
+
         if self.settingType is None:
             self.settingType = self.submenue.selection
 
@@ -194,7 +240,15 @@ r: reset
 
         self.blocked = False
 
+    # bad code: should use superclass ability
     def runCommand(self, commandName):
+        """
+        runs a preconfigured command on a npc
+
+        Parameters:
+            commandName: the name of the command to run
+        """
+
         if commandName not in self.commands:
             return
         command = self.commands[commandName]
@@ -210,7 +264,12 @@ r: reset
             "running command for trigger: %s - %s" % (commandName, command)
         )
 
+    # bad code: should use superclass ability
     def setCommand(self):
+        """
+        sets a command to run under certain conditions
+        """
+
         self.lastAction = "setCommand"
         trigger = self.submenue.selection
 
@@ -235,9 +294,21 @@ r: reset
         self.blocked = False
         return
 
+    # bad code: should use superclass ability
     def apply2(self):
-        self.lastAction = "apply2"
+        """
+        do actions depending on earlier selection
+        """
 
+        self.lastAction = "apply2"
+        character = self.character
+
+        if self.submenue.selection == "clearInventory":
+            numItems = len(character.inventory)
+            character.runCommandString("Js.j"*numItems)
+        if self.submenue.selection == "fillInventory":
+            numItems = character.maxInventorySpace-len(character.inventory)
+            character.runCommandString("Js.sj"*numItems)
         if self.submenue.selection == "storeItem":
             if not self.character.inventory:
                 self.character.addMessage("nothing in inventory")
@@ -536,6 +607,13 @@ r: reset
         return
 
     def fetchSpecialRegisterInformation(self):
+        """
+        returns some of the objects state to be stored ingame in a characters registers
+
+        Returns:
+            a dictionary containing the information
+        """
+
         result = super().fetchSpecialRegisterInformation()
         result["numItemsStored"] = self.numItemsStored
         result["storedItemType"] = self.storedItemType
@@ -545,27 +623,12 @@ r: reset
         if self.xPosition % 15 == 7 and self.yPosition % 15 == 7:
             result["maxAmount"] = 6 * 6 * 4
         elif (
-            self.xPosition % 15
-            in (
-                6,
-                8,
-            )
+            self.xPosition % 15 in (6,8,)
             and self.yPosition % 15 in (6, 8)
         ):
             result["maxAmount"] = 4 * 6 + 2 * 4
         else:
             result["maxAmount"] = 0
         return result
-
-    def getState(self):
-        state = super().getState()
-        state["commands"] = self.commands
-        return state
-
-    def setState(self, state):
-        super().setState(state)
-        if "commands" in state:
-            self.commands = state["commands"]
-
 
 src.items.addType(UniformStockpileManager)

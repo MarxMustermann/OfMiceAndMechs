@@ -1,29 +1,34 @@
 import src
 
-"""
-"""
-
-
 class SporeExtractor(src.items.Item):
+    """
+    ingame item that processes ressources as part of the food processing
+    """
+
     type = "SporeExtractor"
 
-    """
-    call superclass constructor with modified paramters and set some state
-    """
-
     def __init__(self):
-        super().__init__()
+        """
+        configure the super class 
+        """
 
-        self.display = src.canvas.displayChars.sporeExtractor
+        super().__init__(display = src.canvas.displayChars.sporeExtractor)
+
         self.name = "spore extractor"
+        self.description  = "A Spore Extractor removes spores from mold blooms"
+        sefl.usageInfo = """
+Place mold bloom to the west/left and activate the Spore Extractor.
+The MoldSpores will be outputted to the east/right.
+"""
         self.activated = False
 
-    """
-    """
-
     def apply(self, character):
+        """
+        handle a character trying to use the item
 
-        super().apply(character, silent=True)
+        Parameters:
+            character: the character trying to use the item
+        """
 
         if self.xPosition is None:
             character.addMessage("this machine needs to be placed to be used")
@@ -65,19 +70,5 @@ class SporeExtractor(src.items.Item):
         for i in range(1, 5):
             new = src.items.itemMap["MoldSpore"]()
             self.container.addItem(new,(self.xPosition,self.yPosition,self.zPosition))
-
-    def getLongInfo(self):
-        text = """
-item: SporeExtractor
-
-description:
-A Spore Extractor removes spores from mold blooms.
-
-Place mold bloom to the west/left and activate the Spore Extractor.
-The MoldSpores will be outputted to the east/right.
-
-"""
-        return text
-
 
 src.items.addType(SporeExtractor)

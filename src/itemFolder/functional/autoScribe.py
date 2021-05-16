@@ -1,29 +1,45 @@
 import src
 
-"""
-"""
-
-
 class AutoScribe(src.items.Item):
+    """
+    ingame item to copy sheet based items
+    is indeded to allow the player to copy automation
+    """
+
     type = "AutoScribe"
 
-    """
-    call superclass constructor with modified parameters
-    """
+    def __init__(self):
+        """
+        configure the super class
+        """
 
-    def __init__(self, name="auto scribe", noId=False):
         self.coolDown = 10
         self.coolDownTimer = -self.coolDown
         self.level = 1
 
-        super().__init__(display=src.canvas.displayChars.sorter, name=name)
+        super().__init__(display=src.canvas.displayChars.sorter)
+
+        self.name = "auto scribe"
+        self.description = "A AutoScribe copies commands"
+        self.usageInfo = """
+The command to copy has to be placed to the west of the machine.
+A sheet has to be placed to the north of the machine.
+The copy of the command will be outputted to the east.
+The original command will be outputted to the south.
+
+The level of the copied command is the minimum level of the input command, sheet and the auto scribe itself.
+"""
 
         self.attributesToStore.extend(["coolDown", "coolDownTimer", "level"])
 
-    """
-    """
+    def apply(self, character):
+        """
+        handle a character trying touse this item to copy another item
 
-    def apply(self, character, resultType=None):
+        Parameters:
+            character: the character trying to use this item
+        """
+
         super().apply(character, silent=True)
 
         # fetch input command or Note
@@ -123,19 +139,15 @@ class AutoScribe(src.items.Item):
         self.container.addItem(itemFound,(self.xPosition,self.yPosition+1,self.zPosition))
 
     def getLongInfo(self):
-        text = """
-item: AutoScribe
+        """
+        return a longer than normal description text
 
-description:
-A AutoScribe copies commands.
+        Returns:
+            the description text
+        """
 
-The command to copy has to be placed to the west of the machine.
-A sheet has to be placed to the north of the machine.
-The copy of the command will be outputted to the east.
-The original command will be outputted to the south.
-
-The level of the copied command is the minimum level of the input command, sheet and the auto scribe itself.
-
+        text = super().getLongInfo()
+        text += """
 This is a level %s item
 
 """ % (

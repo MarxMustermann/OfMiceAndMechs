@@ -2,9 +2,17 @@ import src
 
 
 class StaticWall(src.items.Item):
+    """
+    a wall skinned to fit into a dungeon
+    """
+
     type = "StaticWall"
 
     def __init__(self):
+        """
+        configure the super class
+        """
+
         super().__init__(display=src.canvas.displayChars.forceField)
         self.name = "static spark"
 
@@ -13,6 +21,13 @@ class StaticWall(src.items.Item):
         self.strength = 1
 
     def apply(self, character):
+        """
+        handle a character tyring to destroy the wall
+
+        Parameters:
+            character: the character trying to destroy the wall
+        """
+
         staticSpark = None
         for item in character.inventory:
             if isinstance(item, StaticSpark) and item.strength >= self.strength:

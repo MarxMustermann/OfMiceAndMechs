@@ -12,6 +12,7 @@ class BioMass(src.items.Item):
         """
         simple superclass configuration
         """
+
         super().__init__()
 
         self.display = src.canvas.displayChars.bioMass

@@ -25,8 +25,12 @@ Activate the bio press to produce press cake.
     # needs abstraction: takes x input and produces y output
     def apply(self, character):
         """
-        try to produce a press cake from bio mass
+        handle a character trying to produce a press cake from bio mass
+
+        Parameters:
+            character: the character using the item
         """
+
         super().apply(character, silent=True)
 
         # fetch input bio mass

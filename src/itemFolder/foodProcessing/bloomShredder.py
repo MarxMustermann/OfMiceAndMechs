@@ -1,25 +1,33 @@
 import src
 
-"""
-"""
-
-
 class BloomShredder(src.items.Item):
+    """
+    ingame item thats part of the production chain for goo from bloomb
+    """
+
     type = "BloomShredder"
 
-    """
-    call superclass constructor with modified paramters and set some state
-    """
+    def __init__(self):
+        """
+        simple superclass configuration
+        """
 
-    def __init__(self, name="bloom shredder", noId=False):
         self.activated = False
-        super().__init__(display=src.canvas.displayChars.bloomShredder, name=name)
-
-    """
-    """
+        super().__init__(display=src.canvas.displayChars.bloomShredder)
+        self.name = "bloom shredder"
+        self.description = "A bloom shredder produces bio mass from blooms"
+        self.usageInfo = """
+Place bloom to the left/west of the bloom shredder.
+Activate the bloom shredder to produce biomass.
+"""
 
     def apply(self, character):
-        super().apply(character, silent=True)
+        """
+        handle a character trying to use this item to convert a bloom into a bio mass
+
+        Parameters:
+            character: the character using the item
+        """
 
         items = []
         for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.zPosition)):
@@ -56,19 +64,5 @@ class BloomShredder(src.items.Item):
         # spawn the new item
         new = src.items.itemMap["BioMass"]()
         self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
-
-    def getLongInfo(self):
-        text = """
-item: BloomShredder
-
-description:
-A bloom shredder produces bio mass from blooms.
-
-Place bloom to the left/west of the bloom shredder.
-Activate the bloom shredder to produce biomass.
-
-"""
-        return text
-
 
 src.items.addType(BloomShredder)

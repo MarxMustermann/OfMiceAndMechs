@@ -17,6 +17,16 @@ class BloomContainer(src.items.Item):
 
         self.display = src.canvas.displayChars.bloomContainer
         self.name = "bloom container"
+        self.description = "The bloom container is used to carry an store blooms"
+        self.usageInfo = """
+= loading blooms =
+prepare by placing the bloom container on the ground and placing blooms around the container.
+Activate the bloom container and select the option "load bloom" to load the blooms into the container.
+
+= unload blooms =
+prepare by placing the bloom container on the ground.
+Activate the bloom container and select the option "unload bloom" to unload the blooms to the east.
+"""
 
         self.charges = 0
         self.maxCharges = 15
@@ -32,25 +42,12 @@ class BloomContainer(src.items.Item):
             the description
         """
 
-        return """
-item: BloomContainer
+        text = super().getLongInfo()
 
-description:
-The bloom container is used to carry an store blooms.
-
+        text += """
 it has %s blooms (charges) in it. It can hold a maximum of %s blooms.
 
 This is a level %s item.
-
-actions:
-
-= loading blooms =
-prepare by placing the bloom container on the ground and placing blooms around the container.
-Activate the bloom container and select the option "load bloom" to load the blooms into the container.
-
-= unload blooms =
-prepare by placing the bloom container on the ground.
-Activate the bloom container and select the option "unload bloom" to unload the blooms to the east.
 """ % (
             self.charges,
             self.maxCharges,
@@ -58,6 +55,13 @@ Activate the bloom container and select the option "unload bloom" to unload the 
         )
 
     def apply(self, character):
+        """
+        handle a character trying to use the item
+
+        Parameters:
+            character: the character trying to use the item
+        """
+
         options = []
         options.append(("load", "load blooms"))
         options.append(("unload", "unload blooms"))
@@ -68,7 +72,13 @@ Activate the bloom container and select the option "unload bloom" to unload the 
         character.macroState["submenue"].followUp = self.doSelection
         self.character = character
 
+    # bad code: should be splitted up
+    # abstraction: should use superclass function
     def doSelection(self):
+        """
+        either unload or load depending on a previous selection
+        """
+
         selection = self.submenue.selection
         if selection == "load":
             if self.charges >= self.maxCharges:

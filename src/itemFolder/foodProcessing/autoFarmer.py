@@ -12,6 +12,7 @@ class AutoFarmer(src.items.Item):
         """
         simple configuration of superclass
         """
+
         super().__init__()
         self.display = src.canvas.displayChars.autoFarmer
         self.name = "auto farmer"
@@ -20,7 +21,7 @@ class AutoFarmer(src.items.Item):
 
     def apply(self, character):
         """
-        use the autofarmer to gather nearby blooms
+        handle a character using the autofarmer to gather nearby blooms
 
         Parameters:
             character: the character using the item

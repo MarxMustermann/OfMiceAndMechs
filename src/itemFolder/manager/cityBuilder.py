@@ -35,7 +35,7 @@ class CityBuilder(src.items.Item):
         self.stuckReason = None
         self.runningTasks = []
 
-        self.resources = {"TypedStockpileManager": 4, "Paving": 300}
+        self.resources = {"TypedStockpileManager": 4, "Paving": 120}
 
         # config options
         self.numReservedPathPlots = 5

@@ -68,17 +68,14 @@ args = parser.parse_args()
 
 # load the gamestate
 loaded = False
-if not args.nourwid:
-    if args.load:
-        shouldLoad = True
-    else:
-        load = input("load saved game? (Y/n)")
-        if load.lower() == "n":
-            shouldLoad = False
-        else:
-            shouldLoad = True
-else:
+if args.load:
     shouldLoad = True
+else:
+    load = input("load saved game? (Y/n)")
+    if load.lower() == "n":
+        shouldLoad = False
+    else:
+        shouldLoad = True
 
 if not shouldLoad:
     if not args.scenario:

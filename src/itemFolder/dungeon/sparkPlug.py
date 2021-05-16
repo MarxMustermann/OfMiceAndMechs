@@ -2,9 +2,17 @@ import src
 
 
 class SparkPlug(src.items.Item):
+    """
+    ingame item transforming into a rip in reality when using a key
+    """
+
     type = "SparkPlug"
 
     def __init__(self):
+        """
+        configure the superclass
+        """
+
         super().__init__(display=src.canvas.displayChars.sparkPlug)
         self.name = "spark plug"
 
@@ -13,6 +21,13 @@ class SparkPlug(src.items.Item):
         self.strength = 1
 
     def apply(self, character):
+        """
+        handle a chracter trying to unlock the item
+
+        Parameters:
+            character: the character trying to unlock the item
+        """
+
         staticSpark = None
         for item in character.inventory:
             if isinstance(item, StaticSpark) and item.strength >= self.strength - 1:

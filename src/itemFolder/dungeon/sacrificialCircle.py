@@ -2,9 +2,17 @@ import src
 
 
 class SaccrificialCircle(src.items.Item):
+    """
+    ingame item allowing the player to saccrifice corpses for rewards
+    """
+
     type = "SaccrificialCircle"
 
     def __init__(self):
+        """
+        configure superclass
+        """
+
         super().__init__(display="&°")
 
         self.name = "SaccrificialCircle"
@@ -15,6 +23,13 @@ class SaccrificialCircle(src.items.Item):
         self.uses = 2
 
     def apply(self, character):
+        """
+        handle a character sacrifying something
+
+        Parameters:
+            character: the character trying to saccrisfy something
+        """
+
         foundItem = None
         for item in character.inventory:
             if item.type == "Corpse":
@@ -33,6 +48,13 @@ class SaccrificialCircle(src.items.Item):
         self.uses -= 1
 
     def render(self):
+        """
+        render depending on how much was saccrifysed already
+
+        Returns:
+            how the item should look like
+        """
+
         if self.uses == 2:
             return (src.interaction.urwid.AttrSpec("#aaf", "black"), "&°")
         elif self.uses == 1:

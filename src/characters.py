@@ -1793,28 +1793,7 @@ class Monster(Character):
 
         self.phase = 3
         self.macroState["macros"] = {
-            "s": [
-                "o",
-                "p",
-                "f",
-                "$",
-                "=",
-                "a",
-                "a",
-                "$",
-                "=",
-                "s",
-                "s",
-                "$",
-                "=",
-                "w",
-                "w",
-                "$",
-                "=",
-                "d",
-                "d",
-                "j",
-            ]
+            "s": list("opf$=aa$=ss$=ww$=ddj"),
         }
         self.macroState["macros"]["m"] = []
         for i in range(0, 8):
@@ -1831,32 +1810,10 @@ class Monster(Character):
 
         self.phase = 4
         self.macroState["macros"] = {
-            "e": ["1", "0", "j", "m"],
-            "s": [
-                "o",
-                "p",
-                "M",
-                "$",
-                "=",
-                "a",
-                "a",
-                "$",
-                "=",
-                "w",
-                "w",
-                "$",
-                "=",
-                "d",
-                "d",
-                "$",
-                "=",
-                "s",
-                "s",
-                "_",
-                "e",
-            ],
+            "e": list("10jm"),
+            "s": list("opM$=aa$=ww$=dd$=ss_e"),
             "w": [],
-            "f": ["%", "c", "_", "s", "_", "w", "_", "f"],
+            "f": list("%c_s_w_f"),
         }
         for i in range(0, 4):
             self.macroState["macros"]["w"].append(str(random.randint(0, 9)))
@@ -1873,60 +1830,11 @@ class Monster(Character):
         for i in range(0, 5):
             self.faction += random.choice("abcdefghiasjlkasfhoiuoijpqwei10934009138402")
         self.macroState["macros"] = {
-            "j": 70 * ["J", "f"] + ["m"],
-            "s": [
-                "o",
-                "p",
-                "M",
-                "$",
-                "=",
-                "a",
-                "a",
-                "$",
-                "=",
-                "w",
-                "w",
-                "$",
-                "=",
-                "d",
-                "d",
-                "$",
-                "=",
-                "s",
-                "s",
-                "k",
-                "j",
-                "j",
-                "j",
-                "k",
-            ],
+            "j": list(70 * "Jf" + "m"),
+            "s": list("opM$=aa$=ww$=dd$=sskjjjk"),
             "w": [],
-            "k": [
-                "o",
-                "p",
-                "e",
-                "$",
-                "=",
-                "a",
-                "a",
-                "m",
-                "$",
-                "=",
-                "w",
-                "w",
-                "m",
-                "$",
-                "=",
-                "d",
-                "d",
-                "m",
-                "$",
-                "=",
-                "s",
-                "s",
-                "m",
-            ],
-            "f": ["%", "c", "_", "s", "_", "w", "_", "k", "_", "f"],
+            "k": list("ope$=aam$=wwm$=ddm$=ssm"),
+            "f": list("%c_s_w_k_f"),
         }
         for i in range(0, 8):
             self.macroState["macros"]["w"].append(str(random.randint(0, 9)))

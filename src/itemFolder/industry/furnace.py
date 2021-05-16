@@ -18,6 +18,12 @@ class Furnace(src.items.Item):
         self.boilers = []
         super().__init__(display=src.canvas.displayChars.furnace_inactive)
         self.name = "Furnace"
+        self.description = "Used to generate heat. Heat is used to produce steam in boilers"
+        self.usageInfo = """
+You can fire the furnace by activating it with coal in your inventory.
+
+Place the furnace next to a boiler to be able to heat up the boiler with this furnace.
+"""
 
         # set metadata for saving
         self.attributesToStore.extend(["activated"])
@@ -104,29 +110,14 @@ class Furnace(src.items.Item):
 
     def render(self):
         """
-        render the furnace
+        render the furnace depending on it burning or not
+
+        Returns:
+           what the furnace should look like 
         """
         if self.activated:
             return src.canvas.displayChars.furnace_active
         else:
             return src.canvas.displayChars.furnace_inactive
-
-    def getLongInfo(self):
-        text = """
-item: Furnace
-
-description:
-A furnace is used to generate heat. Heat is used to produce steam in boilers.
-
-You can fire the furnace by activating it with coal in your inventory.
-
-Place the furnace next to a boiler to be able to heat up the boiler with this furnace.
-
-"""
-        return text
-
-    def getLongInfo(self):
-        return str(self.id)
-
 
 src.items.addType(Furnace)

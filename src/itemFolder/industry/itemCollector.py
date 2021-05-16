@@ -159,7 +159,10 @@ class ItemCollector(src.items.Item):
             convertedCommand + character.macroState["commandKeyQueue"]
         )
 
+    # abstraction: should use super class function
     def configure(self, character):
+        """
+        """
         options = [("addCommand", "add command")]
         self.submenue = src.interaction.SelectionMenu(
             "what do you want to do?", options

@@ -11,13 +11,19 @@ import src.quests
 import config
 import src.gamestate
 
-"""
-the main class for chats
-"""
-
-
 class Chat(src.interaction.SubMenu):
+    """
+    the main class for chats
+    """
+
     def removeFromChatOptions(self, character):
+        """
+        remove self from a characters chat options
+
+        Parameters:
+            character: character
+        """
+
         # find self in the characters chat options
         toRemove = None
         for item in character.basicChatOptions:
@@ -41,24 +47,43 @@ class Chat(src.interaction.SubMenu):
             src.logger.debugMessages.append("removed chat option that wasn't there")
 
     def setUp(self, state):
+        """
+        actually set up the internal state
+
+        Parameters:
+            state: the state to set
+        """
+
         pass
 
 
 class OneTimeMessage(Chat):
+    """
+    interaction menu that shows a message and then quits
+    """
+
     id = "OneTimeMessage"
 
-    """
-    """
-
     def __init__(self, text=""):
+        """
+        conigure super class and initialise own state
+
+        Parameters:
+            text: the text shown
+        """
         super().__init__()
         self.firstRun = True
         self.persistentText = text
 
-    """
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        close on second keystroke
+
+        Parameters:
+            key: the key pressed
+            noRender: flag to prevent rendering for example or npc
+        """
+
         if self.firstRun:
             self.set_text(self.persistentText)
             self.done = False
@@ -67,27 +92,35 @@ class OneTimeMessage(Chat):
         self.done = True
         return True
 
-
-"""
-the chat for getting a hopper duty intro
-"""
-
-
+# obsolete: needs serious reintegration to work again
 class ConfigurableChat(Chat):
+    """
+    a somewhat configurable chat sequence
+    """
+
     id = "ConfigurableChat"
 
-    """
-    """
-
     def __init__(self, discardParam=None):
+        """
+        set up the internal state
+
+        Parameters:
+            discardParam: parameter that has to be accepted to not crash but is ignored
+        """
+
         super().__init__()
         self.subMenu = None
         self.allowExit = True
 
-    """
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        handle a keystroke
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         if self.subMenu:
             if not self.subMenu.handleKey(key, noRender=noRender):
                 return False
@@ -144,38 +177,47 @@ class ConfigurableChat(Chat):
         self.done = False
         return False
 
-    """
-    add internal state
-    bad pattern: chat option stored as references to class complicates this
-    """
 
+    # bad code: very weird logic
+    # bad pattern: chat option stored as references to class complicates this
     def setUp(self, state):
+        """
+        actually set up the internal state
+
+        Parameters:
+            state: the state to set
+        """
+
         self.text = state["text"]
         self.info = state["info"]
         if "allowExit" in state:
             self.allowExit = state["allowExit"]
 
-
-"""
-the chat for collecting the reward
-"""
-
-
+# obsolete: needs to be reintegrated
 class RewardChat(Chat):
+    """
+    the chat for collecting a reward
+    """
+
     id = "RewardChat"
 
-    """
-    call superclass with less params
-    """
 
-    def __init__(subSelf, partner):
+    def __init__(self, partner):
+        """
+        call superclass with less params
+        """
+
         super().__init__()
 
-    """
-    call the solver to assign reward
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        call the solver to assign reward
+
+        Parameters:
+            key: the key pressed
+            noRender: flag to skip rendering
+        """
+
         self.persistentText = "here is your reward"
         self.set_text(self.persistentText)
 
@@ -189,49 +231,58 @@ class RewardChat(Chat):
         self.done = True
         return True
 
-    """
-    add internal state
-    bad pattern: chat option stored as references to class complicates this
-    """
-
+    # bad pattern: chat option stored as references to class complicates this
     def setUp(self, state):
+        """
+        actually set up the internal state
+
+        Parameters:
+            state: the state to set
+        """
+
         self.quest = state["quest"]
         self.character = state["character"]
 
-
-"""
-bad code: story specific
-"""
-
-
+# bad code: story specific
+# obsolete: needs to be reintegrated or deleted
 class GrowthTankRefillChat(Chat):
     id = "GrowthTankRefillChat"
     type = "GrowthTankRefillChat"
 
-    """
-    straightforward state setting
-    """
-
     def __init__(self, partner):
+        """
+        initialise the internal state
+
+        Parameters:
+            partner: the chat partner
+        """
+
         self.done = False
         self.persistentText = ""
         self.firstRun = True
         super().__init__()
 
-    """
-    add internal state
-    bad pattern: chat option stored as references to class complicates this
-    """
-
+    # bad pattern: chat option stored as references to class complicates this
     def setUp(self, state):
+        """
+        actually set up the internal state
+
+        Parameters:
+            state: the state to set
+        """
+
         self.firstOfficer = state["firstOfficer"]
         self.phase = state["phase"]
 
-    """
-    show the dialog for one keystroke
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        show the dialog for one keystroke
+
+        Parameters:
+            key: the key pressed
+            noRender: flag to skip rendering
+        """
+
         # do all activity on the first run
         if self.firstRun:
             # show fluffed up information
@@ -285,41 +336,51 @@ Activate these, while having a full bottle in your inventory, but leave the full
             self.done = True
             return True
 
-
-"""
-the chat to proof the player is able to chat
-bad code: story specific
-"""
-
-
+# obsolete: needs to be reintegrated or deleted
+# bad code: story specific
 class TutorialSpeechTest(Chat):
+    """
+    the chat to proof the player is able to chat
+    """
+
     id = "TutorialSpeechTest"
     type = "TutorialSpeechTest"
 
-    """
-    straightforward state setting
-    """
 
     def __init__(self, partner):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chatpartner
+        """
+
         self.done = False
         self.persistentText = ""
         self.firstRun = True
         super().__init__()
 
-    """
-    add internal state
-    bad pattern: chat option stored as references to class complicates this
-    """
-
+    # bad pattern: chat option stored as references to class complicates this
     def setUp(self, state):
+        """
+        actually set up the internal state
+
+        Parameters:
+            state: the state to set
+        """
+
         self.firstOfficer = state["firstOfficer"]
         self.phase = state["phase"]
 
-    """
-    show the dialog for one keystroke
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        show the dialog for one keystroke
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         # do all activity on the first run
         if self.firstRun:
             # show fluffed up information
@@ -358,20 +419,23 @@ class TutorialSpeechTest(Chat):
             return True
 
 
-"""
-dialog to unlock a furnace firering option
-"""
-
-
+# obsolete: needs to be reintegrated
 class FurnaceChat(Chat):
+    """
+    dialog to unlock a furnace firering option
+    """
+
     id = "FurnaceChat"
     type = "FurnaceChat"
 
-    """
-    straightforward state setting
-    """
-
     def __init__(self, partner):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chatpartner
+        """
+
         self.state = None
         self.partner = partner
         self.firstRun = True
@@ -386,6 +450,13 @@ class FurnaceChat(Chat):
     """
 
     def setUp(self, state):
+        """
+        actually set up the internal state
+
+        Parameters:
+            state: the state to set
+        """
+
         self.firstOfficer = state["firstOfficer"]
         self.terrain = state["terrain"]
         self.phase = state["phase"]
@@ -395,6 +466,14 @@ class FurnaceChat(Chat):
     """
 
     def handleKey(self, key, noRender=False):
+        """
+        handle a keystroke
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         # set up the chat
         if self.firstRun:
 
@@ -469,14 +548,13 @@ class FurnaceChat(Chat):
 
         return False
 
-
-"""
-a monologe explaining automovement
-bad code: should be abstracted
-"""
-
-
+# obsolete: needs serious reintegration to work again
 class SternChat(Chat):
+    """
+    a monologe explaining automovement
+    bad code: should be abstracted
+    """
+
     id = "SternChat"
     type = "SternChat"
 
@@ -485,24 +563,38 @@ class SternChat(Chat):
     """
 
     def __init__(self, partner):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chat partner
+        """
+
         self.submenue = None
         self.firstRun = True
         self.done = False
         super().__init__()
 
-    """
-    add internal state
-    bad pattern: chat option stored as references to class complicates this
-    """
-
+    # bad pattern: chat option stored as references to class complicates this
     def setUp(self, state):
+        """
+        actually set up the internal state
+
+        Parameters:
+            state: the state to set
+        """
+
         self.firstOfficer = state["firstOfficer"]
 
-    """
-    show the dialog for one keystroke
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        show the dialog for one keystroke
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         # show information on first run
         if self.firstRun:
             # show fluffed up information
@@ -548,40 +640,49 @@ do things the most efficent way. It will even try to handle conversion, wich doe
             self.done = True
             return True
 
-
-"""
-an instruction to ask questions and hinting at the auto mode
-bad code: should be abstracted
-"""
-
-
+# obsolete: needs to be reintegrated
+# bad code: should be abstracted
 class InfoChat(Chat):
+    """
+    an instruction to ask questions and hinting at the auto mode
+    """
+
     id = "InfoChat"
     type = "InfoChat"
 
-    """
-    straight forward state setting
-    """
-
     def __init__(self, partner):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chat partner
+        """
+
         self.submenue = None
         self.firstRun = True
         self.done = False
         super().__init__()
 
-    """
-    add internal state
-    bad pattern: chat option stored as references to class complicates this
-    """
-
+    # bad pattern: chat option stored as references to class complicates this
     def setUp(self, state):
+        """
+        actually set up the internal state
+
+        Parameters:
+            state: the state to set
+        """
+
         self.firstOfficer = state["firstOfficer"]
 
-    """
-    show the dialog for one keystroke
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        show the dialog for one keystroke
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         # do all activity on first run
         if self.firstRun:
             # show fluffed up information
@@ -629,38 +730,48 @@ for a brain.\n\n"""
             return True
 
 
-"""
-a dialog for reentering the command chain
-bad code: story specific
-"""
-
-
+# bad code: story specific
+# obsolete: needs to be reintegrated
 class ReReport(src.interaction.SubMenu):
+    """
+    a dialog for reentering the command chain
+    """
+
     id = "ReReport"
     type = "ReReport"
 
-    """
-    state initialization
-    """
-
     def __init__(self, partner):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chat partner
+        """
+
         self.persistentText = ""
         self.firstRun = True
         super().__init__()
 
-    """
-    add internal state
-    bad pattern: chat option stored as references to class complicates this
-    """
-
+    # bad pattern: chat option stored as references to class complicates this
     def setUp(self, state):
+        """
+        actually set up the internal state
+
+        Parameters:
+            state: the state to set
+        """
+
         self.phase = state["phase"]
 
-    """
-    scold the player and start intro
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        scold the player and start intro
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         if self.firstRun:
             # show message
             self.persistentText = "It seems you did not report for duty immediately. Try to not repeat that"
@@ -684,31 +795,36 @@ class ReReport(src.interaction.SubMenu):
         else:
             return False
 
-
-"""
-the dialog for asking somebody somewhat important for a job
-"""
-
-
+# obsolete: needs serious reintegration to work again
 class JobChatFirst(Chat):
+    """
+    the dialog for asking somebody somewhat important for a job
+    """
+
     id = "JobChatFirst"
     type = "JobChatFirst"
 
-    """
-    add internal state
-    bad pattern: chat option stored as references to class complicates this
-    """
-
+    # bad pattern: chat option stored as references to class complicates this
     def setUp(self, state):
+        """
+        actually set up the internal state
+
+        Parameters:
+            state: the state to set
+        """
+
         self.mainChar = state["mainChar"]
         self.terrain = state["terrain"]
         self.hopperDutyQuest = state["hopperDutyQuest"]
 
-    """
-    basic state initialization
-    """
-
     def __init__(self, partner):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chat partner
+        """
+
         self.state = None
         self.partner = partner
         self.firstRun = True
@@ -718,11 +834,15 @@ class JobChatFirst(Chat):
         self.selectedQuest = None
         super().__init__()
 
-    """
-    show dialog and assign quest 
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        show dialog and assign quest
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         # handle chat termination
         if key == "esc":
 
@@ -773,21 +893,24 @@ class JobChatFirst(Chat):
         else:
             return False
 
-
-"""
-the dialog for asking somebody for a job
-"""
-
-
+# obsolete: needs serious reintegration to work again
 class JobChatSecond(Chat):
+    """
+    the dialog for asking somebody for a job
+    """
+
     id = "JobChatSecond"
     type = "JobChatSecond"
 
-    """
-    basic state initialization
-    """
 
     def __init__(self, partner):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chat partner
+        """
+
         self.state = None
         self.partner = partner
         self.firstRun = True
@@ -797,21 +920,28 @@ class JobChatSecond(Chat):
         self.selectedQuest = None
         super().__init__()
 
-    """
-    add internal state
-    bad pattern: chat option stored as references to class complicates this
-    """
-
+    # bad pattern: chat option stored as references to class complicates this
     def setUp(self, state):
+        """
+        actually set up the internal state
+
+        Parameters:
+            state: the state to set
+        """
+
         self.mainChar = state["mainChar"]
         self.terrain = state["terrain"]
         self.hopperDutyQuest = state["hopperDutyQuest"]
 
-    """
-    show dialog and assign quest 
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        show dialog and assign quest 
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         # handle termination of this chat
         if key == "esc":
             # quit dialog
@@ -881,19 +1011,40 @@ class JobChatSecond(Chat):
 
         return True
 
-
+# obsolete: needs serious reintegration to work again
 class RoomDutyChat(Chat):
     id = "RoomDutyChat"
     type = "RoomDutyChat"
 
     def __init__(self, partner):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chat partner
+        """
+
         self.partner = partner
         super().__init__()
 
     def setUp(self, state):
+        """
+        actually set up the internal state
+
+        Parameters:
+            state: the state to set
+        """
+
         self.superior = state["superior"]
 
     def handleKey(self, key, noRender=False):
+        """
+        handle a keystroke
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
 
         if src.gamestate.gamestate.tick % 2:
             self.persistentText = "yes, you may."
@@ -912,19 +1063,41 @@ class RoomDutyChat(Chat):
 
             return True
 
-
+# obsolete: needs serious reintegration to work again
 class RoomDutyChat2(Chat):
     id = "RoomDutyChat2"
     type = "RoomDutyChat2"
 
     def __init__(self, partner):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chat partner
+        """
+
         self.partner = partner
         super().__init__()
 
     def setUp(self, state):
+        """
+        actually set up the internal state
+
+        Parameters:
+            state: the state to set
+        """
+
         pass
 
     def handleKey(self, key, noRender=False):
+        """
+        handle a keystroke
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         self.persistentText = "Drink something"
 
         quest = src.quests.PickupQuestMeta(self.partner.room.bean)
@@ -936,21 +1109,23 @@ class RoomDutyChat2(Chat):
         self.done = True
         return True
 
-
-"""
-the dialog for asking somebody for a job
-"""
-
-
+# obsolete: needs serious reintegration to work again
 class JobChatThird(Chat):
+    """
+    a dialog for asking somebody for a job
+    """
+
     id = "JobChatThird"
     type = "JobChatThird"
 
-    """
-    basic state initialization
-    """
-
     def __init__(self, partner):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chat partner
+        """
+
         self.state = None
         self.partner = partner
         self.firstRun = True
@@ -960,21 +1135,28 @@ class JobChatThird(Chat):
         self.selectedQuest = None
         super().__init__()
 
-    """
-    add internal state
-    bad pattern: chat option stored as references to class complicates this
-    """
-
+    # bad pattern: chat option stored as references to class complicates this
     def setUp(self, state):
+        """
+        actually set up the internal state
+
+        Parameters:
+            state: the state to set
+        """
+
         self.mainChar = state["mainChar"]
         self.terrain = state["terrain"]
         self.containerQuest = state["hopperDutyQuest"]
 
-    """
-    show dialog and assign quest 
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        show dialog and assign quest 
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         # handle termination of this chat
         if key == "esc":
             # quit dialog
@@ -1044,21 +1226,22 @@ class JobChatThird(Chat):
 
         return True
 
-
-"""
-the chat for making the npc stop firing the furnace
-"""
-
-
+# obsolete: needs serious reintegration to work again
 class StopChat(Chat):
+    """
+    the chat for making the npc stop firing the furnace
+    """
     id = "StopChat"
     type = "StopChat"
 
-    """
-    basic state initialization
-    """
-
     def __init__(self, partner):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chat partner
+        """
+
         self.state = None
         self.partner = partner
         self.firstRun = True
@@ -1066,11 +1249,15 @@ class StopChat(Chat):
         self.persistentText = ""
         super().__init__()
 
-    """
-    stop furnace quest and correct dialog
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        stop furnace quest and correct dialog
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         # show information on first run
         if self.firstRun:
             # stop firing the furnace
@@ -1097,21 +1284,23 @@ class StopChat(Chat):
         else:
             return False
 
-
-"""
-the chat for making the npc start firering the furnace
-"""
-
-
+# obsolete: needs serious reintegration to work again
 class StartChat(Chat):
+    """
+    the chat for making the npc start firering the furnace
+    """
+
     id = "StartChat"
     type = "StartChat"
 
-    """
-    basic state initialization
-    """
-
     def __init__(self, partner):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chat partner
+        """
+
         self.state = None
         self.partner = partner
         self.firstRun = True
@@ -1119,11 +1308,15 @@ class StartChat(Chat):
         self.persistentText = ""
         super().__init__()
 
-    """
-    start furnace quest and correct dialog
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        start furnace quest and correct dialog
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         # show information on first run
         if self.firstRun:
 
@@ -1154,22 +1347,24 @@ class StartChat(Chat):
         else:
             return False
 
-
-"""
-the chat option for recruiting a character
-"""
-
-
+# obsolete: needs serious reintegration to work again
 class RecruitChat(Chat):
+    """
+    the chat option for recruiting a character
+    """
+
     dialogName = (
         "follow my orders."  # the name for this chat when presented as dialog option
     )
 
-    """
-    straightforward state initialization
-    """
-
     def __init__(self, partner):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chat partner
+        """
+
         self.type = "RecruitChat"
         self.state = None
         self.partner = partner
@@ -1178,13 +1373,17 @@ class RecruitChat(Chat):
         self.persistentText = ""
         super().__init__()
 
-    """
-    show dialog and recruit character depending on success
-    bad code: showing the messages should be handled in __init__ or a setup method
-    bad code: the dialog and reactions should be generated within the characters
-    """
-
+    # bad code: showing the messages should be handled in __init__ or a setup method
+    # bad code: the dialog and reactions should be generated within the characters
     def handleKey(self, key, noRender=False):
+        """
+        show dialog and recruit character depending on success
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         # exit submenu
         if key == "esc":
             return True
@@ -1262,19 +1461,22 @@ class RecruitChat(Chat):
             self.done = True
             return False
 
-
-"""
-"""
-
-
+# obsolete: needs serious reintegration to work again
 class JoinMilitaryChat(Chat):
+    """
+    chat for trying to join the military
+    """
+
     id = "CaptainChat"
 
-    """
-    straightforward state initialization
-    """
-
     def __init__(self, partner):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chat partner
+        """
+
         self.type = "CaptainChat"
         self.state = None
         self.partner = partner
@@ -1284,13 +1486,17 @@ class JoinMilitaryChat(Chat):
         self.wait = False
         super().__init__()
 
-    """
-    show dialog and recruit character depending on success
-    bad code: showing the messages should be handled in __init__ or a setup method
-    bad code: the dialog and reactions should be generated within the characters
-    """
-
+    # bad code: showing the messages should be handled in __init__ or a setup method
+    # bad code: the dialog and reactions should be generated within the characters
     def handleKey(self, key, noRender=False):
+        """
+        show dialog and recruit character depending on success
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         # exit submenu
         if key == "esc":
             return True
@@ -1326,19 +1532,21 @@ class JoinMilitaryChat(Chat):
             self.done = True
             return False
 
-
-"""
-"""
-
-
+# obsolete: needs serious reintegration to work again
 class CaptainChat(Chat):
+    """
+    """
+
     id = "CaptainChat"
 
-    """
-    straightforward state initialization
-    """
-
     def __init__(self, partner):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chat partner
+        """
+
         self.type = "CaptainChat"
         self.state = None
         self.partner = partner
@@ -1348,13 +1556,17 @@ class CaptainChat(Chat):
         self.wait = False
         super().__init__()
 
-    """
-    show dialog and recruit character depending on success
-    bad code: showing the messages should be handled in __init__ or a setup method
-    bad code: the dialog and reactions should be generated within the characters
-    """
-
+    # bad code: showing the messages should be handled in __init__ or a setup method
+    # bad code: the dialog and reactions should be generated within the characters
     def handleKey(self, key, noRender=False):
+        """
+        show dialog and recruit character depending on success
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         # exit submenu
         if key == "esc":
             return True
@@ -1394,19 +1606,22 @@ class CaptainChat(Chat):
             self.done = True
             return False
 
-
-"""
-"""
-
-
+# obsolete: needs serious reintegration to work again
 class FactionChat1(Chat):
+    """
+    chat for joining an alliance
+    """
+
     id = "FactionChat1"
 
-    """
-    straightforward state initialization
-    """
-
     def __init__(self, partner):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chat partner
+        """
+
         self.type = "CaptainChat"
         self.state = None
         self.partner = partner
@@ -1416,10 +1631,15 @@ class FactionChat1(Chat):
         self.wait = False
         super().__init__()
 
-    """
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        handle a keystroke
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         # exit submenu
         if key == "esc":
             return True
@@ -1452,19 +1672,22 @@ class FactionChat1(Chat):
             self.done = True
             return False
 
-
-"""
-"""
-
-
+# obsolete: needs serious reintegration to work again
 class FactionChat2(Chat):
+    """
+    chat for joining an alliance
+    """
+
     id = "FactionChat2"
 
-    """
-    straightforward state initialization
-    """
-
     def __init__(self, partner):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chat partner
+        """
+
         self.type = "CaptainChat"
         self.state = None
         self.partner = partner
@@ -1474,10 +1697,15 @@ class FactionChat2(Chat):
         self.wait = False
         super().__init__()
 
-    """
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        handle a keystroke
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         # exit submenu
         if key == "esc":
             return True
@@ -1536,18 +1764,22 @@ class FactionChat2(Chat):
             return False
 
 
-"""
-"""
-
-
+# obsolete: needs serious reintegration to work again
 class CaptainChat2(Chat):
+    """
+    chat to try to become captain
+    """
+
     id = "CaptainChat2"
 
-    """
-    straightforward state initialization
-    """
-
     def __init__(self, partner):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chat partner
+        """
+
         self.type = "CaptainChat"
         self.state = None
         self.partner = partner
@@ -1557,13 +1789,17 @@ class CaptainChat2(Chat):
         self.wait = False
         super().__init__()
 
-    """
-    show dialog and recruit character depending on success
-    bad code: showing the messages should be handled in __init__ or a setup method
-    bad code: the dialog and reactions should be generated within the characters
-    """
-
+    # bad code: showing the messages should be handled in __init__ or a setup method
+    # bad code: the dialog and reactions should be generated within the characters
     def handleKey(self, key, noRender=False):
+        """
+        show dialog and recruit character depending on success
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         # exit submenu
         if key == "esc":
             return True
@@ -1607,19 +1843,19 @@ class CaptainChat2(Chat):
             self.done = True
             return False
 
-
-"""
-a chat with a character, partially hardcoded partially dynamically generated 
-"""
-
-
 class ChatMenu(Chat):
-
     """
-    straightforward state initialization
+    a chat with a character, partially hardcoded partially dynamically generated 
     """
 
     def __init__(self, partner=None):
+        """
+        initialise the internal state
+        
+        Parameters:
+            partner: the chat partner
+        """
+
         self.type = "ChatMenu"
         self.state = None
         self.partner = partner
@@ -1629,11 +1865,13 @@ class ChatMenu(Chat):
         super().__init__()
         self.objectsToStore.extend(["partner", "macro"])
 
-    """
-    get state as dictionary
-    """
-
     def getState(self):
+        """
+        get state as semi serialised state
+
+        Returns:
+            the semi serialised state
+        """
         state = super().getState()
         if self.subMenu:
             state["subMenu"] = self.subMenu.getState()
@@ -1642,11 +1880,13 @@ class ChatMenu(Chat):
 
         return state
 
-    """
-    set internal state from state as dictionary
-    """
-
     def setState(self, state):
+        """
+        set internal state from semi serialised state
+
+        Parameters:
+            the state to set
+        """
         super().setState(state)
 
         if "subMenu" in state:
@@ -1655,13 +1895,17 @@ class ChatMenu(Chat):
             else:
                 self.subMenu = None
 
-    """
-    show the dialog options and wrap around the corresponding submenus
-    bad code: showing the messages should be handled in __init__ or a setup method
-    bad code: the dialog should be generated within the characters
-    """
-
+    # bad code: showing the messages should be handled in __init__ or a setup method
+    # bad code: the dialog should be generated within the characters
     def handleKey(self, key, noRender=False):
+        """
+        show the dialog options and wrap around the corresponding submenus 
+
+        Parameters:
+            key: the keystroke
+            noRender: flag to skip actually rendering stuff
+        """
+
         # smooth over impossible state
         if self.partner is None:
             src.logger.debugMessages.append("chatmenu spawned without partner")
@@ -1938,6 +2182,9 @@ class ChatMenu(Chat):
         return False
 
     def runMacro(self):
+        """
+        run a selected macro
+        """
 
         if self.subMenu.keyPressed not in self.partner.macroState["macros"]:
             src.gamestate.gamestate.mainChar.addMessage("no macro found")

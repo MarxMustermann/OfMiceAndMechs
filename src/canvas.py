@@ -9,7 +9,7 @@ import src.logger
 # bad code: this is unintuitive, ugly and unnecessary it should be replaced by a simpler solution
 class Mapping(object):
     """
-    maps things to abstrect representation and back
+    maps things to abstract representation and back
     """
 
     mappedThings = {}
@@ -17,11 +17,10 @@ class Mapping(object):
         0
     ]  # non intuitive: list to make counter same object for all instances
 
-    """
-    (re) builds the mapping
-    """
-
     def buildMap(self):
+        """
+        (re) builds the mapping
+        """
 
         # get configuration
         rawConfig = self.loadMapping()
@@ -92,11 +91,16 @@ class Mapping(object):
                 # set the actual attribute
                 setattr(self, item[0], index)
 
-    """
-    set mapping value for an index
-    """
 
     def mapToIndex(self, index, value):
+        """
+        set mapping value for an index
+
+        Parameters:
+            index: the index to set the value for
+            value: the value to set
+        """
+
         # ensure minimum length
         while len(self.indexedMapping) - 1 < index:
             self.indexedMapping.append(None)
@@ -105,18 +109,22 @@ class Mapping(object):
         self.indexedMapping[index] = value
 
 
-"""
-maps an abstract representation to tiles.
-"""
 
 
 class TileMapping(Mapping):
     """
-    basic state setting
-    bad code: hardcoded modes for now
+    maps an abstract representation to tiles.
     """
 
     def __init__(self, mode):
+        """
+        basic state setting
+        bad code: hardcoded modes for now
+
+        Parameters:
+            mode: the mode to load
+        """
+
         super().__init__()
         self.modes = {"testTiles": "", "pseudeUnicode": "", "testTiles2": ""}
         self.setRenderingMode(mode)
@@ -124,11 +132,14 @@ class TileMapping(Mapping):
         # add fallback values for missing tiles
         mapping = Mapping
 
-    """
-    set the rendering mode AND recalculate the tile map
-    """
-
     def setRenderingMode(self, mode):
+        """
+        set the rendering mode AND recalculate the tile map
+
+        Parameters:
+            mode: the mode to load
+        """
+
         # input validation
         if mode not in self.modes:
             raise Exception("tried to switch to unkown mode: " + mode)
@@ -139,11 +150,11 @@ class TileMapping(Mapping):
         # rebuild abstract mapping
         self.buildMap()
 
-    """
-    fetch correct configuration for mode
-    """
-
     def loadMapping(self):
+        """
+        load the correct mapping tile
+        """
+
         # bad pattern: no way to load arbitrary files
         if self.mode == "testTiles":
             # bad code: reimport the config as library, i don't think this is a good thing to do
@@ -157,6 +168,13 @@ class TileMapping(Mapping):
         return rawConfig
 
     def addFallbackChars(self,rawConfig):
+        """
+        add missing tiles by loading data from the tile based mode
+
+        Parameters:
+            rawConfig: the unmodified config 
+        """
+
         # load the fallback chars
         import config.displayChars_fallback as fallback
 
@@ -187,15 +205,26 @@ class DisplayMapping(Mapping):
     """
 
     def __init__(self, mode):
+        """
+        initilise own state
+
+        Parameters:
+            mode: the mode to load
+        """
+
         super().__init__()
         self.modes = {"unicode": "", "pureASCII": ""}
         self.setRenderingMode(mode)
 
-    """
-    set the rendering mode AND recalculate the char map
-    """
 
     def setRenderingMode(self, mode):
+        """
+        set the rendering mode AND recalculate the char map
+
+        Parameters:
+            mode: the mode to load
+        """
+
         # validate input
         if mode not in self.modes:
             raise Exception("tired to switch to unkown mode: " + mode)
@@ -206,11 +235,11 @@ class DisplayMapping(Mapping):
         # create the actual mapping
         self.buildMap()
 
-    """
-    fetch the config depending on the mode
-    """
-
     def loadMapping(self):
+        """
+        fetch the config depending on the mode
+        """
+
         if self.mode == "unicode":
             # bad code: reimport the config as library, i don't think this is a good thing to do
             import config.displayChars as rawConfig
@@ -219,22 +248,16 @@ class DisplayMapping(Mapping):
             import config.displayChars_fallback as rawConfig
         return rawConfig
 
-
-"""
-The canvas is supposed to hold the content of a piece screen.
-It is used to allow for pixel setting and to be able to cache rendered state.
-Recursive canvases would be great but are not implemented yet.
-
-bad code: actual rendering beyond the abstracted form (urwid formatting, tiles) is done here
-"""
-
-
+# bad code: actual rendering beyond the abstracted form (urwid formatting, tiles) is done here
 class Canvas(object):
     """
-    set up state AND fill the canvas with the (default) chars
-    bad code: should be split into 3 methods
+    The canvas is supposed to hold the content of a piece screen.
+    It is used to allow for pixel setting and to be able to cache rendered state.
+    Recursive canvases would be great but are not implemented yet.
+
     """
 
+    # bad code: should be split into 3 methods
     def __init__(
         self,
         size=(81, 81),
@@ -246,6 +269,9 @@ class Canvas(object):
         tileMapping=None,
         tileMapping2=None,
     ):
+        """
+        set up state AND fill the canvas with the (default) chars
+        """
 
         if defaultChar is None:
             defaultChar = displayChars.void
@@ -282,11 +308,15 @@ class Canvas(object):
                     except:
                         pass
 
-    """
-    plain and simple pseudo pixel setting
-    """
-
     def setPseudoPixel(self, x, y, char):
+        """
+        sets a pseudo pixel on the canvas
+        Parameters:
+            x: the x coordinate
+            y: the y coordinate 
+            char: 
+        """
+
         # shift coordinates
         x -= self.coordinateOffset[0]
         y -= self.coordinateOffset[1]
@@ -298,16 +328,18 @@ class Canvas(object):
         # set pixel
         self.chars[x][y] = char
 
-    """
-    get the Canvas prepared for use with urwid,
-    this basically returns urwid.AttrSpecs
-    bad code: urwid specific code should be in one place not everywhere
-    """
-
+    # bad code: urwid specific code should be in one place not everywhere
     def getUrwirdCompatible(self, warning=False):
+        """
+        get the Canvas prepared for use with urwid,
+        this basically returns urwid.AttrSpecs
+
+        Parameters:
+            warning: flag if warning indicators should be shown
+        """
+
         # the to be result
         out = []
-
         if warning:
             blank = (src.interaction.urwid.AttrSpec("default", "#f00"), "  ")
         else:
@@ -349,13 +381,18 @@ class Canvas(object):
             out.append("\n")
         return out
 
-    """
-    draw the display onto a pygame display
-    bad code: pygame specific code should be in one place not everywhere
-    bad code: the method should return a rendered result instead of rendering directly
-    """
-
+    # bad code: pygame specific code should be in one place not everywhere
+    # bad code: the method should return a rendered result instead of rendering directly
     def setPygameDisplay(self, pydisplay, pygame, tileSize):
+        """
+        draw the display onto a pygame display
+        
+        Parameters:
+            pydisplay: the display from pygame
+            pygame: the pygame itself
+            tileSize: the size of the drawing area
+        """
+
         # fill game area
         pydisplay.fill((0, 0, 0))
 

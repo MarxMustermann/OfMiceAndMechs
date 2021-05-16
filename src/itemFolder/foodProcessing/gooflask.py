@@ -4,27 +4,32 @@ import src
 class GooFlask(src.items.Item):
     type = "GooFlask"
 
-    """
-    call superclass constructor with modified paramters and set some state
-    """
+    def __init__(self):
+        """
+        configure super class
+        """
 
-    def __init__(self, name="goo flask", noId=False):
         self.uses = 0
-        super().__init__(display=src.canvas.displayChars.gooflask_empty, name=name)
+        super().__init__(display=src.canvas.displayChars.gooflask_empty)
+        
+        self.name = "goo flask"
         self.walkable = True
         self.bolted = False
-        self.description = "a flask containing goo"
+        self.description = "A flask holds goo. Goo is nourishment for you"
         self.level = 1
         self.maxUses = 100
 
         # set up meta information for saving
         self.attributesToStore.extend(["uses", "level", "maxUses"])
 
-    """
-    drink from flask
-    """
-
     def apply(self, character):
+        """
+        handle a character tyring to drink from the flask
+
+        Parameters:
+            character: the character trying to drink from the flask
+        """
+
         super().apply(character, silent=True)
 
         # handle edge case
@@ -52,7 +57,11 @@ class GooFlask(src.items.Item):
     def render(self):
         """
         render based on fill amount
+
+        Returns:
+            what the item should look like
         """
+
         displayByUses = [
             src.canvas.displayChars.gooflask_empty,
             src.canvas.displayChars.gooflask_part1,
@@ -63,19 +72,23 @@ class GooFlask(src.items.Item):
         ]
         return displayByUses[self.uses // 20]
 
-    """
-    get info including the charges on the flask
-    """
-
     def getDetailedInfo(self):
+        """
+        get info including the charges on the flask
+        """
+
         return super().getDetailedInfo() + " (" + str(self.uses) + " charges)"
 
     def getLongInfo(self):
-        text = """
-item: GooFlask
+        """
+        return a longer than normal description text
 
-description:
-A goo flask holds goo. Goo is nourishment for you.
+        Returns:
+            the description text
+        """
+
+        text = super().getLongInfo()
+        text += """
 
 If you do not drink from the flask every 1000 ticks you will starve.
 
@@ -90,14 +103,21 @@ this is a level %s item.
         return text
 
     def upgrade(self):
+        """
+        increase max uses on upgrade
+        """
+
         super().upgrade()
 
         self.maxUses += 10
 
     def downgrade(self):
+        """
+        decrease max uses on upgrade
+        """
+
         super().downgrade()
 
         self.maxUses -= 10
-
 
 src.items.addType(GooFlask)

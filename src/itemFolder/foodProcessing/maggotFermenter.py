@@ -2,21 +2,34 @@ import src
 
 
 class MaggotFermenter(src.items.Item):
+    """
+    ingame item that is part of the goo (food) production
+    """
+
     type = "MaggotFermenter"
 
-    """
-    call superclass constructor with modified paramters and set some state
-    """
+    def __init__(self):
+        """
+        call superclass constructor with modified paramters and set some state
+        """
 
-    def __init__(self, name="maggot fermenter", noId=False):
         self.activated = False
         super().__init__(display=src.canvas.displayChars.maggotFermenter, name=name)
 
-    """
-    """
+        self.name = "maggot fermenter"
+        self.description = "A maggot fermenter produces bio mass from vat maggots"
+        self.usageInfo = """
+Place 10 vat maggots to the left/west of the maggot fermenter.
+Activate the maggot fermenter to produce biomass.
+"""
 
     def apply(self, character):
-        super().apply(character, silent=True)
+        """
+        handle a character trying to use this item to convert vat maggots to bio mass
+
+        Parameters:
+            character: the character trying to use the item
+        """
 
         if not self.xPosition:
             character.addMessage("This has to be placed to be used")
@@ -63,19 +76,5 @@ class MaggotFermenter(src.items.Item):
         # spawn the new item
         new = src.items.itemMap["BioMass"]()
         self.container.addItem(new,(self.xPosition+1,self.yPosition,self.zPosition))
-
-    def getLongInfo(self):
-        text = """
-item: MaggotFermenter
-
-description:
-A maggot fermenter produces bio mass from vat maggots.
-
-Place 10 vat maggots to the left/west of the maggot fermenter.
-Activate the maggot fermenter to produce biomass.
-
-"""
-        return text
-
 
 src.items.addType(MaggotFermenter)

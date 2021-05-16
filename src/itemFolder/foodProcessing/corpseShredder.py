@@ -1,26 +1,37 @@
 import src
 
-"""
-"""
-
-
 class CorpseShredder(src.items.Item):
+    """
+    ingame item producing fertilizer components from corpses
+    """
+
     type = "CorpseShredder"
 
-    """
-    call superclass constructor with modified paramters and set some state
-    """
 
     def __init__(self):
+        """
+        configure superclass
+        """
+
         self.activated = False
         super().__init__(display=src.canvas.displayChars.corpseShredder)
         self.name = "corpse shredder"
-
-    """
-    """
+        self.description = """
+A corpse shredder produces mold feed from corpses.
+If corpses and MoldSpores are supplied it produces seeded mold feed
+"""
+        self.usageInfo = """
+Place corpse/mold seed to the west of the bloom shredder.
+Activate the corpse shredder to produce mold feed/seeded mold feed.
+"""
 
     def apply(self, character):
-        super().apply(character, silent=True)
+        """
+        handle a character tying to use the item to shred a corpse
+
+        Parameters:
+            character: the character using the item
+        """
 
         corpse = None
         moldSpores = []
@@ -66,20 +77,5 @@ class CorpseShredder(src.items.Item):
                 # spawn the new item
                 new = src.items.itemMap["MoldFeed"]()
             self.container.addItem(new,( self.xPosition + 1,self.yPosition,self.zPosition))
-
-    def getLongInfo(self):
-        text = """
-item: CorpseShredder
-
-description:
-A corpse shredder produces mold feed from corpses.
-If corpses and MoldSpores are supplied it produces seeded mold feed
-
-Place corpse/mold seed to the west of the bloom shredder.
-Activate the corpse shredder to produce mold feed/seeded mold feed.
-
-"""
-        return text
-
 
 src.items.addType(CorpseShredder)

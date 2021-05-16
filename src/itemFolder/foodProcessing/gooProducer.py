@@ -1,29 +1,39 @@
 import src
 
-"""
-"""
-
-
 class GooProducer(src.items.Item):
+    """
+    ingame item that is the final step of the goo (food) production
+    """
+
     type = "GooProducer"
 
-    """
-    call superclass constructor with modified paramters and set some state
-    """
-
     def __init__(self):
+        """
+        configure super class
+        """
+
         super().__init__(display=src.canvas.displayChars.gooProducer)
         self.name = "goo producer"
+        self.description = "A goo producer produces goo from press cakes"
+        self.usageInfo = """
+Place 10 press cakes to the left/west of the goo producer and a goo dispenser to the rigth/east.
+Activate the maggot fermenter to add a charge to the goo dispenser.
+"""
+
         self.activated = False
         self.level = 1
 
         # bad code: repetitive and easy to forget
         self.attributesToStore.extend(["level"])
 
-    """
-    """
-
     def apply(self, character):
+        """
+        handle a character trying to produce goo
+
+        Parameters:
+            character: the character trying to use the item
+        """
+
         super().apply(character, silent=True)
 
         # fetch input items
@@ -66,19 +76,5 @@ class GooProducer(src.items.Item):
             self.container.removeItem(item)
 
         dispenser.addCharge()
-
-    def getLongInfo(self):
-        text = """
-item: GooProducer
-
-description:
-A goo producer produces goo from press cakes.
-
-Place 10 press cakes to the left/west of the goo producer and a goo dispenser to the rigth/east.
-Activate the maggot fermenter to add a charge to the goo dispenser.
-
-"""
-        return text
-
 
 src.items.addType(GooProducer)

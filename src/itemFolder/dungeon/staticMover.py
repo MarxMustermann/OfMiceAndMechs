@@ -2,12 +2,21 @@ import src
 
 
 class StaticMover(src.items.Item):
+    """
+    ingame item behaving like a wall trying to block the player in
+    """
+
     type = "StaticMover"
 
     def __init__(self):
+        """
+        configure the superclass
+        """
+
         super().__init__(display=src.canvas.displayChars.forceField2)
 
-        self.name = "static spark"
+        self.name = "static mover"
+        self.description = "Moves towards you and leeches your energy"
 
         self.walkable = False
         self.bolted = True
@@ -15,6 +24,13 @@ class StaticMover(src.items.Item):
         self.energy = 1
 
     def apply(self, character):
+        """
+        handle a character trying to destroy the mover
+
+        Parameters:
+            character: the character trying to destroy the mover
+        """
+
         staticSpark = None
         for item in character.inventory:
             if isinstance(item, StaticSpark) and item.strength >= self.strength:
@@ -33,18 +49,24 @@ class StaticMover(src.items.Item):
         )
 
     def getLongInfo(self):
-        return """
-item: StaticMover
+        """
+        return a longer than normal description text
 
-description:
-Moves towards you and leeches your energy
+        Returns:
+            the description text
+        """
 
+        text = super().getLongInfo()
+
+        text += """
 energy:
 %s
 
 """ % (
             self.energy
         )
+
+        return text
 
 
 src.items.addType(StaticMover)

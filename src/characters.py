@@ -1602,6 +1602,25 @@ class Character(src.saveing.Saveable):
         if self.satiation > 1000:
             self.satiation = 1000
 
+    def addFrustration(self, amount):
+        """
+        increase the characters frustration
+
+        Parameters:
+            amount: how much the frustration should increase
+        """
+
+        self.frustration += amount
+
+    def removeFrustration(self, amount):
+        """
+        decrease the characters frustration
+
+        Parameters:
+            amount: how much the frustration should be decreased
+        """
+
+        self.frustration -= amount
 
 # bad code: animals should not be characters. This means it is possible to chat with a mouse
 class Mouse(Character):

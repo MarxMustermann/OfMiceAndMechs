@@ -2,11 +2,20 @@ import src
 
 
 class RipInReality(src.items.Item):
+    """
+    ingame item that teleports the character to a dungeon or within a dungeon
+    """
+
     type = "RipInReality"
 
     def __init__(self):
+        """
+        configuration of the superclass
+        """
+        
         super().__init__(display=src.canvas.displayChars.ripInReality)
         self.name = "rip in reality"
+        self.description = "You can enter it"
         self.target = None
         self.targetPos = None
 
@@ -20,12 +29,24 @@ class RipInReality(src.items.Item):
         self.storedItems = []
 
     def render(self):
+        """
+        render the rip depending on whether or not it is stable
+        """
+
         if self.stable:
             return "|#"
         else:
             return self.display
 
     def apply(self, character):
+        """
+        teleport a character using the rip
+        if not teleport target exists the rip will create a new room
+
+        Parameters:
+            character: the character using the rip
+        """
+
         self.container.removeCharacter(character)
         character.staggered += 1
         character.addMessage("the reality shift staggers you")
@@ -288,7 +309,15 @@ class RipInReality(src.items.Item):
 
         self.lastUse = src.gamestate.gamestate.tick
 
+    # abstraction: should use superclass functionality
     def configure(self, character):
+        """
+        offer a selection a actions to a character and set the trigger to run them
+
+        Parameters:
+                character: the character the selection is offered to
+        """
+        
         options = [("destabilize", "destabilize"), ("stablize", "stablize")]
         self.submenue = src.interaction.SelectionMenu(
             "what do you want to do?", options
@@ -297,7 +326,12 @@ class RipInReality(src.items.Item):
         character.macroState["submenue"].followUp = self.apply2
         self.character = character
 
+    # bad code: should be splitted
     def apply2(self):
+        """
+        run a selected action from a list of actions
+        """
+
         staticSpark = None
         for item in self.character.inventory:
             if isinstance(item, StaticSpark) and item.strength >= self.depth:
@@ -325,11 +359,16 @@ class RipInReality(src.items.Item):
         self.submenue = None
 
     def getLongInfo(self):
-        return """
-item: RipInReality
+        """
+        return a longer than normal description text
 
-description:
-You can enter it
+        Returns:
+            the description text
+        """
+
+        text = super().getLongInfo()
+
+        text += """
 
 depth:
 %s
@@ -345,6 +384,7 @@ stable:
             self.target,
             self.targetPos,
         )
-
+        
+        return text
 
 src.items.addType(RipInReality)

@@ -3206,7 +3206,7 @@ class InputMenu(SubMenu):
 
         if key == "enter" and not self.escape or len(self.text) > 15 * 15:
             if self.followUp:
-                self.followUp()
+                self.callIndirect(self.followUp,extraParams={"text":self.text})
             return True
 
         if self.ignoreFirst and self.firstHit:

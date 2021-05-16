@@ -4,7 +4,8 @@ import random
 
 class QuestArtwork(src.items.Item):
     """
-
+    ingame item spawning quests and giving rewards
+    used to add more excitement and ressources to the game
     """
 
     type = "QuestArtwork"
@@ -39,6 +40,13 @@ class QuestArtwork(src.items.Item):
         )
 
     def returnQuest(self, character):
+        """
+        return finished quest and get reward
+
+        Parameters:
+            character: the character returning the quest
+        """
+
         foundQuests = []
         for quest in character.quests:
             if quest.completed:
@@ -56,6 +64,14 @@ class QuestArtwork(src.items.Item):
             character.addMessage("quest reward issued: GooFlask")
 
     def getQuest(self, character):
+        """
+        assigns a quest to a character
+        currenty generates the quest
+
+        Parameters:
+            character: the character asking for a quest
+        """
+
         if len(character.quests) > 2:
             character.addMessage("too many quests")
             return
@@ -80,3 +96,5 @@ class QuestArtwork(src.items.Item):
         )
         character.assignQuest(quest)
         character.addMessage("quest was assigned")
+
+src.items.addType(QuestArtwork)

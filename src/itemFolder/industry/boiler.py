@@ -1,19 +1,20 @@
 import src
 
-"""
-produces steam from heat
-bad code: sets the rooms steam generation directly without using pipes
-"""
 
-
+# bad code: sets the rooms steam generation directly without using pipes
 class Boiler(src.items.Item):
+    """
+    produces steam from heat
+    is intended to be part of an energy management system
+    """
+
     type = "Boiler"
 
-    """
-    call superclass constructor with modified paramters and set some state
-    """
-
     def __init__(self):
+        """
+        configure super class
+        """
+
         super().__init__(display=src.canvas.displayChars.boiler_inactive)
         self.isBoiling = False
         self.isHeated = False
@@ -27,11 +28,11 @@ class Boiler(src.items.Item):
         self.objectsToStore.append("startBoilingEvent")
         self.objectsToStore.append("stopBoilingEvent")
 
-    """
-    start producing steam after a delay
-    """
 
     def startHeatingUp(self):
+        """
+        start producing steam after a delay
+        """
 
         # do not heat up heated items
         if self.isHeated:
@@ -55,11 +56,12 @@ class Boiler(src.items.Item):
         # notify listeners
         self.changed()
 
-    """
-    stop producing steam after a delay
-    """
 
     def stopHeatingUp(self):
+        """
+        stop producing steam after a delay
+        """
+
         # don't do cooldown on cold boilers
         if not self.isHeated:
             return
@@ -81,20 +83,26 @@ class Boiler(src.items.Item):
         self.changed()
 
     def getLongInfo(self):
-        text = (
-            """
+        """
+        returns a longer than normal desription text
+
+        Returns:
+            the description text
+        """
+
+        text = super().getLongInfo()
+        text += """
 a boiler can be heated by a furnace to produce steam. Steam is the basis for energy generation.
 
 """
-            + self.id
-        )
         return text
 
-    """
-    set state from dict
-    """
-
+    # bad code: should be replaced with render()
     def setState(self, state):
+        """
+        set state from semi serilised form
+        """
+
         super().setState(state)
 
         if self.isBoiling:

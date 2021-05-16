@@ -15,7 +15,7 @@ class MoldFeed(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.moldFeed)
         self.name = "mold feed"
-        self.description "This is a good base for mold growth. If mold grows onto it, it will grow into a bloom."
+        self.description = "This is a good base for mold growth. If mold grows onto it, it will grow into a bloom."
         self.usageInfo = """
 place mold feed next to a mold and when the mold grows onto it, it will grow into a bloom.
 

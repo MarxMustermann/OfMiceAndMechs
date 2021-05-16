@@ -1,18 +1,19 @@
 import src
 
-"""
-heat source for generating steam and similar
-"""
 
 
 class Furnace(src.items.Item):
+    """
+    ingame item used as heat source for generating steam and similar
+    """
+
     type = "Furnace"
 
-    """
-    straightforward state initialization
-    """
-
     def __init__(self):
+        """
+        configure super class
+        """
+
         self.activated = False
         self.boilers = []
         super().__init__(display=src.canvas.displayChars.furnace_inactive)
@@ -21,12 +22,13 @@ class Furnace(src.items.Item):
         # set metadata for saving
         self.attributesToStore.extend(["activated"])
 
-    """
-    fire the furnace
-    """
-
     def apply(self, character):
-        super().apply(character, silent=True)
+        """
+        handle a character trying to fire the furnace
+
+        Parameters:
+            character: the character trying to use this item
+        """
 
         # select fuel
         # bad pattern: the player should be able to select fuel

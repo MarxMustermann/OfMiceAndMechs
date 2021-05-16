@@ -16,7 +16,7 @@ class SporeExtractor(src.items.Item):
 
         self.name = "spore extractor"
         self.description  = "A Spore Extractor removes spores from mold blooms"
-        sefl.usageInfo = """
+        self.usageInfo = """
 Place mold bloom to the west/left and activate the Spore Extractor.
 The MoldSpores will be outputted to the east/right.
 """

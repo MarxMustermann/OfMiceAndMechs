@@ -14,7 +14,7 @@ class MaggotFermenter(src.items.Item):
         """
 
         self.activated = False
-        super().__init__(display=src.canvas.displayChars.maggotFermenter, name=name)
+        super().__init__(display=src.canvas.displayChars.maggotFermenter)
 
         self.name = "maggot fermenter"
         self.description = "A maggot fermenter produces bio mass from vat maggots"

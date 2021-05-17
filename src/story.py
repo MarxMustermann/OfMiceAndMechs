@@ -1,6 +1,9 @@
 """
 story code and story related code belongs here
 most thing should be abstracted and converted to a game mechanism later
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+most of this code is currenty not in use and needs to be reintegrated
 """
 
 import src.saveing
@@ -23,34 +26,44 @@ phasesByName = None
 #
 #####################################
 
-"""
-helper to add message cinematic
-"""
-
-
 def showMessage(message, trigger=None):
+    """
+    helper to add message cinematic
+
+    Parameters:
+        message: the message to add
+        trigger: function that should be called after showing the message
+    """
+
     cinematic = src.cinematics.ShowMessageCinematic(message)
     src.cinematics.cinematicQueue.append(cinematic)
     cinematic.endTrigger = trigger
 
-
-"""
-helper to add show game cinematic
-"""
-
-
 def showGame(duration, trigger=None):
+    """
+    helper to add show game cinematic
+
+    Parameters:
+        duration: how long the game should be shown
+        trigger: function that should be called after showing the game
+    """
+
     cinematic = src.cinematics.ShowGameCinematic(duration, tickSpan=1)
     src.cinematics.cinematicQueue.append(cinematic)
     cinematic.endTrigger = trigger
 
 
-"""
-helper to add show quest cinematic
-"""
-
-
 def showQuest(quest, assignTo=None, trigger=None, container=None):
+    """
+    helper to add show quest cinematic
+
+    Parameters:
+        quest: the quest to add
+        assignTo: he character to assign the quest to
+        trigger: function that should be called after showing the game
+        container: quest to add the quest as subquest to
+    """
+
     cinematic = src.cinematics.ShowQuestExecution(
         quest, tickSpan=1, assignTo=assignTo, container=container
     )
@@ -58,12 +71,14 @@ def showQuest(quest, assignTo=None, trigger=None, container=None):
     cinematic.endTrigger = trigger
 
 
-"""
-helper to add text cinematic
-"""
-
-
 def showText(text, rusty=False, autocontinue=False, trigger=None, scrolling=False):
+    """
+    helper to add text cinematic
+
+    Parameters:
+        text: the text to show
+    """
+
     cinematic = src.cinematics.TextCinematic(
         text, rusty=rusty, autocontinue=autocontinue, scrolling=scrolling
     )

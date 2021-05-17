@@ -1,5 +1,7 @@
 """
 rooms and room related code belong here
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+much of this code is currenty not in use and needs to be reintegrated
 """
 
 # import basic libs
@@ -17,17 +19,15 @@ import src.gameMath
 import src.characters
 import src.gamestate
 
-"""
-the base class for all rooms
-"""
-
-
+# bad code: too many attributes
+# obsolete: lots of old code needs a cleanup
 class Room(src.saveing.Saveable):
     """
-    state initialization
-    bad code: too many attributes
+    the base class for all rooms
     """
 
+    # bad code: the position of the room should not be in the constructor
+    # obsolete: most parameters for rooms are oblsolete actually
     def __init__(
         self,
         layout="",
@@ -38,6 +38,18 @@ class Room(src.saveing.Saveable):
         desiredPosition=None,
         seed=0,
     ):
+        """
+        initialise internal state
+
+        Parameters:
+            layout: the room layout
+            xPosition: the x position of the room in big coordinates
+            yPosition: the y position of the 
+            offsetX: the x offset from the position in big coordinates
+            offsetY: the y offset from the position in big coordinates
+            desiredPosition: the desired position for the room
+            seed: the rng seed
+        """
         super().__init__()
 
         # initialize attributes
@@ -351,6 +363,9 @@ class Room(src.saveing.Saveable):
         )
 
     def damage(self):
+        """
+        damage the room
+        """
         self.health -= 1
         if self.itemsOnFloor:
             import random
@@ -385,24 +400,32 @@ class Room(src.saveing.Saveable):
             self.xPosition = 0
             self.yPosition = 0
 
-    """
-    registering for notifications
-    bad code: should be in extra class
-    """
-
+    # bad code: should be in extra class
     def addListener(self, listenFunction, tag="default"):
+        """
+        register a callbak to be run when something changes about the room
+
+        Parameters:
+            listenFunction: the callback
+            tag: a filter for the changes to be notified about
+        """
+
         if tag not in self.listeners:
             self.listeners[tag] = []
 
         if listenFunction not in self.listeners[tag]:
             self.listeners[tag].append(listenFunction)
 
-    """
-    deregistering for notifications
-    bad code: should be in extra class
-    """
-
+    # bad code: should be in extra class
     def delListener(self, listenFunction, tag="default"):
+        """
+        deregistering for notifications
+
+        Parameters:
+            listenFunction: the callback to call on change
+            tag: a filter or reducing the amount of notifications
+        """
+
         if listenFunction in self.listeners[tag]:
             self.listeners[tag].remove(listenFunction)
 
@@ -410,18 +433,29 @@ class Room(src.saveing.Saveable):
             del self.listeners[tag]
 
     def getItemByPosition(self, position):
+        """
+        get items that are on a specific position
+
+        Parameters:
+            position: the position the fetch the items for
+        """
+
         try:
             return self.itemByCoordinates[position]
         except:
             return []
 
-    """
-    sending notifications
-    bad code: probably misnamed
-    bad code: should be in extra class
-    """
-
+    # bad code: probably misnamed
+    # bad code: should be in extra class
     def changed(self, tag="default", info=None):
+        """
+        send notifications about this room having changed
+
+        Parameters:
+            tag: a tag for filtering notifications
+            info: additional info
+        """
+
         self.requestRedraw()
         if not tag == "default":
             if tag not in self.listeners:
@@ -434,11 +468,14 @@ class Room(src.saveing.Saveable):
 
         self.engineStrength = 250 * self.steamGeneration
 
-    """
-    get semi serialised room state
-    """
-
     def getState(self):
+        """
+        get semi serialised room state
+
+        Returns:
+            the semi serialised state
+        """
+
         state = super().getState()
 
         # get states from lists
@@ -482,12 +519,14 @@ class Room(src.saveing.Saveable):
 
         return state
 
-    """
-    construct state from semi serialised form
-    bad code: incomplete
-    """
-
+    # bad code: incomplete
     def setState(self, state):
+        """
+        construct state from semi serialised form
+        
+        Parameters:
+            state: the semi serialised state
+        """
 
         if "timeIndex" in state:
             self.timeIndex = state["timeIndex"]
@@ -589,50 +628,70 @@ class Room(src.saveing.Saveable):
 
         self.forceRedraw()
 
-    """
-    get physical resistance against beeing moved
-    """
-
     def getResistance(self):
+        """
+        get physical resistance against beeing moved
+
+        Returns:
+            the resistance
+        """
+
         return self.sizeX * self.sizeY
 
-    """
-    open all doors
-    bad code: this method seems to be very specialised/kind of useless
-    """
 
+    # bad code: this method seems to be very specialised/kind of useless
     def openDoors(self):
+        """
+        open all doors of the room
+        """
+
         for door in self.doors:
             door.open()
             self.open = True
 
-    """
-    close all doors
-    bad code: this method seems to be very specialised/kind of useless
-    """
-
+    # bad code: this method seems to be very specialised/kind of useless
     def closeDoors(self):
+        """
+        close all doors of the room
+        """
+
         for door in self.doors:
             door.close()
             self.open = False
 
+    # bad code: should have proper pathfinding
+    # obsolete: not really used anymore
     def findPath(self, start, end):
+        """
+        forward naive path calculation
+        """
+
         return self.calculatePath(start[0], start[1], end[0], end[1], self.walkingPath)
 
-    """
-    forward naive path calculation
-    bad code: should have proper pathfinding
-    """
-
     def calculatePath(self, x, y, dstX, dstY, walkingPath):
+        """
+        calculate a path based on a preset path
+        Parameters:
+            x: the start x position
+            y: the start y position
+            dstX: the end x position
+            dstY: the end y position
+            walkingPath: the precalculated paths
+        Returns:
+            the generated path
+        """
+
         path = src.gameMath.calculatePath(x, y, dstX, dstY, walkingPath)
         return path
 
-    """
-    render the room
-    """
-
     def render(self):
+        """
+        render the room
+
+        Returns:
+            the rendered room
+        """
+
         # skip rendering
         # if self.lastRender:
         #    return self.lastRender
@@ -793,27 +852,34 @@ class Room(src.saveing.Saveable):
 
         return chars
 
-    """
-    drop rendering cache
-    """
-
+    # bad code: game is always redrawing
     def forceRedraw(self):
+        """
+        drop rendering cache
+        """
+
         self.lastRender = None
 
-    """
-    maybe drop rendering cache
-    """
-
+    # bad code: game is always redrawing
     def requestRedraw(self):
+        """
+        maybe drop rendering cache
+        """
+
         # if not self.hidden:
         if 1 == 1:
             self.lastRender = None
 
-    """
-    teleport character into the room
-    """
-
     def addCharacter(self, character, x, y):
+        """
+        teleport character into the room
+
+        Parameters:
+            character: the character to teleport
+            x: the x coordiate to teleport to
+            y: the y coordiate to teleport to
+        """
+
         self.characters.append(character)
         character.room = self
         character.xPosition = x
@@ -821,24 +887,38 @@ class Room(src.saveing.Saveable):
         character.path = []
         self.changed("entered room", character)
 
-    """
-    teleport character out of the room
-    """
-
     def removeCharacter(self, character):
+        """
+        teleport character out of the room
+
+        Parameters:
+            character: the character to teleport
+        """
+
         self.changed("left room", character)
         character.changed("left room", self)
         self.characters.remove(character)
         character.room = None
 
     def addItem(self, item, pos):
+        """
+        add a item to the room
+
+        Parameters:
+            item: the item to add
+            pos: the position to add the item on
+        """
+
         self.addItems([(item, pos)])
 
-    """
-    add items to internal structure
-    """
-
     def addItems(self, items):
+        """
+        add items to the room
+
+        Parameters:
+            items: a list containing a tuples of a item and its position
+        """
+
         # add the items to the item list
         for itemPair in items:
             self.itemsOnFloor.append(itemPair[0])
@@ -861,11 +941,14 @@ class Room(src.saveing.Saveable):
             else:
                 self.itemByCoordinates[pos] = [item]
 
-    """
-    remove item from internal structure
-    """
-
     def removeItem(self, item):
+        """
+        remove item from the room
+
+        Parameters:
+            item: the item to remove
+        """
+
         # remove items from easy access map
         itemList = self.getItemByPosition(item.getPosition())
         if item in itemList:
@@ -884,19 +967,40 @@ class Room(src.saveing.Saveable):
         item.container = None
 
     def removeItems(self, items):
+        """
+        remove items from the room
+
+        Parameters:
+            items: a list of items to remove
+        """
+
         for item in items:
             self.removeItem(item)
 
+    # obsolete: not sure if used anymore
     def clearCoordinate(self, position):
-        self.removeItems(self.getItemByPosition(position))
+        """
+        remove all items from a spot in the room
 
-    """
-    move the room a step into some direction
-    """
+        Parameters:
+            position: the position to remove the items from
+        """
+
+        self.removeItems(self.getItemByPosition(position))
 
     def moveDirection(
         self, direction, force=1, initialMovement=True, movementBlock=set()
     ):
+        """
+        move the room a step into some direction
+
+        Parameters:
+            direction: the direction to move the room
+            force: how much energy is behind the movement
+            initialMovement: lag indicating if this is the first movement
+            movementBlock: a tracker (list) of things to move.
+        """
+
         # move items the room collided with
         # bad code: crashes when moved items were destroyed already
         if initialMovement:
@@ -926,11 +1030,18 @@ class Room(src.saveing.Saveable):
         self.terrain.moveRoomDirection(direction, self)
         src.logger.debugMessages.append("*RUMBLE*")
 
-    """
-    get the things that would be afftected by a room movement
-    """
-
     def getAffectedByMovementDirection(self, direction, force=1, movementBlock=set()):
+        """
+        get the things that would be affected by a room movement
+
+        Parameters:
+            direction: the direction to move the room
+            force: how much energy is behind the movement
+            movementBlock: a tracker (list) of things to move.
+        Returns:
+            a list of things affected by the movement
+        """
+
 
         # gather things that would be affected on terrain level
         self.terrain.getAffectedByRoomMovementDirection(
@@ -947,11 +1058,14 @@ class Room(src.saveing.Saveable):
 
         return movementBlock
 
-    """
-    move a character into some direction within or out of a room
-    """
-
     def moveCharacterDirection(self, character, direction):
+        """
+        move a character into some direction within or out of a room
+
+        Parameters:
+            character: the character to move
+            direction: the direction to move the character
+        """
 
         # check whether movement is contained in the room
         innerRoomMovement = True
@@ -1020,11 +1134,16 @@ class Room(src.saveing.Saveable):
         self.terrain.addCharacter(character, newXPos, newYPos)
         return
 
-    """
-    move a character to a new position within room
-    """
-
     def moveCharacter(self, character, newPosition):
+        """
+        move a character to a new position within room
+
+        Parameters:
+            character: the character to move
+            newPosition: the position to move the character to
+        Returns:
+            return item if the character collided with an item
+        """
 
         # check if target position can be walked on
         if newPosition in self.itemByCoordinates:
@@ -1042,22 +1161,26 @@ class Room(src.saveing.Saveable):
         character.changed()
         return None
 
-    """
-    advance the room to current tick
-    """
-
+    # obsolete: not really used anymore
     def applySkippedAdvances(self):
+        """
+        advance the room to current tick
+        """
+
         while self.delayedTicks > 0:
             for character in self.characters:
                 character.advance()
             self.delayedTicks -= 1
 
-    """
-    add an event to internal structure
-    bad code: should be in extra class
-    """
-
+    # bad code: should be in extra class
     def addEvent(self, event):
+        """
+        add an event to internal structure
+
+        Parameters:
+            event: the event to add
+        """
+
         index = 0
         for existingEvent in self.events:
             if event.tick < existingEvent.tick:
@@ -1065,30 +1188,33 @@ class Room(src.saveing.Saveable):
             index += 1
         self.events.insert(index, event)
 
-    """
-    remove an event from internal structure
-    bad code: should be in extra class
-    """
-
+    # bad code: should be in extra class
     def removeEvent(self, event):
+        """
+        remove an event from internal structure
+
+        Parameters:
+            event: the event to remove
+        """
+
         self.events.remove(event)
 
-    """
-    remove items of a certain type from internal structure
-    bad code: should be in extra class
-    bad code: this is no real good use case
-    """
-
+    # bad code: should be in extra class
+    # bad code: this is no real good use case
+    # obsolete: not used anymore
     def removeEventsByType(self, eventType):
+        """
+        remove events of a certain type from internal structure
+        """
+
         for event in self.events:
             if type(event) == eventType:
                 self.events.remove(event)
 
-    """
-    advance the room one step
-    """
-
     def advance(self):
+        """
+        advance the room one step
+        """
 
         # change own state
         self.timeIndex += 1
@@ -1122,8 +1248,480 @@ class Room(src.saveing.Saveable):
         else:
             self.delayedTicks += 1
 
+    # bad code: should do something or be deleted
     def calculatePathMap(self):
+        """
+        dummy to prevent crashes
+        """
         pass
+
+class MiniBase(Room):
+    """
+    a room sized base for small off mech missions
+    """
+
+    objType = "MiniBase"
+
+    def __init__(
+        self,
+        xPosition=None,
+        yPosition=None,
+        offsetX=None,
+        offsetY=None,
+        desiredPosition=None,
+        seed=0,
+    ):
+        """
+        create room and add special items
+
+        Parameters:
+            layout: the room layout
+            xPosition: the x position of the room in big coordinates
+            yPosition: the y position of the 
+            offsetX: the x offset from the position in big coordinates
+            offsetY: the y offset from the position in big coordinates
+            desiredPosition: the desired position for the room
+            seed: the rng seed
+        """
+
+        # obsolete: the room layout is practically never used
+        self.roomLayout = """
+XXXXXXXXXXXXX
+X           X
+X           X
+X           X
+X           X
+X           X
+X  .........$
+X           X
+X           X
+X           X
+X           X
+X           X
+XXXXXXXXXXXXX
+"""
+        super().__init__(
+            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+        )
+
+        itemsToAdd = []
+        self.artwork = src.items.itemMap["ProductionArtwork"]()
+        itemsToAdd.append((self.artwork,(4,1,0)))
+        self.compactor = src.items.itemMap["ScrapCompactor"]()
+        itemsToAdd.append((self.compactor,(8,1,0)))
+        flask1 = src.items.itemMap["GooFlask"]()
+        flask1.uses = 100
+        itemsToAdd.append((flask1,(10,2,0)))
+        flask2 = src.items.itemMap["GooFlask"]()
+        flask2.uses = 100
+        itemsToAdd.append((flask2,(10,3,0)))
+        flask3 = src.items.itemMap["GooFlask"]()
+        flask3.uses = 100
+        itemsToAdd.append((flask3,(10,4,0)))
+        self.doors[0].walkable = True
+
+        self.machinemachine = src.items.itemMap["MachineMachine"]()
+        itemsToAdd.append((self.machinemachine,(4,4,0)))
+
+        self.infoScreen = src.items.itemMap["AutoTutor"]()
+        itemsToAdd.append((self.infoScreen,(4,9,0)))
+
+        self.bluePrinter = src.items.itemMap["BluePrinter"]()
+        itemsToAdd.append((self.bluePrinter,(8,9,0)))
+
+        self.machine = src.items.itemMap["Machine"]()
+        self.machine.setToProduce("Sheet")
+        itemsToAdd.append((self.machine,(7,8,0)))
+
+        self.addItems(itemsToAdd)
+
+        itemsToAdd = []
+        itemsToAdd.append((src.items.itemMap["MetalBars"](),(3, 1, 0)))
+        itemsToAdd.append((src.items.itemMap["MetalBars"](),(7, 9, 0)))
+        itemsToAdd.append((src.items.itemMap["MetalBars"](),(9, 1, 0)))
+        itemsToAdd.append((src.items.itemMap["MetalBars"](),(3, 4, 0)))
+        itemsToAdd.append((src.items.itemMap["Scrap"](),(7, 1, 0)))
+        itemsToAdd.append((src.items.itemMap["Connector"](),(7, 9, 0)))
+        bluePrint = src.items.itemMap["BluePrint"]()
+        bluePrint.setToProduce("Sheet")
+        bluePrint.bolted = False
+        itemsToAdd.append((bluePrint,(9, 9, 0)))
+        bluePrint = src.items.itemMap["BluePrint"]()
+        bluePrint.setToProduce("Radiator")
+        bluePrint.bolted = False
+        itemsToAdd.append((bluePrint,(9, 9, 0)))
+        bluePrint = src.items.itemMap["BluePrint"]()
+        bluePrint.setToProduce("Mount")
+        bluePrint.bolted = False
+        itemsToAdd.append((bluePrint,(9, 9, 0)))
+        bluePrint = src.items.itemMap["BluePrint"]()
+        bluePrint.setToProduce("Stripe")
+        bluePrint.bolted = False
+        itemsToAdd.append((bluePrint,(9, 9, 0)))
+        bluePrint = src.items.itemMap["BluePrint"]()
+        bluePrint.setToProduce("Bolt")
+        bluePrint.bolted = False
+        itemsToAdd.append((bluePrint,(9, 9, 0)))
+        bluePrint = src.items.itemMap["BluePrint"]()
+        bluePrint.setToProduce("Rod")
+        bluePrint.bolted = False
+        itemsToAdd.append((bluePrint,(4, 3, 0)))
+
+class MiniBase2(Room):
+    """
+    a room sized base for small off mech missions
+    varyation for survival map
+    """
+
+    objType = "MiniBase2"
+
+    def __init__(
+        self,
+        xPosition=None,
+        yPosition=None,
+        offsetX=None,
+        offsetY=None,
+        desiredPosition=None,
+        seed=0,
+    ):
+        """
+        create room and add special items
+
+        Parameters:
+            layout: the room layout
+            xPosition: the x position of the room in big coordinates
+            yPosition: the y position of the 
+            offsetX: the x offset from the position in big coordinates
+            offsetY: the y offset from the position in big coordinates
+            desiredPosition: the desired position for the room
+            seed: the rng seed
+        """
+
+        self.roomLayout = """
+XXXXXXXXXXX
+X         X
+X         X
+X         X
+X         X
+X  .......$
+X         X
+X         X
+X         X
+X         X
+XXXXXXXXXXX
+"""
+        super().__init__(
+            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+        )
+        self.doors[0].walkable = True
+
+        healingstation = src.items.HealingStation(4, 1)
+        corpseShredder = src.items.CorpseShredder(4, 8)
+        corpse = src.items.Corpse(3, 8)
+        corpse.charges = 300
+        sunScreen = src.items.SunScreen(5, 5)
+        vial = src.items.Vial(7, 3)
+        import random
+
+        vial.uses = random.randint(0, 10)
+        self.addItems([healingstation, sunScreen, vial, corpseShredder, corpse])
+
+class EmptyRoom(Room):
+    """
+    a empty room
+    """
+
+    objType = "EmptyRoom"
+
+    def __init__(
+        self,
+        xPosition=None,
+        yPosition=None,
+        offsetX=None,
+        offsetY=None,
+        desiredPosition=None,
+        bio=False,
+    ):
+        """
+        create room and add special items
+
+        Parameters:
+            layout: the room layout
+            xPosition: the x position of the room in big coordinates
+            yPosition: the y position of the 
+            offsetX: the x offset from the position in big coordinates
+            offsetY: the y offset from the position in big coordinates
+            desiredPosition: the desired position for the room
+            seed: the rng seed
+        """
+
+        self.roomLayout = """
+XXX
+X.$
+XXX
+"""
+        super().__init__(
+            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+        )
+        self.bio = bio
+
+        if self.bio:
+            self.floorDisplay = [
+                src.canvas.displayChars.moss,
+                src.canvas.displayChars.moss,
+                src.canvas.displayChars.sprout,
+                src.canvas.displayChars.moss,
+                src.canvas.displayChars.moss,
+                src.canvas.displayChars.sprout2,
+            ]
+
+        self.name = "room"
+
+        self.attributesToStore.extend(["bio"])
+        self.initialState = self.getState()
+
+    def reconfigure(self, sizeX=3, sizeY=3, items=[], bio=False, doorPos=[]):
+        """
+        change the size of the room
+
+        Parameters:
+            sizeX: the size of the room
+            sizeY: the size of the room
+            items: the items the room should have afterwards
+            bio: flag to switch between man made or grown room
+            doorPos: a list of door positions
+        """
+
+        self.sizeX = sizeX
+        self.sizeY = sizeY
+
+        if not items:
+            if not doorPos:
+                doorPos.append([(sizeX - 1, sizeY // 2)])
+
+            for x in (0, sizeX - 1):
+                for y in range(0, sizeY):
+                    if (x, y) in doorPos:
+                        items.append((src.items.itemMap["Door"](), (x, y, 0)))
+                    else:
+                        items.append((src.items.itemMap["Wall"](), (x, y, 0)))
+
+            for x in range(1, sizeX - 1):
+                for y in (0, sizeY - 1):
+                    if (x, y) in doorPos:
+                        items.append((src.items.itemMap["Door"](), (x, y, 0)))
+                    else:
+                        items.append((src.items.itemMap["Wall"](), (x, y, 0)))
+
+        self.itemsOnFloor = []
+        self.itemByCoordinates = {}
+        self.addItems(items)
+
+        self.walkingAccess = []
+        for itemPair in items:
+            item = itemPair[0]
+            if item.type == "Door" or item.type == "Chute":
+                self.walkingAccess.append((item.xPosition, item.yPosition))
+
+    def setState(self, state):
+        """
+        load state from semi-serialised state
+        also ensure the walking access is loaded
+
+        Parameters:
+            state: the state to load
+        """
+
+        super().setState(state)
+
+        try:
+            self.walkingAccess = []
+            for access in state["walkingAccess"]:
+                self.walkingAccess.append((access[0], access[1]))
+        except:
+            self.walkingAccess = []
+
+class StaticRoom(EmptyRoom):
+    """
+    the rooms used in dungeons
+    """
+
+    def __init__(
+        self,
+        xPosition=None,
+        yPosition=None,
+        offsetX=None,
+        offsetY=None,
+        desiredPosition=None,
+        depth=1,
+    ):
+        """
+        create room and add special items
+
+        Parameters:
+            xPosition: the x position of the room in big coordinates
+            yPosition: the y position of the 
+            offsetX: the x offset from the position in big coordinates
+            offsetY: the y offset from the position in big coordinates
+            desiredPosition: the desired position for the room
+            depth: the level of this dungeon room
+        """
+        super().__init__(
+            xPosition=xPosition,
+            yPosition=yPosition,
+            offsetX=offsetX,
+            offsetY=offsetY,
+            desiredPosition=desiredPosition,
+            bio=False,
+        )
+
+        self.depth = depth
+        import urwid
+
+        self.floorDisplay = [
+            (
+                urwid.AttrSpec("#00" + str(10 - depth), "black"),
+                [".", ",", ":", ";"][depth // 4 % 4] + [".", ",", ":", ";"][depth % 4],
+            )
+        ]
+
+    # bad code: ugly hack that causes issues
+    def moveCharacterDirection(self, character, direction):
+        """
+        move a character into a direction
+        also do collusion detecion between chars
+        also advance the room 
+
+        Parameters:
+            character: the character to move
+            direction: the direction to move the charecter into
+        """
+
+        super().moveCharacterDirection(character=character, direction=direction)
+
+        self.evolve(character)
+
+        for other in self.characters:
+            if other == character:
+                continue
+
+            if not (
+                character.xPosition == other.xPosition
+                and character.yPosition == other.yPosition
+                and character.zPosition == other.zPosition
+            ):
+                continue
+
+            character.collidedWith(other)
+            other.collidedWith(character)
+
+    def evolve(self, character):
+        """
+        progress the rooms state
+
+        Parameters:
+            the character triggering the change
+        """
+
+        for character in self.characters:
+            character.satiation -= self.depth
+            if character.satiation < 1 and not character.godMode:
+                character.die()
+
+        for item in self.itemsOnFloor[:]:
+            if isinstance(item, src.items.StaticMover):
+                if item.energy > 1:
+                    newPos = [item.xPosition, item.yPosition]
+                    skip = False
+                    if character.xPosition < item.xPosition:
+                        newPos[0] -= 1
+                        skip = True
+                    if character.xPosition > item.xPosition:
+                        newPos[0] += 1
+                        skip = True
+
+                    blocked = False
+                    if (
+                        newPos[0],
+                        newPos[1],
+                    ) in self.itemByCoordinates and self.itemByCoordinates[
+                        (newPos[0], newPos[1])
+                    ]:
+                        blocked = True
+                    for character in self.characters:
+                        if (
+                            character.xPosition == newPos[0]
+                            and character.yPosition == newPos[1]
+                        ):
+                            blocked = True
+                            character.satiation -= 50
+                            item.energy += 5
+                            if character.satiation < 1 and not character.godMode:
+                                character.die()
+
+                    if blocked:
+                        newPos = [item.xPosition, item.yPosition]
+                        skip = False
+                        blocked = False
+
+                    if not skip:
+                        if character.yPosition < item.yPosition:
+                            newPos[1] -= 1
+                        if character.yPosition > item.yPosition:
+                            newPos[1] += 1
+
+                    blocked = False
+                    if (
+                        newPos[0],
+                        newPos[1],
+                    ) in self.itemByCoordinates and self.itemByCoordinates[
+                        (newPos[0], newPos[1])
+                    ]:
+                        blocked = True
+                    for character in self.characters:
+                        if (
+                            character.xPosition == newPos[0]
+                            and character.yPosition == newPos[1]
+                        ):
+                            blocked = True
+                            character.satiation -= 50
+                            item.energy += 5
+                            if character.satiation < 1 and not character.godMode:
+                                character.die()
+
+                    if not blocked:
+                        if item.energy:
+                            item.energy -= 2
+                            self.removeItem(item)
+                            item.xPosition = newPos[0]
+                            item.yPosition = newPos[1]
+                            self.addItems([item])
+
+                if (
+                    character.yPosition == item.yPosition
+                    and abs(character.xPosition - item.xPosition) == 1
+                ) or (
+                    character.xPosition == item.xPosition
+                    and abs(character.yPosition - item.yPosition) == 1
+                ):
+                    character.satiation -= 10
+                    item.energy += 2
+                    if character.satiation < 1 and not character.godMode:
+                        character.die()
+
+                if (
+                    character.yPosition == item.yPosition
+                    and abs(character.xPosition - item.xPosition) == 2
+                ) or (
+                    character.xPosition == item.xPosition
+                    and abs(character.yPosition - item.yPosition) == 2
+                ):
+                    character.satiation -= 5
+                    item.energy += 1
+                    if character.satiation < 1 and not character.godMode:
+                        character.die()
+        pass
+
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # rooms below the point are not in use and need to be reintegrated
@@ -1722,163 +2320,6 @@ XXXXXX
     def changed(self, tag="default", info=None):
         super().changed(tag, info)
         self.engineStrength = 250 * self.steamGeneration
-
-
-"""
-a room sized base for small off mech missions
-bad code: serves no real function yet
-"""
-
-
-class MiniBase(Room):
-    objType = "MiniBase"
-
-    """
-    create room and add special items
-    """
-
-    def __init__(
-        self,
-        xPosition=None,
-        yPosition=None,
-        offsetX=None,
-        offsetY=None,
-        desiredPosition=None,
-        seed=0,
-    ):
-        self.roomLayout = """
-XXXXXXXXXXXXX
-X           X
-X           X
-X           X
-X           X
-X           X
-X  .........$
-X           X
-X           X
-X           X
-X           X
-X           X
-XXXXXXXXXXXXX
-"""
-        super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
-        )
-
-        itemsToAdd = []
-        self.artwork = src.items.itemMap["ProductionArtwork"]()
-        itemsToAdd.append((self.artwork,(4,1,0)))
-        self.compactor = src.items.itemMap["ScrapCompactor"]()
-        itemsToAdd.append((self.compactor,(8,1,0)))
-        flask1 = src.items.itemMap["GooFlask"]()
-        flask1.uses = 100
-        itemsToAdd.append((flask1,(10,2,0)))
-        flask2 = src.items.itemMap["GooFlask"]()
-        flask2.uses = 100
-        itemsToAdd.append((flask2,(10,3,0)))
-        flask3 = src.items.itemMap["GooFlask"]()
-        flask3.uses = 100
-        itemsToAdd.append((flask3,(10,4,0)))
-        self.doors[0].walkable = True
-
-        self.machinemachine = src.items.itemMap["MachineMachine"]()
-        itemsToAdd.append((self.machinemachine,(4,4,0)))
-
-        self.infoScreen = src.items.itemMap["AutoTutor"]()
-        itemsToAdd.append((self.infoScreen,(4,9,0)))
-
-        self.bluePrinter = src.items.itemMap["BluePrinter"]()
-        itemsToAdd.append((self.bluePrinter,(8,9,0)))
-
-        self.machine = src.items.itemMap["Machine"]()
-        self.machine.setToProduce("Sheet")
-        itemsToAdd.append((self.machine,(7,8,0)))
-
-        self.addItems(itemsToAdd)
-
-        itemsToAdd = []
-        itemsToAdd.append((src.items.itemMap["MetalBars"](),(3, 1, 0)))
-        itemsToAdd.append((src.items.itemMap["MetalBars"](),(7, 9, 0)))
-        itemsToAdd.append((src.items.itemMap["MetalBars"](),(9, 1, 0)))
-        itemsToAdd.append((src.items.itemMap["MetalBars"](),(3, 4, 0)))
-        itemsToAdd.append((src.items.itemMap["Scrap"](),(7, 1, 0)))
-        itemsToAdd.append((src.items.itemMap["Connector"](),(7, 9, 0)))
-        bluePrint = src.items.itemMap["BluePrint"]()
-        bluePrint.setToProduce("Sheet")
-        bluePrint.bolted = False
-        itemsToAdd.append((bluePrint,(9, 9, 0)))
-        bluePrint = src.items.itemMap["BluePrint"]()
-        bluePrint.setToProduce("Radiator")
-        bluePrint.bolted = False
-        itemsToAdd.append((bluePrint,(9, 9, 0)))
-        bluePrint = src.items.itemMap["BluePrint"]()
-        bluePrint.setToProduce("Mount")
-        bluePrint.bolted = False
-        itemsToAdd.append((bluePrint,(9, 9, 0)))
-        bluePrint = src.items.itemMap["BluePrint"]()
-        bluePrint.setToProduce("Stripe")
-        bluePrint.bolted = False
-        itemsToAdd.append((bluePrint,(9, 9, 0)))
-        bluePrint = src.items.itemMap["BluePrint"]()
-        bluePrint.setToProduce("Bolt")
-        bluePrint.bolted = False
-        itemsToAdd.append((bluePrint,(9, 9, 0)))
-        bluePrint = src.items.itemMap["BluePrint"]()
-        bluePrint.setToProduce("Rod")
-        bluePrint.bolted = False
-        itemsToAdd.append((bluePrint,(4, 3, 0)))
-
-"""
-a room sized base for small off mech missions
-bad code: serves no real function yet
-"""
-
-
-class MiniBase2(Room):
-    objType = "MiniBase2"
-
-    """
-    create room and add special items
-    """
-
-    def __init__(
-        self,
-        xPosition=None,
-        yPosition=None,
-        offsetX=None,
-        offsetY=None,
-        desiredPosition=None,
-        seed=0,
-    ):
-        self.roomLayout = """
-XXXXXXXXXXX
-X         X
-X         X
-X         X
-X         X
-X  .......$
-X         X
-X         X
-X         X
-X         X
-XXXXXXXXXXX
-"""
-        super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
-        )
-        self.doors[0].walkable = True
-
-        healingstation = src.items.HealingStation(4, 1)
-        corpseShredder = src.items.CorpseShredder(4, 8)
-        corpse = src.items.Corpse(3, 8)
-        corpse.charges = 300
-        sunScreen = src.items.SunScreen(5, 5)
-        vial = src.items.Vial(7, 3)
-        import random
-
-        vial.uses = random.randint(0, 10)
-        self.addItems([healingstation, sunScreen, vial, corpseShredder, corpse])
-
 
 """
 a room to test gameplay concepts
@@ -3470,92 +3911,6 @@ XXXXX$XXXXX
             amount=20, reason=" for balancing"
         )
 
-
-"""
-a empty room
-"""
-
-
-class EmptyRoom(Room):
-    objType = "EmptyRoom"
-
-    def __init__(
-        self,
-        xPosition=None,
-        yPosition=None,
-        offsetX=None,
-        offsetY=None,
-        desiredPosition=None,
-        bio=False,
-    ):
-        self.roomLayout = """
-XXX
-X.$
-XXX
-"""
-        super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
-        )
-        self.bio = bio
-
-        if self.bio:
-            self.floorDisplay = [
-                src.canvas.displayChars.moss,
-                src.canvas.displayChars.moss,
-                src.canvas.displayChars.sprout,
-                src.canvas.displayChars.moss,
-                src.canvas.displayChars.moss,
-                src.canvas.displayChars.sprout2,
-            ]
-
-        self.name = "room"
-
-        self.attributesToStore.extend(["bio"])
-        self.initialState = self.getState()
-
-    def reconfigure(self, sizeX=3, sizeY=3, items=[], bio=False, doorPos=[]):
-        self.sizeX = sizeX
-        self.sizeY = sizeY
-
-        if not items:
-            if not doorPos:
-                doorPos.append([(sizeX - 1, sizeY // 2)])
-
-            for x in (0, sizeX - 1):
-                for y in range(0, sizeY):
-                    if (x, y) in doorPos:
-                        items.append((src.items.itemMap["Door"](), (x, y, 0)))
-                    else:
-                        items.append((src.items.itemMap["Wall"](), (x, y, 0)))
-
-            for x in range(1, sizeX - 1):
-                for y in (0, sizeY - 1):
-                    if (x, y) in doorPos:
-                        items.append((src.items.itemMap["Door"](), (x, y, 0)))
-                    else:
-                        items.append((src.items.itemMap["Wall"](), (x, y, 0)))
-
-        self.itemsOnFloor = []
-        self.itemByCoordinates = {}
-        self.addItems(items)
-
-        self.walkingAccess = []
-        for itemPair in items:
-            item = itemPair[0]
-            if item.type == "Door" or item.type == "Chute":
-                self.walkingAccess.append((item.xPosition, item.yPosition))
-
-    def setState(self, state):
-        super().setState(state)
-
-        try:
-            self.walkingAccess = []
-            for access in state["walkingAccess"]:
-                self.walkingAccess.append((access[0], access[1]))
-        except:
-            self.walkingAccess = []
-
-
 """
 a room in the process of beeing constructed. The room itself exists but no items within
 """
@@ -3674,154 +4029,6 @@ XXXXX$XXXXX
         self.itemsInBuildOrder.reverse()
 
 
-class StaticRoom(EmptyRoom):
-    def __init__(
-        self,
-        xPosition=None,
-        yPosition=None,
-        offsetX=None,
-        offsetY=None,
-        desiredPosition=None,
-        depth=1,
-    ):
-        super().__init__(
-            xPosition=xPosition,
-            yPosition=yPosition,
-            offsetX=offsetX,
-            offsetY=offsetY,
-            desiredPosition=desiredPosition,
-            bio=False,
-        )
-
-        self.depth = depth
-        import urwid
-
-        self.floorDisplay = [
-            (
-                urwid.AttrSpec("#00" + str(10 - depth), "black"),
-                [".", ",", ":", ";"][depth // 4 % 4] + [".", ",", ":", ";"][depth % 4],
-            )
-        ]
-
-    def moveCharacterDirection(self, character, direction):
-        super().moveCharacterDirection(character=character, direction=direction)
-
-        self.evolve(character)
-
-        for other in self.characters:
-            if other == character:
-                continue
-
-            if not (
-                character.xPosition == other.xPosition
-                and character.yPosition == other.yPosition
-                and character.zPosition == other.zPosition
-            ):
-                continue
-
-            character.collidedWith(other)
-            other.collidedWith(character)
-
-    def evolve(self, character):
-        for character in self.characters:
-            character.satiation -= self.depth
-            if character.satiation < 1 and not character.godMode:
-                character.die()
-
-        for item in self.itemsOnFloor[:]:
-            if isinstance(item, src.items.StaticMover):
-                if item.energy > 1:
-                    newPos = [item.xPosition, item.yPosition]
-                    skip = False
-                    if character.xPosition < item.xPosition:
-                        newPos[0] -= 1
-                        skip = True
-                    if character.xPosition > item.xPosition:
-                        newPos[0] += 1
-                        skip = True
-
-                    blocked = False
-                    if (
-                        newPos[0],
-                        newPos[1],
-                    ) in self.itemByCoordinates and self.itemByCoordinates[
-                        (newPos[0], newPos[1])
-                    ]:
-                        blocked = True
-                    for character in self.characters:
-                        if (
-                            character.xPosition == newPos[0]
-                            and character.yPosition == newPos[1]
-                        ):
-                            blocked = True
-                            character.satiation -= 50
-                            item.energy += 5
-                            if character.satiation < 1 and not character.godMode:
-                                character.die()
-
-                    if blocked:
-                        newPos = [item.xPosition, item.yPosition]
-                        skip = False
-                        blocked = False
-
-                    if not skip:
-                        if character.yPosition < item.yPosition:
-                            newPos[1] -= 1
-                        if character.yPosition > item.yPosition:
-                            newPos[1] += 1
-
-                    blocked = False
-                    if (
-                        newPos[0],
-                        newPos[1],
-                    ) in self.itemByCoordinates and self.itemByCoordinates[
-                        (newPos[0], newPos[1])
-                    ]:
-                        blocked = True
-                    for character in self.characters:
-                        if (
-                            character.xPosition == newPos[0]
-                            and character.yPosition == newPos[1]
-                        ):
-                            blocked = True
-                            character.satiation -= 50
-                            item.energy += 5
-                            if character.satiation < 1 and not character.godMode:
-                                character.die()
-
-                    if not blocked:
-                        if item.energy:
-                            item.energy -= 2
-                            self.removeItem(item)
-                            item.xPosition = newPos[0]
-                            item.yPosition = newPos[1]
-                            self.addItems([item])
-
-                if (
-                    character.yPosition == item.yPosition
-                    and abs(character.xPosition - item.xPosition) == 1
-                ) or (
-                    character.xPosition == item.xPosition
-                    and abs(character.yPosition - item.yPosition) == 1
-                ):
-                    character.satiation -= 10
-                    item.energy += 2
-                    if character.satiation < 1 and not character.godMode:
-                        character.die()
-
-                if (
-                    character.yPosition == item.yPosition
-                    and abs(character.xPosition - item.xPosition) == 2
-                ) or (
-                    character.xPosition == item.xPosition
-                    and abs(character.yPosition - item.yPosition) == 2
-                ):
-                    character.satiation -= 5
-                    item.energy += 1
-                    if character.satiation < 1 and not character.godMode:
-                        character.die()
-        pass
-
 
 """
 smart scrap storage
@@ -3903,12 +4110,16 @@ roomMap = {
     "ScrapStorage": ScrapStorage,
 }
 
-"""
-get item instances from dict state
-"""
-
 
 def getRoomFromState(state, terrain=None):
+    """
+    get item instances from semiserialised state
+
+    Parameters:
+        state: the state to set
+        terrain: a terrain to place the room on
+    """
+
     room = roomMap[state["objType"]](
         state["xPosition"], state["yPosition"], state["offsetX"], state["offsetY"]
     )

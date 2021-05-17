@@ -246,11 +246,15 @@ class Saveable(object):
         for objectName in self.objectsToStore:
             if objectName in state:
                 if state[objectName]:
-                    """
-                    set value
-                    """
-
                     def setValue(value, name):
+                        """
+                        set value of an attribute
+
+                        Parameters:
+                            value: the value to set
+                            name: the name of the attriute to set
+                        """
+
                         setattr(self, name, value)
 
                     loadingRegistry.callWhenAvailable(

@@ -85,13 +85,15 @@ def showText(text, rusty=False, autocontinue=False, trigger=None, scrolling=Fals
     src.cinematics.cinematicQueue.append(cinematic)
     cinematic.endTrigger = trigger
 
-
-"""
-add message cinematic mimicing speech
-"""
-
-
 def say(text, speaker=None, trigger=None):
+    """
+    add message cinematic mimicing speech
+
+    Parameters:
+        speaker: the character that should be shown as speaking
+        trigger: function that should be called after showing the game
+    """
+
     prefix = ""
     if speaker:
         # add speakers icon as prefix
@@ -118,18 +120,21 @@ def say(text, speaker=None, trigger=None):
 #
 #########################################################################
 
-"""
-the base class for the all phases here
-"""
-
-
 class BasicPhase(src.saveing.Saveable):
     """
-    state initialization
-    bad code: creating default attributes in init and set them externally later
+    the base class for the all phases
     """
 
+    # bad code: creating default attributes in init and set them externally later
     def __init__(self, name, seed=0):
+        """
+        initialise own state
+
+        Parameters:
+            name: the name of the phase
+            seed: rng seed
+        """
+
         super().__init__()
         self.mainCharXPosition = None
         self.mainCharYPosition = None
@@ -147,14 +152,14 @@ class BasicPhase(src.saveing.Saveable):
 
         # register with dummy id
         self.id = name
-        src.saveing.loadingRegistry.register(self)
-        self.initialState = self.getState()
 
-    """
-    start the game phase
-    """
+        self.attributesToStore.append("name")
 
     def start(self, seed=0):
+        """
+        set up and start to run this game phase
+        """
+
         # set state
         src.gamestate.gamestate.currentPhase = self
         self.tick = src.gamestate.gamestate.tick
@@ -210,11 +215,11 @@ class BasicPhase(src.saveing.Saveable):
         # save initial state
         src.gamestate.gamestate.save()
 
-    """
-    helper function to properly hook player quests
-    """
-
     def assignPlayerQuests(self):
+        """
+        helper function to properly hook player quests
+        """
+
         # do nothing without quests
         if not self.mainCharQuestList:
             return
@@ -232,49 +237,54 @@ class BasicPhase(src.saveing.Saveable):
         # assign the first quest
         src.gamestate.gamestate.mainChar.assignQuest(self.mainCharQuestList[0])
 
-    """
-    do nothing when done
-    """
-
     def end(self):
+        """
+        do nothing when done
+        """
+
         pass
 
-    """
-    returns very simple state as dict
-    """
-
-    def getState(self):
-        state = super().getState()
-        state["name"] = self.name
-        return state
-
-
 #########################################################################
 #
-#     general purpose phases
+#     phases with actual usage
 #
 #########################################################################
 
-"""
-"""
-
-
+# obsolete: not really used anymore
 class Challenge(BasicPhase):
+    """
+    gamemode for solving escape rooms 
+    """
+
     def __init__(self, seed=0):
+        """
+        configure super class
+
+        Parameters:
+            seed: rng seed
+        """
+
         super().__init__("challenge", seed=seed)
 
-    """
-    place main char
-    bad code: superclass call should not be prevented
-    """
-
+    # bad code: superclass call should not be prevented
     def start(self, seed=0):
+        """
+        start running the phase by placing the main char
+
+        Parameters:
+            seed: rng seed
+        """
+
         showText("escape the room. Your seed is: %s" % (seed))
         self.roomCounter = 0
         self.seed = seed
         self.restart()
 
     def restart(self):
+        """
+        reset the challenge on completion
+        """
+
         self.seed = ((self.seed % 317) + (self.seed // 317)) * 321 + self.seed % 300
         challengeRoom = src.gamestate.gamestate.terrain.challengeRooms[self.roomCounter]
         if src.gamestate.gamestate.mainChar.room:
@@ -345,29 +355,38 @@ class Challenge(BasicPhase):
         self.roomCounter += 1
 
     def win(self):
+        """
+        handle a player win
+        """
+
         showText("you won the challenge")
 
     def fail(self):
+        """
+        handle a player loose
+        """
+
         print("you lost the challenge (winning is not always possible)")
 
-
-"""
-the phase is intended to give the player access to the true gameworld without manipulations
-
-this phase should be left as blank as possible
-"""
-
-
 class OpenWorld(BasicPhase):
+    """
+    the phase is intended to give the player access to the true gameworld without manipulations
+
+    this phase should be left as blank as possible
+    """
+
     def __init__(self, seed=0):
+        """
+        set up super class
+        """
         super().__init__("OpenWorld", seed=seed)
 
-    """
-    place main char
-    bad code: superclass call should not be prevented
-    """
-
+    # bad code: superclass call should not be prevented
     def start(self, seed=0):
+        """
+        start phase by placing main char
+        """
+
         src.cinematics.showCinematic("staring open world Scenario.")
 
         # place character in wakeup room
@@ -446,21 +465,28 @@ class OpenWorld(BasicPhase):
 
         src.gamestate.gamestate.save()
 
-
-"""
-"""
-
-
 class Dungeon(BasicPhase):
+    """
+    game mode ment to offer dungeon crawling
+    """
+
     def __init__(self, seed=0):
+        """
+        set up super class
+
+        Parameters:
+            seed: rng seed
+        """
         super().__init__("Dungeon", seed=seed)
 
-    """
-    place main char
-    bad code: superclass call should not be prevented
-    """
-
     def start(self, seed=0):
+        """
+        place main char and add entry point to dungeon
+
+        Parameters:
+            seed: rng seed
+        """
+
         src.cinematics.showCinematic("staring open world Scenario.")
 
         src.gamestate.gamestate.mainChar.xPosition = 65
@@ -509,6 +535,717 @@ class Dungeon(BasicPhase):
             "DropQuestMeta",
         ]
 
+class BuildBase(BasicPhase):
+    """
+    the phase is intended to give the player access to the true gameworld without manipulations
+
+    this phase should be left as blank as possible
+    """
+
+    def __init__(self, seed=0):
+        """
+        set up super class
+
+        Parameters:
+            seed: rng seed
+        """
+
+        super().__init__("BuildBase", seed=seed)
+
+    def start(self, seed=0):
+        """
+        set up terrain and spawn main character
+
+        Parameters:
+            seed: rng seed
+        """
+
+        showText("build a base.\n\npress space to continue")
+        showText(
+            "\n\n * press ? for help\n\n * press a to move left/west\n * press w to move up/north\n * press s to move down/south\n * press d to move right/east\n\npress space to continue\n\n"
+        )
+
+        src.gamestate.gamestate.mainChar.terrain = src.gamestate.gamestate.terrain
+        src.gamestate.gamestate.terrain.addCharacter(
+            src.gamestate.gamestate.mainChar, 124, 109
+        )
+
+        self.miniBase = src.gamestate.gamestate.terrain.rooms[0]
+
+        """
+        import json
+        if seed%2==0:
+            with open("states/theftBase1.json","r") as stateFile:
+                room = json.loads(stateFile.read())
+            src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
+        if seed%3==1:
+            with open("states/theftBase2.json","r") as stateFile:
+                room = json.loads(stateFile.read())
+            src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
+        if seed%2==1:
+            with open("states/caseStorage.json","r") as stateFile:
+                room = json.loads(stateFile.read())
+            src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
+        else:
+            with open("states/emptyRoom1.json","r") as stateFile:
+                room = json.loads(stateFile.read())
+            src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
+        if seed%4:
+            with open("states/emptyRoom2.json","r") as stateFile:
+                room = json.loads(stateFile.read())
+        else:
+            wallRooms = ["states/wallRoom_1.json"]
+            wallRoom = wallRooms[seed%5%len(wallRooms)]
+            with open(wallRoom,"r") as stateFile:
+                room = json.loads(stateFile.read())
+        src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
+        with open("states/miniMech.json","r") as stateFile:
+            room = json.loads(stateFile.read())
+        src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
+        #room = src.rooms.EmptyRoom(1,1,2,2,creator=self)
+        #room.reconfigure(sizeX=seed%12+3,sizeY=(seed+seed%236)%12+3,doorPos=(0,1))
+        #src.gamestate.gamestate.terrain.addRoom(room)
+        #room = src.rooms.EmptyRoom(4,9,-1,0,creator=self)
+        #room.reconfigure(sizeX=14,sizeY=14,doorPos=(13,6))
+        #src.gamestate.gamestate.terrain.addRoom(room)
+        with open("states/globalMacroStorage.json","r") as stateFile:
+            room = json.loads(stateFile.read())
+        src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
+        """
+
+        molds = []
+        for bigX in range(1, 14):
+            for bigY in range(1, 14):
+                import random
+
+                if 3 < bigX < 11 and 3 < bigY < 11:
+                    continue
+                if random.randint(1, 1) == 1:
+                    for i in range(0, 30):
+                        molds.append(
+                            (
+                                src.items.itemMap["Mold"](),
+                                (
+                                    bigX * 15 + random.randint(1, 13),
+                                    bigY * 15 + random.randint(1, 13),
+                                    0,
+                                ),
+                            )
+                        )
+        molds.append((src.items.itemMap["Mold"](),(155, 108, 0)))
+        molds.append((src.items.itemMap["Mold"](),(159, 116, 0)))
+        molds.append((src.items.itemMap["Mold"](),(138, 108, 0)))
+        molds.append((src.items.itemMap["Mold"](),(145, 115, 0)))
+
+        positions = [
+            (187, 37, 0),
+            (37, 37, 0),
+            (37, 187, 0),
+            (187, 187, 0),
+            (202, 112, 0),
+            (187, 112, 0),
+            (172, 112, 0),
+        ]
+        counter = 0
+        for x in range(1, 14):
+            for y in (1, 2, 12, 13):
+                counter += 1
+                if not counter % 3 == 0:
+                    continue
+                pos = (x * 15 + 7, y * 15 + 7, 0)
+                if pos not in positions:
+                    positions.append(pos)
+
+        for y in range(1, 14):
+            for x in (1, 2, 12, 13):
+                counter += 1
+                if not counter % 3 == 0:
+                    continue
+                pos = (x * 15 + 7, y * 15 + 7, 0)
+                if pos not in positions:
+                    positions.append(pos)
+
+        for pos in positions:
+            commandBloom = src.items.itemMap["CommandBloom"]()
+            src.gamestate.gamestate.terrain.addItem(commandBloom,pos)
+            if pos in ((187, 112, 0), (172, 112, 0), (157, 112, 0), (142, 112, 0)):
+                commandBloom.masterCommand = "13a9kj"
+            molds.append(
+                (
+                    src.items.itemMap["Mold"](),
+                    (pos[0] + 4, pos[1] + 4, pos[2]),
+                )
+            )
+            molds.append(
+                (
+                    src.items.itemMap["Mold"](),
+                    (pos[0] - 4, pos[1] + 4, pos[2]),
+                )
+            )
+            molds.append(
+                (
+                    src.items.itemMap["Mold"](),
+                    (pos[0] + 4, pos[1] - 4, pos[2]),
+                )
+            )
+            molds.append(
+                (
+                    src.items.itemMap["Mold"](),
+                    (pos[0] - 4, pos[1] - 4, pos[2]),
+                )
+            )
+            molds.append(
+                (
+                    src.items.itemMap["Bloom"](),
+                    (pos[0] + 2, pos[1] + 2, pos[2]),
+                )
+            )
+            molds.append(
+                (
+                    src.items.itemMap["Bloom"](),
+                    (pos[0] - 2, pos[1] + 2, pos[2]),
+                )
+            )
+            molds.append(
+                (
+                    src.items.itemMap["Bloom"](),
+                    (pos[0] + 2, pos[1] - 2, pos[2]),
+                )
+            )
+            molds.append(
+                (
+                    src.items.itemMap["Bloom"](),
+                    (pos[0] - 2, pos[1] - 2, pos[2]),
+                )
+            )
+            src.gamestate.gamestate.terrain.addItem(
+                src.items.itemMap["CommandBloom"](),(pos[0] - 6, pos[1], pos[2])
+            )
+            src.gamestate.gamestate.terrain.addItem(
+                src.items.itemMap["CommandBloom"](),(pos[0] - 6, pos[1], pos[2])
+            )
+            src.gamestate.gamestate.terrain.addItem(
+                src.items.itemMap["CommandBloom"](),(pos[0] + 6, pos[1], pos[2])
+            )
+            src.gamestate.gamestate.terrain.addItem(
+                src.items.itemMap["CommandBloom"](),(pos[0], pos[1] - 6, pos[2])
+            )
+            src.gamestate.gamestate.terrain.addItem(
+                src.items.itemMap["CommandBloom"](),(pos[0], pos[1] + 6, pos[2])
+            )
+            molds.append(
+                (
+                    src.items.itemMap["Mold"](),
+                    (pos[0] + 6, pos[1] + 6, pos[2]),
+                )
+            )
+            molds.append(
+                (
+                    src.items.itemMap["Mold"](),
+                    (pos[0] - 6, pos[1] - 6, pos[2]),
+                )
+            )
+            molds.append(
+                (
+                    src.items.itemMap["Mold"](),
+                    (pos[0] + 6, pos[1] - 6, pos[2]),
+                )
+            )
+            molds.append(
+                (
+                    src.items.itemMap["Mold"](),
+                    (pos[0] - 6, pos[1] + 6, pos[2]),
+                )
+            )
+
+        src.gamestate.gamestate.terrain.addItems(molds)
+        for mold in molds:
+            mold[0].startSpawn()
+
+        for pos in positions:
+            crawler = src.characters.Monster(xPosition=pos[0], yPosition=pos[1])
+
+            crawler.solvers = [
+                "SurviveQuest",
+                "Serve",
+                "NaiveMoveQuest",
+                "NaiveMurderQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "ExamineQuest",
+                "FireFurnaceMeta",
+                "CollectQuestMeta",
+                "WaitQuest",
+            ]
+            crawler.macroState["commandKeyQueue"] = [("j", []), ("j", [])]
+            src.gamestate.gamestate.terrain.addCharacter(crawler, pos[0], pos[1])
+
+        src.gamestate.gamestate.mainChar.addListener(self.checkRoomEnteredMain)
+        src.gamestate.gamestate.mainChar.macroState["macros"]["j"] = ["J", "f"]
+
+        # add basic set of abilities in openworld phase
+        src.gamestate.gamestate.mainChar.questsDone = [
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "CollectQuestMeta",
+            "FireFurnaceMeta",
+            "ExamineQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+            "LeaveRoomQuest",
+            "NaiveMurderQuest",
+        ]
+
+        src.gamestate.gamestate.mainChar.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "NaiveMurderQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest" "NaiveDropQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+        ]
+
+        self.mainChar = src.gamestate.gamestate.mainChar
+
+        src.gamestate.gamestate.save()
+
+    def checkRoomEnteredMain(self):
+        """
+        handle the main character entering rooms
+        by showing a message when the player enters the base the first time
+        """
+
+        if self.mainChar.room and self.mainChar.room == self.miniBase:
+            showText(
+                "\n\nUse the auto tutor for more information. The autotutor is represented by iD\n\n * press j to activate \n * press k to pick up\n * press l to pick up\n * press i to view inventory\n * press @ to view your stats\n * press e to examine\n * press ? for help\n\nMove onto an item and press the key to interact with it. Move against big items and press the key to interact with it\n\npress space to continue\n\n"
+            )
+            src.gamestate.gamestate.mainChar.delListener(self.checkRoomEnteredMain)
+
+class DesertSurvival(BasicPhase):
+    """
+    game mode offering a harsh survival experience
+    """
+
+    def __init__(self, seed=0):
+        """
+        set up the super class
+        """
+        super().__init__("DesertSurvival", seed=seed)
+
+    # bad code: superclass call should not be prevented
+    def start(self, seed=0):
+        """
+        set up terrain and place char
+
+        Parameters:
+            seed: rng seed
+        """
+
+        import random
+
+        src.cinematics.showCinematic("staring desert survival Scenario.")
+
+        src.gamestate.gamestate.terrain.heatmap[3][7] = 1
+        src.gamestate.gamestate.terrain.heatmap[4][7] = 1
+        src.gamestate.gamestate.terrain.heatmap[5][7] = 1
+        src.gamestate.gamestate.terrain.heatmap[6][7] = 1
+
+        # place character in wakeup room
+        if src.gamestate.gamestate.terrain.wakeUpRoom:
+            self.mainCharRoom = src.gamestate.gamestate.terrain.wakeUpRoom
+            self.mainCharRoom.addCharacter(src.gamestate.gamestate.mainChar, 2, 4)
+        # place character on terrain
+        else:
+            src.gamestate.gamestate.mainChar.xPosition = 65
+            src.gamestate.gamestate.mainChar.yPosition = 111
+            src.gamestate.gamestate.mainChar.reputation = 100
+            src.gamestate.gamestate.mainChar.terrain = src.gamestate.gamestate.terrain
+            src.gamestate.gamestate.terrain.addCharacter(
+                src.gamestate.gamestate.mainChar, 65, 111
+            )
+
+        # add basic set of abilities in openworld phase
+        src.gamestate.gamestate.mainChar.questsDone = [
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "CollectQuestMeta",
+            "FireFurnaceMeta",
+            "ExamineQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+            "LeaveRoomQuest",
+        ]
+
+        src.gamestate.gamestate.mainChar.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest" "NaiveDropQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+        ]
+
+        reservedTiles = [
+            (2, 6),
+            (3, 6),
+            (4, 6),
+            (5, 6),
+            (6, 6),
+            (7, 6),
+            (2, 7),
+            (3, 7),
+            (4, 7),
+            (5, 7),
+            (6, 7),
+            (7, 7),
+            (2, 8),
+            (3, 8),
+            (4, 8),
+            (5, 8),
+            (6, 8),
+            (7, 8),
+        ]
+
+        while 1:
+            x = random.randint(1, 14)
+            y = random.randint(1, 14)
+            if (x, y) in reservedTiles:
+                continue
+
+            reservedTiles.append((x, y))
+
+            self.workshop = src.rooms.EmptyRoom(x, y, 2, 3, creator=self)
+            self.workshop.reconfigure(11, 8)
+            break
+
+        scrap = src.items.itemMap["Scrap"](2, 5, creator=self, amount=10)
+        self.workshop.addItems([scrap])
+        sunscreen = src.items.itemMap["SunScreen"](9, 4, creator=self)
+        self.workshop.addItems([sunscreen])
+        scrapCompactor = src.items.itemMap["ScrapCompactor"](3, 5, creator=self)
+        self.workshop.addItems([scrapCompactor])
+        rodMachine = src.items.itemMap["Machine"](5, 5, creator=self)
+        rodMachine.setToProduce("Rod")
+        self.workshop.addItems([rodMachine])
+        waterCondenserMachine = src.items.itemMap["Machine"](7, 2, creator=self)
+        waterCondenserMachine.setToProduce("WaterCondenser")
+        self.workshop.addItems([waterCondenserMachine])
+        scrapper = src.items.itemMap["Scraper"](7, 5, creator=self)
+        self.workshop.addItems([scrapper])
+        case = src.items.itemMap["Case"](1, 1, creator=self)
+        case.bolted = False
+        self.workshop.addItems([case])
+        case = src.items.itemMap["Case"](2, 1, creator=self)
+        case.bolted = False
+        self.workshop.addItems([case])
+        case = src.items.itemMap["Case"](3, 1, creator=self)
+        case.bolted = False
+        self.workshop.addItems([case])
+        case = src.items.itemMap["Case"](4, 1, creator=self)
+        case.bolted = False
+        self.workshop.addItems([case])
+        sheet = src.items.itemMap["Sheet"](7, 1, creator=self)
+        sheet.bolted = False
+        self.workshop.addItems([sheet])
+        src.gamestate.gamestate.terrain.addRooms([self.workshop])
+
+        while 1:
+            x = random.randint(1, 14)
+            y = random.randint(1, 14)
+            if (x, y) in reservedTiles:
+                continue
+
+            reservedTiles.append((x, y))
+
+            self.workshop = src.rooms.EmptyRoom(x, y, 2, 4, creator=self)
+            self.workshop.reconfigure(8, 8)
+            break
+
+        src.gamestate.gamestate.terrain.doSandStorm()
+
+# NIY: not done and not integrated
+# obsolete: maybe just delete and rebuild
+class FactoryDream(BasicPhase):
+    """
+    game mode basically 
+    """
+
+    def __init__(self, seed=0):
+        """
+        initialise the super class
+
+        Parameters:
+            seed: rng seed
+        """
+        super().__init__("FactoryDream", seed=seed)
+
+    def start(self, seed=0):
+        """
+        set up terrain and place main char
+
+        Parameters:
+            seed: rng seed
+        """
+        
+        import random
+
+        src.cinematics.showCinematic("just look at my pretty factory")
+
+        src.gamestate.gamestate.mainChar.terrain = src.gamestate.gamestate.terrain
+        src.gamestate.gamestate.terrain.addCharacter(
+            src.gamestate.gamestate.mainChar, 7 * 15 + 7, 7 * 15 + 7
+        )
+
+        # add basic set of abilities in openworld phase
+        src.gamestate.gamestate.mainChar.questsDone = [
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "CollectQuestMeta",
+            "FireFurnaceMeta",
+            "ExamineQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+            "LeaveRoomQuest",
+        ]
+
+        src.gamestate.gamestate.mainChar.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest" "NaiveDropQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+        ]
+
+        # fill one cargo pod with scrap
+        cargoPod = src.rooms.EmptyRoom(5, 6, 2, 3, creator=self)
+        cargoPod.reconfigure(11, 8)
+        items = []
+        for x in range(1, 9):
+            for y in range(1, 6):
+                scrap = src.items.itemMap["Scrap"](x, y, amount=10, creator=self)
+                items.append(scrap)
+        cargoPod.addItems(items)
+        src.gamestate.gamestate.terrain.addRooms([cargoPod])
+
+        cargoPod = src.rooms.ScrapStorage(6, 6, 1, 1, creator=self)
+        src.gamestate.gamestate.terrain.addRooms([cargoPod])
+
+        # fill other cargo pod with flasks
+        cargoPod = src.rooms.EmptyRoom(6, 5, 2, 3, creator=self)
+        cargoPod.reconfigure(11, 8)
+        items = []
+        for x in range(1, 9):
+            for y in range(1, 6):
+                flask = src.items.itemMap["GooFlask"](x, y)
+                flask.uses = 100
+                items.append(flask)
+        cargoPod.addItems(items)
+        src.gamestate.gamestate.terrain.addRooms([cargoPod])
+
+        # place processing scrap into metal bars
+        workshopMetal = src.rooms.EmptyRoom(6, 7, 1, 1, creator=self)
+        items = []
+        scrapCompactor = src.items.itemMap["ScrapCompactor"](4, 8)
+        items.append(scrapCompactor)
+        scrapCompactor = src.items.itemMap["ScrapCompactor"](8, 8)
+        items.append(scrapCompactor)
+        scrapCompactor = src.items.itemMap["ScrapCompactor"](7, 10)
+        items.append(scrapCompactor)
+        machine = src.items.itemMap["Machine"](3, 4)
+        machine.setToProduce("Rod")
+        items.append(machine)
+        machine = src.items.itemMap["Machine"](5, 4)
+        machine.setToProduce("Frame")
+        items.append(machine)
+        machine = src.items.itemMap["Machine"](7, 4)
+        machine.setToProduce("Case")
+        items.append(machine)
+        machine = src.items.itemMap["Machine"](9, 4)
+        machine.setToProduce("Wall")
+        items.append(machine)
+        machine = src.items.itemMap["Machine"](10, 8)
+        machine.setToProduce("Sheet")
+        items.append(machine)
+        machine = src.items.itemMap["Machine"](9, 10)
+        machine.setToProduce("FloorPlate")
+        items.append(machine)
+        stasisTank = src.items.itemMap["StasisTank"](
+            9, 1
+        )  # lets add the stasis tank to hold the local npc
+        items.append(stasisTank)
+        command = src.items.itemMap["Command"](
+            6, 6
+        )  # add a command for producing walls
+        command.setPayload(
+            list(
+                "13dwwasjsjsjsjdss13aaaasslwdsjdddslwdsjdskwaaaakskwwwaaawlwdddddddlaaaaaaassdwjddwjddwjddwjdwksddddddddsjj12a"
+            )
+        )
+        items.append(command)
+        command = src.items.itemMap["Command"](
+            5, 10
+        )  # add a command for producing floors
+        command.setPayload(list(""))
+        items.append(command)
+        command = src.items.itemMap["Command"](5, 10)  # add roombuilder
+        command.setPayload(list(""))
+        items.append(command)
+        workshopMetal.reconfigure(13, 13)
+        workshopMetal.addItems(items)
+        src.gamestate.gamestate.terrain.addRooms([workshopMetal])
+
+        items = []
+        stockPile = src.items.itemMap["UniformStockpileManager"](15 * 7 + 7, 15 * 6 + 7)
+        items.append(stockPile)
+        stockPile = src.items.itemMap["UniformStockpileManager"](15 * 8 + 7, 15 * 6 + 7)
+        items.append(stockPile)
+        stockPile = src.items.itemMap["UniformStockpileManager"](15 * 9 + 7, 15 * 6 + 7)
+        items.append(stockPile)
+        stockPile = src.items.itemMap["UniformStockpileManager"](
+            15 * 10 + 7, 15 * 6 + 7
+        )
+        items.append(stockPile)
+        src.gamestate.gamestate.terrain.addItems(items)
+
+class CreativeMode(BasicPhase):
+    """
+    mode to build stuff with disabled environmental danger
+    """
+
+    def __init__(self, seed=0):
+        """
+        initialise super class
+
+        Parameters:
+            seed: rng seed
+        """
+
+        super().__init__("CreativeMode", seed=seed)
+
+    def start(self, seed=0):
+        """
+        place main char and add godmode items
+        """
+
+        import random
+
+        src.gamestate.gamestate.mainChar.terrain = src.gamestate.gamestate.terrain
+        src.gamestate.gamestate.mainChar.godMode = True
+        src.gamestate.gamestate.terrain.addCharacter(
+            src.gamestate.gamestate.mainChar, 7 * 15 + 7, 7 * 15 + 7
+        )
+
+        # add basic set of abilities in openworld phase
+        src.gamestate.gamestate.mainChar.questsDone = [
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "CollectQuestMeta",
+            "FireFurnaceMeta",
+            "ExamineQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+            "LeaveRoomQuest",
+        ]
+
+        src.gamestate.gamestate.mainChar.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest" "NaiveDropQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+        ]
+
+        items = []
+        item = src.items.itemMap["ArchitectArtwork"]()
+        item.bolted = False
+        item.godMode = True
+        items.append((item, (15 * 7 + 8, 15 * 7 + 7, 0)))
+        item = src.items.itemMap["ProductionArtwork"]()
+        item.bolted = False
+        item.godMode = True
+        items.append((item, (15 * 7 + 8, 15 * 7 + 8, 0)))
+        src.gamestate.gamestate.terrain.addItems(items)
+
+        item = src.items.itemMap["ArchitectArtwork"]()
+        item.bolted = False
+        item.godMode = True
+        src.gamestate.gamestate.mainChar.inventory.append(item)
+        item = src.items.itemMap["ProductionArtwork"]()
+        item.bolted = False
+        item.godMode = True
+        src.gamestate.gamestate.mainChar.inventory.append(item)
+
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+# despite the effort sunk into the story, all of the phases below are obsolete
+# and will need to be rewritten. The don't even run currently.
+# ignore them
+#
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ###############################################################################
 #
@@ -2832,6 +3569,7 @@ class FurnaceCompetition(BasicPhase):
             nextPhase = MachineRoomPhase()
         nextPhase.start(self.seed)
 
+# obsolete: all of this stuff is still obsolete, sry
 
 ################################################################################
 #
@@ -4764,678 +5502,6 @@ class Testing_1(BasicPhase):
             self.productionSection()
 
 
-"""
-the phase is intended to give the player access to the true gameworld without manipulations
-
-this phase should be left as blank as possible
-"""
-
-
-class BuildBase(BasicPhase):
-    def __init__(self, seed=0):
-        super().__init__("BuildBase", seed=seed)
-
-    """
-    place main char
-    bad code: superclass call should not be prevented
-    """
-
-    def start(self, seed=0):
-        showText("build a base.\n\npress space to continue")
-        showText(
-            "\n\n * press ? for help\n\n * press a to move left/west\n * press w to move up/north\n * press s to move down/south\n * press d to move right/east\n\npress space to continue\n\n"
-        )
-
-        src.gamestate.gamestate.mainChar.terrain = src.gamestate.gamestate.terrain
-        src.gamestate.gamestate.terrain.addCharacter(
-            src.gamestate.gamestate.mainChar, 124, 109
-        )
-
-        self.miniBase = src.gamestate.gamestate.terrain.rooms[0]
-
-        """
-        import json
-        if seed%2==0:
-            with open("states/theftBase1.json","r") as stateFile:
-                room = json.loads(stateFile.read())
-            src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
-        if seed%3==1:
-            with open("states/theftBase2.json","r") as stateFile:
-                room = json.loads(stateFile.read())
-            src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
-        if seed%2==1:
-            with open("states/caseStorage.json","r") as stateFile:
-                room = json.loads(stateFile.read())
-            src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
-        else:
-            with open("states/emptyRoom1.json","r") as stateFile:
-                room = json.loads(stateFile.read())
-            src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
-        if seed%4:
-            with open("states/emptyRoom2.json","r") as stateFile:
-                room = json.loads(stateFile.read())
-        else:
-            wallRooms = ["states/wallRoom_1.json"]
-            wallRoom = wallRooms[seed%5%len(wallRooms)]
-            with open(wallRoom,"r") as stateFile:
-                room = json.loads(stateFile.read())
-        src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
-        with open("states/miniMech.json","r") as stateFile:
-            room = json.loads(stateFile.read())
-        src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
-        #room = src.rooms.EmptyRoom(1,1,2,2,creator=self)
-        #room.reconfigure(sizeX=seed%12+3,sizeY=(seed+seed%236)%12+3,doorPos=(0,1))
-        #src.gamestate.gamestate.terrain.addRoom(room)
-        #room = src.rooms.EmptyRoom(4,9,-1,0,creator=self)
-        #room.reconfigure(sizeX=14,sizeY=14,doorPos=(13,6))
-        #src.gamestate.gamestate.terrain.addRoom(room)
-        with open("states/globalMacroStorage.json","r") as stateFile:
-            room = json.loads(stateFile.read())
-        src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
-        """
-
-        molds = []
-        for bigX in range(1, 14):
-            for bigY in range(1, 14):
-                import random
-
-                if 3 < bigX < 11 and 3 < bigY < 11:
-                    continue
-                if random.randint(1, 1) == 1:
-                    for i in range(0, 30):
-                        molds.append(
-                            (
-                                src.items.itemMap["Mold"](),
-                                (
-                                    bigX * 15 + random.randint(1, 13),
-                                    bigY * 15 + random.randint(1, 13),
-                                    0,
-                                ),
-                            )
-                        )
-        molds.append((src.items.itemMap["Mold"](),(155, 108, 0)))
-        molds.append((src.items.itemMap["Mold"](),(159, 116, 0)))
-        molds.append((src.items.itemMap["Mold"](),(138, 108, 0)))
-        molds.append((src.items.itemMap["Mold"](),(145, 115, 0)))
-
-        positions = [
-            (187, 37, 0),
-            (37, 37, 0),
-            (37, 187, 0),
-            (187, 187, 0),
-            (202, 112, 0),
-            (187, 112, 0),
-            (172, 112, 0),
-        ]
-        counter = 0
-        for x in range(1, 14):
-            for y in (1, 2, 12, 13):
-                counter += 1
-                if not counter % 3 == 0:
-                    continue
-                pos = (x * 15 + 7, y * 15 + 7, 0)
-                if pos not in positions:
-                    positions.append(pos)
-
-        for y in range(1, 14):
-            for x in (1, 2, 12, 13):
-                counter += 1
-                if not counter % 3 == 0:
-                    continue
-                pos = (x * 15 + 7, y * 15 + 7, 0)
-                if pos not in positions:
-                    positions.append(pos)
-
-        for pos in positions:
-            commandBloom = src.items.itemMap["CommandBloom"]()
-            src.gamestate.gamestate.terrain.addItem(commandBloom,pos)
-            if pos in ((187, 112, 0), (172, 112, 0), (157, 112, 0), (142, 112, 0)):
-                commandBloom.masterCommand = "13a9kj"
-            molds.append(
-                (
-                    src.items.itemMap["Mold"](),
-                    (pos[0] + 4, pos[1] + 4, pos[2]),
-                )
-            )
-            molds.append(
-                (
-                    src.items.itemMap["Mold"](),
-                    (pos[0] - 4, pos[1] + 4, pos[2]),
-                )
-            )
-            molds.append(
-                (
-                    src.items.itemMap["Mold"](),
-                    (pos[0] + 4, pos[1] - 4, pos[2]),
-                )
-            )
-            molds.append(
-                (
-                    src.items.itemMap["Mold"](),
-                    (pos[0] - 4, pos[1] - 4, pos[2]),
-                )
-            )
-            molds.append(
-                (
-                    src.items.itemMap["Bloom"](),
-                    (pos[0] + 2, pos[1] + 2, pos[2]),
-                )
-            )
-            molds.append(
-                (
-                    src.items.itemMap["Bloom"](),
-                    (pos[0] - 2, pos[1] + 2, pos[2]),
-                )
-            )
-            molds.append(
-                (
-                    src.items.itemMap["Bloom"](),
-                    (pos[0] + 2, pos[1] - 2, pos[2]),
-                )
-            )
-            molds.append(
-                (
-                    src.items.itemMap["Bloom"](),
-                    (pos[0] - 2, pos[1] - 2, pos[2]),
-                )
-            )
-            src.gamestate.gamestate.terrain.addItem(
-                src.items.itemMap["CommandBloom"](),(pos[0] - 6, pos[1], pos[2])
-            )
-            src.gamestate.gamestate.terrain.addItem(
-                src.items.itemMap["CommandBloom"](),(pos[0] - 6, pos[1], pos[2])
-            )
-            src.gamestate.gamestate.terrain.addItem(
-                src.items.itemMap["CommandBloom"](),(pos[0] + 6, pos[1], pos[2])
-            )
-            src.gamestate.gamestate.terrain.addItem(
-                src.items.itemMap["CommandBloom"](),(pos[0], pos[1] - 6, pos[2])
-            )
-            src.gamestate.gamestate.terrain.addItem(
-                src.items.itemMap["CommandBloom"](),(pos[0], pos[1] + 6, pos[2])
-            )
-            molds.append(
-                (
-                    src.items.itemMap["Mold"](),
-                    (pos[0] + 6, pos[1] + 6, pos[2]),
-                )
-            )
-            molds.append(
-                (
-                    src.items.itemMap["Mold"](),
-                    (pos[0] - 6, pos[1] - 6, pos[2]),
-                )
-            )
-            molds.append(
-                (
-                    src.items.itemMap["Mold"](),
-                    (pos[0] + 6, pos[1] - 6, pos[2]),
-                )
-            )
-            molds.append(
-                (
-                    src.items.itemMap["Mold"](),
-                    (pos[0] - 6, pos[1] + 6, pos[2]),
-                )
-            )
-
-        src.gamestate.gamestate.terrain.addItems(molds)
-        for mold in molds:
-            mold[0].startSpawn()
-
-        for pos in positions:
-            crawler = src.characters.Monster(xPosition=pos[0], yPosition=pos[1])
-
-            crawler.solvers = [
-                "SurviveQuest",
-                "Serve",
-                "NaiveMoveQuest",
-                "NaiveMurderQuest",
-                "MoveQuestMeta",
-                "NaiveActivateQuest",
-                "ActivateQuestMeta",
-                "NaivePickupQuest",
-                "PickupQuestMeta",
-                "DrinkQuest",
-                "ExamineQuest",
-                "FireFurnaceMeta",
-                "CollectQuestMeta",
-                "WaitQuest",
-            ]
-            crawler.macroState["commandKeyQueue"] = [("j", []), ("j", [])]
-            src.gamestate.gamestate.terrain.addCharacter(crawler, pos[0], pos[1])
-
-        src.gamestate.gamestate.mainChar.addListener(self.checkRoomEnteredMain)
-        src.gamestate.gamestate.mainChar.macroState["macros"]["j"] = ["J", "f"]
-
-        # add basic set of abilities in openworld phase
-        src.gamestate.gamestate.mainChar.questsDone = [
-            "NaiveMoveQuest",
-            "MoveQuestMeta",
-            "NaiveActivateQuest",
-            "ActivateQuestMeta",
-            "NaivePickupQuest",
-            "PickupQuestMeta",
-            "DrinkQuest",
-            "CollectQuestMeta",
-            "FireFurnaceMeta",
-            "ExamineQuest",
-            "NaiveDropQuest",
-            "DropQuestMeta",
-            "LeaveRoomQuest",
-            "NaiveMurderQuest",
-        ]
-
-        src.gamestate.gamestate.mainChar.solvers = [
-            "SurviveQuest",
-            "Serve",
-            "NaiveMoveQuest",
-            "NaiveMurderQuest",
-            "MoveQuestMeta",
-            "NaiveActivateQuest",
-            "ActivateQuestMeta",
-            "NaivePickupQuest",
-            "PickupQuestMeta",
-            "DrinkQuest",
-            "ExamineQuest",
-            "FireFurnaceMeta",
-            "CollectQuestMeta",
-            "WaitQuest" "NaiveDropQuest",
-            "NaiveDropQuest",
-            "DropQuestMeta",
-        ]
-
-        self.mainChar = src.gamestate.gamestate.mainChar
-
-        src.gamestate.gamestate.save()
-
-    def checkRoomEnteredMain(self):
-        if self.mainChar.room and self.mainChar.room == self.miniBase:
-            showText(
-                "\n\nUse the auto tutor for more information. The autotutor is represented by iD\n\n * press j to activate \n * press k to pick up\n * press l to pick up\n * press i to view inventory\n * press @ to view your stats\n * press e to examine\n * press ? for help\n\nMove onto an item and press the key to interact with it. Move against big items and press the key to interact with it\n\npress space to continue\n\n"
-            )
-            src.gamestate.gamestate.mainChar.delListener(self.checkRoomEnteredMain)
-
-
-"""
-"""
-
-
-class DesertSurvival(BasicPhase):
-    def __init__(self, seed=0):
-        super().__init__("DesertSurvival", seed=seed)
-
-    """
-    place main char
-    bad code: superclass call should not be prevented
-    """
-
-    def start(self, seed=0):
-        import random
-
-        src.cinematics.showCinematic("staring desert survival Scenario.")
-
-        src.gamestate.gamestate.terrain.heatmap[3][7] = 1
-        src.gamestate.gamestate.terrain.heatmap[4][7] = 1
-        src.gamestate.gamestate.terrain.heatmap[5][7] = 1
-        src.gamestate.gamestate.terrain.heatmap[6][7] = 1
-
-        # place character in wakeup room
-        if src.gamestate.gamestate.terrain.wakeUpRoom:
-            self.mainCharRoom = src.gamestate.gamestate.terrain.wakeUpRoom
-            self.mainCharRoom.addCharacter(src.gamestate.gamestate.mainChar, 2, 4)
-        # place character on terrain
-        else:
-            src.gamestate.gamestate.mainChar.xPosition = 65
-            src.gamestate.gamestate.mainChar.yPosition = 111
-            src.gamestate.gamestate.mainChar.reputation = 100
-            src.gamestate.gamestate.mainChar.terrain = src.gamestate.gamestate.terrain
-            src.gamestate.gamestate.terrain.addCharacter(
-                src.gamestate.gamestate.mainChar, 65, 111
-            )
-
-        # add basic set of abilities in openworld phase
-        src.gamestate.gamestate.mainChar.questsDone = [
-            "NaiveMoveQuest",
-            "MoveQuestMeta",
-            "NaiveActivateQuest",
-            "ActivateQuestMeta",
-            "NaivePickupQuest",
-            "PickupQuestMeta",
-            "DrinkQuest",
-            "CollectQuestMeta",
-            "FireFurnaceMeta",
-            "ExamineQuest",
-            "NaiveDropQuest",
-            "DropQuestMeta",
-            "LeaveRoomQuest",
-        ]
-
-        src.gamestate.gamestate.mainChar.solvers = [
-            "SurviveQuest",
-            "Serve",
-            "NaiveMoveQuest",
-            "MoveQuestMeta",
-            "NaiveActivateQuest",
-            "ActivateQuestMeta",
-            "NaivePickupQuest",
-            "PickupQuestMeta",
-            "DrinkQuest",
-            "ExamineQuest",
-            "FireFurnaceMeta",
-            "CollectQuestMeta",
-            "WaitQuest" "NaiveDropQuest",
-            "NaiveDropQuest",
-            "DropQuestMeta",
-        ]
-
-        reservedTiles = [
-            (2, 6),
-            (3, 6),
-            (4, 6),
-            (5, 6),
-            (6, 6),
-            (7, 6),
-            (2, 7),
-            (3, 7),
-            (4, 7),
-            (5, 7),
-            (6, 7),
-            (7, 7),
-            (2, 8),
-            (3, 8),
-            (4, 8),
-            (5, 8),
-            (6, 8),
-            (7, 8),
-        ]
-
-        while 1:
-            x = random.randint(1, 14)
-            y = random.randint(1, 14)
-            if (x, y) in reservedTiles:
-                continue
-
-            reservedTiles.append((x, y))
-
-            self.workshop = src.rooms.EmptyRoom(x, y, 2, 3, creator=self)
-            self.workshop.reconfigure(11, 8)
-            break
-
-        scrap = src.items.itemMap["Scrap"](2, 5, creator=self, amount=10)
-        self.workshop.addItems([scrap])
-        sunscreen = src.items.itemMap["SunScreen"](9, 4, creator=self)
-        self.workshop.addItems([sunscreen])
-        scrapCompactor = src.items.itemMap["ScrapCompactor"](3, 5, creator=self)
-        self.workshop.addItems([scrapCompactor])
-        rodMachine = src.items.itemMap["Machine"](5, 5, creator=self)
-        rodMachine.setToProduce("Rod")
-        self.workshop.addItems([rodMachine])
-        waterCondenserMachine = src.items.itemMap["Machine"](7, 2, creator=self)
-        waterCondenserMachine.setToProduce("WaterCondenser")
-        self.workshop.addItems([waterCondenserMachine])
-        scrapper = src.items.itemMap["Scraper"](7, 5, creator=self)
-        self.workshop.addItems([scrapper])
-        case = src.items.itemMap["Case"](1, 1, creator=self)
-        case.bolted = False
-        self.workshop.addItems([case])
-        case = src.items.itemMap["Case"](2, 1, creator=self)
-        case.bolted = False
-        self.workshop.addItems([case])
-        case = src.items.itemMap["Case"](3, 1, creator=self)
-        case.bolted = False
-        self.workshop.addItems([case])
-        case = src.items.itemMap["Case"](4, 1, creator=self)
-        case.bolted = False
-        self.workshop.addItems([case])
-        sheet = src.items.itemMap["Sheet"](7, 1, creator=self)
-        sheet.bolted = False
-        self.workshop.addItems([sheet])
-        src.gamestate.gamestate.terrain.addRooms([self.workshop])
-
-        while 1:
-            x = random.randint(1, 14)
-            y = random.randint(1, 14)
-            if (x, y) in reservedTiles:
-                continue
-
-            reservedTiles.append((x, y))
-
-            self.workshop = src.rooms.EmptyRoom(x, y, 2, 4, creator=self)
-            self.workshop.reconfigure(8, 8)
-            break
-
-        src.gamestate.gamestate.terrain.doSandStorm()
-
-
-"""
-"""
-
-
-class FactoryDream(BasicPhase):
-    def __init__(self, seed=0):
-        super().__init__("FactoryDream", seed=seed)
-
-    """
-    place main char
-    bad code: superclass call should not be prevented
-    """
-
-    def start(self, seed=0):
-        import random
-
-        src.cinematics.showCinematic("just look at my pretty factory")
-
-        src.gamestate.gamestate.mainChar.terrain = src.gamestate.gamestate.terrain
-        src.gamestate.gamestate.terrain.addCharacter(
-            src.gamestate.gamestate.mainChar, 7 * 15 + 7, 7 * 15 + 7
-        )
-
-        # add basic set of abilities in openworld phase
-        src.gamestate.gamestate.mainChar.questsDone = [
-            "NaiveMoveQuest",
-            "MoveQuestMeta",
-            "NaiveActivateQuest",
-            "ActivateQuestMeta",
-            "NaivePickupQuest",
-            "PickupQuestMeta",
-            "DrinkQuest",
-            "CollectQuestMeta",
-            "FireFurnaceMeta",
-            "ExamineQuest",
-            "NaiveDropQuest",
-            "DropQuestMeta",
-            "LeaveRoomQuest",
-        ]
-
-        src.gamestate.gamestate.mainChar.solvers = [
-            "SurviveQuest",
-            "Serve",
-            "NaiveMoveQuest",
-            "MoveQuestMeta",
-            "NaiveActivateQuest",
-            "ActivateQuestMeta",
-            "NaivePickupQuest",
-            "PickupQuestMeta",
-            "DrinkQuest",
-            "ExamineQuest",
-            "FireFurnaceMeta",
-            "CollectQuestMeta",
-            "WaitQuest" "NaiveDropQuest",
-            "NaiveDropQuest",
-            "DropQuestMeta",
-        ]
-
-        # fill one cargo pod with scrap
-        cargoPod = src.rooms.EmptyRoom(5, 6, 2, 3, creator=self)
-        cargoPod.reconfigure(11, 8)
-        items = []
-        for x in range(1, 9):
-            for y in range(1, 6):
-                scrap = src.items.itemMap["Scrap"](x, y, amount=10, creator=self)
-                items.append(scrap)
-        cargoPod.addItems(items)
-        src.gamestate.gamestate.terrain.addRooms([cargoPod])
-
-        cargoPod = src.rooms.ScrapStorage(6, 6, 1, 1, creator=self)
-        src.gamestate.gamestate.terrain.addRooms([cargoPod])
-
-        # fill other cargo pod with flasks
-        cargoPod = src.rooms.EmptyRoom(6, 5, 2, 3, creator=self)
-        cargoPod.reconfigure(11, 8)
-        items = []
-        for x in range(1, 9):
-            for y in range(1, 6):
-                flask = src.items.itemMap["GooFlask"](x, y)
-                flask.uses = 100
-                items.append(flask)
-        cargoPod.addItems(items)
-        src.gamestate.gamestate.terrain.addRooms([cargoPod])
-
-        # place processing scrap into metal bars
-        workshopMetal = src.rooms.EmptyRoom(6, 7, 1, 1, creator=self)
-        items = []
-        scrapCompactor = src.items.itemMap["ScrapCompactor"](4, 8)
-        items.append(scrapCompactor)
-        scrapCompactor = src.items.itemMap["ScrapCompactor"](8, 8)
-        items.append(scrapCompactor)
-        scrapCompactor = src.items.itemMap["ScrapCompactor"](7, 10)
-        items.append(scrapCompactor)
-        machine = src.items.itemMap["Machine"](3, 4)
-        machine.setToProduce("Rod")
-        items.append(machine)
-        machine = src.items.itemMap["Machine"](5, 4)
-        machine.setToProduce("Frame")
-        items.append(machine)
-        machine = src.items.itemMap["Machine"](7, 4)
-        machine.setToProduce("Case")
-        items.append(machine)
-        machine = src.items.itemMap["Machine"](9, 4)
-        machine.setToProduce("Wall")
-        items.append(machine)
-        machine = src.items.itemMap["Machine"](10, 8)
-        machine.setToProduce("Sheet")
-        items.append(machine)
-        machine = src.items.itemMap["Machine"](9, 10)
-        machine.setToProduce("FloorPlate")
-        items.append(machine)
-        stasisTank = src.items.itemMap["StasisTank"](
-            9, 1
-        )  # lets add the stasis tank to hold the local npc
-        items.append(stasisTank)
-        command = src.items.itemMap["Command"](
-            6, 6
-        )  # add a command for producing walls
-        command.setPayload(
-            list(
-                "13dwwasjsjsjsjdss13aaaasslwdsjdddslwdsjdskwaaaakskwwwaaawlwdddddddlaaaaaaassdwjddwjddwjddwjdwksddddddddsjj12a"
-            )
-        )
-        items.append(command)
-        command = src.items.itemMap["Command"](
-            5, 10
-        )  # add a command for producing floors
-        command.setPayload(list(""))
-        items.append(command)
-        command = src.items.itemMap["Command"](5, 10)  # add roombuilder
-        command.setPayload(list(""))
-        items.append(command)
-        workshopMetal.reconfigure(13, 13)
-        workshopMetal.addItems(items)
-        src.gamestate.gamestate.terrain.addRooms([workshopMetal])
-
-        items = []
-        stockPile = src.items.itemMap["UniformStockpileManager"](15 * 7 + 7, 15 * 6 + 7)
-        items.append(stockPile)
-        stockPile = src.items.itemMap["UniformStockpileManager"](15 * 8 + 7, 15 * 6 + 7)
-        items.append(stockPile)
-        stockPile = src.items.itemMap["UniformStockpileManager"](15 * 9 + 7, 15 * 6 + 7)
-        items.append(stockPile)
-        stockPile = src.items.itemMap["UniformStockpileManager"](
-            15 * 10 + 7, 15 * 6 + 7
-        )
-        items.append(stockPile)
-        src.gamestate.gamestate.terrain.addItems(items)
-
-
-"""
-"""
-
-
-class CreativeMode(BasicPhase):
-    def __init__(self, seed=0):
-        super().__init__("CreativeMode", seed=seed)
-
-    """
-    place main char
-    bad code: superclass call should not be prevented
-    """
-
-    def start(self, seed=0):
-        import random
-
-        src.gamestate.gamestate.mainChar.terrain = src.gamestate.gamestate.terrain
-        src.gamestate.gamestate.mainChar.godMode = True
-        src.gamestate.gamestate.terrain.addCharacter(
-            src.gamestate.gamestate.mainChar, 7 * 15 + 7, 7 * 15 + 7
-        )
-
-        # add basic set of abilities in openworld phase
-        src.gamestate.gamestate.mainChar.questsDone = [
-            "NaiveMoveQuest",
-            "MoveQuestMeta",
-            "NaiveActivateQuest",
-            "ActivateQuestMeta",
-            "NaivePickupQuest",
-            "PickupQuestMeta",
-            "DrinkQuest",
-            "CollectQuestMeta",
-            "FireFurnaceMeta",
-            "ExamineQuest",
-            "NaiveDropQuest",
-            "DropQuestMeta",
-            "LeaveRoomQuest",
-        ]
-
-        src.gamestate.gamestate.mainChar.solvers = [
-            "SurviveQuest",
-            "Serve",
-            "NaiveMoveQuest",
-            "MoveQuestMeta",
-            "NaiveActivateQuest",
-            "ActivateQuestMeta",
-            "NaivePickupQuest",
-            "PickupQuestMeta",
-            "DrinkQuest",
-            "ExamineQuest",
-            "FireFurnaceMeta",
-            "CollectQuestMeta",
-            "WaitQuest" "NaiveDropQuest",
-            "NaiveDropQuest",
-            "DropQuestMeta",
-        ]
-
-        items = []
-        item = src.items.itemMap["ArchitectArtwork"]()
-        item.bolted = False
-        item.godMode = True
-        items.append((item, (15 * 7 + 8, 15 * 7 + 7, 0)))
-        item = src.items.itemMap["ProductionArtwork"]()
-        item.bolted = False
-        item.godMode = True
-        items.append((item, (15 * 7 + 8, 15 * 7 + 8, 0)))
-        src.gamestate.gamestate.terrain.addItems(items)
-
-        item = src.items.itemMap["ArchitectArtwork"]()
-        item.bolted = False
-        item.godMode = True
-        src.gamestate.gamestate.mainChar.inventory.append(item)
-        item = src.items.itemMap["ProductionArtwork"]()
-        item.bolted = False
-        item.godMode = True
-        src.gamestate.gamestate.mainChar.inventory.append(item)
-
-
 ###############################################################
 #
 #    the glue to be able to call the phases from configs etc
@@ -5444,13 +5510,12 @@ class CreativeMode(BasicPhase):
 #
 ###############################################################
 
-"""
-reference the phases to be able to call them easier
-bad code: registering here is easy to forget when adding a phase
-"""
-
-
+# bad code: registering here is easy to forget when adding a phase
 def registerPhases():
+    """
+    reference the phases to be able to call them easier
+    """
+
     import src.gamestate
 
     phasesByName = src.gamestate.phasesByName

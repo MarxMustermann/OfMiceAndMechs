@@ -10,17 +10,19 @@ import json
 import src.saveing
 import src.canvas
 
-"""
-base class for events
-"""
-
-
 class Event(src.saveing.Saveable):
     """
-    basic state setting
+    base class for events
     """
 
-    def __init__(self, tick, creator=None):
+    def __init__(self, tick):
+        """
+        initialises internal state
+
+        Parameters:
+            tick: the time the event should trigger
+        """
+
         super().__init__()
         self.type = "Event"
 
@@ -36,24 +38,31 @@ class Event(src.saveing.Saveable):
         # self initial state
         self.initialState = self.getState()
 
-    """
-    do nothing
-    """
 
     def handleEvent(self):
+        """
+        do nothing
+        """
         pass
 
-    def getState(self):
-        state = super().getState()
-        state["objType"] = self.type
-        state["type"] = self.type
-        state["tick"] = self.tick
-        return state
-
-
+# bad code: almost identical to RunCallbackEvent
 class RunFunctionEvent(Event):
-    def __init__(self, tick, creator=None):
-        super().__init__(tick=tick, creator=creator)
+    """
+    event that calls a function when triggering
+
+    Parameters:
+        tick: the time the event should trigger
+    """
+
+    def __init__(self, tick):
+        """
+        initialises internal state
+
+        Parameters:
+            tick: the time the event should trigger
+        """
+
+        super().__init__(tick=tick)
 
     def setFunction(self, function):
         self.function = function
@@ -61,19 +70,20 @@ class RunFunctionEvent(Event):
     def handleEvent(self):
         self.function()
 
-
-"""
-the event for automatically terminating the quest
-"""
-
-
 class RunCallbackEvent(Event):
     """
-    straightforward state setting
+    the event for calling a callback
     """
 
-    def __init__(self, tick, creator=None):
-        super().__init__(tick, creator=creator)
+    def __init__(self, tick):
+        """
+        initialises internal state
+
+        Parameters:
+            tick: the time the event should trigger
+        """
+
+        super().__init__(tick)
         self.type = "RunCallbackEvent"
         self.callback = None
 
@@ -81,13 +91,20 @@ class RunCallbackEvent(Event):
         self.callbacksToStore.append("callback")
 
     def setCallback(self, callback):
+        """
+        set a callback to call
+
+        Parameters:
+            callback: the callback to store
+        """
+
         self.callback = callback
 
-    """
-    terminate the quest
-    """
-
     def handleEvent(self):
+        """
+        call the callback
+        """
+
         try:
             self.callback
         except:
@@ -97,50 +114,56 @@ class RunCallbackEvent(Event):
         else:
             pass
 
-
-"""
-straightforward adding a message
-"""
-
-
+# obsolete: only used in old story mode
 class ShowMessageEvent(Event):
     """
-    basic state setting
+    event for adding a message
     """
 
-    def __init__(self, tick, message="", creator=None):
-        super().__init__(tick, creator=creator)
+    def __init__(self, tick, message=""):
+        """
+        initialises internal state
+
+        Parameters:
+            tick: the time the event should trigger
+            message: the message to show
+        """
+
+        super().__init__(tick)
         self.type = "ShowMessageEvent"
         self.message = message
 
-    """
-    add message
-    """
-
     def handleEvent(self):
+        """
+        add message
+        """
+
         messages.append(self.message)
 
-
-"""
-straigthforward showing a cinematic
-"""
-
-
+# obsolete: only used in old story mode
 class ShowCinematicEvent(Event):
     """
-    basic state setting
+    event for showing a cinematic
     """
 
-    def __init__(self, tick, cinematic=None, creator=None):
-        super().__init__(tick, creator=creator)
+    def __init__(self, tick, cinematic=None):
+        """
+        initialises internal state
+
+        Parameters:
+            tick: the time the event should trigger
+            cinematic: the cinematic to show
+        """
+
+        super().__init__(tick)
         self.type = "ShowCinematicEvent"
         self.cinematic = cinematic
 
-    """
-    start cinematic
-    """
-
     def handleEvent(self):
+        """
+        start cinematic
+        """
+
         # bad code: a wrapper should be called here
         import src.cinematics
         import src.interaction
@@ -148,18 +171,23 @@ class ShowCinematicEvent(Event):
         src.cinematics.cinematicQueue.append(self.cinematic)
         src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, "~")
 
-
-"""
-the event for automatically terminating the quest
-"""
-
-
+# obsolete: only used in old story mode
+# bad code: doesn't at all do what it promises to do
 class EndQuestEvent(Event):
     """
-    straightforward state setting
+    the event for automatically terminating the quest
+    (doesn't actually do that)
     """
 
-    def __init__(self, tick, callback=None, creator=None):
+    def __init__(self, tick, callback=None):
+        """
+        initialises internal state
+
+        Parameters:
+            tick: the time the event should trigger
+            callback: a callback to call
+        """
+
         super().__init__(tick, creator=creator)
         self.type = "EndQuestEvent"
         self.callback = callback
@@ -167,31 +195,33 @@ class EndQuestEvent(Event):
         # set meta information for saving
         self.callbacksToStore.append("callback")
 
-    """
-    terminate the quest
-    """
-
     def handleEvent(self):
+        """
+        call callback
+        """
+
         if self.callback:
             self.callIndirect(self.callback)
         else:
             pass
 
-
-"""
-the event for stopping to burn after a while
-bad code: should be an abstact event calling a method
-"""
-
-
+# obsolete: only used in old story mode
+# bad code: should be an abstact event calling a method
 class FurnaceBurnoutEvent(Event):
     """
-    straightforward state initialization
+    the event for stopping to burn after a while
     """
 
-    def __init__(self, tick, creator=None):
+    def __init__(self, tick):
+        """
+        initialises internal state
+
+        Parameters:
+            tick: the time the event should trigger
+        """
+
         self.furnace = None
-        super().__init__(tick, creator=creator)
+        super().__init__(tick)
         self.type = "FurnaceBurnoutEvent"
 
         self.tick = tick
@@ -202,11 +232,12 @@ class FurnaceBurnoutEvent(Event):
         # self initial state
         self.initialState = self.getState()
 
-    """
-    stop burning
-    """
 
     def handleEvent(self):
+        """
+        stop burning
+        """
+
         # stop burning
         self.furnace.activated = False
 
@@ -238,25 +269,23 @@ class FurnaceBurnoutEvent(Event):
         # notify listeners
         self.furnace.changed()
 
-    def setState(self, state):
-        super().setState(state)
-
-
-"""
-the event for stopping to boil
-bad code: should be an abstract event calling a method
-"""
-
-
+# obsolete: only used in old story mode
+# bad code: should be an abstract event calling a method
 class StopBoilingEvent(Event):
-
     """
-    straightforward state initialization
+    the event for stopping to boil
     """
 
-    def __init__(self, tick, creator=None):
+    def __init__(self, tick):
+        """
+        initialises internal state
+
+        Parameters:
+            tick: the time the event should trigger
+        """
+
         self.boiler = None
-        super().__init__(tick, creator=creator)
+        super().__init__(tick)
         self.type = "StopBoilingEvent"
 
         self.tick = tick
@@ -267,11 +296,11 @@ class StopBoilingEvent(Event):
         # self initial state
         self.initialState = self.getState()
 
-    """
-    start producing steam
-    """
-
     def handleEvent(self):
+        """
+        start producing steam
+        """
+
         # add noises
         mainChar.addMessage("*unboil*")
 
@@ -285,21 +314,23 @@ class StopBoilingEvent(Event):
         self.boiler.room.steamGeneration -= 1
         self.boiler.room.changed()
 
-
-"""
-the event for starting to boil
-bad code: should be an abstact event calling a method
-"""
-
-
+# obsolete: only used in old story mode
+# bad code: should be an abstact event calling a method
 class StartBoilingEvent(Event):
     """
-    straightforward state initialization
+    the event for starting to boil
     """
 
-    def __init__(self, tick, creator=None):
+    def __init__(self, tick):
+        """
+        initialises internal state
+
+        Parameters:
+            tick: the time the event should trigger
+        """
+
         self.boiler = None
-        super().__init__(tick, creator=creator)
+        super().__init__(tick)
 
         self.type = "StartBoilingEvent"
 
@@ -311,11 +342,11 @@ class StartBoilingEvent(Event):
         # self initial state
         self.initialState = self.getState()
 
-    """
-    start producing steam
-    """
-
     def handleEvent(self):
+        """
+        start producing steam
+        """
+
         # add noises
         # bad pattern: should only make noise for nearby things
         mainChar.addMessage("*boil*")
@@ -344,12 +375,13 @@ eventMap = {
     "RunCallbackEvent": RunCallbackEvent,
 }
 
-"""
-create an event from a state dict
-"""
-
-
 def getEventFromState(state):
+    """
+    create an event from a semi serialised state
+
+    Parameters:
+        state: the state
+    """
     event = eventMap[state["type"]](state["tick"])
     event.setState(state)
     src.saveing.loadingRegistry.register(event)

@@ -2517,6 +2517,9 @@ class SubMenu(src.saveing.Saveable):
     def setState(self, state):
         """
         set internal state from state dictionary
+        
+        Parameters:
+            state: the state to set
         """
 
         super().setState(state)
@@ -2543,11 +2546,14 @@ class SubMenu(src.saveing.Saveable):
                     newNiceOptions[option[0]] = option[1]
                 self.niceOptions = newNiceOptions
 
-    """
-    get state as dictionary
-    """
-
     def getState(self):
+        """
+        get state in semi-serialised form
+
+        Returns:
+            the state
+        """
+
         state = super().getState()
 
         # store options
@@ -2568,11 +2574,15 @@ class SubMenu(src.saveing.Saveable):
 
         return state
 
-    """
-    sets the options to select from
-    """
-
     def setOptions(self, query, options):
+        """
+        set the options to select from
+
+        Parameters:
+            query: the text shown for the selection
+            options: the options to choose from
+        """
+
         # convert options to ordered dict
         import collections
 
@@ -2590,18 +2600,24 @@ class SubMenu(src.saveing.Saveable):
         self.lockOptions = True
         self.selection = None
 
-    """
-    straightforward getter for the selected item
-    """
-
     def getSelection(self):
+        """
+        get the selected item
+        """
+
         return self.selection
 
-    """
-    show the options and allow the user to select one
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        show the options and allow the user to select one
+
+        Parameters:
+            key: the key pressed
+            noRender: flag for skipping the rendering
+        Returns:
+            returns True when done
+        """
+
         # exit submenu
         if key == "esc":
             return True
@@ -2713,37 +2729,49 @@ class SubMenu(src.saveing.Saveable):
 
         return False
 
-    """
-    set text in urwid
-    bad code: should either be used everywhere or be removed
-    bad code: urwid specific code
-    """
-
+    # bad code: should either be used everywhere or be removed
+    # bad code: urwid specific code
     def set_text(self, text):
+        """
+        set text in urwid
+
+        Parameters:
+            text: the text to set
+        """
+
         main.set_text((urwid.AttrSpec("default", "default"), text))
 
-
-"""
-does a simple selection and terminates
-bad code: this does nothing the Submenu doesn't do
-"""
-
-
+# bad code: this does nothing the Submenu doesn't do
 class SelectionMenu(SubMenu):
     """
-    set up the selection
+    does a simple selection and terminates
     """
 
     def __init__(self, text="", options=[], default=None):
+        """
+        set up the selection
+
+        Parameters:
+            text: the text to show next to the selection
+            options: the options to select from
+            default: the default value
+        """
+
         self.type = "SelectionMenu"
         super().__init__(default=default)
         self.setOptions(text, options)
 
-    """
-    handles the key
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        handles a keypress
+
+        Parameters:
+            key: the key pressed
+            noRender: flag for skipping rendering
+        Returns:
+            returns True when done
+        """
+
         # exit submenu
         if key == "esc":
             self.selection = None
@@ -2763,29 +2791,30 @@ class SelectionMenu(SubMenu):
         else:
             return False
 
-
-"""
-Spawns a Chat submenu with a player selected character
-bad code: since there is no need to wait for some return this submenue should not wrap around the Chat menu
-bad code: sub menues should be implemented in the base class
-"""
-
-
+# bad code: since there is no need to wait for some return this submenue should not wrap around the Chat menu
+# bad code: sub menues should be implemented in the base class
 class ChatPartnerselection(SubMenu):
     """
-    straightforward state initialization
+    Spawns a Chat submenu with a player selected character
     """
 
     def __init__(self):
+        """
+        initialise internal state
+        """
+
         self.type = "ChatPartnerselection"
         self.subMenu = None
         super().__init__()
 
-    """
-    get state as dictionary
-    """
-
     def getState(self):
+        """
+        get state in semi serialised form
+
+        Returns:
+            the state
+        """
+
         state = super().getState()
         if self.subMenu:
             state["subMenu"] = self.subMenu.getState()
@@ -2794,11 +2823,14 @@ class ChatPartnerselection(SubMenu):
 
         return state
 
-    """
-    set internal state from state as dictionary
-    """
-
     def setState(self, state):
+        """
+        set internal state from state in semi-serialised form
+
+        Parameters:
+            state: the state to set
+        """
+
         super().setState(state)
 
         if "subMenu" in state:
@@ -2807,11 +2839,18 @@ class ChatPartnerselection(SubMenu):
             else:
                 self.subMenu = None
 
-    """
-    set up the selection and spawn the chat 
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        set up the selection and spawn the chat 
+        keystrokes after the setup will be delegated
+
+        Parameters:
+            key: the key pressed
+            noRender: a flag toskip rendering
+        Returns:
+            returns True when done
+        """
+
         # wrap around the chat menu
         if self.subMenu:
             return self.subMenu.handleKey(key, noRender=noRender)
@@ -2881,42 +2920,48 @@ class ChatPartnerselection(SubMenu):
         else:
             return False
 
-
-"""
-minimal debug ability
-"""
-
-
 class DebugMenu(SubMenu):
     """
-    straightforward state initialization
+    menu offering minimal debug ability
+    (actually does nothing)
     """
 
-    def __init__(self, char=None):
+    def __init__(self):
+        """
+        initialise internal state
+        """
+
         self.type = "DebugMenu"
         super().__init__()
 
-    """
-    show some debug output
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        show some debug output
+        (actually does nothing)
+
+        Parameters:
+            key: the key pressed
+            noRender: a flag toskip rendering
+        Returns:
+            returns True when done
+        """
         # exit submenu
         if key == "esc":
             return True
 
-
-"""
-show the quests for a character and allow player interaction
-"""
-
-
 class QuestMenu(SubMenu):
     """
-    straightforward state initialization
+    show the quests for a character and allow player interaction
     """
 
     def __init__(self, char=None):
+        """
+        initialise internal state
+
+        Parameters:
+            char: the character to show the quests for
+        """
+
         self.type = "QuestMenu"
         self.lockOptions = True
         if not char:
@@ -2926,12 +2971,18 @@ class QuestMenu(SubMenu):
         self.questIndex = 0
         super().__init__()
 
-    """
-    show a questlist and handle interactions
-    overrides the superclasses method completely
-    """
-
+    # overrides the superclasses method completely
     def handleKey(self, key, noRender=False):
+        """
+        show a questlist and handle interactions
+
+        Parameters:
+            key: the key pressed
+            noRender: a flag toskip rendering
+        Returns:
+            returns True when done
+        """
+
         # exit submenu
         if key == "esc":
             return True
@@ -3028,18 +3079,23 @@ class QuestMenu(SubMenu):
 
         return False
 
-
-"""
-show the players inventory
-bad code: should be abstracted
-bad code: uses global functions to render
-"""
-
-
+# bad code: should be abstracted
+# bad code: uses global functions to render
 class InventoryMenu(SubMenu):
+    """
+    shows and interacts with a characters inventory
+    """
+
     type = "InventoryMenu"
 
     def __init__(self, char=None):
+        """
+        initialise the internal state
+
+        Parameters:
+            char: the character that owns the inventory that should be shown
+        """
+
         self.subMenu = None
         self.skipKeypress = False
         self.activate = False
@@ -3048,12 +3104,17 @@ class InventoryMenu(SubMenu):
         super().__init__()
         self.footerText = "press j to activate, press l to drop, press esc to exit"
 
-    """
-    show the inventory
-    bad pattern: no player interaction
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        show the inventory
+
+        Parameters:
+            key: the key pressed
+            noRender: a flag to skip rendering
+        Returns:
+            returns True when done
+        """
+
         if self.subMenu:
             self.subMenu.handleKey(key, noRender=noRender)
             if not self.subMenu.getSelection() is None:
@@ -3179,16 +3240,22 @@ class InventoryMenu(SubMenu):
 
         return False
 
-
-"""
-show the players inventory
-"""
-
-
 class InputMenu(SubMenu):
+    """
+    menu to get a string input from the user
+    """
+
     type = "InputMenu"
 
-    def __init__(self, query="", char=None, ignoreFirst=False):
+    def __init__(self, query="", ignoreFirst=False):
+        """
+        initialise internal state
+
+        Parameters:
+            query: the text to be shown along with the input prompt
+            ignoreFirst: flag to ignore first keypress
+        """
+
         self.query = query
         self.text = ""
         super().__init__()
@@ -3198,11 +3265,16 @@ class InputMenu(SubMenu):
         self.escape = False
         self.position = 0
 
-    """
-    show the inventory
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        gather the input keystrokes
+
+        Parameters:
+            key: the key pressed
+            noRender: a flag to skip rendering
+        Returns:
+            returns True when done
+        """
 
         if key == "enter" and not self.escape or len(self.text) > 15 * 15:
             if self.followUp:
@@ -3265,24 +3337,29 @@ class InputMenu(SubMenu):
         return False
 
 
-"""
-show the players attributes
-bad code: should be abstracted
-bad code: uses global function to render
-"""
-
-
+# bad code: should be abstracted
+# bad code: uses global function to render
 class CharacterInfoMenu(SubMenu):
+    """
+    menu to show the players attributes
+    """
+
     type = "CharacterInfoMenu"
 
     def __init__(self, char=None):
         self.char = char
 
-    """
-    show the attributes
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        show the attributes and ignore keystrokes
+
+        Parameters:
+            key: the key pressed
+            noRender: flag to skip rendering
+        Returns:
+            returns True when done
+        """
+
         # exit the submenu
         if key == "esc":
             return True
@@ -3329,30 +3406,34 @@ class CharacterInfoMenu(SubMenu):
         main.set_text((urwid.AttrSpec("default", "default"), [text]))
         header.set_text((urwid.AttrSpec("default", "default"), ""))
 
-
-"""
-player interaction for delegating a quest
-"""
-
-
 class AdvancedQuestMenu(SubMenu):
+    """
+    player interaction for delegating a quest
+    """
+
     type = "AdvancedQuestMenu"
 
-    """
-    straighforwad state initalisation
-    """
-
     def __init__(self):
+        """
+        set up internal state
+        """
+
         self.character = None
         self.quest = None
         self.questParams = {}
         super().__init__()
 
-    """
-    gather the quests parameters and assign the quest
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        gather the quests parameters and assign the quest
+
+        Parameters:
+            key: the key pressed
+            noRender: flag to skip rendering
+        Returns:
+            returns True when done
+        """
+
         # exit submenu
         if key == "esc":
             return True
@@ -3645,14 +3726,15 @@ class AdvancedQuestMenu(SubMenu):
 
         return False
 
-
-"""
-render the information section on top of the screen
-bad pattern: should be configurable
-"""
-
-
+# bad pattern: should be configurable
 def renderHeader(character):
+    """
+    render the information section on top of the screen
+
+    Parameters:
+        character: the character to use to get the information from
+    """
+
     # render the sections to display
     questSection = renderQuests(maxQuests=2)
     messagesSection = renderMessages(character)
@@ -3721,14 +3803,19 @@ def renderHeader(character):
 
     return txt
 
-
-"""
-render the last x messages into a string
-bad code: global function
-"""
-
-
+# bad code: global function
 def renderMessages(character, maxMessages=5):
+    """
+    render the last x messages into a string
+
+    Parameters:
+        character: the character to render the messages from
+        maxMessages: the maximum amount of messages rendered
+
+    Returns:
+        the rendered messages
+    """
+
     txt = ""
     messages = character.messages
     if len(messages) > maxMessages:
@@ -3740,14 +3827,21 @@ def renderMessages(character, maxMessages=5):
 
     return txt
 
-
-"""
-render the quests into a string or list
-bad code: the asList and questIndex parameters are out of place
-"""
-
-
+# bad code: the asList and questIndex parameters are out of place
 def renderQuests(maxQuests=0, char=None, asList=False, questIndex=0):
+    """
+    render the quests into a string or list
+
+    Parameters:
+        maxQuests: the maximal number of quests rendered (0=no maximum)
+        char: the character the quests belong to
+        asList: flag to switch from rendering as string to rendering as list
+        questsIndex: index pointing to the active quest
+
+    Returns:
+        the rendered messages
+    """
+
     # basic set up
     if not char:
         char = src.gamestate.gamestate.mainChar
@@ -3798,14 +3892,16 @@ def renderQuests(maxQuests=0, char=None, asList=False, questIndex=0):
     return txt
 
 
-"""
-render the inventory of the player into a string
-bad code: global function
-bad code: should be abstracted
-"""
-
-
+#bad code: global function
+#bad code: should be abstracted
 def renderInventory():
+    """
+    render the inventory of the player into a string
+
+    Returns:
+        the rendered string
+    """
+
     char = src.gamestate.gamestate.mainChar
     txt = []
     if len(char.inventory):
@@ -3842,20 +3938,25 @@ def renderInventory():
         txt = "empty Inventory"
     return txt
 
-
-"""
-the help submenue
-bad code: uses global function to render
-"""
-
-
+# bad code: uses global function to render
 class HelpMenu(SubMenu):
-    type = "AdvancedQuestMenu"
     """
-    show the help text
+    the help submenue
     """
+
+    type = "HelpMenu"
 
     def handleKey(self, key, noRender=False):
+        """
+        show the help text and ignore keypresses
+
+        Parameters:
+            key: the key pressed
+            noRender: flag to skip rendering
+        Returns:
+            returns True when done
+        """
+
         # exit the submenu
         if key == "esc":
             return True
@@ -3868,22 +3969,35 @@ class HelpMenu(SubMenu):
 
         return False
 
-
-"""
-"""
-
-
 class TextMenu(SubMenu):
+    """
+    a menu showing a text
+    """
+    
     type = "TextMenu"
 
     def __init__(self, text=""):
+        """
+        initialise inernal state
+
+        Parameters:
+            text: the text to show
+        """
+
         super().__init__()
         self.text = text
 
-    """
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        show the text and ignore keypresses
+
+        Parameters:
+            key: the key pressed
+            noRender: flag to skip rendering
+        Returns:
+            returns True when done
+        """
+
         # exit the submenu
         if key in (
             "esc",
@@ -3904,25 +4018,37 @@ class TextMenu(SubMenu):
 
         return False
 
-
-"""
-"""
-
-
 class OneKeystrokeMenu(SubMenu):
+    """
+    a menu getting a single keystroke from the character
+    """
+
     type = "OneKeystrokeMenu"
 
     def __init__(self, text=""):
+        """
+        initialise inernal state
+
+        Parameters:
+            text: the text to show
+        """
+
         super().__init__()
         self.text = text
         self.firstRun = True
         self.keyPressed = ""
         self.done = False
 
-    """
-    """
-
     def handleKey(self, key, noRender=False):
+        """
+        show the text and quit on second keypress
+
+        Parameters:
+            key: the key pressed
+            noRender: flag to skip rendering
+        Returns:
+            returns True when done
+        """
 
         # show info
         if not noRender:
@@ -3943,14 +4069,15 @@ class OneKeystrokeMenu(SubMenu):
 
         return False
 
-
-"""
-return the help text
-bad code: should not be a global function
-"""
-
-
+# bad code: should not be a global function
 def renderHelp():
+    """
+    renders the help text
+
+    Returns:
+        the rendered help text
+    """
+
     char = src.gamestate.gamestate.mainChar
     txt = "the Goal of the Game is to stay alive and build a base.\nThe daily Grind can be delageted to subordinates.\n\nThe game is focused on automation so try to use Commands and NPCs to automate production.\n\nUse the Auto tutor to do challenges and to learn how to play the game.\n\n"
     txt += "your keybindings are:\n\n"
@@ -3989,13 +4116,18 @@ lastTerrain = None
 
 lastCenterX = None
 lastCenterY = None
-"""
-render the map
-bad code: should be contained somewhere
-"""
 
-
+# bad code: should be contained somewhere
 def render(char):
+    """
+    render the map
+
+    Parameters:
+        char: the character to center the map on
+    Returns:
+        rendered map
+    """
+
     if char.room:
         thisTerrain = char.room.terrain
     else:
@@ -4083,6 +4215,13 @@ charindex = 0
 
 
 def keyboardListener(key):
+    """
+    handles true key presses from the player
+
+    Parameters:
+        key: the key pressed
+    """
+
     global multi_currentChar
     global multi_chars
     global charindex
@@ -4244,6 +4383,14 @@ lastAutosave = 0
 
 
 def gameLoop(loop, user_data=None):
+    """
+    run the game for one tick
+
+    Parameters:
+        loop: the main loop (urwids main loop)
+        user_data: parameter have to handle but is ignored
+    """
+
     if not src.gamestate.gamestate.stopGameInTicks is None:
         if src.gamestate.gamestate.stopGameInTicks == 0:
             src.gamestate.gamestate.gameHalted = True
@@ -4616,6 +4763,11 @@ subMenuMap = {
 def getSubmenuFromState(state):
     """
     load a submenu from a serialised state
+
+    Parameters:
+        state: the state to load from
+    Returns:
+        the submenu
     """
 
     subMenu = subMenuMap[state["type"]]()

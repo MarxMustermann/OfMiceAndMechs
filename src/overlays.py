@@ -2,17 +2,20 @@
 graphical overlays for decoration on top of renderings
 """
 
-"""
-Overlay showing the precalculated paths
-"""
-
-
+# obsolete: not currently in use and probably broken
 class PathsOverlay(object):
     """
-    add overlayed information
+    Overlay showing the precalculated paths
     """
 
     def apply(self, chars, terrain):
+        """
+        add overlayed information
+
+        Parameters:
+            chars: the currently rendered chars
+            terrain: the terrain currently rendered
+        """
 
         # do not draw when hidden
         if terrain.hidden:
@@ -43,19 +46,21 @@ class PathsOverlay(object):
             for coordinate in path:
                 chars[coordinate[1]][coordinate[0]] = (ltyellow, "::")
 
-
-"""
-Overlay showing quest marker
-"""
-
-
+# obsolete: not currently in use and probably broken
 class QuestMarkerOverlay(object):
-
     """
-    add overlayed information
+    Overlay showing quest marker
     """
 
     def apply(self, chars, mainChar, displayChars):
+        """
+        add overlayed information
+
+        Parameters:
+            chars: the currently rendered chars
+            mainChar: the main character
+            displayChars: rendering information
+        """
 
         # handle edge case
         if mainChar.room or not mainChar.path:
@@ -78,18 +83,20 @@ class QuestMarkerOverlay(object):
                     display[1],
                 )
 
-
-"""
-adds npcs
-"""
-
-
 class NPCsOverlay(object):
     """
-    add overlayed information
+    overlay showing npcs
     """
 
     def apply(self, chars, terrain):
+        """
+        add overlayed information
+
+        Parameters:
+            chars: the currently rendered chars
+            terrain: the terrain currently rendered
+        """
+
         for character in terrain.characters:
             if not (character.yPosition and character.xPosition):
                 continue
@@ -98,17 +105,19 @@ class NPCsOverlay(object):
             except:
                 pass
 
-
-"""
-adds main char
-"""
-
-
 class MainCharOverlay(object):
     """
-    add overlayed information
+    overly showing the main character
     """
 
     def apply(self, chars, mainChar):
+        """
+        add overlayed information
+
+        Parameters:
+            chars: the currently rendered chars
+            mainChar: the main character
+        """
+
         if not mainChar.dead and not mainChar.room:
             chars[mainChar.yPosition][mainChar.xPosition] = mainChar.display

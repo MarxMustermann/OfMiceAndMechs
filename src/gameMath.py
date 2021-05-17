@@ -1,18 +1,22 @@
 """
 special non standard math belongs here
-bad code: pathfindind doesn't really belong here
-bad code: the whole file is obsolete probably
 """
+# bad code: pathfinding doesn't really belong here
+# bad code: the whole file is obsolete probably
 
 import src.interaction
 
-"""
-remove loops from a path
-bad pattern: path should be generated in such a way this is not needed
-"""
 
 
+# bad pattern: path should be generated in such a way this is not needed
 def removeLoops(path):
+    """
+    remove loops from a path
+
+    Parameters:
+        path: the path to remove loops from
+    """
+
     # count the amount of occurrences of each position in the path
     found = {}
     for waypoint in path:
@@ -55,14 +59,21 @@ def removeLoops(path):
     return newPath
 
 
-"""
-naively calculate a path uses a precalcated standard path to speed up 
-bad code: this assumes no obstacles resulting in bugs and odd workarounds. So this should not be used really.
-bad code: alternative implementations exist but not everywhere yet
-"""
-
-
+# bad code: this assumes no obstacles resulting in bugs and odd workarounds. So this should not be used really.
+# bad code: alternative implementations exist but not everywhere yet
 def calculatePath(startX, startY, endX, endY, walkingPath):
+    """
+    naively calculate a path
+    uses a precalculated standard path to speed up calculations
+
+    Parameters:
+        startX: the start x position
+        startY: the start y position
+        endX: the end x position
+        endY: the end y position
+        walkingPath: the precalculated paths
+    """
+
     # get path with loops
     path = calculatePathRaw(startX, startY, endX, endY, walkingPath)
 
@@ -70,12 +81,20 @@ def calculatePath(startX, startY, endX, endY, walkingPath):
     return removeLoops(path)
 
 
-"""
-recusively calcualate a unoptimized path
-"""
 
 
 def calculatePathRaw(startX, startY, endX, endY, walkingPath):
+    """
+    recusively calcualate a unoptimized path
+
+    Parameters:
+        startX: the start x position
+        startY: the start y position
+        endX: the end x position
+        endY: the end y position
+        walkingPath: the precalculated paths
+    """
+
     path = []
 
     if None in (startX, startY, endX, endY):

@@ -1,5 +1,9 @@
 """
 quests and quest related code
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+most of this code is currenty not in use and needs to be reintegrated
+
 """
 
 # import basic libs
@@ -17,27 +21,16 @@ import src.gamestate
 # HACK: common variables with modules
 mainChar = None
 
-############################################################
-#
-#   building block quests
-#   not intended for direct use unless you know what you are doing
-#
-############################################################
-
-
 class MurderQuest2(src.saveing.Saveable):
     """
-    straightforward state initialization
+    quest to murder someone
     """
 
-    def __init__(
-        self,
-        followUp=None,
-        startCinematics=None,
-        lifetime=None,
-        creator=None,
-        failTrigger=None,
-    ):
+    def __init__(self):
+        """
+        set up internal state
+        """
+
         super().__init__()
         self.completed = False
         self.active = False
@@ -55,11 +48,15 @@ class MurderQuest2(src.saveing.Saveable):
         self.attributesToStore.extend(["completed", "active", "information", "type"])
         self.objectsToStore.extend(["character", "toKill"])
 
-    """
-    set state as dict
-    """
-
     def setState(self, state):
+        """
+        set state from semi-serialised state
+        ensure to keep listening to the target
+
+        Parameters:
+            state: the state to set
+        """
+
         super().setState(state)
 
         # set character
@@ -75,37 +72,82 @@ class MurderQuest2(src.saveing.Saveable):
                 state["toKill"], watchCharacter
             )
 
-    """
-    register callback
-    """
-
     def startWatching(self, target, callback, tag=""):
+        """
+        register callback to be notified if an event occours
+
+        Parameters:
+            target: the thing that is watching
+            callback: the callback to call
+            tag: the type of event to listen for
+        """
+
         target.addListener(callback, tag)
         self.watched.append((target, callback))
 
-    """
-    unregister callback
-    """
-
     def stopWatching(self, target, callback, tag=""):
+        """
+        deregister callback from beeing notified if an event occours
+
+        Parameters:
+            target: the thing that is watching
+            callback: the callback to call
+            tag: the type of event to listen for
+        """
+
         target.delListener(callback, tag)
         self.watched.remove((target, callback))
 
     def setTarget(self, target):
+        """
+        set target to kill
+
+        Parameters:
+            target: the target to kill
+        """
+
         self.toKill = target
         self.startWatching(target, self.handleKill, "died")
 
     def handleKill(self, info):
+        """
+        handle death of the target to kill
+
+        Parameters:
+            info: addional info about the death
+        """
+
         self.completed = True
         self.character.addMessage("handle kill")
 
     def assignToCharacter(self, character):
+        """
+        assign quest to a character
+
+        Parameters:
+            character: the character to assign the quest to
+        """
+
         self.character = character
 
     def activate(self):
+        """
+        activate the quest
+        """
         pass
 
     def getDescription(self, asList=False, colored=False, active=False):
+        """
+        return description of the quest
+
+        Parameters:
+            asList: flag to render as list or as string
+            colored: flag for rendering color
+            active: flag indicating if this is the current active quest for the character
+        Returns:
+            the rendered description
+        """
+
         text = "%s %s" % (
             self.type,
             self.toKill.charType,
@@ -119,6 +161,17 @@ class MurderQuest2(src.saveing.Saveable):
             text += " %s" % (self.information,)
         return text
 
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# quests below the point are not in use and need to be reintegrated
+# this will require heavy rewrites, so please ignore unless you plan to rewrite
+# the last few lines of this file are in use
+
+############################################################
+#
+#   building block quests
+#   not intended for direct use unless you know what you are doing
+#
+############################################################
 
 """
 the base class for all quests
@@ -4712,12 +4765,16 @@ questMap = {
     "DummyQuest": DummyQuest,
 }
 
-"""
-get quest instance from state dict
-"""
-
-
 def getQuestFromState(state):
+    """
+    get quest instance from state dict
+
+    Parameters:
+        state: the state to load
+    Returns:
+        the quest
+    """
+
     quest = questMap[state["type"]]()
     quest.setState(state)
     src.saveing.loadingRegistry.register(quest)

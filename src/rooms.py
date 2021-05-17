@@ -1125,6 +1125,10 @@ class Room(src.saveing.Saveable):
     def calculatePathMap(self):
         pass
 
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# rooms below the point are not in use and need to be reintegrated
+# this will require heavy rewrites, so please ignore unless you plan to rewrite
+# the last few lines of this file are in use
 
 """
 the machine room used in the tutorial

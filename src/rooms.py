@@ -1597,7 +1597,7 @@ class StaticRoom(EmptyRoom):
             direction: the direction to move the charecter into
         """
 
-        super().moveCharacterDirection(character=character, direction=direction)
+        item = super().moveCharacterDirection(character=character, direction=direction)
 
         self.evolve(character)
 
@@ -1614,6 +1614,8 @@ class StaticRoom(EmptyRoom):
 
             character.collidedWith(other)
             other.collidedWith(character)
+
+        return item
 
     def evolve(self, character):
         """

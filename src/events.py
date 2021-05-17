@@ -129,7 +129,7 @@ class ShowMessageEvent(Event):
             message: the message to show
         """
 
-        super().__init__(tick):
+        super().__init__(tick)
         self.type = "ShowMessageEvent"
         self.message = message
 
@@ -155,11 +155,7 @@ class ShowCinematicEvent(Event):
             cinematic: the cinematic to show
         """
 
-<<<<<<< HEAD
         super().__init__(tick)
-=======
-        super().__init__(tick):
->>>>>>> fcbc20953464bd3b5dd52adc8ee750cc983ff285
         self.type = "ShowCinematicEvent"
         self.cinematic = cinematic
 
@@ -289,7 +285,7 @@ class StopBoilingEvent(Event):
         """
 
         self.boiler = None
-        super().__init__(tick):
+        super().__init__(tick)
         self.type = "StopBoilingEvent"
 
         self.tick = tick

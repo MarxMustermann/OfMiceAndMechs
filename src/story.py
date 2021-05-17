@@ -1229,16 +1229,6 @@ class CreativeMode(BasicPhase):
         items.append((item, (15 * 7 + 8, 15 * 7 + 8, 0)))
         src.gamestate.gamestate.terrain.addItems(items)
 
-        item = src.items.itemMap["ArchitectArtwork"]()
-        item.bolted = False
-        item.godMode = True
-        src.gamestate.gamestate.mainChar.inventory.append(item)
-        item = src.items.itemMap["ProductionArtwork"]()
-        item.bolted = False
-        item.godMode = True
-        src.gamestate.gamestate.mainChar.inventory.append(item)
-
-
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #
 # despite the effort sunk into the story, all of the phases below are obsolete

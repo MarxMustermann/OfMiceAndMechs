@@ -17,42 +17,48 @@ import src.quests
 import src.events
 import src.gamestate
 
-"""
-a abstracted coordinate.
-bad code: is not used in all places
-"""
-
-
+# bad code: is basically used nowhere
 class Coordinate(object):
     """
-    straightforward state initialization
+    a abstracted coordinate.
     """
-
+    
     def __init__(self, x, y):
+        """
+        set up internal state
+
+        Parameters:
+            x: x coordinate
+            y: y coordinate
+        """
+
         self.x = x
         self.y = y
 
-
-"""
-the base class for terrains
-"""
-
-
 class Terrain(src.saveing.Saveable):
-
     """
-    straightforward state initialization
+    the base class for terrains
     """
 
     def __init__(
         self,
         layout="",
         detailedLayout="",
-        creator=None,
         seed=0,
         noPaths=False,
         noContent=False,
     ):
+        """
+        set up internal state
+
+        Parameters:
+            layout: the terrains room layout
+            detailedLayout: the terrains item layout
+            seed: rng seed
+            noPaths: flag to calculate no paths
+            noContent: flag to generate terrain empty
+        """
+
         super().__init__()
 
         self.noPaths = noPaths
@@ -397,6 +403,14 @@ class Terrain(src.saveing.Saveable):
         )
 
     def getItemByPosition(self, position):
+        """
+        get items on a specific position
+
+        Parameters:
+            position: the position to get items from
+        Returns:
+            the list of items on that position
+        """
 
         if position[0] % 15 == 0:
             if position[1] % 15 < 7:
@@ -424,7 +438,13 @@ class Terrain(src.saveing.Saveable):
         except KeyError:
             return []
 
+    # bad code: story specific code
+    # obolete: used only by obsolete story
     def runner1(self):
+        """
+        make a npc run around
+        """
+
         room = None
         for room in self.rooms:
             if isinstance(room, src.rooms.VatFermenting):
@@ -434,7 +454,13 @@ class Terrain(src.saveing.Saveable):
             quest.endTrigger = {"container": self, "method": "runner2"}
             self.runner.assignQuest(quest, active=True)
 
+    # bad code: story specific code
+    # obolete: used only by obsolete story
     def runner2(self):
+        """
+        make a npc run around
+        """
+
         for room in reversed(self.rooms):
             if isinstance(room, src.rooms.VatFermenting):
                 break
@@ -442,37 +468,46 @@ class Terrain(src.saveing.Saveable):
         quest.endTrigger = {"container": self, "method": "runner1"}
         self.runner.assignQuest(quest, active=True)
 
-    """
-    registering for notifications
-    bad code: should be an extra class
-    """
-
+    # bad code: should be an extra class
     def addListener(self, listenFunction, tag="default"):
+        """
+        register a callback to be called on the terrain changing
+
+        Parameters:
+            listenFunction: the callback to register
+            tag: filter to only listen for some changes
+        """
+
         if tag not in self.listeners:
             self.listeners[tag] = []
 
         if listenFunction not in self.listeners[tag]:
             self.listeners[tag].append(listenFunction)
 
-    """
-    deregistering for notifications
-    bad code: should be an extra class
-    """
-
     def delListener(self, listenFunction, tag="default"):
+        """
+        deregister a callback to be called on the terrain changing
+
+        Parameters:
+            listenFunction: the callback to deregister
+            tag: filter to only listen for some changes
+        """
+
         if listenFunction in self.listeners[tag]:
             self.listeners[tag].remove(listenFunction)
 
         if not self.listeners[tag]:
             del self.listeners[tag]
 
-    """
-    sending notifications
-    bad code: probably misnamed
-    bad code: should be an extra class
-    """
-
     def changed(self, tag="default", info=None):
+        """
+        sending notifications to thing listening 
+
+        Parameters:
+            tag: filter to only listen for some changes
+            info: additional information
+        """
+
         if not tag == "default":
             if tag not in self.listeners:
                 return
@@ -482,11 +517,13 @@ class Terrain(src.saveing.Saveable):
         for listenFunction in self.listeners["default"]:
             listenFunction()
 
-    """
-    create a map of non passable tiles
-    """
-
+    # obsolete: used by old disabled pathfinding
+    # bad code: disabled in a brutal way
     def setNonMovableMap(self):
+        """
+        create a map of non passable tiles
+        """
+
         return
         self.nonMovablecoordinates = {}
 
@@ -508,11 +545,11 @@ class Terrain(src.saveing.Saveable):
                 ):
                     self.nonMovablecoordinates[(x, y)] = True
 
-    """
-    precalculate pathfinding data
-    """
-
+    # obsolete: not currently used
     def calculatePathMap(self):
+        """
+        precalculate pathfinding data
+        """
 
         # container for pathfinding information
         self.watershedNodeMap = {}
@@ -585,12 +622,19 @@ class Terrain(src.saveing.Saveable):
         self.overlay = self.addWatershedOverlay
         self.overlay = None
 
-    """
-    get a path to node from within the nodes section
-    result is not returned instead an argument is modified to store the result
-    """
-
+    # obsolete: not currently used
     def walkBack(self, coordinate, bucket, path, last=1000):
+        """
+        get a path to node from within the nodes section
+        result is not returned instead an argument is modified to store the result
+
+        Parameters:
+            coordinate: starting point for the backtracking
+            bucket: restrict pathfinding to tiles in the bucket
+            path: the path so far
+            last: rating of the latest try
+        """
+
 
         # get neighbouring coordinates
         testCoordinates = [
@@ -624,11 +668,16 @@ class Terrain(src.saveing.Saveable):
             path.append(nextStep[0])
             self.walkBack(nextStep[0], bucket, path, last=nextStep[1][1] + 1)
 
-    """
-    expand the section around a node in a circular pattern until it reaches the section of another node and connect them
-    """
-
+    # obsolete: not really used
     def watershed(self, counter, lastCoordinates):
+        """
+        expand the section around a node in a circular pattern until it reaches the section of another node and connect them
+
+        Parameters:
+            counter: how many runs were already done
+            lastCoordinates: the last Coordinates added
+        """
+
 
         # limit size to not destroy performance/get endless loops
         counter += 1
@@ -701,13 +750,19 @@ class Terrain(src.saveing.Saveable):
             if pair[0] not in [pair[1]]:
                 self.watershedNodeMap[pair[1]].append(pair[0])
 
-    """
-    get a path to supernode from within the supernodes section
-    result is not returned but a modifcation of a argument
-    bad code: similar to pathfinding for nodes
-    """
-
+    # obsolete: not really used
+    # bad code: similar to pathfinding for nodes
     def walkBackSuper(self, coordinate, bucket, path, last=1000):
+        """
+        get a path to supernode from within the supernodes section
+        result is not returned but a modifcation of a argument
+
+        Parameters:
+            coordinate: starting point for the backtracking
+            bucket: restrict pathfinding to tiles in the bucket
+            path: the path so far
+            last: rating of the latest try
+        """
 
         # get neighbouring nodes
         testCoordinates = self.watershedNodeMap[coordinate]
@@ -736,12 +791,16 @@ class Terrain(src.saveing.Saveable):
             path.append(nextStep[0])
             self.walkBackSuper(nextStep[0], bucket, path, last=nextStep[1][1] + 1)
 
-    """
-    expand the section around a supernode in a circular pattern until it reaches the section of another supernode and connect them
-    bad code: similar to pathfinding for nodes
-    """
-
+    # bad code: similar to pathfinding for nodes
     def superWatershed(self, counter, lastCoordinates):
+        """
+        expand the section around a supernode in a circular pattern until it reaches the section of another supernode and connect them
+        
+        Parameters:
+            counter: how many runs were already done
+            lastCoordinates: the last Coordinates added
+        """
+
         # limit size to not destroy performance/get endless loops
         counter += 1
         if counter > 60:
@@ -818,16 +877,27 @@ class Terrain(src.saveing.Saveable):
         # recursively increase section
         self.superWatershed(counter, newLast)
 
-    """
-    remove a character from the terrain
-    """
-
     def removeCharacter(self, character):
+        """
+        remove a character from the terrain
+
+        Parameters:
+            character: the character to remove
+        """
+
         self.characters.remove(character)
         character.room = None
         character.terrain = None
 
     def moveCharacterDirection(self, char, direction):
+        """
+        move a character into a direction
+
+        Parameters:
+            char: the character to move
+            direction: the direction to move the character in
+        """
+
         if not char.terrain:
             return
         if not (char.xPosition and char.yPosition):
@@ -962,12 +1032,14 @@ class Terrain(src.saveing.Saveable):
                     if room not in roomCandidates:
                         roomCandidates.append(room)
 
-        """
-        move a player into a room
-        bad code: inline function within inline function
-        """
-
         def enterLocalised(room, localisedEntry):
+            """
+            move a character into a room
+
+            Parameters:
+                room: the room to enter
+                localisedEntry: the position to enter the room
+            """
 
             # get the entry point in room coordinates
             if localisedEntry in room.walkingAccess:
@@ -1144,11 +1216,16 @@ class Terrain(src.saveing.Saveable):
 
             return foundItem
 
-    """
-    add a character to the terrain
-    """
-
     def addCharacter(self, character, x, y):
+        """
+        add a character to the terrain
+
+        Parameters:
+            character: the character to add
+            x: the x position to add the character on
+            y: the y position to add the character on
+        """
+
         self.characters.append(character)
         character.terrain = self
         character.room = None
@@ -1157,13 +1234,18 @@ class Terrain(src.saveing.Saveable):
         character.changed()
         self.changed("entered terrain", character)
 
-    """
-    paint the information for the pathfinding
-    bad code: is part visual debugging and partially looking nice, it still has to be integrated properly
-    bad code: urwid specific code
-    """
-
+    # obsolete: debugging code for obsolete code
+    # bad code: is part visual debugging and partially looking nice, it still has to be integrated properly
+    # bad code: urwid specific code
+    # bad code: is an overlay
     def addWatershedOverlay(self, chars):
+        """
+        paint the information for the pathfinding
+
+        Parameters:
+            chars: the current rendering to extend
+        """
+
         import urwid
 
         # define colors for the sections
@@ -1249,11 +1331,11 @@ class Terrain(src.saveing.Saveable):
             src.gamestate.gamestate.mainChar.xPosition
         ] = src.gamestate.gamestate.mainChar.display
 
-    """
-    find path between start and end coordinates
-    """
-
+    # obsolete: pathfinding is not really used right now
     def findPath(self, start, end):
+        """
+        find path between start and end coordinates
+        """
 
         # clear pathfinding state
         self.applicablePaths = {}
@@ -1385,14 +1467,21 @@ class Terrain(src.saveing.Saveable):
         # return cleaned up path
         return src.gameMath.removeLoops(path)
 
-    """
-    construct the path to a coordinate by walking backwards from this coordinate back to the starting point
-    bad code: simliar to the other pathfinding
-    """
-
+    # bad code: simliar to the other pathfinding
+    # obsolete: part of the obsolete pathfinding
     def markWalkBack(
         self, coordinate, obseveredCoordinates, pathToEntry, counter=0, limit=1000
     ):
+        """
+        construct the path to a coordinate by walking backwards from this coordinate back to the starting point
+
+        Parameters:
+            coordinate: current coordinate
+            obseveredCoordinates: coordinates checked already
+            pathToEntry: path gathered so far
+            counter: how many iterations were done so far
+            limit: rating of the previous try
+        """
 
         # add current coordinate
         pathToEntry.append((coordinate[0], coordinate[1]))
@@ -1425,11 +1514,16 @@ class Terrain(src.saveing.Saveable):
                 obseveredCoordinates[found],
             )
 
-    """
-    find path to the nearest entry point to a path
-    """
-
+    # osolete: part of the unused pahfinding
     def mark(self, coordinates, counter=0, obseveredCoordinates={}):
+        """
+        find path to the nearest entry point to a path
+
+        Parameters:
+            coordinates: coordinates to check from
+            counter: how many tries were done so far
+            obseveredCoordinates: coordinates already checked
+        """
 
         # limit recursion depth
         if counter > 30:
@@ -1470,11 +1564,18 @@ class Terrain(src.saveing.Saveable):
         if newCoordinates:
             return self.mark(newCoordinates, counter + 1, obseveredCoordinates)
 
-    """
-    find path between start and end nodes using precalculated paths between nodes
-    """
-
     def findWayNodeBased(self, start, end):
+        """
+        find path between start and end nodes using precalculated paths between nodes
+
+        Parameters:
+            start: the start node
+            end: the end node
+
+        Returns:
+            the path found
+        """
+
         index = 0
         nodeMap = {}
         neighbourNodes = []
@@ -1530,11 +1631,14 @@ class Terrain(src.saveing.Saveable):
 
         return outPath
 
-    """
-    add rooms to terrain and add them to internal datastructures
-    """
-
     def addRooms(self, rooms):
+        """
+        add rooms to terrain and add them to internal datastructures
+
+        Parameters:
+            rooms: the rooms to add
+        """
+
         self.rooms.extend(rooms)
         for room in rooms:
             room.terrain = self
@@ -1547,11 +1651,15 @@ class Terrain(src.saveing.Saveable):
         ):  # nontrivial: prevents crashes in constructor
             self.calculatePathMap()
 
-    """
-    remove item from terrain
-    """
-
     def removeItem(self, item, recalculate=True):
+        """
+        remove item from terrain
+
+        Parameters:
+            item: the item to remove
+            recalculate: flag to prevent recalculatio of the pathfinding
+        """
+
         pos = (item.xPosition, item.yPosition, item.zPosition)
 
         try:
@@ -1566,17 +1674,36 @@ class Terrain(src.saveing.Saveable):
         item.container = None
 
     def removeItems(self, items, recalcuate=True):
+        """
+        remove items from terrain
+
+        Parameters:
+            items: the items to remove
+            recalculate: flag to prevent recalculatio of the pathfinding
+        """
+
         for item in items:
             self.removeItem(item, recalculate=False)
 
     def addItem(self, item, pos):
+        """
+        add item to terrain
+
+        Parameters:
+            item: the item to add
+            pos: the position to add the item to
+        """
+
         self.addItems([(item, pos)])
 
-    """
-    add items to terrain and add them to internal datastructures
-    """
-
     def addItems(self, items, recalculate=True):
+        """
+        add items to terrain and add them to internal datastructures
+
+        Parameters:
+            items: a list of tuples containing an item and the position to add it
+        """
+
         recalc = False
         for itemPair in items:
             item = itemPair[0]
@@ -1648,11 +1775,14 @@ class Terrain(src.saveing.Saveable):
             else:
                 self.itemsByCoordinate[position] = [item]
 
-    """
-    draw the floor
-    """
-
     def paintFloor(self):
+        """
+        draw the floor
+
+        Returns:
+            the rendered floor
+        """
+
         chars = []
         for i in range(0, 250):
             line = []
@@ -1664,12 +1794,16 @@ class Terrain(src.saveing.Saveable):
             chars.append(line)
         return chars
 
-    """
-    get nearby rooms
-
-    """
-
     def getNearbyRooms(self, pos):
+        """
+        get nearby rooms
+
+        Parameters:
+            pos: the position to get nearby rooms for
+        Returns:
+            a list of nearby rooms
+        """
+        
         roomCandidates = []
         possiblePositions = set()
         for i in range(-1, 2):
@@ -1682,6 +1816,13 @@ class Terrain(src.saveing.Saveable):
         return roomCandidates
 
     def getRoomsOnFineCoordinate(self, pos):
+        """
+        get rooms on a coordinate
+
+        Parameters:
+            pos: the coordinate to check if there is a room on it
+        """
+
         rooms = []
         for room in self.getNearbyRooms((pos[0] // 15, pos[1] // 15)):
             if (
@@ -1694,11 +1835,14 @@ class Terrain(src.saveing.Saveable):
                 rooms.append(room)
         return rooms
 
-    """
-    render the terrain and its contents
-    """
-
     def render(self):
+        """
+        render the terrain and its contents
+
+        Returns:
+            the rendered terrain
+        """
+
         # hide/show map
         global mapHidden
         if src.gamestate.gamestate.mainChar.room is None:
@@ -1844,13 +1988,18 @@ class Terrain(src.saveing.Saveable):
         chars[42][127] = src.canvas.displayChars.void
         return chars
 
-    """
-    get things that would be affected if a room would move
-    """
-
     def getAffectedByRoomMovementDirection(
         self, room, direction, force=1, movementBlock=set()
     ):
+        """
+        get things that would be affected if a room would move
+
+        Parameters:
+            room: the room to move
+            direction: the direction to move the room in
+            force: how much force is behind the movement
+            movementBlock: the thing affected by the movement
+        """
 
         # determine rooms that the room could collide with
         roomCandidates = []
@@ -2001,11 +2150,16 @@ class Terrain(src.saveing.Saveable):
                 "invalid movement direction: " + str(direction)
             )
 
-    """
-    actually move a room trough the terrain
-    """
-
     def moveRoomDirection(self, direction, room, force=1, movementBlock=[]):
+        """
+        actually move a room trough the terrain
+
+        Parameters:
+            direction: the direction to move the room in
+            room: the room to move
+            force: how much force is behind the movement
+            movementBlock: the thing affected by the movement
+        """
 
         # move the room
         if direction == "north":
@@ -2100,11 +2254,14 @@ class Terrain(src.saveing.Saveable):
         if hasattr(self, "watershedStart"):
             self.calculatePathMap()
 
-    """
-    remove a room from terrain
-    """
-
     def removeRoom(self, room):
+        """
+        remove a room from terrain
+
+        Parameters:
+            room: the room to remove
+        """
+
         self.rooms.remove(room)
 
         if (room.xPosition, room.yPosition) in self.roomByCoordinates:
@@ -2117,11 +2274,14 @@ class Terrain(src.saveing.Saveable):
         ):  # nontrivial: prevents crashes in constructor
             self.calculatePathMap()
 
-    """
-    add a room to the terrain
-    """
-
     def addRoom(self, room):
+        """
+        add a room to the terrain
+
+        Parameters:
+            room: the room to add
+        """
+
         room.terrain = self
         self.rooms.append(room)
 
@@ -2135,11 +2295,14 @@ class Terrain(src.saveing.Saveable):
         ):  # nontrivial: prevents crashes in constructor
             self.calculatePathMap()
 
-    """
-    teleport a room to another position
-    """
-
     def teleportRoom(self, room, newPosition):
+        """
+        teleport a room to another position
+
+        Parameters:
+            room: to room to teleport
+            newPosition: the position to teleport the room to
+        """
 
         # remove room from old position
         oldPosition = (room.xPosition, room.yPosition)
@@ -2161,12 +2324,16 @@ class Terrain(src.saveing.Saveable):
         if hasattr(self, "watershedStart"):
             self.calculatePathMap()
 
-    """
-    set state from dict
-    bad code: should be in saveable
-    """
-
+    # bad code: should be in saveable
     def setState(self, state, tick=0):
+        """
+        set state from dict
+
+        Parameters:
+            state: the state to set
+            tick: obsolete, ignore
+        """
+
         for roomId in state["roomIds"]:
             room = src.rooms.getRoomFromState(state["roomStates"][roomId], terrain=self)
             self.addRoom(room)
@@ -2190,12 +2357,15 @@ class Terrain(src.saveing.Saveable):
             addItems.append((item, item.getPosition()))
         self.addItems(addItems)
 
-    """
-    get state as dict
-    bad code: should be in saveable
-    """
-
+    # bad code: should be in saveable
     def getState(self):
+        """
+        get state as dict
+
+        Returns:
+            semi serialised state
+        """
+
         roomIds = []
         roomStates = {}
         for room in self.rooms:
@@ -2242,12 +2412,15 @@ class Terrain(src.saveing.Saveable):
             "eventStates": eventStates,
         }
 
-    """
-    add an event to internal structure
-    bad code: should be in extra class
-    """
-
+    # bad code: should be in extra class
     def addEvent(self, event):
+        """
+        add an event to internal structure
+
+        Parameters:
+            event: th event to add
+        """
+
         index = 0
         start = 0
         end = len(self.events)
@@ -2268,28 +2441,29 @@ class Terrain(src.saveing.Saveable):
         self.events.insert(start, event)
 
 
-"""
-a empty terrain
-"""
-
 
 class EmptyTerrain(Terrain):
+    """
+    a empty terrain
+    """
+
     objType = "EmptyTerrain"
 
-
-"""
-a almost empty terrain
-"""
-
-
 class Nothingness(Terrain):
+    """
+    a almost empty terrain
+    """
+
     objType = "Nothingness"
 
-    """
-    paint floor with minimal variation to ease perception of movement
-    """
-
     def paintFloor(self):
+        """
+        paint floor with minimal variation to ease perception of movement
+
+        Returns:
+            the painted floor
+        """
+
         displayChar = self.floordisplay
         if src.gamestate.gamestate.mainChar.zPosition < 0:
             displayChar = "%s" % (src.gamestate.gamestate.mainChar.zPosition,)
@@ -2311,11 +2485,15 @@ class Nothingness(Terrain):
             chars.append(line)
         return chars
 
-    """
-    state initialization
-    """
+    def __init__(self, seed=0, noContent=False):
+        """
+        state initialization
 
-    def __init__(self, creator=None, seed=0, noContent=False):
+        Parameters:
+            seed: rng seed
+            noContent: flag to prevent adding content
+        """
+
 
         # leave layout empty
         layout = """
@@ -2326,7 +2504,6 @@ class Nothingness(Terrain):
         super().__init__(
             layout,
             detailedLayout,
-            creator=creator,
             seed=seed,
             noPaths=True,
             noContent=noContent,
@@ -2363,20 +2540,23 @@ class Nothingness(Terrain):
 
         self.floordisplay = src.canvas.displayChars.dirt
 
-
-"""
-a gameplay test
-"""
-
-
+# obsolete: should be removed
 class GameplayTest(Terrain):
+    """
+    a gameplay test
+    """
+
     objType = "GameplayTest"
 
-    """
-    state initialization
-    """
+    def __init__(self, seed=0, noContent=False):
+        """
+        state initialization
+        
+        Parameters:
+            seed: rng seed
+            noContent: flag to generate no content
+        """
 
-    def __init__(self, creator=None, seed=0, noContent=False):
         # add only a few scattered intact rooms
         layout = """
              
@@ -2493,11 +2673,17 @@ class GameplayTest(Terrain):
                     seed += seed % 13
                     counter += 1
 
-            """
-            add field of items
-            """
-
             def addPseudoRandomThing(xRange, yRange, modulos, itemType):
+                """
+                add field of items
+
+                Parameters:
+                    xRange: the range of x Positions to cover
+                    xRange: the range of y Positions to cover
+                    modulos: kind of a rng seed
+                    itemType: the kind of thing to add
+                """
+
                 for x in range(xRange[0], xRange[1]):
                     for y in range(yRange[0], yRange[1]):
                         # skip pseudorandomly
@@ -2639,11 +2825,14 @@ class GameplayTest(Terrain):
             # save internal state
             self.initialState = self.getState()
 
-    """
-    paint floor with minimal variation to ease perception of movement
-    """
-
     def paintFloor(self):
+        """
+        paint floor with minimal variation to ease perception of movement
+
+        Returns:
+            the painted floor
+        """
+
         chars = []
         for i in range(0, 250):
             line = []
@@ -2655,20 +2844,25 @@ class GameplayTest(Terrain):
             chars.append(line)
         return chars
 
-
-"""
-a test for desert map
-"""
-
-
 class Desert(Terrain):
+    """
+    a desert map
+    """
+
     objType = "Desert"
 
     """
     state initialization
     """
 
-    def __init__(self, creator=None, seed=0, noContent=False):
+    def __init__(self, seed=0, noContent=False):
+        """
+        state initialization
+        
+        Parameters:
+            seed: rng seed
+            noContent: flag to generate no content
+        """
 
         import random
 
@@ -2696,7 +2890,7 @@ class Desert(Terrain):
         """
 
         super().__init__(
-            layout, detailedLayout, creator=creator, seed=seed, noContent=noContent
+            layout, detailedLayout, seed=seed, noContent=noContent
         )
 
         self.itemPool = []
@@ -2804,6 +2998,10 @@ class Desert(Terrain):
         self.randomizeHeatmap()
 
     def randomizeHeatmap(self):
+        """
+        make random tiles dispense heat damage
+        """
+
         # save heatmap for tiles
         import random
 
@@ -2815,6 +3013,10 @@ class Desert(Terrain):
                 self.heatmap[x][y] = random.randint(1, 5)
 
     def doSandStorm(self):
+        """
+        shuffle items around
+        """
+
         import random
 
         counter = 0
@@ -2852,11 +3054,14 @@ class Desert(Terrain):
                 item.yPosition = y
         self.addItems(toAdd)
 
-    """
-    paint floor with minimal variation to ease perception of movement
-    """
-
     def paintFloor(self):
+        """
+        paint floor with minimal variation to ease perception of movement
+
+        Returns:
+            the painted floor
+        """
+
         import urwid
 
         desertTiles = [
@@ -2884,6 +3089,15 @@ class Desert(Terrain):
         return chars
 
     def moveCharacterDirection(self, char, direction):
+        """
+        move a character into a direction
+        dispense heat damage on hot tiles
+
+        Parameters:
+            char: the character to move
+            direction: the direction to move the character in
+        """
+
         heatDamage = (
             self.heatmap[char.xPosition // 15][char.yPosition // 15]
             - char.heatResistance
@@ -2894,19 +3108,26 @@ class Desert(Terrain):
         return super().moveCharacterDirection(char, direction)
 
 
-"""
-a wrecked mech
-"""
-
-
 class ScrapField(Terrain):
+    """
+    big pile of scrap
+    """
+
     objType = "ScrapField"
 
     """
     state initialization
     """
 
-    def __init__(self, creator=None, seed=0, noContent=False):
+    def __init__(self, seed=0, noContent=False):
+        """
+        state initialization
+        
+        Parameters:
+            seed: rng seed
+            noContent: flag to generate no content
+        """
+
         # add only a few scattered intact rooms
         layout = """
 
@@ -2920,16 +3141,24 @@ U  U
         detailedLayout = """
         """
         super().__init__(
-            layout, detailedLayout, creator=creator, seed=seed, noContent=noContent
+            layout, detailedLayout, seed=seed, noContent=noContent
         )
 
         self.floordisplay = src.canvas.displayChars.dirt
 
-        """
-        add field of thick scrap
-        """
-
         def addPseudoRandomScrap(counter, xRange, yRange, skips):
+            """
+            add field of thick scrap
+
+            Parameters:
+                counter: rng seed
+                xRange: range of x coordinates to cover
+                yRange: range of y coordinates to cover
+                skips: positions to leave empty
+            Returns:
+                rng seed
+            """
+
             for x in range(xRange[0], xRange[1]):
                 for y in range(yRange[0], yRange[1]):
                     # skip pseudorandomly
@@ -2950,11 +3179,17 @@ U  U
                         counter = 1
             return counter
 
-        """
-        add field of items
-        """
-
         def addPseudoRandomThin(xRange, yRange, modulos, itemType):
+            """
+            add field of items
+
+            Parameters:
+                xRange: range of x coordinates to cover
+                yRange: range of y coordinates to cover
+                modulos: rng seed
+                itemType: what to add
+            """
+
             for x in range(xRange[0], xRange[1]):
                 for y in range(yRange[0], yRange[1]):
                     # skip pseudorandomly
@@ -3005,16 +3240,22 @@ U  U
         self.wakeUpRoom = src.rooms.MiniBase(0, 4, 0, 0, creator=creator)
         self.addRooms([self.wakeUpRoom])
 
-
-"""
-the tutorial mech
-"""
-
-
 class TutorialTerrain(Terrain):
+    """
+    the tutorial mech
+    """
+
     objType = "TutorialTerrain"
 
-    def __init__(self, creator=None, seed=0, noContent=False):
+    def __init__(self, seed=0, noContent=False):
+        """
+        state initialization
+        
+        Parameters:
+            seed: rng seed
+            noContent: flag to generate no content
+        """
+
         self.toTransport = []
 
         # the layout for the mech
@@ -3182,7 +3423,7 @@ XXXCCCCCXXX """
                                              X#XXXXXXXXXXXXXX#XXXXXXXXXXXXXX#XXXXXXXXXXXXXX#XXXXXXXXXXXXXX#XXXXXXXXXXXXX                                             
 """
         super().__init__(
-            layout, detailedLayout, creator=creator, seed=seed, noContent=noContent
+            layout, detailedLayout, seed=seed, noContent=noContent
         )
 
         # add some tasks to keep npc busy
@@ -3232,11 +3473,11 @@ XXXCCCCCXXX """
         # save internal state
         self.initialState = self.getState()
 
-    """
-    add quest to move something from the lab to storage
-    """
-
     def addStorageQuest(self):
+        """
+        add quest to move something from the lab to storage
+        """
+
         if not self.toTransport:
             return
 
@@ -3260,22 +3501,22 @@ XXXCCCCCXXX """
         quest.endTrigger = {"container": self, "method": "addStorageQuest"}
         self.waitingRoom.quests.append(quest)
 
-    """
-    add roadblock
-    """
-
     def addRoadblock(self):
+        """
+        add roadblock
+        """
+
         room = self.tutorialCargoRooms[8]
         item = room.storedItems[-1]
         outerQuest = src.quests.MetaQuestSequence([], creator=self)
         innerQuest = src.quests.TransportQuest(item, (None, 127, 81), creator=self)
 
-        """
-        move character off the placed item
-        bad code: should happen somewhere else
-        """
-
+        # bad code: should happen somewhere else
         def moveAway():
+            """
+            move character off the placed item
+            """
+
             outerQuest.character.yPosition -= 1
 
         innerQuest.endTrigger = moveAway
@@ -3289,12 +3530,12 @@ XXXCCCCCXXX """
             )
         )
 
-    """
-    move roadblock
-    bad code: should be more abstracted
-    """
-
+    # bad code: should be more abstracted
     def moveRoadblockToLeft(self):
+        """
+        move roadblock to the left of the map
+        """
+
         # abort if roadblock is missing
         if (127, 81) not in self.itemByCoordinates:
             return
@@ -3303,12 +3544,11 @@ XXXCCCCCXXX """
         outerQuest = src.quests.MetaQuestSequence([], creator=self)
         innerQuest = src.quests.TransportQuest(item, (None, 37, 81), creator=self)
 
-        """
-        move character off the placed item
-        bad code: should happen somewhere else
-        """
-
         def moveAway():
+            """
+            move character off the placed item
+            """
+
             outerQuest.character.yPosition -= 1
 
         innerQuest.endTrigger = moveAway
@@ -3322,12 +3562,11 @@ XXXCCCCCXXX """
             )
         )
 
-    """
-    move roadblock
-    bad code: should be more abstracted
-    """
-
     def moveRoadblockToRight(self):
+        """
+        move roadblock to the left of the map
+        """
+
         # abort if roadblock is missing
         if (37, 81) not in self.itemByCoordinates:
             return
@@ -3336,12 +3575,11 @@ XXXCCCCCXXX """
         outerQuest = src.quests.MetaQuestSequence([], creator=self)
         innerQuest = src.quests.TransportQuest(item, (None, 127, 81), creator=self)
 
-        """
-        move character off the placed item
-        bad code: should happen somewhere else
-        """
-
         def moveAway():
+            """
+            move character off the placed item
+            """
+
             outerQuest.character.yPosition -= 1
 
         innerQuest.endTrigger = moveAway
@@ -3366,14 +3604,18 @@ terrainMap = {
     "Desert": Desert,
 }
 
-"""
-get item instances from dict state
-"""
+def getTerrainFromState(state):
+    """
+    get item instances from dict state
 
+    Parameters:
+        state: the state to set
+    Returns:
+        the generated terrain
+    """
 
-def getTerrainFromState(state, creator=None):
     terrain = terrainMap[state["objType"]](
-        creator=creator, seed=state["initialSeed"], noContent=True
+        seed=state["initialSeed"], noContent=True
     )
     terrain.setState(state)
     src.saveing.loadingRegistry.register(terrain)

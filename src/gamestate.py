@@ -190,7 +190,7 @@ class GameState(src.saveing.Saveable):
             newLine = []
             x = 0
             for item in line:
-                thisTerrain = src.terrains.getTerrainFromState(item, creator=self)
+                thisTerrain = src.terrains.getTerrainFromState(item)
                 thisTerrain.xPosition = x
                 thisTerrain.yPosition = y
                 newLine.append(thisTerrain)

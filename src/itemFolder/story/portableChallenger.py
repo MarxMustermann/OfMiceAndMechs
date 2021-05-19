@@ -1,10 +1,19 @@
 import src
 
-
+#NIY: half done
 class PortableChallenger(src.items.Item):
+
+    """
+    ingame item to complete challenges outside
+    """
+
     type = "PortableChallenger"
 
     def __init__(self):
+        """
+        set up internal state
+        """
+
         super().__init__(display=src.canvas.displayChars.portableChallenger)
 
         self.name = "portable challenger"
@@ -17,7 +26,13 @@ class PortableChallenger(src.items.Item):
         self.attributesToStore.extend(["challenges", "done", "secret"])
 
     def apply(self, character):
-        super().apply(character, silent=True)
+        """
+        handle a character tryin to use the item
+        by running the challenge set
+
+        Parameters:
+            character: the character trying to use the item
+        """
 
         if not self.challenges:
             self.done = True
@@ -174,16 +189,19 @@ class PortableChallenger(src.items.Item):
             self.done = True
 
     def getLongInfo(self):
+        """
+        returns a description text
+
+        Returns:
+            the description text
+        """
+
         text = """
 item:
-
-description:
-TBD
 
 %s
         """ % (
             str(self.challenges)
         )
-
 
 src.items.addType(PortableChallenger)

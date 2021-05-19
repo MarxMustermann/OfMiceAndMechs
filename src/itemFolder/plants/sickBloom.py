@@ -1,11 +1,18 @@
 import src
 import random
 
-
 class SickBloom(src.items.Item):
+    """
+    a plant spawning new monsters
+    """
+
     type = "SickBloom"
 
     def __init__(self):
+        """
+        initialise internal state
+        """
+
         super().__init__(display=src.canvas.displayChars.sickBloom)
 
         self.name = "sick bloom"
@@ -15,6 +22,13 @@ class SickBloom(src.items.Item):
         self.attributesToStore.extend(["charges", "dead"])
 
     def apply(self, character):
+        """
+        handle a character trying to use this item
+
+        Parameters:
+            character: the character trying to use the item
+        """
+
         if self.charges and not self.dead:
             if isinstance(character, src.characters.Monster):
                 if character.phase == 1:
@@ -44,12 +58,23 @@ class SickBloom(src.items.Item):
         character.addMessage("you eat the sick bloom and gain 100 satiation")
 
     def pickUp(self, character):
+        """
+        handle getting picked up by a character
+
+        Parameters:
+            character: the character trying topick up the item
+        """
+
         self.bolted = False
         self.dead = True
         self.charges = 0
         super().pickUp(character)
 
     def startSpawn(self):
+        """
+        schedule spawning a monster
+        """
+        
         event = src.events.RunCallbackEvent(
             src.gamestate.gamestate.tick
             + (2 * self.xPosition + 3 * self.yPosition + src.gamestate.gamestate.tick)
@@ -59,6 +84,10 @@ class SickBloom(src.items.Item):
         self.container.addEvent(event)
 
     def spawn(self):
+        """
+        spawn a monster
+        """
+
         if not self.charges:
             return
 
@@ -80,16 +109,10 @@ class SickBloom(src.items.Item):
 
         character.faction = "monster"
 
-        def splitCommand(newCommand):
-            splittedCommand = []
-            for char in newCommand:
-                splittedCommand.append(char)
-            return splittedCommand
-
-        character.macroState["macros"]["w"] = splitCommand("wj")
-        character.macroState["macros"]["a"] = splitCommand("aj")
-        character.macroState["macros"]["s"] = splitCommand("sj")
-        character.macroState["macros"]["d"] = splitCommand("dj")
+        character.macroState["macros"]["w"] = list("wj")
+        character.macroState["macros"]["a"] = list("aj")
+        character.macroState["macros"]["s"] = list("sj")
+        character.macroState["macros"]["d"] = list("dj")
 
         counter = 1
         command = ""
@@ -125,6 +148,12 @@ you can eat it to gain %s satiation.
         )
 
     def destroy(self, generateSrcap=True):
+        """
+        destroy this item
+
+        Parameters:
+            generateSrcap: flag to not leave residue
+        """
 
         if not self.dead:
             new = src.items.itemMap["Mold"]()
@@ -132,6 +161,5 @@ you can eat it to gain %s satiation.
             new.startSpawn()
 
         super().destroy(generateSrcap=False)
-
 
 src.items.addType(SickBloom)

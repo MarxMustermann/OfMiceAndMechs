@@ -3,15 +3,36 @@ import random
 
 
 class Mold(src.items.Item):
+    """
+    simple plant that grows into other plants
+    a singe spot of mold should have the chance to grow into a jungle
+    """
+
     type = "Mold"
 
     def __init__(self, noId=False):
-        super().__init__(display=src.canvas.displayChars.moss, name="mold")
+        """
+        set up internal state
+        """
+
+        super().__init__(display=src.canvas.displayChars.moss)
         self.charges = 2
         self.walkable = True
+        self.name = "mold"
+        self.description = "This is a patch of mold"
+        self.usageInfo = """
+you can eat it to gain 2 satiation.
+"""
         self.attributesToStore.extend(["charges"])
 
     def apply(self, character):
+        """
+        handle getting eaten by a character
+
+        Parameters:
+            character: the character trying to use this item
+        """
+
         character.satiation += 2
         if character.satiation > 1000:
             character.satiation = 1000
@@ -19,6 +40,10 @@ class Mold(src.items.Item):
         character.addMessage("you eat the mold and gain 2 satiation")
 
     def startSpawn(self):
+        """
+        schedule spawning more mold
+        """
+
         if self.charges and self.container:
             if not (self.xPosition and self.yPosition and self.container):
                 return
@@ -35,6 +60,10 @@ class Mold(src.items.Item):
             self.container.addEvent(event)
 
     def spawn(self):
+        """
+        spawn a now mold and handle interactions with other plants
+        """
+
         if self.charges and self.container:
             if not (self.xPosition and self.yPosition):
                 return
@@ -183,18 +212,14 @@ class Mold(src.items.Item):
         if self.charges:
             self.startSpawn()
 
-    def getLongInfo(self):
-        return """
-item: Mold
-
-description:
-This is a patch of mold
-
-you can eat it to gain 2 satiation.
-"""
-
     def destroy(self, generateSrcap=True):
-        super().destroy(generateSrcap=False)
+        """
+        destroy this item
 
+        Parameters:
+            generateSrcap: flag to toggle leaving residue
+        """
+
+        super().destroy(generateSrcap=False)
 
 src.items.addType(Mold)

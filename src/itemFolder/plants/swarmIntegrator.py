@@ -1,32 +1,32 @@
 import src
 
-
+# NIY: not really implemented yet
 class SwarmIntegrator(src.items.Item):
+    """
+    item intended for collecting creatures to add to a mold civilisation
+    """
+
     type = "SwarmIntegrator"
 
     def __init__(self):
+        """
+        set up initial state 
+        """
+
         super().__init__(display=src.canvas.displayChars.floor_node)
         self.name = "swarm integrator"
         self.walkable = False
         self.faction = "swarm"
 
-    def getLongInfo(self):
-        return """
-item: SwarmIntegrator
-
-description:
-You can use it to create paths
-"""
-
     def apply(self, character):
+        """
+        handle a character trying to use this item
+        
+        Parameters:
+            character: the character trying to use this item
+        """
+
         command = "aopR.$a*13.$w*13.$s*13.$d*13.$=aa$=ww$=ss$=dd"
-        convertedCommand = []
-        for item in command:
-            convertedCommand.append((item, ["norecord"]))
-
-        character.macroState["commandKeyQueue"] = (
-            convertedCommand + character.macroState["commandKeyQueue"]
-        )
-
+        character.runCommandString(command)
 
 src.items.addType(SwarmIntegrator)

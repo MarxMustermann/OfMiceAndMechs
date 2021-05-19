@@ -1,42 +1,58 @@
 import src
 
-"""
-"""
-
-
 class Corpse(src.items.Item):
+    """
+    ingame item that is a ressource and basically does nothing
+    also it is food and dead people
+    """
+
     type = "Corpse"
 
-    """
-    almost straightforward state initialization
-    """
-
     def __init__(self):
+        """
+        initialise internal state
+        """
+
         super().__init__(display=src.canvas.displayChars.corpse)
 
         self.name = "corpse"
+        self.description = "something dead"
+        self.usageInfo = """
+Activate it to eat from it. Eating from a corpse will gain you 15 satiation.
+
+can be processed in a corpse shredder
+"""
+
         self.charges = 1000
         self.attributesToStore.extend(["activated", "charges"])
         self.walkable = True
         self.bolted = False
 
     def getLongInfo(self):
+        """
+        return a longer than normal description text
+
+        Returns:
+            the description text
+        """
+
+        text = super().getLongInfo()
         text = """
-item: Corpse
-
-description:
-A corpse. Activate it to eat from it. Eating from a Corpse will gain you 15 Satiation.
-
-can be processed in a corpse shredder
-
 The corpse has %s charges left.
-
 """ % (
             self.charges
         )
         return text
 
     def apply(self, character):
+        """
+        handle a character trying to use this item
+        by getting eaten
+
+        Parameters:
+            character: the character that tries to use the item
+        """
+
         if isinstance(character, src.characters.Monster):
             if character.phase == 3:
                 character.enterPhase4()
@@ -58,6 +74,5 @@ The corpse has %s charges left.
             character.addMessage("you eat from the corpse and gain 15 satiation")
         else:
             self.destroy(generateSrcap=False)
-
 
 src.items.addType(Corpse)

@@ -1,18 +1,21 @@
 import src
 
-"""
-"""
-
-
 class Rod(src.items.Item):
+    """
+    ingame item used as ressource. basically does nothing
+    """
+
     type = "Rod"
 
-    """
-    call superclass constructor with modified parameters
-    """
+    def __init__(self):
+        """
+        set initial state
+        """
 
-    def __init__(self, name="rod", noId=False):
-        super().__init__(display=src.canvas.displayChars.rod, name=name)
+        super().__init__(display=src.canvas.displayChars.rod)
+
+        self.name = "rod"
+        self.description = "used to build items"
 
         self.bolted = False
         self.walkable = True
@@ -24,12 +27,15 @@ class Rod(src.items.Item):
         )
 
     def getLongInfo(self):
-        text = """
-item: Rod
+        """
+        return a longer than normal description text
 
-description:
-A rod. Simple building material.
+        Returns:
+            the description text
+        """
 
+        text = super().getLongInfo()
+        text += """
 baseDamage:
 %s
 
@@ -38,9 +44,17 @@ baseDamage:
         )
         return text
 
+    # bad code: very hacky way of equiping things
     def apply(self, character):
+        """
+        handle a character trying to use this item
+        by equiping itself on the player
+
+        Parameters:
+            character: the character trying to use the iten
+        """
+
         character.weapon = self
         self.container.removeItem(self)
-
 
 src.items.addType(Rod)

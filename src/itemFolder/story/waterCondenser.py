@@ -1,13 +1,21 @@
 import src
 
-
 class WaterCondenser(src.items.Item):
+    """
+    ingame item used as a source for water
+    """
+
     type = "WaterCondenser"
 
     def __init__(self):
+        """
+        set up initial state
+        """
+
         super().__init__(display="WW")
 
         self.name = "water condenser"
+        self.description = "you can drink condensed water from it, but the water is poisoned"
 
         self.walkable = False
         self.bolted = True
@@ -18,6 +26,14 @@ class WaterCondenser(src.items.Item):
             self.lastUsage = 0
 
     def apply(self, character):
+        """
+        handle a character trying to use the item
+        by offering a selection of possible actions
+
+        Parameters:
+            character: the character trying to use the item
+        """
+
         options = [("drink", "drink"), ("rod", "add rod")]
         self.submenue = src.interaction.SelectionMenu(
             "what do you want to do?", options
@@ -27,6 +43,11 @@ class WaterCondenser(src.items.Item):
         self.character = character
 
     def apply2(self):
+        """
+        handle a character selected an action to do
+        by dooing it
+        """
+
         if not self.terrain:
             self.character.addMessage(
                 "the water condenser needs to be placed outside to work"
@@ -75,17 +96,21 @@ class WaterCondenser(src.items.Item):
             self.character.addMessage("you have no rods in your inventory")
 
     def getLongInfo(self):
-        return """
-item: Water condenser
+        """
+        returns a longer than usual description text
 
-description:
-you can drink condensed water from it, but the water is poisoned
+        Returns:
+            the description text
+        """
+
+        text = super().getLongInfo()
+        text += """
 
 it generates %s satiation for every 100 ticks left alone
 
 """ % (
             self.rods + 1 + 5,
         )
-
+        return text
 
 src.items.addType(WaterCondenser)

@@ -1,19 +1,32 @@
 import src
 
-
 class WaterPump(src.items.Item):
+    """
+    ingame item used as a source for water
+    """
+
     type = "WaterPump"
 
     def __init__(self):
+        """
+        set up internal state
+        """
+
         super().__init__(display="WP")
 
         self.name = "water pump"
+        self.description = "you can drink condensed water from it"
 
         self.walkable = False
         self.bolted = True
         self.rods = 0
 
     def apply(self, character):
+        """
+        handle a character trying to use this item
+        by offering a selection of possible actions
+        """
+
         options = [("drink", "drink"), ("rod", "add rod")]
         self.submenue = src.interaction.SelectionMenu(
             "what do you want to do?", options
@@ -23,6 +36,11 @@ class WaterPump(src.items.Item):
         self.character = character
 
     def apply2(self):
+        """
+        handle a character having selected an action
+        by running it
+        """
+        
         if not self.terrain:
             self.character.addMessage(
                 "the water condenser needs to be placed outside to work"
@@ -59,15 +77,5 @@ class WaterPump(src.items.Item):
                     self.character.inventory.remove(item)
                     return
             self.character.addMessage("you have no rods in your inventory")
-
-    def getLongInfo(self):
-        return """
-item: Water condenser
-
-description:
-you can drink condensed water from it
-
-"""
-
 
 src.items.addType(WaterPump)

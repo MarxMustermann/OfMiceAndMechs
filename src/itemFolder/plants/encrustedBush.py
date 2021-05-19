@@ -5,21 +5,24 @@ class EncrustedBush(src.items.Item):
     type = "EncrustedBush"
 
     def __init__(self):
+        """
+        set up internal state
+        """
+
         super().__init__(display=src.canvas.displayChars.encrustedBush)
         self.name = "encrusted bush"
+        self.description = "This is a cluster of blooms. The veins developed a protecive shell and are dense enough to form a solid wall"
 
         self.walkable = False
 
-    def getLongInfo(self):
-        return """
-item: EncrustedBush
-
-description:
-This is a cluster of blooms. The veins developed a protecive shell and are dense enough to form a solid wall.
-
-"""
-
     def destroy(self, generateSrcap=True):
+        """
+        destroy this item
+
+        Parameters:
+            generateSrcap: flag to toggle leaving residue
+        """
+
         new = itemMap["Coal"]()
         self.container.addItem(new,self.getPosition())
 
@@ -38,16 +41,10 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
 
         character.faction = "monster"
 
-        def splitCommand(newCommand):
-            splittedCommand = []
-            for char in newCommand:
-                splittedCommand.append(char)
-            return splittedCommand
-
-        character.macroState["macros"]["w"] = splitCommand("wj")
-        character.macroState["macros"]["a"] = splitCommand("aj")
-        character.macroState["macros"]["s"] = splitCommand("sj")
-        character.macroState["macros"]["d"] = splitCommand("dj")
+        character.macroState["macros"]["w"] = list("wj")
+        character.macroState["macros"]["a"] = list("aj")
+        character.macroState["macros"]["s"] = list("sj")
+        character.macroState["macros"]["d"] = list("dj")
 
         counter = 1
         command = ""
@@ -58,7 +55,7 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
                 directions[random.randint(0, 3)],
             )
             counter += 1
-        character.macroState["macros"]["m"] = splitCommand(command + "_m")
+        character.macroState["macros"]["m"] = list(command + "_m")
 
         character.macroState["commandKeyQueue"] = [("_", []), ("m", [])]
         character.satiation = 10
@@ -66,7 +63,14 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
 
         super().destroy(generateSrcap=False)
 
-    def tryToGrowRoom(self, spawnPoint, character=None):
+    def tryToGrowRoom(self, spawnPoint):
+        """
+        try to evolve the neighbouring plants into a room
+
+        Parameters:
+            spawnPoint: the plant that is the core of the room
+        """
+        
         if not self.terrain:
             return
         if not self.container:
@@ -177,6 +181,5 @@ This is a cluster of blooms. The veins developed a protecive shell and are dense
         )
         self.terrain.addRooms([room])
         room.reconfigure(sizeX, sizeY, keepItems)
-
 
 src.items.addType(EncrustedBush)

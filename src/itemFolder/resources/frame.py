@@ -1,31 +1,23 @@
 import src
 
-"""
-"""
-
-
 class Frame(src.items.Item):
+    """
+    ingame item used as ressource. basically does nothing
+    """
+
     type = "Frame"
 
-    """
-    call superclass constructor with modified parameters
-    """
+    def __init__(self):
+        """
+        set up internal state
+        """
 
-    def __init__(self, name="Frame", noId=False):
-        super().__init__(display=src.canvas.displayChars.frame, name=name)
+        super().__init__(display=src.canvas.displayChars.frame)
+
+        self.name = "frame"
+        self.description = "used to build items"
 
         self.bolted = False
         self.walkable = True
-
-    def getLongInfo(self):
-        text = """
-item: Frame
-
-description:
-A frame. Building material.
-
-"""
-        return text
-
 
 src.items.addType(Frame)

@@ -1,29 +1,19 @@
 import src
 
-"""
-"""
-
-
 class MemoryCell(src.items.Item):
+    """
+    ingame item used as ressource. basically does nothing
+    """
     type = "MemoryCell"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        set up internal state
+        """
         super().__init__()
         self.name = "memory cell"
+        self.description = "a complex building item. It is used to build logic items"
         self.display = src.canvas.displayChars.memoryCell
         self.walkable = True
-
-    def getLongInfo(self):
-        text = """
-
-A memory cell. Is complex building item. It is used to build logic items.
-
-"""
-        return text
-
 
 src.items.addType(MemoryCell)

@@ -8,12 +8,16 @@ class Door(src.items.Item):
 
     type = "Door"
 
-    def __init__(self, name="Door", noId=False, bio=False):
+    def __init__(self, bio=False):
         """
-        call superclass constructor with modified paramters and set some state
+        set up initial state
+
+        Parameters:
+            bio: whether this item is grown or manmade
         """
 
-        super().__init__(name=name, noId=noId)
+        super().__init__()
+        self.name = "door"
         self.walkable = False
         self.bio = bio
 
@@ -29,6 +33,9 @@ class Door(src.items.Item):
     def render(self):
         """
         render depending on state
+
+        Returns:
+            what the item should look like
         """
 
         if self.bio:
@@ -45,7 +52,11 @@ class Door(src.items.Item):
 
     def gatherApplyActions(self, character):
         """
+        handle a character trying to use this item, by
         add open or close action depending on state
+
+        Parameters:
+            character: the character trying to use this item
         """
         applyActions = super().gatherApplyActions()
         if self.walkable:

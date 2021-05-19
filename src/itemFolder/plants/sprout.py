@@ -2,15 +2,34 @@ import src
 
 
 class Sprout(src.items.Item):
+    """
+    intermediate plant evolution
+    """
+
     type = "Sprout"
 
     def __init__(self):
+        """
+        initialise internal state
+        """
+
         super().__init__(display=src.canvas.displayChars.sprout)
 
         self.name = "sprout"
+        self.description = "mold patch that shows the first sign of a bloom"
+        self.usageInfo = """
+you can eat it to gain 10 satiation.
+"""
         self.walkable = True
 
     def apply(self, character):
+        """
+        handle a character trying to use the item
+
+        Parameters:
+            character: character trying to use the item
+        """
+
         if not self.container:
             character.addMessage("this needs to be placed outside to be used")
             return
@@ -21,23 +40,18 @@ class Sprout(src.items.Item):
         self.destroy(generateSrcap=False)
         character.addMessage("you eat the sprout and gain 10 satiation")
 
-    def getLongInfo(self):
-        return """
-item: Sprout
+    def destroy(self, generateScrap=True):
+        """
+        detroy the item
 
-description:
-This is a mold patch that shows the first sign of a bloom.
-
-you can eat it to gain 10 satiation.
-"""
-
-    def destroy(self, generateSrcap=True):
+        Parameters:
+            generateScrap: flag to not leave residue
+        """
 
         new = src.items.itemMap["Mold"]()
         self.container.addItem(new, self.getPosition())
         new.startSpawn()
 
-        super().destroy(generateSrcap=False)
-
+        super().destroy(generateScrap=False)
 
 src.items.addType(Sprout)

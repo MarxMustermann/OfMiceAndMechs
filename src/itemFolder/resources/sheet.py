@@ -1,17 +1,18 @@
 import src
 
-"""
-"""
-
-
 class Sheet(src.items.Item):
+    """
+    ingame item that can be directly converted to some other items
+    also a building material
+    """
+
     type = "Sheet"
 
-    """
-    call superclass constructor with modified parameters
-    """
+    def __init__(self):
+        """
+        set up initial state
+        """
 
-    def __init__(self, noId=False):
         super().__init__(display=src.canvas.displayChars.sheet)
 
         self.bolted = False
@@ -44,6 +45,13 @@ Sheets are also needed as resource to create a blueprint in the blueprinter mach
         self.attributesToStore.extend(["recording", "level"])
 
     def getLongInfo(self):
+        """
+        returns a longer than normal description text
+
+        Returns:
+            the description text
+        """
+
         text = super().getLongInfo()
         text += """
 Sheets can be produced from metal bars.
@@ -56,6 +64,14 @@ This is a level %s item
         return text
 
     def apply(self, character):
+        """
+        handle a character trying to use this item
+        by offering a selection of item types to create
+
+        Parameters:
+            character: the character trying to use the item
+        """
+
         if self.recording:
             self.createCommand()
             return
@@ -77,6 +93,11 @@ This is a level %s item
         self.character.macroState["submenue"].followUp = self.actionSwitch
 
     def actionSwitch(self):
+        """
+        handle a character having selected an item type to produce
+        by starting to produce such an item
+        """
+
         if self.submenue.selection == "createNote":
             self.createNote()
         elif self.submenue.selection == "createCommand":
@@ -87,6 +108,10 @@ This is a level %s item
             self.createJobOrder()
 
     def createNote(self):
+        """
+        start creating a note by prompting a character for more information
+        """
+
         self.submenue = src.interaction.InputMenu(
             "type the text you want to write on the note"
         )
@@ -94,6 +119,9 @@ This is a level %s item
         self.character.macroState["submenue"].followUp = self.createNoteItem
 
     def createNoteItem(self):
+        """
+        actually create a new note item
+        """
 
         note = src.items.itemMap["Note"]()
         note.setText(self.submenue.text)
@@ -106,6 +134,10 @@ This is a level %s item
             self.character.inventory.append(note)
 
     def createMapItem(self):
+        """
+        create a new map item
+        """
+
         if self.xPosition:
             self.container.removeItem(self)
             self.container.addItem(mapItem,self.getPosition())
@@ -114,6 +146,9 @@ This is a level %s item
             self.character.inventory.append(mapItem)
 
     def createJobOrder(self):
+        """
+        create a job order
+        """
 
         jobOrder = src.items.itemMap["JobOrder"]()
 
@@ -125,6 +160,9 @@ This is a level %s item
             self.character.inventory.append(jobOrder)
 
     def createCommand(self):
+        """
+        create a new command or start recording a new command
+        """
 
         if not self.character:
             return
@@ -176,12 +214,20 @@ This is a level %s item
         self.character.macroState["submenue"].followUp = self.storeSelect
 
     def storeSelect(self):
+        """
+        either load a command from macro or record a new one
+        """
+        
         if self.submenue.selection == "record":
             self.recordAndstore()
         elif self.submenue.selection == "store":
             self.storeFromMacro()
 
     def recordAndstore(self):
+        """
+        start recording a new command
+        """
+
         self.recording = True
         convertedCommand = []
         convertedCommand.append(("-", ["norecord"]))
@@ -191,6 +237,11 @@ This is a level %s item
         )
 
     def storeFromMacro(self):
+        """
+        start generating a new command from a macro
+        by prompting the character for which macro to load
+        """
+
         self.recording = True
 
         options = []
@@ -210,6 +261,13 @@ This is a level %s item
         self.character.macroState["submenue"].followUp = self.storeMacro
 
     def storeMacro(self, key=None):
+        """
+        actually create command from macros
+
+        Parameters:
+            key: the macro to load
+        """
+
         if not key:
             key = self.submenue.selection
 
@@ -228,6 +286,5 @@ This is a level %s item
         else:
             self.character.inventory.append(command)
             self.character.inventory.remove(self)
-
 
 src.items.addType(Sheet)

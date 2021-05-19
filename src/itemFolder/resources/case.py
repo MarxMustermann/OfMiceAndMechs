@@ -1,28 +1,20 @@
 import src
 
-"""
-"""
-
-
 class Case(src.items.Item):
+    """
+    ingame item that is a ressource and basically does nothing
+    """
+
     type = "Case"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        set up internal state
+        """
+
         super().__init__()
         self.display = src.canvas.displayChars.case
         self.name = "case"
-
-    def getLongInfo(self):
-        text = """
-
-A case. Is complex building item. It is used to build bigger things.
-
-"""
-        return text
-
+        self.description = "a complex building item"
 
 src.items.addType(Case)

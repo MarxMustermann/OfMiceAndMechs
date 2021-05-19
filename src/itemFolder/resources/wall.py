@@ -7,11 +7,12 @@ class Wall(src.items.Item):
 
     type = "Wall"
 
-    def __init__(self,name="Wall",noId=False):
+    def __init__(self):
         '''
-        call superclass constructor with modified paramters
+        set up internal state
         '''
-        super().__init__(display=src.canvas.displayChars.wall,name=name)
+        super().__init__(display=src.canvas.displayChars.wall)
         self.description = "Used to build rooms."
+        self.name = "wall"
 
 src.items.addType(Wall)

@@ -1,15 +1,30 @@
 import src
 
-
 class EncrustedPoisonBush(src.items.Item):
+    """
+    ingame item that blocks paths and is hard to remove
+    """
+
     type = "EncrustedPoisonBush"
 
     def __init__(self):
+        """
+        set up internal state
+        """
+
         super().__init__(display=src.canvas.displayChars.encrustedPoisonBush)
         self.name = "encrusted poison bush"
         self.walkable = False
 
     def apply(self, character):
+        """
+        handle a character trying to use this item
+        by stealing the characters blood
+
+        Parameters:
+            character: the character trying to us the item
+        """
+        
         if 100 > character.satiation:
             character.satiation = 0
         else:
@@ -20,9 +35,16 @@ class EncrustedPoisonBush(src.items.Item):
         )
 
     def getLongInfo(self):
-        return """
-item: EncrustedPoisonBush
+        """
+        returns a longer than normal description text
 
+        Parameters:
+            the description text
+        """
+        
+        text = super().getLongInfo()
+
+        text += """
 description:
 This is a cluster of blooms. The veins developed a protecive shell and are dense enough to form a solid wall.
 Its spore sacks shriveled and are covered in green slime.
@@ -30,8 +52,16 @@ Its spore sacks shriveled and are covered in green slime.
 actions:
 You can use it to loose 100 satiation.
 """
+        return text
 
     def destroy(self, generateSrcap=True):
+        """
+        destroy this item and spawn a moster
+
+        Parameters:
+            generateSrcap: flag to toggle leaving residue
+        """
+
         new = itemMap["FireCrystals"]()
         self.container.addItem(new,self.getPosition())
         # new.startExploding()
@@ -73,6 +103,5 @@ You can use it to loose 100 satiation.
         self.container.addCharacter(character, self.xPosition, self.yPosition)
 
         super().destroy(generateSrcap=False)
-
 
 src.items.addType(EncrustedPoisonBush)

@@ -3,17 +3,21 @@ import src
 
 class Scrap(src.items.Item):
     """
-    crushed something, basically raw metal
+    ingame item serving as a source of metal
     """
 
     type = "Scrap"
 
-    def __init__(self, amount=1, name="scrap", noId=False):
+    def __init__(self, amount=1):
         """
         almost straightforward state initialization
         """
 
-        super().__init__(display=src.canvas.displayChars.scrap_light, name=name)
+        super().__init__(display=src.canvas.displayChars.scrap_light)
+
+        self.name = "scrap"
+        self.description = "crushed something, basically raw metal"
+        self.usageInfo = "A raw material. Its main use is to be converted to metal bars in a scrap compactor"
 
         # set up metadata for saving
         self.attributesToStore.extend(["amount"])
@@ -29,7 +33,13 @@ class Scrap(src.items.Item):
     def moveDirection(self, direction, force=1, initialMovement=True):
         """
         move the item and leave residue
+
+        Parameters:
+            direction: the direction to move the item in
+            force: how much force is behind the movement
+            initialMovement: flag indicating whether this is the initial movement
         """
+
         self.dropStuff()
         super().moveDirection(direction, force, initialMovement)
 
@@ -61,6 +71,7 @@ class Scrap(src.items.Item):
         """
         recalculate the walkable attribute
         """
+
         if self.amount < 5:
             self.walkable = True
         else:
@@ -69,7 +80,11 @@ class Scrap(src.items.Item):
     def render(self):
         """
         render the scrap depending on amount
+
+        Returns:
+            how the item should be shown
         """
+
         if self.amount < 5:
             return src.canvas.displayChars.scrap_light
         elif self.amount < 15:
@@ -81,11 +96,15 @@ class Scrap(src.items.Item):
         """
         get resistance to beeing moved depending on size
         """
+
         return self.amount * 2
 
     def destroy(self, generateSrcap=True):
         """
         destroying scrap means to merge the scrap
+
+        Parameters:
+            generateScrap: flag to leave no residue
         """
 
         # get list of scrap on same location
@@ -111,13 +130,13 @@ class Scrap(src.items.Item):
     def getLongInfo(self):
         """
         generate simple text description
+
+        Returns:
+            the decription text
         """
 
-        text = """
-item: Scrap
-
-description:
-Scrap is a raw material. Its main use is to be converted to metal bars in a scrap compactor.
+        text = super().getLongInfo()
+        text += """
 
 There is %s in this pile
 """ % (
@@ -129,6 +148,9 @@ There is %s in this pile
     def pickUp(self, character):
         """
         get picked up by the supplied character
+
+        Parameters:
+            character: the character trying to pick up the item
         """
 
         # get picked up completely
@@ -152,7 +174,11 @@ There is %s in this pile
     def apply(self, character):
         """
         add more scrap to a scrap pile if available
+
+        Parameters:
+            character: the character trying to add more scrap to the stack
         """
+
         scrapFound = []
         for item in character.inventory:
             if item.type == "Scrap":
@@ -169,6 +195,5 @@ There is %s in this pile
                 character.inventory.remove(item)
 
         self.setWalkable()
-
 
 src.items.addType(Scrap)

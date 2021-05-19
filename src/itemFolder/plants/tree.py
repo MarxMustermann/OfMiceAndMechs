@@ -1,18 +1,18 @@
 import src
 import random
 
-"""
-"""
-
-
 class Tree(src.items.Item):
+    """
+    ingame item serving as an infinite food source
+    """
+
     type = "Tree"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        initialise internal state
+        """
+
         super().__init__(display=src.canvas.displayChars.tree)
 
         self.name = "name"
@@ -30,10 +30,21 @@ class Tree(src.items.Item):
         self.attributesToStore.extend(["maggot", "maxMaggot", "lastUse"])
 
     def regenerateMaggots(self):
+        """
+        regenerate maggots to account for passed time
+        """
+
         self.numMaggots += (src.gamestate.gamestate.tick - self.lastUse) // 100
         self.numMaggots = min(self.numMaggots, self.maxMaggot)
 
     def apply(self, character):
+        """
+        handle a character trying to use this item
+        by dropping some food
+
+        Parameters:
+            character: the character 
+        """
 
         if not self.terrain:
             character.addMessage("The tree has to be on the outside to be used")
@@ -69,12 +80,19 @@ class Tree(src.items.Item):
         self.terrain.addItem(new,(self.xPosition+1,self.yPosition,self.zPosition))
 
     def getLongInfo(self):
+        """
+        returns a longer than normal description text
+        this recalculates the internal state and has side effects
+
+        Returns:
+            the decription text
+        """
+
         self.regenerateMaggots()
         self.lastUse = src.gamestate.gamestate.tick
 
-        text = """
-item: Tree
-
+        text = super().getLongInfo()
+        text += """
 numMaggots: %s
 
 description:
@@ -86,6 +104,5 @@ Activate the tree to harvest a vat maggot.
             self.numMaggots,
         )
         return text
-
 
 src.items.addType(Tree)

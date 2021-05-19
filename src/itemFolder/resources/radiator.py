@@ -1,33 +1,21 @@
 import src
 
-"""
-"""
-
-
 class Radiator(src.items.Item):
+    """
+    ingame item used as ressource. basically does nothing
+    """
+
     type = "Radiator"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
-        super().__init__()
+        """
+        set up initial state
+        """
 
-        self.display = src.canvas.displayChars.coil
+        super().__init__(display = src.canvas.displayChars.coil)
         self.name = "radiator"
+        self.description = "used to build items"
         self.bolted = False
         self.walkable = True
-
-    def getLongInfo(self):
-        text = """
-item: Radiator
-
-description:
-A radiator. Simple building material.
-
-"""
-        return text
-
 
 src.items.addType(Radiator)

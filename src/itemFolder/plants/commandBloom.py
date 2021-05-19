@@ -1,11 +1,19 @@
 import src
 import random
 
-
 class CommandBloom(src.items.Item):
+    """
+    ingame item taking control over the characters
+    """
+
     type = "CommandBloom"
 
     def __init__(self):
+        """
+        ingame item that takes control over npcs
+        a plant reprogramming npc to expand and farm the mold
+        """
+
         super().__init__(display=src.canvas.displayChars.commandBloom)
         self.name = "command bloom"
 
@@ -44,6 +52,14 @@ class CommandBloom(src.items.Item):
         )
 
     def apply(self, character):
+        """
+        handle a character trying to use the item
+        by reprogramming the the character
+
+        Parameters:
+            character: the character trying to use the item
+        """
+
         selfDestroy = False
 
         if not self.xPosition:
@@ -804,6 +820,13 @@ class CommandBloom(src.items.Item):
         )
 
     def runCommandOnNewCrawler(self, newCommand):
+        """
+        create a new npc and run a command on it
+
+        Parameters:
+            newCommand: the command to run on the new crawler
+        """
+
         if not self.numSick:
             return
         newCharacter = src.characters.Monster()
@@ -833,15 +856,16 @@ class CommandBloom(src.items.Item):
 
         return newCharacter
 
-    def configure(self, character):
-        self.charges += 1
-
     def getLongInfo(self):
-        return """
-item: Command Bloom
+        """
+        return a longer than normal description text
 
-description:
-runs commands on any creature activating this item.
+        Returns:
+            the description text
+        """
+
+        text = super().getLongInfo()
+        text += """
 
 charges: %s
 numCoal: %s
@@ -861,6 +885,5 @@ faction: %s
             self.cluttered,
             self.faction,
         )
-
 
 src.items.addType(CommandBloom)

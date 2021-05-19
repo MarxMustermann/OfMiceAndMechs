@@ -1,11 +1,19 @@
 import src
 import random
 
-
+# NIY: not implemented yet
 class HiveMind(src.items.Item):
+    """
+    ingame item that is intended to be a thinking node of a mold civilisation
+    """
+
     type = "HiveMind"
 
     def __init__(self):
+        """
+        set up initial state
+        """
+
         self.territory = []
         self.paths = {}
         super().__init__(display=src.canvas.displayChars.floor_node)
@@ -35,6 +43,14 @@ class HiveMind(src.items.Item):
         )
 
     def apply(self, character):
+        """
+        handle a character trying to use this item
+        by using it to expand the mold
+
+        Parameters:
+            character: the character trying to use this item
+        """
+
         if not self.xPosition:
             character.addMessage("this needs to be placed to be used")
             return
@@ -436,6 +452,13 @@ class HiveMind(src.items.Item):
         )
 
     def doHealthCheckLazy(self, character):
+        """
+        check if the territory is still complete and working
+
+        Parameters:
+            character: the character that can be used to do the action
+        """
+
         if not self.toCheck:
             self.toCheck = self.territory[:]
 
@@ -453,6 +476,14 @@ class HiveMind(src.items.Item):
         return command
 
     def doHealthCheck(self, character, target):
+        """
+        check if a specific par of the territory is still complete and working
+
+        Parameters:
+            character: the character that can be used to do the action
+            target: the part of the territory to check
+        """
+
         character.addMessage(target)
         (movementCommand, secondToLastNode) = self.calculateMovementUsingPaths(target)
         command = movementCommand
@@ -483,6 +514,10 @@ class HiveMind(src.items.Item):
         return command
 
     def calculateMovementUsingPaths(self, target):
+        """
+        get the movement to a specific point on the terrain
+        """
+
         if target not in self.paths:
             return ("", None)
 
@@ -510,15 +545,16 @@ class HiveMind(src.items.Item):
 
         return (command, secondToLastNode)
 
-    def configure(self, character):
-        self.charges += 1
-
     def getLongInfo(self):
-        text = """
-item: 
+        """
+        get a longer than normal description text
 
-description:
+        Returns:
+            the description text
+        """
 
+        text = super().getLongInfo()
+        text += """
 charges: %s
 createdAt: %s
 territory: %s
@@ -562,6 +598,13 @@ paths:
         return text
 
     def getState(self):
+        """
+        get state in semi serialised form
+
+        Returns:
+            the state
+        """
+
         state = super().getState()
         state["paths"] = []
         for (key, value) in self.paths.items():
@@ -582,6 +625,13 @@ paths:
         return state
 
     def setState(self, state):
+        """
+        set state from semi serialised from
+
+        Parameters:
+            state: the state to set
+        """
+
         super().setState(state)
         if "paths" in state:
             self.paths = {}
@@ -617,6 +667,5 @@ paths:
             self.lastCluttered = tuple(state["lastCluttered"])
         if "lastBlocked" in state:
             self.lastBlocked = tuple(state["lastBlocked"])
-
 
 src.items.addType(HiveMind)

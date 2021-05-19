@@ -1,17 +1,17 @@
 import src
 
-"""
-"""
-
-
 class AutoTutor(src.items.Item):
+    """
+    ingame item serving as a tutorial
+    """
+
     type = "AutoTutor"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        set up internal state
+        """
+
         self.knownBlueprints = []
         self.knownInfos = []
         self.availableChallenges = {}
@@ -68,6 +68,14 @@ class AutoTutor(src.items.Item):
         )
 
     def addScraps(self, amount=1):
+        """
+        add scrap to the environment
+
+        Parameters:
+            amount: how much scrap to add
+        Returns:
+            flag indicating wheter or not the scrap was added 
+        """
 
         targetFull = False
         scrapFound = None
@@ -99,7 +107,13 @@ class AutoTutor(src.items.Item):
         return True
 
     def apply(self, character):
-        super().apply(character, silent=True)
+        """
+        handle a character using this item
+        by starting to show the tutorial
+
+        Parameters:
+            character: the character trying to use this item
+        """
 
         self.character = character
 
@@ -119,6 +133,13 @@ class AutoTutor(src.items.Item):
         self.character = character
 
     def step2(self):
+        """
+        handle a character using this item
+        by offering the character a selection of actions
+
+        Parameters:
+            character: the character trying to use this item
+        """
 
         selection = self.submenue.getSelection()
         self.submenue = None
@@ -137,6 +158,13 @@ class AutoTutor(src.items.Item):
             self.character.addMessage("NOT ENOUGH ENERGY")
 
     def challenge(self):
+        """
+        handle a character using this item
+        by confronting the character with a challenge
+
+        Parameters:
+            character: the character trying to use this item
+        """
 
         if not self.activateChallengeDone:
             if not self.initialChallengeDone:
@@ -576,6 +604,13 @@ comment:
             self.character.macroState["submenue"] = self.submenue
 
     def checkForOtherItem(self, itemType):
+        """
+        checks wheter a characters inventory contains exactly one item of a type
+
+        Returns:
+            whether or not items were found
+        """
+
         if len(self.character.inventory) > 2:
             return True
         foundOtherItem = None
@@ -588,6 +623,16 @@ comment:
         return False
 
     def getFromInventory(self, itemType):
+        """
+        get a item of a certain type from the characters inventory
+
+        Parameters:
+            itemType: the type of item to check for
+
+        Returns:
+            the item found or None
+        """
+
         foundItem = None
         for item in self.character.inventory:
             if item.type in [itemType]:
@@ -596,6 +641,10 @@ comment:
         return foundItem
 
     def challengeRun2(self):
+        """
+        handle a character using this item
+        by confronting the character with a second tier of challenges
+        """
 
         selection = self.submenue.getSelection()
         self.submenue = None
@@ -1939,6 +1988,15 @@ comment:
         self.character.macroState["submenue"] = self.submenue
 
     def countInInventory(self, itemType):
+        """
+        count items of a certain type from the characters inventory
+
+        Parameters:
+            itemType: the typ of item to search for
+        Returns:
+            the number of items found
+        """
+
         num = 0
         for item in self.character.inventory:
             if isinstance(item, itemType):
@@ -1946,22 +2004,46 @@ comment:
         return num
 
     def countInInventoryOrRoom(self, itemType):
+        """
+        count items of a certain type from the characters inventory or the local room
+
+        Parameters:
+            itemType: the typ of item to search for
+        Returns:
+            the number of items found
+        """
+
         num = self.countInInventory(itemType)
         for item in self.container.itemsOnFloor:
             if isinstance(item, itemType):
                 num += 1
         return num
 
-    def basicInfo(self):
-        itemsLeft = ["Tank", "Heater", "Connector", "pusher", "puller", "Frame"]
-
     def checkListAgainstInventory(self, itemTypes):
+        """
+        check whether a characters inventory contains items of some types
+
+        Parameters:
+            itemTypes: the items to search for
+        Returns:
+            a list of items not found
+        """
+
         for item in self.character.inventory:
             if item.type in itemTypes:
                 itemTypes.remove(item.type)
         return itemTypes
 
     def checkListAgainstInventoryOrIsRoom(self, itemTypes):
+        """
+        check whether a characters inventory and local room contains items of some types
+
+        Parameters:
+            itemTypes: the items to search for
+        Returns:
+            a list of items not found
+        """
+
         itemTypes = self.checkListAgainstInventory(itemTypes)
         if itemTypes:
             for item in self.container.itemsOnFloor:
@@ -1969,13 +2051,32 @@ comment:
                     itemTypes.remove(item.type)
         return itemTypes
 
+    # abstraction: should use character class functionality
     def checkInInventory(self, itemType):
+        """
+        checks whether a characters inventory contains items of a certain type
+
+        Parameters:
+            itemType: the type of item to search for
+        Returns:
+            flag indication whether or not an item was found
+        """
+
         for item in self.character.inventory:
             if isinstance(item, itemType):
                 return True
         return False
 
     def checkInInventoryOrInRoom(self, itemType):
+        """
+        checks whether a characters inventory or local room contains items of a certain type
+
+        Parameters:
+            itemType: the type of item to search for
+        Returns:
+            flag indication whether or not an item was found
+        """
+
         if self.checkInInventory(itemType):
             return True
         for item in self.container.itemsOnFloor:
@@ -1985,6 +2086,9 @@ comment:
         return False
 
     def basicInfo(self):
+        """
+        show a menu to get basic information from
+        """
 
         options = []
 
@@ -2010,6 +2114,9 @@ comment:
         self.character.macroState["submenue"].followUp = self.level1_selection
 
     def level1_selection(self):
+        """
+        show level1 information
+        """
 
         selection = self.submenue.getSelection()
 
@@ -2218,6 +2325,9 @@ comment:
             self.character.macroState["submenue"] = self.submenue
 
     def stepLevel1Food(self):
+        """
+        show level1 information about food
+        """
 
         selection = self.submenue.getSelection()
 
@@ -2233,6 +2343,9 @@ comment:
             self.character.macroState["submenue"] = self.submenue
 
     def stepLevel1Automation(self):
+        """
+        show level1 information about automation
+        """
 
         selection = self.submenue.getSelection()
 
@@ -2258,6 +2371,9 @@ comment:
             self.character.macroState["submenue"] = self.submenue
 
     def stepLevel1Machines(self):
+        """
+        show level1 information about machines
+        """
 
         selection = self.submenue.getSelection()
 
@@ -2302,6 +2418,9 @@ comment:
             self.character.macroState["submenue"] = self.submenue
 
     def l2Info(self):
+        """
+        show selection for level 2 information
+        """
 
         options = []
 
@@ -2315,6 +2434,9 @@ comment:
         self.character.macroState["submenue"].followUp = self.level2_selection
 
     def level2_selection(self):
+        """
+        show level 2 information
+        """
 
         selection = self.submenue.getSelection()
 
@@ -2332,6 +2454,9 @@ comment:
             self.character.addMessage("unknown selection: " + selection)
 
     def l3Info(self):
+        """
+        show selection for level 3 information
+        """
 
         options = []
 
@@ -2346,6 +2471,9 @@ comment:
         self.character.macroState["submenue"].followUp = self.level3_selection
 
     def level3_selection(self):
+        """
+        show level 3 information
+        """
 
         selection = self.submenue.getSelection()
 
@@ -2368,6 +2496,9 @@ comment:
             self.character.addMessage("unknown selection: " + selection)
 
     def l4Info(self):
+        """
+        show selection for level 4 information
+        """
 
         options = []
 
@@ -2382,6 +2513,9 @@ comment:
         self.character.macroState["submenue"].followUp = self.level4_selection
 
     def level4_selection(self):
+        """
+        show level 4 information
+        """
 
         if selection == "level4_npcCreation":
             self.submenue = src.interaction.TextMenu(
@@ -2399,12 +2533,26 @@ comment:
         return state
 
     def setState(self, state):
+        """
+        load from semi serialised state
+
+        Parameters:
+            state: the state to load
+        """
+
         super().setState(state)
         self.availableChallenges = state["availableChallenges"]
         self.knownBlueprints = state["knownBlueprints"]
         self.knownInfos = state["knownInfos"]
 
     def getLongInfo(self):
+        """
+        returns a description text
+
+        Returns:
+            the description text
+        """
+
         text = """
 
 This machine hold the information and practices needed to build a base.
@@ -2413,6 +2561,5 @@ Activate/Apply it to complete challenges and gain more information.
 
 """
         return text
-
 
 src.items.addType(AutoTutor)

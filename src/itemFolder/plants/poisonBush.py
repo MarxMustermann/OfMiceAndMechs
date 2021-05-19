@@ -1,18 +1,37 @@
 import src
 
-
 class PoisonBush(src.items.Item):
+    """
+    a hard to remove poison plant
+    """
+
     type = "PoisonBush"
 
     def __init__(self):
+        """
+        set up internal state
+        """
+
         super().__init__(display=src.canvas.displayChars.poisonBush)
         self.name = "poison brush"
+        self.description = ""
+        self.usageInfo = """
+You can use it to loose 100 satiation.
+"""
 
         self.walkable = False
         self.charges = 0
         self.attributesToStore.extend(["charges"])
 
     def apply(self, character):
+        """
+        handle a character trying to use this item
+        by killing the character
+
+        Parameters:
+            character: the character trying to use this item
+        """
+
         self.charges += 1
         if 100 > character.satiation:
             character.satiation = 0
@@ -29,6 +48,13 @@ class PoisonBush(src.items.Item):
         character.addMessage("you give your blood to the poison bush")
 
     def spawn(self, distance=1):
+        """
+        spawn a new poison bloom
+
+        Parameters:
+            distance: the spawning distance
+        """
+
         if not (self.xPosition and self.yPosition):
             return
         direction = (
@@ -53,20 +79,25 @@ class PoisonBush(src.items.Item):
             self.container.addItem(new,newPos)
 
     def getLongInfo(self):
-        return "poison charges: %s" % (self.charges)
+        """
+        returns a longer than normal description text
 
-    def getLongInfo(self):
-        return """
-item: Poison Bush
+        Returns:
+            the description text
+        """
 
-description:
-This a cluster of blooms with a network veins connecting them. Its spore sacks shriveled and are covered in green slime.
-
-actions:
-You can use it to loose 100 satiation.
-"""
+        text = super().getLongInfo()
+        text += "poison charges: %s" % (self.charges)
+        return text
 
     def destroy(self, generateSrcap=True):
+        """
+        destroy the item and leave a exploding thing
+
+        Parameters:
+            generateSrcap: flag to toggle leaving residue
+        """
+
         new = itemMap["FireCrystals"]()
         self.container.addItem(new,self.getPosition())
 
@@ -85,12 +116,6 @@ You can use it to loose 100 satiation.
         ]
 
         character.faction = "monster"
-
-        def splitCommand(newCommand):
-            splittedCommand = []
-            for char in newCommand:
-                splittedCommand.append(char)
-            return splittedCommand
 
         command = ""
         if src.gamestate.gamestate.tick % 4 == 0:
@@ -120,13 +145,12 @@ You can use it to loose 100 satiation.
         if self.yPosition % 4 == 3:
             command += "D"
 
-        character.macroState["macros"]["m"] = splitCommand(command + "_m")
+        character.macroState["macros"]["m"] = list(command + "_m")
 
         character.macroState["commandKeyQueue"] = [("_", []), ("m", [])]
         character.satiation = 100
         self.container.addCharacter(character, self.xPosition, self.yPosition)
 
         super().destroy(generateSrcap=False)
-
 
 src.items.addType(PoisonBush)

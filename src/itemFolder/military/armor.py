@@ -1,22 +1,21 @@
 import src
 import random
 
-"""
-"""
-
-
 class Armor(src.items.Item):
+    """
+    ingame item increasing the players armor
+    """
+
     type = "Armor"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
-        super().__init__()
+        """
+        set up internal state    
+        """
+
+        super().__init__(display="ar")
 
         self.name = "armor"
-        self.display = "ar"
 
         self.bolted = False
         self.walkable = True
@@ -24,14 +23,28 @@ class Armor(src.items.Item):
         self.damageType = "attacked"
 
     def getArmorValue(self, damageType):
+        """
+        returns the items armor value
+
+        Parameters:
+            damageType: the damage type to armor against
+        """
+
         if damageType == self.damageType:
             return self.armorValue
         return 0
 
     def getLongInfo(self):
-        text = """
-item: Armor
+        """
+        returns a longer than normal description text
 
+        Returns:
+            the description text
+        """
+
+        text = super().getLongInfo()
+
+        text += """
 armorvalue:
 %s
 
@@ -44,8 +57,12 @@ protects you in combat
         return text
 
     def apply(self, character):
+        """
+        handle a character trying to use this item
+        by equiping it
+        """
+
         character.armor = self
         self.container.removeItem(self)
-
 
 src.items.addType(Armor)

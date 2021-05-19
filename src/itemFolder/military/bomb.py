@@ -2,38 +2,47 @@ import src
 
 
 class Bomb(src.items.Item):
+    """
+    ingame item to kill things and destroy stuff
+    """
+
     type = "Bomb"
 
-    """
-    almost straightforward state initialization
-    """
-
     def __init__(self):
+        """
+        initialise state
+        """
 
         super().__init__(display=src.canvas.displayChars.bomb)
 
         self.name = "bomb"
+        self.description = "designed to explode"
+        self.usageInfo = """
+The explosion will damage/destroy everything on the current tile or the container.
+
+Activate it to trigger a exlosion.
+"""
 
         self.bolted = False
         self.walkable = True
 
-    def getLongInfo(self):
-
-        text = """
-
-A simple Bomb. It explodes when destroyed.
-
-The explosion will damage/destroy everything on the current tile or the container.
-
-Activate it to trigger a exlosion.
-
-"""
-        return text
-
     def apply(self, character):
+        """
+        handle a character trying to use this item
+        by exploding
+
+        Parameters:
+            character: the character trying to use this item
+        """
+
         self.destroy()
 
     def destroy(self, generateSrcap=True):
+        """
+        handle this item getting destroyed
+        by exploding
+        """
+
         xPosition = self.xPosition
         yPosition = self.yPosition
 
@@ -94,6 +103,5 @@ Activate it to trigger a exlosion.
                     continue
                 item.destroy()
         """
-
 
 src.items.addType(Bomb)

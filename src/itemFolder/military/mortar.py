@@ -1,16 +1,22 @@
 import src
 
-
+# NIY: not properly implemented
 class Mortar(src.items.Item):
+    """
+    ingame item allowing to do ranged attacks with explosives
+    """
+
     type = "Mortar"
-    """
-    almost straightforward state initialization
-    """
+
 
     def __init__(self):
+        """
+        initialise internal state
+        """
 
         super().__init__(display=src.canvas.displayChars.mortar)
         self.name = "mortar"
+        self.description = "allow to deliver exlosives over a distance"
 
         self.bolted = False
         self.loaded = False
@@ -20,6 +26,11 @@ class Mortar(src.items.Item):
         self.attributesToStore.extend(["loaded", "precision"])
 
     def apply(self, character):
+        """
+        handle a character trying to use this item
+        by dooing the ranged attack
+        """
+
         if not self.loaded:
             itemFound = None
             for item in character.inventory:
@@ -94,11 +105,15 @@ class Mortar(src.items.Item):
             bomb.destroy()
 
     def getLongInfo(self):
+        """
+        returns a longer than normal description text
+
+        Returns:
+            the description text
+        """
 
         text = (
             """
-
-A mortar. Load it with bombs and activate it to fire.
 
 It fires 10 steps to the south. Its current precision is """
             + str(self.precision)
@@ -107,6 +122,5 @@ It fires 10 steps to the south. Its current precision is """
 """
         )
         return text
-
 
 src.items.addType(Mortar)

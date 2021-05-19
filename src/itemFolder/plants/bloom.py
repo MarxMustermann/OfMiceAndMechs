@@ -1,20 +1,35 @@
 import src
 import random
 
-
 class Bloom(src.items.Item):
+    """
+    ingame item used as a food source
+    """
+
     type = "Bloom"
 
     def __init__(self):
+        """
+        set up internal state
+        """
+
         super().__init__(display=src.canvas.displayChars.bloom)
 
         self.name = "bloom"
+        self.description = "blossomed mold"
         self.bolted = False
         self.walkable = True
         self.dead = False
         self.attributesToStore.extend(["dead"])
 
     def apply(self, character):
+        """
+        handle a character trying to use this item
+
+        Parameters:
+            character: the character trying to use this item
+        """
+
         if not self.container:
             character.addMessage("this needs to be placed to be used")
             return
@@ -31,6 +46,10 @@ class Bloom(src.items.Item):
             character.addMessage("you eat the bloom and gain 115 satiation")
 
     def startSpawn(self):
+        """
+        schedule spawning new mold
+        """
+
         if not (self.dead or self.xPosition is None or self.yPosition is None):
             event = src.events.RunCallbackEvent(
                 src.gamestate.gamestate.tick
@@ -45,12 +64,23 @@ class Bloom(src.items.Item):
             self.container.addEvent(event)
 
     def pickUp(self, character):
+        """
+        handle getting picked up by a character
+
+        Parameters:
+            character: the character picking the item uo
+        """
+
         self.bolted = False
         self.localSpawn()
         self.dead = True
         super().pickUp(character)
 
     def spawn(self):
+        """
+        swapn new mold
+        """
+
         if self.dead:
             return
         if not (self.xPosition and self.yPosition):
@@ -70,6 +100,10 @@ class Bloom(src.items.Item):
             new.startSpawn()
 
     def localSpawn(self):
+        """
+        spawn a new patch of mold
+        """
+
         if not self.dead:
             new = src.items.itemMap["Mold"]()
             new.charges = 4
@@ -77,24 +111,33 @@ class Bloom(src.items.Item):
             new.startSpawn()
 
     def getLongInfo(self):
+        """
+        return a longer description text than usual
+
+        Returns:
+            the description text
+        """
+
+        text = super().getLongInfo()
+
         satiation = 115
         if self.dead:
             satiation = 100
-        return """
-item: Bloom
-
-description:
-This is a mold bloom.
-
+        text += """
 you can eat it to gain %s satiation.
 """ % (
             satiation
         )
 
+        return text
+
     def destroy(self, generateSrcap=True):
+        """
+        destroy this item and spawn new mold
+        """
+
         self.localSpawn()
 
         super().destroy(generateSrcap=False)
-
 
 src.items.addType(Bloom)

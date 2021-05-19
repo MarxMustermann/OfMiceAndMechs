@@ -5,10 +5,15 @@ class StockpileMetaManager(src.items.Item):
     type = "StockpileMetaManager"
 
     """
-    call superclass constructor with modified parameters
+    ingame item to mangage multiple stockpile manager
+    this is used as a logistics system between manufacturing locations
     """
 
     def __init__(self):
+        """
+        set up internal state
+        """
+
         self.jobOrders = []
         self.commands = {}
         self.stockPiles = []
@@ -57,39 +62,26 @@ class StockpileMetaManager(src.items.Item):
             "test": self.test,
         }
 
+    # NIY: dummy functionality
     def addTask(self, character):
+        """
+        handle a character trying to add a task to this machine
+
+        Parameters:
+            character: the character trying to use this machine
+        """
+
         self.tasks.append({"task": "extend storage"})
 
-    def applyOld(self, character):
-        if not (
-            character.xPosition == self.xPosition
-            and character.yPosition == self.yPosition - 1
-        ):
-            character.addMessage("this item can only be used from north")
-            return
-        if self.blocked and not self.character.dead:
-            character.runCommandString("Js")
-            character.addMessage("item blocked - auto retry")
-            return
-
-        self.lastAction = "apply"
-
-        self.blocked = True
-        options = [
-            ("clearInventory", "clear inventory"),
-            ("addItem", "add item"),
-            ("addTask", "add Task"),
-            ("doMaintenance", "do maintenance"),
-            ("test", "test"),
-        ]
-        self.submenue = src.interaction.SelectionMenu(
-            "what do you want to do?", options
-        )
-        character.macroState["submenue"] = self.submenue
-        character.macroState["submenue"].followUp = self.apply2
-        self.character = character
-
+    # bad code: debug should not be added in like this
     def test(self, character):
+        """
+        call a debug or test function
+
+        Parameters:
+            character: the character trying to use this item
+        """
+
         character = src.characters.Character(name="logistics npc")
         character.godMode = True
         character.xPosition = self.xPosition
@@ -101,6 +93,13 @@ class StockpileMetaManager(src.items.Item):
         character.runCommandString("_a")
 
     def doMaintenance(self, character):
+        """
+        handle a character trying to do a maintenance task
+
+        Parameters:
+            character: the character trying to use this item
+        """
+
         """
         if self.tasks:
             task = self.tasks.pop()
@@ -429,6 +428,13 @@ class StockpileMetaManager(src.items.Item):
         self.blocked = False
 
     def doClearInventory(self, character):
+        """
+        handle a character trying to clear its inventory
+
+        Parameters:
+            character: the character trying to use this item
+        """
+
         self.lastAction = "clearInventory"
 
         amount = len(character.inventory)
@@ -437,6 +443,13 @@ class StockpileMetaManager(src.items.Item):
         self.blocked = False
 
     def doAddItem(self, character):
+        """
+        handle a character trying to add an item to storage
+
+        Parameters:
+            character: the character trying to use this item
+        """
+
         self.lastAction = "addItem"
 
         if not character.inventory:
@@ -503,6 +516,14 @@ class StockpileMetaManager(src.items.Item):
         self.blocked = False
 
     def configure(self, character):
+        """
+        handle a character trying to configure this machine
+        by offering a selection of configuration options
+
+        Parameters:
+            character: the character trying to configure the machine
+        """
+
         if self.blocked:
             character.runCommandString("sc")
             character.addMessage("item blocked - auto retry")
@@ -529,6 +550,14 @@ class StockpileMetaManager(src.items.Item):
         self.character = character
 
     def doAddStockpile(self, task, context=None):
+        """
+        handle the task to integrate a stockpile into this items management
+
+        Parameters:
+            task: details about this task
+            context: the context for this task
+        """
+
         nodeName = task["nodeName"]
         self.stockPiles.append(task["nodeName"])
         self.stockPileInfo[task["nodeName"]] = {}
@@ -541,6 +570,11 @@ class StockpileMetaManager(src.items.Item):
         self.stockPileInfo[task["nodeName"]]["active"] = False
 
     def configure2(self):
+        """
+        handle a character having selected a configuration action to run
+        by running it
+        """
+
         self.lastAction = "configure2"
         if self.submenue.selection == "runJobOrder":
             if not self.character.jobOrders:
@@ -705,6 +739,11 @@ class StockpileMetaManager(src.items.Item):
             self.character.macroState["submenue"].followUp = self.setCommand
 
     def stockPileSelection(self):
+        """
+        handle a character trying to configure a stockpile
+        by spawning submenus for the detailed configuration
+        """
+
         if not self.stockPile:
             self.stockPile = self.submenue.selection
             options = [
@@ -749,6 +788,10 @@ class StockpileMetaManager(src.items.Item):
             return
 
     def configureStockpile(self):
+        """
+        handle a character trying to configure a specific stockpiles settings
+        """
+
         if not self.stockPile:
             self.stockPile = self.submenue.selection
             options = []
@@ -798,7 +841,12 @@ class StockpileMetaManager(src.items.Item):
         self.stockPileInfo[self.stockPile][self.settingType] = settingValue
         self.blocked = False
 
+    # obsolete: plots and building should be managed by the architect
     def addPlot(self):
+        """
+        add a plot to this items management
+        """
+
         position = (self.xPosition, self.yPosition - 1)
         items = self.container.getItemByPosition(position)
         mapFound = None
@@ -829,6 +877,10 @@ class StockpileMetaManager(src.items.Item):
         self.blocked = False
 
     def addStockpile(self):
+        """
+        add a stockpile to this items management
+        """
+
         position = (self.xPosition, self.yPosition - 1)
         items = self.container.getItemByPosition(position)
         mapFound = None
@@ -858,6 +910,10 @@ class StockpileMetaManager(src.items.Item):
         self.blocked = False
 
     def setCommand(self):
+        """
+        set a command that should be run in certain situations
+        """
+
         itemType = self.submenue.selection
 
         commandItem = None
@@ -881,6 +937,13 @@ class StockpileMetaManager(src.items.Item):
         return
 
     def runCommand(self, trigger):
+        """
+        run a command on a character
+
+        Parameters:
+            trigger: identifier for the situation to run the command for
+        """
+
         if trigger not in self.commands:
             return
 
@@ -895,8 +958,15 @@ class StockpileMetaManager(src.items.Item):
         )
 
     def getState(self):
+        """
+        get this items state in semi-serialised state
+        ensures job orders are stored in full form
+
+        Returns:
+            the state
+        """
+
         state = super().getState()
-        state["commands"] = self.commands
         jobOrderStates = []
         for item in self.jobOrders:
             jobOrderStates.append(item.getState())
@@ -904,6 +974,13 @@ class StockpileMetaManager(src.items.Item):
         return state
 
     def setState(self, state):
+        """
+        load state from semi serialised form
+
+        Parameters:
+            state: the state to load
+        """
+
         super().setState(state)
         if "commands" in state:
             self.commands = state["commands"]
@@ -913,6 +990,14 @@ class StockpileMetaManager(src.items.Item):
                 self.jobOrders.append(getItemFromState(jobOrderState))
 
     def getLongInfo(self):
+        """
+        get a longer than normal description text
+
+        Returns:
+            the description text
+        """
+
+        text = super().getLongInfo()
         stockPileInfo = ""
         for (stockpile, info) in self.stockPileInfo.items():
             stockPileInfo += "\n  %s: " % (stockpile,)
@@ -920,9 +1005,7 @@ class StockpileMetaManager(src.items.Item):
                 if key in ("pathTo", "pathFrom"):
                     continue
                 stockPileInfo += "  %s: %s " % (key, value)
-        text = """
-item: StockpileMetaManager
-
+        text += """
 tasks:
 %s
 
@@ -960,6 +1043,5 @@ description:
             self.roomManagerName,
         )
         return text
-
 
 src.items.addType(StockpileMetaManager)

@@ -2,47 +2,59 @@ import src
 
 
 class ProductionManager(src.items.Item):
+    """
+    ingame item ment to coordinate production of things
+    """
+
     type = "ProductionManager"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        initialise internal state
+        """
+
         self.commands = {}
 
         super().__init__(display=src.canvas.displayChars.productionManager)
 
         self.name = "production manager"
+        self.description = "allows to set commands for production of items."
 
         self.bolted = False
         self.walkable = False
 
     def getLongInfo(self):
+        """
+        return a longer than normal description text
+
+        Returns:
+            the text description
+        """
+
+        super().getLongInfo()
 
         commandsString = ""
         for (itemType, command) in self.commands.items():
             commandsString += "* " + itemType + " " + str(command) + "\n"
 
-        text = """
-item: ProductionManager
-
-description:
-allows to set commands for production of items.
-job order can be inserted and commands can be run depending on the item the job order is for.
-
-%s
+        text += """
 
 commands:
-%s
 
 """ % (
             commandsString,
-            self.commands,
         )
         return text
 
     def apply(self, character):
+        """
+        handle a character trying to use this item
+        by offering a selection of possible actions
+
+        Parameters:
+            character: the character tyring to use this item
+        """
+
         if not (
             character.xPosition == self.xPosition
             and character.yPosition == self.yPosition - 1
@@ -76,8 +88,11 @@ commands:
             self.macroSafe = None
 
     def apply2(self):
-        self.character.addMessage("self.submenue.selection")
-        self.character.addMessage(self.submenue.selection)
+        """
+        handle a character having selected an action to run
+        by running the action
+        """
+
         if self.submenue.selection == "runJobOrder":
             jobOrder = None
             for item in reversed(self.character.inventory):
@@ -158,6 +173,11 @@ commands:
             self.character.macroState["submenue"].followUp = self.setCommand
 
     def setCommand(self):
+        """
+        handle a character tyring to set a command
+        by offering a selection of situation to run the command in
+        """
+
         itemType = self.submenue.selection
 
         commandItem = None
@@ -180,6 +200,11 @@ commands:
         return
 
     def setCommand2(self):
+        """
+        handle a character having selected what command to set
+        by setting it
+        """
+
         itemType = self.submenue.selection
 
         if not len(self.macroSafe) > 1:
@@ -191,6 +216,10 @@ commands:
         )
 
     def runCommand(self):
+        """
+        runs a preset command on a character
+        """
+
         itemType = self.submenue.selection
         command = self.commands[itemType]
 
@@ -204,16 +233,5 @@ commands:
         self.character.addMessage(
             "running command to produce %s - %s" % (itemType, command)
         )
-
-    def getState(self):
-        state = super().getState()
-        state["commands"] = self.commands
-        return state
-
-    def setState(self, state):
-        super().setState(state)
-        if "commands" in state:
-            self.commands = state["commands"]
-
 
 src.items.addType(ProductionManager)

@@ -7,6 +7,7 @@ class UniformStockpileManager(src.items.Item):
     items will be nearby
     is intended to help the player with automation
     is used with prefabs and in logistics
+    does NOT support random access
     """
 
     type = "UniformStockpileManager"

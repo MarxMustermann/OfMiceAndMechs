@@ -1,17 +1,20 @@
 import src
 
-"""
-"""
-
-
 class Machine(src.items.Item):
+    """
+    ingame item that produces items using ressources
+    """
+
     type = "Machine"
 
-    """
-    call superclass constructor with modified parameters
-    """
+    def __init__(self, seed=0):
+        """
+        call superclass constructor with modified parameters
 
-    def __init__(self, name="Machine", seed=0):
+        Parameters:
+            seed: the rng seed
+        """
+
         self.toProduce = "Wall"
 
         self.coolDown = 100
@@ -23,20 +26,32 @@ class Machine(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.machine, seed=seed)
         self.name = "machine"
+        self.usageInfo = """
+Prepare for production by placing the input materials to the west/left/noth/top of this machine.
+Activate the machine to produce.
+"""
 
         self.attributesToStore.extend(["toProduce", "level", "productionLevel"])
 
-        self.baseName = name
+        self.baseName = self.name
 
-        self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges"])
+        self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges","commands"])
 
         self.setDescription()
         self.resetDisplay()
 
     def setDescription(self):
+        """
+        recalculate the machines description
+        """
+
         self.description = self.baseName + " MetalBar -> %s" % (self.toProduce,)
 
     def resetDisplay(self):
+        """
+        recalculate how the machine is shown
+        """
+
         chars = "X\\"
         display = (src.interaction.urwid.AttrSpec("#aaa", "black"), chars)
         toProduce = self.toProduce
@@ -87,15 +102,25 @@ class Machine(src.items.Item):
         self.display = display
 
     def setToProduce(self, toProduce):
+        """
+        set what type of item the machine should produe
+
+        Parameters:
+            toProduce: the type of items to produce
+        """
+
         self.toProduce = toProduce
         self.setDescription()
         self.resetDisplay()
 
-    """
-    trigger production of a player selected item
-    """
-
     def apply(self, character):
+        """
+        handle a character trying to use this machine to produce an item
+
+        Parameters:
+            character: the character trying to produce an item
+        """
+
 
         if not self.xPosition:
             character.addMessage("this machine has to be placed to be used")
@@ -212,18 +237,18 @@ class Machine(src.items.Item):
         self.runCommand("success", character)
 
     def getLongInfo(self):
+        """
+        returns a longer than normal description text
+
+        Parameters:
+            the description text
+        """
+
         coolDownLeft = self.coolDown - (
             src.gamestate.gamestate.tick - self.coolDownTimer
         )
 
         text = """
-item: Machine
-
-description:
-This Machine produces %s.
-
-Prepare for production by placing the input materials to the west/left/noth/top of this machine.
-Activate the machine to produce.
 
 After using this machine you need to wait %s ticks till you can use this machine again.
 
@@ -264,7 +289,16 @@ Currently the machine has no charges
 
         return text
 
+    # abstraction: use super class function
     def configure(self, character):
+        """
+        handle a character trying to do a configuration action
+        by offering a selection of possible actions
+
+        Parameters:
+            character: the character trying to use the machine
+        """
+
         options = [("addCommand", "add command")]
         self.submenue = src.interaction.OneKeystrokeMenu(
             "what do you want to do?\n\nc: add command\nj: run job order"
@@ -273,7 +307,13 @@ Currently the machine has no charges
         character.macroState["submenue"].followUp = self.apply2
         self.character = character
 
+    # abstraction: use super class function
     def apply2(self):
+        """
+        handle a character having selected a configuraion option
+        by running the action
+        """
+
         if self.submenue.keyPressed == "j":
             if not self.character.jobOrders:
                 self.character.addMessage("no job order found")
@@ -313,7 +353,12 @@ Currently the machine has no charges
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setCommand
 
+    # abstraction: use super class functionality
     def setCommand(self):
+        """
+        set a command to run in certain situations
+        """
+
         itemType = self.submenue.selection
 
         commandItem = None
@@ -335,7 +380,16 @@ Currently the machine has no charges
         )
         return
 
+    # abstraction: use super class functionality
     def runCommand(self, trigger, character):
+        """
+        run a preconfigured command
+
+        Parameters:
+            trigger (string): indicator for what command to run
+            character: the character to run the command on
+        """
+
         if trigger not in self.commands:
             return
 
@@ -352,17 +406,16 @@ Currently the machine has no charges
             "running command to handle trigger %s - %s" % (trigger, command)
         )
 
-    def getState(self):
-        state = super().getState()
-        state["commands"] = self.commands
-        return state
-
     def setState(self, state):
+        """
+        load state from semi-serialised state
+
+        Parameters:
+            state: the state to load
+        """
+
         super().setState(state)
-        if "commands" in state:
-            self.commands = state["commands"]
         self.setDescription()
         self.resetDisplay()
-
 
 src.items.addType(Machine)

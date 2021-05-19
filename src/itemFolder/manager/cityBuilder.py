@@ -14,7 +14,7 @@ class CityBuilder(src.items.Item):
 
     def __init__(self, name="CityBuilder", noId=False):
         """
-        set up the initialstate
+        set up the initial state
         """
 
         super().__init__(display="CB", name=name)
@@ -71,6 +71,14 @@ class CityBuilder(src.items.Item):
         )
 
     def addTasksToLocalRoom(self, tasks, character):
+        """
+        delegate tasks to the room the item is in
+
+        Parameters:
+            tasks: the tasks to delegate
+            character: the character that can be used to carry the tasks to the room
+        """
+
         jobOrder = src.items.itemMap["JobOrder"]()
         jobOrder.tasks = list(
             reversed(
@@ -102,6 +110,14 @@ class CityBuilder(src.items.Item):
         character.runCommandString("Jj.j")
 
     def apply(self, character):
+        """
+        handle a character trying to use the item
+        by offerin a selection of possible actions
+
+        Parameters:
+            character: the character trying to use the menu
+        """
+
         options = [
             ("showMap", "show map"),
             ("addTaskExpand", "add task expand"),
@@ -126,6 +142,14 @@ class CityBuilder(src.items.Item):
         self.character = character
 
     def costGuard(self, cost, character):
+        """
+        check and remove required ressources
+
+        Parameters:
+            cost: the ressources needed
+            character: the character tyig to do something
+        """
+
         for (resourceType, amount) in cost.items():
             availableAmount = self.resources.get(resourceType)
 
@@ -147,6 +171,11 @@ class CityBuilder(src.items.Item):
             return True
 
     def apply2(self):
+        """
+        handle a character having selected a action to do
+        by dooing the action
+        """
+
         character = self.character
 
         selection = self.submenue.selection
@@ -263,6 +292,10 @@ class CityBuilder(src.items.Item):
         self.unusedRoadTiles.remove(plot)
 
     def triggerExpandStorage(self):
+        """
+        extend own tasks to initiate expanding the internal storage
+        """
+
         if not self.storageCoordinate:
             self.storageCoordinate = self.submenue.selection
 
@@ -317,6 +350,10 @@ class CityBuilder(src.items.Item):
         self.tasks.append(newTask)
 
     def triggerAddRoom(self):
+        """
+        extend own tasks to initiate building a room
+        """
+
         plot = self.submenue.selection
         if not plot:
             self.character.addMessage("no selection")
@@ -330,6 +367,10 @@ class CityBuilder(src.items.Item):
         self.tasks.append(newTask)
 
     def reservePlot(self):
+        """
+        mark a plot as unavailble for building
+        """
+
         plot = self.submenue.selection
         if not plot:
             self.character.addMessage("no selection")
@@ -343,6 +384,10 @@ class CityBuilder(src.items.Item):
         self.reservedPlots.append(plot)
 
     def triggerExpand(self):
+        """
+        extend own tasks to expand the city
+        """
+
         newTask = {"task": "expand"}
         if self.submenue.selection and not self.submenue.selection == "random":
             newTask["from"] = self.submenue.selection
@@ -350,6 +395,15 @@ class CityBuilder(src.items.Item):
         self.tasks.append(newTask)
 
     def doRegisterResult(self, task, context):
+        """
+        handle processing a report on something
+        used to check if job orders were completed successful
+
+        Parameters:
+            tasks: the tasks to delegate
+            character: the character that can be used to carry the tasks to the room
+        """
+
         character = context["character"]
 
         error = context["jobOrder"].error
@@ -384,12 +438,25 @@ class CityBuilder(src.items.Item):
         self.runningTasks = []
 
     def registerError(self, error):
+        """
+        go into an error state
+
+        Parameters:
+            error: the error to register
+        """
+
         task = self.runningTasks.pop()
         self.tasks.append(task)
         self.error = error
 
     def doIdleExtend(self, character):
-        character
+        """
+        try to expand the city due to having no other task
+
+        Parameters:
+            character: the character available to do the task
+        """
+        
         if self.idleExtend:
             if len(self.plotPool) < self.numReservedPathPlots + self.numBufferPlots:
                 self.tasks.append({"task": "expand"})
@@ -398,6 +465,13 @@ class CityBuilder(src.items.Item):
         character.addMessage("no tasks left")
 
     def getTaskResolvers(self):
+        """
+        get list of resolvers
+
+        Returns:
+            a dictionary mapping resovers to tasks
+        """
+
         taskDict = {}
         self.addTriggerToTriggerMap(taskDict, "expand", self.doExpand)
         self.addTriggerToTriggerMap(taskDict, "build roads", self.doBuildRoads)
@@ -417,6 +491,13 @@ class CityBuilder(src.items.Item):
         return taskDict
 
     def doSetUpRoom(self, context):
+        """
+        handle a task to set up a room
+
+        Parameters:
+            context: the context for this task
+        """
+
         character = context["character"]
         task = context["task"]
         plot = task["plot"]
@@ -433,9 +514,23 @@ class CityBuilder(src.items.Item):
         self.usedPlots.append(tuple(plot))
 
     def doSetUpInternalStorage(self, context):
+        """
+        handle a task to set up a system for internal item storage
+
+        Parameters:
+            context: the context for this task
+        """
+
         self.tasks.append({"task": "extend storage"})
 
     def doExtendStorage(self, context):
+        """
+        handle a task to extend to storage space of the internal item storage
+        
+        Parameters:
+            context: the context for this task
+        """
+
         character = context["character"]
         task = context["task"]
 
@@ -507,6 +602,13 @@ class CityBuilder(src.items.Item):
         self.useJoborderRelayToLocalRoom(character, tasks, "ArchitectArtwork")
 
     def doPrepareScrapField(self, context):
+        """
+        handle a task to extend to storage space of the internal item storage
+        
+        Parameters:
+            context: the context for this task
+        """
+
         character = context["character"]
         self.useJoborderRelayToLocalRoom(
             character,
@@ -520,7 +622,14 @@ class CityBuilder(src.items.Item):
             "RoadManager",
         )
 
-    def doSetUpBasicProduction(self, character):
+    def doSetUpBasicProduction(self, context):
+        """
+        handle a task to add basic production capabilities
+        
+        Parameters:
+            context: the context for this task
+        """
+
         self.addTasksToLocalRoom(
             [
                 {"task": "add machine", "type": "FloorPlate"},
@@ -530,6 +639,12 @@ class CityBuilder(src.items.Item):
         )
 
     def doBuildRoads(self, context):
+        """
+        handle a task to extend to storage space of the internal item storage
+        
+        Parameters:
+            context: the context for this task
+        """
 
         character = context["character"]
         task = context["task"]
@@ -589,9 +704,19 @@ class CityBuilder(src.items.Item):
             self.runningTasks = []
 
     def abortTask(self):
+        """
+        abort the currently running task
+        """
         self.tasks.append(self.runningTasks.pop())
 
     def doExpand(self, context):
+        """
+        handle the task of expandng the city
+        
+        Parameters:
+            context: the context for this task
+        """
+
         if not self.plotPool:
             return
 
@@ -614,6 +739,13 @@ class CityBuilder(src.items.Item):
         return
 
     def doMaintenance(self, character):
+        """
+        handle a character trying to do a maintenance task
+
+        Parameters:
+            character: the character trying to do the maintenance task
+        """
+
         if (
             "go to room manager" not in self.commands
             and "return from room manager" in self.commands
@@ -648,6 +780,13 @@ class CityBuilder(src.items.Item):
                 taskResolver({"character": character, "task": task})
 
     def doSetUpFactory(self, context):
+        """
+        handle the task of building a factory
+
+        Parameters:
+            context: the context for this task
+        """
+
         character = context["character"]
         task = context["task"]
 
@@ -666,6 +805,13 @@ class CityBuilder(src.items.Item):
         )
 
     def doSetUpMine(self, context):
+        """
+        handle the task of setting up a mine
+
+        Parameters:
+            context: the context for this task
+        """
+
         character = context["character"]
         task = context["task"]
 
@@ -951,6 +1097,13 @@ class CityBuilder(src.items.Item):
         )
 
     def expandFromPlot(self, plot):
+        """
+        expand the city by converting a plot into a road
+        
+        Parameters:
+            plot: the plot to convert
+        """
+
         self.usedPlots.append(plot)
         self.plotPool.remove(plot)
 
@@ -994,6 +1147,14 @@ class CityBuilder(src.items.Item):
                     self.expandFromPlot(plot)
 
     def showMap(self, character):
+        """
+        handle a character trying to view the map of the city
+        (the map shows what this item thinks is true not actual truth)
+
+        Parameters:
+            character: the character to show the map to
+        """
+
         mapContent = []
         for x in range(0, 15):
             mapContent.append([])
@@ -1027,18 +1188,40 @@ class CityBuilder(src.items.Item):
         character.macroState["submenue"] = self.submenue
 
     def getConfigurationOptions(self, character):
+        """
+        register the configuration options with superclass
+
+        Parameters:
+            character: the character trying to conigure the machine
+        """
+
         options = super().getConfigurationOptions(character)
         options["x"] = ("show map", self.showMap)
         options["e"] = ("retry task", self.retryTask)
         return options
 
     def retryTask(self, character):
+        """
+        handle a character trying to restart the currently running task
+        by restarting the current task
+
+        Parameters:
+            character: character using this item
+        """
+
         self.error = {}
         if self.runningTasks:
             self.tasks.extend(self.runningTasks)
             self.runningTasks = []
 
     def getLongInfo(self):
+        """
+        return a longer than normal description text
+
+        Returns:
+            the description text
+        """
+
         text = """
 resources:
 %s
@@ -1090,6 +1273,5 @@ scrapFields:
             self.scrapFields,
         )
         return text
-
 
 src.items.addType(CityBuilder)

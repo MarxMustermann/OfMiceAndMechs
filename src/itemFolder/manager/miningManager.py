@@ -1,24 +1,32 @@
 import src
 import random
 
-"""
-"""
-
-
 class MiningManager(src.items.Item):
+    """
+    ingame item managing the the operation of a mine
+    """
+
     type = "MiningManager"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        call superclass constructor with modified parameters
+        """
+
         super().__init__(display="MM")
 
         self.name = "mining manager"
         self.runsJobOrders = True
 
     def apply(self, character):
+        """
+        handle a character trying to use this item
+        by offering a selection of possible actions
+
+        Parameters:
+            character: the character trying to use the machine
+        """
+
         options = [
             ("do maintenace", "do maintenace"),
             ("mine", "mine"),
@@ -33,6 +41,11 @@ class MiningManager(src.items.Item):
         self.character = character
 
     def apply2(self):
+        """
+        handle a character having selected a action to do
+        by running the action
+        """
+
         character = self.character
 
         selection = self.submenue.selection
@@ -137,11 +150,23 @@ class MiningManager(src.items.Item):
             character.runCommandString("Jj.j")
 
     def getJobOrderTriggers(self):
+        """
+        register handlers for tasks run via job order
+        """
+
         result = super().getJobOrderTriggers()
         self.addTriggerToTriggerMap(result, "set up", self.doSetUp)
         return result
 
     def doSetUp(self, task, context):
+        """
+        handle the task of setting up something
+
+        Parameters:
+            task: details about this task
+            context: context about this task
+        """
+        
         """
         self.useJoborderRelayToLocalRoom(character,[
             {"task":"set up","setupInfo":{
@@ -359,6 +384,12 @@ class MiningManager(src.items.Item):
         )
 
     def getLongInfo(self):
+        """
+        get longer than normal description text
+
+        Returns:
+            the description text
+        """
 
         text = """
 commands:

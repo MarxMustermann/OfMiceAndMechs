@@ -1,15 +1,32 @@
 import src
 
-
 class Container(src.items.Item):
+    """
+    ingame item to store other items
+    """
+
     type = "Container"
 
     def __init__(self):
+        """
+        initialise internal state
+        """
+
         super().__init__()
 
         self.contained = []
         self.display = src.canvas.displayChars.container
         self.name = "container"
+        self.description = "The container is used to carry and store small items"
+        self.usageInfo = """
+= load items =
+prepare by placing the bloom container on the ground and placing the items to the east of the container.
+Activate the bloom container and select the option "load items" to load the blooms into the container.
+
+= unload items =
+prepare by placing the container on the ground.
+Activate the container and select the option "unload items" to unload the items.
+"""
 
         self.charges = 0
         self.maxItems = 10
@@ -18,12 +35,16 @@ class Container(src.items.Item):
         self.attributesToStore.extend(["charges", "maxCharges", "level"])
 
     def getLongInfo(self):
-        text = """
-item: Container
+        """
+        returns a longer than normal description text
 
-description:
-The container is used to carry and store small items.
+        Returns:
+            the description text
+        """
 
+        text = super().getLongInfo()
+
+        text += """
 it holds the items. It can hold a maximum of %s items.
 
 This is a level %s item.
@@ -50,17 +71,18 @@ the container is empty
 
 actions:
 
-= load items =
-prepare by placing the bloom container on the ground and placing the items to the east of the container.
-Activate the bloom container and select the option "load items" to load the blooms into the container.
-
-= unload items =
-prepare by placing the container on the ground.
-Activate the container and select the option "unload items" to unload the items.
 """
         return text
 
     def getState(self):
+        """
+        return the items state in a semi-serialised form
+        and ensures the contained items are saved
+
+        Returns:
+            the state in semi-serialised form
+        """
+
         state = super().getState()
         state["contained"] = []
         for item in self.contained:
@@ -68,13 +90,29 @@ Activate the container and select the option "unload items" to unload the items.
         return state
 
     def setState(self, state):
+        """
+        loads state from semi-serialised form
+        ensure the contained items are created
+
+        Parameters:
+            state: the state to load
+        """
+
         super().setState(state)
 
         if "contained" in state:
             for item in state["contained"]:
                 self.contained.append(getItemFromState(item))
 
+    # bad code: should use super class functionality
     def apply(self, character):
+        """
+        handle a character trying to use this item 
+        by offering a selection of possible actions
+        Parameters:
+            character: the character trying to use the machine
+        """
+
         options = []
         options.append(("load", "load items"))
         options.append(("unload", "unload items"))
@@ -86,6 +124,11 @@ Activate the container and select the option "unload items" to unload the items.
         self.character = character
 
     def doSelection(self):
+        """
+        handle a character having selected an action to do
+        by running the action
+        """
+
         selection = self.submenue.selection
         if selection == "load":
             if len(self.contained) >= self.maxItems:
@@ -144,6 +187,5 @@ Activate the container and select the option "unload items" to unload the items.
 
                 toAdd.append(new)
             self.container.addItems(toAdd)
-
 
 src.items.addType(Container)

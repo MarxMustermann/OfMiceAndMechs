@@ -1,22 +1,22 @@
 import src
 
-"""
-scrap to metal bar converter
-"""
-
-
 class ScrapCompactor(src.items.Item):
+    """
+    ingame item that converts scrapt to metal bars
+    """
+
     type = "ScrapCompactor"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        set up internal state
+        """
+
         super().__init__()
 
         self.display = src.canvas.displayChars.scrapCompactor
         self.name = "scrap compactor"
+        self.description = "This machine converts scrap into metal bars."
 
         self.coolDown = 100
         self.coolDownTimer = -self.coolDown
@@ -24,13 +24,16 @@ class ScrapCompactor(src.items.Item):
         self.level = 1
         self.commands = {}
 
-        self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges", "level"])
+        self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges", "level","commands"])
 
-    """
-    produce a metal bar
-    """
+    def apply(self, character):
+        """
+        handle a character trying to use this item to produce a metal bar
 
-    def apply(self, character, resultType=None):
+        Parameters:
+            character: the character trying to use the item
+        """
+
         if not self.container:
             character.addMessage("this machine has be somewhere to be used")
             return
@@ -135,17 +138,21 @@ class ScrapCompactor(src.items.Item):
         self.runCommand("success", character)
 
     def getLongInfo(self):
+        """
+        returns a longer than normal description text
+
+        Returns:
+           a longer than normal description text 
+        """
+
+        text = super().getLongInfo()
+
         directions = "west"
         if self.level > 1:
             directions += "/south"
         if self.level > 2:
             directions += "/north"
-        text = """
-item: ScrapCompactor
-
-description:
-This machine converts scrap into metal bars. Metal bars are a form of metal that can be used to produce other things.
-
+        text += """
 Place scrap to the %s of the machine and activate it 
 
 After using this machine you need to wait %s ticks till you can use this machine again.
@@ -192,6 +199,14 @@ thie is a level %s item
         return text
 
     def configure(self, character):
+        """
+        handle a character trying to configure the machine
+        by offering a selection of possible actions
+
+        Parameters:
+            character: the character trying to use the machine
+        """
+
         options = [("addCommand", "add command")]
         self.submenue = src.interaction.SelectionMenu(
             "what do you want to do?", options
@@ -201,6 +216,11 @@ thie is a level %s item
         self.character = character
 
     def apply2(self):
+        """
+        handle a character having selected a configuration action
+        by running the action
+        """
+
         if self.submenue.selection == "runCommand":
             options = []
             for itemType in self.commands:
@@ -223,6 +243,10 @@ thie is a level %s item
             self.character.macroState["submenue"].followUp = self.setCommand
 
     def setCommand(self):
+        """
+        set a command to be run in certain situations
+        """
+
         itemType = self.submenue.selection
 
         commandItem = None
@@ -245,6 +269,14 @@ thie is a level %s item
         return
 
     def runCommand(self, trigger, character):
+        """
+        run a preconfigured command
+
+        Parameters:
+            trigger (string): indicator for what command to run
+            character: the character to run the command on
+        """
+
         if trigger not in self.commands:
             return
 
@@ -260,16 +292,5 @@ thie is a level %s item
         character.addMessage(
             "running command to handle trigger %s - %s" % (trigger, command)
         )
-
-    def getState(self):
-        state = super().getState()
-        state["commands"] = self.commands
-        return state
-
-    def setState(self, state):
-        super().setState(state)
-        if "commands" in state:
-            self.commands = state["commands"]
-
 
 src.items.addType(ScrapCompactor)

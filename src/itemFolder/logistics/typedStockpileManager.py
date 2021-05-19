@@ -2,13 +2,20 @@ import src
 
 
 class TypedStockpileManager(src.items.Item):
+    """
+    ingame item that manages item storage
+    items are stored near the machine
+    this is intended to relieve the player from one of the more complicated autmation tasks
+    supports random access to items
+    """
+
     type = "TypedStockpileManager"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        set up the internal state
+        """
+
         self.freeItemSlots = {}
 
         self.freeItemSlots[1] = []
@@ -59,11 +66,23 @@ class TypedStockpileManager(src.items.Item):
         self.slotsByItemtype = {}
         super().__init__(display=src.canvas.displayChars.typedStockpileManager)
         self.name = "typed stockpile manager"
+        self.description = "managers stockpiles with different types of items"
+        self.usageInfo = """
+needs to be placed in the center of a tile. The tile should be emtpy and mold free for proper function.
+"""
 
         self.bolted = False
         self.walkable = False
 
     def configure(self, character):
+        """
+        handle a character trying to configure this machine
+        by offering a selection of possible actions
+
+        Parameters:
+            character: the character trying to use the machine
+        """
+
         self.submenue = src.interaction.OneKeystrokeMenu(
             "what do you want to do?\n\nj: use job order"
         )
@@ -72,6 +91,10 @@ class TypedStockpileManager(src.items.Item):
         self.character = character
 
     def configure2(self):
+        """
+        handle a character having selected what configuration task should be done
+        by dooing the selected task
+        """
         if not self.character.jobOrders:
             return
 
@@ -82,13 +105,16 @@ class TypedStockpileManager(src.items.Item):
             jobOrder.popTask()
 
     def getLongInfo(self):
+        """
+        return a longer than normal description text
 
-        text = """
-item: TypedStockpileManager
+        Returns:
+            the description text
+        """
 
-description:
-needs to be placed in the center of a tile. The tile should be emtpy and mold free for proper function.
+        text = super().getLongInfo()
 
+        text += """
 slotsByItemtype
 %s
 """ % (
@@ -97,6 +123,14 @@ slotsByItemtype
         return text
 
     def apply(self, character):
+        """
+        handle a character trying to use this item
+        by offering a selection of actions to do
+
+        Parameters:
+            character: the character trying to use the item
+        """
+
         if not (
             character.xPosition == self.xPosition
             and character.yPosition == self.yPosition - 1
@@ -117,6 +151,11 @@ slotsByItemtype
         self.character = character
 
     def apply2(self):
+        """
+        handle a character having selected a action to do
+        by running the action
+        """
+
         if self.submenue.selection == "storeItem":
             if not self.freeItemSlots:
                 self.character.addMessage("no free item slot")
@@ -239,6 +278,9 @@ slotsByItemtype
             return
 
     def fetchItem(self):
+        """
+        handle a character trying to fetch an item
+        """
 
         if self.submenue.selection is None:
             return
@@ -305,6 +347,7 @@ slotsByItemtype
                 command += "4w"
             command += "dwwa"
 
+        # abstration: should use character functionality
         convertedCommand = []
         for char in command:
             convertedCommand.append((char, "norecord"))
@@ -315,6 +358,13 @@ slotsByItemtype
         self.character.addMessage("running command to fetch item %s" % (command))
 
     def fetchSpecialRegisterInformation(self):
+        """
+        returns some of the objects state to be stored ingame in a characters registers
+
+        Returns:
+            a dictionary containing the information
+        """
+
         result = super().fetchSpecialRegisterInformation()
         for itemType in self.slotsByItemtype.keys():
             result["num " + str(itemType) + " stored"] = len(
@@ -332,7 +382,15 @@ slotsByItemtype
         result["max amount"] = maxAmount
         return result
 
+    # bad code: should use super class functionality
     def getState(self):
+        """
+        get the items state in semi-serialised form
+
+        Returns:
+            the state in semi-serialised form
+        """
+        
         state = super().getState()
         state["slotsByItemtype"] = self.slotsByItemtype
 
@@ -345,7 +403,15 @@ slotsByItemtype
 
         return state
 
+    # bad code: should use super class functionality
     def setState(self, state):
+        """
+        set state from state in semi-serialised form
+
+        Parameters:
+            state: the state to set
+        """
+
         super().setState(state)
         if "slotsByItemtype" in state:
             self.slotsByItemtype = state["slotsByItemtype"]

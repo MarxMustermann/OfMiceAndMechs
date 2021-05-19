@@ -1,18 +1,20 @@
 import src
 
-"""
-gomode item for terraforming and things
-"""
-
-
+# NIY: ressources are teleported in instead of beeing carried around
 class RoadManager(src.items.Item):
+    """
+    ingame item for handling roads 
+    this means building roads and pathfinding on roads
+    """
+
+
     type = "RoadManager"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        initialise internal state
+        """
+
         super().__init__(display="RM")
 
         self.name = "road manager"
@@ -45,6 +47,13 @@ class RoadManager(src.items.Item):
         )
 
     def generatePaths(self, character):
+        """
+        calculate and store paths on the road network
+
+        Parameters:
+            character: the character triggering this action
+        """
+
         text = ""
         for (
             key,
@@ -108,6 +117,13 @@ class RoadManager(src.items.Item):
         character.macroState["submenue"] = self.submenue
 
     def getJobOrderTriggers(self):
+        """
+        register handlers for handling job order tasks
+
+        Returns:
+            a dict of lists containing the handlers
+        """
+
         result = super().getJobOrderTriggers()
         self.addTriggerToTriggerMap(result, "clear paths", self.jobOrderClearPaths)
         self.addTriggerToTriggerMap(
@@ -118,6 +134,14 @@ class RoadManager(src.items.Item):
         return result
 
     def getCommandStringForPath(self, start, end):
+        """
+        get the keystrokes required to walk a path
+
+        Parameters:
+            start: the big coordiate to start on
+            end: the big coordiate to end on
+        """
+
         start = tuple(start)
         end = tuple(end)
 
@@ -161,6 +185,14 @@ class RoadManager(src.items.Item):
         return command
 
     def doPrintPaths(self, task, context):
+        """
+        handle the task of printing a path onto a job order
+
+        Parameters:
+            task: details about this task
+            context: the context for this task
+        """
+
         self.generatePaths(context["character"])
         self.character = context["character"]
         context["jobOrder"].information["pathTo"] = self.getCommandStringForPath(
@@ -171,6 +203,14 @@ class RoadManager(src.items.Item):
         )
 
     def jobOrderAddPathingNode(self, task, context):
+        """
+        handle the task of adding a pathing node
+
+        Parameters:
+            task: details about this task
+            context: the context for this task
+        """
+
         if not self.center:
             self.center = [self.container.xPosition, self.container.yPosition]
             self.roadNetwork[tuple(self.center)] = {"type": "roomCenterBlocked"}
@@ -180,9 +220,25 @@ class RoadManager(src.items.Item):
         self.doAddPathingNode(task)
 
     def jobOrderClearPaths(self, task, context):
+        """
+        handle the task of clearing paths on a big coordinate
+
+        Parameters:
+            task: details about this task
+            context: the context for this task
+        """
+
         self.doClearPaths(task["coordinate"][0], task["coordinate"][1])
 
     def doAddRoad(self, task, context):
+        """
+        handle the task of adding a road
+
+        Parameters:
+            task: details about this task
+            context: the context for this task
+        """
+
         terrain = self.getTerrain()
 
         bigX = task["coordinate"][0]
@@ -259,6 +315,13 @@ class RoadManager(src.items.Item):
             )
 
     def doAddPathingNode(self, task):
+        """
+        add a pathing node
+
+        Parameters:
+            task: details about the original task
+        """
+
         terrain = self.getTerrain()
 
         nodeName = task["nodeName"]
@@ -309,6 +372,14 @@ class RoadManager(src.items.Item):
         terrain.addItem(pathingNode, (bigX * 15 + offsetX, bigY * 15 + offsetY, 0))
 
     def doClearPaths(self, x, y):
+        """
+        clear paths on a big coordiante
+
+        Parameters:
+            x: the x part of the coordinate
+            y: the y part of the coordinate
+        """
+
         terrain = self.getTerrain()
 
         minX = 15 * x
@@ -324,7 +395,12 @@ class RoadManager(src.items.Item):
         terrain.removeItems(toRemove)
 
     def getLongInfo(self):
-        text = """
+        """
+        return a longer than normal description text
+        """
+
+        text = super().getLongInfo()
+        text += """
 roadNetwork:
 %s
 

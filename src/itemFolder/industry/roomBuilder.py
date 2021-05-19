@@ -1,26 +1,36 @@
 import src
 import src.rooms
 
-"""
-"""
-
-
 class RoomBuilder(src.items.Item):
+    """
+    ingame items to build rooms
+    """
+
     type = "RoomBuilder"
 
-    """
-    call superclass constructor with modified paramters
-    """
-
     def __init__(self):
+        """
+        set up internal state
+        """
+
         super().__init__(display=src.canvas.displayChars.roomBuilder)
         self.name = "RoomBuilder"
+        self.description = "The roombuilder creates rooms from basic items."
+        self.usageInfo = """
+Place Walls and and Doors around the room builder and activate the room builder to create a room.
 
-    """
-    map player controls to room movement 
-    """
+The room has to be a rectangle.
+"""
 
     def apply(self, character):
+        """
+        handle a character trying to build a room
+        by trying to build a room
+
+        Parameters:
+            character: the character trying to use this item
+        """
+
         if self.xPosition is None:
             character.addMessage("this machine can not be used within rooms")
             return
@@ -224,20 +234,5 @@ class RoomBuilder(src.items.Item):
         self.xPosition = roomLeft
         self.yPosition = roomTop
         room.addItems([self])
-
-    def getLongInfo(self):
-        text = """
-item: RoomBuilder
-
-description:
-The roombuilder creates rooms from basic items.
-
-Place Walls and and Doors around the room builder and activate the room builder to create a room.
-
-The room has to be a rectangle.
-
-"""
-        return text
-
 
 src.items.addType(RoomBuilder)

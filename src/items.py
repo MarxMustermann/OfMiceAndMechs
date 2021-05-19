@@ -611,6 +611,7 @@ class Item(src.saveing.Saveable):
     def getJobOrderTriggers(self):
         """
         returns a dict of lists containing callbacks to be triggered by a job order
+
         Returns:
             a dict of lists
         """
@@ -623,6 +624,7 @@ class Item(src.saveing.Saveable):
     def doRegisterResult(self, task, context):
         """
         dummy callback for registering success or failure of a job order
+
         Parameters:
             task: the task details
             context: the context of the task

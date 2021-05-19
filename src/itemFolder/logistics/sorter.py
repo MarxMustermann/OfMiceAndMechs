@@ -2,27 +2,42 @@ import src
 
 
 class Sorter(src.items.Item):
+    """
+    ingame item allowing to sort items
+    """
+
     type = "Sorter"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        set up internal state
+        """
+
         super().__init__()
 
         self.display = src.canvas.displayChars.sorter
         self.name = "sorter"
+        self.description = "A sorter can sort items."
+        self.usageInfo = """
+To sort item with a sorter place the item you want to compare against on the north.
+Place the item or items to be sorted on the west of the sorter.
+Activate the sorter to sort an item.
+Matching items will be moved to the south and non matching items will be moved to the east.
+"""
+
         self.coolDown = 10
         self.coolDownTimer = -self.coolDown
 
         self.attributesToStore.extend(["coolDown", "coolDownTimer"])
 
-    """
-    """
+    def apply(self, character):
+        """
+        handle a character trying to use the item to sort other items
+        by trying to sor items
 
-    def apply(self, character, resultType=None):
-        super().apply(character, silent=True)
+        Parameters:
+            character: the character trying to use the item
+        """
 
         # fetch input scrap
         itemFound = None
@@ -95,21 +110,5 @@ class Sorter(src.items.Item):
             return
 
         self.container.addItem(itemFound,targetPos)
-
-    def getLongInfo(self):
-        text = """
-item: Sorter
-
-description:
-A sorter can sort items.
-
-To sort item with a sorter place the item you want to compare against on the north.
-Place the item or items to be sorted on the west of the sorter.
-Activate the sorter to sort an item.
-Matching items will be moved to the south and non matching items will be moved to the east.
-
-"""
-        return text
-
 
 src.items.addType(Sorter)

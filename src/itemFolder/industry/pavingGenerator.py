@@ -2,13 +2,17 @@ import src
 
 
 class PavingGenerator(src.items.Item):
+    """
+    ingame item producing pavement
+    """
+
     type = "PavingGenerator"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        set up internal state
+        """
+
         self.coolDown = 100
         self.coolDownTimer = -self.coolDown
         self.charges = 3
@@ -18,14 +22,18 @@ class PavingGenerator(src.items.Item):
         super().__init__(display="PG")
 
         self.name = "paving generator"
+        self.description = "This machine converts scrap into paving"
 
-        self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges", "level"])
+        self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges", "level", "commands"])
 
-    """
-    produce a paving
-    """
+    def apply(self, character):
+        """
+        handle a character trying to use the machine
 
-    def apply(self, character, resultType=None):
+        Parameters:
+            character: the character trying to use the machine
+        """
+
         if not self.container:
             character.addMessage("this machine has be somewhere to be used")
             return
@@ -114,16 +122,19 @@ class PavingGenerator(src.items.Item):
         self.runCommand("success", character)
 
     def getLongInfo(self):
+        """
+        returns a longer than normal description text
+
+        Parameters:
+            the description text
+        """
+
         directions = "west"
         if self.level > 1:
             directions += "/south"
         if self.level > 2:
             directions += "/north"
         text = """
-item: ScrapCompactor
-
-description:
-This machine converts scrap into metal bars. Metal bars are a form of metal that can be used to produce other things.
 
 Place scrap to the %s of the machine and activate it 
 
@@ -170,7 +181,16 @@ thie is a level %s item
         )
         return text
 
+    # abstraction: should use super class functionality
     def configure(self, character):
+        """
+        handle a character trying to configure the machine
+        by offering a selection of possible actions
+
+        Parameters:
+            character: the character trying to use the machine
+        """
+
         options = [("addCommand", "add command")]
         self.submenue = src.interaction.SelectionMenu(
             "what do you want to do?", options
@@ -179,7 +199,13 @@ thie is a level %s item
         character.macroState["submenue"].followUp = self.apply2
         self.character = character
 
+    # abstraction: should use super class functionality
     def apply2(self):
+        """
+        handle a character having selected what action to do
+        by running the action
+        """
+
         if self.submenue.selection == "runCommand":
             options = []
             for itemType in self.commands:
@@ -201,7 +227,12 @@ thie is a level %s item
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setCommand
 
+    # abstraction: should use super class fuctionality
     def setCommand(self):
+        """
+        set a command that should be run in certain situations
+        """
+
         itemType = self.submenue.selection
 
         commandItem = None
@@ -223,7 +254,16 @@ thie is a level %s item
         )
         return
 
+    # abstraction: should use super class fuctionality
     def runCommand(self, trigger, character):
+        """
+        run a preconfigured command
+
+        Parameters:
+            trigger (string): indicator for what command to run
+            character: the character to run the command on
+        """
+
         if trigger not in self.commands:
             return
 
@@ -239,16 +279,5 @@ thie is a level %s item
         character.addMessage(
             "running command to handle trigger %s - %s" % (trigger, command)
         )
-
-    def getState(self):
-        state = super().getState()
-        state["commands"] = self.commands
-        return state
-
-    def setState(self, state):
-        super().setState(state)
-        if "commands" in state:
-            self.commands = state["commands"]
-
 
 src.items.addType(PavingGenerator)

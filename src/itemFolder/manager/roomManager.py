@@ -990,7 +990,7 @@ class RoomManager(src.items.Item):
         """
 
         text = super().getLongInfo()
-        text = """
+        text += """
 
 itemPositions:
 %s

@@ -162,7 +162,13 @@ class ItemCollector(src.items.Item):
     # abstraction: should use super class function
     def configure(self, character):
         """
+        handle character trying to to a complex interation with the item
+        by offering a selections o actions to do
+
+        Parameters:
+            character: a character trying to use the item
         """
+
         options = [("addCommand", "add command")]
         self.submenue = src.interaction.SelectionMenu(
             "what do you want to do?", options
@@ -172,6 +178,10 @@ class ItemCollector(src.items.Item):
         self.character = character
 
     def configure2(self):
+        """
+        handle a character having selected a complex action to run
+        """
+
         if self.submenue.selection == "addCommand":
             options = []
             options.append(("empty", "no items left"))
@@ -183,6 +193,10 @@ class ItemCollector(src.items.Item):
             self.character.macroState["submenue"].followUp = self.setCommand
 
     def setCommand(self):
+        """
+        set a command to run in certain situations
+        """
+
         itemType = self.submenue.selection
 
         commandItem = None

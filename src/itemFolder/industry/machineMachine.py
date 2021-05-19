@@ -1,17 +1,18 @@
 import src
 
-"""
-"""
-
-
 class MachineMachine(src.items.Item):
+    """
+    ingame machine to produce machines that produce item
+    requires blueprints for producing machines
+    """
+
     type = "MachineMachine"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        set up interal state
+        """
+
         self.coolDown = 1000
         self.coolDownTimer = -self.coolDown
         self.charges = 3
@@ -22,16 +23,33 @@ class MachineMachine(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.machineMachine)
         self.name = "machine machine"
+        self.description = "This machine produces machines that build machines. It needs blueprints to do that."
+        self.usageInfo = """
+You can load blueprints into this machine.
+Prepare by placing a blueprint to the above/north of this machine.
+After activation select "load blueprint" and the blueprint will be added.
+
+You can produce machines for blueprints that were added.
+Prepare for production by placing metal bars to the west/left of this machine.
+Activate the machine to start producing. You will be shown a list of things to produce.
+Select the thing to produce and confirm.
+"""
 
         self.attributesToStore.extend(
             ["coolDown", "coolDownTimer", "endProducts", "charges", "level"]
         )
 
-    """
-    trigger production of a player selected item
-    """
+        
+    # abstraction: should use super class fuctionality
+    def apply(self, character):
+        """
+        handle a character trying to use this item
+        by offering a list of possible actions
 
-    def apply(self, character, resultType=None):
+        Parameters:
+            character: the character trying to use the machine
+        """
+
         super().apply(character, silent=True)
 
         options = []
@@ -44,7 +62,16 @@ class MachineMachine(src.items.Item):
         character.macroState["submenue"].followUp = self.basicSwitch
         self.character = character
 
+    # abstraction: should use superclass functionality
     def configure(self, character):
+        """
+        handle a character trying to configure the item
+        by offering a selection of configuration options
+
+        Parameters:
+            character: the character tryig to use the item
+        """
+
         options = [("addCommand", "add command")]
         self.submenue = src.interaction.OneKeystrokeMenu(
             "what do you want to do?\n\nc: add command\nj: run job order"
@@ -53,7 +80,13 @@ class MachineMachine(src.items.Item):
         character.macroState["submenue"].followUp = self.configure2
         self.character = character
 
+    # abstraction: should use superclass functionality
     def configure2(self):
+        """
+        handle a character having selected a configuration action
+        by running the selected action
+        """
+
         if self.submenue.keyPressed == "j":
             if not self.character.jobOrders:
                 self.character.addMessage("no job order found")
@@ -65,7 +98,13 @@ class MachineMachine(src.items.Item):
             if task["task"] == "produce machine":
                 self.produce(task["type"])
 
+    # abstraction: should use superclass functionality
     def basicSwitch(self):
+        """
+        handle a character having seleted a activation action
+        by running the selected action
+        """
+
         selection = self.character.macroState["submenue"].getSelection()
         if selection == "blueprint":
             self.addBlueprint()
@@ -73,6 +112,10 @@ class MachineMachine(src.items.Item):
             self.productionSwitch()
 
     def addBlueprint(self):
+        """
+        try to load a blueprint into the machine
+        """
+
         blueprintFound = None
         if (self.xPosition, self.yPosition - 1) in self.container.itemByCoordinates:
             for item in self.container.itemByCoordinates[
@@ -98,6 +141,10 @@ class MachineMachine(src.items.Item):
         self.container.removeItem(blueprintFound)
 
     def productionSwitch(self):
+        """
+        handle a character trying to produce a item
+        by offering a selection of machines that can be produced
+        """
 
         if self.endProducts == {}:
             self.character.addMessage("no blueprints available.")
@@ -122,18 +169,20 @@ class MachineMachine(src.items.Item):
         self.character.macroState["submenue"] = self.submenue
         self.character.macroState["submenue"].followUp = self.produceSelection
 
-    """
-    trigger production of the selected item
-    """
-
     def produceSelection(self):
+        """
+        trigger production of a selected item
+        """
+
         self.produce(self.submenue.selection)
 
-    """
-    produce an item
-    """
+    def produce(self, itemType):
+        """
+        produce an item
 
-    def produce(self, itemType, resultType=None):
+        Parameters:
+            ItemType: the typeof item that can be produced by the produced machine
+        """
 
         # gather a metal bar
         resourcesNeeded = ["MetalBars"]
@@ -191,33 +240,17 @@ class MachineMachine(src.items.Item):
 
         self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
 
-    def getState(self):
-        state = super().getState()
-        state["endProducts"] = self.endProducts
-        state["blueprintLevels"] = self.blueprintLevels
-        return state
-
-    def setState(self, state):
-        super().setState(state)
-        self.endProducts = state["endProducts"]
-        self.blueprintLevels = state["blueprintLevels"]
-
     def getLongInfo(self):
-        text = """
-item: MachineMachine
+        """
+        shows a longer than normal description text
 
-description:
-This machine produces machines that build machines. It needs blueprints to do that.
+        Returns:
+            the description text
+        """
 
-You can load blueprints into this machine.
-Prepare by placing a blueprint to the above/north of this machine.
-After activation select "load blueprint" and the blueprint will be added.
+        text = super().getLongInfo()
 
-You can produce machines for blueprints that were added.
-Prepare for production by placing metal bars to the west/left of this machine.
-Activate the machine to start producing. You will be shown a list of things to produce.
-Select the thing to produce and confirm.
-
+        text += """
 After using this machine you need to wait %s ticks till you can use this machine again.
 """ % (
             self.coolDown,

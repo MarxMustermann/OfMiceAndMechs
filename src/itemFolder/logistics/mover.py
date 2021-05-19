@@ -2,27 +2,40 @@ import src
 
 
 class Mover(src.items.Item):
+    """
+    ingame item to move other items a short distance
+    inteded to help with coding edgecases
+    """
+
     type = "Mover"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        call superclass constructor with modified parameters
+        """
+
         super().__init__(display=src.canvas.displayChars.sorter)
         self.name = "mover"
+        self.description = "A mover moves items"
+        self.usageInfo = """
+Place the item or items to the west of the mover.
+activate the mover to move one item to the east of the mover.
+"""
 
-    """
-    """
+    def apply(self, character):
+        """
+        handle a character trying to us this item to move items
+        by trying to move the items
 
-    def apply(self, character, resultType=None):
+        Parameters:
+            character: the character trying to use this item
+        """
+
         if self.xPosition is None:
             character.addMessage("this machine needs to be placed to be used")
             return
 
-        super().apply(character, silent=True)
-
-        # fetch input scrap
+        # fetch input
         itemFound = None
         for item in self.container.getItemByPosition(
             (self.xPosition - 1, self.yPosition)
@@ -34,7 +47,7 @@ class Mover(src.items.Item):
             character.addMessage("nothing to be moved")
             return
 
-        # remove resources
+        # remove input
         self.container.removeItem(itemFound)
 
         targetPos = (self.xPosition + 1, self.yPosition)
@@ -62,19 +75,5 @@ class Mover(src.items.Item):
             return
 
         self.container.addItems([itemFound])
-
-    def getLongInfo(self):
-        text = """
-item: Mover
-
-description:
-A mover moves items
-
-Place the item or items to the west of the mover.
-activate the mover to move one item to the east of the mover.
-
-"""
-        return text
-
 
 src.items.addType(Mover)

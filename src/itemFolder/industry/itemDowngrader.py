@@ -2,13 +2,32 @@ import src
 
 
 class ItemDowngrader(src.items.Item):
+    """
+    ingame item to downgrade other items
+    """
+
     type = "ItemDowngrader"
 
     def __init__(self):
+        """
+        set up internal state
+        """
+
         super().__init__(display="ID")
         self.name = "item downgrader"
+        self.description = "the item downgrader downgrades items"
+        self.usageInfo = """
+Place item to upgrade to the west and the downgraded item will be placed to the east.
+"""
 
     def apply(self, character):
+        """
+        handle a character trying to use this item to downgrade another item
+
+        Parameters:
+            character: the character trying to use the item
+        """
+
         if self.xPosition is None:
             character.addMessage("this machine has to be placed to be used")
             return
@@ -72,19 +91,5 @@ class ItemDowngrader(src.items.Item):
         inputItem.xPosition = self.xPosition + 1
         inputItem.yPosition = self.yPosition
         self.container.addItems([inputItem])
-
-    def getLongInfo(self):
-        text = """
-item: ItemDowngrader
-
-description:
-
-the item downgrader downgrades items
-
-Place item to upgrade to the west and the downgraded item will be placed to the east.
-
-"""
-        return text
-
 
 src.items.addType(ItemDowngrader)

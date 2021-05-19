@@ -1,29 +1,39 @@
 import src
 
-"""
-"""
-
-
 class Scraper(src.items.Item):
+    """
+    ingame item to destroy other items
+    """
+
     type = "Scraper"
 
-    """
-    call superclass constructor with modified parameters
-    """
+    def __init__(self):
+        """
+        set up internal state 
+        """
 
-    def __init__(self, name="scraper", noId=False):
         self.coolDown = 10
         self.coolDownTimer = -self.coolDown
         self.charges = 3
 
-        super().__init__(display=src.canvas.displayChars.scraper, name=name)
+        super().__init__(display=src.canvas.displayChars.scraper)
+        self.name = "scraper"
+        self.description = "A scrapper shreds items to scrap"
+        self.usageInfo = """
+Place an item to the west and activate the scrapper to shred an item.
+"""
 
         self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges"])
 
-    """
-    """
+    # bug: should destroy the item instead of placing scrap
+    def apply(self, character):
+        """
+        handle a character trying to use this item to destroy another item
 
-    def apply(self, character, resultType=None):
+        Parameters:
+            character: the character trying to use the item
+        """
+
         super().apply(character, silent=True)
 
         # fetch input scrap
@@ -77,18 +87,5 @@ class Scraper(src.items.Item):
         # spawn scrap
         new = itemMap["Scrap"](amount=1)
         self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
-
-    def getLongInfo(self):
-        text = """
-item: Scrapper
-
-description:
-A scrapper shreds items to scrap.
-
-Place an item to the west and activate the scrapper to shred an item.
-
-"""
-        return text
-
 
 src.items.addType(Scraper)

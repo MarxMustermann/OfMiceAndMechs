@@ -1,19 +1,19 @@
 import src
 import random
 
-"""
-gomode item for terraforming and things
-"""
-
-
 class ArchitectArtwork(src.items.Item):
+    """
+    god mode item for terraforming and things
+    also used to build stuff ingame
+    """
+
     type = "ArchitectArtwork"
 
-    """
-    call superclass constructor with modified parameters
-    """
-
     def __init__(self):
+        """
+        configure super class and initialise internal state
+        """
+
         super().__init__(display="AA")
 
         self.name = "scrap compactor"
@@ -22,6 +22,13 @@ class ArchitectArtwork(src.items.Item):
         self.attributesToStore.extend(["godMode"])
 
     def getJobOrderTriggers(self):
+        """
+        returns a dict of lists containing callbacks to be triggered by a job order
+
+        Returns:
+            a dict of lists
+        """
+
         result = super().getJobOrderTriggers()
         self.addTriggerToTriggerMap(
             result, "add scrap field", self.jobOrderAddScrapField
@@ -32,7 +39,17 @@ class ArchitectArtwork(src.items.Item):
         )
         return result
 
+    # obsolete: stockpile are build on existing roads only
     def doConnectStockpile(self, task, context):
+        """
+        connect a stockpile to something else
+        this is done by sending npcs around and delegating tasks
+
+        Parameters:
+            task: detail for this task
+            context: the context for this task
+        """
+
         jobOrder = context["jobOrder"]
 
         if "pathFrom" not in jobOrder.information:
@@ -164,11 +181,27 @@ class ArchitectArtwork(src.items.Item):
                 del jobOrder.information["pathTo"]
 
     def jobOrderAddScrapField(self, task, character):
+        """
+        spawn a scrap field (god mode)
+
+        Parameters:
+            task: detail for this task
+            context: the context for this task
+        """
+
         self.doAddScrapfield(
             task["coordinate"][0], task["coordinate"][1], task["amount"]
         )
 
     def doSetUp(self, task, context):
+        """
+        build a structure
+
+        Parameters:
+            task: detail for this task
+            context: the context for this task
+        """
+
         if task["type"] == "stockPile":
             self.useJoborderRelayToLocalRoom(
                 context["character"],
@@ -324,6 +357,14 @@ class ArchitectArtwork(src.items.Item):
             )
 
     def doRegisterResult(self, task, context):
+        """
+        handle getting a report about a job done
+
+        Parameters:
+            task: detail for this task
+            context: the context for this task
+        """
+
         if context["jobOrder"].error:
             if not context["jobOrder"].getTask():
                 context["character"].jobOrders.pop()
@@ -331,10 +372,15 @@ class ArchitectArtwork(src.items.Item):
                     jobOrder = context["character"].jobOrders[-1]
                     jobOrder.error = context["jobOrder"].error
 
-    """
-    """
-
     def apply(self, character):
+        """
+        handle a character trying to use his item
+        by offering a selection of possible actions
+
+        Parameters:
+            character: the character trying to use this item
+        """
+
         options = [
             ("showMap", "shop map of the area"),
             ("addScrapField", "add scrap field"),
@@ -350,10 +396,20 @@ class ArchitectArtwork(src.items.Item):
         character.macroState["submenue"].followUp = self.apply2
         self.character = character
 
+    # bad code: should not exist
     def test(self):
+        """
+        show debug info or trigger a test function
+        """
+
         pass
 
     def apply2(self):
+        """
+        handle a character having selected an action
+        by running the action
+        """
+
         if self.submenue.selection == "test":
             self.test()
         if self.submenue.selection == "shapeTerrain":
@@ -456,6 +512,13 @@ class ArchitectArtwork(src.items.Item):
             self.clearField(wipe=True)
 
     def clearField(self, wipe=False):
+        """
+        handle a character trying to clear a field
+
+        Parameters:
+            wipe: flag to rerequest settings
+        """
+
         if not self.submenue:
             self.submenue = src.interaction.InputMenu(
                 "enter the coordinate ( x,y ) current: %s,%s"
@@ -471,6 +534,14 @@ class ArchitectArtwork(src.items.Item):
         self.doClearField(targetX, targetY)
 
     def doClearField(self, x, y):
+        """
+        remove all item from a big coordinate
+
+        Parameters:
+            x: the big x position
+            y: the big y position
+        """
+
         terrain = self.getTerrain()
 
         minX = 15 * x
@@ -488,6 +559,13 @@ class ArchitectArtwork(src.items.Item):
                 terrain.removeRoom(room)
 
     def addScrapField(self, wipe=False):
+        """
+        handle a character trying to add a scrap field
+
+        Parameters:
+            wipe: flag to rerequest settings
+        """
+
         if wipe:
             self.targetX = None
             self.targetY = None
@@ -524,6 +602,15 @@ class ArchitectArtwork(src.items.Item):
         self.doAddScrapfield(self.targetX, self.targetY, amount)
 
     def doAddScrapfield(self, x, y, amount):
+        """
+        spawn a scrap field to a big coordinate
+        (god mode)
+
+        Parameters:
+            x: the big x position
+            y: the big y position
+        """
+
         terrain = self.getTerrain()
 
         counter = 0
@@ -566,6 +653,13 @@ class ArchitectArtwork(src.items.Item):
         terrain.addItems(items)
 
     def addRoom(self, wipe=False):
+        """
+        handle a character trying to add a room
+
+        Parameters:
+            wipe: flag to rerequest settings
+        """
+
         if wipe:
             self.targetX = None
             self.targetY = None
@@ -645,6 +739,14 @@ class ArchitectArtwork(src.items.Item):
         )
 
     def doAddRoom(self, task, context):
+        """
+        add a room
+
+        Parameters:
+            task: details about this task
+            context: the context for this task
+        """
+
         room = src.rooms.roomMap[task["roomType"]](
             task["coordinate"][0],
             task["coordinate"][1],
@@ -674,6 +776,5 @@ class ArchitectArtwork(src.items.Item):
             return
 
         terrain.addRooms([room])
-
 
 src.items.addType(ArchitectArtwork)

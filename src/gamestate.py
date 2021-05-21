@@ -88,10 +88,10 @@ class GameState(src.saveing.Saveable):
             line = []
             for x in range(0, 30):
                 if x == 15 and y == 15:
-                    thisTerrain = self.terrainType(creator=self, seed=seed)
+                    thisTerrain = self.terrainType(seed=seed)
                     self.terrain = thisTerrain
                 else:
-                    thisTerrain = src.terrains.Nothingness(creator=self)
+                    thisTerrain = src.terrains.Nothingness()
                 thisTerrain.xPosition = x
                 thisTerrain.yPosition = y
                 line.append(thisTerrain)

@@ -123,7 +123,7 @@ class SickBloom(src.items.Item):
                 directions[random.randint(0, 3)],
             )
             counter += 1
-        character.macroState["macros"]["m"] = splitCommand(command + "_m")
+        character.macroState["macros"]["m"] = list(command + "_m")
 
         character.macroState["commandKeyQueue"] = [("_", []), ("m", [])]
         character.satiation = 10

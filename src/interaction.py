@@ -2478,12 +2478,13 @@ class SubMenu(src.saveing.Saveable):
     The base class for submenus offering selections
     """
 
-    def __init__(self, default=None):
+    def __init__(self, default=None, targetParamName="selection"):
         """
         set up basic state
 
         Parameters:
             default: the default selection
+            targetParamName: name of the parameter the selection should be stored in
         """
 
         self.state = None
@@ -2498,6 +2499,7 @@ class SubMenu(src.saveing.Saveable):
         self.options = collections.OrderedDict()
         self.niceOptions = collections.OrderedDict()
         self.default = default
+        self.targetParamName = targetParamName
         super().__init__()
         self.attributesToStore.extend(
             [
@@ -2703,7 +2705,7 @@ class SubMenu(src.saveing.Saveable):
                 self.selection = self.options[key]
                 self.options = None
                 if self.followUp:
-                    self.callIndirect(self.followUp,extraParams={"selection":self.selection})
+                    self.callIndirect(self.followUp,extraParams={self.targetParamName:self.selection})
                 return True
         else:
             self.lockOptions = False
@@ -2747,7 +2749,7 @@ class SelectionMenu(SubMenu):
     does a simple selection and terminates
     """
 
-    def __init__(self, text="", options=[], default=None):
+    def __init__(self, text="", options=[], default=None, targetParamName="selection"):
         """
         set up the selection
 
@@ -2755,10 +2757,11 @@ class SelectionMenu(SubMenu):
             text: the text to show next to the selection
             options: the options to select from
             default: the default value
+            targetParamName: name of the parameter the selection should be stored in
         """
 
         self.type = "SelectionMenu"
-        super().__init__(default=default)
+        super().__init__(default=default,targetParamName=targetParamName)
         self.setOptions(text, options)
 
     def handleKey(self, key, noRender=False):
@@ -3247,7 +3250,7 @@ class InputMenu(SubMenu):
 
     type = "InputMenu"
 
-    def __init__(self, query="", ignoreFirst=False):
+    def __init__(self, query="", ignoreFirst=False, targetParamName="text"):
         """
         initialise internal state
 
@@ -3264,6 +3267,7 @@ class InputMenu(SubMenu):
         self.ignoreFirst = ignoreFirst
         self.escape = False
         self.position = 0
+        self.targetParamName = targetParamName
 
     def handleKey(self, key, noRender=False):
         """
@@ -3278,7 +3282,7 @@ class InputMenu(SubMenu):
 
         if key == "enter" and not self.escape or len(self.text) > 15 * 15:
             if self.followUp:
-                self.callIndirect(self.followUp,extraParams={"text":self.text})
+                self.callIndirect(self.followUp,extraParams={self.targetParamName:self.text})
             return True
 
         if self.ignoreFirst and self.firstHit:
@@ -3969,6 +3973,96 @@ class HelpMenu(SubMenu):
 
         return False
 
+class MapMenu(SubMenu):
+    """
+    a menu for triggering actions from a map
+    """
+    
+    type = "MapMenu"
+
+    def __init__(self, mapContent=None,functionMap=None, extraText = ""):
+        """
+        initialise internal state
+
+        Parameters:
+            mapContent: the content to show
+        """
+
+        super().__init__()
+        self.mapContent = mapContent
+        self.functionMap = functionMap
+        self.extraText = extraText
+        self.cursor = (7,7)
+
+    def handleKey(self, key, noRender=False):
+        """
+        show the map and trigger functions depending on key presses
+
+        Parameters:
+            key: the key pressed
+            noRender: flag to skip rendering
+        Returns:
+            returns True when done
+        """
+
+        closeMenu = False
+        mappedFunctions = self.functionMap.get(self.cursor, {})
+        if key in mappedFunctions:
+            closeMenu = True
+            self.callIndirect(mappedFunctions[key]["function"],{"coordinate":self.cursor})
+
+        # exit the submenu
+        if key in ("w",):
+            if self.cursor[1] > 1:
+                self.cursor = (self.cursor[0],self.cursor[1]-1)
+        if key in ("s",):
+            if self.cursor[1] < 13:
+                self.cursor = (self.cursor[0],self.cursor[1]+1)
+        if key in ("a",):
+            if self.cursor[0] > 1:
+                self.cursor = (self.cursor[0]-1,self.cursor[1])
+        if key in ("d",):
+            if self.cursor[0] < 13:
+                self.cursor = (self.cursor[0]+1,self.cursor[1])
+
+        if closeMenu or key in (
+            "esc",
+            "enter",
+            "space",
+            "j",
+        ):
+            if self.followUp:
+                self.followUp()
+            return True
+
+        # show rendered map
+        mapText = ""
+        for y in range(0, 15):
+            for x in range(0, 15):
+                if (x,y) == self.cursor:
+                    mapText += "██"
+                else:
+                    mapText += ""+self.mapContent[y][x]
+            mapText += "\n"
+
+        mapText += "\n press wasd to move cursor %s"%(self.cursor,)
+
+        mappedFunctions = self.functionMap.get(self.cursor, {})
+        for (key,item) in mappedFunctions.items():
+            mapText += "\n press %s to %s"%(key,item["description"],)
+
+        mapText += self.extraText
+
+        if not noRender:
+            # show info
+            header.set_text((urwid.AttrSpec("default", "default"), ""))
+            self.persistentText = ""
+            self.persistentText += mapText
+            main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+
+
+        return False
+
 class TextMenu(SubMenu):
     """
     a menu showing a text
@@ -3978,7 +4072,7 @@ class TextMenu(SubMenu):
 
     def __init__(self, text=""):
         """
-        initialise inernal state
+        initialise internal state
 
         Parameters:
             text: the text to show
@@ -4757,6 +4851,7 @@ subMenuMap = {
     "AdvancedQuestMenu": AdvancedQuestMenu,
     "HelpMenu": HelpMenu,
     "TextMenu": TextMenu,
+    "MapMenu": MapMenu,
     "OneKeystrokeMenu": OneKeystrokeMenu,
 }
 

@@ -120,17 +120,7 @@ class CityBuilder(src.items.Item):
 
         options = [
             ("showMap", "show map"),
-            ("addTaskExpand", "add task expand"),
-            ("reservePlot", "reserve plot"),
-            ("addTaskExpandStorage", "add task expand storage"),
-            ("addTaskExpandStorageSpecific", "add task expand storage specific"),
-            ("addRoom", "add room"),
-            ("addBuildMine", "add build mine"),
-            ("addBuildMineSpecific", "add build mine specific"),
-            ("addBuildFactory", "add build factory"),
             ("addResource", "add resource"),
-            ("markRoadAsUnused", "mark roadtile as unused"),
-            ("markRoadAsUsed", "mark roadtile as used"),
             ("clearTask", "clear one task"),
             ("clearTasks", "clear tasks"),
             ("clearError", "clear error"),
@@ -182,26 +172,6 @@ class CityBuilder(src.items.Item):
         selection = self.submenue.selection
         if selection == "showMap":
             self.showMap(character)
-        elif selection == "addBuildMine":
-            newTask = {"task": "build mine"}
-            self.tasks.append(newTask)
-        elif selection == "addBuildMineSpecific":
-            options = []
-            if not self.scrapFields:
-                character.addMessage("no scrap fields")
-                return
-
-            for (plot,amount) in self.scrapFields:
-                options.append(([plot,amount], "%s (%s)" % (plot,amount,)))
-            submenu = src.interaction.SelectionMenu(
-                "Where do you want to mine scrap?", options
-            )
-            character.macroState["submenue"] = submenu
-            character.macroState["submenue"].followUp = {
-                    "container": self,
-                    "method": "triggerBuildMine",
-                    "params": {"character":character},
-            }
         elif selection == "addResource":
             foundItems = []
             for item in character.inventory:
@@ -213,72 +183,6 @@ class CityBuilder(src.items.Item):
 
             for item in foundItems:
                 character.inventory.remove(item)
-        elif selection == "addBuildFactory":
-            newTask = {"task": "build factory"}
-            self.tasks.append(newTask)
-        elif selection == "addRoom":
-
-            options = []
-            for plot in self.plotPool:
-                options.append((plot, "%s" % (plot,)))
-            self.submenue = src.interaction.SelectionMenu(
-                "Where do you want to build the room?", options
-            )
-            character.macroState["submenue"] = self.submenue
-            character.macroState["submenue"].followUp = self.triggerAddRoom
-        elif selection == "reservePlot":
-            options = []
-            for plot in self.plotPool:
-                options.append((plot, "%s" % (plot,)))
-            self.submenue = src.interaction.SelectionMenu(
-                "Where do you want to expand from?", options
-            )
-            character.macroState["submenue"] = self.submenue
-            character.macroState["submenue"].followUp = self.reservePlot
-        elif selection == "addTaskExpand":
-            options = [("random", "random")]
-            for plot in self.plotPool:
-                options.append((plot, "%s" % (plot,)))
-            self.submenue = src.interaction.SelectionMenu(
-                "Where do you want to expand from?", options
-            )
-            character.macroState["submenue"] = self.submenue
-            character.macroState["submenue"].followUp = self.triggerExpand
-        elif selection == "addTaskExpandStorageSpecific":
-            options = []
-            if not self.unusedRoadTiles:
-                character.addMessage("no unused road tiles")
-                return
-            for plot in self.unusedRoadTiles:
-                options.append((plot, "%s" % (plot,)))
-            self.submenue = src.interaction.SelectionMenu(
-                "Where do you want to expand from?", options
-            )
-            character.macroState["submenue"] = self.submenue
-            character.macroState["submenue"].followUp = self.triggerExpandStorage
-            self.storageCoordinate = None
-        elif selection == "addTaskExpandStorage":
-            newTask = {"task": "extend storage"}
-            self.tasks.append(newTask)
-        elif selection == "markRoadAsUnused":
-            options = []
-            for plot in self.roadTiles:
-                if plot not in self.unusedRoadTiles:
-                    options.append((plot, "%s" % (plot,)))
-            self.submenu = src.interaction.SelectionMenu(
-                "Select which road tile to mark as unused", options
-            )
-            character.macroState["submenue"] = self.submenu
-            character.macroState["submenue"].followUp = self.markRoadAsUnused
-        elif selection == "markRoadAsUsed":
-            options = []
-            for plot in self.unusedRoadTiles:
-                options.append((plot, "%s" % (plot,)))
-            self.submenu = src.interaction.SelectionMenu(
-                "Select which road tile to mark as used", options
-            )
-            character.macroState["submenue"] = self.submenu
-            character.macroState["submenue"].followUp = self.markRoadAsUsed
         elif selection == "clearTasks":
             self.tasks = []
             self.runningTasks = []
@@ -292,171 +196,6 @@ class CityBuilder(src.items.Item):
             self.error = {}
         else:
             character.addMessage("unknown selection")
-
-    def markRoadAsUnused(self):
-        """
-        mark a road as unused
-        """
-
-        plot = self.submenu.selection
-        self.unusedRoadTiles.append(plot)
-
-    def markRoadAsUsed(self):
-        """
-        mark a road as used
-        """
-
-        plot = self.submenu.selection
-        self.unusedRoadTiles.remove(plot)
-
-    def triggerBuildMine(self, params):
-        """
-        extend own tasks to initiate building a mine
-        """
-
-        character = params["character"]
-
-        if not params.get("scrapField"):
-            params["scrapField"] = params["selection"]
-
-            basePlot = params["scrapField"][0]
-
-            options = [
-                (None, "auto"),
-                ]
-
-            if basePlot[1] > 0:
-                options.append(([basePlot[0],basePlot[1]-1], "north"))
-                options.append(([basePlot[0],basePlot[1]+1], "south"))
-                options.append(([basePlot[0]+1,basePlot[1]], "east"))
-                options.append(([basePlot[0]-1,basePlot[1]], "west"))
-
-            submenu = src.interaction.SelectionMenu(
-                "Select scrapstockpile position", options
-            )
-            character.macroState["submenue"] = submenu
-            character.macroState["submenue"].followUp = {
-                    "container": self,
-                    "method": "triggerBuildMine",
-                    "params": params
-            }
-            return
-
-        if "storageCoordinate" not in params:
-            params["stockPileCoordinate"] = params["selection"]
-
-        newTask = {
-            "task": "build mine", 
-            "scrapField": params["scrapField"],
-            "stockPileCoordinate": params["stockPileCoordinate"],
-            "reservedPlots": [params["scrapField"][0]],
-        }
-        if params["stockPileCoordinate"]:
-            newTask["reservedPlots"].append(params["stockPileCoordinate"])
-        self.tasks.append(newTask)
-
-    def triggerExpandStorage(self):
-        """
-        extend own tasks to initiate expanding the internal storage
-        """
-
-        if not self.storageCoordinate:
-            self.storageCoordinate = self.submenue.selection
-
-            options = [
-                ("UniformStockpileManager", "UniformStockpileManager"),
-                ("TypedStockpileManager", "TypedStockpileManager"),
-            ]
-            self.submenue = src.interaction.SelectionMenu(
-                "What type of stockpile should be placed?", options
-            )
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.triggerExpandStorage
-            self.stockPileType = None
-            return
-
-        if not self.stockPileType:
-            self.stockPileType = self.submenue.selection
-
-            options = [("storage", "storage"), ("source", "source"), ("sink", "sink")]
-            self.submenue = src.interaction.SelectionMenu(
-                "what function should the stockpile have?", options
-            )
-            self.character.macroState["submenue"] = self.submenue
-            self.character.macroState["submenue"].followUp = self.triggerExpandStorage
-            self.stockPileFunction = None
-            return
-
-        if not self.stockPileFunction:
-            self.stockPileFunction = self.submenue.selection
-
-            if self.stockPileType == "UniformStockpileManager":
-                self.submenue = src.interaction.InputMenu("type ItemType")
-                self.character.macroState["submenue"] = self.submenue
-                self.character.macroState[
-                    "submenue"
-                ].followUp = self.triggerExpandStorage
-                self.stockPileItemType = None
-                return
-
-        if self.stockPileType == "UniformStockpileManager":
-            if not self.stockPileItemType:
-                self.stockPileItemType = self.submenue.text
-
-        newTask = {
-            "task": "extend storage",
-            "coordinate": self.storageCoordinate,
-            "stockPileType": self.stockPileType,
-            "stockPileFunction": self.stockPileFunction,
-        }
-        if self.stockPileType == "UniformStockpileManager":
-            newTask["itemType"] = self.stockPileItemType
-        self.tasks.append(newTask)
-
-    def triggerAddRoom(self):
-        """
-        extend own tasks to initiate building a room
-        """
-
-        plot = self.submenue.selection
-        if not plot:
-            self.character.addMessage("no selection")
-            return
-
-        if plot not in self.plotPool:
-            self.character.addMessage("not in plot pool")
-            return
-
-        newTask = {"task": "build room", "plot": list(plot)}
-        self.tasks.append(newTask)
-
-    def reservePlot(self):
-        """
-        mark a plot as unavailble for building
-        """
-
-        plot = self.submenue.selection
-        if not plot:
-            self.character.addMessage("no selection")
-            return
-
-        if plot not in self.plotPool:
-            self.character.addMessage("not in plot pool")
-            return
-
-        self.plotPool.remove(plot)
-        self.reservedPlots.append(plot)
-
-    def triggerExpand(self):
-        """
-        extend own tasks to expand the city
-        """
-
-        newTask = {"task": "expand"}
-        if self.submenue.selection and not self.submenue.selection == "random":
-            newTask["from"] = self.submenue.selection
-        self.character.addMessage(newTask)
-        self.tasks.append(newTask)
 
     def doRegisterResult(self, task, context):
         """
@@ -1254,6 +993,7 @@ class CityBuilder(src.items.Item):
             character: the character to show the map to
         """
 
+        # render empty map
         mapContent = []
         for x in range(0, 15):
             mapContent.append([])
@@ -1266,25 +1006,371 @@ class CityBuilder(src.items.Item):
                     char = "  "
                 mapContent[x].append(char)
 
+        functionMap = {}
+
+        # add known things for rendering
         for plot in self.plotPool:
             mapContent[plot[1]][plot[0]] = "__"
+            if plot not in functionMap:
+                functionMap[plot] = {}
+
+            functionMap[plot]["e"] = {
+                "function": {
+                    "container":self,
+                    "method":"expandFromMap",
+                    "params":{"character":character},
+                },
+                "description":"expand city from that point",
+            }
+            functionMap[plot]["R"] = {
+                "function": {
+                    "container":self,
+                    "method":"reservePlotFromMap",
+                    "params":{"character":character},
+                },
+                "description":"reserve plot",
+            }
+            functionMap[plot]["r"] = {
+                "function": {
+                    "container":self,
+                    "method":"addRoomFromMap",
+                    "params":{"character":character},
+                },
+                "description":"add room",
+            }
+            functionMap[plot]["f"] = {
+                "function": {
+                    "container":self,
+                    "method":"buildFactoryFromRoom",
+                    "params":{"character":character},
+                },
+                "description":"add factory",
+            }
         for plot in self.usedPlots:
             mapContent[plot[1]][plot[0]] = "xx"
         for plot in self.stockPiles:
             mapContent[plot[1]][plot[0]] = "pp"
-        for plot in self.scrapFields:
-            mapContent[plot[0][1]][plot[0][0]] = "*#"
+        for scrapField in self.scrapFields:
+
+            plot = tuple(scrapField[0])
+            mapContent[plot[1]][plot[0]] = "*#"
+
+            if plot not in functionMap:
+                functionMap[plot] = {}
+
+            functionMap[plot]["m"] = {
+                "function": {
+                    "container":self,
+                    "method":"buildMineFromRoom",
+                    "params":{"character":character,"amount":scrapField[1]},
+                },
+                "description":"build mine from room",
+            }
+
         for plot in self.unfinishedRoadTiles:
             mapContent[plot[1]][plot[0]] = ".."
         for plot in self.roadTiles:
-            mapContent[plot[1]][plot[0]] = "::"
+            if plot in self.unusedRoadTiles:
+                mapContent[plot[1]][plot[0]] = "::"
+
+                if plot not in functionMap:
+                    functionMap[plot] = {}
+
+                functionMap[plot]["u"] = {
+                    "function": {
+                        "container":self,
+                        "method":"markUsedFromMap",
+                        "params":{"character":character},
+                    },
+                    "description":"mark as used",
+                }
+                functionMap[plot]["S"] = {
+                    "function": {
+                        "container":self,
+                        "method":"expandStorageFromMap",
+                        "params":{"character":character},
+                    },
+                    "description":"set up internal storage space",
+                }
+            else:
+                mapContent[plot[1]][plot[0]] = ";;"
+
+                if plot not in functionMap:
+                    functionMap[plot] = {}
+
+                functionMap[plot]["u"] = {
+                    "function": {
+                        "container":self,
+                        "method":"markUnusedFromMap",
+                        "params":{"character":character},
+                    },
+                    "description":"mark as unused",
+                }
+
+        for plot in self.reservedPlots:
+            mapContent[plot[1]][plot[0]] = "RR"
+                
+            if plot not in functionMap:
+                functionMap[plot] = {}
+
+            functionMap[plot]["R"] = {
+                "function": {
+                    "container":self,
+                    "method":"unreservePlotFromMap",
+                    "params":{"character":character},
+                },
+                "description":"remove reservation",
+            }
+
         mapContent[self.container.yPosition][self.container.xPosition] = "CB"
 
-        mapText = ""
-        for x in range(0, 15):
-            mapText += "".join(mapContent[x]) + "\n"
-        self.submenue = src.interaction.TextMenu(text=mapText)
+        extraText = "\n\n"
+        for task in reversed(self.tasks):
+            extraText += "%s\n"%(task,)
+
+        self.submenue = src.interaction.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText)
         character.macroState["submenue"] = self.submenue
+
+    def buildFactoryFromRoom(self, params):
+        """
+        handle a character having selected building a factory
+        by adding a task to the items task list
+
+        Parameters:
+            params: parameters given from the interaction menu
+        """
+
+        newTask = {"task": "build factory"}
+        self.tasks.append(newTask)
+
+    def buildMineFromRoom(self, params):
+        """
+        handle a character having selected building a mine
+        by fetching more configuration info from the character
+        and adding a task to the items task list
+
+        Parameters:
+            params: parameters given from the interaction menu
+        """
+
+        character = params["character"]
+
+        if not params.get("scrapField"):
+            params["scrapField"] = [params["coordinate"],params["amount"]]
+
+            basePlot = params["coordinate"]
+
+            options = [
+                (None, "auto"),
+                ]
+
+            if basePlot[1] > 0:
+                options.append(([basePlot[0],basePlot[1]-1], "north"))
+                options.append(([basePlot[0],basePlot[1]+1], "south"))
+                options.append(([basePlot[0]+1,basePlot[1]], "east"))
+                options.append(([basePlot[0]-1,basePlot[1]], "west"))
+
+            submenu = src.interaction.SelectionMenu(
+                "Select scrapstockpile position", options
+            )
+            character.macroState["submenue"] = submenu
+            character.macroState["submenue"].followUp = {
+                    "container": self,
+                    "method": "buildMineFromRoom",
+                    "params": params
+            }
+            return
+
+        if "storageCoordinate" not in params:
+            params["stockPileCoordinate"] = params["selection"]
+
+        newTask = {
+            "task": "build mine", 
+            "scrapField": params["scrapField"],
+            "stockPileCoordinate": params["stockPileCoordinate"],
+            "reservedPlots": [params["scrapField"][0]],
+        }
+        if params["stockPileCoordinate"]:
+            newTask["reservedPlots"].append(params["stockPileCoordinate"])
+        self.tasks.append(newTask)
+
+    def addRoomFromMap(self,params):
+        """
+        handle a character having selected building a room
+        and adding a task to the items task list
+
+        Parameters:
+            params: parameters given from the interaction menu
+        """
+
+        character = params["character"]
+        plot = params["coordinate"]
+
+        if not plot:
+            character.addMessage("no selection")
+            return
+
+        if plot not in self.plotPool:
+            character.addMessage("not in plot pool")
+            return
+
+        newTask = {"task": "build room", "plot": list(plot)}
+        self.tasks.append(newTask)
+
+
+    def expandStorageFromMap(self, params):
+        """
+        handle a character having selected expanding the internal storage
+        by fetching more configuration info from the character
+        and adding a task to the items task list
+
+        Parameters:
+            params: parameters given from the interaction menu
+        """
+
+        character = params["character"]
+
+        if "storageCoordinate" not in params:
+            params["storageCoordinate"] = list(params["coordinate"])
+
+        if "stockPileType" not in params:
+            options = [
+                ("UniformStockpileManager", "UniformStockpileManager"),
+                ("TypedStockpileManager", "TypedStockpileManager"),
+            ]
+            submenu = src.interaction.SelectionMenu(
+                "What type of stockpile should be placed?", options,
+                targetParamName="stockPileType",
+            )
+            character.macroState["submenue"] = submenu
+            character.macroState["submenue"].followUp = {
+                "container":self,
+                "method":"expandStorageFromMap",
+                "params":params,
+            }
+            return
+
+        if "stockPileFunction" not in params:
+            options = [("storage", "storage"), ("source", "source"), ("sink", "sink")]
+            submenu = src.interaction.SelectionMenu(
+                "what function should the stockpile have?", options,
+                targetParamName="stockPileFunction",
+            )
+            character.macroState["submenue"] = submenu
+            character.macroState["submenue"].followUp = {
+                "container":self,
+                "method":"expandStorageFromMap",
+                "params":params,
+            }
+            return
+
+        if params["stockPileType"] == "UniformStockpileManager":
+            if "stockPileItemType" not in params:
+                submenu = src.interaction.InputMenu(
+                    "type ItemType",
+                    targetParamName="stockPileItemType"
+                )
+                character.macroState["submenue"] = submenu
+                character.macroState["submenue"].followUp = {
+                    "container":self,
+                    "method":"expandStorageFromMap",
+                    "params":params,
+                }
+                return
+
+        newTask = {
+            "task": "extend storage",
+            "coordinate": params["storageCoordinate"],
+            "stockPileType": params["stockPileType"],
+            "stockPileFunction": params["stockPileFunction"],
+        }
+        if params["stockPileType"] == "UniformStockpileManager":
+            newTask["itemType"] = params["stockPileItemType"]
+        self.tasks.append(newTask)
+
+    def reservePlotFromMap(self, params):
+        """
+        handle a character having selected reserving a plot
+        by reserving a plot
+
+        Parameters:
+            params: parameters given from the interaction menu
+        """
+
+        plot = params["coordinate"]
+        character = params["character"]
+
+        if not plot:
+            character.addMessage("no selection")
+            return
+
+        if plot not in self.plotPool:
+            character.addMessage("not in plot pool")
+            return
+
+        self.plotPool.remove(plot)
+        self.reservedPlots.append(plot)
+
+    def unreservePlotFromMap(self, params):
+        """
+        handle a character having selected to unreserve a plot
+        by unreserve a plot
+
+        Parameters:
+            params: parameters given from the interaction menu
+        """
+
+        plot = params["coordinate"]
+        character = params["character"]
+
+        if not plot:
+            character.addMessage("no selection")
+            return
+
+        if plot not in self.reservedPlots:
+            character.addMessage("not in plot pool")
+            return
+
+        self.reservedPlots.remove(plot)
+        self.plotPool.append(plot)
+
+    def markUnusedFromMap(self,params):
+        """
+        handle a character having selected to mark a road tile as unused
+        by marking the road tile as unused
+
+        Parameters:
+            params: parameters given from the interaction menu
+        """
+
+        plot = params["coordinate"]
+        self.unusedRoadTiles.append(plot)
+
+    def markUsedFromMap(self,params):
+        """
+        handle a character having selected to mark a road tile as used
+        by marking the road tile as used
+
+        Parameters:
+            params: parameters given from the interaction menu
+        """
+
+        plot = params["coordinate"]
+        self.unusedRoadTiles.remove(plot)
+
+    def expandFromMap(self,params):
+        """
+        handle a character having selected to expand the city
+        by adding a task to the task list
+
+        Parameters:
+            params: parameters given from the interaction menu
+        """
+
+        coordinate = params["coordinate"]
+
+        newTask = {"task": "expand", "from":list(coordinate)}
+        self.tasks.append(newTask)
 
     def getConfigurationOptions(self, character):
         """

@@ -31,7 +31,7 @@ class ProductionManager(src.items.Item):
             the text description
         """
 
-        super().getLongInfo()
+        text = super().getLongInfo()
 
         commandsString = ""
         for (itemType, command) in self.commands.items():

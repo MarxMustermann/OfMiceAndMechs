@@ -126,6 +126,7 @@ class CityBuilder(src.items.Item):
             ("addTaskExpandStorageSpecific", "add task expand storage specific"),
             ("addRoom", "add room"),
             ("addBuildMine", "add build mine"),
+            ("addBuildMineSpecific", "add build mine specific"),
             ("addBuildFactory", "add build factory"),
             ("addResource", "add resource"),
             ("markRoadAsUnused", "mark roadtile as unused"),
@@ -184,6 +185,23 @@ class CityBuilder(src.items.Item):
         elif selection == "addBuildMine":
             newTask = {"task": "build mine"}
             self.tasks.append(newTask)
+        elif selection == "addBuildMineSpecific":
+            options = []
+            if not self.scrapFields:
+                character.addMessage("no scrap fields")
+                return
+
+            for (plot,amount) in self.scrapFields:
+                options.append(([plot,amount], "%s (%s)" % (plot,amount,)))
+            submenu = src.interaction.SelectionMenu(
+                "Where do you want to mine scrap?", options
+            )
+            character.macroState["submenue"] = submenu
+            character.macroState["submenue"].followUp = {
+                    "container": self,
+                    "method": "triggerBuildMine",
+                    "params": {"character":character},
+            }
         elif selection == "addResource":
             foundItems = []
             for item in character.inventory:
@@ -290,6 +308,52 @@ class CityBuilder(src.items.Item):
 
         plot = self.submenu.selection
         self.unusedRoadTiles.remove(plot)
+
+    def triggerBuildMine(self, params):
+        """
+        extend own tasks to initiate building a mine
+        """
+
+        character = params["character"]
+
+        if not params.get("scrapField"):
+            params["scrapField"] = params["selection"]
+
+            basePlot = params["scrapField"][0]
+
+            options = [
+                (None, "auto"),
+                ]
+
+            if basePlot[1] > 0:
+                options.append(([basePlot[0],basePlot[1]-1], "north"))
+                options.append(([basePlot[0],basePlot[1]+1], "south"))
+                options.append(([basePlot[0]+1,basePlot[1]], "east"))
+                options.append(([basePlot[0]-1,basePlot[1]], "west"))
+
+            submenu = src.interaction.SelectionMenu(
+                "Select scrapstockpile position", options
+            )
+            character.macroState["submenue"] = submenu
+            character.macroState["submenue"].followUp = {
+                    "container": self,
+                    "method": "triggerBuildMine",
+                    "params": params
+            }
+            return
+
+        if "storageCoordinate" not in params:
+            params["stockPileCoordinate"] = params["selection"]
+
+        newTask = {
+            "task": "build mine", 
+            "scrapField": params["scrapField"],
+            "stockPileCoordinate": params["stockPileCoordinate"],
+            "reservedPlots": [params["scrapField"][0]],
+        }
+        if params["stockPileCoordinate"]:
+            newTask["reservedPlots"].append(params["stockPileCoordinate"])
+        self.tasks.append(newTask)
 
     def triggerExpandStorage(self):
         """
@@ -544,8 +608,31 @@ class CityBuilder(src.items.Item):
                 self.runningTasks = []
                 return
 
+            # set the coordinate to build on
             if not task.get("coordinate"):
-                task["stockPileCoordinate"] = self.unusedRoadTiles.pop()
+                plot = random.choice(self.unusedRoadTiles)
+
+                # check if the selected plot was reserved
+                if "reservedPlots" in task:
+                    if list(plot) in task["reservedPlots"]:
+
+                        # increment failure couner to not get stuck
+                        if not "failCounter" in task:
+                            task["failCounter"] = 1
+                        else:
+                            task["failCounter"] += 1
+
+                        # retry task
+                        self.tasks.append(task)
+
+                        # expand the roads when stuck
+                        if task["failCounter"] > 4:
+                            newTask = {"task": "expand"}
+                            self.tasks.append(newTask)
+
+                        # abort
+                        return
+                task["stockPileCoordinate"] = plot
             else:
                 task["stockPileCoordinate"] = task["coordinate"]
                 self.unusedRoadTiles.remove(task["coordinate"])
@@ -827,6 +914,8 @@ class CityBuilder(src.items.Item):
         if not task.get("expanded storage"):
             self.tasks.append(task)
             newTask = {"task": "extend storage"}
+            if task.get("reservedPlots"):
+                newTask["reservedPlots"] = task["reservedPlots"]
             self.tasks.append(newTask)
             self.runningTasks = []
             task["expanded storage"] = True

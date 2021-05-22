@@ -130,7 +130,7 @@ class TradingArtwork(src.items.Item):
 
             self.availableTrades.append(
                 {
-                    "numOffered": random.randint(2, 10),
+                    "numOffered": 1,
                     "name": "trade for %s" % (item,),
                     "give": dependencies,
                     "recieve": [recieve],

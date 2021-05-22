@@ -934,6 +934,9 @@ class CityBuilder(src.items.Item):
                     task["scrapField"][0][0] + direction[0],
                     task["scrapField"][0][1] + direction[1],
                 )
+                if "reservedPlots" in task:
+                    if list(position) in task["reservedPlots"]:
+                        continue
                 if position in self.unusedRoadTiles:
                     neighbourRoad = position
                     continue
@@ -995,6 +998,9 @@ class CityBuilder(src.items.Item):
                     task["stockPileCoordinate"][0] + direction[0],
                     task["stockPileCoordinate"][1] + direction[1],
                 )
+                if "reservedPlots" in task:
+                    if list(position) in task["reservedPlots"]:
+                        continue
                 if position in self.unusedRoadTiles:
                     neighbourRoad = position
                     continue

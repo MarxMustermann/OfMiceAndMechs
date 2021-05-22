@@ -294,6 +294,31 @@ class ArchitectArtwork(src.items.Item):
                         ),
                     )
                 )
+
+            positions = [
+                (9, 2),
+                (12, 2),
+                (9, 4),
+                (12, 4),
+                (12, 6),
+                (12, 9),
+                (9, 11),
+                (12, 11),
+                (9, 13),
+                (12, 13),
+            ]
+            for position in positions:
+                items.append(
+                    (
+                        src.items.itemMap["PavingGenerator"](),
+                        (
+                            task["coordinate"][0] * 15 + position[0],
+                            task["coordinate"][1] * 15 + position[1],
+                            0,
+                        ),
+                    )
+                )
+
             self.getTerrain().addItems(items)
         if task["type"] == "mine":
             if not task.get("cleared"):

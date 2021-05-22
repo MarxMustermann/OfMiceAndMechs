@@ -602,7 +602,7 @@ class RoomManager(src.items.Item):
             character.runCommandString("Jj.j")
 
         if task["task"] == "add BluePrintingArtwork":
-            machine = src.items.BluePrintingArtwork()
+            machine = src.items.items["BluePrintingArtwork"]()
             if not self.bluePrintingArtworkPos:
                 self.bluePrintingArtworkPos = itemSlot
             character.inventory.append(machine)

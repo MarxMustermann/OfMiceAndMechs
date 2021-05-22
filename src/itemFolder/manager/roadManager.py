@@ -87,32 +87,6 @@ class RoadManager(src.items.Item):
             text += "  %s\n" % (list(reversed(backPath)),)
             text += "  %s\n" % (backPath,)
 
-            commandItem = src.items.itemMap["Command"]()
-            command = ""
-            lastNode = None
-            for node in self.pathsToCenter[tuple(value["coordinate"])]:
-                if lastNode is None:
-                    lastNode = node
-                    continue
-
-                if lastNode[0] > node[0]:
-                    command += "as11awa"
-                if lastNode[0] < node[0]:
-                    command += "ds11dwd"
-                if lastNode[1] > node[1]:
-                    command += "11wawwd"
-                if lastNode[1] < node[1]:
-                    command += "dssa11s"
-
-                lastNode = node
-            commandItem.setPayload(list(command))
-
-            terrain = self.getTerrain()
-            terrain.addItem(
-                commandItem,
-                (value["coordinate"][0] * 15 + 7, value["coordinate"][1] * 15 + 6, 0),
-            )
-
         self.submenue = src.interaction.OneKeystrokeMenu(text)
         character.macroState["submenue"] = self.submenue
 

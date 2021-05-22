@@ -179,17 +179,6 @@ This is a level %s item.
             self.level
         )
 
-        if self.name:
-            text += """
-name: %s""" % (
-                self.name
-            )
-        if self.description and len(self.description) > 0:
-            text += """
-
-description:\n%s""" % (
-                self.description
-            )
         text += """
 
 it holds the command:

@@ -747,7 +747,7 @@ get position for what thing
                     itemDict = char.container.itemByCoordinates
                 else:
                     itemDict = char.container.itemsByCoordinate
-                for (pos, value) in itemDict.items():  # <= horrible slow
+                for (pos, value) in itemDict.items():  # <= really really bad and horribly slow. iterate like 10000 items
                     if (
                         pos[0] - (char.xPosition - char.xPosition % 15) > 13
                         or pos[0] - (char.xPosition - char.xPosition % 15) < 1

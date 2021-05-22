@@ -25,12 +25,12 @@ Activate it to eat
         self.walkable = True
         self.bolted = False
 
-    def destroy(self, generateSrcap=True):
+    def destroy(self, generateScrap=True):
         """
         destroy this item without leaving residue
         """
 
-        super().destroy(generateSrcap=False)
+        super().destroy(generateScrap=False)
 
     def apply(self, character):
         """

@@ -54,12 +54,12 @@ You can use it to loose 100 satiation.
 """
         return text
 
-    def destroy(self, generateSrcap=True):
+    def destroy(self, generateScrap=True):
         """
         destroy this item and spawn a moster
 
         Parameters:
-            generateSrcap: flag to toggle leaving residue
+            generateScrap: flag to toggle leaving residue
         """
 
         new = itemMap["FireCrystals"]()
@@ -102,6 +102,6 @@ You can use it to loose 100 satiation.
         character.satiation = 100
         self.container.addCharacter(character, self.xPosition, self.yPosition)
 
-        super().destroy(generateSrcap=False)
+        super().destroy(generateScrap=False)
 
 src.items.addType(EncrustedPoisonBush)

@@ -41,7 +41,7 @@ class SickBloom(src.items.Item):
                 elif character.phase == 2:
                     character.enterPhase3()
                     self.charges -= 1
-                    self.destroy(generateSrcap=False)
+                    self.destroy(generateScrap=False)
                 else:
                     character.satiation += 400
                     self.charges -= 1
@@ -54,7 +54,7 @@ class SickBloom(src.items.Item):
             character.satiation += 100
             if character.satiation > 1000:
                 character.satiation = 1000
-            self.destroy(generateSrcap=False)
+            self.destroy(generateScrap=False)
         character.addMessage("you eat the sick bloom and gain 100 satiation")
 
     def pickUp(self, character):
@@ -147,12 +147,12 @@ you can eat it to gain %s satiation.
             satiation
         )
 
-    def destroy(self, generateSrcap=True):
+    def destroy(self, generateScrap=True):
         """
         destroy this item
 
         Parameters:
-            generateSrcap: flag to not leave residue
+            generateScrap: flag to not leave residue
         """
 
         if not self.dead:
@@ -160,6 +160,6 @@ you can eat it to gain %s satiation.
             self.container.addItem(new, self.getPosition())
             new.startSpawn()
 
-        super().destroy(generateSrcap=False)
+        super().destroy(generateScrap=False)
 
 src.items.addType(SickBloom)

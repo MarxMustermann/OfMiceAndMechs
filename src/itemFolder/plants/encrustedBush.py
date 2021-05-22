@@ -15,12 +15,12 @@ class EncrustedBush(src.items.Item):
 
         self.walkable = False
 
-    def destroy(self, generateSrcap=True):
+    def destroy(self, generateScrap=True):
         """
         destroy this item
 
         Parameters:
-            generateSrcap: flag to toggle leaving residue
+            generateScrap: flag to toggle leaving residue
         """
 
         new = itemMap["Coal"]()
@@ -61,7 +61,7 @@ class EncrustedBush(src.items.Item):
         character.satiation = 10
         self.container.addCharacter(character, self.xPosition, self.yPosition)
 
-        super().destroy(generateSrcap=False)
+        super().destroy(generateScrap=False)
 
     def tryToGrowRoom(self, spawnPoint):
         """

@@ -37,6 +37,6 @@ activate it to eat it
 
         # change state
         character.addSatiation(1000,reason="ate the press cake")
-        self.destroy(generateSrcap=False)
+        self.destroy(generateScrap=False)
 
 src.items.addType(PressCake)

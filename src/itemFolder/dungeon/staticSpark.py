@@ -31,7 +31,7 @@ class StaticSpark(src.items.Item):
         """
 
         character.addSatiation(self.strength * 50, reason="consuming a static spark")
-        self.destroy(generateSrcap=False)
+        self.destroy(generateScrap=False)
 
 
 src.items.addType(StaticSpark)

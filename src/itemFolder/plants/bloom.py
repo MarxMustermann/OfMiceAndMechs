@@ -36,13 +36,13 @@ class Bloom(src.items.Item):
 
         if self.dead:
             character.satiation += 100
-            self.destroy(generateSrcap=False)
+            self.destroy(generateScrap=False)
             character.addMessage("you eat the dead bloom and gain 100 satiation")
         else:
             character.satiation += 115
             if character.satiation > 1000:
                 character.satiation = 1000
-            self.destroy(generateSrcap=False)
+            self.destroy(generateScrap=False)
             character.addMessage("you eat the bloom and gain 115 satiation")
 
     def startSpawn(self):
@@ -131,13 +131,13 @@ you can eat it to gain %s satiation.
 
         return text
 
-    def destroy(self, generateSrcap=True):
+    def destroy(self, generateScrap=True):
         """
         destroy this item and spawn new mold
         """
 
         self.localSpawn()
 
-        super().destroy(generateSrcap=False)
+        super().destroy(generateScrap=False)
 
 src.items.addType(Bloom)

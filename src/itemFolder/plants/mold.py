@@ -36,7 +36,7 @@ you can eat it to gain 2 satiation.
         character.satiation += 2
         if character.satiation > 1000:
             character.satiation = 1000
-        self.destroy(generateSrcap=False)
+        self.destroy(generateScrap=False)
         character.addMessage("you eat the mold and gain 2 satiation")
 
     def startSpawn(self):
@@ -194,13 +194,13 @@ you can eat it to gain 2 satiation.
                     self.container.removeItem(self)
 
                 elif itemList[-1].type in ["Coal"]:
-                    itemList[-1].destroy(generateSrcap=False)
+                    itemList[-1].destroy(generateScrap=False)
 
                     new = src.items.itemMap["Bush"]()
                     self.container.addItem(new, newPos)
 
                 elif itemList[-1].type in ["MoldFeed"]:
-                    itemList[-1].destroy(generateSrcap=False)
+                    itemList[-1].destroy(generateScrap=False)
 
                     new = src.items.itemMap["Bloom"]()
                     self.container.addItem(new, newPos)
@@ -212,14 +212,14 @@ you can eat it to gain 2 satiation.
         if self.charges:
             self.startSpawn()
 
-    def destroy(self, generateSrcap=True):
+    def destroy(self, generateScrap=True):
         """
         destroy this item
 
         Parameters:
-            generateSrcap: flag to toggle leaving residue
+            generateScrap: flag to toggle leaving residue
         """
 
-        super().destroy(generateSrcap=False)
+        super().destroy(generateScrap=False)
 
 src.items.addType(Mold)

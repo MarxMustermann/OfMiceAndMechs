@@ -37,7 +37,7 @@ you can eat it to gain 10 satiation.
         character.satiation += 10
         if character.satiation > 1000:
             character.satiation = 1000
-        self.destroy(generateSrcap=False)
+        self.destroy(generateScrap=False)
         character.addMessage("you eat the sprout and gain 10 satiation")
 
     def destroy(self, generateScrap=True):

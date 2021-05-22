@@ -104,6 +104,6 @@ class FireCrystals(src.items.Item):
         event.setCallback({"container": new, "method": "explode"})
         self.container.addEvent(event)
 
-        super().destroy(generateSrcap=False)
+        super().destroy(generateScrap=False)
 
 src.items.addType(FireCrystals)

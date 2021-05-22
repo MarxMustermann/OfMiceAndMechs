@@ -59,13 +59,13 @@ class Bush(src.items.Item):
 charges: %s""" % (self.charges)
         return text
 
-    def destroy(self, generateSrcap=True):
+    def destroy(self, generateScrap=True):
         """
         destroy this item
         """
 
         new = itemMap["Coal"]()
         self.container.addItem(new,self.getPosition())
-        super().destroy(generateSrcap=False)
+        super().destroy(generateScrap=False)
 
 src.items.addType(Bush)

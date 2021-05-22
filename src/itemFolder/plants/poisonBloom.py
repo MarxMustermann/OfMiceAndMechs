@@ -44,7 +44,7 @@ You can eat it to die.
 
         character.addMessage("you eat the poison bloom and die")
 
-        self.destroy(generateSrcap=False)
+        self.destroy(generateScrap=False)
 
     def pickUp(self, character):
         """
@@ -58,11 +58,11 @@ You can eat it to die.
         self.charges = 0
         super().pickUp(character)
 
-    def destroy(self, generateSrcap=True):
+    def destroy(self, generateScrap=True):
         """
         destroy the item without leaving residue
         """
 
-        super().destroy(generateSrcap=False)
+        super().destroy(generateScrap=False)
 
 src.items.addType(PoisonBloom)

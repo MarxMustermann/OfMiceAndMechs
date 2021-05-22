@@ -60,13 +60,13 @@ The seeded mold feed grows stronger then a mold spore on its own.
         self.container.addItem(new,self.getPosition())
         new.charges = 8
         new.startSpawn()
-        self.destroy(generateSrcap=False)
+        self.destroy(generateScrap=False)
 
-    def destroy(self, generateSrcap=True):
+    def destroy(self, generateScrap=True):
         """
         get destroyed without leaving anything
         """
 
-        super().destroy(generateSrcap=False)
+        super().destroy(generateScrap=False)
 
 src.items.addType(SeededMoldFeed)

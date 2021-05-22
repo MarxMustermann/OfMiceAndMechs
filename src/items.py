@@ -437,7 +437,7 @@ class Item(src.saveing.Saveable):
 
         character.addMessage("you eat the %s" % (self.name,))
         character.addSatiation(self.nutrition)
-        self.destroy(generateSrcap=False)
+        self.destroy(generateScrap=False)
 
     def configure(self, character):
         """
@@ -844,12 +844,12 @@ class Item(src.saveing.Saveable):
         else:
             return 50
 
-    def destroy(self, generateSrcap=True):
+    def destroy(self, generateScrap=True):
         """
         destroy the item and leave scrap
 
         Parameters:
-            generateSrcap: a flag indication wether scrap should be left by the destruction
+            generateScrap: a flag indication wether scrap should be left by the destruction
         """
 
         container = self.container
@@ -859,7 +859,7 @@ class Item(src.saveing.Saveable):
         container.removeItem(self)
 
         # generate scrap
-        if generateSrcap:
+        if generateScrap:
             newItem = src.items.itemMap["Scrap"](amount=1)
 
             toRemove = []

@@ -90,12 +90,12 @@ You can use it to loose 100 satiation.
         text += "poison charges: %s" % (self.charges)
         return text
 
-    def destroy(self, generateSrcap=True):
+    def destroy(self, generateScrap=True):
         """
         destroy the item and leave a exploding thing
 
         Parameters:
-            generateSrcap: flag to toggle leaving residue
+            generateScrap: flag to toggle leaving residue
         """
 
         new = itemMap["FireCrystals"]()
@@ -151,6 +151,6 @@ You can use it to loose 100 satiation.
         character.satiation = 100
         self.container.addCharacter(character, self.xPosition, self.yPosition)
 
-        super().destroy(generateSrcap=False)
+        super().destroy(generateScrap=False)
 
 src.items.addType(PoisonBush)

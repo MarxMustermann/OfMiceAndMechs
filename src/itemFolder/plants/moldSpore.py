@@ -59,6 +59,6 @@ put it on the ground and activate it to plant it
         new = itemMap["Mold"]()
         self.container.addItem(new,self.getPosition())
         new.startSpawn()
-        self.destroy(generateSrcap=False)
+        self.destroy(generateScrap=False)
 
 src.items.addType(MoldSpore)

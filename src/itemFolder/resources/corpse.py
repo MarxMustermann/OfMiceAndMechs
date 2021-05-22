@@ -73,6 +73,6 @@ The corpse has %s charges left.
             self.charges -= 1
             character.addMessage("you eat from the corpse and gain 15 satiation")
         else:
-            self.destroy(generateSrcap=False)
+            self.destroy(generateScrap=False)
 
 src.items.addType(Corpse)

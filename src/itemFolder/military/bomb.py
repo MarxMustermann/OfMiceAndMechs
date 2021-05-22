@@ -37,7 +37,7 @@ Activate it to trigger a exlosion.
 
         self.destroy()
 
-    def destroy(self, generateSrcap=True):
+    def destroy(self, generateScrap=True):
         """
         handle this item getting destroyed
         by exploding

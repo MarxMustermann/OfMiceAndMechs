@@ -99,7 +99,7 @@ class Scrap(src.items.Item):
 
         return self.amount * 2
 
-    def destroy(self, generateSrcap=True):
+    def destroy(self, generateScrap=True):
         """
         destroying scrap means to merge the scrap
 

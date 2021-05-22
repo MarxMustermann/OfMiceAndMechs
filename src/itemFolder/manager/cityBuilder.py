@@ -623,6 +623,7 @@ class CityBuilder(src.items.Item):
                             task["failCounter"] += 1
 
                         # retry task
+                        self.runningTasks = []
                         self.tasks.append(task)
 
                         # expand the roads when stuck
@@ -1053,6 +1054,9 @@ class CityBuilder(src.items.Item):
                     task["oreProcessingCoordinate"][0] + direction[0],
                     task["oreProcessingCoordinate"][1] + direction[1],
                 )
+                if "reservedPlots" in task:
+                    if list(position) in task["reservedPlots"]:
+                        continue
                 if position in self.unusedRoadTiles:
                     neighbourRoad = position
                     continue

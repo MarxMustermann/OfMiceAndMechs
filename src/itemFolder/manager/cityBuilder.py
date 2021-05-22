@@ -1158,6 +1158,7 @@ class CityBuilder(src.items.Item):
         if not params.get("scrapField"):
             params["scrapField"] = [params["coordinate"],params["amount"]]
 
+        if "storageCoordinate" not in params:
             basePlot = params["coordinate"]
 
             options = [
@@ -1171,7 +1172,8 @@ class CityBuilder(src.items.Item):
                 options.append(([basePlot[0]-1,basePlot[1]], "west"))
 
             submenu = src.interaction.SelectionMenu(
-                "Select scrapstockpile position", options
+                "Select scrapstockpile position", options,
+                targetParamName="storageCoordinate",
             )
             character.macroState["submenue"] = submenu
             character.macroState["submenue"].followUp = {
@@ -1180,9 +1182,6 @@ class CityBuilder(src.items.Item):
                     "params": params
             }
             return
-
-        if "storageCoordinate" not in params:
-            params["stockPileCoordinate"] = params["selection"]
 
         newTask = {
             "task": "build mine", 

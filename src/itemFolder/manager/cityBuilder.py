@@ -70,6 +70,24 @@ class CityBuilder(src.items.Item):
             ]
         )
 
+        self.applyOptions.extend(
+            [
+                ("showMap", "show map"),
+                ("addResource", "add resource"),
+                ("clearTask", "clear one task"),
+                ("clearTasks", "clear tasks"),
+                ("clearError", "clear error"),
+            ]
+        )
+        self.applyMap = {
+            "showMap": self.showMap,
+            "addResource": self.addResource,
+            "clearTask": self.clearTask,
+            "clearTasks": self.clearTasks,
+            "clearError": self.clearError,
+        }
+
+
     def addTasksToLocalRoom(self, tasks, character):
         """
         delegate tasks to the room the item is in
@@ -109,29 +127,6 @@ class CityBuilder(src.items.Item):
         character.jobOrders.append(jobOrder)
         character.runCommandString("Jj.j")
 
-    def apply(self, character):
-        """
-        handle a character trying to use the item
-        by offerin a selection of possible actions
-
-        Parameters:
-            character: the character trying to use the menu
-        """
-
-        options = [
-            ("showMap", "show map"),
-            ("addResource", "add resource"),
-            ("clearTask", "clear one task"),
-            ("clearTasks", "clear tasks"),
-            ("clearError", "clear error"),
-        ]
-        self.submenue = src.interaction.SelectionMenu(
-            "what do you want to do?", options
-        )
-        character.macroState["submenue"] = self.submenue
-        character.macroState["submenue"].followUp = self.apply2
-        self.character = character
-
     def costGuard(self, cost, character):
         """
         check and remove required ressources
@@ -161,41 +156,63 @@ class CityBuilder(src.items.Item):
             self.resources[resourceType] -= amount
             return True
 
-    def apply2(self):
+    def addResource(self, character):
         """
-        handle a character having selected a action to do
-        by dooing the action
+        handle a character trying to add ressources
+        by trying to add the ressources from the characters inventory
+
+        Parameters:
+            character: the character trying to use the item
         """
 
-        character = self.character
+        foundItems = []
+        for item in character.inventory:
+            foundItems.append(item)
 
-        selection = self.submenue.selection
-        if selection == "showMap":
-            self.showMap(character)
-        elif selection == "addResource":
-            foundItems = []
-            for item in character.inventory:
-                foundItems.append(item)
+            if item.type not in self.resources:
+                self.resources[item.type] = 0
+            self.resources[item.type] += 1
 
-                if item.type not in self.resources:
-                    self.resources[item.type] = 0
-                self.resources[item.type] += 1
+        for item in foundItems:
+            character.inventory.remove(item)
 
-            for item in foundItems:
-                character.inventory.remove(item)
-        elif selection == "clearTasks":
-            self.tasks = []
-            self.runningTasks = []
-        elif selection == "clearTask":
-            if self.tasks:
-                task = self.tasks.pop()
-                character.addMessage("cleared task %s"%(task["task"]))
-            else:
-                character.addMessage("no task to clear")
-        elif selection == "clearError":
-            self.error = {}
+    def clearTask(self, character):
+        """
+        handle a character trying to clear a task this items 
+        by clearing the most recent task
+
+        Parameters:
+            character: the character trying to use the item
+        """
+
+        if self.tasks:
+            task = self.tasks.pop()
+            character.addMessage("cleared task %s"%(task["task"]))
         else:
-            character.addMessage("unknown selection")
+            character.addMessage("no task to clear")
+
+    def clearTasks(self, character):
+        """
+        handle a character trying to clear this items tasks
+        by clearing the tasks
+
+        Parameters:
+            character: the character trying to use the item
+        """
+
+        self.tasks = []
+        self.runningTasks = []
+
+    def clearError(self, character):
+        """
+        handle a character trying to clear errors
+        by clearing the errors
+
+        Parameters:
+            character: the character trying to use the item
+        """
+
+        self.error = {}
 
     def doRegisterResult(self, task, context):
         """

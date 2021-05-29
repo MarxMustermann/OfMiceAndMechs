@@ -1139,7 +1139,20 @@ class CityBuilder(src.items.Item):
                 "description":"remove reservation",
             }
 
-        mapContent[self.container.yPosition][self.container.xPosition] = "CB"
+        plot = (self.container.xPosition,self.container.yPosition)
+        mapContent[plot[1]][plot[0]] = "CB"
+
+        if not self.roadTiles and not self.tasks:
+            if plot not in functionMap:
+                functionMap[plot] = {}
+            functionMap[plot]["c"] = {
+                "function": {
+                    "container":self,
+                    "method":"startCityBuilding",
+                "params":{"character":character},
+                },
+                "description":"start city building",
+            }
 
         extraText = "\n\n"
         for task in reversed(self.tasks):
@@ -1148,6 +1161,18 @@ class CityBuilder(src.items.Item):
         self.submenue = src.interaction.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText)
         character.macroState["submenue"] = self.submenue
 
+    def startCityBuilding(self,character):
+        """
+        handle a character requesting to start building the city
+        by scheduling a task to expand
+
+        Parameters:
+            character: the character using the item
+        """
+
+        newTask = {"task":"expand"}
+        self.tasks.append(newTask)
+    
     def buildFactoryFromRoom(self, params):
         """
         handle a character having selected building a factory

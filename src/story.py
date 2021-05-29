@@ -113,6 +113,37 @@ def say(text, speaker=None, trigger=None):
     # add message
     showMessage(prefix + '"' + text + '"', trigger=trigger)
 
+class WorldBuildingPhase(src.saveing.Saveable):
+    """
+    Phase for a new world building phase
+    """
+
+    def __init__(self, name="worldbuilding", seed=0):
+        """
+        initialise own state
+
+        Parameters:
+            name: the name of the phase
+            seed: rng seed
+        """
+        super().__init__()
+
+        self.name = name
+        self.seed = seed
+
+        # register with dummy id
+        self.id = name
+
+        self.attributesToStore.append("name")
+
+    def start(self, seed=0):
+        newRoom = src.rooms.DungeonRoom()
+        newRoom.addCharacter(src.gamestate.gamestate.mainChar,7,7)
+        src.gamestate.gamestate.extraRoots.append(newRoom)
+        pass
+
+    def end(self):
+        pass
 
 #########################################################################
 #
@@ -5531,3 +5562,4 @@ def registerPhases():
     phasesByName["FactoryDream"] = FactoryDream
     phasesByName["CreativeMode"] = CreativeMode
     phasesByName["Dungeon"] = Dungeon
+    phasesByName["WorldBuildingPhase"] = WorldBuildingPhase

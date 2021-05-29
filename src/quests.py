@@ -468,9 +468,9 @@ class Quest(src.saveing.Saveable):
 
         # smooth over impossible state
         if not self.active:
-            src.interaction.debugMessages.append(
-                "recalculate called on inactive quest: " + str(self)
-            )
+            #src.interaction.debugMessages.append(
+            #    "recalculate called on inactive quest: " + str(self)
+            #)
             return
 
         self.triggerCompletionCheck()

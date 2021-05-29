@@ -1541,6 +1541,34 @@ XXX
         except:
             self.walkingAccess = []
 
+class DungeonRoom(Room):
+    def __init__(
+        self,
+        ):
+        """
+        """
+        layout = """
+           
+           
+           
+           
+    .      
+           
+           
+           
+           
+"""
+
+        super().__init__(
+            layout=layout,
+            xPosition=0,
+            yPosition=0,
+            offsetX=0,
+            offsetY=0,
+            desiredPosition=None,
+        )
+
+
 class StaticRoom(EmptyRoom):
     """
     the rooms used in dungeons

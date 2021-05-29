@@ -104,6 +104,10 @@ if not shouldLoad:
                 "dungeon",
                 "dungeon",
             ),
+            (
+                "WorldBuildingPhase",
+                "WorldBuildingPhase",
+            ),
         ]
 
         text = "\n"
@@ -132,6 +136,9 @@ if not shouldLoad:
     elif scenario == "dungeon":
         args.terrain = "nothingness"
         args.phase = "Dungeon"
+    elif scenario == "WorldBuildingPhase":
+        args.terrain = "nothingness"
+        args.phase = "WorldBuildingPhase"
 
 # set rendering mode
 if not args.nourwid:

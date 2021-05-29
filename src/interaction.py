@@ -58,6 +58,10 @@ def advanceGame():
                 event.handleEvent()
                 specificTerrain.events.remove(event)
 
+    for item in src.gamestate.gamestate.extraRoots:
+        for character in item.characters:
+            character.advance()
+
     src.gamestate.gamestate.tick += 1
 
 
@@ -4560,12 +4564,17 @@ def gameLoop(loop, user_data=None):
                     key = "enter"
                 keyboardListener(key)
 
-        for char in src.gamestate.gamestate.terrain.characters[:]:
+        for char in src.gamestate.gamestate.terrain.characters:
             if char not in multi_chars:
                 multi_chars.append(char)
 
         for room in src.gamestate.gamestate.terrain.rooms:
-            for character in room.characters[:]:
+            for character in room.characters:
+                if character not in multi_chars:
+                    multi_chars.append(character)
+
+        for room in src.gamestate.gamestate.extraRoots:
+            for character in room.characters:
                 if character not in multi_chars:
                     multi_chars.append(character)
 

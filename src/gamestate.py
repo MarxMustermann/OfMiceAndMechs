@@ -33,6 +33,7 @@ class GameState(src.saveing.Saveable):
         self.tick = 0
         self.gameHalted = False
         self.stopGameInTicks = None
+        self.extraRoots = []
 
     # bad code: initialization should happen in story or from loading
     def setup(self, phase=None, seed=0):
@@ -182,6 +183,10 @@ class GameState(src.saveing.Saveable):
         self.tick = state["tick"]
         self.initialSeed = state["initialSeed"]
 
+        self.extraRoots = []
+        for item in state["extraRoots"]:
+            self.extraRoots.append(src.rooms.getRoomFromState(item))
+
         self.macros = state["macros"]
 
         self.terrainMap = []
@@ -275,7 +280,11 @@ class GameState(src.saveing.Saveable):
             "initialSeed": self.initialSeed,
             "macros": self.macros,
             "terrainMap": [],
+            "extraRoots": [],
         }
+
+        for item in self.extraRoots:
+            state["extraRoots"].append(("Room",item.getState()))
 
         for line in self.terrainMap:
             newLine = []

@@ -31,8 +31,6 @@ Activate the bio press to produce press cake.
             character: the character using the item
         """
 
-        super().apply(character, silent=True)
-
         # fetch input bio mass
         items = []
         for item in self.container.getItemByPosition(

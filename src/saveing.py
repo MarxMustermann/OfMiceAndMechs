@@ -102,6 +102,8 @@ class Saveable(object):
                     return
                 serializedCallback["container"] = callback["container"].id
                 serializedCallback["method"] = callback["method"]
+                if "params" in callback:
+                    serializedCallback["params"] = callback["params"]
             else:
                 # save callback info in unusable format
                 # bad code: cannot be loaded, intended for debugging
@@ -127,6 +129,8 @@ class Saveable(object):
             callback = {}
 
         # update callback attributes
+        if "params" in state:
+            callback["params"] = state["params"]
         if "method" in state:
             callback["method"] = state["method"]
         if "container" in state:

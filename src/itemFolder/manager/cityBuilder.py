@@ -121,11 +121,10 @@ class CityBuilder(src.items.Item):
                 ]
             )
         )
-        jobOrder.taskName = "install city builder"
+        jobOrder.taskName = "relay task to room"
 
         character.addMessage("running job order to add local room task")
-        character.jobOrders.append(jobOrder)
-        character.runCommandString("Jj.j")
+        character.addJobOrder(jobOrder)
 
     def costGuard(self, cost, character):
         """
@@ -247,13 +246,14 @@ class CityBuilder(src.items.Item):
             if task["task"] == "build roads":
                 character.addMessage("handle success")
                 plot = context["jobOrder"].information["plot"]
-                self.unfinishedRoadTiles.remove(plot)
-                if not (
-                    plot[0] == self.container.xPosition
-                    and plot[1] == self.container.yPosition
-                ):
-                    self.roadTiles.append(plot)
-                    self.unusedRoadTiles.append(plot)
+                if plot in self.unfinishedRoadTiles:
+                    self.unfinishedRoadTiles.remove(plot)
+                    if not (
+                        plot[0] == self.container.xPosition
+                        and plot[1] == self.container.yPosition
+                    ):
+                        self.roadTiles.append(plot)
+                        self.unusedRoadTiles.append(plot)
 
         self.runningTasks = []
 
@@ -386,13 +386,14 @@ class CityBuilder(src.items.Item):
                         if task["failCounter"] > 4:
                             newTask = {"task": "expand"}
                             self.tasks.append(newTask)
+                            task["failCounter"] = 1
 
                         # abort
                         return
                 task["stockPileCoordinate"] = plot
             else:
                 task["stockPileCoordinate"] = task["coordinate"]
-                self.unusedRoadTiles.remove(task["coordinate"])
+                self.unusedRoadTiles.remove(tuple(task["coordinate"]))
             self.usedPlots.append(task["stockPileCoordinate"])
             self.stockPiles.append(task["stockPileCoordinate"])
             self.tasks.append(task)
@@ -666,7 +667,7 @@ class CityBuilder(src.items.Item):
             self.runningTasks = []
             return
         if not task.get("scrapField"):
-            task["scrapField"] = random.choice(self.scrapFields)
+            task["scrapField"] = list(random.choice(self.scrapFields))
 
         if not task.get("expanded storage"):
             self.tasks.append(task)
@@ -874,6 +875,12 @@ class CityBuilder(src.items.Item):
                 task["stockPileCoordinate"][0],
                 task["stockPileCoordinate"][1],
             )
+
+            if not "metalBarStorageName" in task:
+                task["metalBarStorageName"] = "bardropoff %s" % (
+                    task["metalBarStorageCoordinate"],
+                )
+
             self.useJoborderRelayToLocalRoom(
                 character,
                 [
@@ -1200,7 +1207,7 @@ class CityBuilder(src.items.Item):
         if not params.get("scrapField"):
             params["scrapField"] = [params["coordinate"],params["amount"]]
 
-        if "storageCoordinate" not in params:
+        if "scrapStorageCoordinate" not in params:
             basePlot = params["coordinate"]
 
             options = [
@@ -1215,7 +1222,57 @@ class CityBuilder(src.items.Item):
 
             submenu = src.interaction.SelectionMenu(
                 "Select scrapstockpile position", options,
-                targetParamName="storageCoordinate",
+                targetParamName="scrapStorageCoordinate",
+            )
+            character.macroState["submenue"] = submenu
+            character.macroState["submenue"].followUp = {
+                    "container": self,
+                    "method": "buildMineFromRoom",
+                    "params": params
+            }
+            return
+
+        if "processingCoordinate" not in params and params["scrapStorageCoordinate"]:
+            basePlot = params["scrapStorageCoordinate"]
+
+            options = [
+                (None, "auto"),
+                ]
+
+            if basePlot[1] > 0:
+                options.append(([basePlot[0],basePlot[1]-1], "north"))
+                options.append(([basePlot[0],basePlot[1]+1], "south"))
+                options.append(([basePlot[0]+1,basePlot[1]], "east"))
+                options.append(([basePlot[0]-1,basePlot[1]], "west"))
+
+            submenu = src.interaction.SelectionMenu(
+                "Select processing position", options,
+                targetParamName="processingCoordinate",
+            )
+            character.macroState["submenue"] = submenu
+            character.macroState["submenue"].followUp = {
+                    "container": self,
+                    "method": "buildMineFromRoom",
+                    "params": params
+            }
+            return
+
+        if "barStorageCoordinate" not in params and params["processingCoordinate"]:
+            basePlot = params["processingCoordinate"]
+
+            options = [
+                (None, "auto"),
+                ]
+
+            if basePlot[1] > 0:
+                options.append(([basePlot[0],basePlot[1]-1], "north"))
+                options.append(([basePlot[0],basePlot[1]+1], "south"))
+                options.append(([basePlot[0]+1,basePlot[1]], "east"))
+                options.append(([basePlot[0]-1,basePlot[1]], "west"))
+
+            submenu = src.interaction.SelectionMenu(
+                "Select bar storage position", options,
+                targetParamName="barStorageCoordinate",
             )
             character.macroState["submenue"] = submenu
             character.macroState["submenue"].followUp = {
@@ -1227,12 +1284,19 @@ class CityBuilder(src.items.Item):
 
         newTask = {
             "task": "build mine", 
-            "scrapField": params["scrapField"],
-            "stockPileCoordinate": params["stockPileCoordinate"],
-            "reservedPlots": [params["scrapField"][0]],
+            "scrapField": list(params["scrapField"]),
+            "reservedPlots": [list(params["scrapField"][0])],
         }
-        if params["stockPileCoordinate"]:
-            newTask["reservedPlots"].append(params["stockPileCoordinate"])
+
+        if "scrapStorageCoordinate" in params and params["scrapStorageCoordinate"]:
+            newTask["reservedPlots"].append(params["scrapStorageCoordinate"])
+            newTask["stockPileCoordinate"] = params["scrapStorageCoordinate"]
+        if "processingCoordinate" in params and params["processingCoordinate"]:
+            newTask["reservedPlots"].append(params["processingCoordinate"])
+            newTask["oreProcessingCoordinate"] = params["processingCoordinate"]
+        if "barStorageCoordinate" in params and params["barStorageCoordinate"]:
+            newTask["reservedPlots"].append(params["barStorageCoordinate"])
+            newTask["metalBarStorageCoordinate"] = params["barStorageCoordinate"]
         self.tasks.append(newTask)
 
     def addRoomFromMap(self,params):

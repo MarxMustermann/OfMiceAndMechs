@@ -255,7 +255,6 @@ After using this machine you need to wait %s ticks till you can use this machine
 this is a level %s item and will produce level %s items.
 
 """ % (
-            self.toProduce,
             self.coolDown,
             self.level,
             self.level,

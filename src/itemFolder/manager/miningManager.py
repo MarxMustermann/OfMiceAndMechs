@@ -32,6 +32,7 @@ class MiningManager(src.items.Item):
             ("mine", "mine"),
             ("metal bars", "metal bars"),
             ("spawn npc", "spawn npc"),
+            ("loop", "start joborder loop"),
         ]
         self.submenue = src.interaction.SelectionMenu(
             "what do you want to do?", options
@@ -49,6 +50,64 @@ class MiningManager(src.items.Item):
         character = self.character
 
         selection = self.submenue.selection
+        if selection == "loop":
+            self.useJoborderRelayToLocalRoom(
+                character,
+                [
+                    {"task":"add job order"}
+                ]
+                , "JobBoard"
+                )
+            targetJobOrder = src.items.itemMap["JobOrder"]()
+            tasks = [
+                        {
+                            "task": "insert job order",
+                            "command": "scj",
+                        },
+                        {
+                            "task": "run command",
+                            "command": None,
+                            "toRun":"go to room manager",
+                        },
+                        {
+                            "task": "insert job order",
+                            "command": "scj",
+                        },
+                        {
+                            "task": "go to item",
+                            "command": None,
+                            "item": "MiningManager",
+                        },
+                        {
+                            "task": "do maintenace",
+                            "command": "Js.j",
+                        },
+                        {
+                            "task": "continue loop",
+                            "command": "Js.wj",
+                        },
+                        {
+                            "task": "insert job order",
+                            "command": "scj",
+                        },
+                        {
+                            "task": "run command",
+                            "command": None,
+                            "toRun":"go to room manager",
+                        },
+                        {
+                            "task": "insert job order",
+                            "command": "scj",
+                        },
+                        {
+                            "task": "go to item",
+                            "command": None,
+                            "item": "JobBoard",
+                        },
+                    ]
+            targetJobOrder.addTasks(tasks)
+            character.addToInventory(targetJobOrder)
+            
         if selection == "spawn npc":
             character = src.characters.Character(name="mining npc")
             character.godMode = True
@@ -167,16 +226,6 @@ class MiningManager(src.items.Item):
             context: context about this task
         """
         
-        """
-        self.useJoborderRelayToLocalRoom(character,[
-            {"task":"set up","setupInfo":{
-                "mine":task["scrapField"],
-                "scrapStockPileName":task["stockPileName"],"scrapStockPileCoordinate":task["stockPileCoordinate"],
-                "metalBarStockPileName":task["metalBarStorageName"],"metalBarStockPileCoordinate":task["metalBarStorageCoordinate"],
-                "oreProcessing":task["oreProcessingCoordinate"]}}
-            ],"MiningManager")
-        """
-
         setupInfo = task["setupInfo"]
 
         jobOrder = context["jobOrder"]

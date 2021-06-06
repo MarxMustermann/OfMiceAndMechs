@@ -233,10 +233,10 @@ class Item(src.saveing.Saveable):
         options = []
         for option in self.applyOptions:
             options.append(option)
-        self.submenue = src.interaction.SelectionMenu(
+        submenu = src.interaction.SelectionMenu(
             "what do you want to do?", options
         )
-        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"] = submenu
         character.macroState["submenue"].followUp = {
             "method": "handleApplyMenu",
             "container": self,
@@ -462,8 +462,8 @@ class Item(src.saveing.Saveable):
                 text += "%s: %s\n" % (key, value[0])
 
         # spawn menu
-        self.submenue = src.interaction.OneKeystrokeMenu(text)
-        character.macroState["submenue"] = self.submenue
+        submenu = src.interaction.OneKeystrokeMenu(text)
+        character.macroState["submenue"] = submenu
 
         # register callback
         character.macroState["submenue"].followUp = {
@@ -487,8 +487,8 @@ class Item(src.saveing.Saveable):
         options = self.getConfigurationOptions(character)
 
         # call selected function
-        if self.submenue.keyPressed in options:
-            option = options[self.submenue.keyPressed][1](character)
+        if params["keyPressed"] in options:
+            option = options[params["keyPressed"]][1](character)
         else:
             character.addMessage("no configure action found for this key")
 
@@ -527,10 +527,10 @@ class Item(src.saveing.Saveable):
         """
 
         options = self.commandOptions
-        self.submenue = src.interaction.SelectionMenu(
+        submenu = src.interaction.SelectionMenu(
             "what command do you want to set?", options
         )
-        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"] = submenu
         character.macroState["submenue"].followUp = {
             "method": "handleSetCommandMenu",
             "container": self,
@@ -619,6 +619,7 @@ class Item(src.saveing.Saveable):
         result = {}
         self.addTriggerToTriggerMap(result, "configure machine", self.jobOrderConfigure)
         self.addTriggerToTriggerMap(result, "register result", self.doRegisterResult)
+        self.addTriggerToTriggerMap(result, "run command", self.jobOrderRunCommand)
         return result
 
     def doRegisterResult(self, task, context):
@@ -631,6 +632,10 @@ class Item(src.saveing.Saveable):
         """
 
         pass
+
+    def jobOrderRunCommand(self, task, context):
+        character = context["character"]
+        character.runCommandString(self.commands[task["toRun"]])
 
     def jobOrderConfigure(self, task, context):
         """

@@ -6,6 +6,7 @@ bad pattern: logic should be moved somewhere else
 # load libraries
 import time
 import uuid
+import json
 
 # load internal libraries
 import src.rooms
@@ -458,8 +459,14 @@ type the macro name you want to record to
                 items[0].apply(char)
         elif key == "j":
             character = char
-            while character.jobOrders and not character.jobOrders[-1].getTask():
+            if not character.jobOrders:
+                char.addMessage("no job Order")
+                return
+
+            if not character.jobOrders[-1].getTask():
                 character.jobOrders.pop()
+                del char.interactionState["advancedInteraction"]
+                return
 
             if character.jobOrders:
                 character.jobOrders[-1].apply(character)
@@ -557,6 +564,7 @@ call function %s
             char.addMessage(char.interactionState["functionCall"])
             if char.interactionState["functionCall"] == "clear":
                 char.registers = {}
+                #char.jobOrders = []
             if char.interactionState["functionCall"] == "clear registers":
                 char.registers = {}
             if char.interactionState["functionCall"] == "clearJobOrders":
@@ -3376,8 +3384,11 @@ class CharacterInfoMenu(SubMenu):
 
         text = char.getDetailedInfo() + "\n\n"
 
+        text += "\n"
         for jobOrder in char.jobOrders:
             text += str(jobOrder.taskName)
+            text += ": %s \n" % json.dumps(jobOrder.tasks)#,indent=4)
+        text += "\n"
 
         armorValue = None
         if char.armor:
@@ -3407,7 +3418,7 @@ class CharacterInfoMenu(SubMenu):
         char.setRegisterValue("NUM INVENTORY ITEMs", len(char.inventory))
         text += "NUM INVENTORY ITEMs - %s" % (len(char.inventory)) + "\n"
         char.setRegisterValue("frustration", char.frustration)
-        text += "frust: %s\n" % char.frustration
+        text += "frustration: %s\n" % char.frustration
 
         # show info
         header.set_text((urwid.AttrSpec("default", "default"), "\ncharacter overview"))
@@ -4159,7 +4170,7 @@ class OneKeystrokeMenu(SubMenu):
         if key not in ("~",) and not self.firstRun:
             self.keyPressed = key
             if self.followUp:
-                self.callIndirect(self.followUp)
+                self.callIndirect(self.followUp,{"keyPressed":key})
             self.done = True
             return True
 
@@ -4471,6 +4482,9 @@ def keyboardListener(key):
             src.gamestate.gamestate.stopGameInTicks = 10
         if key == "I":
             src.gamestate.gamestate.stopGameInTicks = 1
+        if key == "s":
+            global speed
+            speed = 0.1
         src.gamestate.gamestate.gameHalted = False
     else:
         show_or_exit(key, charState=state)

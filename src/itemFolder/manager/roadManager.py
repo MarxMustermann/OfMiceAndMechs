@@ -54,16 +54,10 @@ class RoadManager(src.items.Item):
             character: the character triggering this action
         """
 
-        text = ""
         for (
             key,
             value,
         ) in self.pathingNodes.items():
-            text += "%s: %s  => center\n" % (
-                key,
-                value["coordinate"],
-            )
-            text += "  "
             node = tuple(value["coordinate"])
             counter = 0
             backPath = []
@@ -83,12 +77,6 @@ class RoadManager(src.items.Item):
 
             self.pathsFromCenter[tuple(value["coordinate"])] = list(reversed(backPath))
             self.pathsToCenter[tuple(value["coordinate"])] = backPath
-
-            text += "  %s\n" % (list(reversed(backPath)),)
-            text += "  %s\n" % (backPath,)
-
-        self.submenue = src.interaction.OneKeystrokeMenu(text)
-        character.macroState["submenue"] = self.submenue
 
     def getJobOrderTriggers(self):
         """

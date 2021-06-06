@@ -143,8 +143,10 @@ tasks:
         self.character = character
 
     def doAddBreakPoint(self):
+        if self.submenue.selection is None:
+            return
         self.character.addMessage("breakpoint set")
-        self.tasks[2]["breakPoint"] = True
+        self.tasks[self.submenue.selection]["breakPoint"] = True
 
     def runSingleStep(self, character):
         """
@@ -210,6 +212,9 @@ done: %s
             self.done,
         )
         return text
+
+    def addTasks(self,tasks):
+        self.tasks = list(reversed(tasks))
 
 
 src.items.addType(JobOrder)

@@ -23,19 +23,45 @@ class JobBoard(src.items.Item):
         self.bolted = False
         self.walkable = False
 
+        self.runsJobOrders = True
+
         # set up interaction menu
         self.applyOptions.extend(
             [
                 ("doMaintenance", "do a job order"),
                 ("addComand", "add comand"),
                 ("addJobOrder", "add job order"),
+                ("spawnNpc", "spawn npc"),
             ]
         )
         self.applyMap = {
             "doMaintenance": self.doMaintenance,
             "addComand": self.addComand,
             "addJobOrder": self.addJobOrder,
+            "spawnNpc": self.spawnNpc,
         }
+
+    def getJobOrderTriggers(self):
+        """
+        register handlers for handling job order tasks
+
+        Returns:
+            a dict of lists containing the handlers
+        """
+
+        result = super().getJobOrderTriggers()
+        self.addTriggerToTriggerMap(result, "add job order", self.jobOrderAddJobOrder)
+        return result
+
+
+    def spawnNpc(self, character):
+        npc = src.characters.Character(name="Hooper")
+        npc.godMode = True
+        self.container.addCharacter(npc,self.xPosition,self.yPosition-1)
+        npc.macroState["macros"] = {
+            "a": list("Js.j_a")
+        }
+        npc.runCommandString("_a")
 
     def addComand(self, character):
         """
@@ -64,6 +90,9 @@ class JobBoard(src.items.Item):
         # add to todo list
         self.todo.append(jobOrder)
         character.addMessage("copied comand to job order and added it")
+
+    def jobOrderAddJobOrder(self, task, context):
+        self.addJobOrder(context["character"])
 
     def addJobOrder(self, character):
         """
@@ -102,7 +131,10 @@ class JobBoard(src.items.Item):
         if not self.todo:
             character.addMessage("no job order on job board")
         else:
-            character.addJobOrder(self.todo.pop())
+            import random
+            jobOrder = random.choice(self.todo)
+            self.todo.remove(jobOrder)
+            character.addJobOrder(jobOrder)
             character.addMessage("you take a job order from the job board")
 
     def getLongInfo(self):

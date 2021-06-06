@@ -82,15 +82,62 @@ class StockpileMetaManager(src.items.Item):
             character: the character trying to use this item
         """
 
-        character = src.characters.Character(name="logistics npc")
-        character.godMode = True
-        character.xPosition = self.xPosition
-        character.yPosition = self.yPosition - 1
-        self.container.addCharacter(character, self.xPosition, self.yPosition - 1)
-        character.macroState["macros"] = {
-            "a": ["J", "s", ".", "s", "s", "s", "j", "_", "a"],
-        }
-        character.runCommandString("_a")
+        self.useJoborderRelayToLocalRoom(
+            character,
+            [
+                {"task":"add job order"}
+            ]
+            , "JobBoard"
+            )
+        targetJobOrder = src.items.itemMap["JobOrder"]()
+        tasks = [
+                    {
+                        "task": "insert job order",
+                        "command": "scj",
+                    },
+                    {
+                        "task": "run command",
+                        "command": None,
+                        "toRun":"go to room manager",
+                    },
+                    {
+                        "task": "insert job order",
+                        "command": "scj",
+                    },
+                    {
+                        "task": "go to item",
+                        "command": None,
+                        "item": "StockpileMetaManager",
+                    },
+                    {
+                        "task": "do maintenace",
+                        "command": "Js.wwj",
+                    },
+                    {
+                        "task": "continue loop",
+                        "command": "Js.wj",
+                    },
+                    {
+                        "task": "insert job order",
+                        "command": "scj",
+                    },
+                    {
+                        "task": "run command",
+                        "command": None,
+                        "toRun":"go to room manager",
+                    },
+                    {
+                        "task": "insert job order",
+                        "command": "scj",
+                    },
+                    {
+                        "task": "go to item",
+                        "command": None,
+                        "item": "JobBoard",
+                    },
+                ]
+        targetJobOrder.addTasks(tasks)
+        character.addToInventory(targetJobOrder)
 
     def doMaintenance(self, character):
         """
@@ -596,6 +643,9 @@ class StockpileMetaManager(src.items.Item):
                 amount = len(self.character.inventory)
                 command = "Js.s.j" * amount
                 self.character.runCommandString(command)
+            elif jobOrder.getTask()["task"] == "run command":
+                task = jobOrder.popTask()
+                self.character.runCommandString(self.commands[task["toRun"]])
             elif jobOrder.getTask()["task"] == "configure machine":
                 task = jobOrder.popTask()
 
@@ -634,11 +684,9 @@ class StockpileMetaManager(src.items.Item):
                     stockPileInfo["desiredAmount"] = stockPileInfo["maxAmount"]
                 stockPileInfo["active"] = True
                 jobOrder.popTask()
-                self.character.jobOrders.pop()
             else:
-                self.character.addMessage("unknown task type %s"%task["task"])
+                self.character.addMessage("unknown task type %s"%jobOrder.getTask()["task"])
                 jobOrder.popTask()
-                self.character.jobOrders.pop()
 
             self.blocked = False
             return

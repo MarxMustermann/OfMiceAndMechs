@@ -135,6 +135,7 @@ class RoomManager(src.items.Item):
         options = [
             ("storeItem", "add item to storage"),
             ("spawnMaintenanceNpc", "spawn maintenance npc"),
+            ("startJoborderLoop", "start job order loop"),
         ]
         submenu = src.interaction.SelectionMenu(
             "what action do you want to do?", options
@@ -237,6 +238,9 @@ class RoomManager(src.items.Item):
             params: parameters from the selection
         """
 
+        if "selection" not in params:
+            return
+
         character = params["character"]
         character.addMessage(params)
 
@@ -295,8 +299,6 @@ class RoomManager(src.items.Item):
         self.stuckReason = None
         self.dependencies = {}
 
-        character.runCommandString("Js.j")
-
     def doAction(self,params):
         """
         run an action on a character
@@ -305,8 +307,62 @@ class RoomManager(src.items.Item):
             params: parameters from the selection
         """
 
+        if "selection" not in params:
+            return
+
         character = params["character"] 
         selection = params["selection"]
+
+        if selection == "startJoborderLoop":
+            jobOrder = src.items.itemMap["JobOrder"]()
+            itemSlot = random.choice(self.itemPositions["JobBoard"])
+            newTasks = [
+                {
+                    "task": "go to job board",
+                    "command": self.generatePathFromTo(
+                        [character.xPosition, character.yPosition],
+                        [itemSlot[0], itemSlot[1] - 1],
+                    ),
+                },
+                {"task": "add job order", "command": "Js.ssj"},
+                {
+                    "task": "go back",
+                    "command": self.generatePathFromTo(
+                        [itemSlot[0], itemSlot[1] - 1],
+                        [character.xPosition, character.yPosition],
+                    ),
+                },
+            ]
+            jobOrder.addTasks(newTasks)
+            character.addJobOrder(jobOrder)
+
+            payloadJobOrder = src.items.itemMap["JobOrder"]()
+            newTasks = [
+                {
+                    "task": "go to room manager",
+                    "command": self.generatePathFromTo(
+                        [itemSlot[0], itemSlot[1] - 1],
+                        [self.xPosition, self.yPosition - 1],
+                    ),
+                },
+                {
+                    "task": "do maintenance",
+                    "command": "Js.j",
+                },
+                {
+                    "task": "continue loop",
+                    "command": "Js.sjssj",
+                },
+                {
+                    "task": "go back",
+                    "command": self.generatePathFromTo(
+                        [self.xPosition, self.yPosition - 1],
+                        [itemSlot[0], itemSlot[1] - 1],
+                    ),
+                },
+            ]
+            payloadJobOrder.addTasks(newTasks)
+            character.addToInventory(payloadJobOrder)
 
         if selection == "storeItem":
             jobOrder = src.items.itemMap["JobOrder"]()
@@ -360,7 +416,6 @@ class RoomManager(src.items.Item):
             return
         if not self.tasks:
             if self.cityBuilderPos:
-                character.runCommandString("Js.j")
                 command = ""
                 command += self.generatePathFromTo(
                     [character.xPosition, character.yPosition],
@@ -376,8 +431,6 @@ class RoomManager(src.items.Item):
             else:
                 character.addMessage("no tasks")
                 return
-
-        character.runCommandString("Js.j")
 
         task = self.tasks.pop()
 
@@ -442,14 +495,15 @@ class RoomManager(src.items.Item):
                 "StockpileMetaManager",
                 "ArchitectArtwork",
                 "RoadManager",
+                "JobBoard",
             ):
                 commands = {}
                 commands["go to room manager"] = self.generatePathFromTo(
                     [itemSlot[0], itemSlot[1] - 1],
-                    [character.xPosition, character.yPosition],
+                    [self.xPosition, self.yPosition - 1],
                 )
                 commands["return from room manager"] = self.generatePathFromTo(
-                    [character.xPosition, character.yPosition],
+                    [self.xPosition, self.yPosition - 1],
                     [itemSlot[0], itemSlot[1] - 1],
                 )
 
@@ -482,9 +536,7 @@ class RoomManager(src.items.Item):
             )
             jobOrder.tasks = list(reversed(tasks))
             jobOrder.taskName = "add item to room"
-            character.jobOrders.append(jobOrder)
-
-            character.runCommandString("Jj.j")
+            character.addJobOrder(jobOrder)
 
             self.itemSlotUsage[tuple(itemSlot)] = task
             if task["type"] not in self.itemPositions:
@@ -554,10 +606,10 @@ class RoomManager(src.items.Item):
             commands = {}
             commands["go to room manager"] = self.generatePathFromTo(
                 [self.cityBuilderPos[0], self.cityBuilderPos[1] - 1],
-                [character.xPosition, character.yPosition],
+                [self.xPosition, self.yPosition - 1],
             )
             commands["return from room manager"] = self.generatePathFromTo(
-                [character.xPosition, character.yPosition],
+                [self.xPosition, self.yPosition - 1],
                 [self.cityBuilderPos[0], self.cityBuilderPos[1] - 1],
             )
 
@@ -598,8 +650,7 @@ class RoomManager(src.items.Item):
             jobOrder.taskName = "install city builder"
 
             character.addMessage("running job order to install machine")
-            character.jobOrders.append(jobOrder)
-            character.runCommandString("Jj.j")
+            character.addJobOrder(jobOrder)
 
         if task["task"] == "add BluePrintingArtwork":
             machine = src.items.items["BluePrintingArtwork"]()
@@ -749,8 +800,6 @@ class RoomManager(src.items.Item):
                         self.dependencies[tuple(targetPos)].append(itemSlot)
                 itemCount += 1
 
-            character.inventory = []
-
             resourceTerminalPos = random.choice(
                 self.resourceTerminalPositions.get("MetalBars")
             )
@@ -870,8 +919,7 @@ class RoomManager(src.items.Item):
             self.tasks.append(newTask)
 
             character.addMessage("running job order to install machine")
-            character.jobOrders.append(jobOrder)
-            character.runCommandString("Jj.j")
+            character.addJobOrder(jobOrder)
 
             if task["type"] not in self.machinePositions:
                 self.machinePositions[task["type"]] = []
@@ -913,7 +961,19 @@ class RoomManager(src.items.Item):
         result = {}
         self.addTriggerToTriggerMap(result, "relay job order", self.relayJobOrder)
         self.addTriggerToTriggerMap(result, "add Tasks", self.addTasks)
+        self.addTriggerToTriggerMap(result, "go to item", self.jobOrderGoToItem)
         return result
+
+    def jobOrderGoToItem(self, task, context):
+        character = context["character"]
+        itemType = task["item"]
+
+        import random
+        itemSlot = random.choice(self.itemPositions[itemType])
+        
+        command = self.generatePathFromTo((character.xPosition,character.yPosition), (itemSlot[0],itemSlot[1]-1))
+
+        character.runCommandString(command)
 
     def addTasks(self, task, context):
         """

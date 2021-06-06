@@ -392,9 +392,8 @@ class ArchitectArtwork(src.items.Item):
 
         if context["jobOrder"].error:
             if not context["jobOrder"].getTask():
-                context["character"].jobOrders.pop()
-                if context["character"].jobOrders:
-                    jobOrder = context["character"].jobOrders[-1]
+                if len(context["character"].jobOrders) > 1:
+                    jobOrder = context["character"].jobOrders[-2]
                     jobOrder.error = context["jobOrder"].error
 
     def apply(self, character):

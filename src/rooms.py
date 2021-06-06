@@ -553,27 +553,6 @@ class Room(src.saveing.Saveable):
         for item in state["walkingAccess"]:
             self.walkingAccess.append((item[0], item[1]))
 
-        # update changed items
-        if "changedItems" in state:
-            for item in self.itemsOnFloor[:]:
-                if item.id in state["changedItems"]:
-                    self.removeItem(item)
-                    item.setState(state["itemStates"][item.id])
-                    self.addItems([item])
-
-        # remove items
-        if "removedItems" in state:
-            for item in self.itemsOnFloor[:]:
-                if item.id in state["removedItems"]:
-                    self.removeItem(item)
-
-        # add new items
-        if "newItems" in state:
-            for itemId in state["newItems"]:
-                itemState = state["itemStates"][itemId]
-                item = src.items.getItemFromState(itemState)
-                self.addItem(item, item.getPosition())
-
         if "itemIds" in state:
             for item in self.itemsOnFloor[:]:
                 self.removeItem(item)

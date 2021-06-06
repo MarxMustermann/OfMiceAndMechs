@@ -879,6 +879,12 @@ class Item(src.saveing.Saveable):
 
             # place scrap
             container.addItems([newItem])
+    
+    def setState(self,state):
+        super().setState(state)
+
+        if self.xPosition and not self.zPosition:
+            self.zPosition = 0
 
 
 commons = [

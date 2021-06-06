@@ -19,7 +19,6 @@ class CityBuilder(src.items.Item):
 
         super().__init__(display="CB", name=name)
         self.commands = {}
-        self.tasks = [{"task": "build factory"}]
         self.tasks = []
         self.internalRooms = []
         self.scrapFields = []
@@ -36,6 +35,7 @@ class CityBuilder(src.items.Item):
         self.runningTasks = []
 
         self.resources = {"TypedStockpileManager": 4, "Paving": 120}
+        self.resources = {}
 
         # config options
         self.numReservedPathPlots = 5

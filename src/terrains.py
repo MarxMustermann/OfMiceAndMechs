@@ -402,6 +402,9 @@ class Terrain(src.saveing.Saveable):
             ]
         )
 
+    def damage(self):
+        pass
+
     def getItemByPosition(self, position):
         """
         get items on a specific position
@@ -1176,6 +1179,7 @@ class Terrain(src.saveing.Saveable):
 
             # check for items blocking the move to the destination coordinate
             foundItem = None
+            stepOnActiveItems = []
             item = None
             for item in foundItems:
                 if item and not item.walkable:
@@ -1187,7 +1191,9 @@ class Terrain(src.saveing.Saveable):
 
                     # remember the item for interaction and abort
                     foundItem = item
-                    break
+
+                if item.isStepOnActive:
+                    stepOnActiveItems.append(item)
             if not foundItem:
                 if len(foundItems) >= 15:
                     char.addMessage("the floor is too full to walk there")
@@ -1201,8 +1207,23 @@ class Terrain(src.saveing.Saveable):
             if foundItem:
                 foundItem = foundItems[0]
 
+            for other in self.characters:
+                if other == char:
+                    continue
+
+                if not destCoord == other.getPosition():
+                    continue
+
+                char.messages.append("*thump*")
+                char.collidedWith(other)
+                other.collidedWith(char)
+                return
+
             # move the character
             if not foundItem:
+
+                for item in stepOnActiveItems:
+                    item.doStepOnAction(char)
                 if direction == "north":
                     char.yPosition -= 1
                 elif direction == "south":

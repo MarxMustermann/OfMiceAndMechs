@@ -1,5 +1,6 @@
 import src
 import random
+import json
 
 class ArchitectArtwork(src.items.Item):
     """
@@ -16,7 +17,7 @@ class ArchitectArtwork(src.items.Item):
 
         super().__init__(display="AA")
 
-        self.name = "scrap compactor"
+        self.name = "architect artwork"
         self.runsJobOrders = True
         self.godMode = False
         self.attributesToStore.extend(["godMode"])
@@ -411,6 +412,9 @@ class ArchitectArtwork(src.items.Item):
             ("shapeTerrain", "shape terrain"),
             ("addRoom", "add room"),
             ("clearField", "clear coordinate"),
+            ("addRemnant", "add remnant"),
+            ("fill map", "fill map"),
+            ("generate maze", "generate maze"),
             ("test", "test"),
         ]
         self.submenue = src.interaction.SelectionMenu(
@@ -428,12 +432,432 @@ class ArchitectArtwork(src.items.Item):
 
         pass
 
+    def addRemants(self,character):
+        terrain = self.getTerrain()
+
+        roomsPositions = []
+
+        with open("states/abandondedCityCore.json","r") as stateFile:
+            roomData = json.loads(stateFile.read())
+        room = src.rooms.getRoomFromState(roomData,src.gamestate.gamestate.terrain)
+        terrain.addRoom(room)
+        character.addMessage("added abandoned city core")
+        roomsPositions.append((7,7))
+
+        streets = []
+        connections = {}
+        for i in range(0,5):
+            xPosition = random.randint(1,13)
+            yPosition = random.randint(1,13)
+
+            if xPosition in (7,8,9) and yPosition in (7,8,9):
+                continue
+            if (xPosition,yPosition) in roomsPositions:
+                continue
+
+            with open("states/emptyRoom.json","r") as stateFile:
+                roomData = json.loads(stateFile.read())
+            room = src.rooms.getRoomFromState(roomData,src.gamestate.gamestate.terrain)
+            room.xPosition = xPosition
+            room.yPosition = yPosition
+
+            for i in range(1,random.randint(4,10)):
+                enemy = src.characters.Spider()
+                enemy.godMode = True
+                room.addCharacter(enemy,random.randint(1,11),random.randint(1,11))
+                enemy.startDefending()
+            for i in range(1,random.randint(4,40)):
+                net = src.items.itemMap["SpiderNet"]()
+                room.addItem(net,(random.randint(1,11),random.randint(1,11),0))
+            for i in range(1,random.randint(4,10)):
+                net = src.items.itemMap["AcidBladder"]()
+                room.addItem(net,(random.randint(1,11),random.randint(1,11),0))
+
+            terrain.addRoom(room)
+            roomsPositions.append((xPosition,yPosition))
+
+            adjustedPosition = [xPosition,yPosition]
+
+            while 1:
+                if adjustedPosition[0] > 7:
+                    direction = (-1,0)
+                    backDirection = (1,0)
+                elif adjustedPosition[0] < 7:
+                    direction = ( 1,0)
+                    backDirection = (-1,0)
+                else:
+                    if adjustedPosition[1] > 7:
+                        direction = (0,-1)
+                        backDirection = (0,1)
+                    elif adjustedPosition[1] < 7:
+                        direction = (0, 1)
+                        backDirection = (0,-1)
+                    else:
+                        break
+
+                if tuple(adjustedPosition) in connections:
+                    connections[tuple(adjustedPosition)].append(direction)
+
+                adjustedPosition[0] += direction[0]
+                adjustedPosition[1] += direction[1]
+
+                if not tuple(adjustedPosition) in streets:
+                    streets.append(tuple(adjustedPosition))
+                    connections[tuple(adjustedPosition)] = []
+
+                connections[tuple(adjustedPosition)].append(backDirection)
+
+        enemy = src.characters.Spider()
+        enemy.godMode = True
+        terrain.addCharacter(enemy,96,115)
+
+
+        character.addMessage("added empty rooms")
+        character.addMessage("%s"%(roomsPositions,))
+        character.addMessage("%s"%(streets,))
+            
+        for street in streets:
+            xPosition = street[0]
+            yPosition = street[1]
+
+            positions = [(6,6),(6,7),(6,8),(7,6),(8,6),(8,7),(8,8),(7,8)]
+            roadPart = []
+            directions = [(1,0),(0,-1)]
+            for direction in connections[street]:
+                start = [7,7]
+                for j in range(1,7):
+                    start[0] += direction[0]
+                    start[1] += direction[1]
+                    positions.append(tuple(start))
+
+            for position in positions:
+                paving = src.items.itemMap["Paving"]()
+                pos = (xPosition*15+position[0],yPosition*15+position[1],0)
+                if terrain.getItemByPosition(pos):
+                    continue
+                terrain.addItem(paving,pos)
+            #character.addMessage("added remnant paving to %s/%s"%(xPosition,yPosition,))
+
+    def generateMaze(self):
+        """
+        build a maze
+        """
+
+        self.fillMap()
+        self.doClearField(self.xPosition//15,self.xPosition//15)
+
+        terrain = self.getTerrain()
+
+        center = (self.xPosition//15,self.xPosition//15)
+
+        # generate room slots
+        roomSlots = []
+        ringrooms = []
+        ringrooms.append((5,7))
+        ringrooms.append((7,5))
+        ringrooms.append((9,7))
+        ringrooms.append((7,9))
+        roomSlots.extend(ringrooms)
+        for i in range(1,50):
+            x = random.randint(1,13)
+            y = random.randint(1,13)
+
+            if abs(x-7) < 2 and abs(y-7) < 2:
+                continue
+            
+            if not (x,y) in roomSlots:
+                roomSlots.append((x,y))
+
+        freeRoomSlots = roomSlots[:]
+
+        # add target room
+        targetRoom = random.choice(freeRoomSlots)
+        while targetRoom in freeRoomSlots:
+            freeRoomSlots.remove(targetRoom)
+        memoryCellRoom = random.choice(freeRoomSlots)
+        while memoryCellRoom in freeRoomSlots:
+            freeRoomSlots.remove(memoryCellRoom)
+        pocketFrameRoom = random.choice(freeRoomSlots)
+        while pocketFrameRoom in freeRoomSlots:
+            freeRoomSlots.remove(pocketFrameRoom)
+        
+        pathSlots = []
+        crossroads = []
+
+        """
+        # sort rooms by distance
+        sortingHelper = {}
+        for roomSlot in roomSlots:
+            distance = abs(roomSlot[0]-7)-abs(roomSlot[1]-7)
+        roomSlots = sorted(roomSlots,key=abs(roomSlot[0]-7)-abs(roomSlot[1]-7)
+        """
+
+        # clear paths to rooms
+        for roomSlot in roomSlots:
+            self.doClearField(roomSlot[0],roomSlot[1])
+
+        connectedRooms = []
+        for roomSlot in roomSlots:
+
+            x = roomSlot[0]
+            y = roomSlot[1]
+
+            hasNeighbour = False
+            for pos in ((x-1,y),(x+1,y),(x,y-1),(x,y+1)):
+                if pos in connectedRooms:
+                    hasNeighbour = True
+
+            if hasNeighbour:
+                pass
+                #continue
+
+            last = None
+            while not x == 7 or not y == 7:
+
+                items = []
+                if x > 7:
+                    direction = "west"
+                elif x < 7:
+                    direction = "east"
+                elif y > 7:
+                    direction = "north"
+                elif y < 7:
+                    direction = "south"
+
+                # bug: does not work as intended
+                if (x-1,y) in pathSlots and not last == (x-1,y) and x > 7:
+                    direction = "west"
+                if (x+1,y) in pathSlots and not last == (x+1,y) and x < 7:
+                    direction = "east"
+                if (x,y-1) in pathSlots and not last == (x,y-1) and y > 7:
+                    direction = "north"
+                if (x,y+1) in pathSlots and not last == (x,y+1) and y < 7:
+                    direction = "south"
+
+                if x > 7 and (x-1,y) in roomSlots:
+                    direction = "west"
+                if x < 7 and (x+1,y) in roomSlots:
+                    direction = "east"
+                if y > 7 and (x,y-1) in roomSlots:
+                    direction = "north"
+                if y < 7 and (x,y+1) in roomSlots:
+                    direction = "south"
+
+                if abs(x-7) < 2 and abs(y-7) < 2:
+                    if y < 7:
+                        direction = "south"
+                    if y > 7:
+                        direction = "north"
+                    if x > 7:
+                        direction = "west"
+                    if x < 7:
+                        direction = "east"
+
+                if direction == "west":
+                    for pathPos in range(-8,8):
+                        items.extend(terrain.getItemByPosition((x*15+pathPos,y*15+7,0)))
+                    x = x-1
+                elif direction == "east":
+                    for pathPos in range(8,23):
+                        items.extend(terrain.getItemByPosition((x*15+pathPos,y*15+7,0)))
+                    x = x+1
+                elif direction == "north":
+                    for pathPos in range(-8,8):
+                        items.extend(terrain.getItemByPosition((x*15+7,y*15+pathPos,0)))
+                    y = y-1
+                elif direction == "south":
+                    for pathPos in range(8,23):
+                        items.extend(terrain.getItemByPosition((x*15+7,y*15+pathPos,0)))
+                    y = y+1
+
+                last = (x,y)
+
+                while self in items:
+                    items.remove(self)
+                terrain.removeItems(items)
+
+                if x == 7 and y == 7:
+                    break
+
+                if (x,y) in roomSlots:
+                    note = src.items.itemMap["Note"]()
+                    note.text = random.choice([
+                        "The item is on coordinate %s/%s"%(targetRoom[0],targetRoom[1],),
+                        "The item is on coordinate %s/%s"%(targetRoom[0],targetRoom[1],),
+                        "The memorycell production is on coordinate %s/%s"%(memoryCellRoom[0],memoryCellRoom[1],),
+                        "The pocketframe production is on coordinate %s/%s"%(pocketFrameRoom[0],pocketFrameRoom[1],),
+                        ])
+                    terrain.addItem(note,(x*15+7,y*15+7,0))
+                    break
+                if (x,y) in pathSlots:
+                    if not (x,y) in crossroads:
+                        crossroads.append((x,y))
+                    else:
+                        break
+                    
+                    if not (abs(x-7) > 2 or abs(y-7) > 2):
+                        break
+
+                    if random.choice([True,False]):
+                        enemy = src.characters.Monster(x*15+7, y*15+7)
+                        enemy.health = 10 + random.randint(1, 100)
+                        enemy.baseDamage = random.randint(1, 10)
+                        enemy.godMode = True
+                        enemy.aggro = 1000000
+                        terrain.addCharacter(enemy, x*15+7, y*15+7)
+                    break
+
+                pathSlots.append((x,y))
+                connectedRooms.append((x,y))
+
+        # set up target room
+        targetItem = src.items.itemMap["YouWonMachine"]()
+        terrain.addItem(targetItem,(targetRoom[0]*15+7,targetRoom[1]*15+7,0))
+
+        memoryCellMachine = src.items.itemMap["Machine"]()
+        memoryCellMachine.setToProduce("MemoryCell")
+        terrain.addItem(memoryCellMachine,(memoryCellRoom[0]*15+7,memoryCellRoom[1]*15+7,0))
+
+        pocketFrameMachine = src.items.itemMap["Machine"]()
+        pocketFrameMachine.setToProduce("PocketFrame")
+        terrain.addItem(pocketFrameMachine,(pocketFrameRoom[0]*15+7,pocketFrameRoom[1]*15+7,0))
+
+        # insert theme rooms
+        for roomSlot in freeRoomSlots[:]:
+            if random.choice([True,True,True,False]):
+                continue
+
+            freeRoomSlots.remove(roomSlot)
+
+            theme = random.choice(["machine","food","military","stockpile","stockpile"])
+            
+            if theme == "machine":
+                for i in range(0,random.randint(4,8)):
+                    machine = src.items.itemMap["Machine"]()
+                    machine.toProduce = random.choice(["Rod","Rod","Vial","Rod","Heater","puller","Stripe","Bolt","Case","Tank","Armor","GooFlask","MemoryCell"])
+                    terrain.addItem(machine,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
+                for i in range(0,random.randint(0,10)):
+                    gooFlask = src.items.itemMap[random.choice(["MetalBars","Rod","Rod","Vial","Rod","Heater","puller","Stripe","Bolt","Case","Tank"])]()
+                    terrain.addItem(gooFlask,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
+
+            if theme == "food":
+                for i in range(0,random.randint(4,10)):
+                    machine = src.items.itemMap[random.choice(["CorpseShredder","MaggotFermenter","SporeExtractor","GooDispenser","BioPress","BloomShredder"])]()
+                    if machine.type == "GooDispenser":
+                        machine.charges = random.randint(0,3)
+                    terrain.addItem(machine,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
+
+                for i in range(0,random.randint(0,4)):
+                    gooFlask = src.items.itemMap["GooFlask"]()
+                    gooFlask.uses = random.choice([0,0,1,2,3,5,7,8,25,45,100])
+                    terrain.addItem(gooFlask,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
+
+            if theme == "military":
+                for i in range(0,random.randint(4,20)):
+                    bomb = src.items.itemMap["Bomb"]()
+                    terrain.addItem(bomb,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
+
+                enemy = src.characters.Monster(x, y)
+                enemy.health = 10 + random.randint(1, 1000)
+                enemy.baseDamage = random.randint(1, 100)
+                enemy.godMode = True
+                enemy.aggro = 1000000
+                enemy.faction = "animals"
+                terrain.addCharacter(enemy, roomSlot[0]*15+random.randint(1,13), roomSlot[1]*15+random.randint(1,13))
+
+
+            if theme == "stockpile":
+                manager = src.items.itemMap["UniformStockpileManager"]()
+                terrain.addItem(manager,(roomSlot[0]*15+7,roomSlot[1]*15+7,0))
+
+                itemType = random.choice(src.items.commons)
+                for i in range(0,random.randint(4,20)):
+                    bomb = src.items.itemMap[itemType]()
+                    terrain.addItem(bomb,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
+
+            for i in range(0,random.randint(0,5)):
+                enemy = src.characters.Monster(x, y)
+                enemy.health = 10 + random.randint(1, 100)
+                enemy.baseDamage = random.randint(1, 5)
+                enemy.godMode = True
+                enemy.aggro = 1000000
+                enemy.faction = "animals"
+
+                terrain.addCharacter(enemy, roomSlot[0]*15+random.randint(1,13), roomSlot[1]*15+random.randint(1,13))
+
+
+        # fill up remaining rooms
+        for roomSlot in freeRoomSlots:
+
+            distance = abs(roomSlot[0]-7)+abs(roomSlot[1]-7)
+
+            for i in range(0,random.randint(0,3)):
+                loot = src.items.itemMap[random.choice(["Rod","Rod","Vial","Rod","Heater","puller","Stripe","Bolt","Case","Tank","Armor","GooFlask"])]()
+                terrain.addItem(loot,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
+
+                if loot.type == "Vial":
+                    loot.uses = distance//3+1
+                if loot.type == "Rod":
+                    loot.baseDamage = distance+random.randint(0,3)
+                if loot.type == "Armor":
+                    loot.armorValue = distance//3+random.randint(0,1)
+                if loot.type == "GooFlask":
+                    loot.uses = min(distance+random.randint(0,100),100)
+                
+            for i in range(0,random.randint(0,50)):
+                pos = (random.randint(1,13),random.randint(1,13))
+                if not pos in ((7,1),(1,7),(13,7),(7,13)):
+                    if random.randint(0,3) == 1:
+                        loot = src.items.itemMap[random.choice(["MetalBars","Rod","Frame","Case"]+src.items.commons)]()
+                        terrain.addItem(loot,(roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0))
+                    scrap = src.items.itemMap["Scrap"](amount=random.randint(1,30))
+                    terrain.addItem(scrap,(roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0))
+
+            for i in range(0,random.randint(0,10)):
+                pos = (random.randint(1,13),random.randint(1,13))
+                if not pos in ((7,1),(1,7),(13,7),(7,13)):
+                    mold = src.items.itemMap["Mold"]()
+                    terrain.addItem(mold,(roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0))
+                    mold.startSpawn()
+            for i in range(0,random.randint(0,2)):
+                enemy = src.characters.Monster(x, y)
+                enemy.health = 10 + random.randint(1, distance*10)
+                enemy.baseDamage = random.randint(1, distance)
+                enemy.godMode = True
+                enemy.aggro = 1000000
+                enemy.faction = "animals"
+
+                terrain.addCharacter(enemy, roomSlot[0]*15+random.randint(1,13), roomSlot[1]*15+random.randint(1,13))
+
+    def fillMap(self):
+        """
+        fill the whole map
+        """
+
+        terrain = self.getTerrain()
+
+        for bigX in range(1,14):
+            for bigY in range(1, 14):
+                for x in range(1,14):
+                    for y in range(1,14):
+                        if bigX*15+x == self.xPosition and bigY*15+y == self.yPosition:
+                            continue
+                        item = src.items.itemMap["Scrap"](amount=random.randint(0,20))
+                        terrain.addItem(item,(bigX*15+x,bigY*15+y,0))
+
+
     def apply2(self):
         """
         handle a character having selected an action
         by running the action
         """
 
+        if self.submenue.selection == "addRemnant":
+            self.addRemants(self.character)
+        if self.submenue.selection == "generate maze":
+            self.generateMaze()
+        if self.submenue.selection == "fill map":
+            self.fillMap()
         if self.submenue.selection == "test":
             self.test()
         if self.submenue.selection == "shapeTerrain":
@@ -576,6 +1000,8 @@ class ArchitectArtwork(src.items.Item):
         for x in range(minX, maxX):
             for y in range(minY, maxY):
                 toRemove.extend(terrain.getItemByPosition((x, y, 0)))
+        if self in toRemove:
+            toRemove.remove(self)
         terrain.removeItems(toRemove)
 
         if (x, y) in terrain.roomByCoordinates:

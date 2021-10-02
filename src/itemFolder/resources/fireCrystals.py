@@ -1,5 +1,5 @@
 import src
-
+import random
 
 class FireCrystals(src.items.Item):
     """
@@ -17,6 +17,12 @@ class FireCrystals(src.items.Item):
         super().__init__(display=src.canvas.displayChars.fireCrystals)
         self.walkable = True
         self.name = "fireCrystals"
+        self.isStepOnActive = True
+
+    def doStepOnAction(self, character):
+        if random.choice([True,False]):
+            character.addMessage("you step on an fire crystal")
+            self.apply(character)
 
     def apply(self, character):
         """
@@ -64,7 +70,14 @@ class FireCrystals(src.items.Item):
         if not self.xPosition or not self.yPosition:
             return
 
-        new = Explosion()
+        new = src.items.itemMap["Explosion"]()
+        event = src.events.RunCallbackEvent(
+            src.gamestate.gamestate.tick + 1
+        )
+        event.setCallback({"container": new, "method": "explode"})
+        self.container.addEvent(event)
+
+        new = src.items.itemMap["Explosion"]()
         self.container.addItem(new,self.getPosition())
         event = src.events.RunCallbackEvent(
             src.gamestate.gamestate.tick + 1
@@ -72,15 +85,7 @@ class FireCrystals(src.items.Item):
         event.setCallback({"container": new, "method": "explode"})
         self.container.addEvent(event)
 
-        new = Explosion()
-        self.container.addItems(new,self.getPosition())
-        event = src.events.RunCallbackEvent(
-            src.gamestate.gamestate.tick + 1
-        )
-        event.setCallback({"container": new, "method": "explode"})
-        self.container.addEvent(event)
-
-        new = Explosion()
+        new = src.items.itemMap["Explosion"]()
         self.container.addItem(new,self.getPosition())
         event = src.events.RunCallbackEvent(
             src.gamestate.gamestate.tick + 1
@@ -88,7 +93,7 @@ class FireCrystals(src.items.Item):
         event.setCallback({"container": new, "method": "explode"})
         self.container.addEvent(event)
 
-        new = Explosion()
+        new = src.items.itemMap["Explosion"]()
         self.container.addItem(new,self.getPosition())
         event = src.events.RunCallbackEvent(
             src.gamestate.gamestate.tick + 1
@@ -96,8 +101,8 @@ class FireCrystals(src.items.Item):
         event.setCallback({"container": new, "method": "explode"})
         self.container.addEvent(event)
 
-        new = Explosion()
-        self.container.addItems(new,self.getPosition())
+        new = src.items.itemMap["Explosion"]()
+        self.container.addItem(new,self.getPosition())
         event = src.events.RunCallbackEvent(
             src.gamestate.gamestate.tick + 1
         )

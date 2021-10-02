@@ -30,7 +30,7 @@ class GooFlask(src.items.Item):
             character: the character trying to drink from the flask
         """
 
-        super().apply(character, silent=True)
+        super().apply(character)
 
         # handle edge case
         if self.uses <= 0:
@@ -52,6 +52,7 @@ class GooFlask(src.items.Item):
         if character.frustration > 5000:
             character.frustration -= 15
         character.satiation = 1000
+        character.addMessage("you are satiated")
         character.changed()
 
     def render(self):

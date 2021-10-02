@@ -3,6 +3,7 @@ the code for the characters belongs here
 """
 # import basic libs
 import json
+import urwid
 
 # import the other internal libs
 import src.items
@@ -138,6 +139,8 @@ class Character(src.saveing.Saveable):
         self.staggerResistant = False
 
         self.lastJobOrder = ""
+        self.huntkilling = False
+        self.guarding = False
 
         # generate the id for this object
         if characterId:
@@ -189,6 +192,8 @@ class Character(src.saveing.Saveable):
                 "staggerResistant",
                 "lastJobOrder",
                 "maxInventorySpace",
+                "huntkilling",
+                "guarding",
             ]
         )
         self.objectsToStore.append("serveQuest")
@@ -221,6 +226,30 @@ class Character(src.saveing.Saveable):
 
         self.xPosition = xPosition
         self.yPosition = yPosition
+
+    def huntkill(self):
+        self.addMessage("should start huntkill now")
+        self.huntkilling = True
+
+    def doHuntKill(self):
+        targets = []
+        for character in self.container.characters:
+            if character == self:
+                continue
+            if not character.xPosition//15 == self.xPosition//15:
+                continue
+            if not character.yPosition//15 == self.yPosition//15:
+                continue
+            if character.faction == self.faction:
+                continue
+            targets.append(character)
+
+        if not targets:
+            self.huntkilling = False
+            return "."
+
+        for target in targets:
+            distance = abs(target.xPosition-self.xPosition)+abs(target.yPosition-self.yPosition)
 
     def setDefaultMacroState(self):
         """
@@ -453,8 +482,10 @@ class Character(src.saveing.Saveable):
             other: the other character
         """
 
+        self.messages.append("collided")
         if not other.faction == self.faction:
             if self.personality.get("attacksEnemiesOnContact"):
+                self.messages.append("attack!")
                 self.runCommandString("m")
         else:
             if self.personality.get("annoyenceByNpcCollisions"):
@@ -1502,12 +1533,35 @@ class Character(src.saveing.Saveable):
 
         if self.aggro:
             self.aggro -= 1
-            command = random.choice(
-                [
-                    "ope$=aa$=ww$=ss$=ddm",
-                    "ope$=aa$=ww$=ss$=ddmk",
-                ]
-            )
+            if not self.container:
+                return
+
+            commands = []
+            for character in self.container.characters:
+                if character == self:
+                    continue
+                if character.faction == self.faction:
+                    continue
+                if not character.xPosition//15 == self.xPosition//15 or not character.yPosition//15 == self.yPosition//15:
+                    continue
+
+                if abs(character.xPosition-self.xPosition) < 2 and abs(character.yPosition-self.yPosition) < 2 and ( abs(character.xPosition-self.xPosition) == 0 or abs(character.yPosition-self.yPosition) == 0):
+                    commands = ["m"]
+                    break
+
+                if character.xPosition-self.xPosition > 0:
+                    commands.append("d")
+                if character.xPosition-self.xPosition < 0:
+                    commands.append("a")
+                if character.yPosition-self.yPosition > 0:
+                    commands.append("s")
+                if character.yPosition-self.yPosition < 0:
+                    commands.append("w")
+
+            if not commands:
+                command = "."
+            else:
+                command = random.choice(commands)
         elif (
             self.frustration < 1000 + self.personality["frustrationTolerance"]
             and not random.randint(1, waitChance) == 1
@@ -1590,7 +1644,7 @@ class Character(src.saveing.Saveable):
         if self.satiation < 0:
             self.die(reason="you starved")
 
-    def addSatiation(self, amount):
+    def addSatiation(self, amount, reason=None):
         """
         make the character less hungry
 
@@ -1598,9 +1652,12 @@ class Character(src.saveing.Saveable):
             amount: how less the character should be hungryier
         """
 
+        self.addMessage("you gain %s satiation because you %s"%(amount,reason))
+
         self.satiation += amount
         if self.satiation > 1000:
             self.satiation = 1000
+
 
     def addFrustration(self, amount):
         """
@@ -1889,16 +1946,85 @@ class Monster(Character):
             what the monster looks like
         """
 
+        render = src.canvas.displayChars.monster_spore
         if self.phase == 2:
-            return src.canvas.displayChars.monster_feeder
-        elif self.phase == 3:
-            return src.canvas.displayChars.monster_grazer
-        elif self.phase == 4:
-            return src.canvas.displayChars.monster_corpseGrazer
-        elif self.phase == 5:
-            return src.canvas.displayChars.monster_hunter
-        return src.canvas.displayChars.monster_spore
+            render = src.canvas.displayChars.monster_feeder
+            
+            if self.health > 150:
+                colorHealth = "#f80"
+            elif self.health > 140:
+                colorHealth = "#e80"
+            elif self.health > 130:
+                colorHealth = "#d80"
+            elif self.health > 120:
+                colorHealth = "#c80"
+            elif self.health > 110:
+                colorHealth = "#b80"
+            elif self.health > 100:
+                colorHealth = "#a80"
+            elif self.health > 90:
+                colorHealth = "#980"
+            elif self.health > 80:
+                colorHealth = "#880"
+            elif self.health > 70:
+                colorHealth = "#780"
+            elif self.health > 60:
+                colorHealth = "#680"
+            elif self.health > 50:
+                colorHealth = "#580"
+            elif self.health > 40:
+                colorHealth = "#480"
+            elif self.health > 30:
+                colorHealth = "#380"
+            elif self.health > 20:
+                colorHealth = "#280"
+            elif self.health > 10:
+                colorHealth = "#180"
+            else:
+                colorHealth = "#080"
 
+            if self.baseDamage > 15:
+                colorDamage = "#f80"
+            elif self.baseDamage > 14:
+                colorDamage = "#e80"
+            elif self.baseDamage > 13:
+                colorDamage = "#d80"
+            elif self.baseDamage > 12:
+                colorDamage = "#c80"
+            elif self.baseDamage > 11:
+                colorDamage = "#b80"
+            elif self.baseDamage > 10:
+                colorDamage = "#a80"
+            elif self.baseDamage > 9:
+                colorDamage = "#980"
+            elif self.baseDamage > 8:
+                colorDamage = "#880"
+            elif self.baseDamage > 7:
+                colorDamage = "#780"
+            elif self.baseDamage > 6:
+                colorDamage = "#680"
+            elif self.baseDamage > 5:
+                colorDamage = "#580"
+            elif self.baseDamage > 4:
+                colorDamage = "#480"
+            elif self.baseDamage > 3:
+                colorDamage = "#380"
+            elif self.baseDamage > 2:
+                colorDamage = "#280"
+            elif self.baseDamage > 1:
+                colorDamage = "#180"
+            else:
+                colorDamage = "#080"
+
+            render = [(urwid.AttrSpec(colorHealth, "black"), "🝆"),(urwid.AttrSpec(colorDamage, "black"), "-")]
+        elif self.phase == 3:
+            render = src.canvas.displayChars.monster_grazer
+        elif self.phase == 4:
+            render = src.canvas.displayChars.monster_corpseGrazer
+        elif self.phase == 5:
+            render = src.canvas.displayChars.monster_hunter
+
+        return render
 
 class Exploder(Monster):
     """
@@ -1973,12 +2099,126 @@ class Exploder(Monster):
 
         super().die(reason=reason, addCorpse=False)
 
+class Spider(Monster):
+
+    def __init__(
+        self,
+        display="🝆~",
+        xPosition=0,
+        yPosition=0,
+        quests=[],
+        automated=True,
+        name="Spider",
+        creator=None,
+        characterId=None,
+    ):
+        """
+        basic state setting
+
+        Parameters:
+            display: what the monster should look like
+            xPosition: obsolete, ignore
+            yPosition: obsolete, ignore
+            quests: obsolete, ignore
+            automated: obsolete, ignore
+            name: obsolete, ignore
+            creator: obsolete, ignore
+            characterId: obsolete, ignore
+        """
+        super().__init__(
+            display,
+            xPosition,
+            yPosition,
+            quests,
+            automated,
+            name,
+            creator=creator,
+            characterId=characterId,
+        )
+
+        self.solvers = [
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "NaiveMurderQuest",
+        ]
+
+        self.defending = None
+
+    def render(self):
+        return "ss"
+
+    def startDefending(self):
+        if not isinstance(self.container,src.rooms.Room):
+            return
+        self.container.addListener(self.test,"entered room")
+
+    def hurt(self, damage, reason=None):
+        if reason == "acid burns":
+            super().heal(damage, reason=reason)
+        else:
+            super().hurt(damage, reason=reason)
+        self.runCommandString("_m")
+
+    def test(self,character):
+        character.addMessage("skreeeeee")
+        #self.runCommandString(":huntkill enemy")
+        self.macroState["macros"]["m"] = list("ope$=aa$=ww$=ss$=ddm_m")
+        self.runCommandString("mmm_m")
+
+    def attack(self, target):
+        super().attack(target)
+        self.runCommandString("m")
+
+
+class CollectorSpider(Spider):
+
+    def __init__(
+        self,
+        display="🝆~",
+        xPosition=0,
+        yPosition=0,
+        quests=[],
+        automated=True,
+        name="CollectorSpider",
+        creator=None,
+        characterId=None,
+    ):
+        """
+        basic state setting
+
+        Parameters:
+            display: what the monster should look like
+            xPosition: obsolete, ignore
+            yPosition: obsolete, ignore
+            quests: obsolete, ignore
+            automated: obsolete, ignore
+            name: obsolete, ignore
+            creator: obsolete, ignore
+            characterId: obsolete, ignore
+        """
+        super().__init__(
+            display,
+            xPosition,
+            yPosition,
+            quests,
+            automated,
+            name,
+            creator=creator,
+            characterId=characterId,
+        )
+
+    def render(self):
+        return "SS"
+
 
 characterMap = {
     "Character": Character,
     "Monster": Monster,
     "Exploder": Exploder,
     "Mouse": Mouse,
+    "Spider": Spider,
+    "CollectorSpider": CollectorSpider,
 }
 
 

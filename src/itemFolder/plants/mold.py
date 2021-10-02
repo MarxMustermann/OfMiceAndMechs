@@ -178,7 +178,7 @@ you can eat it to gain 2 satiation.
                     self.container.addItem(new, newPos)
 
                     new = src.items.itemMap["Bush"]()
-                    self.container.addItems(new, self.getPosition())
+                    self.container.addItem(new, self.getPosition())
                     self.container.removeItem(self)
 
                 elif itemList[-1].type == "EncrustedBush":

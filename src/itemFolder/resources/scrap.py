@@ -110,7 +110,7 @@ class Scrap(src.items.Item):
         # get list of scrap on same location
         # bad code: should be handled in the container
         foundScraps = []
-        for item in self.container.getItembyPosition(
+        for item in self.container.getItemByPosition(
             (self.xPosition, self.yPosition, self.zPosition)
         ):
             if item.type == "Scrap":

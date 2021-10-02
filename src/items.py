@@ -74,6 +74,7 @@ class Item(src.saveing.Saveable):
         self.runsCommands = False
         self.canReset = False
         self.hasMaintenance = False
+        self.hasStepOnAction = False
 
         # properties for traits
         self.commands = {}
@@ -83,6 +84,7 @@ class Item(src.saveing.Saveable):
         self.nutrition = 0
         self.commandOptions = []
         self.godMode = False
+        self.isStepOnActive = False
 
         # set up metadata for saving
         self.attributesToStore.extend(
@@ -97,6 +99,7 @@ class Item(src.saveing.Saveable):
                 "bolted",
                 "description",
                 "commands",
+                "isStepOnActive",
             ]
         )
 
@@ -104,6 +107,9 @@ class Item(src.saveing.Saveable):
             self.id = uuid.uuid4().hex
         else:
             self.id = None
+
+    def doStepOnAction(self, character):
+        pass
 
     def setPosition(self, pos):
         """
@@ -878,7 +884,7 @@ class Item(src.saveing.Saveable):
             newItem.setWalkable()
 
             # place scrap
-            container.addItems([newItem])
+            container.addItems([(newItem,pos)])
     
     def setState(self,state):
         super().setState(state)

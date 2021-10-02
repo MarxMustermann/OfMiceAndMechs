@@ -1,4 +1,5 @@
 import src
+import random
 
 class Rod(src.items.Item):
     """
@@ -19,7 +20,7 @@ class Rod(src.items.Item):
 
         self.bolted = False
         self.walkable = True
-        self.baseDamage = 6
+        self.baseDamage = random.randint(3,15)
         self.attributesToStore.extend(
             [
                 "baseDamage",

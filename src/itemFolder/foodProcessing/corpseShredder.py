@@ -36,10 +36,10 @@ Activate the corpse shredder to produce mold feed/seeded mold feed.
         corpse = None
         moldSpores = []
 
-        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.xPosition)):
-            if isinstance(item, Corpse):
+        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, 0)):
+            if item.type == "Corpse":
                 corpse = item
-            if isinstance(item, MoldSpore):
+            if item.type == "MoldSpore":
                 moldSpores.append(item)
 
         # refuse to produce without resources
@@ -48,17 +48,12 @@ Activate the corpse shredder to produce mold feed/seeded mold feed.
             return
 
         targetFull = False
-        if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
-            if (
-                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition)])
-                > 15
-            ):
+        items = self.container.getItemByPosition((self.xPosition + 1, self.yPosition,0))
+        if len(items) > 15:
+            targetFull = True
+        for item in items:
+            if item.walkable == False:
                 targetFull = True
-            for item in self.container.itemByCoordinates[
-                (self.xPosition + 1, self.yPosition)
-            ]:
-                if item.walkable == False:
-                    targetFull = True
 
         if targetFull:
             character.addMessage(

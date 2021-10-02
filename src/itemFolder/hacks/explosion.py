@@ -13,6 +13,7 @@ class Explosion(src.items.Item):
     def __init__(self):
         super().__init__(display=src.canvas.displayChars.explosion)
         self.name = "explosion"
+        self.walkable = True
 
     def pickUp(self, character):
         """
@@ -52,11 +53,6 @@ class Explosion(src.items.Item):
 
         if self.container:
             self.container.damage()
-        elif self.terrain:
-            for room in self.terrain.getRoomsOnFineCoordinate(
-                self.getPosition()
-            ):
-                room.damage()
 
         if self.xPosition and self.yPosition:
             for character in self.container.characters:
@@ -64,7 +60,7 @@ class Explosion(src.items.Item):
                     character.xPosition == self.xPosition
                     and character.yPosition == self.yPosition
                 ):
-                    character.die()
+                    character.die(reason="stood in a explosion")
 
             for item in self.container.getItemByPosition(
                 (self.xPosition, self.yPosition, self.zPosition)

@@ -1075,6 +1075,19 @@ class Room(src.saveing.Saveable):
                 newPosition[0] += 1
             else:
                 src.logger.debugMessages.append("invalid movement direction")
+
+
+            for other in self.characters:
+                if other == character:
+                    continue
+
+                if not tuple(newPosition) == other.getPosition():
+                    continue
+
+                character.collidedWith(other)
+                other.collidedWith(character)
+                return
+
             return self.moveCharacter(character, tuple(newPosition))
 
         # move onto terrain
@@ -1125,13 +1138,20 @@ class Room(src.saveing.Saveable):
         """
 
         # check if target position can be walked on
+        triggeringItems = []
+
         if newPosition in self.itemByCoordinates:
             for item in self.itemByCoordinates[newPosition]:
+                if item.hasStepOnAction:
+                    triggeringItems.append(item)
                 if not item.walkable:
                     return item
 
             if len(self.itemByCoordinates[newPosition]) > 15:
                 return self.itemByCoordinates[newPosition][0]
+
+        for item in triggeringItems:
+            item.stepedOn(character)
 
         # teleport character to new position
         character.xPosition = newPosition[0]

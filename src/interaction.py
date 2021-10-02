@@ -479,20 +479,20 @@ type the macro name you want to record to
         elif key == "f":
             character = char
             for item in character.inventory:
-                if isinstance(item, src.items.GooFlask):
+                if isinstance(item, src.items.itemMap["GooFlask"]):
                     if item.uses > 0:
                         item.apply(character)
                         break
                 if (
-                    isinstance(item, src.items.Bloom)
-                    or isinstance(item, src.items.BioMass)
-                    or isinstance(item, src.items.PressCake)
-                    or isinstance(item, src.items.SickBloom)
+                    isinstance(item, src.items.itemMap["Bloom"])
+                    or isinstance(item, src.items.itemMap["BioMass"])
+                    or isinstance(item, src.items.itemMap["PressCake"])
+                    or isinstance(item, src.items.itemMap["SickBloom"])
                 ):
                     item.apply(character)
                     character.inventory.remove(item)
                     break
-                if isinstance(item, src.items.Corpse):
+                if isinstance(item, src.items.itemMap["Corpse"]):
                     item.apply(character)
                     break
         del char.interactionState["advancedInteraction"]
@@ -569,6 +569,8 @@ call function %s
                 char.registers = {}
             if char.interactionState["functionCall"] == "clearJobOrders":
                 char.jobOrders = []
+            if char.interactionState["functionCall"] == "huntkill":
+                char.huntkill()
             del char.interactionState["functionCall"]
         char.timeTaken -= 0.99
         return
@@ -1127,7 +1129,10 @@ press any other key to finish
             if action == "=":
                 if register not in char.registers:
                     char.registers[register] = [0]
-                char.registers[register][-1] = int(lastVarAction["number"])
+                try:
+                    char.registers[register][-1] = int(lastVarAction["number"])
+                except:
+                    pass
             if action == "+":
                 char.registers[register][-1] += int(lastVarAction["number"])
             if action == "-":
@@ -4353,6 +4358,7 @@ def keyboardListener(key):
         state["commandKeyQueue"].clear()
         state["loop"] = []
         state["replay"].clear()
+        src.gamestate.gamestate.mainChar.huntkilling = False
         if "ifCondition" in src.gamestate.gamestate.mainChar.interactionState:
             src.gamestate.gamestate.mainChar.interactionState["ifCondition"].clear()
             src.gamestate.gamestate.mainChar.interactionState["ifParam1"].clear()
@@ -4640,12 +4646,17 @@ def gameLoop(loop, user_data=None):
                         else:
                             key = ("~", [])
 
-                    while len(state["commandKeyQueue"]) and char.timeTaken < 1:
-                        key = state["commandKeyQueue"][0]
-                        state["commandKeyQueue"].remove(key)
-                        processInput(
-                            key, charState=state, noAdvanceGame=True, char=char
-                        )
+                    while (len(state["commandKeyQueue"]) or char.huntkilling) and char.timeTaken < 1:
+                        if not char.huntkilling:
+                            key = state["commandKeyQueue"][0]
+                            state["commandKeyQueue"].remove(key)
+                            processInput(
+                                key, charState=state, noAdvanceGame=True, char=char
+                            )
+                        else:
+                            processInput(
+                                    (char.doHuntKill(),["norecord"]),
+                                    charState=state, noAdvanceGame=True, char=char)
 
                     char.timeTaken -= 1
 

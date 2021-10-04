@@ -62,6 +62,8 @@ protects you in combat
         by equiping it
         """
 
+        character.addMessage("you equip the armor and wear a %s armor now"%(self.armorValue,))
+
         character.armor = self
         self.container.removeItem(self)
 

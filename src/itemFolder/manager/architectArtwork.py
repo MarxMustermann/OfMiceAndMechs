@@ -569,17 +569,25 @@ class ArchitectArtwork(src.items.Item):
                 roomSlots.append((x,y))
 
         freeRoomSlots = roomSlots[:]
+        roomMap = []
+        for y in range(0,15):
+            roomMap.append([])
+            for x in range(0,15):
+                roomMap[y].append("  ")
 
         # add target room
         targetRoom = random.choice(freeRoomSlots)
         while targetRoom in freeRoomSlots:
             freeRoomSlots.remove(targetRoom)
+            roomMap[targetRoom[1]][targetRoom[0]] = "RC"
         memoryCellRoom = random.choice(freeRoomSlots)
         while memoryCellRoom in freeRoomSlots:
             freeRoomSlots.remove(memoryCellRoom)
+            roomMap[memoryCellRoom[1]][memoryCellRoom[0]] = "mc"
         pocketFrameRoom = random.choice(freeRoomSlots)
         while pocketFrameRoom in freeRoomSlots:
             freeRoomSlots.remove(pocketFrameRoom)
+            roomMap[pocketFrameRoom[1]][pocketFrameRoom[0]] = "pf"
         
         pathSlots = []
         crossroads = []
@@ -682,8 +690,8 @@ class ArchitectArtwork(src.items.Item):
                 if (x,y) in roomSlots:
                     note = src.items.itemMap["Note"]()
                     note.text = random.choice([
-                        "The item is on coordinate %s/%s"%(targetRoom[0],targetRoom[1],),
-                        "The item is on coordinate %s/%s"%(targetRoom[0],targetRoom[1],),
+                        "The the reserve city builder is on coordinate %s/%s"%(targetRoom[0],targetRoom[1],),
+                        "The the reserve city builder is on coordinate %s/%s"%(targetRoom[0],targetRoom[1],),
                         "The memorycell production is on coordinate %s/%s"%(memoryCellRoom[0],memoryCellRoom[1],),
                         "The pocketframe production is on coordinate %s/%s"%(pocketFrameRoom[0],pocketFrameRoom[1],),
                         ])
@@ -711,7 +719,7 @@ class ArchitectArtwork(src.items.Item):
                 connectedRooms.append((x,y))
 
         # set up target room
-        targetItem = src.items.itemMap["YouWonMachine"]()
+        targetItem = src.items.itemMap["ReserveCityBuilder"]()
         terrain.addItem(targetItem,(targetRoom[0]*15+7,targetRoom[1]*15+7,0))
 
         memoryCellMachine = src.items.itemMap["Machine"]()
@@ -723,22 +731,51 @@ class ArchitectArtwork(src.items.Item):
         terrain.addItem(pocketFrameMachine,(pocketFrameRoom[0]*15+7,pocketFrameRoom[1]*15+7,0))
 
         # insert theme rooms
+        numRuns = 0
+        ensuredConnectorMachine = False
+        ensuredPocketFrameMachine = False
+
+        roomMap[7][7] = "CB"
+
+        for slot in pathSlots:
+            roomMap[slot[1]][slot[0]] = "++"
+
         for roomSlot in freeRoomSlots[:]:
             if random.choice([True,True,True,False]):
                 continue
 
+            numRuns += 1
+
             freeRoomSlots.remove(roomSlot)
 
             theme = random.choice(["machine","food","military","stockpile","stockpile"])
+
+            if numRuns == 1:
+                theme = "machine"
+            if numRuns == 2:
+                theme = "food"
+            if numRuns == 3:
+                theme = "military"
+            if numRuns == 4:
+                theme = "stockpile"
+
             
             if theme == "machine":
                 for i in range(0,random.randint(4,8)):
                     machine = src.items.itemMap["Machine"]()
-                    machine.toProduce = random.choice(["Rod","Rod","Vial","Rod","Heater","puller","Stripe","Bolt","Case","Tank","Armor","GooFlask","MemoryCell"])
-                    terrain.addItem(machine,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
+                    toProduceType = random.choice(["Rod","Rod","Vial","Rod","Heater","puller","Stripe","Bolt","Case","Tank","Armor","GooFlask","MemoryCell","Connector","PocketFrame"])
+                    if not ensuredConnectorMachine:
+                        toProduceType = "Connector"
+                        ensuredConnectorMachine = True
+                    elif not ensuredPocketFrameMachine:
+                        toProduceType = "PocketFrame"
+                        ensuredPocketFrameMachine = True
+                    machine.setToProduce(toProduceType)
+                    terrain.addItem(machine,(roomSlot[0]*15+random.randint(2,12),roomSlot[1]*15+random.randint(2,12),0))
                 for i in range(0,random.randint(0,10)):
-                    gooFlask = src.items.itemMap[random.choice(["MetalBars","Rod","Rod","Vial","Rod","Heater","puller","Stripe","Bolt","Case","Tank"])]()
+                    gooFlask = src.items.itemMap[random.choice(["MetalBars","Rod","Rod","Vial","Rod","Heater","puller","Stripe","Bolt","Case","Tank","Mount"])]()
                     terrain.addItem(gooFlask,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
+                roomMap[roomSlot[1]][roomSlot[0]] = "mm"
 
             if theme == "food":
                 for i in range(0,random.randint(4,10)):
@@ -751,6 +788,7 @@ class ArchitectArtwork(src.items.Item):
                     gooFlask = src.items.itemMap["GooFlask"]()
                     gooFlask.uses = random.choice([0,0,1,2,3,5,7,8,25,45,100])
                     terrain.addItem(gooFlask,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
+                roomMap[roomSlot[1]][roomSlot[0]] = "FF"
 
             if theme == "military":
                 for i in range(0,random.randint(4,20)):
@@ -764,7 +802,7 @@ class ArchitectArtwork(src.items.Item):
                 enemy.aggro = 1000000
                 enemy.faction = "animals"
                 terrain.addCharacter(enemy, roomSlot[0]*15+random.randint(1,13), roomSlot[1]*15+random.randint(1,13))
-
+                roomMap[roomSlot[1]][roomSlot[0]] = "MM"
 
             if theme == "stockpile":
                 manager = src.items.itemMap["UniformStockpileManager"]()
@@ -774,6 +812,8 @@ class ArchitectArtwork(src.items.Item):
                 for i in range(0,random.randint(4,20)):
                     bomb = src.items.itemMap[itemType]()
                     terrain.addItem(bomb,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
+
+                roomMap[roomSlot[1]][roomSlot[0]] = "ss"
 
             for i in range(0,random.randint(0,5)):
                 enemy = src.characters.Monster(x, y)
@@ -785,14 +825,21 @@ class ArchitectArtwork(src.items.Item):
 
                 terrain.addCharacter(enemy, roomSlot[0]*15+random.randint(1,13), roomSlot[1]*15+random.randint(1,13))
 
+        ensuredMountDrop = False
 
         # fill up remaining rooms
         for roomSlot in freeRoomSlots:
 
+            roomMap[roomSlot[1]][roomSlot[0]] = "rr"
+
             distance = abs(roomSlot[0]-7)+abs(roomSlot[1]-7)
 
-            for i in range(0,random.randint(0,3)):
-                loot = src.items.itemMap[random.choice(["Rod","Rod","Vial","Rod","Heater","puller","Stripe","Bolt","Case","Tank","Armor","GooFlask"])]()
+            for i in range(0,random.randint(0,distance)):
+                lootType = random.choice(["Frame","Mount","FireCrystals","FireCrystals","Rod","Rod","Vial","Vial","Rod","Heater","puller","Stripe","Bolt","Bolt","Case","Tank","Armor","GooFlask"])
+                if not ensuredMountDrop:
+                    lootType = "Mount"
+                    ensuredMountDrop = True
+                loot = src.items.itemMap[lootType]()
                 terrain.addItem(loot,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
 
                 if loot.type == "Vial":
@@ -800,22 +847,24 @@ class ArchitectArtwork(src.items.Item):
                 if loot.type == "Rod":
                     loot.baseDamage = distance+random.randint(0,3)
                 if loot.type == "Armor":
-                    loot.armorValue = distance//3+random.randint(0,1)
+                    loot.armorValue = distance//3+random.randint(0,1)+1
                 if loot.type == "GooFlask":
                     loot.uses = min(distance+random.randint(0,100),100)
                 
             for i in range(0,random.randint(0,50)):
                 pos = (random.randint(1,13),random.randint(1,13))
-                if not pos in ((7,1),(1,7),(13,7),(7,13)):
+                if not pos in ((7,1),(1,7),(13,7),(7,13)) and not terrain.getItemByPosition((roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0)):
                     if random.randint(0,3) == 1:
-                        loot = src.items.itemMap[random.choice(["MetalBars","Rod","Frame","Case"]+src.items.commons)]()
-                        terrain.addItem(loot,(roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0))
+                        loot = src.items.itemMap[random.choice(["MetalBars","Rod","Frame"]+src.items.commons)]()
+                        loot.bolted = False
+                        if loot.walkable:
+                            terrain.addItem(loot,(roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0))
                     scrap = src.items.itemMap["Scrap"](amount=random.randint(1,30))
                     terrain.addItem(scrap,(roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0))
 
             for i in range(0,random.randint(0,10)):
                 pos = (random.randint(1,13),random.randint(1,13))
-                if not pos in ((7,1),(1,7),(13,7),(7,13)):
+                if not pos in ((7,1),(1,7),(13,7),(7,13)) and not terrain.getItemByPosition((roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0)):
                     mold = src.items.itemMap["Mold"]()
                     terrain.addItem(mold,(roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0))
                     mold.startSpawn()
@@ -828,6 +877,14 @@ class ArchitectArtwork(src.items.Item):
                 enemy.faction = "animals"
 
                 terrain.addCharacter(enemy, roomSlot[0]*15+random.randint(1,13), roomSlot[1]*15+random.randint(1,13))
+
+        item = src.items.itemMap["Note"]()
+        item.text = ""
+
+        for row in roomMap:
+            item.text += "".join(row)+"\n"
+
+        terrain.addItem(item,(targetRoom[0]*15+4,targetRoom[1]*15+8,0))
 
     def fillMap(self):
         """

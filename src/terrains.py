@@ -4,6 +4,7 @@ terrains and terrain related code belongs here
 
 # import basic libs
 import json
+import array
 
 # import basic internal libs
 import src.items
@@ -75,6 +76,7 @@ class Terrain(src.saveing.Saveable):
         self.seed = seed
         self.events = []
         self.biomeInfo = {"wet": 2}
+        self.hidden = True
 
         # set id
         import uuid
@@ -1796,7 +1798,7 @@ class Terrain(src.saveing.Saveable):
             else:
                 self.itemsByCoordinate[position] = [item]
 
-    def paintFloor(self):
+    def paintFloor(self,size=None,coordinateOffset=None):
         """
         draw the floor
 
@@ -1804,14 +1806,16 @@ class Terrain(src.saveing.Saveable):
             the rendered floor
         """
 
+        if not self.hidden:
+            displayChar = self.floordisplay
+        else:
+            displayChar = src.canvas.displayChars.void
+
         chars = []
         for i in range(0, 250):
             line = []
             for j in range(0, 250):
-                if not self.hidden:
-                    line.append(self.floordisplay)
-                else:
-                    line.append(src.canvas.displayChars.void)
+                line.append(displayChar)
             chars.append(line)
         return chars
 
@@ -1856,7 +1860,7 @@ class Terrain(src.saveing.Saveable):
                 rooms.append(room)
         return rooms
 
-    def render(self):
+    def render(self,size=None,coordinateOffset=(0,0)):
         """
         render the terrain and its contents
 
@@ -1877,16 +1881,24 @@ class Terrain(src.saveing.Saveable):
         self.hidden = mapHidden
 
         # paint floor
-        chars = self.paintFloor()
+        chars = self.paintFloor(size=size,coordinateOffset=coordinateOffset)
         for x in range(0, 225):
             for y in range(0, 16):
-                chars[x][y] = src.canvas.displayChars.forceField
-                chars[x][y + 14 * 15 - 1] = src.canvas.displayChars.forceField
+                if (x < coordinateOffset[0] or x > coordinateOffset[0]+size[0]):
+                    continue
+                if (y < coordinateOffset[1] or y > coordinateOffset[1]+size[1]):
+                    continue
+                chars[x-coordinateOffset[0]][y-coordinateOffset[1]] = src.canvas.displayChars.forceField
+                chars[x-coordinateOffset[0]][y-coordinateOffset[1] + 14 * 15 - 1] = src.canvas.displayChars.forceField
 
         for y in range(0, 225):
             for x in range(0, 16):
-                chars[x][y] = src.canvas.displayChars.forceField
-                chars[x + 14 * 15 - 1][y] = src.canvas.displayChars.forceField
+                if (x < coordinateOffset[0] or x > coordinateOffset[0]+size[0]):
+                    continue
+                if (y < coordinateOffset[1] or y > coordinateOffset[1]+size[1]):
+                    continue
+                chars[x-coordinateOffset[0]][y-coordinateOffset[1]] = src.canvas.displayChars.forceField
+                chars[x-coordinateOffset[0] + 14 * 15 - 1][y-coordinateOffset[1]] = src.canvas.displayChars.forceField
 
         # show/hide rooms
         for room in self.rooms:
@@ -1903,20 +1915,33 @@ class Terrain(src.saveing.Saveable):
             for bigY in range(0, 14):
                 for x in range(0, 15):
                     for y in range(0, 15):
+
                         if x == 7 or y == 7:
                             continue
-                        chars[bigX * 15 + x][
-                            bigY * 15 + 0
-                        ] = src.canvas.displayChars.forceField
-                        chars[bigX * 15 + x][
-                            bigY * 15 + 14
-                        ] = src.canvas.displayChars.forceField
-                        chars[bigX * 15 + 0][
-                            bigY * 15 + y
-                        ] = src.canvas.displayChars.forceField
-                        chars[bigX * 15 + 14][
-                            bigY * 15 + y
-                        ] = src.canvas.displayChars.forceField
+
+                        if not (bigX*15+x < coordinateOffset[0] or bigX*15+x > coordinateOffset[0]+size[0] or
+                                bigY*15 < coordinateOffset[1] or bigY*15 > coordinateOffset[1]+size[1]):
+                            chars[bigX * 15 + x - coordinateOffset[0]][
+                                bigY * 15 + 0 - coordinateOffset[1]
+                            ] = src.canvas.displayChars.forceField
+
+                        if not (bigX*15+x < coordinateOffset[0] or bigX*15+x > coordinateOffset[0]+size[0] or
+                                bigY*15+14 < coordinateOffset[1] or bigY*15+14 > coordinateOffset[1]+size[1]):
+                            chars[bigX * 15 + x - coordinateOffset[0]][
+                                bigY * 15 + 14 - coordinateOffset[1]
+                            ] = src.canvas.displayChars.forceField
+
+                        if not (bigX*15 < coordinateOffset[0] or bigX*15 > coordinateOffset[0]+size[0] or
+                                bigY*15+y < coordinateOffset[1] or bigY*15+y > coordinateOffset[1]+size[1]):
+                            chars[bigX * 15 + 0 - coordinateOffset[0]][
+                                bigY * 15 + y - coordinateOffset[1]
+                            ] = src.canvas.displayChars.forceField
+
+                        if not (bigX*15+14 < coordinateOffset[0] or bigX*15+14 > coordinateOffset[0]+size[0] or
+                                bigY*15+y < coordinateOffset[1] or bigY*15+y > coordinateOffset[1]+size[1]):
+                            chars[bigX * 15 + 14 - coordinateOffset[0]][
+                                bigY * 15 + y - coordinateOffset[1]
+                            ] = src.canvas.displayChars.forceField
 
         # calculate room visibility
         if not mapHidden:
@@ -1944,21 +1969,22 @@ class Terrain(src.saveing.Saveable):
 
         # draw items on map
         if not mapHidden:
-            # for item in self.itemsOnFloor:
-            #    if not (item.yPosition and item.xPosition):
-            #        continue
-            #    chars[item.yPosition][item.xPosition] = item.display
             for entry in self.itemsByCoordinate.values():
                 if not entry:
                     continue
                 item = entry[0]
+
+                if (item.xPosition < coordinateOffset[1] or item.xPosition > coordinateOffset[1]+size[1] or
+                    item.yPosition < coordinateOffset[0] or item.yPosition > coordinateOffset[0]+size[0]):
+                   continue
+
                 if not (item.yPosition and item.xPosition):
                     continue
                 if not (item.zPosition == src.gamestate.gamestate.mainChar.zPosition):
                     continue
 
                 try:
-                    chars[item.yPosition][item.xPosition] = item.render()
+                    chars[item.yPosition-coordinateOffset[0]][item.xPosition-coordinateOffset[1]] = item.render()
                 except:
                     pass
 
@@ -1981,16 +2007,19 @@ class Terrain(src.saveing.Saveable):
             for line in renderedRoom:
                 rowCounter = 0
                 for char in line:
-                    chars[lineCounter + yOffset][rowCounter + xOffset] = char
+                    if (rowCounter + xOffset < coordinateOffset[1] or rowCounter + xOffset > coordinateOffset[1]+size[1] or
+                        lineCounter + yOffset < coordinateOffset[0] or lineCounter + yOffset > coordinateOffset[0]+size[0]):
+                       continue
+                    chars[lineCounter + yOffset - coordinateOffset[0]][rowCounter + xOffset-coordinateOffset[1]] = char
                     rowCounter += 1
                 lineCounter += 1
 
         # add overlays
         if not mapHidden:
             # src.overlays.QuestMarkerOverlay().apply(chars,src.gamestate.gamestate.mainChar,src.canvas.displayChars)
-            src.overlays.NPCsOverlay().apply(chars, self)
+            src.overlays.NPCsOverlay().apply(chars, self,size=size,coordinateOffset=coordinateOffset)
             src.overlays.MainCharOverlay().apply(
-                chars, src.gamestate.gamestate.mainChar
+                chars, src.gamestate.gamestate.mainChar,size=size,coordinateOffset=coordinateOffset
             )
 
         # cache rendering
@@ -2000,13 +2029,6 @@ class Terrain(src.saveing.Saveable):
         if self.overlay:
             self.overlay(chars)
 
-        for bigX in range(1, 15):
-            for bigY in range(1, 15):
-                for x in range(1, 8):
-                    chars[bigX * 15 + x][1] = src.canvas.displayChars.void
-
-        chars[127][42] = src.canvas.displayChars.void
-        chars[42][127] = src.canvas.displayChars.void
         return chars
 
     def getAffectedByRoomMovementDirection(
@@ -2477,7 +2499,7 @@ class Nothingness(Terrain):
 
     objType = "Nothingness"
 
-    def paintFloor(self):
+    def paintFloor(self,size=None,coordinateOffset=None):
         """
         paint floor with minimal variation to ease perception of movement
 
@@ -2494,7 +2516,16 @@ class Nothingness(Terrain):
         chars = []
         for i in range(0, 250):
             line = []
+
+            if i < coordinateOffset[1] or i > coordinateOffset[1]+size[1]:
+                continue
+
             for j in range(0, 250):
+
+                if coordinateOffset: # game runs horrible without this flag
+                    if j < coordinateOffset[0] or j > coordinateOffset[0]+size[0]:
+                        continue
+
                 if not self.hidden:
                     if not i % 7 and not j % 12 and not (i + j) % 3:
                         # paint grass at pseudo random location
@@ -2602,7 +2633,7 @@ class GameplayTest(Terrain):
         """
 
         super().__init__(
-            layout, detailedLayout, creator=creator, seed=seed, noContent=noContent
+            layout, detailedLayout, creator=None, seed=seed, noContent=noContent
         )
 
         self.floordisplay = src.canvas.displayChars.dirt

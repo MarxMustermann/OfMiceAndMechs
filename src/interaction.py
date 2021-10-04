@@ -423,6 +423,11 @@ type the macro name you want to record to
         char.doStackPush = False
         return
 
+    if "fireDirection" in char.interactionState:
+        char.doRangedAttack(direction=key)
+        del char.interactionState["fireDirection"]
+        return
+
     if "advancedInteraction" in char.interactionState:
         if not char.container:
             del char.interactionState["advancedInteraction"]
@@ -1707,7 +1712,7 @@ current macros:
 
     # save and quit
     if key in (commandChars.quit_normal, commandChars.quit_instant):
-        src.gamestate.gamestate.save()
+        #src.gamestate.gamestate.save()
         raise urwid.ExitMainLoop()
 
     """
@@ -2307,6 +2312,29 @@ press key for the advanced interaction
                     char.specialRender = True
 
                 char.interactionState["advancedInteraction"] = {}
+                return
+
+            if key in ("f",):
+                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+                    text = """
+
+press key to set fire direction
+
+* w = fire north
+* a = fire west
+* s = fire south
+* d = fire east
+
+"""
+
+                    header.set_text(
+                        (urwid.AttrSpec("default", "default"), "advanced pick up")
+                    )
+                    main.set_text((urwid.AttrSpec("default", "default"), text))
+                    footer.set_text((urwid.AttrSpec("default", "default"), ""))
+                    char.specialRender = True
+
+                char.interactionState["fireDirection"] = {}
                 return
 
             if key in ("K",):
@@ -4253,15 +4281,6 @@ def render(char):
     else:
         thisTerrain = lastTerrain
 
-    # render the map
-    if (
-        src.gamestate.gamestate.mainChar.room
-        and not src.gamestate.gamestate.mainChar.room.xPosition
-    ):
-        chars = src.gamestate.gamestate.mainChar.room.render()
-    else:
-        chars = thisTerrain.render()
-
     # center on player
     # bad code: should focus on arbitrary positions
     if (
@@ -4310,11 +4329,21 @@ def render(char):
         screensize[0] // 4 - (viewsize - 1) // 2,
     )
 
+    # render the map
+    if (
+        src.gamestate.gamestate.mainChar.room
+        and not src.gamestate.gamestate.mainChar.room.xPosition
+    ):
+        chars = src.gamestate.gamestate.mainChar.room.render()
+    else:
+        chars = thisTerrain.render(size=(viewsize, viewsize),coordinateOffset=(centerY - halfviewsite, centerX - halfviewsite))
+
+
     # place rendering in screen
     canvas = src.canvas.Canvas(
         size=(viewsize, viewsize),
         chars=chars,
-        coordinateOffset=(centerY - halfviewsite, centerX - halfviewsite),
+        coordinateOffset=(0,0),
         shift=shift,
         displayChars=src.canvas.displayChars,
         tileMapping=tileMapping,

@@ -864,6 +864,10 @@ class Item(src.saveing.Saveable):
         """
 
         container = self.container
+
+        if not container:
+            return
+
         pos = (self.xPosition, self.yPosition, self.zPosition)
 
         # remove item

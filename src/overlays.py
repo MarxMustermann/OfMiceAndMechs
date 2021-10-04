@@ -88,7 +88,7 @@ class NPCsOverlay(object):
     overlay showing npcs
     """
 
-    def apply(self, chars, terrain):
+    def apply(self, chars, terrain, size=None,coordinateOffset=(0,0)):
         """
         add overlayed information
 
@@ -100,8 +100,13 @@ class NPCsOverlay(object):
         for character in terrain.characters:
             if not (character.yPosition and character.xPosition):
                 continue
+
+            if (character.xPosition < coordinateOffset[1] or character.xPosition > coordinateOffset[1]+size[1] or
+                  character.yPosition < coordinateOffset[0] or character.yPosition > coordinateOffset[0]+size[0]):
+                continue
+
             try:
-                chars[character.yPosition][character.xPosition] = character.display
+                chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = character.display
             except:
                 pass
 
@@ -110,7 +115,7 @@ class MainCharOverlay(object):
     overly showing the main character
     """
 
-    def apply(self, chars, mainChar):
+    def apply(self, chars, mainChar, size=None,coordinateOffset=(0,0)):
         """
         add overlayed information
 
@@ -119,5 +124,8 @@ class MainCharOverlay(object):
             mainChar: the main character
         """
 
-        if not mainChar.dead and not mainChar.room:
-            chars[mainChar.yPosition][mainChar.xPosition] = mainChar.display
+        if not mainChar.dead and not mainChar.room and not (
+                  mainChar.xPosition < coordinateOffset[1] or mainChar.xPosition > coordinateOffset[1]+size[1] or
+                  mainChar.yPosition < coordinateOffset[0] or mainChar.yPosition > coordinateOffset[0]+size[0]):
+
+            chars[mainChar.yPosition-coordinateOffset[0]][mainChar.xPosition-coordinateOffset[1]] = mainChar.display

@@ -251,6 +251,72 @@ class Character(src.saveing.Saveable):
         for target in targets:
             distance = abs(target.xPosition-self.xPosition)+abs(target.yPosition-self.yPosition)
 
+    def doRangedAttack(self,direction):
+        shift = None
+        if direction == "w":
+            shift = (0,-1)
+        if direction == "s":
+            shift = (0,1)
+        if direction == "a":
+            shift = (-1,0)
+        if direction == "d":
+            shift = (1,0)
+        if not shift:
+            return
+
+        bolt = None
+        for item in self.inventory:
+            if item.type == "Bolt":
+                bolt = item
+
+        if not bolt:
+            self.addMessage("you have no bolt to fire")
+            return
+
+        self.addMessage("you fire a bolt")
+        self.inventory.remove(bolt)
+
+        potentialTargets = []
+        if direction == "w":
+            for character in self.container.characters:
+                if character.xPosition == self.xPosition and character.yPosition < self.yPosition and character.yPosition//15 == self.yPosition//15:
+                    potentialTargets.append(character)
+        if direction == "s":
+            for character in self.container.characters:
+                if character.xPosition == self.xPosition and character.yPosition > self.yPosition and character.yPosition//15 == self.yPosition//15:
+                    potentialTargets.append(character)
+        if direction == "a":
+            for character in self.container.characters:
+                if character.yPosition == self.yPosition and character.xPosition < self.xPosition and character.xPosition//15 == self.xPosition//15:
+                    potentialTargets.append(character)
+        if direction == "d":
+            for character in self.container.characters:
+                if character.yPosition == self.yPosition and character.xPosition > self.xPosition and character.xPosition//15 == self.xPosition//15:
+                    potentialTargets.append(character)
+
+        newPos = list(self.getPosition())
+        newPos[0] += shift[0]
+        newPos[1] += shift[1]
+
+        while newPos[0]//15 == self.xPosition//15 and newPos[1]//15 == self.yPosition//15:
+
+            for item in self.container.getItemByPosition(tuple(newPos)):
+                if not item.walkable:
+                    self.addMessage("the bolt hits %s"%(item.type,))
+                    item.destroy()
+                    return
+
+            for character in potentialTargets:
+                if character.getPosition() == tuple(newPos):
+                    self.addMessage("the bolt hits somebody for 20 damage")
+                    character.hurt(20,reason="got hit by a bolt")
+                    return
+
+            newPos[0] += shift[0]
+            newPos[1] += shift[1]
+
+        self.addMessage("the bolt vanishes into the static")
+
     def setDefaultMacroState(self):
         """
         resets the macro automation state
@@ -408,7 +474,7 @@ class Character(src.saveing.Saveable):
 
             self.health -= damage
             self.frustration += 10 * damage
-            self.addMessage("you took " + str(damage) + " damage")
+            self.addMessage("you took " + str(damage) + " damage. You have %s health left"%(self.health,))
 
             if self.combatMode == "defensive":
                 staggerThreshold *= 2

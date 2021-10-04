@@ -5008,11 +5008,55 @@ class Tutorial(BasicPhase):
             self.productionSection()
 
 
-"""
-the phase is intended to give the player access to the true gameworld without manipulations
+class RoguelikeStart(BasicPhase):
+    def __init__(self, seed=0):
+        super().__init__("RoguelikeStart", seed=seed)
 
-this phase should be left as blank as possible
-"""
+    def start(self, seed=0):
+        showText(
+            "you traveled to the city #1A23 destroyed by an artisan a century ago.\nAfter arriving at the cities core to inspect the citybuilder you find it destroyed.\n\nThis setback was expected and the contingency plan is to find and activate the citys reserve citybuilder"
+        )
+
+        self.mainChar = src.gamestate.gamestate.mainChar
+        self.mainChar.xPosition = 15*7+7
+        self.mainChar.yPosition = 15*7+7
+        self.mainChar.terrain = src.gamestate.gamestate.terrain
+        src.gamestate.gamestate.terrain.addCharacter(
+            self.mainChar, self.mainChar.xPosition, self.mainChar.yPosition
+        )
+
+        self.seed = seed
+
+        items = []
+        architect = src.items.itemMap["ArchitectArtwork"]()
+        architect.bolted = False
+        architect.godMode = True
+        items.append((architect, (15 * 7 + 8, 15 * 7 + 7, 0)))
+        src.gamestate.gamestate.terrain.addItems(items)
+        architect.generateMaze()
+        src.gamestate.gamestate.terrain.removeItem(architect)
+
+        self.mainChar.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "NaiveMurderQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest" "NaiveDropQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+        ]
+        self.mainChar.personality["autoFlee"] = False
+        self.mainChar.personality["abortMacrosOnAttack"] = False
+        self.mainChar.personality["autoCounterAttack"] = False
 
 
 class Testing_1(BasicPhase):
@@ -5563,3 +5607,4 @@ def registerPhases():
     phasesByName["CreativeMode"] = CreativeMode
     phasesByName["Dungeon"] = Dungeon
     phasesByName["WorldBuildingPhase"] = WorldBuildingPhase
+    phasesByName["RoguelikeStart"] = RoguelikeStart

@@ -1912,7 +1912,13 @@ class Terrain(src.saveing.Saveable):
                     room.hidden = True
 
         for bigX in range(0, 14):
+            if bigX*15 < coordinateOffset[0]-15 or bigX*15 > coordinateOffset[0]+size[0]+15:
+                continue
+
             for bigY in range(0, 14):
+                if bigY*15 < coordinateOffset[1]-15 or bigY*15 > coordinateOffset[1]+size[1]+15:
+                    continue
+
                 for x in range(0, 15):
                     for y in range(0, 15):
 

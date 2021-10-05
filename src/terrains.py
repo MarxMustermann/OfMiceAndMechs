@@ -1812,8 +1812,20 @@ class Terrain(src.saveing.Saveable):
             displayChar = src.canvas.displayChars.void
 
         chars = []
+
+        if size[0] > coordinateOffset[0]:
+            for i in range(0,coordinateOffset[0]-size[0]):
+                line = []
+                for j in range(0, size[1]):
+                    line.append(src.canvas.displayChars.void)
+
         for i in range(0, 250):
             line = []
+
+            if coordinateOffset[1] < 0:
+                for j in range(0,-coordinateOffset[1]):
+                    line.append(src.canvas.displayChars.void)
+
             for j in range(0, 250):
                 line.append(displayChar)
             chars.append(line)
@@ -1883,22 +1895,27 @@ class Terrain(src.saveing.Saveable):
         # paint floor
         chars = self.paintFloor(size=size,coordinateOffset=coordinateOffset)
         for x in range(0, 225):
+            if (x < coordinateOffset[1] or x > coordinateOffset[1]+size[1]):
+                continue
+
             for y in range(0, 16):
-                if (x < coordinateOffset[0] or x > coordinateOffset[0]+size[0]):
-                    continue
-                if (y < coordinateOffset[1] or y > coordinateOffset[1]+size[1]):
-                    continue
-                chars[x-coordinateOffset[0]][y-coordinateOffset[1]] = src.canvas.displayChars.forceField
-                chars[x-coordinateOffset[0]][y-coordinateOffset[1] + 14 * 15 - 1] = src.canvas.displayChars.forceField
+                if not ((y < coordinateOffset[0] or y > coordinateOffset[0]+size[0])):
+                    chars[y-coordinateOffset[0]][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
+                if not ((y+14*15-1 < coordinateOffset[0] or y+14*15-1 > coordinateOffset[0]+size[0])):
+                    chars[y-coordinateOffset[0] + 14 * 15 - 1][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
 
         for y in range(0, 225):
+            if (y < coordinateOffset[0] or y > coordinateOffset[0]+size[0]):
+                continue
+
             for x in range(0, 16):
-                if (x < coordinateOffset[0] or x > coordinateOffset[0]+size[0]):
-                    continue
-                if (y < coordinateOffset[1] or y > coordinateOffset[1]+size[1]):
-                    continue
-                chars[x-coordinateOffset[0]][y-coordinateOffset[1]] = src.canvas.displayChars.forceField
-                chars[x-coordinateOffset[0] + 14 * 15 - 1][y-coordinateOffset[1]] = src.canvas.displayChars.forceField
+                if not (x < coordinateOffset[1] or x > coordinateOffset[1]+size[1]):
+                    try:
+                        chars[y-coordinateOffset[0]][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
+                    except:
+                        raise Exception("%s %s"%(coordinateOffset[0],coordinateOffset[1]))
+                if not (x + 14 * 15 - 1 < coordinateOffset[1] or x + 14 * 15 - 1 > coordinateOffset[1]+size[1]):
+                    chars[y-coordinateOffset[0]][x-coordinateOffset[1] + 14 * 15 - 1] = src.canvas.displayChars.forceField
 
         # show/hide rooms
         for room in self.rooms:
@@ -1912,11 +1929,11 @@ class Terrain(src.saveing.Saveable):
                     room.hidden = True
 
         for bigX in range(0, 14):
-            if bigX*15 < coordinateOffset[0]-15 or bigX*15 > coordinateOffset[0]+size[0]+15:
+            if bigX*15 < coordinateOffset[1]-15 or bigX*15 > coordinateOffset[1]+size[1]+15:
                 continue
 
             for bigY in range(0, 14):
-                if bigY*15 < coordinateOffset[1]-15 or bigY*15 > coordinateOffset[1]+size[1]+15:
+                if bigY*15 < coordinateOffset[0]-15 or bigY*15 > coordinateOffset[0]+size[0]+15:
                     continue
 
                 for x in range(0, 15):
@@ -1925,28 +1942,28 @@ class Terrain(src.saveing.Saveable):
                         if x == 7 or y == 7:
                             continue
 
-                        if not (bigX*15+x < coordinateOffset[0] or bigX*15+x > coordinateOffset[0]+size[0] or
-                                bigY*15 < coordinateOffset[1] or bigY*15 > coordinateOffset[1]+size[1]):
-                            chars[bigX * 15 + x - coordinateOffset[0]][
-                                bigY * 15 + 0 - coordinateOffset[1]
+                        if not (bigX*15+x < coordinateOffset[1] or bigX*15+x > coordinateOffset[1]+size[1] or
+                                bigY*15 < coordinateOffset[0] or bigY*15 > coordinateOffset[0]+size[0]):
+                            chars[bigY * 15 + 0 - coordinateOffset[0]][
+                                bigX * 15 + x - coordinateOffset[1]
                             ] = src.canvas.displayChars.forceField
 
-                        if not (bigX*15+x < coordinateOffset[0] or bigX*15+x > coordinateOffset[0]+size[0] or
-                                bigY*15+14 < coordinateOffset[1] or bigY*15+14 > coordinateOffset[1]+size[1]):
-                            chars[bigX * 15 + x - coordinateOffset[0]][
-                                bigY * 15 + 14 - coordinateOffset[1]
+                        if not (bigX*15+x < coordinateOffset[1] or bigX*15+x > coordinateOffset[1]+size[1] or
+                                bigY*15+14 < coordinateOffset[0] or bigY*15+14 > coordinateOffset[0]+size[0]):
+                            chars[bigY * 15 + 14 - coordinateOffset[0]][
+                                bigX * 15 + x - coordinateOffset[1]
                             ] = src.canvas.displayChars.forceField
 
-                        if not (bigX*15 < coordinateOffset[0] or bigX*15 > coordinateOffset[0]+size[0] or
-                                bigY*15+y < coordinateOffset[1] or bigY*15+y > coordinateOffset[1]+size[1]):
-                            chars[bigX * 15 + 0 - coordinateOffset[0]][
-                                bigY * 15 + y - coordinateOffset[1]
+                        if not (bigX*15 < coordinateOffset[1] or bigX*15 > coordinateOffset[1]+size[1] or
+                                bigY*15+y < coordinateOffset[0] or bigY*15+y > coordinateOffset[0]+size[0]):
+                            chars[bigY * 15 + y - coordinateOffset[0]][
+                                bigX * 15 + 0 - coordinateOffset[1]
                             ] = src.canvas.displayChars.forceField
 
-                        if not (bigX*15+14 < coordinateOffset[0] or bigX*15+14 > coordinateOffset[0]+size[0] or
-                                bigY*15+y < coordinateOffset[1] or bigY*15+y > coordinateOffset[1]+size[1]):
-                            chars[bigX * 15 + 14 - coordinateOffset[0]][
-                                bigY * 15 + y - coordinateOffset[1]
+                        if not (bigX*15+14 < coordinateOffset[1] or bigX*15+14 > coordinateOffset[1]+size[1] or
+                                bigY*15+y < coordinateOffset[0] or bigY*15+y > coordinateOffset[0]+size[0]):
+                            chars[bigY * 15 + y - coordinateOffset[0]][
+                                bigX * 15 + 14 - coordinateOffset[1]
                             ] = src.canvas.displayChars.forceField
 
         # calculate room visibility
@@ -2520,16 +2537,23 @@ class Nothingness(Terrain):
             displayChar = "+%s" % (src.gamestate.gamestate.mainChar.zPosition,)
 
         chars = []
-        for i in range(0, 250):
+        for i in range(0,-coordinateOffset[0]):
+            line = []
+            chars.append(line)
+
+        for i in range(0, 15*15):
             line = []
 
-            if i < coordinateOffset[1] or i > coordinateOffset[1]+size[1]:
+            if i < coordinateOffset[0] or i > coordinateOffset[0]+size[0]:
                 continue
 
-            for j in range(0, 250):
+            for j in range(0,-coordinateOffset[1]):
+                line.append(src.canvas.displayChars.void)
+
+            for j in range(0, 15*15):
 
                 if coordinateOffset: # game runs horrible without this flag
-                    if j < coordinateOffset[0] or j > coordinateOffset[0]+size[0]:
+                    if j < coordinateOffset[1] or j > coordinateOffset[1]+size[1]:
                         continue
 
                 if not self.hidden:
@@ -2541,6 +2565,7 @@ class Nothingness(Terrain):
                 else:
                     line.append(src.canvas.displayChars.void)
             chars.append(line)
+
         return chars
 
     def __init__(self, seed=0, noContent=False):

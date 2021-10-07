@@ -1084,6 +1084,9 @@ class Room(src.saveing.Saveable):
                 if not tuple(newPosition) == other.getPosition():
                     continue
 
+                if character.faction == "player" and other.faction == "player":
+                    continue
+
                 character.collidedWith(other)
                 other.collidedWith(character)
                 return
@@ -1501,14 +1504,18 @@ XXX
             for x in (0, sizeX - 1):
                 for y in range(0, sizeY):
                     if (x, y) in doorPos:
-                        items.append((src.items.itemMap["Door"](), (x, y, 0)))
+                        item = src.items.itemMap["Door"]()
+                        item.walkable = True
+                        items.append((item, (x, y, 0)))
                     else:
                         items.append((src.items.itemMap["Wall"](), (x, y, 0)))
 
             for x in range(1, sizeX - 1):
                 for y in (0, sizeY - 1):
                     if (x, y) in doorPos:
-                        items.append((src.items.itemMap["Door"](), (x, y, 0)))
+                        item = src.items.itemMap["Door"]()
+                        item.walkable = True
+                        items.append((item, (x, y, 0)))
                     else:
                         items.append((src.items.itemMap["Wall"](), (x, y, 0)))
 

@@ -42,14 +42,14 @@ class Vial(src.items.Item):
         # print feedback
         if character.watched:
             if not self.uses == 1:
-                character.addMessage("you drink from your flask")
+                character.addMessage("you drink from the vial")
             else:
-                character.addMessage("you drink from your flask and empty it")
+                character.addMessage("you drink from the vial and empty it")
 
         # change state
         self.uses -= 1
         self.changed()
-        character.heal(10)
+        character.heal(10+(100-character.health)//10)
         character.changed()
 
     def render(self):
@@ -61,12 +61,12 @@ class Vial(src.items.Item):
         """
 
         displayByUses = [
-            src.canvas.displayChars.gooflask_empty,
-            src.canvas.displayChars.gooflask_part1,
-            src.canvas.displayChars.gooflask_part2,
-            src.canvas.displayChars.gooflask_part3,
-            src.canvas.displayChars.gooflask_part4,
-            src.canvas.displayChars.gooflask_full,
+            src.canvas.displayChars.vial_empty,
+            src.canvas.displayChars.vial_part1,
+            src.canvas.displayChars.vial_part2,
+            src.canvas.displayChars.vial_part3,
+            src.canvas.displayChars.vial_part4,
+            src.canvas.displayChars.vial_full,
         ]
         return displayByUses[self.uses // 2]
 

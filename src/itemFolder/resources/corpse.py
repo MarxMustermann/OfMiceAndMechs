@@ -1,4 +1,5 @@
 import src
+import random
 
 class Corpse(src.items.Item):
     """
@@ -18,7 +19,7 @@ class Corpse(src.items.Item):
         self.name = "corpse"
         self.description = "something dead"
         self.usageInfo = """
-Activate it to eat from it. Eating from a corpse will gain you 15 satiation.
+Activate it to eat from it. Eating from a corpse will gain you 15 satiation and may hurt your stomage for 1 damage.
 
 can be processed in a corpse shredder
 """
@@ -72,6 +73,9 @@ The corpse has %s charges left.
                 character.satiation = 1000
             self.charges -= 1
             character.addMessage("you eat from the corpse and gain 15 satiation")
+
+            if character.satiation > random.randint(0,10000):
+                character.hurt(1,reason="the solid food hurts your stomach")
         else:
             self.destroy(generateScrap=False)
 

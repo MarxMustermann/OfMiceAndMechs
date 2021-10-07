@@ -60,7 +60,7 @@ Filling a flask will use up a charge from your goo dispenser.
         filled = False
         fillAmount = 100 + ((self.level - 1) * 10)
         for item in character.inventory:
-            if isinstance(item, src.itemMap["GooFlask"]) and not item.uses >= fillAmount:
+            if isinstance(item, src.items.itemMap["GooFlask"]) and not item.uses >= fillAmount:
                 item.uses = fillAmount
                 filled = True
                 self.charges -= 1

@@ -1216,6 +1216,9 @@ class Terrain(src.saveing.Saveable):
                 if not destCoord == other.getPosition():
                     continue
 
+                if char.faction == "player" and other.faction == "player":
+                    continue
+
                 char.messages.append("*thump*")
                 char.collidedWith(other)
                 other.collidedWith(char)

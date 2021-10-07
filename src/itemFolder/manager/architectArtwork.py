@@ -546,8 +546,7 @@ class ArchitectArtwork(src.items.Item):
         self.fillMap()
         self.doClearField(self.xPosition//15,self.xPosition//15)
 
-        terrain = self.getTerrain()
-
+        terrain = self.getTerrain() 
         center = (self.xPosition//15,self.xPosition//15)
 
         # generate room slots
@@ -576,10 +575,11 @@ class ArchitectArtwork(src.items.Item):
                 roomMap[y].append("  ")
 
         # add target room
-        targetRoom = random.choice(freeRoomSlots)
-        while targetRoom in freeRoomSlots:
-            freeRoomSlots.remove(targetRoom)
-            roomMap[targetRoom[1]][targetRoom[0]] = "RC"
+        targetRoomSlot = random.choice(freeRoomSlots)
+        #targetRoomSlot = (7,9)
+        while targetRoomSlot in freeRoomSlots:
+            freeRoomSlots.remove(targetRoomSlot)
+            roomMap[targetRoomSlot[1]][targetRoomSlot[0]] = "RC"
         memoryCellRoom = random.choice(freeRoomSlots)
         while memoryCellRoom in freeRoomSlots:
             freeRoomSlots.remove(memoryCellRoom)
@@ -690,8 +690,8 @@ class ArchitectArtwork(src.items.Item):
                 if (x,y) in roomSlots:
                     note = src.items.itemMap["Note"]()
                     note.text = random.choice([
-                        "The the reserve city builder is on coordinate %s/%s"%(targetRoom[0],targetRoom[1],),
-                        "The the reserve city builder is on coordinate %s/%s"%(targetRoom[0],targetRoom[1],),
+                        "The the reserve city builder is on coordinate %s/%s"%(targetRoomSlot[0],targetRoomSlot[1],),
+                        "The the reserve city builder is on coordinate %s/%s"%(targetRoomSlot[0],targetRoomSlot[1],),
                         "The memorycell production is on coordinate %s/%s"%(memoryCellRoom[0],memoryCellRoom[1],),
                         "The pocketframe production is on coordinate %s/%s"%(pocketFrameRoom[0],pocketFrameRoom[1],),
                         ])
@@ -720,7 +720,28 @@ class ArchitectArtwork(src.items.Item):
 
         # set up target room
         targetItem = src.items.itemMap["ReserveCityBuilder"]()
-        terrain.addItem(targetItem,(targetRoom[0]*15+7,targetRoom[1]*15+7,0))
+        targetRoom = self.doAddRoom(
+                {
+                    "coordinate": targetRoomSlot,
+                    "roomType": "EmptyRoom",
+                    "doors": "0,6 6,0 12,6 6,12",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                },
+                None,
+                )
+        for i in range(0,random.randint(20,30)):
+            targetRoom.damage()
+        for i in range(0,random.randint(20,30)):
+            pos = (random.randint(1,11),random.randint(1,11),0)
+            if pos == (6,6,0):
+                continue
+            amount = random.randint(1,20)
+            if pos[0] == 6 or pos[1] == 6:
+                amount = random.randint(1,4)
+            scrap = src.items.itemMap["Scrap"](amount=amount)
+            targetRoom.addItem(scrap,pos)
+        targetRoom.addItem(targetItem,(6,6,0))
 
         memoryCellMachine = src.items.itemMap["Machine"]()
         memoryCellMachine.setToProduce("MemoryCell")
@@ -878,13 +899,12 @@ class ArchitectArtwork(src.items.Item):
 
                 terrain.addCharacter(enemy, roomSlot[0]*15+random.randint(1,13), roomSlot[1]*15+random.randint(1,13))
 
-        item = src.items.itemMap["Note"]()
-        item.text = ""
+        text = ""
 
         for row in roomMap:
-            item.text += "".join(row)+"\n"
+            text += "".join(row)+"\n"
 
-        terrain.addItem(item,(targetRoom[0]*15+4,targetRoom[1]*15+8,0))
+        targetItem.mapString = text
 
     def fillMap(self):
         """
@@ -1272,16 +1292,19 @@ class ArchitectArtwork(src.items.Item):
 
                 entryPoints.append(entryPoint)
 
-            context["character"].addMessage(entryPoints)
+            if context:
+                context["character"].addMessage(entryPoints)
 
             room.reconfigure(task["size"][0], task["size"][1], doorPos=entryPoints)
 
         terrain = self.getTerrain()
 
         if not terrain:
-            context["character"].addMessage("no terrain found")
+            if context:
+                context["character"].addMessage("no terrain found")
             return
 
         terrain.addRooms([room])
+        return room
 
 src.items.addType(ArchitectArtwork)

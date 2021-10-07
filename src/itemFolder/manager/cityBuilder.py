@@ -994,7 +994,7 @@ class CityBuilder(src.items.Item):
                             if item.type == "Scrap":
                                 numScrap += item.amount
 
-                if numScrap > 100:
+                if numScrap > 1000:
                     self.scrapFields.append([list(candidate), numScrap])
                     self.usedPlots.append(candidate)
                     continue

@@ -230,7 +230,7 @@ Select the thing to produce and confirm.
             self.container.removeItem(item)
 
         # spawn new item
-        new = src.itemMap["Machine"]()
+        new = src.items.itemMap["Machine"]()
         new.productionLevel = self.blueprintLevels[itemType]
         new.setToProduce(itemType)
         new.bolted = False

@@ -17,4 +17,49 @@ class AttrSpec(object):
         self.bg = bg
 
     def get_rgb_values(self):
-        return (255,255,255,0,0,0)
+        def convertValue(value):
+            try:
+                return int(value)*16
+            except:
+                if value == "a":
+                    return 10*16
+                if value == "b":
+                    return 11*16
+                if value == "c":
+                    return 12*16
+                if value == "d":
+                    return 13*16
+                if value == "e":
+                    return 14*16
+                if value == "f":
+                    return 15*16
+
+        color = []
+        if self.fg[0] == "#":
+            color.append(convertValue(self.fg[1]))
+            color.append(convertValue(self.fg[2]))
+            color.append(convertValue(self.fg[3]))
+        elif self.fg == "black":
+            color.append(0)
+            color.append(0)
+            color.append(0)
+        else:
+            color.append(None)
+            color.append(None)
+            color.append(None)
+            print(self.fg)
+        if self.bg[0] == "#":
+            color.append(convertValue(self.bg[1]))
+            color.append(convertValue(self.bg[2]))
+            color.append(convertValue(self.bg[3]))
+        elif self.bg == "black":
+            color.append(0)
+            color.append(0)
+            color.append(0)
+        else:
+            color.append(None)
+            color.append(None)
+            color.append(None)
+            print(self.bg)
+        return tuple(color)
+

@@ -1,187 +1,255 @@
-import urwid
+try:
+    import urwid
+    AttrSpec = urwid.AttrSpec
+except:
+    class AttrSpec(object):
+        """
+        dumy object behaving like an urwid attribute
+        this is used to prevent crashes
+        """
 
-sunScreen = (urwid.AttrSpec("#420", "black"), "oo")
-healingStation = (urwid.AttrSpec("#f00", "black"), "HS")
-forceField2 = (urwid.AttrSpec("#3f3", "black"), "##")
-staticCrystal = (urwid.AttrSpec("#aaf", "black"), "/\\")
-staticSpark = (urwid.AttrSpec("#aaf", "black"), "*-")
-sparkPlug = (urwid.AttrSpec("#aaf", "black"), "O-")
-ripInReality = (urwid.AttrSpec("#aaf", "black"), "|#")
-productionManager = (urwid.AttrSpec("#aaa", "black"), "PM")
-autoFarmer = (urwid.AttrSpec("#fff", "#252"), "::")
-portableChallenger = (urwid.AttrSpec("#aaa", "black"), "pc")
-typedStockpileManager = (urwid.AttrSpec("#aaa", "black"), "ST")
-uniformStockpileManager = (urwid.AttrSpec("#aaa", "black"), "SU")
-jobOrder = (urwid.AttrSpec("#33f", "black"), "j#")
-jobBoard = (urwid.AttrSpec("#33f", "black"), "JB")
-itemUpgrader = (urwid.AttrSpec("#aaa", "black"), "iU")
-blueprint = (urwid.AttrSpec("#aaa", "black"), "bd")
-command = (urwid.AttrSpec("#aaa", "black"), "c#")
-map = (urwid.AttrSpec("#aaa", "black"), "m#")
-note = (urwid.AttrSpec("#aaa", "black"), "n#")
-bloomShredder = (urwid.AttrSpec("#fff", "black"), "%>")
-corpseShredder = (urwid.AttrSpec("#800", "black"), "%>")
-sporeExtractor = (urwid.AttrSpec("#fff", "black"), "%o")
-bloomContainer = (urwid.AttrSpec("#fff", "black"), "[H")
-container = (urwid.AttrSpec("#446", "black"), "[H")
-moldFeed = (urwid.AttrSpec("black", "#600"), "::")
-seededMoldFeed = (urwid.AttrSpec("#436", "#600"), ";;")
-moss = (urwid.AttrSpec("#030", "black"), ",.")
-moldSpore = (urwid.AttrSpec("#436", "black"), ",.")
-monster_spore = (urwid.AttrSpec("#030", "black"), "🝆 ")
-monster_feeder = (urwid.AttrSpec("#252", "black"), "🝆~")
-monster_grazer = (urwid.AttrSpec("#484", "black"), "🝆=")
-monster_corpseGrazer = (urwid.AttrSpec("#824", "black"), "🝆-")
-monster_hunter = (urwid.AttrSpec("#f48", "black"), "🝆>")
-monster_exploder = (urwid.AttrSpec("#3f3", "black"), "🝆%")
-sprout = (urwid.AttrSpec("#252", "black"), ",*")
-sprout2 = (urwid.AttrSpec("#474", "black"), "**")
-bloom = (urwid.AttrSpec("#fff", "black"), "**")
-sickBloom = (urwid.AttrSpec("#ff2", "black"), "**")
-poisonBloom = (urwid.AttrSpec("#3f3", "black"), "**")
-commandBloom = (urwid.AttrSpec("#006", "black"), "**")
-poisonBush = (urwid.AttrSpec("#3f3", "black"), "#%")
-bush = (urwid.AttrSpec("#484", "black"), "#%")
-encrustedBush = (urwid.AttrSpec("#484", "black"), "##")
-encrustedPoisonBush = (urwid.AttrSpec("#3f3", "black"), "##")
-monster = (urwid.AttrSpec("#33f", "#007"), "MM")
-explosion = (urwid.AttrSpec("#fa0", "#f00"), "##")
-reactionChamber = (urwid.AttrSpec("#aaa", "black"), "[}")
-explosive = (urwid.AttrSpec("#a55", "black"), "be")
-fireCrystals = (urwid.AttrSpec("#3f3", "black"), "bc")
-bomb = (urwid.AttrSpec("#a88", "black"), "bb")
-mortar = (urwid.AttrSpec("#aaa", "black"), "Bm")
-pocketFrame = (urwid.AttrSpec("#aaa", "black"), "*h")
-case = (urwid.AttrSpec("#aaa", "black"), "*H")
-memoryCell = (urwid.AttrSpec("#33f", "black"), "*m")
-frame = (urwid.AttrSpec("#aaa", "black"), "#O")
-watch = (urwid.AttrSpec("#aaa", "black"), "ow")
-backTracker = (urwid.AttrSpec("#aaa", "black"), "ob")
-tumbler = (urwid.AttrSpec("#aaa", "black"), "ot")
-positioningDevice = (urwid.AttrSpec("#aaa", "black"), "op")
-stasisTank = (urwid.AttrSpec("#aaa", "black"), "$c")
-engraver = (urwid.AttrSpec("#aaa", "black"), "eE")
-gameTestingProducer = (urwid.AttrSpec("#aaa", "black"), "/\\")
-token = (urwid.AttrSpec("#aaa", "black"), ". ")
-macroRunner = (urwid.AttrSpec("#33f", "black"), "Rm")
-objectDispenser = (urwid.AttrSpec("#aaa", "black"), "U\\")
-markerBean_active = (urwid.AttrSpec("#aaa", "black"), " -")
-markerBean_inactive = (urwid.AttrSpec("#aaa", "black"), "x-")
-sorter = (urwid.AttrSpec("#aaa", "black"), "U\\")
-scraper = (urwid.AttrSpec("#aaa", "black"), "RS")
-simpleRunner = (urwid.AttrSpec("#aaa", "black"), "Rs")
-roomBuilder = (urwid.AttrSpec("#aaa", "black"), "RB")
-globalMacroStorage = (urwid.AttrSpec("#ff2", "black"), "mG")
-memoryDump = (urwid.AttrSpec("#33f", "black"), "mD")
-memoryBank = (urwid.AttrSpec("#33f", "black"), "mM")
-memoryStack = (urwid.AttrSpec("#33f", "black"), "mS")
-memoryReset = (urwid.AttrSpec("#33f", "black"), "mR")
-tank = (urwid.AttrSpec("#aaa", "black"), "#o")
-heater = (urwid.AttrSpec("#aaa", "black"), "#%")
-connector = (urwid.AttrSpec("#aaa", "black"), "#H")
-pusher = (urwid.AttrSpec("#aaa", "black"), "#>")
-puller = (urwid.AttrSpec("#aaa", "black"), "#<")
-coil = (urwid.AttrSpec("#aaa", "black"), "+g")
-nook = (urwid.AttrSpec("#aaa", "black"), "+L")
-stripe = (urwid.AttrSpec("#aaa", "black"), "+-")
-bolt = (urwid.AttrSpec("#aaa", "black"), "+i")
-rod = (urwid.AttrSpec("#aaa", "black"), "+|")
-forceField = (urwid.AttrSpec("#aaf", "black"), "..")
-drill = (urwid.AttrSpec("#aaa", "black"), "&|")
-vatMaggot = (urwid.AttrSpec("#3f3", "black"), "~-")
-bioMass = (urwid.AttrSpec("#3f3", "black"), "~=")
-pressCake = (urwid.AttrSpec("#3f3", "black"), "~#")
-maggotFermenter = (urwid.AttrSpec("#3f3", "black"), "%0")
-bioPress = (urwid.AttrSpec("#3f3", "black"), "%=")
-gooProducer = (urwid.AttrSpec("#3f3", "black"), "%=")
-gooDispenser = (urwid.AttrSpec("#3f3", "black"), "%=")
-coalMine = (urwid.AttrSpec("#334", "black"), "&c")
-tree = (urwid.AttrSpec("#383", "black"), "&/")
-infoscreen = (urwid.AttrSpec("#aaa", "black"), "iD")
-blueprinter = (urwid.AttrSpec("#aaa", "black"), "sX")
-productionArtwork = (urwid.AttrSpec("#ff2", "black"), "ßß")
-gooflask_empty = (urwid.AttrSpec("#3f3", "black"), "ò ")
-gooflask_part1 = (urwid.AttrSpec("#3f3", "black"), "ò.")
-gooflask_part2 = (urwid.AttrSpec("#3f3", "black"), "ò,")
-gooflask_part3 = (urwid.AttrSpec("#3f3", "black"), "ò-")
-gooflask_part4 = (urwid.AttrSpec("#3f3", "black"), "ò~")
-gooflask_full = (urwid.AttrSpec("#3f3", "black"), "ò=")
-vial_empty = (urwid.AttrSpec("#f33", "black"), "ò ")
-vial_part1 = (urwid.AttrSpec("#f33", "black"), "ò.")
-vial_part2 = (urwid.AttrSpec("#f33", "black"), "ò,")
-vial_part3 = (urwid.AttrSpec("#f33", "black"), "ò-")
-vial_part4 = (urwid.AttrSpec("#f33", "black"), "ò~")
-vial_full = (urwid.AttrSpec("#f33", "black"), "ò=")
-machineMachine = (urwid.AttrSpec("#aaa", "black"), "M\\")
-machine = (urwid.AttrSpec("#aaa", "black"), "X\\")
-scrapCompactor = (urwid.AttrSpec("#aaa", "black"), "RC")
-sheet = (urwid.AttrSpec("#aaa", "black"), "+#")
-metalBars = (urwid.AttrSpec("#aaa", "black"), "==")
-wall = (urwid.AttrSpec("#334", "black"), "XX")
-dirt = (urwid.AttrSpec("#330", "black"), ".´")
-grass = (urwid.AttrSpec("#030", "black"), ",`")
-pipe = (urwid.AttrSpec("#337", "black"), "**")
-corpse = (urwid.AttrSpec("#f00", "black"), "＠")
-unconciousBody = (urwid.AttrSpec("#f22", "black"), "@ ")
-growthTank_filled = (urwid.AttrSpec("#3b3", "black"), "OO")
-growthTank_unfilled = (urwid.AttrSpec("#3b3", "black"), "00")
-hutch_free = (urwid.AttrSpec("#3b3", "black"), "==")
-hutch_occupied = (urwid.AttrSpec("#3f3", "black"), "=}")
-lever_notPulled = (urwid.AttrSpec("#bb3", "black"), "||")
-lever_pulled = (urwid.AttrSpec("#ff3", "black"), "//")
-furnace_inactive = (urwid.AttrSpec("#b33", "black"), "oo")
-furnace_active = (urwid.AttrSpec("#f73,bold", "black"), "öö")
-display = (urwid.AttrSpec("#a63", "black"), "DD")
+        def __init__(self, fg, bg):
+            """
+            store basic attriutes
+
+            Parameters:
+                fg: foreground color
+                bg: background color
+            """
+
+            self.fg = fg
+            self.bg = bg
+
+        def get_rgb_values(self):
+            def convertValue(value):
+                try:
+                    return int(value)*16
+                except:
+                    if value == "a":
+                        return 10*16
+                    if value == "b":
+                        return 11*16
+                    if value == "c":
+                        return 12*16
+                    if value == "d":
+                        return 13*16
+                    if value == "e":
+                        return 14*16
+                    if value == "f":
+                        return 15*16
+            
+            color = []
+            if self.fg[0] == "#":
+                color.append(convertValue(self.fg[1]))
+                color.append(convertValue(self.fg[2]))
+                color.append(convertValue(self.fg[3]))
+            elif self.fg == "black":
+                color.append(0)
+                color.append(0)
+                color.append(0)
+            else:
+                color.append(None)
+                color.append(None)
+                color.append(None)
+                print(self.fg)
+            if self.bg[0] == "#":
+                color.append(convertValue(self.bg[1]))
+                color.append(convertValue(self.bg[2]))
+                color.append(convertValue(self.bg[3]))
+            elif self.bg == "black":
+                color.append(0)
+                color.append(0)
+                color.append(0)
+            else:
+                color.append(None)
+                color.append(None)
+                color.append(None)
+                print(self.bg)
+            return tuple(color)
+
+
+sunScreen = (AttrSpec("#420", "black"), "oo")
+healingStation = (AttrSpec("#f00", "black"), "HS")
+forceField2 = (AttrSpec("#3f3", "black"), "##")
+staticCrystal = (AttrSpec("#aaf", "black"), "/\\")
+staticSpark = (AttrSpec("#aaf", "black"), "*-")
+sparkPlug = (AttrSpec("#aaf", "black"), "O-")
+ripInReality = (AttrSpec("#aaf", "black"), "|#")
+productionManager = (AttrSpec("#aaa", "black"), "PM")
+autoFarmer = (AttrSpec("#fff", "#252"), "::")
+portableChallenger = (AttrSpec("#aaa", "black"), "pc")
+typedStockpileManager = (AttrSpec("#aaa", "black"), "ST")
+uniformStockpileManager = (AttrSpec("#aaa", "black"), "SU")
+jobOrder = (AttrSpec("#33f", "black"), "j#")
+jobBoard = (AttrSpec("#33f", "black"), "JB")
+itemUpgrader = (AttrSpec("#aaa", "black"), "iU")
+blueprint = (AttrSpec("#aaa", "black"), "bd")
+command = (AttrSpec("#aaa", "black"), "c#")
+map = (AttrSpec("#aaa", "black"), "m#")
+note = (AttrSpec("#aaa", "black"), "n#")
+bloomShredder = (AttrSpec("#fff", "black"), "%>")
+corpseShredder = (AttrSpec("#800", "black"), "%>")
+sporeExtractor = (AttrSpec("#fff", "black"), "%o")
+bloomContainer = (AttrSpec("#fff", "black"), "[H")
+container = (AttrSpec("#446", "black"), "[H")
+moldFeed = (AttrSpec("black", "#600"), "::")
+seededMoldFeed = (AttrSpec("#436", "#600"), ";;")
+moss = (AttrSpec("#030", "black"), ",.")
+moldSpore = (AttrSpec("#436", "black"), ",.")
+monster_spore = (AttrSpec("#030", "black"), "🝆 ")
+monster_feeder = (AttrSpec("#252", "black"), "🝆~")
+monster_grazer = (AttrSpec("#484", "black"), "🝆=")
+monster_corpseGrazer = (AttrSpec("#824", "black"), "🝆-")
+monster_hunter = (AttrSpec("#f48", "black"), "🝆>")
+monster_exploder = (AttrSpec("#3f3", "black"), "🝆%")
+sprout = (AttrSpec("#252", "black"), ",*")
+sprout2 = (AttrSpec("#474", "black"), "**")
+bloom = (AttrSpec("#fff", "black"), "**")
+sickBloom = (AttrSpec("#ff2", "black"), "**")
+poisonBloom = (AttrSpec("#3f3", "black"), "**")
+commandBloom = (AttrSpec("#006", "black"), "**")
+poisonBush = (AttrSpec("#3f3", "black"), "#%")
+bush = (AttrSpec("#484", "black"), "#%")
+encrustedBush = (AttrSpec("#484", "black"), "##")
+encrustedPoisonBush = (AttrSpec("#3f3", "black"), "##")
+monster = (AttrSpec("#33f", "#007"), "MM")
+explosion = (AttrSpec("#fa0", "#f00"), "##")
+reactionChamber = (AttrSpec("#aaa", "black"), "[}")
+explosive = (AttrSpec("#a55", "black"), "be")
+fireCrystals = (AttrSpec("#3f3", "black"), "bc")
+bomb = (AttrSpec("#a88", "black"), "bb")
+mortar = (AttrSpec("#aaa", "black"), "Bm")
+pocketFrame = (AttrSpec("#aaa", "black"), "*h")
+case = (AttrSpec("#aaa", "black"), "*H")
+memoryCell = (AttrSpec("#33f", "black"), "*m")
+frame = (AttrSpec("#aaa", "black"), "#O")
+watch = (AttrSpec("#aaa", "black"), "ow")
+backTracker = (AttrSpec("#aaa", "black"), "ob")
+tumbler = (AttrSpec("#aaa", "black"), "ot")
+positioningDevice = (AttrSpec("#aaa", "black"), "op")
+stasisTank = (AttrSpec("#aaa", "black"), "$c")
+engraver = (AttrSpec("#aaa", "black"), "eE")
+gameTestingProducer = (AttrSpec("#aaa", "black"), "/\\")
+token = (AttrSpec("#aaa", "black"), ". ")
+macroRunner = (AttrSpec("#33f", "black"), "Rm")
+objectDispenser = (AttrSpec("#aaa", "black"), "U\\")
+markerBean_active = (AttrSpec("#aaa", "black"), " -")
+markerBean_inactive = (AttrSpec("#aaa", "black"), "x-")
+sorter = (AttrSpec("#aaa", "black"), "U\\")
+scraper = (AttrSpec("#aaa", "black"), "RS")
+simpleRunner = (AttrSpec("#aaa", "black"), "Rs")
+roomBuilder = (AttrSpec("#aaa", "black"), "RB")
+globalMacroStorage = (AttrSpec("#ff2", "black"), "mG")
+memoryDump = (AttrSpec("#33f", "black"), "mD")
+memoryBank = (AttrSpec("#33f", "black"), "mM")
+memoryStack = (AttrSpec("#33f", "black"), "mS")
+memoryReset = (AttrSpec("#33f", "black"), "mR")
+tank = (AttrSpec("#aaa", "black"), "#o")
+heater = (AttrSpec("#aaa", "black"), "#%")
+connector = (AttrSpec("#aaa", "black"), "#H")
+pusher = (AttrSpec("#aaa", "black"), "#>")
+puller = (AttrSpec("#aaa", "black"), "#<")
+coil = (AttrSpec("#aaa", "black"), "+g")
+nook = (AttrSpec("#aaa", "black"), "+L")
+stripe = (AttrSpec("#aaa", "black"), "+-")
+bolt = (AttrSpec("#aaa", "black"), "+i")
+rod = (AttrSpec("#aaa", "black"), "+|")
+forceField = (AttrSpec("#aaf", "black"), "..")
+drill = (AttrSpec("#aaa", "black"), "&|")
+vatMaggot = (AttrSpec("#3f3", "black"), "~-")
+bioMass = (AttrSpec("#3f3", "black"), "~=")
+pressCake = (AttrSpec("#3f3", "black"), "~#")
+maggotFermenter = (AttrSpec("#3f3", "black"), "%0")
+bioPress = (AttrSpec("#3f3", "black"), "%=")
+gooProducer = (AttrSpec("#3f3", "black"), "%=")
+gooDispenser = (AttrSpec("#3f3", "black"), "%=")
+coalMine = (AttrSpec("#334", "black"), "&c")
+tree = (AttrSpec("#383", "black"), "&/")
+infoscreen = (AttrSpec("#aaa", "black"), "iD")
+blueprinter = (AttrSpec("#aaa", "black"), "sX")
+productionArtwork = (AttrSpec("#ff2", "black"), "ßß")
+gooflask_empty = (AttrSpec("#3f3", "black"), "ò ")
+gooflask_part1 = (AttrSpec("#3f3", "black"), "ò.")
+gooflask_part2 = (AttrSpec("#3f3", "black"), "ò,")
+gooflask_part3 = (AttrSpec("#3f3", "black"), "ò-")
+gooflask_part4 = (AttrSpec("#3f3", "black"), "ò~")
+gooflask_full = (AttrSpec("#3f3", "black"), "ò=")
+vial_empty = (AttrSpec("#f33", "black"), "ò ")
+vial_part1 = (AttrSpec("#f33", "black"), "ò.")
+vial_part2 = (AttrSpec("#f33", "black"), "ò,")
+vial_part3 = (AttrSpec("#f33", "black"), "ò-")
+vial_part4 = (AttrSpec("#f33", "black"), "ò~")
+vial_full = (AttrSpec("#f33", "black"), "ò=")
+machineMachine = (AttrSpec("#aaa", "black"), "M\\")
+machine = (AttrSpec("#aaa", "black"), "X\\")
+scrapCompactor = (AttrSpec("#aaa", "black"), "RC")
+sheet = (AttrSpec("#aaa", "black"), "+#")
+metalBars = (AttrSpec("#aaa", "black"), "==")
+wall = (AttrSpec("#334", "black"), "XX")
+dirt = (AttrSpec("#330", "black"), ".´")
+grass = (AttrSpec("#030", "black"), ",`")
+pipe = (AttrSpec("#337", "black"), "**")
+corpse = (AttrSpec("#f00", "black"), "＠")
+unconciousBody = (AttrSpec("#f22", "black"), "@ ")
+growthTank_filled = (AttrSpec("#3b3", "black"), "OO")
+growthTank_unfilled = (AttrSpec("#3b3", "black"), "00")
+hutch_free = (AttrSpec("#3b3", "black"), "==")
+hutch_occupied = (AttrSpec("#3f3", "black"), "=}")
+lever_notPulled = (AttrSpec("#bb3", "black"), "||")
+lever_pulled = (AttrSpec("#ff3", "black"), "//")
+furnace_inactive = (AttrSpec("#b33", "black"), "oo")
+furnace_active = (AttrSpec("#f73,bold", "black"), "öö")
+display = (AttrSpec("#a63", "black"), "DD")
 coal = "sc"
-door_closed = (urwid.AttrSpec("#bb3", "black"), "[]")
-door_opened = (urwid.AttrSpec("#ff3", "black"), "[]")
-bioDoor_closed = (urwid.AttrSpec("#030", "black"), "[]")
-bioDoor_opened = (urwid.AttrSpec("#070", "black"), "[]")
+door_closed = (AttrSpec("#bb3", "black"), "[]")
+door_opened = (AttrSpec("#ff3", "black"), "[]")
+bioDoor_closed = (AttrSpec("#030", "black"), "[]")
+bioDoor_opened = (AttrSpec("#070", "black"), "[]")
 pile = "UU"
 acid = "~~"
 notImplentedYet = "??"
-floor = (urwid.AttrSpec("#336", "black"), "::")
-floor_path = (urwid.AttrSpec("#888", "black"), "::")
-floor_nodepath = (urwid.AttrSpec("#ccc", "black"), "::")
-floor_superpath = (urwid.AttrSpec("#fff", "black"), "::")
-floor_node = (urwid.AttrSpec("#ff5", "black"), "::")
-floor_superNode = (urwid.AttrSpec("#ff5", "black"), "::")
+floor = (AttrSpec("#336", "black"), "::")
+floor_path = (AttrSpec("#888", "black"), "::")
+floor_nodepath = (AttrSpec("#ccc", "black"), "::")
+floor_superpath = (AttrSpec("#fff", "black"), "::")
+floor_node = (AttrSpec("#ff5", "black"), "::")
+floor_superNode = (AttrSpec("#ff5", "black"), "::")
 binStorage = "VV"
 chains = "88"
-commLink = (urwid.AttrSpec("#aaa", "black"), "DC")
+commLink = (AttrSpec("#aaa", "black"), "DC")
 grid = "##"
 acids = [
-    (urwid.AttrSpec("#182", "black"), "~="),
-    (urwid.AttrSpec("#095", "black"), "=~"),
-    (urwid.AttrSpec("#282", "black"), "=~"),
-    (urwid.AttrSpec("#195", "black"), "~="),
-    (urwid.AttrSpec("#173", "black"), "~~"),
+    (AttrSpec("#182", "black"), "~="),
+    (AttrSpec("#095", "black"), "=~"),
+    (AttrSpec("#282", "black"), "=~"),
+    (AttrSpec("#195", "black"), "~="),
+    (AttrSpec("#173", "black"), "~~"),
 ]
 foodStuffs = [
-    (urwid.AttrSpec("#842", "black"), "*-"),
-    (urwid.AttrSpec("#841", "black"), ".*"),
-    (urwid.AttrSpec("#742", "black"), "-."),
-    (urwid.AttrSpec("#832", "black"), ".-"),
-    (urwid.AttrSpec("#843", "black"), "-+"),
-    (urwid.AttrSpec("#743", "black"), "+."),
+    (AttrSpec("#842", "black"), "*-"),
+    (AttrSpec("#841", "black"), ".*"),
+    (AttrSpec("#742", "black"), "-."),
+    (AttrSpec("#832", "black"), ".-"),
+    (AttrSpec("#843", "black"), "-+"),
+    (AttrSpec("#743", "black"), "+."),
 ]
 machineries = [
-    (urwid.AttrSpec("#334", "black"), "Mm"),
-    (urwid.AttrSpec("#336", "black"), "Mm"),
-    (urwid.AttrSpec("#347", "black"), "Mm"),
-    (urwid.AttrSpec("#335", "black"), "Mm"),
-    (urwid.AttrSpec("#335", "black"), "Mm"),
+    (AttrSpec("#334", "black"), "Mm"),
+    (AttrSpec("#336", "black"), "Mm"),
+    (AttrSpec("#347", "black"), "Mm"),
+    (AttrSpec("#335", "black"), "Mm"),
+    (AttrSpec("#335", "black"), "Mm"),
 ]
-hub = (urwid.AttrSpec("#337", "black"), "++")
+hub = (AttrSpec("#337", "black"), "++")
 ramp = "fr"
-noClue = (urwid.AttrSpec("#337", "black"), "*━")
-vatSnake = (urwid.AttrSpec("#194", "black"), "<=")
-pipe_lr = (urwid.AttrSpec("#337", "black"), "━━")
-pipe_lrd = (urwid.AttrSpec("#337", "black"), "┳━")
-pipe_ld = (urwid.AttrSpec("#337", "black"), "┓ ")
-pipe_lu = (urwid.AttrSpec("#337", "black"), "┛ ")
-pipe_ru = (urwid.AttrSpec("#337", "black"), "┗━")
-pipe_ud = (urwid.AttrSpec("#337", "black"), "┃ ")
+noClue = (AttrSpec("#337", "black"), "*━")
+vatSnake = (AttrSpec("#194", "black"), "<=")
+pipe_lr = (AttrSpec("#337", "black"), "━━")
+pipe_lrd = (AttrSpec("#337", "black"), "┳━")
+pipe_ld = (AttrSpec("#337", "black"), "┓ ")
+pipe_lu = (AttrSpec("#337", "black"), "┛ ")
+pipe_ru = (AttrSpec("#337", "black"), "┗━")
+pipe_ud = (AttrSpec("#337", "black"), "┃ ")
 spray_right_stage1 = "-."
 spray_left_stage1 = ".-"
 spray_right_stage2 = "--"
@@ -190,36 +258,36 @@ spray_right_stage3 = "-="
 spray_left_stage3 = "=-"
 spray_right_inactive = "- "
 spray_left_inactive = " -"
-outlet = (urwid.AttrSpec("#337", "black"), "o>")
+outlet = (AttrSpec("#337", "black"), "o>")
 barricade = "Xx"
 randomStuff1 = [
-    (urwid.AttrSpec("#334", "black"), "GP"),
-    (urwid.AttrSpec("#334", "black"), "GP"),
-    (urwid.AttrSpec("#334", "black"), "GP"),
-    (urwid.AttrSpec("#334", "black"), "GP"),
-    (urwid.AttrSpec("#334", "black"), "GP"),
+    (AttrSpec("#334", "black"), "GP"),
+    (AttrSpec("#334", "black"), "GP"),
+    (AttrSpec("#334", "black"), "GP"),
+    (AttrSpec("#334", "black"), "GP"),
+    (AttrSpec("#334", "black"), "GP"),
 ]
 randomStuff2 = [
-    (urwid.AttrSpec("#334", "black"), "GP"),
-    (urwid.AttrSpec("#334", "black"), "GP"),
-    (urwid.AttrSpec("#334", "black"), "GP"),
-    (urwid.AttrSpec("#334", "black"), "GP"),
-    (urwid.AttrSpec("#334", "black"), "GP"),
-    (urwid.AttrSpec("#334", "black"), "GP"),
-    (urwid.AttrSpec("#334", "black"), "GP"),
-    (urwid.AttrSpec("#334", "black"), "GP"),
-    (urwid.AttrSpec("#334", "black"), "GP"),
-    (urwid.AttrSpec("#334", "black"), "GP"),
+    (AttrSpec("#334", "black"), "GP"),
+    (AttrSpec("#334", "black"), "GP"),
+    (AttrSpec("#334", "black"), "GP"),
+    (AttrSpec("#334", "black"), "GP"),
+    (AttrSpec("#334", "black"), "GP"),
+    (AttrSpec("#334", "black"), "GP"),
+    (AttrSpec("#334", "black"), "GP"),
+    (AttrSpec("#334", "black"), "GP"),
+    (AttrSpec("#334", "black"), "GP"),
+    (AttrSpec("#334", "black"), "GP"),
 ]
 nonWalkableUnkown = "::"
-questTargetMarker = (urwid.AttrSpec("white", "black"), "xX")
-pathMarker = (urwid.AttrSpec("white", "black"), "xx")
+questTargetMarker = (AttrSpec("white", "black"), "xX")
+pathMarker = (AttrSpec("white", "black"), "xx")
 questPathMarker = pathMarker
 invisibleRoom = ".."
-boiler_inactive = (urwid.AttrSpec("#33b", "black"), "OO")
-boiler_active = (urwid.AttrSpec("#77f", "black"), "00")
-clamp_active = (urwid.AttrSpec("#338", "black"), "<>")
-clamp_inactive = (urwid.AttrSpec("#338", "black"), "{}")
+boiler_inactive = (AttrSpec("#33b", "black"), "OO")
+boiler_active = (AttrSpec("#77f", "black"), "00")
+clamp_active = (AttrSpec("#338", "black"), "<>")
+clamp_inactive = (AttrSpec("#338", "black"), "{}")
 void = "  "
 main_char = "＠"
 staffCharacters = [
@@ -227,14 +295,14 @@ staffCharacters = [
     "@ ",
     "@ ",
     "@ ",
-    (urwid.AttrSpec("#33f", "black"), "@ "),
+    (AttrSpec("#33f", "black"), "@ "),
     "@ ",
     "@ ",
     "@ ",
     "@ ",
     "@ ",
     "@ ",
-    (urwid.AttrSpec("#133", "black"), "@ "),
+    (AttrSpec("#133", "black"), "@ "),
     "@ ",
     "@ ",
     "@ ",
@@ -255,14 +323,14 @@ staffCharactersByLetter = {
     "b": "@ ",
     "c": "@ ",
     "d": "@ ",
-    "e": (urwid.AttrSpec("#33f", "black"), "@ "),
+    "e": (AttrSpec("#33f", "black"), "@ "),
     "f": "@ ",
     "g": "@ ",
     "h": "@ ",
     "i": "@ ",
     "j": "@ ",
     "k": "@ ",
-    "l": (urwid.AttrSpec("#193", "black"), "@ "),
+    "l": (AttrSpec("#193", "black"), "@ "),
     "m": "@ ",
     "n": "@ ",
     "o": "@ ",
@@ -281,6 +349,6 @@ staffCharactersByLetter = {
 winch = "8O"
 winch_inactive = "80"
 winch_active = "iW"
-scrap_light = (urwid.AttrSpec("#f50", "black"), ".;")
-scrap_medium = (urwid.AttrSpec("#a60", "black"), "*,")
-scrap_heavy = (urwid.AttrSpec("#860", "black"), "%#")
+scrap_light = (AttrSpec("#f50", "black"), ".;")
+scrap_medium = (AttrSpec("#a60", "black"), "*,")
+scrap_heavy = (AttrSpec("#860", "black"), "%#")

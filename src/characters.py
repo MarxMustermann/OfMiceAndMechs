@@ -3,7 +3,7 @@ the code for the characters belongs here
 """
 # import basic libs
 import json
-import urwid
+urwid = None
 
 # import the other internal libs
 import src.items

@@ -1,12 +1,11 @@
 import src
 import random
-import urwid
 
 class ReserveCityBuilder(src.items.Item):
 
     type = "ReserveCityBuilder"
     def __init__(self):
-        super().__init__(display=(urwid.AttrSpec("#ff2", "black"), "RC"))
+        super().__init__(display=(src.interaction.urwid.AttrSpec("#ff2", "black"), "RC"))
         self.broken = True
         self.mapString = ""
         self.firstUsage = True
@@ -510,8 +509,8 @@ class ReserveCityBuilder(src.items.Item):
     
     def render(self):
         if self.broken:
-            return (urwid.AttrSpec("#aa8", "black"), "RC")
+            return (src.interaction.urwid.AttrSpec("#aa8", "black"), "RC")
         else:
-            return (urwid.AttrSpec("#ff2", "black"), "RC")
+            return (src.interaction.urwid.AttrSpec("#ff2", "black"), "RC")
 
 src.items.addType(ReserveCityBuilder)

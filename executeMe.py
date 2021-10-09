@@ -184,12 +184,14 @@ if args.nourwid:
     import src.pseudoUrwid
 
     interaction.urwid = src.pseudoUrwid
+    characters.urwid = src.pseudoUrwid
     interaction.setUpNoUrwid()
 else:
     interaction.nourwid = False
     import urwid
 
     interaction.urwid = urwid
+    characters.urwid = urwid
     interaction.setUpUrwid()
 
 if args.tcod:

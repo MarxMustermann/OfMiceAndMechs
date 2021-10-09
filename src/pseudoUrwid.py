@@ -15,3 +15,6 @@ class AttrSpec(object):
 
         self.fg = fg
         self.bg = bg
+
+    def get_rgb_values(self):
+        return (255,255,255,0,0,0)

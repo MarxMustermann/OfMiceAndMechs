@@ -328,7 +328,7 @@ class Canvas(object):
         # set pixel
         self.chars[x][y] = char
 
-    def printTcod(self, console, y):
+    def printTcod(self, console, offsetY, offsetX):
 
         def stringifyUrwid(inData):
             outData = ""
@@ -341,10 +341,11 @@ class Canvas(object):
                     outData += item
             return outData
 
+        y = offsetY
         out = []
         for line in self.chars:
             y += 1
-            x = 0
+            x = offsetX
             for char in line:
                 mapped = None
                 if isinstance(char, int):
@@ -369,6 +370,12 @@ class Canvas(object):
                     text = text.replace("＠","@ ")
                     text = text.replace("🝆","<")
                     text = text.replace("´","'")
+                    text = text.replace("┃","|")
+                    text = text.replace("━","-")
+                    text = text.replace("┳","+")
+                    text = text.replace("┛","+")
+                    text = text.replace("┓","+")
+                    text = text.replace("┛","+")
                     console.print(x=2*x+numPrinted,y=y,fg=item[0],string=text)
                     numPrinted += 1
                 x += 1

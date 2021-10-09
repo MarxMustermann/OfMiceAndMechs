@@ -332,6 +332,8 @@ class TextCinematic(BasicCinematic):
                     self.alarm = src.interaction.loop.set_alarm_in(
                         0.05, src.interaction.callShow_or_exit, "~"
                     )
+            else:
+                 src.interaction.callShow_or_exit(None,"~")
             addition = ""
 
         # show the complete text

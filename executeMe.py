@@ -54,6 +54,7 @@ parser.add_argument("-T", "--terrain", type=str, help="select the terrain")
 parser.add_argument("-s", "--seed", type=str, help="select the seed of a new game")
 parser.add_argument("--multiplayer", action="store_true", help="activate multiplayer")
 parser.add_argument("--load", action="store_true", help="load")
+parser.add_argument("--noload", action="store_true", help="do not load saves")
 parser.add_argument(
     "-S", "--speed", type=int, help="set the speed of the game to a fixed speed"
 )
@@ -71,6 +72,8 @@ args = parser.parse_args()
 loaded = False
 if args.load:
     shouldLoad = True
+elif args.noload:
+    shouldLoad = False
 else:
     load = input("load saved game? (Y/n)")
     if load.lower() == "n":

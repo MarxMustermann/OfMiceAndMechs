@@ -154,6 +154,11 @@ if not args.nourwid:
         displayChars = canvas.DisplayMapping("unicode")
     else:
         displayChars = canvas.DisplayMapping("pureASCII")
+elif args.tcod:
+    if args.unicode:
+        displayChars = canvas.DisplayMapping("unicode")
+    else:
+        displayChars = canvas.DisplayMapping("pureASCII")
 else:
     displayChars = canvas.TileMapping("testTiles")
 

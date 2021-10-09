@@ -364,7 +364,12 @@ class Canvas(object):
 
                 numPrinted = 0
                 for item in tcodPrepared:
-                    console.print(x=2*x+numPrinted,y=y,fg=item[0],string=item[1])
+                    text = item[1]
+                    text = text.replace("ò","o")
+                    text = text.replace("＠","@ ")
+                    text = text.replace("🝆","<")
+                    text = text.replace("´","'")
+                    console.print(x=2*x+numPrinted,y=y,fg=item[0],string=text)
                     numPrinted += 1
                 x += 1
 

@@ -341,7 +341,6 @@ class Canvas(object):
                     outData += item
             return outData
 
-        console.print(x=5,y=5,fg=(255,255,0),string="test")
         out = []
         for line in self.chars:
             y += 1

@@ -87,8 +87,11 @@ class AbstractedDisplay(object):
 
 tcodConsole = None
 tcodContext = None
+tcod = None
 def setUpTcod():
-    import tcod
+    import tcod as internalTcod
+    global tcod
+    tcod = internalTcod
 
     screen_width = 100
     screen_height = 60
@@ -101,7 +104,7 @@ def setUpTcod():
             screen_width,
             screen_height,
             tileset=tileset,
-            title="Yet Another Roguelike Tutorial",
+            title="OfMiceAndMechs",
             vsync=True,
                 )
     root_console = tcod.Console(screen_width, screen_height, order="F")
@@ -110,7 +113,6 @@ def setUpTcod():
     tcodConsole = root_console
     tcodContext = context
 
-    root_console.print(x=1, y=1, string="@")
     context.present(root_console)
 
 def setUpUrwid():
@@ -4640,6 +4642,76 @@ def gameLoop(loop, user_data=None):
                     key = "enter"
                 keyboardListener(key)
 
+        if tcod:
+            events = tcod.event.get()
+
+            for event in events:
+                if isinstance(event,tcod.event.KeyDown):
+                    key = event.sym
+                    translatedKey = None
+                    if key == tcod.event.KeySym.RETURN:
+                        translatedKey = "enter"
+                    if key == tcod.event.KeySym.SPACE:
+                        translatedKey = " "
+                    if key == tcod.event.KeySym.a:
+                        translatedKey = "a"
+                    if key == tcod.event.KeySym.b:
+                        translatedKey = "b"
+                    if key == tcod.event.KeySym.c:
+                        translatedKey = "c"
+                    if key == tcod.event.KeySym.d:
+                        translatedKey = "d"
+                    if key == tcod.event.KeySym.e:
+                        translatedKey = "e"
+                    if key == tcod.event.KeySym.f:
+                        translatedKey = "f"
+                    if key == tcod.event.KeySym.g:
+                        translatedKey = "g"
+                    if key == tcod.event.KeySym.h:
+                        translatedKey = "h"
+                    if key == tcod.event.KeySym.i:
+                        translatedKey = "i"
+                    if key == tcod.event.KeySym.j:
+                        translatedKey = "j"
+                    if key == tcod.event.KeySym.k:
+                        translatedKey = "k"
+                    if key == tcod.event.KeySym.l:
+                        translatedKey = "l"
+                    if key == tcod.event.KeySym.m:
+                        translatedKey = "m"
+                    if key == tcod.event.KeySym.n:
+                        translatedKey = "n"
+                    if key == tcod.event.KeySym.o:
+                        translatedKey = "o"
+                    if key == tcod.event.KeySym.p:
+                        translatedKey = "p"
+                    if key == tcod.event.KeySym.q:
+                        translatedKey = "q"
+                    if key == tcod.event.KeySym.r:
+                        translatedKey = "r"
+                    if key == tcod.event.KeySym.s:
+                        translatedKey = "s"
+                    if key == tcod.event.KeySym.t:
+                        translatedKey = "t"
+                    if key == tcod.event.KeySym.u:
+                        translatedKey = "u"
+                    if key == tcod.event.KeySym.v:
+                        translatedKey = "v"
+                    if key == tcod.event.KeySym.w:
+                        translatedKey = "w"
+                    if key == tcod.event.KeySym.x:
+                        translatedKey = "x"
+                    if key == tcod.event.KeySym.y:
+                        translatedKey = "y"
+                    if key == tcod.event.KeySym.z:
+                        translatedKey = "z"
+
+                    if translatedKey == None:
+                        raise Exception(event.sym)
+
+                    keyboardListener(translatedKey)
+
+
         for char in src.gamestate.gamestate.terrain.characters:
             if char not in multi_chars:
                 multi_chars.append(char)
@@ -4806,14 +4878,14 @@ def gameLoop(loop, user_data=None):
                         )
                     )
                     if tcodConsole:
+                        tcodConsole.clear()
                         counter = 0
                         for line in stringifyUrwid(header.get_text()).split("\n"):
                             tcodConsole.print(x=1, y=counter, string=line)
                             counter += 1
                         canvas.printTcod(tcodConsole,counter)
-                        tcodConsole.print(x=0,y=60,string=stringifyUrwid(footer.get_text()))
+                        tcodConsole.print(x=0,y=59,string=stringifyUrwid(footer.get_text()))
                         tcodContext.present(tcodConsole)
-                        pass
                     if useTiles:
                         w, h = pydisplay.get_size()
 
@@ -4844,6 +4916,15 @@ def gameLoop(loop, user_data=None):
                         counter += 1
 
                     pygame.display.update()
+                if tcodConsole:
+                    tcodConsole.clear()
+                    plainText = stringifyUrwid(main.get_text())
+                    counter = 0
+                    for line in plainText.split("\n"):
+                        tcodConsole.print(x=1, y=counter, string=line)
+                        counter += 1
+                    tcodContext.present(tcodConsole)
+                    tcodConsole.print(x=0,y=59,string=stringifyUrwid(footer.get_text()))
         else:
             continousOperation = 0
 

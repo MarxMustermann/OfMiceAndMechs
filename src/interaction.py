@@ -2,7 +2,6 @@
  ode for interacation with the user belongs here
 bad pattern: logic should be moved somewhere else
 """
-
 # load libraries
 import time
 import uuid
@@ -35,6 +34,7 @@ frame = None
 urwid = None
 fixedTicks = False
 speed = None
+libtcodpy = None
 
 # bad code: should be contained in gamestate
 def advanceGame():
@@ -85,6 +85,33 @@ class AbstractedDisplay(object):
     def renderSDL2(self):
         pass
 
+tcodConsole = None
+tcodContext = None
+def setUpTcod():
+    import tcod
+
+    screen_width = 100
+    screen_height = 60
+
+    tileset = tcod.tileset.load_tilesheet(
+        "dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD
+    )
+
+    context = tcod.context.new_terminal(
+            screen_width,
+            screen_height,
+            tileset=tileset,
+            title="Yet Another Roguelike Tutorial",
+            vsync=True,
+                )
+    root_console = tcod.Console(screen_width, screen_height, order="F")
+    global tcodConsole
+    global tcodContext
+    tcodConsole = root_console
+    tcodContext = context
+
+    root_console.print(x=1, y=1, string="@")
+    context.present(root_console)
 
 def setUpUrwid():
     """
@@ -4778,6 +4805,15 @@ def gameLoop(loop, user_data=None):
                             renderHeader(src.gamestate.gamestate.mainChar),
                         )
                     )
+                    if tcodConsole:
+                        counter = 0
+                        for line in stringifyUrwid(header.get_text()).split("\n"):
+                            tcodConsole.print(x=1, y=counter, string=line)
+                            counter += 1
+                        canvas.printTcod(tcodConsole,counter)
+                        tcodConsole.print(x=0,y=60,string=stringifyUrwid(footer.get_text()))
+                        tcodContext.present(tcodConsole)
+                        pass
                     if useTiles:
                         w, h = pydisplay.get_size()
 

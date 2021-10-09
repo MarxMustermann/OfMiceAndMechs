@@ -58,6 +58,7 @@ parser.add_argument(
     "-S", "--speed", type=int, help="set the speed of the game to a fixed speed"
 )
 parser.add_argument("-sc", "--scenario", type=str, help="set the scenario to run")
+parser.add_argument("-tcod", "--tcod", action="store_true", help="use tcod renderer")
 args = parser.parse_args()
 
 ################################################################################
@@ -182,6 +183,9 @@ else:
 
     interaction.urwid = urwid
     interaction.setUpUrwid()
+
+if args.tcod:
+    interaction.setUpTcod()
 
 story.registerPhases()
 

@@ -328,6 +328,47 @@ class Canvas(object):
         # set pixel
         self.chars[x][y] = char
 
+    def printTcod(self, console, y):
+
+        def stringifyUrwid(inData):
+            outData = ""
+            for item in inData:
+                if isinstance(item, tuple):
+                    outData += stringifyUrwid(item[1])
+                if isinstance(item, list):
+                    outData += stringifyUrwid(item)
+                if isinstance(item, str):
+                    outData += item
+            return outData
+
+        console.print(x=5,y=5,fg=(255,255,0),string="test")
+        out = []
+        for line in self.chars:
+            y += 1
+            x = 0
+            for char in line:
+                mapped = None
+                if isinstance(char, int):
+                    mapped = self.displayChars.indexedMapping[char]
+                else:
+                    mapped = char
+
+                if not isinstance(mapped, list):
+                    mapped = [mapped]
+
+                tcodPrepared = []
+                for item in mapped:
+                    if isinstance(item, str):
+                        tcodPrepared.append(((255,255,255),item))
+                    if isinstance(item, tuple):
+                        tcodPrepared.append((tuple(item[0].get_rgb_values()[:3]),item[1]))
+
+                numPrinted = 0
+                for item in tcodPrepared:
+                    console.print(x=2*x+numPrinted,y=y,fg=item[0],string=item[1])
+                    numPrinted += 1
+                x += 1
+
     # bad code: urwid specific code should be in one place not everywhere
     def getUrwirdCompatible(self, warning=False):
         """

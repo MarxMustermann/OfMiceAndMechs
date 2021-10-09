@@ -362,6 +362,15 @@ class Room(src.saveing.Saveable):
             ]
         )
 
+    def getPositionWalkable(self,pos):
+        items = self.getItemByPosition(pos)
+        if len(items) > 15:
+            return False
+        for item in items:
+            if item.walkable == False:
+                return False
+        return True
+
     def damage(self):
         """
         damage the room
@@ -380,15 +389,13 @@ class Room(src.saveing.Saveable):
                 self.open = True
                 self.walkingAccess.append((item.xPosition, item.yPosition))
             random.choice(self.itemsOnFloor).destroy()
-        if self.health < 1:
+        if self.health == 0:
             self.terrain.removeRoom(self)
 
             toAdd = []
             for item in self.itemsOnFloor:
-                item.xPosition += self.xPosition * 15 + self.offsetX
-                item.yPosition += self.yPosition * 15 + self.offsetY
                 item.bolted = False
-                toAdd.append(item)
+                toAdd.append((item,(self.xPosition * 15 + self.offsetX,self.yPosition * 15 + self.offsetY,0)))
             for character in self.characters:
                 character.xPosition += self.xPosition * 15 + self.offsetX
                 character.yPosition += self.yPosition * 15 + self.offsetY

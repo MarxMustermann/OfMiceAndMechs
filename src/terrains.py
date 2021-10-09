@@ -2022,6 +2022,7 @@ class Terrain(src.saveing.Saveable):
             #    continue
             if src.gamestate.gamestate.mainChar not in room.characters:
                 room.hidden = True
+            room.hidden = False
 
             # get the render for the room
             renderedRoom = room.render()
@@ -2034,8 +2035,9 @@ class Terrain(src.saveing.Saveable):
                 rowCounter = 0
                 for char in line:
                     if (rowCounter + xOffset < coordinateOffset[1] or rowCounter + xOffset > coordinateOffset[1]+size[1] or
-                        lineCounter + yOffset < coordinateOffset[0] or lineCounter + yOffset > coordinateOffset[0]+size[0]):
-                       continue
+                            lineCounter + yOffset < coordinateOffset[0] or lineCounter + yOffset > coordinateOffset[0]+size[0]):
+                        rowCounter += 1
+                        continue
                     chars[lineCounter + yOffset - coordinateOffset[0]][rowCounter + xOffset-coordinateOffset[1]] = char
                     rowCounter += 1
                 lineCounter += 1

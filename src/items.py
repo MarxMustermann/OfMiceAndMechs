@@ -875,6 +875,9 @@ class Item(src.saveing.Saveable):
 
         # generate scrap
         if generateScrap:
+            amount = 1
+            if not self.walkable:
+                amount = 20
             newItem = src.items.itemMap["Scrap"](amount=1)
 
             toRemove = []

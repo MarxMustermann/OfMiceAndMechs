@@ -576,7 +576,7 @@ class ArchitectArtwork(src.items.Item):
 
         # add target room
         targetRoomSlot = random.choice(freeRoomSlots)
-        #targetRoomSlot = (7,9)
+        targetRoomSlot = (7,9)
         while targetRoomSlot in freeRoomSlots:
             freeRoomSlots.remove(targetRoomSlot)
             roomMap[targetRoomSlot[1]][targetRoomSlot[0]] = "RC"
@@ -765,6 +765,8 @@ class ArchitectArtwork(src.items.Item):
             if random.choice([True,True,True,False]):
                 continue
 
+            room = None
+
             numRuns += 1
 
             freeRoomSlots.remove(roomSlot)
@@ -775,13 +777,26 @@ class ArchitectArtwork(src.items.Item):
                 theme = "machine"
             if numRuns == 2:
                 theme = "food"
-            if numRuns == 3:
-                theme = "military"
             if numRuns == 4:
-                theme = "stockpile"
+                theme = "machine"
+            if numRuns == 5:
+                theme = "food"
 
             
             if theme == "machine":
+                room = self.doAddRoom(
+                        {
+                            "coordinate": roomSlot,
+                            "roomType": "EmptyRoom",
+                            "doors": "0,6 6,0 12,6 6,12",
+                            "offset": [1,1],
+                            "size": [13, 13],
+                        },
+                        None,
+                )
+                for i in range(0,random.randint(20,30)):
+                    room.damage()
+
                 for i in range(0,random.randint(4,8)):
                     machine = src.items.itemMap["Machine"]()
                     toProduceType = random.choice(["Rod","Rod","Vial","Rod","Heater","puller","Stripe","Bolt","Case","Tank","Armor","GooFlask","MemoryCell","Connector","PocketFrame"])
@@ -792,23 +807,40 @@ class ArchitectArtwork(src.items.Item):
                         toProduceType = "PocketFrame"
                         ensuredPocketFrameMachine = True
                     machine.setToProduce(toProduceType)
-                    terrain.addItem(machine,(roomSlot[0]*15+random.randint(2,12),roomSlot[1]*15+random.randint(2,12),0))
+                    room.addItem(machine,(random.randint(2,10),random.randint(2,10),0))
                 for i in range(0,random.randint(0,10)):
                     gooFlask = src.items.itemMap[random.choice(["MetalBars","Rod","Rod","Vial","Rod","Heater","puller","Stripe","Bolt","Case","Tank","Mount"])]()
-                    terrain.addItem(gooFlask,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
+                    room.addItem(gooFlask,(random.randint(2,10),random.randint(2,10),0))
                 roomMap[roomSlot[1]][roomSlot[0]] = "mm"
 
+                for i in range(1,random.randint(10,200)):
+                    pass
+                    #room.damage()
+
             if theme == "food":
+                room = self.doAddRoom(
+                        {
+                            "coordinate": roomSlot,
+                            "roomType": "EmptyRoom",
+                            "doors": "0,6 6,0 12,6 6,12",
+                            "offset": [1,1],
+                            "size": [13, 13],
+                        },
+                        None,
+                )
+                for i in range(0,random.randint(20,30)):
+                    room.damage()
+
                 for i in range(0,random.randint(4,10)):
                     machine = src.items.itemMap[random.choice(["CorpseShredder","MaggotFermenter","SporeExtractor","GooDispenser","BioPress","BloomShredder"])]()
                     if machine.type == "GooDispenser":
                         machine.charges = random.randint(0,3)
-                    terrain.addItem(machine,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
+                    room.addItem(machine,(random.randint(2,10),random.randint(2,10),0))
 
                 for i in range(0,random.randint(0,4)):
                     gooFlask = src.items.itemMap["GooFlask"]()
                     gooFlask.uses = random.choice([0,0,1,2,3,5,7,8,25,45,100])
-                    terrain.addItem(gooFlask,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
+                    room.addItem(gooFlask,(random.randint(2,10),random.randint(2,10),0))
                 roomMap[roomSlot[1]][roomSlot[0]] = "FF"
 
             if theme == "military":
@@ -844,15 +876,36 @@ class ArchitectArtwork(src.items.Item):
                 enemy.aggro = 1000000
                 enemy.faction = "animals"
 
-                terrain.addCharacter(enemy, roomSlot[0]*15+random.randint(1,13), roomSlot[1]*15+random.randint(1,13))
+                if not room:
+                    terrain.addCharacter(enemy, roomSlot[0]*15+random.randint(1,13), roomSlot[1]*15+random.randint(1,13))
 
         ensuredMountDrop = False
 
         # fill up remaining rooms
+        """
         for roomSlot in freeRoomSlots:
+            room = self.doAddRoom(
+                    {
+                        "coordinate": roomSlot,
+                        "roomType": "EmptyRoom",
+                        "doors": "0,6 6,0 12,6 6,12",
+                        "offset": [1,1],
+                        "size": [13, 13],
+                    },
+                    None,
+            )
+            for i in range(2,8):
+                room.damage()
 
             roomMap[roomSlot[1]][roomSlot[0]] = "rr"
 
+        for roomSlot in pathSlots:
+            if roomSlot in crossroads:
+                continue
+        """
+
+        for roomSlot in freeRoomSlots:
+            self.doClearField(roomSlot[0],roomSlot[1])
             distance = abs(roomSlot[0]-7)+abs(roomSlot[1]-7)
 
             for i in range(0,random.randint(0,distance)):
@@ -872,7 +925,9 @@ class ArchitectArtwork(src.items.Item):
                 if loot.type == "GooFlask":
                     loot.uses = min(distance+random.randint(0,100),100)
                 
-            for i in range(0,random.randint(0,50)):
+            numScrap = random.randint(0,50)
+            #numScrap += random.choice((0,0,10,40,100))
+            for i in range(0,numScrap):
                 pos = (random.randint(1,13),random.randint(1,13))
                 if not pos in ((7,1),(1,7),(13,7),(7,13)) and not terrain.getItemByPosition((roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0)):
                     if random.randint(0,3) == 1:
@@ -883,7 +938,7 @@ class ArchitectArtwork(src.items.Item):
                     scrap = src.items.itemMap["Scrap"](amount=random.randint(1,30))
                     terrain.addItem(scrap,(roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0))
 
-            for i in range(0,random.randint(0,10)):
+            for i in range(0,random.randint(0,14)):
                 pos = (random.randint(1,13),random.randint(1,13))
                 if not pos in ((7,1),(1,7),(13,7),(7,13)) and not terrain.getItemByPosition((roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0)):
                     mold = src.items.itemMap["Mold"]()

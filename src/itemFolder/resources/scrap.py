@@ -107,6 +107,9 @@ class Scrap(src.items.Item):
             generateScrap: flag to leave no residue
         """
 
+        if not self.container:
+            return
+
         # get list of scrap on same location
         # bad code: should be handled in the container
         foundScraps = []

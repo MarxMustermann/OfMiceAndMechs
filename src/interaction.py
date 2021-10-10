@@ -4947,8 +4947,8 @@ def gameLoop(loop, user_data=None):
                     # bad code: display mode specific code
                     canvas = render(src.gamestate.gamestate.mainChar)
                     if not src.gamestate.gamestate.mainChar.godMode and (
-                        src.gamestate.gamestate.mainChar.satiation < 100
-                        or src.gamestate.gamestate.mainChar.health < 10
+                        src.gamestate.gamestate.mainChar.satiation < 300
+                        or src.gamestate.gamestate.mainChar.health < 30
                     ):
                         warning = True
                     else:
@@ -4973,7 +4973,7 @@ def gameLoop(loop, user_data=None):
                         for line in stringifyUrwid(header.get_text()).split("\n"):
                             tcodConsole.print(x=1, y=counter, string=line)
                             counter += 1
-                        canvas.printTcod(tcodConsole,counter,20)
+                        canvas.printTcod(tcodConsole,counter,20,warning=warning)
                         footertext = stringifyUrwid(footer.get_text())
                         tcodConsole.print(x=0,y=59,string=" "*(200-len(footertext))+footertext)
                         tcodContext.present(tcodConsole)

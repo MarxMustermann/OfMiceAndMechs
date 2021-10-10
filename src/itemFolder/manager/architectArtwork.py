@@ -733,12 +733,23 @@ class ArchitectArtwork(src.items.Item):
                 },
                 None,
                 )
-        for i in range(0,random.randint(20,30)):
+        for i in range(0,random.randint(0,10)):
             targetRoom.damage()
         for i in range(0,random.randint(20,30)):
             pos = (random.randint(1,11),random.randint(1,11),0)
             if pos == (6,6,0):
                 continue
+
+            loot = None
+            if random.choice([True,False]):
+                if random.choice([True,False]):
+                    loot = src.items.itemMap[random.choice(["Armor","Rod"])]()
+                    targetRoom.addItem(loot,pos)
+                else:
+                    loot = src.items.itemMap[random.choice(src.items.commons)]()
+                    if loot.walkable:
+                        targetRoom.addItem(loot,pos)
+
             amount = random.randint(1,20)
             if pos[0] == 6 or pos[1] == 6:
                 amount = random.randint(1,4)
@@ -862,7 +873,7 @@ class ArchitectArtwork(src.items.Item):
                 enemy.godMode = True
                 enemy.aggro = 1000000
                 enemy.faction = "animals"
-                terrain.addCharacter(enemy, roomSlot[0]*15+random.randint(1,13), roomSlot[1]*15+random.randint(1,13))
+                terrain.addCharacter(enemy, roomSlot[0]*15+7, roomSlot[1]*15+7)
                 roomMap[roomSlot[1]][roomSlot[0]] = "MM"
 
             if theme == "stockpile":

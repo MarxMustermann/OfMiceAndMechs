@@ -17,7 +17,7 @@ class CityBuilder(src.items.Item):
         set up the initial state
         """
 
-        super().__init__(display="CB", name=name)
+        super().__init__(display="CC", name=name)
         self.commands = {}
         self.tasks = []
         self.internalRooms = []

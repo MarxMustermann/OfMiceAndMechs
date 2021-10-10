@@ -5018,7 +5018,7 @@ class RoguelikeStart(BasicPhase):
         )
 
         self.mainChar = src.gamestate.gamestate.mainChar
-        self.mainChar.xPosition = 15*7+7
+        self.mainChar.xPosition = 15*7+6
         self.mainChar.yPosition = 15*7+7
         self.mainChar.terrain = src.gamestate.gamestate.terrain
         src.gamestate.gamestate.terrain.addCharacter(

@@ -576,7 +576,7 @@ class ArchitectArtwork(src.items.Item):
 
         # add target room
         targetRoomSlot = random.choice(freeRoomSlots)
-        targetRoomSlot = (7,9)
+        #targetRoomSlot = (7,9)
         while targetRoomSlot in freeRoomSlots:
             freeRoomSlots.remove(targetRoomSlot)
             roomMap[targetRoomSlot[1]][targetRoomSlot[0]] = "RC"
@@ -690,8 +690,8 @@ class ArchitectArtwork(src.items.Item):
                 if (x,y) in roomSlots:
                     note = src.items.itemMap["Note"]()
                     note.text = random.choice([
-                        "The the reserve city builder is on coordinate %s/%s"%(targetRoomSlot[0],targetRoomSlot[1],),
-                        "The the reserve city builder is on coordinate %s/%s"%(targetRoomSlot[0],targetRoomSlot[1],),
+                        "The the reserve city core is on coordinate %s/%s"%(targetRoomSlot[0],targetRoomSlot[1],),
+                        "The the reserve city core is on coordinate %s/%s"%(targetRoomSlot[0],targetRoomSlot[1],),
                         "The memorycell production is on coordinate %s/%s"%(memoryCellRoom[0],memoryCellRoom[1],),
                         "The pocketframe production is on coordinate %s/%s"%(pocketFrameRoom[0],pocketFrameRoom[1],),
                         ])
@@ -717,6 +717,9 @@ class ArchitectArtwork(src.items.Item):
 
                 pathSlots.append((x,y))
                 connectedRooms.append((x,y))
+
+        oldCityCore = src.items.itemMap["BrokenCityBuilder"]()
+        terrain.addItem(oldCityCore,(7*15+7,7*15+7,0))
 
         # set up target room
         targetItem = src.items.itemMap["ReserveCityBuilder"]()
@@ -784,6 +787,7 @@ class ArchitectArtwork(src.items.Item):
 
             
             if theme == "machine":
+                """
                 room = self.doAddRoom(
                         {
                             "coordinate": roomSlot,
@@ -796,6 +800,7 @@ class ArchitectArtwork(src.items.Item):
                 )
                 for i in range(0,random.randint(20,30)):
                     room.damage()
+                """
 
                 for i in range(0,random.randint(4,8)):
                     machine = src.items.itemMap["Machine"]()
@@ -807,17 +812,17 @@ class ArchitectArtwork(src.items.Item):
                         toProduceType = "PocketFrame"
                         ensuredPocketFrameMachine = True
                     machine.setToProduce(toProduceType)
-                    room.addItem(machine,(random.randint(2,10),random.randint(2,10),0))
+                    #room.addItem(machine,(random.randint(2,10),random.randint(2,10),0))
+                    terrain.addItem(machine,(roomSlot[0]*15+random.randint(2,11),roomSlot[1]*15+random.randint(2,11),0))
                 for i in range(0,random.randint(0,10)):
                     gooFlask = src.items.itemMap[random.choice(["MetalBars","Rod","Rod","Vial","Rod","Heater","puller","Stripe","Bolt","Case","Tank","Mount"])]()
-                    room.addItem(gooFlask,(random.randint(2,10),random.randint(2,10),0))
+                    #room.addItem(gooFlask,(random.randint(2,10),random.randint(2,10),0))
+                    terrain.addItem(gooFlask,(roomSlot[0]*15+random.randint(2,11),roomSlot[1]*15+random.randint(2,11),0))
                 roomMap[roomSlot[1]][roomSlot[0]] = "mm"
 
-                for i in range(1,random.randint(10,200)):
-                    pass
-                    #room.damage()
 
             if theme == "food":
+                """
                 room = self.doAddRoom(
                         {
                             "coordinate": roomSlot,
@@ -830,17 +835,20 @@ class ArchitectArtwork(src.items.Item):
                 )
                 for i in range(0,random.randint(20,30)):
                     room.damage()
+                """
 
                 for i in range(0,random.randint(4,10)):
                     machine = src.items.itemMap[random.choice(["CorpseShredder","MaggotFermenter","SporeExtractor","GooDispenser","BioPress","BloomShredder"])]()
                     if machine.type == "GooDispenser":
                         machine.charges = random.randint(0,3)
-                    room.addItem(machine,(random.randint(2,10),random.randint(2,10),0))
+                    #room.addItem(machine,(random.randint(2,10),random.randint(2,10),0))
+                    terrain.addItem(machine,(roomSlot[0]*15+random.randint(1,11),roomSlot[1]*15+random.randint(1,11),0))
 
                 for i in range(0,random.randint(0,4)):
                     gooFlask = src.items.itemMap["GooFlask"]()
                     gooFlask.uses = random.choice([0,0,1,2,3,5,7,8,25,45,100])
-                    room.addItem(gooFlask,(random.randint(2,10),random.randint(2,10),0))
+                    #room.addItem(gooFlask,(random.randint(2,10),random.randint(2,10),0))
+                    terrain.addItem(gooFlask,(roomSlot[0]*15+random.randint(1,11),roomSlot[1]*15+random.randint(1,11),0))
                 roomMap[roomSlot[1]][roomSlot[0]] = "FF"
 
             if theme == "military":
@@ -879,6 +887,16 @@ class ArchitectArtwork(src.items.Item):
                 if not room:
                     terrain.addCharacter(enemy, roomSlot[0]*15+random.randint(1,13), roomSlot[1]*15+random.randint(1,13))
 
+            if not terrain.getItemByPosition((roomSlot[0]*15+7,roomSlot[1]*15+7,0)):
+                note = src.items.itemMap["Note"]()
+                note.text = random.choice([
+                    "The the reserve city core is on coordinate %s/%s"%(targetRoomSlot[0],targetRoomSlot[1],),
+                    "The the reserve city core is on coordinate %s/%s"%(targetRoomSlot[0],targetRoomSlot[1],),
+                    "The memorycell production is on coordinate %s/%s"%(memoryCellRoom[0],memoryCellRoom[1],),
+                    "The pocketframe production is on coordinate %s/%s"%(pocketFrameRoom[0],pocketFrameRoom[1],),
+                    ])
+                terrain.addItem(note,(roomSlot[0]*15+7,roomSlot[1]*15+7,0))
+
         ensuredMountDrop = False
 
         # fill up remaining rooms
@@ -905,6 +923,8 @@ class ArchitectArtwork(src.items.Item):
         """
 
         for roomSlot in freeRoomSlots:
+            roomMap[roomSlot[1]][roomSlot[0]] = "rr"
+
             self.doClearField(roomSlot[0],roomSlot[1])
             distance = abs(roomSlot[0]-7)+abs(roomSlot[1]-7)
 

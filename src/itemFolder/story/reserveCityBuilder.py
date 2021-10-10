@@ -9,12 +9,11 @@ class ReserveCityBuilder(src.items.Item):
         self.broken = True
         self.mapString = ""
         self.firstUsage = True
-        self.dropedLoot1 = False
         self.workerCount = random.randint(100,1000)
         self.neededRepairItems = []
         repairCandidates = ["Rod","Heater","puller","Stripe","Bolt","Tank"]
-        #for i in range(0,random.randint(3,5)):
-        for i in range(0,0):
+        #for i in range(0,0):
+        for i in range(0,random.randint(3,5)):
             candidate = random.choice(repairCandidates)
             self.neededRepairItems.append(candidate)
             repairCandidates.remove(candidate)
@@ -26,14 +25,12 @@ class ReserveCityBuilder(src.items.Item):
             [
              ("doMaintenance", "do maintenance"),
              ("showMap", "show map"),
-             ("dropLoot1", "drop loot"),
              ("morphToCityBuilder", "morph to city builder"),
              ("spawnNPC", "spawn worker"),
             ]
         )
         self.applyMap = {
             "showMap": self.showMap,
-            "dropLoot1": self.dropLoot1,
             "morphToCityBuilder": self.morphToCityBuilder,
             "spawnNPC": self.spawnNPC,
             "doMaintenance": self.doMaintenance,
@@ -85,6 +82,10 @@ class ReserveCityBuilder(src.items.Item):
 
     def doCollectItems(self, character):
 
+        if not character.inventory:
+            character.addMessage("empty inventory")
+            return
+
         # collect items from the characters inventory
         numScraps = 0
         foundOther = None
@@ -101,22 +102,26 @@ class ReserveCityBuilder(src.items.Item):
                 foundOther = item
                 break
 
-        if numScraps:
-            character.addMessage("drop scraps")
-            if not self.freeItemSlots:
-                character.addMessage("no item slots left")
-                return
-            target = random.choice(self.freeItemSlots)
-            while target in self.freeItemSlots:
-                self.freeItemSlots.remove(target)
-            self.usedItemSlots.append(target)
-
-            path = self.getProperPath(character.getPosition(),target)
-            command = path[:-1]+("L"+path[-1])*numScraps
-            backCommand = path[::-1].replace("w","x").replace("s","w").replace("x","s").replace("d","x").replace("a","d").replace("x","a")[1:]
-            character.runCommandString(command+backCommand)
-            character.addMessage(command)
+        character.addMessage("drop scraps")
+        if not self.freeItemSlots:
+            character.addMessage("no item slots left")
             return
+        target = random.choice(self.freeItemSlots)
+        while target in self.freeItemSlots:
+            self.freeItemSlots.remove(target)
+        self.usedItemSlots.append(target)
+
+        path = self.getProperPath(character.getPosition(),target)
+
+        amount = 1
+        if numScraps:
+            amount = numScraps
+
+        command = path[:-1]+("L"+path[-1])*amount
+        backCommand = path[::-1].replace("w","x").replace("s","w").replace("x","s").replace("d","x").replace("a","d").replace("x","a")[1:]
+        character.runCommandString(command+backCommand)
+        character.addMessage(command)
+        return
 
 
     def doClearScrap2(self,character):
@@ -287,7 +292,6 @@ class ReserveCityBuilder(src.items.Item):
             for y in range(7,12):
                 if not self.container.getPositionWalkable((6,y,0)):
                     self.urgentClear.append((6,y,0))
-                    character.addMessage("eyyy .... jo")
                     break
 
                 if y in (8,10,):
@@ -333,7 +337,9 @@ class ReserveCityBuilder(src.items.Item):
         character.addMessage(self.urgentClear)
 
     def doClearScrap(self,character):
+        print("running clear scrap")
         if self.urgentClear:
+            print("found to clear")
             character.addMessage(str(self.urgentClear))
             target = self.urgentClear.pop()
             character.addMessage("target")
@@ -405,17 +411,17 @@ class ReserveCityBuilder(src.items.Item):
         text += "\n"
         text += "\n"
         text += "\n"
-        text += "++ = Road"
-        text += "rr = room"
-        text += "MM = military"
-        text += "mm = factory"
-        text += "ss = storage"
-        text += "CB = city builder"
-        text += "RC = reserve city builder"
-        text += "mc = memory cell production"
-        text += "pf = pocket frame production"
+        text += "RC = reserve city builder\n"
+        text += "CB = city builder\n"
+        text += "++ = Road\n"
+        text += "rr = room\n"
+        text += "MM = military\n"
+        text += "mm = factory\n"
+        text += "ss = storage\n"
+        text += "mc = memory cell production\n"
+        text += "pf = pocket frame production\n"
         text += "\n"
-        self.submenue = src.interaction.TextMenu(text=self.mapString)
+        self.submenue = src.interaction.TextMenu(text=text)
         character.macroState["submenue"] = self.submenue
 
     def morphToCityBuilder(self, character):
@@ -467,7 +473,6 @@ class ReserveCityBuilder(src.items.Item):
             #character.addMessage("%s Scrap in storage"%(self.numScrap,))
             #character.addMessage("%s Food in storage"%(self.numFood,))
             #character.addMessage("%s Goo in storage"%(self.numGoo,))
-            # drop loot
             # show map
             # set up room
             #  needs roomManger etc
@@ -487,26 +492,6 @@ class ReserveCityBuilder(src.items.Item):
         else:
             pass
 
-    def dropLoot1(self,character):
-        if self.dropedLoot1:
-            character.addMessage("tryied dropping loot twice - aborted")
-            return
-        self.dropedLoot1 = True
-
-        for x in range(3,5):
-            for y in range(3,5):
-                item = src.items.itemMap["Rod"]()
-                item.baseDamage = 10
-        self.container.addItem(item,(4,2,0))
-        for x in range(3,4):
-            for y in range(3,4):
-                item = src.items.itemMap["Armor"]()
-                item.armorValue = 3
-        self.container.addItem(item,(8,2,0))
-        for i in range(3,10):
-            item = src.items.itemMap["Bolt"]()
-            self.container.addItem(item,(i,9,0))
-    
     def render(self):
         if self.broken:
             return (src.interaction.urwid.AttrSpec("#aa8", "black"), "RC")

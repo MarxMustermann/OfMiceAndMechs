@@ -170,6 +170,7 @@ There is %s in this pile
         character.addMessage(
             "you pick up a piece of scrap, there is %s left" % (self.amount,)
         )
+        self.setWalkable()
 
         # add item to characters inventory
         character.addToInventory(Scrap(amount=1))

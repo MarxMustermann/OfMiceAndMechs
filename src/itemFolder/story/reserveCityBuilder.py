@@ -12,19 +12,22 @@ class ReserveCityBuilder(src.items.Item):
         self.workerCount = random.randint(100,1000)
         self.neededRepairItems = []
         repairCandidates = ["Rod","Heater","puller","Stripe","Bolt","Tank"]
-        #for i in range(0,0):
-        for i in range(0,random.randint(3,5)):
+        #for i in range(0,random.randint(3,5)):
+        for i in range(0,0):
             candidate = random.choice(repairCandidates)
             self.neededRepairItems.append(candidate)
             repairCandidates.remove(candidate)
         self.hasMaintenance = True
         self.freeItemSlots = []
         self.usedItemSlots = []
+        self.scrapSlots = {}
+        self.storageSlots = {}
 
         self.applyOptions.extend(
             [
              ("doMaintenance", "do maintenance"),
              ("showMap", "show map"),
+             ("showRessources", "show ressources"),
              ("morphToCityBuilder", "morph to city builder"),
              ("spawnNPC", "spawn worker"),
             ]
@@ -34,13 +37,24 @@ class ReserveCityBuilder(src.items.Item):
             "morphToCityBuilder": self.morphToCityBuilder,
             "spawnNPC": self.spawnNPC,
             "doMaintenance": self.doMaintenance,
+            "showRessources": self.showRessources,
         }
         self.numScrap = 0
         self.numFood = 0
         self.numGoo = 0
+        self.numScrap = 0
+        self.numFood = 10000
+        self.numGoo = 200
 
         self.clearedScrap = False
         self.urgentClear = []
+        self.nonUrgentClear = []
+
+    def showRessources(self, character):
+        character.addMessage("%s Scrap in storage"%(self.numScrap,))
+        character.addMessage("%s Food in storage"%(self.numFood,))
+        character.addMessage("%s Goo in storage"%(self.numGoo,))
+        pass
 
     def spawnNPC(self, character):
         if not self.numGoo >= 100:
@@ -93,11 +107,13 @@ class ReserveCityBuilder(src.items.Item):
             if item.type == "Scrap":
                 numScraps += 1
             elif item.type == "Corpse":
-                character.inventory.remove(item)
                 self.numFood += item.charges
-            elif item.type == "GooFlask":
                 character.inventory.remove(item)
+                return
+            elif item.type == "GooFlask":
                 self.numGoo += item.uses
+                character.inventory.remove(item)
+                return
             else:
                 foundOther = item
                 break
@@ -106,16 +122,70 @@ class ReserveCityBuilder(src.items.Item):
         if not self.freeItemSlots:
             character.addMessage("no item slots left")
             return
-        target = random.choice(self.freeItemSlots)
+
+        target = None
+
+        if numScraps:
+            for (pos,amount) in self.scrapSlots.items():
+                if amount < 15:
+                    target = pos
+                    numScraps = min(numScraps,15-amount)
+        elif foundOther:
+            for (pos,info) in self.storageSlots.items():
+                if info["type"] == foundOther.type and info["amount"] < 15:
+                    if foundOther.type == "Armor":
+                        if not (foundOther.armorValue == info["armorValue"]):
+                            continue
+                    if foundOther.type == "Vial":
+                        if not (bool(foundOther.uses) == info["hasCharges"]):
+                            continue
+                    if foundOther.type == "GooFlask":
+                        if not (bool(foundOther.uses) == info["hasCharges"]):
+                            continue
+                    if foundOther.type == "GooFlask":
+                        if not ((foundOther.uses == 100) == info["full"]):
+                            continue
+                    if foundOther.type == "Rod":
+                        if not (foundOther.baseDamage == info["baseDamage"]):
+                            continue
+                    target = pos
+
+        if not target:
+            target = self.freeItemSlots.pop()
+
         while target in self.freeItemSlots:
             self.freeItemSlots.remove(target)
-        self.usedItemSlots.append(target)
+        if not target in self.usedItemSlots:
+            self.usedItemSlots.append(target)
 
         path = self.getProperPath(character.getPosition(),target)
 
         amount = 1
         if numScraps:
             amount = numScraps
+
+        if numScraps:
+            if not target in self.scrapSlots:
+                self.scrapSlots[target] = 0
+            self.scrapSlots[target] += amount
+        elif foundOther:
+            if not target in self.storageSlots:
+                info = {"type":foundOther.type,"amount":0}
+
+                if foundOther.type == "Armor":
+                    info["armorValue"] = foundOther.armorValue
+                if foundOther.type == "Vial":
+                    info["hasCharges"] = bool(foundOther.uses)
+                if foundOther.type == "GooFlask":
+                    info["hasCharges"] = bool(foundOther.uses)
+                if foundOther.type == "GooFlask":
+                    info["full"] = (foundOther.uses == 100)
+                if foundOther.type == "Rod":
+                    info["baseDamage"] = foundOther.baseDamage
+
+                self.storageSlots[target] = info
+
+            self.storageSlots[target]["amount"] += 1
 
         command = path[:-1]+("L"+path[-1])*amount
         backCommand = path[::-1].replace("w","x").replace("s","w").replace("x","s").replace("d","x").replace("a","d").replace("x","a")[1:]
@@ -236,18 +306,25 @@ class ReserveCityBuilder(src.items.Item):
     def checkForItemSlots(self, character):
         itemSlots = []
         self.urgentClear = []
+        self.nonUrgentClear = []
 
         # check northern part
         for y in reversed(range(1,6)):
-            if not self.container.getPositionWalkable((6,y,0)):
-                self.urgentClear.append((6,y,0))
-                break
+            if self.container.getItemByPosition((6,y,0)):
+                if not self.container.getPositionWalkable((6,y,0)):
+                    self.urgentClear.append((6,y,0))
+                    break
+                else:
+                    self.nonUrgentClear.append((6,y,0))
 
             if y in (2,4,):
                 for x in reversed(range(1,6)):
-                    if not self.container.getPositionWalkable((x,y,0)):
-                        self.urgentClear.append((x,y,0))
-                        break
+                    if self.container.getItemByPosition((x,y,0)):
+                        if not self.container.getPositionWalkable((x,y,0)):
+                            self.urgentClear.append((x,y,0))
+                            break
+                        else:
+                            self.nonUrgentClear.append((x,y,0))
 
                     if not (x,y+1,0) == (5,5,0):
                         if not self.container.getItemByPosition((x,y+1,0)):
@@ -263,9 +340,12 @@ class ReserveCityBuilder(src.items.Item):
                             if not (x,y-1,0) in self.usedItemSlots:
                                 self.urgentClear.append((x,y-1,0))
                 for x in range(7,12):
-                    if not self.container.getPositionWalkable((x,y,0)):
-                        self.urgentClear.append((x,y,0))
-                        break
+                    if self.container.getItemByPosition((x,y,0)):
+                        if not self.container.getPositionWalkable((x,y,0)):
+                            self.urgentClear.append((x,y,0))
+                            break
+                        else:
+                            self.nonUrgentClear.append((x,y,0))
 
                     if not (x,y+1,0) == (7,5,0):
                         if not self.container.getItemByPosition((x,y+1,0)):
@@ -284,25 +364,34 @@ class ReserveCityBuilder(src.items.Item):
         # check roundabout
         roundaboutBlocked = False
         for pos in ((6,5,0),(5,5,0),(5,6,0),(5,7,0),(6,7,0),(7,7,0),(7,6,0),(7,5,0)):
-            if not self.container.getPositionWalkable(pos):
-                self.urgentClear.append(pos)
-                roundaboutBlocked = True
-                break
+            if self.container.getItemByPosition(pos):
+                if not self.container.getPositionWalkable(pos):
+                    self.urgentClear.append(pos)
+                    roundaboutBlocked = True
+                    break
+                else:
+                    self.nonUrgentClear.append(pos)
 
         # check southern side
         if not roundaboutBlocked:
             for y in range(7,12):
-                if not self.container.getPositionWalkable((6,y,0)):
-                    self.urgentClear.append((6,y,0))
-                    break
+                if self.container.getItemByPosition((6,y,0)):
+                    if not self.container.getPositionWalkable((6,y,0)):
+                        self.urgentClear.append((6,y,0))
+                        break
+                    else:
+                        self.nonUrgentClear.append((6,y,0))
 
                 if y in (8,10,):
                     for x in reversed(range(1,6)):
-                        if not self.container.getPositionWalkable((x,y,0)):
-                            self.urgentClear.append((x,y,0))
-                            break
+                        if self.container.getItemByPosition((x,y,0)):
+                            if not self.container.getPositionWalkable((x,y,0)):
+                                self.urgentClear.append((x,y,0))
+                                break
+                            else:
+                                self.nonUrgentClear.append((x,y,0))
 
-                        if y in (8,):
+                        if y in (10,):
                             if not self.container.getItemByPosition((x,y+1,0)):
                                 itemSlots.append((x,y+1,0))
                             else:
@@ -316,11 +405,14 @@ class ReserveCityBuilder(src.items.Item):
                                 if not (x,y-1,0) in self.usedItemSlots:
                                     self.urgentClear.append((x,y-1,0))
                     for x in range(7,12):
-                        if not self.container.getPositionWalkable((x,y,0)):
-                            self.urgentClear.append((x,y,0))
-                            break
+                        if self.container.getItemByPosition((x,y,0)):
+                            if not self.container.getPositionWalkable((x,y,0)):
+                                self.urgentClear.append((x,y,0))
+                                break
+                            else:
+                                self.nonUrgentClear.append((x,y,0))
 
-                        if y in (8,):
+                        if y in (10,):
                             if not self.container.getItemByPosition((x,y+1,0)):
                                 itemSlots.append((x,y+1,0))
                             else:
@@ -333,15 +425,31 @@ class ReserveCityBuilder(src.items.Item):
                             else:
                                 if not (x,y-1,0) in self.usedItemSlots:
                                     self.urgentClear.append((x,y-1,0))
+        # check west/east path
+        for x in reversed(range(1,5)):
+            pos = (x,6,0)
+            if self.container.getItemByPosition(pos):
+                if not self.container.getPositionWalkable(pos):
+                    self.urgentClear.append(pos)
+                else:
+                    self.nonUrgentClear.append(pos)
+        for x in range(8,12):
+            pos = (x,6,0)
+            if self.container.getItemByPosition(pos):
+                if not self.container.getPositionWalkable(pos):
+                    self.urgentClear.append(pos)
+                else:
+                    self.nonUrgentClear.append(pos)
 
         self.freeItemSlots = itemSlots[:]
+
+        if self.nonUrgentClear or self.urgentClear:
+            self.clearedScrap = False
 
         character.addMessage(self.urgentClear)
 
     def doClearScrap(self,character):
-        print("running clear scrap")
         if self.urgentClear:
-            print("found to clear")
             character.addMessage(str(self.urgentClear))
             target = self.urgentClear.pop()
             character.addMessage("target")
@@ -350,10 +458,26 @@ class ReserveCityBuilder(src.items.Item):
             command = path[:-1]+("K"+path[-1])*10
             backCommand = path[::-1].replace("w","x").replace("s","w").replace("x","s").replace("d","x").replace("a","d").replace("x","a")[1:]
             character.runCommandString(command+backCommand)
+        elif self.nonUrgentClear:
+            character.addMessage(str(self.nonUrgentClear))
+            target = self.nonUrgentClear.pop()
+            character.addMessage("target")
+            character.addMessage(target)
+            path = self.getProperPath(character.getPosition(),target)
+            command = path[:-1]+("K"+path[-1])*10
+            backCommand = path[::-1].replace("w","x").replace("s","w").replace("x","s").replace("d","x").replace("a","d").replace("x","a")[1:]
+            character.runCommandString(command+backCommand)
+        else:
+            self.clearedScrap = True
 
     def getProperPath(self, startPos, endPos):
         command = ""
         lastStep = ""
+
+        if endPos == (5,7,0):
+            return "ass"
+        if endPos == (6,7,0):
+            return "assd"
 
         if endPos[1] == 1:
             nearByPath = (endPos[0],2,0)
@@ -391,6 +515,15 @@ class ReserveCityBuilder(src.items.Item):
                 command += "a"*(startPos[0]-nearByPath[0])
             if nearByPath[0] > 6:
                 command += "d"*(nearByPath[0]-startPos[0])
+        elif endPos[0] < 6:
+            startPos = (startPos[0]-1,startPos[1]+1)
+            command += "as"
+            command += "a"*(startPos[0]-nearByPath[0])
+        elif endPos[0] > 6:
+            command += "assddw"
+            startPos = (startPos[0]+1,startPos[1]+1)
+            command += "d"*(nearByPath[0]-startPos[0])
+
 
         command += lastStep
         return command
@@ -405,8 +538,8 @@ class ReserveCityBuilder(src.items.Item):
         if not self.clearedScrap:
             self.doClearScrap(character)
             return
-        #
-        #character.runCommandString("assddwwa")
+
+        character.runCommandString("assddwwa")
 
     def showMap(self, character):
         text = self.mapString
@@ -472,10 +605,6 @@ class ReserveCityBuilder(src.items.Item):
                     character.inventory.remove(item)
         else:
             super().apply(character)
-            #character.addMessage("%s Scrap in storage"%(self.numScrap,))
-            #character.addMessage("%s Food in storage"%(self.numFood,))
-            #character.addMessage("%s Goo in storage"%(self.numGoo,))
-            # show map
             # set up room
             #  needs roomManger etc
             # replace memory cell
@@ -499,5 +628,12 @@ class ReserveCityBuilder(src.items.Item):
             return (src.interaction.urwid.AttrSpec("#aa8", "black"), "RC")
         else:
             return (src.interaction.urwid.AttrSpec("#ff2", "black"), "RC")
+
+    def getLongInfo(self):
+        test = super().getLongInfo()
+        test += "\nfreeItemSlots: %s\nusedItemSlots: %s"%(self.freeItemSlots,self.usedItemSlots)
+        test += "\nclearedScrap: %s\nurgentClear: %s\nnonUrgentClear: %s"%(self.clearedScrap,self.urgentClear,self.nonUrgentClear)
+        return test
+
 
 src.items.addType(ReserveCityBuilder)

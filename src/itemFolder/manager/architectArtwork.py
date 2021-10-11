@@ -576,7 +576,7 @@ class ArchitectArtwork(src.items.Item):
 
         # add target room
         targetRoomSlot = random.choice(freeRoomSlots)
-        #targetRoomSlot = (7,9)
+        targetRoomSlot = (7,9)
         while targetRoomSlot in freeRoomSlots:
             freeRoomSlots.remove(targetRoomSlot)
             roomMap[targetRoomSlot[1]][targetRoomSlot[0]] = "RC"
@@ -735,23 +735,37 @@ class ArchitectArtwork(src.items.Item):
                 )
         for i in range(0,random.randint(0,10)):
             targetRoom.damage()
-        for i in range(0,random.randint(20,30)):
+        for i in range(0,random.randint(50,60)):
             pos = (random.randint(1,11),random.randint(1,11),0)
             if pos == (6,6,0):
                 continue
+            
+            if targetRoom.getItemByPosition(pos):
+                continue
 
             loot = None
-            if random.choice([True,False]):
+            if random.choice([True,True,True,False]):
                 if random.choice([True,False]):
                     loot = src.items.itemMap[random.choice(["Armor","Rod"])]()
                     targetRoom.addItem(loot,pos)
+                    loot.bolted = False
+                elif random.choice([True,False]):
+                    loot = src.items.itemMap[random.choice(["Bolt"])]()
+                    targetRoom.addItem(loot,pos)
+                    loot.bolted = False
                 else:
                     loot = src.items.itemMap[random.choice(src.items.commons)]()
-                    if loot.walkable:
-                        targetRoom.addItem(loot,pos)
+                    if loot.type == "Vial":
+                        loot.uses = random.randint(1,4)
+                    if loot.type == "GooFlask":
+                        loot.uses = random.randint(1,100)
+                    loot.bolted = False
+                    if not loot.walkable:
+                        loot = src.items.itemMap[random.choice(["Bolt","Bolt","Rod"])]()
+                    targetRoom.addItem(loot,pos)
 
-            amount = random.randint(1,20)
-            if pos[0] == 6 or pos[1] == 6:
+            amount = random.randint(1,15)
+            if pos[0] == 6 or pos[1] == 6 or abs(pos[0]-6)+abs(pos[1]-6) < 2:
                 amount = random.randint(1,4)
             scrap = src.items.itemMap["Scrap"](amount=amount)
             targetRoom.addItem(scrap,pos)
@@ -945,6 +959,7 @@ class ArchitectArtwork(src.items.Item):
                     lootType = "Mount"
                     ensuredMountDrop = True
                 loot = src.items.itemMap[lootType]()
+                loot.bolted = False
                 terrain.addItem(loot,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
 
                 if loot.type == "Vial":
@@ -966,6 +981,7 @@ class ArchitectArtwork(src.items.Item):
                         loot.bolted = False
                         if loot.walkable:
                             terrain.addItem(loot,(roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0))
+                        loot.bolted = False
                     scrap = src.items.itemMap["Scrap"](amount=random.randint(1,30))
                     terrain.addItem(scrap,(roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0))
 

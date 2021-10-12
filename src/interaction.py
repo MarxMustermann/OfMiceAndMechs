@@ -96,8 +96,13 @@ def setUpTcod():
     screen_width = 200
     screen_height = 60
 
+    """
     tileset = tcod.tileset.load_tilesheet(
         "dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD
+    )
+    """
+    tileset = tcod.tileset.load_tilesheet(
+        "terminal.png", 16, 16, tcod.tileset.CHARMAP_CP437
     )
     """
     tileset =  tcod.tileset.load_truetype_font("./config/font/dejavu-sans-mono-fonts-ttf-2.35/ttf/DejaVuSansMono.ttf",48,24)

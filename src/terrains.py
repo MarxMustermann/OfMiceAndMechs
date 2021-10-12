@@ -2913,7 +2913,7 @@ class GameplayTest(Terrain):
             # save internal state
             self.initialState = self.getState()
 
-    def paintFloor(self):
+    def paintFloor(self,size=None,coordinateOffset=None):
         """
         paint floor with minimal variation to ease perception of movement
 
@@ -2922,8 +2922,20 @@ class GameplayTest(Terrain):
         """
 
         chars = []
+
+        if size[0] > coordinateOffset[0]:
+            for i in range(0,coordinateOffset[0]-size[0]):
+                line = []
+                for j in range(0, size[1]):
+                    line.append(src.canvas.displayChars.void)
+
         for i in range(0, 250):
             line = []
+
+            if coordinateOffset[1] < 0:
+                for j in range(0,-coordinateOffset[1]):
+                    line.append(src.canvas.displayChars.void)
+
             for j in range(0, 250):
                 if not self.hidden:
                     line.append(self.floordisplay)

@@ -796,7 +796,7 @@ class CommandBloom(src.items.Item):
 
         if selfDestroy:
             new = src.items.itemMap["FireCrystals"]()
-            self.container.addItems(new.self.getPosition())
+            self.container.addItems(new,self.getPosition())
             self.container.removeItem(self)
             direction = random.choice(["w", "a", "s", "d"])
             reverseDirection = {"a": "d", "w": "s", "d": "a", "s": "w"}

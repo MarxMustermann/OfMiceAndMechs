@@ -4664,6 +4664,31 @@ def gameLoop(loop, user_data=None):
                         translatedKey = "."
                     if key == tcod.event.KeySym.ESCAPE:
                         translatedKey = "esc"
+                    if key == tcod.event.KeySym.N1:
+                        translatedKey = "1"
+                    if key == tcod.event.KeySym.N2:
+                        translatedKey = "2"
+                    if key == tcod.event.KeySym.N3:
+                        translatedKey = "3"
+                    if key == tcod.event.KeySym.N4:
+                        translatedKey = "4"
+                    if key == tcod.event.KeySym.N5:
+                        translatedKey = "5"
+                    if key == tcod.event.KeySym.N6:
+                        translatedKey = "6"
+                    if key == tcod.event.KeySym.N7:
+                        translatedKey = "7"
+                    if key == tcod.event.KeySym.N8:
+                        translatedKey = "8"
+                    if key == tcod.event.KeySym.N9:
+                        translatedKey = "9"
+                    if key == tcod.event.KeySym.N0:
+                        translatedKey = "0"
+                    if key == tcod.event.KeySym.MINUS:
+                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                            translatedKey = "_"
+                        else:
+                            translatedKey = "-"
                     if key == tcod.event.KeySym.a:
                         if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
                             translatedKey = "A"

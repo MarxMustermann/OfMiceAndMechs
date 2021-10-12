@@ -2669,7 +2669,7 @@ class GameplayTest(Terrain):
         """
 
         super().__init__(
-            layout, detailedLayout, creator=None, seed=seed, noContent=noContent
+            layout, detailedLayout, seed=seed, noContent=noContent
         )
 
         self.floordisplay = src.canvas.displayChars.dirt
@@ -3142,7 +3142,39 @@ class Desert(Terrain):
                 item.yPosition = y
         self.addItems(toAdd)
 
-    def paintFloor(self):
+        """
+        draw the floor
+
+        Returns:
+            the rendered floor
+        """
+
+        if not self.hidden:
+            displayChar = self.floordisplay
+        else:
+            displayChar = src.canvas.displayChars.void
+
+        chars = []
+
+        if size[0] > coordinateOffset[0]:
+            for i in range(0,coordinateOffset[0]-size[0]):
+                line = []
+                for j in range(0, size[1]):
+                    line.append(src.canvas.displayChars.void)
+
+        for i in range(0, 250):
+            line = []
+
+            if coordinateOffset[1] < 0:
+                for j in range(0,-coordinateOffset[1]):
+                    line.append(src.canvas.displayChars.void)
+
+            for j in range(0, 250):
+                line.append(displayChar)
+            chars.append(line)
+        return chars
+
+    def paintFloor(self,size=None,coordinateOffset=None):
         """
         paint floor with minimal variation to ease perception of movement
 
@@ -3150,16 +3182,14 @@ class Desert(Terrain):
             the painted floor
         """
 
-        import urwid
-
         desertTiles = [
-            (urwid.AttrSpec("#0c2", "black"), "::"),
-            (urwid.AttrSpec("#2c2", "black"), "::"),
-            (urwid.AttrSpec("#4c2", "black"), "::"),
-            (urwid.AttrSpec("#8c2", "black"), "::"),
-            (urwid.AttrSpec("#ac2", "black"), "::"),
-            (urwid.AttrSpec("#cc2", "black"), "::"),
-            (urwid.AttrSpec("#fc2", "black"), "::"),
+            (src.interaction.urwid.AttrSpec("#0c2", "black"), "::"),
+            (src.interaction.urwid.AttrSpec("#2c2", "black"), "::"),
+            (src.interaction.urwid.AttrSpec("#4c2", "black"), "::"),
+            (src.interaction.urwid.AttrSpec("#8c2", "black"), "::"),
+            (src.interaction.urwid.AttrSpec("#ac2", "black"), "::"),
+            (src.interaction.urwid.AttrSpec("#cc2", "black"), "::"),
+            (src.interaction.urwid.AttrSpec("#fc2", "black"), "::"),
         ]
 
         chars = []

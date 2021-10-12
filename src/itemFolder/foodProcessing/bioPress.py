@@ -36,7 +36,7 @@ Activate the bio press to produce press cake.
         for item in self.container.getItemByPosition(
             (self.xPosition - 1, self.yPosition, self.zPosition)
         ):
-            if isinstance(item, BioMass):
+            if item.type == "BioMass":
                 items.append(item)
 
         # refuse to produce without resources

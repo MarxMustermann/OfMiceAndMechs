@@ -116,6 +116,10 @@ if not shouldLoad:
                 "RoguelikeStart",
                 "RoguelikeStart",
             ),
+            (
+                "Tour",
+                "Tour",
+            ),
         ]
 
         text = "\n"
@@ -150,6 +154,9 @@ if not shouldLoad:
     elif scenario == "RoguelikeStart":
         args.terrain = "nothingness"
         args.phase = "RoguelikeStart"
+    elif scenario == "Tour":
+        args.terrain = "nothingness"
+        args.phase = "Tour"
 
 # set rendering mode
 if not args.nourwid:

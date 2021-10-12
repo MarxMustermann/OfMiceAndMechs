@@ -34,12 +34,12 @@ Activate the maggot fermenter to add a charge to the goo dispenser.
             character: the character trying to use the item
         """
 
-        super().apply(character, silent=True)
+        super().apply(character)
 
         # fetch input items
         items = []
-        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.xPosition)):
-            if isinstance(item, PressCake):
+        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.zPosition)):
+            if item.type == "PressCake":
                 items.append(item)
 
         # refuse to produce without resources
@@ -50,8 +50,8 @@ Activate the maggot fermenter to add a charge to the goo dispenser.
         # refill goo dispenser
         dispenser = None
 
-        for item in self.container.getItemByPosition((self.xPosition + 1, self.yPosition, self.xPosition)):
-            if isinstance(item, GooDispenser):
+        for item in self.container.getItemByPosition((self.xPosition + 1, self.yPosition, self.zPosition)):
+            if item.type == "GooDispenser":
                 dispenser = item
         if not dispenser:
             character.addMessage("no goo dispenser attached")

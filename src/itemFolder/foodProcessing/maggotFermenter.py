@@ -38,7 +38,7 @@ Activate the maggot fermenter to produce biomass.
         # fetch input scrap
         items = []
         for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.zPosition)):
-            if isinstance(item, VatMaggot):
+            if item.type == "VatMaggot":
                 items.append(item)
 
         # refuse to produce without resources

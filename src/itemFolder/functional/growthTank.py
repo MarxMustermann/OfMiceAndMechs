@@ -117,6 +117,7 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
             if seed2 is None:
                 seed2 = seed1 + (seed1 // 5)
 
+            """
             firstName = config.names.characterFirstNames[
                 seed1 % len(config.names.characterFirstNames)
             ]
@@ -125,6 +126,8 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
             ]
 
             name = "%s %s"%(firstName,lastName,)
+            """
+            name = "worker"
                 
             return name
 
@@ -134,7 +137,7 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
                 self.xPosition + self.container.timeIndex,
                 self.yPosition + self.container.timeIndex,
             )
-            character = characters.Character(
+            character = src.characters.Character(
                 src.canvas.displayChars.staffCharactersByLetter[name[0].lower()],
                 name=name,
             )

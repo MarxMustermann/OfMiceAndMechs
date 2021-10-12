@@ -46,7 +46,7 @@ class Tree(src.items.Item):
             character: the character 
         """
 
-        if not self.terrain:
+        if not self.container:
             character.addMessage("The tree has to be on the outside to be used")
             return
 
@@ -57,13 +57,13 @@ class Tree(src.items.Item):
         character.frustration += 1
 
         targetFull = False
-        targetPos = (self.xPosition + 1, self.yPosition)
-        if targetPos in self.terrain.itemByCoordinates:
-            if len(self.terrain.itemByCoordinates[targetPos]) > 15:
+        targetPos = (self.xPosition + 1, self.yPosition, self.zPosition)
+        items = self.container.getItemByPosition(targetPos)
+        if len(items) > 15:
+            targetFull = True
+        for item in items:
+            if item.walkable == False:
                 targetFull = True
-            for item in self.terrain.itemByCoordinates[targetPos]:
-                if item.walkable == False:
-                    targetFull = True
 
         if targetFull:
             character.addMessage("the target area is full, the machine does not work")
@@ -77,7 +77,7 @@ class Tree(src.items.Item):
         self.numMaggots -= 1
         new = src.items.itemMap["VatMaggot"]()
         new.bolted = False
-        self.terrain.addItem(new,(self.xPosition+1,self.yPosition,self.zPosition))
+        self.container.addItem(new,(self.xPosition+1,self.yPosition,self.zPosition))
 
     def getLongInfo(self):
         """

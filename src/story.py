@@ -1186,6 +1186,527 @@ class FactoryDream(BasicPhase):
         items.append(stockPile)
         src.gamestate.gamestate.terrain.addItems(items)
 
+class Tour(BasicPhase):
+    """
+    """
+
+    def __init__(self, seed=0):
+        super().__init__("Tour", seed=seed)
+
+    def start(self, seed=0):
+
+        src.gamestate.gamestate.mainChar.terrain = src.gamestate.gamestate.terrain
+        src.gamestate.gamestate.mainChar.godMode = True
+        src.gamestate.gamestate.mainChar.satiation = 1000000000
+        src.gamestate.gamestate.terrain.addCharacter(
+            src.gamestate.gamestate.mainChar, 1 * 15 + 5, 1 * 15 + 5
+        )
+
+        # add basic set of abilities in openworld phase
+        src.gamestate.gamestate.mainChar.questsDone = [
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "CollectQuestMeta",
+            "FireFurnaceMeta",
+            "ExamineQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+            "LeaveRoomQuest",
+        ]
+
+        src.gamestate.gamestate.mainChar.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest" "NaiveDropQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+        ]
+
+        showText("""
+Hello i'm MarxMustermann and the creator and current maintainer of this game.
+
+This game not remotely finished, but is playable and is kind of complicated. So i build this mode to explain the game a bit.
+
+This project heavyly inspired by cataclysm:dda and DF Fortress mode and Factorio, but wants to add story.
+
+For now that means for me:
+* top down roguelike on a large world with building and crafting (cataclysm)
+* imperative programming for example for overcomplicated factories (factorio)
+* functional programming for example for autoresoving build tasks (DF Fortress mode)
+* prebuilds and lore
+
+While each of these is a 10 year project easily and the idea might it might be an impossible goal, i did make some progress.
+
+So let's give you a Tour!
+
+The following scenarios represent the roguelike aspect: roguelikeStart, survival, dungeon
+The following scenarios represent the imperative programming part of the game: siege, creative mode
+The following scenarios represent the functional programming part of the game: 
+
+-- press space to continue --
+(loads of spoilers ahead)
+""")
+        sideNotes = """
+some sidenotes:
+
+    * Commands are ment to be recorded by standing on a sheet and activating it
+    * Commands are ment to be be placed on the floor and activated while standing on them
+    * You can activate commands while recording a command
+    * The result of a recorded action may change  
+    * Your commands can include moving commands
+    * You cannot record two commands at once
+    * Commands alone are not enough for full automation
+"""
+
+        showText("""
+The first thing i want to show/explain is the imperative automation component.
+
+The easyiest and most convienient way for automating things is to create commands.
+
+Commands are ingame items that can be used to run the command stored in that item.
+These commands can be recorded by activating a sheet, dooing something and activating the sheet again.
+The keys pressed by the player inbetween the activations are recorded and stored as command in the item.
+
+This means you can record actions and redo them later. In other words simple imperative automation.
+
+-- press space to continue --
+""")
+        showText("""
+So let's give it a go. I'll go and spawn you a world with some sheets and some examples for you.
+
+Read the notes on the floor for more information.
+""")
+
+        terrain = src.gamestate.gamestate.mainChar.terrain
+
+        
+        # room 1
+        roomPos = (1,1)
+        item = src.items.itemMap["Note"]()
+        item.text = "use the command in the center of the room"
+        terrain.addItem(item,(15*roomPos[0]+8,15*roomPos[1]+9,0))
+
+        item = src.items.itemMap["Command"]()
+        item.command = "d"*13
+        terrain.addItem(item,(15*roomPos[0]+7,15*roomPos[1]+7,0))
+        item.bolted = True
+
+        # room 2
+        roomPos = (2,1)
+        for x in range(2,5):
+            for y in range(2,5):
+                for i in range(1,4):
+                    item = src.items.itemMap["Sheet"]()
+                    terrain.addItem(item,(15*roomPos[0]+x,15*roomPos[1]+y,0))
+
+        item = src.items.itemMap["Note"]()
+        item.text = """
+This room contains sheets so you can practice recording commands.
+
+You can record a command by:
+    * placing a sheet on the ground
+    * activating it
+    * selecting "create a written commmand"
+    * selecting "start recording"
+    * dooing some action
+    * activating the sheet again
+
+Continue to the east afterwards
+"""
+        terrain.addItem(item,(15*roomPos[0]+8,15*roomPos[1]+9,0))
+
+        # room 3
+        roomPos = (3,1)
+        item = src.items.itemMap["Note"]()
+        item.text = """
+The intended usage for commands is for automation of simple processes.
+A small machine setup for producing sheets is demonstrated in this room.
+
+Continue to the east afterwards
+"""
+        terrain.addItem(item,(15*roomPos[0]+8,15*roomPos[1]+9,0))
+
+        item = src.items.itemMap["Command"]()
+        item.command = "a"*4+"w"*3+"Jw"+"dd"+"Jw"+"dd"+"sss"
+        terrain.addItem(item,(15*roomPos[0]+7,15*roomPos[1]+7,0))
+
+        item = src.items.itemMap["Scrap"]()
+        item.amount = 15
+        terrain.addItem(item,(15*roomPos[0]+2,15*roomPos[1]+3,0))
+        item = src.items.itemMap["ScrapCompactor"]()
+        item.charges = 100
+        terrain.addItem(item,(15*roomPos[0]+3,15*roomPos[1]+3,0))
+        item = src.items.itemMap["Machine"]()
+        item.setToProduce("Sheet")
+        item.charges = 100
+        terrain.addItem(item,(15*roomPos[0]+5,15*roomPos[1]+3,0))
+
+        # room 4
+        roomPos = (4,1)
+        item = src.items.itemMap["Note"]()
+        item.text = """
+I did cheat a bit in the last example to make things easier.
+The production chains in this game are overcomplicated to offer some challenge to the player.
+For example machines have a cooldown when used the cooldown.
+
+This example is the same example as the last one, but has the cooldown for the machines activated.
+That means the command will only work when the machines have no cooldown active
+
+If the cooldown is active the environment changed and the command stops working.
+Other examples for complications are input ressources running out or output fields filling up.
+
+Try activating the command several times in a row and continue east afterwards.
+"""
+
+        terrain.addItem(item,(15*roomPos[0]+8,15*roomPos[1]+9,0))
+
+        item = src.items.itemMap["Command"]()
+        item.command = "a"*4+"w"*3+"Jw"+"dd"+"Jw"+"dd"+"sss"
+        terrain.addItem(item,(15*roomPos[0]+7,15*roomPos[1]+7,0))
+
+        item = src.items.itemMap["Scrap"]()
+        item.amount = 15
+        terrain.addItem(item,(15*roomPos[0]+2,15*roomPos[1]+3,0))
+        item = src.items.itemMap["ScrapCompactor"]()
+        item.charges = 0
+        terrain.addItem(item,(15*roomPos[0]+3,15*roomPos[1]+3,0))
+        item = src.items.itemMap["Machine"]()
+        item.setToProduce("Sheet")
+        item.charges = 0
+        terrain.addItem(item,(15*roomPos[0]+5,15*roomPos[1]+3,0))
+
+        # room 5
+        roomPos = (5,1)
+        item = src.items.itemMap["Note"]()
+        item.text = """
+The cooldown issue can be worked around by simply waiting for the cooldown to pass.
+
+This can be automated in a crude way by recording a new command that waits a 100 ticks and then runs the other command.
+
+I extended the last example with such a command. The new command is to the west of the tile center.
+
+So commands can be chained to each other. Since there is no limit on how many commands run how many commands complex processes can be build.
+The overcomplex production chains incurage this.
+
+continue east to see an example for this.
+
+"""
+
+        terrain.addItem(item,(15*roomPos[0]+8,15*roomPos[1]+9,0))
+
+        item = src.items.itemMap["Command"]()
+        item.command = "a"*4+"w"*3+"Jw"+"dd"+"Jw"+"dd"+"sss"
+        terrain.addItem(item,(15*roomPos[0]+7,15*roomPos[1]+7,0))
+
+        item = src.items.itemMap["Command"]()
+        item.command = "d100.ja"
+        terrain.addItem(item,(15*roomPos[0]+6,15*roomPos[1]+7,0))
+
+        item = src.items.itemMap["Scrap"]()
+        item.amount = 15
+        terrain.addItem(item,(15*roomPos[0]+2,15*roomPos[1]+3,0))
+        item = src.items.itemMap["ScrapCompactor"]()
+        item.charges = 0
+        terrain.addItem(item,(15*roomPos[0]+3,15*roomPos[1]+3,0))
+        item = src.items.itemMap["Machine"]()
+        item.setToProduce("Sheet")
+        item.charges = 0
+        terrain.addItem(item,(15*roomPos[0]+5,15*roomPos[1]+3,0))
+
+        # room 6
+        roomPos = (6,1)
+        item = src.items.itemMap["Note"]()
+        item.text = """
+This command in the tile center will take about 17000 ticks to complete.
+This is a simplfied food production setup, it works like this (west to east):
+
+The character uses the tree to drop 1 maggot 
+The character picks it up and carries it into the room and drops it
+The character does that 10 times to get 10 maggots
+The character uses the maggot fermenter to produce 1 biomass from 10 maggots
+The character does this 10 times
+The character uses the bio press to produce 1 press cake from 10 biomass
+The character does this 10 times
+The character uses the goo producer to produce goo from 10 press cakes
+
+This works by having the command to produce press cakes activate the command for producing biomass 10 times and so on.
+There are 5 commands chained and each command is very short, but runtime and complexity can grow fast when chaining commands.
+
+Feel free to run the command yourself. The game will start to run very fast and try to burn your CPU, but running the command should not take more than a few minutes.
+
+Continue east to have somebody else do it.
+
+"""
+        terrain.addItem(item,(15*roomPos[0]+8,15*roomPos[1]+9,0))
+
+        item = src.items.itemMap["Tree"]()
+        item.numMaggots = 1000000000
+        item.maxMaggot = 1000000000
+        terrain.addItem(item,(15*roomPos[0]+2,15*roomPos[1]+4,0))
+
+        room = src.rooms.roomMap["EmptyRoom"](roomPos[0],roomPos[1],5,2)
+        room.reconfigure(9, 5, doorPos=[(0,2)])
+        terrain.addRooms([room])
+
+        item = src.items.itemMap["Command"]()
+        item.command = "aasaaJwdKwdwddLw"
+        room.addItem(item,(1,2,0))
+
+        item = src.items.itemMap["MaggotFermenter"]()
+        room.addItem(item,(2,1,0))
+
+        item = src.items.itemMap["Command"]()
+        item.command = "a10jdJw"
+        room.addItem(item,(2,2,0))
+
+        item = src.items.itemMap["BioPress"]()
+        room.addItem(item,(4,1,0))
+
+        item = src.items.itemMap["Command"]()
+        item.command = "aa10jddJw"
+        room.addItem(item,(4,2,0))
+
+        item = src.items.itemMap["GooProducer"]()
+        room.addItem(item,(6,1,0))
+
+        item = src.items.itemMap["Command"]()
+        item.command = "aa10jddJw"
+        room.addItem(item,(6,2,0))
+
+        item = src.items.itemMap["GooDispenser"]()
+        room.addItem(item,(7,1,0))
+
+        item = src.items.itemMap["Command"]()
+        item.command = "3a3w7dj7a3s3d"
+        terrain.addItem(item,(roomPos[0]*15+7,roomPos[1]*15+7,0))
+
+        # room 7
+        roomPos = (7,1)
+        item = src.items.itemMap["Note"]()
+        item.text = """
+Obviously you are not supposed to play the game by running these long commands yourself.
+After having completely automated a task you can have npcs running these commands for you.
+
+The command in the middle of the room uses a growth tank to spawn a npc.
+The npc will activate the command next to the growth tank and will start to run the long command from the previous example.
+
+The idea is to have hook npc in a similar way into your base automation and have many of these npcs and run background tasks in your base.
+
+If you are interested in further detail about how you can use commands continue south.
+For more information on how handle changing conditions continue east
+
+"""
+        terrain.addItem(item,(15*roomPos[0]+8,15*roomPos[1]+9,0))
+
+        room = src.rooms.roomMap["EmptyRoom"](roomPos[0],roomPos[1],5,2)
+        room.reconfigure(8, 5, doorPos=[(0,2)])
+        terrain.addRooms([room])
+
+        item = src.items.itemMap["GooDispenser"]()
+        item.charges = 100
+        room.addItem(item,(1,1,0))
+        item = src.items.itemMap["GrowthTank"]()
+        item.commands["born"] = [("j")]
+        room.addItem(item,(2,1,0))
+        item = src.items.itemMap["GooFlask"]()
+        room.addItem(item,(1,3,0))
+        item = src.items.itemMap["Command"]()
+        item.command = "s4a3s10aj"
+        room.addItem(item,(3,1,0))
+
+        item = src.items.itemMap["Command"]()
+        item.command = "3a3w2dKsJwdJwJwaLsaa3s3d"
+        terrain.addItem(item,(roomPos[0]*15+7,roomPos[1]*15+7,0))
+
+        # room 7.2
+        roomPos = (7,2)
+        item = src.items.itemMap["Note"]()
+        item.text = """
+There are some tricks that can be used with commands that you can do.
+But be aware of the fact that dooing complex automation only using commands is very hard to impossible.
+
+By activating a command from your inventory you can build commands that doesn't stop where it started.
+This is useful to to build endless loops to have npc do a job forever or for building fast travel system.
+
+Moving, storing, stacking and copying commands works. 
+
+So you could have a todo-stack of commands that get a npc takes in an endless loop and distributes those to a pool of workers.
+You could have npcs that spawn more npcs. You could have self replicating strutures.
+
+Go Nutz, but keep in mind working with commands only is very difficult.
+
+"""
+        terrain.addItem(item,(15*roomPos[0]+8,15*roomPos[1]+9,0))
+
+        # room 8
+        roomPos = (8,1)
+        item = src.items.itemMap["Note"]()
+        item.text = """
+I tried building complex automation (small cities with 20 npcs), but i gave up on that because it just was to complicated.
+
+For example:
+When a machine producing sheet gets too little input material it stops producing and all machines dependend on the machine will stop producing.
+When a machine producing sheet gets too much input material it will collect up and clutter up the room or kill npcs.
+
+It was possible to balance this, but very error prone.
+
+The solution for this issue is the ability to configure items to run commands on NPC on specific conditions.
+The item check what conditions are true and run commands depending on it.
+You cannot truely change the conditions, but you can set the commands to be run. (see the note to the right for how to do this)
+
+For example:
+run command (to fetch ressources) if ressources are missing
+run command (to drink) if character is hungry
+
+The machines in this room for example are set to produce missing ressources. Use them from the north or the command in the center of the room to try it.
+Setups like these are player buildable and programmable.
+
+continue east to get information about further helper items.
+"""
+        terrain.addItem(item,(15*roomPos[0]+8,15*roomPos[1]+9,0))
+
+        item = src.items.itemMap["Command"]()
+        item.command = "5w2aJsdKs7dls7awa2d5s"
+        terrain.addItem(item,(roomPos[0]*15+7,roomPos[1]*15+7,0))
+
+        item = src.items.itemMap["Machine"]()
+        item.setToProduce("Case")
+        item.commands["material Frame"] = "2a8sJsdKsa8wdLsdJs"
+        item.charges = 1000
+        terrain.addItem(item,(15*roomPos[0]+5,15*roomPos[1]+3,0))
+
+        item = src.items.itemMap["Machine"]()
+        item.setToProduce("Frame")
+        item.commands["material Rod"] = "3dJsdKsa3aaLsdJs"
+        item.charges = 1000
+        terrain.addItem(item,(15*roomPos[0]+3,15*roomPos[1]+11,0))
+
+        item = src.items.itemMap["Machine"]()
+        item.setToProduce("Rod")
+        item.commands["material MetalBars"] = "5w5dJwdKwa5a5saLsdJs"
+        item.charges = 1000
+        terrain.addItem(item,(15*roomPos[0]+6,15*roomPos[1]+11,0))
+
+        item = src.items.itemMap["ScrapCompactor"]()
+        item.charges = 1000
+        terrain.addItem(item,(15*roomPos[0]+11,15*roomPos[1]+4,0))
+        item = src.items.itemMap["Scrap"]()
+        item.amount = 1000
+        terrain.addItem(item,(15*roomPos[0]+10,15*roomPos[1]+4,0))
+
+        # room 9
+        roomPos = (9,1)
+        item = src.items.itemMap["Note"]()
+        item.text = """
+I you try running the last example more than 7 times you will notice that the production output starts to clutter the room.
+The character starts to bump into items and the recorded command will fail.
+Storing item is a common issue that is hard to solve using commands.
+
+So there are helper items that do to complex things like managing a stockpile for you.
+They do this by calculating a command to do the task and run that command on a npc.
+
+This example is the last example but with 2 smart items build in:
+* a storage manager is used to store the produced case properly. 
+* an item collector to gather scrap easily
+
+"""
+        terrain.addItem(item,(15*roomPos[0]+7,15*roomPos[1]+8,0))
+
+        item = src.items.itemMap["UniformStockpileManager"]()
+        terrain.addItem(item,(15*roomPos[0]+8,15*roomPos[1]+8,0))
+        
+        for i in range(0,10):
+            item = src.items.itemMap["Sheet"]()
+            terrain.addItem(item,(15*roomPos[0]+5,15*roomPos[1]+9,0))
+
+        item = src.items.itemMap["Command"]()
+        item.command = "5w2aJs2d5s"
+        terrain.addItem(item,(roomPos[0]*15+7,roomPos[1]*15+7,0))
+
+        item = src.items.itemMap["Machine"]()
+        item.setToProduce("Case")
+        item.commands["material Frame"] = "2a8sJsdKsa8wdLsdJs"
+        item.commands["success"] = "dKsd5sdJs.ja5w2a"
+        item.charges = 1000
+        terrain.addItem(item,(15*roomPos[0]+5,15*roomPos[1]+3,0))
+
+        item = src.items.itemMap["Machine"]()
+        item.setToProduce("Frame")
+        item.commands["material Rod"] = "3dJsdKsa3aaLsdJs"
+        item.charges = 1000
+        terrain.addItem(item,(15*roomPos[0]+3,15*roomPos[1]+11,0))
+
+        item = src.items.itemMap["Machine"]()
+        item.setToProduce("Rod")
+        item.commands["material MetalBars"] = "5w5dJwdKwa5a5saLsdJs"
+        item.charges = 1000
+        terrain.addItem(item,(15*roomPos[0]+6,15*roomPos[1]+11,0))
+
+        item = src.items.itemMap["ScrapCompactor"]()
+        item.commands["material Scrap"] = "4a15sj15w3dLwd"
+        item.charges = 1000
+        terrain.addItem(item,(15*roomPos[0]+11,15*roomPos[1]+4,0))
+
+        # room 9
+        roomPos = (9,2)
+
+        item = src.items.itemMap["ItemCollector"]()
+        terrain.addItem(item,(roomPos[0]*15+7,roomPos[1]*15+7,0))
+
+        item = src.items.itemMap["Scrap"]()
+        item.amount = 1000
+        terrain.addItem(item,(15*roomPos[0]+10,15*roomPos[1]+4,0))
+
+        item = src.items.itemMap["Scrap"]()
+        item.amount = 1
+        terrain.addItem(item,(15*roomPos[0]+6,15*roomPos[1]+6,0))
+
+        item = src.items.itemMap["Scrap"]()
+        item.amount = 2
+        terrain.addItem(item,(15*roomPos[0]+8,15*roomPos[1]+7,0))
+
+        item = src.items.itemMap["Scrap"]()
+        item.amount = 10
+        terrain.addItem(item,(15*roomPos[0]+10,15*roomPos[1]+8,0))
+
+    def showMainSelection(self):
+        options = [
+            ("story", "The story aspect of the game"),
+            ("imperative", "The imperative programming aspect of the game"),
+            ("functional", "The "),
+            ("roguelike", "The roguelike aspect of the game"),
+            ]
+        cinematic = src.cinematics.SelectionCinematic("So... what do you want to know more about?\n\nThe order is historical btw", options, default="ok")
+        cinematic.followUps = {
+                    "story": {"container": self, "method": "niy"},
+                    "imperative": {"container": self, "method": "niy"},
+                    "functional": {"container": self, "method": "niy"},
+                    "roguelike": {"container": self, "method": "niy"},
+                }
+        self.cinematic = cinematic
+        src.cinematics.cinematicQueue.append(cinematic)
+
+    def explainStoryAndLore(self):
+        pass
+
+    def niy():
+        showText("""well.... that is not implemented yet. Sorry""")
+
 class CreativeMode(BasicPhase):
     """
     mode to build stuff with disabled environmental danger
@@ -5608,3 +6129,4 @@ def registerPhases():
     phasesByName["Dungeon"] = Dungeon
     phasesByName["WorldBuildingPhase"] = WorldBuildingPhase
     phasesByName["RoguelikeStart"] = RoguelikeStart
+    phasesByName["Tour"] = Tour

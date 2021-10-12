@@ -576,7 +576,6 @@ class ArchitectArtwork(src.items.Item):
 
         # add target room
         targetRoomSlot = random.choice(freeRoomSlots)
-        targetRoomSlot = (7,9)
         while targetRoomSlot in freeRoomSlots:
             freeRoomSlots.remove(targetRoomSlot)
             roomMap[targetRoomSlot[1]][targetRoomSlot[0]] = "RC"

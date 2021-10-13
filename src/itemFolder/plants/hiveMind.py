@@ -119,7 +119,7 @@ class HiveMind(src.items.Item):
 
         if character.inventory and character.inventory[-1].type == "Scrap":
             character.inventory.pop()
-            character.inventory.append(Coal())
+            character.inventory.append(src.items.itemMap["Coal"]())
 
         numItems = 0
         for item in reversed(character.inventory):

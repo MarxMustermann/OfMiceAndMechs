@@ -64,6 +64,8 @@ class CommandBloom(src.items.Item):
 
         if not self.xPosition:
             return
+        if not self.container:
+            return
 
         items = self.container.getItemByPosition(
             (
@@ -132,7 +134,7 @@ class CommandBloom(src.items.Item):
                     elif self.masterCommand:  # follow network
                         command = self.masterCommand
                     else:  # wait for hive mind to develop
-                        command = "1000."
+                        command = "gg"*100
 
                 elif item.type == "CommandBloom":
                     if (
@@ -168,12 +170,14 @@ class CommandBloom(src.items.Item):
 
                     if self.numCommandBlooms > 2:
                         new = src.items.itemMap["HiveMind"]()
+                        pos = self.getPosition()
+                        container = self.container
                         new.createdAt = src.gamestate.gamestate.tick
-                        new.territory.append((new.xPosition // 15, new.yPosition // 15))
-                        new.paths[(new.xPosition // 15, new.yPosition // 15)] = []
+                        new.territory.append((pos[0] // 15, pos[1] // 15))
+                        new.paths[(pos[0] // 15, pos[1] // 15)] = []
                         new.faction = self.faction
                         self.container.removeItem(self)
-                        self.container.addItem(new,self.getPosition())
+                        container.addItem(new,pos)
                 index += 1
             for item in removeItems:
                 character.inventory.remove(item)
@@ -232,7 +236,7 @@ class CommandBloom(src.items.Item):
 
                     targets = []
                     for pos in path:
-                        items = self.container.getItemByPosition(pos)
+                        items = self.container.getItemByPosition((pos[0],pos[1],0))
                         if (
                             items
                             and (items[0].bolted or not items[0].walkable)
@@ -710,13 +714,11 @@ class CommandBloom(src.items.Item):
                     if not foundSomething:
                         if character.satiation > 100:
                             command += (
-                                str(
-                                    min(
+                                "gg"*(min(
                                         character.satiation - 30,
                                         random.randint(100, 200),
-                                    )
-                                )
-                                + ".j"
+                                    )//10)
+                                + "j"
                             )
                         else:
                             command = random.choice(["W", "A", "S", "D"])
@@ -796,7 +798,7 @@ class CommandBloom(src.items.Item):
 
         if selfDestroy:
             new = src.items.itemMap["FireCrystals"]()
-            self.container.addItems(new,self.getPosition())
+            self.container.addItem(new,self.getPosition())
             self.container.removeItem(self)
             direction = random.choice(["w", "a", "s", "d"])
             reverseDirection = {"a": "d", "w": "s", "d": "a", "s": "w"}

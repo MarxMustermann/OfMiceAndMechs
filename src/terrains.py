@@ -1155,6 +1155,7 @@ class Terrain(src.saveing.Saveable):
                         localisedEntry = (
                             (char.xPosition - room.offsetX - 1) % 15,
                             (char.yPosition - room.offsetY) % 15,
+                            0,
                         )
 
             # move player into the room

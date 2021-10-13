@@ -174,7 +174,7 @@ class AutoTutor(src.items.Item):
                 self.initialChallengeDone = True
                 self.character.macroState["submenue"] = self.submenue
             elif not self.gooChallengeDone:
-                if not self.checkInInventory(src.items.GooFlask):
+                if not self.checkInInventory(src.items.itemMap["GooFlask"]):
                     self.submenue = src.interaction.TextMenu(
                         "\n\nchallenge: pick up goo flask\nstatus: challenge in progress - Try again with a goo flask in your inventory.\n\ncomment:\nA goo flask is represnted by ò=. There should be some flasks in the room.\n\n"
                     )
@@ -185,7 +185,7 @@ class AutoTutor(src.items.Item):
                     self.gooChallengeDone = True
                 self.character.macroState["submenue"] = self.submenue
             elif not self.metalbarChallengeDone:
-                if not self.checkInInventory(src.items.MetalBars):
+                if not self.checkInInventory(src.items.itemMap["MetalBars"]):
                     self.submenue = src.interaction.TextMenu(
                         '\n\nchallenge: gather metal bars\nstatus: challenge in progress - Try again with a metal bar in your inventory.\n\ncomment: \nMetal bars are represented by ==\ncheck "information->machines->metal bar production" on how to produce metal bars.\n\n'
                     )
@@ -196,7 +196,7 @@ class AutoTutor(src.items.Item):
                     self.metalbarChallengeDone = True
                 self.character.macroState["submenue"] = self.submenue
             elif not self.sheetChallengeDone:
-                if not self.checkInInventoryOrInRoom(src.items.Sheet):
+                if not self.checkInInventoryOrInRoom(src.items.itemMap["Sheet"]):
                     self.submenue = src.interaction.TextMenu(
                         '\n\nchallenge: produce sheet\nstatus: challenge in progress - Try again with a sheet in your inventory.\n\ncomment: \ncheck "information->machines->simple item production" on how to produce simple items.\nA sheet machine should be within this room.\n\n'
                     )
@@ -209,7 +209,7 @@ class AutoTutor(src.items.Item):
             elif not self.machineChallengeDone:
                 foundMachine = False
                 for item in self.character.inventory + self.container.itemsOnFloor:
-                    if isinstance(item, src.items.Machine) and item.toProduce == "Rod":
+                    if isinstance(item, src.items.itemMap["Machine"]) and item.toProduce == "Rod":
                         foundMachine = True
                 if not foundMachine:
                     self.submenue = src.interaction.TextMenu(
@@ -227,7 +227,7 @@ class AutoTutor(src.items.Item):
                 foundBluePrint = False
                 for item in self.character.inventory + self.container.itemsOnFloor:
                     if (
-                        isinstance(item, src.items.BluePrint)
+                        isinstance(item, src.items.itemMap["BluePrint"])
                         and item.endProduct == "Frame"
                     ):
                         foundBluePrint = True
@@ -305,7 +305,7 @@ class AutoTutor(src.items.Item):
 
                     metalBarFound = None
                     for item in self.character.inventory:
-                        if isinstance(item, src.items.MetalBars):
+                        if isinstance(item, src.items.itemMap["MetalBars"]):
                             metalBarFound = item
                             break
 
@@ -369,7 +369,7 @@ class AutoTutor(src.items.Item):
                 if self.wallChallenge:
                     wallFound = None
                     for item in self.character.inventory:
-                        if isinstance(item, src.items.Wall):
+                        if isinstance(item, src.items.itemMap["Wall"]):
                             wallFound = item
                             break
 
@@ -668,7 +668,7 @@ comment:
         # => produce 100 metal bars
 
         if selection == "note":  # from root
-            if not self.checkInInventoryOrInRoom(src.items.Note):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["Note"]):
                 self.submenue = src.interaction.TextMenu(
                     '\n\nchallenge: write note\nstatus: challenge in progress - Try again with a note in your inventory.\n\ncomment:\n check "information->items->notes" on how to create notes.\n\n'
                 )
@@ -679,7 +679,7 @@ comment:
                 del self.availableChallenges["note"]
 
         elif selection == "gatherBloom":  # from root
-            if not self.checkInInventoryOrInRoom(src.items.Bloom):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["Bloom"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: gather bloom\nstatus: challenge in progress - Try again with a bloom in your inventory.\n\ncomment: \nBlooms are represented by ** and are white.\nYou should be able to collect some outside of the wall, the exit is on the east.\n\n"
                 )
@@ -701,7 +701,7 @@ comment:
                 )
 
         elif selection == "produceSporeExtractor":  # from gatherBloom
-            if not self.checkInInventoryOrInRoom(src.items.SporeExtractor):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["SporeExtractor"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: produce spore extractor\nstatus: challenge in progress - try again with spore extractor in your inventory.\n\n"
                 )
@@ -712,7 +712,7 @@ comment:
                 del self.availableChallenges["produceSporeExtractor"]
 
         elif selection == "produceScrapCompactors":  # from root
-            if not self.checkInInventory(src.items.ScrapCompactor):
+            if not self.checkInInventory(src.items.itemMap["ScrapCompactor"]):
                 self.submenue = src.interaction.TextMenu(
                     '\n\nchallenge: produce scrap compactor\nstatus: challenge in progress - try again with scrap compactor in your inventory.\n\ncomment:\n * check "information->blueprint reciepes" and "information -> machines -> machine production" on how to do this.\n\n'
                 )
@@ -744,7 +744,7 @@ comment:
                 )
 
         elif selection == "prodCase":  # from produceBasics
-            if not self.checkInInventoryOrInRoom(src.items.Case):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["Case"]):
                 self.submenue = src.interaction.TextMenu(
                     '\n\nchallenge: produce case\nstatus: challenge in progress - Try again with a case in your inventory.\n\ncomment:\nCases are produced from Frames\n which are produced from rods\n which are produced from metal bars\n which are produced from scrap\ncheck "information -> blueprint reciepes" for the reciepes\n\n'
                 )
@@ -777,7 +777,7 @@ comment:
             blueprints = []
             for item in self.character.inventory + self.container.itemsOnFloor:
                 if (
-                    isinstance(item, src.items.BluePrint)
+                    isinstance(item, src.items.itemMap["BluePrint"])
                     and item.endProduct not in blueprints
                 ):
                     blueprints.append(item.endProduct)
@@ -792,7 +792,7 @@ comment:
                 del self.availableChallenges["differentBlueprints"]
 
         elif selection == "9blooms":  # from root2
-            if self.countInInventoryOrRoom(src.items.Bloom) < 9:
+            if self.countInInventoryOrRoom(src.items.itemMap["Bloom"]) < 9:
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: gather 9 blooms\nstatus: failed. Try with 9 bloom in your inventory.\n\n\n\n"
                 )
@@ -806,7 +806,7 @@ comment:
                 del self.availableChallenges["9blooms"]
 
         elif selection == "processedBloom":  # from 9blooms
-            if not self.checkInInventoryOrInRoom(src.items.BioMass):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["BioMass"]):
                 self.submenue = src.interaction.TextMenu(
                     '\n\nchallenge: process bloom\nstatus: challenge in progress - try with bio mass in your inventory.\n\ncomment:\n* use a bloom shreder to produce bio mass\n* check "information->food->mold farming" for more information\n\n'
                 )
@@ -830,7 +830,7 @@ comment:
                 )
 
         elif selection == "produceWall":  # from produceAdvanced
-            if not self.checkInInventoryOrInRoom(src.items.Wall):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["Wall"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: produce items\nstatus: challenge in progress - try again with wall in your inventory.\n\n"
                 )
@@ -842,7 +842,7 @@ comment:
                 )
 
         elif selection == "produceDoor":  # from produceWall
-            if not self.checkInInventoryOrInRoom(src.items.Door):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["Door"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: produce items\nstatus: challenge in progress - try again with door in your inventory.\n\nreward:\n* new blueprint reciepe for floor plate\n\n"
                 )
@@ -854,7 +854,7 @@ comment:
                 )
 
         elif selection == "produceFloorPlate":  # from produceDoor
-            if not self.checkInInventoryOrInRoom(src.items.FloorPlate):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["FloorPlate"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: produce items\nstatus: challenge in progress - try again with floor plate in your inventory.\n\n"
                 )
@@ -865,7 +865,7 @@ comment:
                 )
 
         elif selection == "produceScraper":  # from root2
-            if not self.checkInInventoryOrInRoom(src.items.Scraper):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["Scraper"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: produce scraper\nstatus: challenge in progress. Try with scraper in your inventory.\n\n"
                 )
@@ -899,7 +899,7 @@ comment:
         # => produce random door/wall/floorplate things
 
         elif selection == "produceBioMasses":  # from root3
-            if self.countInInventoryOrRoom(src.items.BioMass) < 9:
+            if self.countInInventoryOrRoom(src.items.itemMap["BioMass"]) < 9:
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: produce 9 Biomass\nstatus: challenge in progress. Try with 9 BioMass in your inventory.\n\n"
                 )
@@ -914,7 +914,7 @@ comment:
                 del self.availableChallenges["produceBioMasses"]
 
         elif selection == "processBioMass":  # from produceBioMasses
-            if not self.checkInInventoryOrInRoom(src.items.PressCake):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["PressCake"]):
                 self.submenue = src.interaction.TextMenu(
                     '\n\nchallenge: produce press cake\nstatus: challenge in progress. Try with Press cake in your inventory.\n\ncomment:\n* use a bio press to produce press cake\n* check "information->food->mold farming" for more information\n\n'
                 )
@@ -936,7 +936,7 @@ comment:
                 del self.availableChallenges["processBioMass"]
 
         elif selection == "producePressCakes":  # from processBioMass
-            if self.countInInventoryOrRoom(src.items.PressCake) < 4:
+            if self.countInInventoryOrRoom(src.items.itemMap["PressCake"]) < 4:
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: produce press cakes\nstatus: challenge in progress. Try with 4 press cake in your inventory.\n\n"
                 )
@@ -950,7 +950,7 @@ comment:
                 self.knownBlueprints.append("GooFlask")
 
         elif selection == "buildGooProducer":  # from processBioMass
-            if not self.checkInInventoryOrInRoom(src.items.GooProducer):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["GooProducer"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: build goo producer\nstatus: challenge in progress. Try with goo producer in your inventory.\n\n"
                 )
@@ -961,7 +961,7 @@ comment:
                 del self.availableChallenges["buildGooProducer"]
 
         elif selection == "produceAutofarmer":  # from processBioMass
-            if not self.checkInInventoryOrInRoom(src.items.AutoFarmer):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["AutoFarmer"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: build auto farmer\nstatus: challenge in progress. Try with auto farmer in your inventory.\n\n"
                 )
@@ -972,7 +972,7 @@ comment:
                 del self.availableChallenges["produceAutofarmer"]
 
         elif selection == "createMap":  # from root3
-            if not self.checkInInventoryOrInRoom(src.items.Map):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["Map"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: create map\nstatus: challenge in progress. Try with map in your inventory.\n\n"
                 )
@@ -988,7 +988,7 @@ comment:
         elif selection == "createMapWithPaths":  # from createMap
             itemFound = False
             for item in self.character.inventory + self.container.itemsOnFloor:
-                if isinstance(item, src.items.Map) and item.routes:
+                if isinstance(item, src.items.itemMap["Map"]) and item.routes:
                     itemFound = True
                     break
             if not itemFound:
@@ -1022,7 +1022,7 @@ comment:
         elif (
             selection == "produceUniformStockpileManager"
         ):  # from produceProductionManager
-            if not self.checkInInventoryOrInRoom(src.items.UniformStockpileManager):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["UniformStockpileManager"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: build uniform stockpile manager\nstatus: challenge in progress. Try with uniform stockpile manager in your inventory.\n\n"
                 )
@@ -1066,7 +1066,7 @@ comment:
         elif selection == "produceFilledGooDispenser":  # NOT ASSIGNED
             itemFound = False
             for item in self.character.inventory + self.container.itemsOnFloor:
-                if isinstance(item, src.items.GooDispenser) and item.charges > 0:
+                if isinstance(item, src.items.itemMap["GooDispenser"]) and item.charges > 0:
                     itemFound = True
                     break
             if not itemFound:
@@ -1287,7 +1287,7 @@ comment:
                 del self.availableChallenges["produceFilledGooDispenser"]
 
         elif selection == "produceAutoScribe":  # from root 4
-            if not self.checkInInventoryOrInRoom(src.items.AutoScribe):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["AutoScribe"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: produce auto scribe\nstatus: challenge in progress. Try with auto scribe in your inventory.\n\n"
                 )
@@ -1414,7 +1414,7 @@ comment:
 
         # copy command
         elif selection == "gatherSickBloom":  # from root 4
-            if not self.checkInInventoryOrInRoom(src.items.SickBloom):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["SickBloom"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: gather sick bloom\nstatus: challenge in progress. Try with sick bloom in your inventory.\n\n"
                 )
@@ -1472,7 +1472,7 @@ comment:
                 del self.availableChallenges["gatherSickBloom"]
 
         elif selection == "gatherCoal":  # from gatherSickBloom
-            if not self.checkInInventoryOrInRoom(src.items.Coal):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["Coal"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: gather coal\nstatus: challenge in progress. Try with coal in your inventory.\n\n"
                 )
@@ -1524,7 +1524,7 @@ comment:
                 del self.availableChallenges["gatherCoal"]
 
         elif selection == "produceFireCrystals":  # from gatherCoal
-            if not self.checkInInventoryOrInRoom(src.items.FireCrystals):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["FireCrystals"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: produce fire crystals\nstatus: challenge in progress. Try with fire crystals in your inventory.\n\n"
                 )
@@ -1535,7 +1535,7 @@ comment:
                 del self.availableChallenges["produceFireCrystals"]
 
         elif selection == "gatherSickBlooms":  # from gatherSickBloom
-            if self.countInInventoryOrRoom(src.items.SickBloom) < 9:
+            if self.countInInventoryOrRoom(src.items.itemMap["SickBloom"]) < 9:
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: gather sick blooms\nstatus: challenge in progress. Try with 9 sick blooms in your inventory.\n\n"
                 )
@@ -1717,7 +1717,7 @@ comment:
         # => learn 25 commands
 
         elif selection == "produceGrowthTank":  # from root 5
-            if not self.checkInInventoryOrInRoom(src.items.GrowthTank):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["GrowthTank"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: produce growth tank\nstatus: challenge in progress. Try with growth tank in your inventory.\n\n"
                 )
@@ -1800,7 +1800,7 @@ comment:
                 )
 
         elif selection == "gatherCorpse":  # from spawnNPC
-            if not self.checkInInventoryOrInRoom(src.items.Corpse):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["Corpse"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: gather corpse\nstatus: challenge in progress. Try with corpse in your inventory.\n\n"
                 )
@@ -1848,7 +1848,7 @@ comment:
                 del self.availableChallenges["gatherCorpse"]
 
         elif selection == "produceItemUpgrader":  # from root 5
-            if not self.checkInInventoryOrInRoom(src.items.ItemUpgrader):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["ItemUpgrader"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: produce item upgrader\nstatus: challenge in progress. Try with item upgrader in your inventory.\n\n"
                 )
@@ -1935,7 +1935,7 @@ comment:
         # => build mini mech
 
         elif selection == "gatherPoisonBloom":  # from root 6
-            if self.countInInventoryOrRoom(src.items.PoisonBloom) < 9:
+            if self.countInInventoryOrRoom(src.items.itemMap["PoisonBloom"]) < 9:
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: gather poison bloom\nstatus: challenge in progress. Try with poison bloom in your inventory.\n\n"
                 )
@@ -1946,7 +1946,7 @@ comment:
                 del self.availableChallenges["gatherPoisonBloom"]
 
         elif selection == "produceRoomBuilder":  # from root 6
-            if not self.checkInInventoryOrInRoom(src.items.RoomBuilder):
+            if not self.checkInInventoryOrInRoom(src.items.itemMap["RoomBuilder"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: produce room builder\nstatus: challenge in progress. Try with room builder in your inventory.\n\n"
                 )
@@ -1960,7 +1960,7 @@ comment:
                 del self.availableChallenges["produceRoomBuilder"]
 
         elif selection == "produceFloorPlate":  # from produceRoomBuilder
-            if self.checkInInventoryOrRoom(src.items.FloorPlate):
+            if self.checkInInventoryOrRoom(src.items.itemMap["FloorPlate"]):
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: produce floor plates\nstatus: challenge in progress. Try with 9 floor plates in your inventory.\n\n"
                 )
@@ -1975,7 +1975,7 @@ comment:
         # gather poision blooms
 
         elif selection == "gatherPoisonBlooms":  # from gatherPoisonBloom
-            if self.countInInventoryOrRoom(src.items.PoisonBloom) < 5:
+            if self.countInInventoryOrRoom(src.items.itemMap["PoisonBloom"]) < 5:
                 self.submenue = src.interaction.TextMenu(
                     "\n\nchallenge: gather poison bloom\nstatus: challenge in progress. Try with 5 poison blooms in your inventory.\n\n"
                 )

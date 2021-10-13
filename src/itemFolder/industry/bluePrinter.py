@@ -98,7 +98,7 @@ The items from the blueprint reciepe need to be added to the west or south.
         """
 
         sheet = None
-        for item in self.container.getItemByPosition((self.xPosition, self.yPosition - 1,self.xPosition)):
+        for item in self.container.getItemByPosition((self.xPosition, self.yPosition - 1,self.zPosition)):
             if item.type == "Sheet":
                 sheet = item
                 break
@@ -138,18 +138,18 @@ The items from the blueprint reciepe need to be added to the west or south.
             new.bolted = False
 
             targetFull = False
-            if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
+            if (self.xPosition + 1, self.yPosition, self.zPosition) in self.container.itemByCoordinates:
                 if (
                     len(
                         self.container.itemByCoordinates[
-                            (self.xPosition + 1, self.yPosition)
+                            (self.xPosition + 1, self.yPosition, self.zPosition)
                         ]
                     )
                     > 15
                 ):
                     targetFull = True
                 for item in self.container.itemByCoordinates[
-                    (self.xPosition + 1, self.yPosition)
+                    (self.xPosition + 1, self.yPosition, self.zPosition)
                 ]:
                     if item.walkable == False:
                         targetFull = True

@@ -120,6 +120,7 @@ class Character(src.saveing.Saveable):
         self.godMode = False
         self.submenue = None
         self.jobOrders = []
+        self.hasOwnAction = 0
 
         self.frustration = 0
         self.aggro = 0
@@ -140,7 +141,7 @@ class Character(src.saveing.Saveable):
 
         self.lastJobOrder = ""
         self.huntkilling = False
-        self.guarding = False
+        self.guarding = 0
 
         # generate the id for this object
         if characterId:
@@ -226,6 +227,60 @@ class Character(src.saveing.Saveable):
 
         self.xPosition = xPosition
         self.yPosition = yPosition
+
+    def startGuarding(self,numTicks):
+        self.guarding = numTicks
+        self.hasOwnAction += 1
+
+    def getOwnAction(self):
+        foundEnemy = None
+        commands = []
+        command = None
+        if not self.container:
+            self.hasOwnAction = 0
+            return "."
+
+        for character in self.container.characters:
+            if character == self:
+                continue
+            if character.faction == self.faction:
+                continue
+            if not character.xPosition//15 == self.xPosition//15 or not character.yPosition//15 == self.yPosition//15:
+                continue
+
+            foundEnemy = character
+
+            if abs(character.xPosition-self.xPosition) < 2 and abs(character.yPosition-self.yPosition) < 2 and ( abs(character.xPosition-self.xPosition) == 0 or abs(character.yPosition-self.yPosition) == 0):
+                command = "m"
+                break
+
+            x = character.xPosition
+            while x-self.xPosition > 0:
+                commands.append("d")
+                x -= 1
+            x = character.xPosition
+            while x-self.xPosition < 0:
+                commands.append("a")
+                x += 1
+            y = character.yPosition
+            while y-self.yPosition > 0:
+                commands.append("s")
+                y -= 1
+            y = character.yPosition
+            while y-self.yPosition < 0:
+                commands.append("w")
+                y += 1
+
+        if not command and commands:
+            command = random.choice(commands)
+
+        if not foundEnemy:
+            self.guarding -= 1
+            if self.guarding == 0:
+                self.hasOwnAction -= 1
+
+            command = "."
+        return command
 
     def huntkill(self):
         self.addMessage("should start huntkill now")
@@ -2156,10 +2211,8 @@ class Exploder(Monster):
         """
 
         if self.xPosition and self.container:
-            new = src.items.itemMap["FireCrystals"](creator=self)
-            new.xPosition = self.xPosition
-            new.yPosition = self.yPosition
-            self.container.addItems([new])
+            new = src.items.itemMap["FireCrystals"]()
+            self.container.addItem(new,self.getPosition())
             if self.explode:
                 new.startExploding()
 

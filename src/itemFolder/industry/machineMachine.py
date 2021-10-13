@@ -1,4 +1,5 @@
 import src
+import random
 
 class MachineMachine(src.items.Item):
     """
@@ -50,7 +51,7 @@ Select the thing to produce and confirm.
             character: the character trying to use the machine
         """
 
-        super().apply(character, silent=True)
+        super().apply(character)
 
         options = []
         options.append(("blueprint", "load blueprint"))
@@ -117,9 +118,9 @@ Select the thing to produce and confirm.
         """
 
         blueprintFound = None
-        if (self.xPosition, self.yPosition - 1) in self.container.itemByCoordinates:
+        if (self.xPosition, self.yPosition - 1,0) in self.container.itemByCoordinates:
             for item in self.container.itemByCoordinates[
-                (self.xPosition, self.yPosition - 1)
+                (self.xPosition, self.yPosition - 1,0)
             ]:
                 if item.type in ["BluePrint"]:
                     blueprintFound = item
@@ -201,9 +202,9 @@ Select the thing to produce and confirm.
             return
 
         targetFull = False
-        if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
+        if (self.xPosition + 1, self.yPosition,0) in self.container.itemByCoordinates:
             if (
-                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition)])
+                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition,0)])
                 > 0
             ):
                 targetFull = True

@@ -40,7 +40,7 @@ You can use it to loose 100 satiation.
 
         if self.charges > 10:
 
-            new = itemMap["EncrustedPoisonBush"]()
+            new = src.items.itemMap["EncrustedPoisonBush"]()
             self.container.addItem(new,self.getPosition())
 
             self.container.removeItem(self)

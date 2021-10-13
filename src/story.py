@@ -653,14 +653,13 @@ class BuildBase(BasicPhase):
                     continue
                 if random.randint(1, 1) == 1:
                     for i in range(0, 30):
+                        pos = (bigX * 15 + random.randint(1, 13),bigY * 15 + random.randint(1, 13),0)
+                        if src.gamestate.gamestate.terrain.getItemByPosition(pos):
+                            continue
                         molds.append(
                             (
                                 src.items.itemMap["Mold"](),
-                                (
-                                    bigX * 15 + random.randint(1, 13),
-                                    bigY * 15 + random.randint(1, 13),
-                                    0,
-                                ),
+                                pos,
                             )
                         )
         molds.append((src.items.itemMap["Mold"](),(155, 108, 0)))
@@ -677,7 +676,12 @@ class BuildBase(BasicPhase):
             (187, 112, 0),
             (172, 112, 0),
         ]
+        positions = [
+            (37, 37, 0),
+            (37, 187, 0),
+        ]
         counter = 0
+        """
         for x in range(1, 14):
             for y in (1, 2, 12, 13):
                 counter += 1
@@ -695,6 +699,7 @@ class BuildBase(BasicPhase):
                 pos = (x * 15 + 7, y * 15 + 7, 0)
                 if pos not in positions:
                     positions.append(pos)
+        """
 
         for pos in positions:
             commandBloom = src.items.itemMap["CommandBloom"]()
@@ -856,6 +861,9 @@ class BuildBase(BasicPhase):
         ]
 
         self.mainChar = src.gamestate.gamestate.mainChar
+        self.mainChar.personality["autoFlee"] = False
+        self.mainChar.personality["abortMacrosOnAttack"] = False
+        self.mainChar.personality["autoCounterAttack"] = False
 
         src.gamestate.gamestate.save()
 

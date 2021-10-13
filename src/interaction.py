@@ -1,5 +1,5 @@
 """
- ode for interacation with the user belongs here
+code for interacation with the user belongs here
 bad pattern: logic should be moved somewhere else
 """
 # load libraries
@@ -94,15 +94,21 @@ def setUpTcod():
     tcod = internalTcod
 
     screen_width = 200
-    screen_height = 60
+    screen_height = 53
 
     """
     tileset = tcod.tileset.load_tilesheet(
         "dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD
     )
-    """
     tileset = tcod.tileset.load_tilesheet(
         "terminal.png", 16, 16, tcod.tileset.CHARMAP_CP437
+    )
+    tileset = tcod.tileset.load_tilesheet(
+        "ownFont2.png", 16, 16, tcod.tileset.CHARMAP_CP437
+    )
+    """
+    tileset = tcod.tileset.load_tilesheet(
+        "Acorntileset.png", 16, 16, tcod.tileset.CHARMAP_CP437
     )
     """
     tileset =  tcod.tileset.load_truetype_font("./config/font/dejavu-sans-mono-fonts-ttf-2.35/ttf/DejaVuSansMono.ttf",48,24)
@@ -465,6 +471,11 @@ type the macro name you want to record to
     if "fireDirection" in char.interactionState:
         char.doRangedAttack(direction=key)
         del char.interactionState["fireDirection"]
+        return
+
+    if "runaction" in char.interactionState:
+        char.startGuarding(10)
+        del char.interactionState["runaction"]
         return
 
     if "advancedInteraction" in char.interactionState:
@@ -1457,6 +1468,7 @@ type the macro that should be run in case the condition is false
                             ):
                                 conditionTrue = True
                                 break
+                """
                 if char.interactionState["ifCondition"][-1] == "c":
                     conditionTrue = False
                     if char.container:
@@ -1500,6 +1512,7 @@ type the macro that should be run in case the condition is false
                             ]:
                                 conditionTrue = True
                                 break
+                """
                 if conditionTrue:
                     charState["commandKeyQueue"] = (
                         char.interactionState["ifParam1"][-1]
@@ -2353,6 +2366,23 @@ press key for the advanced interaction
                 char.interactionState["advancedInteraction"] = {}
                 return
 
+            if key in ("g",):
+                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+                    text = """
+
+press key to set fire direction
+
+* g = run guard mode for 10 ticks
+"""
+                    header.set_text(
+                        (urwid.AttrSpec("default", "default"), "action menu")
+                    )
+                    main.set_text((urwid.AttrSpec("default", "default"), text))
+                    footer.set_text((urwid.AttrSpec("default", "default"), ""))
+                    char.specialRender = True
+
+                char.interactionState["runaction"] = {}
+                return
             if key in ("f",):
                 if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                     text = """
@@ -2367,7 +2397,7 @@ press key to set fire direction
 """
 
                     header.set_text(
-                        (urwid.AttrSpec("default", "default"), "advanced pick up")
+                        (urwid.AttrSpec("default", "default"), "fire menu")
                     )
                     main.set_text((urwid.AttrSpec("default", "default"), text))
                     footer.set_text((urwid.AttrSpec("default", "default"), ""))
@@ -4894,17 +4924,21 @@ def gameLoop(loop, user_data=None):
                         else:
                             key = ("~", [])
 
-                    while (len(state["commandKeyQueue"]) or char.huntkilling) and char.timeTaken < 1:
-                        if not char.huntkilling:
+                    while (len(state["commandKeyQueue"]) or char.huntkilling or char.hasOwnAction) and char.timeTaken < 1:
+                        if char.huntkilling:
+                            processInput(
+                                    (char.doHuntKill(),["norecord"]),
+                                    charState=state, noAdvanceGame=True, char=char)
+                        elif char.hasOwnAction:
+                            processInput(
+                                    (char.getOwnAction(),["norecord"]),
+                                    charState=state, noAdvanceGame=True, char=char)
+                        else:
                             key = state["commandKeyQueue"][0]
                             state["commandKeyQueue"].remove(key)
                             processInput(
                                 key, charState=state, noAdvanceGame=True, char=char
                             )
-                        else:
-                            processInput(
-                                    (char.doHuntKill(),["norecord"]),
-                                    charState=state, noAdvanceGame=True, char=char)
 
                     char.timeTaken -= 1
 
@@ -5005,7 +5039,7 @@ def gameLoop(loop, user_data=None):
                             counter += 1
                         canvas.printTcod(tcodConsole,counter,20,warning=warning)
                         footertext = stringifyUrwid(footer.get_text())
-                        tcodConsole.print(x=0,y=59,string=" "*(200-len(footertext))+footertext)
+                        tcodConsole.print(x=0,y=52,string=" "*(200-len(footertext))+footertext)
                         tcodContext.present(tcodConsole)
                     if useTiles:
                         w, h = pydisplay.get_size()

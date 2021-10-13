@@ -1296,12 +1296,12 @@ class MiniBase(Room):
         # obsolete: the room layout is practically never used
         self.roomLayout = """
 XXXXXXXXXXXXX
+X     .     X
+X     .     X
 X           X
 X           X
 X           X
-X           X
-X           X
-X  .........$
+X           $
 X           X
 X           X
 X           X
@@ -1375,6 +1375,11 @@ XXXXXXXXXXXXX
         bluePrint.setToProduce("Rod")
         bluePrint.bolted = False
         itemsToAdd.append((bluePrint,(4, 3, 0)))
+        self.addItems(itemsToAdd)
+
+
+        for item in self.doors:
+            item.walkable = True
 
 class MiniBase2(Room):
     """

@@ -33,13 +33,13 @@ You can eat it to die.
             character: the character trying to use the item
         """
 
-        if not self.terrain:
+        if not self.container:
             self.dead = True
 
         character.die()
 
         if not self.dead:
-            new = itemMap["PoisonBush"]()
+            new = src.items.itemMap["PoisonBush"]()
             self.container.addItem(new,self.getPosition())
 
         character.addMessage("you eat the poison bloom and die")

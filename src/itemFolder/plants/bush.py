@@ -64,7 +64,7 @@ charges: %s""" % (self.charges)
         destroy this item
         """
 
-        new = itemMap["Coal"]()
+        new = src.items.itemMap["Coal"]()
         self.container.addItem(new,self.getPosition())
         super().destroy(generateScrap=False)
 

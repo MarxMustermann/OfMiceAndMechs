@@ -43,8 +43,8 @@ class Coal(src.items.Item):
         if not self.xPosition:
             return
 
-        if isinstance(character,src.characters.Monster) and character.phase == 1 and ((gamestate.tick+self.xPosition)%10 == 5):
-            newChar = characters.Exploder()
+        if isinstance(character,src.characters.Monster) and character.phase == 1 and ((src.gamestate.gamestate.tick+self.xPosition)%10 == 5):
+            newChar = src.characters.Exploder()
             import copy
             newChar.macroState = character.macroState
             character.macroState = {}

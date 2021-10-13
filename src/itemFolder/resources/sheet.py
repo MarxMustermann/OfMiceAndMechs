@@ -127,8 +127,10 @@ This is a level %s item
         note.setText(self.submenue.text)
 
         if self.xPosition:
+            container = self.container
+            pos = self.getPosition()
             self.container.removeItem(self)
-            self.container.addItem(note,self.getPosition())
+            container.addItem(note,pos)
         else:
             self.character.inventory.remove(self)
             self.character.inventory.append(note)
@@ -139,8 +141,10 @@ This is a level %s item
         """
 
         if self.xPosition:
+            container = self.container
+            pos = self.getPosition()
             self.container.removeItem(self)
-            self.container.addItem(mapItem,self.getPosition())
+            container.addItem(mapItem,pos)
         else:
             self.character.inventory.remove(self)
             self.character.inventory.append(mapItem)
@@ -150,11 +154,16 @@ This is a level %s item
         create a job order
         """
 
+        if not self.container:
+            return
+
         jobOrder = src.items.itemMap["JobOrder"]()
 
         if self.xPosition:
+            container = self.container
+            pos = self.getPosition()
             self.container.removeItem(self)
-            self.container.addItem(jobOrder,self.getPosition())
+            container.addItem(jobOrder,pos)
         else:
             self.character.inventory.remove(self)
             self.character.inventory.append(jobOrder)
@@ -281,8 +290,10 @@ This is a level %s item
         self.character.addMessage("you created a written command")
 
         if self.container:
-            self.container.addItem(command, self.getPosition())
+            container = self.container
+            pos = self.getPosition()
             self.container.removeItem(self)
+            container.addItem(command, pos)
         else:
             self.character.inventory.append(command)
             self.character.inventory.remove(self)

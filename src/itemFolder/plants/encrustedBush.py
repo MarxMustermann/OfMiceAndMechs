@@ -71,8 +71,6 @@ class EncrustedBush(src.items.Item):
             spawnPoint: the plant that is the core of the room
         """
         
-        if not self.terrain:
-            return
         if not self.container:
             return
 
@@ -91,7 +89,7 @@ class EncrustedBush(src.items.Item):
                 rowOk = True
                 for y in range(0, sizeY):
                     items = self.container.getItemByPosition(
-                        (upperLeftEdge[0] - 1, upperLeftEdge[1] + y)
+                        (upperLeftEdge[0] - 1, upperLeftEdge[1] + y,0)
                     )
                     if not (len(items) > 0 and items[0].type == "EncrustedBush"):
                         if items and items[0].type == "Bush":
@@ -107,7 +105,7 @@ class EncrustedBush(src.items.Item):
                 rowOk = True
                 for x in range(0, sizeX):
                     items = self.container.getItemByPosition(
-                        (upperLeftEdge[0] + x, upperLeftEdge[1] - 1)
+                        (upperLeftEdge[0] + x, upperLeftEdge[1] - 1,0)
                     )
                     if not (len(items) > 0 and items[0].type == "EncrustedBush"):
                         if items and items[0].type == "Bush":
@@ -123,7 +121,7 @@ class EncrustedBush(src.items.Item):
                 rowOk = True
                 for x in range(0, sizeX):
                     items = self.container.getItemByPosition(
-                        (upperLeftEdge[0] + x, upperLeftEdge[1] + sizeY)
+                        (upperLeftEdge[0] + x, upperLeftEdge[1] + sizeY,0)
                     )
                     if not (len(items) > 0 and items[0].type == "EncrustedBush"):
                         if items and items[0].type == "Bush":
@@ -138,7 +136,7 @@ class EncrustedBush(src.items.Item):
                 rowOk = True
                 for y in range(0, sizeY):
                     items = self.container.getItemByPosition(
-                        (upperLeftEdge[0] + sizeX, upperLeftEdge[1] + y)
+                        (upperLeftEdge[0] + sizeX, upperLeftEdge[1] + y,0)
                     )
                     if not (len(items) > 0 and items[0].type == "EncrustedBush"):
                         if items and items[0].type == "Bush":
@@ -150,7 +148,7 @@ class EncrustedBush(src.items.Item):
 
         if sizeX < 3 or sizeY < 3:
             if growBlock:
-                new = itemMap["EncrustedBush"]()
+                new = src.items.itemMap["EncrustedBush"]()
                 self.container.addItem(new,growBlock.getPosition())
                 growBlock.container.removeItem(growBlock)
             return
@@ -161,10 +159,10 @@ class EncrustedBush(src.items.Item):
             for y in range(0, sizeY):
                 if x == 0 or y == 0 or x == sizeX - 1 or y == sizeY - 1:
                     if x == 0 and y == 1:
-                        item = Door(bio=True)
+                        item = src.items.itemMap["Door"](bio=True)
                     else:
                         items = self.container.getItemByPosition(
-                            (upperLeftEdge[0] + x, upperLeftEdge[1] + y)
+                            (upperLeftEdge[0] + x, upperLeftEdge[1] + y,0)
                         )
                         if not items:
                             return

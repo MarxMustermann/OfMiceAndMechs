@@ -651,8 +651,11 @@ class BuildBase(BasicPhase):
 
                 if 3 < bigX < 11 and 3 < bigY < 11:
                     continue
+                if bigX > 7 and bigY == 7:
+                    continue
                 if random.randint(1, 1) == 1:
-                    for i in range(0, 30):
+                    amount = max(30-(bigX+bigY)*2,0)
+                    for i in range(0, amount):
                         pos = (bigX * 15 + random.randint(1, 13),bigY * 15 + random.randint(1, 13),0)
                         if src.gamestate.gamestate.terrain.getItemByPosition(pos):
                             continue

@@ -175,6 +175,9 @@ Select the thing to produce and confirm.
         trigger production of a selected item
         """
 
+        if not self.submenue.selection:
+            return
+
         self.produce(self.submenue.selection)
 
     def produce(self, itemType):

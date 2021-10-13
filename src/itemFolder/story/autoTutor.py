@@ -80,7 +80,7 @@ class AutoTutor(src.items.Item):
         targetFull = False
         scrapFound = None
         itemList = self.container.getItemByPosition(
-            (self.xPosition, self.yPosition + 1)
+            (self.xPosition, self.yPosition + 1, self.zPosition)
         )
         if len(itemList) > 15:
             targetFull = True
@@ -647,6 +647,10 @@ comment:
         """
 
         selection = self.submenue.getSelection()
+
+        if not selection:
+            return
+
         self.submenue = None
 
         # <=
@@ -693,7 +697,7 @@ comment:
                 self.knownInfos.append("food/moldfarming")
                 blooms = []
                 for i in range(0, 4):
-                    new = itemMap["MoldSpore"]()
+                    new = src.items.itemMap["MoldSpore"]()
                     blooms.append((new,(self.xPosition,self.yPosition+1,self.zPosition)))
                 self.container.addItems(blooms)
                 self.submenue = src.interaction.TextMenu(

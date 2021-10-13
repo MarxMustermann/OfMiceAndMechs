@@ -1047,7 +1047,7 @@ class Terrain(src.saveing.Saveable):
             """
 
             # get the entry point in room coordinates
-            if localisedEntry in room.walkingAccess:
+            if localisedEntry in room.walkingAccess or 1==1:
                 if localisedEntry in room.itemByCoordinates:
                     # check if the entry point is blocked (by a door)
                     for item in room.itemByCoordinates[localisedEntry]:
@@ -1105,9 +1105,10 @@ class Terrain(src.saveing.Saveable):
                         localisedEntry = (
                             char.xPosition % 15 - room.offsetX,
                             char.yPosition % 15 - room.offsetY - 1,
+                            0,
                         )
                         if localisedEntry[1] == -1:
-                            localisedEntry = (localisedEntry[0], room.sizeY - 1)
+                            localisedEntry = (localisedEntry[0], room.sizeY - 1,0)
 
             # check south
             elif direction == "south":
@@ -1123,6 +1124,7 @@ class Terrain(src.saveing.Saveable):
                         localisedEntry = (
                             (char.xPosition - room.offsetX) % 15,
                             (char.yPosition - room.offsetY + 1) % 15,
+                            0
                         )
 
             # check east
@@ -1139,6 +1141,7 @@ class Terrain(src.saveing.Saveable):
                         localisedEntry = (
                             (char.xPosition - room.offsetX + 1) % 15,
                             (char.yPosition - room.offsetY) % 15,
+                            0
                         )
 
             # check west

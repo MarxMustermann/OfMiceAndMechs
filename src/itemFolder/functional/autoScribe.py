@@ -40,7 +40,7 @@ The level of the copied command is the minimum level of the input command, sheet
             character: the character trying to use this item
         """
 
-        super().apply(character, silent=True)
+        super().apply(character)
 
         # fetch input command or Note
         itemFound = None

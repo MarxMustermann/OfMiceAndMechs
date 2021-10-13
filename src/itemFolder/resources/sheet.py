@@ -139,6 +139,7 @@ This is a level %s item
         """
         create a new map item
         """
+        mapItem = src.items.itemMap["Map"]()
 
         if self.xPosition:
             container = self.container

@@ -20,7 +20,12 @@ class Rod(src.items.Item):
 
         self.bolted = False
         self.walkable = True
-        self.baseDamage = random.randint(3,15)
+
+        num = 40
+        while num > 20:
+            num = random.expovariate(1/3)//1 + 4
+
+        self.baseDamage = int(random.triangular(4,21,10))
         self.attributesToStore.extend(
             [
                 "baseDamage",

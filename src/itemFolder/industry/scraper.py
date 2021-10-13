@@ -34,7 +34,7 @@ Place an item to the west and activate the scrapper to shred an item.
             character: the character trying to use the item
         """
 
-        super().apply(character, silent=True)
+        super().apply(character)
 
         # fetch input scrap
         itemFound = None

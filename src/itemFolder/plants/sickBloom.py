@@ -35,7 +35,7 @@ class SickBloom(src.items.Item):
                     character.satiation += 300
                     if character.satiation > 1000:
                         character.satiation = 1000
-                    self.spawn()
+                    self.spawn(character)
                     self.charges -= 1
                     self.dead = True
                 elif character.phase == 2:
@@ -46,7 +46,7 @@ class SickBloom(src.items.Item):
                     character.satiation += 400
                     self.charges -= 1
             else:
-                self.spawn()
+                self.spawn(character)
                 character.satiation += 100
                 if character.satiation > 1000:
                     character.satiation = 1000
@@ -83,7 +83,7 @@ class SickBloom(src.items.Item):
         event.setCallback({"container": self, "method": "spawn"})
         self.container.addEvent(event)
 
-    def spawn(self):
+    def spawn(self,triggerCharacter=None):
         """
         spawn a monster
         """
@@ -95,6 +95,8 @@ class SickBloom(src.items.Item):
             return
 
         character = src.characters.Monster()
+        if triggerCharacter:
+            character.faction = triggerCharacter.faction
 
         character.solvers = [
             "NaiveActivateQuest",

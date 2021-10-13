@@ -37,7 +37,7 @@ class ResourceTerminal(src.items.Item):
             character: the character using the item
         """
 
-        super().apply(character, silent=True)
+        super().apply(character)
         options = [
             ("showBalance", "show balance"),
             ("addResource", "add %s" % (self.resource)),

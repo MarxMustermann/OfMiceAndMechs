@@ -153,7 +153,7 @@ Activate the machine to produce.
                 resourcesNeeded.remove(item.type)
 
         for item in self.container.getItemByPosition(
-            (self.xPosition - 1, self.yPosition, self.zPosition)
+            (self.xPosition, self.yPosition-1, self.zPosition)
         ):
             if item.type in resourcesNeeded:
                 resourcesFound.append(item)

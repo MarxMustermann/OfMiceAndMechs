@@ -33,7 +33,7 @@ activate it to eat it
             character: the character trying to use the item
         """
 
-        super().apply(character, silent=True)
+        super().apply(character)
 
         # change state
         character.addSatiation(1000,reason="ate the press cake")

@@ -42,7 +42,7 @@ class SanitaryStation(src.items.Item):
             character: the character to heathcheck
         """
 
-        super().apply(character, silent=True)
+        super().apply(character)
 
         if character.health < self.healthThreshold:
             character.addMessage("health needed")

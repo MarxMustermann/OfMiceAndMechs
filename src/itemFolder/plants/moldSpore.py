@@ -32,7 +32,7 @@ put it on the ground and activate it to plant it
             character: the character spawning the mold
         """
 
-        if not self.terrain:
+        if not self.container:
             character.addMessage("this needs to be placed outside to be used")
             return
         self.startSpawn()

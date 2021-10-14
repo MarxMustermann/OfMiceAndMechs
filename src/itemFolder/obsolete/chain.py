@@ -36,7 +36,7 @@ class Chain(src.items.Item):
             character.addMessage("chains can only be used on terrain")
             return
 
-        super().apply(character, silent=True)
+        super().apply(character)
         # chain to surrounding items/rooms
         # bad pattern: the user needs to be able to select to what to chain to
         if not self.fixed:

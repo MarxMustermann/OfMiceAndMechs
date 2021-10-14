@@ -18,7 +18,7 @@ class Engraver(src.items.Item):
         self.text = None
 
     def apply(self, character):
-        super().apply(character, silent=True)
+        super().apply(character)
 
         self.character = character
 

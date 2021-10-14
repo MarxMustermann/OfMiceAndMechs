@@ -31,7 +31,7 @@ class Lever(src.items.Item):
     """
 
     def apply(self, character):
-        super().apply(character, silent=True)
+        super().apply(character)
 
         if not self.activated:
             # activate the lever

@@ -103,7 +103,7 @@ class GameTestingProducer(src.items.Item):
         new.bolted = False
         self.container.addItem(new,self.getPosition())
 
-        super().apply(character, silent=True)
+        super().apply(character)
 
     def getLongInfo(self):
         text = """

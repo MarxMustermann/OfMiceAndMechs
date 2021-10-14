@@ -35,7 +35,7 @@ class MemoryBank(src.items.Item):
     """
 
     def apply(self, character):
-        super().apply(character, silent=True)
+        super().apply(character)
 
         import copy
 

@@ -62,7 +62,7 @@ class Pile(src.items.Item):
             new = src.items.itemMap[self.itemType]()
             self.container.addItem(new,pos)
 
-        super().apply(character, silent=True)
+        super().apply(character)
 
     """
     print info with item counter

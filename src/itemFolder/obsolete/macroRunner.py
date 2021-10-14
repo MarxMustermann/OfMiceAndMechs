@@ -16,7 +16,7 @@ class MacroRunner(src.items.Item):
         self.attributesToStore.extend(["command"])
 
     def apply(self, character):
-        super().apply(character, silent=True)
+        super().apply(character)
 
         if self.command is None:
             if not len(character.macroState["macros"]):

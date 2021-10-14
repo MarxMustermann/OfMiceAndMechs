@@ -36,7 +36,7 @@ The MoldSpores will be outputted to the east/right.
 
         items = []
         for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.zPosition)):
-            if isinstance(item, src.item.itemMap["Bloom"]):
+            if isinstance(item, src.items.itemMap["Bloom"]):
                 items.append(item)
 
         # refuse to produce without resources
@@ -47,7 +47,7 @@ The MoldSpores will be outputted to the east/right.
         targetFull = False
         if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
             if (
-                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition)])
+                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition, self.zPosition)])
                 > 15
             ):
                 targetFull = True
@@ -69,6 +69,6 @@ The MoldSpores will be outputted to the east/right.
         # spawn the new item
         for i in range(1, 5):
             new = src.items.itemMap["MoldSpore"]()
-            self.container.addItem(new,(self.xPosition,self.yPosition,self.zPosition))
+            self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
 
 src.items.addType(SporeExtractor)

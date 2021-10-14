@@ -31,7 +31,7 @@ Activate the bloom shredder to produce biomass.
 
         items = []
         for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.zPosition)):
-            if isinstance(item, Bloom):
+            if isinstance(item, src.items.Bloom):
                 items.append(item)
 
         # refuse to produce without resources

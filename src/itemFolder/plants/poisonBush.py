@@ -98,7 +98,7 @@ You can use it to loose 100 satiation.
             generateScrap: flag to toggle leaving residue
         """
 
-        new = itemMap["FireCrystals"]()
+        new = src.items.itemMap["FireCrystals"]()
         self.container.addItem(new,self.getPosition())
 
         character = characters.Exploder()

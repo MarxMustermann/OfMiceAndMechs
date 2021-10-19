@@ -155,7 +155,8 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
                 "ExamineQuest",
                 "FireFurnaceMeta",
                 "CollectQuestMeta",
-                "WaitQuest" "NaiveDropQuest",
+                "WaitQuest",
+                "NaiveDropQuest",
                 "DropQuestMeta",
             ]
 

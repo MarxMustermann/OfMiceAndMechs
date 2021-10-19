@@ -1,4 +1,5 @@
 import src
+import random
 
 
 class EncrustedBush(src.items.Item):
@@ -23,7 +24,7 @@ class EncrustedBush(src.items.Item):
             generateScrap: flag to toggle leaving residue
         """
 
-        new = itemMap["Coal"]()
+        new = src.items.itemMap["Coal"]()
         self.container.addItem(new,self.getPosition())
 
         character = src.characters.Monster()

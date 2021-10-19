@@ -97,6 +97,14 @@ if not shouldLoad:
                 "siege",
             ),
             (
+                "basebuilding",
+                "basebuilding",
+            ),
+            (
+                "BackToTheRoots",
+                "BackToTheRoots",
+            ),
+            (
                 "survival",
                 "survival",
             ),
@@ -138,7 +146,10 @@ if not shouldLoad:
 
     if scenario == "siege":
         args.terrain = "test"
-        args.phase = "BuildBase"
+        args.phase = "Siege"
+    elif scenario == "basebuilding":
+        args.terrain = "nothingness"
+        args.phase = "BaseBuilding"
     elif scenario == "survival":
         args.terrain = "desert"
         args.phase = "DesertSurvival"
@@ -157,6 +168,9 @@ if not shouldLoad:
     elif scenario == "Tour":
         args.terrain = "nothingness"
         args.phase = "Tour"
+    elif scenario == "BackToTheRoots":
+        args.terrain = "nothingness"
+        args.phase = "BackToTheRoots"
 
 # set rendering mode
 if not args.nourwid:

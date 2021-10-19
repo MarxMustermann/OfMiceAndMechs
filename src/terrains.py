@@ -906,8 +906,10 @@ class Terrain(src.saveing.Saveable):
         if not char.terrain:
             return
         if not (char.xPosition and char.yPosition):
+            print("nopos")
             return
 
+        """
         if direction == "west":
             if char.xPosition % 15 == 1:
                 if char.yPosition % 15 < 7:
@@ -988,6 +990,7 @@ class Terrain(src.saveing.Saveable):
             return
         if char.yPosition % 15 in (0, 14) and direction in ("east", "west"):
             return
+        """
 
         # gather the rooms the character might have entered
         if direction == "north":
@@ -1223,6 +1226,10 @@ class Terrain(src.saveing.Saveable):
                 if char.faction == "player" and other.faction == "player":
                     continue
 
+                if char.faction.startswith("city"):
+                    if char.faction == other.faction:
+                        continue
+
                 char.messages.append("*thump*")
                 char.collidedWith(other)
                 other.collidedWith(char)
@@ -1241,6 +1248,108 @@ class Terrain(src.saveing.Saveable):
                     char.xPosition += 1
                 elif direction == "west":
                     char.xPosition -= 1
+
+                if char.yPosition < 1:
+                    print("should warp now")
+                    y = 0
+
+                    pos = None
+                    for row in src.gamestate.gamestate.terrainMap:
+                        x = 0
+                        for terrain in row:
+                            if terrain == self:
+                                pos = (x,y)
+                            x += 1
+                        y +=1
+
+                    print(pos)
+                    print("selcting warp target")
+
+                    newTerrain = src.gamestate.gamestate.terrainMap[pos[1]-1][pos[0]]
+
+                    print("warping now")
+                    self.removeCharacter(char)
+                    newTerrain.addCharacter(char,char.xPosition,15*14)
+
+                    if char == src.gamestate.gamestate.mainChar:
+                        src.gamestate.gamestate.terrain = newTerrain
+
+                if char.yPosition > 223:
+                    print("should warp now")
+                    y = 0
+
+                    pos = None
+                    for row in src.gamestate.gamestate.terrainMap:
+                        x = 0
+                        for terrain in row:
+                            if terrain == self:
+                                pos = (x,y)
+                            x += 1
+                        y +=1
+
+                    print(pos)
+                    print("selcting warp target")
+
+                    newTerrain = src.gamestate.gamestate.terrainMap[pos[1]+1][pos[0]]
+
+                    print("warping now")
+                    self.removeCharacter(char)
+                    newTerrain.addCharacter(char,char.xPosition,15)
+
+                    if char == src.gamestate.gamestate.mainChar:
+                        src.gamestate.gamestate.terrain = newTerrain
+
+                if char.xPosition < 1:
+                    print("should warp now")
+                    y = 0
+
+                    pos = None
+                    for row in src.gamestate.gamestate.terrainMap:
+                        x = 0
+                        for terrain in row:
+                            if terrain == self:
+                                pos = (x,y)
+                            x += 1
+                        y +=1
+
+                    print(pos)
+                    print("selcting warp target")
+
+                    newTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]-1]
+
+                    print("warping now")
+                    self.removeCharacter(char)
+                    newTerrain.addCharacter(char,15*14,char.yPosition)
+
+                    if char == src.gamestate.gamestate.mainChar:
+                        src.gamestate.gamestate.terrain = newTerrain
+
+                if char.xPosition > 223:
+                    print("should warp now")
+                    y = 0
+
+                    pos = None
+                    for row in src.gamestate.gamestate.terrainMap:
+                        x = 0
+                        for terrain in row:
+                            if terrain == self:
+                                pos = (x,y)
+                            x += 1
+                        y +=1
+
+                    print(pos)
+                    print("selcting warp target")
+
+                    newTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]+1]
+
+                    print("warping now")
+                    self.removeCharacter(char)
+                    newTerrain.addCharacter(char,15,char.yPosition)
+
+                    if char == src.gamestate.gamestate.mainChar:
+                        src.gamestate.gamestate.terrain = newTerrain
+
+
                 char.changed()
                 char.changed("moved", direction)
 

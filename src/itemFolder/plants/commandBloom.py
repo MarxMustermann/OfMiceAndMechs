@@ -192,7 +192,7 @@ class CommandBloom(src.items.Item):
                         items = []
                         for i in range(0, 2):
                             items.append(character.inventory.pop())
-                        crawler = self.runCommandOnNewCrawler("j")
+                        crawler = self.runCommandOnNewCrawler("j",character.faction)
                         crawler.inventory.extend(items)
                 else:
                     command = random.choice(["W", "A", "S", "D"])
@@ -205,7 +205,7 @@ class CommandBloom(src.items.Item):
             ):
                 if self.numSick > 4:
                     command = "wal20jsdj"
-                    self.runCommandOnNewCrawler("j")
+                    self.runCommandOnNewCrawler("j",character.faction)
 
             if isinstance(character, src.characters.Exploder):
                 if self.blocked:
@@ -335,7 +335,7 @@ class CommandBloom(src.items.Item):
                 else:
                     command = 13 * random.choice(["w", "a", "s", "d"]) + "9kkj"
 
-            if self.charges < 5 and not command:
+            if self.charges < 1 and not command:
                 command = ""
                 length = 1
                 pos = [self.xPosition, self.yPosition]
@@ -593,7 +593,7 @@ class CommandBloom(src.items.Item):
                                     if direction[0] > 0:
                                         newCommand += str(direction[0]) + "dJdJdJdJd"
                                     newCommand += "20j2000."
-                                    self.runCommandOnNewCrawler(newCommand)
+                                    self.runCommandOnNewCrawler(newCommand,character.faction)
                                     break
 
                         lastCharacterPosition = pos
@@ -670,7 +670,7 @@ class CommandBloom(src.items.Item):
                         if direction[0] > 0:
                             newCommand += str(direction[0]) + "d"
                         newCommand += "l20j2000."
-                        newChar = self.runCommandOnNewCrawler(newCommand)
+                        newChar = self.runCommandOnNewCrawler(newCommand,character.faction)
                         newChar.inventory.append(src.items.itemMap["Coal"]())
                         self.numCoal -= 1
                         break
@@ -783,7 +783,7 @@ class CommandBloom(src.items.Item):
                 walker.registers["CLUTTERED"] = [self.beganCluttered]
 
                 if self.numSick:
-                    self.runCommandOnNewCrawler("j")
+                    self.runCommandOnNewCrawler("j",character.faction)
 
                 if "NaiveDropQuest" not in walker.solvers:
                     walker.solvers.append("NaiveDropQuest")
@@ -821,7 +821,7 @@ class CommandBloom(src.items.Item):
             convertedCommand + character.macroState["commandKeyQueue"]
         )
 
-    def runCommandOnNewCrawler(self, newCommand):
+    def runCommandOnNewCrawler(self, newCommand, faction):
         """
         create a new npc and run a command on it
 
@@ -844,7 +844,7 @@ class CommandBloom(src.items.Item):
             "NaiveDropQuest",
         ]
 
-        newCharacter.faction = self.faction
+        newCharacter.faction = faction
         newCharacter.satiation = 100
         convertedCommand = []
         for item in newCommand:

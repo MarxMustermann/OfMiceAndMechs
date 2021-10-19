@@ -1,5 +1,6 @@
 import src
 import random
+import string
 
 class SickBloom(src.items.Item):
     """
@@ -95,9 +96,6 @@ class SickBloom(src.items.Item):
             return
 
         character = src.characters.Monster()
-        if triggerCharacter:
-            character.faction = triggerCharacter.faction
-
         character.solvers = [
             "NaiveActivateQuest",
             "ActivateQuestMeta",
@@ -109,7 +107,10 @@ class SickBloom(src.items.Item):
             "NaiveDropQuest",
         ]
 
-        character.faction = "monster"
+        character.faction = 'mold_'.join(random.choice(string.ascii_letters) for _ in range(1,10))
+        if triggerCharacter:
+            character.faction = triggerCharacter.faction
+
 
         character.macroState["macros"]["w"] = list("wj")
         character.macroState["macros"]["a"] = list("aj")

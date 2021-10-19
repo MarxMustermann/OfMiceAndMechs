@@ -31,7 +31,7 @@ Activate the bloom shredder to produce biomass.
 
         items = []
         for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.zPosition)):
-            if isinstance(item, src.items.Bloom):
+            if isinstance(item, src.items.itemMap["Bloom"]):
                 items.append(item)
 
         # refuse to produce without resources
@@ -40,9 +40,9 @@ Activate the bloom shredder to produce biomass.
             return
 
         targetFull = False
-        if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
+        if (self.xPosition + 1, self.yPosition, self.zPosition) in self.container.itemByCoordinates:
             if (
-                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition)])
+                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition, sefl.zPosition)])
                 > 15
             ):
                 targetFull = True

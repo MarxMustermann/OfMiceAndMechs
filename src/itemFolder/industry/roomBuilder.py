@@ -35,49 +35,45 @@ The room has to be a rectangle.
             character.addMessage("this machine can not be used within rooms")
             return
 
-        if self.terrain is None:
+        if self.container is None:
             character.addMessage("this machine can not be used within rooms")
             return
 
         wallLeft = False
         for offset in range(1, 15):
             pos = (self.xPosition - offset, self.yPosition)
-            if pos in self.terrain.itemByCoordinates:
-                for item in self.terrain.itemByCoordinates[pos]:
-                    if isinstance(item, Wall) or isinstance(item, Door):
-                        wallLeft = item
-                        break
+            for item in self.container.getItemByPosition(pos):
+                if isinstance(item, Wall) or isinstance(item, Door):
+                    wallLeft = item
+                    break
             if wallLeft:
                 break
         wallRight = False
         for offset in range(1, 15):
             pos = (self.xPosition + offset, self.yPosition)
-            if pos in self.terrain.itemByCoordinates:
-                for item in self.terrain.itemByCoordinates[pos]:
-                    if isinstance(item, Wall) or isinstance(item, Door):
-                        wallRight = item
-                        break
+            for item in self.container.getItemByPosition(pos):
+                if isinstance(item, Wall) or isinstance(item, Door):
+                    wallRight = item
+                    break
             if wallRight:
                 break
         wallTop = False
         for offset in range(1, 15):
             pos = (self.xPosition, self.yPosition - offset)
-            if pos in self.terrain.itemByCoordinates:
-                for item in self.terrain.itemByCoordinates[pos]:
-                    if isinstance(item, Wall) or isinstance(item, Door):
-                        wallTop = item
-                        break
+            for item in self.container.getItemByPosition(pos):
+                if isinstance(item, Wall) or isinstance(item, Door):
+                    wallTop = item
+                    break
 
             if wallTop:
                 break
         wallBottom = False
         for offset in range(1, 15):
             pos = (self.xPosition, self.yPosition + offset)
-            if pos in self.terrain.itemByCoordinates:
-                for item in self.terrain.itemByCoordinates[pos]:
-                    if isinstance(item, Wall) or isinstance(item, Door):
-                        wallBottom = item
-                        break
+            for item in self.container.getItemByPosition(pos):
+                if isinstance(item, Wall) or isinstance(item, Door):
+                    wallBottom = item
+                    break
             if wallBottom:
                 break
 
@@ -103,8 +99,8 @@ The room has to be a rectangle.
         for x in range(-roomLeft, roomRight + 1):
             pos = (self.xPosition + x, self.yPosition - roomTop)
             wallFound = None
-            if pos in self.terrain.itemByCoordinates:
-                for item in self.terrain.itemByCoordinates[pos]:
+            if pos in self.container.itemByCoordinates:
+                for item in self.container.itemByCoordinates[pos]:
                     if (
                         isinstance(item, Wall)
                         or isinstance(item, Door)
@@ -123,8 +119,8 @@ The room has to be a rectangle.
         for y in range(-roomTop, roomBottom + 1):
             pos = (self.xPosition - roomLeft, self.yPosition + y)
             wallFound = None
-            if pos in self.terrain.itemByCoordinates:
-                for item in self.terrain.itemByCoordinates[pos]:
+            if pos in self.container.itemByCoordinates:
+                for item in self.container.itemByCoordinates[pos]:
                     if (
                         isinstance(item, Wall)
                         or isinstance(item, Door)
@@ -143,8 +139,8 @@ The room has to be a rectangle.
         for y in range(-roomTop, roomBottom + 1):
             pos = (self.xPosition + roomRight, self.yPosition + y)
             wallFound = None
-            if pos in self.terrain.itemByCoordinates:
-                for item in self.terrain.itemByCoordinates[pos]:
+            if pos in self.container.itemByCoordinates:
+                for item in self.container.itemByCoordinates[pos]:
                     if (
                         isinstance(item, Wall)
                         or isinstance(item, Door)
@@ -163,8 +159,8 @@ The room has to be a rectangle.
         for x in range(-roomLeft, roomRight + 1):
             pos = (self.xPosition + x, self.yPosition + roomBottom)
             wallFound = None
-            if pos in self.terrain.itemByCoordinates:
-                for item in self.terrain.itemByCoordinates[pos]:
+            if pos in self.container.itemByCoordinates:
+                for item in self.container.itemByCoordinates[pos]:
                     if (
                         isinstance(item, Wall)
                         or isinstance(item, Door)
@@ -202,7 +198,7 @@ The room has to be a rectangle.
                 character.addMessage("special items to near to each other")
                 return
 
-        oldTerrain = self.terrain
+        oldTerrain = self.container
         for item in items:
             if item == self:
                 continue
@@ -229,7 +225,7 @@ The room has to be a rectangle.
         character.yPosition = roomTop + yOffset
         room.addCharacter(character, roomLeft + xOffset, roomTop + yOffset)
 
-        self.terrain.removeItem(self)
+        self.container.removeItem(self)
 
         self.xPosition = roomLeft
         self.yPosition = roomTop

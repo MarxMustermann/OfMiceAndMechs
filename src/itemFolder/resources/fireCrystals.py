@@ -78,7 +78,7 @@ class FireCrystals(src.items.Item):
         self.container.addEvent(event)
 
         new = src.items.itemMap["Explosion"]()
-        self.container.addItem(new,self.getPosition())
+        self.container.addItem(new,(self.xPosition,self.yPosition,self.zPosition))
         event = src.events.RunCallbackEvent(
             src.gamestate.gamestate.tick + 1
         )
@@ -86,7 +86,7 @@ class FireCrystals(src.items.Item):
         self.container.addEvent(event)
 
         new = src.items.itemMap["Explosion"]()
-        self.container.addItem(new,self.getPosition())
+        self.container.addItem(new,(self.xPosition+1,self.yPosition,self.zPosition))
         event = src.events.RunCallbackEvent(
             src.gamestate.gamestate.tick + 1
         )
@@ -94,7 +94,7 @@ class FireCrystals(src.items.Item):
         self.container.addEvent(event)
 
         new = src.items.itemMap["Explosion"]()
-        self.container.addItem(new,self.getPosition())
+        self.container.addItem(new,(self.xPosition-1,self.yPosition,self.zPosition))
         event = src.events.RunCallbackEvent(
             src.gamestate.gamestate.tick + 1
         )
@@ -102,7 +102,15 @@ class FireCrystals(src.items.Item):
         self.container.addEvent(event)
 
         new = src.items.itemMap["Explosion"]()
-        self.container.addItem(new,self.getPosition())
+        self.container.addItem(new,(self.xPosition,self.yPosition+1,self.zPosition))
+        event = src.events.RunCallbackEvent(
+            src.gamestate.gamestate.tick + 1
+        )
+        event.setCallback({"container": new, "method": "explode"})
+        self.container.addEvent(event)
+
+        new = src.items.itemMap["Explosion"]()
+        self.container.addItem(new,(self.xPosition,self.yPosition-1,self.zPosition))
         event = src.events.RunCallbackEvent(
             src.gamestate.gamestate.tick + 1
         )

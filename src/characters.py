@@ -444,7 +444,7 @@ class Character(src.saveing.Saveable):
 
         self.messages.append(message)
 
-    def runCommandString(self, commandString):
+    def runCommandString(self, commandString, clear=False):
         """
         run a command using the macro automation
 
@@ -457,10 +457,18 @@ class Character(src.saveing.Saveable):
         for char in commandString:
             convertedCommand.append((char, "norecord"))
 
+
+        oldCommand = []
+        if not clear:
+            oldCommand = self.macroState["commandKeyQueue"]
+
         # add command to the characters command queue
         self.macroState["commandKeyQueue"] = (
-            convertedCommand + self.macroState["commandKeyQueue"]
+            convertedCommand + oldCommand
         )
+
+        if len(self.macroState["commandKeyQueue"]) > 100:
+            self.macroState["commandKeyQueue"] = self.macroState["commandKeyQueue"][0:100]
 
     def getCommandString(self):
         """

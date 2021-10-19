@@ -21,6 +21,7 @@ import src.gamestate
 # HACK: common variables with modules
 mainChar = None
 
+
 class MurderQuest2(src.saveing.Saveable):
     """
     quest to murder someone
@@ -315,6 +316,8 @@ class Quest(src.saveing.Saveable):
     """
 
     def getDescription(self, asList=False, colored=False, active=False):
+        colored = False
+
         if asList:
             if colored:
                 import urwid
@@ -574,10 +577,98 @@ class Quest(src.saveing.Saveable):
         return state
 
 
-"""
-a container quest containing a list of quests that have to be handled in sequence
-"""
+class ObtainAllSpecialItems(Quest):
 
+    """
+    state initialization
+    """
+
+    def __init__(self, description="obtain all special items", creator=None):
+        questList = []
+        super().__init__(questList, creator=creator)
+        self.description = description
+        self.homePos = None
+        self.priorityObtainID = None
+        self.priorityObtainLocation = None
+        self.didDelegate = False
+
+        # save initial state and register
+        self.type = "ObtainAllSpecialItems"
+
+    """
+    never complete
+    """
+
+    def setPriorityObtain(self, itemID, itemLocation):
+        self.priorityObtainID = itemID
+        self.priorityObtainLocation = itemLocation
+        self.description = "obtain all special items, especially #%s from %s"%(itemID,itemLocation)
+        self.didDelegate = False
+
+    def triggerCompletionCheck(self):
+        return
+
+    def solver(self, character):
+        if self.didDelegate:
+            return False
+
+        print("should solve special quest all now")
+        for npc in character.subordinates:
+            print("delegating to npc")
+
+            quest = ObtainSpecialItem()
+            quest.setToObtain(self.priorityObtainID,self.priorityObtainLocation)
+
+            serveQuest = npc.quests[0]
+            serveQuest.addQuest(quest)
+
+        self.didDelegate = True
+
+        return False
+
+class ObtainSpecialItem(Quest):
+    def __init__(self, description="obtain special item", creator=None):
+        questList = []
+        super().__init__(questList, creator=creator)
+        self.description = description
+        self.homePos = None
+        self.itemID = None
+        self.itemLocation = None
+        self.didDelegate = False
+
+        # save initial state and register
+        self.type = "ObtainSpecialItem"
+
+    def setToObtain(self, itemID, itemLocation):
+        self.itemID = itemID
+        self.itemLocation = itemLocation
+        self.description = "obtain special item #%s from %s"%(self.itemID,self.itemLocation)
+
+    def triggerCompletionCheck(self):
+        return
+
+    def solver(self, character):
+        if character.subordinates:
+
+            if self.didDelegate:
+                return
+
+            print("redelegating to npc")
+
+            for npc in character.subordinates:
+                quest = ObtainSpecialItem()
+                quest.setToObtain(self.itemID,self.itemLocation)
+
+                serveQuest = npc.quests[0]
+                serveQuest.addQuest(quest)
+
+            self.description = "obtain special item #%s from %s (delegated)"%(self.itemID,self.itemLocation)
+            self.didDelegate = True
+        
+        else:
+            character.runCommandString("10a")
+
+        return False
 
 class MetaQuestSequence(Quest):
     """
@@ -1067,6 +1158,7 @@ class MetaQuestParralel(Quest):
     """
 
     def getDescription(self, asList=False, colored=False, active=False):
+        colored = False
         # add actual quest name
         if asList:
             if colored:
@@ -4763,6 +4855,7 @@ questMap = {
     "RoomDuty": RoomDuty,
     "Serve": Serve,
     "DummyQuest": DummyQuest,
+    "ObtainAllSpecialItems": ObtainAllSpecialItems,
 }
 
 def getQuestFromState(state):

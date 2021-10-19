@@ -1898,7 +1898,7 @@ current registers
     # bad code: keystrokes are abused here, a timer would be more appropriate
     if key in (commandChars.autoAdvance,):
         if not charState["ignoreNextAutomated"]:
-            loop.set_alarm_in(0.2, callShow_or_exit, commandChars.autoAdvance)
+            char.runCommandString(commandChars.autoAdvance)
         else:
             charState["ignoreNextAutomated"] = False
 
@@ -2279,14 +2279,7 @@ current registers
                     # activate the marked item
                     if charState["itemMarkedLast"]:
                         if not charState["itemMarkedLast"].container:
-                            if charState["itemMarkedLast"].room:
-                                charState["itemMarkedLast"].container = charState[
-                                    "itemMarkedLast"
-                                ].room
-                            elif charState["itemMarkedLast"].terrain:
-                                charState["itemMarkedLast"].container = charState[
-                                    "itemMarkedLast"
-                                ].terrain
+                            return
 
                         charState["itemMarkedLast"].apply(char)
 
@@ -2989,12 +2982,16 @@ class ChatPartnerselection(SubMenu):
                 for char in src.gamestate.gamestate.mainChar.room.characters:
                     if char == src.gamestate.gamestate.mainChar:
                         continue
+                    if not char.faction == src.gamestate.gamestate.mainChar.faction:
+                        continue
                     options.append((char, char.name))
             # get character on terrain
             else:
                 for char in src.gamestate.gamestate.mainChar.terrain.characters:
                     # bad pattern: should only list nearby characters
                     if char == src.gamestate.gamestate.mainChar:
+                        continue
+                    if not char.faction == src.gamestate.gamestate.mainChar.faction:
                         continue
                     options.append((char, char.name))
 
@@ -3020,6 +3017,8 @@ class ChatPartnerselection(SubMenu):
                         continue
 
                     for char in room.characters:
+                        if not char.faction == src.gamestate.gamestate.mainChar.faction:
+                            continue
                         options.append((char, char.name))
 
             self.setOptions("talk with whom?", options)
@@ -4537,6 +4536,35 @@ def keyboardListener(key):
             macroFile.write(json.dumps(compressedMacros, indent=10, sort_keys=True))
 
     elif key == "ctrl a":
+        multi_chars = []
+        multi_chars_fastCheck = {}
+
+        for row in src.gamestate.gamestate.terrainMap:
+            for terrain in row:
+                for char in terrain.characters:
+                    if char not in multi_chars:
+                        multi_chars.append(char)
+
+                for room in terrain.rooms:
+                    for character in room.characters:
+                        if character not in multi_chars_fastCheck:
+                            multi_chars.append(character)
+                            multi_chars_fastCheck[character] = 1
+
+        for room in src.gamestate.gamestate.extraRoots:
+            for character in room.characters:
+                if character not in multi_chars_fastCheck:
+                    multi_chars.append(character)
+                    multi_chars_fastCheck[character] = 1
+
+        for char in multi_chars:
+            if char.room:
+                for other in char.room.characters:
+                    if other not in multi_chars_fastCheck:
+                        multi_chars.append(other)
+                        multi_chars_fastCheck[other] = 1
+
+        """
         for character in src.gamestate.gamestate.terrain.characters:
             if character not in multi_chars:
                 multi_chars.append(character)
@@ -4544,6 +4572,7 @@ def keyboardListener(key):
             for character in room.characters[:]:
                 if character not in multi_chars:
                     multi_chars.append(character)
+        """
 
         toRemove = []
         for character in multi_chars:
@@ -4554,8 +4583,11 @@ def keyboardListener(key):
 
         newChar = None
 
+
         charindex += 1
         if charindex >= len(multi_chars):
+            charindex = 0
+        if charindex < 0:
             charindex = 0
         newChar = multi_chars[charindex]
 
@@ -4644,10 +4676,8 @@ def gameLoop(loop, user_data=None):
 
         firstRun = False
 
-        if not multi_currentChar:
-            multi_currentChar = src.gamestate.gamestate.mainChar
-        if multi_chars is None:
-            multi_chars = []
+        multi_chars = []
+        multi_chars_fastCheck = {}
 
         # transform and store the keystrokes that accumulated in pygame
         if useTiles:
@@ -4719,13 +4749,22 @@ def gameLoop(loop, user_data=None):
                         translatedKey = "9"
                     if key == tcod.event.KeySym.N0:
                         translatedKey = "0"
+                    if key == tcod.event.KeySym.COMMA:
+                        translatedKey = ","
                     if key == tcod.event.KeySym.MINUS:
                         if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
                             translatedKey = "_"
                         else:
                             translatedKey = "-"
-                    if key == tcod.event.KeySym.a:
+                    if key == tcod.event.KeySym.PLUS:
                         if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                            translatedKey = "*"
+                        else:
+                            translatedKey = "+"
+                    if key == tcod.event.KeySym.a:
+                        if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
+                            translatedKey = "ctrl a"
+                        elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
                             translatedKey = "A"
                         else:
                             translatedKey = "a"
@@ -4735,12 +4774,16 @@ def gameLoop(loop, user_data=None):
                         else:
                             translatedKey = "b"
                     if key == tcod.event.KeySym.c:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
+                            translatedKey = "ctrl c"
+                        elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
                             translatedKey = "C"
                         else:
                             translatedKey = "c"
                     if key == tcod.event.KeySym.d:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
+                            translatedKey = "ctrl d"
+                        elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
                             translatedKey = "D"
                         else:
                             translatedKey = "d"
@@ -4862,25 +4905,30 @@ def gameLoop(loop, user_data=None):
                     keyboardListener(translatedKey)
 
 
-        for char in src.gamestate.gamestate.terrain.characters:
-            if char not in multi_chars:
-                multi_chars.append(char)
+        for row in src.gamestate.gamestate.terrainMap:
+            for terrain in row:
+                for char in terrain.characters:
+                    if char not in multi_chars:
+                        multi_chars.append(char)
 
-        for room in src.gamestate.gamestate.terrain.rooms:
-            for character in room.characters:
-                if character not in multi_chars:
-                    multi_chars.append(character)
+                for room in terrain.rooms:
+                    for character in room.characters:
+                        if character not in multi_chars_fastCheck:
+                            multi_chars.append(character)
+                            multi_chars_fastCheck[character] = 1
 
         for room in src.gamestate.gamestate.extraRoots:
             for character in room.characters:
-                if character not in multi_chars:
+                if character not in multi_chars_fastCheck:
                     multi_chars.append(character)
+                    multi_chars_fastCheck[character] = 1
 
         for char in multi_chars:
             if char.room:
                 for other in char.room.characters:
-                    if other not in multi_chars:
+                    if other not in multi_chars_fastCheck:
                         multi_chars.append(other)
+                        multi_chars_fastCheck[other] = 1
 
         global continousOperation
         if (
@@ -4909,6 +4957,7 @@ def gameLoop(loop, user_data=None):
 
                 # do random action
                 if not len(state["commandKeyQueue"]):
+                    #if not char == src.gamestate.gamestate.mainChar:
                     char.startIdling()
 
                 if len(state["commandKeyQueue"]):

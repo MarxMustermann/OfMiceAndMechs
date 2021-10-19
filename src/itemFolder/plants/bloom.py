@@ -94,7 +94,7 @@ class Bloom(src.items.Item):
             self.zPosition,
         )
 
-        if self.container.getItemByPosition(newPos):
+        if not self.container.getItemByPosition(newPos):
             new = src.items.itemMap["Mold"]()
             self.container.addItem(new, newPos)
             new.startSpawn()

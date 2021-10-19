@@ -18,6 +18,8 @@ import src.events
 import config
 import src.gamestate
 
+import random
+
 phasesByName = None
 
 #####################################
@@ -566,7 +568,485 @@ class Dungeon(BasicPhase):
             "DropQuestMeta",
         ]
 
-class BuildBase(BasicPhase):
+class BackToTheRoots(BasicPhase):
+    """
+    """
+
+    def __init__(self, seed=0):
+        """
+        set up super class
+
+        Parameters:
+            seed: rng seed
+        """
+
+        super().__init__("BackToTheRoots", seed=seed)
+
+        self.specialItemSlotPositions = [(1,1),(2,1),(3,1),(4,1),(5,1),(7,1),(8,1),(9,1),(10,1),(11,1),(1,3),(1,4),(1,5),(1,7),(1,8)]
+        self.leaderQuests = {}
+        self.citylocations = []
+        self.cityIds = {}
+
+    def start(self, seed=0):
+        """
+        set up terrain and spawn main character
+
+        Parameters:
+            seed: rng seed
+        """
+
+        showText("gather all special items or die.\n\npress space to continue")
+
+        mainChar = src.gamestate.gamestate.mainChar
+
+        numCities = 0
+        while numCities < 15:
+            pos = (random.randint(1,13),random.randint(1,13))
+
+            if not pos in self.citylocations:
+                print("city at %s"%(pos,))
+                self.citylocations.append(pos)
+                numCities += 1
+
+        placedMainChar = False
+
+        cityCounter = 1
+        for citylocation in self.citylocations:
+            currentTerrain = src.gamestate.gamestate.terrainMap[citylocation[1]][citylocation[0]]
+            
+            architect = src.items.itemMap["ArchitectArtwork"]()
+            currentTerrain.addItem(architect,(124, 110, 0))
+
+            mainRoom = architect.doAddRoom(
+                {
+                    "coordinate": (7,7),
+                    "roomType": "EmptyRoom",
+                    "doors": "0,6 6,0 12,6 6,12",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                    },
+                None,
+            )
+
+            counter = 1
+            for pos in self.specialItemSlotPositions:
+                slotItem = src.items.itemMap["SpecialItemSlot"]()
+                slotItem.itemID = counter
+                if counter == cityCounter:
+                    slotItem.hasItem = True
+                mainRoom.addItem(slotItem,(pos[0],pos[1],0))
+                counter += 1
+
+            slotItem = src.items.itemMap["SpecialItem"]()
+            slotItem.itemID = cityCounter
+
+            def genNPC(cityCounter):
+                npc = src.characters.Character()
+                item = src.items.itemMap["GooFlask"]()
+                item.uses = 100
+                #npc.runCommandString("-agg_a-")
+                npc.runCommandString("*")
+                npc.inventory.append(item)
+                npc.faction = "city #%s"%(cityCounter,)
+
+                # add basic set of abilities in openworld phase
+                npc.questsDone = [
+                    "NaiveMoveQuest",
+                    "MoveQuestMeta",
+                    "NaiveActivateQuest",
+                    "ActivateQuestMeta",
+                    "NaivePickupQuest",
+                    "PickupQuestMeta",
+                    "DrinkQuest",
+                    "CollectQuestMeta",
+                    "FireFurnaceMeta",
+                    "ExamineQuest",
+                    "NaiveDropQuest",
+                    "DropQuestMeta",
+                    "LeaveRoomQuest",
+                ]
+
+                npc.solvers = [
+                    "SurviveQuest",
+                    "Serve",
+                    "NaiveMoveQuest",
+                    "MoveQuestMeta",
+                    "NaiveActivateQuest",
+                    "ActivateQuestMeta",
+                    "NaivePickupQuest",
+                    "PickupQuestMeta",
+                    "DrinkQuest",
+                    "ExamineQuest",
+                    "FireFurnaceMeta",
+                    "CollectQuestMeta",
+                    "WaitQuest",
+                    "NaiveDropQuest",
+                    "NaiveMurderQuest",
+                    "DropQuestMeta",
+                ]
+
+                return npc
+
+            leader = genNPC(cityCounter)
+            mainRoom.addCharacter(leader,6,2)
+
+            leader.faction = "city #%s"%(cityCounter,)
+
+            for i in range(0,3):
+                subleader = genNPC(cityCounter)
+                mainRoom.addCharacter(subleader,2+i*3,3)
+
+                leader.subordinates.append(subleader)
+                leader.runCommandString("*",clear=True)
+
+                quest = src.quests.Serve(superior=leader)
+                subleader.assignQuest(quest, active=True)
+
+                for j in range(0,3):
+                    subsubleader = genNPC(cityCounter)
+                    mainRoom.addCharacter(subsubleader,2+i*3+j,4)
+
+                    subleader.subordinates.append(subsubleader)
+
+                    quest = src.quests.Serve(superior=subleader)
+                    subsubleader.assignQuest(quest, active=True)
+
+                    for k in range(0,3):
+                        worker = genNPC(cityCounter)
+                        mainRoom.addCharacter(worker,2+i*3+j,6+k)
+                        subsubleader.subordinates.append(worker)
+
+                        quest = src.quests.Serve(superior=subsubleader)
+                        worker.assignQuest(quest, active=True)
+
+                        if not placedMainChar:
+                            src.gamestate.gamestate.mainChar = worker
+                            placedMainChar = True
+            
+            quest = src.quests.ObtainAllSpecialItems()
+            leader.assignQuest(quest, active=True)
+            self.leaderQuests[citylocation] = quest
+
+            self.cityIds[citylocation] = cityCounter
+
+            cityCounter += 1
+
+        src.gamestate.gamestate.mainChar.runCommandString("~", clear=True)
+        """
+        playerTerrainPos = random.choice(citylocations)
+        playerTerrain = src.gamestate.gamestate.terrainMap[playerTerrainPos[1]][playerTerrainPos[0]]
+
+        mainChar.terrain = playerTerrain
+        mainChar.faction = "city #%s"%(cityIds[playerTerrainPos],)
+
+        playerTerrain.addCharacter(
+            src.gamestate.gamestate.mainChar, 124, 109
+        )
+        """
+        self.startNewEpoch()
+
+    def startNewEpoch(self):
+        print("starting new epoch")
+
+        specialItemPositions = {}
+        toFetchMap = {}
+
+        for cityLocation in self.citylocations:
+            print("handling city #%s %s"%(self.cityIds[cityLocation],cityLocation,))
+
+            terrain = src.gamestate.gamestate.terrainMap[cityLocation[1]][cityLocation[0]]
+            foundRoom = None
+            for room in terrain.rooms:
+                if room.xPosition == 7 and room.yPosition == 7:
+                    foundRoom = room
+
+            if foundRoom:
+                print("found room")
+            else:
+                print("did not find room")
+                return
+        
+            missingItems = []
+            foundItems = []
+            for pos in self.specialItemSlotPositions:
+                for item in foundRoom.getItemByPosition((pos[0],pos[1],0)):
+                    if not item.type == "SpecialItemSlot":
+                        continue
+                    if not item.hasItem:
+                        missingItems.append(item.itemID)
+                        continue
+                    foundItems.append(item.itemID)
+                    specialItemPositions[item.itemID] = cityLocation
+
+            print("special item state")
+            print(foundItems)
+            print(missingItems)
+
+            if not missingItems:
+                print("city won the game")
+                return
+
+            itemToFetch = random.choice(missingItems)
+            toFetchMap[cityLocation] = itemToFetch
+            print("selected item #%s for this epoch"%(itemToFetch,))
+
+        print("fetch map:")
+        for cityLocation in self.citylocations:
+            print("city at %s needs item #%s from %s"%(cityLocation,toFetchMap[cityLocation],specialItemPositions[toFetchMap[cityLocation]]))
+            self.leaderQuests[cityLocation].setPriorityObtain(toFetchMap[cityLocation],specialItemPositions[toFetchMap[cityLocation]])
+
+class BaseBuilding(BasicPhase):
+    """
+    """
+
+    def __init__(self, seed=0):
+        """
+        set up super class
+
+        Parameters:
+            seed: rng seed
+        """
+
+        super().__init__("BaseBuilding", seed=seed)
+
+    def start(self, seed=0):
+        """
+        set up terrain and spawn main character
+
+        Parameters:
+            seed: rng seed
+        """
+
+        showText("build a base.\n\npress space to continue")
+
+        mainChar = src.gamestate.gamestate.mainChar
+        mainChar.terrain = src.gamestate.gamestate.terrain
+        src.gamestate.gamestate.terrain.addCharacter(
+            src.gamestate.gamestate.mainChar, 124, 109
+        )
+
+        item = src.items.itemMap["GooFlask"]()
+        item.uses = 100
+        mainChar.inventory.append(item)
+
+        item = src.items.itemMap["ItemCollector"]()
+        mainChar.inventory.append(item)
+
+        items = []
+
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.bolted = False
+        item.godMode = True
+        items.append((item, (15 * 8 + 8, 15 * 8 + 9, 0)))
+
+        item = src.items.itemMap["RoadManager"]()
+        roadManager = item
+        item.bolted = False
+        item.godMode = True
+        items.append((item, (15 * 8 + 8, 15 * 8 + 8, 0)))
+
+        item = src.items.itemMap["ProductionArtwork"]()
+        item.bolted = False
+        item.godMode = True
+        items.append((item, (15 * 8 + 8, 15 * 8 + 10, 0)))
+
+        src.gamestate.gamestate.terrain.addItems(items)
+
+        # add basic set of abilities in openworld phase
+        src.gamestate.gamestate.mainChar.questsDone = [
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "CollectQuestMeta",
+            "FireFurnaceMeta",
+            "ExamineQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+            "LeaveRoomQuest",
+        ]
+
+        src.gamestate.gamestate.mainChar.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest" "NaiveDropQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+        ]
+        src.gamestate.gamestate.mainChar.macroState["macros"]["j"] = ["J", "f"]
+
+        architect.doAddScrapfield(9, 7, 80)
+        architect.doAddScrapfield(10, 6, 280)
+        architect.doAddScrapfield(10, 7, 280)
+        architect.doAddScrapfield(10, 8, 280)
+
+        mainRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        commonsStorage = architect.doAddRoom(
+                {
+                       "coordinate": (7,6),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        toolsStorage = architect.doAddRoom(
+                {
+                       "coordinate": (6,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+            )
+        machineStorage = architect.doAddRoom(
+                {
+                       "coordinate": (7,8),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+            )
+        architect.doAddRoom(
+                {
+                       "coordinate": (6,6),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+            )
+        architect.doAddRoom(
+                {
+                       "coordinate": (6,8),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+            )
+        
+        for x in range(1,6):
+            for y in range(1,6):
+                for i in range(1,6):
+                    item = src.items.itemMap["Sheet"]()
+                    commonsStorage.addItem(item,(x,y,0))
+
+        for x in range(7,12):
+            for y in range(1,6):
+                for i in range(1,6):
+                    item = src.items.itemMap["GooFlask"]()
+                    item.uses = 100
+                    commonsStorage.addItem(item,(x,y,0))
+
+        for y in range(1,6):
+            item = src.items.itemMap["GrowthTank"]()
+            item.filled = True
+            item.commands["born"] = "-aJf-j"
+            mainRoom.addItem(item,(1,y,0))
+
+            item = src.items.itemMap["Command"]()
+            item.command = "dj"*3+"3aj"
+            mainRoom.addItem(item,(2,y,0))
+
+        item = src.items.itemMap["Command"]()
+        item.command = "dkd4s28d10j13awwaJs.ssjdss13a4w2a"
+        mainRoom.addItem(item,(4,2,0))
+
+        item = src.items.itemMap["GooFlask"]()
+        item.uses = 100
+        mainRoom.addItem(item,(5,2,0))
+
+        item = src.items.itemMap["Command"]()
+        item.command = "djd3s15dwwaJs.sjdss3asaLsdJsdKsaw3dwwdJs.jass13a3waa"
+        mainRoom.addItem(item,(4,3,0))
+
+        item = src.items.itemMap["GooFlask"]()
+        item.uses = 100
+        mainRoom.addItem(item,(5,3,0))
+
+
+        roadManager.doClearPaths(9,7)
+
+        items = []
+
+        item = src.items.itemMap["ItemCollector"]()
+        item.bolted = True
+        items.append((item, (15 * 9 + 7, 15 * 7 + 7, 0)))
+
+        item = src.items.itemMap["UniformStockpileManager"]()
+        item.bolted = True
+        items.append((item, (15 * 8 + 6, 15 * 7 + 6, 0)))
+
+        item = src.items.itemMap["UniformStockpileManager"]()
+        item.bolted = True
+        items.append((item, (15 * 8 + 8, 15 * 7 + 6, 0)))
+
+        item = src.items.itemMap["ScrapCompactor"]()
+        item.bolted = True
+        items.append((item, (15 * 8 + 4, 15 * 7 + 9, 0)))
+
+        item = src.items.itemMap["Machine"]()
+        item.bolted = True
+        item.setToProduce("Rod")
+        items.append((item, (15 * 8 + 6, 15 * 7 + 9, 0)))
+
+        item = src.items.itemMap["Machine"]()
+        item.bolted = True
+        item.setToProduce("Frame")
+        items.append((item, (15 * 8 + 8, 15 * 7 + 9, 0)))
+
+        item = src.items.itemMap["Machine"]()
+        item.bolted = True
+        item.setToProduce("Case")
+        items.append((item, (15 * 8 + 10, 15 * 7 + 9, 0)))
+
+        src.gamestate.gamestate.terrain.addItems(items)
+
+        for x in range(1,6):
+            for y in range(1,6):
+                item = src.items.itemMap["ScrapCompactor"]()
+                item.bolted = False
+                machineStorage.addItem(item,(x,y,0))
+
+        for x in range(7,12):
+            for y in range(1,6):
+                item = src.items.itemMap["UniformStockpileManager"]()
+                item.bolted = False
+                machineStorage.addItem(item,(x,y,0))
+
+
+class Siege(BasicPhase):
     """
     the phase is intended to give the player access to the true gameworld without manipulations
 
@@ -581,7 +1061,7 @@ class BuildBase(BasicPhase):
             seed: rng seed
         """
 
-        super().__init__("BuildBase", seed=seed)
+        super().__init__("Siege", seed=seed)
 
     def start(self, seed=0):
         """
@@ -669,6 +1149,9 @@ class BuildBase(BasicPhase):
         molds.append((src.items.itemMap["Mold"](),(159, 116, 0)))
         molds.append((src.items.itemMap["Mold"](),(138, 108, 0)))
         molds.append((src.items.itemMap["Mold"](),(145, 115, 0)))
+
+        print("test")
+        print(len(src.items.itemMap))
 
         positions = [
             (187, 37, 0),
@@ -1243,7 +1726,8 @@ class Tour(BasicPhase):
             "ExamineQuest",
             "FireFurnaceMeta",
             "CollectQuestMeta",
-            "WaitQuest" "NaiveDropQuest",
+            "WaitQuest",
+            "NaiveDropQuest",
             "NaiveDropQuest",
             "DropQuestMeta",
         ]
@@ -6132,7 +6616,7 @@ def registerPhases():
     phasesByName["Challenge"] = Challenge
     phasesByName["Test"] = Testing_1
     phasesByName["Testing_1"] = Testing_1
-    phasesByName["BuildBase"] = BuildBase
+    phasesByName["Siege"] = Siege
     phasesByName["Tutorial"] = Tutorial
     phasesByName["DesertSurvival"] = DesertSurvival
     phasesByName["FactoryDream"] = FactoryDream
@@ -6141,3 +6625,5 @@ def registerPhases():
     phasesByName["WorldBuildingPhase"] = WorldBuildingPhase
     phasesByName["RoguelikeStart"] = RoguelikeStart
     phasesByName["Tour"] = Tour
+    phasesByName["BaseBuilding"] = BaseBuilding
+    phasesByName["BackToTheRoots"] = BackToTheRoots

@@ -720,6 +720,7 @@ class Room(src.saveing.Saveable):
                         "chracter is rendered outside of room"
                     )
 
+            """
             # draw quest markers
             # bad code: should be an overlay
             if src.gamestate.gamestate.mainChar.room == self:
@@ -797,6 +798,7 @@ class Room(src.saveing.Saveable):
                     #  don't show the questmarker every second turn for blinking effect
                     else:
                         self.shownQuestmarkerLastRender = False
+            """
 
             # draw main char
             if src.gamestate.gamestate.mainChar in self.characters:
@@ -1093,6 +1095,9 @@ class Room(src.saveing.Saveable):
 
                 if character.faction == "player" and other.faction == "player":
                     continue
+                if character.faction.startswith("city"):
+                    if character.faction == other.faction:
+                        continue
 
                 character.collidedWith(other)
                 other.collidedWith(character)

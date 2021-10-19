@@ -1,3 +1,4 @@
+"""
 import os
 
 for module in os.listdir(os.path.dirname(__file__)):
@@ -5,3 +6,13 @@ for module in os.listdir(os.path.dirname(__file__)):
         continue
     __import__("src.itemFolder.functional." + module[:-3], locals(), globals())
 del module
+"""
+
+import src.itemFolder.functional.autoScribe
+import src.itemFolder.functional.growthTank
+import src.itemFolder.functional.map
+import src.itemFolder.functional.markerBean
+import src.itemFolder.functional.note
+import src.itemFolder.functional.roomControls
+import src.itemFolder.functional.stasisTank
+import src.itemFolder.functional.suicideBooth

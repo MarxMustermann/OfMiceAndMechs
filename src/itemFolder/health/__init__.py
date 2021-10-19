@@ -1,3 +1,4 @@
+"""
 import os
 
 for module in os.listdir(os.path.dirname(__file__)):
@@ -5,3 +6,9 @@ for module in os.listdir(os.path.dirname(__file__)):
         continue
     __import__("src.itemFolder.health." + module[:-3], locals(), globals())
 del module
+"""
+
+import src.itemFolder.health.healingStation
+import src.itemFolder.health.sanitaryStation
+import src.itemFolder.health.vial
+

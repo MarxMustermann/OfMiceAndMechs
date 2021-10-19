@@ -1,3 +1,4 @@
+"""
 import os
 
 for module in os.listdir(os.path.dirname(__file__)):
@@ -5,3 +6,8 @@ for module in os.listdir(os.path.dirname(__file__)):
         continue
     __import__("src.itemFolder.automation." + module[:-3], locals(), globals())
 del module
+"""
+
+import src.itemFolder.automation.command
+import src.itemFolder.automation.jobBoard
+import src.itemFolder.automation.jobOrder

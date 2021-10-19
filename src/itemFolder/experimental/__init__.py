@@ -1,3 +1,4 @@
+"""
 import os
 
 for module in os.listdir(os.path.dirname(__file__)):
@@ -5,3 +6,7 @@ for module in os.listdir(os.path.dirname(__file__)):
         continue
     __import__("src.itemFolder.experimental." + module[:-3], locals(), globals())
 del module
+"""
+
+import src.itemFolder.experimental.miningShaft
+import src.itemFolder.experimental.scrapCommander

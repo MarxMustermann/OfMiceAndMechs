@@ -1,5 +1,5 @@
 """
-rooms and room related code belong here
+eeeeeeend room related code belong here
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 much of this code is currenty not in use and needs to be reintegrated
 """
@@ -714,7 +714,41 @@ class Room(src.saveing.Saveable):
                 if character.yPosition < len(chars) and character.xPosition < len(
                     chars[character.yPosition]
                 ):
-                    chars[character.yPosition][character.xPosition] = character.display
+                    if not "city" in character.faction:
+                        chars[character.yPosition][character.xPosition] = character.display
+                    else:
+                        chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec("#3f3", "black"), "@ ")
+                        if character.faction.endswith("#1"):
+                            chars[character.yPosition][character.xPosition][0].fg = "#066"
+                        if character.faction.endswith("#2"):
+                            chars[character.yPosition][character.xPosition][0].fg = "#006"
+                        if character.faction.endswith("#3"):
+                            chars[character.yPosition][character.xPosition][0].fg = "#060"
+                        if character.faction.endswith("#4"):
+                            chars[character.yPosition][character.xPosition][0].fg = "#082"
+                        if character.faction.endswith("#5"):
+                            chars[character.yPosition][character.xPosition][0].fg = "#028"
+                        if character.faction.endswith("#6"):
+                            chars[character.yPosition][character.xPosition][0].fg = "#088"
+                        if character.faction.endswith("#7"):
+                            chars[character.yPosition][character.xPosition][0].fg = "#086"
+                        if character.faction.endswith("#8"):
+                            chars[character.yPosition][character.xPosition][0].fg = "#068"
+                        if character.faction.endswith("#9"):
+                            chars[character.yPosition][character.xPosition][0].fg = "#0a0"
+                        if character.faction.endswith("#10"):
+                            chars[character.yPosition][character.xPosition][0].fg = "#00a"
+                        if character.faction.endswith("#11"):
+                            chars[character.yPosition][character.xPosition][0].fg = "#0a6"
+                        if character.faction.endswith("#12"):
+                            chars[character.yPosition][character.xPosition][0].fg = "#06a"
+                        if character.faction.endswith("#13"):
+                            chars[character.yPosition][character.xPosition][0].fg = "#08a"
+                        if character.faction.endswith("#14"):
+                            chars[character.yPosition][character.xPosition][0].fg = "#0a6"
+                        if character.faction.endswith("#15"):
+                            chars[character.yPosition][character.xPosition][0].fg = "#0aa"
+
                 else:
                     src.logger.debugMessages.append(
                         "chracter is rendered outside of room"
@@ -807,9 +841,12 @@ class Room(src.saveing.Saveable):
                 ) and src.gamestate.gamestate.mainChar.xPosition < len(
                     chars[src.gamestate.gamestate.mainChar.yPosition]
                 ):
+                    """
                     chars[src.gamestate.gamestate.mainChar.yPosition][
                         src.gamestate.gamestate.mainChar.xPosition
                     ] = src.gamestate.gamestate.mainChar.display
+                    """
+                    chars[src.gamestate.gamestate.mainChar.yPosition][src.gamestate.gamestate.mainChar.xPosition] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
                 else:
                     src.logger.debugMessages.append(
                         "chracter is rendered outside of room"

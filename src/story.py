@@ -586,6 +586,63 @@ class BackToTheRoots(BasicPhase):
         self.leaderQuests = {}
         self.citylocations = []
         self.cityIds = {}
+        self.cityNPCCounters = {}
+        self.leaders = {}
+        self.scoreTracker = {}
+
+    def genNPC(self, cityCounter, citylocation):
+        npc = src.characters.Character()
+        item = src.items.itemMap["GooFlask"]()
+        item.uses = 100
+        #npc.runCommandString("-agg_a-")
+        npc.runCommandString("10.*")
+        npc.macroState["macros"]["j"] = ["J", "f"]
+        npc.inventory.append(item)
+        npc.faction = "city #%s"%(cityCounter,)
+        npc.registers["HOMEx"] = citylocation[0]
+        npc.registers["HOMEy"] = citylocation[1]
+
+        # add basic set of abilities in openworld phase
+        npc.questsDone = [
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "CollectQuestMeta",
+            "FireFurnaceMeta",
+            "ExamineQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+            "LeaveRoomQuest",
+            "DeliverSpecialItem",
+        ]
+
+        npc.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest",
+            "NaiveDropQuest",
+            "NaiveMurderQuest",
+            "DropQuestMeta",
+            "DeliverSpecialItem",
+        ]
+
+        npc.personality["abortMacrosOnAttack"] = False
+        npc.personality["doIdleAction"] = False
+        return npc
 
     def start(self, seed=0):
         """
@@ -595,7 +652,7 @@ class BackToTheRoots(BasicPhase):
             seed: rng seed
         """
 
-        showText("gather all special items or die.\n\npress space to continue")
+        showText("follow the orders given to you.\n\npress space to continue")
 
         mainChar = src.gamestate.gamestate.mainChar
 
@@ -628,6 +685,8 @@ class BackToTheRoots(BasicPhase):
                 None,
             )
 
+            self.cityNPCCounters[citylocation] = 0
+
             counter = 1
             for pos in self.specialItemSlotPositions:
                 slotItem = src.items.itemMap["SpecialItemSlot"]()
@@ -640,94 +699,66 @@ class BackToTheRoots(BasicPhase):
             slotItem = src.items.itemMap["SpecialItem"]()
             slotItem.itemID = cityCounter
 
-            def genNPC(cityCounter):
-                npc = src.characters.Character()
-                item = src.items.itemMap["GooFlask"]()
-                item.uses = 100
-                #npc.runCommandString("-agg_a-")
-                npc.runCommandString("*")
-                npc.inventory.append(item)
-                npc.faction = "city #%s"%(cityCounter,)
-
-                # add basic set of abilities in openworld phase
-                npc.questsDone = [
-                    "NaiveMoveQuest",
-                    "MoveQuestMeta",
-                    "NaiveActivateQuest",
-                    "ActivateQuestMeta",
-                    "NaivePickupQuest",
-                    "PickupQuestMeta",
-                    "DrinkQuest",
-                    "CollectQuestMeta",
-                    "FireFurnaceMeta",
-                    "ExamineQuest",
-                    "NaiveDropQuest",
-                    "DropQuestMeta",
-                    "LeaveRoomQuest",
-                ]
-
-                npc.solvers = [
-                    "SurviveQuest",
-                    "Serve",
-                    "NaiveMoveQuest",
-                    "MoveQuestMeta",
-                    "NaiveActivateQuest",
-                    "ActivateQuestMeta",
-                    "NaivePickupQuest",
-                    "PickupQuestMeta",
-                    "DrinkQuest",
-                    "ExamineQuest",
-                    "FireFurnaceMeta",
-                    "CollectQuestMeta",
-                    "WaitQuest",
-                    "NaiveDropQuest",
-                    "NaiveMurderQuest",
-                    "DropQuestMeta",
-                ]
-
-                return npc
-
-            leader = genNPC(cityCounter)
-            mainRoom.addCharacter(leader,6,2)
+            leader = self.genNPC(cityCounter,citylocation)
+            mainRoom.addCharacter(leader,7,3)
+            leader.rank = 3
 
             leader.faction = "city #%s"%(cityCounter,)
+            self.leaders[citylocation] = leader
+
+            """
+            if not placedMainChar:
+                extra = self.genNPC(cityCounter,citylocation)
+                mainRoom.addCharacter(extra,7,4)
+                src.gamestate.gamestate.mainChar = extra
+                placedMainChar = True
+            """
 
             for i in range(0,3):
-                subleader = genNPC(cityCounter)
-                mainRoom.addCharacter(subleader,2+i*3,3)
+                subleader = self.genNPC(cityCounter,citylocation)
+                mainRoom.addCharacter(subleader,4+i*3,4)
 
                 leader.subordinates.append(subleader)
-                leader.runCommandString("*",clear=True)
 
                 quest = src.quests.Serve(superior=leader)
+                subleader.superior = leader
+                subleader.rank = 4
                 subleader.assignQuest(quest, active=True)
 
                 for j in range(0,3):
-                    subsubleader = genNPC(cityCounter)
-                    mainRoom.addCharacter(subsubleader,2+i*3+j,4)
+                    subsubleader = self.genNPC(cityCounter,citylocation)
+                    mainRoom.addCharacter(subsubleader,3+i*3+j,5)
 
                     subleader.subordinates.append(subsubleader)
 
                     quest = src.quests.Serve(superior=subleader)
+                    subsubleader.superior = subleader
+                    subsubleader.rank = 5
                     subsubleader.assignQuest(quest, active=True)
 
                     for k in range(0,3):
-                        worker = genNPC(cityCounter)
-                        mainRoom.addCharacter(worker,2+i*3+j,6+k)
+                        worker = self.genNPC(cityCounter,citylocation)
+                        mainRoom.addCharacter(worker,3+i*3+j,7+k)
                         subsubleader.subordinates.append(worker)
 
                         quest = src.quests.Serve(superior=subsubleader)
+                        worker.superior = subsubleader
+                        worker.rank = 6
                         worker.assignQuest(quest, active=True)
 
                         if not placedMainChar:
                             src.gamestate.gamestate.mainChar = worker
                             placedMainChar = True
+
+                        if src.gamestate.gamestate.mainChar.faction == worker.faction:
+                            worker.baseDamage = 1000
             
             quest = src.quests.ObtainAllSpecialItems()
             leader.assignQuest(quest, active=True)
             self.leaderQuests[citylocation] = quest
 
             self.cityIds[citylocation] = cityCounter
+            self.scoreTracker[citylocation] = 0
 
             cityCounter += 1
 
@@ -745,12 +776,18 @@ class BackToTheRoots(BasicPhase):
         """
         self.startNewEpoch()
 
+    def rewardNPCDirect(self,character):
+        print("rewarding npc")
+
     def startNewEpoch(self):
         print("starting new epoch")
 
         specialItemPositions = {}
         toFetchMap = {}
+        hasItemMap = {}
 
+        locatedItems = []
+        missingItemMap = {}
         for cityLocation in self.citylocations:
             print("handling city #%s %s"%(self.cityIds[cityLocation],cityLocation,))
 
@@ -778,22 +815,273 @@ class BackToTheRoots(BasicPhase):
                     foundItems.append(item.itemID)
                     specialItemPositions[item.itemID] = cityLocation
 
+            hasItemMap[cityLocation] = foundItems
+
+            locatedItems.extend(foundItems)
+            missingItemMap[cityLocation] = missingItems
+
+        for cityLocation in self.citylocations:
+            missingItems = missingItemMap[cityLocation]
             print("special item state")
             print(foundItems)
             print(missingItems)
 
-            if not missingItems:
-                print("city won the game")
-                return
+            candidates = missingItems[:]
+            for candidate in candidates[:]:
+                if not candidate in locatedItems:
+                    candidates.remove(candidate)
 
-            itemToFetch = random.choice(missingItems)
+            if not candidates:
+                print("city %s won the game"%(cityLocation,))
+                return
+                
+            itemToFetch = random.choice(candidates)
             toFetchMap[cityLocation] = itemToFetch
             print("selected item #%s for this epoch"%(itemToFetch,))
+
+        print("has item map:")
+        for cityLocation in self.citylocations:
+            print("city at %s has items %s "%(cityLocation,hasItemMap[cityLocation],))
+
+        for cityLocation in self.citylocations:
+            numNpcs = len(hasItemMap[cityLocation])
+            currentTerrain = src.gamestate.gamestate.terrainMap[cityLocation[1]][cityLocation[0]]
+            mainRoom = currentTerrain.rooms[0]
+
+            for item in mainRoom.itemsOnFloor[:]:
+                if not item.type == "Corpse":
+                    continue
+                mainRoom.removeItem(item)
+
+            cityLeader = self.leaders[cityLocation]
+
+            print("found leader")
+            if cityLeader.dead:
+                print("leader dead")
+                continue
+
+            for i in range(0,numNpcs):
+                newNPC = self.genNPC(self.cityIds[cityLocation],cityLocation)
+                self.cityNPCCounters[cityLocation] += 1
+
+                if not newNPC.faction == src.gamestate.gamestate.mainChar.faction:
+                    continue
+
+                foundSubleaderReplacement = None
+                counter = 0
+                for subordinate in cityLeader.subordinates:
+                    if subordinate.dead == True:
+                        print("found dead subleader")
+                        foundSubleaderReplacement = subordinate
+                        break
+                    counter += 1
+
+                if len(cityLeader.subordinates) < 3:
+                    counter = len(cityLeader.subordinates)
+                    cityLeader.subordinates.append(None)
+                    foundSubleaderReplacement = True
+
+                if foundSubleaderReplacement:
+                    cityLeader.subordinates[counter] = newNPC
+                    print("added replacement subleader in slot %s"%(counter,))
+
+                    mainRoom.addCharacter(newNPC,4+counter*3,4)
+
+                    quest = src.quests.Serve(superior=cityLeader)
+                    newNPC.assignQuest(quest, active=True)
+                    newNPC.superior = cityLeader
+                    newNPC.rank = 4
+
+                    newNPC.addMessage("added as replacement 2nd tier officer")
+                    continue
+
+                selectedSubLeader = random.choice(cityLeader.subordinates)
+                counter = cityLeader.subordinates.index(selectedSubLeader)
+                print("subleader index %s"%(counter,))
+
+                foundSubsubleaderReplacement = None
+                counter2 = 0
+                for subsubordinate in selectedSubLeader.subordinates:
+                    if subsubordinate.dead == True:
+                        print("found dead subsubleader")
+                        foundSubsubleaderReplacement = subsubordinate
+                        break
+                    counter2 += 1
+
+                if len(selectedSubLeader.subordinates) < 3:
+                    counter2 = len(selectedSubLeader.subordinates)
+                    selectedSubLeader.subordinates.append(None)
+                    foundSubsubleaderReplacement = True
+
+                if foundSubsubleaderReplacement:
+                    selectedSubLeader.subordinates[counter2] = newNPC
+                    print("added replacement subsubleader in slot %s/%s"%(counter,counter2,))
+
+                    mainRoom.addCharacter(newNPC,3+counter*3+counter2,5)
+
+                    quest = src.quests.Serve(superior=selectedSubLeader)
+                    newNPC.assignQuest(quest, active=True)
+                    newNPC.superior = selectedSubLeader
+                    newNPC.rank = 5
+
+                    newNPC.addMessage("added as replacement 2nd tier officer")
+                    continue
+
+                selectedSubsubLeader = random.choice(selectedSubLeader.subordinates)
+                counter2 = selectedSubLeader.subordinates.index(selectedSubsubLeader)
+                print("subsubleader index %s"%(counter2,))
+
+                foundWorkerReplacement = None
+                counter3 = 0
+                for worker in selectedSubsubLeader.subordinates:
+                    if worker.dead == True:
+                        print("found dead worker")
+                        foundWorkerReplacement = worker
+                        break
+                    counter3 += 1
+
+                if len(selectedSubsubLeader.subordinates) < 3:
+                    counter3 = len(selectedSubsubLeader.subordinates)
+                    selectedSubsubLeader.subordinates.append(None)
+                    foundWorkerReplacement = True
+
+                if foundWorkerReplacement:
+                    selectedSubsubLeader.subordinates[counter3] = newNPC
+                    print("added replacement worker in slot %s/%s/%s"%(counter,counter2,counter3,))
+
+                    mainRoom.addCharacter(newNPC,3+counter*3+counter2,7+counter3)
+
+                    quest = src.quests.Serve(superior=selectedSubsubLeader)
+                    newNPC.assignQuest(quest, active=True)
+                    newNPC.superior = selectedSubsubLeader
+                    newNPC.rank = 6
+
+                    newNPC.addMessage("added as replacement worker")
+                    continue
+
+                print("full tree")
+
+                newNPC.die()
+
+        toKill = []
+        for cityLocation in self.citylocations:
+            newScore = len(hasItemMap[cityLocation])
+
+            if newScore <= self.scoreTracker[cityLocation]:
+                cityLeader = self.leaders[cityLocation]
+                toKill.append(cityLeader)
+
+                # promote subleaders
+                candidates = []
+                for subordinate in cityLeader.subordinates:
+                    if subordinate.dead:
+                        continue
+                    candidates.append(subordinate)
+
+                if not candidates:
+                    print("no subordinate to promote")
+                    continue
+
+                subLeader = random.choice(candidates)
+
+                serveQuest = subLeader.quests[0]
+                subLeader.quests.remove(serveQuest)
+                subLeader.rank = 3
+
+                subLeader.quests.append(cityLeader.quests[0])
+                subLeader.runCommandString("w")
+                del subLeader.superior
+                self.leaders[cityLocation] = subLeader
+
+                oldSubordinatesSubLeader = subLeader.subordinates
+                subLeader.subordinates = []
+                subLeaderInsertIndex = None
+                counter = 0
+                for subordinate in cityLeader.subordinates:
+                    if subordinate == subLeader:
+                        subLeaderInsertIndex = counter
+                        continue
+                    subordinate.superior = subLeader
+                    subLeader.subordinates.append(subordinate)
+                    counter += 1
+
+                # promote subsubleaders
+                candidates = []
+                for subordinate in oldSubordinatesSubLeader:
+                    if subordinate.dead:
+                        continue
+                    candidates.append(subordinate)
+
+                if not candidates:
+                    print("no subsubordinate to promote")
+                    continue
+
+                subsubLeader = random.choice(candidates)
+
+                subsubLeader.runCommandString("w")
+                subsubLeader.rank = 4
+                oldSubordinatesSubsubLeader = subsubLeader.subordinates
+                subsubLeader.subordinates = []
+
+                subsubLeader.superior = subLeader
+                subLeader.subordinates.insert(subLeaderInsertIndex,subsubLeader)
+
+                for subordinate in oldSubordinatesSubLeader:
+                    if subordinate == subsubLeader:
+                        continue
+                    subordinate.superior = subsubLeader
+                    subsubLeader.subordinates.append(subordinate)
+
+                # promote workers
+                candidates = []
+                for subordinate in oldSubordinatesSubsubLeader:
+                    if subordinate.dead:
+                        continue
+                    candidates.append(subordinate)
+
+                if not candidates:
+                    print("no worker to promote")
+                    continue
+                print("promoting worker")
+
+                worker = random.choice(candidates)
+
+                worker.runCommandString("w"*(worker.yPosition-5))
+                worker.rank = 5
+
+                worker.superior = subsubLeader
+                subsubLeader.subordinates.insert(subLeaderInsertIndex,worker)
+
+                for subordinate in oldSubordinatesSubsubLeader:
+                    if subordinate == worker:
+                        continue
+                    subordinate.superior = worker
+                    worker.subordinates.append(subordinate)
+
+            self.scoreTracker[cityLocation] = len(hasItemMap[cityLocation])
+
+        for cityLeader in toKill:
+            cityLeader.die()
+            cityLeader.quests = []
+            cityLeader.subordinates = []
+
 
         print("fetch map:")
         for cityLocation in self.citylocations:
             print("city at %s needs item #%s from %s"%(cityLocation,toFetchMap[cityLocation],specialItemPositions[toFetchMap[cityLocation]]))
             self.leaderQuests[cityLocation].setPriorityObtain(toFetchMap[cityLocation],specialItemPositions[toFetchMap[cityLocation]])
+
+        print("schedule next epoch")
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 10000)
+        event.setCallback({"container": self, "method": "endEpoch"})
+        terrain.addEvent(event)
+
+        locatedItems.sort()
+        print("located items: %s"%(locatedItems,))
+
+    def endEpoch(self):
+        print("finished epoch")
+        self.startNewEpoch()
 
 class BaseBuilding(BasicPhase):
     """

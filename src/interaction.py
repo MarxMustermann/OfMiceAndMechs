@@ -3498,10 +3498,16 @@ class CharacterInfoMenu(SubMenu):
         if char.weapon:
             baseDamage = char.weapon.baseDamage
 
+        text += "internal id: %s\n" % (char,)
         text += "numChars: %s\n" % (len(char.container.characters))
         text += "lastJobOrder: %s\n" % char.lastJobOrder
         text += "weapon: %s\n" % baseDamage
         text += "armor: %s\n" % armorValue
+        text += "faction: %s\n" % char.faction
+        if hasattr(char,"rank"):
+            text += "rank: %s\n" % char.rank
+        if hasattr(char,"superior"):
+            text += "superior: %s\n" % char.superior
         text += "numAttackedWithoutResponse: %s\n" % char.numAttackedWithoutResponse
 
         char.setRegisterValue("HEALTh", char.health)
@@ -4608,6 +4614,17 @@ def keyboardListener(key):
 
         with open("roomExport.json", "w") as exportFile:
             exportFile.write(serializedState)
+    elif key == "ctrl i":
+        print("entered ctrl i")
+        for character in src.gamestate.gamestate.mainChar.container.characters:
+            print(character)
+            if character == src.gamestate.gamestate.mainChar:
+                continue
+            if character.xPosition == src.gamestate.gamestate.mainChar.xPosition and character.yPosition == src.gamestate.gamestate.mainChar.yPosition:
+                print("correct position")
+                src.gamestate.gamestate.mainChar = character
+                state = src.gamestate.gamestate.mainChar.macroState
+                break
     elif src.gamestate.gamestate.gameHalted:
         if key == "M":
             # 1000 moves and then stop
@@ -4808,7 +4825,9 @@ def gameLoop(loop, user_data=None):
                         else:
                             translatedKey = "h"
                     if key == tcod.event.KeySym.i:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
+                            translatedKey = "ctrl i"
+                        elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
                             translatedKey = "I"
                         else:
                             translatedKey = "i"
@@ -4863,7 +4882,10 @@ def gameLoop(loop, user_data=None):
                         else:
                             translatedKey = "s"
                     if key == tcod.event.KeySym.t:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
+                            translatedKey = "ctrl t"
+                            print("pressed ctrlt")
+                        elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
                             translatedKey = "T"
                         else:
                             translatedKey = "t"
@@ -5009,6 +5031,10 @@ def gameLoop(loop, user_data=None):
                 + str(src.gamestate.gamestate.mainChar.satiation)
                 + " health: "
                 + str(src.gamestate.gamestate.mainChar.health)
+                + " tick: "
+                + str(src.gamestate.gamestate.tick)
+                + " mode: "
+                + str(src.gamestate.gamestate.mainChar.hasOwnAction)
             )
             footer.set_text((urwid.AttrSpec("default", "default"), text))
 

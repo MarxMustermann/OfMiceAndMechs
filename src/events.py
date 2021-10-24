@@ -188,7 +188,7 @@ class EndQuestEvent(Event):
             callback: a callback to call
         """
 
-        super().__init__(tick, creator=creator)
+        super().__init__(tick)
         self.type = "EndQuestEvent"
         self.callback = callback
 

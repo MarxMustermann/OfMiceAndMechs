@@ -909,7 +909,6 @@ class Terrain(src.saveing.Saveable):
             print("nopos")
             return
 
-        """
         if direction == "west":
             if char.xPosition % 15 == 1:
                 if char.yPosition % 15 < 7:
@@ -917,7 +916,7 @@ class Terrain(src.saveing.Saveable):
                 elif char.yPosition % 15 > 7:
                     direction = "north"
                 else:
-                    if char.xPosition == 16:
+                    if char.xPosition == 16 and 1==0:
                         return
                     else:
                         # char.stasis = True
@@ -936,7 +935,7 @@ class Terrain(src.saveing.Saveable):
                 elif char.yPosition % 15 > 7:
                     direction = "north"
                 else:
-                    if char.xPosition == 15 * 14 - 2:
+                    if char.xPosition == 15 * 14 - 2 and 1==0:
                         return
                     else:
                         # char.stasis = True
@@ -955,7 +954,7 @@ class Terrain(src.saveing.Saveable):
                 elif char.xPosition % 15 > 7:
                     direction = "west"
                 else:
-                    if char.yPosition == 16:
+                    if char.yPosition == 16 and 1==0:
                         return
                     else:
                         # char.stasis = True
@@ -974,7 +973,7 @@ class Terrain(src.saveing.Saveable):
                 elif char.xPosition % 15 > 7:
                     direction = "west"
                 else:
-                    if char.yPosition == 15 * 14 - 2:
+                    if char.yPosition == 15 * 14 - 2 and 1 == 0:
                         return
                     else:
                         # char.stasis = True
@@ -986,6 +985,7 @@ class Terrain(src.saveing.Saveable):
                         )
                         pass
                 char.addMessage("a force field pushes you")
+        """
         if char.xPosition % 15 in (0, 14) and direction in ("north", "south"):
             return
         if char.yPosition % 15 in (0, 14) and direction in ("east", "west"):
@@ -1250,7 +1250,6 @@ class Terrain(src.saveing.Saveable):
                     char.xPosition -= 1
 
                 if char.yPosition < 1:
-                    print("should warp now")
                     y = 0
 
                     pos = None
@@ -1262,12 +1261,11 @@ class Terrain(src.saveing.Saveable):
                             x += 1
                         y +=1
 
-                    print(pos)
-                    print("selcting warp target")
 
                     newTerrain = src.gamestate.gamestate.terrainMap[pos[1]-1][pos[0]]
 
-                    print("warping now")
+                    char.addMessage("you moved from terrain %s/%s to terrain %s/%s"%(pos[0],pos[1],pos[0],pos[1]-1,))
+
                     self.removeCharacter(char)
                     newTerrain.addCharacter(char,char.xPosition,15*14)
 
@@ -1275,7 +1273,6 @@ class Terrain(src.saveing.Saveable):
                         src.gamestate.gamestate.terrain = newTerrain
 
                 if char.yPosition > 223:
-                    print("should warp now")
                     y = 0
 
                     pos = None
@@ -1287,12 +1284,10 @@ class Terrain(src.saveing.Saveable):
                             x += 1
                         y +=1
 
-                    print(pos)
-                    print("selcting warp target")
-
                     newTerrain = src.gamestate.gamestate.terrainMap[pos[1]+1][pos[0]]
 
-                    print("warping now")
+                    char.addMessage("you moved from terrain %s/%s to terrain %s/%s"%(pos[0],pos[1],pos[0],pos[1]+1,))
+
                     self.removeCharacter(char)
                     newTerrain.addCharacter(char,char.xPosition,15)
 
@@ -1300,7 +1295,6 @@ class Terrain(src.saveing.Saveable):
                         src.gamestate.gamestate.terrain = newTerrain
 
                 if char.xPosition < 1:
-                    print("should warp now")
                     y = 0
 
                     pos = None
@@ -1312,12 +1306,10 @@ class Terrain(src.saveing.Saveable):
                             x += 1
                         y +=1
 
-                    print(pos)
-                    print("selcting warp target")
-
                     newTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]-1]
 
-                    print("warping now")
+                    char.addMessage("you moved from terrain %s/%s to terrain %s/%s"%(pos[0],pos[1],pos[0]-1,pos[1],))
+
                     self.removeCharacter(char)
                     newTerrain.addCharacter(char,15*14,char.yPosition)
 
@@ -1325,7 +1317,6 @@ class Terrain(src.saveing.Saveable):
                         src.gamestate.gamestate.terrain = newTerrain
 
                 if char.xPosition > 223:
-                    print("should warp now")
                     y = 0
 
                     pos = None
@@ -1337,12 +1328,10 @@ class Terrain(src.saveing.Saveable):
                             x += 1
                         y +=1
 
-                    print(pos)
-                    print("selcting warp target")
-
                     newTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]+1]
 
-                    print("warping now")
+                    char.addMessage("you moved from terrain %s/%s to terrain %s/%s"%(pos[0],pos[1],pos[0]+1,pos[1],))
+
                     self.removeCharacter(char)
                     newTerrain.addCharacter(char,15,char.yPosition)
 

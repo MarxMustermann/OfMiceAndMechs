@@ -1,3 +1,4 @@
+import src
 """
 graphical overlays for decoration on top of renderings
 """
@@ -106,7 +107,37 @@ class NPCsOverlay(object):
                 continue
 
             try:
-                chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = character.display
+                chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec("#3f3", "black"), "@ ")
+                if character.faction.endswith("#1"):
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#066"
+                if character.faction.endswith("#2"):
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#006"
+                if character.faction.endswith("#3"):
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#060"
+                if character.faction.endswith("#4"):
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#082"
+                if character.faction.endswith("#5"):
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#028"
+                if character.faction.endswith("#6"):
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#088"
+                if character.faction.endswith("#7"):
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#086"
+                if character.faction.endswith("#8"):
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#068"
+                if character.faction.endswith("#9"):
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#0a0"
+                if character.faction.endswith("#10"):
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#00a"
+                if character.faction.endswith("#11"):
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#0a6"
+                if character.faction.endswith("#12"):
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#06a"
+                if character.faction.endswith("#13"):
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#08a"
+                if character.faction.endswith("#14"):
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#0a6"
+                if character.faction.endswith("#15"):
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#0aa"
             except:
                 pass
 
@@ -128,4 +159,4 @@ class MainCharOverlay(object):
                   mainChar.xPosition < coordinateOffset[1] or mainChar.xPosition > coordinateOffset[1]+size[1] or
                   mainChar.yPosition < coordinateOffset[0] or mainChar.yPosition > coordinateOffset[0]+size[0]):
 
-            chars[mainChar.yPosition-coordinateOffset[0]][mainChar.xPosition-coordinateOffset[1]] = mainChar.display
+            chars[mainChar.yPosition-coordinateOffset[0]][mainChar.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")

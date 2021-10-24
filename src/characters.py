@@ -220,6 +220,7 @@ class Character(src.saveing.Saveable):
         self.personality["autoAttackOnCombatSuccess"] = 0
         self.personality["annoyenceByNpcCollisions"] = random.randint(50, 150)
         self.personality["attacksEnemiesOnContact"] = True
+        self.personality["doIdleAction"] = True
 
         self.silent = False
 
@@ -1228,6 +1229,7 @@ class Character(src.saveing.Saveable):
             reason: the reason for dieing
             addCorpse: flag to control adding a corpse
         """
+        self.quests = []
 
         self.lastRoom = self.room
         self.lastTerrain = self.terrain
@@ -1563,14 +1565,24 @@ class Character(src.saveing.Saveable):
 
         if self.satiation in (300 - 1, 200 - 1, 100 - 1, 30 - 1):
             self.changed("thirst")
-            self.macroState["commandKeyQueue"] = [
-                ("|", ["norecord"]),
-                (">", ["norecord"]),
-                ("_", ["norecord"]),
-                ("j", ["norecord"]),
-                ("|", ["norecord"]),
-                ("<", ["norecord"]),
-            ] + self.macroState["commandKeyQueue"]
+
+            for item in self.inventory:
+                if isinstance(item, src.items.itemMap["GooFlask"]):
+                    if item.uses > 0:
+                        item.apply(self)
+                        break
+                if (
+                    isinstance(item, src.items.itemMap["Bloom"])
+                    or isinstance(item, src.items.itemMap["BioMass"])
+                    or isinstance(item, src.items.itemMap["PressCake"])
+                    or isinstance(item, src.items.itemMap["SickBloom"])
+                ):
+                    item.apply(self)
+                    self.inventory.remove(item)
+                    break
+                if isinstance(item, src.items.itemMap["Corpse"]):
+                    item.apply(self)
+                    break
 
         if self.satiation == 30 - 1:
             self.changed("severeThirst")
@@ -1652,6 +1664,10 @@ class Character(src.saveing.Saveable):
                 listenFunction(info)
 
     def startIdling(self):
+        if not self.personality["doIdleAction"]:
+            self.runCommandString(".")
+            return
+
         """
         run idle actions using the macro automation
         should be called when the character is bored for some reason

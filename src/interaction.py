@@ -4773,7 +4773,7 @@ def gameLoop(loop, user_data=None):
                             translatedKey = "_"
                         else:
                             translatedKey = "-"
-                    if key == tcod.event.KeySym.PLUS:
+                    if key == tcod.event.KeySym.PLUS or key == tcod.event.KeySym.KP_PLUS:
                         if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
                             translatedKey = "*"
                         else:

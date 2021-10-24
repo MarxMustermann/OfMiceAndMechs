@@ -2702,28 +2702,15 @@ class Nothingness(Terrain):
         if not noContent:
             # add a few items scattered around
             self.dekoItems = []
-            for x in range(1, 224):
-                for y in range(1, 224):
+            for x in range(15, 210):
+                for y in range(15, 210):
                     item = None
                     if not x % 23 and not y % 35 and not (x + y) % 5:
                         item = src.items.itemMap["Scrap"](amount=1)
-                        item.bolted = False
                     if not x % 57 and not y % 22 and not (x + y) % 3:
-                        item = src.items.itemMap["Item"](
-                            display=src.canvas.displayChars.foodStuffs[
-                                ((2 * x) + y) % 6
-                            ]
-                        )
-                        item.walkable = True
-                        item.bolted = False
+                        item = src.items.itemMap["Mold"]()
                     if not x % 19 and not y % 27 and not (x + y) % 4:
-                        item = src.items.itemMap["Item"](
-                            display=src.canvas.displayChars.foodStuffs[
-                                ((2 * x) + y) % 6
-                            ]
-                        )
-                        item.walkable = True
-                        item.bolted = False
+                        item = src.items.itemMap["Scrap"](amount=10)
                     if item:
                         self.dekoItems.append((item, (x, y, 0)))
             self.addItems(self.dekoItems)

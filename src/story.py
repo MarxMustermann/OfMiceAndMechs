@@ -640,6 +640,9 @@ class BackToTheRoots(BasicPhase):
             "DeliverSpecialItem",
         ]
 
+        npc.weapon = src.items.itemMap["Rod"]()
+        npc.armor = src.items.itemMap["Armor"]()
+
         npc.personality["abortMacrosOnAttack"] = False
         npc.personality["doIdleAction"] = False
         return npc

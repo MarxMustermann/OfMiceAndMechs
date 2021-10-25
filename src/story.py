@@ -659,6 +659,32 @@ class BackToTheRoots(BasicPhase):
 
         mainChar = src.gamestate.gamestate.mainChar
 
+        # add random items
+        for row in src.gamestate.gamestate.terrainMap:
+            for terrain in row:
+                items = []
+                for i in range(0,random.randint(1,10)):
+                    item = src.items.itemMap["MetalBars"]()
+                    items.append(item)
+                for i in range(0,random.randint(1,10)):
+                    item = src.items.itemMap["Rod"]()
+                    if item.baseDamage > 10:
+                        item.baseDamage = random.randint(7,10)
+                    items.append(item)
+                for i in range(0,random.randint(1,3)):
+                    item = src.items.itemMap["Armor"]()
+                    if item.armorValue > 3:
+                        item.armorValue = random.randint(1,3)
+                    items.append(item)
+                for i in range(0,random.randint(1,3)):
+                    item = src.items.itemMap["GooFlask"]()
+                    items.append(item)
+                for i in range(0,random.randint(1,3)):
+                    item = src.items.itemMap["GooFlask"]()
+                    items.append(item)
+                terrain.randomAddItems(items)
+
+        # build cities
         numCities = 0
         while numCities < 15:
             pos = (random.randint(1,13),random.randint(1,13))

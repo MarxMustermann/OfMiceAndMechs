@@ -983,6 +983,7 @@ class BackToTheRoots(BasicPhase):
                     continue
 
                 print("full tree adding machine")
+                placedItem = False
                 for y in (92,94,96,98,100,102):
                     for x in (107,109,111,113,115,117):
                         if currentTerrain.getItemByPosition((x,y,0)):
@@ -994,6 +995,10 @@ class BackToTheRoots(BasicPhase):
                             itemType = random.choice(["Rod","Armor"])
                             item.setToProduce(itemType)
                         currentTerrain.addItem(item,(x,y,0))
+                        placedItem = True
+                        break
+
+                    if placedItem:
                         break
 
                 newNPC.die()

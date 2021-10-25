@@ -766,17 +766,7 @@ class BackToTheRoots(BasicPhase):
             cityCounter += 1
 
         src.gamestate.gamestate.mainChar.runCommandString("~", clear=True)
-        """
-        playerTerrainPos = random.choice(citylocations)
-        playerTerrain = src.gamestate.gamestate.terrainMap[playerTerrainPos[1]][playerTerrainPos[0]]
 
-        mainChar.terrain = playerTerrain
-        mainChar.faction = "city #%s"%(cityIds[playerTerrainPos],)
-
-        playerTerrain.addCharacter(
-            src.gamestate.gamestate.mainChar, 124, 109
-        )
-        """
         self.startNewEpoch()
 
     def rewardNPCDirect(self,character):

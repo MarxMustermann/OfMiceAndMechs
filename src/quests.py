@@ -4924,7 +4924,7 @@ class GoHome(Quest):
                     character.runCommandString(".w"*(character.yPosition%15-7))
                     return False
 
-                directions = ["."]
+                directions = ["gg"]
                 if characterTerrainPos[0] > self.cityLocation[0]:
                     directions.extend(["a"]*(characterTerrainPos[0]-self.cityLocation[0]))
                 if characterTerrainPos[0] < self.cityLocation[0]:
@@ -4934,7 +4934,7 @@ class GoHome(Quest):
                 if characterTerrainPos[1] < self.cityLocation[1]:
                     directions.extend(["s"]*(self.cityLocation[1]-characterTerrainPos[1]))
                 if characterTerrainPos[1] == self.cityLocation[1] and characterTerrainPos[0] == self.cityLocation[0]:
-                    directions = [","]
+                    directions = ["gg"]
                     if character.xPosition//15 < 7:
                         directions.extend(["d"]*(7-character.xPosition//15))
                     if character.xPosition//15 > 7:
@@ -5073,7 +5073,7 @@ class EnterEnemyCity(Quest):
                     character.runCommandString(".w"*(character.yPosition%15-7))
                     return False
 
-                directions = ["."]
+                directions = ["gg"]
                 if characterTerrainPos[0] > self.cityLocation[0]:
                     directions.extend(["a"]*(characterTerrainPos[0]-self.cityLocation[0]))
                 if characterTerrainPos[0] < self.cityLocation[0]:
@@ -5083,7 +5083,7 @@ class EnterEnemyCity(Quest):
                 if characterTerrainPos[1] < self.cityLocation[1]:
                     directions.extend(["s"]*(self.cityLocation[1]-characterTerrainPos[1]))
                 if characterTerrainPos[1] == self.cityLocation[1] and characterTerrainPos[0] == self.cityLocation[0]:
-                    directions = [","]
+                    directions = ["gg"]
                     if character.xPosition//15 < 7:
                         directions.extend(["d"]*(7-character.xPosition//15))
                     if character.xPosition//15 > 7:

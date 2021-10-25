@@ -680,8 +680,8 @@ class BackToTheRoots(BasicPhase):
                 for i in range(0,random.randint(1,3)):
                     item = src.items.itemMap["GooFlask"]()
                     items.append(item)
-                for i in range(0,random.randint(1,3)):
-                    item = src.items.itemMap["GooFlask"]()
+                for i in range(0,random.randint(1,20)):
+                    item = src.items.itemMap["FireCrystals"]()
                     items.append(item)
                 for i in range(0,random.randint(1,20)):
                     item = src.items.itemMap["Mold"]()
@@ -848,9 +848,6 @@ class BackToTheRoots(BasicPhase):
 
         for cityLocation in self.citylocations:
             missingItems = missingItemMap[cityLocation]
-            print("special item state")
-            print(foundItems)
-            print(missingItems)
 
             candidates = missingItems[:]
             for candidate in candidates[:]:

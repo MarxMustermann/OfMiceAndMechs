@@ -663,6 +663,7 @@ class BackToTheRoots(BasicPhase):
         for row in src.gamestate.gamestate.terrainMap:
             for terrain in row:
                 items = []
+                molds = []
                 for i in range(0,random.randint(1,10)):
                     item = src.items.itemMap["MetalBars"]()
                     items.append(item)
@@ -682,7 +683,13 @@ class BackToTheRoots(BasicPhase):
                 for i in range(0,random.randint(1,3)):
                     item = src.items.itemMap["GooFlask"]()
                     items.append(item)
+                for i in range(0,random.randint(1,20)):
+                    item = src.items.itemMap["Mold"]()
+                    items.append(item)
+                    molds.append(item)
                 terrain.randomAddItems(items)
+                for mold in molds:
+                    mold.spawn()
 
         # build cities
         numCities = 0
@@ -978,7 +985,17 @@ class BackToTheRoots(BasicPhase):
                     newNPC.addMessage("added as replacement worker")
                     continue
 
-                print("full tree")
+                print("full tree adding machine")
+                for y in (107,109,111,113,115,117):
+                    for x in (107,109,111,113,115,117):
+                        if currentTerrain.getItemByPosition((x,y,0)):
+                            continue
+                        dropType = random.choice(["Machine","ItemUpgrader","ScrapCompactor"])
+                        item = src.items.itemMap[dropType]()
+                        if dropType == "Machine":
+                            itemType = random.choice(["Rod","Armor"])
+                            item.setToProduce(itemType)
+                        currentTerrain.addItem(item,(x,y,0))
 
                 newNPC.die()
 

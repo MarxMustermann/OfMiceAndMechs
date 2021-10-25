@@ -664,6 +664,7 @@ class BackToTheRoots(BasicPhase):
             for terrain in row:
                 items = []
                 molds = []
+                landmines = []
                 for i in range(0,random.randint(1,10)):
                     item = src.items.itemMap["MetalBars"]()
                     items.append(item)
@@ -683,6 +684,10 @@ class BackToTheRoots(BasicPhase):
                 for i in range(0,random.randint(1,20)):
                     item = src.items.itemMap["FireCrystals"]()
                     items.append(item)
+                for i in range(0,random.randint(1,150)):
+                    item = src.items.itemMap["LandMine"]()
+                    items.append(item)
+                    landmines.append(item)
                 for i in range(0,random.randint(1,20)):
                     item = src.items.itemMap["Mold"]()
                     items.append(item)
@@ -690,6 +695,11 @@ class BackToTheRoots(BasicPhase):
                 terrain.randomAddItems(items)
                 for mold in molds:
                     mold.spawn()
+                for landmine in landmines:
+                    scrap = src.items.itemMap["Scrap"](amount=random.randint(1,3))
+                    if random.choice([True,False]):
+                        if landmine.getPosition()[0]:
+                            terrain.addItem(scrap,landmine.getPosition())
 
         # build cities
         numCities = 0

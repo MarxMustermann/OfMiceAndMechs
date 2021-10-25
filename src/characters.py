@@ -1237,10 +1237,21 @@ class Character(src.saveing.Saveable):
         # replace character with corpse
         if self.container:
             container = self.container
+            pos = self.getPosition()
             container.removeCharacter(self)
             if addCorpse:
+                for item in self.inventory:
+                    container.addItem(item, pos)
+
+                if self.weapon:
+                    container.addItem(self.weapon, pos)
+                    self.weapon = None
+                if self.armor:
+                    container.addItem(self.armor, pos)
+                    self.armor = None
+
                 corpse = src.items.itemMap["Corpse"]()
-                container.addItem(corpse, self.getPosition())
+                container.addItem(corpse, pos)
         # log impossible state
         else:
             src.logger.debugMessages.append(

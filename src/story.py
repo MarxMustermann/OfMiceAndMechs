@@ -890,9 +890,6 @@ class BackToTheRoots(BasicPhase):
                 newNPC = self.genNPC(self.cityIds[cityLocation],cityLocation)
                 self.cityNPCCounters[cityLocation] += 1
 
-                if not newNPC.faction == src.gamestate.gamestate.mainChar.faction:
-                    continue
-
                 foundSubleaderReplacement = None
                 counter = 0
                 for subordinate in cityLeader.subordinates:

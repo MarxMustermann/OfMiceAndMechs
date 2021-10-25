@@ -75,31 +75,16 @@ If the upgrade fails the remains of the item will be placed to the south.
             success = True
 
         targetFull = False
-        if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
+        itemList = self.container.getItemByPosition((self.xPosition + 1, self.yPosition,0))
+        if itemList:
             if inputItem.walkable:
-                if (
-                    len(
-                        self.container.itemByCoordinates[
-                            (self.xPosition + 1, self.yPosition)
-                        ]
-                    )
-                    > 15
-                ):
+                if (len(itemList) > 15):
                     targetFull = True
-                for item in self.container.itemByCoordinates[
-                    (self.xPosition + 1, self.yPosition)
-                ]:
+                for item in itemList:
                     if item.walkable == False:
                         targetFull = True
             else:
-                if (
-                    len(
-                        self.container.itemByCoordinates[
-                            (self.xPosition + 1, self.yPosition)
-                        ]
-                    )
-                    > 1
-                ):
+                if ( len(itemList) > 1 ):
                     targetFull = True
 
         if targetFull:

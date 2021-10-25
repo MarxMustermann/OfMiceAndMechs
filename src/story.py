@@ -983,9 +983,10 @@ class BackToTheRoots(BasicPhase):
                     continue
 
                 print("full tree adding machine")
-                for y in (107,109,111,113,115,117):
+                for y in (92,94,96,98,100,102):
                     for x in (107,109,111,113,115,117):
                         if currentTerrain.getItemByPosition((x,y,0)):
+                            print("skipping")
                             continue
                         dropType = random.choice(["Machine","ItemUpgrader","ScrapCompactor"])
                         item = src.items.itemMap[dropType]()
@@ -993,6 +994,7 @@ class BackToTheRoots(BasicPhase):
                             itemType = random.choice(["Rod","Armor"])
                             item.setToProduce(itemType)
                         currentTerrain.addItem(item,(x,y,0))
+                        break
 
                 newNPC.die()
 

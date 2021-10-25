@@ -65,4 +65,12 @@ baseDamage:
         character.weapon = self
         self.container.removeItem(self)
 
+    def upgrade(self):
+        self.baseDamage += 1
+        super().upgrade()
+
+    def downgrade(self):
+        self.baseDamage -= 1
+        super().downgrade()
+
 src.items.addType(Rod)

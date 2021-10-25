@@ -67,4 +67,12 @@ protects you in combat
         character.armor = self
         self.container.removeItem(self)
 
+    def upgrade(self):
+        self.armorValue += 1
+        super().upgrade()
+
+    def downgrade(self):
+        self.armorValue -= 1
+        super().downgrade()
+
 src.items.addType(Armor)

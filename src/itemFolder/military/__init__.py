@@ -11,4 +11,5 @@ del module
 import src.itemFolder.military.armor
 import src.itemFolder.military.bomb
 import src.itemFolder.military.mortar
+import src.itemFolder.military.landmine
 

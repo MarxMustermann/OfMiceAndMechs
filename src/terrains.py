@@ -5,6 +5,7 @@ terrains and terrain related code belongs here
 # import basic libs
 import json
 import array
+import random
 
 # import basic internal libs
 import src.items
@@ -403,6 +404,11 @@ class Terrain(src.saveing.Saveable):
                 "xPosition",
             ]
         )
+
+    def randomAddItems(self, items):
+        for item in items:
+            pos = (random.randint(15,210),random.randint(15,210),0)
+            self.addItem(item, pos)
 
     def damage(self):
         pass

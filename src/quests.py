@@ -352,12 +352,6 @@ class Quest(src.saveing.Saveable):
 
         # smooth over impossible state
         if not self.active:
-            src.interaction.debugMessages.append(
-                "this should not happen (posthandler called on inactive quest ("
-                + str(self)
-                + ")) "
-                + str(self.character)
-            )
             return
 
         # smooth over impossible state
@@ -4870,6 +4864,7 @@ class GoHome(Quest):
         # save initial state and register
         self.type = "GoHome"
         self.itemID = None
+        self.hasListener = False
 
     def triggerCompletionCheck(self, character=None):
         if not character:
@@ -4879,11 +4874,27 @@ class GoHome(Quest):
             if (character.container.terrain.xPosition == self.cityLocation[0] and character.container.terrain.yPosition == self.cityLocation[1]):
                 self.postHandler()
 
-    def solver(self,character):
-        self.description = "go home %s/%s"%(character.registers["HOMEx"],character.registers["HOMEy"])
+    def wrapedTriggerCompletionCheck(self, extraInfo):
+        if not self.active:
+            return
 
+        self.triggerCompletionCheck(extraInfo[0])
+
+    def assignToCharacter(self, character):
+        if not self.hasListener:
+            character.addListener(self.wrapedTriggerCompletionCheck, "moved")
+            self.hasListener = True
+
+        self.setHomeLocation(character)
+
+        super().assignToCharacter(character)
+
+    def setHomeLocation(self,character):
         self.cityLocation = (character.registers["HOMEx"],character.registers["HOMEy"])
-        
+        self.description = "go home %s/%s"%(self.cityLocation[0],self.cityLocation[1],)
+
+    def solver(self,character):
+
         if isinstance(character.container, src.rooms.Room):
             if not character.container.terrain:
                 return
@@ -4959,10 +4970,13 @@ class GrabSpecialItem(Quest):
         # save initial state and register
         self.type = "GrabSpecialItem"
         self.itemID = None
+        self.hasListener = False
 
     def triggerCompletionCheck(self, character=None):
         if not character:
             return
+
+        print("checking items")
 
         itemFound = None
         for item in character.inventory:
@@ -4977,6 +4991,18 @@ class GrabSpecialItem(Quest):
             return
 
         self.postHandler()
+
+    def wrapedTriggerCompletionCheck(self, extraInfo):
+        if not self.active:
+            return
+
+        self.triggerCompletionCheck(extraInfo[0])
+
+    def assignToCharacter(self, character):
+        if not self.hasListener:
+            character.addListener(self.wrapedTriggerCompletionCheck, "moved")
+            self.hasListener = True
+        super().assignToCharacter(character)
 
     def solver(self,character):
         if not character.container or not isinstance(character.container, src.rooms.Room):
@@ -5018,8 +5044,9 @@ class EnterEnemyCity(Quest):
         # save initial state and register
         self.type = "EnterEnemyCity"
         self.cityLocation = None
+        self.hasListener = False
 
-    def triggerCompletionCheck(self, character=None):
+    def triggerCompletionCheck(self, character=None, direction=None):
         if not character:
             return
 
@@ -5028,9 +5055,21 @@ class EnterEnemyCity(Quest):
                 self.postHandler()
         return
 
+    def wrapedTriggerCompletionCheck(self, extraInfo):
+        if not self.active:
+            return
+
+        self.triggerCompletionCheck(extraInfo[0])
+
     def setCityLocation(self, cityLocation):
         self.cityLocation = cityLocation
         self.description = "enter enemy city %s"%(self.cityLocation,)
+
+    def assignToCharacter(self, character):
+        if not self.hasListener:
+            character.addListener(self.wrapedTriggerCompletionCheck, "moved")
+            self.hasListener = True
+        super().assignToCharacter(character)
 
     def solver(self, character):
         if isinstance(character.container, src.rooms.Room):

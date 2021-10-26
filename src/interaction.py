@@ -2140,7 +2140,7 @@ current registers
                             )
                         return item
                     else:
-                        char.changed("moved", direction)
+                        char.changed("moved", (char, direction))
 
                 # do movement on terrain
                 # bad code: these calculation should be done elsewhere
@@ -5036,6 +5036,14 @@ def gameLoop(loop, user_data=None):
                 + " mode: "
                 + str(src.gamestate.gamestate.mainChar.hasOwnAction)
             )
+            text += (
+                " space: %s/%s"%(src.gamestate.gamestate.mainChar.xPosition%15,src.gamestate.gamestate.mainChar.yPosition%15,)
+                + " tile: %s/%s"%(src.gamestate.gamestate.mainChar.xPosition//15,src.gamestate.gamestate.mainChar.yPosition//15,)
+                )
+            if src.gamestate.gamestate.mainChar.container:
+                text += (
+                    " terrain: %s/%s"%(src.gamestate.gamestate.mainChar.container.xPosition,src.gamestate.gamestate.mainChar.container.yPosition,)
+                    )
             footer.set_text((urwid.AttrSpec("default", "default"), text))
 
             def stringifyUrwid(inData):

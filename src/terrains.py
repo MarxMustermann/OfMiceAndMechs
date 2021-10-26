@@ -1082,7 +1082,7 @@ class Terrain(src.saveing.Saveable):
                         #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
                         return room.itemByCoordinates[localisedEntry][0]
 
-                char.changed("moved", direction)
+                char.changed("moved", (char, direction))
 
                 # teleport the character into the room
                 room.addCharacter(char, localisedEntry[0], localisedEntry[1])
@@ -1346,7 +1346,7 @@ class Terrain(src.saveing.Saveable):
 
 
                 char.changed()
-                char.changed("moved", direction)
+                char.changed("moved", (char, direction))
 
             return foundItem
 

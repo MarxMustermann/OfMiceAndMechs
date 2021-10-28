@@ -717,6 +717,13 @@ class BackToTheRoots(BasicPhase):
         for citylocation in self.citylocations:
             currentTerrain = src.gamestate.gamestate.terrainMap[citylocation[1]][citylocation[0]]
             
+            scrapCompactor = src.items.itemMap["ScrapCompactor"]()
+            currentTerrain.addItem(scrapCompactor,(107, 92, 0))
+            
+            machine = src.items.itemMap["Machine"]()
+            machine.setToProduce("Sheet")
+            currentTerrain.addItem(machine,(109, 92, 0))
+
             architect = src.items.itemMap["ArchitectArtwork"]()
             currentTerrain.addItem(architect,(124, 110, 0))
 

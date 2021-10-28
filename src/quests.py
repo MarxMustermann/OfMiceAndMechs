@@ -214,6 +214,7 @@ class Quest(src.saveing.Saveable):
         self.paused = False
         self.reputationReward = 0
         self.watched = []
+        self.randomSeed = None
 
         # set up saving
         # bad code: extend would be better
@@ -235,6 +236,11 @@ class Quest(src.saveing.Saveable):
         import uuid
 
         self.id = uuid.uuid4().hex
+
+        self.reroll()
+    
+    def reroll(self):
+        self.randomSeed = random.randint(0,2000000)
 
     def getActiveQuest(self):
         return self
@@ -5061,7 +5067,6 @@ class EnterEnemyCity(Quest):
         self.type = "EnterEnemyCity"
         self.cityLocation = None
         self.hasListener = False
-        self.randomSeed = random.randint(1,2000000)
 
     def triggerCompletionCheck(self, character=None, direction=None):
         if not character:
@@ -5076,7 +5081,7 @@ class EnterEnemyCity(Quest):
         if not self.active:
             return
 
-        self.randomSeed = random.randint(1,2000000)
+        self.reroll()
         self.triggerCompletionCheck(extraInfo[0])
 
     def setCityLocation(self, cityLocation):

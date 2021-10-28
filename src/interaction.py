@@ -2447,6 +2447,13 @@ press key for advanced drop
                 char.interactionState["advancedDrop"] = {}
                 return
 
+            if key in ("#",):
+                activeQuest = char.getActiveQuest()
+                if activeQuest:
+                    activeQuest.reroll()
+                return
+
+
             # pick up items
             # bad code: picking up should happen in character
             if key in (commandChars.pickUp,):
@@ -2483,6 +2490,8 @@ press key for advanced drop
             if key in (commandChars.advance, commandChars.autoAdvance):
                 if len(char.quests):
                     charState["lastMoveAutomated"] = True
+                    if not char.automated:
+                        char.runCommandString("~")
                     char.automated = True
                 else:
                     pass
@@ -4750,6 +4759,8 @@ def gameLoop(loop, user_data=None):
                         translatedKey = " "
                     if key == tcod.event.KeySym.PERIOD:
                         translatedKey = "."
+                    if key == tcod.event.KeySym.HASH:
+                        translatedKey = "#"
                     if key == tcod.event.KeySym.ESCAPE:
                         translatedKey = "esc"
                     if key == tcod.event.KeySym.N1:
@@ -4890,7 +4901,6 @@ def gameLoop(loop, user_data=None):
                     if key == tcod.event.KeySym.t:
                         if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
                             translatedKey = "ctrl t"
-                            print("pressed ctrlt")
                         elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
                             translatedKey = "T"
                         else:

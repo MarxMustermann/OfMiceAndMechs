@@ -236,6 +236,9 @@ class Quest(src.saveing.Saveable):
 
         self.id = uuid.uuid4().hex
 
+    def getActiveQuest(self):
+        return self
+
     """
     register callback
     """
@@ -570,6 +573,9 @@ class Quest(src.saveing.Saveable):
                 }
         return state
 
+    def getSolvingCommandString(self,character):
+        return None
+
 class StandAttention(Quest):
 
     """
@@ -691,6 +697,11 @@ class MetaQuestSequence(Quest):
 
         # save state and register
         self.type = "MetaQuestSequence"
+
+    def getActiveQuest(self):
+        if self.subQuests:
+            return self.subQuests[0]
+        return self
 
     """
     get state as dict
@@ -1032,6 +1043,11 @@ class MetaQuestParralel(Quest):
 
         # store initial state and register
         self.type = "MetaQuestParralel"
+
+    def getActiveQuest(self):
+        if self.subQuests:
+            return self.subQuests[0].getActiveQuest()
+        return self
 
     """
     get state as dict
@@ -5045,6 +5061,7 @@ class EnterEnemyCity(Quest):
         self.type = "EnterEnemyCity"
         self.cityLocation = None
         self.hasListener = False
+        self.randomSeed = random.randint(1,2000000)
 
     def triggerCompletionCheck(self, character=None, direction=None):
         if not character:
@@ -5059,6 +5076,7 @@ class EnterEnemyCity(Quest):
         if not self.active:
             return
 
+        self.randomSeed = random.randint(1,2000000)
         self.triggerCompletionCheck(extraInfo[0])
 
     def setCityLocation(self, cityLocation):
@@ -5071,28 +5089,25 @@ class EnterEnemyCity(Quest):
             self.hasListener = True
         super().assignToCharacter(character)
 
-    def solver(self, character):
+    def getSolvingCommandString(self, character):
+        localRandom = random.Random(self.randomSeed)
+
         if isinstance(character.container, src.rooms.Room):
             if not character.container.terrain:
-                return
+                return None
 
             if not (character.container.terrain.xPosition == self.cityLocation[0] and character.container.terrain.yPosition == self.cityLocation[1]):
                 if not (character.xPosition == 6 and character.yPosition == 6):
                     if character.xPosition < 6:
-                        character.runCommandString("d"*(6-character.xPosition))
-                        return False
+                        return "d"*(6-character.xPosition)
                     if character.xPosition > 6:
-                        character.runCommandString("a"*(character.xPosition-6))
-                        return False
+                        return "a"*(character.xPosition-6)
                     if character.yPosition < 6:
-                        character.runCommandString("s"*(6-character.yPosition))
-                        return False
+                        return "s"*(6-character.yPosition)
                     if character.yPosition > 6:
-                        character.runCommandString("w"*(character.yPosition-6))
-                        return False
+                        return "w"*(character.yPosition-6)
                 else:
-                    character.runCommandString("13"+random.choice(["a","w","s","d"]))
-                    return False
+                    return "13"+localRandom.choice(["a","w","s","d"])
             else:
                 self.triggerCompletionCheck(character)
         else:
@@ -5100,17 +5115,13 @@ class EnterEnemyCity(Quest):
                 characterTerrainPos = (character.container.xPosition,character.container.yPosition)
 
                 if character.xPosition%15 < 7:
-                    character.runCommandString(".d"*(7-character.xPosition%15))
-                    return False
+                    return "."+"d"*(7-character.xPosition%15)
                 if character.xPosition%15 > 7:
-                    character.runCommandString(".a"*(character.xPosition%15-7))
-                    return False
+                    return "."+"a"*(character.xPosition%15-7)
                 if character.yPosition%15 < 7:
-                    character.runCommandString(".s"*(7-character.yPosition%15))
-                    return False
+                    return "."+"s"*(7-character.yPosition%15)
                 if character.yPosition%15 > 7:
-                    character.runCommandString(".w"*(character.yPosition%15-7))
-                    return False
+                    return "."+"w"*(character.yPosition%15-7)
 
                 directions = ["gg"]
                 if characterTerrainPos[0] > self.cityLocation[0]:
@@ -5132,11 +5143,18 @@ class EnterEnemyCity(Quest):
                     if character.yPosition//15 > 7:
                         directions.extend(["w"]*(character.yPosition//15-7))
 
-                character.runCommandString(".13"+random.choice(directions))
-
-                return False
+                return ".13"+localRandom.choice(directions)
             else:
-                return True
+                return None
+
+    def solver(self, character):
+        commandString = self.getSolvingCommandString(character)
+        self.randomSeed = random.randint(1,2000000)
+        if commandString:
+            character.runCommandString(commandString)
+            return False
+        else:
+            return True
 
 class ObtainSpecialItem(MetaQuestSequence):
     def __init__(self, description="obtain special item", creator=None):

@@ -674,6 +674,10 @@ class Character(src.saveing.Saveable):
         else:
             return self.terrain
 
+    def getActiveQuest(self):
+        if self.quests:
+            return self.quests[0].getActiveQuest()
+
     # bad code: should be removed
     def getQuest(self):
         """

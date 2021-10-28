@@ -3978,6 +3978,12 @@ def renderQuests(maxQuests=0, char=None, asList=False, questIndex=0):
 
     # render the quests
     if len(char.quests):
+        nextstep = "next step: %s \n"%(char.getActiveQuest().getSolvingCommandString(char),)
+        if asList:
+            txt.append(nextstep)
+        else:
+            txt += nextstep
+
         counter = 0
         for quest in char.quests:
             # render quest

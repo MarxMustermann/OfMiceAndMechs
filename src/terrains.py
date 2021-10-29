@@ -1295,7 +1295,7 @@ class Terrain(src.saveing.Saveable):
                     char.addMessage("you moved from terrain %s/%s to terrain %s/%s"%(pos[0],pos[1],pos[0],pos[1]+1,))
 
                     self.removeCharacter(char)
-                    newTerrain.addCharacter(char,char.xPosition,15)
+                    newTerrain.addCharacter(char,char.xPosition,2)
 
                     if char == src.gamestate.gamestate.mainChar:
                         src.gamestate.gamestate.terrain = newTerrain
@@ -1339,7 +1339,7 @@ class Terrain(src.saveing.Saveable):
                     char.addMessage("you moved from terrain %s/%s to terrain %s/%s"%(pos[0],pos[1],pos[0]+1,pos[1],))
 
                     self.removeCharacter(char)
-                    newTerrain.addCharacter(char,15,char.yPosition)
+                    newTerrain.addCharacter(char,2,char.yPosition)
 
                     if char == src.gamestate.gamestate.mainChar:
                         src.gamestate.gamestate.terrain = newTerrain

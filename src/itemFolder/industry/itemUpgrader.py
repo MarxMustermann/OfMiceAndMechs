@@ -71,7 +71,7 @@ If the upgrade fails the remains of the item will be placed to the south.
             chance = 100
 
         success = False
-        if src.gamestate.gamestate.tick % (self.charges + 1) > chance:
+        if random.randint(1,1000) % (self.charges + 2) > chance:
             success = True
 
         targetFull = False

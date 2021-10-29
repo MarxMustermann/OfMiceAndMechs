@@ -1008,6 +1008,8 @@ class BackToTheRoots(BasicPhase):
                         if dropType == "Machine":
                             itemType = random.choice(["Rod","Armor"])
                             item.setToProduce(itemType)
+                        if dropType == "ItemUpgrader":
+                            item.level = 10
                         currentTerrain.addItem(item,(x,y,0))
                         item.bolted = False
                         placedItem = True

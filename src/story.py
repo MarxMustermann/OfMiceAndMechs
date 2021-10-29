@@ -604,20 +604,6 @@ class BackToTheRoots(BasicPhase):
 
         # add basic set of abilities in openworld phase
         npc.questsDone = [
-            "NaiveMoveQuest",
-            "MoveQuestMeta",
-            "NaiveActivateQuest",
-            "ActivateQuestMeta",
-            "NaivePickupQuest",
-            "PickupQuestMeta",
-            "DrinkQuest",
-            "CollectQuestMeta",
-            "FireFurnaceMeta",
-            "ExamineQuest",
-            "NaiveDropQuest",
-            "DropQuestMeta",
-            "LeaveRoomQuest",
-            "DeliverSpecialItem",
         ]
 
         npc.solvers = [

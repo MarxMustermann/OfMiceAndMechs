@@ -1909,7 +1909,6 @@ class Mouse(Character):
         self.container.removeCharacter(self)
         self.vanished = True
 
-
 # bad code: there is very specific code in here, so it it stopped to be a generic class
 class Monster(Character):
     """

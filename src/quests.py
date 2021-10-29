@@ -5321,6 +5321,7 @@ questMap = {
     "ObtainAllSpecialItems": ObtainAllSpecialItems,
     "EnterEnemyCity": EnterEnemyCity,
     "DeliverSpecialItem": DeliverSpecialItem,
+    "GoHome": GoHome,
 }
 
 def getQuestFromState(state):

@@ -3633,7 +3633,6 @@ class AdvancedQuestMenu(SubMenu):
                         continue
 
                     options.append((value, key))
-                options.append(("special_furnace", "vehicle fueling"))
                 self.setOptions("what type of quest:", options)
 
             # let the superclass handle the actual selection

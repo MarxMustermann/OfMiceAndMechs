@@ -1846,7 +1846,7 @@ class Terrain(src.saveing.Saveable):
             if not item.walkable:
                 recalc = True
 
-            position = itemPair[1]
+            position = tuple(itemPair[1])
             if position[0] % 15 == 0:
                 if position[1] % 15 < 7:
                     position = (position[0] + 1, position[1] + 1, position[2])
@@ -3089,64 +3089,54 @@ class Desert(Terrain):
         )
 
         self.itemPool = []
-        self.itemPool.append(src.items.itemMap["SunScreen"](None, None, creator=self))
-        self.itemPool.append(src.items.itemMap["SunScreen"](None, None, creator=self))
-        self.itemPool.append(src.items.itemMap["SunScreen"](None, None, creator=self))
-        machine = src.items.itemMap["Machine"](None, None, creator=self)
+        self.itemPool.append([src.items.itemMap["SunScreen"](),[0,0,0]])
+        self.itemPool.append([src.items.itemMap["SunScreen"](),[0,0,0]])
+        self.itemPool.append([src.items.itemMap["SunScreen"](),[0,0,0]])
+        machine = src.items.itemMap["Machine"]()
         machine.setToProduce("Rod")
         machine.bolted = False
-        self.itemPool.append(machine)
-        machine = src.items.itemMap["Machine"](None, None, creator=self)
+        self.itemPool.append([machine,[0,0,0]])
+        machine = src.items.itemMap["Machine"]()
         machine.setToProduce("Rod")
         machine.bolted = False
-        self.itemPool.append(machine)
-        machine = src.items.itemMap["Machine"](None, None, creator=self)
+        self.itemPool.append([machine,[0,0,0]])
+        machine = src.items.itemMap["Machine"]()
         machine.setToProduce("Rod")
         machine.bolted = False
-        self.itemPool.append(machine)
-        machine = src.items.itemMap["Machine"](None, None, creator=self)
+        self.itemPool.append([machine,[0,0,0]])
+        machine = src.items.itemMap["Machine"]()
         machine.setToProduce("Rod")
         machine.bolted = False
-        self.itemPool.append(machine)
-        machine = src.items.itemMap["Machine"](None, None, creator=self)
+        self.itemPool.append([machine,[0,0,0]])
+        machine = src.items.itemMap["Machine"]()
         machine.setToProduce("Rod")
         machine.bolted = False
-        self.itemPool.append(machine)
-        machine = src.items.itemMap["Machine"](None, None, creator=self)
+        self.itemPool.append([machine,[0,0,0]])
+        machine = src.items.itemMap["Machine"]()
         machine.setToProduce("Sheet")
         machine.bolted = False
-        self.itemPool.append(machine)
-        machine = src.items.itemMap["Machine"](None, None, creator=self)
+        self.itemPool.append([machine,[0,0,0]])
+        machine = src.items.itemMap["Machine"]()
         machine.setToProduce("Sheet")
         machine.bolted = False
-        self.itemPool.append(machine)
-        machine = src.items.itemMap["Machine"](None, None, creator=self)
+        self.itemPool.append([machine,[0,0,0]])
+        machine = src.items.itemMap["Machine"]()
         for i in range(1, 30):
-            self.itemPool.append(src.items.itemMap["Sheet"](None, None, creator=self))
-            case = src.items.itemMap["Case"](None, None, creator=self)
+            self.itemPool.append([src.items.itemMap["Sheet"](),[0,0,0]])
+            case = src.items.itemMap["Case"]()
             case.bolted = False
-            self.itemPool.append(case)
-            self.itemPool.append(src.items.itemMap["Vial"](None, None, creator=self))
-            corpse = src.items.itemMap["Corpse"](None, None, creator=self)
+            self.itemPool.append([case,[0,0,0]])
+            self.itemPool.append([src.items.itemMap["Vial"](),[0,0,0]])
+            corpse = src.items.itemMap["Corpse"]()
             corpse.charges = random.randint(100, 300)
-            self.itemPool.append(corpse)
+            self.itemPool.append([corpse,[0,0,0]])
         for i in range(1, 200):
-            self.itemPool.append(src.items.itemMap["Coal"](None, None, creator=self))
-            self.itemPool.append(
-                src.items.itemMap["MetalBars"](None, None, creator=self)
-            )
-            self.itemPool.append(src.items.itemMap["Rod"](None, None, creator=self))
-            self.itemPool.append(
-                src.items.itemMap["Scrap"](None, None, creator=self, amount=1)
-            )
-            self.itemPool.append(
-                src.items.itemMap["Scrap"](None, None, creator=self, amount=1)
-            )
-            self.itemPool.append(
-                src.items.itemMap["Scrap"](None, None, creator=self, amount=1)
-            )
-
-        import random
+            self.itemPool.append([src.items.itemMap["Coal"](),[0,0,0]])
+            self.itemPool.append([src.items.itemMap["MetalBars"](),[0,0,0]])
+            self.itemPool.append([src.items.itemMap["Rod"](),[0,0,0]])
+            self.itemPool.append([src.items.itemMap["Scrap"](amount=1),[0,0,0]])
+            self.itemPool.append([src.items.itemMap["Scrap"](amount=1),[0,0,0]])
+            self.itemPool.append([src.items.itemMap["Scrap"](amount=1),[0,0,0]])
 
         random.shuffle(self.itemPool)
         for item in self.itemPool:
@@ -3157,33 +3147,25 @@ class Desert(Terrain):
                 if x % 15 in (0, 14) or y % 15 in (0, 14):
                     continue
 
-                item.xPosition = x
-                item.yPosition = y
+                item[1][0] = x
+                item[1][1] = y
                 break
 
-        waterCondenser = src.items.itemMap["WaterCondenser"](
-            6 * 15 + 6, 7 * 15 + 6, creator=self
-        )
+        waterCondenser = src.items.itemMap["WaterCondenser"]()
         waterCondenser.lastUsage = -10000
-        self.addItems([waterCondenser])
-        waterCondenser = src.items.itemMap["WaterCondenser"](
-            6 * 15 + 6, 7 * 15 + 8, creator=self
-        )
+        self.addItem(waterCondenser,(6 * 15 + 6, 7 * 15 + 6,0))
+        waterCondenser = src.items.itemMap["WaterCondenser"]()
         waterCondenser.lastUsage = -10000
-        self.addItems([waterCondenser])
-        waterCondenser = src.items.itemMap["WaterCondenser"](
-            6 * 15 + 8, 7 * 15 + 6, creator=self
-        )
+        self.addItem(waterCondenser,(86 * 15 + 6, 7 * 15 + 8,0))
+        waterCondenser = src.items.itemMap["WaterCondenser"]()
         waterCondenser.lastUsage = -10000
-        self.addItems([waterCondenser])
-        waterCondenser = src.items.itemMap["WaterCondenser"](
-            6 * 15 + 8, 7 * 15 + 8, creator=self
-        )
+        self.addItem(waterCondenser,(6 * 15 + 8, 7 * 15 + 6,0))
+        waterCondenser = src.items.itemMap["WaterCondenser"]()
         waterCondenser.lastUsage = -10000
-        self.addItems([waterCondenser])
+        self.addItem(waterCondenser,(6 * 15 + 8, 7 * 15 + 8,0))
 
         # add base of operations
-        self.miniBase = src.rooms.MiniBase2(3, 7, 2, 2, creator=self, seed=seed)
+        self.miniBase = src.rooms.MiniBase2(3, 7, 2, 2, seed=seed)
         self.addRooms([self.miniBase])
 
         # save internal state
@@ -3224,7 +3206,7 @@ class Desert(Terrain):
                 if counter % 2 == 0:
                     toMove.append(item)
                 else:
-                    self.itemPool.append(item)
+                    self.itemPool.append((item,position))
                 counter += 1
 
         cutOff = len(self.itemPool) // 10
@@ -3235,20 +3217,19 @@ class Desert(Terrain):
             x = item.xPosition + random.randint(-1, 1)
             y = item.yPosition + random.randint(-1, 1)
             if x % 15 not in (0, 14) and y % 15 not in (0, 14):
-                self.removeItem(item)
                 item.xPosition = x
                 item.yPosition = y
-                self.addItems([item])
 
         for item in toAdd[: len(toAdd) // 2]:
             x = random.randint(16, 209)
             if x % 15 not in (0, 14):
-                item.xPosition = x
+                item[1][0] = x
             y = random.randint(16, 209)
             if y % 15 not in (0, 14):
-                item.yPosition = y
+                item[1][1] = y
         self.addItems(toAdd)
 
+    def paintFloor(self,size=None,coordinateOffset=None):
         """
         draw the floor
 
@@ -3261,27 +3242,46 @@ class Desert(Terrain):
         else:
             displayChar = src.canvas.displayChars.void
 
-        chars = []
+        desertTiles = [
+            (src.interaction.urwid.AttrSpec("#0c2", "black"), "::"),
+            (src.interaction.urwid.AttrSpec("#2c2", "black"), "::"),
+            (src.interaction.urwid.AttrSpec("#4c2", "black"), "::"),
+            (src.interaction.urwid.AttrSpec("#8c2", "black"), "::"),
+            (src.interaction.urwid.AttrSpec("#ac2", "black"), "::"),
+            (src.interaction.urwid.AttrSpec("#cc2", "black"), "::"),
+            (src.interaction.urwid.AttrSpec("#fc2", "black"), "::"),
+        ]
 
+        chars = []
         if size[0] > coordinateOffset[0]:
             for i in range(0,coordinateOffset[0]-size[0]):
                 line = []
                 for j in range(0, size[1]):
                     line.append(src.canvas.displayChars.void)
 
-        for i in range(0, 250):
+        for i in range(0, 15*15):
             line = []
+            if i < coordinateOffset[0] or i > coordinateOffset[0]+size[0]:
+                continue
 
             if coordinateOffset[1] < 0:
                 for j in range(0,-coordinateOffset[1]):
                     line.append(src.canvas.displayChars.void)
 
-            for j in range(0, 250):
-                line.append(displayChar)
+            for j in range(0, 15*15):
+                if coordinateOffset: # game runs horrible without this flag
+                    if j < coordinateOffset[1] or j > coordinateOffset[1]+size[1]:
+                        continue
+
+                try:
+                    #line.append(desertTiles[self.heatmap[(j+coordinateOffset[1]) // 15][(i+coordinateOffset[k]) // 15]])
+                    line.append(desertTiles[self.heatmap[j // 15][i // 15]])
+                except:
+                    line.append(src.canvas.displayChars.void)
             chars.append(line)
         return chars
 
-    def paintFloor(self,size=None,coordinateOffset=None):
+    def paintFloor2(self,size=None,coordinateOffset=None):
         """
         paint floor with minimal variation to ease perception of movement
 

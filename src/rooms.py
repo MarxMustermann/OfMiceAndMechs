@@ -1471,16 +1471,16 @@ XXXXXXXXXXX
         )
         self.doors[0].walkable = True
 
-        healingstation = src.items.HealingStation(4, 1)
-        corpseShredder = src.items.CorpseShredder(4, 8)
-        corpse = src.items.Corpse(3, 8)
+        healingstation = src.items.itemMap["HealingStation"]()
+        corpseShredder = src.items.itemMap["CorpseShredder"]()
+        corpse = src.items.itemMap["Corpse"]()
         corpse.charges = 300
-        sunScreen = src.items.SunScreen(5, 5)
-        vial = src.items.Vial(7, 3)
+        sunScreen = src.items.itemMap["SunScreen"]()
+        vial = src.items.itemMap["Vial"]()
         import random
 
         vial.uses = random.randint(0, 10)
-        self.addItems([healingstation, sunScreen, vial, corpseShredder, corpse])
+        self.addItems([(healingstation,(4,1,0)), (sunScreen,(5,5,0)), (vial,(7,3,0)), (corpseShredder,(4,8,0)), (corpse,(3,8,0))])
 
 class EmptyRoom(Room):
     """

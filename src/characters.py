@@ -1152,6 +1152,8 @@ class Character(src.saveing.Saveable):
         Parameters:
             quest: the quest to set the path from
         """
+        self.path = [] # disabled
+        return
 
         if hasattr(quest, "dstX") and hasattr(quest, "dstY") and self.container:
             self.path = self.container.findPath(

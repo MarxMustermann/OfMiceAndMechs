@@ -653,11 +653,12 @@ class ObtainAllSpecialItems(Quest):
 
         for npc in character.subordinates:
 
-            quest = ObtainSpecialItem()
-            quest.setToObtain(self.priorityObtainID,self.priorityObtainLocation)
+            if npc.quests:
+                quest = ObtainSpecialItem()
+                quest.setToObtain(self.priorityObtainID,self.priorityObtainLocation)
 
-            serveQuest = npc.quests[0]
-            serveQuest.addQuest(quest)
+                serveQuest = npc.quests[0]
+                serveQuest.addQuest(quest)
 
         self.didDelegate = True
 

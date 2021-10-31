@@ -590,14 +590,14 @@ class BackToTheRoots(BasicPhase):
         self.leaders = {}
         self.scoreTracker = {}
 
-    def genNPC(self, cityCounter, citylocation):
+    def genNPC(self, cityCounter, citylocation, flaskUses=100):
         npc = src.characters.Character()
         item = src.items.itemMap["GooFlask"]()
-        item.uses = 100
+        item.uses = flaskUses
+        npc.inventory.append(item)
         #npc.runCommandString("-agg_a-")
         npc.runCommandString("10.*")
         npc.macroState["macros"]["j"] = ["J", "f"]
-        npc.inventory.append(item)
         npc.faction = "city #%s"%(cityCounter,)
         npc.registers["HOMEx"] = citylocation[0]
         npc.registers["HOMEy"] = citylocation[1]
@@ -646,8 +646,20 @@ class BackToTheRoots(BasicPhase):
         mainChar = src.gamestate.gamestate.mainChar
 
         # add random items
-        for row in src.gamestate.gamestate.terrainMap:
-            for terrain in row:
+        y = 0
+        for row in src.gamestate.gamestate.terrainMap[:]:
+            y += 1
+            x = 0
+            for terrain in row[:]:
+                x += 1
+                """
+                if random.choice([True,False]) or 1==1:
+                    terrain = src.terrains.Desert()
+                    terrain.xPosition = x-1
+                    terrain.yPosition = y-1
+                    src.gamestate.gamestate.terrainMap[y-1][x-1] = terrain
+                """
+
                 items = []
                 molds = []
                 landmines = []
@@ -666,6 +678,7 @@ class BackToTheRoots(BasicPhase):
                     items.append(item)
                 for i in range(0,random.randint(1,3)):
                     item = src.items.itemMap["GooFlask"]()
+                    item.uses = random.randint(1,3)
                     items.append(item)
                 for i in range(0,random.randint(1,20)):
                     item = src.items.itemMap["FireCrystals"]()
@@ -776,7 +789,7 @@ class BackToTheRoots(BasicPhase):
                     subsubleader.assignQuest(quest, active=True)
 
                     for k in range(0,3):
-                        worker = self.genNPC(cityCounter,citylocation)
+                        worker = self.genNPC(cityCounter,citylocation,flaskUses=(2-k)*10)
                         mainRoom.addCharacter(worker,3+i*3+j,7+k)
                         subsubleader.subordinates.append(worker)
 
@@ -785,7 +798,7 @@ class BackToTheRoots(BasicPhase):
                         worker.rank = 6
                         worker.assignQuest(quest, active=True)
 
-                        if not placedMainChar:
+                        if not placedMainChar and i == 2 and j == 2 and k == 2:
                             src.gamestate.gamestate.mainChar = worker
                             placedMainChar = True
 

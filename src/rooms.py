@@ -49,7 +49,14 @@ class Room(src.saveing.Saveable):
             offsetY: the y offset from the position in big coordinates
             desiredPosition: the desired position for the room
             seed: the rng seed
+
         """
+        self.attributesToStore = super().attributesToStore[:]
+        self.callbacksToStore = []
+        self.objectsToStore = []
+        self.tupleDictsToStore = []
+        self.tupleListsToStore = []
+
         super().__init__()
 
         # initialize attributes
@@ -714,7 +721,7 @@ class Room(src.saveing.Saveable):
                 if character.yPosition < len(chars) and character.xPosition < len(
                     chars[character.yPosition]
                 ):
-                    if not "city" in character.faction:
+                    if not "city" in character.faction or not character.charType == "Character":
                         chars[character.yPosition][character.xPosition] = character.display
                     else:
                         chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec("#3f3", "black"), "@ ")
@@ -1534,7 +1541,6 @@ XXX
         self.name = "room"
 
         self.attributesToStore.extend(["bio"])
-        self.initialState = self.getState()
 
     def reconfigure(self, sizeX=3, sizeY=3, items=[], bio=False, doorPos=[]):
         """

@@ -3,6 +3,8 @@ import src
 
 class StockpileMetaManager(src.items.Item):
     type = "StockpileMetaManager"
+    attributesToStore = []
+    applyOptions = []
 
     """
     ingame item to mangage multiple stockpile manager
@@ -35,25 +37,29 @@ class StockpileMetaManager(src.items.Item):
         # settings
         self.autoExpand = True
 
-        self.attributesToStore.extend(
-            [
-                "stockPiles",
-                "stockPileInfo",
-                "assignedPlots",
-                "assignedPlotsInfo",
-                "roomManagerName",
-            ]
-        )
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(
+                [
+                    "stockPiles",
+                    "stockPileInfo",
+                    "assignedPlots",
+                    "assignedPlotsInfo",
+                    "roomManagerName",
+                ]
+            )
 
-        self.applyOptions.extend(
-            [
-                ("clearInventory", "clear inventory"),
-                ("addItem", "add item"),
-                ("addTask", "add task"),
-                ("doMaintenance", "do maintenance"),
-                ("test", "test"),
-            ]
-        )
+        if not self.applyOptions:
+            self.applyOptions.extend(super().applyOptions)
+            self.applyOptions.extend(
+                [
+                    ("clearInventory", "clear inventory"),
+                    ("addItem", "add item"),
+                    ("addTask", "add task"),
+                    ("doMaintenance", "do maintenance"),
+                    ("test", "test"),
+                ]
+            )
         self.applyMap = {
             "clearInventory": self.doClearInventory,
             "addItem": self.doAddItem,

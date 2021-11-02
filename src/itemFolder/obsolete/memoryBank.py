@@ -6,6 +6,7 @@ import src
 
 class MemoryBank(src.items.Item):
     type = "MemoryBank"
+    attributesToStore = []
 
     """
     call superclass constructor with modified parameters
@@ -20,7 +21,9 @@ class MemoryBank(src.items.Item):
         self.name = "memory bank"
         self.baseName = self.name
 
-        self.attributesToStore.extend(["macros"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["macros"])
 
         self.setDescription()
 

@@ -6,6 +6,11 @@ class Heater(src.items.Item):
     """
 
     type = "Heater"
+    name = "heater"
+    description = "used to build items"
+
+    bolted = False
+    walkable = True
 
     def __init__(self):
         """
@@ -15,11 +20,5 @@ class Heater(src.items.Item):
         super().__init__()
 
         self.display = src.canvas.displayChars.heater
-
-        self.name = "heater"
-        self.description = "used to build items"
-
-        self.bolted = False
-        self.walkable = True
 
 src.items.addType(Heater)

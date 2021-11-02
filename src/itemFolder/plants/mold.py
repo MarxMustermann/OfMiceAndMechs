@@ -9,6 +9,14 @@ class Mold(src.items.Item):
     """
 
     type = "Mold"
+    attributesToStore = []
+    charges = 2
+    walkable = True
+    name = "mold"
+    description = "This is a patch of mold"
+    usageInfo = """
+you can eat it to gain 2 satiation.
+"""
 
     def __init__(self, noId=False):
         """
@@ -16,14 +24,9 @@ class Mold(src.items.Item):
         """
 
         super().__init__(display=src.canvas.displayChars.moss)
-        self.charges = 2
-        self.walkable = True
-        self.name = "mold"
-        self.description = "This is a patch of mold"
-        self.usageInfo = """
-you can eat it to gain 2 satiation.
-"""
-        self.attributesToStore.extend(["charges"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["charges"])
 
     def apply(self, character):
         """
@@ -46,16 +49,16 @@ you can eat it to gain 2 satiation.
 
         if self.charges and self.container:
             if not (self.xPosition and self.yPosition and self.container):
+                self.charges = 0
                 return
             event = src.events.RunCallbackEvent(
-                src.gamestate.gamestate.tick
-                + (
-                    2 * self.xPosition
-                    + 3 * self.yPosition
-                    + src.gamestate.gamestate.tick
-                )
-                % 1000
+                src.gamestate.gamestate.tick+500+int(random.random()*500)
             )
+            """
+            event = src.events.RunCallbackEvent(
+                src.gamestate.gamestate.tick+500+int(random.random()*500)
+            )
+            """
             event.setCallback({"container": self, "method": "spawn"})
             self.container.addEvent(event)
 

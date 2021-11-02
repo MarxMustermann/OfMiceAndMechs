@@ -6,7 +6,12 @@ class Scrap(src.items.Item):
     ingame item serving as a source of metal
     """
 
+    attributesToStore = []
     type = "Scrap"
+    bolted = False
+    name = "scrap"
+    description = "crushed something, basically raw metal"
+    usageInfo = "A raw material. Its main use is to be converted to metal bars in a scrap compactor"
 
     def __init__(self, amount=1):
         """
@@ -15,14 +20,10 @@ class Scrap(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.scrap_light)
 
-        self.name = "scrap"
-        self.description = "crushed something, basically raw metal"
-        self.usageInfo = "A raw material. Its main use is to be converted to metal bars in a scrap compactor"
-
-        # set up metadata for saving
-        self.attributesToStore.extend(["amount"])
-
-        self.bolted = False
+        if not self.attributesToStore:
+            # set meta information for saving
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["amount"])
 
         # how many scraps this pile consists of
         self.amount = amount

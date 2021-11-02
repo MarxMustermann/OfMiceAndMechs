@@ -6,6 +6,7 @@ bad pattern: logic should be moved somewhere else
 import time
 import uuid
 import json
+import random
 
 # load internal libraries
 import src.rooms
@@ -284,50 +285,250 @@ def show_or_exit(key, charState=None):
 
 shownStarvationWarning = False
 
-# bad code: there are way too much lines of code in this function
-# bad code: probably only one parameter needed
-def processInput(key, charState=None, noAdvanceGame=False, char=None):
-    """
-    handle a keystroke
+def moveCharacter(direction,char,noAdvanceGame,header,urwid):
 
-    Parameters:
-        charState: the state of the character the input belongs to 
-                   this can probably be deduced from char
-        noAdvanceGame: flag indication whether the game should be advanced
-                       always True in practice
-        char: the character the input belongs to
-    """
-
-    if char.dead:
-        return
-
-    char.timeTaken += 1
-
-    if charState is None:
-        charState = src.gamestate.gamestate.mainChar.macroState
-
-    if char is None:
-        char = src.gamestate.gamestate.mainChar
-
+    # do inner room movement
     if char.room:
-        terrain = char.room.terrain
-    else:
-        terrain = char.terrain
+        item = char.room.moveCharacterDirection(char, direction)
 
-    if terrain is None:
-        if char.lastRoom:
-            terrain = char.lastRoom.terrain
+        # remember items bumped into for possible interaction
+        if item:
+            char.addMessage("You cannot walk there " + str(direction))
+            char.addMessage("press " + commandChars.activate + " to apply")
+            if not noAdvanceGame:
+                header.set_text(
+                    (
+                        urwid.AttrSpec("default", "default"),
+                        renderHeader(char),
+                    )
+                )
+            return item
         else:
-            terrain = char.lastTerrain
+            char.changed("moved", (char, direction))
 
-    flags = key[1]
-    key = key[0]
+    # do movement on terrain
+    # bad code: these calculation should be done elsewhere
+    else:
+        if not char.terrain:
+            return
 
-    # ignore mouse interaction
-    # bad pattern: mouse input should be used
-    if type(key) == tuple:
-        return
+        return char.terrain.moveCharacterDirection(char, direction)
 
+def tumble(char,charState):
+    if charState["itemMarkedLast"] and char.personality["avoidItems"]:
+        char.runCommandString(random.choice(("a","w","s","d",)))
+
+def handleActivityKeypress(char, header, main, footer, flags):
+    if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+        text = """
+
+press key to select action
+
+* g = run guard mode for 10 ticks
+"""
+        header.set_text(
+            (urwid.AttrSpec("default", "default"), "action menu")
+        )
+        main.set_text((urwid.AttrSpec("default", "default"), text))
+        footer.set_text((urwid.AttrSpec("default", "default"), ""))
+        char.specialRender = True
+
+    char.interactionState["runaction"] = {}
+
+def handleActivitySelection(char):
+    char.startGuarding(10)
+    del char.interactionState["runaction"]
+
+def handleStartMacroReplayChar(key,char,charState,main,header,footer,urwid,flags):
+    if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+        text = """
+
+press key for macro to replay
+
+current macros:
+
+"""
+        for key, value in charState["macros"].items():
+            compressedMacro = ""
+            for keystroke in value:
+                if len(keystroke) == 1:
+                    compressedMacro += keystroke
+                else:
+                    compressedMacro += "/" + keystroke + "/"
+
+            text += """
+%s - %s""" % (
+                key,
+                compressedMacro,
+            )
+
+        header.set_text((urwid.AttrSpec("default", "default"), "record macro"))
+        main.set_text((urwid.AttrSpec("default", "default"), text))
+        footer.set_text((urwid.AttrSpec("default", "default"), ""))
+        char.specialRender = True
+
+    charState["replay"].append("")
+
+def handleMacroReplayChar(key,char,charState,main,header,footer,urwid,flags):
+    if charState["replay"] and (
+        charState["replay"][-1] == ""
+        or charState["replay"][-1][-1].isupper()
+        or charState["replay"][-1][-1] == " "
+    ):
+        if not charState["number"]:
+
+            charState["replay"][-1] += key
+
+            if (
+                charState["replay"][-1][-1].isupper()
+                or charState["replay"][-1][-1] == " "
+            ):
+
+                if "norecord" in flags:
+                    return
+
+                text = """
+
+press key for macro to replay
+
+%s
+
+current macros:
+
+""" % (
+                    charState["replay"][-1]
+                )
+
+                for macroName, value in charState["macros"].items():
+                    if not macroName.startswith(charState["replay"][-1]):
+                        continue
+
+                    compressedMacro = ""
+                    for keystroke in value:
+                        if len(keystroke) == 1:
+                            compressedMacro += keystroke
+                        else:
+                            compressedMacro += "/" + keystroke + "/"
+
+                    text += """
+%s - %s""" % (
+                        macroName,
+                        compressedMacro,
+                    )
+
+                header.set_text(
+                    (urwid.AttrSpec("default", "default"), "record macro")
+                )
+                main.set_text((urwid.AttrSpec("default", "default"), text))
+                footer.set_text((urwid.AttrSpec("default", "default"), ""))
+                char.specialRender = True
+                return
+
+            if charState["replay"][-1] in charState["macros"]:
+                char.addMessage(
+                    "replaying %s: %s"
+                    % (
+                        charState["replay"][-1],
+                        "".join(charState["macros"][charState["replay"][-1]]),
+                    )
+                )
+                commands = []
+                for keyPress in charState["macros"][charState["replay"][-1]]:
+                    commands.append((keyPress, ["norecord"]))
+                charState["commandKeyQueue"] = (
+                    commands + charState["commandKeyQueue"]
+                )
+            else:
+                char.addMessage(
+                    "no macro recorded to %s" % (charState["replay"][-1])
+                )
+
+            charState["replay"].pop()
+        else:
+            num = int(charState["number"])
+            charState["number"] = None
+
+            charState["doNumber"] = True
+
+            commands = []
+            counter = 0
+            while counter < num:
+                commands.append(("_", ["norecord"]))
+                commands.append((key, ["norecord"]))
+                counter += 1
+            charState["replay"].pop()
+            charState["commandKeyQueue"] = commands + charState["commandKeyQueue"]
+
+            charState["doNumber"] = False
+            char.timeTaken -= 0.99
+
+def handleRecordingChar(key,char,charState,main,header,footer,urwid,flags):
+    if (
+        key not in ("lagdetection", "lagdetection_", "-")
+        or char.interactionState["varActions"]
+    ):
+        if (
+            charState["recordingTo"] is None
+            or charState["recordingTo"][-1].isupper()
+            or charState["recordingTo"][-1] == " "
+        ):
+            if charState["recordingTo"] is None:
+                charState["recordingTo"] = key
+            else:
+                charState["recordingTo"] += key
+
+            if not (key.isupper() or key == " "):
+                charState["macros"][charState["recordingTo"]] = []
+                char.addMessage(
+                    "start recording to: %s" % (charState["recordingTo"])
+                )
+            else:
+                if (
+                    src.gamestate.gamestate.mainChar == char
+                    and "norecord" not in flags
+                ):
+                    text = """
+
+type the macro name you want to record to
+
+%s
+
+""" % (
+                        charState["recordingTo"]
+                    )
+
+                    for key, value in charState["macros"].items():
+
+                        if not key.startswith(charState["recordingTo"]):
+                            continue
+
+                        compressedMacro = ""
+                        for keystroke in value:
+                            if len(keystroke) == 1:
+                                compressedMacro += keystroke
+                            else:
+                                compressedMacro += "/" + keystroke + "/"
+
+                        text += """
+%s - %s""" % (
+                            key,
+                            compressedMacro,
+                        )
+
+                    header.set_text(
+                        (urwid.AttrSpec("default", "default"), "record macro")
+                    )
+                    main.set_text((urwid.AttrSpec("default", "default"), text))
+                    footer.set_text((urwid.AttrSpec("default", "default"), ""))
+                    char.specialRender = True
+
+            return
+        else:
+            if "norecord" not in flags:
+                charState["macros"][charState["recordingTo"]].append(key)
+    return (1,key)
+
+def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
     char.specialRender = False
 
     if char.staggered:
@@ -336,69 +537,10 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
         return
 
     if charState["recording"]:
-        if (
-            key not in ("lagdetection", "lagdetection_", "-")
-            or char.interactionState["varActions"]
-        ):
-            if (
-                charState["recordingTo"] is None
-                or charState["recordingTo"][-1].isupper()
-                or charState["recordingTo"][-1] == " "
-            ):
-                if charState["recordingTo"] is None:
-                    charState["recordingTo"] = key
-                else:
-                    charState["recordingTo"] += key
-
-                if not (key.isupper() or key == " "):
-                    charState["macros"][charState["recordingTo"]] = []
-                    char.addMessage(
-                        "start recording to: %s" % (charState["recordingTo"])
-                    )
-                else:
-                    if (
-                        src.gamestate.gamestate.mainChar == char
-                        and "norecord" not in flags
-                    ):
-                        text = """
-
-type the macro name you want to record to
-
-%s
-
-""" % (
-                            charState["recordingTo"]
-                        )
-
-                        for key, value in charState["macros"].items():
-
-                            if not key.startswith(charState["recordingTo"]):
-                                continue
-
-                            compressedMacro = ""
-                            for keystroke in value:
-                                if len(keystroke) == 1:
-                                    compressedMacro += keystroke
-                                else:
-                                    compressedMacro += "/" + keystroke + "/"
-
-                            text += """
-%s - %s""" % (
-                                key,
-                                compressedMacro,
-                            )
-
-                        header.set_text(
-                            (urwid.AttrSpec("default", "default"), "record macro")
-                        )
-                        main.set_text((urwid.AttrSpec("default", "default"), text))
-                        footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                        char.specialRender = True
-
-                return
-            else:
-                if "norecord" not in flags:
-                    charState["macros"][charState["recordingTo"]].append(key)
+        result = handleRecordingChar(key,char,charState,main,header,footer,urwid,flags)
+        if not (result and result[0]):
+            return
+        key = result[1]
 
     if (
         charState["submenue"]
@@ -474,8 +616,7 @@ type the macro name you want to record to
         return
 
     if "runaction" in char.interactionState:
-        char.startGuarding(10)
-        del char.interactionState["runaction"]
+        handleActivitySelection(char)
         return
 
     if "advancedInteraction" in char.interactionState:
@@ -1615,130 +1756,11 @@ current macros:
         "lagdetection_",
         "~",
     ):
-        if charState["replay"] and (
-            charState["replay"][-1] == ""
-            or charState["replay"][-1][-1].isupper()
-            or charState["replay"][-1][-1] == " "
-        ):
-            if not charState["number"]:
-
-                charState["replay"][-1] += key
-
-                if (
-                    charState["replay"][-1][-1].isupper()
-                    or charState["replay"][-1][-1] == " "
-                ):
-
-                    if "norecord" in flags:
-                        return
-
-                    text = """
-
-press key for macro to replay
-
-%s
-
-current macros:
-
-""" % (
-                        charState["replay"][-1]
-                    )
-
-                    for macroName, value in charState["macros"].items():
-                        if not macroName.startswith(charState["replay"][-1]):
-                            continue
-
-                        compressedMacro = ""
-                        for keystroke in value:
-                            if len(keystroke) == 1:
-                                compressedMacro += keystroke
-                            else:
-                                compressedMacro += "/" + keystroke + "/"
-
-                        text += """
-%s - %s""" % (
-                            macroName,
-                            compressedMacro,
-                        )
-
-                    header.set_text(
-                        (urwid.AttrSpec("default", "default"), "record macro")
-                    )
-                    main.set_text((urwid.AttrSpec("default", "default"), text))
-                    footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                    char.specialRender = True
-                    return
-
-                if charState["replay"][-1] in charState["macros"]:
-                    char.addMessage(
-                        "replaying %s: %s"
-                        % (
-                            charState["replay"][-1],
-                            "".join(charState["macros"][charState["replay"][-1]]),
-                        )
-                    )
-                    commands = []
-                    for keyPress in charState["macros"][charState["replay"][-1]]:
-                        commands.append((keyPress, ["norecord"]))
-                    charState["commandKeyQueue"] = (
-                        commands + charState["commandKeyQueue"]
-                    )
-                else:
-                    char.addMessage(
-                        "no macro recorded to %s" % (charState["replay"][-1])
-                    )
-
-                charState["replay"].pop()
-            else:
-                num = int(charState["number"])
-                charState["number"] = None
-
-                charState["doNumber"] = True
-
-                commands = []
-                counter = 0
-                while counter < num:
-                    commands.append(("_", ["norecord"]))
-                    commands.append((key, ["norecord"]))
-                    counter += 1
-                charState["replay"].pop()
-                charState["commandKeyQueue"] = commands + charState["commandKeyQueue"]
-
-                charState["doNumber"] = False
-                char.timeTaken -= 0.99
-
+        handleMacroReplayChar(key,char,charState,main,header,footer,urwid,flags)
         return
 
     if key in ("_",):
-
-        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-            text = """
-
-press key for macro to replay
-
-current macros:
-
-"""
-            for key, value in charState["macros"].items():
-                compressedMacro = ""
-                for keystroke in value:
-                    if len(keystroke) == 1:
-                        compressedMacro += keystroke
-                    else:
-                        compressedMacro += "/" + keystroke + "/"
-
-                text += """
-%s - %s""" % (
-                    key,
-                    compressedMacro,
-                )
-
-            header.set_text((urwid.AttrSpec("default", "default"), "record macro"))
-            main.set_text((urwid.AttrSpec("default", "default"), text))
-            footer.set_text((urwid.AttrSpec("default", "default"), ""))
-            char.specialRender = True
-
-        charState["replay"].append("")
+        handleStartMacroReplayChar(key,char,charState,main,header,footer,urwid,flags)
         return
 
     if charState["number"] and key not in (
@@ -1825,6 +1847,665 @@ current registers
 
         char.doStackPush = True
         return
+    return (1,key)
+
+def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
+    if key in ("u",):
+        char.setInterrupt = True
+        return
+
+    if key in ("esc",):
+        options = [("save", "save"), ("quit", "save and quit"), ("actions", "actions"),
+                   ("macros", "macros"), ("help", "help"), ("keybinding", "keybinding"),
+                   ("changeFaction", "changeFaction"),
+                   ("change personality settings", "change personality settings")]
+        submenu = SelectionMenu("What do you want to do?", options)
+        char.macroState["submenue"] = submenu
+
+        def trigger():
+            selection = submenu.getSelection()
+            if selection == "change personality settings":
+
+                def getValue():
+                    settingName = char.macroState["submenue"].selection
+
+                    def setValue():
+                        value = char.macroState["submenue"].text
+                        if settingName in (
+                            "autoCounterAttack",
+                            "autoFlee",
+                            "abortMacrosOnAttack",
+                            "attacksEnemiesOnContact",
+                        ):
+                            if value == "True":
+                                value = True
+                            else:
+                                value = False
+                        else:
+                            value = int(value)
+                        char.personality[settingName] = value
+
+                    if settingName is None:
+                        return
+                    submenu3 = InputMenu("input value")
+                    char.macroState["submenue"] = submenu3
+                    char.macroState["submenue"].followUp = setValue
+                    return
+
+                options = []
+                for (key, value) in char.personality.items():
+                    options.append((key, "%s: %s" % (key, value)))
+                submenu2 = SelectionMenu("select personality setting", options)
+                char.macroState["submenue"] = submenu2
+                char.macroState["submenue"].followUp = getValue
+                return
+            if selection == "save":
+                tmp = char.macroState["submenue"]
+                char.macroState["submenue"] = None
+                src.gamestate.gamestate.save()
+                char.macroState["submenue"] = tmp
+            elif selection == "quit":
+                char.macroState["submenue"] = None
+                src.gamestate.gamestate.save()
+                raise urwid.ExitMainLoop()
+            elif selection == "actions":
+                pass
+            elif selection == "macros":
+                pass
+            elif selection == "changeFaction":
+                if char.faction == "player":
+                    char.faction = "monster"
+                else:
+                    char.faction = "player"
+                pass
+            elif selection == "help":
+                charState["submenue"] = HelpMenu()
+            elif selection == "keybinding":
+                pass
+
+        char.macroState["submenue"].followUp = trigger
+        key = "."
+
+    if key in ("z",):
+        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+            header.set_text((urwid.AttrSpec("default", "default"), "observe"))
+            main.set_text(
+                (
+                    urwid.AttrSpec("default", "default"),
+                    """
+
+select what you want to do
+
+* c - clear macros
+
+""",
+                )
+            )
+            footer.set_text((urwid.AttrSpec("default", "default"), ""))
+            char.specialRender = True
+        char.interactionState["functionCall"] = ""
+        char.timeTaken -= 0.99
+        return
+    if key in ("o",) and 1==0:
+        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+            header.set_text((urwid.AttrSpec("default", "default"), "observe"))
+            main.set_text(
+                (
+                    urwid.AttrSpec("default", "default"),
+                    """
+
+select what you want to observe
+
+* p - get position of something
+
+""",
+                )
+            )
+            footer.set_text((urwid.AttrSpec("default", "default"), ""))
+            char.specialRender = True
+        char.interactionState["enumerateState"].append({"type": None})
+        char.timeTaken -= 0.99
+        return
+
+    # handle cinematics
+    if len(cinematics.cinematicQueue):
+        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+            char.specialRender = True
+
+        # get current cinematic
+        cinematic = cinematics.cinematicQueue[0]
+        char.timeTaken -= 1
+
+        # allow to quit even within a cutscene
+        if key in (commandChars.quit_normal, commandChars.quit_instant):
+            src.gamestate.gamestate.save()
+            # bad code: directly calls urwid
+            raise urwid.ExitMainLoop()
+
+        # skip the cinematic if requested
+        elif (
+            key
+            in (
+                commandChars.pause,
+                commandChars.advance,
+                commandChars.autoAdvance,
+                commandChars.redraw,
+                "enter",
+            )
+            and cinematic.skipable
+        ):
+            cinematic.abort()
+            cinematics.cinematicQueue = cinematics.cinematicQueue[1:]
+            if loop:
+                loop.set_alarm_in(0.0, callShow_or_exit, commandChars.ignore)
+            else:
+                callShow_or_exit(None, commandChars.ignore)
+            return
+
+        # advance the cutscene
+        else:
+            if not cinematic.advance():
+                return
+            if not cinematic.background:
+                # bad code: changing the key mid function
+                key = commandChars.ignore
+
+    # set the flag to advance the game
+    doAdvanceGame = True
+    if key in (commandChars.ignore,):
+        doAdvanceGame = False
+
+    # invalidate input for unconscious char
+    if char.unconcious:
+        key = commandChars.wait
+
+    # show a few rounds after death and exit
+    if char.dead:
+        if not ticksSinceDeath:
+            ticksSinceDeath = src.gamestate.gamestate.tick
+        key = commandChars.wait
+        if src.gamestate.gamestate.tick == ticksSinceDeath + 5:
+            char.macroState["commandKeyQueue"] = []
+            char.macroState["submenue"] = TextMenu(
+                "You died. press ctrl-c and reload to start from last save"
+            )
+            # destroy the gamestate
+            # bad pattern: should not always destroy gamestate
+            # saveFile = open("gamestate/gamestate.json","w")
+            # saveFile.write("you lost")
+            # saveFile.close()
+            # raise urwid.ExitMainLoop()
+            pass
+
+    # call callback if key was overwritten
+    if "stealKey" in charState and key in charState["stealKey"]:
+        charState["stealKey"][key]()
+
+    # handle the keystroke for a char on the map
+    else:
+        # open the debug menue
+        if key in ("´",):
+            if debug:
+                charState["submenue"] = DebugMenu()
+            else:
+                char.addMessage("debug not enabled")
+
+        # destroy save and quit
+        if key in (commandChars.quit_delete,):
+            saveFile = open("gamestate/gamestate.json", "w")
+            saveFile.write("reset")
+            saveFile.close()
+            raise urwid.ExitMainLoop()
+
+        # kill one of the autoadvance keystrokes
+        # bad pattern: doesn't actually pause
+        if key in (commandChars.pause,):
+            charState["ignoreNextAutomated"] = True
+            doAdvanceGame = False
+
+        """
+        move the player into a direction
+        bad code: huge inline function + player vs. npc movement should use same code
+        """
+
+        # move the player
+        if key in (commandChars.move_north, "up"):
+            charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid)
+            if charState["itemMarkedLast"]:
+                tumble(char,charState)
+                return
+        if key in (commandChars.move_south, "down"):
+            charState["itemMarkedLast"] = moveCharacter("south",char,noAdvanceGame,header,urwid)
+            if charState["itemMarkedLast"]:
+                tumble(char,charState)
+                return
+        if key in (commandChars.move_east, "right"):
+            charState["itemMarkedLast"] = moveCharacter("east",char,noAdvanceGame,header,urwid)
+            if charState["itemMarkedLast"]:
+                tumble(char,charState)
+                return
+        if key in (commandChars.move_west, "left"):
+            charState["itemMarkedLast"] = moveCharacter("west",char,noAdvanceGame,header,urwid)
+            if charState["itemMarkedLast"]:
+                tumble(char,charState)
+                return
+
+        # move the player
+        if key in (
+            "W",
+            "S",
+            "D",
+            "A",
+        ):
+
+            lastXposition = char.xPosition
+            lastYposition = char.yPosition
+            if key in ("W",):
+                charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid)
+            if key in ("S",):
+                charState["itemMarkedLast"] = moveCharacter("south",char,noAdvanceGame,header,urwid)
+            if key in ("D",):
+                charState["itemMarkedLast"] = moveCharacter("east",char,noAdvanceGame,header,urwid)
+            if key in ("A",):
+                charState["itemMarkedLast"] = moveCharacter("west",char,noAdvanceGame,header,urwid)
+
+            if (
+                not lastXposition == char.xPosition
+                or not lastYposition == char.yPosition
+            ):
+                charState["commandKeyQueue"].insert(0, (key, ("norecord",)))
+
+            if charState["itemMarkedLast"]:
+                tumble(char,charState)
+                return
+
+        # murder the next available character
+        # bad pattern: player should be able to select whom to kill if there are multiple targets
+        if key in ("M",):
+            if char.combatMode is None:
+                char.combatMode = "agressive"
+            elif char.combatMode == "agressive":
+                char.combatMode = "defensive"
+            else:
+                char.combatMode = None
+            char.addMessage("switched combatMode to: %s" % (char.combatMode,))
+        if key in (commandChars.attack,):
+            if (
+                "NaiveMurderQuest" not in char.solvers and not char.godMode
+            ):  # disabled
+                char.addMessage("you do not have the nessecary solver yet (murder)")
+            else:
+                # bad code: should be part of a position object
+                adjascentFields = [
+                    (char.xPosition, char.yPosition),
+                    (char.xPosition - 1, char.yPosition),
+                    (char.xPosition + 1, char.yPosition),
+                    (char.xPosition, char.yPosition - 1),
+                    (char.xPosition, char.yPosition + 1),
+                ]
+                for enemy in char.container.characters:
+                    if enemy == char:
+                        continue
+                    if (
+                        not char.combatMode == "agressive"
+                        and enemy.faction == char.faction
+                    ):
+                        continue
+                    if (enemy.xPosition, enemy.yPosition) not in adjascentFields:
+                        continue
+                    if isinstance(char, src.characters.Monster) and char.phase == 4:
+                        char.addMessage("entered stage 5")
+                        char.enterPhase5()
+                    char.attack(enemy)
+                    break
+
+        # activate an item
+        if key in ("c",):
+            if "NaiveActivateQuest" not in char.solvers and not char.godMode:
+                char.addMessage(
+                    "you do not have the nessecary solver yet (activate)"
+                )
+            else:
+                # activate the marked item
+                if charState["itemMarkedLast"]:
+                    if not charState["itemMarkedLast"].container:
+                        if charState["itemMarkedLast"].room:
+                            charState["itemMarkedLast"].container = charState[
+                                "itemMarkedLast"
+                            ].room
+                        elif charState["itemMarkedLast"].terrain:
+                            charState["itemMarkedLast"].container = charState[
+                                "itemMarkedLast"
+                            ].terrain
+
+                    charState["itemMarkedLast"].configure(char)
+
+                # activate an item on floor
+                else:
+                    # for item in char.container.itemsOnFloor:
+                    #    if item.xPosition == char.xPosition and item.yPosition == char.yPosition:
+                    #        item.apply(char)
+                    #        break
+                    entry = char.container.getItemByPosition(
+                        (char.xPosition, char.yPosition, char.zPosition)
+                    )
+                    if len(entry):
+                        entry[0].configure(char)
+
+        # activate an item
+        if key in (commandChars.activate,):
+            if "NaiveActivateQuest" not in char.solvers and not char.godMode:
+                char.addMessage(
+                    "you do not have the nessecary solver yet (activate)"
+                )
+            else:
+                # activate the marked item
+                if charState["itemMarkedLast"]:
+                    if not charState["itemMarkedLast"].container:
+                        return
+
+                    charState["itemMarkedLast"].apply(char)
+
+                # activate an item on floor
+                else:
+                    # for item in char.container.itemsOnFloor:
+                    #    if item.xPosition == char.xPosition and item.yPosition == char.yPosition:
+                    #        item.apply(char)
+                    #        break
+                    if not (
+                        char.xPosition is None
+                        or char.yPosition is None
+                        or char.zPosition is None
+                    ):
+                        entry = char.container.getItemByPosition(
+                            (char.xPosition, char.yPosition, char.zPosition)
+                        )
+
+                        if entry:
+                            entry[0].apply(char)
+
+        # examine an item
+        if key in (commandChars.examine,):
+            if "ExamineQuest" not in char.solvers and not char.godMode:
+                char.addMessage(
+                    "you do not have the nessecary solver yet (examine)"
+                )
+            else:
+                # examine the marked item
+                if charState["itemMarkedLast"]:
+                    char.examine(charState["itemMarkedLast"])
+
+                # examine an item on floor
+                else:
+                    itemList = char.container.getItemByPosition(
+                        (char.xPosition, char.yPosition, char.zPosition)
+                    )
+                    for item in itemList:
+                        char.examine(item)
+                        break
+
+        # drop first item from inventory
+        # bad pattern: the user has to have the choice for what item to drop
+        if key in (commandChars.drop,):
+            if "NaiveDropQuest" not in char.solvers and not char.godMode:
+                char.addMessage("you do not have the nessecary solver yet (drop)")
+            else:
+                if len(char.inventory):
+                    char.drop(char.inventory[-1])
+
+        # drink from the first available item in inventory
+        # bad pattern: the user has to have the choice from what item to drink from
+        # bad code: drinking should happen in character
+        if key in ("J",):
+            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+                text = """
+
+press key for the advanced interaction
+
+* w = activate north
+* a = activate west
+* s = activate east
+* d = activate south
+* . = activate item on floor
+* f = eat food
+* j = activate job order
+
+"""
+
+                header.set_text(
+                    (urwid.AttrSpec("default", "default"), "advanced activate")
+                )
+                main.set_text((urwid.AttrSpec("default", "default"), text))
+                footer.set_text((urwid.AttrSpec("default", "default"), ""))
+                char.specialRender = True
+
+            char.interactionState["advancedInteraction"] = {}
+            return
+
+        if key in ("g",):
+            handleActivityKeypress(char, header, main, footer, flags)
+            return
+        if key in ("f",):
+            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+                text = """
+
+press key to set fire direction
+
+* w = fire north
+* a = fire west
+* s = fire south
+* d = fire east
+
+"""
+
+                header.set_text(
+                    (urwid.AttrSpec("default", "default"), "fire menu")
+                )
+                main.set_text((urwid.AttrSpec("default", "default"), text))
+                footer.set_text((urwid.AttrSpec("default", "default"), ""))
+                char.specialRender = True
+
+            char.interactionState["fireDirection"] = {}
+            return
+
+        if key in ("K",):
+            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+                text = """
+
+press key for advanced pickup
+
+* w = pick up north
+* a = pick up west
+* s = pick up east
+* d = pick up south
+* . = pick item on floor
+
+"""
+
+                header.set_text(
+                    (urwid.AttrSpec("default", "default"), "advanced pick up")
+                )
+                main.set_text((urwid.AttrSpec("default", "default"), text))
+                footer.set_text((urwid.AttrSpec("default", "default"), ""))
+                char.specialRender = True
+
+            char.interactionState["advancedPickup"] = {}
+            return
+
+        if key in ("L",):
+            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+                text = """
+
+press key for advanced drop
+
+* w = drop north
+* a = drop west
+* s = drop east
+* d = drop south
+* . = drop on floor
+
+"""
+
+                header.set_text(
+                    (urwid.AttrSpec("default", "default"), "advanced drop")
+                )
+                main.set_text((urwid.AttrSpec("default", "default"), text))
+                footer.set_text((urwid.AttrSpec("default", "default"), ""))
+                char.specialRender = True
+
+            char.interactionState["advancedDrop"] = {}
+            return
+
+        if key in ("#",):
+            activeQuest = char.getActiveQuest()
+            if activeQuest:
+                activeQuest.reroll()
+            return
+
+
+        # pick up items
+        # bad code: picking up should happen in character
+        if key in (commandChars.pickUp,):
+            if "NaivePickupQuest" not in char.solvers and not char.godMode:
+                char.addMessage("you do not have the nessecary solver yet (pickup)")
+            else:
+                if len(char.inventory) >= 10:
+                    char.addMessage("you cannot carry more items")
+                else:
+                    item = charState["itemMarkedLast"]
+
+                    if not item:
+                        itemList = char.container.getItemByPosition(
+                            (char.xPosition, char.yPosition, char.zPosition)
+                        )
+
+                        if len(itemList):
+                            item = itemList[0]
+
+                    if not item:
+                        char.addMessage("no item to pick up found")
+                        return
+
+                    item.pickUp(char)
+                    if not item.walkable:
+                        char.container.calculatePathMap()
+
+        # open chat partner selection
+        if key in (commandChars.hail,):
+            charState["submenue"] = ChatPartnerselection()
+
+        char.automated = False
+        # do automated movement for the main character
+        if key in (commandChars.advance, commandChars.autoAdvance):
+            if len(char.quests):
+                charState["lastMoveAutomated"] = True
+                if not char.automated:
+                    char.runCommandString("~")
+                char.automated = True
+            else:
+                pass
+
+        # recalculate the questmarker since it could be tainted
+        elif key not in (commandChars.pause,):
+            charState["lastMoveAutomated"] = False
+            if char.quests:
+                char.setPathToQuest(char.quests[0])
+
+    # drop the marker for interacting with an item after bumping into it
+    # bad code: ignore autoadvance opens up an unintended exploit
+    if key not in (
+        "lagdetection",
+        "lagdetection_",
+        commandChars.wait,
+        commandChars.autoAdvance,
+    ):
+        charState["itemMarkedLast"] = None
+
+    char.specialRender = False
+
+    # doesn't open the dev menu and toggles rendering mode instead
+    # bad code: code should act as advertised
+    if key in (commandChars.devMenu,):
+        if src.canvas.displayChars.mode == "unicode":
+            src.canvas.displayChars.setRenderingMode("pureASCII")
+        else:
+            src.canvas.displayChars.setRenderingMode("unicode")
+
+    # open quest menu
+    if key in (commandChars.show_quests,):
+        charState["submenue"] = QuestMenu()
+
+    # open help menu
+    if key in (commandChars.show_help,):
+        charState["submenue"] = HelpMenu()
+
+    # open inventory
+    if key in (commandChars.show_inventory,):
+        charState["submenue"] = InventoryMenu(char)
+
+    # open the menu for giving quests
+    if key in (commandChars.show_quests_detailed,):
+        charState["submenue"] = AdvancedQuestMenu()
+
+    # open the character information
+    if key in (commandChars.show_characterInfo,"v",):
+        charState["submenue"] = CharacterInfoMenu(char=char)
+
+    # open the help screen
+    if key in (commandChars.show_help,):
+        char.specialRender = True
+
+    return (1,key)
+
+
+# bad code: there are way too much lines of code in this function
+# bad code: probably only one parameter needed
+def processInput(key, charState=None, noAdvanceGame=False, char=None):
+    """
+    handle a keystroke
+
+    Parameters:
+        charState: the state of the character the input belongs to 
+                   this can probably be deduced from char
+        noAdvanceGame: flag indication whether the game should be advanced
+                       always True in practice
+        char: the character the input belongs to
+    """
+
+    if char.dead:
+        return
+
+    char.timeTaken += 1
+
+    if charState is None:
+        charState = src.gamestate.gamestate.mainChar.macroState
+
+    if char is None:
+        char = src.gamestate.gamestate.mainChar
+
+    if char.room:
+        terrain = char.room.terrain
+    else:
+        terrain = char.terrain
+
+    if terrain is None:
+        if char.lastRoom:
+            terrain = char.lastRoom.terrain
+        else:
+            terrain = char.lastTerrain
+
+    flags = key[1]
+    key = key[0]
+
+    # ignore mouse interaction
+    # bad pattern: mouse input should be used
+    if type(key) == tuple:
+        return
+
+    priorityActionResult = handlePriorityActions(char,charState,flags,key,main,header,footer,urwid)
+    if not (priorityActionResult and priorityActionResult[0] == 1):
+        return
+    key = priorityActionResult[1]
 
     # bad code: global variables
     global lastLagDetection
@@ -1904,647 +2585,10 @@ current registers
 
     # handle a keystroke while on map or in cinematic
     if not charState["submenue"]:
-        if key in ("u",):
-            char.setInterrupt = True
+        result = handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
+        if not (result and result[0] == 1):
             return
-
-        if key in ("esc",):
-            options = [("save", "save"), ("quit", "save and quit"), ("actions", "actions"),
-                       ("macros", "macros"), ("help", "help"), ("keybinding", "keybinding"),
-                       ("changeFaction", "changeFaction"),
-                       ("change personality settings", "change personality settings")]
-            submenu = SelectionMenu("What do you want to do?", options)
-            char.macroState["submenue"] = submenu
-
-            def trigger():
-                selection = submenu.getSelection()
-                if selection == "change personality settings":
-
-                    def getValue():
-                        settingName = char.macroState["submenue"].selection
-
-                        def setValue():
-                            value = char.macroState["submenue"].text
-                            if settingName in (
-                                "autoCounterAttack",
-                                "autoFlee",
-                                "abortMacrosOnAttack",
-                                "attacksEnemiesOnContact",
-                            ):
-                                if value == "True":
-                                    value = True
-                                else:
-                                    value = False
-                            else:
-                                value = int(value)
-                            char.personality[settingName] = value
-
-                        if settingName is None:
-                            return
-                        submenu3 = InputMenu("input value")
-                        char.macroState["submenue"] = submenu3
-                        char.macroState["submenue"].followUp = setValue
-                        return
-
-                    options = []
-                    for (key, value) in char.personality.items():
-                        options.append((key, "%s: %s" % (key, value)))
-                    submenu2 = SelectionMenu("select personality setting", options)
-                    char.macroState["submenue"] = submenu2
-                    char.macroState["submenue"].followUp = getValue
-                    return
-                if selection == "save":
-                    tmp = char.macroState["submenue"]
-                    char.macroState["submenue"] = None
-                    src.gamestate.gamestate.save()
-                    char.macroState["submenue"] = tmp
-                elif selection == "quit":
-                    char.macroState["submenue"] = None
-                    src.gamestate.gamestate.save()
-                    raise urwid.ExitMainLoop()
-                elif selection == "actions":
-                    pass
-                elif selection == "macros":
-                    pass
-                elif selection == "changeFaction":
-                    if char.faction == "player":
-                        char.faction = "monster"
-                    else:
-                        char.faction = "player"
-                    pass
-                elif selection == "help":
-                    charState["submenue"] = HelpMenu()
-                elif selection == "keybinding":
-                    pass
-
-            char.macroState["submenue"].followUp = trigger
-            key = "."
-
-        if key in ("z",):
-            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                header.set_text((urwid.AttrSpec("default", "default"), "observe"))
-                main.set_text(
-                    (
-                        urwid.AttrSpec("default", "default"),
-                        """
-
-    select what you want to do
-
-    * c - clear macros
-
-    """,
-                    )
-                )
-                footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                char.specialRender = True
-            char.interactionState["functionCall"] = ""
-            char.timeTaken -= 0.99
-            return
-        if key in ("o",):
-            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                header.set_text((urwid.AttrSpec("default", "default"), "observe"))
-                main.set_text(
-                    (
-                        urwid.AttrSpec("default", "default"),
-                        """
-
-    select what you want to observe
-
-    * p - get position of something
-
-    """,
-                    )
-                )
-                footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                char.specialRender = True
-            char.interactionState["enumerateState"].append({"type": None})
-            char.timeTaken -= 0.99
-            return
-
-        # handle cinematics
-        if len(cinematics.cinematicQueue):
-            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                char.specialRender = True
-
-            # get current cinematic
-            cinematic = cinematics.cinematicQueue[0]
-
-            # allow to quit even within a cutscene
-            if key in (commandChars.quit_normal, commandChars.quit_instant):
-                src.gamestate.gamestate.save()
-                # bad code: directly calls urwid
-                raise urwid.ExitMainLoop()
-
-            # skip the cinematic if requested
-            elif (
-                key
-                in (
-                    commandChars.pause,
-                    commandChars.advance,
-                    commandChars.autoAdvance,
-                    commandChars.redraw,
-                    "enter",
-                )
-                and cinematic.skipable
-            ):
-                cinematic.abort()
-                cinematics.cinematicQueue = cinematics.cinematicQueue[1:]
-                if loop:
-                    loop.set_alarm_in(0.0, callShow_or_exit, commandChars.ignore)
-                else:
-                    callShow_or_exit(None, commandChars.ignore)
-                return
-
-            # advance the cutscene
-            else:
-                if not cinematic.advance():
-                    return
-                if not cinematic.background:
-                    # bad code: changing the key mid function
-                    key = commandChars.ignore
-
-        # set the flag to advance the game
-        doAdvanceGame = True
-        if key in (commandChars.ignore,):
-            doAdvanceGame = False
-
-        # invalidate input for unconscious char
-        if char.unconcious:
-            key = commandChars.wait
-
-        # show a few rounds after death and exit
-        if char.dead:
-            if not ticksSinceDeath:
-                ticksSinceDeath = src.gamestate.gamestate.tick
-            key = commandChars.wait
-            if src.gamestate.gamestate.tick == ticksSinceDeath + 5:
-                char.macroState["commandKeyQueue"] = []
-                char.macroState["submenue"] = TextMenu(
-                    "You died. press ctrl-c and reload to start from last save"
-                )
-                # destroy the gamestate
-                # bad pattern: should not always destroy gamestate
-                # saveFile = open("gamestate/gamestate.json","w")
-                # saveFile.write("you lost")
-                # saveFile.close()
-                # raise urwid.ExitMainLoop()
-                pass
-
-        # call callback if key was overwritten
-        if "stealKey" in charState and key in charState["stealKey"]:
-            charState["stealKey"][key]()
-
-        # handle the keystroke for a char on the map
-        else:
-            # open the debug menue
-            if key in ("´",):
-                if debug:
-                    charState["submenue"] = DebugMenu()
-                else:
-                    char.addMessage("debug not enabled")
-
-            # destroy save and quit
-            if key in (commandChars.quit_delete,):
-                saveFile = open("gamestate/gamestate.json", "w")
-                saveFile.write("reset")
-                saveFile.close()
-                raise urwid.ExitMainLoop()
-
-            # kill one of the autoadvance keystrokes
-            # bad pattern: doesn't actually pause
-            if key in (commandChars.pause,):
-                charState["ignoreNextAutomated"] = True
-                doAdvanceGame = False
-
-            """
-            move the player into a direction
-            bad code: huge inline function + player vs. npc movement should use same code
-            """
-
-            def moveCharacter(direction):
-
-                # do inner room movement
-                if char.room:
-                    item = char.room.moveCharacterDirection(char, direction)
-
-                    # remember items bumped into for possible interaction
-                    if item:
-                        char.addMessage("You cannot walk there " + str(direction))
-                        char.addMessage("press " + commandChars.activate + " to apply")
-                        if not noAdvanceGame:
-                            header.set_text(
-                                (
-                                    urwid.AttrSpec("default", "default"),
-                                    renderHeader(char),
-                                )
-                            )
-                        return item
-                    else:
-                        char.changed("moved", (char, direction))
-
-                # do movement on terrain
-                # bad code: these calculation should be done elsewhere
-                else:
-                    if not char.terrain:
-                        return
-
-                    return char.terrain.moveCharacterDirection(char, direction)
-
-            # move the player
-            if key in (commandChars.move_north, "up"):
-                charState["itemMarkedLast"] = moveCharacter("north")
-                if charState["itemMarkedLast"]:
-                    return
-            if key in (commandChars.move_south, "down"):
-                charState["itemMarkedLast"] = moveCharacter("south")
-                if charState["itemMarkedLast"]:
-                    return
-            if key in (commandChars.move_east, "right"):
-                charState["itemMarkedLast"] = moveCharacter("east")
-                if charState["itemMarkedLast"]:
-                    return
-            if key in (commandChars.move_west, "left"):
-                charState["itemMarkedLast"] = moveCharacter("west")
-                if charState["itemMarkedLast"]:
-                    return
-
-            # move the player
-            if key in (
-                "W",
-                "S",
-                "D",
-                "A",
-            ):
-
-                lastXposition = char.xPosition
-                lastYposition = char.yPosition
-                if key in ("W",):
-                    charState["itemMarkedLast"] = moveCharacter("north")
-                if key in ("S",):
-                    charState["itemMarkedLast"] = moveCharacter("south")
-                if key in ("D",):
-                    charState["itemMarkedLast"] = moveCharacter("east")
-                if key in ("A",):
-                    charState["itemMarkedLast"] = moveCharacter("west")
-
-                if (
-                    not lastXposition == char.xPosition
-                    or not lastYposition == char.yPosition
-                ):
-                    charState["commandKeyQueue"].insert(0, (key, ("norecord",)))
-
-                if charState["itemMarkedLast"]:
-                    return
-
-            # murder the next available character
-            # bad pattern: player should be able to select whom to kill if there are multiple targets
-            if key in ("M",):
-                if char.combatMode is None:
-                    char.combatMode = "agressive"
-                elif char.combatMode == "agressive":
-                    char.combatMode = "defensive"
-                else:
-                    char.combatMode = None
-                char.addMessage("switched combatMode to: %s" % (char.combatMode,))
-            if key in (commandChars.attack,):
-                if (
-                    "NaiveMurderQuest" not in char.solvers and not char.godMode
-                ):  # disabled
-                    char.addMessage("you do not have the nessecary solver yet (murder)")
-                else:
-                    # bad code: should be part of a position object
-                    adjascentFields = [
-                        (char.xPosition, char.yPosition),
-                        (char.xPosition - 1, char.yPosition),
-                        (char.xPosition + 1, char.yPosition),
-                        (char.xPosition, char.yPosition - 1),
-                        (char.xPosition, char.yPosition + 1),
-                    ]
-                    for enemy in char.container.characters:
-                        if enemy == char:
-                            continue
-                        if (
-                            not char.combatMode == "agressive"
-                            and enemy.faction == char.faction
-                        ):
-                            continue
-                        if (enemy.xPosition, enemy.yPosition) not in adjascentFields:
-                            continue
-                        if isinstance(char, src.characters.Monster) and char.phase == 4:
-                            char.addMessage("entered stage 5")
-                            char.enterPhase5()
-                        char.attack(enemy)
-                        break
-
-            # activate an item
-            if key in ("c",):
-                if "NaiveActivateQuest" not in char.solvers and not char.godMode:
-                    char.addMessage(
-                        "you do not have the nessecary solver yet (activate)"
-                    )
-                else:
-                    # activate the marked item
-                    if charState["itemMarkedLast"]:
-                        if not charState["itemMarkedLast"].container:
-                            if charState["itemMarkedLast"].room:
-                                charState["itemMarkedLast"].container = charState[
-                                    "itemMarkedLast"
-                                ].room
-                            elif charState["itemMarkedLast"].terrain:
-                                charState["itemMarkedLast"].container = charState[
-                                    "itemMarkedLast"
-                                ].terrain
-
-                        charState["itemMarkedLast"].configure(char)
-
-                    # activate an item on floor
-                    else:
-                        # for item in char.container.itemsOnFloor:
-                        #    if item.xPosition == char.xPosition and item.yPosition == char.yPosition:
-                        #        item.apply(char)
-                        #        break
-                        entry = char.container.getItemByPosition(
-                            (char.xPosition, char.yPosition, char.zPosition)
-                        )
-                        if len(entry):
-                            entry[0].configure(char)
-
-            # activate an item
-            if key in (commandChars.activate,):
-                if "NaiveActivateQuest" not in char.solvers and not char.godMode:
-                    char.addMessage(
-                        "you do not have the nessecary solver yet (activate)"
-                    )
-                else:
-                    # activate the marked item
-                    if charState["itemMarkedLast"]:
-                        if not charState["itemMarkedLast"].container:
-                            return
-
-                        charState["itemMarkedLast"].apply(char)
-
-                    # activate an item on floor
-                    else:
-                        # for item in char.container.itemsOnFloor:
-                        #    if item.xPosition == char.xPosition and item.yPosition == char.yPosition:
-                        #        item.apply(char)
-                        #        break
-                        if not (
-                            char.xPosition is None
-                            or char.yPosition is None
-                            or char.zPosition is None
-                        ):
-                            entry = char.container.getItemByPosition(
-                                (char.xPosition, char.yPosition, char.zPosition)
-                            )
-
-                            if entry:
-                                entry[0].apply(char)
-
-            # examine an item
-            if key in (commandChars.examine,):
-                if "ExamineQuest" not in char.solvers and not char.godMode:
-                    char.addMessage(
-                        "you do not have the nessecary solver yet (examine)"
-                    )
-                else:
-                    # examine the marked item
-                    if charState["itemMarkedLast"]:
-                        char.examine(charState["itemMarkedLast"])
-
-                    # examine an item on floor
-                    else:
-                        itemList = char.container.getItemByPosition(
-                            (char.xPosition, char.yPosition, char.zPosition)
-                        )
-                        for item in itemList:
-                            char.examine(item)
-                            break
-
-            # drop first item from inventory
-            # bad pattern: the user has to have the choice for what item to drop
-            if key in (commandChars.drop,):
-                if "NaiveDropQuest" not in char.solvers and not char.godMode:
-                    char.addMessage("you do not have the nessecary solver yet (drop)")
-                else:
-                    if len(char.inventory):
-                        char.drop(char.inventory[-1])
-
-            # drink from the first available item in inventory
-            # bad pattern: the user has to have the choice from what item to drink from
-            # bad code: drinking should happen in character
-            if key in ("J",):
-                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                    text = """
-
-press key for the advanced interaction
-
-* w = activate north
-* a = activate west
-* s = activate east
-* d = activate south
-* . = activate item on floor
-* f = eat food
-* j = activate job order
-
-"""
-
-                    header.set_text(
-                        (urwid.AttrSpec("default", "default"), "advanced activate")
-                    )
-                    main.set_text((urwid.AttrSpec("default", "default"), text))
-                    footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                    char.specialRender = True
-
-                char.interactionState["advancedInteraction"] = {}
-                return
-
-            if key in ("g",):
-                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                    text = """
-
-press key to set fire direction
-
-* g = run guard mode for 10 ticks
-"""
-                    header.set_text(
-                        (urwid.AttrSpec("default", "default"), "action menu")
-                    )
-                    main.set_text((urwid.AttrSpec("default", "default"), text))
-                    footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                    char.specialRender = True
-
-                char.interactionState["runaction"] = {}
-                return
-            if key in ("f",):
-                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                    text = """
-
-press key to set fire direction
-
-* w = fire north
-* a = fire west
-* s = fire south
-* d = fire east
-
-"""
-
-                    header.set_text(
-                        (urwid.AttrSpec("default", "default"), "fire menu")
-                    )
-                    main.set_text((urwid.AttrSpec("default", "default"), text))
-                    footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                    char.specialRender = True
-
-                char.interactionState["fireDirection"] = {}
-                return
-
-            if key in ("K",):
-                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                    text = """
-
-press key for advanced pickup
-
-* w = pick up north
-* a = pick up west
-* s = pick up east
-* d = pick up south
-* . = pick item on floor
-
-"""
-
-                    header.set_text(
-                        (urwid.AttrSpec("default", "default"), "advanced pick up")
-                    )
-                    main.set_text((urwid.AttrSpec("default", "default"), text))
-                    footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                    char.specialRender = True
-
-                char.interactionState["advancedPickup"] = {}
-                return
-
-            if key in ("L",):
-                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                    text = """
-
-press key for advanced drop
-
-* w = drop north
-* a = drop west
-* s = drop east
-* d = drop south
-* . = drop on floor
-
-"""
-
-                    header.set_text(
-                        (urwid.AttrSpec("default", "default"), "advanced drop")
-                    )
-                    main.set_text((urwid.AttrSpec("default", "default"), text))
-                    footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                    char.specialRender = True
-
-                char.interactionState["advancedDrop"] = {}
-                return
-
-            if key in ("#",):
-                activeQuest = char.getActiveQuest()
-                if activeQuest:
-                    activeQuest.reroll()
-                return
-
-
-            # pick up items
-            # bad code: picking up should happen in character
-            if key in (commandChars.pickUp,):
-                if "NaivePickupQuest" not in char.solvers and not char.godMode:
-                    char.addMessage("you do not have the nessecary solver yet (pickup)")
-                else:
-                    if len(char.inventory) >= 10:
-                        char.addMessage("you cannot carry more items")
-                    else:
-                        item = charState["itemMarkedLast"]
-
-                        if not item:
-                            itemList = char.container.getItemByPosition(
-                                (char.xPosition, char.yPosition, char.zPosition)
-                            )
-
-                            if len(itemList):
-                                item = itemList[0]
-
-                        if not item:
-                            char.addMessage("no item to pick up found")
-                            return
-
-                        item.pickUp(char)
-                        if not item.walkable:
-                            char.container.calculatePathMap()
-
-            # open chat partner selection
-            if key in (commandChars.hail,):
-                charState["submenue"] = ChatPartnerselection()
-
-            char.automated = False
-            # do automated movement for the main character
-            if key in (commandChars.advance, commandChars.autoAdvance):
-                if len(char.quests):
-                    charState["lastMoveAutomated"] = True
-                    if not char.automated:
-                        char.runCommandString("~")
-                    char.automated = True
-                else:
-                    pass
-
-            # recalculate the questmarker since it could be tainted
-            elif key not in (commandChars.pause,):
-                charState["lastMoveAutomated"] = False
-                if char.quests:
-                    char.setPathToQuest(char.quests[0])
-
-        # drop the marker for interacting with an item after bumping into it
-        # bad code: ignore autoadvance opens up an unintended exploit
-        if key not in (
-            "lagdetection",
-            "lagdetection_",
-            commandChars.wait,
-            commandChars.autoAdvance,
-        ):
-            charState["itemMarkedLast"] = None
-
-        char.specialRender = False
-
-        # doesn't open the dev menu and toggles rendering mode instead
-        # bad code: code should act as advertised
-        if key in (commandChars.devMenu,):
-            if src.canvas.displayChars.mode == "unicode":
-                src.canvas.displayChars.setRenderingMode("pureASCII")
-            else:
-                src.canvas.displayChars.setRenderingMode("unicode")
-
-        # open quest menu
-        if key in (commandChars.show_quests,):
-            charState["submenue"] = QuestMenu()
-
-        # open help menu
-        if key in (commandChars.show_help,):
-            charState["submenue"] = HelpMenu()
-
-        # open inventory
-        if key in (commandChars.show_inventory,):
-            charState["submenue"] = InventoryMenu(char)
-
-        # open the menu for giving quests
-        if key in (commandChars.show_quests_detailed,):
-            charState["submenue"] = AdvancedQuestMenu()
-
-        # open the character information
-        if key in (commandChars.show_characterInfo,"v",):
-            charState["submenue"] = CharacterInfoMenu(char=char)
-
-        # open the help screen
-        if key in (commandChars.show_help,):
-            char.specialRender = True
+        key = result[1]
 
     # render submenus
     if charState["submenue"]:
@@ -2602,6 +2646,13 @@ class SubMenu(src.saveing.Saveable):
             default: the default selection
             targetParamName: name of the parameter the selection should be stored in
         """
+
+        self.attributesToStore = super().attributesToStore[:]
+        self.callbacksToStore = []
+        self.objectsToStore = []
+        self.tupleDictsToStore = []
+        self.tupleListsToStore = []
+
 
         self.state = None
         self.options = {}
@@ -4629,13 +4680,11 @@ def keyboardListener(key):
         with open("roomExport.json", "w") as exportFile:
             exportFile.write(serializedState)
     elif key == "ctrl i":
-        print("entered ctrl i")
         for character in src.gamestate.gamestate.mainChar.container.characters:
             print(character)
             if character == src.gamestate.gamestate.mainChar:
                 continue
             if character.xPosition == src.gamestate.gamestate.mainChar.xPosition and character.yPosition == src.gamestate.gamestate.mainChar.yPosition:
-                print("correct position")
                 src.gamestate.gamestate.mainChar = character
                 state = src.gamestate.gamestate.mainChar.macroState
                 break
@@ -4660,6 +4709,35 @@ def keyboardListener(key):
 lastAdvance = 0
 lastAutosave = 0
 
+def collectCharacters():
+    multi_chars = set()
+
+    for row in src.gamestate.gamestate.terrainMap:
+        for terrain in row:
+            for char in terrain.characters:
+                multi_chars.add(char)
+
+            for room in terrain.rooms:
+                for character in room.characters:
+                    multi_chars.add(character)
+
+    for room in src.gamestate.gamestate.extraRoots:
+        for character in room.characters:
+            multi_chars.add(character)
+
+    """
+    for char in multi_chars:
+        if char.room:
+            for other in char.room.characters:
+                if other not in multi_chars_fastCheck:
+                    multi_chars.append(other)
+                    multi_chars_fastCheck[other] = 1
+                else:
+                    rejectCount += 1
+                    rejectCount4 += 1
+    """
+
+    return multi_chars
 
 def gameLoop(loop, user_data=None):
     """
@@ -4699,487 +4777,489 @@ def gameLoop(loop, user_data=None):
     firstRun = True
     while not loop or firstRun:
 
-        if lastAutosave == 0:
-            lastAutosave = src.gamestate.gamestate.tick
-        if src.gamestate.gamestate.tick - lastAutosave > 1000:
-            # src.gamestate.gamestate.save()
-            lastAutosave = src.gamestate.gamestate.tick
+        import cProfile
+        profiler = cProfile.Profile()
+        profiler.enable()
 
-        firstRun = False
+        startTime = time.time()
+        origTick = src.gamestate.gamestate.tick
 
-        multi_chars = []
-        multi_chars_fastCheck = {}
+        if 1== 1:
+            if lastAutosave == 0:
+                lastAutosave = src.gamestate.gamestate.tick
+            if src.gamestate.gamestate.tick - lastAutosave > 1000:
+                # src.gamestate.gamestate.save()
+                lastAutosave = src.gamestate.gamestate.tick
 
-        # transform and store the keystrokes that accumulated in pygame
-        if useTiles:
-            import pygame
+            firstRun = False
 
-            for item in pygame.event.get():
-                if item.type == pygame.QUIT:
-                    src.gamestate.gamestate.save()
-                    pygame.quit()
-                if not hasattr(item, "unicode"):
-                    continue
-                key = item.unicode
-                if key == "":
-                    continue
-                if key == "\x10":
-                    key = "ctrl p"
-                if key == "\x18":
-                    key = "ctrl x"
-                if key == "\x0f":
-                    key = "ctrl o"
-                if key == "\x04":
-                    key = "ctrl d"
-                if key == "\x0b":
-                    key = "ctrl k"
-                if key == "\x01":
-                    key = "ctrl a"
-                if key == "\x17":
-                    key = "ctrl w"
-                if key == "\x1b":
-                    key = "esc"
-                if key == "\r":
-                    key = "enter"
-                keyboardListener(key)
+            multi_chars = []
+            multi_chars_fastCheck = {}
 
-        if tcod:
-            events = tcod.event.get()
+            # transform and store the keystrokes that accumulated in pygame
+            if useTiles:
+                import pygame
 
-            for event in events:
-                if isinstance(event,tcod.event.KeyDown):
-                    key = event.sym
-                    translatedKey = None
-                    if key == tcod.event.KeySym.LSHIFT:
+                for item in pygame.event.get():
+                    if item.type == pygame.QUIT:
+                        src.gamestate.gamestate.save()
+                        pygame.quit()
+                    if not hasattr(item, "unicode"):
                         continue
-                    if key == tcod.event.KeySym.RETURN:
-                        translatedKey = "enter"
-                    if key == tcod.event.KeySym.SPACE:
-                        translatedKey = " "
-                    if key == tcod.event.KeySym.PERIOD:
-                        translatedKey = "."
-                    if key == tcod.event.KeySym.HASH:
-                        translatedKey = "#"
-                    if key == tcod.event.KeySym.ESCAPE:
-                        translatedKey = "esc"
-                    if key == tcod.event.KeySym.N1:
-                        translatedKey = "1"
-                    if key == tcod.event.KeySym.N2:
-                        translatedKey = "2"
-                    if key == tcod.event.KeySym.N3:
-                        translatedKey = "3"
-                    if key == tcod.event.KeySym.N4:
-                        translatedKey = "4"
-                    if key == tcod.event.KeySym.N5:
-                        translatedKey = "5"
-                    if key == tcod.event.KeySym.N6:
-                        translatedKey = "6"
-                    if key == tcod.event.KeySym.N7:
-                        translatedKey = "7"
-                    if key == tcod.event.KeySym.N8:
-                        translatedKey = "8"
-                    if key == tcod.event.KeySym.N9:
-                        translatedKey = "9"
-                    if key == tcod.event.KeySym.N0:
-                        translatedKey = "0"
-                    if key == tcod.event.KeySym.COMMA:
-                        translatedKey = ","
-                    if key == tcod.event.KeySym.MINUS:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "_"
-                        else:
-                            translatedKey = "-"
-                    if key == tcod.event.KeySym.PLUS or key == tcod.event.KeySym.KP_PLUS:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "*"
-                        else:
-                            translatedKey = "+"
-                    if key == tcod.event.KeySym.a:
-                        if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
-                            translatedKey = "ctrl a"
-                        elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "A"
-                        else:
-                            translatedKey = "a"
-                    if key == tcod.event.KeySym.b:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "B"
-                        else:
-                            translatedKey = "b"
-                    if key == tcod.event.KeySym.c:
-                        if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
-                            translatedKey = "ctrl c"
-                        elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "C"
-                        else:
-                            translatedKey = "c"
-                    if key == tcod.event.KeySym.d:
-                        if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
-                            translatedKey = "ctrl d"
-                        elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "D"
-                        else:
-                            translatedKey = "d"
-                    if key == tcod.event.KeySym.e:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "E"
-                        else:
-                            translatedKey = "e"
-                    if key == tcod.event.KeySym.f:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "F"
-                        else:
-                            translatedKey = "f"
-                    if key == tcod.event.KeySym.g:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "G"
-                        else:
-                            translatedKey = "g"
-                    if key == tcod.event.KeySym.h:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "H"
-                        else:
-                            translatedKey = "h"
-                    if key == tcod.event.KeySym.i:
-                        if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
-                            translatedKey = "ctrl i"
-                        elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "I"
-                        else:
-                            translatedKey = "i"
-                    if key == tcod.event.KeySym.j:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "J"
-                        else:
-                            translatedKey = "j"
-                    if key == tcod.event.KeySym.k:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "K"
-                        else:
-                            translatedKey = "k"
-                    if key == tcod.event.KeySym.l:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "L"
-                        else:
-                            translatedKey = "l"
-                    if key == tcod.event.KeySym.m:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "M"
-                        else:
-                            translatedKey = "m"
-                    if key == tcod.event.KeySym.n:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "N"
-                        else:
-                            translatedKey = "n"
-                    if key == tcod.event.KeySym.o:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "O"
-                        else:
-                            translatedKey = "o"
-                    if key == tcod.event.KeySym.p:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "P"
-                        else:
-                            translatedKey = "p"
-                    if key == tcod.event.KeySym.q:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "Q"
-                        else:
-                            translatedKey = "q"
-                    if key == tcod.event.KeySym.r:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "R"
-                        else:
-                            translatedKey = "r"
-                    if key == tcod.event.KeySym.s:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "S"
-                        else:
-                            translatedKey = "s"
-                    if key == tcod.event.KeySym.t:
-                        if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
-                            translatedKey = "ctrl t"
-                        elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "T"
-                        else:
-                            translatedKey = "t"
-                    if key == tcod.event.KeySym.u:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "U"
-                        else:
-                            translatedKey = "u"
-                    if key == tcod.event.KeySym.v:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "V"
-                        else:
-                            translatedKey = "v"
-                    if key == tcod.event.KeySym.w:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "W"
-                        else:
-                            translatedKey = "w"
-                    if key == tcod.event.KeySym.x:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "X"
-                        else:
-                            translatedKey = "x"
-                    if key == tcod.event.KeySym.y:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "Y"
-                        else:
-                            translatedKey = "y"
-                    if key == tcod.event.KeySym.z:
-                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                            translatedKey = "Z"
-                        else:
-                            translatedKey = "Z"
+                    key = item.unicode
+                    if key == "":
+                        continue
+                    if key == "\x10":
+                        key = "ctrl p"
+                    if key == "\x18":
+                        key = "ctrl x"
+                    if key == "\x0f":
+                        key = "ctrl o"
+                    if key == "\x04":
+                        key = "ctrl d"
+                    if key == "\x0b":
+                        key = "ctrl k"
+                    if key == "\x01":
+                        key = "ctrl a"
+                    if key == "\x17":
+                        key = "ctrl w"
+                    if key == "\x1b":
+                        key = "esc"
+                    if key == "\r":
+                        key = "enter"
+                    keyboardListener(key)
 
-                    if translatedKey == None:
-                        print(event)
+            if tcod:
+                events = tcod.event.get()
+
+                for event in events:
+                    if isinstance(event,tcod.event.KeyDown):
+                        key = event.sym
+                        translatedKey = None
+                        if key == tcod.event.KeySym.LSHIFT:
+                            continue
+                        if key == tcod.event.KeySym.RETURN:
+                            translatedKey = "enter"
+                        if key == tcod.event.KeySym.SPACE:
+                            translatedKey = " "
+                        if key == tcod.event.KeySym.PERIOD:
+                            translatedKey = "."
+                        if key == tcod.event.KeySym.HASH:
+                            translatedKey = "#"
+                        if key == tcod.event.KeySym.ESCAPE:
+                            translatedKey = "esc"
+                        if key == tcod.event.KeySym.N1:
+                            translatedKey = "1"
+                        if key == tcod.event.KeySym.N2:
+                            translatedKey = "2"
+                        if key == tcod.event.KeySym.N3:
+                            translatedKey = "3"
+                        if key == tcod.event.KeySym.N4:
+                            translatedKey = "4"
+                        if key == tcod.event.KeySym.N5:
+                            translatedKey = "5"
+                        if key == tcod.event.KeySym.N6:
+                            translatedKey = "6"
+                        if key == tcod.event.KeySym.N7:
+                            translatedKey = "7"
+                        if key == tcod.event.KeySym.N8:
+                            translatedKey = "8"
+                        if key == tcod.event.KeySym.N9:
+                            translatedKey = "9"
+                        if key == tcod.event.KeySym.N0:
+                            translatedKey = "0"
+                        if key == tcod.event.KeySym.COMMA:
+                            translatedKey = ","
+                        if key == tcod.event.KeySym.MINUS:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "_"
+                            else:
+                                translatedKey = "-"
+                        if key == tcod.event.KeySym.PLUS or key == tcod.event.KeySym.KP_PLUS:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "*"
+                            else:
+                                translatedKey = "+"
+                        if key == tcod.event.KeySym.a:
+                            if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
+                                translatedKey = "ctrl a"
+                            elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "A"
+                            else:
+                                translatedKey = "a"
+                        if key == tcod.event.KeySym.b:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "B"
+                            else:
+                                translatedKey = "b"
+                        if key == tcod.event.KeySym.c:
+                            if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
+                                translatedKey = "ctrl c"
+                            elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "C"
+                            else:
+                                translatedKey = "c"
+                        if key == tcod.event.KeySym.d:
+                            if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
+                                translatedKey = "ctrl d"
+                            elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "D"
+                            else:
+                                translatedKey = "d"
+                        if key == tcod.event.KeySym.e:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "E"
+                            else:
+                                translatedKey = "e"
+                        if key == tcod.event.KeySym.f:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "F"
+                            else:
+                                translatedKey = "f"
+                        if key == tcod.event.KeySym.g:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "G"
+                            else:
+                                translatedKey = "g"
+                        if key == tcod.event.KeySym.h:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "H"
+                            else:
+                                translatedKey = "h"
+                        if key == tcod.event.KeySym.i:
+                            if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
+                                translatedKey = "ctrl i"
+                            elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "I"
+                            else:
+                                translatedKey = "i"
+                        if key == tcod.event.KeySym.j:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "J"
+                            else:
+                                translatedKey = "j"
+                        if key == tcod.event.KeySym.k:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "K"
+                            else:
+                                translatedKey = "k"
+                        if key == tcod.event.KeySym.l:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "L"
+                            else:
+                                translatedKey = "l"
+                        if key == tcod.event.KeySym.m:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "M"
+                            else:
+                                translatedKey = "m"
+                        if key == tcod.event.KeySym.n:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "N"
+                            else:
+                                translatedKey = "n"
+                        if key == tcod.event.KeySym.o:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "O"
+                            else:
+                                translatedKey = "o"
+                        if key == tcod.event.KeySym.p:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "P"
+                            else:
+                                translatedKey = "p"
+                        if key == tcod.event.KeySym.q:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "Q"
+                            else:
+                                translatedKey = "q"
+                        if key == tcod.event.KeySym.r:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "R"
+                            else:
+                                translatedKey = "r"
+                        if key == tcod.event.KeySym.s:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "S"
+                            else:
+                                translatedKey = "s"
+                        if key == tcod.event.KeySym.t:
+                            if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
+                                translatedKey = "ctrl t"
+                            elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "T"
+                            else:
+                                translatedKey = "t"
+                        if key == tcod.event.KeySym.u:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "U"
+                            else:
+                                translatedKey = "u"
+                        if key == tcod.event.KeySym.v:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "V"
+                            else:
+                                translatedKey = "v"
+                        if key == tcod.event.KeySym.w:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "W"
+                            else:
+                                translatedKey = "w"
+                        if key == tcod.event.KeySym.x:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "X"
+                            else:
+                                translatedKey = "x"
+                        if key == tcod.event.KeySym.y:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "Y"
+                            else:
+                                translatedKey = "y"
+                        if key == tcod.event.KeySym.z:
+                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                translatedKey = "Z"
+                            else:
+                                translatedKey = "Z"
+
+                        if translatedKey == None:
+                            print(event)
+                            continue
+
+                        keyboardListener(translatedKey)
+
+            multi_chars = collectCharacters()
+
+            global continousOperation
+            if (
+                src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"] and not speed
+            ) or runFixedTick:
+                continousOperation += 1
+
+                if not len(cinematics.cinematicQueue):
+                    lastAdvance = time.time()
+                    advanceGame()
+
+                removeChars = []
+                for char in multi_chars:
+                    if char.dead and not char == src.gamestate.gamestate.mainChar:
+                        removeChars.append(char)
+                    if char.stasis:
                         continue
 
-                    keyboardListener(translatedKey)
-
-
-        for row in src.gamestate.gamestate.terrainMap:
-            for terrain in row:
-                for char in terrain.characters:
-                    if char not in multi_chars:
-                        multi_chars.append(char)
-
-                for room in terrain.rooms:
-                    for character in room.characters:
-                        if character not in multi_chars_fastCheck:
-                            multi_chars.append(character)
-                            multi_chars_fastCheck[character] = 1
-
-        for room in src.gamestate.gamestate.extraRoots:
-            for character in room.characters:
-                if character not in multi_chars_fastCheck:
-                    multi_chars.append(character)
-                    multi_chars_fastCheck[character] = 1
-
-        for char in multi_chars:
-            if char.room:
-                for other in char.room.characters:
-                    if other not in multi_chars_fastCheck:
-                        multi_chars.append(other)
-                        multi_chars_fastCheck[other] = 1
-
-        global continousOperation
-        if (
-            src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"] and not speed
-        ) or runFixedTick:
-            continousOperation += 1
-
-            if not len(cinematics.cinematicQueue):
-                lastAdvance = time.time()
-                advanceGame()
-
-            removeChars = []
-            for char in multi_chars:
-                if char.dead and not char == src.gamestate.gamestate.mainChar:
-                    removeChars.append(char)
-                if char.stasis:
-                    continue
-
-                if (
-                    len(cinematics.cinematicQueue)
-                    and not char == src.gamestate.gamestate.mainChar
-                ):
-                    continue
-
-                state = char.macroState
-
-                # do random action
-                if not len(state["commandKeyQueue"]):
-                    #if not char == src.gamestate.gamestate.mainChar:
-                    char.startIdling()
-
-                if len(state["commandKeyQueue"]):
-                    key = state["commandKeyQueue"][0]
-                    while (
-                        isinstance(key[0], list)
-                        or isinstance(key[0], tuple)
-                        or key[0] in ("lagdetection", "lagdetection_")
+                    if (
+                        len(cinematics.cinematicQueue)
+                        and not char == src.gamestate.gamestate.mainChar
                     ):
-                        if len(state["commandKeyQueue"]):
-                            key = state["commandKeyQueue"][0]
-                            state["commandKeyQueue"].remove(key)
-                        else:
-                            key = ("~", [])
+                        continue
 
-                    while (len(state["commandKeyQueue"]) or char.huntkilling or char.hasOwnAction) and char.timeTaken < 1:
-                        if char.huntkilling:
-                            processInput(
-                                    (char.doHuntKill(),["norecord"]),
-                                    charState=state, noAdvanceGame=True, char=char)
-                        elif char.hasOwnAction:
-                            processInput(
-                                    (char.getOwnAction(),["norecord"]),
-                                    charState=state, noAdvanceGame=True, char=char)
-                        else:
-                            key = state["commandKeyQueue"][0]
-                            state["commandKeyQueue"].remove(key)
-                            processInput(
-                                key, charState=state, noAdvanceGame=True, char=char
-                            )
+                    state = char.macroState
 
-                    char.timeTaken -= 1
+                    # do random action
+                    if not len(state["commandKeyQueue"]):
+                        #if not char == src.gamestate.gamestate.mainChar:
+                        char.startIdling()
 
-            for char in removeChars:
-                multi_chars.remove(char)
+                    while len(state["commandKeyQueue"]) > 100:
+                        state["commandKeyQueue"].pop()
 
-            text = ""
-            for cmd in src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"]:
-                item = cmd[0]
-                if (
-                    isinstance(item, list)
-                    or isinstance(item, tuple)
-                    or item in ("lagdetection", "lagdetection_")
-                ):
-                    continue
-                text += str(cmd[0])
-            text += (
-                " | satiation: "
-                + str(src.gamestate.gamestate.mainChar.satiation)
-                + " health: "
-                + str(src.gamestate.gamestate.mainChar.health)
-                + " tick: "
-                + str(src.gamestate.gamestate.tick)
-                + " mode: "
-                + str(src.gamestate.gamestate.mainChar.hasOwnAction)
-            )
-            text += (
-                " space: %s/%s"%(src.gamestate.gamestate.mainChar.xPosition%15,src.gamestate.gamestate.mainChar.yPosition%15,)
-                + " tile: %s/%s"%(src.gamestate.gamestate.mainChar.xPosition//15,src.gamestate.gamestate.mainChar.yPosition//15,)
-                )
-            if src.gamestate.gamestate.mainChar.container:
+                    while len(char.messages) > 100:
+                        char.messages.pop()
+
+                    if len(state["commandKeyQueue"]):
+                        key = state["commandKeyQueue"][0]
+                        while (
+                            isinstance(key[0], list)
+                            or isinstance(key[0], tuple)
+                            or key[0] in ("lagdetection", "lagdetection_")
+                        ):
+                            if len(state["commandKeyQueue"]):
+                                key = state["commandKeyQueue"][0]
+                                state["commandKeyQueue"].remove(key)
+                            else:
+                                key = ("~", [])
+
+                        while (len(state["commandKeyQueue"]) or char.huntkilling or char.hasOwnAction) and char.timeTaken < 1:
+                            if char.huntkilling:
+                                processInput(
+                                        (char.doHuntKill(),["norecord"]),
+                                        charState=state, noAdvanceGame=True, char=char)
+                            elif char.hasOwnAction:
+                                processInput(
+                                        (char.getOwnAction(),["norecord"]),
+                                        charState=state, noAdvanceGame=True, char=char)
+                            else:
+                                key = state["commandKeyQueue"][0]
+                                state["commandKeyQueue"].remove(key)
+                                processInput(
+                                    key, charState=state, noAdvanceGame=True, char=char
+                                )
+
+                        char.timeTaken -= 1
+
+                for char in removeChars:
+                    multi_chars.remove(char)
+
+                text = ""
+                for cmd in src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"]:
+                    item = cmd[0]
+                    if (
+                        isinstance(item, list)
+                        or isinstance(item, tuple)
+                        or item in ("lagdetection", "lagdetection_")
+                    ):
+                        continue
+                    text += str(cmd[0])
                 text += (
-                    " terrain: %s/%s"%(src.gamestate.gamestate.mainChar.container.xPosition,src.gamestate.gamestate.mainChar.container.yPosition,)
+                    " | satiation: "
+                    + str(src.gamestate.gamestate.mainChar.satiation)
+                    + " health: "
+                    + str(src.gamestate.gamestate.mainChar.health)
+                    + " tick: "
+                    + str(src.gamestate.gamestate.tick)
+                    + " mode: "
+                    + str(src.gamestate.gamestate.mainChar.hasOwnAction)
+                    + " len(commandKeyQueue): "
+                    + str(len(src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"]))
+                )
+                text += (
+                    " space: %s/%s"%(src.gamestate.gamestate.mainChar.xPosition%15,src.gamestate.gamestate.mainChar.yPosition%15,)
+                    + " tile: %s/%s"%(src.gamestate.gamestate.mainChar.xPosition//15,src.gamestate.gamestate.mainChar.yPosition//15,)
                     )
-            footer.set_text((urwid.AttrSpec("default", "default"), text))
+                if src.gamestate.gamestate.mainChar.container:
+                    text += (
+                        " terrain: %s/%s"%(src.gamestate.gamestate.mainChar.container.xPosition,src.gamestate.gamestate.mainChar.container.yPosition,)
+                        )
+                footer.set_text((urwid.AttrSpec("default", "default"), text))
 
-            def stringifyUrwid(inData):
-                outData = ""
-                for item in inData:
-                    if isinstance(item, tuple):
-                        outData += stringifyUrwid(item[1])
-                    if isinstance(item, list):
-                        outData += stringifyUrwid(item)
-                    if isinstance(item, str):
-                        outData += item
-                return outData
+                def stringifyUrwid(inData):
+                    outData = ""
+                    for item in inData:
+                        if isinstance(item, tuple):
+                            outData += stringifyUrwid(item[1])
+                        if isinstance(item, list):
+                            outData += stringifyUrwid(item)
+                        if isinstance(item, str):
+                            outData += item
+                    return outData
 
-            # render the game
-            if not src.gamestate.gamestate.mainChar.specialRender:
+                # render the game
+                if not src.gamestate.gamestate.mainChar.specialRender:
 
-                skipRender = True
+                    skipRender = True
 
-                thresholds = [
-                    10,
-                    50,
-                    100,
-                    500,
-                    1000,
-                    5000,
-                    10000,
-                    50000,
-                    100000,
-                    500000,
-                    1000000,
-                ]
-                skipper = 0
-                for threshold in thresholds:
-                    if continousOperation > threshold:
-                        skipper += 1
-                if skipper == 0 or src.gamestate.gamestate.tick % skipper == 0:
-                    skipRender = False
+                    thresholds = [
+                        10,
+                        50,
+                        100,
+                        500,
+                        1000,
+                        5000,
+                        10000,
+                        50000,
+                        100000,
+                        500000,
+                        1000000,
+                    ]
+                    skipper = 0
+                    for threshold in thresholds:
+                        if continousOperation > threshold:
+                            skipper += 1
+                    if skipper == 0 or src.gamestate.gamestate.tick % skipper == 0:
+                        skipRender = False
 
-                if (
-                    len(src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"])
-                    == 0
-                ):
-                    skipRender = False
-
-                if (not skipRender) or fixedTicks:
-
-                    # render map
-                    # bad code: display mode specific code
-                    canvas = render(src.gamestate.gamestate.mainChar)
-                    if not src.gamestate.gamestate.mainChar.godMode and (
-                        src.gamestate.gamestate.mainChar.satiation < 300
-                        or src.gamestate.gamestate.mainChar.health < 30
+                    if (
+                        len(src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"])
+                        == 0
                     ):
-                        warning = True
-                    else:
-                        warning = False
-                    main.set_text(
-                        (
-                            urwid.AttrSpec("#999", "black"),
-                            canvas.getUrwirdCompatible(warning=warning),
-                        )
-                    )
-                    if useTiles:
-                        canvas.setPygameDisplay(pydisplay, pygame, tileSize)
-                    header.set_text(
-                        (
-                            urwid.AttrSpec("default", "default"),
-                            renderHeader(src.gamestate.gamestate.mainChar),
-                        )
-                    )
-                    if tcodConsole:
-                        tcodConsole.clear()
-                        counter = 0
-                        for line in stringifyUrwid(header.get_text()).split("\n"):
-                            tcodConsole.print(x=1, y=counter, string=line)
-                            counter += 1
-                        canvas.printTcod(tcodConsole,counter,20,warning=warning)
-                        footertext = stringifyUrwid(footer.get_text())
-                        tcodConsole.print(x=0,y=52,string=" "*(200-len(footertext))+footertext)
-                        tcodContext.present(tcodConsole)
-                    if useTiles:
-                        w, h = pydisplay.get_size()
+                        skipRender = False
 
+                    if (not skipRender) or fixedTicks:
+
+                        # render map
+                        # bad code: display mode specific code
+                        canvas = render(src.gamestate.gamestate.mainChar)
+                        if not src.gamestate.gamestate.mainChar.godMode and (
+                            src.gamestate.gamestate.mainChar.satiation < 300
+                            or src.gamestate.gamestate.mainChar.health < 30
+                        ):
+                            warning = True
+                        else:
+                            warning = False
+                        main.set_text(
+                            (
+                                urwid.AttrSpec("#999", "black"),
+                                canvas.getUrwirdCompatible(warning=warning),
+                            )
+                        )
+                        if useTiles:
+                            canvas.setPygameDisplay(pydisplay, pygame, tileSize)
+                        header.set_text(
+                            (
+                                urwid.AttrSpec("default", "default"),
+                                renderHeader(src.gamestate.gamestate.mainChar),
+                            )
+                        )
+                        if tcodConsole:
+                            tcodConsole.clear()
+                            counter = 0
+                            for line in stringifyUrwid(header.get_text()).split("\n"):
+                                tcodConsole.print(x=1, y=counter, string=line)
+                                counter += 1
+                            canvas.printTcod(tcodConsole,counter,20,warning=warning)
+                            footertext = stringifyUrwid(footer.get_text())
+                            tcodConsole.print(x=0,y=52,string=" "*(200-len(footertext))+footertext)
+                            tcodContext.present(tcodConsole)
+                        if useTiles:
+                            w, h = pydisplay.get_size()
+
+                            font = pygame.font.Font("config/DejaVuSansMono.ttf", 14)
+                            plainText = stringifyUrwid(header.get_text())
+                            counter = 0
+                            for line in plainText.split("\n"):
+                                text = font.render(line, True, (200, 200, 200))
+                                pydisplay.blit(text, (0, 0 + 15 * counter))
+                                counter += 1
+                            pygame.display.update()
+
+                            plainText = stringifyUrwid(footer.get_text())
+                            text = font.render(plainText, True, (200, 200, 200))
+                            tw, th = font.size(plainText)
+                            pydisplay.blit(text, (w - tw - 8, h - th - 8))
+                            pygame.display.update()
+                else:
+                    if useTiles:
+                        pydisplay.fill((0, 0, 0))
                         font = pygame.font.Font("config/DejaVuSansMono.ttf", 14)
-                        plainText = stringifyUrwid(header.get_text())
+
+                        plainText = stringifyUrwid(main.get_text())
                         counter = 0
                         for line in plainText.split("\n"):
                             text = font.render(line, True, (200, 200, 200))
-                            pydisplay.blit(text, (0, 0 + 15 * counter))
+                            pydisplay.blit(text, (30, 110 + 15 * counter))
                             counter += 1
+
                         pygame.display.update()
+                    if tcodConsole:
+                        tcodConsole.clear()
+                        plainText = stringifyUrwid(main.get_text())
+                        counter = 0
+                        for line in plainText.split("\n"):
+                            tcodConsole.print(x=1, y=counter, string=line)
+                            counter += 1
+                        tcodContext.present(tcodConsole)
+                        tcodConsole.print(x=0,y=59,string=stringifyUrwid(footer.get_text()))
 
-                        plainText = stringifyUrwid(footer.get_text())
-                        text = font.render(plainText, True, (200, 200, 200))
-                        tw, th = font.size(plainText)
-                        pydisplay.blit(text, (w - tw - 8, h - th - 8))
-                        pygame.display.update()
-            else:
-                if useTiles:
-                    pydisplay.fill((0, 0, 0))
-                    font = pygame.font.Font("config/DejaVuSansMono.ttf", 14)
+        endTime = time.time()
+        if endTime-startTime > 0.2:
+            print("tick time %s for %s"%(endTime-startTime,origTick,))
 
-                    plainText = stringifyUrwid(main.get_text())
-                    counter = 0
-                    for line in plainText.split("\n"):
-                        text = font.render(line, True, (200, 200, 200))
-                        pydisplay.blit(text, (30, 110 + 15 * counter))
-                        counter += 1
+        profiler.dump_stats("tmpFolder/tick%s"%(origTick,))
+        
+        #if time.time()-startTime < 0.02:
+        #    time.sleep(0.2-(time.time()-startTime))
 
-                    pygame.display.update()
-                if tcodConsole:
-                    tcodConsole.clear()
-                    plainText = stringifyUrwid(main.get_text())
-                    counter = 0
-                    for line in plainText.split("\n"):
-                        tcodConsole.print(x=1, y=counter, string=line)
-                        counter += 1
-                    tcodContext.present(tcodConsole)
-                    tcodConsole.print(x=0,y=59,string=stringifyUrwid(footer.get_text()))
-        else:
-            continousOperation = 0
+    else:
+        continousOperation = 0
 
     loop.set_alarm_in(0.001, gameLoop)
 

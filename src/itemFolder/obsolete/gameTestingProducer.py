@@ -6,6 +6,7 @@ import src
 
 class GameTestingProducer(src.items.Item):
     type = "GameTestingProducer"
+    attributesToStore = []
 
     def __init__(self, seed=0, possibleSources=[], possibleResults=[]):
         self.coolDown = 20
@@ -20,7 +21,9 @@ class GameTestingProducer(src.items.Item):
         self.possibleSources = possibleSources
         # self.change_apply_2(force=True)
 
-        self.attributesToStore.extend(["coolDown", "coolDownTimer"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["coolDown", "coolDownTimer"])
 
     def apply(self, character, resultType=None):
 

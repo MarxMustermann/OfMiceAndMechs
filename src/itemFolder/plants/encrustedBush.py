@@ -4,6 +4,10 @@ import random
 
 class EncrustedBush(src.items.Item):
     type = "EncrustedBush"
+    name = "encrusted bush"
+    description = "This is a cluster of blooms. The veins developed a protecive shell and are dense enough to form a solid wall"
+
+    walkable = False
 
     def __init__(self):
         """
@@ -11,10 +15,6 @@ class EncrustedBush(src.items.Item):
         """
 
         super().__init__(display=src.canvas.displayChars.encrustedBush)
-        self.name = "encrusted bush"
-        self.description = "This is a cluster of blooms. The veins developed a protecive shell and are dense enough to form a solid wall"
-
-        self.walkable = False
 
     def destroy(self, generateScrap=True):
         """

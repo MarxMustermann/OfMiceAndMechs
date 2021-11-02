@@ -11,7 +11,8 @@ class UniformStockpileManager(src.items.Item):
     """
 
     type = "UniformStockpileManager"
-
+    attributesToStore = []
+    objectsToStore = []
 
     def __init__(self):
         """
@@ -34,17 +35,22 @@ class UniformStockpileManager(src.items.Item):
         self.numItemsStored = 0
         self.lastAction = ""
 
-        self.attributesToStore.extend(
-            [
-                "commands",
-                "numItemsStored",
-                "storedItemType",
-                "storedItemWalkable",
-                "restrictStoredItemType",
-                "restrictStoredItemWalkable",
-            ]
-        )
-        self.objectsToStore.extend(["submenue", "character"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(
+                [
+                    "commands",
+                    "numItemsStored",
+                    "storedItemType",
+                    "storedItemWalkable",
+                    "restrictStoredItemType",
+                    "restrictStoredItemWalkable",
+                ]
+            )
+
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.extend(["submenue", "character"])
 
         self.commands = {}
         self.submenue = None

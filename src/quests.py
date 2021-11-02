@@ -9,6 +9,8 @@ most of this code is currenty not in use and needs to be reintegrated
 # import basic libs
 import json
 import random
+import uuid
+import time
 
 # import basic internal libs
 import src.items
@@ -27,11 +29,15 @@ class MurderQuest2(src.saveing.Saveable):
     """
     quest to murder someone
     """
+    attributesToStore = []
+    objectsToStore = []
 
     def __init__(self):
         """
         set up internal state
         """
+        self.callbacksToStore = []
+
 
         super().__init__()
         self.completed = False
@@ -43,12 +49,12 @@ class MurderQuest2(src.saveing.Saveable):
         self.watched = []
 
         # set id
-        import uuid
-
-        self.id = uuid.uuid4().hex
-
-        self.attributesToStore.extend(["completed", "active", "information", "type"])
-        self.objectsToStore.extend(["character", "toKill"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["completed", "active", "information", "type"])
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.extend(["character", "toKill"])
 
     def setState(self, state):
         """
@@ -185,6 +191,10 @@ class Quest(src.saveing.Saveable):
     straightforward state initialization
     """
 
+    type = "Quest"
+    attributesToStore = []
+    objectsToStore = []
+
     def __init__(
         self,
         followUp=None,
@@ -193,10 +203,11 @@ class Quest(src.saveing.Saveable):
         creator=None,
         failTrigger=None,
     ):
+        self.callbacksToStore = []
+
         super().__init__()
 
         # set basic attributes
-        self.type = "Quest"
         self.followUp = followUp  # deprecate?
         self.character = (
             None  # should be more general like owner as preparation for room quests
@@ -217,30 +228,31 @@ class Quest(src.saveing.Saveable):
         self.randomSeed = None
 
         # set up saving
-        # bad code: extend would be better
-        self.attributesToStore.append("type")
-        self.attributesToStore.append("active")
-        self.attributesToStore.append("completed")
-        self.attributesToStore.append("reputationReward")
-        self.attributesToStore.append("lifetime")
-        self.attributesToStore.extend(["dstX", "dstY"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            # bad code: extend would be better
+            self.attributesToStore.append("type")
+            self.attributesToStore.append("active")
+            self.attributesToStore.append("completed")
+            self.attributesToStore.append("reputationReward")
+            self.attributesToStore.append("lifetime")
+            self.attributesToStore.extend(["dstX", "dstY"])
         self.callbacksToStore.append("endTrigger")
-        self.objectsToStore.append("character")
-        self.objectsToStore.append("target")
-        self.objectsToStore.append("lifetimeEvent")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("character")
+            self.objectsToStore.append("target")
+            self.objectsToStore.append("lifetimeEvent")
 
         self.lifetime = lifetime
         self.lifetimeEvent = None
 
         # set id
-        import uuid
-
-        self.id = uuid.uuid4().hex
-
+        self.id = str(random.random())+str(time.time())
         self.reroll()
     
     def reroll(self):
-        self.randomSeed = random.randint(0,2000000)
+        self.randomSeed = random.random()
 
     def getActiveQuest(self):
         return self
@@ -472,6 +484,7 @@ class Quest(src.saveing.Saveable):
     """
 
     def recalculate(self):
+        return
 
         # smooth over impossible state
         if not self.active:
@@ -670,6 +683,8 @@ class MetaQuestSequence(Quest):
     bad code: quest parameter does not work anymore and should be removed
     """
 
+    attributesToStore = []
+
     def __init__(
         self,
         quests=[],
@@ -696,11 +711,13 @@ class MetaQuestSequence(Quest):
             self.startWatching(self.subQuests[0], self.recalculate)
 
         # set meta information for saving
-        self.attributesToStore.append("metaDescription")
-        while "dstX" in self.attributesToStore:
-            self.attributesToStore.remove("dstX")
-        while "dstY" in self.attributesToStore:
-            self.attributesToStore.remove("dstY")
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.append("metaDescription")
+            while "dstX" in self.attributesToStore:
+                self.attributesToStore.remove("dstX")
+            while "dstY" in self.attributesToStore:
+                self.attributesToStore.remove("dstY")
 
         # save state and register
         self.type = "MetaQuestSequence"
@@ -1024,6 +1041,8 @@ class MetaQuestParralel(Quest):
     """
     state initialization
     """
+    attributesToStore = []
+    objectsToStore = []
 
     def __init__(
         self, quests, startCinematics=None, looped=False, lifetime=None, creator=None
@@ -1041,12 +1060,16 @@ class MetaQuestParralel(Quest):
             self.startWatching(quest, self.recalculate)
 
         # set metadata for saving
-        self.attributesToStore.append("metaDescription")
-        self.objectsToStore.append("lastActive")
-        while "dstX" in self.attributesToStore:
-            self.attributesToStore.remove("dstX")
-        while "dstY" in self.attributesToStore:
-            self.attributesToStore.remove("dstY")
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.append("metaDescription")
+            while "dstX" in self.attributesToStore:
+                self.attributesToStore.remove("dstX")
+            while "dstY" in self.attributesToStore:
+                self.attributesToStore.remove("dstY")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("lastActive")
 
         # store initial state and register
         self.type = "MetaQuestParralel"
@@ -1311,6 +1334,8 @@ class MetaQuestParralel(Quest):
     """
 
     def recalculate(self):
+        return
+
         # remove completed sub quests
         for quest in self.subQuests:
             if quest.completed:
@@ -1392,6 +1417,8 @@ class NaiveMoveQuest(Quest):
     """
     straightfoward state setting
     """
+    attributesToStore = []
+    objectsToStore = []
 
     def __init__(
         self,
@@ -1413,8 +1440,12 @@ class NaiveMoveQuest(Quest):
         super().__init__(followUp, startCinematics=startCinematics, creator=creator)
 
         # set metadata for saving
-        self.attributesToStore.extend(["description", "sloppy"])
-        self.objectsToStore.append("room")
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["description", "sloppy"])
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("room")
 
         # save initial state and register
         self.type = "NaiveMoveQuest"
@@ -1517,6 +1548,8 @@ class NaiveEnterRoomQuest(Quest):
     """
     straightforward state initialization
     """
+    attributesToStore = []
+    objectsToStore = []
 
     def __init__(self, room=None, followUp=None, startCinematics=None, creator=None):
         self.room = room
@@ -1535,8 +1568,12 @@ class NaiveEnterRoomQuest(Quest):
         # set door as target
         super().__init__(followUp, startCinematics=startCinematics, creator=creator)
 
-        self.objectsToStore.append("room")
-        self.attributesToStore.extend(["dstX", "dstY", "description"])
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("room")
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["dstX", "dstY", "description"])
 
         # save initial state and register
         self.type = "NaiveEnterRoomQuest"
@@ -1626,6 +1663,7 @@ class NaivePickupQuest(Quest):
     """
     straightforward state initialization
     """
+    objectsToStore = []
 
     def __init__(
         self, toPickup=None, followUp=None, startCinematics=None, creator=None
@@ -1643,7 +1681,9 @@ class NaivePickupQuest(Quest):
         self.description = "naive pickup"
 
         # set metadata for saving
-        self.objectsToStore.append("toPickup")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("toPickup")
 
         # save initial state and register
         self.type = "NaivePickupQuest"
@@ -1709,6 +1749,8 @@ class NaiveGetQuest(Quest):
     """
     straightforward state initialization
     """
+    attributesToStore = []
+    objectsToStore = []
 
     def __init__(
         self,
@@ -1725,8 +1767,12 @@ class NaiveGetQuest(Quest):
         self.description = "naive get quest"
 
         # set metadata for saving
-        self.objectsToStore.append("questDispenser")
-        self.attributesToStore.append("assign")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("questDispenser")
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.append("assign")
 
         # save initial state and register
         self.type = "NaiveGetQuest"
@@ -1772,6 +1818,7 @@ class NaiveGetReward(Quest):
     """
     straightforward state initialization
     """
+    objectsToStore = []
 
     def __init__(self, quest=None, followUp=None, startCinematics=None, creator=None):
         super().__init__(followUp, startCinematics=startCinematics, creator=creator)
@@ -1780,7 +1827,9 @@ class NaiveGetReward(Quest):
         self.done = False
 
         # set metadata for saving
-        self.objectsToStore.append("quest")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("quest")
 
         # save initial state and register
         self.type = "NaiveGetReward"
@@ -1961,6 +2010,8 @@ class NaiveActivateQuest(Quest):
     """
     straightforward state initialization
     """
+    attributesToStore = []
+    objectsToStore = []
 
     def __init__(
         self, toActivate=None, followUp=None, startCinematics=None, creator=None
@@ -1970,8 +2021,12 @@ class NaiveActivateQuest(Quest):
         self.activated = False
 
         # set metadata for saving
-        self.objectsToStore.append("toActivate")
-        self.attributesToStore.append("description")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("toActivate")
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.append("description")
 
         # save initial state and register
         self.type = "NaiveActivateQuest"
@@ -2044,6 +2099,7 @@ class NaiveDropQuest(Quest):
     """
     straightforward state initialization
     """
+    objectsToStore = []
 
     def __init__(
         self,
@@ -2067,8 +2123,10 @@ class NaiveDropQuest(Quest):
         self.dropped = False
 
         # set metadata for saving
-        self.objectsToStore.append("toDrop")
-        self.objectsToStore.append("room")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("toDrop")
+            self.objectsToStore.append("room")
 
         # save initial state and register
         self.type = "NaiveDropQuest"
@@ -2380,6 +2438,7 @@ class SurviveQuest(Quest):
     """
 
     def recalculate(self):
+        return
 
         # smooth over impossible state
         if not self.active:
@@ -2431,6 +2490,7 @@ class EnterRoomQuestMeta(MetaQuestSequence):
     """
     basic state initialization
     """
+    objectsToStore = []
 
     def __init__(self, room=None, followUp=None, startCinematics=None, creator=None):
         super().__init__([], creator=creator)
@@ -2442,8 +2502,10 @@ class EnterRoomQuestMeta(MetaQuestSequence):
         self.leaveRoomQuest = None
 
         # set metadata for saving
-        self.objectsToStore.append("room")
-        self.objectsToStore.append("leaveRoomQuest")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("room")
+            self.objectsToStore.append("leaveRoomQuest")
 
         # save initial state and register
         self.type = "EnterRoomQuestMeta"
@@ -2455,6 +2517,7 @@ class EnterRoomQuestMeta(MetaQuestSequence):
     """
 
     def recalculate(self):
+        return
 
         # smooth over impossible state
         if not self.active:
@@ -2511,6 +2574,8 @@ class MoveQuestMeta(MetaQuestSequence):
     """
     state initialization
     """
+    attributesToStore = []
+    objectsToStore = []
 
     def __init__(
         self,
@@ -2537,9 +2602,13 @@ class MoveQuestMeta(MetaQuestSequence):
         self.metaDescription = "move meta"
 
         # set metadata for saving
-        self.attributesToStore.append("sloppy")
-        self.objectsToStore.append("room")
-        self.objectsToStore.extend(["enterRoomQuest", "leaveRoomQuest"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.append("sloppy")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("room")
+            self.objectsToStore.extend(["enterRoomQuest", "leaveRoomQuest"])
 
         # save initial state and register
         self.type = "MoveQuestMeta"
@@ -2549,6 +2618,7 @@ class MoveQuestMeta(MetaQuestSequence):
     """
 
     def recalculate(self):
+        return
 
         # handle impossible state
         if not self.active:
@@ -2613,6 +2683,8 @@ class DropQuestMeta(MetaQuestSequence):
     """
     generate quests to move and drop item
     """
+    attributesToStore = []
+    objectsToStore = []
 
     def __init__(
         self,
@@ -2642,10 +2714,14 @@ class DropQuestMeta(MetaQuestSequence):
         self.metaDescription = "drop Meta"
 
         # set metadata for saving
-        self.objectsToStore.append("toDrop")
-        self.objectsToStore.append("moveQuest")
-        self.objectsToStore.append("room")
-        self.attributesToStore.extend(["xPosition", "yPosition"])
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("toDrop")
+            self.objectsToStore.append("moveQuest")
+            self.objectsToStore.append("room")
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["xPosition", "yPosition"])
 
         # save initial state and register
         self.type = "DropQuestMeta"
@@ -2657,6 +2733,7 @@ class DropQuestMeta(MetaQuestSequence):
     """
 
     def recalculate(self):
+        return
 
         # handle impossible state
         if not self.active:
@@ -2698,6 +2775,8 @@ class PickupQuestMeta(MetaQuestSequence):
     """
     generate quests to move and pick up
     """
+    attributesToStore = []
+    objectsToStore = []
 
     def __init__(
         self, toPickup=None, followUp=None, startCinematics=None, creator=None
@@ -2723,9 +2802,13 @@ class PickupQuestMeta(MetaQuestSequence):
         self.metaDescription = "pickup Meta"
 
         # set metadata for saving
-        self.attributesToStore.append("sloppy")
-        self.objectsToStore.append("toPickup")
-        self.objectsToStore.append("moveQuest")
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.append("sloppy")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("toPickup")
+            self.objectsToStore.append("moveQuest")
 
         # save initial state and register
         self.type = "PickupQuestMeta"
@@ -2735,6 +2818,7 @@ class PickupQuestMeta(MetaQuestSequence):
     """
 
     def recalculate(self):
+        return
 
         # smooth over impossible state
         if not self.active:
@@ -2833,6 +2917,8 @@ class ActivateQuestMeta(MetaQuestSequence):
     """
     generate quests to move and activate
     """
+    attributesToStore = []
+    objectsToStore = []
 
     def __init__(
         self,
@@ -2863,9 +2949,13 @@ class ActivateQuestMeta(MetaQuestSequence):
         self.metaDescription = "activate Quest"
 
         # set metadata for saving
-        self.attributesToStore.append("sloppy")
-        self.objectsToStore.append("moveQuest")
-        self.objectsToStore.append("toActivate")
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.append("sloppy")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("moveQuest")
+            self.objectsToStore.append("toActivate")
 
         # save initial state and register
         self.type = "ActivateQuestMeta"
@@ -2877,6 +2967,8 @@ class ActivateQuestMeta(MetaQuestSequence):
     """
 
     def recalculate(self):
+        return
+
         # smooth over impossible state
         if not self.toActivate:
             src.interaction.debugMessages.append("Pickup quest with nothing to pick up")
@@ -3063,6 +3155,7 @@ class GetQuest(MetaQuestSequence):
     """
     generate quests to move to the quest dispenser and get the quest
     """
+    objectsToStore = []
 
     def __init__(
         self,
@@ -3093,7 +3186,9 @@ class GetQuest(MetaQuestSequence):
         self.metaDescription = "get Quest"
 
         # set metainformation for saving
-        self.objectsToStore.append("questDispenser")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("questDispenser")
 
         # save initial state and register
         self.type = "GetQuest"
@@ -3136,6 +3231,8 @@ get the reward for a completed quest
 
 
 class GetReward(MetaQuestSequence):
+    attributesToStore = []
+    objectsToStore = []
     def __init__(
         self,
         questDispenser=None,
@@ -3170,8 +3267,12 @@ class GetReward(MetaQuestSequence):
         self.metaDescription = "get Reward"
 
         # set metainformation for saving
-        self.objectsToStore.append("questDispenser")
-        self.attributesToStore.append("addedRewardChat")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("questDispenser")
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.append("addedRewardChat")
 
         # save initial state and register
         self.type = "GetReward"
@@ -3295,6 +3396,7 @@ class MurderQuest(MetaQuestSequence):
     """
 
     def recalculate(self):
+        return
 
         # smooth over impossible state
         if not self.active:
@@ -3367,6 +3469,7 @@ class KnockOutQuest(MetaQuestSequence):
     """
 
     def recalculate(self):
+        return
 
         # smooth over impossible state
         if not self.active:
@@ -3438,6 +3541,7 @@ class WakeUpQuest(MetaQuestSequence):
     """
 
     def recalculate(self):
+        return
 
         # smooth over impossible state
         if not self.active:
@@ -3494,6 +3598,7 @@ class FillPocketsQuest(MetaQuestSequence):
     """
 
     def recalculate(self):
+        return
 
         # smooth over impossible state
         if not self.active:
@@ -3532,6 +3637,7 @@ quest to leave the room
 
 
 class LeaveRoomQuest(Quest):
+    objectsToStore = []
     def __init__(self, room=None, followUp=None, startCinematics=None, creator=None):
         self.room = room
         self.description = "please leave the room."
@@ -3544,7 +3650,9 @@ class LeaveRoomQuest(Quest):
             self.dstY = 0
         super().__init__(followUp, startCinematics=startCinematics, creator=creator)
 
-        self.objectsToStore.append("room")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("room")
 
         # save initial state and register
         self.type = "LeaveRoomQuest"
@@ -3667,12 +3775,16 @@ class ExamineQuest(Quest):
     state initialization
     """
 
+    attributesToStore = []
+
     def __init__(self, startCinematics=None, completionThreshold=5, creator=None):
         self.completionThreshold = completionThreshold
         self.description = "please examine your environment"
         self.examinedItems = []
         super().__init__(startCinematics=startCinematics, creator=creator)
-        self.attributesToStore.append("completionThreshold")
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.append("completionThreshold")
 
         # save initial state and register
         self.type = "ExamineQuest"
@@ -3921,6 +4033,8 @@ class ConstructRoom(MetaQuestParralel):
     """
 
     def recalculate(self):
+        return
+
         # bad code: questlist isn't even defined here
         if not questList or questList[0].completed:
             if not self.didFetchQuest:
@@ -3971,6 +4085,7 @@ class TransportQuest(MetaQuestSequence):
     """
     generate quest for picking up the item
     """
+    objectsToStore = []
 
     def __init__(
         self,
@@ -3993,7 +4108,9 @@ class TransportQuest(MetaQuestSequence):
         self.metaDescription = "transport"
 
         # set meta information for saving
-        self.objectsToStore.append("toTransport")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("toTransport")
 
         # save initial state and register
         self.type = "TransportQuest"
@@ -4271,6 +4388,7 @@ class KeepFurnaceFiredMeta(MetaQuestSequence):
     """
     basic state initialization
     """
+    objectsToStore = []
 
     def __init__(
         self,
@@ -4295,7 +4413,9 @@ class KeepFurnaceFiredMeta(MetaQuestSequence):
         )
         self.metaDescription = "KeepFurnaceFiredMeta"
 
-        self.objectsToStore.append("furnace")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("furnace")
 
         # listen to furnace
         self.startWatching(self.furnace, self.recalculate)
@@ -4308,6 +4428,8 @@ class KeepFurnaceFiredMeta(MetaQuestSequence):
     """
 
     def recalculate(self):
+        return
+
         # handle impossible state
         if not self.character:
             # bad code: should log
@@ -4352,6 +4474,7 @@ class FireFurnaceMeta(MetaQuestSequence):
     """
     state initialization
     """
+    objectsToStore = []
 
     def __init__(
         self,
@@ -4369,7 +4492,9 @@ class FireFurnaceMeta(MetaQuestSequence):
         self.metaDescription = "FireFurnaceMeta"
 
         # set meta information for saving
-        self.objectsToStore.append("furnace")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("furnace")
 
         # save initial state and register
         self.type = "FireFurnaceMeta"
@@ -4379,6 +4504,7 @@ class FireFurnaceMeta(MetaQuestSequence):
     """
 
     def recalculate(self):
+        return
 
         # smooth over impossible state
         if not self.active:
@@ -4486,6 +4612,7 @@ class FillGrowthTankMeta(MetaQuestSequence):
     """
     state initialization
     """
+    objectsToStore = []
 
     def __init__(
         self,
@@ -4503,7 +4630,9 @@ class FillGrowthTankMeta(MetaQuestSequence):
         self.metaDescription = "FillGrowthTankMeta"
 
         # set meta information for saving
-        self.objectsToStore.append("growthTank")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("growthTank")
 
         # save initial state and register
         self.type = "FillGrowthTankMeta"
@@ -4513,6 +4642,7 @@ class FillGrowthTankMeta(MetaQuestSequence):
     """
 
     def recalculate(self):
+        return
 
         # smooth over impossible state
         if not self.active:
@@ -4598,6 +4728,7 @@ class HopperDuty(MetaQuestSequence):
     """
     straightforward state initialization
     """
+    objectsToStore = []
 
     def __init__(
         self,
@@ -4623,10 +4754,12 @@ class HopperDuty(MetaQuestSequence):
         self.waitingRoom = waitingRoom
 
         # set meta information for saving
-        self.objectsToStore.append("actualQuest")
-        self.objectsToStore.append("rewardQuest")
-        self.objectsToStore.append("getQuest")
-        self.objectsToStore.append("waitingRoom")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("actualQuest")
+            self.objectsToStore.append("rewardQuest")
+            self.objectsToStore.append("getQuest")
+            self.objectsToStore.append("waitingRoom")
 
         # save initial state and register
         self.type = "HopperDuty"
@@ -4636,6 +4769,7 @@ class HopperDuty(MetaQuestSequence):
     """
 
     def recalculate(self):
+        return
 
         # smooth over impossible state
         if not self.active:
@@ -4755,6 +4889,7 @@ class Serve(MetaQuestParralel):
     """
     state initialization
     """
+    objectsToStore = []
 
     def __init__(self, superior=None, creator=None):
         questList = []
@@ -4763,7 +4898,9 @@ class Serve(MetaQuestParralel):
         self.metaDescription = "serve"
 
         # set meta information for saving
-        self.objectsToStore.append("superior")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("superior")
 
         # save initial state and register
         self.type = "Serve"
@@ -4998,8 +5135,6 @@ class GrabSpecialItem(Quest):
         if not character:
             return
 
-        print("checking items")
-
         itemFound = None
         for item in character.inventory:
             if not item.type == "SpecialItem":
@@ -5067,6 +5202,7 @@ class EnterEnemyCity(Quest):
         self.type = "EnterEnemyCity"
         self.cityLocation = None
         self.hasListener = False
+        self.centerFailCounter = 0
 
     def triggerCompletionCheck(self, character=None, direction=None):
         if not character:
@@ -5094,7 +5230,7 @@ class EnterEnemyCity(Quest):
             self.hasListener = True
         super().assignToCharacter(character)
 
-    def getSolvingCommandString(self, character):
+    def getSolvingCommandString(self, character, realRun = False):
         localRandom = random.Random(self.randomSeed)
 
         if isinstance(character.container, src.rooms.Room):
@@ -5103,7 +5239,7 @@ class EnterEnemyCity(Quest):
 
             if not (character.container.terrain.xPosition == self.cityLocation[0] and character.container.terrain.yPosition == self.cityLocation[1]):
                 if not (character.xPosition == 6 and character.yPosition == 6):
-                    if character.xPosition < 6:
+                    if character.xPosition%15 < 6:
                         return "d"*(6-character.xPosition)
                     if character.xPosition > 6:
                         return "a"*(character.xPosition-6)
@@ -5120,13 +5256,38 @@ class EnterEnemyCity(Quest):
                 characterTerrainPos = (character.container.xPosition,character.container.yPosition)
 
                 if character.xPosition%15 < 7:
-                    return "."+"d"*(7-character.xPosition%15)
+                    if realRun:
+                        self.centerFailCounter += 1
+                    if self.centerFailCounter < 10:
+                        return "."+"d"*(7-character.xPosition%15)
+                    else:
+                        self.centerFailCounter = 0
+                        return "20"+random.choice(("a","w","s","d",))
                 if character.xPosition%15 > 7:
-                    return "."+"a"*(character.xPosition%15-7)
+                    if realRun:
+                        self.centerFailCounter += 1
+                    if self.centerFailCounter < 10:
+                        return "."+"a"*(character.xPosition%15-7)
+                    else:
+                        self.centerFailCounter = 0
+                        return "20"+random.choice(("a","w","s","d",))
                 if character.yPosition%15 < 7:
-                    return "."+"s"*(7-character.yPosition%15)
+                    if realRun:
+                        self.centerFailCounter += 1
+                    if self.centerFailCounter < 10:
+                        return "."+"s"*(7-character.yPosition%15)
+                    else:
+                        self.centerFailCounter = 0
+                        return "20"+random.choice(("a","w","s","d",))
                 if character.yPosition%15 > 7:
-                    return "."+"w"*(character.yPosition%15-7)
+                    if realRun:
+                        self.centerFailCounter += 1
+                    if self.centerFailCounter < 10:
+                        return "."+"w"*(character.yPosition%15-7)
+                    else:
+                        self.centerFailCounter = 0
+                        return "20"+random.choice(("a","w","s","d",))
+                self.centerFailCounter = 0
 
                 directions = ["gg"]
                 if characterTerrainPos[0] > self.cityLocation[0]:
@@ -5148,12 +5309,16 @@ class EnterEnemyCity(Quest):
                     if character.yPosition//15 > 7:
                         directions.extend(["w"]*(character.yPosition//15-7))
 
-                return ".13"+localRandom.choice(directions)
+                direction = localRandom.choice(directions)
+                if direction == "gg":
+                    return "gg."
+                else:
+                    return ".13"+direction
             else:
                 return None
 
     def solver(self, character):
-        commandString = self.getSolvingCommandString(character)
+        commandString = self.getSolvingCommandString(character,realRun=True)
         self.randomSeed = random.randint(1,2000000)
         if commandString:
             character.runCommandString(commandString)

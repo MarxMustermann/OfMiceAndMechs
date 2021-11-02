@@ -11,6 +11,9 @@ class CityBuilder(src.items.Item):
 
 
     type = "CityBuilder"
+    attributesToStore = []
+    tupleListsToStore = []
+    applyOptions = []
 
     def __init__(self, name="CityBuilder", noId=False):
         """
@@ -47,38 +50,44 @@ class CityBuilder(src.items.Item):
 
         self.error = {}
 
-        self.attributesToStore.extend(
-            [
-                "tasks",
-                "runningTasks",
-                "error",
-                "commands",
-                "error",
-                "scrapFields",
-                "resources",
-            ]
-        )
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(
+                [
+                    "tasks",
+                    "runningTasks",
+                    "error",
+                    "commands",
+                    "error",
+                    "scrapFields",
+                    "resources",
+                ]
+            )
 
-        self.tupleListsToStore.extend(
-            [
-                "unfinishedRoadTiles",
-                "usedPlots",
-                "plotPool",
-                "reseredPlots",
-                "roadTiles",
-                "unusedRoadTiles",
-            ]
-        )
+        if not self.tupleListsToStore:
+            self.tupleListsToStore.extend(super().tupleListsToStore)
+            self.tupleListsToStore.extend(
+                [
+                    "unfinishedRoadTiles",
+                    "usedPlots",
+                    "plotPool",
+                    "reseredPlots",
+                    "roadTiles",
+                    "unusedRoadTiles",
+                ]
+            )
 
-        self.applyOptions.extend(
-            [
-                ("showMap", "show map"),
-                ("addResource", "add resource"),
-                ("clearTask", "clear one task"),
-                ("clearTasks", "clear tasks"),
-                ("clearError", "clear error"),
-            ]
-        )
+        if not self.applyOptions:
+            self.applyOptions.extend(super().applyOptions)
+            self.applyOptions.extend(
+                [
+                    ("showMap", "show map"),
+                    ("addResource", "add resource"),
+                    ("clearTask", "clear one task"),
+                    ("clearTasks", "clear tasks"),
+                    ("clearError", "clear error"),
+                ]
+            )
         self.applyMap = {
             "showMap": self.showMap,
             "addResource": self.addResource,

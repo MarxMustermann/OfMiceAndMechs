@@ -7,6 +7,11 @@ class Bolt(src.items.Item):
     """
 
     type = "Bolt"
+    name = "bolt"
+    description = "Simple building material"""
+
+    bolted = False
+    walkable = True
 
     def __init__(self):
         """
@@ -14,11 +19,5 @@ class Bolt(src.items.Item):
         """
 
         super().__init__(src.canvas.displayChars.bolt)
-
-        self.name = "bolt"
-        self.description = "Simple building material"""
-
-        self.bolted = False
-        self.walkable = True
 
 src.items.addType(Bolt)

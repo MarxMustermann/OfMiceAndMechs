@@ -7,6 +7,7 @@ class Map(src.items.Item):
     #NIY: kind of works but is not well integrated
 
     type = "Map"
+    attributesToStore = []
 
     def __init__(self):
         """
@@ -30,14 +31,16 @@ You can select the routes and run the stored route.
 
         self.markers = {}
 
-        self.attributesToStore.extend(
-            [
-                "text",
-                "recording",
-                "nodes",
-                "routes",
-            ]
-        )
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(
+                [
+                    "text",
+                    "recording",
+                    "nodes",
+                    "routes",
+                ]
+            )
 
     def apply(self, character):
         """

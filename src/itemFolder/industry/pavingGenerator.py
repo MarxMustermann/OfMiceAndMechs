@@ -7,6 +7,7 @@ class PavingGenerator(src.items.Item):
     """
 
     type = "PavingGenerator"
+    attributesToStore = []
 
     def __init__(self):
         """
@@ -24,7 +25,9 @@ class PavingGenerator(src.items.Item):
         self.name = "paving generator"
         self.description = "This machine converts scrap into paving"
 
-        self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges", "level", "commands"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges", "level", "commands"])
 
     def apply(self, character):
         """

@@ -61,6 +61,12 @@ class Terrain(src.saveing.Saveable):
             noContent: flag to generate terrain empty
         """
 
+        self.attributesToStore = super().attributesToStore[:]
+        self.callbacksToStore = []
+        self.objectsToStore = []
+        self.tupleDictsToStore = []
+        self.tupleListsToStore = []
+
         super().__init__()
 
         self.noPaths = noPaths
@@ -1268,12 +1274,15 @@ class Terrain(src.saveing.Saveable):
                         y +=1
 
 
-                    newTerrain = src.gamestate.gamestate.terrainMap[pos[1]-1][pos[0]]
+                    try:
+                        newTerrain = src.gamestate.gamestate.terrainMap[pos[1]-1][pos[0]]
+                    except:
+                        return
 
                     char.addMessage("you moved from terrain %s/%s to terrain %s/%s"%(pos[0],pos[1],pos[0],pos[1]-1,))
 
                     self.removeCharacter(char)
-                    newTerrain.addCharacter(char,char.xPosition,15*14)
+                    newTerrain.addCharacter(char,char.xPosition,15*15-2)
 
                     if char == src.gamestate.gamestate.mainChar:
                         src.gamestate.gamestate.terrain = newTerrain
@@ -1290,7 +1299,10 @@ class Terrain(src.saveing.Saveable):
                             x += 1
                         y +=1
 
-                    newTerrain = src.gamestate.gamestate.terrainMap[pos[1]+1][pos[0]]
+                    try:
+                        newTerrain = src.gamestate.gamestate.terrainMap[pos[1]+1][pos[0]]
+                    except:
+                        return
 
                     char.addMessage("you moved from terrain %s/%s to terrain %s/%s"%(pos[0],pos[1],pos[0],pos[1]+1,))
 
@@ -1312,12 +1324,15 @@ class Terrain(src.saveing.Saveable):
                             x += 1
                         y +=1
 
-                    newTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]-1]
+                    try:
+                        newTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]-1]
+                    except:
+                        return
 
                     char.addMessage("you moved from terrain %s/%s to terrain %s/%s"%(pos[0],pos[1],pos[0]-1,pos[1],))
 
                     self.removeCharacter(char)
-                    newTerrain.addCharacter(char,15*14,char.yPosition)
+                    newTerrain.addCharacter(char,15*15-2,char.yPosition)
 
                     if char == src.gamestate.gamestate.mainChar:
                         src.gamestate.gamestate.terrain = newTerrain
@@ -1334,7 +1349,10 @@ class Terrain(src.saveing.Saveable):
                             x += 1
                         y +=1
 
-                    newTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]+1]
+                    try:
+                        newTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]+1]
+                    except:
+                        return
 
                     char.addMessage("you moved from terrain %s/%s to terrain %s/%s"%(pos[0],pos[1],pos[0]+1,pos[1],))
 
@@ -1853,58 +1871,37 @@ class Terrain(src.saveing.Saveable):
                 elif position[1] % 15 > 7:
                     position = (position[0] + 1, position[1] - 1, position[2])
                 else:
-                    if item.type not in (
-                        "Explosion",
-                        "FireCrystals",
-                        "Bomb",
-                        "CommandBloom",
-                    ):
-                        continue
+                    position = (position[0] + 1, position[1] , position[2])
             if position[0] % 15 == 14:
                 if position[1] % 15 < 7:
                     position = (position[0] - 1, position[1] + 1, position[2])
                 elif position[1] % 15 > 7:
                     position = (position[0] - 1, position[1] - 1, position[2])
                 else:
-                    if item.type not in (
-                        "Explosion",
-                        "FireCrystals",
-                        "Bomb",
-                        "CommandBloom",
-                    ):
-                        continue
+                    position = (position[0] - 1, position[1] , position[2])
             if position[1] % 15 == 0:
                 if position[0] % 15 < 7:
                     position = (position[0] + 1, position[1] + 1, position[2])
                 elif position[0] % 15 > 7:
                     position = (position[0] - 1, position[1] + 1, position[2])
                 else:
-                    if item.type not in (
-                        "Explosion",
-                        "FireCrystals",
-                        "Bomb",
-                        "CommandBloom",
-                    ):
-                        continue
+                    position = (position[0] , position[1] + 1, position[2])
             if position[1] % 15 == 14:
                 if position[0] % 15 < 7:
                     position = (position[0] + 1, position[1] - 1, position[2])
                 elif position[0] % 15 > 7:
                     position = (position[0] - 1, position[1] - 1, position[2])
                 else:
-                    if item.type not in (
-                        "Explosion",
-                        "FireCrystals",
-                        "Bomb",
-                        "CommandBloom",
-                    ):
-                        continue
+                    position = (position[0] , position[1] - 1, position[2])
 
             item.xPosition = position[0]
             item.yPosition = position[1]
             item.zPosition = position[2]
 
             if position in self.itemsByCoordinate:
+                if len(self.itemsByCoordinate[position]) > 20:
+                    print("stack of %s items found on %s"%(len(self.itemsByCoordinate[position]),position,))
+
                 self.itemsByCoordinate[position].insert(0, item)
             else:
                 self.itemsByCoordinate[position] = [item]
@@ -2157,9 +2154,6 @@ class Terrain(src.saveing.Saveable):
             src.overlays.MainCharOverlay().apply(
                 chars, src.gamestate.gamestate.mainChar,size=size,coordinateOffset=coordinateOffset
             )
-
-        # cache rendering
-        self.lastRender = chars
 
         # add special overlay
         if self.overlay:

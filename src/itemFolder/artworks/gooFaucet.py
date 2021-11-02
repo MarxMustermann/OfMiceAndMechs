@@ -6,6 +6,10 @@ class GooFaucet(src.items.Item):
     """
 
     type = "GooFaucet"
+    attributesToStore = []
+    objectsToStore = []
+    commandOptions = []
+    applyOptions = []
 
     def __init__(self):
         """
@@ -23,28 +27,30 @@ class GooFaucet(src.items.Item):
         self.balance = 0
         self.character = None
 
-        self.attributesToStore.extend(
-            [
-                "balance",
-                "commands",
-            ]
-        )
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(
+                [
+                    "balance",
+                    "commands",
+                ]
+            )
 
-        self.objectsToStore.extend(
-            [
-                "character",
-            ]
-        )
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("character")
 
         # set up interaction menu
-        self.applyOptions.extend(
-            [
-                ("drink", "drink from the faucet"),
-                ("fillFlask", "fill goo flask"),
-                ("addTokens", "add goo tokens"),
-                ("showBalance", "show balance"),
-            ]
-        )
+        if not self.applyOptions:
+            self.applyOptions.extend(super().applyOptions)
+            self.applyOptions.extend(
+                [
+                    ("drink", "drink from the faucet"),
+                    ("fillFlask", "fill goo flask"),
+                    ("addTokens", "add goo tokens"),
+                    ("showBalance", "show balance"),
+                ]
+            )
         self.applyMap = {
             "drink": self.drink,
             "fillFlask": self.fillFlask,
@@ -53,9 +59,11 @@ class GooFaucet(src.items.Item):
         }
 
         self.runsCommands = True
-        self.commandOptions = [
-            ("balanceTooLow", "balance too low"),
-        ]
+        if not self.commandOptions:
+            self.attributesToStore.extend(super().commandOptions)
+            self.commandOptions = [
+                ("balanceTooLow", "balance too low"),
+            ]
 
     def drink(self, character):
         """

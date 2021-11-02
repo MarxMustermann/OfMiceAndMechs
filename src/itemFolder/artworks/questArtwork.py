@@ -9,35 +9,39 @@ class QuestArtwork(src.items.Item):
     """
 
     type = "QuestArtwork"
+    attributesToStore = []
+    applyOptions = []
 
     def __init__(self):
         """
         call superclass constructor with modified parameters
         """
 
-        self.tasks = []
-
         super().__init__(display="QA")
 
         self.name = "quest artwork"
 
-        self.applyOptions.extend(
-            [
-                ("returnQuest", "return quest"),
-                ("getQuest", "get quest"),
-            ]
-        )
+        if not self.applyOptions:
+            self.applyOptions.extend(super().applyOptions)
+            self.applyOptions.extend(
+                [
+                    ("returnQuest", "return quest"),
+                    ("getQuest", "get quest"),
+                ]
+            )
         self.applyMap = {
             "returnQuest": self.returnQuest,
             "getQuest": self.getQuest,
         }
         self.numQuestsGiven = 0
 
-        self.attributesToStore.extend(
-            [
-                "numQuestsGiven",
-            ]
-        )
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(
+                [
+                    "numQuestsGiven",
+                ]
+            )
 
     def returnQuest(self, character):
         """

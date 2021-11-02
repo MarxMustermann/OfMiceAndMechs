@@ -11,6 +11,7 @@ import src.interaction
 import json
 import random
 import uuid
+import time
 
 # load basic internal libs
 import src.saveing
@@ -28,7 +29,39 @@ class Item(src.saveing.Saveable):
 
     """
 
+    attributesToStore = []
     type = "Item"
+
+    # flags for traits
+    runsJobOrders = False
+    hasSettings = False
+    runsCommands = False
+    canReset = False
+    hasMaintenance = False
+    hasStepOnAction = False
+
+    isFood = False
+    godMode = False
+    isStepOnActive = False
+    level = 1
+    nutrition = 0
+    description = None
+    xPosition = None
+    yPosition = None
+    zPosition = None
+    walkable = False
+    bolted = True
+    blocked = False
+    usageInfo = None
+    tasks = []
+    container = None
+
+    commandOptions = []
+    applyOptions = []
+    applyMap = {}
+
+    def callInit(self):
+        super().__init__()
 
     def __init__(self, display=None, name="unkown", seed=0, noId=False):
         """
@@ -40,8 +73,13 @@ class Item(src.saveing.Saveable):
             seed: rng seed
             noId: flag to prevent generating useless ids (obsolete?)
         """
-        super().__init__()
+        #super().__init__()
 
+        self.callInit()
+
+        self.doOwnInit(display=display,name=name,seed=seed,noId=noId)
+
+    def doOwnInit(self,display=None, name="unkown", seed=0, noId=False):
         if display:
             self.display = display
         else:
@@ -50,16 +88,6 @@ class Item(src.saveing.Saveable):
         # basic information
         self.seed = seed
         self.name = name
-        self.description = None
-        self.xPosition = None
-        self.yPosition = None
-        self.zPosition = None
-        self.container = None
-        self.walkable = False
-        self.bolted = True
-        self.usageInfo = None
-        self.tasks = []
-        self.blocked = False
 
         # storage for other entities listening to changes
         self.listeners = {"default": []}
@@ -68,45 +96,27 @@ class Item(src.saveing.Saveable):
         self.lastMovementToken = None
         self.chainedTo = []
 
-        # flags for traits
-        self.runsJobOrders = False
-        self.hasSettings = False
-        self.runsCommands = False
-        self.canReset = False
-        self.hasMaintenance = False
-        self.hasStepOnAction = False
-
         # properties for traits
         self.commands = {}
-        self.applyOptions = []
-        self.level = 1
-        self.isFood = False
-        self.nutrition = 0
-        self.commandOptions = []
-        self.godMode = False
-        self.isStepOnActive = False
 
-        # set up metadata for saving
-        self.attributesToStore.extend(
-            [
-                "seed",
-                "xPosition",
-                "yPosition",
-                "zPosition",
-                "name",
-                "type",
-                "walkable",
-                "bolted",
-                "description",
-                "commands",
-                "isStepOnActive",
-            ]
-        )
-
-        if not noId:
-            self.id = uuid.uuid4().hex
-        else:
-            self.id = None
+        if not self.attributesToStore:
+            # set meta information for saving
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(
+                [
+                    "seed",
+                    "xPosition",
+                    "yPosition",
+                    "zPosition",
+                    "name",
+                    "type",
+                    "walkable",
+                    "bolted",
+                    "description",
+                    "commands",
+                    "isStepOnActive",
+                ]
+            )
 
     def doStepOnAction(self, character):
         pass

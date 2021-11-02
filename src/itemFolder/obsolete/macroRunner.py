@@ -3,6 +3,7 @@ import src
 
 class MacroRunner(src.items.Item):
     type = "MacroRunner"
+    attributesToStore = []
 
     """
     call superclass constructor with modified parameters
@@ -13,7 +14,9 @@ class MacroRunner(src.items.Item):
         self.command = None
         self.name = "macro runner"
 
-        self.attributesToStore.extend(["command"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["command"])
 
     def apply(self, character):
         super().apply(character)

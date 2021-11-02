@@ -8,6 +8,7 @@ class PortableChallenger(src.items.Item):
     """
 
     type = "PortableChallenger"
+    attributesToStore = []
 
     def __init__(self):
         """
@@ -23,7 +24,9 @@ class PortableChallenger(src.items.Item):
         self.bolted = False
         self.secret = ""
 
-        self.attributesToStore.extend(["challenges", "done", "secret"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["challenges", "done", "secret"])
 
     def apply(self, character):
         """

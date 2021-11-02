@@ -6,6 +6,8 @@ class Case(src.items.Item):
     """
 
     type = "Case"
+    name = "case"
+    description = "a complex building item"
 
     def __init__(self):
         """
@@ -14,7 +16,5 @@ class Case(src.items.Item):
 
         super().__init__()
         self.display = src.canvas.displayChars.case
-        self.name = "case"
-        self.description = "a complex building item"
 
 src.items.addType(Case)

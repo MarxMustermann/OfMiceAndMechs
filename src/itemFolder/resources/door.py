@@ -7,6 +7,10 @@ class Door(src.items.Item):
     """
 
     type = "Door"
+    attributesToStore = []
+    name = "door"
+    walkable = False
+    description = "Used to enter and leave rooms."
 
     def __init__(self, bio=False):
         """
@@ -17,18 +21,16 @@ class Door(src.items.Item):
         """
 
         super().__init__()
-        self.name = "door"
-        self.walkable = False
         self.bio = bio
 
         # set metadata for saving
-        self.attributesToStore.extend(
-            [
-                "bio",
-            ]
-        )
-
-        self.description = "Used to enter and leave rooms."
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(
+                [
+                    "bio",
+                ]
+            )
 
     def render(self):
         """

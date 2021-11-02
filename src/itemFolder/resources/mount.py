@@ -8,6 +8,10 @@ class Mount(src.items.Item):
 
     type = "Mount"
 
+    name = "mount"
+    description = "a simple building material"
+    bolted = False
+    walkable = True
 
     def __init__(self):
         """
@@ -15,10 +19,5 @@ class Mount(src.items.Item):
         """
 
         super().__init__(display=src.canvas.displayChars.nook)
-
-        self.name = "mount"
-        self.description = "a simple building material"
-        self.bolted = False
-        self.walkable = True
 
 src.items.addType(Mount)

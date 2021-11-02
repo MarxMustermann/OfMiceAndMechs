@@ -6,6 +6,10 @@ class Paving(src.items.Item):
     """
 
     type = "Paving"
+    name = "floor plate"
+    description = "Used as building material for roads"
+    bolted = False
+    walkable = True
 
     def __init__(self):
         """
@@ -13,10 +17,5 @@ class Paving(src.items.Item):
         """
 
         super().__init__(display=";;")
-
-        self.name = "floor plate"
-        self.description = "Used as building material for roads"
-        self.bolted = False
-        self.walkable = True
 
 src.items.addType(Paving)

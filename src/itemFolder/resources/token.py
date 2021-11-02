@@ -7,6 +7,14 @@ class Token(src.items.Item):
     """
 
     type = "Token"
+    attributesToStore = []
+    name = "token"
+    description = """
+A token. Only has value in the eyes of the beholder.
+"""
+
+    bolted = False
+    walkable = True
 
     def __init__(self, tokenType="generic", payload=None):
         """
@@ -18,16 +26,11 @@ class Token(src.items.Item):
         """
         super().__init__(display=src.canvas.displayChars.token)
 
-        self.name = "token"
-        self.description = """
-A token. Only has value in the eyes of the beholder.
-"""
-
-        self.bolted = False
-        self.walkable = True
         self.tokenType = tokenType
         self.payload = payload
 
-        self.attributesToStore.extend(["tokenType", "payload"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["tokenType", "payload"])
 
 src.items.addType(Token)

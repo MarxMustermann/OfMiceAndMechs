@@ -6,6 +6,15 @@ class PoisonBloom(src.items.Item):
     """
 
     type = "PoisonBloom"
+    attributesToStore = []
+    name = "poison bloom"
+    description = "Its spore sacks shriveled and are covered in green slime"
+    usageInfo = """
+You can eat it to die.
+"""
+    walkable = True
+    dead = False
+    bolted = False
 
     def __init__(self):
         """
@@ -14,15 +23,9 @@ class PoisonBloom(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.poisonBloom)
 
-        self.name = "poison bloom"
-        self.description = "Its spore sacks shriveled and are covered in green slime"
-        self.usageInfo = """
-You can eat it to die.
-"""
-        self.walkable = True
-        self.dead = False
-        self.bolted = False
-        self.attributesToStore.extend(["dead"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["dead"])
 
     def apply(self, character):
         """

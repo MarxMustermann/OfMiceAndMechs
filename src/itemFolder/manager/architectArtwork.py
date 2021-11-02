@@ -9,6 +9,7 @@ class ArchitectArtwork(src.items.Item):
     """
 
     type = "ArchitectArtwork"
+    attributesToStore = []
 
     def __init__(self):
         """
@@ -20,7 +21,9 @@ class ArchitectArtwork(src.items.Item):
         self.name = "architect artwork"
         self.runsJobOrders = True
         self.godMode = False
-        self.attributesToStore.extend(["godMode"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["godMode"])
 
     def getJobOrderTriggers(self):
         """

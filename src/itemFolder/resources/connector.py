@@ -6,6 +6,11 @@ class Connector(src.items.Item):
     """
 
     type = "Connector"
+    bolted = False
+    name = "connector"
+    description = "building material"
+    walkable = True
+
 
     """
     call superclass constructor with modified parameters
@@ -13,10 +18,5 @@ class Connector(src.items.Item):
 
     def __init__(self):
         super().__init__(display=src.canvas.displayChars.connector)
-
-        self.bolted = False
-        self.name = "connector"
-        self.description = "building material"
-        self.walkable = True
 
 src.items.addType(Connector)

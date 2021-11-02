@@ -7,6 +7,13 @@ class Rod(src.items.Item):
     """
 
     type = "Rod"
+    attributesToStore = []
+
+    name = "rod"
+    description = "used to build items"
+
+    bolted = False
+    walkable = True
 
     def __init__(self):
         """
@@ -15,22 +22,14 @@ class Rod(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.rod)
 
-        self.name = "rod"
-        self.description = "used to build items"
-
-        self.bolted = False
-        self.walkable = True
-
-        num = 40
-        while num > 20:
-            num = random.expovariate(1/3)//1 + 4
-
         self.baseDamage = int(random.triangular(4,21,10))
-        self.attributesToStore.extend(
-            [
-                "baseDamage",
-            ]
-        )
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(
+                [
+                    "baseDamage",
+                ]
+            )
 
     def getLongInfo(self):
         """

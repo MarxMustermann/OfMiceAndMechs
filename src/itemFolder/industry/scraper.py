@@ -6,6 +6,7 @@ class Scraper(src.items.Item):
     """
 
     type = "Scraper"
+    attributesToStore = []
 
     def __init__(self):
         """
@@ -23,7 +24,9 @@ class Scraper(src.items.Item):
 Place an item to the west and activate the scrapper to shred an item.
 """
 
-        self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges"])
 
     # bug: should destroy the item instead of placing scrap
     def apply(self, character):

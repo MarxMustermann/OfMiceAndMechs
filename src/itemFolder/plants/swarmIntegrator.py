@@ -7,6 +7,9 @@ class SwarmIntegrator(src.items.Item):
     """
 
     type = "SwarmIntegrator"
+    name = "swarm integrator"
+    walkable = False
+    faction = "swarm"
 
     def __init__(self):
         """
@@ -14,9 +17,6 @@ class SwarmIntegrator(src.items.Item):
         """
 
         super().__init__(display=src.canvas.displayChars.floor_node)
-        self.name = "swarm integrator"
-        self.walkable = False
-        self.faction = "swarm"
 
     def apply(self, character):
         """

@@ -7,21 +7,14 @@ class Sheet(src.items.Item):
     """
 
     type = "Sheet"
-
-    def __init__(self):
-        """
-        set up initial state
-        """
-
-        super().__init__(display=src.canvas.displayChars.sheet)
-
-        self.bolted = False
-        self.walkable = True
-        self.recording = False
-        self.character = None
-        self.name = "sheet"
-        self.description = "Simple building material and use to store information."
-        self.usageInfo = """
+    attributesToStore = []
+    bolted = False
+    walkable = True
+    recording = False
+    character = None
+    name = "sheet"
+    description = "Simple building material and use to store information."
+    usageInfo = """
 Can be used to create a Note or a written command directly from the sheet.
 Activate the sheet to get a selection, whether to create a command or a note.
 
@@ -40,9 +33,18 @@ Activate this option and select the macro buffer to create the command.
 
 Sheets are also needed as resource to create a blueprint in the blueprinter machine."""
 
-        self.level = 1
+    level = 1
 
-        self.attributesToStore.extend(["recording", "level"])
+    def __init__(self):
+        """
+        set up initial state
+        """
+
+        super().__init__(display=src.canvas.displayChars.sheet)
+
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["recording", "level"])
 
     def getLongInfo(self):
         """

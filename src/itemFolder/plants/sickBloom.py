@@ -8,6 +8,11 @@ class SickBloom(src.items.Item):
     """
 
     type = "SickBloom"
+    attributesToStore = []
+    name = "sick bloom"
+    walkable = True
+    charges = 1
+    dead = False
 
     def __init__(self):
         """
@@ -16,11 +21,9 @@ class SickBloom(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.sickBloom)
 
-        self.name = "sick bloom"
-        self.walkable = True
-        self.charges = 1
-        self.dead = False
-        self.attributesToStore.extend(["charges", "dead"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["charges", "dead"])
 
     def apply(self, character):
         """

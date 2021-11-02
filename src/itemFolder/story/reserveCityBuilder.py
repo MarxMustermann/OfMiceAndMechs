@@ -4,6 +4,8 @@ import random
 class ReserveCityBuilder(src.items.Item):
 
     type = "ReserveCityBuilder"
+    applyOptions = []
+
     def __init__(self):
         super().__init__(display=(src.interaction.urwid.AttrSpec("#ff2", "black"), "RC"))
         self.broken = True
@@ -23,15 +25,17 @@ class ReserveCityBuilder(src.items.Item):
         self.scrapSlots = {}
         self.storageSlots = {}
 
-        self.applyOptions.extend(
-            [
-             ("doMaintenance", "do maintenance"),
-             ("showMap", "show map"),
-             ("showRessources", "show ressources"),
-             ("morphToCityBuilder", "morph to city builder"),
-             ("spawnNPC", "spawn worker"),
-            ]
-        )
+        if not self.applyOptions:
+            self.applyOptions.extend(super().applyOptions)
+            self.applyOptions.extend(
+                [
+                 ("doMaintenance", "do maintenance"),
+                 ("showMap", "show map"),
+                 ("showRessources", "show ressources"),
+                 ("morphToCityBuilder", "morph to city builder"),
+                 ("spawnNPC", "spawn worker"),
+                ]
+            )
         self.applyMap = {
             "showMap": self.showMap,
             "morphToCityBuilder": self.morphToCityBuilder,

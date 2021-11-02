@@ -6,6 +6,11 @@ class Stripe(src.items.Item):
     """
 
     type = "Stripe"
+    name = "stripe"
+    description = "used to build items"
+
+    bolted = False
+    walkable = True
 
     def __init__(self, name="stripe"):
         """
@@ -13,11 +18,5 @@ class Stripe(src.items.Item):
         """
 
         super().__init__(display=src.canvas.displayChars.stripe)
-
-        self.name = "stripe"
-        self.description = "used to build items"
-
-        self.bolted = False
-        self.walkable = True
 
 src.items.addType(Stripe)

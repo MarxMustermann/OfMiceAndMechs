@@ -7,6 +7,7 @@ class Command(src.items.Item):
     """
 
     type = "Command"
+    attributesToStore = []
 
     def __init__(self):
         """
@@ -25,7 +26,9 @@ class Command(src.items.Item):
         self.extraName = ""
         self.level = 1
 
-        self.attributesToStore.extend(["command", "extraName", "level", "description"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["command", "extraName", "level", "description"])
 
     def apply(self, character):
         """

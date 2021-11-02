@@ -7,6 +7,19 @@ class CommandBloom(src.items.Item):
     """
 
     type = "CommandBloom"
+    attributesToStore = []
+    walkable = True
+    bolted = True
+    charges = 0
+    numCoal = 0
+    numSick = 0
+    numCommandBlooms = 0
+    lastFeeding = 0
+    masterCommand = None
+    expectedNext = 0
+    blocked = False
+    cluttered = False
+    lastExplosion = 0
 
     def __init__(self):
         """
@@ -17,39 +30,28 @@ class CommandBloom(src.items.Item):
         super().__init__(display=src.canvas.displayChars.commandBloom)
         self.name = "command bloom"
 
-        self.walkable = True
-        self.bolted = True
-        self.charges = 0
-        self.numCoal = 0
-        self.numSick = 0
-        self.numCommandBlooms = 0
-        self.lastFeeding = 0
-        self.masterCommand = None
-        self.expectedNext = 0
-        self.blocked = False
-        self.cluttered = False
-        self.lastExplosion = 0
-
         self.faction = ""
         for i in range(0, 5):
             char = random.choice("abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
             self.faction += char
 
-        self.attributesToStore.extend(
-            [
-                "charges",
-                "numCoal",
-                "numSick",
-                "lastFeeding",
-                "faction",
-                "numCommandBlooms",
-                "masterCommand",
-                "expectedNext",
-                "blocked",
-                "cluttered",
-                "lastExplosion",
-            ]
-        )
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(
+                [
+                    "charges",
+                    "numCoal",
+                    "numSick",
+                    "lastFeeding",
+                    "faction",
+                    "numCommandBlooms",
+                    "masterCommand",
+                    "expectedNext",
+                    "blocked",
+                    "cluttered",
+                    "lastExplosion",
+                ]
+            )
 
     def apply(self, character):
         """

@@ -7,6 +7,12 @@ class Bush(src.items.Item):
     """
 
     type = "Bush"
+    attributesToStore = []
+    name = "bush"
+    description = "This a patch of mold with multiple blooms and a network vains connecting them"
+
+    walkable = False
+    charges = 10
 
     def __init__(self):
         """
@@ -15,12 +21,9 @@ class Bush(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.bush)
 
-        self.name = "bush"
-        self.description = "This a patch of mold with multiple blooms and a network vains connecting them"
-
-        self.walkable = False
-        self.charges = 10
-        self.attributesToStore.extend(["charges"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["charges"])
 
     def apply(self, character):
         """

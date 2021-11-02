@@ -6,6 +6,7 @@ import src
 
 class MemoryStack(src.items.Item):
     type = "MemoryStack"
+    attributesToStore = []
 
     """
     call superclass constructor with modified parameters
@@ -19,7 +20,9 @@ class MemoryStack(src.items.Item):
 
         self.name = "memory stack"
 
-        self.attributesToStore.extend(["macros"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["macros"])
 
     """
     trigger production of a player selected item

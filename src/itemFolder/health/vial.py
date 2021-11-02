@@ -7,6 +7,7 @@ class Vial(src.items.Item):
     """
 
     type = "Vial"
+    attributesToStore = []
 
     def __init__(self, name="vial", noId=False):
         """
@@ -23,7 +24,9 @@ class Vial(src.items.Item):
         self.level = 1
 
         # set up meta information for saving
-        self.attributesToStore.extend(["uses", "level", "maxUses"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["uses", "level", "maxUses"])
 
     def apply(self, character):
         """

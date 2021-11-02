@@ -26,6 +26,13 @@ class GameState(src.saveing.Saveable):
         basic state setting with some initialization
         """
 
+        self.attributesToStore = super().attributesToStore[:]
+        self.callbacksToStore = []
+        self.objectsToStore = []
+        self.tupleDictsToStore = []
+        self.tupleListsToStore = []
+
+
         super().__init__()
         self.id = "gamestate"
         self.mainChar = None

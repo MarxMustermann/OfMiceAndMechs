@@ -7,21 +7,19 @@ class MoldSpore(src.items.Item):
     """
 
     type = "MoldSpore"
+    name = "mold spore"
+    description = "grows into mold"
+    usageInfo = """
+put it on the ground and activate it to plant it
+"""
+    walkable = True
+    bolted = False
 
     def __init__(self):
         """
         set up internal state
         """
-
         super().__init__(display=src.canvas.displayChars.moldSpore)
-
-        self.name = "mold spore"
-        self.description = "grows into mold"
-        self.usageInfo = """
-put it on the ground and activate it to plant it
-"""
-        self.walkable = True
-        self.bolted = False
 
     def apply(self, character):
         """

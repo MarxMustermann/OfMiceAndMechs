@@ -3,6 +3,7 @@ import src
 
 class ScrapCommander(src.items.Item):
     type = "ScrapCommander"
+    attributesToStore = []
 
     def __init__(self):
         super().__init__(display=";;")
@@ -11,7 +12,9 @@ class ScrapCommander(src.items.Item):
         self.bolted = True
         self.walkable = True
         self.numScrapStored = 0
-        self.attributesToStore.extend(["numScrapStored"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["numScrapStored"])
 
     def apply(self, character):
         options = [("addScrap", "add scrap"), ("fetchScrap", "fetch scrap")]

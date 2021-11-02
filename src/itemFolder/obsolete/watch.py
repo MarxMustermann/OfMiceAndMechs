@@ -6,6 +6,7 @@ import src
 
 class Watch(src.items.Item):
     type = "Watch"
+    attributesToStore = []
 
     """
     call superclass constructor with modified parameters
@@ -19,7 +20,9 @@ class Watch(src.items.Item):
 
         self.name = "watch"
 
-        self.attributesToStore.extend(["creationTime"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["creationTime"])
 
         self.bolted = False
         self.walkable = True

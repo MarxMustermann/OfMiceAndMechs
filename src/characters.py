@@ -52,6 +52,12 @@ class Character(src.saveing.Saveable):
             characterId: osolete, to be removed
             seed: rng seed
         """
+        self.attributesToStore = super().attributesToStore[:]
+        self.callbacksToStore = []
+        self.objectsToStore = []
+        self.tupleDictsToStore = []
+        self.tupleListsToStore = []
+
         super().__init__()
 
         if name is None and seed:
@@ -221,6 +227,7 @@ class Character(src.saveing.Saveable):
         self.personality["annoyenceByNpcCollisions"] = random.randint(50, 150)
         self.personality["attacksEnemiesOnContact"] = True
         self.personality["doIdleAction"] = True
+        self.personality["avoidItems"] = False
 
         self.silent = False
 

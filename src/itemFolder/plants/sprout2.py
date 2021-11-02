@@ -6,6 +6,12 @@ class Sprout2(src.items.Item):
     """
 
     type = "Sprout2"
+    name = "sprout2"
+    description = "This is a mold patch that developed a bloom sprout."
+    usageInfo = """
+you can eat it to gain 25 satiation.
+"""
+    walkable = True
 
     def __init__(self):
         """
@@ -13,12 +19,6 @@ class Sprout2(src.items.Item):
         """
 
         super().__init__(display=src.canvas.displayChars.sprout2)
-        self.name = "sprout2"
-        self.description = "This is a mold patch that developed a bloom sprout."
-        self.usageInfo = """
-you can eat it to gain 25 satiation.
-"""
-        self.walkable = True
 
     def apply(self, character):
         """

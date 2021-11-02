@@ -3,6 +3,7 @@ import src
 
 class SimpleRunner(src.items.Item):
     type = "SimpleRunner"
+    attributesToStore = []
 
     """  
     call superclass constructor with modified parameters
@@ -15,7 +16,9 @@ class SimpleRunner(src.items.Item):
         self.name = "simple runner"
         self.command = None
 
-        self.attributesToStore.extend(["command"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["command"])
 
     def apply(self, character):
         super().apply(character)

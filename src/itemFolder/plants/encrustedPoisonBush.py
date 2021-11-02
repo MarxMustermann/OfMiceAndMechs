@@ -6,6 +6,8 @@ class EncrustedPoisonBush(src.items.Item):
     """
 
     type = "EncrustedPoisonBush"
+    name = "encrusted poison bush"
+    walkable = False
 
     def __init__(self):
         """
@@ -13,8 +15,6 @@ class EncrustedPoisonBush(src.items.Item):
         """
 
         super().__init__(display=src.canvas.displayChars.encrustedPoisonBush)
-        self.name = "encrusted poison bush"
-        self.walkable = False
 
     def apply(self, character):
         """

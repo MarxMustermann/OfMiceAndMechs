@@ -128,6 +128,12 @@ class WorldBuildingPhase(src.saveing.Saveable):
             name: the name of the phase
             seed: rng seed
         """
+        self.attributesToStore = super().attributesToStore[:]
+        self.callbacksToStore = []
+        self.objectsToStore = []
+        self.tupleDictsToStore = []
+        self.tupleListsToStore = []
+
         super().__init__()
 
         self.name = name
@@ -167,6 +173,12 @@ class BasicPhase(src.saveing.Saveable):
             name: the name of the phase
             seed: rng seed
         """
+        self.attributesToStore = super().attributesToStore[:]
+        self.callbacksToStore = []
+        self.objectsToStore = []
+        self.tupleDictsToStore = []
+        self.tupleListsToStore = []
+
 
         super().__init__()
         self.mainCharXPosition = None
@@ -590,13 +602,13 @@ class BackToTheRoots(BasicPhase):
         self.leaders = {}
         self.scoreTracker = {}
 
-    def genNPC(self, cityCounter, citylocation, flaskUses=100):
+    def genNPC(self, cityCounter, citylocation, flaskUses=100, spawnArmor=True, spawnWeapon=True):
         npc = src.characters.Character()
         item = src.items.itemMap["GooFlask"]()
         item.uses = flaskUses
         npc.inventory.append(item)
         #npc.runCommandString("-agg_a-")
-        npc.runCommandString("10.*")
+        npc.runCommandString("10.10*")
         npc.macroState["macros"]["j"] = ["J", "f"]
         npc.faction = "city #%s"%(cityCounter,)
         npc.registers["HOMEx"] = citylocation[0]
@@ -626,11 +638,14 @@ class BackToTheRoots(BasicPhase):
             "DeliverSpecialItem",
         ]
 
-        npc.weapon = src.items.itemMap["Rod"]()
-        npc.armor = src.items.itemMap["Armor"]()
+        if spawnWeapon:
+            npc.weapon = src.items.itemMap["Rod"]()
+        if spawnArmor:
+            npc.armor = src.items.itemMap["Armor"]()
 
         npc.personality["abortMacrosOnAttack"] = False
         npc.personality["doIdleAction"] = False
+        npc.personality["avoidItems"] = True
         return npc
 
     def start(self, seed=0):
@@ -687,18 +702,34 @@ class BackToTheRoots(BasicPhase):
                     item = src.items.itemMap["LandMine"]()
                     items.append(item)
                     landmines.append(item)
-                for i in range(0,random.randint(1,20)):
+                for i in range(0,random.randint(1,200)):
                     item = src.items.itemMap["Mold"]()
                     items.append(item)
                     molds.append(item)
                 terrain.randomAddItems(items)
                 for mold in molds:
-                    mold.spawn()
+                    #mold.spawn()
+                    pass
                 for landmine in landmines:
                     scrap = src.items.itemMap["Scrap"](amount=random.randint(1,3))
                     if random.choice([True,False]):
                         if landmine.getPosition()[0]:
                             terrain.addItem(scrap,landmine.getPosition())
+                
+                for i in range(0,random.randint(1,20)):
+                    xPos = 1+int(random.random()*13)*15+7
+                    yPos = 1+int(random.random()*13)*15+7
+                    if xPos//15 == 7 or yPos//15 == 7:
+                        continue
+                    enemy = src.characters.Monster(xPos,yPos)
+                    enemy.health = 10 + random.randint(1, 100)
+                    enemy.baseDamage = random.randint(1, 10)
+                    enemy.godMode = True
+                    enemy.aggro = 1000000
+                    enemy.macroState["macros"]["g"] = ["g","g","_","g"]
+                    enemy.runCommandString("_g")
+                    terrain.addCharacter(enemy, xPos, yPos)
+
 
         # build cities
         numCities = 0
@@ -789,7 +820,9 @@ class BackToTheRoots(BasicPhase):
                     subsubleader.assignQuest(quest, active=True)
 
                     for k in range(0,3):
-                        worker = self.genNPC(cityCounter,citylocation,flaskUses=(2-k)*10)
+                        spawnWeapon = False
+                        spawnArmor = False
+                        worker = self.genNPC(cityCounter,citylocation,flaskUses=(2-k)*10+50,spawnWeapon=spawnWeapon,spawnArmor=spawnArmor)
                         mainRoom.addCharacter(worker,3+i*3+j,7+k)
                         subsubleader.subordinates.append(worker)
 
@@ -815,6 +848,9 @@ class BackToTheRoots(BasicPhase):
             cityCounter += 1
 
         src.gamestate.gamestate.mainChar.runCommandString("~", clear=True)
+        src.gamestate.gamestate.mainChar.personality["autoFlee"] = False
+        src.gamestate.gamestate.mainChar.personality["abortMacrosOnAttack"] = False
+        src.gamestate.gamestate.mainChar.personality["autoCounterAttack"] = False
 
         self.startNewEpoch()
 

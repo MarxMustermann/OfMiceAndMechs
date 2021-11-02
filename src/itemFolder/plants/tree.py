@@ -7,6 +7,11 @@ class Tree(src.items.Item):
     """
 
     type = "Tree"
+    attributesToStore = []
+    bolted = True
+    walkable = False
+    numMaggots = 0
+    name = "tree"
 
     def __init__(self):
         """
@@ -15,19 +20,16 @@ class Tree(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.tree)
 
-        self.name = "name"
-
-        self.bolted = True
-        self.walkable = False
         self.maxMaggot = random.randint(75, 150)
-        self.numMaggots = 0
 
         try:
             self.lastUse = src.gamestate.gamestate.tick
         except:
             self.lastUse = -100000
 
-        self.attributesToStore.extend(["maggot", "maxMaggot", "lastUse"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["maggot", "maxMaggot", "lastUse"])
 
     def regenerateMaggots(self):
         """

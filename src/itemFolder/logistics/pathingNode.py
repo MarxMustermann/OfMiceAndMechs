@@ -8,6 +8,7 @@ class PathingNode(src.items.Item):
     """
 
     type = "PathingNode"
+    attributesToStore = []
 
     def __init__(self):
         """
@@ -22,11 +23,13 @@ class PathingNode(src.items.Item):
         self.walkable = True
         self.nodeName = ""
 
-        self.attributesToStore.extend(
-            [
-                "nodeName",
-            ]
-        )
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(
+                [
+                    "nodeName",
+                ]
+            )
 
     def apply(self, character):
         """

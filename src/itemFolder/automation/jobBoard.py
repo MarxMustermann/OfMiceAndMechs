@@ -7,6 +7,7 @@ class JobBoard(src.items.Item):
     """
 
     type = "JobBoard"
+    applyOptions = []
 
     def __init__(self):
         """
@@ -26,14 +27,17 @@ class JobBoard(src.items.Item):
         self.runsJobOrders = True
 
         # set up interaction menu
-        self.applyOptions.extend(
-            [
-                ("doMaintenance", "do a job order"),
-                ("addComand", "add comand"),
-                ("addJobOrder", "add job order"),
-                ("spawnNpc", "spawn npc"),
-            ]
-        )
+
+        if not self.applyOptions:
+            self.applyOptions.extend(super().applyOptions)
+            self.applyOptions.extend(
+                [
+                    ("doMaintenance", "do a job order"),
+                    ("addComand", "add comand"),
+                    ("addJobOrder", "add job order"),
+                    ("spawnNpc", "spawn npc"),
+                ]
+            )
         self.applyMap = {
             "doMaintenance": self.doMaintenance,
             "addComand": self.addComand,

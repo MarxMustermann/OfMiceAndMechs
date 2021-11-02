@@ -6,19 +6,18 @@ class Coal(src.items.Item):
     """
 
     type = "Coal"
+    name = "coal"
+    description = "used as an energy source"
+    walkable = True
+    bolted = False
+    canBurn = True
 
     def __init__(self):
         """
         set up internal state
         """
 
-        self.canBurn = True
         super().__init__(display=src.canvas.displayChars.coal)
-
-        self.name = "coal"
-        self.description = "used as an energy source"
-        self.walkable = True
-        self.bolted = False
 
     def destroy(self, generateScrap=True):
         """

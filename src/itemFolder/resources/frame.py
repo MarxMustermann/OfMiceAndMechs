@@ -6,6 +6,11 @@ class Frame(src.items.Item):
     """
 
     type = "Frame"
+    name = "frame"
+    description = "used to build items"
+
+    bolted = False
+    walkable = True
 
     def __init__(self):
         """
@@ -13,11 +18,5 @@ class Frame(src.items.Item):
         """
 
         super().__init__(display=src.canvas.displayChars.frame)
-
-        self.name = "frame"
-        self.description = "used to build items"
-
-        self.bolted = False
-        self.walkable = True
 
 src.items.addType(Frame)

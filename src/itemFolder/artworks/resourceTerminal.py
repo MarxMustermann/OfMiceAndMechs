@@ -5,6 +5,7 @@ class ResourceTerminal(src.items.Item):
     """
 
     type = "ResourceTerminal"
+    attributesToStore = []
 
     def __init__(self):
         """
@@ -17,7 +18,9 @@ class ResourceTerminal(src.items.Item):
 
         self.balance = 0
         self.resource = "Scrap"
-        self.attributesToStore.extend(["balance", "resource"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["balance", "resource"])
 
     def setResource(self, resource):
         """

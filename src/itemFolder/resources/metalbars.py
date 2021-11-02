@@ -6,6 +6,10 @@ class MetalBars(src.items.Item):
     """
 
     type = "MetalBars"
+    name = "metal bar"
+    description = "It is used by most machines and produced by a scrap compactor"
+    walkable = True
+    bolted = False
 
     def __init__(self):
         """
@@ -13,9 +17,4 @@ class MetalBars(src.items.Item):
         """
 
         super().__init__(display = src.canvas.displayChars.metalBars)
-        self.name = "metal bar"
-        self.description = "It is used by most machines and produced by a scrap compactor"
-        self.walkable = True
-        self.bolted = False
-
 src.items.addType(MetalBars)

@@ -9,6 +9,7 @@ class TradingArtwork(src.items.Item):
     """
 
     type = "TradingArtwork"
+    attributesToStore = []
 
     def __init__(self):
         """
@@ -137,10 +138,12 @@ class TradingArtwork(src.items.Item):
                 },
             )
 
-        self.attributesToStore.extend([
-            "tradingHistory",
-            "availableTrades",
-        ])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend([
+                "tradingHistory",
+                "availableTrades",
+            ])
 
         self.setApplyOptions()
 

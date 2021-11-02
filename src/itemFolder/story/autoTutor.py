@@ -6,6 +6,7 @@ class AutoTutor(src.items.Item):
     """
 
     type = "AutoTutor"
+    attributesToStore = []
 
     def __init__(self):
         """
@@ -42,30 +43,32 @@ class AutoTutor(src.items.Item):
         self.initialChallengeDone = False
         self.challengeInfo = {}
 
-        self.attributesToStore.extend(
-            [
-                "gooChallengeDone",
-                "metalbarChallengeDone",
-                "sheetChallengeDone",
-                "machineChallengeDone",
-                "blueprintChallengeDone",
-                "energyChallengeDone",
-                "activateChallengeDone",
-                "commandChallengeDone",
-                "challengeRun2Done",
-                "challengeRun3Done",
-                "challengeRun4Done",
-                "challengeRun5Done",
-                "initialChallengeDone",
-                "activateChallenge",
-                "wallChallenge",
-                "autoScribeChallenge",
-                "knownBlueprints",
-                "availableChallenges",
-                "knownInfos",
-                "challengeInfo",
-            ]
-        )
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(
+                [
+                    "gooChallengeDone",
+                    "metalbarChallengeDone",
+                    "sheetChallengeDone",
+                    "machineChallengeDone",
+                    "blueprintChallengeDone",
+                    "energyChallengeDone",
+                    "activateChallengeDone",
+                    "commandChallengeDone",
+                    "challengeRun2Done",
+                    "challengeRun3Done",
+                    "challengeRun4Done",
+                    "challengeRun5Done",
+                    "initialChallengeDone",
+                    "activateChallenge",
+                    "wallChallenge",
+                    "autoScribeChallenge",
+                    "knownBlueprints",
+                    "availableChallenges",
+                    "knownInfos",
+                    "challengeInfo",
+                ]
+            )
 
     def addScraps(self, amount=1):
         """

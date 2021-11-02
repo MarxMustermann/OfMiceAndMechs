@@ -8,6 +8,17 @@ class Corpse(src.items.Item):
     """
 
     type = "Corpse"
+    attributesToStore = []
+    name = "corpse"
+    description = "something dead"
+    usageInfo = """
+Activate it to eat from it. Eating from a corpse will gain you 15 satiation and may hurt your stomage for 1 damage.
+
+can be processed in a corpse shredder
+"""
+    walkable = True
+    bolted = False
+    charges = 1000
 
     def __init__(self):
         """
@@ -16,18 +27,9 @@ class Corpse(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.corpse)
 
-        self.name = "corpse"
-        self.description = "something dead"
-        self.usageInfo = """
-Activate it to eat from it. Eating from a corpse will gain you 15 satiation and may hurt your stomage for 1 damage.
-
-can be processed in a corpse shredder
-"""
-
-        self.charges = 1000
-        self.attributesToStore.extend(["activated", "charges"])
-        self.walkable = True
-        self.bolted = False
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["activated", "charges"])
 
     def getLongInfo(self):
         """

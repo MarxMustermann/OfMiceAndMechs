@@ -8,6 +8,7 @@ class GooDispenser(src.items.Item):
     """
 
     type = "GooDispenser"
+    attributesToStore = []
 
     def __init__(self):
         """
@@ -32,7 +33,9 @@ Filling a flask will use up a charge from your goo dispenser.
         self.level = 1
 
         # set up meta information for saving
-        self.attributesToStore.extend(["activated", "charges"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["activated", "charges"])
 
         self.charges = 0
         self.maxCharges = 100

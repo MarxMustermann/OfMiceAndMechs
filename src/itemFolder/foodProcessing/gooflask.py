@@ -3,6 +3,7 @@ import src
 
 class GooFlask(src.items.Item):
     type = "GooFlask"
+    attributesToStore = []
 
     def __init__(self):
         """
@@ -20,7 +21,9 @@ class GooFlask(src.items.Item):
         self.maxUses = 100
 
         # set up meta information for saving
-        self.attributesToStore.extend(["uses", "level", "maxUses"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["uses", "level", "maxUses"])
 
     def apply(self, character):
         """

@@ -8,6 +8,9 @@ class FireCrystals(src.items.Item):
     """
 
     type = "FireCrystals"
+    walkable = True
+    name = "fireCrystals"
+    isStepOnActive = True
 
     def __init__(self):
         """
@@ -15,9 +18,6 @@ class FireCrystals(src.items.Item):
         """
 
         super().__init__(display=src.canvas.displayChars.fireCrystals)
-        self.walkable = True
-        self.name = "fireCrystals"
-        self.isStepOnActive = True
 
     def doStepOnAction(self, character):
         if random.choice([True,False]):

@@ -7,6 +7,7 @@ basically a bed with a activatable cover
 
 class Hutch(src.items.Item):
     type = "Hutch"
+    attributesToStore = []
 
     def __init__(self, activated=False):
         self.activated = activated
@@ -15,7 +16,9 @@ class Hutch(src.items.Item):
         self.name = "Hutch"
 
         # bad code: set metadata for saving
-        self.attributesToStore.extend(["activated"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["activated"])
 
     def render(self):
         """

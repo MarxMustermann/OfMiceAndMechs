@@ -7,15 +7,16 @@ class Radiator(src.items.Item):
 
     type = "Radiator"
 
+    name = "radiator"
+    description = "used to build items"
+    bolted = False
+    walkable = True
+
     def __init__(self):
         """
         set up initial state
         """
 
         super().__init__(display = src.canvas.displayChars.coil)
-        self.name = "radiator"
-        self.description = "used to build items"
-        self.bolted = False
-        self.walkable = True
 
 src.items.addType(Radiator)

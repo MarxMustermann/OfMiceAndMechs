@@ -8,6 +8,7 @@ class ProductionArtwork(src.items.Item):
     """
 
     type = "ProductionArtwork"
+    attributesToStore = []
 
     def __init__(self):
         """
@@ -29,9 +30,11 @@ Prepare for production by placing metal bars to the west/left of this machine.
 Activate the machine to start producing. You will be shown a list of things to produce.
 Select the thing to produce and confirm."""
 
-        self.attributesToStore.extend(
-            ["coolDown", "coolDownTimer", "charges", "godMode"]
-        )
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(
+                ["coolDown", "coolDownTimer", "charges", "godMode"]
+            )
 
     def apply(self, character):
         """

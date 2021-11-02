@@ -8,6 +8,9 @@ class RoomManager(src.items.Item):
     """
 
     type = "RoomManager"
+    attributesToStore = []
+    tupleDictsToStore = []
+    applyOptions = {}
 
     def __init__(self, name="RoomManager", noId=False):
         """
@@ -22,16 +25,19 @@ class RoomManager(src.items.Item):
         self.runCommands = True
         self.canReset = True
         self.hasMaintenance = True
+        self.tasks = []
 
         # set up interaction menu
-        self.applyOptions.extend(
-            [
-                ("doMaintence", "do maintenance"),
-                ("do action", "do action"),
-                ("addTaskSelection", "add task"),
-                ("clearTasks", "clear tasks"),
-            ]
-        )
+        if not self.applyOptions:
+            self.applyOptions.extend(super().applyOptions)
+            self.applyOptions.extend(
+                [
+                    ("doMaintence", "do maintenance"),
+                    ("do action", "do action"),
+                    ("addTaskSelection", "add task"),
+                    ("clearTasks", "clear tasks"),
+                ]
+            )
         self.applyMap = {
             "doMaintence": self.doMaintence,
             "do action": self.actionSelection,
@@ -40,27 +46,31 @@ class RoomManager(src.items.Item):
         }
 
         # set up saving information
-        self.attributesToStore.extend(
-            [
-                "cityBuilderPos",
-                "machineMachinePos",
-                "bluePrintingArtworkPos",
-                "tasks",
-                "managerName",
-                "resourceTerminalPositions",
-                "stuck",
-                "stuckReason",
-                "machinePositions",
-                "freeItemSlots",
-                "itemPositions",
-            ]
-        )
-        self.tupleDictsToStore.extend(
-            [
-                "itemSlotUsage",
-                "dependencies",
-            ]
-        )
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(
+                [
+                    "cityBuilderPos",
+                    "machineMachinePos",
+                    "bluePrintingArtworkPos",
+                    "tasks",
+                    "managerName",
+                    "resourceTerminalPositions",
+                    "stuck",
+                    "stuckReason",
+                    "machinePositions",
+                    "freeItemSlots",
+                    "itemPositions",
+                ]
+            )
+        if not self.tupleDictsToStore:
+            self.tupleDictsToStore.extend(super().tupleDictsToStore)
+            self.tupleDictsToStore.extend(
+                [
+                    "itemSlotUsage",
+                    "dependencies",
+                ]
+            )
 
         # set state by resetting
         self.reset()

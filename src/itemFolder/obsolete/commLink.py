@@ -8,6 +8,7 @@ bad code: this class is dummy only and basically is to be implemented
 
 class Commlink(src.items.Item):
     type = "CommLink"
+    attributesToStore = []
 
     """
     call superclass constructor with modified paramters
@@ -19,7 +20,9 @@ class Commlink(src.items.Item):
         self.name = "commlink"
 
         self.scrapToDeliver = 100
-        self.attributesToStore.extend(["scrapToDeliver"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["scrapToDeliver"])
 
     """
     get tributes and trades

@@ -7,7 +7,7 @@ class Mortar(src.items.Item):
     """
 
     type = "Mortar"
-
+    attributesToStore = []
 
     def __init__(self):
         """
@@ -23,7 +23,9 @@ class Mortar(src.items.Item):
         self.loadedWith = None
         self.precision = 5
 
-        self.attributesToStore.extend(["loaded", "precision"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["loaded", "precision"])
 
     def apply(self, character):
         """

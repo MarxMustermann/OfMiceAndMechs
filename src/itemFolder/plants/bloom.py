@@ -7,6 +7,12 @@ class Bloom(src.items.Item):
     """
 
     type = "Bloom"
+    attributesToStore = []
+    name = "bloom"
+    description = "blossomed mold"
+    bolted = False
+    walkable = True
+    dead = False
 
     def __init__(self):
         """
@@ -15,12 +21,9 @@ class Bloom(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.bloom)
 
-        self.name = "bloom"
-        self.description = "blossomed mold"
-        self.bolted = False
-        self.walkable = True
-        self.dead = False
-        self.attributesToStore.extend(["dead"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["dead"])
 
     def apply(self, character):
         """

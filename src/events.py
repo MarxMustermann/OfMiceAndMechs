@@ -5,6 +5,9 @@ bad code: not all events are here yet
 
 # import basic libs
 import json
+import random
+import time
+
 
 # import basic internal libs
 import src.saveing
@@ -15,6 +18,9 @@ class Event(src.saveing.Saveable):
     base class for events
     """
 
+    type = "Event"
+    attributesToStore = []
+
     def __init__(self, tick):
         """
         initialises internal state
@@ -24,20 +30,13 @@ class Event(src.saveing.Saveable):
         """
 
         super().__init__()
-        self.type = "Event"
 
-        import uuid
-
-        self.id = uuid.uuid4().hex
-
-        # set meta information for saving
-        self.attributesToStore.extend(["tick", "type"])
+        if not self.attributesToStore:
+            # set meta information for saving
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["tick", "type"])
 
         self.tick = tick
-
-        # self initial state
-        self.initialState = self.getState()
-
 
     def handleEvent(self):
         """
@@ -75,6 +74,8 @@ class RunCallbackEvent(Event):
     the event for calling a callback
     """
 
+    callbacksToStore = []
+
     def __init__(self, tick):
         """
         initialises internal state
@@ -88,7 +89,9 @@ class RunCallbackEvent(Event):
         self.callback = None
 
         # set meta information for saving
-        self.callbacksToStore.append("callback")
+        if not self.callbacksToStore:
+            self.callbacksToStore.extend(super().callbacksToStore)
+            self.callbacksToStore.append("callback")
 
     def setCallback(self, callback):
         """
@@ -179,6 +182,8 @@ class EndQuestEvent(Event):
     (doesn't actually do that)
     """
 
+    callbacksToStore = []
+
     def __init__(self, tick, callback=None):
         """
         initialises internal state
@@ -193,7 +198,9 @@ class EndQuestEvent(Event):
         self.callback = callback
 
         # set meta information for saving
-        self.callbacksToStore.append("callback")
+        if not self.callbacksToStore:
+            self.callbacksToStore.extend(super().callbacksToStore)
+            self.callbacksToStore.append("callback")
 
     def handleEvent(self):
         """
@@ -211,6 +218,7 @@ class FurnaceBurnoutEvent(Event):
     """
     the event for stopping to burn after a while
     """
+    objectsToStore = []
 
     def __init__(self, tick):
         """
@@ -227,7 +235,9 @@ class FurnaceBurnoutEvent(Event):
         self.tick = tick
 
         # set meta information for saving
-        self.objectsToStore.append("furnace")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("furnace")
 
         # self initial state
         self.initialState = self.getState()
@@ -275,6 +285,7 @@ class StopBoilingEvent(Event):
     """
     the event for stopping to boil
     """
+    objectsToStore = []
 
     def __init__(self, tick):
         """
@@ -291,7 +302,9 @@ class StopBoilingEvent(Event):
         self.tick = tick
 
         # set meta information for saving
-        self.objectsToStore.append("boiler")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("boiler")
 
         # self initial state
         self.initialState = self.getState()
@@ -320,6 +333,7 @@ class StartBoilingEvent(Event):
     """
     the event for starting to boil
     """
+    objectsToStore = []
 
     def __init__(self, tick):
         """
@@ -337,7 +351,9 @@ class StartBoilingEvent(Event):
         self.tick = tick
 
         # set meta information for saving
-        self.objectsToStore.append("boiler")
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("boiler")
 
         # self initial state
         self.initialState = self.getState()

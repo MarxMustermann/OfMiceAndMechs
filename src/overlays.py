@@ -105,41 +105,44 @@ class NPCsOverlay(object):
             if (character.xPosition < coordinateOffset[1] or character.xPosition > coordinateOffset[1]+size[1] or
                   character.yPosition < coordinateOffset[0] or character.yPosition > coordinateOffset[0]+size[0]):
                 continue
-
-            try:
-                chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec("#3f3", "black"), "@ ")
-                if character.faction.endswith("#1"):
-                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#066"
-                if character.faction.endswith("#2"):
-                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#006"
-                if character.faction.endswith("#3"):
-                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#060"
-                if character.faction.endswith("#4"):
-                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#082"
-                if character.faction.endswith("#5"):
-                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#028"
-                if character.faction.endswith("#6"):
-                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#088"
-                if character.faction.endswith("#7"):
-                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#086"
-                if character.faction.endswith("#8"):
-                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#068"
-                if character.faction.endswith("#9"):
-                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#0a0"
-                if character.faction.endswith("#10"):
-                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#00a"
-                if character.faction.endswith("#11"):
-                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#0a6"
-                if character.faction.endswith("#12"):
-                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#06a"
-                if character.faction.endswith("#13"):
-                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#08a"
-                if character.faction.endswith("#14"):
-                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#0a6"
-                if character.faction.endswith("#15"):
-                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#0aa"
-            except:
-                pass
+        
+            if not "city" in character.faction or not character.charType == "Character":
+                chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = character.display
+            else:
+                try:
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec("#3f3", "black"), "@ ")
+                    if character.faction.endswith("#1"):
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#066"
+                    if character.faction.endswith("#2"):
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#006"
+                    if character.faction.endswith("#3"):
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#060"
+                    if character.faction.endswith("#4"):
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#082"
+                    if character.faction.endswith("#5"):
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#028"
+                    if character.faction.endswith("#6"):
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#088"
+                    if character.faction.endswith("#7"):
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#086"
+                    if character.faction.endswith("#8"):
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#068"
+                    if character.faction.endswith("#9"):
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#0a0"
+                    if character.faction.endswith("#10"):
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#00a"
+                    if character.faction.endswith("#11"):
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#0a6"
+                    if character.faction.endswith("#12"):
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#06a"
+                    if character.faction.endswith("#13"):
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#08a"
+                    if character.faction.endswith("#14"):
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#0a6"
+                    if character.faction.endswith("#15"):
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#0aa"
+                except:
+                    pass
 
 class MainCharOverlay(object):
     """

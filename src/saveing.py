@@ -69,20 +69,21 @@ class Saveable(object):
     attributes that should be saved need to be registered as such
     """
 
-    creationCounter = 0
+    attributesToStore = []
+    callbacksToStore = []
+    objectsToStore = []
+    tupleDictsToStore = []
+    tupleListsToStore = []
+
+    def doInit2(self):
+        super().__init__()
+        pass
 
     def __init__(self):
         """
         basic state setting
         """
-
-        super().__init__()
-        self.attributesToStore = ["id", "creationCounter"]
-        self.callbacksToStore = []
-        self.objectsToStore = []
-        self.tupleDictsToStore = []
-        self.tupleListsToStore = []
-
+        self.doInit2()
 
     def serializeCallback(self, callback):
         """

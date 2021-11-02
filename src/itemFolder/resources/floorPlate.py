@@ -6,6 +6,10 @@ class FloorPlate(src.items.Item):
     """
 
     type = "FloorPlate"
+    bolted = False
+    walkable = True
+    name = "floor plate"
+    description = "Used as building material and can be used to mark paths"
 
     def __init__(self):
         """
@@ -13,11 +17,6 @@ class FloorPlate(src.items.Item):
         """
 
         super().__init__(display="::")
-
-        self.bolted = False
-        self.walkable = True
-        self.name = "floor plate"
-        self.description = "Used as building material and can be used to mark paths"
 
     # bad code: hacky way for bolting the item
     def apply(self, character):

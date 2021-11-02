@@ -8,6 +8,17 @@ class HiveMind(src.items.Item):
     """
 
     type = "HiveMind"
+    attributesToStore = []
+    name = "command bloom"
+    createdAt = 0
+    walkable = True
+    bolted = True
+    lastMoldClear = 0
+    charges = 0
+    lastBlocked = (7, 7)
+    lastCluttered = (7, 7)
+    lastExpansion = None
+    colonizeIndex = 0
 
     def __init__(self):
         """
@@ -17,30 +28,22 @@ class HiveMind(src.items.Item):
         self.territory = []
         self.paths = {}
         super().__init__(display=src.canvas.displayChars.floor_node)
-        self.name = "command bloom"
-        self.createdAt = 0
-        self.walkable = True
-        self.bolted = True
-        self.lastMoldClear = 0
-        self.charges = 0
         self.toCheck = []
         self.cluttered = []
         self.blocked = []
         self.needSick = []
         self.needCoal = []
-        self.lastBlocked = (7, 7)
-        self.lastCluttered = (7, 7)
-        self.lastExpansion = None
-        self.colonizeIndex = 0
 
         self.faction = ""
         for i in range(0, 5):
             char = random.choice("abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
             self.faction += char
 
-        self.attributesToStore.extend(
-            ["lastMoldClear", "charges", "lastExpansion", "createdAt", "faction"]
-        )
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(
+                ["lastMoldClear", "charges", "lastExpansion", "createdAt", "faction"]
+            )
 
     def apply(self, character):
         """

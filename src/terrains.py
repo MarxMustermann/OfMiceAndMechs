@@ -906,6 +906,57 @@ class Terrain(src.saveing.Saveable):
         character.room = None
         character.terrain = None
 
+    def enterLocalised(self, char, room, localisedEntry, direction):
+        """
+        move a character into a room
+
+        Parameters:
+            room: the room to enter
+            localisedEntry: the position to enter the room
+        """
+
+        # get the entry point in room coordinates
+        if localisedEntry in room.walkingAccess or 1==1:
+            if localisedEntry in room.itemByCoordinates:
+                # check if the entry point is blocked (by a door)
+                for item in room.itemByCoordinates[localisedEntry]:
+
+                    # handle collisions
+                    if not item.walkable:
+                        # print some info
+                        if isinstance(item, src.items.itemMap["Door"]):
+                            char.addMessage("you need to open the door first")
+                        else:
+                            char.addMessage("the entry is blocked")
+                        # char.addMessage("press "+commandChars.activate+" to apply")
+                        # if noAdvanceGame == False:
+                        #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
+
+                        # remember the item for interaction and abort
+                        return item
+
+                if len(room.itemByCoordinates[localisedEntry]) >= 15:
+                    char.addMessage("the entry is blocked by items.")
+                    # char.addMessage("press "+commandChars.activate+" to apply")
+                    # if noAdvanceGame == False:
+                    #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
+                    return room.itemByCoordinates[localisedEntry][0]
+
+            char.changed("moved", (char, direction))
+
+            # teleport the character into the room
+            room.addCharacter(char, localisedEntry[0], localisedEntry[1])
+            try:
+                char.terrain.characters.remove(char)
+            except:
+                char.addMessage("fail,fail,fail")
+
+            return
+
+        # do not move player into the room
+        else:
+            char.addMessage("you cannot move there")
+
     def moveCharacterDirection(self, char, direction):
         """
         move a character into a direction
@@ -1052,57 +1103,6 @@ class Terrain(src.saveing.Saveable):
                     if room not in roomCandidates:
                         roomCandidates.append(room)
 
-        def enterLocalised(room, localisedEntry):
-            """
-            move a character into a room
-
-            Parameters:
-                room: the room to enter
-                localisedEntry: the position to enter the room
-            """
-
-            # get the entry point in room coordinates
-            if localisedEntry in room.walkingAccess or 1==1:
-                if localisedEntry in room.itemByCoordinates:
-                    # check if the entry point is blocked (by a door)
-                    for item in room.itemByCoordinates[localisedEntry]:
-
-                        # handle collisions
-                        if not item.walkable:
-                            # print some info
-                            if isinstance(item, src.items.itemMap["Door"]):
-                                char.addMessage("you need to open the door first")
-                            else:
-                                char.addMessage("the entry is blocked")
-                            # char.addMessage("press "+commandChars.activate+" to apply")
-                            # if noAdvanceGame == False:
-                            #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
-
-                            # remember the item for interaction and abort
-                            return item
-
-                    if len(room.itemByCoordinates[localisedEntry]) >= 15:
-                        char.addMessage("the entry is blocked by items.")
-                        # char.addMessage("press "+commandChars.activate+" to apply")
-                        # if noAdvanceGame == False:
-                        #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
-                        return room.itemByCoordinates[localisedEntry][0]
-
-                char.changed("moved", (char, direction))
-
-                # teleport the character into the room
-                room.addCharacter(char, localisedEntry[0], localisedEntry[1])
-                try:
-                    char.terrain.characters.remove(char)
-                except:
-                    char.addMessage("fail,fail,fail")
-
-                return
-
-            # do not move player into the room
-            else:
-                char.addMessage("you cannot move there")
-
         # check if character has entered a room
         hadRoomInteraction = False
         for room in roomCandidates:
@@ -1178,7 +1178,7 @@ class Terrain(src.saveing.Saveable):
 
             # move player into the room
             if hadRoomInteraction:
-                item = enterLocalised(room, localisedEntry)
+                item = self.enterLocalised(char, room, localisedEntry, direction)
                 if item:
                     return item
 
@@ -1363,7 +1363,6 @@ class Terrain(src.saveing.Saveable):
                         src.gamestate.gamestate.terrain = newTerrain
 
 
-                char.changed()
                 char.changed("moved", (char, direction))
 
             return foundItem
@@ -1385,6 +1384,7 @@ class Terrain(src.saveing.Saveable):
         character.yPosition = y
         character.changed()
         self.changed("entered terrain", character)
+        src.interaction.multi_chars.add(character)
 
     # obsolete: debugging code for obsolete code
     # bad code: is part visual debugging and partially looking nice, it still has to be integrated properly

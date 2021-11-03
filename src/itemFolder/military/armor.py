@@ -7,6 +7,10 @@ class Armor(src.items.Item):
     """
 
     type = "Armor"
+    name = "armor"
+    bolted = False
+    walkable = True
+    damageType = "attacked"
 
     def __init__(self):
         """
@@ -15,12 +19,7 @@ class Armor(src.items.Item):
 
         super().__init__(display="ar")
 
-        self.name = "armor"
-
-        self.bolted = False
-        self.walkable = True
         self.armorValue = random.randint(1, 5)
-        self.damageType = "attacked"
 
     def getArmorValue(self, damageType):
         """

@@ -25,6 +25,9 @@ class Character(src.saveing.Saveable):
     """
 
     charType = "Character"
+    disabled = False
+    objectsToStore = []
+    attributesToStore = []
 
     def __init__(
         self,
@@ -52,12 +55,6 @@ class Character(src.saveing.Saveable):
             characterId: osolete, to be removed
             seed: rng seed
         """
-        self.attributesToStore = super().attributesToStore[:]
-        self.callbacksToStore = []
-        self.objectsToStore = []
-        self.tupleDictsToStore = []
-        self.tupleListsToStore = []
-
         super().__init__()
 
         if name is None and seed:
@@ -157,54 +154,59 @@ class Character(src.saveing.Saveable):
 
             self.id = uuid.uuid4().hex
 
-        # mark attributes for saving
-        self.attributesToStore.extend(
-            [
-                "gotBasicSchooling",
-                "gotMovementSchooling",
-                "gotInteractionSchooling",
-                "gotExamineSchooling",
-                "xPosition",
-                "yPosition",
-                "zPosition",
-                "name",
-                "satiation",
-                "unconcious",
-                "reputation",
-                "tutorialStart",
-                "isMilitary",
-                "hasFloorPermit",
-                "dead",
-                "deathReason",
-                "automated",
-                "watched",
-                "solvers",
-                "questsDone",
-                "stasis",
-                "registers",
-                "doStackPop",
-                "doStackPush",
-                "timeTaken",
-                "personality",
-                "health",
-                "heatResistance",
-                "godMode",
-                "frustration",
-                "combatMode",
-                "numAttackedWithoutResponse",
-                "baseDamage",
-                "randomBonus",
-                "bonusMultiplier",
-                "staggered",
-                "staggerResistant",
-                "lastJobOrder",
-                "maxInventorySpace",
-                "huntkilling",
-                "guarding",
-            ]
-        )
-        self.objectsToStore.append("serveQuest")
-        self.objectsToStore.append("room")
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            # mark attributes for saving
+            self.attributesToStore.extend(
+                [
+                    "gotBasicSchooling",
+                    "gotMovementSchooling",
+                    "gotInteractionSchooling",
+                    "gotExamineSchooling",
+                    "xPosition",
+                    "yPosition",
+                    "zPosition",
+                    "name",
+                    "satiation",
+                    "unconcious",
+                    "reputation",
+                    "tutorialStart",
+                    "isMilitary",
+                    "hasFloorPermit",
+                    "dead",
+                    "deathReason",
+                    "automated",
+                    "watched",
+                    "solvers",
+                    "questsDone",
+                    "stasis",
+                    "registers",
+                    "doStackPop",
+                    "doStackPush",
+                    "timeTaken",
+                    "personality",
+                    "health",
+                    "heatResistance",
+                    "godMode",
+                    "frustration",
+                    "combatMode",
+                    "numAttackedWithoutResponse",
+                    "baseDamage",
+                    "randomBonus",
+                    "bonusMultiplier",
+                    "staggered",
+                    "staggerResistant",
+                    "lastJobOrder",
+                    "maxInventorySpace",
+                    "huntkilling",
+                    "guarding",
+                ]
+            )
+
+        if not self.objectsToStore:
+            self.objectsToStore.extend(super().objectsToStore)
+            self.objectsToStore.append("serveQuest")
+            self.objectsToStore.append("room")
 
         # bad code: story specific state
         self.serveQuest = None
@@ -506,6 +508,8 @@ class Character(src.saveing.Saveable):
         self.runCommandString("Jj.j")
 
     def hurt(self, damage, reason=None):
+        if self.disabled:
+            self.disabled = False
         """
         hurt the character
 
@@ -1286,9 +1290,6 @@ class Character(src.saveing.Saveable):
         # notify listeners
         self.changed("died", {"character": self, "reason": reason})
 
-        # notify listeners
-        self.changed()
-
     # obsolete: needs to be reintegrated
     # bad pattern: should be contained in quest solver
     def walkPath(self):
@@ -1345,7 +1346,6 @@ class Character(src.saveing.Saveable):
                     # resorting to teleport
                     self.xPosition = nextPosition[0]
                     self.yPosition = nextPosition[1]
-                    self.changed()
                 else:
                     src.logger.debugMessages.append(
                         "character moved on non continious path"
@@ -1374,7 +1374,6 @@ class Character(src.saveing.Saveable):
                         room.addCharacter(self, localisedEntry[0], localisedEntry[1])
                         self.terrain.characters.remove(self)
                         self.terrain = None
-                        self.changed()
                         return
                     else:
                         # show message the character bumped into a wall
@@ -1450,7 +1449,6 @@ class Character(src.saveing.Saveable):
                 # move the char to the next position on path
                 self.xPosition = nextPosition[0]
                 self.yPosition = nextPosition[1]
-                self.changed()
 
         # handle bumping into an item
         if item:
@@ -1518,8 +1516,6 @@ class Character(src.saveing.Saveable):
             # add item to floor
             self.container.addItem(item, position)
 
-        self.changed()
-
     def examine(self, item):
         """
         make the character examine an item
@@ -1552,7 +1548,7 @@ class Character(src.saveing.Saveable):
         advance the character one tick
         """
 
-        if self.stasis or self.dead:
+        if self.stasis or self.dead or self.disabled:
             return
 
         # smooth over impossible state
@@ -1578,7 +1574,6 @@ class Character(src.saveing.Saveable):
             if self.satiation < 10:
                 self.frustration += 10
             self.frustration += 1
-        self.changed()
         if self.satiation < 0 and not self.godMode:
             self.die(
                 reason="you starved. This happens when your satiation falls below 0\nPrevent this by drinking using the "
@@ -1626,7 +1621,6 @@ class Character(src.saveing.Saveable):
         if self.automated:
             if len(self.quests):
                 self.applysolver(self.quests[0].solver)
-                self.changed()
 
     # bad pattern: is repeated in items etc
     def addListener(self, listenFunction, tag="default"):
@@ -1855,6 +1849,7 @@ class Mouse(Character):
     """
 
     charType = "Mouse"
+    attributesToStore = []
 
     def __init__(
         self,
@@ -1891,12 +1886,13 @@ class Mouse(Character):
             characterId=characterId,
         )
         self.vanished = False
-        self.attributesToStore.extend(
-            [
-                "vanished",
-            ]
-        )
-        self.initialState = self.getState()
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(
+                [
+                    "vanished",
+                ]
+            )
 
         self.personality["autoAttackOnCombatSuccess"] = 1
         self.personality["abortMacrosOnAttack"] = True
@@ -1925,6 +1921,7 @@ class Monster(Character):
     """
 
     charType = "Monster"
+    attributesToStore = []
 
     def __init__(
         self,
@@ -1962,12 +1959,13 @@ class Monster(Character):
             characterId=characterId,
         )
         self.phase = 1
-        self.attributesToStore.extend(
-            [
-                "phase",
-            ]
-        )
-        self.initialState = self.getState()
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(
+                [
+                    "phase",
+                ]
+            )
         self.faction = "monster"
 
         self.solvers.extend(["NaiveMurderQuest"])
@@ -2200,6 +2198,7 @@ class Exploder(Monster):
     """
 
     charType = "Exploder"
+    attributesToStore = []
 
     def __init__(
         self,
@@ -2237,7 +2236,9 @@ class Exploder(Monster):
         )
 
         self.explode = True
-        self.attributesToStore.extend(["explode"])
+        if not self.attributesToStore:
+            self.attributesToStore.extend(super().attributesToStore)
+            self.attributesToStore.extend(["explode"])
 
     def render(self):
         """

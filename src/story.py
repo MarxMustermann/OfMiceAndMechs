@@ -702,23 +702,32 @@ class BackToTheRoots(BasicPhase):
                     item = src.items.itemMap["LandMine"]()
                     items.append(item)
                     landmines.append(item)
-                for i in range(0,random.randint(1,200)):
-                    item = src.items.itemMap["Mold"]()
+                for i in range(0,random.randint(1,300)):
+                    item = src.items.itemMap["Bolt"]()
                     items.append(item)
-                    molds.append(item)
+                    landmines.append(item)
+                if random.choice([True,False,False,False,False,False]):
+                    for i in range(0,random.randint(1,20)):
+                        item = src.items.itemMap["Mold"]()
+                        items.append(item)
+                        molds.append(item)
+                
                 terrain.randomAddItems(items)
                 for mold in molds:
-                    #mold.spawn()
+                    mold.spawn()
                     pass
+
                 for landmine in landmines:
                     scrap = src.items.itemMap["Scrap"](amount=random.randint(1,3))
                     if random.choice([True,False]):
                         if landmine.getPosition()[0]:
                             terrain.addItem(scrap,landmine.getPosition())
                 
-                for i in range(0,random.randint(1,20)):
-                    xPos = 1+int(random.random()*13)*15+7
-                    yPos = 1+int(random.random()*13)*15+7
+                #for i in range(0,random.randint(1,20)):
+                #for i in range(0,200):
+                for i in range(0,20):
+                    xPos = int(random.random()*13)*15+7
+                    yPos = int(random.random()*13)*15+7
                     if xPos//15 == 7 or yPos//15 == 7:
                         continue
                     enemy = src.characters.Monster(xPos,yPos)
@@ -728,8 +737,8 @@ class BackToTheRoots(BasicPhase):
                     enemy.aggro = 1000000
                     enemy.macroState["macros"]["g"] = ["g","g","_","g"]
                     enemy.runCommandString("_g")
+                    enemy.disabled = True
                     terrain.addCharacter(enemy, xPos, yPos)
-
 
         # build cities
         numCities = 0
@@ -820,8 +829,14 @@ class BackToTheRoots(BasicPhase):
                     subsubleader.assignQuest(quest, active=True)
 
                     for k in range(0,3):
-                        spawnWeapon = False
                         spawnArmor = False
+                        if k == 0:
+                            spawnArmor = True
+
+                        spawnWeapon = False
+                        if k in (0,1,):
+                            spawnWeapon = True
+
                         worker = self.genNPC(cityCounter,citylocation,flaskUses=(2-k)*10+50,spawnWeapon=spawnWeapon,spawnArmor=spawnArmor)
                         mainRoom.addCharacter(worker,3+i*3+j,7+k)
                         subsubleader.subordinates.append(worker)
@@ -835,9 +850,6 @@ class BackToTheRoots(BasicPhase):
                             src.gamestate.gamestate.mainChar = worker
                             placedMainChar = True
 
-                        if src.gamestate.gamestate.mainChar.faction == worker.faction:
-                            worker.baseDamage = 1000
-            
             quest = src.quests.ObtainAllSpecialItems()
             leader.assignQuest(quest, active=True)
             self.leaderQuests[citylocation] = quest

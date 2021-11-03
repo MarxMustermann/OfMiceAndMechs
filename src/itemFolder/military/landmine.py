@@ -8,6 +8,9 @@ class LandMine(src.items.Item):
     """
 
     type = "LandMine"
+    walkable = True
+    name = "landmine"
+    isStepOnActive = True
 
     def __init__(self):
         """
@@ -15,9 +18,6 @@ class LandMine(src.items.Item):
         """
 
         super().__init__(display="_~")
-        self.walkable = True
-        self.name = "landmine"
-        self.isStepOnActive = True
 
     def doStepOnAction(self, character):
         character.addMessage("you step on a landmine")
@@ -34,7 +34,7 @@ class LandMine(src.items.Item):
 
         self.destroy()
 
-    def destroy(self, generateScrap=False):
+    def destroy(self, generateScrap=True):
         """
         destroy the item
         

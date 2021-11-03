@@ -7,6 +7,8 @@ import time
 import uuid
 import json
 import random
+import cProfile
+import collections
 
 # load internal libraries
 import src.rooms
@@ -387,41 +389,42 @@ def handleMacroReplayChar(key,char,charState,main,header,footer,urwid,flags):
                 if "norecord" in flags:
                     return
 
-                text = """
+                if src.gamestate.gamestate.mainChar == char and 1==0:
+                    text = """
 
-press key for macro to replay
+    press key for macro to replay
 
-%s
+    %s
 
-current macros:
+    current macros:
 
-""" % (
-                    charState["replay"][-1]
-                )
-
-                for macroName, value in charState["macros"].items():
-                    if not macroName.startswith(charState["replay"][-1]):
-                        continue
-
-                    compressedMacro = ""
-                    for keystroke in value:
-                        if len(keystroke) == 1:
-                            compressedMacro += keystroke
-                        else:
-                            compressedMacro += "/" + keystroke + "/"
-
-                    text += """
-%s - %s""" % (
-                        macroName,
-                        compressedMacro,
+    """ % (
+                        charState["replay"][-1]
                     )
 
-                header.set_text(
-                    (urwid.AttrSpec("default", "default"), "record macro")
-                )
-                main.set_text((urwid.AttrSpec("default", "default"), text))
-                footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                char.specialRender = True
+                    for macroName, value in charState["macros"].items():
+                        if not macroName.startswith(charState["replay"][-1]):
+                            continue
+
+                        compressedMacro = ""
+                        for keystroke in value:
+                            if len(keystroke) == 1:
+                                compressedMacro += keystroke
+                            else:
+                                compressedMacro += "/" + keystroke + "/"
+
+                        text += """
+    %s - %s""" % (
+                            macroName,
+                            compressedMacro,
+                        )
+
+                    header.set_text(
+                        (urwid.AttrSpec("default", "default"), "record macro")
+                    )
+                    main.set_text((urwid.AttrSpec("default", "default"), text))
+                    footer.set_text((urwid.AttrSpec("default", "default"), ""))
+                    char.specialRender = True
                 return
 
             if charState["replay"][-1] in charState["macros"]:
@@ -432,16 +435,12 @@ current macros:
                         "".join(charState["macros"][charState["replay"][-1]]),
                     )
                 )
-                commands = []
-                for keyPress in charState["macros"][charState["replay"][-1]]:
-                    commands.append((keyPress, ["norecord"]))
-                charState["commandKeyQueue"] = (
-                    commands + charState["commandKeyQueue"]
-                )
             else:
                 char.addMessage(
                     "no macro recorded to %s" % (charState["replay"][-1])
                 )
+
+            stitchCommands(charState)
 
             charState["replay"].pop()
         else:
@@ -461,6 +460,20 @@ current macros:
 
             charState["doNumber"] = False
             char.timeTaken -= 0.99
+
+def stitchCommands(charState):
+    """
+    commands = []
+    for keyPress in charState["macros"][charState["replay"][-1]]:
+        commands.append((keyPress, ["norecord"]))
+    charState["commandKeyQueue"] = (
+        commands + charState["commandKeyQueue"]
+    )
+    """
+    print(charState["macros"][charState["replay"][-1]])
+    for keyPress in reversed(charState["macros"][charState["replay"][-1]]):
+        charState["commandKeyQueue"].insert(0,(keyPress, ["norecord"]))
+    #commands = [('g', ['norecord']), ('g', ['norecord']), ('_', ['norecord']), ('g', ['norecord'])]
 
 def handleRecordingChar(key,char,charState,main,header,footer,urwid,flags):
     if (
@@ -528,19 +541,26 @@ type the macro name you want to record to
                 charState["macros"][charState["recordingTo"]].append(key)
     return (1,key)
 
-def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
-    char.specialRender = False
-
+def checkStaggered(char):
     if char.staggered:
         char.staggered -= 1
         char.addMessage("you are still staggered")
         return
+    return (1,)
 
-    if charState["recording"]:
-        result = handleRecordingChar(key,char,charState,main,header,footer,urwid,flags)
-        if not (result and result[0]):
-            return
-        key = result[1]
+def checkRecording(key,char,charState,main,header,footer,urwid,flags):
+    return handleRecordingChar(key,char,charState,main,header,footer,urwid,flags)
+
+def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
+    char.specialRender = False
+
+    if not checkStaggered(char):
+        return
+
+    result = checkRecording(key,char,charState,main,header,footer,urwid,flags)
+    if not (result and result[0]):
+        return
+    key = result[1]
 
     if (
         charState["submenue"]
@@ -1968,7 +1988,7 @@ select what you want to observe
         return
 
     # handle cinematics
-    if len(cinematics.cinematicQueue):
+    if src.gamestate.gamestate.mainChar == char and len(cinematics.cinematicQueue):
         if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
             char.specialRender = True
 
@@ -2285,6 +2305,7 @@ press key for the advanced interaction
         if key in ("g",):
             handleActivityKeypress(char, header, main, footer, flags)
             return
+
         if key in ("f",):
             if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                 text = """
@@ -2661,7 +2682,6 @@ class SubMenu(src.saveing.Saveable):
         self.persistentText = ""
         self.footerText = "press w / s to move selection up / down, press enter / j / k to select, press esc to exit"
         self.followUp = None
-        import collections
 
         self.options = collections.OrderedDict()
         self.niceOptions = collections.OrderedDict()
@@ -2698,8 +2718,6 @@ class SubMenu(src.saveing.Saveable):
             if state["options"] is None:
                 self.options = None
             else:
-                import collections
-
                 newOptions = collections.OrderedDict()
                 for option in state["options"]:
                     newOptions[option[0]] = option[1]
@@ -2708,8 +2726,6 @@ class SubMenu(src.saveing.Saveable):
             if state["niceOptions"] is None:
                 self.niceOptions = None
             else:
-                import collections
-
                 newNiceOptions = collections.OrderedDict()
                 for option in state["niceOptions"]:
                     newNiceOptions[option[0]] = option[1]
@@ -2753,7 +2769,6 @@ class SubMenu(src.saveing.Saveable):
         """
 
         # convert options to ordered dict
-        import collections
 
         self.options = collections.OrderedDict()
         self.niceOptions = collections.OrderedDict()
@@ -2796,8 +2811,6 @@ class SubMenu(src.saveing.Saveable):
             oldOptions = self.options
             oldNiceOptions = self.niceOptions
 
-            import collections
-
             self.options = collections.OrderedDict()
             self.niceOptions = collections.OrderedDict()
             counter = 1
@@ -2812,8 +2825,6 @@ class SubMenu(src.saveing.Saveable):
             # convert options to ordered dict
             oldOptions = self.options
             oldNiceOptions = self.niceOptions
-
-            import collections
 
             self.options = collections.OrderedDict()
             self.niceOptions = collections.OrderedDict()
@@ -4492,7 +4503,7 @@ def render(char):
 
 
 multi_currentChar = None
-multi_chars = None
+multi_chars = set()
 charindex = 0
 
 
@@ -4518,7 +4529,7 @@ def keyboardListener(key):
         for room in src.gamestate.gamestate.terrain.rooms:
             for character in room.characters[:]:
                 if character not in multi_chars:
-                    multi_chars.append(character)
+                    multi_chars.add(character)
 
     state = src.gamestate.gamestate.mainChar.macroState
 
@@ -4607,43 +4618,6 @@ def keyboardListener(key):
             macroFile.write(json.dumps(compressedMacros, indent=10, sort_keys=True))
 
     elif key == "ctrl a":
-        multi_chars = []
-        multi_chars_fastCheck = {}
-
-        for row in src.gamestate.gamestate.terrainMap:
-            for terrain in row:
-                for char in terrain.characters:
-                    if char not in multi_chars:
-                        multi_chars.append(char)
-
-                for room in terrain.rooms:
-                    for character in room.characters:
-                        if character not in multi_chars_fastCheck:
-                            multi_chars.append(character)
-                            multi_chars_fastCheck[character] = 1
-
-        for room in src.gamestate.gamestate.extraRoots:
-            for character in room.characters:
-                if character not in multi_chars_fastCheck:
-                    multi_chars.append(character)
-                    multi_chars_fastCheck[character] = 1
-
-        for char in multi_chars:
-            if char.room:
-                for other in char.room.characters:
-                    if other not in multi_chars_fastCheck:
-                        multi_chars.append(other)
-                        multi_chars_fastCheck[other] = 1
-
-        """
-        for character in src.gamestate.gamestate.terrain.characters:
-            if character not in multi_chars:
-                multi_chars.append(character)
-        for room in src.gamestate.gamestate.terrain.rooms:
-            for character in room.characters[:]:
-                if character not in multi_chars:
-                    multi_chars.append(character)
-        """
 
         toRemove = []
         for character in multi_chars:
@@ -4660,7 +4634,7 @@ def keyboardListener(key):
             charindex = 0
         if charindex < 0:
             charindex = 0
-        newChar = multi_chars[charindex]
+        newChar = list(multi_chars)[charindex]
 
         if not newChar:
             messages.append("charindex %s" % charindex)
@@ -4709,35 +4683,208 @@ def keyboardListener(key):
 lastAdvance = 0
 lastAutosave = 0
 
-def collectCharacters():
-    multi_chars = set()
+lastcheck = time.time()
+def getTcodEvents():
+    global lastcheck
 
-    for row in src.gamestate.gamestate.terrainMap:
-        for terrain in row:
-            for char in terrain.characters:
-                multi_chars.add(char)
+    events = tcod.event.get()
 
-            for room in terrain.rooms:
-                for character in room.characters:
-                    multi_chars.add(character)
+    if lastcheck < time.time()-0.05:
+        for event in events:
+            if isinstance(event,tcod.event.KeyDown):
+                key = event.sym
+                translatedKey = None
+                if key == tcod.event.KeySym.LSHIFT:
+                    continue
+                if key == tcod.event.KeySym.RETURN:
+                    translatedKey = "enter"
+                if key == tcod.event.KeySym.SPACE:
+                    translatedKey = " "
+                if key == tcod.event.KeySym.PERIOD:
+                    translatedKey = "."
+                if key == tcod.event.KeySym.HASH:
+                    translatedKey = "#"
+                if key == tcod.event.KeySym.ESCAPE:
+                    translatedKey = "esc"
+                if key == tcod.event.KeySym.N1:
+                    translatedKey = "1"
+                if key == tcod.event.KeySym.N2:
+                    translatedKey = "2"
+                if key == tcod.event.KeySym.N3:
+                    translatedKey = "3"
+                if key == tcod.event.KeySym.N4:
+                    translatedKey = "4"
+                if key == tcod.event.KeySym.N5:
+                    translatedKey = "5"
+                if key == tcod.event.KeySym.N6:
+                    translatedKey = "6"
+                if key == tcod.event.KeySym.N7:
+                    translatedKey = "7"
+                if key == tcod.event.KeySym.N8:
+                    translatedKey = "8"
+                if key == tcod.event.KeySym.N9:
+                    translatedKey = "9"
+                if key == tcod.event.KeySym.N0:
+                    translatedKey = "0"
+                if key == tcod.event.KeySym.COMMA:
+                    translatedKey = ","
+                if key == tcod.event.KeySym.MINUS:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "_"
+                    else:
+                        translatedKey = "-"
+                if key == tcod.event.KeySym.PLUS or key == tcod.event.KeySym.KP_PLUS:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "*"
+                    else:
+                        translatedKey = "+"
+                if key == tcod.event.KeySym.a:
+                    if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
+                        translatedKey = "ctrl a"
+                    elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "A"
+                    else:
+                        translatedKey = "a"
+                if key == tcod.event.KeySym.b:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "B"
+                    else:
+                        translatedKey = "b"
+                if key == tcod.event.KeySym.c:
+                    if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
+                        translatedKey = "ctrl c"
+                    elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "C"
+                    else:
+                        translatedKey = "c"
+                if key == tcod.event.KeySym.d:
+                    if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
+                        translatedKey = "ctrl d"
+                    elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "D"
+                    else:
+                        translatedKey = "d"
+                if key == tcod.event.KeySym.e:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "E"
+                    else:
+                        translatedKey = "e"
+                if key == tcod.event.KeySym.f:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "F"
+                    else:
+                        translatedKey = "f"
+                if key == tcod.event.KeySym.g:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "G"
+                    else:
+                        translatedKey = "g"
+                if key == tcod.event.KeySym.h:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "H"
+                    else:
+                        translatedKey = "h"
+                if key == tcod.event.KeySym.i:
+                    if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
+                        translatedKey = "ctrl i"
+                    elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "I"
+                    else:
+                        translatedKey = "i"
+                if key == tcod.event.KeySym.j:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "J"
+                    else:
+                        translatedKey = "j"
+                if key == tcod.event.KeySym.k:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "K"
+                    else:
+                        translatedKey = "k"
+                if key == tcod.event.KeySym.l:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "L"
+                    else:
+                        translatedKey = "l"
+                if key == tcod.event.KeySym.m:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "M"
+                    else:
+                        translatedKey = "m"
+                if key == tcod.event.KeySym.n:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "N"
+                    else:
+                        translatedKey = "n"
+                if key == tcod.event.KeySym.o:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "O"
+                    else:
+                        translatedKey = "o"
+                if key == tcod.event.KeySym.p:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "P"
+                    else:
+                        translatedKey = "p"
+                if key == tcod.event.KeySym.q:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "Q"
+                    else:
+                        translatedKey = "q"
+                if key == tcod.event.KeySym.r:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "R"
+                    else:
+                        translatedKey = "r"
+                if key == tcod.event.KeySym.s:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "S"
+                    else:
+                        translatedKey = "s"
+                if key == tcod.event.KeySym.t:
+                    if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
+                        translatedKey = "ctrl t"
+                    elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "T"
+                    else:
+                        translatedKey = "t"
+                if key == tcod.event.KeySym.u:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "U"
+                    else:
+                        translatedKey = "u"
+                if key == tcod.event.KeySym.v:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "V"
+                    else:
+                        translatedKey = "v"
+                if key == tcod.event.KeySym.w:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "W"
+                    else:
+                        translatedKey = "w"
+                if key == tcod.event.KeySym.x:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "X"
+                    else:
+                        translatedKey = "x"
+                if key == tcod.event.KeySym.y:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "Y"
+                    else:
+                        translatedKey = "y"
+                if key == tcod.event.KeySym.z:
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "Z"
+                    else:
+                        translatedKey = "Z"
 
-    for room in src.gamestate.gamestate.extraRoots:
-        for character in room.characters:
-            multi_chars.add(character)
+                if translatedKey == None:
+                    print(event)
+                    continue
 
-    """
-    for char in multi_chars:
-        if char.room:
-            for other in char.room.characters:
-                if other not in multi_chars_fastCheck:
-                    multi_chars.append(other)
-                    multi_chars_fastCheck[other] = 1
-                else:
-                    rejectCount += 1
-                    rejectCount4 += 1
-    """
-
-    return multi_chars
+                keyboardListener(translatedKey)
+                lastcheck = time.time()
 
 def gameLoop(loop, user_data=None):
     """
@@ -4775,11 +4922,12 @@ def gameLoop(loop, user_data=None):
     global multi_chars
 
     firstRun = True
+    lastcheck = time.time()
+
     while not loop or firstRun:
 
-        import cProfile
-        profiler = cProfile.Profile()
-        profiler.enable()
+        #profiler = cProfile.Profile()
+        #profiler.enable()
 
         startTime = time.time()
         origTick = src.gamestate.gamestate.tick
@@ -4792,9 +4940,6 @@ def gameLoop(loop, user_data=None):
                 lastAutosave = src.gamestate.gamestate.tick
 
             firstRun = False
-
-            multi_chars = []
-            multi_chars_fastCheck = {}
 
             # transform and store the keystrokes that accumulated in pygame
             if useTiles:
@@ -4830,204 +4975,7 @@ def gameLoop(loop, user_data=None):
                     keyboardListener(key)
 
             if tcod:
-                events = tcod.event.get()
-
-                for event in events:
-                    if isinstance(event,tcod.event.KeyDown):
-                        key = event.sym
-                        translatedKey = None
-                        if key == tcod.event.KeySym.LSHIFT:
-                            continue
-                        if key == tcod.event.KeySym.RETURN:
-                            translatedKey = "enter"
-                        if key == tcod.event.KeySym.SPACE:
-                            translatedKey = " "
-                        if key == tcod.event.KeySym.PERIOD:
-                            translatedKey = "."
-                        if key == tcod.event.KeySym.HASH:
-                            translatedKey = "#"
-                        if key == tcod.event.KeySym.ESCAPE:
-                            translatedKey = "esc"
-                        if key == tcod.event.KeySym.N1:
-                            translatedKey = "1"
-                        if key == tcod.event.KeySym.N2:
-                            translatedKey = "2"
-                        if key == tcod.event.KeySym.N3:
-                            translatedKey = "3"
-                        if key == tcod.event.KeySym.N4:
-                            translatedKey = "4"
-                        if key == tcod.event.KeySym.N5:
-                            translatedKey = "5"
-                        if key == tcod.event.KeySym.N6:
-                            translatedKey = "6"
-                        if key == tcod.event.KeySym.N7:
-                            translatedKey = "7"
-                        if key == tcod.event.KeySym.N8:
-                            translatedKey = "8"
-                        if key == tcod.event.KeySym.N9:
-                            translatedKey = "9"
-                        if key == tcod.event.KeySym.N0:
-                            translatedKey = "0"
-                        if key == tcod.event.KeySym.COMMA:
-                            translatedKey = ","
-                        if key == tcod.event.KeySym.MINUS:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "_"
-                            else:
-                                translatedKey = "-"
-                        if key == tcod.event.KeySym.PLUS or key == tcod.event.KeySym.KP_PLUS:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "*"
-                            else:
-                                translatedKey = "+"
-                        if key == tcod.event.KeySym.a:
-                            if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
-                                translatedKey = "ctrl a"
-                            elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "A"
-                            else:
-                                translatedKey = "a"
-                        if key == tcod.event.KeySym.b:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "B"
-                            else:
-                                translatedKey = "b"
-                        if key == tcod.event.KeySym.c:
-                            if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
-                                translatedKey = "ctrl c"
-                            elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "C"
-                            else:
-                                translatedKey = "c"
-                        if key == tcod.event.KeySym.d:
-                            if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
-                                translatedKey = "ctrl d"
-                            elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "D"
-                            else:
-                                translatedKey = "d"
-                        if key == tcod.event.KeySym.e:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "E"
-                            else:
-                                translatedKey = "e"
-                        if key == tcod.event.KeySym.f:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "F"
-                            else:
-                                translatedKey = "f"
-                        if key == tcod.event.KeySym.g:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "G"
-                            else:
-                                translatedKey = "g"
-                        if key == tcod.event.KeySym.h:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "H"
-                            else:
-                                translatedKey = "h"
-                        if key == tcod.event.KeySym.i:
-                            if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
-                                translatedKey = "ctrl i"
-                            elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "I"
-                            else:
-                                translatedKey = "i"
-                        if key == tcod.event.KeySym.j:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "J"
-                            else:
-                                translatedKey = "j"
-                        if key == tcod.event.KeySym.k:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "K"
-                            else:
-                                translatedKey = "k"
-                        if key == tcod.event.KeySym.l:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "L"
-                            else:
-                                translatedKey = "l"
-                        if key == tcod.event.KeySym.m:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "M"
-                            else:
-                                translatedKey = "m"
-                        if key == tcod.event.KeySym.n:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "N"
-                            else:
-                                translatedKey = "n"
-                        if key == tcod.event.KeySym.o:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "O"
-                            else:
-                                translatedKey = "o"
-                        if key == tcod.event.KeySym.p:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "P"
-                            else:
-                                translatedKey = "p"
-                        if key == tcod.event.KeySym.q:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "Q"
-                            else:
-                                translatedKey = "q"
-                        if key == tcod.event.KeySym.r:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "R"
-                            else:
-                                translatedKey = "r"
-                        if key == tcod.event.KeySym.s:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "S"
-                            else:
-                                translatedKey = "s"
-                        if key == tcod.event.KeySym.t:
-                            if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
-                                translatedKey = "ctrl t"
-                            elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "T"
-                            else:
-                                translatedKey = "t"
-                        if key == tcod.event.KeySym.u:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "U"
-                            else:
-                                translatedKey = "u"
-                        if key == tcod.event.KeySym.v:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "V"
-                            else:
-                                translatedKey = "v"
-                        if key == tcod.event.KeySym.w:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "W"
-                            else:
-                                translatedKey = "w"
-                        if key == tcod.event.KeySym.x:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "X"
-                            else:
-                                translatedKey = "x"
-                        if key == tcod.event.KeySym.y:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "Y"
-                            else:
-                                translatedKey = "y"
-                        if key == tcod.event.KeySym.z:
-                            if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                                translatedKey = "Z"
-                            else:
-                                translatedKey = "Z"
-
-                        if translatedKey == None:
-                            print(event)
-                            continue
-
-                        keyboardListener(translatedKey)
-
-            multi_chars = collectCharacters()
+                getTcodEvents()
 
             global continousOperation
             if (
@@ -5044,6 +4992,8 @@ def gameLoop(loop, user_data=None):
                     if char.dead and not char == src.gamestate.gamestate.mainChar:
                         removeChars.append(char)
                     if char.stasis:
+                        continue
+                    if char.disabled:
                         continue
 
                     if (
@@ -5083,7 +5033,7 @@ def gameLoop(loop, user_data=None):
                                 processInput(
                                         (char.doHuntKill(),["norecord"]),
                                         charState=state, noAdvanceGame=True, char=char)
-                            elif char.hasOwnAction:
+                            elif char.hasOwnAction > 0:
                                 processInput(
                                         (char.getOwnAction(),["norecord"]),
                                         charState=state, noAdvanceGame=True, char=char)
@@ -5249,11 +5199,11 @@ def gameLoop(loop, user_data=None):
                         tcodContext.present(tcodConsole)
                         tcodConsole.print(x=0,y=59,string=stringifyUrwid(footer.get_text()))
 
-        endTime = time.time()
-        if endTime-startTime > 0.2:
-            print("tick time %s for %s"%(endTime-startTime,origTick,))
+        #endTime = time.time()
+        #if endTime-startTime > 0.1:
+        #    print("tick time %s for %s"%(endTime-startTime,origTick,))
 
-        profiler.dump_stats("tmpFolder/tick%s"%(origTick,))
+        #profiler.dump_stats("tmpFolder/tick%s"%(origTick,))
         
         #if time.time()-startTime < 0.02:
         #    time.sleep(0.2-(time.time()-startTime))

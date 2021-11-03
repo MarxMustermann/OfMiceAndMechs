@@ -8,6 +8,13 @@ class Mortar(src.items.Item):
 
     type = "Mortar"
     attributesToStore = []
+    name = "mortar"
+    description = "allow to deliver exlosives over a distance"
+
+    bolted = False
+    loaded = False
+    loadedWith = None
+    precision = 5
 
     def __init__(self):
         """
@@ -15,13 +22,6 @@ class Mortar(src.items.Item):
         """
 
         super().__init__(display=src.canvas.displayChars.mortar)
-        self.name = "mortar"
-        self.description = "allow to deliver exlosives over a distance"
-
-        self.bolted = False
-        self.loaded = False
-        self.loadedWith = None
-        self.precision = 5
 
         if not self.attributesToStore:
             self.attributesToStore.extend(super().attributesToStore)

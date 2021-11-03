@@ -8,6 +8,16 @@ class Bomb(src.items.Item):
     """
 
     type = "Bomb"
+    name = "bomb"
+    description = "designed to explode"
+    usageInfo = """
+The explosion will damage/destroy everything on the current tile or the container.
+
+Activate it to trigger a exlosion.
+"""
+
+    bolted = False
+    walkable = True
 
     def __init__(self):
         """
@@ -15,17 +25,6 @@ class Bomb(src.items.Item):
         """
 
         super().__init__(display=src.canvas.displayChars.bomb)
-
-        self.name = "bomb"
-        self.description = "designed to explode"
-        self.usageInfo = """
-The explosion will damage/destroy everything on the current tile or the container.
-
-Activate it to trigger a exlosion.
-"""
-
-        self.bolted = False
-        self.walkable = True
 
     def apply(self, character):
         """

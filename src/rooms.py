@@ -902,7 +902,7 @@ class Room(src.saveing.Saveable):
         if 1 == 1:
             self.lastRender = None
 
-    def addCharacter(self, character, x, y):
+    def addCharacter(self, character, x, y, noRegister=False):
         """
         teleport character into the room
 
@@ -918,6 +918,8 @@ class Room(src.saveing.Saveable):
         character.yPosition = y
         character.path = []
         self.changed("entered room", character)
+        if not noRegister:
+            src.interaction.multi_chars.add(character)
 
     def removeCharacter(self, character):
         """

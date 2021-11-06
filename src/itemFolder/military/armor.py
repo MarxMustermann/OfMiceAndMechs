@@ -31,6 +31,8 @@ class Armor(src.items.Item):
 
         if damageType == self.damageType:
             return self.armorValue
+        if damageType == "explosion":
+            return self.armorValue*5
         return 0
 
     def getLongInfo(self):

@@ -616,6 +616,7 @@ class BackToTheRoots(BasicPhase):
 
         # add basic set of abilities in openworld phase
         npc.questsDone = [
+            "ObtainSpecialItem",
         ]
 
         npc.solvers = [
@@ -660,6 +661,27 @@ class BackToTheRoots(BasicPhase):
 
         mainChar = src.gamestate.gamestate.mainChar
 
+        # build cities
+        self.citylocations.append((7,7))
+        numCities = 0
+        while numCities < 4:
+            pos = (random.randint(3,11),random.randint(3,11))
+
+            foundEnemyCity = None
+            for cityPos in self.citylocations:
+                if abs(pos[0]-cityPos[0])+abs(pos[1]-cityPos[1]) > 4:
+                    continue
+                foundEnemyCity = cityPos
+                break
+
+            if foundEnemyCity:
+                continue
+
+            print("city at %s"%(pos,))
+            self.citylocations.append(pos)
+            numCities += 1
+        self.citylocations.remove((7,7))
+
         # add random items
         y = 0
         for row in src.gamestate.gamestate.terrainMap[:]:
@@ -667,6 +689,9 @@ class BackToTheRoots(BasicPhase):
             x = 0
             for terrain in row[:]:
                 x += 1
+
+                if not (y == 8 and x == 8):
+                    continue
                 """
                 if random.choice([True,False]) or 1==1:
                     terrain = src.terrains.Desert()
@@ -678,40 +703,39 @@ class BackToTheRoots(BasicPhase):
                 items = []
                 molds = []
                 landmines = []
-                for i in range(0,random.randint(1,10)):
+                for i in range(0,random.randint(1,100)):
                     item = src.items.itemMap["MetalBars"]()
                     items.append(item)
-                for i in range(0,random.randint(1,10)):
+                for i in range(0,random.randint(1,100)):
                     item = src.items.itemMap["Rod"]()
                     if item.baseDamage > 10:
                         item.baseDamage = random.randint(7,10)
                     items.append(item)
-                for i in range(0,random.randint(1,3)):
+                for i in range(0,random.randint(1,30)):
                     item = src.items.itemMap["Armor"]()
                     if item.armorValue > 3:
                         item.armorValue = random.randint(1,3)
                     items.append(item)
-                for i in range(0,random.randint(1,3)):
+                for i in range(0,random.randint(1,30)):
                     item = src.items.itemMap["GooFlask"]()
                     item.uses = random.randint(1,3)
                     items.append(item)
-                for i in range(0,random.randint(1,20)):
+                for i in range(0,random.randint(1,200)):
                     item = src.items.itemMap["FireCrystals"]()
                     items.append(item)
-                for i in range(0,random.randint(1,150)):
+                for i in range(0,random.randint(1,1500)):
                     item = src.items.itemMap["LandMine"]()
                     items.append(item)
                     landmines.append(item)
-                for i in range(0,random.randint(1,300)):
+                for i in range(0,random.randint(1,200)):
                     item = src.items.itemMap["Bolt"]()
                     items.append(item)
                     landmines.append(item)
-                if random.choice([True,False,False,False,False,False]):
-                    for i in range(0,random.randint(1,20)):
-                        item = src.items.itemMap["Mold"]()
-                        items.append(item)
-                        molds.append(item)
-                
+                for i in range(0,random.randint(1,2000)):
+                    item = src.items.itemMap["Mold"]()
+                    items.append(item)
+                    molds.append(item)
+            
                 terrain.randomAddItems(items)
                 for mold in molds:
                     mold.spawn()
@@ -725,36 +749,26 @@ class BackToTheRoots(BasicPhase):
                 
                 #for i in range(0,random.randint(1,20)):
                 #for i in range(0,200):
-                for i in range(0,20):
-                    xPos = int(random.random()*13)*15+7
-                    yPos = int(random.random()*13)*15+7
-                    if xPos//15 == 7 or yPos//15 == 7:
+                for i in range(0,40):
+                    xPos = int(random.random()*13+1)*15+7
+                    yPos = int(random.random()*13+1)*15+7
+                    if (xPos//15,yPos//15) in self.citylocations:
                         continue
                     enemy = src.characters.Monster(xPos,yPos)
-                    enemy.health = 10 + random.randint(1, 100)
+                    enemy.health = 100 + random.randint(1, 1000)
                     enemy.baseDamage = random.randint(1, 10)
                     enemy.godMode = True
                     enemy.aggro = 1000000
                     enemy.macroState["macros"]["g"] = ["g","g","_","g"]
                     enemy.runCommandString("_g")
-                    enemy.disabled = True
+                    #enemy.disabled = True
                     terrain.addCharacter(enemy, xPos, yPos)
-
-        # build cities
-        numCities = 0
-        while numCities < 15:
-            pos = (random.randint(1,13),random.randint(1,13))
-
-            if not pos in self.citylocations:
-                print("city at %s"%(pos,))
-                self.citylocations.append(pos)
-                numCities += 1
 
         placedMainChar = False
 
         cityCounter = 1
         for citylocation in self.citylocations:
-            currentTerrain = src.gamestate.gamestate.terrainMap[citylocation[1]][citylocation[0]]
+            currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
             
             scrapCompactor = src.items.itemMap["ScrapCompactor"]()
             currentTerrain.addItem(scrapCompactor,(107, 92, 0))
@@ -768,7 +782,7 @@ class BackToTheRoots(BasicPhase):
 
             mainRoom = architect.doAddRoom(
                 {
-                    "coordinate": (7,7),
+                    "coordinate": citylocation,
                     "roomType": "EmptyRoom",
                     "doors": "0,6 6,0 12,6 6,12",
                     "offset": [1,1],
@@ -837,7 +851,7 @@ class BackToTheRoots(BasicPhase):
                         if k in (0,1,):
                             spawnWeapon = True
 
-                        worker = self.genNPC(cityCounter,citylocation,flaskUses=(2-k)*10+50,spawnWeapon=spawnWeapon,spawnArmor=spawnArmor)
+                        worker = self.genNPC(cityCounter,citylocation,flaskUses=(2-k),spawnWeapon=spawnWeapon,spawnArmor=spawnArmor)
                         mainRoom.addCharacter(worker,3+i*3+j,7+k)
                         subsubleader.subordinates.append(worker)
 
@@ -858,6 +872,22 @@ class BackToTheRoots(BasicPhase):
             self.scoreTracker[citylocation] = 0
 
             cityCounter += 1
+
+            for offset in [(0,0),(0,1),(1,0),(-1,0),(0,-1)]:
+                xPos = (mainRoom.xPosition+offset[0])*15+7
+                yPos = (mainRoom.yPosition+offset[1])*15+7
+                if (xPos//15,yPos//15) in self.citylocations:
+                    continue
+                enemy = src.characters.Guardian(xPos,yPos)
+                enemy.health = 1500
+                enemy.baseDamage = 100 + random.randint(1, 10)
+                enemy.godMode = True
+                enemy.aggro = 1000000
+                enemy.macroState["macros"]["g"] = ["g","g","_","g"]
+                enemy.runCommandString("_g")
+                enemy.faction = leader.faction
+                #enemy.disabled = True
+                currentTerrain.addCharacter(enemy, xPos, yPos)
 
         src.gamestate.gamestate.mainChar.runCommandString("~", clear=True)
         src.gamestate.gamestate.mainChar.personality["autoFlee"] = False
@@ -881,10 +911,10 @@ class BackToTheRoots(BasicPhase):
         for cityLocation in self.citylocations:
             print("handling city #%s %s"%(self.cityIds[cityLocation],cityLocation,))
 
-            terrain = src.gamestate.gamestate.terrainMap[cityLocation[1]][cityLocation[0]]
+            terrain = src.gamestate.gamestate.terrainMap[7][7]
             foundRoom = None
             for room in terrain.rooms:
-                if room.xPosition == 7 and room.yPosition == 7:
+                if room.xPosition == cityLocation[0] and room.yPosition == cityLocation[1]:
                     foundRoom = room
 
             if foundRoom:
@@ -931,9 +961,15 @@ class BackToTheRoots(BasicPhase):
             print("city at %s has items %s "%(cityLocation,hasItemMap[cityLocation],))
 
         for cityLocation in self.citylocations:
-            numNpcs = len(hasItemMap[cityLocation])
+            numNpcs = len(hasItemMap[cityLocation])*5
             currentTerrain = src.gamestate.gamestate.terrainMap[cityLocation[1]][cityLocation[0]]
-            mainRoom = currentTerrain.rooms[0]
+
+            foundRoom = None
+            for room in terrain.rooms:
+                if room.xPosition == cityLocation[0] and room.yPosition == cityLocation[1]:
+                    foundRoom = room
+
+            mainRoom = foundRoom
 
             for item in mainRoom.itemsOnFloor[:]:
                 if not item.type == "Corpse":
@@ -946,6 +982,9 @@ class BackToTheRoots(BasicPhase):
             if cityLeader.dead:
                 print("leader dead")
                 continue
+        
+            if cityLeader.faction == src.gamestate.gamestate.mainChar.faction:
+                showText("a new epoch begins")
 
             for i in range(0,numNpcs):
                 newNPC = self.genNPC(self.cityIds[cityLocation],cityLocation)
@@ -979,7 +1018,15 @@ class BackToTheRoots(BasicPhase):
                     newNPC.addMessage("added as replacement 2nd tier officer")
                     continue
 
-                selectedSubLeader = random.choice(cityLeader.subordinates)
+                if random.choice((True,True,False,)):
+                    selectedSubLeader = random.choice(cityLeader.subordinates)
+                else:
+                    maxReputation = 0
+                    for char in cityLeader.subordinates:
+                        if char.reputation >= maxReputation:
+                            selectedSubLeader = char
+                            maxReputation = char.reputation
+
                 counter = cityLeader.subordinates.index(selectedSubLeader)
                 print("subleader index %s"%(counter,))
 
@@ -1011,7 +1058,15 @@ class BackToTheRoots(BasicPhase):
                     newNPC.addMessage("added as replacement 2nd tier officer")
                     continue
 
-                selectedSubsubLeader = random.choice(selectedSubLeader.subordinates)
+                if random.choice((True,True,False,)):
+                    selectedSubsubLeader = random.choice(selectedSubLeader.subordinates)
+                else:
+                    maxReputation = 0
+                    for char in selectedSubLeader.subordinates:
+                        if char.reputation >= maxReputation:
+                            selectedSubsubLeader = char
+                            maxReputation = char.reputation
+
                 counter2 = selectedSubLeader.subordinates.index(selectedSubsubLeader)
                 print("subsubleader index %s"%(counter2,))
 
@@ -1045,6 +1100,7 @@ class BackToTheRoots(BasicPhase):
 
                 print("full tree adding machine")
                 placedItem = False
+                offset = (1,1)
                 for y in (92,94,96,98,100,102):
                     for x in (107,109,111,113,115,117):
                         if currentTerrain.getItemByPosition((x,y,0)):
@@ -1086,7 +1142,11 @@ class BackToTheRoots(BasicPhase):
                     print("no subordinate to promote")
                     continue
 
-                subLeader = random.choice(candidates)
+                maxReputation = 0
+                for char in candidates:
+                    if char.reputation >= maxReputation:
+                        subLeader = char
+                        maxReputation = char.reputation
 
                 serveQuest = subLeader.quests[0]
                 subLeader.quests.remove(serveQuest)
@@ -1120,7 +1180,11 @@ class BackToTheRoots(BasicPhase):
                     print("no subsubordinate to promote")
                     continue
 
-                subsubLeader = random.choice(candidates)
+                maxReputation = 0
+                for char in candidates:
+                    if char.reputation >= maxReputation:
+                        subsubLeader = char
+                        maxReputation = char.reputation
 
                 subsubLeader.runCommandString("w")
                 subsubLeader.rank = 4
@@ -1148,7 +1212,11 @@ class BackToTheRoots(BasicPhase):
                     continue
                 print("promoting worker")
 
-                worker = random.choice(candidates)
+                maxReputation = 0
+                for char in candidates:
+                    if char.reputation >= maxReputation:
+                        worker = char
+                        maxReputation = char.reputation
 
                 worker.runCommandString("w"*(worker.yPosition-5))
                 worker.rank = 5
@@ -1173,10 +1241,10 @@ class BackToTheRoots(BasicPhase):
         print("fetch map:")
         for cityLocation in self.citylocations:
             print("city at %s needs item #%s from %s"%(cityLocation,toFetchMap[cityLocation],specialItemPositions[toFetchMap[cityLocation]]))
-            self.leaderQuests[cityLocation].setPriorityObtain(toFetchMap[cityLocation],specialItemPositions[toFetchMap[cityLocation]])
+            self.leaderQuests[cityLocation].setPriorityObtain(toFetchMap[cityLocation],specialItemPositions[toFetchMap[cityLocation]],epochLength=1000)
 
         print("schedule next epoch")
-        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 10000)
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1000)
         event.setCallback({"container": self, "method": "endEpoch"})
         terrain.addEvent(event)
 

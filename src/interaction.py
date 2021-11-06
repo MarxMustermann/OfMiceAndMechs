@@ -318,7 +318,8 @@ def moveCharacter(direction,char,noAdvanceGame,header,urwid):
 
 def tumble(char,charState):
     if charState["itemMarkedLast"] and char.personality["avoidItems"]:
-        char.runCommandString(random.choice(("a","w","s","d",)))
+        char.runCommandString("k"+random.choice(("a","w","s","d",)))
+        return
 
 def handleActivityKeypress(char, header, main, footer, flags):
     if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
@@ -3603,6 +3604,27 @@ class CharacterInfoMenu(SubMenu):
         main.set_text((urwid.AttrSpec("default", "default"), [text]))
         header.set_text((urwid.AttrSpec("default", "default"), ""))
 
+class CreateQuestMenu(SubMenu):
+    type = "CreateQuestMenu"
+
+    def __init__(self, questType):
+        self.questParams = {}
+        self.questType = questType
+        print("init CreateQuestMenu")
+        super().__init__()
+
+    def handleKey(self, key, noRender=False):
+        # exit submenu
+        if key == "esc":
+            return True
+
+        print("render submenu")
+        # start rendering
+        header.set_text((urwid.AttrSpec("default", "default"), "\ncreate Quest\n"))
+        # show rendered text via urwid
+        main.set_text((urwid.AttrSpec("default", "default"), "--------- %s ---------"%(self.questType,)))
+        return False
+
 class AdvancedQuestMenu(SubMenu):
     """
     player interaction for delegating a quest
@@ -3791,6 +3813,9 @@ class AdvancedQuestMenu(SubMenu):
                         self.lockOptions = True
                     else:
                         return False
+            elif self.quest.hasParams:
+                src.gamestate.gamestate.mainChar.macroState["submenue"] = CreateQuestMenu(self.quest)
+                return False
             else:
                 # skip parameter selection
                 self.state = "confirm"

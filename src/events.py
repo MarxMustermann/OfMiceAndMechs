@@ -174,7 +174,6 @@ class ShowCinematicEvent(Event):
         src.cinematics.cinematicQueue.append(self.cinematic)
         src.interaction.loop.set_alarm_in(0.0, src.interaction.callShow_or_exit, "~")
 
-# obsolete: only used in old story mode
 # bad code: doesn't at all do what it promises to do
 class EndQuestEvent(Event):
     """
@@ -183,6 +182,7 @@ class EndQuestEvent(Event):
     """
 
     callbacksToStore = []
+    type = "EndQuestEvent"
 
     def __init__(self, tick, callback=None):
         """
@@ -194,7 +194,6 @@ class EndQuestEvent(Event):
         """
 
         super().__init__(tick)
-        self.type = "EndQuestEvent"
         self.callback = callback
 
         # set meta information for saving

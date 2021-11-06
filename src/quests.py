@@ -194,6 +194,7 @@ class Quest(src.saveing.Saveable):
     type = "Quest"
     attributesToStore = []
     objectsToStore = []
+    hasParams = False
 
     def __init__(
         self,
@@ -250,6 +251,9 @@ class Quest(src.saveing.Saveable):
         # set id
         self.id = str(random.random())+str(time.time())
         self.reroll()
+
+    def getRequiredParameters(self):
+        return []
     
     def reroll(self):
         self.randomSeed = random.random()
@@ -332,6 +336,9 @@ class Quest(src.saveing.Saveable):
             self.reputationReward *= -2
         self.postHandler()
 
+    def handleTimeOut(self):
+        self.fail()
+
     """
     get the quests description
     bad code: colored and asList are somewhat out of place
@@ -359,7 +366,16 @@ class Quest(src.saveing.Saveable):
                     )
                 return [[(urwid.AttrSpec(color, "default"), description), "\n"]]
             else:
-                return [[self.description, "\n"]]
+                description = self.description
+                if self.lifetimeEvent:
+                    description += (
+                        " ("
+                        + str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick)
+                        + " / "
+                        + str(self.lifetime)
+                        + ")"
+                    )
+                return [[description, "\n"]]
         else:
             return self.description
 
@@ -378,7 +394,7 @@ class Quest(src.saveing.Saveable):
         # smooth over impossible state
         if not self.character:
             src.interaction.debugMessages.append(
-                "this should not happen (posthandler called on quest without character ("
+                "this should not happen (postHandler called on quest without character ("
                 + str(self)
                 + ")) "
                 + str(self.character)
@@ -401,7 +417,7 @@ class Quest(src.saveing.Saveable):
         # smooth over impossible state
         if self.completed:
             src.interaction.debugMessages.append(
-                "this should not happen (posthandler called on completed quest ("
+                "this should not happen (postHandler called on completed quest ("
                 + str(self)
                 + ")) "
                 + str(self.character)
@@ -616,6 +632,35 @@ class StandAttention(Quest):
         character.runCommandString(".30.")
         return False
 
+class GatherItems(Quest):
+
+    """
+    state initialization
+    """
+
+    def __init__(self, description="gather items", creator=None, lifetime=None):
+        questList = []
+        super().__init__(questList, creator=creator, lifetime=lifetime)
+        self.description = description
+
+        # save initial state and register
+        self.type = "GatherItems"
+
+    def triggerCompletionCheck(self):
+        return
+
+    def timeOut(self):
+        self.postHandler()
+
+    def solver(self, character):
+        if len(character.inventory) > 1:
+            character.inventory.pop()
+            print(character)
+            character.awardReputation(amount=1,reason="gathering item",carryOver=True)
+            return False
+        character.runCommandString(".30.")
+        return False
+
 class ObtainAllSpecialItems(Quest):
 
     """
@@ -631,6 +676,7 @@ class ObtainAllSpecialItems(Quest):
         self.priorityObtainLocation = None
         self.didDelegate = False
         self.resetDelegations = False
+        self.epochLength = None
 
         # save initial state and register
         self.type = "ObtainAllSpecialItems"
@@ -639,11 +685,13 @@ class ObtainAllSpecialItems(Quest):
     never complete
     """
 
-    def setPriorityObtain(self, itemID, itemLocation):
+    def setPriorityObtain(self, itemID, itemLocation, epochLength=None):
         if self.didDelegate:
             self.resetDelegations = True
             
         self.priorityObtainID = itemID
+        if epochLength:
+            self.epochLength = epochLength
         self.priorityObtainLocation = itemLocation
         self.description = "obtain all special items, especially #%s from %s"%(itemID,itemLocation)
         self.didDelegate = False
@@ -667,7 +715,10 @@ class ObtainAllSpecialItems(Quest):
         for npc in character.subordinates:
 
             if npc.quests:
-                quest = ObtainSpecialItem()
+                lifetime = None
+                if self.epochLength:
+                    lifetime=self.epochLength-100
+                quest = ObtainSpecialItem(lifetime=lifetime)
                 quest.setToObtain(self.priorityObtainID,self.priorityObtainLocation)
 
                 serveQuest = npc.quests[0]
@@ -821,15 +872,13 @@ class MetaQuestSequence(Quest):
     @property
     def description(self):
         # add name of the actual quest
-        out = self.metaDescription + ":\n"
+        out = self.metaDescription
         if self.lifetimeEvent:
             out += (
-                " ("
-                + str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick)
-                + " / "
-                + str(self.lifetime)
-                + ")"
+                " (%s/%s)"%(str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick),str(self.lifetime))
             )
+        out += ":\n"
+
         for quest in self.subQuests:
             # add quests
             if quest.active:
@@ -862,23 +911,21 @@ class MetaQuestSequence(Quest):
                                 self.metaDescription + ":",
                             )
                         ],
-                        "\n",
                     ]
                 ]
             else:
-                out = [[self.metaDescription + ":", "\n"]]
+                out = [[self.metaDescription + ":"]]
         else:
-            out = self.metaDescription + ":\n"
+            out = self.metaDescription + ":"
 
         # add remaining time
         if self.lifetimeEvent:
-            out += (
-                " ("
-                + str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick)
-                + " / "
-                + str(self.lifetime)
-                + ")"
-            )
+            out += " (%s/%s)"%(self.lifetimeEvent.tick - src.gamestate.gamestate.tick, self.lifetime)
+
+        if asList:
+            out.append("\n")
+        else:
+            out += ":\n"
 
         # add quests
         for quest in self.subQuests:
@@ -1334,7 +1381,6 @@ class MetaQuestParralel(Quest):
     """
 
     def recalculate(self):
-        return
 
         # remove completed sub quests
         for quest in self.subQuests:
@@ -1606,7 +1652,7 @@ class NaiveEnterRoomQuest(Quest):
         # smooth over impossible state
         if not self.character.room:
             src.interaction.debugMessages.append(
-                "posthandler called without beeing in a room"
+                "postHandler called without beeing in a room"
             )
             return
 
@@ -4921,7 +4967,7 @@ class Serve(MetaQuestParralel):
 
     def solver(self,character):
         if not hasattr(character,"superior") or not character.superior or character.superior.dead:
-            character.die()
+            character.die(reason="superior died")
             return
         super().solver(character)
 
@@ -4962,7 +5008,7 @@ class DeliverSpecialItem(Quest):
         if foundItemSlot.hasItem:
             if self.hadItem:
                 if not self.gaveReward:
-                    character.reputation += 1
+                    character.reputation += 1000
                     self.gaveReward = True
                 self.postHandler()
             else:
@@ -5029,9 +5075,14 @@ class GoHome(Quest):
     def triggerCompletionCheck(self, character=None):
         if not character:
             return
+        if not self.cityLocation:
+            return
 
         if isinstance(character.container, src.rooms.Room):
-            if (character.container.terrain.xPosition == self.cityLocation[0] and character.container.terrain.yPosition == self.cityLocation[1]):
+            if not (character.container.terrain.xPosition == 7 and character.container.terrain.yPosition == 7):
+                return
+            if (character.container.xPosition == self.cityLocation[0] and character.container.yPosition == self.cityLocation[1]):
+                character.reputation += 1
                 self.postHandler()
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
@@ -5088,35 +5139,28 @@ class GoHome(Quest):
                 characterTerrainPos = (character.container.xPosition,character.container.yPosition)
 
                 if character.xPosition%15 < 7:
-                    return ".d"*(7-character.xPosition%15)
+                    return "d"*(7-character.xPosition%15)
                 if character.xPosition%15 > 7:
-                    return ".a"*(character.xPosition%15-7)
+                    return "a"*(character.xPosition%15-7)
                 if character.yPosition%15 < 7:
-                    return ".s"*(7-character.yPosition%15)
+                    return "s"*(7-character.yPosition%15)
                 if character.yPosition%15 > 7:
-                    return ".w"*(character.yPosition%15-7)
+                    return "w"*(character.yPosition%15-7)
 
-                directions = ["gg"]
-                if characterTerrainPos[0] > self.cityLocation[0]:
-                    directions.extend(["a"]*(characterTerrainPos[0]-self.cityLocation[0]))
-                if characterTerrainPos[0] < self.cityLocation[0]:
-                    directions.extend(["d"]*(self.cityLocation[0]-characterTerrainPos[0]))
-                if characterTerrainPos[1] > self.cityLocation[1]:
-                    directions.extend(["w"]*(characterTerrainPos[1]-self.cityLocation[1]))
-                if characterTerrainPos[1] < self.cityLocation[1]:
-                    directions.extend(["s"]*(self.cityLocation[1]-characterTerrainPos[1]))
-                if characterTerrainPos[1] == self.cityLocation[1] and characterTerrainPos[0] == self.cityLocation[0]:
-                    directions = ["gg"]
-                    if character.xPosition//15 < 7:
-                        directions.extend(["d"]*(7-character.xPosition//15))
-                    if character.xPosition//15 > 7:
-                        directions.extend(["a"]*(character.xPosition//15-7))
-                    if character.yPosition//15 < 7:
-                        directions.extend(["s"]*(7-character.yPosition//15))
-                    if character.yPosition//15 > 7:
-                        directions.extend(["w"]*(character.yPosition//15-7))
+                directions = []
+                if character.xPosition//15 > self.cityLocation[0]:
+                    directions.extend(["a"]*(character.xPosition//15-self.cityLocation[0]))
+                if character.xPosition//15 < self.cityLocation[0]:
+                    directions.extend(["d"]*(self.cityLocation[0]-character.xPosition//15))
+                if character.yPosition//15 > self.cityLocation[1]:
+                    directions.extend(["w"]*(character.yPosition//15-self.cityLocation[1]))
+                if character.yPosition//15 < self.cityLocation[1]:
+                    directions.extend(["s"]*(self.cityLocation[1]-character.yPosition//15))
 
-                return ".13"+localRandom.choice(directions)
+                if not directions:
+                    return None
+                direction = localRandom.choice(directions)
+                return ".13"+direction+".gg."
             else:
                 return True
 
@@ -5203,14 +5247,25 @@ class EnterEnemyCity(Quest):
         self.cityLocation = None
         self.hasListener = False
         self.centerFailCounter = 0
+        self.rewardedNearby = False
 
     def triggerCompletionCheck(self, character=None, direction=None):
         if not character:
             return
+        if not self.cityLocation:
+            return
 
         if isinstance(character.container, src.rooms.Room):
-            if (character.container.terrain.xPosition == self.cityLocation[0] and character.container.terrain.yPosition == self.cityLocation[1]):
+            #if (character.container.terrain.xPosition == self.cityLocation[0] and character.container.terrain.yPosition == self.cityLocation[1]):
+            if not (character.container.terrain.xPosition == 7 and character.container.terrain.yPosition == 7):
+                return
+            if (character.container.xPosition == self.cityLocation[0] and character.container.yPosition == self.cityLocation[1]):
                 self.postHandler()
+        else:
+            if not self.rewardedNearby and abs(character.xPosition//15-self.cityLocation[0])+abs(character.yPosition//15-self.cityLocation[1]) == 1:
+                character.awardReputation(amount=20, reason="getting near the enemy city")
+                self.rewardedNearby = True
+
         return
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
@@ -5237,7 +5292,9 @@ class EnterEnemyCity(Quest):
             if not character.container.terrain:
                 return None
 
-            if not (character.container.terrain.xPosition == self.cityLocation[0] and character.container.terrain.yPosition == self.cityLocation[1]):
+            #if not (character.container.terrain.xPosition == self.cityLocation[0] and character.container.terrain.yPosition == self.cityLocation[1]):
+            if (not (character.container.terrain.xPosition == 7 and character.container.terrain.yPosition == 7) or 
+                not (character.container.xPosition == self.cityLocation[0] and character.container.yPosition == self.cityLocation[1])):
                 if not (character.xPosition == 6 and character.yPosition == 6):
                     if character.xPosition%15 < 6:
                         return "d"*(6-character.xPosition)
@@ -5289,31 +5346,24 @@ class EnterEnemyCity(Quest):
                         return "20"+random.choice(("a","w","s","d",))
                 self.centerFailCounter = 0
 
-                directions = ["gg"]
-                if characterTerrainPos[0] > self.cityLocation[0]:
-                    directions.extend(["a"]*(characterTerrainPos[0]-self.cityLocation[0]))
-                if characterTerrainPos[0] < self.cityLocation[0]:
-                    directions.extend(["d"]*(self.cityLocation[0]-characterTerrainPos[0]))
-                if characterTerrainPos[1] > self.cityLocation[1]:
-                    directions.extend(["w"]*(characterTerrainPos[1]-self.cityLocation[1]))
-                if characterTerrainPos[1] < self.cityLocation[1]:
-                    directions.extend(["s"]*(self.cityLocation[1]-characterTerrainPos[1]))
-                if characterTerrainPos[1] == self.cityLocation[1] and characterTerrainPos[0] == self.cityLocation[0]:
-                    directions = ["gg"]
-                    if character.xPosition//15 < 7:
-                        directions.extend(["d"]*(7-character.xPosition//15))
-                    if character.xPosition//15 > 7:
-                        directions.extend(["a"]*(character.xPosition//15-7))
-                    if character.yPosition//15 < 7:
-                        directions.extend(["s"]*(7-character.yPosition//15))
-                    if character.yPosition//15 > 7:
-                        directions.extend(["w"]*(character.yPosition//15-7))
+                directions = []
+                if character.xPosition//15 > self.cityLocation[0]:
+                    directions.extend(["a"]*(character.xPosition//15-self.cityLocation[0]))
+                if character.xPosition//15 < self.cityLocation[0]:
+                    directions.extend(["d"]*(self.cityLocation[0]-character.xPosition//15))
+                if character.yPosition//15 > self.cityLocation[1]:
+                    directions.extend(["w"]*(character.yPosition//15-self.cityLocation[1]))
+                if character.yPosition//15 < self.cityLocation[1]:
+                    directions.extend(["s"]*(self.cityLocation[1]-character.yPosition//15))
+
+                if not directions:
+                    return None
 
                 direction = localRandom.choice(directions)
-                if direction == "gg":
-                    return "gg."
-                else:
-                    return ".13"+direction
+                commandString = ".13"+direction
+                if 1==1 or not len(directions) == 2:
+                    commandString += ".gg."
+                return commandString
             else:
                 return None
 
@@ -5327,9 +5377,12 @@ class EnterEnemyCity(Quest):
             return True
 
 class ObtainSpecialItem(MetaQuestSequence):
-    def __init__(self, description="obtain special item", creator=None):
+
+    hasParams = True
+
+    def __init__(self, description="obtain special item", creator=None, lifetime=None):
         questList = []
-        super().__init__(questList, creator=creator)
+        super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
         self.homePos = None
         self.itemID = None
@@ -5338,9 +5391,19 @@ class ObtainSpecialItem(MetaQuestSequence):
         self.didItemCheck = False
         self.addedSubQuests = False
         self.resetDelegations = False
+        self.initialLifetime = lifetime
 
         # save initial state and register
         self.type = "ObtainSpecialItem"
+    
+    def getRequiredParameters(self):
+        parameters = super().getRequiredParameters()
+        parameters.append({"name":"itemLocation","type":"coordinate"})
+        return parameters
+
+    def setParameters(self,parameters):
+        if "itemLocation" in parameters:
+            self.itemLocation = parameters["itemLocation"]
 
     def setToObtain(self, itemID, itemLocation):
         self.itemID = itemID
@@ -5356,31 +5419,39 @@ class ObtainSpecialItem(MetaQuestSequence):
             if character.subordinates:
 
                 if self.didDelegate:
+                    character.runCommandString(".gg.")
                     return
                 
                 for npc in character.subordinates:
-                    quest = ObtainSpecialItem()
-                    quest.setToObtain(self.itemID,self.itemLocation)
 
                     if npc.dead:
                         print("delegate to dead npc -_-")
                         continue
                     serveQuest = npc.quests[0]
                     serveQuest.cancelOrders()
+
+                    if not npc.subordinates:
+                        quest = GatherItems(lifetime=self.initialLifetime)
+                        serveQuest.addQuest(quest)
+                        quest.assignToCharacter(npc)
+                        quest.activate()
+
+                    quest = ObtainSpecialItem(lifetime=self.initialLifetime)
+                    quest.setToObtain(self.itemID,self.itemLocation)
                     serveQuest.addQuest(quest)
 
                 self.metaDescription = "obtain special item #%s from %s (delegated)"%(self.itemID,self.itemLocation)
                 self.didDelegate = True
             else:
-                character.runCommandString("10.")
+                character.runCommandString(".gg.")
         else:
 
             if self.addedSubQuests and not len(self.subQuests):
                 self.fail()
                 return False
             if not self.addedSubQuests:
-                quest = StandAttention()
-                self.addQuest(quest)
+                #quest = StandAttention()
+                #self.addQuest(quest)
 
                 quest = DeliverSpecialItem()
                 self.addQuest(quest)
@@ -5390,13 +5461,19 @@ class ObtainSpecialItem(MetaQuestSequence):
                 self.addQuest(quest)
                 quest.itemID = self.itemID
 
-                quest = GrabSpecialItem(lifetime=5000)
+                lifetime = None
+                if self.initialLifetime:
+                    lifetime = self.initialLifetime//2
+                quest = GrabSpecialItem(lifetime=lifetime)
                 self.addQuest(quest)
+                quest.assignToCharacter(character)
+                quest.activate()
                 quest.itemID = self.itemID
 
-                quest = EnterEnemyCity(lifetime=5000)
-                quest.active = True
+                quest = EnterEnemyCity(lifetime=lifetime)
                 quest.setCityLocation(self.itemLocation)
+                quest.assignToCharacter(character)
+                quest.activate()
 
                 self.addQuest(quest)
                 self.addedSubQuests = True
@@ -5484,6 +5561,7 @@ questMap = {
     "RoomDuty": RoomDuty,
     "Serve": Serve,
     "DummyQuest": DummyQuest,
+    "ObtainSpecialItem": ObtainSpecialItem,
     "ObtainAllSpecialItems": ObtainAllSpecialItems,
     "EnterEnemyCity": EnterEnemyCity,
     "DeliverSpecialItem": DeliverSpecialItem,

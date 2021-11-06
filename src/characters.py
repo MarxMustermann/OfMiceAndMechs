@@ -28,6 +28,7 @@ class Character(src.saveing.Saveable):
     disabled = False
     objectsToStore = []
     attributesToStore = []
+    superior = None
 
     def __init__(
         self,
@@ -230,6 +231,7 @@ class Character(src.saveing.Saveable):
         self.personality["attacksEnemiesOnContact"] = True
         self.personality["doIdleAction"] = True
         self.personality["avoidItems"] = False
+        self.personality["riskAffinity"] = random.random()
 
         self.silent = False
 
@@ -1043,7 +1045,7 @@ class Character(src.saveing.Saveable):
         return state
 
     # obsolete: remove or reintegrate
-    def awardReputation(self, amount=0, fraction=0, reason=None):
+    def awardReputation(self, amount=0, fraction=0, reason=None, carryOver=False):
         """
         give the character reputation (reward)
 
@@ -1057,11 +1059,14 @@ class Character(src.saveing.Saveable):
         if fraction and self.reputation:
             totalAmount += self.reputation // fraction
         self.reputation += totalAmount
-        if self.watched:
-            text = "you were rewarded %i reputation" % totalAmount
-            if reason:
-                text += " for " + reason
-            self.addMessage(text)
+        
+        text = "you were rewarded %i reputation" % totalAmount
+        if reason:
+            text += " for " + reason
+        self.addMessage(text)
+
+        if carryOver and self.superior:
+            self.superior.awardReputation(amount=amount,fraction=fraction,reason=reason,carryOver=carryOver)
 
     # obsolete: remove or reintegrate
     def revokeReputation(self, amount=0, fraction=0, reason=None):
@@ -2192,6 +2197,146 @@ class Monster(Character):
 
         return render
 
+# bad code: there is very specific code in here, so it it stopped to be a generic class
+class Guardian(Character):
+    """
+    a class for a generic monster
+    """
+
+    charType = "Guardian"
+    attributesToStore = []
+
+    def __init__(
+        self,
+        display="🝆~",
+        xPosition=0,
+        yPosition=0,
+        quests=[],
+        automated=True,
+        name="Mouse",
+        creator=None,
+        characterId=None,
+    ):
+        """
+        basic state setting
+
+        Parameters:
+            display: what the monster should look like
+            xPosition: obsolete, ignore
+            yPosition: obsolete, ignore
+            quests: obsolete, ignore
+            automated: obsolete, ignore
+            name: obsolete, ignore
+            creator: obsolete, ignore
+            characterId: obsolete, ignore
+        """
+
+        super().__init__(
+            display,
+            xPosition,
+            yPosition,
+            quests,
+            automated,
+            name,
+            creator=creator,
+            characterId=characterId,
+        )
+        self.faction = "monster"
+
+        self.solvers.extend(["NaiveMurderQuest"])
+
+    # bad code: specific code in generic class
+    def die(self, reason=None, addCorpse=True):
+        """
+        kill the monster
+
+        Parameters:
+            reason: how the moster was killed
+            addCorpse: a flag determining wether or not a corpse should be added
+        """
+
+        super().die(reason, addCorpse)
+
+    def render(self):
+        """
+        render the monster depending on the evelutionary state
+
+        Returns:
+            what the monster looks like
+        """
+
+        render = src.canvas.displayChars.monster_feeder
+        
+        if self.health > 1500:
+            colorHealth = "#f80"
+        elif self.health > 1400:
+            colorHealth = "#e80"
+        elif self.health > 1300:
+            colorHealth = "#d80"
+        elif self.health > 1200:
+            colorHealth = "#c80"
+        elif self.health > 1100:
+            colorHealth = "#b80"
+        elif self.health > 1000:
+            colorHealth = "#a80"
+        elif self.health > 900:
+            colorHealth = "#980"
+        elif self.health > 800:
+            colorHealth = "#880"
+        elif self.health > 700:
+            colorHealth = "#780"
+        elif self.health > 600:
+            colorHealth = "#680"
+        elif self.health > 500:
+            colorHealth = "#580"
+        elif self.health > 400:
+            colorHealth = "#480"
+        elif self.health > 300:
+            colorHealth = "#380"
+        elif self.health > 200:
+            colorHealth = "#280"
+        elif self.health > 100:
+            colorHealth = "#180"
+        else:
+            colorHealth = "#080"
+
+        if self.baseDamage > 15:
+            colorDamage = "#f80"
+        elif self.baseDamage > 14:
+            colorDamage = "#e80"
+        elif self.baseDamage > 13:
+            colorDamage = "#d80"
+        elif self.baseDamage > 12:
+            colorDamage = "#c80"
+        elif self.baseDamage > 11:
+            colorDamage = "#b80"
+        elif self.baseDamage > 10:
+            colorDamage = "#a80"
+        elif self.baseDamage > 9:
+            colorDamage = "#980"
+        elif self.baseDamage > 8:
+            colorDamage = "#880"
+        elif self.baseDamage > 7:
+            colorDamage = "#780"
+        elif self.baseDamage > 6:
+            colorDamage = "#680"
+        elif self.baseDamage > 5:
+            colorDamage = "#580"
+        elif self.baseDamage > 4:
+            colorDamage = "#480"
+        elif self.baseDamage > 3:
+            colorDamage = "#380"
+        elif self.baseDamage > 2:
+            colorDamage = "#280"
+        elif self.baseDamage > 1:
+            colorDamage = "#180"
+        else:
+            colorDamage = "#080"
+
+        render = [(urwid.AttrSpec(colorHealth, "black"), "!"),(urwid.AttrSpec(colorDamage, "black"), "-")]
+
+        return render
+
 class Exploder(Monster):
     """
     a monster that explodes on death
@@ -2382,6 +2527,7 @@ class CollectorSpider(Spider):
 characterMap = {
     "Character": Character,
     "Monster": Monster,
+    "Guardian": Guardian,
     "Exploder": Exploder,
     "Mouse": Mouse,
     "Spider": Spider,

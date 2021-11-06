@@ -60,7 +60,7 @@ class Explosion(src.items.Item):
                     character.xPosition == self.xPosition
                     and character.yPosition == self.yPosition
                 ):
-                    character.die(reason="stood in a explosion")
+                    character.hurt(100,reason="explosion")
 
             for item in self.container.getItemByPosition(
                 (self.xPosition, self.yPosition, self.zPosition)

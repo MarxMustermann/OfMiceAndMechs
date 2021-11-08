@@ -467,6 +467,8 @@ class Character(src.saveing.Saveable):
         # convert command to macro data structure
         convertedCommand = []
         for char in commandString:
+            if char == "\n":
+                char = "enter"
             convertedCommand.append((char, "norecord"))
 
 

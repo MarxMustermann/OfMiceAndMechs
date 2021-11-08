@@ -718,6 +718,12 @@ class ObtainAllSpecialItems(Quest):
                 serveQuest.subQuests = []
             self.resetDelegations = False
 
+        lifetime = None
+        if self.epochLength:
+            lifetime=self.epochLength-100
+        command = "...QSNObtainSpecialItem\n%s\n%s,%s\nlifetime:%s; ..."%(self.priorityObtainID,self.priorityObtainLocation[0],self.priorityObtainLocation[1],lifetime,)
+        character.runCommandString(command)
+        """
         for npc in character.subordinates:
 
             if npc.quests:
@@ -729,6 +735,7 @@ class ObtainAllSpecialItems(Quest):
 
                 serveQuest = npc.quests[0]
                 serveQuest.addQuest(quest)
+        """
 
         self.didDelegate = True
 

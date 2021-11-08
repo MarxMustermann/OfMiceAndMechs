@@ -568,7 +568,6 @@ def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
         and charState["submenue"].stealAllKeys
         and (key not in ("|", ">", "<") and not charState["submenue"].escape)
     ):
-
         # let the submenu handle the keystroke
         lastSubmenu = charState["submenue"]
         noRender = True
@@ -3533,6 +3532,7 @@ class CharacterInfoMenu(SubMenu):
 
     def __init__(self, char=None):
         self.char = char
+        super().__init__()
 
     def handleKey(self, key, noRender=False):
         """
@@ -3603,7 +3603,7 @@ class CharacterInfoMenu(SubMenu):
 class CreateQuestMenu(SubMenu):
     type = "CreateQuestMenu"
 
-    def __init__(self, questType, assignTo):
+    def __init__(self, questType, assignTo, activeChar):
         self.requiredParams = None
         self.questParams = {}
         self.questType = questType
@@ -3614,6 +3614,7 @@ class CreateQuestMenu(SubMenu):
         self.stealAllKeys = False
         self.parameterName = None
         self.parameterValue = None
+        self.activeChar = activeChar
 
     def handleKey(self, key, noRender=False):
         # exit submenu
@@ -3690,9 +3691,10 @@ class CreateQuestMenu(SubMenu):
                     self.parameterValue += key
 
         # start rendering
-        header.set_text((urwid.AttrSpec("default", "default"), "\ncreate Quest\n"))
-        # show rendered text via urwid
-        main.set_text((urwid.AttrSpec("default", "default"), "type: %s\n\nparameters: \n\n%s\n\ncurrent parameter: \n\n%s : %s\n\noptional parameters: \n\n%s\n\npress space to confirm"%(self.questType,self.questParams,self.parameterName,self.parameterValue,self.optionalParams)))
+        if not noRender:
+            header.set_text((urwid.AttrSpec("default", "default"), "\ncreate Quest\n"))
+            # show rendered text via urwid
+            main.set_text((urwid.AttrSpec("default", "default"), "type: %s\n\nparameters: \n\n%s\n\ncurrent parameter: \n\n%s : %s\n\noptional parameters: \n\n%s\n\npress space to confirm"%(self.questType,self.questParams,self.parameterName,self.parameterValue,self.optionalParams)))
         return False
 
 class AdvancedQuestMenu(SubMenu):
@@ -3917,9 +3919,9 @@ class AdvancedQuestMenu(SubMenu):
                         return False
             elif self.quest.hasParams:
                 if self.character == "ALL":
-                    src.gamestate.gamestate.mainChar.macroState["submenue"] = CreateQuestMenu(self.quest, self.activeChar.subordinates)
+                    self.activeChar.macroState["submenue"] = CreateQuestMenu(self.quest, self.activeChar.subordinates, self.activeChar)
                 else:
-                    src.gamestate.gamestate.mainChar.macroState["submenue"] = CreateQuestMenu(self.quest, [self.character])
+                    self.activeChar.macroState["submenue"] = CreateQuestMenu(self.quest, [self.character], self.activeChar)
                 return False
             else:
                 # skip parameter selection

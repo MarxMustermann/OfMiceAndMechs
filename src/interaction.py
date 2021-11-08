@@ -565,7 +565,7 @@ def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
 
     if (
         charState["submenue"]
-        and charState["submenue"].type == "InputMenu"
+        and charState["submenue"].stealAllKeys
         and (key not in ("|", ">", "<") and not charState["submenue"].escape)
     ):
 
@@ -2467,7 +2467,7 @@ press key for advanced drop
 
     # open the menu for giving quests
     if key in (commandChars.show_quests_detailed,):
-        charState["submenue"] = AdvancedQuestMenu()
+        charState["submenue"] = AdvancedQuestMenu(char)
 
     # open the character information
     if key in (commandChars.show_characterInfo,"v",):
@@ -2675,7 +2675,7 @@ class SubMenu(src.saveing.Saveable):
         self.tupleDictsToStore = []
         self.tupleListsToStore = []
 
-
+        self.stealAllKeys = False
         self.state = None
         self.options = {}
         self.selection = None
@@ -2703,6 +2703,8 @@ class SubMenu(src.saveing.Saveable):
         self.callbacksToStore.extend(["followUp"])
         self.initialState = self.getState()
         self.id = uuid.uuid4().hex
+
+        self.escape = False
 
     def setState(self, state):
         """
@@ -3224,13 +3226,6 @@ class QuestMenu(SubMenu):
             renderQuests(char=self.char, asList=True, questIndex=self.questIndex)
         )
 
-        # spawn the quest menu for complex quest handling
-        if not self.lockOptions:
-            if key in ["q"]:
-                global submenue
-                submenue = AdvancedQuestMenu()
-                submenue.handleKey(key, noRender=noRender)
-                return False
         self.lockOptions = False
 
         # add interaction instructions
@@ -3453,6 +3448,7 @@ class InputMenu(SubMenu):
         self.escape = False
         self.position = 0
         self.targetParamName = targetParamName
+        self.stealAllKeys = True
 
     def handleKey(self, key, noRender=False):
         """
@@ -3607,22 +3603,96 @@ class CharacterInfoMenu(SubMenu):
 class CreateQuestMenu(SubMenu):
     type = "CreateQuestMenu"
 
-    def __init__(self, questType):
+    def __init__(self, questType, assignTo):
+        self.requiredParams = None
         self.questParams = {}
         self.questType = questType
-        print("init CreateQuestMenu")
+        self.quest = None
+        self.submenu = None
+        self.assignTo = assignTo
         super().__init__()
+        self.stealAllKeys = False
+        self.parameterName = None
+        self.parameterValue = None
 
     def handleKey(self, key, noRender=False):
         # exit submenu
         if key == "esc":
             return True
 
-        print("render submenu")
+        if not self.quest:
+            self.quest = self.questType()
+
+        if self.submenu:
+            if not self.submenu.handleKey(key, noRender=noRender):
+                return False
+            param = self.requiredParams.pop()
+            
+            rawParameter = self.submenu.text
+            if param["type"] == "int":
+                self.questParams[param["name"]] = int(rawParameter)
+            elif param["type"] == "string":
+                self.questParams[param["name"]] = rawParameter
+            elif param["type"] == "coordinate":
+                self.questParams[param["name"]] = (int(rawParameter.split(",")[0]),int(rawParameter.split(",")[1])) 
+            self.submenu = None
+
+        if self.requiredParams == None:
+            self.requiredParams = self.quest.getRequiredParameters()
+
+        if self.requiredParams and not self.submenu:
+            param = self.requiredParams[-1]
+            self.submenu = src.interaction.InputMenu("%s"%(param,))
+            self.submenu.handleKey("~", noRender=noRender)
+            self.stealAllKeys = True
+            return False
+
+        if not self.requiredParams and key == " ":
+            for char in self.assignTo:
+                quest = self.questType()
+                quest.setParameters(self.questParams)
+                foundQuest = None
+                for targetQuest in char.quests:
+                    if targetQuest.type == "Serve":
+                        foundQuest = targetQuest
+                        break
+
+                if not foundQuest:
+                    char.assignQuest(quest)
+                else:
+                    foundQuest.addQuest(quest)
+                quest.activate()
+            return True
+
+        self.optionalParams = self.quest.getOptionalParameters()
+
+        if not key in ("enter","~"):
+            if self.parameterName == None:
+                self.parameterName = ""
+
+            if self.parameterValue == None:
+                if key == ":":
+                    self.parameterValue = ""
+                elif key == "backspace":
+                    if len(self.parameterName):
+                        self.parameterName = self.parameterName[:-1]
+                else:
+                    self.parameterName += key
+            else:
+                if key == ";":
+                    self.questParams[self.parameterName] = int(self.parameterValue)
+                    self.parameterName = None
+                    self.parameterValue = None
+                elif key == "backspace":
+                    if len(self.parameterValue):
+                        self.parameterValue = self.parameterValue[:-1]
+                else:
+                    self.parameterValue += key
+
         # start rendering
         header.set_text((urwid.AttrSpec("default", "default"), "\ncreate Quest\n"))
         # show rendered text via urwid
-        main.set_text((urwid.AttrSpec("default", "default"), "--------- %s ---------"%(self.questType,)))
+        main.set_text((urwid.AttrSpec("default", "default"), "type: %s\n\nparameters: \n\n%s\n\ncurrent parameter: \n\n%s : %s\n\noptional parameters: \n\n%s\n\npress space to confirm"%(self.questType,self.questParams,self.parameterName,self.parameterValue,self.optionalParams)))
         return False
 
 class AdvancedQuestMenu(SubMenu):
@@ -3632,7 +3702,7 @@ class AdvancedQuestMenu(SubMenu):
 
     type = "AdvancedQuestMenu"
 
-    def __init__(self):
+    def __init__(self,activeChar):
         """
         set up internal state
         """
@@ -3640,6 +3710,7 @@ class AdvancedQuestMenu(SubMenu):
         self.character = None
         self.quest = None
         self.questParams = {}
+        self.activeChar = activeChar
         super().__init__()
 
     def handleKey(self, key, noRender=False):
@@ -3662,8 +3733,8 @@ class AdvancedQuestMenu(SubMenu):
             (urwid.AttrSpec("default", "default"), "\nadvanced Quest management\n")
         )
         out = "\n"
-        if self.character:
-            out += "character: " + str(self.character.name) + "\n"
+        #if self.character:
+        #    out += "character: " + str(self.character.name) + "\n"
         if self.quest:
             out += "quest: " + str(self.quest) + "\n"
         out += "\n"
@@ -3673,64 +3744,95 @@ class AdvancedQuestMenu(SubMenu):
             self.state = "participantSelection"
         if self.state == "participantSelection":
 
-            # set up the options
-            if not self.options and not self.getSelection():
-
-                # add the main player as target
-                options = [(
-                    src.gamestate.gamestate.mainChar,
-                    src.gamestate.gamestate.mainChar.name + " (you)",
-                )]
-
-                # add the main players subordinates as target
-                for char in src.gamestate.gamestate.mainChar.subordinates:
-                    options.append((char, char.name))
-                self.setOptions("whom to give the order to: ", options)
-
-            # let the superclass handle the actual selection
-            if not self.getSelection():
-                super().handleKey(key, noRender=noRender)
-
-            # store the character to assign the quest to
-            if self.getSelection():
+            if key == "S":
+                print("S key detected")
                 self.state = "questSelection"
-                self.character = self.selection
+                self.character = "ALL"
                 self.selection = None
                 self.lockOptions = True
+                self.options = None
             else:
-                return False
+                # set up the options
+                if not self.options and not self.getSelection():
+
+                    # add the active player as target
+                    options = [(
+                        self.activeChar,
+                        self.activeChar.name+ " (you)",
+                    )]
+
+                    # add the main players subordinates as target
+                    for char in self.activeChar.subordinates:
+                        options.append((char, char.name))
+                    self.setOptions("whom to give the order to: ", options)
+
+                # let the superclass handle the actual selection
+                if not self.getSelection():
+                    super().handleKey(key, noRender=noRender)
+
+                # store the character to assign the quest to
+                if self.getSelection():
+                    self.state = "questSelection"
+                    self.character = self.selection
+                    self.selection = None
+                    self.lockOptions = True
+                else:
+                    return False
 
         # let the player select the type of quest to create
         if self.state == "questSelection":
+            print("do quest selection")
 
-            # add quests to select from
-            if not self.options and not self.getSelection():
-                options = []
-                for key, value in src.quests.questMap.items():
+            if key == "N":
+                self.state = "questByName"
+                self.selection = ""
+                return False
+            else:
+                # add quests to select from
+                if not self.options and not self.getSelection():
+                    options = []
+                    for key, value in src.quests.questMap.items():
 
-                    # show only quests the character has done
-                    if key not in src.gamestate.gamestate.mainChar.questsDone:
-                        continue
+                        # show only quests the character has done
+                        if key not in self.activeChar.questsDone:
+                            continue
 
-                    # do not show naive quests
-                    if key.startswith("Naive"):
-                        continue
+                        # do not show naive quests
+                        if key.startswith("Naive"):
+                            continue
 
-                    options.append((value, key))
-                self.setOptions("what type of quest:", options)
+                        options.append((value, key))
+                    self.setOptions("what type of quest:", options)
 
-            # let the superclass handle the actual selection
-            if not self.getSelection():
-                super().handleKey(key, noRender=noRender)
+                # let the superclass handle the actual selection
+                if not self.getSelection():
+                    super().handleKey(key, noRender=noRender)
 
-            # store the type of quest to create
-            if self.getSelection():
+                # store the type of quest to create
+                if self.getSelection():
+                    self.state = "parameter selection"
+                    self.quest = self.selection
+                    self.selection = None
+                    self.lockOptions = True
+                    self.questParams = {}
+                else:
+                    return False
+
+        if self.state == "questByName":
+            if key == "enter":
                 self.state = "parameter selection"
-                self.quest = self.selection
+                self.quest = src.quests.questMap[self.selection]
                 self.selection = None
                 self.lockOptions = True
                 self.questParams = {}
             else:
+                if key == "backspace":
+                    if len(self.selection) > 0:
+                        self.selection = self.selection[:-1]
+                else:
+                    self.selection += key
+
+                main.set_text((urwid.AttrSpec("default", "default"), self.selection+"\n\n%s"%(self.activeChar.questsDone)))
                 return False
 
         # let the player select the parameters for the quest
@@ -3814,7 +3916,10 @@ class AdvancedQuestMenu(SubMenu):
                     else:
                         return False
             elif self.quest.hasParams:
-                src.gamestate.gamestate.mainChar.macroState["submenue"] = CreateQuestMenu(self.quest)
+                if self.character == "ALL":
+                    src.gamestate.gamestate.mainChar.macroState["submenue"] = CreateQuestMenu(self.quest, self.activeChar.subordinates)
+                else:
+                    src.gamestate.gamestate.mainChar.macroState["submenue"] = CreateQuestMenu(self.quest, [self.character])
                 return False
             else:
                 # skip parameter selection
@@ -4680,7 +4785,6 @@ def keyboardListener(key):
             exportFile.write(serializedState)
     elif key == "ctrl i":
         for character in src.gamestate.gamestate.mainChar.container.characters:
-            print(character)
             if character == src.gamestate.gamestate.mainChar:
                 continue
             if character.xPosition == src.gamestate.gamestate.mainChar.xPosition and character.yPosition == src.gamestate.gamestate.mainChar.yPosition:
@@ -4723,10 +4827,15 @@ def getTcodEvents():
                     continue
                 if key == tcod.event.KeySym.RETURN:
                     translatedKey = "enter"
+                if key == tcod.event.KeySym.BACKSPACE:
+                    translatedKey = "backspace"
                 if key == tcod.event.KeySym.SPACE:
                     translatedKey = " "
                 if key == tcod.event.KeySym.PERIOD:
-                    translatedKey = "."
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = ":"
+                    else:
+                        translatedKey = "."
                 if key == tcod.event.KeySym.HASH:
                     translatedKey = "#"
                 if key == tcod.event.KeySym.ESCAPE:
@@ -4752,7 +4861,10 @@ def getTcodEvents():
                 if key == tcod.event.KeySym.N0:
                     translatedKey = "0"
                 if key == tcod.event.KeySym.COMMA:
-                    translatedKey = ","
+                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                        translatedKey = ";"
+                    else:
+                        translatedKey = ","
                 if key == tcod.event.KeySym.MINUS:
                     if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
                         translatedKey = "_"

@@ -255,6 +255,13 @@ class Quest(src.saveing.Saveable):
     def getRequiredParameters(self):
         return []
     
+    def getOptionalParameters(self):
+        return [{"name":"lifetime","type":"int","default":None}]
+
+    def setParameters(self,parameters):
+        if "lifetime" in parameters:
+            self.lifetime = parameters["lifetime"]
+    
     def reroll(self):
         self.randomSeed = random.random()
 
@@ -655,7 +662,6 @@ class GatherItems(Quest):
     def solver(self, character):
         if len(character.inventory) > 1:
             character.inventory.pop()
-            print(character)
             character.awardReputation(amount=1,reason="gathering item",carryOver=True)
             return False
         character.runCommandString(".30.")
@@ -897,7 +903,7 @@ class MetaQuestSequence(Quest):
         # add name of the actual quest
         if asList:
             if colored:
-                import urwid
+                urwid = src.interaction.urwid
 
                 if active:
                     color = "#0f0"
@@ -5399,11 +5405,13 @@ class ObtainSpecialItem(MetaQuestSequence):
     def getRequiredParameters(self):
         parameters = super().getRequiredParameters()
         parameters.append({"name":"itemLocation","type":"coordinate"})
+        parameters.append({"name":"itemID","type":"int"})
         return parameters
 
     def setParameters(self,parameters):
-        if "itemLocation" in parameters:
-            self.itemLocation = parameters["itemLocation"]
+        if "itemLocation" in parameters and "itemID" in parameters:
+            self.setToObtain(parameters["itemID"],parameters["itemLocation"])
+        super().setParameters(parameters)
 
     def setToObtain(self, itemID, itemLocation):
         self.itemID = itemID

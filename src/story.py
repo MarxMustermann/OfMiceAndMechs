@@ -841,6 +841,10 @@ class BackToTheRoots(BasicPhase):
                     subsubleader.superior = subleader
                     subsubleader.rank = 5
                     subsubleader.assignQuest(quest, active=True)
+                        
+                    if not placedMainChar and i == 2 and j == 2:
+                        src.gamestate.gamestate.mainChar = subsubleader
+                        placedMainChar = True
 
                     for k in range(0,3):
                         spawnArmor = False
@@ -860,9 +864,9 @@ class BackToTheRoots(BasicPhase):
                         worker.rank = 6
                         worker.assignQuest(quest, active=True)
 
-                        if not placedMainChar and i == 2 and j == 2 and k == 2:
-                            src.gamestate.gamestate.mainChar = worker
-                            placedMainChar = True
+                        #if not placedMainChar and i == 2 and j == 2 and k == 2:
+                        #    src.gamestate.gamestate.mainChar = worker
+                        #    placedMainChar = True
 
             quest = src.quests.ObtainAllSpecialItems()
             leader.assignQuest(quest, active=True)

@@ -755,7 +755,15 @@ class Room(src.saveing.Saveable):
                             chars[character.yPosition][character.xPosition][0].fg = "#0a6"
                         if character.faction.endswith("#15"):
                             chars[character.yPosition][character.xPosition][0].fg = "#0aa"
-
+                        if character.showThinking:
+                            chars[character.yPosition][character.xPosition][0].bg = "#333"
+                            character.showThinking = False
+                        if character.showGotCommand:
+                            chars[character.yPosition][character.xPosition][0].bg = "#fff"
+                            character.showGotCommand = False
+                        if character.showGaveCommand:
+                            chars[character.yPosition][character.xPosition][0].bg = "#855"
+                            character.showGaveCommand = False
                 else:
                     src.logger.debugMessages.append(
                         "chracter is rendered outside of room"

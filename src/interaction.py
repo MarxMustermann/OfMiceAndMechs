@@ -471,7 +471,6 @@ def stitchCommands(charState):
         commands + charState["commandKeyQueue"]
     )
     """
-    print(charState["macros"][charState["replay"][-1]])
     for keyPress in reversed(charState["macros"][charState["replay"][-1]]):
         charState["commandKeyQueue"].insert(0,(keyPress, ["norecord"]))
     #commands = [('g', ['norecord']), ('g', ['norecord']), ('_', ['norecord']), ('g', ['norecord'])]
@@ -1994,7 +1993,7 @@ select what you want to observe
 
         # get current cinematic
         cinematic = cinematics.cinematicQueue[0]
-        char.timeTaken -= 1
+        char.timeTaken -= 0.99
 
         # allow to quit even within a cutscene
         if key in (commandChars.quit_normal, commandChars.quit_instant):
@@ -2418,6 +2417,7 @@ press key for advanced drop
         char.automated = False
         # do automated movement for the main character
         if key in (commandChars.advance, commandChars.autoAdvance):
+            char.showThinking = True
             if len(char.quests):
                 charState["lastMoveAutomated"] = True
                 if not char.automated:
@@ -2457,7 +2457,7 @@ press key for advanced drop
         charState["submenue"] = QuestMenu()
 
     # open help menu
-    if key in (commandChars.show_help,):
+    if key in (commandChars.show_help,"H"):
         charState["submenue"] = HelpMenu()
 
     # open inventory
@@ -2613,6 +2613,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
 
     # render submenus
     if charState["submenue"]:
+        char.timeTaken -= 0.99
 
         # set flag to not render the game
         if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
@@ -3663,11 +3664,14 @@ class CreateQuestMenu(SubMenu):
                 else:
                     foundQuest.addQuest(quest)
                 quest.activate()
+                char.showGotCommand = True
+            self.activeChar.showGaveCommand = True
             return True
 
         self.optionalParams = self.quest.getOptionalParameters()
 
         if not key in ("enter","~"):
+            self.stealAllKeys = True
             if self.parameterName == None:
                 self.parameterName = ""
 
@@ -3681,7 +3685,13 @@ class CreateQuestMenu(SubMenu):
                     self.parameterName += key
             else:
                 if key == ";":
-                    self.questParams[self.parameterName] = int(self.parameterValue)
+                    value = None
+                    if self.parameterValue == "None":
+                        value = None
+                    else:
+                        value = int(self.parameterValue)
+
+                    self.questParams[self.parameterName] = value
                     self.parameterName = None
                     self.parameterValue = None
                 elif key == "backspace":
@@ -3747,7 +3757,6 @@ class AdvancedQuestMenu(SubMenu):
         if self.state == "participantSelection":
 
             if key == "S":
-                print("S key detected")
                 self.state = "questSelection"
                 self.character = "ALL"
                 self.selection = None
@@ -3783,12 +3792,11 @@ class AdvancedQuestMenu(SubMenu):
 
         # let the player select the type of quest to create
         if self.state == "questSelection":
-            print("do quest selection")
 
             if key == "N":
                 self.state = "questByName"
                 self.selection = ""
-                return False
+                key = "~"
             else:
                 # add quests to select from
                 if not self.options and not self.getSelection():
@@ -3828,7 +3836,9 @@ class AdvancedQuestMenu(SubMenu):
                 self.lockOptions = True
                 self.questParams = {}
             else:
-                if key == "backspace":
+                if key == "~":
+                    pass
+                elif key == "backspace":
                     if len(self.selection) > 0:
                         self.selection = self.selection[:-1]
                 else:
@@ -3917,7 +3927,7 @@ class AdvancedQuestMenu(SubMenu):
                         self.lockOptions = True
                     else:
                         return False
-            elif self.quest.hasParams:
+            elif self.quest:
                 if self.character == "ALL":
                     self.activeChar.macroState["submenue"] = CreateQuestMenu(self.quest, self.activeChar.subordinates, self.activeChar)
                 else:
@@ -4019,14 +4029,6 @@ class AdvancedQuestMenu(SubMenu):
                         )
                     else:
                         questInstance = self.quest()
-
-                    # show some fluff
-                    if not self.character == src.gamestate.gamestate.mainChar:
-                        self.persistentText += self.character.name + ': "understood?"\n'
-                        self.persistentText += (
-                            src.gamestate.gamestate.mainChar.name
-                            + ': "understood and in execution"\n'
-                        )
 
                     # assign the quest
                     self.character.assignQuest(questInstance, active=True)

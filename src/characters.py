@@ -30,6 +30,10 @@ class Character(src.saveing.Saveable):
     attributesToStore = []
     superior = None
 
+    showThinking = False
+    showGotCommand = False
+    showGaveCommand = False
+
     def __init__(
         self,
         display=None,
@@ -1071,7 +1075,7 @@ class Character(src.saveing.Saveable):
             self.superior.awardReputation(amount=amount,fraction=fraction,reason=reason,carryOver=carryOver)
 
     # obsolete: remove or reintegrate
-    def revokeReputation(self, amount=0, fraction=0, reason=None):
+    def revokeReputation(self, amount=0, fraction=0, reason=None, carryOver=False):
         """
         remove some of the character reputation (punishment)
 
@@ -1090,6 +1094,9 @@ class Character(src.saveing.Saveable):
             if reason:
                 text += " for " + reason
             self.addMessage(text)
+
+        if carryOver and self.superior:
+            self.superior.revokeReputation(amount=amount,fraction=fraction,reason=reason,carryOver=carryOver)
 
     # obsolete: reintegrate
     # bad code: this is kind of incompatible with the meta quests
@@ -2335,7 +2342,10 @@ class Guardian(Character):
         else:
             colorDamage = "#080"
 
-        render = [(urwid.AttrSpec(colorHealth, "black"), "!"),(urwid.AttrSpec(colorDamage, "black"), "-")]
+        if self.faction == src.gamestate.gamestate.mainChar.faction:
+            render = [(urwid.AttrSpec(colorHealth, "black"), "?"),(urwid.AttrSpec(colorDamage, "black"), "-")]
+        else:
+            render = [(urwid.AttrSpec(colorHealth, "black"), "!"),(urwid.AttrSpec(colorDamage, "black"), "-")]
 
         return render
 

@@ -145,6 +145,15 @@ class NPCsOverlay(object):
                         chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#0a6"
                     if character.faction.endswith("#15"):
                         chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#0aa"
+                    if character.showThinking:
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].bg = "#333"
+                        character.showThinking = False
+                    if character.showGotCommand:
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].bg = "#fff"
+                        character.showGotCommand = False
+                    if character.showGaveCommand:
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].bg = "#855"
+                        character.showGaveCommand = False
                 except:
                     pass
 

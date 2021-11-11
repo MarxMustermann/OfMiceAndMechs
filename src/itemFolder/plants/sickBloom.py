@@ -69,9 +69,9 @@ class SickBloom(src.items.Item):
             character: the character trying topick up the item
         """
 
-        self.bolted = False
-        self.dead = True
-        self.charges = 0
+        if random.random() < 0.5:
+            self.destroy()
+            return
         super().pickUp(character)
 
     def startSpawn(self):

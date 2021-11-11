@@ -602,12 +602,21 @@ class BackToTheRoots(BasicPhase):
         self.leaders = {}
         self.scoreTracker = {}
 
+        self.startDelay = 200
+        self.epochLength = 2000
+        self.firstEpoch = True
+        self.npcCounter = 0
+        self.gatherTime = 50
+
+
     def genNPC(self, cityCounter, citylocation, flaskUses=100, spawnArmor=True, spawnWeapon=True):
+        self.npcCounter += 1
+
         npc = src.characters.Character()
         item = src.items.itemMap["GooFlask"]()
         item.uses = flaskUses
+        npc.name = "worker #%s"%(self.npcCounter)
         npc.inventory.append(item)
-        #npc.runCommandString("-agg_a-")
         npc.runCommandString("10.10*")
         npc.macroState["macros"]["j"] = ["J", "f"]
         npc.faction = "city #%s"%(cityCounter,)
@@ -616,7 +625,6 @@ class BackToTheRoots(BasicPhase):
 
         # add basic set of abilities in openworld phase
         npc.questsDone = [
-            "ObtainSpecialItem",
         ]
 
         npc.solvers = [
@@ -656,8 +664,6 @@ class BackToTheRoots(BasicPhase):
         Parameters:
             seed: rng seed
         """
-
-        showText("follow the orders given to you.\n\npress space to continue")
 
         mainChar = src.gamestate.gamestate.mainChar
 
@@ -749,13 +755,13 @@ class BackToTheRoots(BasicPhase):
                 
                 #for i in range(0,random.randint(1,20)):
                 #for i in range(0,200):
-                for i in range(0,40):
+                for i in range(0,100):
                     xPos = int(random.random()*13+1)*15+7
                     yPos = int(random.random()*13+1)*15+7
                     if (xPos//15,yPos//15) in self.citylocations:
                         continue
                     enemy = src.characters.Monster(xPos,yPos)
-                    enemy.health = 100 + random.randint(1, 1000)
+                    enemy.health = random.randint(1, 100)
                     enemy.baseDamage = random.randint(1, 10)
                     enemy.godMode = True
                     enemy.aggro = 1000000
@@ -779,6 +785,16 @@ class BackToTheRoots(BasicPhase):
 
             architect = src.items.itemMap["ArchitectArtwork"]()
             currentTerrain.addItem(architect,(124, 110, 0))
+
+            architect.doClearField(citylocation[0], citylocation[1])
+            architect.doClearField(citylocation[0]+1, citylocation[1])
+            architect.doClearField(citylocation[0]-1, citylocation[1])
+            architect.doClearField(citylocation[0], citylocation[1]+1)
+            architect.doClearField(citylocation[0], citylocation[1]-1)
+            architect.doClearField(citylocation[0]+1, citylocation[1]+1)
+            architect.doClearField(citylocation[0]+1, citylocation[1]-1)
+            architect.doClearField(citylocation[0]-1, citylocation[1]+1)
+            architect.doClearField(citylocation[0]-1, citylocation[1]-1)
 
             mainRoom = architect.doAddRoom(
                 {
@@ -842,9 +858,11 @@ class BackToTheRoots(BasicPhase):
                     subsubleader.rank = 5
                     subsubleader.assignQuest(quest, active=True)
                         
+                    """
                     if not placedMainChar and i == 2 and j == 2:
                         src.gamestate.gamestate.mainChar = subsubleader
                         placedMainChar = True
+                    """
 
                     for k in range(0,3):
                         spawnArmor = False
@@ -864,9 +882,9 @@ class BackToTheRoots(BasicPhase):
                         worker.rank = 6
                         worker.assignQuest(quest, active=True)
 
-                        #if not placedMainChar and i == 2 and j == 2 and k == 2:
-                        #    src.gamestate.gamestate.mainChar = worker
-                        #    placedMainChar = True
+                        if not placedMainChar and i == 2 and j == 2 and k == 2:
+                            src.gamestate.gamestate.mainChar = worker
+                            placedMainChar = True
 
             quest = src.quests.ObtainAllSpecialItems()
             leader.assignQuest(quest, active=True)
@@ -893,12 +911,125 @@ class BackToTheRoots(BasicPhase):
                 #enemy.disabled = True
                 currentTerrain.addCharacter(enemy, xPos, yPos)
 
-        src.gamestate.gamestate.mainChar.runCommandString("~", clear=True)
+        src.gamestate.gamestate.mainChar.runCommandString("~~", clear=True)
         src.gamestate.gamestate.mainChar.personality["autoFlee"] = False
         src.gamestate.gamestate.mainChar.personality["abortMacrosOnAttack"] = False
         src.gamestate.gamestate.mainChar.personality["autoCounterAttack"] = False
 
-        self.startNewEpoch()
+        '''
+        showText("""
+You are %s, a newly spawned worker in the faction %s.
+
+As far as you understand there will be a big attack on an enemy city.
+
+You have heard there will be a big attack on an enemy city.
+If you do well you might be promoted, especially if you manage to capture %s from the city yourself!
+
+After getting enough promotions you might end up leading this faction (and get the highest level of respect and glory).
+
+Here are the most important controls:
+* w/a/s/d = move north/west/south/east
+* l/L = drop item
+* j/J = activate
+* i = show inventory
+* k/K = pick up
+* e/E = examine
+* v = view own stats
+* H = view help
+
+
+
+
+Here are some important hints:
+* You start without food, weapon or armor
+* rods can be used as weapons
+* The attack on the city will start in %s ticks
+* a promotion drastically improves survivability
+* how well quests are completed has an effect on how well your faction is doing
+
+press space to continue
+"""%(src.gamestate.gamestate.mainChar.name,src.gamestate.gamestate.mainChar.faction,self.startDelay,))
+        '''
+
+        showText("""
+You are %s, a newly spawned worker in the faction %s.
+Your current rank is 6. The lowest possible rank and you have no reputation and nobody is backing you.
+
+But as far as you understand there will be a big attack on an enemy city.
+This is your chance to shine, to defeat the odds and to impress your peers.
+Fight and defeat our enemies for the glory of our city.
+
+The enemy is weak now and after a long wait it is the time to strike!
+Wipe them from the earth and claim back the special items they have hoarded.
+The special items will allow us to prosper and grow even stronger.
+Nothing will stand in our way.
+
+Be the one to arrive at the enemies assembly hall first and help to rip the special item from their grasp!
+If you have the persistance, fighting abilities and the courage you may even be the one.
+The one, who fullfills our destiny and brings back the special item we seek.
+
+If you are that relentless fighter you will be respected and a promotion will be guaranteed!
+
+Here are the most important controls:
+* w/a/s/d = move north/west/south/east
+* l/L = drop item
+* j/J = activate
+* i = show inventory
+* k/K = pick up
+* e/E = examine
+* v = view own stats
+* H = view help
+
+
+
+
+Here are some important hints:
+* You start without food, weapon or armor
+* rods can be used as weapons
+* The attack on the enemy city will start in %s ticks
+* a promotion drastically improves survivability
+* how well quests are completed has an effect on how well your faction is doing
+
+press space to continue
+"""%(src.gamestate.gamestate.mainChar.name,src.gamestate.gamestate.mainChar.faction,self.startDelay,))
+
+
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.startDelay-self.gatherTime)
+        event.setCallback({"container": self, "method": "almostStartNewEpoch"})
+        terrain.addEvent(event)
+
+    def almostStartNewEpoch(self):
+        terrain = src.gamestate.gamestate.terrainMap[7][7]
+
+        showText("""
+In %s ticks the attack will finally beginn!
+
+Hurry to the assembly hall and recieve your orders to be able to participate in the battle.
+
+
+imortant UI elements:
+You now got the quest to stand attention in the assembly hall.
+You can see your quests in the upper left corner of the screen.
+
+The topmost line of this quest screen shows a proposed solution for the current quest.
+The shown solution is a series of keystrokes. For example a solution of "13d" means you should move 13 steps east.
+If you press + the proposed solution is run automatically on your character.
+If you dislike the proposed solution press # to reroll the solution.
+
+
+
+
+Important Hint:
+* The NPCs in the attack run by using quest solvers
+* strictly following quest solutions will lead to average results compared to your peers
+* rerolling a solution might not always lead to a different result
+* use the + key to get around faster 
+
+
+press space to continue"""%(self.gatherTime,))
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.gatherTime)
+        event.setCallback({"container": self, "method": "startNewEpoch"})
+        terrain.addEvent(event)
 
     def rewardNPCDirect(self,character):
         print("rewarding npc")
@@ -982,14 +1113,70 @@ class BackToTheRoots(BasicPhase):
 
             cityLeader = self.leaders[cityLocation]
 
+            if cityLeader.faction == src.gamestate.gamestate.mainChar.faction:
+                if self.firstEpoch and 1==0:
+                    showText("""
+A new epoch has started and the attack on the enemy city is about to start.
+
+Go to the assembly hall and wait for further commands. You have %s ticks to do that.
+
+press space to continue""")
+                    self.firstEpoch = False
+                else:
+                    rowwidth = 15
+
+                    infogrid = []
+                    for i in range(0,9*6*2):
+                        infogrid.append(" "*rowwidth)
+
+                    infogrid[4] = cityLeader.name+" "*(rowwidth-len(cityLeader.name))
+                    row2Counter = 0
+                    row3Counter = 0
+                    for subleader in cityLeader.subordinates:
+                        infogrid[2*9+1+row2Counter*3] = subleader.name+" "*(rowwidth-len(subleader.name))
+                        infogrid[3*9+1+row2Counter*3] = str(subleader.reputation)+" "*(rowwidth-len(str(subleader.reputation)))
+                        for subsubleader in subleader.subordinates:
+                            infogrid[4*9+row3Counter] = subsubleader.name+" "*(rowwidth-len(subsubleader.name))
+                            infogrid[5*9+row3Counter] = str(subsubleader.reputation)+" "*(rowwidth-len(str(subsubleader.reputation)))
+                            lineCounter = 0
+                            for worker in subsubleader.subordinates:
+                                infogrid[(2+1+lineCounter)*2*9+row3Counter] = worker.name+" "*(rowwidth-len(worker.name))
+                                infogrid[((2+1+lineCounter)*2+1)*9+row3Counter] = str(worker.reputation)+" "*(rowwidth-len(str(worker.reputation)))
+                                lineCounter += 1
+                            row3Counter += 1
+                        row2Counter += 1
+
+                    reputationTree = """
+cityleader:   """+"%s   "*9+"""
+              """+"%s   "*9+"""
+subleaders:   """+"%s   "*9+"""
+              """+"%s   "*9+"""
+squadleaders: """+"%s   "*9+"""
+              """+"%s   "*9+"""
+
+workers:      """+"%s   "*9+"""
+              """+"%s   "*9+"""
+workers:      """+"%s   "*9+"""
+              """+"%s   "*9+"""
+workers:      """+"%s   "*9+"""
+              """+"%s   "*9+"""
+"""
+                    reputationTree = reputationTree%tuple(infogrid)
+
+                    showText("""
+a new epoch has started!
+
+the current reputation is:
+%s
+
+press space to continue"""%(reputationTree))
+
+
             print("found leader")
             if cityLeader.dead:
                 print("leader dead")
                 continue
         
-            if cityLeader.faction == src.gamestate.gamestate.mainChar.faction:
-                showText("a new epoch begins")
-
             for i in range(0,numNpcs):
                 newNPC = self.genNPC(self.cityIds[cityLocation],cityLocation)
                 self.cityNPCCounters[cityLocation] += 1
@@ -1025,9 +1212,9 @@ class BackToTheRoots(BasicPhase):
                 if random.choice((True,True,False,)):
                     selectedSubLeader = random.choice(cityLeader.subordinates)
                 else:
-                    maxReputation = 0
+                    maxReputation = None
                     for char in cityLeader.subordinates:
-                        if char.reputation >= maxReputation:
+                        if maxReputation == None or char.reputation >= maxReputation:
                             selectedSubLeader = char
                             maxReputation = char.reputation
 
@@ -1065,9 +1252,9 @@ class BackToTheRoots(BasicPhase):
                 if random.choice((True,True,False,)):
                     selectedSubsubLeader = random.choice(selectedSubLeader.subordinates)
                 else:
-                    maxReputation = 0
+                    maxReputation = None
                     for char in selectedSubLeader.subordinates:
-                        if char.reputation >= maxReputation:
+                        if maxReputation == None or char.reputation >= maxReputation:
                             selectedSubsubLeader = char
                             maxReputation = char.reputation
 
@@ -1146,9 +1333,9 @@ class BackToTheRoots(BasicPhase):
                     print("no subordinate to promote")
                     continue
 
-                maxReputation = 0
+                maxReputation = None
                 for char in candidates:
-                    if char.reputation >= maxReputation:
+                    if maxReputation == None or char.reputation >= maxReputation:
                         subLeader = char
                         maxReputation = char.reputation
 
@@ -1184,9 +1371,9 @@ class BackToTheRoots(BasicPhase):
                     print("no subsubordinate to promote")
                     continue
 
-                maxReputation = 0
+                maxReputation = None
                 for char in candidates:
-                    if char.reputation >= maxReputation:
+                    if maxReputation == None or char.reputation >= maxReputation:
                         subsubLeader = char
                         maxReputation = char.reputation
 
@@ -1245,10 +1432,10 @@ class BackToTheRoots(BasicPhase):
         print("fetch map:")
         for cityLocation in self.citylocations:
             print("city at %s needs item #%s from %s"%(cityLocation,toFetchMap[cityLocation],specialItemPositions[toFetchMap[cityLocation]]))
-            self.leaderQuests[cityLocation].setPriorityObtain(toFetchMap[cityLocation],specialItemPositions[toFetchMap[cityLocation]],epochLength=1000)
+            self.leaderQuests[cityLocation].setPriorityObtain(toFetchMap[cityLocation],specialItemPositions[toFetchMap[cityLocation]],epochLength=self.epochLength)
 
         print("schedule next epoch")
-        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1000)
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.epochLength)
         event.setCallback({"container": self, "method": "endEpoch"})
         terrain.addEvent(event)
 

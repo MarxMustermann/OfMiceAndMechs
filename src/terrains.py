@@ -991,6 +991,7 @@ class Terrain(src.saveing.Saveable):
                         )
                         pass
                 char.addMessage("a force field pushes you")
+                char.addMessage(char)
         elif direction == "east":
             if char.xPosition % 15 == 13:
                 if char.yPosition % 15 < 7:
@@ -1010,6 +1011,7 @@ class Terrain(src.saveing.Saveable):
                         )
                         pass
                 char.addMessage("a force field pushes you")
+                char.addMessage(char)
         elif direction == "north":
             if char.yPosition % 15 == 1:
                 if char.xPosition % 15 < 7:
@@ -1029,6 +1031,7 @@ class Terrain(src.saveing.Saveable):
                         )
                         pass
                 char.addMessage("a force field pushes you")
+                char.addMessage(char)
         elif direction == "south":
             if char.yPosition % 15 == 13:
                 if char.xPosition % 15 < 7:
@@ -1048,6 +1051,7 @@ class Terrain(src.saveing.Saveable):
                         )
                         pass
                 char.addMessage("a force field pushes you")
+                char.addMessage(char)
         """
         if char.xPosition % 15 in (0, 14) and direction in ("north", "south"):
             return

@@ -247,6 +247,7 @@ class Quest(src.saveing.Saveable):
 
         self.lifetime = lifetime
         self.lifetimeEvent = None
+        self.startTick = src.gamestate.gamestate.tick
 
         # set id
         self.id = str(random.random())+str(time.time())
@@ -384,7 +385,15 @@ class Quest(src.saveing.Saveable):
                     )
                 return [[description, "\n"]]
         else:
-            return self.description
+            description = self.description
+            if self.lifetimeEvent:
+                description += (
+                    " ("
+                    + str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick)
+                    + " / "
+                    + str(self.lifetime)
+                    + ")")
+            return description
 
     """
     tear the quest down
@@ -574,8 +583,11 @@ class Quest(src.saveing.Saveable):
 
         # add automatic termination
         if self.lifetime and not self.lifetimeEvent:
+            if self.startTick + self.lifetime < src.gamestate.gamestate.tick:
+                self.timeOut()
+                return
             self.lifetimeEvent = src.events.EndQuestEvent(
-                src.gamestate.gamestate.tick + self.lifetime,
+                self.startTick + self.lifetime,
                 callback={"container": self, "method": "timeOut"},
             )
             self.character.addEvent(self.lifetimeEvent)
@@ -660,8 +672,11 @@ class GatherItems(Quest):
         self.postHandler()
 
     def solver(self, character):
+        character.addMessage("running solver")
+        character.addMessage(character)
         if len(character.inventory) > 1:
             character.inventory.pop()
+            character.addMessage("test")
             character.awardReputation(amount=1,reason="gathering item",carryOver=True)
             return False
         character.runCommandString(".30.")
@@ -707,6 +722,7 @@ class ObtainAllSpecialItems(Quest):
 
     def solver(self, character):
         if self.didDelegate:
+            character.runCommandString("10.")
             return False
 
         if self.resetDelegations:
@@ -718,24 +734,15 @@ class ObtainAllSpecialItems(Quest):
                 serveQuest.subQuests = []
             self.resetDelegations = False
 
+        if not self.priorityObtainID or not self.priorityObtainLocation:
+            character.runCommandString("10.")
+            return False
+
         lifetime = None
         if self.epochLength:
             lifetime=self.epochLength-100
-        command = "...QSNObtainSpecialItem\n%s\n%s,%s\nlifetime:%s; ..."%(self.priorityObtainID,self.priorityObtainLocation[0],self.priorityObtainLocation[1],lifetime,)
+        command = ".QSNObtainSpecialItem\n%s\n%s,%s\nlifetime:%s; ."%(self.priorityObtainID,self.priorityObtainLocation[0],self.priorityObtainLocation[1],lifetime,)
         character.runCommandString(command)
-        """
-        for npc in character.subordinates:
-
-            if npc.quests:
-                lifetime = None
-                if self.epochLength:
-                    lifetime=self.epochLength-100
-                quest = ObtainSpecialItem(lifetime=lifetime)
-                quest.setToObtain(self.priorityObtainID,self.priorityObtainLocation)
-
-                serveQuest = npc.quests[0]
-                serveQuest.addQuest(quest)
-        """
 
         self.didDelegate = True
 
@@ -977,7 +984,7 @@ class MetaQuestSequence(Quest):
                     out += (
                         "    x "
                         + "\n      ".join(quest.getDescription().split("\n"))
-                        + "\n"
+                        + "d\n"
                     )
         return out
 
@@ -4982,6 +4989,9 @@ class Serve(MetaQuestParralel):
         if not hasattr(character,"superior") or not character.superior or character.superior.dead:
             character.die(reason="superior died")
             return
+        if not self.subQuests:
+            character.runCommandString("gg")
+            return
         super().solver(character)
 
 class DeliverSpecialItem(Quest):
@@ -4994,10 +5004,40 @@ class DeliverSpecialItem(Quest):
         self.itemID = None
         self.hadItem = None
         self.gaveReward = False
+        self.hasListener = False
+
+    def wrapedTriggerCompletionCheck(self, extraInfo):
+        if not self.active:
+            return
+        self.triggerCompletionCheck(extraInfo[0])
+
+    def assignToCharacter(self, character):
+        if not self.hasListener:
+            character.addListener(self.wrapedTriggerCompletionCheck, "moved")
+            self.hasListener = True
+
+        super().assignToCharacter(character)
+
 
     def triggerCompletionCheck(self, character=None):
         if not character:
             return
+
+        foundItem = None
+        for item in character.inventory:
+            if not item.type == "SpecialItem":
+                continue
+
+            if not self.itemID == None and not self.itemID == item.itemID:
+                continue
+
+            foundItem = item
+            self.itemID = item.itemID
+
+        if not foundItem:
+            self.fail()
+            return True
+
         if not character.container:
             return
         if not isinstance(character.container, src.rooms.Room):
@@ -5276,10 +5316,15 @@ class EnterEnemyCity(Quest):
                 self.postHandler()
         else:
             if not self.rewardedNearby and abs(character.xPosition//15-self.cityLocation[0])+abs(character.yPosition//15-self.cityLocation[1]) == 1:
-                character.awardReputation(amount=20, reason="getting near the enemy city")
+                character.awardReputation(amount=5, reason="getting near the enemy city", carryOver=True)
                 self.rewardedNearby = True
 
         return
+
+    def timeOut(self):
+        if not self.rewardedNearby:
+            self.character.revokeReputation(amount=20, reason="not getting near the enemy city")
+        super().timeOut()
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if not self.active:
@@ -5415,9 +5460,16 @@ class ObtainSpecialItem(MetaQuestSequence):
         parameters.append({"name":"itemID","type":"int"})
         return parameters
 
+    def getOptionalParameters(self):
+        result = super().getOptionalParameters()
+        result.append({"name":"avoidEnemies","type":"bool","default":None})
+        return result
+
     def setParameters(self,parameters):
         if "itemLocation" in parameters and "itemID" in parameters:
             self.setToObtain(parameters["itemID"],parameters["itemLocation"])
+        if "lifetime" in parameters:
+            self.initialLifetime = parameters["lifetime"]
         super().setParameters(parameters)
 
     def setToObtain(self, itemID, itemLocation):
@@ -5426,74 +5478,61 @@ class ObtainSpecialItem(MetaQuestSequence):
         self.metaDescription = "obtain special item #%s from %s"%(self.itemID,self.itemLocation)
         self.didDelegate = False
 
-    def triggerCompletionCheck(self):
-        return
+    def activate(self):
+        self.generateSubquests(self.character)
+        return super().activate()
+
+    def generateSubquests(self,character):
+        if self.addedSubQuests and not len(self.subQuests):
+            self.fail()
+            return False
+        if not self.addedSubQuests:
+
+            #quest = StandAttention()
+            #self.addQuest(quest)
+
+            quest = DeliverSpecialItem()
+            self.addQuest(quest)
+            quest.itemID = self.itemID
+
+            quest = GoHome()
+            self.addQuest(quest)
+            quest.itemID = self.itemID
+
+            lifetime = None
+            if self.initialLifetime:
+                lifetime = self.initialLifetime//2
+            quest = GrabSpecialItem(lifetime=lifetime)
+            self.addQuest(quest)
+            quest.assignToCharacter(character)
+            quest.activate()
+            quest.itemID = self.itemID
+
+            quest = EnterEnemyCity(lifetime=lifetime)
+            quest.setCityLocation(self.itemLocation)
+            quest.assignToCharacter(character)
+            quest.activate()
+
+            self.addQuest(quest)
+            self.addedSubQuests = True
 
     def solver(self, character):
         if character.rank < 6:
-            if character.subordinates:
-
-                if self.didDelegate:
-                    character.runCommandString(".gg.")
-                    return
-                
-                for npc in character.subordinates:
-
-                    if npc.dead:
-                        print("delegate to dead npc -_-")
-                        continue
-                    serveQuest = npc.quests[0]
-                    serveQuest.cancelOrders()
-
-                    if not npc.subordinates:
-                        quest = GatherItems(lifetime=self.initialLifetime)
-                        serveQuest.addQuest(quest)
-                        quest.assignToCharacter(npc)
-                        quest.activate()
-
-                    quest = ObtainSpecialItem(lifetime=self.initialLifetime)
-                    quest.setToObtain(self.itemID,self.itemLocation)
-                    serveQuest.addQuest(quest)
-
-                self.metaDescription = "obtain special item #%s from %s (delegated)"%(self.itemID,self.itemLocation)
-                self.didDelegate = True
-            else:
+            if self.didDelegate:
                 character.runCommandString(".gg.")
+                return
+            
+            command = ".QSNObtainSpecialItem\n%s\n%s,%s\nlifetime:%s; ."%(self.itemID,self.itemLocation[0],self.itemLocation[1],self.initialLifetime,)
+            character.runCommandString(command)
+
+            if not character.rank < 5:
+                command = ".QSNGatherItems\nlifetime:%s; ."%(self.initialLifetime,)
+                character.runCommandString(command)
+
+            self.metaDescription = "obtain special item #%s from %s (delegated)"%(self.itemID,self.itemLocation)
+            self.didDelegate = True
         else:
-
-            if self.addedSubQuests and not len(self.subQuests):
-                self.fail()
-                return False
-            if not self.addedSubQuests:
-                #quest = StandAttention()
-                #self.addQuest(quest)
-
-                quest = DeliverSpecialItem()
-                self.addQuest(quest)
-                quest.itemID = self.itemID
-
-                quest = GoHome()
-                self.addQuest(quest)
-                quest.itemID = self.itemID
-
-                lifetime = None
-                if self.initialLifetime:
-                    lifetime = self.initialLifetime//2
-                quest = GrabSpecialItem(lifetime=lifetime)
-                self.addQuest(quest)
-                quest.assignToCharacter(character)
-                quest.activate()
-                quest.itemID = self.itemID
-
-                quest = EnterEnemyCity(lifetime=lifetime)
-                quest.setCityLocation(self.itemLocation)
-                quest.assignToCharacter(character)
-                quest.activate()
-
-                self.addQuest(quest)
-                self.addedSubQuests = True
-
-
+            self.generateSubquests(character)
             return super().solver(character)
 
         return False
@@ -5581,6 +5620,7 @@ questMap = {
     "EnterEnemyCity": EnterEnemyCity,
     "DeliverSpecialItem": DeliverSpecialItem,
     "GoHome": GoHome,
+    "GatherItems": GatherItems,
 }
 
 def getQuestFromState(state):

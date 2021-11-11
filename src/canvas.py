@@ -362,13 +362,13 @@ class Canvas(object):
                 tcodPrepared = []
                 for item in mapped:
                     if isinstance(item, str):
-                        tcodPrepared.append(((255,255,255),item))
+                        tcodPrepared.append(((255,255,255),(0,0,0),item))
                     if isinstance(item, tuple):
-                        tcodPrepared.append((tuple(item[0].get_rgb_values()[:3]),item[1]))
+                        tcodPrepared.append((tuple(item[0].get_rgb_values()[:3]),tuple(item[0].get_rgb_values()[3:]),item[1]))
 
                 numPrinted = 0
                 for item in tcodPrepared:
-                    text = item[1]
+                    text = item[2]
                     text = text.replace("ò","o")
                     text = text.replace("＠","@ ")
                     text = text.replace("🝆","<")
@@ -379,7 +379,7 @@ class Canvas(object):
                     text = text.replace("┛","+")
                     text = text.replace("┓","+")
                     text = text.replace("┛","+")
-                    console.print(x=2*x+numPrinted,y=y,fg=item[0],bg=(0,0,0),string=text)
+                    console.print(x=2*x+numPrinted,y=y,fg=item[0],bg=item[1],string=text)
                     numPrinted += 1
                 x += 1
 

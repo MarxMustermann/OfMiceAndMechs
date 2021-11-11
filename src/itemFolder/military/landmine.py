@@ -11,6 +11,7 @@ class LandMine(src.items.Item):
     walkable = True
     name = "landmine"
     isStepOnActive = True
+    bolted = False
 
     def __init__(self):
         """
@@ -18,6 +19,13 @@ class LandMine(src.items.Item):
         """
 
         super().__init__(display="_~")
+
+    def pickUp(self, character):
+        print("picked up")
+        if random.random() < 0.5:
+            self.destroy()
+        else:
+            super().pickUp(character)
 
     def doStepOnAction(self, character):
         character.addMessage("you step on a landmine")

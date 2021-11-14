@@ -1,9 +1,6 @@
 """
 quests and quest related code
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-most of this code is currenty not in use and needs to be reintegrated
-
 """
 
 # import basic libs
@@ -630,124 +627,6 @@ class Quest(src.saveing.Saveable):
     def getSolvingCommandString(self,character):
         return None
 
-class StandAttention(Quest):
-
-    """
-    state initialization
-    """
-
-    def __init__(self, description="wait for orders", creator=None):
-        questList = []
-        super().__init__(questList, creator=creator)
-        self.description = description
-
-        # save initial state and register
-        self.type = "StandAttention"
-
-    def triggerCompletionCheck(self):
-        return
-
-    def solver(self, character):
-        character.runCommandString(".30.")
-        return False
-
-class GatherItems(Quest):
-
-    """
-    state initialization
-    """
-
-    def __init__(self, description="gather items", creator=None, lifetime=None):
-        questList = []
-        super().__init__(questList, creator=creator, lifetime=lifetime)
-        self.description = description
-
-        # save initial state and register
-        self.type = "GatherItems"
-
-    def triggerCompletionCheck(self):
-        return
-
-    def timeOut(self):
-        self.postHandler()
-
-    def solver(self, character):
-        character.addMessage("running solver")
-        character.addMessage(character)
-        if len(character.inventory) > 1:
-            character.inventory.pop()
-            character.addMessage("test")
-            character.awardReputation(amount=1,reason="gathering item",carryOver=True)
-            return False
-        character.runCommandString(".30.")
-        return False
-
-class ObtainAllSpecialItems(Quest):
-
-    """
-    state initialization
-    """
-
-    def __init__(self, description="obtain all special items", creator=None):
-        questList = []
-        super().__init__(questList, creator=creator)
-        self.description = description
-        self.homePos = None
-        self.priorityObtainID = None
-        self.priorityObtainLocation = None
-        self.didDelegate = False
-        self.resetDelegations = False
-        self.epochLength = None
-
-        # save initial state and register
-        self.type = "ObtainAllSpecialItems"
-
-    """
-    never complete
-    """
-
-    def setPriorityObtain(self, itemID, itemLocation, epochLength=None):
-        if self.didDelegate:
-            self.resetDelegations = True
-            
-        self.priorityObtainID = itemID
-        if epochLength:
-            self.epochLength = epochLength
-        self.priorityObtainLocation = itemLocation
-        self.description = "obtain all special items, especially #%s from %s"%(itemID,itemLocation)
-        self.didDelegate = False
-
-    def triggerCompletionCheck(self):
-        return
-
-    def solver(self, character):
-        if self.didDelegate:
-            character.runCommandString("10.")
-            return False
-
-        if self.resetDelegations:
-            for npc in character.subordinates:
-                if not npc.quests or not isinstance(npc.quests[0], Serve):
-                    print("bad quest setup detected")
-                    continue
-                serveQuest = npc.quests[0]
-                serveQuest.subQuests = []
-            self.resetDelegations = False
-
-        if not self.priorityObtainID or not self.priorityObtainLocation:
-            character.runCommandString("10.")
-            return False
-
-        lifetime = None
-        if self.epochLength:
-            lifetime=self.epochLength-100
-        command = ".QSNObtainSpecialItem\n%s\n%s,%s\nlifetime:%s; ."%(self.priorityObtainID,self.priorityObtainLocation[0],self.priorityObtainLocation[1],lifetime,)
-        character.runCommandString(command)
-
-        self.didDelegate = True
-
-        return False
-
 class MetaQuestSequence(Quest):
     """
     state initialization
@@ -1098,6 +977,173 @@ class MetaQuestSequence(Quest):
                 self.subQuests[0].deactivate()
         super().deactivate()
 
+
+class StandAttention(MetaQuestSequence):
+
+    """
+    state initialization
+    """
+
+    def __init__(self, description="wait for orders", creator=None):
+        questList = []
+        super().__init__(questList, creator=creator)
+        self.metaDescription = description
+        self.addedSubQuests = False
+
+        # save initial state and register
+        self.type = "StandAttention"
+        self.hasListener = False
+
+    def wrapedTriggerCompletionCheck(self, extraInfo):
+        if not self.active:
+            return
+
+        self.triggerCompletionCheck(extraInfo[0])
+
+    def assignToCharacter(self, character):
+        if not self.hasListener:
+            character.addListener(self.wrapedTriggerCompletionCheck, "moved")
+            self.hasListener = True
+        super().assignToCharacter(character)
+
+
+    def triggerCompletionCheck(self,character=None):
+        return
+
+    def generateSubquests(self,character):
+        if not self.addedSubQuests:
+            quest = GoToPosition()
+            quest.assignToCharacter(character)
+            targetpos = (character.registers["ATTNPOSx"],character.registers["ATTNPOSy"])
+            quest.setParameters({"targetPosition":targetpos})
+            self.addQuest(quest)
+
+            quest = GoToPosition()
+            quest.assignToCharacter(character)
+            quest.setParameters({"targetPosition":(6,6)})
+            self.addQuest(quest)
+
+
+            quest = GoHome()
+            quest.assignToCharacter(character)
+            quest.activate()
+            quest.generateSubquests(character)
+            self.addQuest(quest)
+
+    def getSolvingCommandString(self, character):
+        if self.lifetimeEvent:
+            return str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick)+"."
+        else:
+            return "10."
+
+    def solver(self, character):
+        if self.subQuests:
+            super().solver(character)
+        else:
+            commandString = self.getSolvingCommandString(character)
+            self.randomSeed = random.random()
+            if commandString:
+                character.runCommandString(commandString)
+                return False
+            else:
+                return True
+
+class GatherItems(Quest):
+
+    """
+    state initialization
+    """
+
+    def __init__(self, description="gather items", creator=None, lifetime=None):
+        questList = []
+        super().__init__(questList, creator=creator, lifetime=lifetime)
+        self.description = description
+
+        # save initial state and register
+        self.type = "GatherItems"
+
+    def triggerCompletionCheck(self):
+        return
+
+    def timeOut(self):
+        self.postHandler()
+
+    def solver(self, character):
+        character.addMessage("running solver")
+        character.addMessage(character)
+        if len(character.inventory) > 1:
+            character.inventory.pop()
+            character.addMessage("test")
+            character.awardReputation(amount=1,reason="gathering item",carryOver=True)
+            return False
+        character.runCommandString(".30.")
+        return False
+
+class ObtainAllSpecialItems(Quest):
+
+    """
+    state initialization
+    """
+
+    def __init__(self, description="obtain all special items", creator=None):
+        questList = []
+        super().__init__(questList, creator=creator)
+        self.description = description
+        self.homePos = None
+        self.priorityObtainID = None
+        self.priorityObtainLocation = None
+        self.didDelegate = False
+        self.resetDelegations = False
+        self.epochLength = None
+
+        # save initial state and register
+        self.type = "ObtainAllSpecialItems"
+
+    """
+    never complete
+    """
+
+    def setPriorityObtain(self, itemID, itemLocation, epochLength=None):
+        if self.didDelegate:
+            self.resetDelegations = True
+            
+        self.priorityObtainID = itemID
+        if epochLength:
+            self.epochLength = epochLength
+        self.priorityObtainLocation = itemLocation
+        self.description = "obtain all special items, especially #%s from %s"%(itemID,itemLocation)
+        self.didDelegate = False
+
+    def triggerCompletionCheck(self):
+        return
+
+    def solver(self, character):
+        if self.didDelegate:
+            character.runCommandString("10.")
+            return False
+
+        if self.resetDelegations:
+            for npc in character.subordinates:
+                if not npc.quests or not isinstance(npc.quests[0], Serve):
+                    print("bad quest setup detected")
+                    continue
+                serveQuest = npc.quests[0]
+                serveQuest.subQuests = []
+            self.resetDelegations = False
+
+        if not self.priorityObtainID or not self.priorityObtainLocation:
+            character.runCommandString("10.")
+            return False
+
+        lifetime = None
+        if self.epochLength:
+            lifetime=self.epochLength-100
+        command = ".QSNObtainSpecialItem\n%s\n%s,%s\nlifetime:%s; ."%(self.priorityObtainID,self.priorityObtainLocation[0],self.priorityObtainLocation[1],lifetime,)
+        character.runCommandString(command)
+
+        self.didDelegate = True
+
+        return False
 
 """
 a container quest containing a list of quests that have to be handled in any order
@@ -2302,7 +2348,7 @@ class WaitQuest(Quest):
     def __init__(
         self, followUp=None, startCinematics=None, lifetime=None, creator=None
     ):
-        self.description = "please wait"
+        self.description = "wait"
         super().__init__(lifetime=lifetime, creator=creator)
 
         # save initial state and register
@@ -2314,8 +2360,20 @@ class WaitQuest(Quest):
     do nothing
     """
 
+    def getSolvingCommandString(self, character):
+        if self.lifetimeEvent:
+            return str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick)+"."
+        else:
+            return "10."
+
     def solver(self, character):
-        return True
+        commandString = self.getSolvingCommandString(character)
+        self.randomSeed = random.random()
+        if commandString:
+            character.runCommandString(commandString)
+            return False
+        else:
+            return True
 
 
 """
@@ -5115,15 +5173,78 @@ class DeliverSpecialItem(Quest):
         character.runCommandString("s"*(foundItemSlot.yPosition-character.yPosition))
         character.runCommandString("w"*(character.yPosition-foundItemSlot.yPosition))
 
-class GoHome(Quest):
+class GoToPosition(Quest):
+    def __init__(self, description="go to position", creator=None):
+        questList = []
+        super().__init__(questList, creator=creator)
+        self.targetPosition = None
+        self.description = description
+        self.metaDescription = description
+        self.hasListener = False
+
+    def wrapedTriggerCompletionCheck(self, extraInfo):
+        if not self.active:
+            return
+
+        self.triggerCompletionCheck(extraInfo[0])
+
+    def assignToCharacter(self, character):
+        if not self.hasListener:
+            character.addListener(self.wrapedTriggerCompletionCheck, "moved")
+            self.hasListener = True
+
+        super().assignToCharacter(character)
+
+    def getSolvingCommandString(self, character):
+        if not self.targetPosition:
+            return "..."
+        if character.xPosition%15 == self.targetPosition[0] and character.yPosition%15 == self.targetPosition[1]:
+            return "10."
+        else:
+            return "d"*(self.targetPosition[0]%15-character.xPosition%15)+"s"*(self.targetPosition[1]%15-character.yPosition%15)+"w"*(character.yPosition%15-self.targetPosition[1]%15)+"a"*(character.xPosition%15-self.targetPosition[0]%15)
+
+    def triggerCompletionCheck(self, character=None):
+        if not self.targetPosition:
+            return False
+        if not character:
+            return False
+        if not self.active:
+            return
+        if character.xPosition%15 == self.targetPosition[0] and character.yPosition%15 == self.targetPosition[1]:
+            self.postHandler()
+            return True
+        return False
+
+    def setParameters(self,parameters):
+        if "targetPosition" in parameters and "targetPosition" in parameters:
+            self.targetPosition = parameters["targetPosition"]
+            self.description = self.metaDescription+" %s"%(self.targetPosition,)
+        return super().setParameters(parameters)
+
+    def solver(self, character):
+        commandString = self.getSolvingCommandString(character)
+        self.randomSeed = random.random()
+        if commandString:
+            character.runCommandString(commandString)
+            return False
+        else:
+            return True
+
+    def getRequiredParameters(self):
+        parameters = super().getRequiredParameters()
+        parameters.append({"name":"targetPosition","type":"coordinate"})
+        return parameters
+
+class GoHome(MetaQuestSequence):
     def __init__(self, description="go home", creator=None):
         questList = []
         super().__init__(questList, creator=creator)
-        self.description = description
+        self.metaDescription = description
         # save initial state and register
         self.type = "GoHome"
         self.itemID = None
         self.hasListener = False
+        self.addedSubQuests = False
 
     def triggerCompletionCheck(self, character=None):
         if not character:
@@ -5156,11 +5277,28 @@ class GoHome(Quest):
 
     def setHomeLocation(self,character):
         self.cityLocation = (character.registers["HOMEx"],character.registers["HOMEy"])
-        self.description = "go home %s/%s"%(self.cityLocation[0],self.cityLocation[1],)
+        self.metaDescription = "go home %s/%s"%(self.cityLocation[0],self.cityLocation[1],)
+
+    def generateSubquests(self,character):
+        if not self.addedSubQuests:
+
+            """
+            quest = GoToTile()
+            self.addQuest(quest)
+            quest.assignToCharacter(character)
+            quest.activate()
+            quest.setParameters({"targetTile":self.cityLocation})
+
+            self.addedSubQuests = True
+            """
+            return
 
     def solver(self, character):
+        #if self.subQuests:
+        #    return super().solver()
+
         commandString = self.getSolvingCommandString(character)
-        self.randomSeed = random.randint(1,2000000)
+        self.randomSeed = random.random()
         if commandString:
             character.runCommandString(commandString)
             return False
@@ -5497,7 +5635,6 @@ class ObtainSpecialItem(MetaQuestSequence):
 
             quest = GoHome()
             self.addQuest(quest)
-            quest.itemID = self.itemID
 
             lifetime = None
             if self.initialLifetime:

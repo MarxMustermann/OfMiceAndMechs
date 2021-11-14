@@ -2414,7 +2414,6 @@ press key for advanced drop
         if key in (commandChars.hail,):
             charState["submenue"] = ChatPartnerselection()
 
-        char.automated = False
         # do automated movement for the main character
         if key in (commandChars.advance, commandChars.autoAdvance):
             char.showThinking = True
@@ -2422,15 +2421,17 @@ press key for advanced drop
                 charState["lastMoveAutomated"] = True
                 if not char.automated:
                     char.runCommandString("~")
-                char.automated = True
+                char.applysolver()
             else:
                 pass
 
+        """
         # recalculate the questmarker since it could be tainted
         elif key not in (commandChars.pause,):
             charState["lastMoveAutomated"] = False
             if char.quests:
                 char.setPathToQuest(char.quests[0])
+        """
 
     # drop the marker for interacting with an item after bumping into it
     # bad code: ignore autoadvance opens up an unintended exploit
@@ -3058,6 +3059,8 @@ class ChatPartnerselection(SubMenu):
                         continue
                     if not char.faction == src.gamestate.gamestate.mainChar.faction:
                         continue
+                    if not (char.xPosition//15 == src.gamestate.gamestate.mainChar.xPosition//15 and char.yPosition//15 == src.gamestate.gamestate.mainChar.yPosition//15):
+                        continue
                     options.append((char, char.name))
             # get character on terrain
             else:
@@ -3067,8 +3070,19 @@ class ChatPartnerselection(SubMenu):
                         continue
                     if not char.faction == src.gamestate.gamestate.mainChar.faction:
                         continue
-                    options.append((char, char.name))
+                    if not (char.xPosition//15 == src.gamestate.gamestate.mainChar.xPosition//15 and char.yPosition//15 == src.gamestate.gamestate.mainChar.yPosition//15):
+                        continue
+                    if not char.rank:
+                        continue
 
+                    if char.rank < src.gamestate.gamestate.mainChar.rank:
+                        options.append((char, char.name + " (outranks you)"))
+                    elif char.rank == src.gamestate.gamestate.mainChar.rank:
+                        options.append((char, char.name + " (same rank)"))
+                    else:
+                        options.append((char, char.name))
+
+                """
                 # get nearby rooms
                 bigX = src.gamestate.gamestate.mainChar.xPosition // 15
                 bigY = src.gamestate.gamestate.mainChar.yPosition // 15
@@ -3094,6 +3108,7 @@ class ChatPartnerselection(SubMenu):
                         if not char.faction == src.gamestate.gamestate.mainChar.faction:
                             continue
                         options.append((char, char.name))
+                """
 
             self.setOptions("talk with whom?", options)
 
@@ -5150,7 +5165,7 @@ def gameLoop(loop, user_data=None):
                         #if not char == src.gamestate.gamestate.mainChar:
                         char.startIdling()
 
-                    while len(state["commandKeyQueue"]) > 100:
+                    while len(state["commandKeyQueue"]) > 1000:
                         state["commandKeyQueue"].pop()
 
                     while len(char.messages) > 100:

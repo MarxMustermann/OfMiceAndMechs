@@ -29,6 +29,7 @@ class Character(src.saveing.Saveable):
     objectsToStore = []
     attributesToStore = []
     superior = None
+    rank = None
 
     showThinking = False
     showGotCommand = False
@@ -1224,10 +1225,15 @@ class Character(src.saveing.Saveable):
 
     # obsolete: should probably rewritten
     # bad code: should be handled in quest
-    def applysolver(self, solver):
+    def applysolver(self, solver=None):
         """
         this wrapper converts a character centered call to a solver centered call
         """
+
+        if not solver and self.quests:
+            self.quests[0].solver(self)
+            return
+        return
 
         if not self.unconcious and not self.dead:
             solver(self)
@@ -1631,10 +1637,12 @@ class Character(src.saveing.Saveable):
                 + " ticks!"
             )
 
+        """
         # call the autosolver
         if self.automated:
             if len(self.quests):
                 self.applysolver(self.quests[0].solver)
+        """
 
     # bad pattern: is repeated in items etc
     def addListener(self, listenFunction, tag="default"):

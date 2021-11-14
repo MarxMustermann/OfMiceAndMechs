@@ -602,11 +602,11 @@ class BackToTheRoots(BasicPhase):
         self.leaders = {}
         self.scoreTracker = {}
 
-        self.startDelay = 200
+        self.startDelay = 400
         self.epochLength = 2000
         self.firstEpoch = True
         self.npcCounter = 0
-        self.gatherTime = 50
+        self.gatherTime = 100
 
 
     def genNPC(self, cityCounter, citylocation, flaskUses=100, spawnArmor=True, spawnWeapon=True):
@@ -822,6 +822,8 @@ class BackToTheRoots(BasicPhase):
             slotItem.itemID = cityCounter
 
             leader = self.genNPC(cityCounter,citylocation)
+            leader.registers["ATTNPOSx"] = 7
+            leader.registers["ATTNPOSy"] = 3
             mainRoom.addCharacter(leader,7,3)
             leader.rank = 3
 
@@ -838,6 +840,8 @@ class BackToTheRoots(BasicPhase):
 
             for i in range(0,3):
                 subleader = self.genNPC(cityCounter,citylocation)
+                subleader.registers["ATTNPOSx"] = 4+i*3
+                subleader.registers["ATTNPOSy"] = 4
                 mainRoom.addCharacter(subleader,4+i*3,4)
 
                 leader.subordinates.append(subleader)
@@ -849,7 +853,10 @@ class BackToTheRoots(BasicPhase):
 
                 for j in range(0,3):
                     subsubleader = self.genNPC(cityCounter,citylocation)
-                    mainRoom.addCharacter(subsubleader,3+i*3+j,5)
+                    subsubleader.registers["ATTNPOSx"] = 3+i*3+j
+                    subsubleader.registers["ATTNPOSy"] = 5
+                    offset = random.choice(((0,1),(1,0),(0,-1),(-1,0)))
+                    currentTerrain.addCharacter(subsubleader, (citylocation[0]+offset[0])*15+random.randint(2,13), (citylocation[1]+offset[1])*15+random.randint(2,13))
 
                     subleader.subordinates.append(subsubleader)
 
@@ -873,8 +880,12 @@ class BackToTheRoots(BasicPhase):
                         if k in (0,1,):
                             spawnWeapon = True
 
-                        worker = self.genNPC(cityCounter,citylocation,flaskUses=(2-k),spawnWeapon=spawnWeapon,spawnArmor=spawnArmor)
-                        mainRoom.addCharacter(worker,3+i*3+j,7+k)
+                        worker = self.genNPC(cityCounter,citylocation,flaskUses=(2-k)+1,spawnWeapon=spawnWeapon,spawnArmor=spawnArmor)
+                        worker.registers["ATTNPOSx"] = 3+i*3+j
+                        worker.registers["ATTNPOSy"] = 7+k
+                        #mainRoom.addCharacter(worker,3+i*3+j,7+k)
+                        offset = random.choice(((0,1),(1,0),(0,-1),(-1,0)))
+                        currentTerrain.addCharacter(worker, (citylocation[0]+offset[0])*15+random.randint(2,13), (citylocation[1]+offset[1])*15+random.randint(2,13))
                         subsubleader.subordinates.append(worker)
 
                         quest = src.quests.Serve(superior=subsubleader)
@@ -885,7 +896,6 @@ class BackToTheRoots(BasicPhase):
                         if not placedMainChar and i == 2 and j == 2 and k == 2:
                             src.gamestate.gamestate.mainChar = worker
                             placedMainChar = True
-
             quest = src.quests.ObtainAllSpecialItems()
             leader.assignQuest(quest, active=True)
             self.leaderQuests[citylocation] = quest
@@ -993,6 +1003,22 @@ Here are some important hints:
 press space to continue
 """%(src.gamestate.gamestate.mainChar.name,src.gamestate.gamestate.mainChar.faction,self.startDelay,))
 
+        def waitNPC(char):
+            newQuest = src.quests.WaitQuest()
+            newQuest.setParameters({"lifetime":self.startDelay-self.gatherTime})
+            for charQuest in char.quests:
+                if charQuest.type == "Serve":
+                    charQuest.addQuest(newQuest)
+
+        for cityLocation in self.citylocations:
+            cityLeader = self.leaders[cityLocation]
+            waitNPC(cityLeader)
+            for subleader in cityLeader.subordinates:
+                waitNPC(subleader)
+                for subsubleader in subleader.subordinates:
+                    waitNPC(subsubleader)
+                    for worker in subsubleader.subordinates:
+                        waitNPC(worker)
 
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.startDelay-self.gatherTime)
         event.setCallback({"container": self, "method": "almostStartNewEpoch"})
@@ -1001,8 +1027,26 @@ press space to continue
     def almostStartNewEpoch(self):
         terrain = src.gamestate.gamestate.terrainMap[7][7]
 
+        def gatherNPC(char):
+            newQuest = src.quests.StandAttention()
+            newQuest.setParameters({"lifetime":self.gatherTime})
+            newQuest.generateSubquests(char)
+            for charQuest in char.quests:
+                if charQuest.type == "Serve":
+                    charQuest.addQuest(newQuest)
+
+        for cityLocation in self.citylocations:
+            cityLeader = self.leaders[cityLocation]
+            gatherNPC(cityLeader)
+            for subleader in cityLeader.subordinates:
+                gatherNPC(subleader)
+                for subsubleader in subleader.subordinates:
+                    gatherNPC(subsubleader)
+                    for worker in subsubleader.subordinates:
+                        gatherNPC(worker)
+
         showText("""
-In %s ticks the attack will finally beginn!
+In %s ticks a new epoch will begin and the attack on the enemy city will finally happen!
 
 Hurry to the assembly hall and recieve your orders to be able to participate in the battle.
 
@@ -1095,6 +1139,22 @@ press space to continue"""%(self.gatherTime,))
         for cityLocation in self.citylocations:
             print("city at %s has items %s "%(cityLocation,hasItemMap[cityLocation],))
 
+        def gatherNPC(char):
+            newQuest = src.quests.StandAttention()
+            for charQuest in char.quests:
+                if charQuest.type == "Serve":
+                    charQuest.addQuest(newQuest)
+
+        for cityLocation in self.citylocations:
+            cityLeader = self.leaders[cityLocation]
+            gatherNPC(cityLeader)
+            for subleader in cityLeader.subordinates:
+                gatherNPC(subleader)
+                for subsubleader in subleader.subordinates:
+                    gatherNPC(subsubleader)
+                    for worker in subsubleader.subordinates:
+                        gatherNPC(worker)
+
         for cityLocation in self.citylocations:
             numNpcs = len(hasItemMap[cityLocation])*5
             currentTerrain = src.gamestate.gamestate.terrainMap[cityLocation[1]][cityLocation[0]]
@@ -1114,11 +1174,11 @@ press space to continue"""%(self.gatherTime,))
             cityLeader = self.leaders[cityLocation]
 
             if cityLeader.faction == src.gamestate.gamestate.mainChar.faction:
-                if self.firstEpoch and 1==0:
+                if self.firstEpoch:
                     showText("""
 A new epoch has started and the attack on the enemy city is about to start.
 
-Go to the assembly hall and wait for further commands. You have %s ticks to do that.
+The commands are given out any moment. Wait a few moments more and be ready to roll!
 
 press space to continue""")
                     self.firstEpoch = False

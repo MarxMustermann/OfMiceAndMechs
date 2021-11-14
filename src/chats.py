@@ -1917,6 +1917,15 @@ class ChatMenu(Chat):
             self.partner.wakeUp()
             return True
 
+        if not key == "~":
+            if src.gamestate.gamestate.mainChar.rank > self.partner.rank:
+                src.gamestate.gamestate.mainChar.revokeReputation(amount=10**(self.partner.rank-src.gamestate.gamestate.mainChar.rank),reason="trying to adress someone out of rank")
+                return True
+
+            if src.gamestate.gamestate.mainChar.rank == self.partner.rank:
+                src.gamestate.gamestate.mainChar.addMessage("not now.")
+                return True
+
         # maybe exit the submenu
         if key == "esc" and not self.subMenu:
             # abort the chat

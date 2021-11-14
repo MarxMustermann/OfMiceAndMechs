@@ -5351,7 +5351,7 @@ class GoHome(MetaQuestSequence):
                 if not directions:
                     return None
                 direction = localRandom.choice(directions)
-                return ".13"+direction+".gg."
+                return ".13"+direction+"."
             else:
                 return True
 

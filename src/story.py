@@ -755,7 +755,7 @@ class BackToTheRoots(BasicPhase):
                 
                 #for i in range(0,random.randint(1,20)):
                 #for i in range(0,200):
-                for i in range(0,100):
+                for i in range(0,100000):
                     xPos = int(random.random()*13+1)*15+7
                     yPos = int(random.random()*13+1)*15+7
                     if (xPos//15,yPos//15) in self.citylocations:
@@ -764,8 +764,8 @@ class BackToTheRoots(BasicPhase):
                     enemy.health = random.randint(1, 100)
                     enemy.baseDamage = random.randint(1, 10)
                     enemy.godMode = True
-                    enemy.aggro = 1000000
-                    enemy.macroState["macros"]["g"] = ["g","g","_","g"]
+                    #enemy.aggro = 1000000
+                    enemy.macroState["macros"]["g"] = [".","_","g"]
                     enemy.runCommandString("_g")
                     #enemy.disabled = True
                     terrain.addCharacter(enemy, xPos, yPos)

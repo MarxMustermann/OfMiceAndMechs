@@ -61,6 +61,11 @@ baseDamage:
 
         character.addMessage("you equip the rod and wield a %s weapon now"%(self.baseDamage,))
 
+        if character.weapon:
+            oldWeapon = character.weapon
+            character.weapon = None
+            self.container.addItem(oldWeapon,self.getPosition())
+
         character.weapon = self
         self.container.removeItem(self)
 

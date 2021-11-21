@@ -557,10 +557,11 @@ def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
     if not checkStaggered(char):
         return
 
-    result = checkRecording(key,char,charState,main,header,footer,urwid,flags)
-    if not (result and result[0]):
-        return
-    key = result[1]
+    if charState["recording"]:
+        result = checkRecording(key,char,charState,main,header,footer,urwid,flags)
+        if not (result and result[0]):
+            return
+        key = result[1]
 
     if (
         charState["submenue"]
@@ -5215,17 +5216,28 @@ def gameLoop(loop, user_data=None):
                     ):
                         continue
                     text += str(cmd[0])
+
+                weaponString = "0"
+                if src.gamestate.gamestate.mainChar.weapon:
+                    weaponString = str(src.gamestate.gamestate.mainChar.weapon.baseDamage)
+                armorString = "0"
+                if src.gamestate.gamestate.mainChar.armor:
+                    armorString = str(src.gamestate.gamestate.mainChar.armor.armorValue)
                 text += (
-                    " | satiation: "
-                    + str(src.gamestate.gamestate.mainChar.satiation)
+                    "\nsatiation: "
+                    + str(src.gamestate.gamestate.mainChar.satiation)+";"
                     + " health: "
-                    + str(src.gamestate.gamestate.mainChar.health)
+                    + str(src.gamestate.gamestate.mainChar.health)+";"
+                    + " weapon: "
+                    + weaponString+";"
+                    + " armor: "
+                    + armorString+";"
                     + " tick: "
-                    + str(src.gamestate.gamestate.tick)
+                    + str(src.gamestate.gamestate.tick)+";"
                     + " mode: "
-                    + str(src.gamestate.gamestate.mainChar.hasOwnAction)
+                    + str(src.gamestate.gamestate.mainChar.hasOwnAction)+";"
                     + " len(commandKeyQueue): "
-                    + str(len(src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"]))
+                    + str(len(src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"]))+";"
                 )
                 text += (
                     " space: %s/%s"%(src.gamestate.gamestate.mainChar.xPosition%15,src.gamestate.gamestate.mainChar.yPosition%15,)
@@ -5313,7 +5325,7 @@ def gameLoop(loop, user_data=None):
                                 counter += 1
                             canvas.printTcod(tcodConsole,counter,20,warning=warning)
                             footertext = stringifyUrwid(footer.get_text())
-                            tcodConsole.print(x=0,y=52,string=" "*(200-len(footertext))+footertext)
+                            tcodConsole.print(x=0,y=51,string=" "*(200-len(footertext))+footertext)
                             tcodContext.present(tcodConsole)
                         if useTiles:
                             w, h = pydisplay.get_size()

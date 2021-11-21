@@ -863,7 +863,7 @@ class MetaQuestSequence(Quest):
                     out += (
                         "    x "
                         + "\n      ".join(quest.getDescription().split("\n"))
-                        + "d\n"
+                        + "\n"
                     )
         return out
 

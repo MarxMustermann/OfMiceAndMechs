@@ -65,6 +65,11 @@ protects you in combat
 
         character.addMessage("you equip the armor and wear a %s armor now"%(self.armorValue,))
 
+        if character.armor:
+            oldArmor = character.armor
+            character.armor = None
+            self.container.addItem(oldArmor,self.getPosition())
+
         character.armor = self
         self.container.removeItem(self)
 

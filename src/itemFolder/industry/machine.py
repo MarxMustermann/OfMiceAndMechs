@@ -400,13 +400,8 @@ Currently the machine has no charges
 
         command = self.commands[trigger]
 
-        convertedCommand = []
-        for char in command:
-            convertedCommand.append((char, "norecord"))
-
-        character.macroState["commandKeyQueue"] = (
-            convertedCommand + character.macroState["commandKeyQueue"]
-        )
+        character.runCommandString(command)
+        
         character.addMessage(
             "running command to handle trigger %s - %s" % (trigger, command)
         )

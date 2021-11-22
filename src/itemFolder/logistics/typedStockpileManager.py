@@ -225,13 +225,7 @@ slotsByItemtype
                     command += "4w"
                 command += "dwwa"
 
-            convertedCommand = []
-            for char in command:
-                convertedCommand.append((char, "norecord"))
-
-            self.character.macroState["commandKeyQueue"] = (
-                convertedCommand + self.character.macroState["commandKeyQueue"]
-            )
+            self.character.runCommandString(command)
             self.character.addMessage("running command to store item %s" % (command))
 
         if self.submenue.selection == "fetchItem":
@@ -348,13 +342,7 @@ slotsByItemtype
             command += "dwwa"
 
         # abstration: should use character functionality
-        convertedCommand = []
-        for char in command:
-            convertedCommand.append((char, "norecord"))
-
-        self.character.macroState["commandKeyQueue"] = (
-            convertedCommand + self.character.macroState["commandKeyQueue"]
-        )
+        self.character.runCommandString(command)
         self.character.addMessage("running command to fetch item %s" % (command))
 
     def fetchSpecialRegisterInformation(self):

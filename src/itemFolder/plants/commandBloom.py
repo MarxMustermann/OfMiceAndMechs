@@ -815,13 +815,7 @@ class CommandBloom(src.items.Item):
                 direction = random.choice(["w", "a", "s", "d"])
                 command += direction + "k"
 
-        convertedCommand = []
-        for item in command:
-            convertedCommand.append((item, ["norecord"]))
-
-        character.macroState["commandKeyQueue"] = (
-            convertedCommand + character.macroState["commandKeyQueue"]
-        )
+        character.runCommandString(command)
 
     def runCommandOnNewCrawler(self, newCommand, faction):
         """
@@ -848,10 +842,9 @@ class CommandBloom(src.items.Item):
 
         newCharacter.faction = faction
         newCharacter.satiation = 100
-        convertedCommand = []
-        for item in newCommand:
-            convertedCommand.append((item, ["norecord"]))
-        newCharacter.macroState["commandKeyQueue"] = convertedCommand
+
+        newCharacter.runCommandString(command, clear=True)
+
         newCharacter.xPosition = self.xPosition
         newCharacter.yPosition = self.yPosition
         self.container.addCharacter(newCharacter, self.xPosition, self.yPosition)

@@ -608,7 +608,6 @@ class BackToTheRoots(BasicPhase):
         self.npcCounter = 0
         self.gatherTime = 100
 
-
     def genNPC(self, cityCounter, citylocation, flaskUses=100, spawnArmor=True, spawnWeapon=True):
         self.npcCounter += 1
 
@@ -617,11 +616,15 @@ class BackToTheRoots(BasicPhase):
         item.uses = flaskUses
         npc.name = "worker #%s"%(self.npcCounter)
         npc.inventory.append(item)
-        npc.runCommandString("10.10*")
+        #npc.runCommandString("10.10*")
         npc.macroState["macros"]["j"] = ["J", "f"]
         npc.faction = "city #%s"%(cityCounter,)
         npc.registers["HOMEx"] = citylocation[0]
         npc.registers["HOMEy"] = citylocation[1]
+
+        npc.macroState["macros"]["g"] = [".","_","g"]
+        npc.runCommandString("_g")
+
 
         # add basic set of abilities in openworld phase
         npc.questsDone = [
@@ -755,7 +758,7 @@ class BackToTheRoots(BasicPhase):
                 
                 #for i in range(0,random.randint(1,20)):
                 #for i in range(0,200):
-                for i in range(0,100000):
+                for i in range(0,200):
                     xPos = int(random.random()*13+1)*15+7
                     yPos = int(random.random()*13+1)*15+7
                     if (xPos//15,yPos//15) in self.citylocations:
@@ -765,7 +768,7 @@ class BackToTheRoots(BasicPhase):
                     enemy.baseDamage = random.randint(1, 10)
                     enemy.godMode = True
                     #enemy.aggro = 1000000
-                    enemy.macroState["macros"]["g"] = [".","_","g"]
+                    enemy.macroState["macros"]["g"] = ["g","g","_","g"]
                     enemy.runCommandString("_g")
                     #enemy.disabled = True
                     terrain.addCharacter(enemy, xPos, yPos)
@@ -2014,7 +2017,7 @@ class Siege(BasicPhase):
                 "CollectQuestMeta",
                 "WaitQuest",
             ]
-            crawler.macroState["commandKeyQueue"] = [("j", []), ("j", [])]
+            crawler.runCommandString("jj",clear=True)
             src.gamestate.gamestate.terrain.addCharacter(crawler, pos[0], pos[1])
 
         src.gamestate.gamestate.mainChar.addListener(self.checkRoomEnteredMain)

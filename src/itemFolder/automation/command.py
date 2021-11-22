@@ -126,12 +126,7 @@ class Command(src.items.Item):
             character: the character to run the command on
         """
 
-        convertedCommand = []
-        for item in self.command:
-            convertedCommand.append((item, ["norecord"]))
-        character.macroState["commandKeyQueue"] = (
-            convertedCommand + character.macroState["commandKeyQueue"]
-        )
+        character.runCommandString(self.command)
 
     def setPayload(self, command):
         """

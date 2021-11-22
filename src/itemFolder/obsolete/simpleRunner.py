@@ -47,12 +47,7 @@ class SimpleRunner(src.items.Item):
 
             self.character = character
         else:
-            convertedCommand = []
-            for item in self.command:
-                convertedCommand.append((item, ["norecord"]))
-            character.macroState["commandKeyQueue"] = (
-                convertedCommand + character.macroState["commandKeyQueue"]
-            )
+            character.runCommandString(self.command)
 
     def storeMacro(self):
         key = self.submenue.selection

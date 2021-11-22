@@ -61,10 +61,7 @@ The corpse has %s charges left.
                 character.enterPhase4()
             else:
                 if self.container and character.satiation < 950:
-                    character.macroState["commandKeyQueue"] = [
-                        ("j", []),
-                        ("m", []),
-                    ] + character.macroState["commandKeyQueue"]
+                    character.runCommandString("jm")
             character.frustration -= 1
         else:
             character.frustration += 1

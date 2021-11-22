@@ -983,12 +983,7 @@ class Terrain(src.saveing.Saveable):
                         return
                     else:
                         # char.stasis = True
-                        char.macroState["commandKeyQueue"].insert(
-                            0, ("a", ["norecord"])
-                        )
-                        char.macroState["commandKeyQueue"].insert(
-                            0, ("a", ["norecord"])
-                        )
+                        char.runCommandString("aa")
                         pass
                 char.addMessage("a force field pushes you")
                 char.addMessage(char)
@@ -1003,12 +998,7 @@ class Terrain(src.saveing.Saveable):
                         return
                     else:
                         # char.stasis = True
-                        char.macroState["commandKeyQueue"].insert(
-                            0, ("d", ["norecord"])
-                        )
-                        char.macroState["commandKeyQueue"].insert(
-                            0, ("d", ["norecord"])
-                        )
+                        char.runCommandString("dd")
                         pass
                 char.addMessage("a force field pushes you")
                 char.addMessage(char)
@@ -1023,12 +1013,7 @@ class Terrain(src.saveing.Saveable):
                         return
                     else:
                         # char.stasis = True
-                        char.macroState["commandKeyQueue"].insert(
-                            0, ("w", ["norecord"])
-                        )
-                        char.macroState["commandKeyQueue"].insert(
-                            0, ("w", ["norecord"])
-                        )
+                        char.runCommandString("ww")
                         pass
                 char.addMessage("a force field pushes you")
                 char.addMessage(char)
@@ -1043,12 +1028,7 @@ class Terrain(src.saveing.Saveable):
                         return
                     else:
                         # char.stasis = True
-                        char.macroState["commandKeyQueue"].insert(
-                            0, ("s", ["norecord"])
-                        )
-                        char.macroState["commandKeyQueue"].insert(
-                            0, ("s", ["norecord"])
-                        )
+                        char.runCommandString("ss")
                         pass
                 char.addMessage("a force field pushes you")
                 char.addMessage(char)

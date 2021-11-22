@@ -45,14 +45,7 @@ class MacroRunner(src.items.Item):
 
             self.character = character
         else:
-            import copy
-
-            convertedCommand = []
-            for item in self.command:
-                convertedCommand.append((item, ["norecord"]))
-            character.macroState["commandKeyQueue"] = (
-                convertedCommand + character.macroState["commandKeyQueue"]
-            )
+            character.runCommandString(self.command,clear=True)
 
     def storeMacro(self):
         key = self.submenue.selection

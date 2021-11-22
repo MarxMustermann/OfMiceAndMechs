@@ -115,13 +115,8 @@ commands:
             itemType = jobOrder.tasks[-1]["toProduce"]
             command = self.commands[itemType]
 
-            convertedCommand = []
-            for char in command:
-                convertedCommand.append((char, "norecord"))
+            self.character.runCommandString(command)
 
-            self.character.macroState["commandKeyQueue"] = (
-                convertedCommand + self.character.macroState["commandKeyQueue"]
-            )
             self.character.addMessage(
                 "running command to produce %s - %s" % (itemType, command)
             )
@@ -223,13 +218,8 @@ commands:
         itemType = self.submenue.selection
         command = self.commands[itemType]
 
-        convertedCommand = []
-        for char in command:
-            convertedCommand.append((char, "norecord"))
+        self.character.runCommandString(command)
 
-        self.character.macroState["commandKeyQueue"] = (
-            convertedCommand + self.character.macroState["commandKeyQueue"]
-        )
         self.character.addMessage(
             "running command to produce %s - %s" % (itemType, command)
         )

@@ -179,13 +179,8 @@ class SanitaryStation(src.items.Item):
 
         command = self.commands[trigger]
 
-        convertedCommand = []
-        for char in command:
-            convertedCommand.append((char, "norecord"))
+        character.runCommandString(command)
 
-        character.macroState["commandKeyQueue"] = (
-            convertedCommand + character.macroState["commandKeyQueue"]
-        )
         character.addMessage(
             "running command to handle trigger %s - %s" % (trigger, command)
         )

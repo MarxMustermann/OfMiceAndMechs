@@ -269,7 +269,7 @@ def callShow_or_exit(loop, key):
 
     show_or_exit(key)
 
-def show_or_exit(key, charState=None):
+def show_or_exit(key):
     """
     add keystrokes from urwid to the players command queue
 
@@ -278,12 +278,7 @@ def show_or_exit(key, charState=None):
         charState: the state of the char to add the keystroke to
     """
 
-    if charState is None:
-        charState = src.gamestate.gamestate.mainChar.macroState
-
-    # store the commands for later processing
-    charState["commandKeyQueue"].append((key, []))
-
+    src.gamestate.gamestate.mainChar.runCommandString((key,),nativeKey=True,addBack=True)
 
 shownStarvationWarning = False
 
@@ -450,14 +445,14 @@ def handleMacroReplayChar(key,char,charState,main,header,footer,urwid,flags):
 
             charState["doNumber"] = True
 
-            commands = []
+            command = ""
             counter = 0
             while counter < num:
-                commands.append(("_", ["norecord"]))
-                commands.append((key, ["norecord"]))
+                command += "_"+key
                 counter += 1
             charState["replay"].pop()
-            charState["commandKeyQueue"] = commands + charState["commandKeyQueue"]
+
+            char.runCommandString(command)
 
             charState["doNumber"] = False
             char.timeTaken -= 0.99
@@ -471,8 +466,21 @@ def stitchCommands(charState):
         commands + charState["commandKeyQueue"]
     )
     """
-    for keyPress in reversed(charState["macros"][charState["replay"][-1]]):
-        charState["commandKeyQueue"].insert(0,(keyPress, ["norecord"]))
+
+    stitchCommands2(charState,reversed(charState["macros"][charState["replay"][-1]]))
+
+def stitchCommands2(charState,inCommands):
+    commands = []
+    flags = ["norecord"]
+    for keyPress in inCommands:
+        commands.append(stitchCommands4(keyPress, flags))
+    stitchCommands3(charState,commands)
+
+def stitchCommands4(keyPress,flags):
+    return (keyPress, flags)
+
+def stitchCommands3(charState,commands):
+    charState["commandKeyQueue"].extend(commands)
     #commands = [('g', ['norecord']), ('g', ['norecord']), ('_', ['norecord']), ('g', ['norecord'])]
 
 def handleRecordingChar(key,char,charState,main,header,footer,urwid,flags):
@@ -1215,15 +1223,7 @@ current registers (%s):
                     return char.registers[key][-1]
 
                 value = getValue()
-
-                valueCommand = []
-                for numChar in str(value):
-                    valueCommand.append((numChar, ["norecord"]))
-
-                char.interactionState["varActions"].pop()
-                charState["commandKeyQueue"] = (
-                    valueCommand + charState["commandKeyQueue"]
-                )
+                char.runCommandString(str(value))
                 char.timeTaken -= 0.99
                 return
         else:
@@ -1360,9 +1360,7 @@ press any other key to finish
             if action == "*":
                 char.registers[register][-1] *= int(lastVarAction["number"])
 
-            charState["commandKeyQueue"] = [(key, flags + ["norecord"])] + charState[
-                "commandKeyQueue"
-            ]
+            char.runCommandString(key, extraFlags=flags)
             char.interactionState["varActions"].pop()
             char.timeTaken -= 0.99
             return
@@ -1675,15 +1673,9 @@ type the macro that should be run in case the condition is false
                                 break
                 """
                 if conditionTrue:
-                    charState["commandKeyQueue"] = (
-                        char.interactionState["ifParam1"][-1]
-                        + charState["commandKeyQueue"]
-                    )
+                    char.runCommandString(char.interactionState["ifParam1"][-1])
                 else:
-                    charState["commandKeyQueue"] = (
-                        char.interactionState["ifParam2"][-1]
-                        + charState["commandKeyQueue"]
-                    )
+                    char.runCommandString(char.interactionState["ifParam2"][-1])
 
                 char.interactionState["ifCondition"].pop()
                 char.interactionState["ifParam1"].pop()
@@ -1710,12 +1702,10 @@ type the macro that should be run in case the condition is false
         "~",
     ):
         if not charState["replay"]:
-            commands = [("§", ["norecord"]), (key, ["norecord"])]
-            charState["commandKeyQueue"] = commands + charState["commandKeyQueue"]
+            char.runCommandString("§"+key)
             charState["loop"].pop()
         else:
-            commands = [("§", ["norecord"]), ("_", ["norecord"]), (key, ["norecord"])]
-            charState["commandKeyQueue"] = commands + charState["commandKeyQueue"]
+            char.runCommandString("§_"+key)
             charState["loop"].pop()
 
     if key in ("-",) and not char.interactionState["varActions"]:
@@ -1793,12 +1783,12 @@ current macros:
 
         charState["doNumber"] = True
 
-        commands = []
         counter = 0
+        commands = ""
         while counter < num:
-            commands.append((key, ["norecord"]))
+            commands += key
             counter += 1
-        charState["commandKeyQueue"] = commands + charState["commandKeyQueue"]
+        char.runCommandString(commands)
 
         charState["doNumber"] = False
         char.timeTaken -= 0.99
@@ -2045,7 +2035,7 @@ select what you want to observe
             ticksSinceDeath = src.gamestate.gamestate.tick
         key = commandChars.wait
         if src.gamestate.gamestate.tick == ticksSinceDeath + 5:
-            char.macroState["commandKeyQueue"] = []
+            char.clearCommandString()
             char.macroState["submenue"] = TextMenu(
                 "You died. press ctrl-c and reload to start from last save"
             )
@@ -2133,7 +2123,7 @@ select what you want to observe
                 not lastXposition == char.xPosition
                 or not lastYposition == char.yPosition
             ):
-                charState["commandKeyQueue"].insert(0, (key, ("norecord",)))
+                char.runCommandString(key)
 
             if charState["itemMarkedLast"]:
                 tumble(char,charState)
@@ -4684,7 +4674,7 @@ def keyboardListener(key):
     state = src.gamestate.gamestate.mainChar.macroState
 
     if key == "ctrl d":
-        state["commandKeyQueue"].clear()
+        src.gamestate.gamestate.mainChar.clearCommandString()
         state["loop"] = []
         state["replay"].clear()
         src.gamestate.gamestate.mainChar.huntkilling = False
@@ -4826,7 +4816,7 @@ def keyboardListener(key):
             speed = 0.1
         src.gamestate.gamestate.gameHalted = False
     else:
-        show_or_exit(key, charState=state)
+        show_or_exit(key)
 
 
 lastAdvance = 0
@@ -5166,22 +5156,25 @@ def gameLoop(loop, user_data=None):
                         #if not char == src.gamestate.gamestate.mainChar:
                         char.startIdling()
 
+                    """
                     while len(state["commandKeyQueue"]) > 1000:
                         state["commandKeyQueue"].pop()
+                    """
 
                     while len(char.messages) > 100:
                         char.messages.pop()
 
                     if len(state["commandKeyQueue"]):
-                        key = state["commandKeyQueue"][0]
+                        key = state["commandKeyQueue"][-1]
                         while (
                             isinstance(key[0], list)
                             or isinstance(key[0], tuple)
                             or key[0] in ("lagdetection", "lagdetection_")
                         ):
                             if len(state["commandKeyQueue"]):
-                                key = state["commandKeyQueue"][0]
-                                state["commandKeyQueue"].remove(key)
+                                #key = state["commandKeyQueue"][0]
+                                #state["commandKeyQueue"].remove(key)
+                                key = state["commandKeyQueue"].pop()
                             else:
                                 key = ("~", [])
 
@@ -5195,8 +5188,7 @@ def gameLoop(loop, user_data=None):
                                         (char.getOwnAction(),["norecord"]),
                                         charState=state, noAdvanceGame=True, char=char)
                             else:
-                                key = state["commandKeyQueue"][0]
-                                state["commandKeyQueue"].remove(key)
+                                key = state["commandKeyQueue"].pop()
                                 processInput(
                                     key, charState=state, noAdvanceGame=True, char=char
                                 )
@@ -5207,7 +5199,7 @@ def gameLoop(loop, user_data=None):
                     multi_chars.remove(char)
 
                 text = ""
-                for cmd in src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"]:
+                for cmd in reversed(src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"]):
                     item = cmd[0]
                     if (
                         isinstance(item, list)

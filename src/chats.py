@@ -2080,62 +2080,31 @@ class ChatMenu(Chat):
                         localMoveCommand.append(("d", ["norecord"]))
                         moveCommand = localMoveCommand + moveCommand
 
-                    self.partner.macroState["commandKeyQueue"] = (
-                        self.partner.macroState["commandKeyQueue"] + moveCommand
-                    )
+                    self.partner.runCommandString(moveCommand,addBack=True)
                     return True
                 elif self.selection == "activate":
-                    self.partner.macroState[
-                        "commandKeyQueue"
-                    ] = self.partner.macroState["commandKeyQueue"] + [("j", [])]
+                    self.partner.runCommandString("j",addBack=True)
                     return True
                 elif self.selection == "pickUp":
-                    self.partner.macroState[
-                        "commandKeyQueue"
-                    ] = self.partner.macroState["commandKeyQueue"] + [
-                        ("1", []),
-                        ("0", []),
-                        ("k", []),
-                    ]
+                    self.partner.runCommandString("10k",addBack=True)
                     return True
                 elif self.selection == "dropAll":
-                    self.partner.macroState[
-                        "commandKeyQueue"
-                    ] = self.partner.macroState["commandKeyQueue"] + [
-                        ("1", []),
-                        ("0", []),
-                        ("l", []),
-                    ]
+                    self.partner.runCommandString("10l",addBack=True)
                     return True
                 elif self.selection == "moveWest":
-                    self.partner.macroState[
-                        "commandKeyQueue"
-                    ] = self.partner.macroState["commandKeyQueue"] + [("a", [])]
+                    self.partner.runCommandString("a",addBack=True)
                     return True
                 elif self.selection == "moveNorth":
-                    self.partner.macroState[
-                        "commandKeyQueue"
-                    ] = self.partner.macroState["commandKeyQueue"] + [("w", [])]
+                    self.partner.runCommandString("w",addBack=True)
                     return True
                 elif self.selection == "moveSouth":
-                    self.partner.macroState[
-                        "commandKeyQueue"
-                    ] = self.partner.macroState["commandKeyQueue"] + [("s", [])]
+                    self.partner.runCommandString("s",addBack=True)
                     return True
                 elif self.selection == "moveEast":
-                    self.partner.macroState[
-                        "commandKeyQueue"
-                    ] = self.partner.macroState["commandKeyQueue"] + [("d", [])]
+                    self.partner.runCommandString("d",addBack=True)
                     return True
                 elif self.selection == "stopCommand":
-                    self.partner.macroState[
-                        "commandKeyQueue"
-                    ] = self.partner.macroState["commandKeyQueue"] + [
-                        ("1", []),
-                        ("0", []),
-                        ("l", []),
-                    ]
-                    self.partner.macroState["commandKeyQueue"].clear()
+                    self.partner.runCommandString("",clear=True)
                     self.partner.macroState["loop"] = []
                     self.partner.macroState["replay"].clear()
                     if "ifCondition" in self.partner.interactionState:
@@ -2199,10 +2168,7 @@ class ChatMenu(Chat):
             src.gamestate.gamestate.mainChar.addMessage("no macro found")
             return
 
-        commands = []
-        for command in self.partner.macroState["macros"][self.subMenu.keyPressed]:
-            commands.append((command, []))
-        self.partner.macroState["commandKeyQueue"] = commands
+        self.partner.runCommandString(self.partner.macroState["macros"][self.subMenu.keyPressed])
 
         src.gamestate.gamestate.mainChar.addMessage(
             "run macros - " + self.subMenu.keyPressed

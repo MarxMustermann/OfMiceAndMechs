@@ -461,7 +461,7 @@ class Character(src.saveing.Saveable):
 
         self.messages.append(message)
 
-    def runCommandString(self, commandString, clear=False):
+    def runCommandString(self, commandString, clear=False, addBack=False, nativeKey=False, extraFlags=None):
         """
         run a command using the macro automation
 
@@ -471,23 +471,38 @@ class Character(src.saveing.Saveable):
 
         # convert command to macro data structure
         convertedCommand = []
-        for char in commandString:
+        for char in reversed(commandString):
             if char == "\n":
                 char = "enter"
-            convertedCommand.append((char, "norecord"))
 
+            if nativeKey:
+                flags = []
+            else:
+                flags = ["norecord"]
+
+            if extraFlags:
+                flags.extend(extraFlags)
+
+            convertedCommand.append((char, flags))
 
         oldCommand = []
         if not clear:
             oldCommand = self.macroState["commandKeyQueue"]
 
         # add command to the characters command queue
-        self.macroState["commandKeyQueue"] = (
-            convertedCommand + oldCommand
-        )
+        if not addBack:
+            self.macroState["commandKeyQueue"] = (
+                oldCommand + convertedCommand
+            )
+        else:
+            self.macroState["commandKeyQueue"] = (
+                convertedCommand + oldCommand
+            )
 
+        """
         if len(self.macroState["commandKeyQueue"]) > 100:
             self.macroState["commandKeyQueue"] = self.macroState["commandKeyQueue"][0:100]
+        """
 
     def getCommandString(self):
         """
@@ -1811,11 +1826,7 @@ class Character(src.saveing.Saveable):
             )
             self.frustration -= 1000
 
-        parsedCommand = []
-        for char in command:
-            parsedCommand.append((char, ["norecord"]))
-
-        self.macroState["commandKeyQueue"] = parsedCommand
+        self.runCommandString(command)
 
     def removeSatiation(self, amount):
         """
@@ -2046,7 +2057,7 @@ class Monster(Character):
             self.macroState["macros"]["m"].append(str(random.randint(0, 9)))
             self.macroState["macros"]["m"].append(random.choice(["a", "w", "s", "d"]))
         self.macroState["macros"]["m"].extend(["_", "m"])
-        self.macroState["commandKeyQueue"] = [("_", []), ("m", [])]
+        self.runCommandString("_m")
 
     def enterPhase4(self):
         """
@@ -2063,7 +2074,7 @@ class Monster(Character):
         for i in range(0, 4):
             self.macroState["macros"]["w"].append(str(random.randint(0, 9)))
             self.macroState["macros"]["w"].append(random.choice(["a", "w", "s", "d"]))
-        self.macroState["commandKeyQueue"] = [("_", []), ("f", [])]
+        self.runCommandString("_f")
 
     def enterPhase5(self):
         """
@@ -2085,7 +2096,7 @@ class Monster(Character):
             self.macroState["macros"]["w"].append(str(random.randint(0, 9)))
             self.macroState["macros"]["w"].append(random.choice(["a", "w", "s", "d"]))
             self.macroState["macros"]["w"].append("m")
-        self.macroState["commandKeyQueue"] = [("_", []), ("f", [])]
+        self.runCommandString("_f")
 
     # bad code: should listen to itself instead
     def changed(self, tag="default", info=None):

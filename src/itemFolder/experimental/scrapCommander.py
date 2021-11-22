@@ -32,13 +32,7 @@ class ScrapCommander(src.items.Item):
         rowRemain = fieldNum % 11
 
     def runCommandString(self, command, character):
-        convertedCommand = []
-        for char in command:
-            convertedCommand.append((char, "norecord"))
-
-        character.macroState["commandKeyQueue"] = (
-            convertedCommand + character.macroState["commandKeyQueue"]
-        )
+        character.runCommandString(command)
 
     def apply2(self):
         if self.submenue.selection == "addScrap":

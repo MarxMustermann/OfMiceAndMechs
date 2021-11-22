@@ -25,8 +25,9 @@ class Tumbler(src.items.Item):
         strength = src.gamestate.gamestate.tick%self.strength+1
 
         direction = ["w","a","s","d"][direction]
-        convertedCommands = [(direction,["norecord"])] * strength
-        character.macroState["commandKeyQueue"] = convertedCommands + character.macroState["commandKeyQueue"]
+        command = direction * strength
+
+        character.runCommandString(command)
 
         character.addMessage("tumbling %s %s "%(direction,strength))
         self.tracking = True

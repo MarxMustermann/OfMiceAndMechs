@@ -98,7 +98,7 @@ You can use it to loose 100 satiation.
         command += "_m"
         character.macroState["macros"]["m"] = splitCommand(command)
 
-        character.macroState["commandKeyQueue"] = [("_", []), ("m", [])]
+        character.runCommandString("_m",clear=True)
         character.satiation = 100
         self.container.addCharacter(character, self.xPosition, self.yPosition)
 

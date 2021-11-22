@@ -178,13 +178,8 @@ class StockpileMetaManager(src.items.Item):
             self.stockPiles.append(plot)
             del self.assignedPlotsInfo[plot]
 
-            convertedCommand = []
-            for char in command:
-                convertedCommand.append((char, "norecord"))
+            character.runCommandString(command)
 
-            character.macroState["commandKeyQueue"] = (
-                convertedCommand + character.macroState["commandKeyQueue"]
-            )
             self.blocked = False
             return
 
@@ -559,13 +554,7 @@ class StockpileMetaManager(src.items.Item):
             command.extend(self.commands["return from room manager"])
         stockPileInfo["amount"] += 1
 
-        convertedCommand = []
-        for char in command:
-            convertedCommand.append((char, "norecord"))
-
-        character.macroState["commandKeyQueue"] = (
-            convertedCommand + character.macroState["commandKeyQueue"]
-        )
+        character.runCommandString(command)
         self.blocked = False
 
     def configure(self, character):
@@ -1003,13 +992,7 @@ class StockpileMetaManager(src.items.Item):
 
         command = self.commands[trigger]
 
-        convertedCommand = []
-        for char in command:
-            convertedCommand.append((char, "norecord"))
-
-        self.character.macroState["commandKeyQueue"] = (
-            convertedCommand + self.character.macroState["commandKeyQueue"]
-        )
+        character.runCommandString(command)
 
     def getState(self):
         """

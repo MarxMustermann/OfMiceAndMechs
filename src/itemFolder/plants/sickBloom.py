@@ -131,7 +131,7 @@ class SickBloom(src.items.Item):
             counter += 1
         character.macroState["macros"]["m"] = list(command + "_m")
 
-        character.macroState["commandKeyQueue"] = [("_", []), ("m", [])]
+        character.runCommandString("_m",clear=True)
         character.satiation = 10
         if self.container:
             self.container.addCharacter(character, self.xPosition, self.yPosition)

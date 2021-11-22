@@ -87,7 +87,7 @@ class Spawner(src.items.Item):
         character.macroState["macros"]["_a"] = splitCommand("_RANDOMWALk")
         character.macroState["macros"]["m"] = splitCommand("ijj_GOTOTREe")
 
-        character.macroState["commandKeyQueue"] = [("_", []), ("m", [])]
+        character.runCommandString("_m",clear=True)
         character.satiation = 100000
         self.container.addCharacter(character, self.xPosition + 1, self.yPosition)
 

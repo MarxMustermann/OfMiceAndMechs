@@ -185,11 +185,7 @@ This is a level %s item
             )
 
         if self.recording:
-            convertedCommand = []
-            convertedCommand.append(("-", ["norecord"]))
-            self.character.macroState["commandKeyQueue"] = (
-                convertedCommand + self.character.macroState["commandKeyQueue"]
-            )
+            self.character.runCommandString("-")
 
             if "a" not in self.character.macroState["macros"]:
                 self.character.addMessage('no macro found in buffer "a"')
@@ -241,12 +237,7 @@ This is a level %s item
         """
 
         self.recording = True
-        convertedCommand = []
-        convertedCommand.append(("-", ["norecord"]))
-        convertedCommand.append(("a", ["norecord"]))
-        self.character.macroState["commandKeyQueue"] = (
-            convertedCommand + self.character.macroState["commandKeyQueue"]
-        )
+        self.character.runCommandString("-a")
 
     def storeFromMacro(self):
         """

@@ -429,10 +429,6 @@ class HiveMind(src.items.Item):
         else:  # stand around, look confused
             command = "wwaassdd100.j"
 
-        convertedCommand = []
-        for item in command:
-            convertedCommand.append((item, ["norecord"]))
-
         if selfDestroy:
             new = src.items.itemMap["FireCrystals"]()
             self.container.addItem(new,self.getPosition())
@@ -450,9 +446,7 @@ class HiveMind(src.items.Item):
                 direction = random.choice(["w", "a", "s", "d"])
                 command += direction + "k"
 
-        character.macroState["commandKeyQueue"] = (
-            convertedCommand + character.macroState["commandKeyQueue"]
-        )
+        character.runCommandString(command)
 
     def doHealthCheckLazy(self, character):
         """

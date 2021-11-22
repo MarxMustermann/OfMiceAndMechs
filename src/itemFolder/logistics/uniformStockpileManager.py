@@ -260,13 +260,8 @@ r: reset
             return
         command = self.commands[commandName]
 
-        convertedCommand = []
-        for char in command:
-            convertedCommand.append((char, "norecord"))
+        self.character.runCommandString(command)
 
-        self.character.macroState["commandKeyQueue"] = (
-            convertedCommand + self.character.macroState["commandKeyQueue"]
-        )
         self.character.addMessage(
             "running command for trigger: %s - %s" % (commandName, command)
         )
@@ -600,13 +595,7 @@ r: reset
             else:
                 pass
 
-            convertedCommand = []
-            for char in command:
-                convertedCommand.append((char, "norecord"))
-
-            self.character.macroState["commandKeyQueue"] = (
-                convertedCommand + self.character.macroState["commandKeyQueue"]
-            )
+            self.character.runCommandString(command)
             self.character.addMessage("running command to fetch item")
             self.blocked = False
             return

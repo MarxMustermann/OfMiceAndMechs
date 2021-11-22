@@ -64,7 +64,7 @@ You can select the routes and run the stored route.
         )
         self.character.macroState["submenue"] = self.submenue
         self.character.macroState["submenue"].followUp = self.selectActivity
-        self.macroBackup = self.character.macroState["macros"].get("auto")
+        self.macroBackup = self.character.macroState["macros"].get("a")
 
     def getReachableNodes(self, node):
         """
@@ -139,19 +139,15 @@ You can select the routes and run the stored route.
             self.character.addMessage(
                 "walk the path to the target and activate this menu item again"
             )
-            self.character.macroState["commandKeyQueue"] = [
-                ("-", ["norecord"]),
-                ("auto", ["norecord"]),
-            ] + self.character.macroState["commandKeyQueue"]
+
+            self.character.runCommandString("-a")
             if node:
                 self.recordingStart = node
             else:
                 self.recordingStart = pos
             self.recording = True
         else:
-            self.character.macroState["commandKeyQueue"] = [
-                ("-", ["norecord"])
-            ] + self.character.macroState["commandKeyQueue"]
+            self.character.runCommandString("-")
             self.recording = None
             if not self.macroBackup:
                 return
@@ -168,7 +164,7 @@ You can select the routes and run the stored route.
             else:
                 recordingEnd = pos
             self.routes[self.recordingStart][recordingEnd] = self.macroBackup[:-counter]
-            del self.character.macroState["macros"]["auto"]
+            del self.character.macroState["macros"]["a"]
             self.character.addMessage(
                 "added path from %s to %s" % (self.recordingStart, recordingEnd)
             )
@@ -221,12 +217,8 @@ You can select the routes and run the stored route.
             return
         charPos = (self.character.xPosition, self.character.yPosition)
         path = self.routes[charPos][self.submenue.selection]
-        convertedPath = []
-        for step in path:
-            convertedPath.append((step, ["norecord"]))
-        self.character.macroState["commandKeyQueue"] = (
-            convertedPath + self.character.macroState["commandKeyQueue"]
-        )
+
+        self.character.runCommandString(path)
         self.character.addMessage("you walk the path")
 
 src.items.addType(Map)

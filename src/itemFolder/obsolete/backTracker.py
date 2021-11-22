@@ -36,14 +36,9 @@ class BackTracker(src.items.Item):
             character.addMessage("backtracking")
             self.tracking = False
 
-            convertedCommand = []
-            for item in self.command:
-                convertedCommand.append((item, ["norecord"]))
-
             character.addMessage("runs the stored path")
-            character.macroState["commandKeyQueue"] = (
-                convertedCommand + character.macroState["commandKeyQueue"]
-            )
+            character.runCommandString(self.command)
+
             self.command = []
         else:
             self.tracked = character

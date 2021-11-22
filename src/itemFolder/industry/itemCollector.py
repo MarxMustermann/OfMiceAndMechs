@@ -150,14 +150,7 @@ class ItemCollector(src.items.Item):
 
         command += "opx$=ss$=ww$=dd$=aa"
 
-        character.addMessage(command)
-        convertedCommand = []
-        for item in command:
-            convertedCommand.append((item, ["norecord"]))
-
-        character.macroState["commandKeyQueue"] = (
-            convertedCommand + character.macroState["commandKeyQueue"]
-        )
+        character.runCommandString(command)
 
     # abstraction: should use super class function
     def configure(self, character):

@@ -145,13 +145,6 @@ class AutoFarmer(src.items.Item):
         command += "opx$=ww$=dd$=ss$=aa"
         command += "opx$=ss$=dd$=ww$=aa"
 
-        convertedCommand = []
-        for item in command:
-            convertedCommand.append((item, ["norecord"]))
-
-        character.macroState["commandKeyQueue"] = (
-            convertedCommand + character.macroState["commandKeyQueue"]
-        )
-
+        character.runCommandString(command)
 
 src.items.addType(AutoFarmer)

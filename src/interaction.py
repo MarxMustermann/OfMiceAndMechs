@@ -466,7 +466,8 @@ def stitchCommands(charState):
         commands + charState["commandKeyQueue"]
     )
     """
-
+    if not charState["replay"][-1] in charState["macros"]:
+        return
     stitchCommands2(charState,reversed(charState["macros"][charState["replay"][-1]]))
 
 def stitchCommands2(charState,inCommands):
@@ -4644,6 +4645,7 @@ def render(char):
 
 multi_currentChar = None
 multi_chars = set()
+new_chars = set()
 charindex = 0
 
 
@@ -5067,6 +5069,7 @@ def gameLoop(loop, user_data=None):
 
     global multi_currentChar
     global multi_chars
+    global new_chars
 
     firstRun = True
     lastcheck = time.time()
@@ -5194,6 +5197,8 @@ def gameLoop(loop, user_data=None):
                                 )
 
                         char.timeTaken -= 1
+                multi_chars.update(new_chars)
+                new_chars = set()
 
                 for char in removeChars:
                     multi_chars.remove(char)

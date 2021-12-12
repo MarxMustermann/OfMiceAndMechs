@@ -9,16 +9,17 @@ class SparcRewardLock(src.items.Item):
 
     type = "SparcRewardLock"
 
-    def __init__(self):
+    def __init__(self,treasure=None):
         """
         configure superclass
         """
 
         super().__init__(display="%°")
 
-        self.name = "SaccrificialCircle"
+        self.name = "SparcRewardLock"
         self.walkable = True
         self.bolted = True
+        self.treasure = treasure
 
     def apply(self, character):
         """
@@ -40,8 +41,13 @@ class SparcRewardLock(src.items.Item):
             )
             return
 
-        character.inventory.append(foundItem)
-        character.addMessage("well done")
+        character.inventory.remove(foundItem)
+        if not self.treasure:
+            character.addMessage("there is no reward")
+        else:
+            character.addMessage("the locks opens and you recieve your reward")
+            character.inventory.extend(self.treasure)
+            self.treasure = None
 
 
 src.items.addType(SparcRewardLock)

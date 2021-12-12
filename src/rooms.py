@@ -910,7 +910,7 @@ class Room(src.saveing.Saveable):
         if 1 == 1:
             self.lastRender = None
 
-    def addCharacter(self, character, x, y, noRegister=False):
+    def addCharacter(self, character, x, y, noRegister=False, forceRegister=False):
         """
         teleport character into the room
 
@@ -927,6 +927,8 @@ class Room(src.saveing.Saveable):
         character.path = []
         self.changed("entered room", character)
         if not noRegister:
+            src.interaction.new_chars.add(character)
+        if forceRegister:
             src.interaction.multi_chars.add(character)
 
     def removeCharacter(self, character):
@@ -1564,6 +1566,8 @@ XXX
             doorPos: a list of door positions
         """
 
+        items = []
+
         self.sizeX = sizeX
         self.sizeY = sizeY
 
@@ -1735,9 +1739,9 @@ class StaticRoom(EmptyRoom):
                 character.die()
 
         for item in self.itemsOnFloor[:]:
-            if isinstance(item, src.items.StaticMover):
+            if isinstance(item, src.items.itemMap["StaticMover"]):
                 if item.energy > 1:
-                    newPos = [item.xPosition, item.yPosition]
+                    newPos = [item.xPosition, item.yPosition,0]
                     skip = False
                     if character.xPosition < item.xPosition:
                         newPos[0] -= 1
@@ -1750,8 +1754,9 @@ class StaticRoom(EmptyRoom):
                     if (
                         newPos[0],
                         newPos[1],
+                        0
                     ) in self.itemByCoordinates and self.itemByCoordinates[
-                        (newPos[0], newPos[1])
+                        (newPos[0], newPos[1],0)
                     ]:
                         blocked = True
                     for character in self.characters:
@@ -1766,7 +1771,7 @@ class StaticRoom(EmptyRoom):
                                 character.die()
 
                     if blocked:
-                        newPos = [item.xPosition, item.yPosition]
+                        newPos = [item.xPosition, item.yPosition,0]
                         skip = False
                         blocked = False
 
@@ -1799,9 +1804,7 @@ class StaticRoom(EmptyRoom):
                         if item.energy:
                             item.energy -= 2
                             self.removeItem(item)
-                            item.xPosition = newPos[0]
-                            item.yPosition = newPos[1]
-                            self.addItems([item])
+                            self.addItem(item,newPos)
 
                 if (
                     character.yPosition == item.yPosition

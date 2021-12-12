@@ -30,7 +30,7 @@ class SparkPlug(src.items.Item):
 
         staticSpark = None
         for item in character.inventory:
-            if isinstance(item, StaticSpark) and item.strength >= self.strength - 1:
+            if isinstance(item, src.items.itemMap["StaticSpark"]) and item.strength >= self.strength - 1:
                 if not staticSpark or staticSpark.strength > item.strength:
                     staticSpark = item
 

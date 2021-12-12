@@ -8,7 +8,7 @@ class RipInReality(src.items.Item):
 
     type = "RipInReality"
 
-    def __init__(self):
+    def __init__(self,rootRip=None,treasure=None):
         """
         configuration of the superclass
         """
@@ -18,6 +18,22 @@ class RipInReality(src.items.Item):
         self.description = "You can enter it"
         self.target = None
         self.targetPos = None
+
+        if not rootRip == None:
+            self.rootRip = rootRip
+            self.treasureRoom = None
+        else:
+            self.rootRip = self
+
+            newRoom = src.rooms.StaticRoom(depth=7)
+            newRoom.reconfigure(7, 7)
+            for item in newRoom.itemsOnFloor[:]:
+                newRoom.removeItem(item)
+
+            crystal = src.items.itemMap["StaticCrystal"]()
+            newRoom.addItem(crystal,(3,3,0))
+            self.treasureRoom = newRoom
+            self.treasure = treasure
 
         self.walkable = True
         self.bolted = True
@@ -48,8 +64,6 @@ class RipInReality(src.items.Item):
         """
 
         self.container.removeCharacter(character)
-        character.staggered += 1
-        character.addMessage("the reality shift staggers you")
 
         if (
             not self.stable
@@ -69,7 +83,7 @@ class RipInReality(src.items.Item):
                 startPosition = (5, 5, 0)
 
                 newRoom = src.rooms.StaticRoom(depth=self.depth + 1)
-                backRip = src.items.itemMap["RipInReality"]()
+                backRip = src.items.itemMap["RipInReality"](rootRip=self.rootRip)
                 backRip.target = self.container
                 backRip.targetPos = self.getPosition()
                 backRip.stable = True
@@ -83,48 +97,49 @@ class RipInReality(src.items.Item):
 
                 newRoom.addItem(backRip,startPosition)
 
-                newRoom.addItems([src.items.itemMap["SaccrificialCircle"](5, 4)])
+                newRoom.addItem(src.items.itemMap["SaccrificialCircle"](),(5, 4, 0))
 
-                newRoom.addItems([src.items.itemMap["SparcRewardLock"](5, 6)])
+                lock = src.items.itemMap["SparcRewardLock"](treasure=self.treasure)
+                newRoom.addItem(lock,(5, 6, 0))
 
                 newRoom.addCharacter(character, startPosition[0], startPosition[1])
 
                 positions = [
-                    (2, 2),
-                    (2, 4),
-                    (2, 6),
-                    (2, 8),
-                    (8, 2),
-                    (8, 4),
-                    (8, 6),
-                    (8, 8),
-                    (4, 2),
-                    (6, 2),
-                    (4, 8),
-                    (6, 8),
+                    (2, 2, 0),
+                    (2, 4, 0),
+                    (2, 6, 0),
+                    (2, 8, 0),
+                    (8, 2, 0),
+                    (8, 4, 0),
+                    (8, 6, 0),
+                    (8, 8, 0),
+                    (4, 2, 0),
+                    (6, 2, 0),
+                    (4, 8, 0),
+                    (6, 8, 0),
                 ]
 
                 for position in positions:
                     if random.randint(1, 2) == 1:
-                        rip = src.items.itemMap["RipInReality"]()
+                        rip = src.items.itemMap["RipInReality"](rootRip=self.rootRip)
                         rip.xPosition = position[0]
                         rip.yPosition = position[1]
                         rip.depth = 2
-                        newRoom.addItems([rip])
+                        newRoom.addItem(rip,position)
                     else:
                         plug = src.items.itemMap["SparkPlug"]()
                         plug.xPosition = position[0]
                         plug.yPosition = position[1]
                         plug.strength = 2
-                        newRoom.addItems([plug])
+                        newRoom.addItem(plug,position)
 
                 self.target = newRoom
                 self.targetPos = startPosition
-            elif self.depth == 2:
+            elif self.depth == 2 and 1==0:
                 startPosition = (5, 5, 0)
 
                 newRoom = src.rooms.StaticRoom(depth=self.depth + 1)
-                backRip = src.items.itemMap["RipInReality"]()
+                backRip = src.items.itemMap["RipInReality"](rootRip=self.rootRip)
                 backRip.target = self.container
                 backRip.targetPos = self.getPosition()
                 backRip.stable = True
@@ -136,7 +151,7 @@ class RipInReality(src.items.Item):
                     toRemove.extend(items)
                 newRoom.removeItems(toRemove)
 
-                newRoom.addItems([backRip])
+                newRoom.addItem(backRip,startPosition)
                 newRoom.addCharacter(character, startPosition[0], startPosition[1])
 
                 numMice = random.randint(1, 5)
@@ -152,20 +167,14 @@ class RipInReality(src.items.Item):
 
                 rewardItem = None
                 if random.randint(1, 15) == 1:
-                    rewardItem = src.items.itemMap["Rod"](
-                        random.randint(1, 8), random.randint(1, 8)
-                    )
+                    rewardItem = src.items.itemMap["Rod"]()
                 elif random.randint(1, 15) == 1:
-                    rewardItem = src.items.itemMap["Vial"](
-                        random.randint(1, 8), random.randint(1, 8)
-                    )
+                    rewardItem = src.items.itemMap["Vial"]()
                     rewardItem.uses = 1
                 elif random.randint(1, 15) == 1:
-                    rewardItem = src.items.itemMap["Armor"](
-                        random.randint(1, 8), random.randint(1, 8)
-                    )
+                    rewardItem = src.items.itemMap["Armor"]()
                 if rewardItem:
-                    newRoom.addItems([rewardItem])
+                    newRoom.addItem(rewardItem,(random.randint(1, 8), random.randint(1, 8),0))
 
                 self.target = newRoom
                 self.targetPos = startPosition
@@ -180,34 +189,23 @@ class RipInReality(src.items.Item):
                 )
 
                 # generate solvable captcha room
-                backRip = src.items.itemMap["RipInReality"]()
+                backRip = src.items.itemMap["RipInReality"](rootRip=self.rootRip)
                 backRip.target = self.container
                 backRip.targetPos = self.getPosition()
                 backRip.stable = True
 
-                newRoom.reconfigure(sizeX, sizeY)
-                newRoom = src.rooms.StaticRoom(depth=self.depth + 1)
-                for item in newRoom.itemsOnFloor[:]:
-                    newRoom.removeItem(item)
-
-                newRoom.addItems(backRip,(random.randint(1, sizeX - 2),random.randint(1, sizeY - 2),0))
-                newRoom.addCharacter(character, startPosition[0], startPosition[1])
-
                 self.target = newRoom
                 self.targetPos = startPosition
-            elif self.depth == 10:
-                sizeX = 5
-                sizeY = 5
-                startPosition = (1, 1)
-                crystal = src.items.itemMap["StaticCrystal"]()
+            elif self.depth == 7:
+                backRip = src.items.itemMap["RipInReality"](rootRip=self.rootRip)
+                backRip.target = self.container
+                backRip.targetPos = self.getPosition()
+                backRip.stable = True
 
-                newRoom.reconfigure(sizeX, sizeY)
-                newRoom = src.rooms.StaticRoom(depth=self.depth + 1)
-                for item in newRoom.itemsOnFloor[:]:
-                    newRoom.removeItem(item)
+                newRoom = self.rootRip.treasureRoom
 
-                newRoom.addItem(crystal,(3,3,0))
                 newRoom.addCharacter(character, 1, 1)
+                newRoom.addItem(backRip, (1, 1, 0))
             else:
                 sizeX = random.randint(5, 13)
                 sizeY = random.randint(5, 13)
@@ -221,7 +219,7 @@ class RipInReality(src.items.Item):
                 # generate maybe solvable riddle room
                 newRoom = src.rooms.StaticRoom(depth=self.depth + 1)
                 # newRoom.reconfigure(self,sizeX=3,sizeY=3,items=[],bio=False)
-                backRip = RipInReality()
+                backRip = RipInReality(rootRip=self.rootRip)
                 backRip.target = self.container
                 backRip.targetPos = (self.xPosition, self.yPosition)
                 backRip.stable = True
@@ -238,15 +236,16 @@ class RipInReality(src.items.Item):
                     newPos = (
                         random.randint(0, sizeX - 1),
                         random.randint(0, sizeY - 1),
+                        0
                     )
                     if newPos == startPosition or newRoom.getItemByPosition(newPos):
                         continue
                     wall.energy = self.depth * 2
                     newRoom.addItem(wall,newPos)
 
-                while not random.randint(1, 3) == 3:
-                    if random.randint(1, 2) == 1:
-                        if random.randint(1, 2) == 1:
+                while not random.randint(1, 4) == 3:
+                    if random.random() > 0.3:
+                        if random.random() > 0.3:
                             spark = src.items.itemMap["StaticSpark"]()
                             spark.strength = self.depth
                             spark.name = "static spark %s" % (spark.strength)
@@ -255,7 +254,7 @@ class RipInReality(src.items.Item):
                             spark.strength = self.depth + 1
                             spark.name = "spark plug %s" % (spark.strength)
                     else:
-                        spark = src.items.itemMap["RipInReality"]()
+                        spark = src.items.itemMap["RipInReality"](rootRip=self.rootRip)
                         spark.depth = self.depth + 1
                         spark.name = "rip in reality %s" % (spark.depth)
 
@@ -266,12 +265,17 @@ class RipInReality(src.items.Item):
                         or sparkPos == startPosition
                         or newRoom.getItemByPosition(sparkPos)
                     ):
+                        if counter > 10:
+                            break
+                        counter += 1
                         sparkPos = (
                             random.randint(1, sizeX - 2),
                             random.randint(1, sizeY - 2),
                             0,
                         )
-                    newRoom.addItem(spark,sparkPos)
+
+                    if sparkPos:
+                        newRoom.addItem(spark,sparkPos)
 
                     while not random.randint(1, self.depth + 1) == 1:
                         wall = src.items.itemMap["StaticWall"]()
@@ -283,14 +287,14 @@ class RipInReality(src.items.Item):
                         )
                         if newPos == startPosition or newRoom.getItemByPosition(newPos):
                             continue
-                        newRoom.addItems(wall,newPos)
+                        newRoom.addItem(wall,newPos)
 
                 newRoom.addCharacter(character, startPosition[0], startPosition[1])
 
                 self.target = newRoom
                 self.targetPos = startPosition
 
-                while not random.randint(1, self.depth + 5) == 1:
+                while not random.randint(1, self.depth) == 1:
                     wall = src.items.itemMap["StaticWall"]()
                     wall.strength = self.depth + 2
                     newPos = (
@@ -305,7 +309,15 @@ class RipInReality(src.items.Item):
             self.target.addCharacter(character, self.targetPos[0], self.targetPos[1])
 
         if self.killInventory:
-            character.inventory = []
+            keepItems = []
+            if self.depth == 1:
+                for item in character.inventory:
+                    if item in self.rootRip.treasure:
+                        keepItems.append(item)
+            if keepItems:
+                self.rootRip.destroy()
+                character.addMessage("the rip in reality collapses")
+            character.inventory = keepItems
 
         self.lastUse = src.gamestate.gamestate.tick
 
@@ -334,7 +346,7 @@ class RipInReality(src.items.Item):
 
         staticSpark = None
         for item in self.character.inventory:
-            if isinstance(item, StaticSpark) and item.strength >= self.depth:
+            if isinstance(item, src.items.itemMap["StaticSpark"]) and item.strength >= self.depth:
                 if not staticSpark or staticSpark.strength > item.strength:
                     staticSpark = item
 

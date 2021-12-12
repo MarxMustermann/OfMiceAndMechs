@@ -5173,6 +5173,69 @@ class DeliverSpecialItem(Quest):
         character.runCommandString("s"*(foundItemSlot.yPosition-character.yPosition))
         character.runCommandString("w"*(character.yPosition-foundItemSlot.yPosition))
 
+class GoToTile(Quest):
+    def __init__(self, description="go to tile", creator=None):
+        questList = []
+        super().__init__(questList, creator=creator)
+        self.targetPosition = None
+        self.description = description
+        self.metaDescription = description
+        self.hasListener = False
+
+    def wrapedTriggerCompletionCheck(self, extraInfo):
+        if not self.active:
+            return
+
+        self.triggerCompletionCheck(extraInfo[0])
+
+    def assignToCharacter(self, character):
+        if not self.hasListener:
+            character.addListener(self.wrapedTriggerCompletionCheck, "moved")
+            self.hasListener = True
+
+        super().assignToCharacter(character)
+
+    def triggerCompletionCheck(self, character=None):
+        if not self.targetPosition:
+            return False
+        if not character:
+            return False
+        if not self.active:
+            return
+        if character.xPosition//15 == self.targetPosition[0] and character.yPosition//15 == self.targetPosition[1]:
+            self.postHandler()
+            return True
+        return False
+
+    def setParameters(self,parameters):
+        if "targetPosition" in parameters and "targetPosition" in parameters:
+            self.targetPosition = parameters["targetPosition"]
+            self.description = self.metaDescription+" %s"%(self.targetPosition,)
+        return super().setParameters(parameters)
+
+    def solver(self, character):
+        commandString = self.getSolvingCommandString(character)
+        self.randomSeed = random.random()
+        if commandString:
+            character.runCommandString(commandString)
+            return False
+        else:
+            return True
+
+    def getRequiredParameters(self):
+        parameters = super().getRequiredParameters()
+        parameters.append({"name":"targetPosition","type":"coordinate"})
+        return parameters
+
+    def getSolvingCommandString(self, character):
+        if not self.targetPosition:
+            return "..."
+        if character.xPosition//15 == self.targetPosition[0] and character.yPosition//15 == self.targetPosition[1]:
+            return "10."
+        else:
+            #return "d"*(self.targetPosition[0]-character.xPosition//15)+"s"*(self.targetPosition[1]-character.yPosition//15)+"w"*(character.yPosition//15-self.targetPosition[1])+"a"*(character.xPosition//15-self.targetPosition[0])
+            return "d"*(6-character.xPosition)+"s"*(6-character.yPosition)+"w"*(character.yPosition-6)+"a"*(character.xPosition-6)
+
 class GoToPosition(Quest):
     def __init__(self, description="go to position", creator=None):
         questList = []
@@ -5322,7 +5385,20 @@ class GoHome(MetaQuestSequence):
                     if character.yPosition > 6:
                         return "w"*(character.yPosition-6)
                 else:
-                    return "13"+localRandom.choice(["a","w","s","d"])
+                    if character.container.xPosition < self.cityLocation[0]:
+                        direction = "d"
+                    elif character.container.xPosition > self.cityLocation[0]:
+                        direction = "a"
+                    elif character.container.yPosition < self.cityLocation[1]:
+                        direction = "s"
+                    elif character.container.yPosition > self.cityLocation[1]:
+                        direction = "w"
+                    else:
+                        print("direction not found")
+                        print(character.container.yPosition)
+                        print(self.cityLocation)
+                        direction = localRandom.choice(["a","w","s","d"])
+                    return "13"+direction
             else:
                 self.triggerCompletionCheck(character)
         else:
@@ -5428,11 +5504,11 @@ class GrabSpecialItem(Quest):
         self.fail()
         return
 
-class EnterEnemyCity(Quest):
+class EnterEnemyCity(MetaQuestSequence):
     def __init__(self, description="enter enemy city", creator=None, lifetime=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
-        self.description = description
+        self.metaDescription = description
         # save initial state and register
         self.type = "EnterEnemyCity"
         self.cityLocation = None
@@ -5457,8 +5533,6 @@ class EnterEnemyCity(Quest):
                 character.awardReputation(amount=5, reason="getting near the enemy city", carryOver=True)
                 self.rewardedNearby = True
 
-        return
-
     def timeOut(self):
         if not self.rewardedNearby:
             self.character.revokeReputation(amount=20, reason="not getting near the enemy city")
@@ -5473,7 +5547,7 @@ class EnterEnemyCity(Quest):
 
     def setCityLocation(self, cityLocation):
         self.cityLocation = cityLocation
-        self.description = "enter enemy city %s"%(self.cityLocation,)
+        self.metaDescription = "enter enemy city %s"%(self.cityLocation,)
 
     def assignToCharacter(self, character):
         if not self.hasListener:
@@ -5488,20 +5562,28 @@ class EnterEnemyCity(Quest):
             if not character.container.terrain:
                 return None
 
-            #if not (character.container.terrain.xPosition == self.cityLocation[0] and character.container.terrain.yPosition == self.cityLocation[1]):
-            if (not (character.container.terrain.xPosition == 7 and character.container.terrain.yPosition == 7) or 
-                not (character.container.xPosition == self.cityLocation[0] and character.container.yPosition == self.cityLocation[1])):
+            if (not (character.container.xPosition == self.cityLocation[0] and character.container.yPosition == self.cityLocation[1])):
                 if not (character.xPosition == 6 and character.yPosition == 6):
-                    if character.xPosition%15 < 6:
-                        return "d"*(6-character.xPosition)
+                    if character.xPosition < 6:
+                        return "a"*(6-character.xPosition)
                     if character.xPosition > 6:
-                        return "a"*(character.xPosition-6)
+                        return "d"*(character.xPosition-6)
                     if character.yPosition < 6:
-                        return "s"*(6-character.yPosition)
+                        return "w"*(6-character.yPosition)
                     if character.yPosition > 6:
-                        return "w"*(character.yPosition-6)
+                        return "s"*(character.yPosition-6)
                 else:
-                    return "13"+localRandom.choice(["a","w","s","d"])
+                    directions = ["w","a","s","d"]
+                    if character.container.xPosition < self.cityLocation[0]:
+                        directions.extend(["d"]*(self.cityLocation[0]-character.container.xPosition))
+                    if character.container.xPosition > self.cityLocation[0]:
+                        directions.extend(["a"]*(character.container.xPosition-self.cityLocation[0]))
+                    if character.container.yPosition < self.cityLocation[1]:
+                        directions.extend(["s"]*(self.cityLocation[1]-character.container.yPosition))
+                    if character.container.yPosition > self.cityLocation[1]:
+                        directions.extend(["w"]*(character.container.yPosition-self.cityLocation[1]))
+                    direction = localRandom.choice(directions)
+                    return "13"+direction
             else:
                 self.triggerCompletionCheck(character)
         else:
@@ -5646,11 +5728,17 @@ class ObtainSpecialItem(MetaQuestSequence):
             quest.itemID = self.itemID
 
             quest = EnterEnemyCity(lifetime=lifetime)
+            self.addQuest(quest)
             quest.setCityLocation(self.itemLocation)
             quest.assignToCharacter(character)
             quest.activate()
 
+            quest = GoToTile()
+            quest.setParameters({"targetPosition":(character.registers["HOMEx"]-1,character.registers["HOMEy"]-1)})
+            quest.assignToCharacter(character)
+            quest.activate()
             self.addQuest(quest)
+
             self.addedSubQuests = True
 
     def solver(self, character):

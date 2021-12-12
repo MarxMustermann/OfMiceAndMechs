@@ -67,6 +67,8 @@ class Terrain(src.saveing.Saveable):
         self.tupleDictsToStore = []
         self.tupleListsToStore = []
 
+        self.noPlacementTiles = []
+
         super().__init__()
 
         self.noPaths = noPaths
@@ -414,6 +416,10 @@ class Terrain(src.saveing.Saveable):
     def randomAddItems(self, items):
         for item in items:
             pos = (random.randint(15,210),random.randint(15,210),0)
+
+            while (pos[0]//15,pos[1]//15) in self.noPlacementTiles:
+                pos = (random.randint(15,210),random.randint(15,210),0)
+                
             self.addItem(item, pos)
 
     def damage(self):

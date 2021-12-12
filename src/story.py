@@ -541,8 +541,8 @@ class Dungeon(BasicPhase):
             src.gamestate.gamestate.mainChar, 65, 111
         )
 
-        item = src.items.itemMap["RipInReality"](67, 113)
-        src.gamestate.gamestate.terrain.addItem(item)
+        item = src.items.itemMap["RipInReality"]()
+        src.gamestate.gamestate.terrain.addItem(item,(67, 113, 0))
 
         # add basic set of abilities in openworld phase
         src.gamestate.gamestate.mainChar.questsDone = [
@@ -602,7 +602,7 @@ class BackToTheRoots(BasicPhase):
         self.leaders = {}
         self.scoreTracker = {}
 
-        self.startDelay = 400
+        self.startDelay = 200
         self.epochLength = 2000
         self.firstEpoch = True
         self.npcCounter = 0
@@ -616,15 +616,11 @@ class BackToTheRoots(BasicPhase):
         item.uses = flaskUses
         npc.name = "worker #%s"%(self.npcCounter)
         npc.inventory.append(item)
-        #npc.runCommandString("10.10*")
+        npc.runCommandString("10.10*")
         npc.macroState["macros"]["j"] = ["J", "f"]
         npc.faction = "city #%s"%(cityCounter,)
         npc.registers["HOMEx"] = citylocation[0]
         npc.registers["HOMEy"] = citylocation[1]
-
-        npc.macroState["macros"]["g"] = [".","_","g"]
-        npc.runCommandString("_g")
-
 
         # add basic set of abilities in openworld phase
         npc.questsDone = [
@@ -671,7 +667,10 @@ class BackToTheRoots(BasicPhase):
         mainChar = src.gamestate.gamestate.mainChar
 
         # build cities
-        self.citylocations.append((7,7))
+        self.citylocations.append((6,6))
+        self.citylocations.append((6,8))
+        self.citylocations.append((8,6))
+        self.citylocations.append((8,8))
         numCities = 0
         while numCities < 4:
             pos = (random.randint(3,11),random.randint(3,11))
@@ -689,7 +688,183 @@ class BackToTheRoots(BasicPhase):
             print("city at %s"%(pos,))
             self.citylocations.append(pos)
             numCities += 1
-        self.citylocations.remove((7,7))
+        self.citylocations.remove((6,6))
+        self.citylocations.remove((6,8))
+        self.citylocations.remove((8,6))
+        self.citylocations.remove((8,8))
+
+        architect = src.items.itemMap["ArchitectArtwork"]()
+        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+        currentTerrain.addItem(architect,(124, 110, 0))
+        rooms = []
+
+        room = architect.doAddRoom(
+            {
+                "coordinate": (7,7),
+                "roomType": "EmptyRoom",
+                "doors": "0,6",
+                "offset": [1,1],
+                "size": [13, 13],
+                },
+            None,
+        )
+        rooms.append(room)
+
+        room = architect.doAddRoom(
+            {
+                "coordinate": (7-1,7+0),
+                "roomType": "EmptyRoom",
+                "doors": "6,0 12,6",
+                "offset": [1,1],
+                "size": [13, 13],
+                },
+            None,
+        )
+        rooms.append(room)
+
+        room = architect.doAddRoom(
+            {
+                "coordinate": (7-1,7-1),
+                "roomType": "EmptyRoom",
+                "doors": "12,6 6,12",
+                "offset": [1,1],
+                "size": [13, 13],
+                },
+            None,
+        )
+        rooms.append(room)
+
+        room = architect.doAddRoom(
+            {
+                "coordinate": (7,7-1),
+                "roomType": "EmptyRoom",
+                "doors": "12,6 0,6",
+                "offset": [1,1],
+                "size": [13, 13],
+                },
+            None,
+        )
+        rooms.append(room)
+
+        room = architect.doAddRoom(
+            {
+                "coordinate": (7+1,7-1),
+                "roomType": "EmptyRoom",
+                "doors": "0,6 6,12",
+                "offset": [1,1],
+                "size": [13, 13],
+                },
+            None,
+        )
+        rooms.append(room)
+
+        room = architect.doAddRoom(
+            {
+                "coordinate": (7+1,7),
+                "roomType": "EmptyRoom",
+                "doors": "6,0 6,12",
+                "offset": [1,1],
+                "size": [13, 13],
+                },
+            None,
+        )
+        rooms.append(room)
+
+        room = architect.doAddRoom(
+            {
+                "coordinate": (7+1,7+1),
+                "roomType": "EmptyRoom",
+                "doors": "6,0 0,6",
+                "offset": [1,1],
+                "size": [13, 13],
+                },
+            None,
+        )
+        rooms.append(room)
+
+        room = architect.doAddRoom(
+            {
+                "coordinate": (7,7+1),
+                "roomType": "EmptyRoom",
+                "doors": "12,6 0,6",
+                "offset": [1,1],
+                "size": [13, 13],
+                },
+            None,
+        )
+        rooms.append(room)
+
+        room = architect.doAddRoom(
+            {
+                "coordinate": (7-1,7+1),
+                "roomType": "EmptyRoom",
+                "doors": "12,6 0,6",
+                "offset": [1,1],
+                "size": [13, 13],
+                },
+            None,
+        )
+        rooms.append(room)
+
+        # add treasure room
+        room = rooms[0]
+        sword = src.items.itemMap["Sword"]()
+        armor = src.items.itemMap["Armor"]()
+        armor.armorValue = 100
+
+        ripInReality = src.items.itemMap["RipInReality"](treasure=[armor,sword])
+        room.addItem(ripInReality,(6,6,0))
+
+
+        roomCounter = 0
+        for room in reversed(rooms[1:]):
+            roomCounter += 1
+            for i in range(0,1):
+                pos = (int(random.random()*14),int(random.random()*14))
+                enemy = src.characters.Monster(pos[0],pos[1])
+                enemy.health = 10*roomCounter
+                enemy.baseDamage = roomCounter
+                enemy.macroState["macros"]["g"] = ["g","g","_","g"]
+                enemy.runCommandString("_g")
+                room.addCharacter(enemy, pos[0], pos[1])
+        
+        placedMainChar = False
+
+        offsets = [(-2,+1)]
+        for offset in offsets:
+            architect.doClearField(7+offset[0],7+offset[1])
+            currentTerrain.noPlacementTiles.append((7+offset[0],7+offset[1]))
+        for offset in offsets:
+            for x in range(1,14):
+                for y in range(1,14):
+                    pos = (15*(7+offset[0])+x,15*(7+offset[1])+y,0)
+                    if (pos[0]+pos[1])%2:
+                        if random.random() > 0.3:
+                            mine = src.items.itemMap["LandMine"]()
+                            currentTerrain.addItem(mine,pos)
+                        if random.random() < 0.1:
+                            item = src.items.itemMap["Scrap"]()
+                            currentTerrain.addItem(item,pos)
+                    else:
+                        if random.random() < 0.1:
+                            if random.random() < 0.3:
+                                mine = src.items.itemMap["FireCrystals"]()
+                                currentTerrain.addItem(mine,pos)
+                            else:
+                                mine = src.items.itemMap["LandMine"]()
+                                currentTerrain.addItem(mine,pos)
+                        
+                        item = src.items.itemMap["Scrap"]()
+                        currentTerrain.addItem(item,pos)
+
+        enemy = src.characters.Character(6,6)
+        rooms[0].addCharacter(enemy, 6, 6)
+        item = src.items.itemMap["GooFlask"]()
+        item.uses = 100
+        enemy.inventory.append(item)
+
+        #src.gamestate.gamestate.mainChar = enemy
+        #placedMainChar = True
 
         # add random items
         y = 0
@@ -758,11 +933,24 @@ class BackToTheRoots(BasicPhase):
                 
                 #for i in range(0,random.randint(1,20)):
                 #for i in range(0,200):
-                for i in range(0,200):
-                    xPos = int(random.random()*13+1)*15+7
-                    yPos = int(random.random()*13+1)*15+7
-                    if (xPos//15,yPos//15) in self.citylocations:
+                for i in range(0,150):
+                    xPos = int(random.random()*13+1)*15+int(random.random()*13+1)
+                    yPos = int(random.random()*13+1)*15+int(random.random()*13+1)
+                    foundCity = None
+                    for cityLocation in self.citylocations:
+                        if abs(xPos//15-cityLocation[0])+abs(yPos//15-cityLocation[1]) < 3:
+                            foundCity = cityLocation
+                            break
+
+                    if foundCity:
                         continue
+
+                    if (xPos//15,yPos//15) in [(6,6),(6,7),(6,8),(7,6),(7,7),(7,8),(8,6),(8,7),(8,8)]:
+                        continue
+
+                    if (xPos//15,yPos//15) in currentTerrain.noPlacementTiles:
+                        continue
+
                     enemy = src.characters.Monster(xPos,yPos)
                     enemy.health = random.randint(1, 100)
                     enemy.baseDamage = random.randint(1, 10)
@@ -772,8 +960,6 @@ class BackToTheRoots(BasicPhase):
                     enemy.runCommandString("_g")
                     #enemy.disabled = True
                     terrain.addCharacter(enemy, xPos, yPos)
-
-        placedMainChar = False
 
         cityCounter = 1
         for citylocation in self.citylocations:
@@ -789,11 +975,11 @@ class BackToTheRoots(BasicPhase):
             architect = src.items.itemMap["ArchitectArtwork"]()
             currentTerrain.addItem(architect,(124, 110, 0))
 
-            architect.doClearField(citylocation[0], citylocation[1])
-            architect.doClearField(citylocation[0]+1, citylocation[1])
-            architect.doClearField(citylocation[0]-1, citylocation[1])
-            architect.doClearField(citylocation[0], citylocation[1]+1)
-            architect.doClearField(citylocation[0], citylocation[1]-1)
+            architect.doClearField(citylocation[0]  , citylocation[1]  )
+            architect.doClearField(citylocation[0]+1, citylocation[1]  )
+            architect.doClearField(citylocation[0]-1, citylocation[1]  )
+            architect.doClearField(citylocation[0]  , citylocation[1]+1)
+            architect.doClearField(citylocation[0]  , citylocation[1]-1)
             architect.doClearField(citylocation[0]+1, citylocation[1]+1)
             architect.doClearField(citylocation[0]+1, citylocation[1]-1)
             architect.doClearField(citylocation[0]-1, citylocation[1]+1)
@@ -809,6 +995,52 @@ class BackToTheRoots(BasicPhase):
                     },
                 None,
             )
+
+            rooms = []
+            room = architect.doAddRoom(
+                {
+                    "coordinate": (citylocation[0],citylocation[1]+1),
+                    "roomType": "EmptyRoom",
+                    "doors": "0,6 6,0 12,6",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                    },
+                None,
+            )
+            rooms.append(room)
+            room = architect.doAddRoom(
+                {
+                    "coordinate": (citylocation[0],citylocation[1]-1),
+                    "roomType": "EmptyRoom",
+                    "doors": "0,6 6,12 12,6",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                    },
+                None,
+            )
+            rooms.append(room)
+            room = architect.doAddRoom(
+                {
+                    "coordinate": (citylocation[0]+1,citylocation[1]),
+                    "roomType": "EmptyRoom",
+                    "doors": "0,6 6,0 6,12",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                    },
+                None,
+            )
+            rooms.append(room)
+            room = architect.doAddRoom(
+                {
+                    "coordinate": (citylocation[0]-1,citylocation[1]),
+                    "roomType": "EmptyRoom",
+                    "doors": "6,0 6,12 12,6",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                    },
+                None,
+            )
+            rooms.append(room)
 
             self.cityNPCCounters[citylocation] = 0
 
@@ -858,7 +1090,7 @@ class BackToTheRoots(BasicPhase):
                     subsubleader = self.genNPC(cityCounter,citylocation)
                     subsubleader.registers["ATTNPOSx"] = 3+i*3+j
                     subsubleader.registers["ATTNPOSy"] = 5
-                    offset = random.choice(((0,1),(1,0),(0,-1),(-1,0)))
+                    offset = random.choice(((1,1),(1,-1),(-1,-1),(-1,1)))
                     currentTerrain.addCharacter(subsubleader, (citylocation[0]+offset[0])*15+random.randint(2,13), (citylocation[1]+offset[1])*15+random.randint(2,13))
 
                     subleader.subordinates.append(subsubleader)
@@ -887,7 +1119,7 @@ class BackToTheRoots(BasicPhase):
                         worker.registers["ATTNPOSx"] = 3+i*3+j
                         worker.registers["ATTNPOSy"] = 7+k
                         #mainRoom.addCharacter(worker,3+i*3+j,7+k)
-                        offset = random.choice(((0,1),(1,0),(0,-1),(-1,0)))
+                        offset = random.choice(((1,1),(1,-1),(-1,-1),(-1,1)))
                         currentTerrain.addCharacter(worker, (citylocation[0]+offset[0])*15+random.randint(2,13), (citylocation[1]+offset[1])*15+random.randint(2,13))
                         subsubleader.subordinates.append(worker)
 
@@ -899,6 +1131,7 @@ class BackToTheRoots(BasicPhase):
                         if not placedMainChar and i == 2 and j == 2 and k == 2:
                             src.gamestate.gamestate.mainChar = worker
                             placedMainChar = True
+
             quest = src.quests.ObtainAllSpecialItems()
             leader.assignQuest(quest, active=True)
             self.leaderQuests[citylocation] = quest
@@ -908,9 +1141,9 @@ class BackToTheRoots(BasicPhase):
 
             cityCounter += 1
 
-            for offset in [(0,0),(0,1),(1,0),(-1,0),(0,-1)]:
-                xPos = (mainRoom.xPosition+offset[0])*15+7
-                yPos = (mainRoom.yPosition+offset[1])*15+7
+            for room in rooms:
+                xPos = 6
+                yPos = 6
                 if (xPos//15,yPos//15) in self.citylocations:
                     continue
                 enemy = src.characters.Guardian(xPos,yPos)
@@ -922,12 +1155,31 @@ class BackToTheRoots(BasicPhase):
                 enemy.runCommandString("_g")
                 enemy.faction = leader.faction
                 #enemy.disabled = True
-                currentTerrain.addCharacter(enemy, xPos, yPos)
+                room.addCharacter(enemy, xPos, yPos)
 
         src.gamestate.gamestate.mainChar.runCommandString("~~", clear=True)
         src.gamestate.gamestate.mainChar.personality["autoFlee"] = False
         src.gamestate.gamestate.mainChar.personality["abortMacrosOnAttack"] = False
         src.gamestate.gamestate.mainChar.personality["autoCounterAttack"] = False
+
+        src.gamestate.gamestate.mainChar.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest" "NaiveDropQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+            "NaiveMurderQuest",
+        ]
 
         '''
         showText("""
@@ -1352,6 +1604,7 @@ press space to continue"""%(reputationTree))
                     newNPC.addMessage("added as replacement worker")
                     continue
 
+                """
                 print("full tree adding machine")
                 placedItem = False
                 offset = (1,1)
@@ -1376,6 +1629,7 @@ press space to continue"""%(reputationTree))
                         break
 
                 newNPC.die()
+                """
 
         toKill = []
         for cityLocation in self.citylocations:

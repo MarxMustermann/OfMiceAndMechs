@@ -13,7 +13,7 @@ class StaticWall(src.items.Item):
         configure the super class
         """
 
-        super().__init__(display=src.canvas.displayChars.forceField)
+        super().__init__(display="#'")
         self.name = "static spark"
 
         self.walkable = False
@@ -30,7 +30,7 @@ class StaticWall(src.items.Item):
 
         staticSpark = None
         for item in character.inventory:
-            if isinstance(item, StaticSpark) and item.strength >= self.strength:
+            if isinstance(item, src.items.itemMap["StaticSpark"]) and item.strength >= self.strength:
                 if not staticSpark or staticSpark.strength > item.strength:
                     staticSpark = item
 

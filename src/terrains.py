@@ -425,6 +425,13 @@ class Terrain(src.saveing.Saveable):
     def damage(self):
         pass
 
+    def getRoomByPosition(self, position):
+        foundRooms = []
+        for room in self.rooms:
+            if room.xPosition == position[0] and room.yPosition == position[1]:
+                foundRooms.append(room)
+        return foundRooms
+
     def getItemByPosition(self, position):
         """
         get items on a specific position

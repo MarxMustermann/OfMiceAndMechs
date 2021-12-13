@@ -5228,13 +5228,52 @@ class GoToTile(Quest):
         return parameters
 
     def getSolvingCommandString(self, character):
-        if not self.targetPosition:
-            return "..."
-        if character.xPosition//15 == self.targetPosition[0] and character.yPosition//15 == self.targetPosition[1]:
-            return "10."
+        localRandom = random.Random(self.randomSeed)
+        if isinstance(character.container, src.rooms.Room):
+            if not (character.xPosition == 6 and character.yPosition == 6):
+                return "d"*(6-character.xPosition)+"s"*(6-character.yPosition)+"w"*(character.yPosition-6)+"a"*(character.xPosition-6)
+            else:
+                if not character.container.xPosition:
+                    return "..."
+
+                directions = []
+                randomDirections = []
+                if character.container.getPositionWalkable((0,6,0)):
+                    randomDirections.append("a")
+                    directions.extend("a"*(character.container.xPosition-self.targetPosition[0]))
+                if character.container.getPositionWalkable((12,6,0)):
+                    randomDirections.append("d")
+                    directions.extend("d"*(self.targetPosition[0]-character.container.xPosition))
+                if character.container.getPositionWalkable((6,0,0)):
+                    randomDirections.append("w")
+                    directions.extend("w"*(character.container.yPosition-self.targetPosition[1]))
+                if character.container.getPositionWalkable((6,12,0)):
+                    randomDirections.append("s")
+                    directions.extend("s"*(self.targetPosition[1]-character.container.yPosition))
+                if random.random() < 0.2 or not directions:
+                    directions = randomDirections
+                return ".15"+localRandom.choice(directions)+"gg"
         else:
-            #return "d"*(self.targetPosition[0]-character.xPosition//15)+"s"*(self.targetPosition[1]-character.yPosition//15)+"w"*(character.yPosition//15-self.targetPosition[1])+"a"*(character.xPosition//15-self.targetPosition[0])
-            return "d"*(6-character.xPosition)+"s"*(6-character.yPosition)+"w"*(character.yPosition-6)+"a"*(character.xPosition-6)
+            if not (character.xPosition%15 == 7 and character.yPosition%15 == 7):
+                return "d"*(7-character.xPosition%15)+"s"*(7-character.yPosition%15)+"w"*(character.yPosition%15-7)+"a"*(character.xPosition%15-7)
+            else:
+                directions = []
+                randomDirections = []
+                if not character.container.getRoomByPosition((character.xPosition//15-1,character.yPosition//15)):
+                    randomDirections.append("a")
+                    directions.extend("a"*(character.xPosition//15-self.targetPosition[0]))
+                if not character.container.getRoomByPosition((character.xPosition//15+1,character.yPosition//15)):
+                    randomDirections.append("d")
+                    directions.extend("d"*(self.targetPosition[0]-character.xPosition//15))
+                if not character.container.getRoomByPosition((character.xPosition//15,character.yPosition//15-1)):
+                    randomDirections.append("w")
+                    directions.extend("w"*(character.yPosition//15-self.targetPosition[1]))
+                if not character.container.getRoomByPosition((character.xPosition//15,character.yPosition//15+1)):
+                    randomDirections.append("s")
+                    directions.extend("s"*(self.targetPosition[1]-character.yPosition//15))
+                if random.random() < 0.2 or not directions:
+                    directions = randomDirections
+                return ".13"+localRandom.choice(directions)+"gg"
 
 class GoToPosition(Quest):
     def __init__(self, description="go to position", creator=None):
@@ -5524,6 +5563,8 @@ class EnterEnemyCity(MetaQuestSequence):
 
         if isinstance(character.container, src.rooms.Room):
             #if (character.container.terrain.xPosition == self.cityLocation[0] and character.container.terrain.yPosition == self.cityLocation[1]):
+            if not (character.container.terrain):
+                return
             if not (character.container.terrain.xPosition == 7 and character.container.terrain.yPosition == 7):
                 return
             if (character.container.xPosition == self.cityLocation[0] and character.container.yPosition == self.cityLocation[1]):
@@ -5711,13 +5752,18 @@ class ObtainSpecialItem(MetaQuestSequence):
             #quest = StandAttention()
             #self.addQuest(quest)
 
+            # order is reverse to order in code
+
+            # return the loot
             quest = DeliverSpecialItem()
             self.addQuest(quest)
             quest.itemID = self.itemID
 
+            # go home
             quest = GoHome()
             self.addQuest(quest)
 
+            # grab the item
             lifetime = None
             if self.initialLifetime:
                 lifetime = self.initialLifetime//2
@@ -5727,14 +5773,44 @@ class ObtainSpecialItem(MetaQuestSequence):
             quest.activate()
             quest.itemID = self.itemID
 
+            # enter the city
             quest = EnterEnemyCity(lifetime=lifetime)
             self.addQuest(quest)
             quest.setCityLocation(self.itemLocation)
             quest.assignToCharacter(character)
             quest.activate()
 
+            # enter the city
+            homeLocation = (character.registers["HOMEx"],character.registers["HOMEy"])
+            direction = [0,0]
+            if self.itemLocation[0] < homeLocation[0]:
+                direction[0] = -1
+            if self.itemLocation[0] > homeLocation[0]:
+                direction[0] = +1
+            if self.itemLocation[1] < homeLocation[1]:
+                direction[1] = -1
+            if self.itemLocation[1] > homeLocation[1]:
+                direction[1] = +1
+
+            if direction[0] == 0:
+                if random.random() > 0.5:
+                    direction[0] = 1
+                else:
+                    direction[0] = -1
+            if direction[1] == 0:
+                if random.random() > 0.5:
+                    direction[1] = 1
+                else:
+                    direction[1] = -1
+
             quest = GoToTile()
-            quest.setParameters({"targetPosition":(character.registers["HOMEx"]-1,character.registers["HOMEy"]-1)})
+            quest.setParameters({"targetPosition":(self.itemLocation[0]-direction[0],self.itemLocation[1]-direction[1])})
+            quest.assignToCharacter(character)
+            quest.activate()
+            self.addQuest(quest)
+
+            quest = GoToTile()
+            quest.setParameters({"targetPosition":(homeLocation[0]+direction[0],homeLocation[1]+direction[1])})
             quest.assignToCharacter(character)
             quest.activate()
             self.addQuest(quest)

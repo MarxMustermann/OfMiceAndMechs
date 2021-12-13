@@ -854,7 +854,7 @@ class BackToTheRoots(BasicPhase):
                                 mine = src.items.itemMap["LandMine"]()
                                 currentTerrain.addItem(mine,pos)
                         
-                        item = src.items.itemMap["Scrap"]()
+                        item = src.items.itemMap["Scrap"](amount=int(random.random()*5))
                         currentTerrain.addItem(item,pos)
 
         enemy = src.characters.Character(6,6)

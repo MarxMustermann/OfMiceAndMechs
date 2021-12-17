@@ -5641,23 +5641,21 @@ class EnterEnemyCity(MetaQuestSequence):
                         return "s"*(character.yPosition-6)
                 else:
                     pos = (character.container.xPosition,character.container.yPosition)
-                    if pos == (self.cityLocation[0],self.cityLocation[1]+1):
-                        return "15w"
-                    if pos == (self.cityLocation[0]+1,self.cityLocation[1]+1):
-                        return "15a"
-                    if pos == (self.cityLocation[0]-1,self.cityLocation[1]+1):
-                        return "15d"
                     if pos == (self.cityLocation[0]+1,self.cityLocation[1]):
-                        return "15s"
+                        return "15a"
                     if pos == (self.cityLocation[0]-1,self.cityLocation[1]):
-                        return "15s"
+                        return "15d"
                     if pos == (self.cityLocation[0]+1,self.cityLocation[1]-1):
                         return "15s"
                     if pos == (self.cityLocation[0]-1,self.cityLocation[1]-1):
                         return "15s"
-                    if pos == (self.cityLocation[0],self.cityLocation[1]-1):
-                        return localRandom.choice(["15a","15d"])
+                    if pos == (self.cityLocation[0]+1,self.cityLocation[1]-2):
+                        return "15s"
+                    if pos == (self.cityLocation[0]-1,self.cityLocation[1]-2):
+                        return "15s"
                     if pos == (self.cityLocation[0],self.cityLocation[1]-2):
+                        return localRandom.choice(["15a","15d"])
+                    if pos == (self.cityLocation[0],self.cityLocation[1]-3):
                         return "15s"
 
                     directions = ["w","a","s","d"]
@@ -5836,14 +5834,14 @@ class ObtainSpecialItem(MetaQuestSequence):
 
             # enter the city
             quest = GoToTile()
-            quest.setParameters({"targetPosition":(self.itemLocation[0],self.itemLocation[1]-2)})
+            quest.setParameters({"targetPosition":(self.itemLocation[0],self.itemLocation[1]-3)})
             quest.assignToCharacter(character)
             quest.activate()
             self.addQuest(quest)
 
             if self.itemLocation[0] == homeLocation[0]:
                 quest = GoToTile()
-                quest.setParameters({"targetPosition":(self.itemLocation[0]-2,self.itemLocation[1]-2)})
+                quest.setParameters({"targetPosition":(self.itemLocation[0]-2,self.itemLocation[1]-3)})
                 quest.assignToCharacter(character)
                 quest.activate()
                 self.addQuest(quest)
